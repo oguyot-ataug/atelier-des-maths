@@ -3329,6 +3329,11 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.969', date:'2026-10-03', items:[
+    "Planches CM1 à l'écran (au tableau, en projection, en session COURS) : 232 exercices se font maintenant à l'écran, contre 204. Nouveaux outils : tracer les barres d'un diagramme ; tracer des segments sur un quadrillage (reproduire une figure, la compléter par symétrie, terminer un carré) ; colorier ou entourer des carreaux précis ; placer des points nommés (symétrique d'un point, fraction sur une demi-droite) ; tracer une bande d'une longueur donnée ; placer les aiguilles d'une horloge ; programmer le robot avec les flèches ; remplir case par case le résultat d'une opération posée.",
+    "Les exercices « Pose et calcule dans le quadrillage » ont une version écran : l'opération est déjà posée et l'élève remplit le résultat (pour la division : le quotient et le reste). Sur papier, rien ne change.",
+    "Restent sur papier, volontairement : les « Dans ton cahier » et les tracés à l'équerre et au compas (le geste avec l'instrument est l'objectif)."
+  ] },
   { version:'2026-08-19.968', date:'2026-10-03', items:[
     "Planches CM1 : tous les chapitres du CM1 ont maintenant leurs planches imprimables avec corrigés. Derniers ajouts : « Solides » (reconnaître, faces, arêtes, sommets ; patrons du cube, faces opposées, patron de dé), « Proportionnalité » (raisonner sans tableau : fois plus, en additionnant, par l'unité ; situations non proportionnelles), « Algèbre » (suites de nombres et de figures ; égalités à trou, balances, programmes de calcul), « Angles » (aigu, droit, obtus avec l'équerre, sans rapporteur) et « Initiation à la pensée informatique » (suivre et écrire un programme de déplacement, boucles, bug)."
   ] },

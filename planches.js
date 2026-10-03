@@ -46,6 +46,12 @@ function plListe(items){ return `<ul class="pl-liste">${items.map(x => `<li>${x}
 // Lignes pour rédiger sur la planche, quand on veut quand même de la place.
 function plLignes(n){ return `<div class="pl-lignes">${'<div></div>'.repeat(n || 3)}</div>`; }
 
+// Rend un dessin interactif à l'écran (planches-num.js › PLX) : cfg = { t: 'barres' | 'seg' | 'cases' | 'pts' | … }.
+// Sur papier, rien ne change ; la clé est portée par le dessin de l'énoncé.
+function plX(html, cfg){ return html.replace(/<(svg|span)\b/, m => `${m} data-plx="${JSON.stringify(cfg).replace(/&/g, '&amp;').replace(/"/g, '&quot;')}"`); }
+// Programme de flèches à écrire (à l'écran : boutons ← ↑ → ↓) ; att = 'ddh…' (d droite, g gauche, h haut, b bas).
+function plFleches(att, n){ return plX(`<span class="pl-pts" style="min-width:${(n || 10) * .55}em;"></span>`, { t: 'fleches', att }); }
+
 /* ---------- Figures pour les planches (réutilisables dans tous les chapitres) ---------- */
 const PL_TRAIT = '#1F3A5C', PL_COUL = { carre: '#9CCB6B', disque: '#5CB8D6', bande: '#E8896A', u: '#F08A3C' };
 // Carré partagé en parts égales, k parts coloriées. mode : 'bandes' (horizontales), 'colonnes', 'grille'
@@ -98,6 +104,8 @@ function plBandesU(u, lignes, corr, opts){
     if(Array.isArray(l.lab)) s += `<text x="${lab - 22}" y="${ty - 3}" font-size="10.5" text-anchor="middle" fill="${PL_TRAIT}" font-family="Arial">${l.lab[0]}</text><line x1="${lab - 29}" y1="${ty}" x2="${lab - 15}" y2="${ty}" stroke="${PL_TRAIT}" stroke-width="1"/><text x="${lab - 22}" y="${ty + 10}" font-size="10.5" text-anchor="middle" fill="${PL_TRAIT}" font-family="Arial">${l.lab[1]}</text><text x="${lab - 8}" y="${ty + 4}" font-size="11" font-style="italic" text-anchor="end" fill="${PL_TRAIT}" font-family="Arial">u</text>`;
     else s += `<text x="${lab - 8}" y="${ty + 4}" font-size="12" font-weight="700" text-anchor="end" fill="${PL_TRAIT}" font-family="Arial">${l.lab}</text>`;
     if(l.len && (!l.cache || corr)) s += bande(y, l.len, l.cache ? '#7FC29B' : PL_COUL.bande); });
+  const caches = lignes.map((l, i) => ({ l, y: 2 + (2 + i * 2 + .5) * c + 2 })).filter(z => z.l.cache && z.l.len);
+  if(!corr && caches.length) return plX(s + '</svg>', { t: 'bandes', x0: lab + c, c, max: cols - 1, rows: caches.map(z => ({ y: z.y, h: c - 4, att: z.l.len })) });
   return s + '</svg>';
 }
 

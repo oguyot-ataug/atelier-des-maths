@@ -119,6 +119,10 @@ const PATS = [
   [[[0, 0], [1, 0], [0, 1], [1, 1], [2, 1], [3, 1]], false], [[[0, 0], [1, 0], [2, 0], [2, 1], [3, 1], [4, 1]], true], [[[1, 0], [2, 0], [0, 1], [1, 1], [2, 1], [3, 1]], false],
 ];
 const DE = [[1, 0], [0, 1], [1, 1], [2, 1], [3, 1], [1, 2]];
+// Patron à compléter, posé sur un quadrillage (pour pouvoir dessiner la face qui manque, aussi à l'écran).
+function faceManque(){ const k = 22; let s = `<svg class="pl-libre" viewBox="0 0 ${4 * k + 4} ${3 * k + 4}" style="width:${4 * k + 4}px;display:inline-block;vertical-align:middle;">`;
+  for(let x = 0; x < 4; x++) for(let y = 0; y < 3; y++) s += `<rect x="${2 + x * k}" y="${2 + y * k}" width="${k}" height="${k}" fill="#fff" stroke="#C6D2DE" stroke-width=".8"/>`;
+  return s + [[0, 1], [1, 1], [2, 1], [3, 1], [1, 0]].map(([x, y]) => `<rect x="${2 + x * k}" y="${2 + y * k}" width="${k}" height="${k}" fill="#9CCB6B" fill-opacity=".3" stroke="#1F3A5C" stroke-width="1.6"/>`).join('') + '</svg>'; }
 PLANCHES['cm1|Solides'] = [
   { titre: 'Reconnaître et décrire les solides', duree: '30 min',
     attendus: ['Reconnaître et nommer les solides usuels', 'Compter les faces, les arêtes et les sommets d\'un polyèdre'],
@@ -153,7 +157,7 @@ PLANCHES['cm1|Solides'] = [
         eleve: plListe(['La face à droite du 1 : ' + B(2), 'La face tout à droite : ' + B(2), 'La face sous le 1 : ' + B(2)]),
         corr: plListe(['La face à droite du 1 : ' + R(4), 'La face tout à droite : ' + R(6), 'La face sous le 1 : ' + R(5)]) },
       { etoiles: 2, col: 1, consigne: 'Il manque une face à ce patron de cube. Dessine-la (il y a plusieurs places possibles).',
-        eleve: `<div style="text-align:center;">${pat([[0, 1], [1, 1], [2, 1], [3, 1], [1, 0]], '#9CCB6B')}</div>`,
+        eleve: `<div style="text-align:center;">${plX(faceManque(), { t: 'cases', k: 22, ox: 2, oy: 2, w: 4, h: 3, coul: '#9CCB6B', att: [[1, 2]], alt: [[[0, 2]], [[2, 2]], [[3, 2]]] })}</div>`,
         corr: `<div style="text-align:center;">${pat([[0, 1], [1, 1], [2, 1], [3, 1], [1, 0], [1, 2]], '#9CCB6B')}</div><div class="pl-petit">Par exemple sous la 2<sup>e</sup> face : on obtient la croix. Toute face collée sous la ligne de quatre convient.</div>` },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Sur ton cahier à carreaux, dessine un patron de cube différent de ceux de cette planche. Vérifie en le découpant.',
         corr: cm1Redac('Un autre patron', 'l\'escalier : 2 faces, puis 2, puis 2, décalées', 'Il existe 11 patrons du cube ; l\'escalier en est un.', `<span class="cm-fig-d">${pat([[0, 0], [1, 0], [1, 1], [2, 1], [2, 2], [3, 2]], '#9CCB6B', 90)}</span>`) },

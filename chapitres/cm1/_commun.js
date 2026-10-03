@@ -221,13 +221,16 @@ function cm1Tex(src){ return `<span class="tex">${src}</span>`; }
 // Opération posée alignée sur la virgule : lignes = [[signe, 'chiffres']], la dernière est le résultat ;
 // un 3e élément vrai dans une ligne trace un trait au-dessus d'elle (produits partiels) ;
 // retenues = chaîne alignée à droite (espaces = pas de retenue). Commune au CM1 et au CM2.
-function cm1Posee(lignes, retenues){
+// opts.trous : le résultat est remplacé par des cases à remplir (planche à l'écran) ; opts.rep : le
+// résultat est marqué comme réponse (corrigé lu par planches-num.js, case par case).
+function cm1Posee(lignes, retenues, opts){
+  opts = opts || {};
   const larg = Math.max(...lignes.map(l => l[1].length), retenues ? retenues.length : 0);
-  const cell = (c, st) => `<td style="width:22px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:1.15rem;font-weight:700;padding:2px 0;${st || ''}">${c === ' ' ? '' : c}</td>`;
+  const cell = (c, st, res) => `<td style="width:22px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:1.15rem;font-weight:700;padding:2px 0;${st || ''}">${c === ' ' ? '' : res && opts.trous && typeof plCase === 'function' ? '<span class="pl-case pl-case-seule" style="margin:0;width:18px;"></span>' : res && opts.rep && typeof plRep === 'function' ? plRep(c) : c}</td>`;
   let h = '<table style="border-collapse:collapse;margin:8px auto;">';
   if(retenues) h += `<tr><td></td>${retenues.padStart(larg).split('').map(c => cell(c, 'font-size:.75rem;color:#E35D3A;')).join('')}</tr>`;
   lignes.forEach(([s, n, trait], i) => { const res = i === lignes.length - 1;
-    h += `<tr style="${res || trait ? 'border-top:2px solid #1F3A5C;' : ''}">${cell(s, 'color:#E35D3A;')}${n.padStart(larg).split('').map(c => cell(c, res ? 'color:#2E9C6A;' : '')).join('')}</tr>`; });
+    h += `<tr style="${res || trait ? 'border-top:2px solid #1F3A5C;' : ''}">${cell(s, 'color:#E35D3A;')}${n.padStart(larg).split('').map(c => cell(c, res ? 'color:#2E9C6A;' : '', res)).join('')}</tr>`; });
   return h + '</table>';
 }
 

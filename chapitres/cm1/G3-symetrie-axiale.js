@@ -150,6 +150,9 @@ const DEMI1 = [[5, 1], [3, 2], [2, 4], [3, 6], [5, 6]], DEMI2 = [[5, 0], [4, 2],
 const sym = (pts, ax) => pts.map(([x, y]) => [2 * ax - x, y]);
 const ligne = (g, pts, c) => `<polyline points="${pts.map(p => g(...p).join(',')).join(' ')}" fill="none" stroke="${c || BLEU}" stroke-width="2.4" stroke-linejoin="round"/>`;
 const demi = (pts, sol) => Q(10, 7, 16, g => AX(g(5, -0.2), g(5, 7.2)) + ligne(g, pts) + (sol ? ligne(g, sym(pts, 5), VERT) : ''));
+// Clé pour l'écran : les segments à tracer (ligne brisée pts).
+const segsDe = pts => pts.slice(1).map((p, i) => [pts[i][0], pts[i][1], p[0], p[1]]);
+const demiX = pts => plX(demi(pts, false), { t: 'seg', k: 16, ox: 1, oy: 1, w: 10, h: 7, att: segsDe(sym(pts, 5)) });
 // Cases à colorier par symétrie (axe vertical entre les colonnes 3 et 4 d'un quadrillage 8 × 5).
 const CASES = [[[1, 1], [2, 1], [2, 2], [3, 2], [3, 3], [1, 3]], [[3, 0], [3, 1], [2, 1], [1, 2], [3, 3], [3, 4], [2, 4]]];
 const quad = (c, sol) => { const s = sol ? c.concat(c.map(([x, y]) => [7 - x, y])) : c; return cm1Quad(8, 5, s, { k: 18, c: '#7A4FC0' }).replace('</svg>', AX([73, -2], [73, 93]) + '</svg>'); };
@@ -170,7 +173,7 @@ PLANCHES['cm1|Symétrie axiale'] = [
         eleve: plListe(['Figure 1 : <b>oui · non</b>', 'Figure 2 : <b>oui · non</b>']),
         corr: plListe([['Figure 1 : ', 'oui'], ['Figure 2 : ', 'non']].map(([t, r]) => t + plEntoure(r))) },
       { etoiles: 2, consigne: 'La droite rouge est un axe de symétrie. Termine chaque dessin.',
-        eleve: duo([demi(DEMI1, false), demi(DEMI2, false)]),
+        eleve: duo([demiX(DEMI1), demiX(DEMI2)]),
         corr: duo([demi(DEMI1, true), demi(DEMI2, true)]) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Trouve trois lettres majuscules qui ont un axe de symétrie vertical, et deux lettres qui ont un axe horizontal.',
         corr: cm1Redac('Des lettres possibles', { suite: ['axe vertical : A, M, T (ou H, O, U, V…)', 'axe horizontal : B, E (ou C, D, K…)'] }, 'Si on plie la lettre le long de son axe, les deux moitiés se superposent.') },
@@ -181,16 +184,16 @@ PLANCHES['cm1|Symétrie axiale'] = [
     attendus: ['Compléter une figure par symétrie sur quadrillage (axe vertical ou horizontal)', 'Placer le symétrique d\'un point'],
     exos: [
       { etoiles: 1, consigne: 'Colorie les carreaux symétriques par rapport à la droite rouge.',
-        eleve: duo(CASES.map(c => quad(c, false))),
+        eleve: duo(CASES.map(c => plX(quad(c, false), { t: 'cases', k: 18, ox: 1, oy: 1, w: 8, h: 5, coul: '#7A4FC0', att: c.map(([x, y]) => [7 - x, y]) }))),
         corr: duo(CASES.map(c => quad(c, true))) },
       { etoiles: 2, consigne: 'Place le symétrique de chaque point par rapport à la droite rouge. Le symétrique du point A se nomme A\' (on lit « A prime »).',
-        eleve: duo([Q(10, 7, 18, g => AX(g(5, -0.2), g(5, 7.2)) + PTS.map(([x, y, n]) => Pt(g(x, y), n)).join(''))]),
+        eleve: duo([plX(Q(10, 7, 18, g => AX(g(5, -0.2), g(5, 7.2)) + PTS.map(([x, y, n]) => Pt(g(x, y), n)).join('')), { t: 'pts', grille: { k: 18, ox: 1, oy: 1, w: 10, h: 7 }, noms: PTS.map(p => p[2] + '\''), att: Object.fromEntries(PTS.map(([x, y, n]) => [n + '\'', [1 + (10 - x) * 18, 1 + y * 18]])) })]),
         corr: duo([Q(10, 7, 18, g => AX(g(5, -0.2), g(5, 7.2)) + PTS.map(([x, y, n]) => Pt(g(x, y), n) + Pt(g(10 - x, y), n + '\'', VERT)).join(''))]) },
       { etoiles: 2, consigne: 'Cette fois, l\'axe de symétrie est horizontal. Termine chaque dessin.',
-        eleve: duo([Q(8, 8, 16, g => AX(g(-0.2, 4), g(8.2, 4)) + ligne(g, [[1, 4], [2, 1], [4, 2], [6, 1], [7, 4]])), Q(8, 8, 16, g => AX(g(-0.2, 4), g(8.2, 4)) + ligne(g, [[2, 4], [2, 2], [4, 0], [6, 2], [6, 4]]))]),
+        eleve: duo([[[1, 4], [2, 1], [4, 2], [6, 1], [7, 4]], [[2, 4], [2, 2], [4, 0], [6, 2], [6, 4]]].map(l => plX(Q(8, 8, 16, g => AX(g(-0.2, 4), g(8.2, 4)) + ligne(g, l)), { t: 'seg', k: 16, ox: 1, oy: 1, w: 8, h: 8, att: segsDe(l.map(([x, y]) => [x, 8 - y])) }))),
         corr: duo([Q(8, 8, 16, g => AX(g(-0.2, 4), g(8.2, 4)) + ligne(g, [[1, 4], [2, 1], [4, 2], [6, 1], [7, 4]]) + ligne(g, [[1, 4], [2, 7], [4, 6], [6, 7], [7, 4]], VERT)), Q(8, 8, 16, g => AX(g(-0.2, 4), g(8.2, 4)) + ligne(g, [[2, 4], [2, 2], [4, 0], [6, 2], [6, 4]]) + ligne(g, [[2, 4], [2, 6], [4, 8], [6, 6], [6, 4]], VERT))]) },
       { etoiles: 3, col: 1, consigne: 'Léa a complété ce dessin par symétrie, mais elle a fait une erreur. Entoure-la.',
-        eleve: quad([[1, 1], [2, 1], [1, 2], [2, 3]], false).replace('</svg>', ['6,1', '5,1', '6,2', '4,3'].map(c => { const [x, y] = c.split(',').map(Number); return `<rect x="${1 + x * 18}" y="${1 + y * 18}" width="18" height="18" fill="#7A4FC0" fill-opacity=".6" stroke="#B9C7D6" stroke-width=".8"/>`; }).join('') + '</svg>'),
+        eleve: plX(quad([[1, 1], [2, 1], [1, 2], [2, 3]], false), { t: 'cases', mode: 'entoure', k: 18, ox: 1, oy: 1, w: 8, h: 5, att: [[4, 3]] }).replace('</svg>', ['6,1', '5,1', '6,2', '4,3'].map(c => { const [x, y] = c.split(',').map(Number); return `<rect x="${1 + x * 18}" y="${1 + y * 18}" width="18" height="18" fill="#7A4FC0" fill-opacity=".6" stroke="#B9C7D6" stroke-width=".8"/>`; }).join('') + '</svg>'),
         corr: quad([[1, 1], [2, 1], [1, 2], [2, 3]], false).replace('</svg>', ['6,1', '5,1', '6,2', '4,3'].map(c => { const [x, y] = c.split(',').map(Number); return `<rect x="${1 + x * 18}" y="${1 + y * 18}" width="18" height="18" fill="#7A4FC0" fill-opacity=".6" stroke="#B9C7D6" stroke-width=".8"/>`; }).join('') + `<circle cx="${1 + 4.5 * 18}" cy="${1 + 3.5 * 18}" r="15" fill="none" stroke="${VERT}" stroke-width="2.4"/></svg>`) + '<div class="pl-petit">Le carreau symétrique de celui de la ligne du bas doit être dans la 6<sup>e</sup> colonne, pas la 5<sup>e</sup>.</div>' },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Sur ton cahier, dessine une figure sur le quadrillage, trace un axe vertical, puis échange avec ton voisin : il complète ta figure par symétrie.',
         corr: cm1Redac('Pour vérifier', { suite: ['Chaque point et son symétrique sont à la même distance de l\'axe.', 'Ils sont sur la même ligne du quadrillage.'] }, 'Si on plie le long de l\'axe, les deux moitiés se superposent exactement.') },

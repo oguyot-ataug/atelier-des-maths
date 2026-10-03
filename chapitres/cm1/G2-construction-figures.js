@@ -497,7 +497,9 @@ const C0 = [80, 72], RR = 55, Cc = [80 + RR * Math.cos(-Math.PI / 3), 72 + RR * 
 const cercle = S(170, 140, Cx(C0, RR) + L([C0[0] - RR, 72], [C0[0] + RR, 72]) + L(C0, Cc) + P(C0, 'O', -2, 16) + P([C0[0] - RR, 72], 'A', -12, 4) + P([C0[0] + RR, 72], 'B', 6, 4) + P(Cc, 'C', 6, -4) + P([98, 100], 'D', 8, 4) + P([150, 20], 'E', 6, 4), 140);
 const OA = (sol) => S(200, 100, (sol ? Cx([100, 50], 42, VERT) : '') + P([100, 50], 'O', -4, 16) + P([142, 50], 'A', 6, 4), 170);
 // Maison sur quadrillage : rectangle 4 × 3 et toit triangulaire.
-const maison = (dx, dy) => g => { const m = (x, y) => g(x + dx, y + dy); return Pg([m(0, 2), m(4, 2), m(4, 5), m(0, 5)], BLEU) + Pg([m(0, 2), m(2, 0), m(4, 2)], ROUGE) + L(m(1, 5), m(1, 3.5), K, 2) + L(m(1, 3.5), m(2, 3.5), K, 2) + L(m(2, 3.5), m(2, 5), K, 2); };
+const maison = (dx, dy) => g => { const m = (x, y) => g(x + dx, y + dy); return Pg([m(0, 2), m(4, 2), m(4, 5), m(0, 5)], BLEU) + Pg([m(0, 2), m(2, 0), m(4, 2)], ROUGE) + L(m(1, 5), m(1, 4), K, 2) + L(m(1, 4), m(2, 4), K, 2) + L(m(2, 4), m(2, 5), K, 2); };
+// La maison en segments de quadrillage (clé de l'exercice à l'écran).
+const maisonSegs = (dx, dy) => [[0, 2, 4, 2], [4, 2, 4, 5], [4, 5, 0, 5], [0, 5, 0, 2], [0, 2, 2, 0], [2, 0, 4, 2], [1, 5, 1, 4], [1, 4, 2, 4], [2, 4, 2, 5]].map(([a, b, c, d]) => [a + dx, b + dy, c + dx, d + dy]);
 
 PLANCHES['cm1|Construction de figures'] = [
   { titre: 'Segments, milieu et cercle', duree: '35 min',
@@ -516,7 +518,7 @@ PLANCHES['cm1|Construction de figures'] = [
         eleve: `<div style="text-align:center;">${OA(false)}</div>`,
         corr: `<div style="text-align:center;">${OA(true)}</div>` },
       { etoiles: 2, consigne: 'Reproduis la maison sur le quadrillage de droite, en commençant par le point rouge.',
-        eleve: duo([col(Q(6, 7, 17, maison(1, 1)), 'Le modèle'), col(Q(8, 7, 17, g => P(g(2, 6), '', 0, 0, ROUGE)), 'À toi !')]),
+        eleve: duo([col(Q(6, 7, 17, maison(1, 1)), 'Le modèle'), col(plX(Q(8, 7, 17, g => P(g(2, 6), '', 0, 0, ROUGE)), { t: 'seg', k: 17, ox: 1, oy: 1, w: 8, h: 7, att: maisonSegs(2, 1) }), 'À toi !')]),
         corr: duo([col(Q(6, 7, 17, maison(1, 1)), 'Le modèle'), col(Q(8, 7, 17, g => maison(2, 1)(g) + P(g(2, 6), '', 0, 0, ROUGE)), 'La reproduction')]) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Trace un segment [AB] de 6 cm. Place son milieu M. Trace le cercle de centre M qui passe par A.',
         corr: cm1Redac('Construction', { suite: ['Le milieu M est à 3 cm de A.', 'Compas piqué en M, ouvert jusqu\'à A.'] }, 'Le cercle passe aussi par B : le segment [AB] est un diamètre du cercle.',
@@ -547,12 +549,12 @@ PLANCHES['cm1|Construction de figures'] = [
         eleve: plListe(['4 côtés égaux et 4 angles droits : ' + B(10), '3 côtés et un angle droit : ' + B(10), '4 angles droits, côtés opposés égaux : ' + B(10), '3 côtés, dont deux égaux : ' + B(10)]),
         corr: plListe(['4 côtés égaux et 4 angles droits : ' + R('carré'), '3 côtés et un angle droit : ' + R('triangle rectangle'), '4 angles droits, côtés opposés égaux : ' + R('rectangle'), '3 côtés, dont deux égaux : ' + R('triangle isocèle')]) },
       { etoiles: 2, consigne: 'Termine chaque figure sur le quadrillage : place le dernier sommet, puis trace les côtés.',
-        eleve: duo([col(Q(6, 6, 17, g => L(g(1, 1), g(4, 1)) + L(g(4, 1), g(4, 4)) + P(g(1, 1), 'A', -8, -4) + P(g(4, 1), 'B', 6, -4) + P(g(4, 4), 'C', 6, 10)), 'le carré ABCD'),
-          col(Q(7, 6, 17, g => P(g(1, 1), 'E', -8, -4) + P(g(6, 1), 'F', 6, -4) + P(g(6, 4), 'G', 6, 10)), 'le rectangle EFGH'),
-          col(Q(6, 6, 17, g => L(g(3, 0.5), g(5, 3)) + L(g(5, 3), g(3, 5.5)) + P(g(3, 0.5), 'K', 8, 4) + P(g(5, 3), 'L', 8, 4) + P(g(3, 5.5), 'M', 8, 4)), 'le losange KLMN')]),
+        eleve: duo([col(plX(Q(6, 6, 17, g => L(g(1, 1), g(4, 1)) + L(g(4, 1), g(4, 4)) + P(g(1, 1), 'A', -8, -4) + P(g(4, 1), 'B', 6, -4) + P(g(4, 4), 'C', 6, 10)), { t: 'seg', k: 17, ox: 1, oy: 1, w: 6, h: 6, att: [[4, 4, 1, 4], [1, 4, 1, 1]] }), 'le carré ABCD'),
+          col(plX(Q(7, 6, 17, g => P(g(1, 1), 'E', -8, -4) + P(g(6, 1), 'F', 6, -4) + P(g(6, 4), 'G', 6, 10)), { t: 'seg', k: 17, ox: 1, oy: 1, w: 7, h: 6, att: [[1, 1, 6, 1], [6, 1, 6, 4], [6, 4, 1, 4], [1, 4, 1, 1]] }), 'le rectangle EFGH'),
+          col(plX(Q(6, 6, 17, g => L(g(3, 0), g(5, 3)) + L(g(5, 3), g(3, 6)) + P(g(3, 0), 'K', 8, 8) + P(g(5, 3), 'L', 8, 4) + P(g(3, 6), 'M', 8, 0)), { t: 'seg', k: 17, ox: 1, oy: 1, w: 6, h: 6, att: [[3, 6, 1, 3], [1, 3, 3, 0]] }), 'le losange KLMN')]),
         corr: duo([col(Q(6, 6, 17, g => Pg([g(1, 1), g(4, 1), g(4, 4), g(1, 4)], VERT) + P(g(1, 1), 'A', -8, -4) + P(g(4, 1), 'B', 6, -4) + P(g(4, 4), 'C', 6, 10) + P(g(1, 4), 'D', -8, 10, VERT)), 'le carré ABCD'),
           col(Q(7, 6, 17, g => Pg([g(1, 1), g(6, 1), g(6, 4), g(1, 4)], VERT) + P(g(1, 1), 'E', -8, -4) + P(g(6, 1), 'F', 6, -4) + P(g(6, 4), 'G', 6, 10) + P(g(1, 4), 'H', -8, 10, VERT)), 'le rectangle EFGH'),
-          col(Q(6, 6, 17, g => Pg([g(3, 0.5), g(5, 3), g(3, 5.5), g(1, 3)], VERT) + P(g(3, 0.5), 'K', 8, 4) + P(g(5, 3), 'L', 8, 4) + P(g(3, 5.5), 'M', 8, 4) + P(g(1, 3), 'N', -10, 4, VERT)), 'le losange KLMN')]) },
+          col(Q(6, 6, 17, g => Pg([g(3, 0), g(5, 3), g(3, 6), g(1, 3)], VERT) + P(g(3, 0), 'K', 8, 8) + P(g(5, 3), 'L', 8, 4) + P(g(3, 6), 'M', 8, 0) + P(g(1, 3), 'N', -10, 4, VERT)), 'le losange KLMN')]) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Construis un rectangle de 5 cm de longueur et 3 cm de largeur. Explique comment tu traces les angles droits.',
         corr: cm1Redac('Construction', { suite: ['Je trace un côté de 5 cm.', 'À chaque bout, avec l\'équerre, un côté de 3 cm.'] }, 'Je relie les extrémités : le rectangle a 4 angles droits.',
           D(S(190, 100, Pg([[20, 15], [170, 15], [170, 85], [20, 85]], VERT) + ad([20, 85], [20, 15], [170, 85]) + ad([170, 85], [170, 15], [20, 85]) + cmT(95, 98, '5 cm', { fs: 11 }) + cmT(182, 54, '3 cm', { fs: 11, a: 'start' }), 170))) },

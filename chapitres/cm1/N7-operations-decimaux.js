@@ -106,13 +106,15 @@ ${cm1Demo('od-dix', 'Multiplier un nombre décimal par 10', 'Calcule 0,56 × 10.
 (() => {
 const B = n => plPointilles(n || 4), R = v => plRep(String(v)), C = plCase();
 // Opération posée alignée sur la virgule ; res vide = à calculer.
-function pd(lignes, res){
+function pd(lignes, res, o){
   const all = lignes.map(l => l[1]).concat(res ? [res] : []), sp = s => s.split(',');
   const I = Math.max(...all.map(s => sp(s)[0].length)), D = Math.max(...all.map(s => (sp(s)[1] || '').length));
   const al = s => { const [i, d] = sp(s); return i.padStart(I, ' ') + (D ? (d != null ? ',' + d.padEnd(D, ' ') : ' '.repeat(D + 1)) : ''); };
   const W = I + (D ? D + 1 : 0);
-  return cm1Posee(lignes.map(([o, n]) => [o, al(n)]).concat([[' ', res ? al(res) : ' '.repeat(W)]]));
+  return cm1Posee(lignes.map(([s, n]) => [s, al(n)]).concat([[' ', res ? al(res) : ' '.repeat(W)]]), '', o);
 }
+// Version écran : opération posée, résultat case par case (la virgule aussi).
+const ecr = l => ({ ecran: { eleve: duo(l.map(([li, r]) => pd(li, r, { trous: true }))), corr: duo(l.map(([li, r]) => pd(li, r, { rep: true }))) } });
 const duo = l => `<div style="display:flex;justify-content:space-around;align-items:flex-start;gap:8px;flex-wrap:wrap;">${l.join('')}</div>`;
 const grille = () => cm1Quad(9, 6, [], { k: 17, largeur: 153 });
 const tab = (ent, lignes) => `<table class="pl-tab"><tr>${ent.map(e => `<th>${e}</th>`).join('')}</tr>${lignes.map(l => `<tr>${l.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</table>`;
@@ -128,13 +130,13 @@ PLANCHES['cm1|Opérations sur les nombres décimaux'] = [
         corr: plListe(['0,6 + ' + R('0,4') + ' = 1', '2,3 + ' + R('0,7') + ' = 3', '0,25 + ' + R('0,75') + ' = 1', '4,9 + ' + R('0,1') + ' = 5']) },
       { etoiles: 2, col: 1, consigne: 'Calcule ces additions.',
         eleve: duo([pd([[' ', '12,5'], ['+', '3,75']]), pd([[' ', '8,07'], ['+', '14,6']])]),
-        corr: duo([pd([[' ', '12,5'], ['+', '3,75']], '16,25'), pd([[' ', '8,07'], ['+', '14,6']], '22,67')]) },
+        corr: duo([pd([[' ', '12,5'], ['+', '3,75']], '16,25'), pd([[' ', '8,07'], ['+', '14,6']], '22,67')]), ...ecr([[[[' ', '12,5'], ['+', '3,75']], '16,25'], [[[' ', '8,07'], ['+', '14,6']], '22,67']]) },
       { etoiles: 2, col: 1, consigne: 'Calcule ces soustractions. Complète avec des zéros si besoin.',
         eleve: duo([pd([[' ', '15,8'], ['−', '6,35']]), pd([[' ', '20'], ['−', '7,4']])]),
-        corr: duo([pd([[' ', '15,80'], ['−', '6,35']], '9,45'), pd([[' ', '20,0'], ['−', '7,4']], '12,6')]) },
+        corr: duo([pd([[' ', '15,80'], ['−', '6,35']], '9,45'), pd([[' ', '20,0'], ['−', '7,4']], '12,6')]), ...ecr([[[[' ', '15,80'], ['−', '6,35']], '9,45'], [[[' ', '20,0'], ['−', '7,4']], '12,6']]) },
       { etoiles: 2, consigne: 'Pose et calcule dans le quadrillage. Aligne bien les virgules.',
         eleve: duo(['<span style="text-align:center;">37,4 + 5,86<br>' + grille() + '</span>', '<span style="text-align:center;">52,3 − 18,75<br>' + grille() + '</span>', '<span style="text-align:center;">4,5 + 12,05 + 0,8<br>' + grille() + '</span>']),
-        corr: duo([pd([[' ', '37,40'], ['+', '5,86']], '43,26'), pd([[' ', '52,30'], ['−', '18,75']], '33,55'), pd([[' ', '4,50'], ['+', '12,05'], ['+', '0,80']], '17,35')]) },
+        corr: duo([pd([[' ', '37,40'], ['+', '5,86']], '43,26'), pd([[' ', '52,30'], ['−', '18,75']], '33,55'), pd([[' ', '4,50'], ['+', '12,05'], ['+', '0,80']], '17,35')]), ...ecr([[[[' ', '37,40'], ['+', '5,86']], '43,26'], [[[' ', '52,30'], ['−', '18,75']], '33,55'], [[[' ', '4,50'], ['+', '12,05'], ['+', '0,80']], '17,35']]) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Lina achète un livre à 12,50 € et un stylo à 3,75 €. Elle paie avec un billet de 20 €. Combien lui rend-on ?',
         corr: cm1Redac('Prix des achats', '12,50 € + 3,75 € = 16,25 €', 'Les achats coûtent 16,25 €.') + cm1Redac('Monnaie rendue', '20 € − 16,25 € = 3,75 €', 'On rend 3,75 € à Lina.') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Tom a calculé : 8,5 + 3,9 = 47,5. Montre avec un ordre de grandeur qu\'il s\'est trompé, puis corrige.',

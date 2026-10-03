@@ -196,7 +196,7 @@ ${cm1Sous('A', 'Atelier : lis l\'heure')}
           eleve: plGrille([[3, 20, 15], [5, 45, 17], [7, 30, 7]].map(([h, m, h24]) => `<span style="display:flex;flex-direction:column;align-items:center;gap:4px;">${horloge(h, m, 78, { h24: h24 + m / 60 })}<span>${HB()}</span></span>`), 3),
           corr: plGrille([[3, 20, 15], [5, 45, 17], [7, 30, 7]].map(([h, m, h24]) => `<span style="display:flex;flex-direction:column;align-items:center;gap:4px;">${horloge(h, m, 78, { h24: h24 + m / 60 })}<span>${HR(h24, m)}</span></span>`), 3) },
         { etoiles: 2, consigne: 'Dessine les aiguilles : la petite pour les heures, la grande pour les minutes.',
-          eleve: plGrille([[7, 30], [10, 15], [2, 45], [6, 50]].map(([h, m]) => `<span style="display:flex;flex-direction:column;align-items:center;gap:2px;">${horloge(h, m, 80, { vide: true })}<b>${hh(h, m)}</b></span>`), 4),
+          eleve: plGrille([[7, 30], [10, 15], [2, 45], [6, 50]].map(([h, m]) => `<span style="display:flex;flex-direction:column;align-items:center;gap:2px;">${plX(horloge(h, m, 80, { vide: true }), { t: 'horloge', cx: 60, cy: 60, r: 56, h, m })}<b>${hh(h, m)}</b></span>`), 4),
           corr: plGrille([[7, 30], [10, 15], [2, 45], [6, 50]].map(([h, m]) => `<span style="display:flex;flex-direction:column;align-items:center;gap:2px;">${horloge(h, m, 80)}<b>${hh(h, m)}</b></span>`), 4) },
         { etoiles: 2, col: 1, consigne: 'Écris ces heures en chiffres.',
           eleve: plListe(['huit heures moins le quart', 'midi et demi', 'neuf heures et quart', 'cinq heures moins vingt'].map(t => `${t} : ${HB()}`)),

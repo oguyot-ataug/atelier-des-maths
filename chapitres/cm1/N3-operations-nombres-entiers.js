@@ -424,7 +424,10 @@ DEMO_REGISTRY['cm1|Opérations sur les nombres entiers'] = { cours:'cours-demo-c
 /* ---- Planches d'exercices imprimables (planches.js) ---- */
 (() => {
 const B = n => plPointilles(n || 4), R = v => plRep(String(v));
-const pose = (a, op, b, res, ret) => cm1Posee([[' ', a], [op, b], [' ', res == null ? ' '.repeat(Math.max(a.length, b.length) + 1) : res]], ret);
+const pose = (a, op, b, res, ret, o) => cm1Posee([[' ', a], [op, b], [' ', res == null ? ' '.repeat(Math.max(a.length, b.length) + 1) : res]], ret, o);
+// Version écran : l'opération est posée, le résultat se remplit case par case (planches-num.js).
+const ecr = l => ({ ecran: { eleve: duo(l.map(([a, op, b, r]) => pose(a, op, b, r, '', { trous: true }))), corr: duo(l.map(([a, op, b, r]) => pose(a, op, b, r, '', { rep: true }))) } });
+const ecrL = (l, res) => ({ eleve: duo([cm1Posee(l.concat([[' ', res]]), '', { trous: true })]), corr: duo([cm1Posee(l.concat([[' ', res]]), '', { rep: true })]) });
 const grille = (l, h) => cm1Quad(l || 9, h || 6, [], { k: 17, largeur: (l || 9) * 17 });
 const div = (a, b, vierge) => typeof divisionPoseeHTML === 'function' ? `<div class="pl-div">${divisionPoseeHTML(computeDivisionPosee(a, b), vierge)}</div>` : '';
 const col = (h, ...l) => `<span style="display:flex;flex-direction:column;align-items:center;font-size:.85em;">${h}${l.map(t => `<span>${t}</span>`).join('')}</span>`;
@@ -441,13 +444,15 @@ PLANCHES['cm1|Opérations sur les nombres entiers'] = [
         corr: plListe(['3 500 + ' + R(500) + ' = 4 000', '1 250 + ' + R(750) + ' = 2 000', '6 000 − ' + R(300) + ' = 5 700', '980 + ' + R(20) + ' = 1 000']) },
       { etoiles: 1, col: 1, consigne: 'Calcule ces additions.',
         eleve: duo([pose('2457', '+', '1386'), pose('3608', '+', '975')]),
-        corr: duo([pose('2457', '+', '1386', '3843', ' 11 '), pose('3608', '+', '975', '4583', '1 1 ')]) },
+        corr: duo([pose('2457', '+', '1386', '3843', ' 11 '), pose('3608', '+', '975', '4583', '1 1 ')]), ...ecr([['2457', '+', '1386', '3843'], ['3608', '+', '975', '4583']]) },
       { etoiles: 2, col: 1, consigne: 'Calcule ces soustractions.',
         eleve: duo([pose('5342', '−', '1718'), pose('7005', '−', '2468')]),
-        corr: duo([pose('5342', '−', '1718', '3624'), pose('7005', '−', '2468', '4537')]) },
+        corr: duo([pose('5342', '−', '1718', '3624'), pose('7005', '−', '2468', '4537')]), ...ecr([['5342', '−', '1718', '3624'], ['7005', '−', '2468', '4537']]) },
       { etoiles: 2, consigne: 'Pose et calcule dans le quadrillage.',
         eleve: duo(['<span style="text-align:center;">4 827 + 3 095<br>' + grille() + '</span>', '<span style="text-align:center;">6 250 − 3 784<br>' + grille() + '</span>', '<span style="text-align:center;">1 096 + 2 768 + 405<br>' + grille() + '</span>']),
-        corr: duo([pose('4827', '+', '3095', '7922', '11 1 '), pose('6250', '−', '3784', '2466'), cm1Posee([[' ', '1096'], ['+', '2768'], ['+', '405'], [' ', '4269']], ' 112 ')]) },
+        corr: duo([pose('4827', '+', '3095', '7922', '11 1 '), pose('6250', '−', '3784', '2466'), cm1Posee([[' ', '1096'], ['+', '2768'], ['+', '405'], [' ', '4269']], ' 112 ')]),
+        ecran: { eleve: duo([pose('4827', '+', '3095', '7922', '', { trous: true }), pose('6250', '−', '3784', '2466', '', { trous: true }), cm1Posee([[' ', '1096'], ['+', '2768'], ['+', '405'], [' ', '4269']], '', { trous: true })]),
+          corr: duo([pose('4827', '+', '3095', '7922', '', { rep: true }), pose('6250', '−', '3784', '2466', '', { rep: true }), cm1Posee([[' ', '1096'], ['+', '2768'], ['+', '405'], [' ', '4269']], '', { rep: true })]) } },
       { etoiles: 2, col: 1, cahier: true, consigne: 'La bibliothèque de l\'école a 1 245 livres. Elle en achète 378. Combien de livres a-t-elle maintenant ?',
         corr: cm1Redac('Nombre de livres', '1 245 + 378 = 1 623', 'La bibliothèque a maintenant 1 623 livres.', cm1Paquets([[1245, '1 245'], [378, '378']], { titre: '?', L: 300 })) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Une salle de spectacle a 2 500 places. 1 868 spectateurs sont assis. Combien de places sont libres ?',
@@ -464,7 +469,7 @@ PLANCHES['cm1|Opérations sur les nombres entiers'] = [
         corr: plListe(['34 × 10 = ' + R(340), '34 × 100 = ' + R('3 400'), '250 × 10 = ' + R('2 500'), '7 × 1 000 = ' + R('7 000'), '60 × 100 = ' + R('6 000')]) },
       { etoiles: 2, col: 1, consigne: 'Calcule ces multiplications.',
         eleve: duo([pose('1237', '×', '4'), pose('2506', '×', '3')]),
-        corr: duo([pose('1237', '×', '4', '4948'), pose('2506', '×', '3', '7518')]) },
+        corr: duo([pose('1237', '×', '4', '4948'), pose('2506', '×', '3', '7518')]), ...ecr([['1237', '×', '4', '4948'], ['2506', '×', '3', '7518']]) },
       { etoiles: 2, col: 1, consigne: 'Décompose pour calculer de tête.',
         eleve: plListe(['23 × 4 = (20 × 4) + (3 × 4) = ' + B(3) + ' + ' + B(3) + ' = ' + B(3), '45 × 3 = (40 × 3) + (5 × 3) = ' + B(3) + ' + ' + B(3) + ' = ' + B(3)]),
         corr: plListe(['23 × 4 = (20 × 4) + (3 × 4) = ' + R(80) + ' + ' + R(12) + ' = ' + R(92), '45 × 3 = (40 × 3) + (5 × 3) = ' + R(120) + ' + ' + R(15) + ' = ' + R(135)]) },
@@ -472,7 +477,9 @@ PLANCHES['cm1|Opérations sur les nombres entiers'] = [
         eleve: duo(['<span style="text-align:center;">253 × 24<br>' + cm1Quad(9, 7, [], { k: 17, largeur: 155 }) + '</span>', '<span style="text-align:center;">312 × 15<br>' + cm1Quad(9, 7, [], { k: 17, largeur: 155 }) + '</span>', '<span style="text-align:center;">1 408 × 6<br>' + grille() + '</span>']),
         corr: duo([col(cm1Posee([[' ', '253'], ['×', '24'], [' ', '1012', true], ['+', '5060'], [' ', '6072']]), '1 012 = 253 × 4', '5 060 = 253 × 20'),
           col(cm1Posee([[' ', '312'], ['×', '15'], [' ', '1560', true], ['+', '3120'], [' ', '4680']]), '1 560 = 312 × 5', '3 120 = 312 × 10'),
-          col(pose('1408', '×', '6', '8448'))]) },
+          col(pose('1408', '×', '6', '8448'))]),
+        ecran: { eleve: duo([cm1Posee([[' ', '253'], ['×', '24'], [' ', '1012', true], ['+', '5060'], [' ', '6072']], '', { trous: true }), cm1Posee([[' ', '312'], ['×', '15'], [' ', '1560', true], ['+', '3120'], [' ', '4680']], '', { trous: true }), pose('1408', '×', '6', '8448', '', { trous: true })]),
+          corr: duo([cm1Posee([[' ', '253'], ['×', '24'], [' ', '1012', true], ['+', '5060'], [' ', '6072']], '', { rep: true }), cm1Posee([[' ', '312'], ['×', '15'], [' ', '1560', true], ['+', '3120'], [' ', '4680']], '', { rep: true }), pose('1408', '×', '6', '8448', '', { rep: true })]) } },
       { etoiles: 2, col: 1, cahier: true, consigne: 'Une boîte contient 24 crayons. Combien de crayons y a-t-il dans 15 boîtes ?',
         corr: cm1Redac('Nombre de crayons', '24 × 15 = 360', 'Il y a 360 crayons dans 15 boîtes.') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Un car a 48 places. L\'école loue 6 cars pour transporter 275 élèves. Y a-t-il assez de places ? Combien en reste-t-il de libres ?',
@@ -490,7 +497,9 @@ PLANCHES['cm1|Opérations sur les nombres entiers'] = [
         corr: plListe([['35 est un multiple de 5. ', 'vrai'], ['6 est un diviseur de 24. ', 'vrai'], ['48 est divisible par 10. ', 'faux'], ['72 est un multiple de 8. ', 'vrai']].map(([t, r]) => t + plEntoure(r))) },
       { etoiles: 2, consigne: 'Pose et calcule ces divisions. Écris le quotient et le reste.',
         eleve: duo([`<span style="text-align:center;">857 ÷ 6<br>${grille(10, 8)}<br>quotient : ${B(3)} reste : ${B(2)}</span>`, `<span style="text-align:center;">639 ÷ 4<br>${grille(10, 8)}<br>quotient : ${B(3)} reste : ${B(2)}</span>`, `<span style="text-align:center;">1 250 ÷ 7<br>${grille(10, 8)}<br>quotient : ${B(3)} reste : ${B(2)}</span>`]),
-        corr: duo([`<span style="text-align:center;">${div(857, 6)}quotient : ${R(142)} reste : ${R(5)}</span>`, `<span style="text-align:center;">${div(639, 4)}quotient : ${R(159)} reste : ${R(3)}</span>`, `<span style="text-align:center;">${div(1250, 7)}quotient : ${R(178)} reste : ${R(4)}</span>`]) },
+        corr: duo([`<span style="text-align:center;">${div(857, 6)}quotient : ${R(142)} reste : ${R(5)}</span>`, `<span style="text-align:center;">${div(639, 4)}quotient : ${R(159)} reste : ${R(3)}</span>`, `<span style="text-align:center;">${div(1250, 7)}quotient : ${R(178)} reste : ${R(4)}</span>`]),
+        ecran: { eleve: plListe([[857, 6], [639, 4], [1250, 7]].map(([a, d]) => `${a.toLocaleString('fr-FR')} ÷ ${d} : quotient ${B(3)} reste ${B(2)}`)) + '<p class="hint">Pose la division sur ton ardoise ou ton cahier, puis écris le quotient et le reste.</p>',
+          corr: plListe([[857, 6, 142, 5], [639, 4, 159, 3], [1250, 7, 178, 4]].map(([a, d, q, r]) => `${a.toLocaleString('fr-FR')} ÷ ${d} : quotient ${R(q)} reste ${R(r)}`)) } },
       { etoiles: 2, col: 1, consigne: 'Entoure les nombres divisibles par 2.',
         eleve: plGrille(['38', '75', '120', '403', '96', '1 001'], 3),
         corr: plGrille(['38', '75', '120', '403', '96', '1 001'].map(n => /[02468]$/.test(n) ? plEntoure(n) : n), 3) },
