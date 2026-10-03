@@ -313,6 +313,10 @@ async function progVerifier(){
   progSauverCourant();
   const msg = document.getElementById('progVerifMsg'); msg.innerHTML = '<p class="hint" style="margin:6px 0 0;">Vérification…</p>';
   const r = await progVerifierDefi(d, prog.ws);
+  if(prog.tableau){ // en groupe, au tableau (planches-prog.js) : rien n'est enregistré
+    msg.innerHTML = `<div class="prog-res ${r.ok ? 'ok' : 'ko'}"><span class="gicon">${r.ok ? 'celebration' : 'info'}</span> ${progEsc(r.message)}</div>`;
+    if(r.ok) progLancer(); return;
+  }
   const s = progSuivi[d.id] = Object.assign(progSuivi[d.id] || {}, { programme: progProgramme() });
   s.tentatives = (s.tentatives || 0) + 1;
   const premiere = r.ok && !s.reussi;

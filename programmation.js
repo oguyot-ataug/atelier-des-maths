@@ -168,7 +168,7 @@ class ProgScene {
     [this.cFond, this.cStylo, this.cLutin] = root.querySelectorAll('canvas');
     [this.cFond, this.cStylo, this.cLutin].forEach(c => { c.width = PROG_W * PROG_R; c.height = PROG_H * PROG_R; });
     this.bulleEl = root.querySelector('.prog-bulle'); this.demandeEl = root.querySelector('.prog-demande');
-    this.grille = false; this.modele = null; this.decor = null; this.depart = null; this.t = new ProgTortue();
+    this.grille = false; this.modele = null; this.decor = null; this.depart = null; this.equipe = null; this.t = new ProgTortue();
     this.fond(); this.lutin();
   }
   ctx(c){ const x = c.getContext('2d'); x.setTransform(PROG_R, 0, 0, -PROG_R, PROG_W / 2 * PROG_R, PROG_H / 2 * PROG_R); return x; }
@@ -206,6 +206,16 @@ class ProgScene {
   lutin(){
     const x = this.ctx(this.cLutin), t = this.t; x.clearRect(-PROG_W, -PROG_H, 2 * PROG_W, 2 * PROG_H);
     x.save(); x.translate(t.x, t.y); x.rotate(-t.dir * Math.PI / 180);
+    if(this.equipe){ // Oliv'IA ou une copine (projection en groupe, planches-prog.js) : l'olive vue de dessus, les yeux et la feuille vers l'avant
+      const q = this.equipe;
+      x.beginPath(); x.ellipse(0, 0, 11, 15, 0, 0, 2 * Math.PI); x.fillStyle = q.c; x.fill(); x.lineWidth = 2; x.strokeStyle = q.e; x.stroke();
+      x.beginPath(); x.ellipse(-4, -3, 2.5, 5, 0.3, 0, 2 * Math.PI); x.fillStyle = 'rgba(255,255,255,.3)'; x.fill();
+      x.beginPath(); x.moveTo(0, 14); x.lineTo(0, 19); x.strokeStyle = '#4F6B2A'; x.lineWidth = 1.6; x.stroke();
+      x.beginPath(); x.ellipse(4, 20, 5.5, 2.4, Math.PI / 6, 0, 2 * Math.PI); x.fillStyle = '#7BAE4F'; x.fill(); x.strokeStyle = '#4F6B2A'; x.lineWidth = 1; x.stroke();
+      [-4.6, 4.6].forEach(ex => { x.beginPath(); x.arc(ex, 6, 3.7, 0, 2 * Math.PI); x.fillStyle = '#fff'; x.fill(); x.strokeStyle = '#2C3A1A'; x.lineWidth = 1; x.stroke(); x.beginPath(); x.arc(ex, 7.3, 1.8, 0, 2 * Math.PI); x.fillStyle = '#1C2B39'; x.fill(); });
+      x.beginPath(); x.arc(0, -5, 2.8, 0, 2 * Math.PI); x.fillStyle = t.stylo ? t.couleur : '#fff'; x.fill(); x.strokeStyle = q.e; x.lineWidth = 1; x.stroke();
+      x.restore(); this.placerBulle(); return;
+    }
     x.beginPath(); x.moveTo(0, 16); x.lineTo(10, -10); x.lineTo(0, -4); x.lineTo(-10, -10); x.closePath();
     x.fillStyle = '#FF8208'; x.strokeStyle = '#B8511F'; x.lineWidth = 1.5; x.fill(); x.stroke();
     x.beginPath(); x.arc(0, 0, 2.6, 0, 2 * Math.PI); x.fillStyle = t.stylo ? t.couleur : '#fff'; x.fill(); x.strokeStyle = '#B8511F'; x.lineWidth = 1; x.stroke();
@@ -226,7 +236,7 @@ class ProgScene {
       this.annulerDemande = () => { f.hidden = true; ok(''); };
     });
   }
-  reset(){ this.t = new ProgTortue(this.depart); this.effacer(); this.bulle(null); if(this.annulerDemande){ this.annulerDemande(); this.annulerDemande = null; } this.lutin(); }
+  reset(){ this.t = new ProgTortue(this.depart); if(this.equipe) this.t.couleur = this.equipe.trait; this.effacer(); this.bulle(null); if(this.annulerDemande){ this.annulerDemande(); this.annulerDemande = null; } this.lutin(); }
 }
 
 /* ---------------------------------------------------------------------
@@ -494,7 +504,7 @@ function progModifie(){
   clearTimeout(prog.saveT); prog.saveT = setTimeout(progSauverCourant, 1200);
 }
 function progSauverCourant(){
-  if(!prog || !prog.ws || prog.chargement || prog.lecture) return;
+  if(!prog || !prog.ws || prog.chargement || prog.lecture || prog.tableau) return; // tableau : défi fait en groupe en projection, rien d'enregistré
   clearTimeout(prog.saveT);
   const json = progProgramme();
   if(prog.mode === 'libre'){ try{ localStorage.setItem('progLibre:' + ((currentUser && currentUser.id) || 'anon'), JSON.stringify(json)); }catch(e){} }

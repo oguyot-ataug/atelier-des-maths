@@ -137,7 +137,7 @@ function plMaj(lvl, c){
   plTdMaj(lvl, c);
   let b = document.getElementById('plBouton');
   const role = typeof currentUserRole !== 'undefined' ? currentUserRole : null;
-  const ok = (role === 'prof' || role === 'admin' || role === 'parent') && c && plDe(lvl, c.t).length > 0;
+  const ok = (role === 'prof' || role === 'admin' || role === 'parent') && c && (plDe(lvl, c.t).length > 0 || (typeof plProgDe === 'function' && plProgDe(lvl, c.t).length > 0));
   if(!ok){ if(b) b.remove(); return; }
   if(!b){
     const meta = document.getElementById('chap-meta'); if(!meta) return;
@@ -160,7 +160,7 @@ function plMaj(lvl, c){
 function plTdMaj(lvl, c){
   const tab = document.getElementById('tabTd'), root = document.getElementById('tdRoot'); if(!tab || !root) return;
   const role = typeof currentUserRole !== 'undefined' ? currentUserRole : null;
-  const ok = (role === 'prof' || role === 'admin' || role === 'parent') && c && plDe(lvl, c.t).length > 0;
+  const ok = (role === 'prof' || role === 'admin' || role === 'parent') && c && (plDe(lvl, c.t).length > 0 || (typeof plProgDe === 'function' && plProgDe(lvl, c.t).length > 0));
   tab.style.display = ok ? '' : 'none';
   if(!ok){ root.innerHTML = ''; if(tab.classList.contains('active')){ const b = document.querySelector('.tab-btn[data-tab="cours"]'); if(b) b.click(); } return; }
   plTdRendre(lvl, c);
@@ -180,11 +180,12 @@ function plTdRendre(lvl, c){
         <div class="td-v-pied"><button type="button" class="btn secondary td-mini" data-tdproj="${i}|${k}" title="En grand, un par un"><span class="gicon">present_to_all</span> Projeter</button>
           <button type="button" class="btn secondary td-mini" data-tdcorr="${i}|${k}"><span class="gicon">fact_check</span> Correction</button>
           <button type="button" class="btn secondary td-mini" data-tdcahier="${i}|${k}" title="Énoncé et correction dans le cahier de la classe"><span class="gicon">add</span> Cahier</button>
-          <button type="button" class="btn secondary td-mini" data-tdsess="${i}|${k}" title="Dans la session COURS en cours, ou en ouverture de la prochaine"><span class="gicon">cast_for_education</span> Session</button></div></div>`).join('')}</div></section>`).join('')}`;
+          <button type="button" class="btn secondary td-mini" data-tdsess="${i}|${k}" title="Dans la session COURS en cours, ou en ouverture de la prochaine"><span class="gicon">cast_for_education</span> Session</button></div></div>`).join('')}</div></section>`).join('')}${typeof plTdProgHtml === 'function' ? plTdProgHtml(lvl, c) : ''}`;
   if(typeof renderStaticMath === 'function') renderStaticMath(root);
   root.onclick = e => {
-    const t = e.target, pj = t.closest('[data-tdproj]'), co = t.closest('[data-tdcorr]'), ca = t.closest('[data-tdcahier]');
-    if(pj){ const [i, k] = pj.dataset.tdproj.split('|').map(Number); plProjeter(lvl, c, i, k); }
+    const t = e.target, pj = t.closest('[data-tdproj]'), co = t.closest('[data-tdcorr]'), ca = t.closest('[data-tdcahier]'), pg = t.closest('[data-tdprog]');
+    if(pg){ plProgProjeter(lvl, c, +pg.dataset.tdprog); }
+    else if(pj){ const [i, k] = pj.dataset.tdproj.split('|').map(Number); plProjeter(lvl, c, i, k); }
     else if(co){ const [i, k] = co.dataset.tdcorr.split('|').map(Number), x = liste[i].exos[k], v = document.getElementById(`tdv-${i}-${k}`), on = !v.classList.contains('corr');
       v.classList.toggle('corr', on); v.querySelector('.pl-corps').innerHTML = plExoCorps(x, on); co.innerHTML = on ? '<span class="gicon">visibility_off</span> Énoncé' : '<span class="gicon">fact_check</span> Correction';
       if(typeof renderStaticMath === 'function') renderStaticMath(v); }
@@ -367,16 +368,23 @@ async function plLivre(lvl){
 /* ---------- Projection : un exercice à la fois, avec la correction ---------- */
 let plProj = null; // { lvl, c, i, k, corr, pn (exercice à l'écran), res }
 function plProjeter(lvl, c, i, k){
+  if(plProj && plProj.prog && typeof plProgQuitter === 'function') plProgQuitter();
   plProj = { lvl, c, i, k: k || 0, corr: false };
+  plProjOuvrirVue();
+  plProjRendre();
+}
+// Fenêtre de projection (plein écran) : aussi pour les défis de programmation (planches-prog.js).
+function plProjOuvrirVue(){
   let v = document.getElementById('plProj');
   if(!v){ v = document.createElement('div'); v.id = 'plProj'; document.body.appendChild(v); }
   v.style.display = 'flex'; document.body.classList.add('plp-ouvert');
   document.addEventListener('keydown', plProjClavier);
   window.addEventListener('resize', plProjAjuster);
   const el = document.documentElement; if(el.requestFullscreen && !document.fullscreenElement){ try{ const pz = el.requestFullscreen(); if(pz && pz.catch) pz.catch(() => {}); }catch(e){} }
-  plProjRendre();
+  return v;
 }
 function plProjFermer(){
+  if(plProj && plProj.prog && typeof plProgQuitter === 'function') plProgQuitter();
   plProj = null; document.removeEventListener('keydown', plProjClavier); window.removeEventListener('resize', plProjAjuster);
   if(typeof plClavier !== 'undefined') plClavier.fermer();
   const v = document.getElementById('plProj'); if(v) v.style.display = 'none';
@@ -385,6 +393,9 @@ function plProjFermer(){
 }
 function plProjClavier(e){
   if(!plProj || (typeof plClavier !== 'undefined' && plClavier.cb)) return;
+  if(plProj.prog){ // éditeur de blocs : on ne vole pas les touches (champs des blocs) ; Échap seulement hors saisie
+    const a = document.activeElement; if(e.key === 'Escape' && !(a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)) && !document.querySelector('.blocklyWidgetDiv input')) plProjFermer();
+    return; }
   if(e.key === 'ArrowRight' || e.key === 'PageDown'){ e.preventDefault(); plProjAller(1); }
   else if(e.key === 'ArrowLeft' || e.key === 'PageUp'){ e.preventDefault(); plProjAller(-1); }
   else if(e.key === 'c' || e.key === 'C'){ plProjCorr(); }
@@ -392,13 +403,14 @@ function plProjClavier(e){
 }
 function plProjAller(d){
   if(!plProj) return;
+  if(plProj.prog){ plProgAller(d); return; }
   const liste = plDe(plProj.lvl, plProj.c.t), p = liste[plProj.i];
   let k = plProj.k + d, i = plProj.i;
   if(k >= p.exos.length && i + 1 < liste.length){ i++; k = 0; } else if(k < 0 && i > 0){ i--; k = liste[i].exos.length - 1; }
   k = Math.max(0, Math.min(liste[i].exos.length - 1, k));
   Object.assign(plProj, { i, k, corr: false, etat: null, res: null }); plProjRendre();
 }
-function plProjCorr(){ if(plProj){ if(plProj.pn) plProj.etat = plProj.pn.etat(); plProj.corr = !plProj.corr; plProjRendre(); } }
+function plProjCorr(){ if(plProj && plProj.prog){ if(typeof progAide === 'function') progAide(); return; } if(plProj){ if(plProj.pn) plProj.etat = plProj.pn.etat(); plProj.corr = !plProj.corr; plProjRendre(); } }
 function plProjVerifier(){
   if(!plProj || !plProj.pn) return;
   plProj.res = plProj.pn.verifier();

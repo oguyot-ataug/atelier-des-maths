@@ -118,8 +118,6 @@ ${cm1Astuce('Le point peut aussi être <b>sur</b> la droite (d) : on fait glisse
   <div class="figure-toolbar"><button class="btn" onclick="cm1dpQuadDemo.next()">Étape suivante →</button><button class="btn secondary" onclick="cm1dpQuadDemo.reset()">Recommencer</button></div>
 </div>
 
-${cm1dpProgBloc()}
-
 <div class="sub-header" data-oliv-plus="En route vers le CM2 !"><span class="letter">+</span><h4>Pour aller plus loin : tracer la droite parallèle à une droite passant par un point</h4></div>
 ${cm1Rem('Au CM1, il faut surtout savoir <b>reconnaître</b> et <b>vérifier</b> que deux droites sont parallèles. Les tracés qui suivent seront travaillés au CM2.')}
 <p class="example-title">Avec deux perpendiculaires (le plus simple) :</p>
@@ -150,14 +148,9 @@ ${dpAnimL('cm1dp-para-L', 'para')}
 }
 /* À l'ordinateur -- demandé : « des exercices dans droites parallèles et perpendiculaires : tracer une
    perpendiculaire déjà présente et une parallèle, dessinées en pointillés ; au départ le curseur placé sur
-   la droite (d) ». Défis CM1 de la programmation par blocs (prog-defis.js, PROG_DEFIS_CM1). */
-const CM1DP_PROG = [['cm1-perp', 'La perpendiculaire'], ['cm1-para', 'La parallèle'], ['cm1-equerre', 'L\'équerre penchée'], ['cm1-rectangle', 'Le rectangle posé sur (d)']];
-function cm1dpProgBloc(){
-  return `<div class="sub-header"><span class="letter">M</span><h4>À l'ordinateur : programme le lutin pour tracer perpendiculaires et parallèles</h4></div>
-<div class="figure-wrap"><p class="hint" style="margin:0 0 8px;">Le lutin part d'un point de la droite (d). Les droites à tracer sont en pointillés : on les repasse avec les blocs « avancer », « tourner de 90° » et « stylo ». Les défis sont vérifiés automatiquement, et on peut les donner en devoir.</p>
-<div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;">${CM1DP_PROG.map(([id, t], i) => `<button type="button" class="btn${i ? ' secondary' : ''}" onclick="cm1dpProg('${id}')"><span class="gicon">extension</span> ${t}</button>`).join('')}</div></div>`;
-}
-function cm1dpProg(id){ if(typeof demoGarde === 'function' && demoGarde('programmation')) return; if(typeof progOuvrir === 'function') progOuvrir({ defi: id }); }
+   la droite (d) », puis « dans Mon TD, dans la fenêtre de projection, en groupe au tableau ». Défis CM1 de
+   la programmation par blocs (prog-defis.js, PROG_DEFIS_CM1). */
+if(typeof PL_PROG !== 'undefined') PL_PROG['cm1|Droites parallèles et perpendiculaires'] = ['cm1-perp', 'cm1-para', 'cm1-equerre', 'cm1-rectangle']; // Mon TD › À l'ordinateur, en groupe (planches-prog.js)
 /* Perpendiculaire sur quadrillage, au CM1 : (d) suit les lignes, ou les diagonales des carreaux (demandé :
    « pour les perpendiculaires dans un quadrillage, on doit se limiter aux diagonales » ; la méthode du
    « L » pour une droite oblique quelconque est vue en 6e). */

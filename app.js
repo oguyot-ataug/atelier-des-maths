@@ -3327,6 +3327,12 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.955', date:'2026-10-03', items:[
+    'Mon TD, rubrique « À l\'ordinateur, en groupe » : les défis de programmation par blocs du chapitre (CM1 Droites parallèles et perpendiculaires : 4 défis), avec l\'aperçu des pointillés à repasser',
+    'Projection : l\'éditeur de blocs s\'ouvre dans la fenêtre de projection (consigne, blocs, scène, vérification ; défi précédent / suivant ; Aide), pour un défi en groupe au tableau ; rien n\'est enregistré',
+    'Oliv\'IA et ses copines : chaque équipe choisit son olive (Oliv\'IA, Noa l\'olive noire, Lila l\'olive violette, Rosa l\'olive rose), qui devient le lutin ; son trait a la couleur de l\'équipe',
+    'Les boutons des défis quittent l\'onglet Méthodes du chapitre',
+  ] },
   { version:'2026-08-19.954', date:'2026-10-03', items:[
     'Programmation par blocs : 4 défis CM1 -- « La perpendiculaire », « La parallèle », « L\'équerre penchée », « Le rectangle posé sur (d) » : le lutin part d\'un point de la droite (d), les droites à tracer sont en pointillés ; vérification au bon endroit (rien tracé en dehors des pointillés), avec un indice si ce n\'est pas juste ; utilisables en devoir',
     'CM1 Droites parallèles et perpendiculaires, onglet Méthodes : « À l\'ordinateur : programme le lutin », un bouton par défi',
