@@ -3310,6 +3310,11 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.931', date:'2026-10-03', items:[
+    'Interrogations en ligne, onglet « Suivi des classes » : rangé par classe (une pastille par classe, la classe active par défaut, ou toutes les classes), interrogations et questions flash mêlées des plus récentes aux plus anciennes',
+    'Archivage : bouton « Archiver » sur chaque interrogation ou séance de questions flash, et « Archiver les terminées » par classe (résultats publiés, interrogations fermées, questions flash terminées). Les archives restent consultables en bas de chaque classe ; rien ne change pour les élèves',
+    'Interrogations en ligne : les explications sont repliées sous « Comment ça marche ? », et les questionnaires pas encore donnés se replient quand ils sont nombreux'
+  ]},
   { version:'2026-08-19.930', date:'2026-10-03', items:[
     'Session COURS : en ouvrant la copie d\'un élève, le professeur lui écrit un mot pour l\'aider ; le mot s\'affiche au-dessus de son exercice (avec Oliv\'IA) et reste enregistré',
     'Session COURS : bouton « Aperçu des copies » : toutes les copies des élèves en miniature dans les vignettes, mises à jour en direct',

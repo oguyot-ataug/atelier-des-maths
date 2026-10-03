@@ -87,28 +87,88 @@ function qzBanqueRender(){
   const interros = (qzB.interros || []).filter(d => !f || qzNormTexte((d.titre || '') + ' ' + (d.classes ? d.classes.nom : '')).includes(f));
   root.innerHTML = `<span class="back-btn" onclick="showView('view-home');setActiveTopnav(null);">← Accueil</span>
     <h1 style="margin:6px 0 4px;"><span class="gicon">quiz</span> Interrogations en ligne</h1>
-    <p style="color:var(--ink-soft);max-width:75ch;">Des interrogations notées, à la manière de Google Forms, séparées des devoirs d'entraînement : créez-les, donnez-les à une classe (en classe, chronométrées, ou à la maison), corrigez-les copie par copie ou question par question, puis publiez les résultats. <b>Banque de questionnaires</b> : vos modèles, toujours modifiables et réutilisables ; chaque classe à qui vous en donnez un reçoit sa propre copie, donc modifier le modèle ne change rien aux interrogations déjà données. <b>Suivi des classes</b> : ce que vous avez donné, les copies rendues, la correction, les questions flash. Pour en envoyer un à un collègue : bouton <b><span class="gicon" style="font-size:1rem;vertical-align:middle;">share</span> Partager</b> ; il le retrouve dans « Partagés avec moi » et peut le copier chez lui.</p>
+    <details class="qz-repli qz-aide"><summary><span class="gicon">help</span> Comment ça marche ?</summary><p style="color:var(--ink-soft);max-width:75ch;">Des interrogations notées, à la manière de Google Forms, séparées des devoirs d'entraînement : créez-les, donnez-les à une classe (en classe, chronométrées, ou à la maison), corrigez-les copie par copie ou question par question, puis publiez les résultats. <b>Banque de questionnaires</b> : vos modèles, toujours modifiables et réutilisables ; chaque classe à qui vous en donnez un reçoit sa propre copie, donc modifier le modèle ne change rien aux interrogations déjà données. <b>Suivi des classes</b> : ce que vous avez donné, les copies rendues, la correction, les questions flash. Pour en envoyer un à un collègue : bouton <b><span class="gicon" style="font-size:1rem;vertical-align:middle;">share</span> Partager</b> ; il le retrouve dans « Partagés avec moi » et peut le copier chez lui.</p>
     <div class="qz-legende">${[['maison', 'noté, à la maison ou en classe (chronométré)'], ['entrainement', 'non noté : l\'élève vérifie, réessaie, voit la correction'], ['sondage', 'pas de bonne réponse : avis, choix, réponses libres'], ['direct', 'en classe, question par question, au rythme du professeur']]
       .map(([k, t]) => `<span>${qzModeBadge(k, '')} <small>${t}</small></span>`).join('')}</div>
-    <p class="qzd-intro"><span class="gicon">bolt</span><span><b>Nouveau : les questions flash.</b> Bouton <b>Questions flash</b> sur un questionnaire : les questions s'affichent une à une au rythme du professeur, chaque élève répond depuis son compte, vous voyez en direct le pourcentage de réponses justes et fausses, puis vous affichez la correction. Toute la classe ou un groupe d'élèves ; ils entrent avec le code que vous affichez au tableau (ou automatiquement). Aussi dans le choix du mode d'une nouvelle interrogation. Notée ou non, au choix : une séance notée devient une interrogation que vous vérifiez avant de publier les notes. Les séances terminées restent consultables (bilan) dans « Mes interrogations ».</span></p>
+    <p class="qzd-intro"><span class="gicon">bolt</span><span><b>Nouveau : les questions flash.</b> Bouton <b>Questions flash</b> sur un questionnaire : les questions s'affichent une à une au rythme du professeur, chaque élève répond depuis son compte, vous voyez en direct le pourcentage de réponses justes et fausses, puis vous affichez la correction. Toute la classe ou un groupe d'élèves ; ils entrent avec le code que vous affichez au tableau (ou automatiquement). Aussi dans le choix du mode d'une nouvelle interrogation. Notée ou non, au choix : une séance notée devient une interrogation que vous vérifiez avant de publier les notes. Les séances terminées restent consultables (bilan) dans « Mes interrogations ».</span></p></details>
     <div class="qz-c-tools">
-      <div class="qz-tabs"><button class="${qzB.onglet === 'donnees' ? 'on' : ''}" onclick="qzB.onglet='donnees';qzBanqueRender()"><span class="gicon">assignment_turned_in</span> Suivi des classes (${(qzB.interros || []).length + (qzB.directsPasses || []).length + qzBrouillonsListe('').length})</button>
+      <div class="qz-tabs"><button class="${qzB.onglet === 'donnees' ? 'on' : ''}" onclick="qzB.onglet='donnees';qzBanqueRender()"><span class="gicon">assignment_turned_in</span> Suivi des classes (${(qzB.interros || []).filter(d => !d.archive_at).length + (qzB.directsPasses || []).filter(d => !d.archive_at).length + qzBrouillonsListe('').length})</button>
         <button class="${qzB.onglet === 'mes' ? 'on' : ''}" onclick="qzB.onglet='mes';qzBanqueRender()"><span class="gicon">inventory_2</span> Banque de questionnaires (${(qzB.banque || qzB.mes).length})</button>
         <button class="${qzB.onglet === 'partages' ? 'on' : ''}" onclick="qzB.onglet='partages';qzBanqueRender()"><span class="gicon">group</span> Partagés avec moi (${qzB.partages.length})</button></div>
       <input type="search" class="qz-b-search" placeholder="Rechercher (titre, énoncé, auteur)…" value="${qzEsc(qzB.filtre)}" oninput="qzB.filtre=this.value;clearTimeout(qzB.t);qzB.t=setTimeout(()=>{qzBanqueRender();const i=document.querySelector('.qz-b-search');if(i){i.focus();i.setSelectionRange(i.value.length,i.value.length);}},250)">
       <button class="btn secondary" onclick="qzOuvrirCarnet()"><span class="gicon">menu_book</span> Carnet de notes</button>
       <button class="btn" onclick="qzBanqueNouveau()"><span class="gicon">add</span> Nouvelle interrogation</button>
     </div>
-    ${qzB.onglet === 'donnees' ? qzBanqueDonneesHtml(f, interros) : `<div class="qz-b-grid">${liste.map(q => qzBanqueCarte(q, qzB.onglet !== 'mes')).join('') || `<p class="hint">${qzB.onglet === 'mes' ? (f ? 'Aucun questionnaire ne correspond.' : 'Aucun questionnaire pour l\'instant : créez-en un avec « Nouvelle interrogation ».') : 'Aucun questionnaire partagé avec vous pour l\'instant.'}</p>`}</div>`}`;
+    ${qzB.onglet === 'donnees' ? qzBanqueDonneesHtml(f) : `<div class="qz-b-grid">${liste.map(q => qzBanqueCarte(q, qzB.onglet !== 'mes')).join('') || `<p class="hint">${qzB.onglet === 'mes' ? (f ? 'Aucun questionnaire ne correspond.' : 'Aucun questionnaire pour l\'instant : créez-en un avec « Nouvelle interrogation ».') : 'Aucun questionnaire partagé avec vous pour l\'instant.'}</p>`}</div>`}`;
 }
-// Onglet « Suivi des classes » : séances en direct (en cours, puis terminées), questionnaires pas
-// encore donnés, puis interrogations données à une classe.
-function qzBanqueDonneesHtml(f, interros){
-  const enCours = typeof qzDirectsHtml === 'function' ? qzDirectsHtml() : '';
-  const passees = typeof qzDirectsPassesHtml === 'function' ? qzDirectsPassesHtml(f) : '';
-  const brouillons = qzBrouillonsHtml(f);
-  const titreDonnees = enCours || brouillons || passees ? `<p class="qz-i-sec"><span class="gicon">assignment_turned_in</span> Données à une classe</p>` : '';
-  return enCours + brouillons + passees + titreDonnees + qzInterrosHtml(interros);
+/* Onglet « Suivi des classes », rangé par classe et avec archivage -- demandé : « La page interrogation
+   en ligne se remplit vite. Il faudrait la réorganiser par classe et avec un archivage. »
+   En haut : questions flash en cours, puis questionnaires pas encore donnés (repliables). Ensuite, une
+   pastille par classe (la classe active par défaut) ; pour chaque classe, ses interrogations et ses
+   questions flash terminées mêlées, des plus récentes aux plus anciennes ; « Archiver » les range dans
+   « Archives » en bas de la classe (devoirs.archive_at, qz_direct.archive_at : rien ne change pour les
+   élèves, notes et copies comprises) ; « Archiver les terminées » range d'un coup celles dont les
+   résultats sont publiés ou qui sont fermées, et les questions flash terminées. */
+function qzSuiviElements(f){
+  const it = (qzB.interros || []).filter(d => !f || qzNormTexte((d.titre || '') + ' ' + (d.classes ? d.classes.nom : '')).includes(f)).map(d => ({ k: 'i', d, t: d.created_at }));
+  const dp = (qzB.directsPasses || []).filter(d => !f || qzNormTexte((d.titre || '') + ' ' + (d.classes ? d.classes.nom : '')).includes(f)).map(d => ({ k: 'd', d, t: d.created_at }));
+  return it.concat(dp).sort((a, b) => String(b.t).localeCompare(String(a.t)));
+}
+function qzSuiviClasses(els){
+  const m = new Map();
+  els.concat(((qzB.directs || []).map(d => ({ d })))).forEach(({ d }) => { const id = d.class_id || '-'; if(!m.has(id)) m.set(id, { id, nom: (d.classes && d.classes.nom) || 'Sans classe', n: 0 }); });
+  els.forEach(({ d }) => { if(!d.archive_at) m.get(d.class_id || '-').n++; });
+  return [...m.values()].sort((a, b) => a.nom.localeCompare(b.nom, 'fr', { numeric: true }));
+}
+function qzSuiviClasseChoisie(classes){
+  let c = qzB.classe;
+  if(c === undefined){ try{ c = localStorage.getItem('qzSuiviClasse'); }catch(e){ c = null; } }
+  if(!c || (c !== 'tout' && !classes.some(x => x.id === c))) c = classes.some(x => x.id === currentClassId) ? currentClassId : 'tout';
+  return c;
+}
+function qzSuiviChoisir(c){ qzB.classe = c; try{ localStorage.setItem('qzSuiviClasse', c); }catch(e){} qzBanqueRender(); }
+function qzSuiviLigne(x){ return x.k === 'i' ? qzInterroLigne(x.d) : qzDirectPasseLigne(x.d); }
+function qzBanqueDonneesHtml(f){
+  const enCoursTous = (qzB.directs || []);
+  const els = qzSuiviElements(f), classes = qzSuiviClasses(els), choix = qzSuiviClasseChoisie(classes);
+  const enCours = enCoursTous.length && typeof qzDirectsHtml === 'function' ? qzDirectsHtml() : '';
+  const nbBr = qzBrouillonsListe(f).length;
+  const brouillons = nbBr ? `<details class="qz-repli"${nbBr <= 4 ? ' open' : ''}><summary>${qzBrouillonsHtml(f).match(/<p class="qz-i-sec">[\s\S]*?<\/p>/)[0].replace(/<\/?p[^>]*>/g, '')}</summary>${qzBrouillonsHtml(f).replace(/<p class="qz-i-sec">[\s\S]*?<\/p>/, '')}</details>` : '';
+  if(!els.length) return enCours + brouillons + `<p class="qz-i-sec"><span class="gicon">assignment_turned_in</span> Données à une classe</p>` + qzInterrosHtml([]);
+  const chips = `<div class="qz-cl-chips"><button class="${choix === 'tout' ? 'on' : ''}" onclick="qzSuiviChoisir('tout')">Toutes les classes</button>${classes.map(c => `<button class="${choix === c.id ? 'on' : ''}" onclick="qzSuiviChoisir('${c.id}')">${qzEsc(c.nom)} <small>${c.n}</small></button>`).join('')}</div>`;
+  const sections = classes.filter(c => choix === 'tout' || c.id === choix).map(c => {
+    const l = els.filter(x => (x.d.class_id || '-') === c.id), actifs = l.filter(x => !x.d.archive_at), arch = l.filter(x => x.d.archive_at);
+    const finies = actifs.filter(qzSuiviFinie).length;
+    return `<section class="qz-cl-sec"><div class="qz-cl-tete"><h3><span class="gicon">groups</span> ${qzEsc(c.nom)}</h3><span class="hint" style="margin:0;">${actifs.length} en cours de suivi${arch.length ? ` · ${arch.length} archivée${arch.length > 1 ? 's' : ''}` : ''}</span>
+        ${finies ? `<button class="btn secondary qz-mini" onclick="qzArchiverTerminees('${c.id}')" title="Résultats publiés, interrogations fermées et questions flash terminées"><span class="gicon">inventory_2</span> Archiver les terminées (${finies})</button>` : ''}</div>
+      ${actifs.length ? `<div class="qz-i-liste">${actifs.map(qzSuiviLigne).join('')}</div>` : '<p class="hint">Rien en cours pour cette classe.</p>'}
+      ${arch.length ? `<details class="qz-repli qz-archives"><summary><span class="gicon">inventory_2</span> Archives (${arch.length})</summary><div class="qz-i-liste">${arch.map(qzSuiviLigne).join('')}</div></details>` : ''}</section>`;
+  }).join('');
+  return enCours + brouillons + `<p class="qz-i-sec"><span class="gicon">assignment_turned_in</span> Données à une classe</p>` + chips + sections;
+}
+function qzSuiviFinie(x){
+  if(x.k === 'd') return true;
+  const e = qzInterroEtat(x.d); return e.c === 'ok' || e.c === 'ferme';
+}
+function qzArchiveBtn(table, d){
+  return d.archive_at
+    ? `<button class="btn secondary qz-mini" onclick="qzArchiver('${table}','${d.id}',false)" title="Sortir des archives"><span class="gicon">unarchive</span></button>`
+    : `<button class="btn secondary qz-mini" onclick="qzArchiver('${table}','${d.id}',true)" title="Archiver : rangée dans « Archives » en bas de la classe (rien ne change pour les élèves)"><span class="gicon">inventory_2</span></button>`;
+}
+async function qzArchiver(table, id, on, silencieux){
+  const v = on ? new Date().toISOString() : null;
+  const { error } = await sb.from(table).update({ archive_at: v }).eq('id', id);
+  if(error){ if(!silencieux) await niceAlert('Archivage impossible : ' + error.message); return false; }
+  const l = table === 'devoirs' ? qzB.interros : qzB.directsPasses, d = (l || []).find(x => x.id === id); if(d) d.archive_at = v;
+  if(!silencieux) qzBanqueRender();
+  return true;
+}
+async function qzArchiverTerminees(classe){
+  const l = qzSuiviElements('').filter(x => (x.d.class_id || '-') === classe && !x.d.archive_at && qzSuiviFinie(x));
+  if(!l.length) return;
+  if(!(await niceConfirm(`Archiver ${l.length} élément${l.length > 1 ? 's' : ''} terminé${l.length > 1 ? 's' : ''} de cette classe (résultats publiés, interrogations fermées, questions flash terminées) ? Rien ne change pour les élèves ; vous les retrouvez dans « Archives ».`))) return;
+  for(const x of l) await qzArchiver(x.k === 'i' ? 'devoirs' : 'qz_direct', x.d.id, true, true);
+  qzBanqueRender();
 }
 function qzBanqueTrouver(id){ return qzB && (qzB.mes.find(q => q.id === id) || qzB.partages.find(q => q.id === id)); }
 async function qzBanqueSur(id){

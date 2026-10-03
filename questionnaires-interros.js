@@ -287,7 +287,7 @@ function qzToast(html, genre){
    Onglet « Interrogations données »
    --------------------------------------------------------------------- */
 async function qzInterrosCharger(){
-  const { data: dv } = await sb.from('devoirs').select('id,titre,class_id,date_depot,date_limite,created_at,student_ids,qz_publie_at,questionnaire_id,classes(nom,niveau)')
+  const { data: dv } = await sb.from('devoirs').select('id,titre,class_id,date_depot,date_limite,created_at,student_ids,qz_publie_at,questionnaire_id,archive_at,classes(nom,niveau)')
     .eq('teacher_id', currentUser.id).eq('type', 'questionnaire').order('created_at', { ascending: false });
   const interros = dv || [], ids = interros.map(d => d.id), classIds = Array.from(new Set(interros.map(d => d.class_id)));
   const [{ data: copies }, { data: cs }] = await Promise.all([
@@ -323,7 +323,9 @@ function qzSourceInterro(d){
 }
 function qzInterrosHtml(liste){
   if(!liste.length) return `<p class="hint">Aucune interrogation pour l'instant : « Nouvelle interrogation » pour en créer une (ou « Donner à une classe » depuis la banque de questionnaires).</p>`;
-  return `<div class="qz-i-liste">${liste.map(d => { const e = qzInterroEtat(d), r = d._reg || QZ_REGLAGES_DEFAUT;
+  return `<div class="qz-i-liste">${liste.map(qzInterroLigne).join('')}</div>`;
+}
+function qzInterroLigne(d){ const e = qzInterroEtat(d), r = d._reg || QZ_REGLAGES_DEFAUT;
     return `<div class="qz-i-row qz-mlisere" style="--m:${qzMode(r).c}">
       <div class="qz-i-main">${qzModeBadge(r)} <b>${qzEsc(d.titre)}</b>${d._q && (d._q.partage_etab || (d._q.partage_profs || []).length) ? ' <span class="qz-b-share"><span class="gicon">group</span> partagé</span>' : ''}
         <div class="hint" style="margin:2px 0 0;">${qzEsc(d.classes ? d.classes.nom : '')}${d.student_ids && d.student_ids.length ? ` · ${d.student_ids.length} élève${d.student_ids.length > 1 ? 's' : ''} choisi${d.student_ids.length > 1 ? 's' : ''}` : ''}${d.date_limite ? ' · limite le ' + new Date(d.date_limite).toLocaleDateString('fr-FR') : ''}</div></div>
@@ -338,8 +340,9 @@ function qzInterrosHtml(liste){
         ${d.questionnaire_id ? (src => `<button class="btn secondary qz-mini qzd-btn" onclick="qzDirectLancer('${src}')" title="Questions flash avec ces questions : une à une, sans note, réponses en direct"><span class="gicon">bolt</span></button>
         <button class="btn secondary qz-mini" onclick="qzBanqueDonner('${src}')" title="Donner une copie à une autre classe"><span class="gicon">content_copy</span></button>
         <button class="btn secondary qz-mini" onclick="qzBanquePartager('${src}')" title="Partager le questionnaire avec des collègues (ils pourront le copier)"><span class="gicon">share</span></button>`)(qzSourceInterro(d)) : ''}
+        ${qzArchiveBtn('devoirs', d)}
         <button class="btn secondary qz-mini" style="color:#a83c1f;" onclick="qzInterroSupprimer('${d.id}')" title="Supprimer"><span class="gicon">delete</span></button>
-      </span></div>`; }).join('')}</div>`;
+      </span></div>`;
 }
 // Questionnaires enregistrés mais jamais donnés (brouillons), en tête de la page -- signalé : "Il
 // faut absolument que les interrogations sauvegardées soient visibles".
@@ -398,6 +401,14 @@ async function qzInterroSupprimer(id){
     .qz-f-grid input,.qz-f-grid select{padding:7px 9px;border:1px solid rgba(28,43,57,.2);border-radius:8px;font:inherit;font-weight:400;}
     .qz-i-liste{display:flex;flex-direction:column;gap:8px;}
     .qz-i-sec{display:flex;align-items:center;gap:6px;font-family:'Space Grotesk',sans-serif;font-weight:700;margin:6px 0 8px;}
+    .qz-repli{margin:0 0 14px;} .qz-repli > summary{cursor:pointer;display:flex;align-items:center;gap:6px;font-family:'Space Grotesk',sans-serif;font-weight:700;margin:6px 0 8px;list-style:none;}
+    .qz-repli > summary::before{content:'▸';color:var(--ink-soft);transition:transform .15s;} .qz-repli[open] > summary::before{transform:rotate(90deg);}
+    .qz-aide > summary{font-weight:600;color:var(--ink-soft);font-size:.92rem;}
+    .qz-cl-chips{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 12px;} .qz-cl-chips button{border:1.5px solid rgba(28,43,57,.15);background:#fff;border-radius:999px;padding:5px 12px;font:600 .88rem inherit;cursor:pointer;color:var(--ink);}
+    .qz-cl-chips button.on{background:#1F3A5C;color:#fff;border-color:#1F3A5C;} .qz-cl-chips small{opacity:.7;margin-left:2px;}
+    .qz-cl-sec{margin:0 0 22px;} .qz-cl-tete{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 8px;border-bottom:2px solid rgba(28,43,57,.08);padding-bottom:6px;}
+    .qz-cl-tete h3{margin:0;font-size:1.15rem;display:flex;align-items:center;gap:6px;} .qz-cl-tete .btn{margin-left:auto;}
+    .qz-archives{margin-top:10px;opacity:.85;} .qz-archives > summary{color:var(--ink-soft);font-size:.92rem;}
     .qz-i-row.brouillon{border-left-color:#0C5BA0;border-style:dashed;border-left-style:solid;}
     .qz-toast{position:fixed;left:50%;bottom:18px;transform:translate(-50%,30px);opacity:0;pointer-events:none;transition:.25s;z-index:900;max-width:min(560px,calc(100vw - 32px));
       background:#1E7B34;color:#fff;border-radius:12px;padding:10px 16px;box-shadow:0 8px 24px rgba(0,0,0,.18);display:flex;gap:8px;align-items:center;font-size:.9rem;}

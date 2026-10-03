@@ -661,7 +661,7 @@ function qzDirectsHtml(){
 async function qzDirectsCharger(){
   const [{ data }, { data: passes }] = await Promise.all([
     sb.from('qz_direct').select('id,titre,class_id,created_at,etat,code,acces,student_ids,notee,devoir_id,classes(nom)').eq('teacher_id', currentUser.id).is('ended_at', null).order('created_at', { ascending: false }),
-    sb.from('qz_direct').select('id,titre,class_id,questionnaire_id,created_at,ended_at,etat,student_ids,notee,devoir_id,classes(nom)').eq('teacher_id', currentUser.id).not('ended_at', 'is', null).order('created_at', { ascending: false }).limit(200),
+    sb.from('qz_direct').select('id,titre,class_id,questionnaire_id,created_at,ended_at,etat,student_ids,notee,devoir_id,archive_at,classes(nom)').eq('teacher_id', currentUser.id).not('ended_at', 'is', null).order('created_at', { ascending: false }).limit(500),
   ]);
   if(typeof qzB !== 'undefined' && qzB){
     qzB.directs = data || [];
@@ -684,7 +684,10 @@ function qzDirectsPassesHtml(f){
     .filter(d => !f || qzNormTexte((d.titre || '') + ' ' + (d.classes ? d.classes.nom : '')).includes(f));
   if(!l.length) return '';
   return `<p class="qz-i-sec"><span class="gicon" style="color:#D93025;">bolt</span> Questions flash terminées (${l.length})</p>
-    <div class="qz-i-liste" style="margin-bottom:18px;">${l.map(d => `<div class="qz-i-row qz-mlisere" style="--m:${qzMode('direct').c}">
+    <div class="qz-i-liste" style="margin-bottom:18px;">${l.map(qzDirectPasseLigne).join('')}</div>`;
+}
+function qzDirectPasseLigne(d){
+  return `<div class="qz-i-row qz-mlisere" style="--m:${qzMode('direct').c}">
         <div class="qz-i-main">${qzModeBadge('direct', '')} <b>${qzEsc(d.titre)}</b>
           <div class="hint" style="margin:2px 0 0;">${qzDirectResumeTxt(d)}</div></div>
         <span class="qz-i-etat ${d.devoir_id ? 'ok' : 'brouillon'}"><span class="gicon">${d.devoir_id ? 'grading' : 'school'}</span> ${d.devoir_id ? 'Notée' : 'Non notée'}</span>
@@ -696,8 +699,9 @@ function qzDirectsPassesHtml(f){
             : `<button class="btn secondary qz-mini" onclick="qzDirectNoter('${d.id}')" title="Créer une interrogation notée avec les réponses des élèves"><span class="gicon">grading</span> Noter</button>`}
           ${d.questionnaire_id ? `<button class="btn secondary qz-mini" onclick="qzBanqueReprendre('${d.questionnaire_id}')" title="Modifier le questionnaire (corriger une erreur de corrigé : le bilan et la notation en tiennent compte)"><span class="gicon">edit</span></button>
           <button class="btn secondary qz-mini qzd-btn" onclick="qzDirectLancer('${d.questionnaire_id}')" title="Nouvelles questions flash avec ce questionnaire"><span class="gicon">replay</span></button>` : ''}
+          ${typeof qzArchiveBtn === 'function' ? qzArchiveBtn('qz_direct', d) : ''}
           <button class="btn secondary qz-mini" style="color:#a83c1f;" onclick="qzDirectSupprimer('${d.id}')" title="Supprimer cette séance et ses réponses"><span class="gicon">delete</span></button>
-        </span></div>`).join('')}</div>`;
+        </span></div>`;
 }
 async function qzDirectSupprimer(id){
   const d = ((qzB && qzB.directsPasses) || []).find(x => x.id === id); if(!d) return;
