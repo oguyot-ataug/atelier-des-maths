@@ -149,7 +149,7 @@ ${dpAnimL('cm1dp-para-L', 'para')}
 /* Perpendiculaire sur quadrillage, au CM1 : (d) suit les lignes, ou les diagonales des carreaux (demandé :
    « pour les perpendiculaires dans un quadrillage, on doit se limiter aux diagonales » ; la méthode du
    « L » pour une droite oblique quelconque est vue en 6e). */
-const CM1DP_CARREAU = `<svg viewBox="0 0 70 70" style="width:64px;vertical-align:middle;"><rect x="5" y="5" width="60" height="60" fill="#fff" stroke="#8FB3D0" stroke-width="1.5"/><line x1="5" y1="5" x2="65" y2="65" stroke="#1F3A5C" stroke-width="2"/><line x1="65" y1="5" x2="5" y2="65" stroke="#E35D3A" stroke-width="2"/><path d="M35,25 L45,35 L35,45" fill="none" stroke="#1F3A5C" stroke-width="1.5"/></svg>`;
+const CM1DP_CARREAU = `<svg viewBox="0 0 70 70" style="width:64px;vertical-align:middle;"><rect x="5" y="5" width="60" height="60" fill="#fff" stroke="#8FB3D0" stroke-width="1.5"/><line x1="5" y1="5" x2="65" y2="65" stroke="#1F3A5C" stroke-width="2"/><line x1="65" y1="5" x2="5" y2="65" stroke="#E35D3A" stroke-width="2"/><path d="M40.66,40.66 L46.31,35 L40.66,29.34" fill="none" stroke="#1F3A5C" stroke-width="1.5"/></svg>`;
 const CM1DP_QH = { w: 288, h: 168, k: 24, d: [[0, 120], [288, 120]], M: [168, 48], taille: 300 }, CM1DP_QD = { w: 288, h: 168, k: 24, d: [[24, 144], [144, 24]], M: [168, 96], taille: 300 };
 const CM1DP_QUAD_STEPS = [
   { expr: cm1dpFig(CM1DP_QH), note: 'La droite (d) suit une ligne du quadrillage.' },

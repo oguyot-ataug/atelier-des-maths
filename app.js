@@ -3327,6 +3327,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.951', date:'2026-10-03', items:[
+    'CM1 Droites parallèles et perpendiculaires : codage de l\'angle droit corrigé sur le petit carreau (les deux diagonales)',
+  ] },
   { version:'2026-08-19.950', date:'2026-10-03', items:[
     'CM1 Droites parallèles et perpendiculaires : sur quadrillage, la perpendiculaire se limite aux droites qui suivent les lignes ou les diagonales des carreaux (les deux diagonales d\'un carreau sont perpendiculaires) ; la méthode du « L » pour une droite oblique quelconque reste en 6e ; planche 2, exercice 2 avec une droite qui suit les diagonales',
   ] },
