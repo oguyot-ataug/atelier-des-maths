@@ -117,3 +117,83 @@ ${cm1Sous('A', 'Atelier : complète le dessin par symétrie')}
   init: () => cm1SyModele(sy.m),
 });
 })();
+
+/* ---- Planches d'exercices imprimables (planches.js) ---- */
+(() => {
+const B = n => plPointilles(n || 2), R = v => plRep(String(v));
+const K = '#1F3A5C', ROUGE = '#E35D3A', BLEU = '#2EA8C9', VERT = '#2E9C6A';
+const S = (w, h, inner, px) => `<svg class="pl-libre" viewBox="0 0 ${w} ${h}" style="width:${px || w}px;max-width:100%;display:inline-block;vertical-align:middle;">${inner}</svg>`;
+const L = (a, b, c, w, d) => `<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="${c || K}" stroke-width="${w || 2}"${d ? ' stroke-dasharray="6 4"' : ''} stroke-linecap="round"/>`;
+const Pg = (pts, c, f) => `<polygon points="${pts.map(p => p.join(',')).join(' ')}" fill="${f || '#DCEFF6'}" stroke="${c || K}" stroke-width="2" stroke-linejoin="round"/>`;
+const Pt = (p, n, c) => `<circle cx="${p[0]}" cy="${p[1]}" r="3" fill="${c || K}"/>` + (n ? cmT(p[0] + 8, p[1] - 6, n, { fs: 12, c: c || K }) : '');
+const AX = (a, b) => L(a, b, ROUGE, 2.2, true);
+// Quadrillage w × h carreaux de k px ; f(g) dessine en coordonnées de carreaux.
+function Q(w, h, k, f){ const g = (x, y) => [1 + x * k, 1 + y * k]; let s = '';
+  for(let x = 0; x <= w; x++) s += L(g(x, 0), g(x, h), '#C6D2DE', .8); for(let y = 0; y <= h; y++) s += L(g(0, y), g(w, y), '#C6D2DE', .8);
+  return S(w * k + 2, h * k + 2, s + (f ? f(g) : ''), w * k + 2); }
+const col = (h, t) => `<span style="display:flex;flex-direction:column;align-items:center;gap:2px;">${h}${t ? `<span>${t}</span>` : ''}</span>`;
+const duo = l => `<div style="display:flex;justify-content:space-around;align-items:flex-end;gap:10px;flex-wrap:wrap;">${l.join('')}</div>`;
+
+// Figures et leurs axes (en pointillés rouges dans le corrigé).
+const FIGS = [
+  { f: Pg([[50, 8], [86, 82], [14, 82]]), ax: [[[50, 2], [50, 88]]], n: 1 },
+  { f: Pg([[10, 22], [90, 22], [90, 68], [10, 68]]), ax: [[[50, 12], [50, 78]], [[4, 45], [96, 45]]], n: 2 },
+  { f: Pg([[18, 13], [82, 13], [82, 77], [18, 77]]), ax: [[[50, 5], [50, 85]], [[10, 45], [90, 45]], [[12, 7], [88, 83]], [[88, 7], [12, 83]]], n: 4 },
+  { f: Pg([[25, 20], [92, 20], [75, 70], [8, 70]]), ax: [], n: 0 },
+  { f: Pg([[50, 4], [86, 45], [50, 86], [14, 45]]), ax: [[[50, 0], [50, 90]], [[8, 45], [92, 45]]], n: 2 },
+  { f: Pg([[10, 35], [55, 35], [55, 18], [90, 45], [55, 72], [55, 55], [10, 55]]), ax: [[[4, 45], [96, 45]]], n: 1 },
+];
+const fig = (x, sol) => S(100, 90, x.f + (sol ? x.ax.map(([a, b]) => AX(a, b)).join('') : ''), 92);
+
+// Moitiés de figures à compléter (axe vertical au milieu d'un quadrillage 10 × 7).
+const DEMI1 = [[5, 1], [3, 2], [2, 4], [3, 6], [5, 6]], DEMI2 = [[5, 0], [4, 2], [2, 2], [3, 4], [2, 6], [5, 6]];
+const sym = (pts, ax) => pts.map(([x, y]) => [2 * ax - x, y]);
+const ligne = (g, pts, c) => `<polyline points="${pts.map(p => g(...p).join(',')).join(' ')}" fill="none" stroke="${c || BLEU}" stroke-width="2.4" stroke-linejoin="round"/>`;
+const demi = (pts, sol) => Q(10, 7, 16, g => AX(g(5, -0.2), g(5, 7.2)) + ligne(g, pts) + (sol ? ligne(g, sym(pts, 5), VERT) : ''));
+// Cases à colorier par symétrie (axe vertical entre les colonnes 3 et 4 d'un quadrillage 8 × 5).
+const CASES = [[[1, 1], [2, 1], [2, 2], [3, 2], [3, 3], [1, 3]], [[3, 0], [3, 1], [2, 1], [1, 2], [3, 3], [3, 4], [2, 4]]];
+const quad = (c, sol) => { const s = sol ? c.concat(c.map(([x, y]) => [7 - x, y])) : c; return cm1Quad(8, 5, s, { k: 18, c: '#7A4FC0' }).replace('</svg>', AX([73, -2], [73, 93]) + '</svg>'); };
+// Points et leurs symétriques (axe vertical x = 5).
+const PTS = [[2, 1, 'A'], [3, 4, 'B'], [1, 5, 'C']];
+
+PLANCHES['cm1|Symétrie axiale'] = [
+  { titre: 'Axes de symétrie d\'une figure', duree: '30 min',
+    attendus: ['Reconnaître qu\'une figure a un ou plusieurs axes de symétrie', 'Tracer les axes de symétrie d\'une figure'],
+    exos: [
+      { etoiles: 1, consigne: 'Trace en rouge le ou les axes de symétrie de chaque figure (il peut n\'y en avoir aucun). Écris combien elle en a.',
+        eleve: plGrille(FIGS.map((x, i) => col(fig(x, false), `<b>${'ABCDEF'[i]}</b> : ${B(2)} axe(s)`)), 3),
+        corr: plGrille(FIGS.map((x, i) => col(fig(x, true), `<b>${'ABCDEF'[i]}</b> : ${R(x.n)} axe(s)`)), 3) },
+      { etoiles: 1, col: 1, consigne: 'Vrai ou faux ? Entoure.',
+        eleve: plListe(['Un carré a 4 axes de symétrie. <b>vrai · faux</b>', 'Un rectangle a 4 axes de symétrie. <b>vrai · faux</b>', 'Une figure peut n\'avoir aucun axe de symétrie. <b>vrai · faux</b>', 'Un triangle équilatéral a 3 axes de symétrie. <b>vrai · faux</b>']),
+        corr: plListe([['Un carré a 4 axes de symétrie. ', 'vrai'], ['Un rectangle a 4 axes de symétrie. ', 'faux'], ['Une figure peut n\'avoir aucun axe de symétrie. ', 'vrai'], ['Un triangle équilatéral a 3 axes de symétrie. ', 'vrai']].map(([t, r]) => t + plEntoure(r))) },
+      { etoiles: 2, col: 1, consigne: `On plie la feuille le long de la droite rouge. Les deux parties se superposent-elles ? Entoure.${duo([col(S(110, 80, Pg([[10, 40], [55, 8], [100, 40], [55, 72]]) + AX([55, 2], [55, 78]), 90), '<b>1</b>'), col(S(110, 80, Pg([[10, 70], [40, 10], [100, 10], [70, 70]]) + AX([55, 2], [55, 78]), 90), '<b>2</b>')])}`,
+        eleve: plListe(['Figure 1 : <b>oui · non</b>', 'Figure 2 : <b>oui · non</b>']),
+        corr: plListe([['Figure 1 : ', 'oui'], ['Figure 2 : ', 'non']].map(([t, r]) => t + plEntoure(r))) },
+      { etoiles: 2, consigne: 'La droite rouge est un axe de symétrie. Termine chaque dessin.',
+        eleve: duo([demi(DEMI1, false), demi(DEMI2, false)]),
+        corr: duo([demi(DEMI1, true), demi(DEMI2, true)]) },
+      { etoiles: 3, col: 1, cahier: true, consigne: 'Trouve trois lettres majuscules qui ont un axe de symétrie vertical, et deux lettres qui ont un axe horizontal.',
+        corr: cm1Redac('Des lettres possibles', { suite: ['axe vertical : A, M, T (ou H, O, U, V…)', 'axe horizontal : B, E (ou C, D, K…)'] }, 'Si on plie la lettre le long de son axe, les deux moitiés se superposent.') },
+      { etoiles: 3, col: 1, cahier: true, consigne: 'Dessine une figure qui a exactement 2 axes de symétrie. Trace ses axes en rouge.',
+        corr: cm1Redac('Une figure à deux axes', 'un rectangle (pas un carré) ou un losange', 'Le rectangle a deux axes : ils passent par les milieux de ses côtés opposés.', `<span class="cm-fig-d">${fig(FIGS[1], true)}</span>`) },
+    ] },
+  { titre: 'Compléter une figure sur quadrillage', duree: '35 min',
+    attendus: ['Compléter une figure par symétrie sur quadrillage (axe vertical ou horizontal)', 'Placer le symétrique d\'un point'],
+    exos: [
+      { etoiles: 1, consigne: 'Colorie les carreaux symétriques par rapport à la droite rouge.',
+        eleve: duo(CASES.map(c => quad(c, false))),
+        corr: duo(CASES.map(c => quad(c, true))) },
+      { etoiles: 2, consigne: 'Place le symétrique de chaque point par rapport à la droite rouge. Le symétrique du point A se nomme A\' (on lit « A prime »).',
+        eleve: duo([Q(10, 7, 18, g => AX(g(5, -0.2), g(5, 7.2)) + PTS.map(([x, y, n]) => Pt(g(x, y), n)).join(''))]),
+        corr: duo([Q(10, 7, 18, g => AX(g(5, -0.2), g(5, 7.2)) + PTS.map(([x, y, n]) => Pt(g(x, y), n) + Pt(g(10 - x, y), n + '\'', VERT)).join(''))]) },
+      { etoiles: 2, consigne: 'Cette fois, l\'axe de symétrie est horizontal. Termine chaque dessin.',
+        eleve: duo([Q(8, 8, 16, g => AX(g(-0.2, 4), g(8.2, 4)) + ligne(g, [[1, 4], [2, 1], [4, 2], [6, 1], [7, 4]])), Q(8, 8, 16, g => AX(g(-0.2, 4), g(8.2, 4)) + ligne(g, [[2, 4], [2, 2], [4, 0], [6, 2], [6, 4]]))]),
+        corr: duo([Q(8, 8, 16, g => AX(g(-0.2, 4), g(8.2, 4)) + ligne(g, [[1, 4], [2, 1], [4, 2], [6, 1], [7, 4]]) + ligne(g, [[1, 4], [2, 7], [4, 6], [6, 7], [7, 4]], VERT)), Q(8, 8, 16, g => AX(g(-0.2, 4), g(8.2, 4)) + ligne(g, [[2, 4], [2, 2], [4, 0], [6, 2], [6, 4]]) + ligne(g, [[2, 4], [2, 6], [4, 8], [6, 6], [6, 4]], VERT))]) },
+      { etoiles: 3, col: 1, consigne: 'Léa a complété ce dessin par symétrie, mais elle a fait une erreur. Entoure-la.',
+        eleve: quad([[1, 1], [2, 1], [1, 2], [2, 3]], false).replace('</svg>', ['6,1', '5,1', '6,2', '4,3'].map(c => { const [x, y] = c.split(',').map(Number); return `<rect x="${1 + x * 18}" y="${1 + y * 18}" width="18" height="18" fill="#7A4FC0" fill-opacity=".6" stroke="#B9C7D6" stroke-width=".8"/>`; }).join('') + '</svg>'),
+        corr: quad([[1, 1], [2, 1], [1, 2], [2, 3]], false).replace('</svg>', ['6,1', '5,1', '6,2', '4,3'].map(c => { const [x, y] = c.split(',').map(Number); return `<rect x="${1 + x * 18}" y="${1 + y * 18}" width="18" height="18" fill="#7A4FC0" fill-opacity=".6" stroke="#B9C7D6" stroke-width=".8"/>`; }).join('') + `<circle cx="${1 + 4.5 * 18}" cy="${1 + 3.5 * 18}" r="15" fill="none" stroke="${VERT}" stroke-width="2.4"/></svg>`) + '<div class="pl-petit">Le carreau symétrique de celui de la ligne du bas doit être dans la 6<sup>e</sup> colonne, pas la 5<sup>e</sup>.</div>' },
+      { etoiles: 3, col: 1, cahier: true, consigne: 'Sur ton cahier, dessine une figure sur le quadrillage, trace un axe vertical, puis échange avec ton voisin : il complète ta figure par symétrie.',
+        corr: cm1Redac('Pour vérifier', { suite: ['Chaque point et son symétrique sont à la même distance de l\'axe.', 'Ils sont sur la même ligne du quadrillage.'] }, 'Si on plie le long de l\'axe, les deux moitiés se superposent exactement.') },
+    ] },
+];
+})();

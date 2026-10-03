@@ -61,7 +61,7 @@ function plNumAnalyser(x){
     const bascules = [];
     itE.forEach((ei, n) => {
       const ci = itC[n], mk = ci.querySelectorAll('.pl-entoure, .pl-barre-rep');
-      const b = [...ei.querySelectorAll('b')].find(z => /^\s*[^·]+·[^·]+$/.test(z.textContent));
+      const b = [...ei.querySelectorAll('b')].find(z => /^\s*[^·]+(·[^·]+)+$/.test(z.textContent)); // deux mots ou plus : « vrai · faux », « + · − · × · ÷ »
       if(b){
         if(mk.length !== 1) return; vues++;
         const mots = b.textContent.split('·').map(s => s.trim()), id = 'ch' + cibles.length;

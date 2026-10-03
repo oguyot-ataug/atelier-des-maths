@@ -3329,6 +3329,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.967', date:'2026-10-03', items:[
+    "Planches CM1 : nouvelles planches imprimables avec corrigés pour « Symétrie axiale » (axes de symétrie ; compléter sur quadrillage, symétrique d'un point), « Procédures de calcul mental », « Probabilités » (vocabulaire des chances, sacs de billes et roues) et « Résolution de problèmes » (choisir l'opération, schémas en barres, problèmes à étapes, informations inutiles).",
+    "Planches à l'écran : les choix à entourer parmi plus de deux mots (« impossible · possible · certain », « + · − · × · ÷ ») se font maintenant en touchant le bon mot."
+  ] },
   { version:'2026-08-19.966', date:'2026-10-03', items:[
     "Planches CM1 : nouvelles planches imprimables avec corrigés pour « Fractions (comparaison et opérations) » (fractions égales et comparaison ; additionner et soustraire), « Organisation et gestion de données » (tableaux ; diagrammes en barres et graphiques), « Grands nombres jusqu'à 999 999 » et « Opérations sur les nombres décimaux » (opérations posées alignées sur la virgule, × 10 et ÷ 10, ordre de grandeur)."
   ] },

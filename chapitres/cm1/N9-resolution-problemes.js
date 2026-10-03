@@ -109,3 +109,55 @@ ${cm1Demo('rp-division', 'Division avec reste : interpréter le résultat', '100
   ],
 });
 })();
+
+/* ---- Planches d'exercices imprimables (planches.js) ---- */
+(() => {
+const B = n => plPointilles(n || 4), R = v => plRep(String(v));
+const OPS = '+ · − · × · ÷';
+const op = items => ({ eleve: '<div class="pl-col1">' + plListe(items.map(([t]) => `${t} <b>${OPS}</b>`)) + '</div>', corr: plListe(items.map(([t, r]) => `${t} ${plEntoure(r)}`)) });
+const P = (parts, o) => cm1Paquets(parts, Object.assign({ L: 260, xt: 70 }, o || {}));
+const petit = h => `<div style="max-width:240px;">${h}</div>`;
+const lettre = t => `<div style="font:700 13px 'Space Grotesk',sans-serif;color:#1F3A5C;margin-top:4px;">${t}</div>`;
+PLANCHES['cm1|Résolution de problèmes'] = [
+  { titre: 'Chercher un tout, une partie, comparer', duree: '40 min',
+    attendus: ['Comprendre l\'énoncé et choisir l\'opération', 'Représenter un problème par un schéma en barres', 'Rédiger la réponse : calcul et phrase'],
+    exos: [
+      { etoiles: 1, consigne: 'Entoure l\'opération qui permet de répondre.',
+        ...op([['J\'ai 45 billes, j\'en gagne 18. Combien en ai-je ?', '+'], ['Le car a 52 places ; 37 sont occupées. Combien sont libres ?', '−'], ['6 boîtes de 12 œufs. Combien d\'œufs ?', '×'], ['48 bonbons pour 6 enfants. Combien chacun ?', '÷']]) },
+      { etoiles: 2, consigne: `Quel schéma va avec chaque problème ?
+        <div class="pl-col1">${plListe(['<b>Problème 1</b> : Léo a 35 €. Il dépense 12 €. Combien lui reste-t-il ?', '<b>Problème 2</b> : Léa a 12 € de plus que Léo, qui a 35 €. Combien a Léa ?', '<b>Problème 3</b> : Léo a 12 € et Léa a 35 €. Combien ont-ils ensemble ?'])}</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px 12px;align-items:start;"><div>${lettre('A') + petit(P([[12, '12'], [35, '35']], { titre: '?', L: 160, xt: 34 }))}</div><div>${lettre('B') + petit(P([[12, '12'], [23, '?']], { titre: '35', L: 160, xt: 34, echelle: 47 }))}</div><div>${lettre('C') + petit(P([[35, '35']], { titre: 'Léo', L: 160, xt: 34, echelle: 47 }) + P([[35, '35'], [12, '12']], { titre: 'Léa', L: 160, xt: 34, echelle: 47 }))}</div></div>`,
+        eleve: plGrille(['Problème 1 : schéma ' + B(2), 'Problème 2 : schéma ' + B(2), 'Problème 3 : schéma ' + B(2)], 3),
+        corr: plGrille(['Problème 1 : schéma ' + R('B'), 'Problème 2 : schéma ' + R('C'), 'Problème 3 : schéma ' + R('A')], 3) },
+      { etoiles: 1, col: 1, consigne: 'Une classe a 28 élèves, dont 13 filles. Combien y a-t-il de garçons ? Complète.',
+        eleve: P([[13, 'filles : 13'], [15, 'garçons : ?']], { titre: '28 élèves' }) + plListe(['Calcul : 28 − 13 = ' + B(3), 'Il y a ' + B(3) + ' garçons.']),
+        corr: P([[13, 'filles : 13'], [15, 'garçons : ?']], { titre: '28 élèves' }) + plListe(['Calcul : 28 − 13 = ' + R(15), 'Il y a ' + R(15) + ' garçons.']) },
+      { etoiles: 2, col: 1, cahier: true, consigne: 'Un pin mesure 18 m. Un chêne mesure 7 m de moins que le pin. Combien mesure le chêne ?',
+        corr: cm1Redac('Hauteur du chêne', '18 m − 7 m = 11 m', 'Le chêne mesure 11 m.', P([[18, '18 m']], { titre: 'pin', echelle: 18, L: 200, xt: 50 }) + P([[11, '?'], [7, '7 m de moins']], { titre: 'chêne', echelle: 18, L: 200, xt: 50 })) },
+      { etoiles: 2, col: 1, cahier: true, consigne: 'Une bibliothèque a 1 250 livres. 486 sont des bandes dessinées. Combien de livres ne sont pas des bandes dessinées ?',
+        corr: cm1Redac('Livres qui ne sont pas des BD', '1 250 − 486 = 764', '764 livres ne sont pas des bandes dessinées.') },
+      { etoiles: 3, col: 1, cahier: true, consigne: 'Inès a 15 ans de plus que son frère, qui a 9 ans. Quel âge aura Inès dans 5 ans ?',
+        corr: cm1Redac('Âge d\'Inès aujourd\'hui', '9 + 15 = 24', 'Inès a 24 ans.') + cm1Redac('Âge d\'Inès dans 5 ans', '24 + 5 = 29', 'Dans 5 ans, Inès aura 29 ans.') },
+    ] },
+  { titre: 'Multiplier, diviser, problèmes à étapes', duree: '40 min',
+    attendus: ['Résoudre des problèmes de multiplication et de division', 'Résoudre un problème à plusieurs étapes', 'Trier les informations utiles'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'Entoure l\'opération qui permet de répondre.',
+        ...op([['5 paquets de 8 gâteaux. Combien de gâteaux ?', '×'], ['72 élèves en équipes de 6. Combien d\'équipes ?', '÷'], ['Une place coûte 9 € ; on en achète 7. Prix ?', '×'], ['On partage 96 cartes entre 4 joueurs.', '÷']]) },
+      { etoiles: 1, col: 1, consigne: 'Barre l\'information qui ne sert à rien pour répondre.',
+        eleve: plListe(['Jeanne a 9 ans. Elle achète 4 cahiers à 3 € chacun. Combien paie-t-elle ?', 'Le train part à 8 h avec 120 voyageurs. À la gare, 35 voyageurs descendent. Combien en reste-t-il ?']),
+        corr: plListe([plBarre('Jeanne a 9 ans.') + ' Elle achète 4 cahiers à 3 € chacun. Combien paie-t-elle ?', 'Le train part ' + plBarre('à 8 h') + ' avec 120 voyageurs. À la gare, 35 voyageurs descendent. Combien en reste-t-il ?']) },
+      { etoiles: 2, consigne: 'Complète chaque schéma, puis le calcul.',
+        eleve: `<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;"><div>${P([[8, '8'], [8, '8'], [8, '8'], [8, '8'], [8, '8']], { titre: '?', L: 220, xt: 30 })}<div>5 paquets de 8 : 5 × 8 = ${B(3)}</div></div><div>${P([[1, '?'], [1, '?'], [1, '?'], [1, '?']], { titre: '36', L: 220, xt: 30 })}<div>36 partagé en 4 : 36 ÷ 4 = ${B(3)}</div></div></div>`,
+        corr: `<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;"><div>${P([[8, '8'], [8, '8'], [8, '8'], [8, '8'], [8, '8']], { titre: '40', L: 220, xt: 30 })}<div>5 paquets de 8 : 5 × 8 = ${R(40)}</div></div><div>${P([[1, '9'], [1, '9'], [1, '9'], [1, '9']], { titre: '36', L: 220, xt: 30 })}<div>36 partagé en 4 : 36 ÷ 4 = ${R(9)}</div></div></div>` },
+      { etoiles: 2, col: 1, cahier: true, consigne: 'Une place de cinéma coûte 8 €. Combien paie l\'école pour 27 élèves ?',
+        corr: cm1Redac('Prix des places', '27 × 8 € = 216 €', 'L\'école paie 216 €.') },
+      { etoiles: 2, col: 1, cahier: true, consigne: 'Un fleuriste fait des bouquets de 7 roses. Il a 85 roses. Combien de bouquets fait-il ? Combien de roses restent ?',
+        corr: cm1Redac('Division de 85 par 7', '85 = (7 × 12) + 1', 'Le fleuriste fait 12 bouquets ; il reste 1 rose.') },
+      { etoiles: 3, col: 1, cahier: true, consigne: 'Maman achète 3 kg de pommes à 2 € le kilo et un melon à 4 €. Elle paie avec un billet de 20 €. Combien lui rend-on ?',
+        corr: cm1Redac('Prix des pommes', '3 × 2 € = 6 €', 'Les pommes coûtent 6 €.') + cm1Redac('Prix des achats', '6 € + 4 € = 10 €', 'Les achats coûtent 10 €.') + cm1Redac('Monnaie rendue', '20 € − 10 € = 10 €', 'On lui rend 10 €.') },
+      { etoiles: 3, col: 1, cahier: true, consigne: 'Pour une sortie, le car coûte 312 € et l\'entrée au musée 4 € par élève. Il y a 26 élèves. La coopérative scolaire donne 100 €. Combien reste-t-il à payer ?',
+        corr: cm1Redac('Prix des entrées', '26 × 4 € = 104 €', 'Les entrées coûtent 104 €.') + cm1Redac('Prix de la sortie', '312 € + 104 € = 416 €', 'La sortie coûte 416 €.') + cm1Redac('Reste à payer', '416 € − 100 € = 316 €', 'Il reste 316 € à payer.') },
+    ] },
+];
+})();

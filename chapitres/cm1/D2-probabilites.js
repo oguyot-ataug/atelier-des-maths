@@ -97,4 +97,57 @@ ${cm1Sous('A', 'Atelier : tirer des billes dans un sac')}
   ],
   init: () => prAfficher(),
 });
+/* ---- Planches d'exercices imprimables (planches.js) ---- */
+{
+const R = v => plRep(String(v));
+const sac = (b, t) => sacSVG(b, t || 84).replace('<svg ', '<svg class="pl-libre" ');
+const MOTS3 = 'impossible · possible · certain', MOTS5 = 'impossible · peu probable · une chance sur deux · probable · certain';
+const choix = (items, mots) => ({ eleve: plListe(items.map(([t]) => `${t} <b>${mots}</b>`)), corr: plListe(items.map(([t, r]) => `${t} ${plEntoure(r)}`)) });
+// Roue partagée en parts égales : couleurs = liste de couleurs, une par part.
+function roue(coul, t){ const n = coul.length, r = 40; let s = `<svg class="pl-libre" viewBox="0 0 100 100" style="width:${t || 84}px;display:inline-block;vertical-align:middle;">`;
+  coul.forEach((c, i) => { const a0 = -Math.PI / 2 + 2 * Math.PI * i / n, a1 = a0 + 2 * Math.PI / n;
+    s += `<path d="M50 52 L${(50 + r * Math.cos(a0)).toFixed(1)} ${(52 + r * Math.sin(a0)).toFixed(1)} A${r} ${r} 0 0 1 ${(50 + r * Math.cos(a1)).toFixed(1)} ${(52 + r * Math.sin(a1)).toFixed(1)} Z" fill="${c}" stroke="#1F3A5C" stroke-width="1.2"/>`; });
+  return s + '<polygon points="46,4 54,4 50,14" fill="#1F3A5C"/><circle cx="50" cy="52" r="3" fill="#1F3A5C"/></svg>'; }
+const J = '#F2C14E', Bl = '#2EA8C9', Rg = '#E35D3A', Vt = '#2E9C6A';
+const col = (h, t) => `<span style="display:flex;flex-direction:column;align-items:center;gap:2px;">${h}<b>${t}</b></span>`;
+const rang = l => `<div style="display:flex;justify-content:space-around;align-items:flex-end;gap:8px;flex-wrap:wrap;margin:4px 0;">${l.join('')}</div>`;
+PLANCHES['cm1|Probabilités'] = [
+  { titre: 'Impossible, possible, certain', duree: '25 min',
+    attendus: ['Reconnaître une expérience due au hasard', 'Utiliser le vocabulaire : impossible, possible, certain, probable, peu probable'],
+    exos: [
+      { etoiles: 1, consigne: 'On lance un dé à 6 faces. Entoure le bon mot.',
+        ...choix([['Obtenir 7 :', 'impossible'], ['Obtenir 3 :', 'possible'], ['Obtenir un nombre plus petit que 10 :', 'certain'], ['Obtenir 0 :', 'impossible'], ['Obtenir un nombre pair :', 'possible']], MOTS3) },
+      { etoiles: 1, col: 1, consigne: 'Expérience due au hasard ou pas ? Entoure.',
+        eleve: plListe(['Lancer une pièce : <b>hasard · pas hasard</b>', 'Tirer une carte sans regarder : <b>hasard · pas hasard</b>', 'Calculer 5 + 3 : <b>hasard · pas hasard</b>', 'Lancer un dé : <b>hasard · pas hasard</b>']),
+        corr: plListe([['Lancer une pièce : ', 'hasard'], ['Tirer une carte sans regarder : ', 'hasard'], ['Calculer 5 + 3 : ', 'pas hasard'], ['Lancer un dé : ', 'hasard']].map(([t, r]) => t + plEntoure(r))) },
+      { etoiles: 2, col: 1, consigne: `On tire une bille dans ce sac sans regarder.<div style="text-align:center;">${sac('RRRRRRRB', 90)}</div>`,
+        ...choix([['Tirer une bille rouge :', 'probable'], ['Tirer une bille bleue :', 'peu probable'], ['Tirer une bille verte :', 'impossible']], 'impossible · peu probable · probable · certain') },
+      { etoiles: 2, consigne: `On fait tourner chaque roue : la flèche montre la couleur obtenue. Sous chaque mot, écris la lettre de la roue qui va avec « obtenir du jaune ».${rang([col(roue([J, J, J, J], 70), 'A'), col(roue([J, Bl, J, Bl], 70), 'B'), col(roue([J, J, J, Bl], 70), 'C'), col(roue([Bl, Bl, Bl, Bl], 70), 'D'), col(roue([J, Bl, Bl, Bl], 70), 'E')])}`,
+        eleve: `<table class="pl-tab"><tr>${['impossible', 'peu probable', 'une chance sur deux', 'probable', 'certain'].map(m => `<th>${m}</th>`).join('')}</tr><tr>${'<td>' + plPointilles(2) + '</td>'}${'<td>' + plPointilles(2) + '</td>'}${'<td>' + plPointilles(2) + '</td>'}${'<td>' + plPointilles(2) + '</td>'}${'<td>' + plPointilles(2) + '</td>'}</tr></table>`,
+        corr: `<table class="pl-tab"><tr>${['impossible', 'peu probable', 'une chance sur deux', 'probable', 'certain'].map(m => `<th>${m}</th>`).join('')}</tr><tr>${['D', 'E', 'B', 'C', 'A'].map(l => `<td>${R(l)}</td>`).join('')}</tr></table>` },
+      { etoiles: 3, col: 1, cahier: true, consigne: 'Invente un événement certain et un événement impossible quand on lance un dé à 6 faces.',
+        corr: cm1Redac('Événement certain', 'Obtenir un nombre entre 1 et 6.', 'C\'est certain : toutes les faces portent un nombre de 1 à 6.') + cm1Redac('Événement impossible', 'Obtenir 8.', 'C\'est impossible : aucune face ne porte le nombre 8.') },
+      { etoiles: 3, col: 1, cahier: true, consigne: 'Sami lance une pièce 4 fois et obtient 4 fois « pile ». Il dit : « Au prochain lancer, j\'aurai sûrement face. » A-t-il raison ?',
+        corr: cm1Redac('Le prochain lancer', 'pile ou face : une chance sur deux', 'Sami a tort : la pièce ne se souvient pas des lancers d\'avant. Il a toujours une chance sur deux d\'obtenir face.') },
+    ] },
+  { titre: 'Comparer les chances', duree: '25 min',
+    attendus: ['Comparer les chances de deux événements', 'Choisir le sac ou la roue qui donne le plus de chances'],
+    exos: [
+      { etoiles: 1, consigne: `Voici trois sacs.${rang([col(sac('RRRRRBBB'), 'Sac 1'), col(sac('RRBBBBBB'), 'Sac 2'), col(sac('RRRRBBBB'), 'Sac 3')])}`,
+        eleve: plListe(['Dans quel sac a-t-on le plus de chances de tirer une bille rouge ? <b>1 · 2 · 3</b>', 'Dans quel sac a-t-on le plus de chances de tirer une bille bleue ? <b>1 · 2 · 3</b>', 'Dans quel sac a-t-on une chance sur deux de tirer une rouge ? <b>1 · 2 · 3</b>']),
+        corr: plListe([['Dans quel sac a-t-on le plus de chances de tirer une bille rouge ? ', '1'], ['Dans quel sac a-t-on le plus de chances de tirer une bille bleue ? ', '2'], ['Dans quel sac a-t-on une chance sur deux de tirer une rouge ? ', '3']].map(([t, r]) => t + plEntoure(r))) },
+      { etoiles: 2, col: 1, consigne: `Pour gagner, il faut obtenir du rouge. Quelle roue choisis-tu ?${rang([col(roue([Rg, Bl, Bl, Bl, Bl, Bl], 74), 'A'), col(roue([Rg, Rg, Rg, Bl, Bl, Bl], 74), 'B')])}`,
+        eleve: plListe(['Je choisis la roue <b>A · B</b>']),
+        corr: plListe(['Je choisis la roue ' + plEntoure('B') + ' : 3 parts rouges sur 6, contre 1 sur 6.']) },
+      { etoiles: 2, col: 1, consigne: `On tire une bille dans ce sac.<div style="text-align:center;">${sac('RRBBBBVV', 84)}</div>`,
+        eleve: plListe(['La couleur qui a le plus de chances : <b>rouge · bleue · verte</b>', 'Rouge et verte ont autant de chances : <b>vrai · faux</b>']),
+        corr: plListe(['La couleur qui a le plus de chances : ' + plEntoure('bleue'), 'Rouge et verte ont autant de chances : ' + plEntoure('vrai')]) },
+      { etoiles: 3, col: 1, cahier: true, consigne: 'Un sac contient 3 billes rouges et 5 billes bleues. Combien de billes rouges faut-il ajouter pour avoir une chance sur deux de tirer une rouge ?',
+        corr: cm1Redac('Billes rouges à ajouter', '5 − 3 = 2', 'Il faut ajouter 2 billes rouges : il y aura 5 rouges et 5 bleues, autant de chaque couleur.', `<span class="cm-fig-d">${sac('RRRRRBBBBB', 70)}</span>`) },
+      { etoiles: 3, col: 1, cahier: true, consigne: 'Dessine un sac de 6 billes dans lequel tirer une bille verte est probable, mais pas certain.',
+        corr: cm1Redac('Un sac possible', '5 billes vertes et 1 bille rouge', 'Il y a beaucoup plus de vertes : tirer une verte est probable. Mais on peut tirer la rouge : ce n\'est pas certain.', `<span class="cm-fig-d">${sac('VVVVVR', 70)}</span>`) },
+    ] },
+];
+}
+
 })();
