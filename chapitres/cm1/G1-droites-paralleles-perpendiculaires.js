@@ -118,7 +118,7 @@ ${cm1Astuce('Le point peut aussi être <b>sur</b> la droite (d) : on fait glisse
   <div class="figure-toolbar"><button class="btn" onclick="cm1dpQuadDemo.next()">Étape suivante →</button><button class="btn secondary" onclick="cm1dpQuadDemo.reset()">Recommencer</button></div>
 </div>
 
-<div class="sub-header"><span class="letter">+</span><h4>Pour aller plus loin : tracer la droite parallèle à une droite passant par un point</h4></div>
+<div class="sub-header" data-oliv-plus="En route vers le CM2 !"><span class="letter">+</span><h4>Pour aller plus loin : tracer la droite parallèle à une droite passant par un point</h4></div>
 ${cm1Rem('Au CM1, il faut surtout savoir <b>reconnaître</b> et <b>vérifier</b> que deux droites sont parallèles. Les tracés qui suivent seront travaillés au CM2.')}
 <p class="example-title">Avec deux perpendiculaires (le plus simple) :</p>
 <div class="figure-wrap">
@@ -349,10 +349,10 @@ function cm1dpRect(){ return `<svg class="pl-libre" viewBox="0 0 170 104" style=
         { etoiles: 2, col: 1, consigne: 'La droite (d) suit les diagonales des carreaux. Trace la droite perpendiculaire à la droite (d) passant par le point M.', eleve: F(Object.assign({ trace: 'perp' }, G2)), corr: F(Object.assign({ sol: 'perp' }, G2)) },
         { etoiles: 2, consigne: 'Avec ton équerre, trace la droite perpendiculaire à la droite (d) passant par le point A, puis celle passant par le point B. Code les angles droits.',
           eleve: plGrille([F(Object.assign({ taille: 200 }, U1)), F(Object.assign({ taille: 200 }, U2))], 2), corr: plGrille([F(Object.assign({ sol: 'perp', taille: 200 }, U1)), F(Object.assign({ sol: 'perp', taille: 200 }, U2))], 2) },
-        { etoiles: 3, col: 1, consigne: 'Pour aller plus loin : trace la droite parallèle à la droite (d) passant par le point N, sur le quadrillage.', eleve: F(Object.assign({ trace: 'para' }, G3)), corr: F(Object.assign({ sol: 'para' }, G3)) },
+        { etoiles: 3, col: 1, plus: true, consigne: 'Trace la droite parallèle à la droite (d) passant par le point N, sur le quadrillage.', eleve: F(Object.assign({ trace: 'para' }, G3)), corr: F(Object.assign({ sol: 'para' }, G3)) },
         { etoiles: 3, col: 1, cahier: true, consigne: 'Sur une feuille blanche, construis un rectangle ABCD de 6 cm de long et 3 cm de large, avec ta règle et ton équerre.',
           corr: cm1Redac('Construction du rectangle ABCD', { suite: ['Je trace le segment [AB] de 6 cm.', 'En A et en B, je trace les perpendiculaires au segment [AB] et j\'y place D et C à 3 cm.', 'Je trace le segment [DC].'] }, 'ABCD a quatre angles droits : c\'est un rectangle de 6 cm sur 3 cm.', cm1dpRect()) },
-        { etoiles: 3, consigne: 'Pour aller plus loin : trace la droite parallèle à la droite (d) passant par le point N (avec deux perpendiculaires, ou avec la règle et l\'équerre qui glisse).', eleve: F(Object.assign({ taille: 300 }, U3)), corr: F(Object.assign({ taille: 300, sol: 'para', constr: true, nomConstr: "(d')", nomSol: "(d'')" }, U3)) },
+        { etoiles: 3, plus: true, consigne: 'Trace la droite parallèle à la droite (d) passant par le point N (avec deux perpendiculaires, ou avec la règle et l\'équerre qui glisse).', eleve: F(Object.assign({ taille: 300 }, U3)), corr: F(Object.assign({ taille: 300, sol: 'para', constr: true, nomConstr: "(d')", nomSol: "(d'')" }, U3)) },
       ] },
   ];
 })();

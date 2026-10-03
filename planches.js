@@ -175,7 +175,7 @@ function plTdRendre(lvl, c){
         <span class="hint" style="margin:0;">${(p.attendus || []).map(esc).join(' · ')}</span>
         <button type="button" class="btn secondary td-mini" data-tdproj="${i}|0"><span class="gicon">present_to_all</span> Projeter la planche</button></div>
       <div class="td-grille">${p.exos.map((x, k) => `<div class="td-vig${x.col === 1 ? '' : ' td-plein'}" id="tdv-${i}-${k}">
-        <div class="td-v-tete"><span class="pl-num">Exercice ${k + 1}</span>${typeof plNumPossible === 'function' && plNumPossible(x) ? '<span class="td-num" title="Se fait aussi à l\'écran (au tableau ou en session) : colorier, compléter avec le clavier, vérifier"><span class="gicon">touch_app</span> à l\'écran</span>' : ''}<span class="pl-et">${plEtoiles(x.etoiles || 1)}</span></div>
+        <div class="td-v-tete"><span class="pl-num">Exercice ${k + 1}</span>${plMarque(lvl, x)}${typeof plNumPossible === 'function' && plNumPossible(x) ? '<span class="td-num" title="Se fait aussi à l\'écran (au tableau ou en session) : colorier, compléter avec le clavier, vérifier"><span class="gicon">touch_app</span> à l\'écran</span>' : ''}<span class="pl-et">${plEtoiles(x.etoiles || 1)}</span></div>
         <div class="td-v-corps"><div class="pl-consigne">${x.consigne}</div><div class="pl-corps">${plExoCorps(x, false)}</div></div>
         <div class="td-v-pied"><button type="button" class="btn secondary td-mini" data-tdproj="${i}|${k}" title="En grand, un par un"><span class="gicon">present_to_all</span> Projeter</button>
           <button type="button" class="btn secondary td-mini" data-tdcorr="${i}|${k}"><span class="gicon">fact_check</span> Correction</button>
@@ -285,6 +285,14 @@ function plOuvrir(lvl, c){
 
 /* ---------- Une page ---------- */
 const plEtoiles = k => '★'.repeat(k) + '<span class="pl-et-off">' + '★'.repeat(3 - k) + '</span>';
+// Exercice « Pour aller plus loin » (x.plus) : la randonneuse, en route vers l'année suivante ; exercice ★★★
+// (un défi) : la petite super-héroïne. Petite vignette dans la ligne du titre (ne change pas la hauteur).
+const PL_SUIVANTE = { ce2: 'En route vers le CM1 !', cm1: 'En route vers le CM2 !', cm2: 'En route vers la 6e !' };
+function plMarque(lvl, x){
+  if(x.plus) return `<span class="pl-marque"><span class="pl-oliv">${plOliv('cm2')}</span><span class="pl-bulle">${PL_SUIVANTE[lvl] || 'Pour aller plus loin !'}</span></span>`;
+  if((x.etoiles || 1) >= 3) return `<span class="pl-marque"><span class="pl-oliv">${plOliv('defi')}</span><span class="pl-bulle">Défi !</span></span>`;
+  return '';
+}
 function plCahierHtml(){ return `<div class="pl-cahier"><span class="pl-oliv">${plOliv('savoir')}</span><span class="pl-bulle">Dans ton cahier !</span></div>`; }
 function plExoCorps(x, corr){ return corr ? (x.corr || x.eleve || '') : ((x.eleve || '') + (x.cahier ? plCahierHtml() : '')); }
 function plPageHtml(lvl, c, p, i, n, mode, pr, logo){
@@ -297,7 +305,7 @@ function plPageHtml(lvl, c, p, i, n, mode, pr, logo){
     <div class="pl-titre"><h1>Planche ${i + 1} : ${escapeHtml(p.titre)}</h1>${corr ? '' : `<span class="pl-oliv-tete"><span class="pl-oliv">${plOliv('muscle')}</span><span class="pl-bulle">Muscle ton jeu !</span></span>`}</div>
     ${ident}
     <div class="pl-attendus"><b>Je travaille :</b> ${(p.attendus || []).map(a => escapeHtml(a)).join(' ; ')}</div>
-    <div class="pl-exos">${p.exos.map((x, k) => `<div class="pl-exo${x.col === 1 ? ' pl-demi' : ''}"><div class="pl-exo-tete"><span class="pl-num">Exercice ${k + 1}</span><span class="pl-et">${plEtoiles(x.etoiles || 1)}</span></div>
+    <div class="pl-exos">${p.exos.map((x, k) => `<div class="pl-exo${x.col === 1 ? ' pl-demi' : ''}"><div class="pl-exo-tete"><span class="pl-num">Exercice ${k + 1}</span>${plMarque(lvl, x)}<span class="pl-et">${plEtoiles(x.etoiles || 1)}</span></div>
       <div class="pl-consigne">${x.consigne}</div><div class="pl-corps">${plExoCorps(x, corr)}</div></div>`).join('')}</div>
     <footer class="pl-pied">${ref} · Planche ${i + 1} sur ${n} · ${niv} · ${escapeHtml(c.t)} · ${p.duree ? 'environ ' + escapeHtml(p.duree) + ' · ' : ''}L'Atelier des Maths</footer>
   </section>`;
@@ -459,6 +467,7 @@ const PL_CSS = `
   .pl-attendus{ font-size:9.5pt; background:#F3F5F8; border-radius:8px; padding:3px 10px; margin-bottom:6px; }
   .pl-exo{ border:1px solid #CBD2DC; border-radius:10px; padding:5px 11px 7px; margin:0 0 6px; break-inside:avoid; page-break-inside:avoid; }
   .pl-exo-tete{ display:flex; justify-content:space-between; align-items:center; margin-bottom:2px; }
+  .pl-marque{ display:inline-flex; align-items:center; gap:3px; margin:-9px auto -9px 8px; } .pl-marque .pl-oliv{ width:30px; height:30px; } .pl-marque .pl-bulle{ font-size:8.5pt; padding:0 7px; }
   .pl-num{ font:700 11pt 'Space Grotesk',Arial,sans-serif; color:#E35D3A; }
   .pl-et{ color:#E9A21C; letter-spacing:2px; font-size:11pt; } .pl-et-off{ color:#D8DCE3; }
   .pl-consigne{ font-weight:600; margin-bottom:4px; }
@@ -527,7 +536,7 @@ const PL_CSS_LIVRE = `
     @media (max-width:760px){ .td-grille{ grid-template-columns:1fr; } }
     .td-vig{ background:#fff; border:1.5px solid rgba(28,43,57,.12); border-radius:14px; padding:10px 12px; display:flex; flex-direction:column; gap:6px; min-width:0; }
     .td-vig.corr{ border-color:#1F7A4D; background:#F6FBF8; }
-    .td-v-tete{ display:flex; justify-content:space-between; align-items:center; } .td-vig .pl-num{ font:700 .95rem 'Space Grotesk',sans-serif; color:#E35D3A; }
+    .td-v-tete{ display:flex; justify-content:space-between; align-items:center; } .td-v-tete .pl-marque{ display:inline-flex; align-items:center; gap:3px; margin:-8px 0 -8px 8px; } .td-v-tete .pl-marque .pl-oliv{ width:30px; height:30px; display:inline-block; } .td-v-tete .pl-marque .pl-oliv svg{ width:100%; height:100%; } .td-v-tete .pl-marque .pl-bulle{ background:#fff; color:#3E5A1E; border:2px solid #8DB84A; border-radius:10px 10px 10px 3px; padding:0 7px; font:700 .72rem 'Space Grotesk',sans-serif; white-space:nowrap; } .td-v-tete .pl-marque + .td-num{ margin-left:8px; } .td-v-tete .pl-et{ margin-left:auto; } .td-vig .pl-num{ font:700 .95rem 'Space Grotesk',sans-serif; color:#E35D3A; }
     .td-vig .pl-et{ color:#E9A21C; letter-spacing:2px; } .td-vig .pl-et-off{ color:#D8DCE3; }
     .td-v-corps{ font-size:.92rem; overflow-x:auto; } .td-v-corps .pl-consigne{ font-weight:600; margin-bottom:6px; }
     .td-num{ margin:0 auto 0 10px; font:700 .72rem 'Space Grotesk',sans-serif; color:#3A6EA5; background:#EEF4FB; border-radius:999px; padding:1px 8px; display:inline-flex; align-items:center; gap:3px; } .td-num .gicon{ font-size:14px; }

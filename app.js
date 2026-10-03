@@ -3327,6 +3327,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.953', date:'2026-10-03', items:[
+    'Oliv\'IA, deux nouvelles poses : la randonneuse au sac à dos pour « Pour aller plus loin » (« En route vers le CM2 ! » au CM1, « vers la 6e » au CM2), et la petite super-héroïne à cape pour les défis (exercices ★★★, « Défi ! »)',
+    'Planches et Mon TD : la vignette apparaît dans la ligne du titre de l\'exercice ; méthodes : en tête des encadrés « Pour aller plus loin »',
+  ] },
   { version:'2026-08-19.952', date:'2026-10-03', items:[
     'Mon TD : les exercices sont disposés comme sur la planche A4 -- un exercice pleine largeur prend toute la ligne, deux demi-largeur côte à côte, à la même hauteur (une colonne sur téléphone)',
     'Exercices à l\'écran : tracer une droite sur un quadrillage -- on touche deux points du quadrillage, la droite se trace ; « Vérifier » contrôle qu\'elle passe par le point demandé dans la bonne direction (élève au tableau, session COURS)',

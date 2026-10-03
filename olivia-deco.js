@@ -8,7 +8,8 @@
 
    Poses (même personnage que le bouton d'Oliv'IA, olivia.js) : le doigt levé (définitions, règles,
    propriétés), la loupe (méthodes), les muscles (exercices, automatismes), le chapeau d'exploratrice
-   et le parchemin (histoire), le point d'interrogation (quiz).
+   et le parchemin (histoire), le point d'interrogation (quiz) ; la randonneuse au sac à dos (« Pour aller
+   plus loin » : en route vers l'année suivante) et la petite super-héroïne à cape (les défis).
 
    Les vignettes sont dessinées UNIQUEMENT en CSS (pseudo-éléments ::before / ::after) sur des classes
    ajoutées aux éléments existants : aucun nœud n'est ajouté au contenu des chapitres. Ainsi rien ne
@@ -49,6 +50,18 @@ function olivPoseSvg(p){
     tete = chapeau;
     bras += `<path d="M93 72 q10 0 13 -6" stroke="${E}" stroke-width="4" fill="none" stroke-linecap="round"/>`;
     extra = `<rect x="98" y="44" width="16" height="26" rx="3" fill="#F6E7C1" stroke="#8A6D1F" stroke-width="2"/><rect x="96" y="40" width="20" height="6" rx="3" fill="#E9D3A0" stroke="#8A6D1F" stroke-width="2"/><rect x="96" y="68" width="20" height="6" rx="3" fill="#E9D3A0" stroke="#8A6D1F" stroke-width="2"/><path d="M102 52 H110 M102 57 H110 M102 62 H108" stroke="#8A6D1F" stroke-width="1.5"/>`;
+  } else if(p === 'cm2'){ // randonneuse, sac à dos et bâton (« Pour aller plus loin » : en route vers l'année suivante)
+    extra = `<rect x="12" y="44" width="24" height="46" rx="9" fill="#E9A21C" stroke="#8A5A1A" stroke-width="2.5"/><rect x="8" y="61" width="11" height="17" rx="4" fill="#D48C10" stroke="#8A5A1A" stroke-width="2"/>`;
+    tete = feuille; // le sac est dessiné derrière le corps (voir plus bas)
+    bras = `<path d="M34 46 Q46 60 38 90" stroke="#8A5A1A" stroke-width="4" fill="none"/>` + `<path d="M104 30 L97 116" stroke="#6B4A22" stroke-width="4" stroke-linecap="round"/><path d="M92 72 Q100 66 101 58" stroke="${E}" stroke-width="4" fill="none" stroke-linecap="round"/><circle cx="101" cy="56" r="4.8" fill="${E}"/>`;
+    visage = yeux(false) + joues + sourire;
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">${extra}${tete}${corps}${bras}${visage}</svg>`;
+  } else if(p === 'defi'){ // petite super-héroïne : cape et poing levé (les défis)
+    const cape = `<path d="M34 42 Q60 30 86 42 L112 112 Q86 102 60 114 Q34 102 8 112 Z" fill="#E35D3A" stroke="#9E2F1C" stroke-width="2.5" stroke-linejoin="round"/>`;
+    bras = `<path d="M28 74 Q18 80 20 94" stroke="${E}" stroke-width="4" fill="none" stroke-linecap="round"/><circle cx="20" cy="96" r="4.8" fill="${E}"/><path d="M92 66 Q104 52 112 40" stroke="${E}" stroke-width="4" fill="none" stroke-linecap="round"/><circle cx="113" cy="37" r="7" fill="${E}"/>`;
+    visage = `<path d="M40 54 L52 57 M80 54 L68 57" stroke="#2C3A1A" stroke-width="3" stroke-linecap="round"/>` + yeux(false) + joues + bouche;
+    extra = `<path d="M44 92 h32 l-4 10 h-24 Z" fill="#F5C518" stroke="#C99A00" stroke-width="1.5"/><text x="60" y="101" font-size="9" font-weight="800" fill="#7A2E2E" font-family="Arial" text-anchor="middle">D</text>`;
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">${cape}${tete}${corps}${bras}${visage}${extra}</svg>`;
   } else if(p === 'quiz'){ // point d'interrogation, main au menton
     bras += `<path d="M93 76 q4 10 -12 14" stroke="${E}" stroke-width="4" fill="none" stroke-linecap="round"/><circle cx="80" cy="90" r="4.5" fill="${E}"/>`;
     extra = `<text x="104" y="40" font-size="36" font-weight="800" fill="#E35D3A" font-family="Arial, sans-serif" text-anchor="middle">?</text>`;
@@ -56,7 +69,7 @@ function olivPoseSvg(p){
   }
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">${tete}${corps}${bras}${visage}${extra}</svg>`;
 }
-const OLIV_POSES = ['savoir', 'methode', 'muscle', 'histoire', 'quiz'];
+const OLIV_POSES = ['savoir', 'methode', 'muscle', 'histoire', 'quiz', 'cm2', 'defi'];
 function olivPoseUrl(p){ return `url("data:image/svg+xml,${encodeURIComponent(olivPoseSvg(p))}")`; }
 
 // Phrases des bulles (le premier encadré prend la première, puis on varie).
@@ -87,6 +100,7 @@ function olivDecorer(demo){
     c.querySelectorAll('.sub-header').forEach(h => {
       const l = h.querySelector('.letter');
       if(l && l.textContent.trim() === 'M'){ h.classList.add('oliv-sh'); h.dataset.oliv = OLIV_PHRASES.methode[nm++ % 3]; }
+      else if(l && l.textContent.trim() === '+'){ h.classList.add('oliv-sh', 'oliv-sh-plus'); h.dataset.oliv = h.dataset.olivPlus || 'Pour aller plus loin !'; }
     });
   });
   // En tête d'onglet : exercices, histoire, quiz.
@@ -100,6 +114,7 @@ function olivDecorer(demo){
   const st = document.createElement('style');
   st.textContent = OLIV_POSES.map(p => `.oliv-deco .oliv-${p}{--oliv-img:${olivPoseUrl(p)};}`).join('\n') + `
     .oliv-deco .oliv-sh{--oliv-img:${olivPoseUrl('methode')};}
+    .oliv-deco .oliv-sh.oliv-sh-plus{--oliv-img:${olivPoseUrl('cm2')};}
     /* Encadrés : Oliv'IA à droite du badge, debout sur l'encadré, et sa bulle */
     .oliv-deco .oliv-b{position:relative;margin-top:28px;}
     .oliv-deco .oliv-b::before{content:'';position:absolute;left:calc(100% + 8px);bottom:-14px;width:54px;height:54px;background:var(--oliv-img) no-repeat center/contain;pointer-events:none;}
