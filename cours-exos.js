@@ -417,7 +417,7 @@ function cxProfDetailFaire(){
   }
   if(it.exo.type === 'prog'){
     box.innerHTML = `${tete}<p>${rep.reussi ? '<b style="color:#1F7A4D;">Défi réussi.</b>' : s.rep ? 'Défi pas encore réussi.' : 'Pas encore commencé.'} ${rep.blocs ? `${rep.blocs} bloc${rep.blocs > 1 ? 's' : ''} posé${rep.blocs > 1 ? 's' : ''}.` : ''}</p>
-      ${rep.msg ? `<div class="cx-msg"><span class="gicon">info</span> Dernière vérification : ${cdEsc(rep.msg)}</div>` : ''}`;
+      ${rep.msg ? `<div class="cx-msg"><span class="gicon">info</span> Dernière vérification : ${cdEsc(String(rep.msg).replace(/^(celebration|info)\s+/, ''))}</div>` : ''}`;
     return;
   }
   const qs = it.exo.questions, tenu = s.main;
@@ -532,6 +532,8 @@ function cxProgEnvoi(tout_de_suite){
   };
   if(tout_de_suite) go(); else cx.prog.envT = setTimeout(go, cx.prog.role === 'prof' ? 400 : 700);
 }
+// Texte d'un message sans le nom de ses icônes (« celebration », « info »… écrits en clair dans .gicon).
+function cxTexteSansIcones(el){ const c = el.cloneNode(true); c.querySelectorAll('.gicon').forEach(i => i.remove()); return c.textContent.replace(/\s+/g, ' ').trim(); }
 function cxBlocs(){ try{ return prog.ws.getAllBlocks(false).filter(b => !b.isShadow()).length; }catch(e){ return 0; } }
 
 /* =====================================================================
@@ -790,7 +792,7 @@ let cxLancerOrig = null;
       if(cx.prog && cx.prog.role === 'eleve' && cx.prog.mode === 'travail' && cdE){
         const k = cx.prog.k, avant = cdE.trav.get(k) || {}, res = document.querySelector('#progVerifMsg .prog-res');
         cdE.trav.set(k, Object.assign({}, avant, { programme: progProgramme(), blocs: cxBlocs(), essais: (avant.essais || 0) + 1,
-          reussi: !!avant.reussi || !!(res && res.classList.contains('ok')), msg: res ? res.textContent.trim() : '' }));
+          reussi: !!avant.reussi || !!(res && res.classList.contains('ok')), msg: res ? cxTexteSansIcones(res) : '' }));
         cxEleveSauver(k);
       }
       return r;

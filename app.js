@@ -3327,6 +3327,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.945', date:'2026-10-03', items:[
+    'Session COURS, programmation : la « dernière vérification » d\'un élève ne commence plus par le nom de l\'icône (« celebration Bravo, défi réussi ! » devient « Bravo, défi réussi ! »)'
+  ]},
   { version:'2026-08-19.944', date:'2026-10-03', items:[
     'Interrogations : après avoir rendu sa copie, l\'élève ne revoit plus ses réponses tant que toute la classe n\'a pas rendu (ou que le professeur n\'a pas fermé l\'interrogation ou publié les résultats) : un voisin ne peut plus les lire. Un bouton « Revoir mes réponses » revérifie',
     'Simulateur : impossible d\'ouvrir un simulateur depuis une fenêtre du simulateur (l\'entrée du menu y est masquée)'
