@@ -111,3 +111,59 @@ ${cm1Demo('ne-graduer', 'Trouver le nombre qui correspond à un point sur une de
     { q: 'Quel nombre est compris entre 3 490 et 3 510 ?', opts: ['3 409', '3 500', '3 590'], correct: 1 },
   ],
 });
+
+/* ---- Planches d'exercices imprimables (planches.js) ---- */
+(() => {
+const B = n => plPointilles(n || 4), R = v => plRep(String(v)), C = plCase();
+const lt = '&lt;', gt = '&gt;';
+PLANCHES['cm1|Nombres entiers jusqu\'à 9 999'] = [
+  { titre: 'Écrire, lire et décomposer les nombres', duree: '30 min',
+    attendus: ['Connaître les unités de numération et leurs relations', 'Écrire un nombre en chiffres, en lettres, et le décomposer'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'Écris en chiffres.',
+        eleve: plListe(['trois-mille-quatre-cent-douze : ' + B(), 'cinq-mille-sept : ' + B(), 'huit-mille-soixante : ' + B(), 'deux-mille-neuf-cent-un : ' + B()]),
+        corr: plListe(['trois-mille-quatre-cent-douze : ' + R('3 412'), 'cinq-mille-sept : ' + R('5 007'), 'huit-mille-soixante : ' + R('8 060'), 'deux-mille-neuf-cent-un : ' + R('2 901')]) },
+      { etoiles: 1, col: 1, consigne: 'Écris en lettres (n\'oublie pas les traits d\'union).',
+        eleve: plListe(['2 048 : ' + B(18), '6 300 : ' + B(18), '9 015 : ' + B(18)]),
+        corr: plListe(['2 048 : ' + R('deux-mille-quarante-huit'), '6 300 : ' + R('six-mille-trois-cents'), '9 015 : ' + R('neuf-mille-quinze')]) },
+      { etoiles: 1, col: 1, consigne: 'Complète.',
+        eleve: plListe(['1 millier = ' + B(3) + ' centaines', '1 centaine = ' + B(3) + ' dizaines', '1 millier = ' + B(3) + ' dizaines', '3 milliers = ' + B(3) + ' unités']),
+        corr: plListe(['1 millier = ' + R(10) + ' centaines', '1 centaine = ' + R(10) + ' dizaines', '1 millier = ' + R(100) + ' dizaines', '3 milliers = ' + R('3 000') + ' unités']) },
+      { etoiles: 2, col: 1, consigne: 'Décompose avec la valeur de chaque chiffre.',
+        eleve: plListe(['4 375 = ' + B(3) + ' + ' + B(3) + ' + ' + B(2) + ' + ' + B(2), '6 208 = ' + B(3) + ' + ' + B(3) + ' + ' + B(2), '9 040 = ' + B(3) + ' + ' + B(2)]),
+        corr: plListe(['4 375 = ' + R('4 000') + ' + ' + R(300) + ' + ' + R(70) + ' + ' + R(5), '6 208 = ' + R('6 000') + ' + ' + R(200) + ' + ' + R(8), '9 040 = ' + R('9 000') + ' + ' + R(40)]) },
+      { etoiles: 2, consigne: 'Complète le tableau : « le chiffre des… » et « le nombre de… ».',
+        eleve: `<table class="pl-tab">${'<tr><th>Nombre</th><th>chiffre des dizaines</th><th>nombre de dizaines</th><th>chiffre des centaines</th><th>nombre de centaines</th></tr>'}${['5 846', '3 027', '9 410'].map(n => `<tr><td><b>${n}</b></td>${'<td>' + B(3) + '</td>'}${'<td>' + B(3) + '</td>'}${'<td>' + B(3) + '</td>'}${'<td>' + B(3) + '</td>'}</tr>`).join('')}</table>`,
+        corr: `<table class="pl-tab"><tr><th>Nombre</th><th>chiffre des dizaines</th><th>nombre de dizaines</th><th>chiffre des centaines</th><th>nombre de centaines</th></tr>${[['5 846', 4, 584, 8, 58], ['3 027', 2, 302, 0, 30], ['9 410', 1, 941, 4, 94]].map(([n, ...v]) => `<tr><td><b>${n}</b></td>${v.map(x => `<td>${R(x)}</td>`).join('')}</tr>`).join('')}</table>` },
+      { etoiles: 2, col: 1, consigne: 'Qui suis-je ?',
+        eleve: plListe(['J\'ai 4 milliers, 0 centaine, 7 dizaines et 2 unités : ' + B(), 'J\'ai 25 centaines et 3 unités : ' + B(), 'J\'ai 6 milliers et 14 dizaines : ' + B()]),
+        corr: plListe(['J\'ai 4 milliers, 0 centaine, 7 dizaines et 2 unités : ' + R('4 072'), 'J\'ai 25 centaines et 3 unités : ' + R('2 503'), 'J\'ai 6 milliers et 14 dizaines : ' + R('6 140')]) },
+      { etoiles: 3, col: 1, cahier: true, consigne: 'Avec les chiffres 3, 0, 8 et 5 (chacun une seule fois), écris le plus grand et le plus petit nombre de 4 chiffres.',
+        corr: cm1Redac('Le plus grand nombre', 'Je place les chiffres du plus grand au plus petit : 8 530', 'Le plus grand nombre est 8 530.')
+          + cm1Redac('Le plus petit nombre', 'Un nombre de 4 chiffres ne commence pas par 0 : 3 058', 'Le plus petit nombre est 3 058.') },
+    ] },
+  { titre: 'Comparer, ranger, placer sur une demi-droite graduée', duree: '30 min',
+    attendus: ['Comparer, encadrer et intercaler des nombres', 'Ranger des nombres', 'Repérer des nombres sur une demi-droite graduée'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'Complète avec &lt;, &gt; ou =.',
+        eleve: plListe([`4 506 ${C} 4 560`, `7 099 ${C} 7 100`, `3 000 ${C} 2 999`, `6 040 ${C} 6 040`]),
+        corr: plListe([`4 506 ${R(lt)} 4 560`, `7 099 ${R(lt)} 7 100`, `3 000 ${R(gt)} 2 999`, `6 040 ${R('=')} 6 040`]) },
+      { etoiles: 1, col: 1, consigne: 'Encadre entre deux milliers qui se suivent.',
+        eleve: plListe([`${B()} &lt; 5 372 &lt; ${B()}`, `${B()} &lt; 8 905 &lt; ${B()}`, `${B()} &lt; 1 460 &lt; ${B()}`]),
+        corr: plListe([`${R('5 000')} &lt; 5 372 &lt; ${R('6 000')}`, `${R('8 000')} &lt; 8 905 &lt; ${R('9 000')}`, `${R('1 000')} &lt; 1 460 &lt; ${R('2 000')}`]) },
+      { etoiles: 2, consigne: 'De 2 000 à 3 000, il y a 10 écarts égaux. Quel nombre correspond à chaque point ?',
+        eleve: cm1Axe(2000, 3000, 100, 1000, [[2300, 'A'], [2800, 'B'], [2600, 'C']], { fmt: v => v.toLocaleString('fr-FR') }) + `<div style="display:flex;gap:30px;justify-content:center;"><span>A : ${B()}</span><span>B : ${B()}</span><span>C : ${B()}</span></div>`,
+        corr: cm1Axe(2000, 3000, 100, 1000, [[2300, 'A'], [2800, 'B'], [2600, 'C']], { fmt: v => v.toLocaleString('fr-FR') }) + `<div style="display:flex;gap:30px;justify-content:center;"><span>A : ${R('2 300')}</span><span>B : ${R('2 800')}</span><span>C : ${R('2 600')}</span></div>` },
+      { etoiles: 2, col: 1, consigne: 'Range dans l\'ordre croissant : 5 040 ; 4 550 ; 5 400 ; 4 505 ; 504.',
+        eleve: `<p>${B(3)} &lt; ${B(3)} &lt; ${B(3)} &lt; ${B(3)} &lt; ${B(3)}</p>`,
+        corr: `<p>${R(504)} &lt; ${R('4 505')} &lt; ${R('4 550')} &lt; ${R('5 040')} &lt; ${R('5 400')}</p>` },
+      { etoiles: 2, col: 1, consigne: 'Complète.',
+        eleve: plListe(['le nombre juste après 4 999 : ' + B(), 'le nombre juste avant 7 000 : ' + B(), '100 de plus que 3 950 : ' + B(), '1 000 de moins que 8 024 : ' + B()]),
+        corr: plListe(['le nombre juste après 4 999 : ' + R('5 000'), 'le nombre juste avant 7 000 : ' + R('6 999'), '100 de plus que 3 950 : ' + R('4 050'), '1 000 de moins que 8 024 : ' + R('7 024')]) },
+      { etoiles: 3, col: 1, cahier: true, consigne: 'Le mont Blanc mesure 4 806 m, le mont Rose 4 634 m et le Cervin 4 478 m. Range ces sommets du plus haut au plus bas. Explique comment tu compares.',
+        corr: cm1Redac('Comparaison des hauteurs', { suite: ['Les trois nombres ont 4 milliers.', 'Je compare les centaines : 8 &gt; 6 &gt; 4.', '4 806 &gt; 4 634 &gt; 4 478'] }, 'Du plus haut au plus bas : le mont Blanc, le mont Rose, puis le Cervin.') },
+      { etoiles: 3, col: 1, cahier: true, consigne: 'Trouve tous les nombres de 4 chiffres qui s\'écrivent avec deux chiffres 1 et deux chiffres 0.',
+        corr: cm1Redac('Les nombres possibles', { suite: ['Le premier chiffre ne peut pas être 0 : c\'est 1.', 'Il reste un 1 à placer : aux centaines, aux dizaines ou aux unités.', '1 100 ; 1 010 ; 1 001'] }, 'Il y a trois nombres : 1 100, 1 010 et 1 001.') },
+    ] },
+];
+})();

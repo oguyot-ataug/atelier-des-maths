@@ -420,3 +420,87 @@ DEMO_QUIZZES['cm1|Opérations sur les nombres entiers'] = [
 document.getElementById('methode-demo-cm1-operations-nombres-entiers').insertAdjacentHTML('beforeend', `<div class="sub-header"><span class="letter">M</span><h4>À toi : une opération posée, pas à pas</h4></div>${cm1AnimOperation('cm1-op-ent', { a: '623', op: '−', b: '148', ops: ['+', '−', '×'] })}`);
 DEMO_REGISTRY['cm1|Opérations sur les nombres entiers'] = { cours:'cours-demo-cm1-operations-nombres-entiers', methode:'methode-demo-cm1-operations-nombres-entiers', exos:'exos-demo-cm1-operations-nombres-entiers', histoire:'histoire-demo-cm1-operations-nombres-entiers',
   init:()=>{ cm1opAdditionDemo.reset(); cm1opSoustractionDemo.reset(); cm1opMultiplicationDemo.reset(); cm1opDivisionReset(); cmAnimDessiner('cm1-op-ent'); cmAnimDessiner('cm1-op-multiples'); } };
+
+/* ---- Planches d'exercices imprimables (planches.js) ---- */
+(() => {
+const B = n => plPointilles(n || 4), R = v => plRep(String(v));
+const pose = (a, op, b, res, ret) => cm1Posee([[' ', a], [op, b], [' ', res == null ? ' '.repeat(Math.max(a.length, b.length) + 1) : res]], ret);
+const grille = (l, h) => cm1Quad(l || 9, h || 6, [], { k: 17, largeur: (l || 9) * 17 });
+const div = (a, b, vierge) => typeof divisionPoseeHTML === 'function' ? `<div class="pl-div">${divisionPoseeHTML(computeDivisionPosee(a, b), vierge)}</div>` : '';
+const col = (h, ...l) => `<span style="display:flex;flex-direction:column;align-items:center;font-size:.85em;">${h}${l.map(t => `<span>${t}</span>`).join('')}</span>`;
+const duo = l => `<div style="display:flex;justify-content:space-around;align-items:flex-start;gap:8px;flex-wrap:wrap;">${l.join('')}</div>`;
+PLANCHES['cm1|Opérations sur les nombres entiers'] = [
+  { titre: 'Addition et soustraction posées', duree: '35 min',
+    attendus: ['Connaître le vocabulaire : somme, différence, produit, quotient', 'Poser et calculer une addition et une soustraction'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'Complète avec le bon mot.',
+        eleve: plListe(['Le résultat d\'une addition est la ' + B(8) + '.', 'Le résultat d\'une soustraction est la ' + B(8) + '.', 'Le résultat d\'une multiplication est le ' + B(8) + '.']),
+        corr: plListe(['Le résultat d\'une addition est la ' + R('somme') + '.', 'Le résultat d\'une soustraction est la ' + R('différence') + '.', 'Le résultat d\'une multiplication est le ' + R('produit') + '.']) },
+      { etoiles: 1, col: 1, consigne: 'Complète pour arriver au nombre rond.',
+        eleve: plListe(['3 500 + ' + B() + ' = 4 000', '1 250 + ' + B() + ' = 2 000', '6 000 − ' + B() + ' = 5 700', '980 + ' + B() + ' = 1 000']),
+        corr: plListe(['3 500 + ' + R(500) + ' = 4 000', '1 250 + ' + R(750) + ' = 2 000', '6 000 − ' + R(300) + ' = 5 700', '980 + ' + R(20) + ' = 1 000']) },
+      { etoiles: 1, col: 1, consigne: 'Calcule ces additions.',
+        eleve: duo([pose('2457', '+', '1386'), pose('3608', '+', '975')]),
+        corr: duo([pose('2457', '+', '1386', '3843', ' 11 '), pose('3608', '+', '975', '4583', '1 1 ')]) },
+      { etoiles: 2, col: 1, consigne: 'Calcule ces soustractions.',
+        eleve: duo([pose('5342', '−', '1718'), pose('7005', '−', '2468')]),
+        corr: duo([pose('5342', '−', '1718', '3624'), pose('7005', '−', '2468', '4537')]) },
+      { etoiles: 2, consigne: 'Pose et calcule dans le quadrillage.',
+        eleve: duo(['<span style="text-align:center;">4 827 + 3 095<br>' + grille() + '</span>', '<span style="text-align:center;">6 250 − 3 784<br>' + grille() + '</span>', '<span style="text-align:center;">1 096 + 2 768 + 405<br>' + grille() + '</span>']),
+        corr: duo([pose('4827', '+', '3095', '7922', '11 1 '), pose('6250', '−', '3784', '2466'), cm1Posee([[' ', '1096'], ['+', '2768'], ['+', '405'], [' ', '4269']], ' 112 ')]) },
+      { etoiles: 2, col: 1, cahier: true, consigne: 'La bibliothèque de l\'école a 1 245 livres. Elle en achète 378. Combien de livres a-t-elle maintenant ?',
+        corr: cm1Redac('Nombre de livres', '1 245 + 378 = 1 623', 'La bibliothèque a maintenant 1 623 livres.', cm1Paquets([[1245, '1 245'], [378, '378']], { titre: '?', L: 300 })) },
+      { etoiles: 3, col: 1, cahier: true, consigne: 'Une salle de spectacle a 2 500 places. 1 868 spectateurs sont assis. Combien de places sont libres ?',
+        corr: cm1Redac('Places libres', '2 500 − 1 868 = 632', 'Il reste 632 places libres.', cm1Paquets([[1868, '1 868'], [632, '?']], { titre: '2 500', L: 300 })) },
+    ] },
+  { titre: 'La multiplication posée', duree: '35 min',
+    attendus: ['Connaître les tables de multiplication', 'Multiplier par 10, 100, 1 000', 'Poser et calculer une multiplication'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'Calcule.',
+        eleve: plListe(['7 × 8 = ' + B(3), '6 × 9 = ' + B(3), '8 × 4 = ' + B(3), '9 × 7 = ' + B(3), '6 × 6 = ' + B(3)]),
+        corr: plListe(['7 × 8 = ' + R(56), '6 × 9 = ' + R(54), '8 × 4 = ' + R(32), '9 × 7 = ' + R(63), '6 × 6 = ' + R(36)]) },
+      { etoiles: 1, col: 1, consigne: 'Calcule.',
+        eleve: plListe(['34 × 10 = ' + B(), '34 × 100 = ' + B(), '250 × 10 = ' + B(), '7 × 1 000 = ' + B(), '60 × 100 = ' + B()]),
+        corr: plListe(['34 × 10 = ' + R(340), '34 × 100 = ' + R('3 400'), '250 × 10 = ' + R('2 500'), '7 × 1 000 = ' + R('7 000'), '60 × 100 = ' + R('6 000')]) },
+      { etoiles: 2, col: 1, consigne: 'Calcule ces multiplications.',
+        eleve: duo([pose('1237', '×', '4'), pose('2506', '×', '3')]),
+        corr: duo([pose('1237', '×', '4', '4948'), pose('2506', '×', '3', '7518')]) },
+      { etoiles: 2, col: 1, consigne: 'Décompose pour calculer de tête.',
+        eleve: plListe(['23 × 4 = (20 × 4) + (3 × 4) = ' + B(3) + ' + ' + B(3) + ' = ' + B(3), '45 × 3 = (40 × 3) + (5 × 3) = ' + B(3) + ' + ' + B(3) + ' = ' + B(3)]),
+        corr: plListe(['23 × 4 = (20 × 4) + (3 × 4) = ' + R(80) + ' + ' + R(12) + ' = ' + R(92), '45 × 3 = (40 × 3) + (5 × 3) = ' + R(120) + ' + ' + R(15) + ' = ' + R(135)]) },
+      { etoiles: 3, consigne: 'Pose et calcule dans le quadrillage. Écris à côté de chaque ligne ce qu\'elle représente.',
+        eleve: duo(['<span style="text-align:center;">253 × 24<br>' + cm1Quad(9, 7, [], { k: 17, largeur: 155 }) + '</span>', '<span style="text-align:center;">312 × 15<br>' + cm1Quad(9, 7, [], { k: 17, largeur: 155 }) + '</span>', '<span style="text-align:center;">1 408 × 6<br>' + grille() + '</span>']),
+        corr: duo([col(cm1Posee([[' ', '253'], ['×', '24'], [' ', '1012', true], ['+', '5060'], [' ', '6072']]), '1 012 = 253 × 4', '5 060 = 253 × 20'),
+          col(cm1Posee([[' ', '312'], ['×', '15'], [' ', '1560', true], ['+', '3120'], [' ', '4680']]), '1 560 = 312 × 5', '3 120 = 312 × 10'),
+          col(pose('1408', '×', '6', '8448'))]) },
+      { etoiles: 2, col: 1, cahier: true, consigne: 'Une boîte contient 24 crayons. Combien de crayons y a-t-il dans 15 boîtes ?',
+        corr: cm1Redac('Nombre de crayons', '24 × 15 = 360', 'Il y a 360 crayons dans 15 boîtes.') },
+      { etoiles: 3, col: 1, cahier: true, consigne: 'Un car a 48 places. L\'école loue 6 cars pour transporter 275 élèves. Y a-t-il assez de places ? Combien en reste-t-il de libres ?',
+        corr: cm1Redac('Nombre de places', '48 × 6 = 288', '288 places, c\'est plus que 275 élèves : il y a assez de places.')
+          + cm1Redac('Places libres', '288 − 275 = 13', 'Il reste 13 places libres.') },
+    ] },
+  { titre: 'Division, multiples et diviseurs', duree: '40 min',
+    attendus: ['Poser et calculer une division euclidienne', 'Reconnaître des multiples et des diviseurs', 'Utiliser les critères de divisibilité par 2, 5 et 10'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'Complète avec les tables.',
+        eleve: plListe(['Dans 42, combien de fois 6 ? ' + B(2), 'Dans 45, combien de fois 9 ? ' + B(2), 'Dans 30, combien de fois 7 ? ' + B(2) + ' reste ' + B(2), 'Dans 50, combien de fois 8 ? ' + B(2) + ' reste ' + B(2)]),
+        corr: plListe(['Dans 42, combien de fois 6 ? ' + R(7), 'Dans 45, combien de fois 9 ? ' + R(5), 'Dans 30, combien de fois 7 ? ' + R(4) + ' reste ' + R(2), 'Dans 50, combien de fois 8 ? ' + R(6) + ' reste ' + R(2)]) },
+      { etoiles: 1, col: 1, consigne: 'Vrai ou faux ? Entoure.',
+        eleve: plListe(['35 est un multiple de 5. <b>vrai · faux</b>', '6 est un diviseur de 24. <b>vrai · faux</b>', '48 est divisible par 10. <b>vrai · faux</b>', '72 est un multiple de 8. <b>vrai · faux</b>']),
+        corr: plListe([['35 est un multiple de 5. ', 'vrai'], ['6 est un diviseur de 24. ', 'vrai'], ['48 est divisible par 10. ', 'faux'], ['72 est un multiple de 8. ', 'vrai']].map(([t, r]) => t + plEntoure(r))) },
+      { etoiles: 2, consigne: 'Pose et calcule ces divisions. Écris le quotient et le reste.',
+        eleve: duo([`<span style="text-align:center;">857 ÷ 6<br>${grille(10, 8)}<br>quotient : ${B(3)} reste : ${B(2)}</span>`, `<span style="text-align:center;">639 ÷ 4<br>${grille(10, 8)}<br>quotient : ${B(3)} reste : ${B(2)}</span>`, `<span style="text-align:center;">1 250 ÷ 7<br>${grille(10, 8)}<br>quotient : ${B(3)} reste : ${B(2)}</span>`]),
+        corr: duo([`<span style="text-align:center;">${div(857, 6)}quotient : ${R(142)} reste : ${R(5)}</span>`, `<span style="text-align:center;">${div(639, 4)}quotient : ${R(159)} reste : ${R(3)}</span>`, `<span style="text-align:center;">${div(1250, 7)}quotient : ${R(178)} reste : ${R(4)}</span>`]) },
+      { etoiles: 2, col: 1, consigne: 'Entoure les nombres divisibles par 2.',
+        eleve: plGrille(['38', '75', '120', '403', '96', '1 001'], 3),
+        corr: plGrille(['38', '75', '120', '403', '96', '1 001'].map(n => /[02468]$/.test(n) ? plEntoure(n) : n), 3) },
+      { etoiles: 2, col: 1, consigne: 'Entoure les nombres divisibles par 5.',
+        eleve: plGrille(['45', '52', '300', '1 205', '78', '990'], 3),
+        corr: plGrille(['45', '52', '300', '1 205', '78', '990'].map(n => /[05]$/.test(n) ? plEntoure(n) : n), 3) },
+      { etoiles: 2, col: 1, cahier: true, consigne: 'On range 150 œufs dans des boîtes de 6. Combien de boîtes remplit-on ?',
+        corr: cm1Redac('Nombre de boîtes', '150 = (6 × 25) + 0', 'On remplit 25 boîtes, et il ne reste aucun œuf.') },
+      { etoiles: 3, col: 1, cahier: true, consigne: '93 élèves partent en sortie. On fait des équipes de 8. Combien d\'équipes complètes ? Combien d\'élèves restent ?',
+        corr: cm1Redac('Division de 93 par 8', '93 = (8 × 11) + 5', 'On fait 11 équipes complètes de 8 élèves, et 5 élèves restent : ils forment une petite équipe en plus.') },
+    ] },
+];
+})();

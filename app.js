@@ -3329,6 +3329,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.965', date:'2026-10-03', items:[
+    "Planches CM1 : nouvelles planches imprimables avec corrigés pour « Nombres entiers jusqu'à 9 999 » (2 planches), « Opérations sur les nombres entiers » (3 planches : addition et soustraction, multiplication, division et critères de divisibilité), « Nombres décimaux » (2 planches) et « Construction de figures » (2 planches : segments, milieu et cercle ; triangles et quadrilatères particuliers).",
+    "Planches : les grands nombres ne se coupent plus en fin de ligne ; tableaux à compléter ; dessin d'une correction rédigée placé à droite du texte quand il est petit."
+  ] },
   { version:'2026-08-19.964', date:'2026-10-03', items:[
     "Planches imprimées : chaque feuille A4 est pleine. Un exercice demi-largeur resté seul prend toute la largeur ; s'il reste de la place sur la planche de l'élève, un bloc « Je fais le point » s'ajoute (l'élève colorie un visage pour chaque attendu) ; les exercices s'étirent ensuite jusqu'en bas de la page, ce qui laisse plus de place pour écrire.",
     "Livre d'exercices : réservé aux professeurs, et imprimable sans les corrigés (livre de l'élève) ou avec les corrigés à la fin.",

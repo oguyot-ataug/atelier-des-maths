@@ -91,3 +91,60 @@ ${cm1Demo('dec-comparer', 'Comparer deux nombres décimaux', 'Qui a sauté le pl
   ],
 });
 })();
+
+/* ---- Planches d'exercices imprimables (planches.js) ---- */
+(() => {
+const B = n => plPointilles(n || 4), R = v => plRep(String(v)), F = cm1Frac, C = plCase();
+const lt = '&lt;', gt = '&gt;';
+const bande = (n, k) => cm1Bande(n, k, { largeur: 170 });
+PLANCHES['cm1|Nombres décimaux'] = [
+  { titre: 'Dixièmes, centièmes et écriture à virgule', duree: '35 min',
+    attendus: ['Comprendre les dixièmes et les centièmes', 'Passer d\'une fraction décimale à l\'écriture à virgule', 'Décomposer un nombre décimal'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'L\'unité est la bande entière. Écris la partie coloriée avec une fraction, puis avec une virgule.',
+        eleve: plGrille([[10, 7], [10, 3], [10, 9]].map(([n, k]) => `${bande(n, k)} ${plFrac()} = ${B(3)}`), 1),
+        corr: plGrille([[10, 7, '0,7'], [10, 3, '0,3'], [10, 9, '0,9']].map(([n, k, v]) => `${bande(n, k)} ${R(F(k, n))} = ${R(v)}`), 1) },
+      { etoiles: 1, col: 1, consigne: 'Écris avec une virgule.',
+        eleve: plListe([`${F(35, 100)} = ${B(3)}`, `${F(8, 10)} = ${B(3)}`, `${F(245, 100)} = ${B(3)}`, `${F(6, 100)} = ${B(3)}`]),
+        corr: plListe([`${F(35, 100)} = ${R('0,35')}`, `${F(8, 10)} = ${R('0,8')}`, `${F(245, 100)} = ${R('2,45')}`, `${F(6, 100)} = ${R('0,06')}`]) },
+      { etoiles: 1, col: 1, consigne: 'Écris avec une fraction décimale.',
+        eleve: plListe([`0,9 = ${plFrac()}`, `0,47 = ${plFrac()}`, `3,1 = ${plFrac()}`, `0,05 = ${plFrac()}`]),
+        corr: plListe([`0,9 = ${R(F(9, 10))}`, `0,47 = ${R(F(47, 100))}`, `3,1 = ${R(F(31, 10))}`, `0,05 = ${R(F(5, 100))}`]) },
+      { etoiles: 2, col: 1, consigne: 'Dans le nombre 52,74, quel est…',
+        eleve: plListe(['le chiffre des unités ? ' + B(2), 'le chiffre des dixièmes ? ' + B(2), 'le chiffre des centièmes ? ' + B(2), 'le chiffre des dizaines ? ' + B(2)]),
+        corr: plListe(['le chiffre des unités ? ' + R(2), 'le chiffre des dixièmes ? ' + R(7), 'le chiffre des centièmes ? ' + R(4), 'le chiffre des dizaines ? ' + R(5)]) },
+      { etoiles: 2, consigne: 'Décompose, puis recompose.',
+        eleve: plGrille([`6,38 = ${B(2)} + ${plFrac()} + ${plFrac()}`, `${'4 + ' + F(5, 10) + ' + ' + F(2, 100)} = ${B(4)}`, `14,25 = ${B(2)} + ${plFrac()} + ${plFrac()}`, `${'7 + ' + F(9, 100)} = ${B(4)}`], 2),
+        corr: plGrille([`6,38 = ${R(6)} + ${R(F(3, 10))} + ${R(F(8, 100))}`, `${'4 + ' + F(5, 10) + ' + ' + F(2, 100)} = ${R('4,52')}`, `14,25 = ${R(14)} + ${R(F(2, 10))} + ${R(F(5, 100))}`, `${'7 + ' + F(9, 100)} = ${R('7,09')}`], 2) },
+      { etoiles: 2, col: 1, consigne: 'Écris en chiffres.',
+        eleve: plListe(['trois unités et cinq dixièmes : ' + B(), 'douze unités et quatre centièmes : ' + B(), 'sept dixièmes : ' + B(), 'deux unités et quinze centièmes : ' + B()]),
+        corr: plListe(['trois unités et cinq dixièmes : ' + R('3,5'), 'douze unités et quatre centièmes : ' + R('12,04'), 'sept dixièmes : ' + R('0,7'), 'deux unités et quinze centièmes : ' + R('2,15')]) },
+      { etoiles: 3, col: 1, cahier: true, consigne: 'Combien y a-t-il de centièmes dans une unité ? Et dans 2,4 ? Explique.',
+        corr: cm1Redac('Centièmes dans une unité', '1 = ' + F(100, 100), 'Il y a 100 centièmes dans une unité.')
+          + cm1Redac('Centièmes dans 2,4', { suite: ['2 unités = 200 centièmes', '4 dixièmes = 40 centièmes', '200 + 40 = 240'] }, 'Dans 2,4, il y a 240 centièmes : 2,4 = ' + F(240, 100) + '.') },
+    ] },
+  { titre: 'Placer, comparer, ranger, encadrer', duree: '35 min',
+    attendus: ['Repérer des nombres décimaux sur une demi-droite graduée', 'Comparer et ranger des nombres décimaux', 'Encadrer un nombre décimal entre deux entiers, entre deux dixièmes'],
+    exos: [
+      { etoiles: 1, consigne: 'Chaque unité est partagée en 10. Écris le nombre décimal de chaque point.',
+        eleve: cm1Axe(0, 2, 0.1, 1, [[0.3, 'A'], [1.1, 'B'], [1.8, 'C']], { fmt: v => String(Math.round(v)) }) + `<div style="display:flex;gap:30px;justify-content:center;"><span>A : ${B()}</span><span>B : ${B()}</span><span>C : ${B()}</span></div>`,
+        corr: cm1Axe(0, 2, 0.1, 1, [[0.3, 'A'], [1.1, 'B'], [1.8, 'C']], { fmt: v => String(Math.round(v)) }) + `<div style="display:flex;gap:30px;justify-content:center;"><span>A : ${R('0,3')}</span><span>B : ${R('1,1')}</span><span>C : ${R('1,8')}</span></div>` },
+      { etoiles: 1, col: 1, consigne: 'Complète avec &lt;, &gt; ou =.',
+        eleve: plListe([`3,5 ${C} 3,48`, `0,7 ${C} 0,70`, `12,09 ${C} 12,1`, `5,3 ${C} 5,03`]),
+        corr: plListe([`3,5 ${R(gt)} 3,48`, `0,7 ${R('=')} 0,70`, `12,09 ${R(lt)} 12,1`, `5,3 ${R(gt)} 5,03`]) },
+      { etoiles: 2, col: 1, consigne: 'Range dans l\'ordre croissant : 2,5 ; 2,05 ; 2,55 ; 2,15 ; 0,25.',
+        eleve: `<p>${B(3)} &lt; ${B(3)} &lt; ${B(3)} &lt; ${B(3)} &lt; ${B(3)}</p>`,
+        corr: `<p>${R('0,25')} &lt; ${R('2,05')} &lt; ${R('2,15')} &lt; ${R('2,5')} &lt; ${R('2,55')}</p>` },
+      { etoiles: 2, col: 1, consigne: 'Encadre entre deux nombres entiers qui se suivent.',
+        eleve: plListe([`${B(2)} &lt; 4,7 &lt; ${B(2)}`, `${B(2)} &lt; 12,08 &lt; ${B(2)}`, `${B(2)} &lt; 0,9 &lt; ${B(2)}`]),
+        corr: plListe([`${R(4)} &lt; 4,7 &lt; ${R(5)}`, `${R(12)} &lt; 12,08 &lt; ${R(13)}`, `${R(0)} &lt; 0,9 &lt; ${R(1)}`]) },
+      { etoiles: 2, col: 1, consigne: 'Encadre entre deux dixièmes qui se suivent.',
+        eleve: plListe([`${B(3)} &lt; 3,46 &lt; ${B(3)}`, `${B(3)} &lt; 7,81 &lt; ${B(3)}`, `${B(3)} &lt; 0,15 &lt; ${B(3)}`]),
+        corr: plListe([`${R('3,4')} &lt; 3,46 &lt; ${R('3,5')}`, `${R('7,8')} &lt; 7,81 &lt; ${R('7,9')}`, `${R('0,1')} &lt; 0,15 &lt; ${R('0,2')}`]) },
+      { etoiles: 3, col: 1, cahier: true, consigne: 'Léo dit : « 0,5 est plus petit que 0,25, car 5 est plus petit que 25. » A-t-il raison ? Explique.',
+        corr: cm1Redac('Comparaison de 0,5 et 0,25', { suite: ['0,5 = ' + F(50, 100), '0,25 = ' + F(25, 100), '50 centièmes &gt; 25 centièmes'] }, 'Léo a tort : 0,5 est plus grand que 0,25. On compare d\'abord les dixièmes : 5 dixièmes contre 2 dixièmes.', `<span style="display:inline-flex;gap:22px;">${[[cm1Rect(0, 0, 5, 10), '0,5', '#E35D3A'], [cm1Rect(0, 0, 2, 10).concat(cm1Rect(2, 0, 1, 5)), '0,25', '#2EA8C9']].map(([c, t, co]) => `<span style="display:flex;flex-direction:column;align-items:center;">${cm1Quad(10, 10, c, { k: 6, c: co })}<b>${t}</b></span>`).join('')}</span>`) },
+      { etoiles: 3, col: 1, cahier: true, consigne: 'Au saut en longueur, Inès a sauté 2,8 m, Tom 2,75 m et Sami 2,08 m. Range les sauts du plus long au plus court. Qui a gagné ?',
+        corr: cm1Redac('Comparaison des sauts', { suite: ['Les trois sauts ont 2 unités.', 'Je compare les dixièmes : 8 &gt; 7 &gt; 0.', '2,8 &gt; 2,75 &gt; 2,08'] }, 'Inès a gagné. Ensuite viennent Tom, puis Sami.') },
+    ] },
+];
+})();

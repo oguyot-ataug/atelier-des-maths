@@ -319,6 +319,9 @@ function plPageHtml(lvl, c, p, i, n, mode, pr, logo){
 // Fractions dessinées en HTML (aucune dépendance au réseau au moment d'imprimer) ; le reste des
 // formules, s'il y en a, passe par KaTeX.
 function plFigerMaths(el){
+  // Les nombres « 5 400 » ne se coupent pas en fin de ligne (espace insécable entre les classes de chiffres).
+  const tw = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, { acceptNode: n => n.parentElement && n.parentElement.closest('svg') ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT });
+  for(let n = tw.nextNode(); n; n = tw.nextNode()) if(/\d \d{3}/.test(n.nodeValue)) n.nodeValue = n.nodeValue.replace(/(\d) (?=\d{3}(?!\d))/g, '$1\u00a0');
   el.querySelectorAll('span.tex').forEach(t => {
     const h = t.textContent.replace(/\\[dt]?frac\{([^{}]*)\}\{([^{}]*)\}/g, (m, a, b) => `<span class="pl-f"><span>${a}</span><span>${b}</span></span>`);
     if(!/\\/.test(h)){ const sp = document.createElement('span'); sp.className = 'pl-tex'; sp.innerHTML = h; t.replaceWith(sp); }
@@ -570,6 +573,8 @@ const PL_CSS = `
   .pl-entoure{ display:inline-block; border:2px solid #1F7A4D; border-radius:50%; padding:2px 6px; }
   .pl-barre-rep{ position:relative; display:inline-block; } .pl-barre-rep::after{ content:''; position:absolute; left:-4px; right:-4px; top:50%; border-top:2.5px solid #C0392B; transform:rotate(-20deg); }
   .pl-exos > .pl-exo.pl-demi.pl-seul{ grid-column:1 / -1; }
+  .pl-tab{ border-collapse:collapse; margin:2px auto; } .pl-tab th, .pl-tab td{ border:1px solid #8A93A3; padding:3px 8px; text-align:center; } .pl-tab th{ background:#F3F5F8; font-size:.85em; font-weight:600; }
+  body.pl-imp{ --ink:#1C2B39; --ink-soft:#4E5665; --accent-orange:#E35D3A; --accent-blue:#2EA8C9; --accent-green:#2E9C6A; }
   .pl-plein{ display:flex; flex-direction:column; box-sizing:border-box; }
   .pl-plein .pl-exos{ flex:1; align-content:stretch; }
   .pl-plein .pl-exo{ display:flex; flex-direction:column; }
@@ -593,6 +598,7 @@ const PL_CSS = `
   .pl-consigne .pl-f{ font-size:.78em; vertical-align:middle; line-height:1; }
   .cm-redac{ margin:2px 0 6px; line-height:1.45; } .cm-redac-titre{ text-decoration:underline; text-underline-offset:3px; font-weight:600; margin-bottom:2px; }
   .cm-redac-ligne{ margin:2px 0 2px 18px; } .cm-redac-phrase{ margin:3px 0 0; } .cm-encadre{ display:inline-block; border:2px solid #1F3A5C; border-radius:3px; padding:1px 8px; font-weight:700; } .cm-redac-fig{ margin:2px 0 3px 18px; } .cm-redac-fig svg{ max-width:100%; height:auto; } .pl-corrige .cm-redac-fig svg{ max-height:64px; width:auto !important; margin:0 !important; }
+  .cm-fig-d{ float:right; margin:0 0 2px 8px; } .cm-fig-d svg, .pl-corrige .cm-redac-fig .cm-fig-d svg{ max-width:none !important; height:72px !important; max-height:none !important; width:auto !important; } .cm-redac::after{ content:''; display:block; clear:both; }
   .cm-redac-col{ border-collapse:collapse; margin:2px 0 4px 18px; } .cm-redac-col td{ padding:2px 4px; }
   .katex{ font-size:1.12em; }
   .pl-consigne .katex{ font-size:1em; } .pl-consigne .katex .mfrac .frac-line{ border-bottom-width:1px; }
@@ -646,6 +652,7 @@ const PL_CSS_LIVRE = `
   st.textContent = `
     .pl-bouton{ margin:6px 0 0 8px; }
     .pl-modal{ max-width:720px; width:94vw; max-height:88vh; overflow:auto; }
+    .td-vig .pl-tab, .plp-boite .pl-tab, .cd-contenu .pl-tab{ border-collapse:collapse; margin:2px auto; } .td-vig .pl-tab th, .td-vig .pl-tab td, .plp-boite .pl-tab th, .plp-boite .pl-tab td, .cd-contenu .pl-tab th, .cd-contenu .pl-tab td{ border:1px solid #8A93A3; padding:3px 8px; text-align:center; }
     .pl-livre-grp{ display:inline-flex; align-items:center; gap:6px; flex-wrap:wrap; background:#FFF6DA; border:1.5px solid #F0C75E; border-radius:12px; padding:5px 8px; } .pl-livre-t{ font:700 .85rem 'Space Grotesk',sans-serif; color:#7A5A00; display:inline-flex; align-items:center; gap:4px; } .pl-livre-t .gicon{ font-size:18px; }
     .pl-cartes{ display:flex; flex-direction:column; gap:10px; }
     .pl-carte{ border:1.5px solid rgba(28,43,57,.12); border-radius:12px; padding:10px 12px; background:#fff; }

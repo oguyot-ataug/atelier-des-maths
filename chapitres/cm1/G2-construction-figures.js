@@ -465,3 +465,100 @@ DEMO_QUIZZES['cm1|Construction de figures'] = [
 
 DEMO_REGISTRY['cm1|Construction de figures'] = { cours: 'cours-demo-cm1-construction-figures', methode: 'methode-demo-cm1-construction-figures', exos: 'exos-demo-cm1-construction-figures', histoire: 'histoire-demo-cm1-construction-figures',
   init: () => { cf1Voc(null); cf1CercleDemo.reset(); cf1RectDemo.reset(); cf1TriDemo.reset(); cf1JeuNouveau(); cmAnimDessiner('cm1-cf-compas'); } };
+
+/* ---- Planches d'exercices imprimables (planches.js) ----
+   Notations toujours expliquées (« le segment [AB] », « le cercle de centre O ») ; pas de rapporteur. */
+(() => {
+const B = n => plPointilles(n || 4), R = v => plRep(String(v));
+const K = '#1F3A5C', ROUGE = '#E35D3A', BLEU = '#2EA8C9', VERT = '#2E9C6A';
+const S = (w, h, inner, px) => `<svg class="pl-libre" viewBox="0 0 ${w} ${h}" style="width:${px || w}px;max-width:100%;display:inline-block;vertical-align:middle;">${inner}</svg>`;
+const L = (a, b, c, w, d) => `<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="${c || K}" stroke-width="${w || 2}"${d ? ' stroke-dasharray="5 4"' : ''} stroke-linecap="round"/>`;
+const P = (p, n, dx, dy, c) => `<circle cx="${p[0]}" cy="${p[1]}" r="2.8" fill="${c || K}"/>` + (n ? cmT(p[0] + (dx == null ? 8 : dx), p[1] + (dy == null ? -6 : dy), n, { fs: 13, c: c || K }) : '');
+const Cx = (o, r, c, w) => `<circle cx="${o[0]}" cy="${o[1]}" r="${r}" fill="none" stroke="${c || K}" stroke-width="${w || 2}"/>`;
+const Pg = (pts, c, f) => `<polygon points="${pts.map(p => p.join(',')).join(' ')}" fill="${f || 'none'}" stroke="${c || K}" stroke-width="2" stroke-linejoin="round"/>`;
+// Codage : n petits traits au milieu d'un côté (longueurs égales) ; angle droit en p (vers u et v).
+function tr(a, b, n, c){
+  const mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2, l = Math.hypot(b[0] - a[0], b[1] - a[1]), ux = (b[0] - a[0]) / l, uy = (b[1] - a[1]) / l;
+  let s = ''; for(let i = 0; i < n; i++){ const o = (i - (n - 1) / 2) * 4; s += L([mx + ux * o - uy * 5, my + uy * o + ux * 5], [mx + ux * o + uy * 5, my + uy * o - ux * 5], c || ROUGE, 1.6); } return s;
+}
+function ad(p, u, v, c){ const n = (q) => { const l = Math.hypot(q[0] - p[0], q[1] - p[1]); return [(q[0] - p[0]) / l * 9, (q[1] - p[1]) / l * 9]; }, a = n(u), b = n(v);
+  return `<polyline points="${p[0] + a[0]},${p[1] + a[1]} ${p[0] + a[0] + b[0]},${p[1] + a[1] + b[1]} ${p[0] + b[0]},${p[1] + b[1]}" fill="none" stroke="${c || ROUGE}" stroke-width="1.6"/>`; }
+// Quadrillage w × h carreaux de k px, dessin en coordonnées de carreaux.
+function Q(w, h, k, f){ const g = (x, y) => [1 + x * k, 1 + y * k]; let s = '';
+  for(let x = 0; x <= w; x++) s += L(g(x, 0), g(x, h), '#C6D2DE', .8); for(let y = 0; y <= h; y++) s += L(g(0, y), g(w, y), '#C6D2DE', .8);
+  return S(w * k + 2, h * k + 2, s + (f ? f(g) : ''), w * k + 2); }
+const col = (h, t) => `<span style="display:flex;flex-direction:column;align-items:center;gap:2px;">${h}${t ? `<span>${t}</span>` : ''}</span>`;
+const D = h => `<span class="cm-fig-d">${h}</span>`;
+const duo = l => `<div style="display:flex;justify-content:space-around;align-items:flex-end;gap:10px;flex-wrap:wrap;">${l.join('')}</div>`;
+
+// Figures du cours
+const segM = S(250, 92, L([20, 40], [220, 40]) + tr([20, 40], [120, 40], 1) + tr([120, 40], [220, 40], 1) + P([20, 40], 'A', -4, -10) + P([220, 40], 'B', 4, -10) + P([120, 40], 'M', 0, -12) + P([175, 40], 'N', 0, -12) + P([90, 78], 'P', 10, 4), 250);
+const C0 = [80, 72], RR = 55, Cc = [80 + RR * Math.cos(-Math.PI / 3), 72 + RR * Math.sin(-Math.PI / 3)];
+const cercle = S(170, 140, Cx(C0, RR) + L([C0[0] - RR, 72], [C0[0] + RR, 72]) + L(C0, Cc) + P(C0, 'O', -2, 16) + P([C0[0] - RR, 72], 'A', -12, 4) + P([C0[0] + RR, 72], 'B', 6, 4) + P(Cc, 'C', 6, -4) + P([98, 100], 'D', 8, 4) + P([150, 20], 'E', 6, 4), 140);
+const OA = (sol) => S(200, 100, (sol ? Cx([100, 50], 42, VERT) : '') + P([100, 50], 'O', -4, 16) + P([142, 50], 'A', 6, 4), 170);
+// Maison sur quadrillage : rectangle 4 × 3 et toit triangulaire.
+const maison = (dx, dy) => g => { const m = (x, y) => g(x + dx, y + dy); return Pg([m(0, 2), m(4, 2), m(4, 5), m(0, 5)], BLEU) + Pg([m(0, 2), m(2, 0), m(4, 2)], ROUGE) + L(m(1, 5), m(1, 3.5), K, 2) + L(m(1, 3.5), m(2, 3.5), K, 2) + L(m(2, 3.5), m(2, 5), K, 2); };
+
+PLANCHES['cm1|Construction de figures'] = [
+  { titre: 'Segments, milieu et cercle', duree: '35 min',
+    attendus: ['Utiliser le vocabulaire : point, segment, milieu, droite', 'Connaître le centre, le rayon et le diamètre d\'un cercle', 'Tracer un cercle au compas, reproduire une figure'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: `Observe la figure. Les petits traits rouges montrent deux longueurs égales.${segM}`,
+        eleve: plListe(['Le milieu du segment [AB] est le point ' + B(2) + '.', 'Le point ' + B(2) + ' est sur le segment [AB], mais ce n\'est pas son milieu.', 'Le point ' + B(2) + ' n\'est pas sur le segment [AB].']),
+        corr: plListe(['Le milieu du segment [AB] est le point ' + R('M') + '.', 'Le point ' + R('N') + ' est sur le segment [AB], mais ce n\'est pas son milieu.', 'Le point ' + R('P') + ' n\'est pas sur le segment [AB].']) },
+      { etoiles: 1, col: 1, consigne: `Observe le cercle de centre O.<div style="text-align:center;">${cercle}</div>`,
+        eleve: plListe(['Le segment [OC] est un ' + B(6) + ' du cercle.', 'Le segment [AB] est un ' + B(6) + ' du cercle.', 'Le point ' + B(2) + ' est à l\'intérieur du cercle.', 'Le point ' + B(2) + ' est à l\'extérieur du cercle.']),
+        corr: plListe(['Le segment [OC] est un ' + R('rayon') + ' du cercle.', 'Le segment [AB] est un ' + R('diamètre') + ' du cercle.', 'Le point ' + R('D') + ' est à l\'intérieur du cercle.', 'Le point ' + R('E') + ' est à l\'extérieur du cercle.']) },
+      { etoiles: 2, col: 1, consigne: 'Complète. Le diamètre mesure deux fois le rayon.',
+        eleve: plListe(['rayon : 3 cm ; diamètre : ' + B(2) + ' cm', 'rayon : 7 cm ; diamètre : ' + B(2) + ' cm', 'diamètre : 10 cm ; rayon : ' + B(2) + ' cm', 'diamètre : 8 cm ; rayon : ' + B(2) + ' cm']),
+        corr: plListe(['rayon : 3 cm ; diamètre : ' + R(6) + ' cm', 'rayon : 7 cm ; diamètre : ' + R(14) + ' cm', 'diamètre : 10 cm ; rayon : ' + R(5) + ' cm', 'diamètre : 8 cm ; rayon : ' + R(4) + ' cm']) },
+      { etoiles: 2, col: 1, consigne: 'Avec ton compas, trace le cercle de centre O qui passe par le point A.',
+        eleve: `<div style="text-align:center;">${OA(false)}</div>`,
+        corr: `<div style="text-align:center;">${OA(true)}</div>` },
+      { etoiles: 2, consigne: 'Reproduis la maison sur le quadrillage de droite, en commençant par le point rouge.',
+        eleve: duo([col(Q(6, 7, 17, maison(1, 1)), 'Le modèle'), col(Q(8, 7, 17, g => P(g(2, 6), '', 0, 0, ROUGE)), 'À toi !')]),
+        corr: duo([col(Q(6, 7, 17, maison(1, 1)), 'Le modèle'), col(Q(8, 7, 17, g => maison(2, 1)(g) + P(g(2, 6), '', 0, 0, ROUGE)), 'La reproduction')]) },
+      { etoiles: 3, col: 1, cahier: true, consigne: 'Trace un segment [AB] de 6 cm. Place son milieu M. Trace le cercle de centre M qui passe par A.',
+        corr: cm1Redac('Construction', { suite: ['Le milieu M est à 3 cm de A.', 'Compas piqué en M, ouvert jusqu\'à A.'] }, 'Le cercle passe aussi par B : le segment [AB] est un diamètre du cercle.',
+          D(S(200, 110, Cx([100, 55], 48, VERT) + L([52, 55], [148, 55]) + tr([52, 55], [100, 55], 1) + tr([100, 55], [148, 55], 1) + P([52, 55], 'A', -12, 4) + P([148, 55], 'B', 6, 4) + P([100, 55], 'M', 0, -10), 180))) },
+      { etoiles: 3, col: 1, cahier: true, consigne: 'Une rosace : trace un cercle de rayon 3 cm. Reporte six fois le rayon sur le cercle, puis relie les six points.',
+        corr: cm1Redac('Construction', { suite: ['Compas piqué sur le cercle, je trace un arc qui le coupe.', 'Je recommence depuis ce point, six fois.'] }, 'J\'obtiens un hexagone : ses six côtés mesurent 3 cm, comme le rayon.',
+          D(S(130, 120, Cx([65, 60], 50, VERT) + Pg([0, 1, 2, 3, 4, 5].map(i => [65 + 50 * Math.cos(i * Math.PI / 3), 60 + 50 * Math.sin(i * Math.PI / 3)]), ROUGE) + P([65, 60], 'O', 0, 14), 120))) },
+    ] },
+  { titre: 'Triangles et quadrilatères particuliers', duree: '40 min',
+    attendus: ['Reconnaître et nommer le carré, le rectangle, le losange et les triangles particuliers', 'Utiliser les codages : angle droit, longueurs égales', 'Terminer et construire une figure'],
+    exos: (() => {
+      const F = [
+        ['losange', S(120, 96, Pg([[60, 6], [108, 48], [60, 90], [12, 48]], BLEU) + tr([60, 6], [108, 48], 1) + tr([108, 48], [60, 90], 1) + tr([60, 90], [12, 48], 1) + tr([12, 48], [60, 6], 1), 110)],
+        ['triangle rectangle', S(120, 96, Pg([[16, 86], [16, 10], [106, 86]], BLEU) + ad([16, 86], [16, 10], [106, 86]), 110)],
+        ['carré', S(120, 96, Pg([[20, 8], [100, 8], [100, 88], [20, 88]], BLEU) + ad([20, 88], [20, 8], [100, 88]) + ad([100, 8], [20, 8], [100, 88]) + [[[20, 8], [100, 8]], [[100, 8], [100, 88]], [[100, 88], [20, 88]], [[20, 88], [20, 8]]].map(([a, b]) => tr(a, b, 1)).join(''), 110)],
+        ['triangle équilatéral', S(120, 96, Pg([[12, 86], [108, 86], [60, 3]], BLEU) + tr([12, 86], [108, 86], 1) + tr([108, 86], [60, 3], 1) + tr([60, 3], [12, 86], 1), 110)],
+        ['rectangle', S(120, 96, Pg([[8, 20], [112, 20], [112, 76], [8, 76]], BLEU) + ad([8, 76], [8, 20], [112, 76]) + ad([112, 20], [8, 20], [112, 76]) + tr([8, 20], [112, 20], 2) + tr([8, 76], [112, 76], 2) + tr([8, 20], [8, 76], 1) + tr([112, 20], [112, 76], 1), 110)],
+        ['triangle isocèle', S(120, 96, Pg([[25, 88], [95, 88], [60, 4]], BLEU) + tr([25, 88], [60, 4], 1) + tr([95, 88], [60, 4], 1), 110)],
+      ];
+      return [
+      { etoiles: 1, consigne: 'Observe les codages, puis écris le nom de chaque figure.',
+        eleve: plGrille(F.map(([, f], i) => col(f, `<b>${'ABCDEF'[i]}</b> : ${B(14)}`)), 3),
+        corr: plGrille(F.map(([n, f], i) => col(f, `<b>${'ABCDEF'[i]}</b> : ${R(n)}`)), 3) },
+      { etoiles: 1, col: 1, consigne: 'Vrai ou faux ? Entoure.',
+        eleve: plListe(['Un carré a 4 angles droits. <b>vrai · faux</b>', 'Un rectangle a 4 côtés égaux. <b>vrai · faux</b>', 'Un losange a 4 côtés égaux. <b>vrai · faux</b>', 'Un triangle équilatéral a 3 côtés égaux. <b>vrai · faux</b>']),
+        corr: plListe([['Un carré a 4 angles droits. ', 'vrai'], ['Un rectangle a 4 côtés égaux. ', 'faux'], ['Un losange a 4 côtés égaux. ', 'vrai'], ['Un triangle équilatéral a 3 côtés égaux. ', 'vrai']].map(([t, r]) => t + plEntoure(r))) },
+      { etoiles: 2, col: 1, consigne: 'Qui suis-je ?',
+        eleve: plListe(['4 côtés égaux et 4 angles droits : ' + B(10), '3 côtés et un angle droit : ' + B(10), '4 angles droits, côtés opposés égaux : ' + B(10), '3 côtés, dont deux égaux : ' + B(10)]),
+        corr: plListe(['4 côtés égaux et 4 angles droits : ' + R('carré'), '3 côtés et un angle droit : ' + R('triangle rectangle'), '4 angles droits, côtés opposés égaux : ' + R('rectangle'), '3 côtés, dont deux égaux : ' + R('triangle isocèle')]) },
+      { etoiles: 2, consigne: 'Termine chaque figure sur le quadrillage : place le dernier sommet, puis trace les côtés.',
+        eleve: duo([col(Q(6, 6, 17, g => L(g(1, 1), g(4, 1)) + L(g(4, 1), g(4, 4)) + P(g(1, 1), 'A', -8, -4) + P(g(4, 1), 'B', 6, -4) + P(g(4, 4), 'C', 6, 10)), 'le carré ABCD'),
+          col(Q(7, 6, 17, g => P(g(1, 1), 'E', -8, -4) + P(g(6, 1), 'F', 6, -4) + P(g(6, 4), 'G', 6, 10)), 'le rectangle EFGH'),
+          col(Q(6, 6, 17, g => L(g(3, 0.5), g(5, 3)) + L(g(5, 3), g(3, 5.5)) + P(g(3, 0.5), 'K', 8, 4) + P(g(5, 3), 'L', 8, 4) + P(g(3, 5.5), 'M', 8, 4)), 'le losange KLMN')]),
+        corr: duo([col(Q(6, 6, 17, g => Pg([g(1, 1), g(4, 1), g(4, 4), g(1, 4)], VERT) + P(g(1, 1), 'A', -8, -4) + P(g(4, 1), 'B', 6, -4) + P(g(4, 4), 'C', 6, 10) + P(g(1, 4), 'D', -8, 10, VERT)), 'le carré ABCD'),
+          col(Q(7, 6, 17, g => Pg([g(1, 1), g(6, 1), g(6, 4), g(1, 4)], VERT) + P(g(1, 1), 'E', -8, -4) + P(g(6, 1), 'F', 6, -4) + P(g(6, 4), 'G', 6, 10) + P(g(1, 4), 'H', -8, 10, VERT)), 'le rectangle EFGH'),
+          col(Q(6, 6, 17, g => Pg([g(3, 0.5), g(5, 3), g(3, 5.5), g(1, 3)], VERT) + P(g(3, 0.5), 'K', 8, 4) + P(g(5, 3), 'L', 8, 4) + P(g(3, 5.5), 'M', 8, 4) + P(g(1, 3), 'N', -10, 4, VERT)), 'le losange KLMN')]) },
+      { etoiles: 3, col: 1, cahier: true, consigne: 'Construis un rectangle de 5 cm de longueur et 3 cm de largeur. Explique comment tu traces les angles droits.',
+        corr: cm1Redac('Construction', { suite: ['Je trace un côté de 5 cm.', 'À chaque bout, avec l\'équerre, un côté de 3 cm.'] }, 'Je relie les extrémités : le rectangle a 4 angles droits.',
+          D(S(190, 100, Pg([[20, 15], [170, 15], [170, 85], [20, 85]], VERT) + ad([20, 85], [20, 15], [170, 85]) + ad([170, 85], [170, 15], [20, 85]) + cmT(95, 98, '5 cm', { fs: 11 }) + cmT(182, 54, '3 cm', { fs: 11, a: 'start' }), 170))) },
+      { etoiles: 3, col: 1, cahier: true, consigne: 'Construis un triangle équilatéral de 4 cm de côté. Aide-toi de ton compas.',
+        corr: cm1Redac('Construction', { suite: ['Je trace le segment [AB] de 4 cm.', 'Compas ouvert de 4 cm : un arc depuis A, un arc depuis B.'] }, 'Les arcs se coupent en C : les trois côtés du triangle ABC mesurent 4 cm.',
+          D(S(170, 120, `<path d="M 98.5 45.5 A 80 80 0 0 0 69.7 28.9" fill="none" stroke="${BLEU}" stroke-width="1.4" stroke-dasharray="4 3"/><path d="M 100.3 28.9 A 80 80 0 0 0 71.5 45.5" fill="none" stroke="${BLEU}" stroke-width="1.4" stroke-dasharray="4 3"/>` + Pg([[45, 105], [125, 105], [85, 35.7]], VERT) + tr([45, 105], [125, 105], 1) + tr([125, 105], [85, 35.7], 1) + tr([85, 35.7], [45, 105], 1) + P([45, 105], 'A', -12, 4) + P([125, 105], 'B', 6, 4) + P([85, 35.7], 'C', 6, -6), 160))) },
+      ]; })() },
+];
+})();

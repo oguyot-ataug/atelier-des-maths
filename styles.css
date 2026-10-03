@@ -1837,3 +1837,6 @@ body.fig-proj #tbSvg{display:block;width:100vw !important;height:100vh !importan
 .btn.secondary.pl-bouton{background:#EAF7EF;border-color:#9ED3B4;color:#1F7A4D;}
 .btn.secondary.fp-bouton{background:#F4F0FC;border-color:#C9B5EE;color:#5B3A99;}
 .chap-outils .btn.secondary:hover, .btn.secondary.pl-bouton:hover, .btn.secondary.fp-bouton:hover{filter:brightness(.97);}
+
+/* Dessin d'une correction rédigée placé à droite du texte (planches) */
+.cm-fig-d{ float:right; margin:0 0 2px 8px; } .cm-fig-d svg{ max-width:none !important; } .cm-redac::after{ content:''; display:block; clear:both; }
