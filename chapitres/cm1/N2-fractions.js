@@ -8,6 +8,7 @@
    ============================================================ */
 (() => {
 const F = cm1Frac;
+const T = (a, b) => cm1Tex(`\\tfrac{${a}}{${b}}`); // fraction en ligne (consignes des planches)
 cm1Chapitre({
   titre: 'Fractions', slug: 'fractions',
   cours: `
@@ -109,6 +110,63 @@ ${cm1Demo('fr-quantite', 'Calculer une fraction d\'une quantité', `Dans une cla
     { q: 'Comment se lit 3/4 ?', opts: ['trois quatre', 'trois quarts', 'trois quatrièmes'], correct: 1 },
     { q: 'Quelle fraction est supérieure à 1 ?', opts: ['4/7', '7/7', '9/7'], correct: 2 },
     { q: '1/4 de 20 billes, c\'est…', opts: ['4 billes', '5 billes', '16 billes'], correct: 1 },
+  ],
+  // Planches d'exercices imprimables (planches.js) : une par grande notion du chapitre.
+  planches: [
+    { titre: 'Partager et colorier', duree: '25 min',
+      attendus: ['Utiliser une fraction pour dire un partage en parts égales', 'Lire et écrire une fraction'],
+      exos: [
+        { etoiles: 1, consigne: 'Écris la fraction de chaque figure qui est coloriée.',
+          eleve: plGrille([`${cm1Bande(4, 3, { largeur: 150 })} ${plFrac()}`, `${cm1Disque(3, 1, { taille: 70 })} ${plFrac()}`, `${cm1Bande(5, 2, { largeur: 150 })} ${plFrac()}`, `${cm1Disque(6, 5, { taille: 70 })} ${plFrac()}`]),
+          corr: plGrille([`${cm1Bande(4, 3, { largeur: 150 })} ${plRep(F(3, 4))}`, `${cm1Disque(3, 1, { taille: 70 })} ${plRep(F(1, 3))}`, `${cm1Bande(5, 2, { largeur: 150 })} ${plRep(F(2, 5))}`, `${cm1Disque(6, 5, { taille: 70 })} ${plRep(F(5, 6))}`]) },
+        { etoiles: 1, consigne: 'Colorie la fraction demandée de chaque bande.',
+          eleve: plGrille([`${F(1, 4)} ${cm1Bande(4, 0, { largeur: 180 })}`, `${F(3, 8)} ${cm1Bande(8, 0, { largeur: 180 })}`, `${F(2, 3)} ${cm1Bande(3, 0, { largeur: 180 })}`, `${F(7, 10)} ${cm1Bande(10, 0, { largeur: 180 })}`]),
+          corr: plGrille([`${F(1, 4)} ${cm1Bande(4, 1, { largeur: 180 })}`, `${F(3, 8)} ${cm1Bande(8, 3, { largeur: 180 })}`, `${F(2, 3)} ${cm1Bande(3, 2, { largeur: 180 })}`, `${F(7, 10)} ${cm1Bande(10, 7, { largeur: 180 })}`]) },
+        { etoiles: 2, consigne: 'Écris chaque fraction en lettres.',
+          eleve: plGrille([`${F(1, 2)} : ${plPointilles(14)}`, `${F(3, 4)} : ${plPointilles(14)}`, `${F(2, 3)} : ${plPointilles(14)}`, `${F(5, 8)} : ${plPointilles(14)}`]),
+          corr: plGrille([`${F(1, 2)} : ${plRep('un demi')}`, `${F(3, 4)} : ${plRep('trois quarts')}`, `${F(2, 3)} : ${plRep('deux tiers')}`, `${F(5, 8)} : ${plRep('cinq huitièmes')}`]) },
+        { etoiles: 2, consigne: 'Écris chaque fraction en chiffres.',
+          eleve: plGrille([`sept dixièmes : ${plFrac()}`, `un tiers : ${plFrac()}`, `quatre cinquièmes : ${plFrac()}`, `neuf douzièmes : ${plFrac()}`]),
+          corr: plGrille([`sept dixièmes : ${plRep(F(7, 10))}`, `un tiers : ${plRep(F(1, 3))}`, `quatre cinquièmes : ${plRep(F(4, 5))}`, `neuf douzièmes : ${plRep(F(9, 12))}`]) },
+        { etoiles: 3, consigne: 'Léo partage une tablette de chocolat de 12 carreaux en parts égales avec ses deux sœurs. Quelle fraction de la tablette reçoit chaque enfant ? Combien de carreaux cela fait-il ?',
+          eleve: plLignes(4),
+          corr: cm1Redac('Fraction reçue par chaque enfant', 'Ils sont 3 enfants : la tablette est partagée en 3 parts égales.', `Chaque enfant reçoit ${F(1, 3)} de la tablette.`) + cm1Redac('Nombre de carreaux par enfant', '12 : 3 = 4', 'Chaque enfant reçoit 4 carreaux.') },
+      ] },
+    { titre: 'Fractions et unité', duree: '25 min',
+      attendus: ['Comparer une fraction à 1', 'Encadrer une fraction entre deux nombres entiers qui se suivent', 'Écrire une fraction comme un entier plus une fraction plus petite que 1'],
+      exos: [
+        { etoiles: 1, consigne: 'Complète avec <, = ou >.',
+          eleve: plGrille([`${F(3, 4)} ${plCase()} 1`, `${F(5, 5)} ${plCase()} 1`, `${F(7, 4)} ${plCase()} 1`, `${F(9, 10)} ${plCase()} 1`, `${F(12, 8)} ${plCase()} 1`, `${F(6, 6)} ${plCase()} 1`], 3),
+          corr: plGrille([`${F(3, 4)} ${plRep('&lt;')} 1`, `${F(5, 5)} ${plRep('=')} 1`, `${F(7, 4)} ${plRep('&gt;')} 1`, `${F(9, 10)} ${plRep('&lt;')} 1`, `${F(12, 8)} ${plRep('&gt;')} 1`, `${F(6, 6)} ${plRep('=')} 1`], 3) },
+        { etoiles: 1, consigne: 'Entoure les fractions plus grandes que 1.',
+          eleve: plGrille([F(2, 3), F(5, 4), F(8, 8), F(11, 10), F(3, 7), F(9, 5)], 6),
+          corr: plGrille([F(2, 3), plEntoure(F(5, 4)), F(8, 8), plEntoure(F(11, 10)), F(3, 7), plEntoure(F(9, 5))], 6) },
+        { etoiles: 2, consigne: 'Encadre chaque fraction entre deux nombres entiers qui se suivent.',
+          eleve: plGrille([`${plPointilles(4)} &lt; ${F(7, 4)} &lt; ${plPointilles(4)}`, `${plPointilles(4)} &lt; ${F(10, 3)} &lt; ${plPointilles(4)}`, `${plPointilles(4)} &lt; ${F(13, 5)} &lt; ${plPointilles(4)}`, `${plPointilles(4)} &lt; ${F(9, 2)} &lt; ${plPointilles(4)}`]),
+          corr: plGrille([`${plRep('1')} &lt; ${F(7, 4)} &lt; ${plRep('2')}`, `${plRep('3')} &lt; ${F(10, 3)} &lt; ${plRep('4')}`, `${plRep('2')} &lt; ${F(13, 5)} &lt; ${plRep('3')}`, `${plRep('4')} &lt; ${F(9, 2)} &lt; ${plRep('5')}`]) },
+        { etoiles: 3, consigne: 'Écris chaque fraction comme un nombre entier plus une fraction plus petite que 1.',
+          eleve: plListe([`${F(7, 4)} = ${plPointilles(4)} + ${plFrac()}`, `${F(11, 5)} = ${plPointilles(4)} + ${plFrac()}`, `${F(17, 6)} = ${plPointilles(4)} + ${plFrac()}`, `${F(10, 3)} = ${plPointilles(4)} + ${plFrac()}`]),
+          corr: plListe([`${F(7, 4)} = ${plRep('1')} + ${plRep(F(3, 4))}`, `${F(11, 5)} = ${plRep('2')} + ${plRep(F(1, 5))}`, `${F(17, 6)} = ${plRep('2')} + ${plRep(F(5, 6))}`, `${F(10, 3)} = ${plRep('3')} + ${plRep(F(1, 3))}`]) },
+        { etoiles: 3, consigne: `Pour un gâteau, Maman a utilisé ${T(7, 4)} de sachet de sucre. A-t-elle utilisé plus ou moins d'un sachet ? Combien de sachets a-t-elle ouverts ?`,
+          eleve: plLignes(4),
+          corr: cm1Redac('Sucre utilisé', cm1Tex('\\dfrac{7}{4} = 1 + \\dfrac{3}{4}'), `Elle a utilisé plus d'un sachet : un sachet entier et ${F(3, 4)} d'un autre. Elle a donc ouvert 2 sachets.`) },
+      ] },
+    { titre: 'Fractions sur une demi-droite graduée', duree: '30 min',
+      attendus: ['Repérer une fraction sur une demi-droite graduée', 'Placer une fraction sur une demi-droite graduée'],
+      exos: [
+        { etoiles: 1, consigne: "L'unité est partagée en 4 parts égales. Quelle fraction correspond à chaque point ?",
+          eleve: cm1Graduation(2, 4, [[0.75, 'A'], [1.25, 'B'], [1.5, 'C']], { unite: 200 }) + plGrille([`A : ${plFrac()}`, `B : ${plFrac()}`, `C : ${plFrac()}`], 3),
+          corr: cm1Graduation(2, 4, [[0.75, 'A'], [1.25, 'B'], [1.5, 'C']], { unite: 200 }) + plGrille([`A : ${plRep(F(3, 4))}`, `B : ${plRep(F(5, 4))}`, `C : ${plRep(F(6, 4))}`], 3) },
+        { etoiles: 2, consigne: `L'unité est partagée en 3 parts égales. Place le point D à ${T(2, 3)}, le point E à ${T(4, 3)} et le point F à ${T(7, 3)}.`,
+          eleve: cm1Graduation(3, 3, [], { unite: 140 }),
+          corr: cm1Graduation(3, 3, [[2 / 3, 'D', '#1F7A4D'], [4 / 3, 'E', '#1F7A4D'], [7 / 3, 'F', '#1F7A4D']], { unite: 140 }) },
+        { etoiles: 3, consigne: `L'unité est partagée en 10 parts égales. Place le point L à ${T(3, 10)}, le point M à ${T(12, 10)} et le point N à ${T(17, 10)}.`,
+          eleve: cm1Graduation(2, 10, [], { unite: 210 }),
+          corr: cm1Graduation(2, 10, [[0.3, 'L', '#1F7A4D'], [1.2, 'M', '#1F7A4D'], [1.7, 'N', '#1F7A4D']], { unite: 210 }) },
+        { etoiles: 3, consigne: `Une course fait 1 km. Théo a parcouru ${T(3, 4)} de la course et Inès ${T(5, 8)}. Place T pour Théo et I pour Inès sur la demi-droite, puis dis qui est le plus avancé.`,
+          eleve: cm1Graduation(1, 8, [], { unite: 400 }) + plLignes(2),
+          corr: cm1Graduation(1, 8, [[0.75, 'T', '#1F7A4D'], [0.625, 'I', '#1F7A4D']], { unite: 400 }) + cm1Redac('Le plus avancé', cm1Tex('\\dfrac{3}{4} = \\dfrac{6}{8}'), `Théo a parcouru ${F(6, 8)} de la course et Inès ${F(5, 8)} : Théo est le plus avancé.`) },
+      ] },
   ],
 });
 })();

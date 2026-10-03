@@ -1101,6 +1101,8 @@ function openChapitre(c, tab, lvlOverride, opts){
   if(typeof olivDecorer==='function') olivDecorer(demo||null);
   // Questions flash prêtes (flash-prets.js) : bouton pour le professeur, au primaire.
   if(typeof fpMaj==='function') fpMaj(lvl, c.t);
+  // Planches d'exercices imprimables (planches.js) : professeur, parent.
+  if(typeof plMaj==='function') plMaj(lvl, c);
   if(!silencieux) showView('view-chapitre');
   return cpFin;
 }
@@ -3300,6 +3302,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.926', date:'2026-10-03', items:[
+    'Planches d\'exercices à imprimer (prototype sur le chapitre Fractions du CM1) : bouton « Planches à imprimer » sur la page du chapitre (professeurs, parents). Chaque planche tient sur une page A4 : référence (CM1-N2-P1…), attendu du programme travaillé, durée indicative, Prénom et Date, exercices gradués de ★ à ★★★ avec des cases et des pointillés pour répondre ; un corrigé à part pour le professeur, problèmes rédigés. Une planche seule, son corrigé, ou tout le chapitre d\'un coup.',
+  ] },
   { version:'2026-08-19.925', date:'2026-10-02', items:[
     'Interrogation ajoutée au cahier : les questions sont des vignettes compactes, deux par ligne (une seule sur téléphone) ; les figures (tracés sur quadrillage…) suivent la largeur de la vignette. Une vignette n\'est jamais coupée entre deux pages à l\'impression.',
   ] },
