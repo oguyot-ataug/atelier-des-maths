@@ -331,7 +331,23 @@ function plMarque(lvl, x){
   return '';
 }
 function plCahierHtml(){ return `<div class="pl-cahier"><span class="pl-oliv">${plOliv('savoir')}</span><span class="pl-bulle">Dans ton cahier !</span></div>`; }
-function plExoCorps(x, corr){ return corr ? (x.corr || x.eleve || '') : ((x.eleve || '') + (x.cahier ? plCahierHtml() : '')); }
+function plExoCorps(x, corr){ return corr ? (x.corr || x.eleve || '') : (plTrousAjustes(x) + (x.cahier ? plCahierHtml() : '')); }
+// Les pointillés sont élargis d'après la réponse du corrigé (demandé : « les cases sont trop petites pour
+// répondre ») : un pointillé tient au moins la réponse attendue, avec un peu de marge pour l'écriture
+// d'un élève. Correspondance dans l'ordre, comme la version écran (planches-num.js).
+const plTrousCache = new Map();
+function plTrousAjustes(x){
+  const e = x.eleve || ''; if(!x.corr || !/pl-pts/.test(e)) return e;
+  if(plTrousCache.has(e)) return plTrousCache.get(e);
+  let out = e;
+  try{ const E = document.createElement('div'), C = document.createElement('div'); E.innerHTML = e; C.innerHTML = x.corr;
+    const trous = [...E.querySelectorAll('.pl-frac, .pl-case-seule, .pl-pts')].filter(t => !t.closest('[data-plx]')), reps = [...C.querySelectorAll('.pl-rep')];
+    if(trous.length === reps.length){ trous.forEach((t, i) => { if(!t.classList.contains('pl-pts')) return;
+        const L = reps[i].textContent.replace(/\s+/g, ' ').trim().length, besoin = +(L * .62 + 1.6).toFixed(1), actuel = parseFloat(t.style.minWidth) || 0;
+        if(besoin > actuel) t.style.minWidth = besoin + 'em'; });
+      out = E.innerHTML; } }catch(err){}
+  plTrousCache.set(e, out); return out;
+}
 function plPageHtml(lvl, c, p, i, n, mode, pr, logo){
   const corr = mode === 'corr', ref = plRef(lvl, plCode(lvl, c), i), niv = PL_NIVEAUX_TXT[lvl] || lvl;
   const ident = corr ? '<p class="pl-pour-prof">Corrigé réservé au professeur.</p>'

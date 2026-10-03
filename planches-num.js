@@ -28,7 +28,7 @@
 const plNumCache = new Map();
 // Normalisation d'une réponse : espaces, casse, ponctuation finale ; un nombre perd ses zéros de tête
 // (« 05 » minutes = « 5 ») et ses espaces (« 1 200 » = « 1200 »).
-const plNumNorm = s => { const t = String(s ?? '').replace(/[\u00a0\u202f]/g, ' ').replace(/\s+/g, ' ').trim().toLowerCase().replace(/[.!]$/, '').replace(/’/g, '\''), n = t.replace(/(\d) (?=\d)/g, '$1'); return /^\d+$/.test(n) ? String(+n) : t; };
+const plNumNorm = s => { const t = String(s ?? '').replace(/[\u00a0\u202f]/g, ' ').replace(/\s+/g, ' ').trim().toLowerCase().replace(/[.!]$/, '').replace(/’/g, '\''), n = t.replace(/(\d) (?=\d)/g, '$1').replace(/[−–]/g, '-'); if(/^\d+$/.test(n)) return String(+n); return /[a-zà-ÿ]/i.test(n) ? t.replace(/[−–]/g, '-') : n.replace(/\s+/g, ''); }; // calcul (« 5 000 000 + 8 ») : sans espaces
 // Fraction écrite en LaTeX dans un bout de corrigé : [numérateur, dénominateur] ou null.
 function plNumFracDe(el){
   const t = el.querySelector('.tex'), m = t && /\\[dt]?frac\{([^}]*)\}\{([^}]*)\}/.exec(t.textContent);
@@ -101,7 +101,8 @@ function plNumAnalyser(x){
       if(plNumFracDe(r)) return null;
       const rep = plNumNorm(r.textContent); if(!rep) return null;
       const large = tr.classList.contains('pl-pts') && /[a-z]/i.test(rep);
-      tr.outerHTML = `<button type="button" class="pn-case${large ? ' pn-large' : ''}${tr.classList.contains('pl-case-seule') ? ' pn-signe' : ''}" data-pn="${id}" data-pnv="${id}"></button>`;
+      const lg = r.textContent.replace(/\s+/g, ' ').trim().length; // case à la taille de la réponse attendue
+      tr.outerHTML = `<button type="button" class="pn-case${large ? ' pn-large' : ''}${tr.classList.contains('pl-case-seule') ? ' pn-signe' : ''}" data-pn="${id}" data-pnv="${id}"${!tr.classList.contains('pl-case-seule') && lg > 4 ? ` style="min-width:${Math.min(320, lg * 11 + 16)}px"` : ''}></button>`;
       cibles.push({ type: 'txt', id, rep, maj: /^[A-ZÉÈ]/.test(r.textContent.trim()) }); // réponse en majuscule (nom de point…) : clavier en majuscules
     }
   }
@@ -362,8 +363,8 @@ const plClavier = {
   rendre(){
     const k = (t, l, cl) => `<button type="button" data-k="${t}" class="${cl || ''}">${l || t}</button>`;
     const lignes = this.mode === '123'
-      ? [['7', '8', '9', '&lt;'], ['4', '5', '6', '='], ['1', '2', '3', '&gt;'], ['0', ',']]
-      : ['azertyuiop', 'qsdfghjklm', 'wxcvbné', 'èàêç\''].map(l => l.split('').map(c => this.maj ? c.toUpperCase() : c));
+      ? [['7', '8', '9', '&lt;'], ['4', '5', '6', '='], ['1', '2', '3', '&gt;'], ['0', ',', '+', '−', '×']]
+      : ['azertyuiop', 'qsdfghjklm', 'wxcvbné', 'èàêç\'-'].map(l => l.split('').map(c => this.maj ? c.toUpperCase() : c));
     this.el.innerHTML = `<div class="pn-cl-lignes">${lignes.map(l => `<div class="pn-cl-l">${l.map(t => k(t === '&lt;' ? '<' : t === '&gt;' ? '>' : t, t)).join('')}</div>`).join('')}
       <div class="pn-cl-l">${this.mode === 'abc' ? `<button type="button" data-maj="1" class="pn-cl-gris${this.maj ? ' pn-cl-on' : ''}" title="Majuscules">⇧ ${this.maj ? 'ABC' : 'abc'}</button>` + k(' ', 'espace', 'pn-cl-large') : ''}${k('⌫', '<span class="gicon">backspace</span>', 'pn-cl-gris')}
         <button type="button" data-m="${this.mode === '123' ? 'abc' : '123'}" class="pn-cl-gris">${this.mode === '123' ? 'abc' : '123'}</button>${k('ok', '<span class="gicon">keyboard_return</span>', 'pn-cl-ok')}${k('fermer', '<span class="gicon">keyboard_hide</span>', 'pn-cl-gris')}</div></div>`;

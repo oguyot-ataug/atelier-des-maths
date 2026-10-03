@@ -3335,6 +3335,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.973', date:'2026-10-03', items:[
+    "Planches : les pointillés de réponse sont maintenant à la taille de la réponse attendue (calculée d'après le corrigé, avec une marge pour l'écriture), sur papier, dans Mon TD et en projection ; à l'écran, la case de réponse aussi.",
+    "Clavier virtuel : touches + − × (décompositions, calculs) et trait d'union (nombres en lettres : « deux-mille-quarante-huit »). Un calcul écrit avec ou sans espaces est accepté."
+  ] },
   { version:'2026-08-19.972', date:'2026-10-03', items:[
     "Opérations posées des planches : chaque ligne à remplir (produits intermédiaires, résultat) a maintenant sa hauteur ; il y a de la place pour écrire, sur papier comme dans Mon TD.",
     "Divisions à l'écran et en session : la potence est écrite (dividende, diviseur, signes « − » et traits) et l'élève complète les cases : quotient, produits soustraits et restes, ou seulement les nombres abaissés et le reste (« sans les soustractions »). En CM1 (Opérations sur les nombres entiers) et en 6e (Nombres entiers).",
