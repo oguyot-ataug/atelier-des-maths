@@ -3329,6 +3329,11 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.963', date:'2026-10-03', items:[
+    "Questions flash : les questions peuvent faire lire un dessin du site (horloge, fraction coloriée sur un disque ou une bande, point sur une droite graduée, segment sur une règle, figure sur un quadrillage, balance). L'IA choisit le dessin et ses réglages, le site le dessine lui-même ; une question d'horloge dont la réponse ne correspond pas au dessin est écartée.",
+    "Les dessins apparaissent dans la liste des questions, dans « Essayer », en séance avec les cartes et dans les questionnaires enregistrés dans la banque.",
+    "Nouvelles questions prêtes avec dessin : lire l'heure (CE2, CM1, CM2) et fractions (CM1, CM2)."
+  ] },
   { version:'2026-08-19.962', date:'2026-10-03', items:[
     'Session COURS : la consigne des exercices de TD s\'affiche sur la copie de l\'élève (et dans la vue détaillée du professeur)',
     'Chapitre : « Personnaliser cet onglet », « Suggérer une amélioration » et « Exporter en PDF » (onglet Cours) sur une seule ligne, en couleur ; « Planches à imprimer » (vert) et « Questions flash » (violet) en couleur',

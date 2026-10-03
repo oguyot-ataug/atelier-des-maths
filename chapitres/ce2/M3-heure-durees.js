@@ -88,6 +88,8 @@ ${cm1Demo('ce2-hd-depart', 'Trouver une heure de départ', 'Lucie est sortie pen
     { q: 'De 9 h 40 à 10 h 10, il s\'écoule…', opts: ['30 minutes', '70 minutes', '1 heure'], correct: 0 },
   ],
   flash: [
+    { l: 1, q: 'Quelle heure indique l\'horloge ?', fig: { type: 'horloge', h: 2, m: 30 }, r: ['2 h 30', '6 h 10', '3 h 30', '2 h 06'], ok: 0 },
+    { l: 1, q: 'Quelle heure indique l\'horloge ?', fig: { type: 'horloge', h: 10, m: 0 }, r: ['12 h 10', '10 h', '2 h', '10 h 12'], ok: 1 },
     { l: 2, q: 'Une demi-heure, c\'est…', r: ['15 min', '30 min', '50 min', '60 min'], ok: 1 },
     { l: 1, q: '3 heures de l\'après-midi, c\'est…', r: ['13 h', '15 h', '16 h', '3 h'], ok: 1 },
     { l: 2, q: 'Combien de minutes dans 2 h ?', r: ['100', '120', '200', '60'], ok: 1 },

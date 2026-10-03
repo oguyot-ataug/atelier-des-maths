@@ -34,9 +34,71 @@ function fpQuestions(lvl, titre){
 function fpTex(s){
   return String(s).split('$').map((p, i) => i % 2 ? p : p.replace(/(\d+|\?|…)\/(\d+)/g, (m, a, b) => '$\\dfrac{' + (a === '…' ? '\\ldots' : a) + '}{' + b + '}$')).join('$');
 }
+/* ---------- Dessins dans les questions (demandé : « est-ce que les questions IA peuvent se servir aussi
+   des graphismes du site, genre lire l'heure ? ») ----------
+   Une question peut porter fig : { type, … } ; le site dessine la figure avec ses propres outils
+   (chapitres/cm1/_commun.js) : l'IA ne dessine rien, elle choisit le dessin et ses paramètres. */
+const FP_FIGS = {
+  horloge: 'une horloge à aiguilles : {"type":"horloge","h":3,"m":40} (h de 1 à 12, m de 0 à 55, de 5 en 5)',
+  disque: 'un disque partagé en n parts égales dont k coloriées : {"type":"disque","n":8,"k":3}',
+  bande: 'une bande partagée en n parts égales dont k coloriées : {"type":"bande","n":5,"k":2} (k peut dépasser n)',
+  graduation: 'une demi-droite graduée de 0 à max, chaque unité partagée en n, un point A placé à la valeur v : {"type":"graduation","max":3,"n":4,"v":1.75,"lettre":"A"}',
+  axe: 'un axe gradué de min à max, graduations tous les pas, nombres écrits tous les etiq, un point A à la valeur v : {"type":"axe","min":0,"max":1000,"pas":50,"etiq":200,"v":650,"lettre":"A"}',
+  regle: 'un segment [AB] posé sur une règle graduée en cm et mm, de longueur mm millimètres : {"type":"regle","mm":47}',
+  quadrillage: 'une figure coloriée sur un quadrillage de l × h carreaux, cases = liste des carreaux [colonne, ligne] coloriés : {"type":"quadrillage","l":8,"h":5,"cases":[[1,1],[2,1],[1,2]]}',
+  balance: 'une balance en équilibre, un objet à gauche, des masses marquées à droite : {"type":"balance","objet":"🍎","masses":["500 g","200 g","50 g"]}'
+};
+const fpEnt = (v, a, b) => Number.isFinite(+v) ? Math.max(a, Math.min(b, Math.round(+v))) : null;
+function fpHorloge(h, m){
+  const cx = 60, cy = 60, R = n => n.toFixed(1); let s = `<svg viewBox="0 0 120 120" style="width:150px;"><circle cx="60" cy="60" r="56" fill="#FFFDF7" stroke="#1F3A5C" stroke-width="3"/>`;
+  for(let i = 0; i < 60; i++){ const a = i * Math.PI / 30, g = i % 5 === 0, r1 = g ? 47 : 51; s += `<line x1="${R(cx + r1 * Math.sin(a))}" y1="${R(cy - r1 * Math.cos(a))}" x2="${R(cx + 54 * Math.sin(a))}" y2="${R(cy - 54 * Math.cos(a))}" stroke="#1F3A5C" stroke-width="${g ? 2 : .8}"/>`; }
+  for(let i = 1; i <= 12; i++){ const a = i * Math.PI / 6; s += `<text x="${R(cx + 38 * Math.sin(a))}" y="${R(cy - 38 * Math.cos(a) + 4)}" font-size="11" text-anchor="middle" fill="#1F3A5C" font-family="Space Grotesk" font-weight="700">${i}</text>`; }
+  const am = m * Math.PI / 30, ah = ((h % 12) + m / 60) * Math.PI / 6;
+  s += `<line x1="60" y1="60" x2="${R(cx + 26 * Math.sin(ah))}" y2="${R(cy - 26 * Math.cos(ah))}" stroke="#E35D3A" stroke-width="5" stroke-linecap="round"/>`;
+  return s + `<line x1="60" y1="60" x2="${R(cx + 44 * Math.sin(am))}" y2="${R(cy - 44 * Math.cos(am))}" stroke="#2EA8C9" stroke-width="3" stroke-linecap="round"/><circle cx="60" cy="60" r="3.5" fill="#1F3A5C"/></svg>`;
+}
+// Figure validée (paramètres de l'IA bornés) → { svg, w } ou null.
+function fpFigSvg(f){
+  if(!f || typeof f !== 'object' || typeof cm1Disque !== 'function') return null;
+  try{
+    switch(f.type){
+      case 'horloge': { const h = fpEnt(f.h, 0, 23), m = fpEnt(f.m, 0, 59); return h == null || m == null ? null : { svg: fpHorloge(h, m), w: 160 }; }
+      case 'disque': { const n = fpEnt(f.n, 1, 12), k = fpEnt(f.k, 0, 12); return n && k != null && k <= n ? { svg: cm1Disque(n, k), w: 130 } : null; }
+      case 'bande': { const n = fpEnt(f.n, 1, 12), k = fpEnt(f.k, 0, 36); return n && k != null ? { svg: cm1Bande(n, k), w: 260 * Math.max(1, Math.ceil(k / n)) } : null; }
+      case 'graduation': { const max = fpEnt(f.max, 1, 6), n = fpEnt(f.n, 1, 12), v = +f.v; if(!max || !n || !(v >= 0 && v <= max)) return null;
+        return { svg: cm1Graduation(max, n, [[v, String(f.lettre || 'A').slice(0, 2)]]), w: 500 }; }
+      case 'axe': { const min = +f.min, max = +f.max, pas = +f.pas, etiq = +f.etiq, v = +f.v;
+        if(![min, max, pas, etiq, v].every(Number.isFinite) || max <= min || pas <= 0 || (max - min) / pas > 60 || etiq < pas || v < min || v > max) return null;
+        return { svg: cm1Axe(min, max, pas, etiq, [[v, String(f.lettre || 'A').slice(0, 2)]]), w: 520 }; }
+      case 'regle': { const mm = fpEnt(f.mm, 1, 150); return mm ? { svg: cm1RegleGraduee(mm, 'AB'), w: 520 } : null; }
+      case 'quadrillage': { const l = fpEnt(f.l, 1, 16), h = fpEnt(f.h, 1, 12); if(!l || !h || !Array.isArray(f.cases)) return null;
+        const cases = f.cases.filter(c => Array.isArray(c) && c.length === 2).map(([x, y]) => [fpEnt(x, 0, l - 1), fpEnt(y, 0, h - 1)]).filter(([x, y]) => x != null && y != null);
+        return { svg: cm1Quad(l, h, cases, { k: 22, contour: true }), w: l * 22 + 2 }; }
+      case 'balance': { const ms = (Array.isArray(f.masses) ? f.masses : []).map(String).filter(m => /^\d+([,.]\d+)?\s?k?g$/.test(m.trim())).slice(0, 5);
+        return ms.length ? { svg: cm1Balance(String(f.objet || '?').slice(0, 4), ms), w: 280 } : null; }
+    }
+  }catch(e){}
+  return null;
+}
+// La figure en image autonome (data:image/svg+xml) : c'est ce que les questionnaires affichent (q.image).
+function fpFigUri(f){
+  const r = fpFigSvg(f); if(!r) return '';
+  const svg = r.svg.replace(/^<svg([^>]*?)\sstyle="[^"]*"/, '<svg$1').replace(/^<svg/, `<svg xmlns="http://www.w3.org/2000/svg" width="${Math.round(r.w)}"`)
+    .replace(/font-family="Space Grotesk"/g, 'font-family="Space Grotesk, Arial, sans-serif"').replace(/class="[^"]*"/g, '');
+  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+}
+const fpFigHtml = (f, cls) => { const u = fpFigUri(f); return u ? `<img class="${cls || 'fp-fig'}" src="${u}" alt="">` : ''; };
+// Sur une horloge, la bonne réponse doit être l'heure dessinée (on écarte les questions où l'IA s'est trompée).
+function fpFigCoherente(x){
+  if(!x.fig || x.fig.type !== 'horloge') return true;
+  const t = String(x.r[x.ok]).replace(/\s/g, ''), mm = t.match(/(\d{1,2})h(\d{1,2})?/);
+  if(!mm) return true; // réponse en mots (« midi et quart »…) : le professeur vérifie avec « Essayer »
+  return (+mm[1]) % 12 === (+x.fig.h) % 12 && (+(mm[2] || 0)) === +x.fig.m;
+}
+
 // Au format des questionnaires (QCM à une bonne réponse : compatible avec les cartes A à D).
 function fpVersQuestionnaire(liste){
-  return liste.map((x, i) => ({ id: 'fp' + i, type: 'qcm', enonce: fpTex(x.q), points: 1, competence: '',
+  return liste.map((x, i) => ({ id: 'fp' + i, type: 'qcm', enonce: fpTex(x.q), points: 1, competence: '', ...(x.fig && fpFigUri(x.fig) ? { image: fpFigUri(x.fig) } : {}),
     choix: x.r.map((t, j) => ({ id: 'fp' + i + 'c' + j, texte: fpTex(t), correct: j === x.ok })) }));
 }
 
@@ -93,11 +155,15 @@ async function fpGenererIa(lvl, titre, lecon, nb){
   const prompt = `Tu es professeur des écoles. Écris ${nb} questions flash de mathématiques, niveau ${niv}, sur le chapitre « ${titre} »${lecon ? `, partie « ${lecon.titre} »` : ''}.
 ${lecon && lecon.texte ? `Voici le cours de cette partie (n'interroge que sur ce qui y est) :\n"""${lecon.texte.slice(0, 2000)}"""\n` : ''}${consignes}
 Chaque question se résout de tête en moins de 30 secondes et se pose avec des cartes A, B, C, D : un QCM à 4 réponses courtes, une seule juste, les 3 autres étant des erreurs fréquentes d'élèves. Phrases courtes, vocabulaire du niveau. Écris une fraction « 3/4 ». Varie les questions (calcul, vocabulaire, raisonnement), sans en répéter.
-Réponds UNIQUEMENT par un tableau JSON, sans texte autour : [{"q":"…","r":["…","…","…","…"],"ok":0}] où ok est l'indice (0 à 3) de la bonne réponse ; place la bonne réponse à des positions variées.`;
+Tu peux faire lire un dessin (au moins le tiers des questions quand le chapitre s'y prête : lire l'heure, une fraction coloriée, un point sur une droite graduée, une longueur sur une règle, une aire en carreaux, une masse sur une balance…). Ajoute alors à la question une clé "fig" ; le site dessine lui-même la figure. Dessins possibles :
+${Object.values(FP_FIGS).map(t => '- ' + t).join('\n')}
+La question parle du dessin (« Quelle heure indique l'horloge ? », « Quelle fraction du disque est coloriée ? », « Quel nombre repère le point A ? »…) et la bonne réponse doit correspondre exactement au dessin. Écris les heures « 3 h 40 ».
+Réponds UNIQUEMENT par un tableau JSON, sans texte autour : [{"q":"…","r":["…","…","…","…"],"ok":0}] (avec "fig":{…} si la question a un dessin) où ok est l'indice (0 à 3) de la bonne réponse ; place la bonne réponse à des positions variées.`;
   const txt = await callClaude(prompt, 2500, { feature: 'quiz', chapitre: titre, niveau: lvl });
   const m = String(txt).match(/\[[\s\S]*\]/); if(!m) throw new Error('réponse illisible');
   return JSON.parse(m[0]).filter(x => x && typeof x.q === 'string' && Array.isArray(x.r) && x.r.length >= 2 && x.r.length <= 4 && Number.isInteger(x.ok) && x.ok >= 0 && x.ok < x.r.length)
-    .map(x => ({ q: x.q.trim(), r: x.r.map(String), ok: x.ok, ia: true, l: lecon ? lecon.n : null }));
+    .map(x => ({ q: x.q.trim(), r: x.r.map(String), ok: x.ok, ia: true, l: lecon ? lecon.n : null, ...(x.fig && fpFigSvg(x.fig) ? { fig: x.fig } : {}) }))
+    .filter(x => (x.fig || !/(horloge|ci-dessous|le dessin|la figure|cette balance|ce quadrillage)/i.test(x.q)) && fpFigCoherente(x));
 }
 
 // « Essayer » : le professeur passe les questions retenues lui-même, une par une (rien n'est enregistré).
@@ -109,7 +175,7 @@ function fpEssayer(liste, titre){
     o.innerHTML = `<div class="qzd-modal fp-essai" role="dialog" aria-label="Essayer les questions flash">
       <div class="fp-essai-tete"><b><span class="gicon">quiz</span> Essai · ${qzEsc(titre)}</b><span>${fini ? 'Terminé' : `Question ${i + 1} / ${liste.length}`}</span><button type="button" class="modal-close" data-x><span class="gicon">close</span></button></div>
       ${fini ? `<div class="fp-essai-fin"><b>${bons} / ${liste.length}</b> bonne${bons > 1 ? 's' : ''} réponse${bons > 1 ? 's' : ''}.<p class="hint">Rien n'est enregistré : c'était pour essayer les questions avant la classe.</p><button type="button" class="btn" data-x>Fermer</button></div>`
-      : `<div class="fp-essai-q">${qzMath(fpTex(x.q))}</div>
+      : `<div class="fp-essai-q">${qzMath(fpTex(x.q))}${fpFigHtml(x.fig, 'fp-essai-fig')}</div>
       <div class="fp-essai-r">${x.r.map((t, j) => `<button type="button" class="fp-essai-c${choisi == null ? '' : j === x.ok ? ' ok' : j === choisi ? ' ko' : ' off'}" data-c="${j}" ${choisi == null ? '' : 'disabled'}><span class="fp-l">${FP_LETTRES[j]}</span> ${qzMath(fpTex(t))}</button>`).join('')}</div>
       <div class="fp-actions"><span class="hint" style="margin:0;">${choisi == null ? 'Choisissez une réponse.' : choisi === x.ok ? '<b style="color:#1E7A4F;">Juste !</b>' : `<b style="color:#9E1F5E;">Non :</b> la bonne réponse est ${FP_LETTRES[x.ok]}.`}</span><span style="flex:1"></span>
         <button type="button" class="btn" data-suiv ${choisi == null ? 'disabled' : ''}>${i + 1 < liste.length ? 'Question suivante' : 'Voir le résultat'} <span class="gicon">arrow_forward</span></button></div>`}</div>`;
@@ -148,7 +214,7 @@ function fpOuvrir(lvl, titre){
       ${iaOk ? `<div class="fp-ia"><span class="gicon">auto_awesome</span> <span>Générer avec l'IA ${lec ? `sur « ${qzEsc(lec.titre)} »` : 'sur tout le chapitre'} :</span>
         ${[5, 10].map(n => `<button type="button" class="btn secondary qz-mini" data-ia="${n}" ${attente ? 'disabled' : ''}>${n} questions</button>`).join('')}${attente ? '<span class="hint" style="margin:0;">Génération en cours…</span>' : ''}${msg ? `<span class="hint" style="margin:0;">${msg}</span>` : ''}</div>` : ''}
       <div class="fp-liste">${vis.length ? vis.map(({ x, k }) => `<label class="fp-q${gardees.has(k) ? '' : ' off'}"><input type="checkbox" data-k="${k}" ${gardees.has(k) ? 'checked' : ''}>
-        <span><b>${qzMath(fpTex(x.q))}</b>${x.ia ? ' <span class="fp-tag">IA</span>' : ''}${filtre === 'tout' && x.l != null && lecons[x.l] ? ` <span class="fp-tag fp-tag-l">${qzEsc(lecons[x.l].num)}. ${qzEsc(lecons[x.l].titre)}</span>` : ''}
+        <span><b>${qzMath(fpTex(x.q))}</b>${fpFigHtml(x.fig)}${x.ia ? ' <span class="fp-tag">IA</span>' : ''}${filtre === 'tout' && x.l != null && lecons[x.l] ? ` <span class="fp-tag fp-tag-l">${qzEsc(lecons[x.l].num)}. ${qzEsc(lecons[x.l].titre)}</span>` : ''}
           <span class="fp-r">${x.r.map((t, j) => `<span class="${j === x.ok ? 'ok' : ''}"><span class="fp-l">${FP_LETTRES[j]}</span> ${qzMath(fpTex(t))}</span>`).join('')}</span></span>
         ${x.ia ? `<button type="button" class="fp-suppr" data-suppr="${k}" title="Supprimer cette question"><span class="gicon">delete</span></button>` : ''}</label>`).join('')
         : `<p class="hint">Pas encore de question prête sur cette partie.${iaOk ? ' Générez-en avec l\'IA ci-dessus.' : ' Avec l\'option IA (Mon compte › Intelligence artificielle), vous pourriez en générer.'}</p>`}</div>
@@ -224,6 +290,8 @@ function fpOuvrir(lvl, titre){
     .btn.secondary.fp-btn-essai{background:#FFF6E5;border-color:#F2CD86;color:#8A5A00;} .btn.secondary.fp-btn-banque{background:#EAF7EF;border-color:#9ED3B4;color:#1F7A4D;}
     .fp-essai{max-width:720px;width:94vw;} .fp-essai-tete{display:flex;align-items:center;gap:10px;color:#5B3A99;} .fp-essai-tete > span{margin-left:auto;font-weight:700;color:#5B6472;}
     .fp-essai-q{font:700 1.35rem 'Space Grotesk',sans-serif;color:#1F3A5C;margin:16px 0 12px;}
+    .fp-essai-fig{display:block;margin:10px auto 0;max-width:100%;max-height:230px;}
+    .fp-fig{display:block;margin:6px 0 2px;max-width:min(100%,320px);max-height:110px;}
     .fp-essai-r{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
     .fp-essai-c{display:flex;align-items:center;gap:8px;padding:12px 14px;border-radius:12px;border:2px solid #DCE2EA;background:#fff;cursor:pointer;font:600 1.05rem Inter,sans-serif;color:#1F3A5C;text-align:left;}
     .fp-essai-c:nth-child(1){border-color:#E35D3A;} .fp-essai-c:nth-child(2){border-color:#2EA8C9;} .fp-essai-c:nth-child(3){border-color:#2E9C6A;} .fp-essai-c:nth-child(4){border-color:#E9A21C;}

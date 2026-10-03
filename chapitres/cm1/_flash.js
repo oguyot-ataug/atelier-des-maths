@@ -31,6 +31,9 @@ const F = {
     { l: 6, q: "Rangés du plus grand au plus petit, quel est le dernier : 1 999 ; 2 001 ; 1 909 ; 2 010 ?", r: ["1 999", "2 001", "1 909", "2 010"], ok: 2 },
   ],
   "cm1|Fractions": [
+    { l: 2, q: "Quelle fraction du disque est coloriée ?", fig: { type: 'disque', n: 8, k: 3 }, r: ["3/8", "3/5", "5/8", "8/3"], ok: 0 },
+    { l: 2, q: "Quelle fraction de la bande est coloriée ?", fig: { type: 'bande', n: 5, k: 2 }, r: ["2/3", "3/5", "2/5", "5/2"], ok: 2 },
+    { l: 4, q: "Quelle fraction repère le point A ?", fig: { type: 'graduation', max: 2, n: 4, v: 0.75, lettre: 'A' }, r: ["3/4", "4/3", "3/8", "1/4"], ok: 0 },
     { l: 1, q: "Une pizza partagée en 4 parts égales : chaque part est…", r: ["un quart", "un demi", "un tiers", "quatre"], ok: 0 },
     { l: 1, q: "Pour avoir des tiers, on partage l'unité en…", r: ["2 parts égales", "3 parts égales", "3 parts quelconques", "4 parts égales"], ok: 1 },
     { l: 2, q: "Dans 3/8, le numérateur est…", r: ["3", "8", "11", "5"], ok: 0 },
@@ -294,6 +297,9 @@ const F = {
     { l: 4, q: "Si on allonge les côtés d'un angle, l'angle…", r: ["ne change pas", "devient plus grand", "devient plus petit", "devient droit"], ok: 0 },
   ],
   "cm1|Heures et durées": [
+    { l: 1, q: "Quelle heure indique l'horloge ?", fig: { type: 'horloge', h: 3, m: 40 }, r: ["3 h 40", "8 h 15", "4 h 40", "3 h 08"], ok: 0 },
+    { l: 1, q: "Quelle heure indique l'horloge ?", fig: { type: 'horloge', h: 9, m: 15 }, r: ["3 h 45", "9 h 03", "9 h 15", "10 h 15"], ok: 2 },
+    { l: 1, q: "L'horloge indique l'heure du goûter, l'après-midi. Il est…", fig: { type: 'horloge', h: 4, m: 30 }, r: ["4 h 30", "16 h 30", "6 h 20", "15 h 30"], ok: 1 },
     { l: 1, q: "La petite aiguille indique…", r: ["les heures", "les minutes", "les secondes", "les jours"], ok: 0 },
     { l: 1, q: "La grande aiguille est sur le 9 : il est … minutes.", r: ["9", "45", "30", "15"], ok: 1 },
     { l: 1, q: "3 h de l'après-midi s'écrit…", r: ["3 h", "13 h", "15 h", "18 h"], ok: 2 },
@@ -343,6 +349,7 @@ const F = {
     { l: 4, q: "À mi-chemin entre 200 000 et 300 000, on lit…", r: ["250 000", "205 000", "225 000", "500 000"], ok: 0 },
   ],
   "cm2|Fractions": [
+    { l: 1, q: "Quelle fraction du disque est coloriée ?", fig: { type: 'disque', n: 6, k: 5 }, r: ["1/6", "5/6", "6/5", "5/11"], ok: 1 },
     { l: 1, q: "Une tarte partagée en 8 parts égales ; on en mange 3. On a mangé…", r: ["3/8 de la tarte", "8/3 de la tarte", "3/5 de la tarte", "5/8 de la tarte"], ok: 0 },
     { l: 1, q: "Dans 5/9, le dénominateur indique…", r: ["en combien de parts on partage", "combien de parts on prend", "le reste", "le total"], ok: 0 },
     { l: 2, q: "Une demi-heure, c'est … d'heure.", r: ["1/2", "1/4", "1/3", "2/1"], ok: 0 },
@@ -571,6 +578,8 @@ const F = {
     { l: 3, q: "Pour construire la moitié d'un angle, on peut…", r: ["le plier en deux", "le peser", "le colorier", "le mesurer à la règle"], ok: 0 },
   ],
   "cm2|Heures et durées": [
+    { l: 1, q: "Quelle heure indique l'horloge ?", fig: { type: 'horloge', h: 7, m: 55 }, r: ["7 h 55", "8 h 55", "11 h 35", "7 h 11"], ok: 0 },
+    { l: 1, q: "C'est le soir. Quelle heure est-il ?", fig: { type: 'horloge', h: 8, m: 20 }, r: ["8 h 20", "20 h 20", "16 h 40", "20 h 04"], ok: 1 },
     { l: 1, q: "La trotteuse indique…", r: ["les secondes", "les minutes", "les heures", "les jours"], ok: 0 },
     { l: 1, q: "Un quart d'heure = … min", r: ["15", "25", "4", "45"], ok: 0 },
     { l: 1, q: "Il est 17 h 45 : c'est…", r: ["6 h moins le quart du soir", "5 h et quart", "7 h 45", "midi"], ok: 0 },
