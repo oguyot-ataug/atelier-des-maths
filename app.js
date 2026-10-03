@@ -303,6 +303,7 @@ function showView(id){
   if(typeof FIG_PROJ!=='undefined' && FIG_PROJ && id!=='view-tableau') return; // fenêtre de projection : rien d'autre que le tableau
   if(typeof QZC_PROJ!=='undefined' && QZC_PROJ) return; // projection des Questions flash (cartes) : rien d'autre
   if(typeof oliviaMaj==='function') setTimeout(oliviaMaj, 30); // Oliv'IA : seulement sur les pages de cours
+  if(id!=='view-programmation' && document.body.classList.contains('prog-plein') && typeof progPleinEcran==='function') progPleinEcran(false); // programmation : on sort du plein écran
   if(id!=='view-classe' && typeof clBruit!=='undefined' && clBruit.actif && !(typeof clSurvol!=='undefined' && clSurvol.has('clBlocBruit'))) clBruitArreter(); // jauge de bruit : micro coupé en quittant la page (sauf jauge en survol)
   // Sécurité : si un outil (figure, texte, probabilités...) ou l'éditeur de formule était resté
   // ouvert (overlay plein écran) au moment de changer de page via le menu, on le referme -- sans
@@ -365,11 +366,9 @@ document.querySelectorAll('[data-nav]').forEach(el=>{
     const nav = el.getAttribute('data-nav');
     if(nav==='home'){ showView('view-home'); setActiveTopnav(null); }
     if(nav==='niveau'){ if(!niveauVisible(el.getAttribute('data-lvl'))) return; currentLevel = el.getAttribute('data-lvl')||currentLevel; renderNiveau(currentLevel); showView('view-niveau'); setActiveTopnav(currentLevel); }
+    // Visiteur non connecté : les outils de L'Atelier montrent leur page de présentation (demo.js).
+    if(!currentUser && typeof demoGarde==='function' && demoGarde(nav)) return;
     if(nav==='cm'){ showView('view-cm'); setActiveTopnav('cm'); if(typeof refreshCMProgress==='function') refreshCMProgress(); if(typeof refreshCMRecords==='function') refreshCMRecords(); }
-    // Visiteur non connecté : page de démonstration à la place de l'outil (demo.js).
-    if((nav==='compte' || nav==='figure-sandbox' || nav==='tableau') && !currentUser && typeof showDemo==='function'){
-      showDemo(nav==='figure-sandbox' ? 'geometrie' : nav); return;
-    }
     if(nav==='compte'){ showView('view-compte'); setActiveTopnav('compte'); if(typeof cebInit==='function') cebInit(); }
     if(nav==='figure-sandbox'){
       // Bac à sable géométrie : accessible à tous (élèves compris), sans lien avec un
@@ -3140,6 +3139,11 @@ async function refreshAuthUI(){
     restrictedVisitor = true;
     if((!wasRestrictedOut || hadFamille) && currentLevel) renderNiveau(currentLevel);
   }
+  // Outils de L'Atelier réservés aux comptes (demo.js) : cadenas dans le menu pour les visiteurs ; un
+  // outil encore ouvert au moment de la déconnexion laisse la place à l'accueil.
+  document.body.classList.toggle('connecte', !!currentUser);
+  if(!currentUser){ const av = document.querySelector('.view.active');
+    if(av && ['view-cm','view-compte','view-convertisseur','view-figure-sandbox','view-tableau','view-programmation'].includes(av.id)){ showView('view-home'); setActiveTopnav(null); } }
   // reflète l'état de connexion sur les boutons "+ Cahier" déjà injectés dans les cours ouverts
   updateCourseAddButtonsState();
   // Mode découverte (demo.js) : automatismes re-verrouillés / déverrouillés, et un visiteur qui
@@ -3310,6 +3314,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.933', date:'2026-10-03', items:[
+    'Outils de L\'Atelier réservés aux comptes : un visiteur non connecté voit, pour chaque outil (Automatismes, Objectif Nombre, Convertisseur, Géométrie interactive, Tableau interactif, Programmation), une page de présentation avec les boutons pour se connecter ; un cadenas le signale dans le menu. Après connexion, l\'outil s\'ouvre directement',
+    'Programmation par blocs : bouton « Plein écran » (le menu du site disparaît, la zone des blocs prend toute la hauteur ; Échap ou le bouton pour revenir)'
+  ]},
   { version:'2026-08-19.932', date:'2026-10-03', items:[
     'Interrogations en ligne : « Rattrapage des absents » dans la page de correction. On coche les élèves absents : eux seuls peuvent commencer l\'interrogation, même fermée ou déjà publiée, avec le même sujet et le même chronomètre (il part quand l\'élève commence). Plus besoin de créer une copie du devoir',
     'Interrogation déjà publiée : l\'élève en rattrapage voit sa note et la correction après « Publier les rattrapages » ; la liste des interrogations signale les rattrapages en cours'

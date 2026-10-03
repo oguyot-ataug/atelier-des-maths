@@ -13,6 +13,21 @@
    ===================================================================== */
 
 const DEMOS = {
+  automatismes: {
+    titre: 'Automatismes', icone: 'bolt', video: 'devoirs-automatismes-objectif-nombre',
+    texte: "Des séquences courtes de calcul mental et d'automatismes, rubrique par rubrique, avec correction immédiate et progression mémorisée.",
+    points: ['Toutes les rubriques du programme, du CM au collège', 'Records et progression suivis par le professeur', 'Donnés en devoir, corrigés tout seuls'],
+  },
+  convertisseur: {
+    titre: 'Convertisseur', icone: 'swap_horiz', video: null,
+    texte: "Des tuiles de conversion (longueurs, masses, contenances, aires, durées…) avec des outils pour comprendre : le chiffre des unités repéré, les décalages expliqués.",
+    points: ['Toutes les unités du programme', 'Explications pas à pas', 'Au vidéoprojecteur comme à la maison'],
+  },
+  programmation: {
+    titre: 'Programmation par blocs', icone: 'extension', video: 'programmation-par-blocs',
+    texte: "Des blocs à assembler, façon Scratch, pour faire bouger un lutin, tracer des figures et calculer, avec des défis progressifs.",
+    points: ['Défis du CM au collège', 'Vérification automatique des programmes', 'Donnés en devoir ou en séance en direct'],
+  },
   compte: {
     titre: 'Objectif Nombre', icone: 'calculate', video: 'demo-objectif-nombre',
     texte: "Six nombres tirés au sort, un compte à atteindre : on combine +, −, × et ÷ pour tomber pile dessus, ou s'en approcher le plus possible.",
@@ -31,6 +46,14 @@ const DEMOS = {
 };
 
 function demoVisiteur(){ return typeof currentUser === 'undefined' || !currentUser; }
+// Outils de L'Atelier : réservés aux comptes -- demandé : « Les outils Atelier ne doivent pas être
+// accessibles en mode non connecté ». Le visiteur voit la page de présentation (vidéo + connexion).
+// Clés : data-nav du menu et routes (router.js).
+const DEMO_OUTILS = { cm: 'automatismes', compte: 'compte', convertisseur: 'convertisseur', 'figure-sandbox': 'geometrie', figure: 'geometrie', tableau: 'tableau', programmation: 'programmation' };
+function demoGarde(nav){
+  if(!demoVisiteur() || !DEMO_OUTILS[nav]) return false;
+  showDemo(DEMO_OUTILS[nav]); return true;
+}
 
 // Ouvre le menu de connexion (en haut à droite) depuis un bouton de la page.
 function demoOuvrirConnexion(e){
@@ -57,7 +80,7 @@ let demoCle = null;
 function demoOuvrirOutil(){
   const v = document.getElementById('view-demo');
   if(!demoCle || !v || !v.classList.contains('active')) return;
-  const nav = demoCle === 'geometrie' ? 'figure-sandbox' : demoCle;
+  const nav = Object.keys(DEMO_OUTILS).find(k => DEMO_OUTILS[k] === demoCle) || demoCle;
   demoCle = null;
   const b = document.querySelector('#navDropdownEntrainer [data-nav="'+nav+'"]');
   if(b) b.click();
@@ -72,12 +95,12 @@ function showDemo(key){
       <div><div class="demo-eyebrow">Aperçu · réservé aux comptes</div><h1>${d.titre}</h1></div>
     </div>
     <div class="demo-grid">
-      <div class="demo-video">
+      <div class="demo-video">${d.video ? `
         <video poster="assets/videos/${d.video}.jpg" autoplay muted loop playsinline preload="metadata" aria-label="Démonstration : ${d.titre}">
           <source src="assets/videos/${d.video}.mp4" type="video/mp4">
           <source src="assets/videos/${d.video}.webm" type="video/webm">
         </video>
-        <span class="demo-badge"><span class="gicon">play_circle</span> Démonstration</span>
+        <span class="demo-badge"><span class="gicon">play_circle</span> Démonstration</span>` : `<div class="demo-sans-video"><span class="gicon">${d.icone}</span></div>`}
       </div>
       <div class="demo-side">
         <p class="demo-texte">${d.texte}</p>
@@ -122,6 +145,8 @@ function demoInvite(titre, texte){
     .demo-grid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:24px;align-items:start;}
     .demo-video{position:relative;border-radius:16px;overflow:hidden;background:#0d2a4a;box-shadow:0 18px 44px rgba(28,43,57,.22);border:1px solid rgba(28,43,57,.08);}
     .demo-video video{display:block;width:100%;height:auto;aspect-ratio:16/10;object-fit:cover;background:#f4f6f9;}
+    .demo-sans-video{aspect-ratio:16/10;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#EAF2FB,#FFF4E6);} .demo-sans-video .gicon{font-size:120px;color:#1A7AD0;opacity:.8;}
+    body:not(.connecte) #navDropdownEntrainer .nav-dropdown-menu button::after{content:'lock';font-family:'Material Symbols Outlined';font-size:15px;margin-left:auto;padding-left:8px;color:var(--ink-soft);}
     .demo-badge{position:absolute;top:10px;left:10px;display:inline-flex;align-items:center;gap:5px;background:rgba(20,28,40,.72);color:#fff;border-radius:999px;padding:4px 10px;font:600 .75rem 'Inter',sans-serif;backdrop-filter:blur(4px);}
     .demo-badge .gicon{font-size:16px;}
     .demo-side{background:#fff;border-radius:16px;padding:20px;box-shadow:var(--shadow);border:1px solid rgba(28,43,57,.06);}

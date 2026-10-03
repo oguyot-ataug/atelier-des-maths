@@ -146,6 +146,8 @@ function routerRestoreFromHash(){
       if(!authorized){
         showView('view-home'); setActiveTopnav(null);
         if(typeof toggleAccountMenu==='function') toggleAccountMenu();
+      } else if(!currentUser && typeof demoGarde==='function' && demoGarde(key)){
+        // visiteur : outils de L'Atelier réservés aux comptes (demo.js)
       } else if(key==='cm'){
         showView('view-cm'); setActiveTopnav('cm');
         if(typeof refreshCMProgress==='function') refreshCMProgress();

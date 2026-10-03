@@ -370,6 +370,28 @@ async function progOuvrir(opts){
   if(typeof progDefisInit === 'function') await progDefisInit(opts);
   else progMode('libre');
 }
+/* Plein écran -- demandé : « L'outil de codage doit pouvoir se mettre en plein écran ». L'éditeur occupe
+   tout l'écran (menu du site masqué), la zone des blocs prend toute la hauteur ; Échap ou le bouton
+   pour revenir. Dans une session COURS (déjà en plein écran), seule la mise en page change. */
+function progPleinEcran(on){
+  const b = document.body; on = on === undefined ? !b.classList.contains('prog-plein') : on;
+  b.classList.toggle('prog-plein', on);
+  const fs = document.fullscreenElement;
+  if(on && !fs && document.documentElement.requestFullscreen){ try{ const p = document.documentElement.requestFullscreen(); if(p && p.catch) p.catch(() => {}); }catch(e){} b.dataset.progFs = '1'; }
+  if(!on && fs && b.dataset.progFs && !b.classList.contains('cd-eleve-ouvert') && !b.classList.contains('cd-travail')){ try{ document.exitFullscreen(); }catch(e){} }
+  if(!on) delete b.dataset.progFs;
+  const btn = document.getElementById('progPleinBtn');
+  if(btn) btn.innerHTML = on ? '<span class="gicon">fullscreen_exit</span> Quitter le plein écran' : '<span class="gicon">fullscreen</span> Plein écran';
+  setTimeout(progPleinAjuster, 60); setTimeout(progPleinAjuster, 400);
+}
+function progPleinAjuster(){
+  const z = document.getElementById('progBlocs'); if(!z) return;
+  if(document.body.classList.contains('prog-plein')){ const r = z.getBoundingClientRect(); z.style.height = Math.max(300, window.innerHeight - r.top - 14) + 'px'; }
+  else z.style.height = '';
+  if(prog && prog.ws) try{ Blockly.svgResize(prog.ws); }catch(e){}
+}
+document.addEventListener('fullscreenchange', () => { if(!document.fullscreenElement && document.body.classList.contains('prog-plein') && document.body.dataset.progFs) progPleinEcran(false); });
+window.addEventListener('resize', () => { if(document.body.classList.contains('prog-plein')) progPleinAjuster(); });
 function progConstruire(root){
   let pref = {}; try{ pref = JSON.parse(localStorage.getItem('progPref') || '{}') || {}; }catch(e){}
   root.innerHTML = `<div class="prog">
@@ -378,6 +400,7 @@ function progConstruire(root){
       <div class="prog-tabs" id="progTabs"><button type="button" data-m="defis" onclick="progMode('defis')"><span class="gicon">emoji_events</span> Défis</button>
         <button type="button" data-m="libre" onclick="progMode('libre')"><span class="gicon">palette</span> Création libre</button></div>
       <span id="progDevoirBandeau" class="prog-devoir" hidden></span>
+      <button type="button" class="btn secondary prog-plein-btn" id="progPleinBtn" onclick="progPleinEcran()" title="Plein écran (Échap pour sortir)"><span class="gicon">fullscreen</span> Plein écran</button>
     </div>
     <div class="prog-body">
       <aside class="prog-liste" id="progListe"></aside>
@@ -494,6 +517,12 @@ function progArreter(){ if(prog && prog.machine){ prog.machine.arreter(); prog.m
     .prog-tabs button.on{background:#fff;color:#0C5BA0;box-shadow:0 1px 4px rgba(28,43,57,.18);} .prog-tabs .gicon{font-size:1.1rem;}
     .prog-devoir{display:inline-flex;align-items:center;gap:6px;background:rgba(255,130,8,.12);color:#B8511F;border-radius:999px;padding:5px 12px;font-weight:600;font-size:.88rem;} .prog-devoir[hidden]{display:none;}
     .prog-body{display:flex;gap:14px;align-items:flex-start;}
+    .prog-plein-btn{margin-left:auto;}
+    body.prog-plein .topbar, body.prog-plein .site-footer, body.prog-plein footer, body.prog-plein #aideBtn, body.prog-plein #aideBulle, body.prog-plein .breadcrumb{display:none !important;}
+    body.prog-plein #view-programmation{position:fixed;inset:0;z-index:900;background:var(--bg, #FBF8F2);overflow:auto;padding:10px 14px;margin:0;max-width:none;}
+    body.prog-plein .prog-top{margin-bottom:6px;} body.prog-plein .prog-top h1{font-size:1.2rem;}
+    body.prog-plein .prog-liste{max-height:calc(100vh - 80px);top:0;}
+    body.prog-plein .prog-droite{top:0;}
     .prog-liste{width:250px;flex:none;display:flex;flex-direction:column;gap:6px;max-height:calc(100vh - 150px);overflow:auto;position:sticky;top:70px;}
     .prog-liste[hidden]{display:none;}
     .prog-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:10px;}
