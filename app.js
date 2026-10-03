@@ -3327,6 +3327,11 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.956', date:'2026-10-03', items:[
+    'Oliv\'IA et ses copines (lutin d\'équipe) : un crayon -- pointe posée sur le point du lutin quand le stylo est en position d\'écriture, levé à côté de l\'olive sinon',
+    'Programmation par blocs : bouton « position de départ » (à côté de Stop) -- le lutin revient à sa place de départ, le dessin est effacé',
+    'Nouveau défi CM1 « La perpendiculaire passant par A » : A est sur la droite (d), mais le lutin part d\'un autre point de (d) ; il doit y aller sans tracer, puis tracer la perpendiculaire (aussi dans Mon TD)',
+  ] },
   { version:'2026-08-19.955', date:'2026-10-03', items:[
     'Mon TD, rubrique « À l\'ordinateur, en groupe » : les défis de programmation par blocs du chapitre (CM1 Droites parallèles et perpendiculaires : 4 défis), avec l\'aperçu des pointillés à repasser',
     'Projection : l\'éditeur de blocs s\'ouvre dans la fenêtre de projection (consigne, blocs, scène, vérification ; défi précédent / suivant ; Aide), pour un défi en groupe au tableau ; rien n\'est enregistré',

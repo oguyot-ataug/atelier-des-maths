@@ -213,7 +213,16 @@ class ProgScene {
       x.beginPath(); x.moveTo(0, 14); x.lineTo(0, 19); x.strokeStyle = '#4F6B2A'; x.lineWidth = 1.6; x.stroke();
       x.beginPath(); x.ellipse(4, 20, 5.5, 2.4, Math.PI / 6, 0, 2 * Math.PI); x.fillStyle = '#7BAE4F'; x.fill(); x.strokeStyle = '#4F6B2A'; x.lineWidth = 1; x.stroke();
       [-4.6, 4.6].forEach(ex => { x.beginPath(); x.arc(ex, 6, 3.7, 0, 2 * Math.PI); x.fillStyle = '#fff'; x.fill(); x.strokeStyle = '#2C3A1A'; x.lineWidth = 1; x.stroke(); x.beginPath(); x.arc(ex, 7.3, 1.8, 0, 2 * Math.PI); x.fillStyle = '#1C2B39'; x.fill(); });
-      x.beginPath(); x.arc(0, -5, 2.8, 0, 2 * Math.PI); x.fillStyle = t.stylo ? t.couleur : '#fff'; x.fill(); x.strokeStyle = q.e; x.lineWidth = 1; x.stroke();
+      x.restore();
+      // Le crayon d'Oliv'IA : pointe posée sur le point du lutin (stylo en position d'écriture), ou levé à côté.
+      x.save(); x.translate(t.x, t.y); x.rotate(-t.dir * Math.PI / 180);
+      const bas = t.stylo; if(!bas) x.translate(17, 2); // levé : à côté de l'olive, la pointe en l'air
+      x.rotate(-0.45); // crayon penché vers l'arrière, à droite
+      x.beginPath(); x.moveTo(0, 0); x.lineTo(-3, -7); x.lineTo(3, -7); x.closePath(); x.fillStyle = '#F2D3A0'; x.fill(); x.strokeStyle = '#8A5A1A'; x.lineWidth = .8; x.stroke();
+      x.beginPath(); x.moveTo(0, 0); x.lineTo(-1.1, -2.6); x.lineTo(1.1, -2.6); x.closePath(); x.fillStyle = t.couleur; x.fill();
+      x.fillStyle = '#F5C518'; x.strokeStyle = '#8A5A1A'; x.beginPath(); x.rect(-3, -25, 6, 18); x.fill(); x.stroke();
+      x.fillStyle = '#E37A9A'; x.beginPath(); x.rect(-3, -29, 6, 4); x.fill(); x.stroke();
+      if(!bas){ x.setLineDash([2, 2]); x.strokeStyle = 'rgba(28,43,57,.45)'; x.beginPath(); x.moveTo(0, 2); x.lineTo(0, 6); x.stroke(); x.setLineDash([]); }
       x.restore(); this.placerBulle(); return;
     }
     x.beginPath(); x.moveTo(0, 16); x.lineTo(10, -10); x.lineTo(0, -4); x.lineTo(-10, -10); x.closePath();
@@ -435,6 +444,7 @@ function progConstruire(root){
             <div class="prog-barre">
               <button type="button" class="prog-go" id="progGo" onclick="progLancer()" title="Lancer le programme"><span>🏁</span></button>
               <button type="button" class="prog-stop" onclick="progArreter()" title="Arrêter"><span class="gicon">stop</span></button>
+              <button type="button" class="prog-stop prog-depart" onclick="progPositionDepart()" title="Remettre le lutin à sa position de départ (et effacer le dessin)"><span class="gicon">restart_alt</span></button>
               <select id="progVitesse" onchange="progPrefs()" title="Vitesse du lutin"><option value="lent">Lent</option><option value="normal">Normal</option><option value="turbo">Turbo</option></select>
               <label class="prog-chk" title="Afficher le repère (x, y)"><input type="checkbox" id="progGrille" onchange="progPrefs()"> Repère</label>
               <label class="prog-chk" id="progModeleLbl" title="Afficher en pointillés la figure à obtenir" hidden><input type="checkbox" id="progModele" onchange="progPrefs()"> Modèle</label>
@@ -471,6 +481,8 @@ function progPrefs(){
   try{ localStorage.setItem('progPref', JSON.stringify({ vitesse: prog.vitesse, grille: prog.grille, modele: prog.modele })); }catch(e){}
   prog.scene.grille = prog.grille; prog.scene.modele = prog.modele && prog.defi && typeof progModeleSegments === 'function' ? progModeleSegments(prog.defi) : null; prog.scene.fond();
 }
+// Bouton « position de départ » : le lutin revient où il était au début (celle du défi), le dessin est effacé.
+function progPositionDepart(){ if(!prog) return; progArreter(); prog.scene.reset(); progMajPos(); const m = document.getElementById('progVerifMsg'); if(m) m.innerHTML = ''; }
 function progMajPos(){
   const el = document.getElementById('progPos'); if(!el || !prog) return;
   const t = prog.scene.t, f = v => String(Math.round(v * 10) / 10).replace('.', ',');
@@ -560,6 +572,7 @@ function progArreter(){ if(prog && prog.machine){ prog.machine.arreter(); prog.m
     .prog-go,.prog-stop{width:42px;height:42px;border-radius:12px;border:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:1.3rem;}
     .prog-go{background:#E8F7EE;border:2px solid #4CBF56;} .prog-go.on{background:#4CBF56;box-shadow:0 0 0 4px rgba(76,191,86,.25);}
     .prog-stop{background:#FDECEA;border:2px solid #EC5959;color:#EC5959;} .prog-stop .gicon{font-size:1.5rem;}
+    .prog-stop.prog-depart{background:#EEF4FB;border-color:#3A6EA5;color:#3A6EA5;}
     .prog-barre select{border:1.5px solid rgba(28,43,57,.15);border-radius:10px;padding:6px 8px;font:600 .85rem Inter,sans-serif;background:#fff;}
     .prog-chk{display:inline-flex;align-items:center;gap:5px;font-size:.85rem;color:#4E5665;cursor:pointer;} .prog-chk[hidden]{display:none;}
     .prog-scene{position:relative;width:100%;aspect-ratio:4/3;background:#fff;border:1px solid rgba(28,43,57,.15);border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(28,43,57,.05);}

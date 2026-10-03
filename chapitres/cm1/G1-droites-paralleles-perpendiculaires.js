@@ -150,7 +150,7 @@ ${dpAnimL('cm1dp-para-L', 'para')}
    perpendiculaire déjà présente et une parallèle, dessinées en pointillés ; au départ le curseur placé sur
    la droite (d) », puis « dans Mon TD, dans la fenêtre de projection, en groupe au tableau ». Défis CM1 de
    la programmation par blocs (prog-defis.js, PROG_DEFIS_CM1). */
-if(typeof PL_PROG !== 'undefined') PL_PROG['cm1|Droites parallèles et perpendiculaires'] = ['cm1-perp', 'cm1-para', 'cm1-equerre', 'cm1-rectangle']; // Mon TD › À l'ordinateur, en groupe (planches-prog.js)
+if(typeof PL_PROG !== 'undefined') PL_PROG['cm1|Droites parallèles et perpendiculaires'] = ['cm1-perp', 'cm1-perp-a', 'cm1-para', 'cm1-equerre', 'cm1-rectangle']; // Mon TD › À l'ordinateur, en groupe (planches-prog.js)
 /* Perpendiculaire sur quadrillage, au CM1 : (d) suit les lignes, ou les diagonales des carreaux (demandé :
    « pour les perpendiculaires dans un quadrillage, on doit se limiter aux diagonales » ; la méthode du
    « L » pour une droite oblique quelconque est vue en 6e). */
