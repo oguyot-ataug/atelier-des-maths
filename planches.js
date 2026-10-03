@@ -175,11 +175,12 @@ function plTdRendre(lvl, c){
         <span class="hint" style="margin:0;">${(p.attendus || []).map(esc).join(' · ')}</span>
         <button type="button" class="btn secondary td-mini" data-tdproj="${i}|0"><span class="gicon">present_to_all</span> Projeter la planche</button></div>
       <div class="td-grille">${p.exos.map((x, k) => `<div class="td-vig" id="tdv-${i}-${k}">
-        <div class="td-v-tete"><span class="pl-num">Exercice ${k + 1}</span><span class="pl-et">${plEtoiles(x.etoiles || 1)}</span></div>
+        <div class="td-v-tete"><span class="pl-num">Exercice ${k + 1}</span>${typeof plNumPossible === 'function' && plNumPossible(x) ? '<span class="td-num" title="Se fait aussi à l\'écran (au tableau ou en session) : colorier, compléter avec le clavier, vérifier"><span class="gicon">touch_app</span> à l\'écran</span>' : ''}<span class="pl-et">${plEtoiles(x.etoiles || 1)}</span></div>
         <div class="td-v-corps"><div class="pl-consigne">${x.consigne}</div><div class="pl-corps">${plExoCorps(x, false)}</div></div>
         <div class="td-v-pied"><button type="button" class="btn secondary td-mini" data-tdproj="${i}|${k}" title="En grand, un par un"><span class="gicon">present_to_all</span> Projeter</button>
           <button type="button" class="btn secondary td-mini" data-tdcorr="${i}|${k}"><span class="gicon">fact_check</span> Correction</button>
-          <button type="button" class="btn secondary td-mini" data-tdcahier="${i}|${k}" title="Énoncé et correction dans le cahier de la classe"><span class="gicon">add</span> Cahier</button></div></div>`).join('')}</div></section>`).join('')}`;
+          <button type="button" class="btn secondary td-mini" data-tdcahier="${i}|${k}" title="Énoncé et correction dans le cahier de la classe"><span class="gicon">add</span> Cahier</button>
+          <button type="button" class="btn secondary td-mini" data-tdsess="${i}|${k}" title="Dans la session COURS en cours, ou en ouverture de la prochaine"><span class="gicon">cast_for_education</span> Session</button></div></div>`).join('')}</div></section>`).join('')}`;
   if(typeof renderStaticMath === 'function') renderStaticMath(root);
   root.onclick = e => {
     const t = e.target, pj = t.closest('[data-tdproj]'), co = t.closest('[data-tdcorr]'), ca = t.closest('[data-tdcahier]');
@@ -188,6 +189,7 @@ function plTdRendre(lvl, c){
       v.classList.toggle('corr', on); v.querySelector('.pl-corps').innerHTML = plExoCorps(x, on); co.innerHTML = on ? '<span class="gicon">visibility_off</span> Énoncé' : '<span class="gicon">fact_check</span> Correction';
       if(typeof renderStaticMath === 'function') renderStaticMath(v); }
     else if(ca){ const [i, k] = ca.dataset.tdcahier.split('|').map(Number); plAjouterCahier(lvl, c, i, k, ca); }
+    else if(t.closest('[data-tdsess]')){ const b = t.closest('[data-tdsess]'), [i, k] = b.dataset.tdsess.split('|').map(Number); plAjouterSession(lvl, c, i, k, b); }
   };
 }
 // Énoncé (et correction) d'un exercice en HTML autonome, formules rendues : pour le cahier et les sessions.
@@ -198,6 +200,23 @@ function plExoHtml(lvl, c, i, k, mode){
     : `<div class="pl-consigne"><b>${x.consigne}</b></div><div class="pl-corps">${plExoCorps(x, false)}</div>`;
   document.body.appendChild(d); if(typeof renderStaticMath === 'function') renderStaticMath(d);
   const h = `<div class="pl-ex-cahier">${d.innerHTML}</div>`; d.remove(); return h;
+}
+// Élément de session COURS : l'exercice à faire à l'écran (planches-num.js) s'il s'y prête, sinon
+// l'énoncé, dont le professeur montre ensuite la correction.
+function plSessionItem(lvl, c, i, k){
+  const x = plDe(lvl, c.t)[i].exos[k], it = { titre: `TD ${plRef(lvl, c.code, i)} · exercice ${k + 1}`, chapitre: `${c.code} · ${c.t}`, html: plExoHtml(lvl, c, i, k, 'eleve'), corr: plExoHtml(lvl, c, i, k, 'corr') };
+  if(typeof plNumPossible === 'function' && plNumPossible(x)){ it.exo = { type: 'td', lvl, code: c.code, t: c.t, i, k }; it.prog = null; }
+  return it;
+}
+// « Ajouter à la session » : dans la session ouverte, sinon en attente pour l'ouverture de la prochaine.
+function plAttente(){ try{ return JSON.parse(localStorage.getItem('cdAttente') || '[]'); }catch(e){ return []; } }
+function plAttenteSauver(l){ try{ localStorage.setItem('cdAttente', JSON.stringify(l)); }catch(e){} }
+async function plAjouterSession(lvl, c, i, k, btn){
+  const it = plSessionItem(lvl, c, i, k);
+  if(typeof cdP !== 'undefined' && cdP){ await cxProfAjouterItems([it], 'Exercice'); return; }
+  const l = plAttente(); if(!l.some(x => x.titre === it.titre)){ it.ouverture = true; l.push(it); plAttenteSauver(l); }
+  if(btn){ const old = btn.innerHTML; btn.innerHTML = `<span class="gicon">check</span> Prochaine session (${l.length})`; setTimeout(() => btn.innerHTML = old, 2200); }
+  if(typeof cdToast === 'function') cdToast(`<span class="gicon">cast_for_education</span> Exercice mis de côté : il ouvrira votre prochaine session COURS (${l.length} en attente).`);
 }
 async function plAjouterCahier(lvl, c, i, k, btn){
   if(typeof cahier === 'undefined'){ await niceAlert('Cahier indisponible.'); return; }
@@ -338,24 +357,26 @@ async function plLivre(lvl){
 }
 
 /* ---------- Projection : un exercice à la fois, avec la correction ---------- */
-let plProj = null; // { lvl, c, i, k, corr }
+let plProj = null; // { lvl, c, i, k, corr, pn (exercice à l'écran), res }
 function plProjeter(lvl, c, i, k){
   plProj = { lvl, c, i, k: k || 0, corr: false };
   let v = document.getElementById('plProj');
   if(!v){ v = document.createElement('div'); v.id = 'plProj'; document.body.appendChild(v); }
   v.style.display = 'flex'; document.body.classList.add('plp-ouvert');
   document.addEventListener('keydown', plProjClavier);
+  window.addEventListener('resize', plProjAjuster);
   const el = document.documentElement; if(el.requestFullscreen && !document.fullscreenElement){ try{ const pz = el.requestFullscreen(); if(pz && pz.catch) pz.catch(() => {}); }catch(e){} }
   plProjRendre();
 }
 function plProjFermer(){
-  plProj = null; document.removeEventListener('keydown', plProjClavier);
+  plProj = null; document.removeEventListener('keydown', plProjClavier); window.removeEventListener('resize', plProjAjuster);
+  if(typeof plClavier !== 'undefined') plClavier.fermer();
   const v = document.getElementById('plProj'); if(v) v.style.display = 'none';
   document.body.classList.remove('plp-ouvert');
   if(document.fullscreenElement){ try{ document.exitFullscreen(); }catch(e){} }
 }
 function plProjClavier(e){
-  if(!plProj) return;
+  if(!plProj || (typeof plClavier !== 'undefined' && plClavier.cb)) return;
   if(e.key === 'ArrowRight' || e.key === 'PageDown'){ e.preventDefault(); plProjAller(1); }
   else if(e.key === 'ArrowLeft' || e.key === 'PageUp'){ e.preventDefault(); plProjAller(-1); }
   else if(e.key === 'c' || e.key === 'C'){ plProjCorr(); }
@@ -367,21 +388,49 @@ function plProjAller(d){
   let k = plProj.k + d, i = plProj.i;
   if(k >= p.exos.length && i + 1 < liste.length){ i++; k = 0; } else if(k < 0 && i > 0){ i--; k = liste[i].exos.length - 1; }
   k = Math.max(0, Math.min(liste[i].exos.length - 1, k));
-  Object.assign(plProj, { i, k, corr: false }); plProjRendre();
+  Object.assign(plProj, { i, k, corr: false, etat: null, res: null }); plProjRendre();
 }
-function plProjCorr(){ if(plProj){ plProj.corr = !plProj.corr; plProjRendre(); } }
+function plProjCorr(){ if(plProj){ if(plProj.pn) plProj.etat = plProj.pn.etat(); plProj.corr = !plProj.corr; plProjRendre(); } }
+function plProjVerifier(){
+  if(!plProj || !plProj.pn) return;
+  plProj.res = plProj.pn.verifier();
+  const b = document.getElementById('plpBilan'); if(b){ b.className = 'pn-bilan ' + (plProj.res.juste === plProj.res.total ? 'ok' : 'ko'); b.innerHTML = plNumBilan(plProj.res); }
+  plProjAjuster();
+}
+function plProjEffacer(){ if(plProj && plProj.pn){ plProj.pn.effacer(); plProj.res = null; const b = document.getElementById('plpBilan'); if(b) b.innerHTML = ''; } }
 function plProjRendre(){
   const v = document.getElementById('plProj'); if(!v || !plProj) return;
+  if(typeof plClavier !== 'undefined') plClavier.fermer();
   const { lvl, c, i, k, corr } = plProj, liste = plDe(lvl, c.t), p = liste[i], x = p.exos[k];
   const premier = i === 0 && k === 0, dernier = i === liste.length - 1 && k === p.exos.length - 1;
+  const num = !corr && typeof plNumPossible === 'function' && plNumPossible(x);
   v.innerHTML = `<div class="plp-tete"><span class="pl-ref">${plRef(lvl, c.code, i)}</span><b>${escapeHtml(p.titre)}</b>
       <span class="plp-pos">Exercice ${k + 1} / ${p.exos.length}</span><span class="pl-et">${plEtoiles(x.etoiles || 1)}</span>
       <button class="plp-fermer" onclick="plProjFermer()" title="Fermer (Échap)"><span class="gicon">close</span></button></div>
-    <div class="plp-corps${corr ? ' corr' : ''}"><div class="plp-consigne">${x.consigne}</div><div class="plp-rep">${plExoCorps(x, corr)}</div></div>
-    <div class="plp-pied"><button class="btn secondary" onclick="plProjAller(-1)" ${premier ? 'disabled' : ''}><span class="gicon">arrow_back</span> Précédent</button>
+    <div class="plp-corps${corr ? ' corr' : ''}" id="plpCorps"><div class="plp-boite" id="plpBoite"><div class="plp-consigne">${x.consigne}</div><div class="plp-rep" id="plpRep">${num ? '' : plExoCorps(x, corr)}</div>
+</div></div>
+    <div class="plp-pied">${num ? `<div class="pn-bilan" id="plpBilan"></div>` : ''}<button class="btn secondary" onclick="plProjAller(-1)" ${premier ? 'disabled' : ''}><span class="gicon">arrow_back</span> Précédent</button>
+      ${num ? `<button class="btn plp-verif" onclick="plProjVerifier()"><span class="gicon">task_alt</span> Vérifier ma réponse</button>
+        <button class="btn secondary" onclick="plProjEffacer()" title="Tout effacer"><span class="gicon">ink_eraser</span> Effacer</button>` : ''}
       <button class="btn plp-corr${corr ? ' on' : ''}" onclick="plProjCorr()"><span class="gicon">${corr ? 'visibility_off' : 'fact_check'}</span> ${corr ? 'Cacher la correction' : 'Correction'}</button>
       <button class="btn secondary" onclick="plProjAller(1)" ${dernier ? 'disabled' : ''}>Suivant <span class="gicon">arrow_forward</span></button></div>`;
-  if(typeof renderStaticMath === 'function') renderStaticMath(v);
+  plProj.pn = null;
+  if(num){
+    plProj.pn = plNum(document.getElementById('plpRep'), x, { etat: plProj.etat, res: plProj.res, onChange: e => { plProj.etat = e; const b = document.getElementById('plpBilan'); if(b && plProj.res){ plProj.res = null; b.innerHTML = ''; } } });
+    if(plProj.res) plProjVerifier();
+  } else if(typeof renderStaticMath === 'function') renderStaticMath(v);
+  plProjAjuster();
+}
+// L'exercice est centré et agrandi pour remplir l'écran (élève au tableau, fond de classe).
+function plProjAjuster(){
+  const corps = document.getElementById('plpCorps'), boite = document.getElementById('plpBoite'); if(!corps || !boite) return;
+  boite.style.zoom = 1;
+  const r = boite.getBoundingClientRect(), cl = document.getElementById('plClavier');
+  const droite = cl && cl.style.display === 'block' ? cl.getBoundingClientRect().width + 24 : 0;
+  const W = corps.clientWidth - 48 - droite, H = corps.clientHeight - 32;
+  const z = Math.max(.6, Math.min(W / r.width, H / r.height, 3.4));
+  boite.style.zoom = z.toFixed(3);
+  corps.style.paddingRight = droite ? droite + 24 + 'px' : '';
 }
 const PL_CSS = `
   @page{ size:A4; margin:10mm 12mm; }
@@ -479,6 +528,7 @@ const PL_CSS_LIVRE = `
     .td-v-tete{ display:flex; justify-content:space-between; align-items:center; } .td-vig .pl-num{ font:700 .95rem 'Space Grotesk',sans-serif; color:#E35D3A; }
     .td-vig .pl-et{ color:#E9A21C; letter-spacing:2px; } .td-vig .pl-et-off{ color:#D8DCE3; }
     .td-v-corps{ font-size:.92rem; overflow-x:auto; } .td-v-corps .pl-consigne{ font-weight:600; margin-bottom:6px; }
+    .td-num{ margin:0 auto 0 10px; font:700 .72rem 'Space Grotesk',sans-serif; color:#3A6EA5; background:#EEF4FB; border-radius:999px; padding:1px 8px; display:inline-flex; align-items:center; gap:3px; } .td-num .gicon{ font-size:14px; }
     .td-v-pied{ display:flex; gap:6px; flex-wrap:wrap; margin-top:auto; } .td-mini{ padding:4px 10px !important; font-size:.82rem !important; }
     .td-vig .pl-grille, .pl-ex-cahier .pl-grille{ display:grid; gap:6px 14px; align-items:center; } .td-vig .pl-item, .pl-ex-cahier .pl-item{ display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
     .td-vig .pl-liste, .pl-ex-cahier .pl-liste{ margin:0; padding-left:18px; } .td-vig .pl-liste li, .pl-ex-cahier .pl-liste li{ margin:3px 0; }
@@ -499,8 +549,11 @@ const PL_CSS_LIVRE = `
     .plp-tete .pl-ref{ color:#fff; border:1.5px solid #fff; border-radius:6px; padding:0 8px; font-weight:700; } .plp-tete b{ font-size:1.15rem; }
     .plp-pos{ margin-left:auto; font-weight:700; } .plp-tete .pl-et{ color:#F4C04E; letter-spacing:2px; } .plp-tete .pl-et-off{ color:rgba(255,255,255,.3); }
     .plp-fermer{ border:0; background:rgba(255,255,255,.15); color:#fff; border-radius:8px; cursor:pointer; display:flex; padding:4px; }
-    .plp-corps{ flex:1; overflow:auto; padding:24px max(24px, calc((100vw - 1100px) / 2)); }
-    .plp-corps > div{ zoom:1.7; font-size:13px; line-height:1.45; color:#1C2B39; }
+    .plp-corps{ flex:1; overflow:auto; padding:16px 24px; display:flex; align-items:center; justify-content:center; min-height:0; }
+    .plp-boite{ width:max-content; max-width:760px; font-size:13px; line-height:1.45; color:#1C2B39; margin:auto; }
+    .plp-pied .pn-bilan{ flex-basis:100%; margin:0; font-size:1.15rem; } .plp-pied .pn-bilan:empty{ display:none; }
+    body.plp-ouvert #plClavier{ left:auto; right:16px; transform:none; bottom:84px; }
+    .plp-verif{ background:#F08A3C !important; border-color:#F08A3C !important; }
     .plp-consigne{ font-weight:700; margin-bottom:10px; }
     .plp-corps .pl-grille{ display:grid; gap:8px 26px; align-items:center; } .plp-corps .pl-item{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
     .plp-corps .pl-liste{ padding-left:20px; margin:0; } .plp-corps .pl-liste li{ margin:6px 0; }
@@ -517,7 +570,7 @@ const PL_CSS_LIVRE = `
     .plp-corps .pl-oliv{ width:48px; height:48px; display:inline-block; } .plp-corps .pl-oliv svg{ width:100%; height:100%; }
     .plp-corps .pl-bulle{ background:#fff; color:#3E5A1E; border:2px solid #8DB84A; border-radius:12px 12px 12px 3px; padding:2px 10px; font:800 13px 'Space Grotesk',sans-serif; }
     body.plp-ouvert #aideBtn, body.plp-ouvert #aideBulle{ display:none !important; }
-    .plp-pied{ display:flex; justify-content:center; gap:14px; padding:12px; border-top:1px solid rgba(28,43,57,.12); background:#fff; }
+    .plp-pied{ display:flex; flex-wrap:wrap; justify-content:center; gap:10px 14px; padding:12px; border-top:1px solid rgba(28,43,57,.12); background:#fff; }
     .plp-pied .btn{ font-size:1.05rem; padding:10px 18px; } .plp-corr{ background:#1F7A4D !important; border-color:#1F7A4D !important; } .plp-corr.on{ background:#5B6472 !important; border-color:#5B6472 !important; }
   `;
   document.head.appendChild(st);

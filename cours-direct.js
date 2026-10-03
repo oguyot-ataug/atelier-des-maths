@@ -70,7 +70,7 @@ async function cdPreparer(){
     if(choix !== 'neuf') return;
   }
   const fin = todayISO(), d0 = new Date(); d0.setDate(d0.getDate() - 14);
-  const st = { du: d0.toISOString().slice(0, 10), au: fin, entrees: [], choisies: new Set(), exos: [], titre: 'Cours du ' + new Date().toLocaleDateString('fr-FR') };
+  const st = { du: d0.toISOString().slice(0, 10), au: fin, entrees: [], choisies: new Set(), exos: typeof plAttente === 'function' ? plAttente() : [], titre: 'Cours du ' + new Date().toLocaleDateString('fr-FR') };
   let o = document.getElementById('cdPrepOverlay');
   if(!o){ o = document.createElement('div'); o.id = 'cdPrepOverlay'; o.className = 'modal-overlay'; o.style.zIndex = '400'; document.body.appendChild(o); }
   const charger = async () => {
@@ -91,7 +91,7 @@ async function cdPreparer(){
         <button type="button" class="btn secondary" id="cdPrepCharger"><span class="gicon">refresh</span> Afficher</button></div>
       <div class="cd-liste">${msg || ([...parJour.entries()].map(([j, es]) => `<div class="cd-jour"><b>${new Date(j + 'T12:00').toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}</b>
         ${es.map(e => `<label class="cd-entree"><input type="checkbox" data-id="${e.id}" ${st.choisies.has(e.id) ? 'checked' : ''}> ${cdEsc(cdTitreEntree(e))}${cdProgDe(e.html) ? ' <span class="cd-tag"><span class="gicon">architecture</span> construction</span>' : ''}${e.chapitre ? ` <small>${cdEsc(e.chapitre)}</small>` : ''}</label>`).join('')}</div>`).join('') || '<p class="hint">Aucune entrée du cahier sur cette période.</p>')}
-        ${st.exos.length ? `<div class="cd-exos"><b>Ajouts (après les éléments du cahier)</b>${st.exos.map((x, k) => `<div class="cd-exo"><span class="gicon"${x.exo ? '' : ' style="color:#1F7A4D;"'}>${x.exo ? 'edit_square' : 'menu_book'}</span> ${cdEsc(x.titre)}${x.chapitre ? ` <small>${cdEsc(x.chapitre)}</small>` : ''}
+        ${st.exos.length ? `<div class="cd-exos"><b>Ajouts (après les éléments du cahier, sauf ceux « en ouverture »)</b>${st.exos.map((x, k) => `<div class="cd-exo"><span class="gicon"${x.exo ? '' : ' style="color:#1F7A4D;"'}>${x.exo ? 'edit_square' : 'menu_book'}</span> ${cdEsc(x.titre)}${x.chapitre ? ` <small>${cdEsc(x.chapitre)}</small>` : ''}${x.ouverture ? ' <span class="cd-tag"><span class="gicon">wb_sunny</span> en ouverture</span>' : ''}
           <span class="cd-exo-act"><button type="button" data-monte="${k}" title="Monter" ${k ? '' : 'disabled'}><span class="gicon">arrow_upward</span></button><button type="button" data-descend="${k}" title="Descendre" ${k < st.exos.length - 1 ? '' : 'disabled'}><span class="gicon">arrow_downward</span></button><button type="button" data-exo="${k}" title="Retirer"><span class="gicon">close</span></button></span></div>`).join('')}</div>` : ''}</div>
       <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;"><button type="button" class="btn secondary" id="cdPrepCours"><span class="gicon">menu_book</span> Ajouter une partie de cours</button>
         <button type="button" class="btn secondary" id="cdPrepExo"><span class="gicon">edit_square</span> Ajouter un exercice à faire</button></div>
@@ -110,7 +110,9 @@ async function cdPreparer(){
     document.getElementById('cdPrepTitre').oninput = e => { st.titre = e.target.value; };
     document.getElementById('cdPrepCharger').onclick = () => { st.du = document.getElementById('cdPrepDu').value; st.au = document.getElementById('cdPrepAu').value; charger(); };
     document.getElementById('cdPrepGo').onclick = async () => {
-      const items = st.entrees.filter(e => st.choisies.has(e.id)).map(cdItemDe).concat(st.exos);
+      // Exercices mis de côté depuis Mon TD (« Session ») : en ouverture, avant le cahier.
+      const items = st.exos.filter(x => x.ouverture).concat(st.entrees.filter(e => st.choisies.has(e.id)).map(cdItemDe), st.exos.filter(x => !x.ouverture));
+      if(typeof plAttenteSauver === 'function') plAttenteSauver([]);
       if(!items.length){ await niceAlert('Choisissez au moins un élément du cahier ou un exercice.'); return; }
       o.style.display = 'none';
       cdCreer(st.titre.trim() || 'Cours', items);
@@ -375,7 +377,8 @@ async function cdEleveCharger(){
   cdE.d = data;
   if(!avant || avant.idx !== data.idx) cdE.vue = data.idx; // le professeur avance : on le suit
   // Exercice en cours sur l'écran : on ne le redessine pas (la saisie en cours serait perdue).
-  if(avant && avant.idx === data.idx && avant.n === data.n && (data.items[cdE.vue] || {}).exo && cdE.cxMonte === cdE.vue) return;
+  const corrBouge = !!(avant && avant.etat && avant.etat.corr) !== !!(data.etat && data.etat.corr) && ((data.items[cdE.vue] || {}).exo || {}).type === 'td';
+  if(avant && avant.idx === data.idx && avant.n === data.n && (data.items[cdE.vue] || {}).exo && cdE.cxMonte === cdE.vue && !corrBouge) return;
   const it = data.items[data.idx] || {}, etape = data.etat && data.etat.etape;
   // Construction déroulée par le professeur : tableau en plein écran, à la même étape.
   if(it.prog && etape != null && cdE.vue === data.idx){

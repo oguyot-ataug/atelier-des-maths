@@ -3302,6 +3302,11 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.929', date:'2026-10-03', items:[
+    'Projection des exercices (Mon TD, planches) : l\'exercice est centré et agrandi pour remplir l\'écran, lisible depuis le fond de la classe',
+    'Exercices à l\'écran : colorier les parts d\'une figure, compléter les cases avec un clavier virtuel (chiffres, < = >, lettres), entourer, barrer, vrai ou faux, puis « Vérifier ma réponse » (juste en vert, à corriger en rouge). Repère « à l\'écran » sur les vignettes de Mon TD',
+    'Bouton « Session » sur chaque vignette de Mon TD : l\'exercice s\'ajoute à la session COURS ouverte, ou est mis de côté pour ouvrir la prochaine. Chaque élève le fait sur son écran et le vérifie ; le professeur suit les réponses justes ou fausses de chacun et peut prendre la main'
+  ]},
   { version:'2026-08-19.928', date:'2026-10-03', items:[
     'Nouvel onglet « Mon TD » dans les chapitres du primaire : tous les exercices des planches en vignettes, projetables un à un, avec bouton Correction et ajout au cahier de la classe',
     'Session COURS : un exercice de Mon TD s\'ajoute avec « Ajouter une partie de cours » ; le professeur montre ou cache la correction aux élèves (elle n\'est envoyée qu\'à ce moment-là)',

@@ -177,7 +177,7 @@ function cxChoisirCours(){
         for(const i of [...st.choisies].sort((a, b) => a - b)){
           const p = st.parties[i];
           if(p.td){ const [pi, k] = p.td;
-            items.push({ titre: `TD ${plRef(st.lvl, c.code, pi)} · exercice ${k + 1}`, chapitre: `${c.code} · ${c.t}`, html: plExoHtml(st.lvl, c, pi, k, 'eleve'), corr: plExoHtml(st.lvl, c, pi, k, 'corr') });
+            items.push(plSessionItem(st.lvl, c, pi, k));
             continue; }
           const n = st.parties.filter(x => x.onglet === p.onglet).indexOf(p);
           try{ const r = await sectionVersHtml(p.h); items.push({ titre: /^(méthode|cours)\b/i.test(r.titre) ? r.titre : (p.onglet === 'Méthode' ? 'Méthode : ' : 'Cours : ') + r.titre, chapitre: `${c.code} · ${c.t}`, html: r.html, prog: cdProgDe(r.html),
@@ -304,7 +304,9 @@ function cxProfAide(p){
 function cxProfMonter(k, it){
   const c = document.getElementById('cdProfContenu'); if(!c) return;
   const d = it.exo.type === 'prog' && typeof progDefiParId === 'function' ? progDefiParId(it.exo.defi) : null;
-  const apercu = it.exo.type === 'prog'
+  const apercu = it.exo.type === 'td'
+    ? `<details class="cx-apercu"><summary>Voir l'exercice et sa correction</summary>${it.html || ''}${it.corr ? '<div class="pl-ex-corr-titre">Correction</div>' + it.corr : ''}</details>`
+    : it.exo.type === 'prog'
     ? `<div class="cx-consigne">${d ? d.enonce : 'Défi introuvable.'}</div>`
     : `<details class="cx-apercu"><summary>Voir l'exercice et son corrigé (${cxNbQuestions(it).length} question${cxNbQuestions(it).length > 1 ? 's' : ''})</summary>${it.exo.questions.map(q => q.type === 'texte'
         ? `<div class="qz-doc">${qzEnonceHtml(q)}</div>` : `<div class="qz-q">${qzEnonceHtml(q)}<div class="qz-q-rep">${qzRenderSaisie(q, undefined, 'corrige', cxCtx('k'))}</div></div>`).join('')}</details>`;
@@ -332,6 +334,11 @@ function cxProfMaj(seul){
       if(nb) commence++; ok = !!rep._fini || (qs.length && nb === qs.length); if(ok) fini++;
       corps = `<div class="cx-pastilles">${qs.map((q, i) => { const v = qzVerdict(q, rep2[i]); return `<i title="Question ${i + 1}" style="background:${CX_COUL[v] || CX_COUL.vide}"></i>`; }).join('')}</div>
         <small>${nb} / ${qs.length} répondue${nb > 1 ? 's' : ''}${rep._fini ? ' · <b>a terminé</b>' : ''}</small>`;
+    } else if(it.exo.type === 'td'){
+      const r = rep.res, nbT = r ? r.total : cxTdTotal(it);
+      if(rep.etat) commence++; ok = !!(r && r.juste === r.total); if(ok) fini++;
+      corps = `<div class="cx-pastilles">${Array.from({ length: nbT }, (_, i) => `<i style="background:${r ? (r.d[i] ? CX_COUL.juste : CX_COUL.faux) : CX_COUL.vide}"></i>`).join('')}</div>
+        <small>${r ? `${r.juste} / ${r.total} juste${r.juste > 1 ? 's' : ''}` : rep.etat ? 'pas encore vérifié' : 'pas commencé'}${rep.essais ? ` · ${rep.essais} vérification${rep.essais > 1 ? 's' : ''}` : ''}</small>`;
     } else {
       if(s.rep) commence++; ok = !!rep.reussi; if(ok) fini++;
       corps = `<small>${ok ? '<b style="color:#1F7A4D;">Défi réussi</b>' : s.rep ? `${rep.blocs || 0} bloc${rep.blocs > 1 ? 's' : ''} · ${rep.essais || 0} vérification${rep.essais > 1 ? 's' : ''}` : 'pas commencé'}</small>`;
@@ -342,7 +349,8 @@ function cxProfMaj(seul){
       ${s.dehors ? '<small class="cx-rouge">SORTI de la page</small>' : ''}</button>`;
   }).join('') || '<p class="hint">Aucun élève dans cette classe.</p>';
   const r = document.getElementById('cxResume');
-  if(r) r.innerHTML = `<b>${commence}</b> / ${cdP.eleves.length} ont commencé · <b>${fini}</b> ${it.exo.type === 'prog' ? 'ont réussi' : 'ont terminé'}${aides ? ` · <b class="cx-bleu"><span class="gicon">front_hand</span> ${aides} main${aides > 1 ? 's' : ''} levée${aides > 1 ? 's' : ''}</b>` : ''}
+  if(r) r.innerHTML = `<b>${commence}</b> / ${cdP.eleves.length} ont commencé · <b>${fini}</b> ${it.exo.type === 'prog' ? 'ont réussi' : it.exo.type === 'td' ? 'ont tout juste' : 'ont terminé'}${aides ? ` · <b class="cx-bleu"><span class="gicon">front_hand</span> ${aides} main${aides > 1 ? 's' : ''} levée${aides > 1 ? 's' : ''}</b>` : ''}
+    ${it.exo.type === 'td' ? '<span class="cx-leg"><i style="background:#1F7A4D"></i>juste <i style="background:#9E1F5E"></i>faux <i style="background:#D5DBE3"></i>pas vérifié</span>' : ''}
     ${it.exo.type === 'qz' ? '<span class="cx-leg"><i style="background:#1F7A4D"></i>juste <i style="background:#C77D1E"></i>en partie <i style="background:#9E1F5E"></i>faux <i style="background:#3A6EA5"></i>à regarder <i style="background:#D5DBE3"></i>pas répondu</span>' : ''}`;
   if(cdP.selEx && (!seul || seul === cdP.selEx) && !(cdP.main && cdP.main.e === cdP.selEx)) cxProfDetail();
 }
@@ -362,6 +370,14 @@ function cxProfDetail(){
       ${s.main ? `<button class="btn" style="background:#1F7A4D;" onclick="cxRelacher()"><span class="gicon">pan_tool</span> Rendre la main</button>`
         : `<button class="btn" style="background:#E35D3A;" onclick="${it.exo.type === 'prog' ? 'cxProfProg(\'main\')' : 'cxPrendre()'}"><span class="gicon">pan_tool_alt</span> Prendre la main</button>`}
       <button class="modal-close" onclick="cxProfVoir('${cdP.selEx}')" title="Fermer"><span class="gicon">close</span></button></div>`;
+  if(it.exo.type === 'td'){
+    const tenu = s.main, r = rep.res;
+    box.innerHTML = `${tete}${tenu ? '<p class="cx-tenu"><span class="gicon">pan_tool_alt</span> Vous avez la main : ce que vous faites ici apparaît en direct sur l\'écran de l\'élève. Rendez-lui la main ensuite.</p>' : ''}
+      <p class="hint" style="margin:4px 0;">${r ? `Dernière vérification : ${r.juste} / ${r.total} juste${r.juste > 1 ? 's' : ''}.` : rep.etat ? 'Pas encore vérifié.' : 'Pas encore commencé.'}</p><div class="cx-td" id="cxTdProf"></div>`;
+    const x = cxTdExo(it), zone = box.querySelector('#cxTdProf');
+    if(!x || !plNum(zone, x, { etat: rep.etat, res: tenu ? null : r, lecture: !tenu, onChange: tenu ? e => cxTdProfChange(e) : null })) zone.innerHTML = it.html || '';
+    return;
+  }
   if(it.exo.type === 'prog'){
     box.innerHTML = `${tete}<p>${rep.reussi ? '<b style="color:#1F7A4D;">Défi réussi.</b>' : s.rep ? 'Défi pas encore réussi.' : 'Pas encore commencé.'} ${rep.blocs ? `${rep.blocs} bloc${rep.blocs > 1 ? 's' : ''} posé${rep.blocs > 1 ? 's' : ''}.` : ''}</p>
       ${rep.msg ? `<div class="cx-msg"><span class="gicon">info</span> Dernière vérification : ${cdEsc(rep.msg)}</div>` : ''}`;
@@ -392,6 +408,7 @@ async function cxPrendre(){
   cdP.main = null; await cxProfCharger(k, e);
   if(!cdP || cdP.selEx !== e) return;
   cdP.main = { e, k };
+  if(it.exo.type === 'td'){ cxProfMaj(); cxProfDetail(); return; }
   const rep = cxClone((cxProfTrav(k).get(e) || {}).rep || {});
   qzP = { direct: true, cours: true, prof: true, e, k, apercu: false, data: { devoir: { id: 'cours', titre: it.titre } }, devoirId: 'cours-' + cdP.id,
     questions: it.exo.questions, reglages: {}, copie: null, reponses: rep, sorties: 0, log: [] };
@@ -400,6 +417,8 @@ async function cxPrendre(){
 function cxRelacher(){
   if(!cdP || !cdP.main) return;
   const { e, k } = cdP.main;
+  if(cdP.tdT){ clearTimeout(cdP.tdT); cdP.tdT = null; const x = cxProfTrav(k).get(e); if(x) cxProfSauver(e, k, x.rep); }
+  if(typeof plClavier !== 'undefined') plClavier.fermer();
   if(qzP && qzP.cours && qzP.prof){
     if(cx.figQid && typeof closeFigureTool === 'function'){ const t = document.getElementById('toolsModalOverlay'); if(t && t.style.display !== 'none') closeFigureTool(); }
     cxProfEnvoi(true); qzP = null;
@@ -480,12 +499,53 @@ function cxEleveTete(k, it){
       : `<span class="cx-e-chip"><span class="gicon">edit_square</span> Exercice à faire</span><span class="hint" id="cxSave" style="margin:0;"></span><span style="flex:1"></span>
         <button class="btn secondary${cdE.aide ? ' cx-leve' : ''}" onclick="cxEleveAide()"><span class="gicon">front_hand</span> ${cdE.aide ? 'Main levée : ton professeur arrive' : 'Lever la main'}</button>`}</div>`;
 }
+/* ---------- Exercices de Mon TD faits à l'écran (planches-num.js) ----------
+   Élément : { titre, html (énoncé figé), corr, exo:{ type:'td', lvl, code, t, i, k } } ; l'exercice est
+   relu dans PLANCHES (scripts des chapitres). Travail : { etat, res (dernière vérification), essais }. */
+function cxTdExo(it){
+  const e = it && it.exo; if(!e || typeof plDe !== 'function') return null;
+  const p = plDe(e.lvl, e.t)[e.i]; return p && p.exos[e.k] ? p.exos[e.k] : null;
+}
+function cxTdTotal(it){ const x = cxTdExo(it), m = x && typeof plNumModele === 'function' ? plNumModele(x) : null; return m ? m.cibles.length : 0; }
+function cxTdProfChange(etat){
+  if(!cdP || !cdP.main) return;
+  const { e, k } = cdP.main, x = cxProfTrav(k).get(e) || {}, rep = Object.assign({}, x.rep, { etat, res: null });
+  cxProfTrav(k).set(e, Object.assign(x, { rep, t: Date.now() }));
+  clearTimeout(cdP.tdT); cdP.tdT = setTimeout(() => { cdP.tdT = null; cxProfSauver(e, k, rep); }, 400);
+}
+function cxEleveTd(k, it, c){
+  const rep = cdE.trav.get(k) || {}, tenu = cdE.main === k, x = cxTdExo(it);
+  const corr = it.corr && cdE.d && cdE.d.idx === k && cdE.d.etat && cdE.d.etat.corr;
+  if(typeof plClavier !== 'undefined') plClavier.fermer();
+  c.innerHTML = `${cxEleveTete(k, it)}<div class="cx-td" id="cxTdEl"></div>
+    ${tenu ? '' : `<div class="pn-actions"><button class="btn cx-td-verif" onclick="cxEleveTdVerifier()"><span class="gicon">task_alt</span> Vérifier ma réponse</button>
+      <button class="btn secondary" onclick="cxEleveTdEffacer()"><span class="gicon">ink_eraser</span> Effacer</button></div>`}
+    <div class="pn-bilan ${rep.res ? (rep.res.juste === rep.res.total ? 'ok' : 'ko') : ''}" id="cxTdBilan">${rep.res && typeof plNumBilan === 'function' ? plNumBilan(rep.res) : ''}</div>
+    ${corr ? '<div class="cd-corr-montree"><span class="gicon">fact_check</span> Correction</div>' + it.corr : ''}`;
+  const zone = c.querySelector('#cxTdEl');
+  cdE.td = x && typeof plNum === 'function' ? plNum(zone, x, { etat: rep.etat, res: rep.res, lecture: tenu, onChange: etat => {
+    const avant = cdE.trav.get(k) || {}; cdE.trav.set(k, Object.assign({}, avant, { etat, res: null }));
+    const b = document.getElementById('cxTdBilan'); if(b){ b.innerHTML = ''; b.className = 'pn-bilan'; }
+    const s = document.getElementById('cxSave'); if(s) s.textContent = 'Enregistrement…';
+    clearTimeout(cdE.saveT); cdE.saveT = setTimeout(() => cxEleveSauver(k), 700);
+  } }) : null;
+  if(!cdE.td){ zone.innerHTML = it.html || ''; if(typeof renderStaticMath === 'function') renderStaticMath(zone); }
+}
+function cxEleveTdVerifier(){
+  if(!cdE || !cdE.td) return;
+  const k = cdE.vue, res = cdE.td.verifier(), avant = cdE.trav.get(k) || {};
+  cdE.trav.set(k, Object.assign({}, avant, { etat: cdE.td.etat(), res, essais: (avant.essais || 0) + 1 }));
+  const b = document.getElementById('cxTdBilan'); if(b){ b.className = 'pn-bilan ' + (res.juste === res.total ? 'ok' : 'ko'); b.innerHTML = plNumBilan(res); }
+  cxEleveSauver(k);
+}
+function cxEleveTdEffacer(){ if(cdE && cdE.td) cdE.td.effacer(); }
 // Remplit #cdEleveContenu quand l'élément affiché est un exercice.
 async function cxEleveMonter(k, it){
   await cxEleveTravaux();
   const c = document.getElementById('cdEleveContenu'); if(!c || !cdE) return;
   cdE.cxMonte = k;
   const rep = cdE.trav.get(k) || {}, tenu = cdE.main === k;
+  if(it.exo.type === 'td'){ if(qzP && qzP.cours) qzP = null; cxEleveTd(k, it, c); return; }
   if(it.exo.type === 'prog'){
     if(qzP && qzP.cours) qzP = null;
     const d = typeof progDefiParId === 'function' ? progDefiParId(it.exo.defi) : null;
