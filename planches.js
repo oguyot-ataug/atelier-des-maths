@@ -49,6 +49,27 @@ function plLignes(n){ return `<div class="pl-lignes">${'<div></div>'.repeat(n ||
 // Rend un dessin interactif à l'écran (planches-num.js › PLX) : cfg = { t: 'barres' | 'seg' | 'cases' | 'pts' | … }.
 // Sur papier, rien ne change ; la clé est portée par le dessin de l'énoncé.
 function plX(html, cfg){ return html.replace(/<(svg|span)\b/, m => `${m} data-plx="${JSON.stringify(cfg).replace(/&/g, '&amp;').replace(/"/g, '&quot;')}"`); }
+// Division posée (potence) à compléter case par case -- demandé : « pour les divisions, écrire la division
+// et laisser l'élève compléter les cases (avec ou sans poser les différences) à l'écran ou en session ».
+// o.mode : 'trous' (cases vides, énoncé à l'écran), 'rep' (corrigé lu case par case), sinon la division écrite ;
+// o.diff : avec les soustractions (produits et restes) ; sinon seulement les nombres abaissés et le reste.
+// Le dividende et le diviseur sont écrits ; les signes « − » et les traits guident la disposition.
+function plDivision(a, b, o){
+  o = o || {}; const res = computeDivisionPosee(a, b), N = String(a).length, diff = o.diff !== false;
+  const cel = c => c === '' ? '' : o.mode === 'trous' ? '<span class="pl-case pl-case-seule" style="margin:0;width:18px;"></span>' : o.mode === 'rep' ? plRep(c) : c;
+  const al = (str, end) => dpAlignedCells(String(str), end, N);
+  const rows = [{ cells: al(a, N - 1).map(c => c), brut: true }];
+  let premier = true, fin = -1;
+  res.steps.forEach((st, i) => { if(st.sub === null) return;
+    if(diff){ if(!premier) rows.push({ cells: al(st.value, i) }); premier = false; rows.push({ cells: al(st.sub, i), moins: true, end: i }); fin = i; if(i === N - 1) rows.push({ cells: al(res.remainder, i) }); }
+    else { if(premier){ premier = false; return; } rows.push({ cells: al(st.value, i) }); } });
+  if(diff && fin < N - 1) rows.push({ cells: al(res.remainder, N - 1) });
+  if(!diff) rows.push({ cells: al(res.remainder, N - 1) });
+  const td = (c, r, j) => `<td style="width:24px;height:28px;text-align:center;padding:1px 0;${r.brut ? 'font-weight:700;' : ''}${r.moins && j <= r.end ? 'border-bottom:1.5px solid #1C2B39;' : ''}">${r.brut ? c : cel(c)}</td>`;
+  const tab = `<table style="border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:1.05rem;">${rows.map(r => `<tr><td style="width:14px;text-align:center;">${r.moins ? '−' : ''}</td>${r.cells.map((c, j) => td(c, r, j)).join('')}</tr>`).join('')}</table>`;
+  const q = String(res.quotient).split('').map(c => `<span style="display:inline-block;min-width:22px;text-align:center;">${cel(c)}</span>`).join('');
+  return `<div class="pl-div2" style="display:inline-flex;gap:14px;align-items:stretch;margin:4px 0;">${tab}<div style="border-left:1.5px solid #1C2B39;font-family:'JetBrains Mono',monospace;font-size:1.05rem;"><div style="padding:3px 0 3px 12px;font-weight:700;">${b}</div><div style="border-top:1.5px solid #1C2B39;padding:4px 0 0 8px;white-space:nowrap;">${q}</div></div></div>`;
+}
 // Programme de flèches à écrire (à l'écran : boutons ← ↑ → ↓) ; att = 'ddh…' (d droite, g gauche, h haut, b bas).
 function plFleches(att, n){ return plX(`<span class="pl-pts" style="min-width:${(n || 10) * .55}em;"></span>`, { t: 'fleches', att }); }
 

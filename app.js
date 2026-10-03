@@ -3335,6 +3335,11 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.972', date:'2026-10-03', items:[
+    "Opérations posées des planches : chaque ligne à remplir (produits intermédiaires, résultat) a maintenant sa hauteur ; il y a de la place pour écrire, sur papier comme dans Mon TD.",
+    "Divisions à l'écran et en session : la potence est écrite (dividende, diviseur, signes « − » et traits) et l'élève complète les cases : quotient, produits soustraits et restes, ou seulement les nombres abaissés et le reste (« sans les soustractions »). En CM1 (Opérations sur les nombres entiers) et en 6e (Nombres entiers).",
+    "6e, Nombres entiers : trois planches au lieu de deux (Les grands nombres ; Opérations posées, avec trois additions et soustractions et trois multiplications ; Division euclidienne, multiples et diviseurs)."
+  ] },
   { version:'2026-08-19.971', date:'2026-10-03', items:[
     "6e : premières planches imprimables avec corrigés, comme au primaire (version écran, projection, session, Mon TD, pages pleines). « Nombres entiers » (grands nombres ; opérations et division euclidienne), « Droites parallèles et perpendiculaires » (notations, perpendiculaire et parallèle sur quadrillage, propriétés rédigées ; médiatrice), « Fractions : nombres et partage » (écriture fractionnaire, égalités, simplification ; proportions et pourcentages), « Distance et cercles » (distance, milieu, codage ; le cercle).",
     "Planches : références uniques quand deux chapitres d'un niveau ont le même code (6e-N4a, 6e-N4b…) ; potences de division plus compactes dans les corrigés."

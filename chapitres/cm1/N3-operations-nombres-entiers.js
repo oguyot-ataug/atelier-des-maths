@@ -498,8 +498,9 @@ PLANCHES['cm1|Opérations sur les nombres entiers'] = [
       { etoiles: 2, consigne: 'Pose et calcule ces divisions. Écris le quotient et le reste.',
         eleve: duo([`<span style="text-align:center;">857 ÷ 6<br>${grille(10, 8)}<br>quotient : ${B(3)} reste : ${B(2)}</span>`, `<span style="text-align:center;">639 ÷ 4<br>${grille(10, 8)}<br>quotient : ${B(3)} reste : ${B(2)}</span>`, `<span style="text-align:center;">1 250 ÷ 7<br>${grille(10, 8)}<br>quotient : ${B(3)} reste : ${B(2)}</span>`]),
         corr: duo([`<span style="text-align:center;">${div(857, 6)}quotient : ${R(142)} reste : ${R(5)}</span>`, `<span style="text-align:center;">${div(639, 4)}quotient : ${R(159)} reste : ${R(3)}</span>`, `<span style="text-align:center;">${div(1250, 7)}quotient : ${R(178)} reste : ${R(4)}</span>`]),
-        ecran: { eleve: plListe([[857, 6], [639, 4], [1250, 7]].map(([a, d]) => `${a.toLocaleString('fr-FR')} ÷ ${d} : quotient ${B(3)} reste ${B(2)}`)) + '<p class="hint">Pose la division sur ton ardoise ou ton cahier, puis écris le quotient et le reste.</p>',
-          corr: plListe([[857, 6, 142, 5], [639, 4, 159, 3], [1250, 7, 178, 4]].map(([a, d, q, r]) => `${a.toLocaleString('fr-FR')} ÷ ${d} : quotient ${R(q)} reste ${R(r)}`)) } },
+        // À l'écran : la potence à compléter case par case (avec les soustractions, puis sans).
+        ecran: { eleve: duo([[857, 6, 1], [639, 4, 1], [1250, 7, 0]].map(([a, d, df]) => `<span style="text-align:center;">${plDivision(a, d, { mode: 'trous', diff: !!df })}<br>quotient : ${B(3)} reste : ${B(2)}</span>`)),
+          corr: duo([[857, 6, 1, 142, 5], [639, 4, 1, 159, 3], [1250, 7, 0, 178, 4]].map(([a, d, df, q, r]) => `<span style="text-align:center;">${plDivision(a, d, { mode: 'rep', diff: !!df })}<br>quotient : ${R(q)} reste : ${R(r)}</span>`)) } },
       { etoiles: 2, col: 1, consigne: 'Entoure les nombres divisibles par 2.',
         eleve: plGrille(['38', '75', '120', '403', '96', '1 001'], 3),
         corr: plGrille(['38', '75', '120', '403', '96', '1 001'].map(n => /[02468]$/.test(n) ? plEntoure(n) : n), 3) },
