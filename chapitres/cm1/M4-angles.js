@@ -84,4 +84,43 @@ ${cm1Sous('A', 'Atelier : ouvre l\'angle')}
   ],
   init: () => { const r = document.querySelector('#methode-demo-cm1-angles input[type=range]'); cm1AnMaj(r ? r.value : 60); },
 });
+/* ---- Planches d'exercices imprimables (planches.js) ----
+   Au CM : pas de rapporteur. On compare avec l'équerre (angle droit) ou un gabarit en papier calque. */
+{
+const B = n => plPointilles(n || 6), R = v => plRep(String(v));
+const ang = (d, o) => angleSVG(d, Object.assign({ w: 150, h: 100, ox: 48, oy: 86, L: 82 }, o || {})).replace('<svg ', '<svg class="pl-libre" ').replace(/style="width:\d+px;/, 'style="width:118px;');
+const col = (h, t) => `<span style="display:flex;flex-direction:column;align-items:center;gap:2px;">${h}<span>${t}</span></span>`;
+const ANG = [[40, 'aigu'], [90, 'droit'], [130, 'obtus'], [70, 'aigu'], [110, 'obtus'], [20, 'aigu']];
+const S = (w, h, inner, px) => `<svg class="pl-libre" viewBox="0 0 ${w} ${h}" style="width:${px || w}px;max-width:100%;display:inline-block;vertical-align:middle;">${inner}</svg>`;
+const ad = (x, y, sx, sy) => `<polyline points="${x + 9 * sx},${y} ${x + 9 * sx},${y + 9 * sy} ${x},${y + 9 * sy}" fill="none" stroke="#2E9C6A" stroke-width="1.6"/>`;
+const FIG = [
+  ['un rectangle', '<polygon points="8,15 102,15 102,70 8,70" fill="#DCEFF6" stroke="#1F3A5C" stroke-width="2"/>', 4, ad(8, 15, 1, 1) + ad(102, 15, -1, 1) + ad(102, 70, -1, -1) + ad(8, 70, 1, -1)],
+  ['un triangle rectangle', '<polygon points="12,75 12,10 100,75" fill="#DCEFF6" stroke="#1F3A5C" stroke-width="2"/>', 1, ad(12, 75, 1, -1)],
+  ['un losange', '<polygon points="55,5 100,42 55,80 10,42" fill="#DCEFF6" stroke="#1F3A5C" stroke-width="2"/>', 0, ''],
+  ['une maison', '<polygon points="15,80 15,35 55,6 95,35 95,80" fill="#DCEFF6" stroke="#1F3A5C" stroke-width="2"/>', 2, ad(15, 80, 1, -1) + ad(95, 80, -1, -1)],
+];
+PLANCHES['cm1|Angles'] = [
+  { titre: 'Angles aigus, droits et obtus', duree: '30 min',
+    attendus: ['Reconnaître un angle droit avec l\'équerre', 'Distinguer angle aigu, angle droit, angle obtus'],
+    exos: [
+      { etoiles: 1, consigne: 'Avec ton équerre, dis si chaque angle est aigu, droit ou obtus.',
+        eleve: plGrille(ANG.map(([d], i) => col(ang(d).replace(/<polyline[^>]*\/>/, ''), `<b>${'ABCDEF'[i]}</b> : ${B()}`)), 3), // sans le codage de l'angle droit : c'est à l'élève de le trouver
+        corr: plGrille(ANG.map(([d, n], i) => col(ang(d), `<b>${'ABCDEF'[i]}</b> : ${R(n)}`)), 3) },
+      { etoiles: 1, col: 1, consigne: 'Vrai ou faux ? Entoure.',
+        eleve: plListe(['Un angle obtus est plus grand qu\'un angle droit. <b>vrai · faux</b>', 'Un angle aigu est plus grand qu\'un angle droit. <b>vrai · faux</b>', 'Si on allonge les côtés, l\'angle devient plus grand. <b>vrai · faux</b>', 'Un carré a 4 angles droits. <b>vrai · faux</b>']),
+        corr: plListe([['Un angle obtus est plus grand qu\'un angle droit. ', 'vrai'], ['Un angle aigu est plus grand qu\'un angle droit. ', 'faux'], ['Si on allonge les côtés, l\'angle devient plus grand. ', 'faux'], ['Un carré a 4 angles droits. ', 'vrai']].map(([t, r]) => t + plEntoure(r))) },
+      { etoiles: 2, col: 1, consigne: `Lequel de ces deux angles est le plus grand ? Décalque-le pour comparer.<div style="display:flex;justify-content:space-around;">${[col(ang(35, { L: 120, w: 175, h: 100, ox: 30 }).replace('width:118px', 'width:140px'), '<b>M</b>'), col(ang(60, { L: 50 }), '<b>N</b>')].join('')}</div>`,
+        eleve: plListe(['Le plus grand angle est <b>M · N</b>']),
+        corr: plListe(['Le plus grand angle est ' + plEntoure('N') + ' : ses côtés sont plus courts, mais il est plus ouvert.']) },
+      { etoiles: 2, consigne: 'Combien d\'angles droits a chaque figure ? Vérifie avec ton équerre.',
+        eleve: plGrille(FIG.map(([n, f]) => col(S(110, 85, f, 100), `${n} : ${B(2)}`)), 4),
+        corr: plGrille(FIG.map(([n, f, k, m]) => col(S(110, 85, f + m, 100), `${n} : ${R(k)}`)), 4) },
+      { etoiles: 3, col: 1, cahier: true, consigne: 'Avec ta règle et ton équerre, trace un angle droit, un angle aigu, puis un angle obtus. Code l\'angle droit.',
+        corr: cm1Redac('Méthode', { suite: ['Angle droit : je trace le long des deux bords de l\'angle droit de l\'équerre.', 'Aigu : plus fermé que l\'équerre ; obtus : plus ouvert.'] }, 'Je code l\'angle droit avec un petit carré.', `<span class="cm-fig-d">${ang(90)}</span>`) },
+      { etoiles: 3, col: 1, cahier: true, consigne: 'À 3 h, les aiguilles d\'une horloge forment un angle droit. Quel angle forment-elles à 2 h ? Et à 5 h ?',
+        corr: cm1Redac('À 2 h', 'les aiguilles sont plus proches qu\'à 3 h', 'À 2 h, l\'angle est aigu.') + cm1Redac('À 5 h', 'les aiguilles sont plus écartées qu\'à 3 h', 'À 5 h, l\'angle est obtus.') },
+    ] },
+];
+}
+
 })();

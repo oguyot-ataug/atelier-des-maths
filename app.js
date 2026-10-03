@@ -3329,6 +3329,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.968', date:'2026-10-03', items:[
+    "Planches CM1 : tous les chapitres du CM1 ont maintenant leurs planches imprimables avec corrigés. Derniers ajouts : « Solides » (reconnaître, faces, arêtes, sommets ; patrons du cube, faces opposées, patron de dé), « Proportionnalité » (raisonner sans tableau : fois plus, en additionnant, par l'unité ; situations non proportionnelles), « Algèbre » (suites de nombres et de figures ; égalités à trou, balances, programmes de calcul), « Angles » (aigu, droit, obtus avec l'équerre, sans rapporteur) et « Initiation à la pensée informatique » (suivre et écrire un programme de déplacement, boucles, bug)."
+  ] },
   { version:'2026-08-19.967', date:'2026-10-03', items:[
     "Planches CM1 : nouvelles planches imprimables avec corrigés pour « Symétrie axiale » (axes de symétrie ; compléter sur quadrillage, symétrique d'un point), « Procédures de calcul mental », « Probabilités » (vocabulaire des chances, sacs de billes et roues) et « Résolution de problèmes » (choisir l'opération, schémas en barres, problèmes à étapes, informations inutiles).",
     "Planches à l'écran : les choix à entourer parmi plus de deux mots (« impossible · possible · certain », « + · − · × · ÷ ») se font maintenant en touchant le bon mot."

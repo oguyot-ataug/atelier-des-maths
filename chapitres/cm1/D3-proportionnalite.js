@@ -79,4 +79,30 @@ ${cm1Demo('pp-unite', 'Passer par l\'unité', '5 baguettes coûtent 6 €. Combi
     { q: 'La taille est-elle proportionnelle à l\'âge ?', opts: ['oui', 'non'], correct: 1 },
   ],
 });
+/* ---- Planches d'exercices imprimables (planches.js) ----
+   Au CM : pas de tableau de proportionnalité ; on raisonne avec des phrases (fois plus, en additionnant, l'unité). */
+{
+const B = n => plPointilles(n || 4), R = v => plRep(String(v));
+const ex = l => ({ eleve: plListe(l.map(([t]) => t.replace('…', B()))), corr: plListe(l.map(([t, r]) => t.replace('…', R(r)))) });
+PLANCHES['cm1|Proportionnalité'] = [
+  { titre: 'Raisonner dans des situations de proportionnalité', duree: '35 min',
+    attendus: ['Raisonner avec « fois plus », en additionnant, en passant par l\'unité', 'Reconnaître une situation qui n\'est pas proportionnelle'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'Pour faire 1 gâteau, il faut 3 œufs.', ...ex([['Pour 2 gâteaux : … œufs', 6], ['Pour 4 gâteaux : … œufs', 12], ['Pour 10 gâteaux : … œufs', 30]]) },
+      { etoiles: 1, col: 1, consigne: '4 stylos coûtent 6 €.', ...ex([['8 stylos (2 fois plus) coûtent … €', 12], ['12 stylos (3 fois plus) coûtent … €', 18], ['2 stylos (2 fois moins) coûtent … €', 3]]) },
+      { etoiles: 2, col: 1, consigne: 'Pour 3 crêpes, il faut 60 g de farine. Pour 5 crêpes, il faut 100 g de farine.', ...ex([['Pour 8 crêpes (3 + 5) : … g', 160], ['Pour 6 crêpes (3 + 3) : … g', 120], ['Pour 10 crêpes (5 + 5) : … g', 200]]) },
+      { etoiles: 2, col: 1, consigne: '5 cahiers coûtent 10 €.', ...ex([['1 cahier coûte … €', 2], ['7 cahiers coûtent … €', 14], ['9 cahiers coûtent … €', 18]]) },
+      { etoiles: 2, consigne: 'Situation de proportionnalité ou pas ? Entoure.',
+        eleve: plListe(['le prix payé et le nombre de baguettes achetées : <b>oui · non</b>', 'l\'âge d\'un enfant et sa taille : <b>oui · non</b>', 'le nombre de vélos et le nombre de roues : <b>oui · non</b>', 'l\'heure de la journée et la température : <b>oui · non</b>']),
+        corr: plListe([['le prix payé et le nombre de baguettes achetées : ', 'oui'], ['l\'âge d\'un enfant et sa taille : ', 'non'], ['le nombre de vélos et le nombre de roues : ', 'oui'], ['l\'heure de la journée et la température : ', 'non']].map(([t, r]) => t + plEntoure(r))) },
+      { etoiles: 2, col: 1, consigne: 'Un robinet remplit 12 L d\'eau en 2 minutes.', ...ex([['En 4 minutes : … L', 24], ['En 1 minute : … L', 6], ['En 5 minutes : … L', 30]]) },
+      { etoiles: 2, col: 1, consigne: 'Sur une carte, 1 cm représente 5 km.', ...ex([['3 cm représentent … km', 15], ['10 cm représentent … km', 50], ['… cm représentent 20 km', 4]]) },
+      { etoiles: 3, col: 1, cahier: true, consigne: 'Une recette pour 4 personnes : 200 g de pâtes et 2 œufs. Quelles quantités faut-il pour 6 personnes ?',
+        corr: cm1Redac('Pour 2 personnes', { suite: ['200 g ÷ 2 = 100 g', '2 œufs ÷ 2 = 1 œuf'] }, 'Pour 2 personnes : 100 g de pâtes et 1 œuf.') + cm1Redac('Pour 6 personnes (4 + 2)', { suite: ['200 g + 100 g = 300 g', '2 œufs + 1 œuf = 3 œufs'] }, 'Pour 6 personnes, il faut 300 g de pâtes et 3 œufs.') },
+      { etoiles: 3, col: 1, cahier: true, consigne: 'Léo mesure 1,30 m à 10 ans. Il dit : « À 20 ans, je mesurerai 2,60 m ! » A-t-il raison ?',
+        corr: cm1Redac('Âge et taille', '20 ans, c\'est 2 fois 10 ans, mais la taille ne double pas.', 'Léo a tort : la taille n\'est pas proportionnelle à l\'âge. On grandit de moins en moins, puis on arrête de grandir.') },
+    ] },
+];
+}
+
 })();

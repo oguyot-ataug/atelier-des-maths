@@ -102,4 +102,52 @@ ${cm1Demo('al-remonter', 'Remonter un programme de calcul', 'Programme : « Choi
     { q: 'Le signe = veut dire…', opts: ['« le résultat est » seulement', '« vaut autant que »', '« est plus grand que »'], correct: 1 },
   ],
 });
+/* ---- Planches d'exercices imprimables (planches.js) ---- */
+{
+const B = n => plPointilles(n || 3), R = v => plRep(String(v));
+const ex = l => ({ eleve: plListe(l.map(([t]) => t.replace('…', B()))), corr: plListe(l.map(([t, r]) => t.replace('…', R(r)))) });
+const all = n => allumettes(n).replace('<svg ', '<svg class="pl-libre" ');
+const bal = (g, d) => balance(g, d).replace('<svg ', '<svg class="pl-libre" ').replace('style="width:260px;display:block;margin:6px auto;"', 'style="width:190px;display:block;margin:2px auto;"');
+PLANCHES['cm1|Algèbre'] = [
+  { titre: 'Suites de nombres et de figures', duree: '30 min',
+    attendus: ['Trouver la règle d\'une suite et la prolonger', 'Prévoir un terme d\'une suite de figures'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'Trouve la règle, puis écris les deux nombres suivants.',
+        eleve: plListe(['5 ; 10 ; 15 ; 20 ; ' + B() + ' ; ' + B(), '3 ; 7 ; 11 ; 15 ; ' + B() + ' ; ' + B(), '100 ; 90 ; 80 ; 70 ; ' + B() + ' ; ' + B(), '1 ; 2 ; 4 ; 8 ; ' + B() + ' ; ' + B()]),
+        corr: plListe(['5 ; 10 ; 15 ; 20 ; ' + R(25) + ' ; ' + R(30), '3 ; 7 ; 11 ; 15 ; ' + R(19) + ' ; ' + R(23), '100 ; 90 ; 80 ; 70 ; ' + R(60) + ' ; ' + R(50), '1 ; 2 ; 4 ; 8 ; ' + R(16) + ' ; ' + R(32)]) },
+      { etoiles: 1, col: 1, consigne: 'Écris la règle de chaque suite.',
+        eleve: plListe(['2 ; 4 ; 6 ; 8 : on ajoute ' + B(), '50 ; 45 ; 40 ; 35 : on enlève ' + B(), '1 ; 3 ; 9 ; 27 : on multiplie par ' + B()]),
+        corr: plListe(['2 ; 4 ; 6 ; 8 : on ajoute ' + R(2), '50 ; 45 ; 40 ; 35 : on enlève ' + R(5), '1 ; 3 ; 9 ; 27 : on multiplie par ' + R(3)]) },
+      { etoiles: 2, consigne: `Avec des allumettes, on construit une rangée de carrés.<div style="display:flex;align-items:flex-end;justify-content:center;gap:6px;flex-wrap:wrap;">${[1, 2, 3].map(n => `<span style="text-align:center;">${all(n)}<br>${n} carré${n > 1 ? 's' : ''}</span>`).join('')}</div>`,
+        eleve: plListe(['Pour 1 carré : ' + B(2) + ' allumettes ; pour 2 carrés : ' + B(2) + ' ; pour 3 carrés : ' + B(2), 'À chaque nouveau carré, on ajoute ' + B(2) + ' allumettes.', 'Pour 4 carrés : ' + B(2) + ' allumettes ; pour 10 carrés : ' + B(2) + ' allumettes.']),
+        corr: plListe(['Pour 1 carré : ' + R(4) + ' allumettes ; pour 2 carrés : ' + R(7) + ' ; pour 3 carrés : ' + R(10), 'À chaque nouveau carré, on ajoute ' + R(3) + ' allumettes.', 'Pour 4 carrés : ' + R(13) + ' allumettes ; pour 10 carrés : ' + R(31) + ' allumettes.']) },
+      { etoiles: 2, col: 1, consigne: 'Une suite commence à 2 et on ajoute 5 à chaque fois.', ...ex([['Le 2e nombre : …', 7], ['Le 3e nombre : …', 12], ['Le 6e nombre : …', 27]]) },
+      { etoiles: 2, col: 1, consigne: 'Trouve l\'intrus : le nombre qui ne respecte pas la règle. Entoure-le.',
+        eleve: plListe(['10 ; 20 ; 30 ; <b>45 · 50 · 60</b>', '4 ; 8 ; 12 ; <b>16 · 18 · 20</b>']),
+        corr: plListe(['10 ; 20 ; 30 ; 45 · 50 · 60 : l\'intrus est ' + plEntoure('45'), '4 ; 8 ; 12 ; 16 · 18 · 20 : l\'intrus est ' + plEntoure('18')]) },
+      { etoiles: 3, col: 1, cahier: true, consigne: 'Une suite : 2 ; 5 ; 8 ; 11… Quel est le 10e nombre ? Explique sans tout écrire.',
+        corr: cm1Redac('10e nombre', ['2 + 9 × 3', '2 + 27', '29'], 'Du 1er au 10e nombre, on ajoute 3 neuf fois : le 10e nombre est 29.') },
+      { etoiles: 3, col: 1, cahier: true, consigne: 'Avec 25 allumettes, combien de carrés peut-on faire dans la rangée de l\'exercice 3 ?',
+        corr: cm1Redac('Nombre de carrés', { suite: ['1 carré : 4 allumettes, puis 3 de plus par carré', '25 − 4 = 21 et 21 ÷ 3 = 7'] }, 'On fait 1 + 7 = 8 carrés, avec exactement 25 allumettes.') },
+    ] },
+  { titre: 'Égalités, balances et programmes de calcul', duree: '30 min',
+    attendus: ['Comprendre le signe = comme une égalité', 'Trouver le nombre caché (égalité à trou, balance)', 'Appliquer un programme de calcul'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'Trouve le nombre caché.', ...ex([['8 + … = 15', 7], ['… − 6 = 9', 15], ['4 × … = 28', 7], ['45 = … + 20', 25]]) },
+      { etoiles: 2, col: 1, consigne: 'Le signe = veut dire « a la même valeur que ». Vrai ou faux ?',
+        eleve: plListe(['7 + 5 = 12 + 3 <b>vrai · faux</b>', '10 + 4 = 7 + 7 <b>vrai · faux</b>', '3 × 4 = 6 × 2 <b>vrai · faux</b>', '15 − 5 = 5 <b>vrai · faux</b>']),
+        corr: plListe([['7 + 5 = 12 + 3 ', 'faux'], ['10 + 4 = 7 + 7 ', 'vrai'], ['3 × 4 = 6 × 2 ', 'vrai'], ['15 − 5 = 5 ', 'faux']].map(([t, r]) => t + plEntoure(r))) },
+      { etoiles: 2, consigne: `Les balances sont en équilibre. Tous les ${Q} ont la même masse. Combien pèse un ${Q} ?`,
+        eleve: `<div style="display:flex;justify-content:space-around;flex-wrap:wrap;gap:8px;">${[['■ + 3 kg', '10 kg'], ['■ ■', '12 kg'], ['■ ■ + 2 kg', '20 kg']].map(([g, d]) => `<span style="text-align:center;">${bal(g, d)}■ = ${B(2)} kg</span>`).join('')}</div>`,
+        corr: `<div style="display:flex;justify-content:space-around;flex-wrap:wrap;gap:8px;">${[['■ + 3 kg', '10 kg', 7], ['■ ■', '12 kg', 6], ['■ ■ + 2 kg', '20 kg', 9]].map(([g, d, r]) => `<span style="text-align:center;">${bal(g, d)}■ = ${R(r)} kg</span>`).join('')}</div>` },
+      { etoiles: 2, col: 1, consigne: 'Programme : choisis un nombre, ajoute 3, puis multiplie par 2.', ...ex([['Je choisis 5 : j\'obtiens …', 16], ['Je choisis 0 : j\'obtiens …', 6], ['Je choisis 10 : j\'obtiens …', 26]]) },
+      { etoiles: 2, col: 1, consigne: 'Programme : choisis un nombre, multiplie-le par 4, puis enlève 1.', ...ex([['Je choisis 3 : j\'obtiens …', 11], ['Je choisis 10 : j\'obtiens …', 39], ['Je choisis 25 : j\'obtiens …', 99]]) },
+      { etoiles: 3, col: 1, cahier: true, consigne: 'Avec le programme « ajoute 3, puis multiplie par 2 », Zoé obtient 20. Quel nombre a-t-elle choisi ?',
+        corr: cm1Redac('On remonte le programme', { suite: ['20 ÷ 2 = 10 (on défait « multiplier par 2 »)', '10 − 3 = 7 (on défait « ajouter 3 »)'] }, 'Zoé a choisi 7. Vérification : 7 + 3 = 10 et 10 × 2 = 20.') },
+      { etoiles: 3, col: 1, cahier: true, consigne: 'Complète pour que l\'égalité soit vraie, de deux façons différentes : 6 + 9 = … + … .',
+        corr: cm1Redac('Deux égalités vraies', { suite: ['6 + 9 = 10 + 5', '6 + 9 = 7 + 8'] }, 'Les deux côtés valent 15 : il y a beaucoup d\'autres réponses possibles.') },
+    ] },
+];
+}
+
 })();

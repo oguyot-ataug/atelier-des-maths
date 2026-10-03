@@ -102,4 +102,63 @@ ${cm1Demo('so-patron', 'Vérifier qu\'une figure est un patron de cube', 'La fig
     { q: 'Un patron de cube est formé de…', opts: ['4 carrés', '6 carrés', '8 carrés'], correct: 1 },
   ],
 });
+/* ---- Planches d'exercices imprimables (planches.js) ---- */
+{
+const B = n => plPointilles(n || 10), R = v => plRep(String(v));
+const sol = svg => `<svg class="pl-libre" viewBox="0 0 120 110" style="width:92px;display:block;margin:0 auto;">${svg}</svg>`;
+const col = (h, t) => `<span style="display:flex;flex-direction:column;align-items:center;gap:2px;">${h}<span>${t}</span></span>`;
+const SOL = [[CUBE, 'cube'], [PAVE, 'pavé droit'], [PRISME, 'prisme droit'], [PYRAMIDE, 'pyramide'], [CYL, 'cylindre'], [CONE, 'cône']];
+const pat = (cases, c, t) => patron(cases, c, t).replace('<svg ', '<svg class="pl-libre" ');
+// Patron avec une lettre (ou un nombre) au milieu de certaines faces : txt = { 'x,y': '…' }.
+function patronT(cases, txt, c){
+  const k = 26, maxX = Math.max(...cases.map(p => p[0])) + 1, maxY = Math.max(...cases.map(p => p[1])) + 1;
+  return `<svg class="pl-libre" viewBox="0 0 ${maxX * k + 4} ${maxY * k + 4}" style="width:${maxX * k + 4}px;display:inline-block;vertical-align:middle;">${cases.map(([x, y]) => `<rect x="${2 + x * k}" y="${2 + y * k}" width="${k}" height="${k}" fill="${c || '#2EA8C9'}" fill-opacity=".25" stroke="#1F3A5C" stroke-width="1.6"/>` + (txt[x + ',' + y] != null ? cmT(2 + x * k + k / 2, 2 + y * k + k / 2 + 5, txt[x + ',' + y], { fs: 14, c: /^\d$/.test(txt[x + ',' + y]) ? '#E35D3A' : '#1F3A5C' }) : '')).join('')}</svg>`;
+}
+const PATS = [
+  [CROIX, true], [[[0, 0], [1, 0], [2, 0], [3, 0], [4, 0], [5, 0]], false], [[[0, 0], [0, 1], [1, 1], [2, 1], [3, 1], [0, 2]], true],
+  [[[0, 0], [1, 0], [0, 1], [1, 1], [2, 1], [3, 1]], false], [[[0, 0], [1, 0], [2, 0], [2, 1], [3, 1], [4, 1]], true], [[[1, 0], [2, 0], [0, 1], [1, 1], [2, 1], [3, 1]], false],
+];
+const DE = [[1, 0], [0, 1], [1, 1], [2, 1], [3, 1], [1, 2]];
+PLANCHES['cm1|Solides'] = [
+  { titre: 'Reconnaître et décrire les solides', duree: '30 min',
+    attendus: ['Reconnaître et nommer les solides usuels', 'Compter les faces, les arêtes et les sommets d\'un polyèdre'],
+    exos: [
+      { etoiles: 1, consigne: 'Écris le nom de chaque solide.',
+        eleve: plGrille(SOL.map(([s], i) => col(sol(s), `<b>${'ABCDEF'[i]}</b> : ${B()}`)), 3),
+        corr: plGrille(SOL.map(([s, n], i) => col(sol(s), `<b>${'ABCDEF'[i]}</b> : ${R(n)}`)), 3) },
+      { etoiles: 2, consigne: 'Complète le tableau. Aide-toi d\'un vrai solide si tu peux.',
+        eleve: `<table class="pl-tab"><tr><th>Solide</th><th>faces</th><th>arêtes</th><th>sommets</th></tr>${['cube', 'pavé droit', 'prisme droit (base triangle)', 'pyramide (base carrée)'].map(n => `<tr><th>${n}</th><td>${B(2)}</td><td>${B(2)}</td><td>${B(2)}</td></tr>`).join('')}</table>`,
+        corr: `<table class="pl-tab"><tr><th>Solide</th><th>faces</th><th>arêtes</th><th>sommets</th></tr>${[['cube', 6, 12, 8], ['pavé droit', 6, 12, 8], ['prisme droit (base triangle)', 5, 9, 6], ['pyramide (base carrée)', 5, 8, 5]].map(([n, ...v]) => `<tr><th>${n}</th>${v.map(x => `<td>${R(x)}</td>`).join('')}</tr>`).join('')}</table>` },
+      { etoiles: 1, col: 1, consigne: 'Vrai ou faux ? Entoure.',
+        eleve: plListe(['Un cube a 6 faces carrées. <b>vrai · faux</b>', 'Un cylindre a des sommets. <b>vrai · faux</b>', 'Un pavé droit a 8 sommets. <b>vrai · faux</b>', 'Une boule a une face plane. <b>vrai · faux</b>']),
+        corr: plListe([['Un cube a 6 faces carrées. ', 'vrai'], ['Un cylindre a des sommets. ', 'faux'], ['Un pavé droit a 8 sommets. ', 'vrai'], ['Une boule a une face plane. ', 'faux']].map(([t, r]) => t + plEntoure(r))) },
+      { etoiles: 2, col: 1, consigne: 'Qui suis-je ?',
+        eleve: plListe(['J\'ai 6 faces, toutes carrées : ' + B(), 'Je roule ; j\'ai 2 faces planes en forme de disque : ' + B(), 'J\'ai une base carrée et 4 faces triangulaires : ' + B()]),
+        corr: plListe(['J\'ai 6 faces, toutes carrées : ' + R('cube'), 'Je roule ; j\'ai 2 faces planes en forme de disque : ' + R('cylindre'), 'J\'ai une base carrée et 4 faces triangulaires : ' + R('pyramide')]) },
+      { etoiles: 3, col: 1, cahier: true, consigne: 'Combien de faces, d\'arêtes et de sommets a une pyramide à base triangulaire ?',
+        corr: cm1Redac('Pyramide à base triangulaire', { suite: ['faces : 1 base + 3 triangles = 4', 'arêtes : 3 autour de la base + 3 vers le sommet = 6', 'sommets : 3 + 1 = 4'] }, 'Elle a 4 faces, 6 arêtes et 4 sommets.') },
+      { etoiles: 3, col: 1, cahier: true, consigne: 'Léo dit : « Un cube est un pavé droit particulier. » A-t-il raison ? Explique.',
+        corr: cm1Redac('Cube et pavé droit', { suite: ['Un pavé droit a 6 faces rectangulaires.', 'Un carré est un rectangle particulier.'] }, 'Léo a raison : le cube est un pavé droit dont les 6 faces sont des carrés.') },
+    ] },
+  { titre: 'Patrons du cube', duree: '30 min',
+    attendus: ['Reconnaître un patron de cube', 'Imaginer le pliage d\'un patron : faces opposées'],
+    exos: [
+      { etoiles: 2, consigne: 'Lesquels sont des patrons de cube ? Entoure oui ou non. Tu peux découper pour vérifier.',
+        eleve: plGrille(PATS.map(([c], i) => col(pat(c, '#2EA8C9', Math.min(130, (Math.max(...c.map(p => p[0])) + 1) * 22 + 4)), `<b>${'ABCDEF'[i]}</b> : <b>oui · non</b>`)), 3),
+        corr: plGrille(PATS.map(([c, ok], i) => col(pat(c, '#2EA8C9', Math.min(130, (Math.max(...c.map(p => p[0])) + 1) * 22 + 4)), `<b>${'ABCDEF'[i]}</b> : ${plEntoure(ok ? 'oui' : 'non')}`)), 3) },
+      { etoiles: 2, col: 1, consigne: `On plie ce patron pour faire un cube.<div style="text-align:center;">${patronT(CROIX, { '1,0': 'B', '0,1': 'C', '1,1': 'A', '2,1': 'E', '3,1': 'D', '1,2': 'F' })}</div>`,
+        eleve: plListe(['La face opposée à A est ' + B(2) + '.', 'La face opposée à B est ' + B(2) + '.', 'La face opposée à C est ' + B(2) + '.']),
+        corr: plListe(['La face opposée à A est ' + R('D') + '.', 'La face opposée à B est ' + R('F') + '.', 'La face opposée à C est ' + R('E') + '.']) },
+      { etoiles: 3, col: 1, consigne: `Sur un dé, deux faces opposées font toujours 7. Complète ce patron de dé.<div style="text-align:center;">${patronT(DE, { '1,0': '2', '0,1': '3', '1,1': '1', '2,1': '', '3,1': '', '1,2': '' })}</div>`,
+        eleve: plListe(['La face à droite du 1 : ' + B(2), 'La face tout à droite : ' + B(2), 'La face sous le 1 : ' + B(2)]),
+        corr: plListe(['La face à droite du 1 : ' + R(4), 'La face tout à droite : ' + R(6), 'La face sous le 1 : ' + R(5)]) },
+      { etoiles: 2, col: 1, consigne: 'Il manque une face à ce patron de cube. Dessine-la (il y a plusieurs places possibles).',
+        eleve: `<div style="text-align:center;">${pat([[0, 1], [1, 1], [2, 1], [3, 1], [1, 0]], '#9CCB6B')}</div>`,
+        corr: `<div style="text-align:center;">${pat([[0, 1], [1, 1], [2, 1], [3, 1], [1, 0], [1, 2]], '#9CCB6B')}</div><div class="pl-petit">Par exemple sous la 2<sup>e</sup> face : on obtient la croix. Toute face collée sous la ligne de quatre convient.</div>` },
+      { etoiles: 3, col: 1, cahier: true, consigne: 'Sur ton cahier à carreaux, dessine un patron de cube différent de ceux de cette planche. Vérifie en le découpant.',
+        corr: cm1Redac('Un autre patron', 'l\'escalier : 2 faces, puis 2, puis 2, décalées', 'Il existe 11 patrons du cube ; l\'escalier en est un.', `<span class="cm-fig-d">${pat([[0, 0], [1, 0], [1, 1], [2, 1], [2, 2], [3, 2]], '#9CCB6B', 90)}</span>`) },
+    ] },
+];
+}
+
 })();

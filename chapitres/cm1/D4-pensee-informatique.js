@@ -133,4 +133,49 @@ ${Object.entries(DIR).map(([k, v]) => `<button class="btn" style="font-size:1.2r
   ],
   init: () => { reset(); rendre(); },
 });
+/* ---- Planches d'exercices imprimables (planches.js) ---- */
+{
+const B = n => plPointilles(n || 2), R = v => plRep(String(v));
+// Quadrillage w × h ; dep [x,y] (robot), but [x,y] (étoile), obs [[x,y]] (rochers), chemin [[x,y]...] (corrigé).
+function G(w, h, o){
+  const k = 30, m = 3, X = x => m + x * k + k / 2, Y = y => m + y * k + k / 2; let s = `<svg class="pl-libre" viewBox="0 0 ${w * k + 2 * m} ${h * k + 2 * m}" style="width:${w * k + 2 * m}px;max-width:100%;display:inline-block;vertical-align:middle;">`;
+  for(let y = 0; y < h; y++) for(let x = 0; x < w; x++) s += `<rect x="${m + x * k}" y="${m + y * k}" width="${k}" height="${k}" fill="#fff" stroke="#B9C7D6"/>`;
+  (o.obs || []).forEach(([x, y]) => { s += `<rect x="${m + x * k + 3}" y="${m + y * k + 3}" width="${k - 6}" height="${k - 6}" rx="5" fill="#8A6A2E"/>`; });
+  if(o.chemin) s += `<polyline points="${o.chemin.map(([x, y]) => X(x) + ',' + Y(y)).join(' ')}" fill="none" stroke="#E35D3A" stroke-width="3" stroke-dasharray="6 4"/>`;
+  if(o.but) s += `<text x="${X(o.but[0])}" y="${Y(o.but[1]) + 7}" font-size="20" text-anchor="middle">⭐</text>`;
+  if(o.fin) s += `<circle cx="${X(o.fin[0])}" cy="${Y(o.fin[1])}" r="9" fill="none" stroke="#2E9C6A" stroke-width="3"/>`;
+  s += `<text x="${X(o.dep[0])}" y="${Y(o.dep[1]) + 8}" font-size="21" text-anchor="middle">🤖</text>`;
+  return s + '</svg>';
+}
+const F = { h: '↑', b: '↓', g: '←', d: '→' }, V = { h: [0, -1], b: [0, 1], g: [-1, 0], d: [1, 0] };
+const marche = (dep, prog) => { const c = [dep.slice()]; let [x, y] = dep; prog.split('').forEach(f => { x += V[f][0]; y += V[f][1]; c.push([x, y]); }); return c; };
+const fl = p => p.split('').map(f => `<b style="display:inline-block;min-width:18px;text-align:center;color:#2EA8C9;">${F[f]}</b>`).join('');
+const col = (h, t) => `<span style="display:flex;flex-direction:column;align-items:center;gap:3px;">${h}<span>${t}</span></span>`;
+const duo = l => `<div style="display:flex;justify-content:space-around;align-items:flex-end;gap:10px;flex-wrap:wrap;">${l.join('')}</div>`;
+const P1 = { dep: [0, 3], prog: 'ddhhhd' }, P2 = { dep: [0, 0], prog: 'ddbbdb' };
+PLANCHES['cm1|Initiation à la pensée informatique'] = [
+  { titre: 'Coder et suivre un déplacement', duree: '30 min',
+    attendus: ['Lire et exécuter un programme de déplacement', 'Écrire un programme avec des flèches, utiliser une boucle « répéter »', 'Trouver et corriger un bug'],
+    exos: [
+      { etoiles: 1, consigne: 'Suis le programme et entoure la case d\'arrivée du robot.',
+        eleve: duo([P1, P2].map(p => col(G(6, 4, { dep: p.dep }), fl(p.prog)))),
+        corr: duo([P1, P2].map(p => { const c = marche(p.dep, p.prog); return col(G(6, 4, { dep: p.dep, chemin: c, fin: c[c.length - 1] }), fl(p.prog)); })) },
+      { etoiles: 2, consigne: 'Écris un programme avec des flèches pour amener le robot jusqu\'à l\'étoile sans toucher les rochers.',
+        eleve: duo([col(G(6, 4, { dep: [0, 3], but: [5, 0], obs: [[1, 2], [2, 2], [4, 1]] }), 'Programme : ' + plPointilles(20))]),
+        corr: duo([col(G(6, 4, { dep: [0, 3], but: [5, 0], obs: [[1, 2], [2, 2], [4, 1]], chemin: marche([0, 3], 'dddhhhdd') }), 'Par exemple : ' + fl('dddhhhdd'))]) },
+      { etoiles: 2, col: 1, consigne: 'Combien de flèches fait chaque boucle ? Écris le programme sans boucle.',
+        eleve: plListe([`répéter 3 fois ${fl('d')} : ${B(10)}`, `répéter 2 fois ${fl('dh')} : ${B(10)}`, `répéter 4 fois ${fl('b')} puis ${fl('g')} : ${B(10)}`]),
+        corr: plListe([`répéter 3 fois ${fl('d')} : ${fl('ddd')}`, `répéter 2 fois ${fl('dh')} : ${fl('dhdh')}`, `répéter 4 fois ${fl('b')} puis ${fl('g')} : ${fl('bbbbg')}`]) },
+      { etoiles: 2, col: 1, consigne: `Écris ces programmes plus courts, avec « répéter ».`,
+        eleve: plListe([`${fl('dddd')} : répéter ${B()} fois ${B()}`, `${fl('hhhhhh')} : répéter ${B()} fois ${B()}`]),
+        corr: plListe([`${fl('dddd')} : répéter ${R(4)} fois ${R('→')}`, `${fl('hhhhhh')} : répéter ${R(6)} fois ${R('↑')}`]) },
+      { etoiles: 3, col: 1, consigne: `Ce programme devait amener le robot sur l'étoile, mais il y a un bug. Entoure la flèche fausse.<div style="text-align:center;">${G(5, 3, { dep: [0, 2], but: [4, 0] })}</div>`,
+        eleve: `<p style="text-align:center;font-size:1.2em;">${fl('dhdd')} ${fl('b')} ${fl('d')}</p>`,
+        corr: `<p style="text-align:center;font-size:1.2em;">${fl('dhdd')} ${plEntoure(F.b)} ${fl('d')}</p><div class="pl-petit">Il fallait ${fl('h')} : le robot doit monter de 2 cases pour atteindre l'étoile.</div>` },
+      { etoiles: 3, col: 1, cahier: true, consigne: 'Sur ton cahier, dessine un quadrillage de 5 × 5 avec un robot, une étoile et deux rochers. Écris le programme le plus court possible.',
+        corr: cm1Redac('Pour vérifier', { suite: ['Je suis le programme flèche par flèche, avec le doigt.', 'Le robot ne sort pas du quadrillage et ne touche aucun rocher.'] }, 'Le programme est juste si le robot arrive exactement sur l\'étoile.') },
+    ] },
+];
+}
+
 })();

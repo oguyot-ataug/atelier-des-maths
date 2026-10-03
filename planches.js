@@ -386,7 +386,8 @@ function plRemplirPages(doc){
     if(H(pg) <= L){ pg.classList.add('pl-plein'); pg.style.height = L + 'px'; }
   });
   // Pages pleines du livre (couverture, séparation) et numéros de page du sommaire.
-  doc.querySelectorAll('.pl-couv, .pl-sommaire').forEach(pg => { if(H(pg) < L) pg.style.minHeight = L + 'px'; });
+  // Couverture et sommaire : la dernière page n'est jamais à moitié vide (l'espace se répartit entre les chapitres).
+  doc.querySelectorAll('.pl-couv, .pl-sommaire').forEach(pg => { const n = Math.max(1, Math.ceil((H(pg) - 2) / L)); pg.style.minHeight = (n * L - (n > 1 ? 6 * n : 0)) + 'px'; });
   let n = 1; const debut = {};
   doc.querySelectorAll('.pl-page').forEach(pg => { if(pg.dataset.ref) debut[pg.dataset.ref] = n; if(pg.classList.contains('pl-corrige') && !debut.corriges) debut.corriges = n; n += Math.max(1, Math.ceil((H(pg) - 2) / L)); });
   doc.querySelectorAll('[data-page]').forEach(el => { el.textContent = debut[el.dataset.page] || ''; });
