@@ -174,7 +174,7 @@ function cdProfAller(i){
   if(typeof cxRelacher === 'function'){ cxRelacher(); cxQuitterProg(); }
   cdP.selEx = null;
   cdQuitterTableau();
-  cdProfEtat({ idx: i, etape: null });
+  cdProfEtat({ idx: i, etape: null, corr: false });
 }
 async function cdProfMembres(){
   if(!cdP) return;
@@ -230,9 +230,10 @@ function cdProfRendre(){
       <div class="cd-p-scene">
         <div class="cd-nav"><button class="btn secondary" onclick="cdProfAller(${i - 1})" ${i ? '' : 'disabled'}><span class="gicon">arrow_back</span> Précédent</button>
           ${it.prog ? `<button class="btn" style="background:#1F7A4D;" onclick="cdProfTableau()"><span class="gicon">architecture</span> Dérouler la construction au tableau</button>` : ''}
+          ${it.corr ? `<button class="btn" style="background:${cdP.etat.corr ? '#5B6472' : '#1F7A4D'};" onclick="cdProfEtat({ corr: ${!cdP.etat.corr} })"><span class="gicon">${cdP.etat.corr ? 'visibility_off' : 'fact_check'}</span> ${cdP.etat.corr ? 'Cacher la correction' : 'Montrer la correction aux élèves'}</button>` : ''}
           <button class="btn" onclick="cdProfAller(${i + 1})" ${i < cdP.items.length - 1 ? '' : 'disabled'}>Suivant <span class="gicon">arrow_forward</span></button></div>
         <div class="cd-item-titre">${cdEsc(it.titre || '')}${it.chapitre ? ` <small>${cdEsc(it.chapitre)}</small>` : ''}</div>
-        <div class="cd-contenu" id="cdProfContenu">${it.exo ? '' : it.html || ''}</div></div>
+        <div class="cd-contenu" id="cdProfContenu">${it.exo ? '' : it.corr && cdP.etat.corr ? it.corr : it.html || ''}</div></div>
       <div class="cd-p-classe"><div class="cd-p-resume" id="cdProfResume"></div><div id="cdProfClasse"></div></div>
     </div>`;
   const c = document.getElementById('cdProfContenu');
@@ -398,7 +399,7 @@ function cdEleveRendre(){
       <b>${k + 1} / ${d.n}</b><button onclick="cdEleveVoir(${k + 1})" ${k < d.idx ? '' : 'disabled'} title="Élément suivant"><span class="gicon">arrow_forward</span></button></span>
       ${k !== d.idx ? `<button class="cd-e-direct" onclick="cdEleveVoir(${d.idx})"><span class="gicon">cast</span> Revenir au direct</button>` : '<span class="cd-e-live"><span class="dot"></span> En direct</span>'}</div>
     <div class="cd-e-corps"><div class="cd-item-titre">${cdEsc(it.titre || '')}${it.chapitre ? ` <small>${cdEsc(it.chapitre)}</small>` : ''}</div>
-      <div class="cd-contenu" id="cdEleveContenu">${it.leger ? '<p class="hint">Chargement…</p>' : it.exo ? '' : it.html || ''}</div></div>
+      <div class="cd-contenu" id="cdEleveContenu">${it.leger ? '<p class="hint">Chargement…</p>' : it.exo ? '' : it.corr && k === d.idx && d.etat && d.etat.corr ? '<div class="cd-corr-montree"><span class="gicon">fact_check</span> Correction</div>' + it.corr : it.html || ''}</div></div>
     ${cdE.dehors ? `<div class="cd-e-retour"><div><span class="gicon">front_hand</span><h2>Reste avec la classe !</h2><p>Tu as quitté la page du cours : ton professeur en est informé.</p><button class="btn" onclick="cdEleveRevenir()">Je reviens au cours</button></div></div>` : ''}`;
   const c = document.getElementById('cdEleveContenu');
   if(it.leger) return;
@@ -529,6 +530,7 @@ document.addEventListener('DOMContentLoaded', cdBoutonMaj);
     #cdInvit{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:381;display:flex;align-items:center;gap:12px;background:#1F3A5C;color:#fff;border-radius:16px;padding:10px 12px 10px 16px;box-shadow:0 10px 30px rgba(31,58,92,.35);max-width:calc(100vw - 24px);font-family:Inter,sans-serif;}
     #cdInvit > .gicon{font-size:1.6rem;} #cdInvit .t{display:flex;flex-direction:column;line-height:1.25;min-width:0;}
     #cdInvit .t span{font-size:.85rem;opacity:.9;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;} #cdInvit .btn{background:#fff;color:#1F3A5C;white-space:nowrap;margin:0;}
+    .cd-corr-montree{display:inline-flex;gap:6px;align-items:center;background:#1F7A4D;color:#fff;border-radius:999px;padding:4px 14px;font-weight:700;margin-bottom:10px;}
     .cd-toast{position:fixed;right:18px;bottom:18px;z-index:9500;background:#C0392B;color:#fff;padding:10px 16px;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.25);transform:translateY(20px);opacity:0;transition:.3s;font-family:Inter,sans-serif;}
     .cd-toast.on{transform:none;opacity:1;} .cd-toast .gicon{vertical-align:middle;}
     @media (max-width:900px){ .cd-p-corps{grid-template-columns:1fr;} }

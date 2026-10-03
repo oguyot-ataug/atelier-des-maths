@@ -142,6 +142,12 @@ function cxChoisirCours(){
           st.parties.push({ h, onglet: nom, titre: t.textContent.trim(), lecon: h.classList.contains('lesson-header') });
         });
       });
+      // Exercices de Mon TD (planches.js) : énoncé, puis correction montrée par le professeur.
+      if(typeof plDe === 'function') plDe(st.lvl, c.t).forEach((pl, i) => pl.exos.forEach((x, k) => {
+        const tmp = document.createElement('div'); tmp.innerHTML = x.consigne;
+        const txt = tmp.textContent.replace(/\s+/g, ' ').trim();
+        st.parties.push({ td: [i, k], onglet: 'Mon TD (exercices des planches)', titre: `${plRef(st.lvl, c.code, i)} · exercice ${k + 1} : ${txt.length > 70 ? txt.slice(0, 70) + '…' : txt}`, lecon: false });
+      }));
       rendre();
     };
     const rendre = () => {
@@ -150,7 +156,7 @@ function cxChoisirCours(){
       o.innerHTML = `<div class="modal-card cx-ch">
         <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;"><b class="cd-h"><span class="gicon">menu_book</span> Partie de cours</b>
           <button class="modal-close" id="cxCoFermer"><span class="gicon">close</span></button></div>
-        <p class="hint" style="margin:6px 0 10px;">Choisissez le chapitre, puis les parties à montrer (cours ou méthodes). Elles sont ajoutées dans cet ordre. Si vous avez personnalisé le cours de ce chapitre, c'est votre version qui est reprise.</p>
+        <p class="hint" style="margin:6px 0 10px;">Choisissez le chapitre, puis les parties à montrer (cours, méthodes, ou exercices de Mon TD dont vous montrerez ensuite la correction). Elles sont ajoutées dans cet ordre. Si vous avez personnalisé le cours de ce chapitre, c'est votre version qui est reprise.</p>
         <div class="cx-co-sel"><select id="cxCoNiv">${niveaux.map(l => `<option value="${l}"${l === st.lvl ? ' selected' : ''}>${nomNiv(l)}</option>`).join('')}</select>
           <select id="cxCoCh"><option value="">Choisir un chapitre…</option>${chs.map(c => `<option value="${cdEsc(c.code)}"${c.code === st.code ? ' selected' : ''}>${cdEsc(c.code)} · ${cdEsc(c.t)}</option>`).join('')}</select></div>
         <div class="cx-ch-corps cx-co-liste">${!st.code ? '<p class="hint">Choisissez un chapitre.</p>' : st.parties.length ? st.parties.map((p, i) => `${p.onglet !== onglet ? `<b class="cx-co-onglet">${(onglet = p.onglet)}</b>` : ''}
@@ -170,6 +176,9 @@ function cxChoisirCours(){
         const items = [];
         for(const i of [...st.choisies].sort((a, b) => a - b)){
           const p = st.parties[i];
+          if(p.td){ const [pi, k] = p.td;
+            items.push({ titre: `TD ${plRef(st.lvl, c.code, pi)} · exercice ${k + 1}`, chapitre: `${c.code} · ${c.t}`, html: plExoHtml(st.lvl, c, pi, k, 'eleve'), corr: plExoHtml(st.lvl, c, pi, k, 'corr') });
+            continue; }
           const n = st.parties.filter(x => x.onglet === p.onglet).indexOf(p);
           try{ const r = await sectionVersHtml(p.h); items.push({ titre: /^(méthode|cours)\b/i.test(r.titre) ? r.titre : (p.onglet === 'Méthode' ? 'Méthode : ' : 'Cours : ') + r.titre, chapitre: `${c.code} · ${c.t}`, html: r.html, prog: cdProgDe(r.html),
             src: { lvl: st.lvl, code: c.code, t: c.t, onglet: p.onglet === 'Méthode' ? 'methode' : 'cours', n, titre: p.titre } }); }

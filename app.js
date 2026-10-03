@@ -3302,6 +3302,12 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.928', date:'2026-10-03', items:[
+    'Nouvel onglet « Mon TD » dans les chapitres du primaire : tous les exercices des planches en vignettes, projetables un à un, avec bouton Correction et ajout au cahier de la classe',
+    'Session COURS : un exercice de Mon TD s\'ajoute avec « Ajouter une partie de cours » ; le professeur montre ou cache la correction aux élèves (elle n\'est envoyée qu\'à ce moment-là)',
+    'CM1 Fractions : 3 nouvelles planches (fractions de figures variées, fractions plus grandes que 1 en images, fractions d\'une longueur sur quadrillage)',
+    'Oliv\'IA « Muscle ton jeu » : clin d\'œil et petits biceps gonflés'
+  ]},
   { version:'2026-08-19.927', date:'2026-10-03', items:[
     'Planches d\'exercices : logo du site et Oliv\'IA (« Muscle ton jeu ! ») en en-tête ; exercices courts côte à côte sur deux colonnes, jusqu\'à 8 exercices par page ; problèmes à rédiger avec Oliv\'IA et sa bulle « Dans ton cahier ! ».',
     'Mise en page réglable et mémorisée : en-tête Prénom, NOM et Prénom, ou rien ; ligne Date ; aménagements dys (police Andika, Lexend ou Atkinson Hyperlegible, texte plus grand, interligne aéré, lettres et mots espacés).',

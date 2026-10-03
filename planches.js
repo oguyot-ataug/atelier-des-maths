@@ -46,6 +46,61 @@ function plListe(items){ return `<ul class="pl-liste">${items.map(x => `<li>${x}
 // Lignes pour rédiger sur la planche, quand on veut quand même de la place.
 function plLignes(n){ return `<div class="pl-lignes">${'<div></div>'.repeat(n || 3)}</div>`; }
 
+/* ---------- Figures pour les planches (réutilisables dans tous les chapitres) ---------- */
+const PL_TRAIT = '#1F3A5C', PL_COUL = { carre: '#9CCB6B', disque: '#5CB8D6', bande: '#E8896A', u: '#F08A3C' };
+// Carré partagé en parts égales, k parts coloriées. mode : 'bandes' (horizontales), 'colonnes', 'grille'
+// (opts.l lignes × n / opts.l colonnes), 'triangles' (n = 2, 4 ou 8 : diagonales, puis médianes).
+function plCarreParts(mode, n, opts){
+  opts = opts || {}; const R = [];
+  if(mode === 'bandes') for(let i = 0; i < n; i++) R.push([[0, i / n], [1, i / n], [1, (i + 1) / n], [0, (i + 1) / n]]);
+  else if(mode === 'colonnes') for(let i = 0; i < n; i++) R.push([[i / n, 0], [(i + 1) / n, 0], [(i + 1) / n, 1], [i / n, 1]]);
+  else if(mode === 'grille'){ const l = opts.l || Math.round(Math.sqrt(n)), c = n / l;
+    for(let y = 0; y < l; y++) for(let x = 0; x < c; x++) R.push([[x / c, y / l], [(x + 1) / c, y / l], [(x + 1) / c, (y + 1) / l], [x / c, (y + 1) / l]]); }
+  else if(mode === 'triangles'){ const C = [.5, .5];
+    if(n === 2) R.push([[0, 0], [1, 0], [1, 1]], [[0, 0], [1, 1], [0, 1]]);
+    else if(n === 4) R.push([[0, 0], [1, 0], C], [[1, 0], [1, 1], C], [[1, 1], [0, 1], C], [[0, 1], [0, 0], C]);
+    else R.push([[0, 0], [.5, 0], C], [[.5, 0], [1, 0], C], [[1, 0], [1, .5], C], [[1, .5], [1, 1], C], [[1, 1], [.5, 1], C], [[.5, 1], [0, 1], C], [[0, 1], [0, .5], C], [[0, .5], [0, 0], C]); }
+  return R;
+}
+function plCarre(mode, n, k, opts){
+  opts = opts || {}; const t = opts.taille || 62, m = 2, c = opts.coul || PL_COUL.carre;
+  const ordre = opts.ordre || plCarreParts(mode, n, opts).map((_, i) => i);
+  const parts = plCarreParts(mode, n, opts);
+  return `<svg viewBox="0 0 ${t + 2 * m} ${t + 2 * m}" style="width:${t + 2 * m}px;height:${t + 2 * m}px;display:inline-block;vertical-align:middle;">${parts.map((poly, i) =>
+    `<polygon points="${poly.map(([x, y]) => `${m + x * t},${m + y * t}`).join(' ')}" fill="${ordre.indexOf(i) < k ? c : '#fff'}" stroke="${PL_TRAIT}" stroke-width="1.3" stroke-linejoin="round"/>`).join('')}</svg>`;
+}
+// Plusieurs unités (carrés ou disques) de n parts, k parts coloriées en tout : fractions plus grandes que 1.
+// figure : { carre: mode } ou 'disque' ; unites : nombre de figures (par défaut, juste ce qu'il faut).
+function plUnites(figure, n, k, unites, opts){
+  opts = opts || {}; const nb = unites || Math.max(1, Math.ceil(k / n)); let h = '';
+  for(let u = 0; u < nb; u++){ const ku = Math.max(0, Math.min(n, k - u * n));
+    h += figure === 'disque' ? cm1Disque(n, ku, { taille: opts.taille || 60, coul: opts.coul }) : plCarre(figure.carre, n, ku, Object.assign({ taille: opts.taille || 56 }, figure)); }
+  return `<span class="pl-unites">${h}</span>`;
+}
+// Disque partagé en parts INÉGALES (angles en degrés) : la part k est coloriée.
+function plDisqueInegal(angles, k, opts){
+  opts = opts || {}; const r = 28, cx = 31, cy = 31; let a0 = -90, s = `<svg viewBox="0 0 62 62" style="width:${opts.taille || 62}px;display:inline-block;vertical-align:middle;">`;
+  angles.forEach((a, i) => { const a1 = a0 + a, p = d => [cx + r * Math.cos(d * Math.PI / 180), cy + r * Math.sin(d * Math.PI / 180)].map(v => v.toFixed(2)).join(' ');
+    s += `<path d="M${cx} ${cy} L${p(a0)} A${r} ${r} 0 ${a > 180 ? 1 : 0} 1 ${p(a1)} Z" fill="${i === k ? PL_COUL.disque : '#fff'}" stroke="${PL_TRAIT}" stroke-width="1.3"/>`; a0 = a1; });
+  return s + '</svg>';
+}
+// Quadrillage avec une bande-unité u (u carreaux) en haut, puis une ligne par bande :
+// lignes = [{ lab: 'A' | [a, b] (fraction de u), len: carreaux, cache: vrai si l'élève doit la tracer }] ;
+// corr : les bandes cachées sont tracées (en vert).
+function plBandesU(u, lignes, corr, opts){
+  opts = opts || {}; const c = 13, lab = 64, maxLen = Math.max(u, ...lignes.map(l => l.len || 0)), cols = maxLen + 2, rows = 2 + lignes.length * 2;
+  const W = lab + cols * c, H = rows * c + 4; let s = `<svg class="pl-libre" viewBox="0 0 ${W} ${H}" style="width:${W}px;max-width:100%;display:block;">`;
+  for(let i = 0; i <= cols; i++) s += `<line x1="${lab + i * c}" y1="2" x2="${lab + i * c}" y2="${2 + rows * c}" stroke="#BFD9EA" stroke-width=".8"/>`;
+  for(let j = 0; j <= rows; j++) s += `<line x1="${lab}" y1="${2 + j * c}" x2="${W}" y2="${2 + j * c}" stroke="#BFD9EA" stroke-width=".8"/>`;
+  const bande = (y, len, coul, txt) => `<rect x="${lab + c}" y="${2 + y * c + 2}" width="${len * c}" height="${c - 4}" fill="${coul}" stroke="${PL_TRAIT}" stroke-width="1.2"/>${txt ? `<text x="${lab + c + len * c / 2}" y="${2 + y * c + c - 3.5}" font-size="9" font-style="italic" text-anchor="middle" fill="#fff" font-family="Arial">${txt}</text>` : ''}`;
+  s += bande(0.5, u, PL_COUL.u, 'u') + `<text x="${lab - 8}" y="${2 + 1 * c + 4}" font-size="12" font-style="italic" text-anchor="end" fill="${PL_TRAIT}" font-family="Arial">u</text>`;
+  lignes.forEach((l, i) => { const y = 2 + i * 2 + .5, ty = 2 + (y + .5) * c;
+    if(Array.isArray(l.lab)) s += `<text x="${lab - 22}" y="${ty - 3}" font-size="10.5" text-anchor="middle" fill="${PL_TRAIT}" font-family="Arial">${l.lab[0]}</text><line x1="${lab - 29}" y1="${ty}" x2="${lab - 15}" y2="${ty}" stroke="${PL_TRAIT}" stroke-width="1"/><text x="${lab - 22}" y="${ty + 10}" font-size="10.5" text-anchor="middle" fill="${PL_TRAIT}" font-family="Arial">${l.lab[1]}</text><text x="${lab - 8}" y="${ty + 4}" font-size="11" font-style="italic" text-anchor="end" fill="${PL_TRAIT}" font-family="Arial">u</text>`;
+    else s += `<text x="${lab - 8}" y="${ty + 4}" font-size="12" font-weight="700" text-anchor="end" fill="${PL_TRAIT}" font-family="Arial">${l.lab}</text>`;
+    if(l.len && (!l.cache || corr)) s += bande(y, l.len, l.cache ? '#7FC29B' : PL_COUL.bande); });
+  return s + '</svg>';
+}
+
 /* ---------- Réglages (mémorisés sur l'appareil) ---------- */
 const PL_POLICES = {
   standard: { nom: 'Standard', css: "Inter, Arial, sans-serif" },
@@ -79,6 +134,7 @@ const PL_NIVEAUX_TXT = { ce2: 'CE2', cm1: 'CM1', cm2: 'CM2', '6e': '6e', '5e': '
 function plDe(lvl, titre){ return (typeof PLANCHES !== 'undefined' && PLANCHES[lvl + '|' + titre]) || []; }
 function plRef(lvl, code, i){ return `${PL_NIVEAUX_TXT[lvl] || lvl}-${code}-P${i + 1}`; }
 function plMaj(lvl, c){
+  plTdMaj(lvl, c);
   let b = document.getElementById('plBouton');
   const role = typeof currentUserRole !== 'undefined' ? currentUserRole : null;
   const ok = (role === 'prof' || role === 'admin' || role === 'parent') && c && plDe(lvl, c.t).length > 0;
@@ -91,6 +147,74 @@ function plMaj(lvl, c){
     meta.insertAdjacentElement('afterend', b);
   }
   b.onclick = () => plOuvrir(lvl, c);
+}
+/* ---------- Mon TD : les exercices des planches en vignettes ----------
+   Demandé : « Pour les exercices projetés je les imaginais plutôt dans la partie Exercices et
+   Rédaction, ou une nouvelle rubrique : mon TD. Ces exercices sont affichés à l'écran sous forme de
+   vignettes, permettent d'être projetés en grand et d'être également corrigés. On doit pouvoir s'en
+   servir dans l'outil de partage d'écran [session COURS], et ajouter au cahier de correction. »
+   Onglet du chapitre (professeur, administrateur, parent) : une vignette par exercice, avec
+   Projeter (en grand, un par un), Correction (sur la vignette) et + Cahier (énoncé et correction).
+   Dans une session COURS : « Ajouter une partie de cours » propose aussi les exercices de Mon TD ;
+   le professeur montre ensuite la correction aux élèves depuis la télécommande. */
+function plTdMaj(lvl, c){
+  const tab = document.getElementById('tabTd'), root = document.getElementById('tdRoot'); if(!tab || !root) return;
+  const role = typeof currentUserRole !== 'undefined' ? currentUserRole : null;
+  const ok = (role === 'prof' || role === 'admin' || role === 'parent') && c && plDe(lvl, c.t).length > 0;
+  tab.style.display = ok ? '' : 'none';
+  if(!ok){ root.innerHTML = ''; if(tab.classList.contains('active')){ const b = document.querySelector('.tab-btn[data-tab="cours"]'); if(b) b.click(); } return; }
+  plTdRendre(lvl, c);
+}
+function plTdRendre(lvl, c){
+  const root = document.getElementById('tdRoot'); if(!root) return;
+  const liste = plDe(lvl, c.t), esc = s => escapeHtml(String(s ?? ''));
+  root.innerHTML = `<div class="td-intro"><span class="pl-oliv">${plOliv('muscle')}</span><div><b>Mon TD : ${liste.reduce((n, p) => n + p.exos.length, 0)} exercices</b>
+      <p class="hint" style="margin:2px 0 0;">Les exercices des planches de ce chapitre. Projetez-les un par un, affichez la correction, ajoutez-les au cahier de la classe ou à une session COURS (« Ajouter une partie de cours »).</p></div>
+      <button type="button" class="btn secondary" onclick="plOuvrir('${lvl}', CHAPITRES_BY_LEVEL['${lvl}'].find(x => x.code === '${c.code}'))"><span class="gicon">print</span> Planches à imprimer</button></div>
+    ${liste.map((p, i) => `<section class="td-planche"><div class="td-p-tete"><span class="pl-ref">${plRef(lvl, c.code, i)}</span><b>${esc(p.titre)}</b>
+        <span class="hint" style="margin:0;">${(p.attendus || []).map(esc).join(' · ')}</span>
+        <button type="button" class="btn secondary td-mini" data-tdproj="${i}|0"><span class="gicon">present_to_all</span> Projeter la planche</button></div>
+      <div class="td-grille">${p.exos.map((x, k) => `<div class="td-vig" id="tdv-${i}-${k}">
+        <div class="td-v-tete"><span class="pl-num">Exercice ${k + 1}</span><span class="pl-et">${plEtoiles(x.etoiles || 1)}</span></div>
+        <div class="td-v-corps"><div class="pl-consigne">${x.consigne}</div><div class="pl-corps">${plExoCorps(x, false)}</div></div>
+        <div class="td-v-pied"><button type="button" class="btn secondary td-mini" data-tdproj="${i}|${k}" title="En grand, un par un"><span class="gicon">present_to_all</span> Projeter</button>
+          <button type="button" class="btn secondary td-mini" data-tdcorr="${i}|${k}"><span class="gicon">fact_check</span> Correction</button>
+          <button type="button" class="btn secondary td-mini" data-tdcahier="${i}|${k}" title="Énoncé et correction dans le cahier de la classe"><span class="gicon">add</span> Cahier</button></div></div>`).join('')}</div></section>`).join('')}`;
+  if(typeof renderStaticMath === 'function') renderStaticMath(root);
+  root.onclick = e => {
+    const t = e.target, pj = t.closest('[data-tdproj]'), co = t.closest('[data-tdcorr]'), ca = t.closest('[data-tdcahier]');
+    if(pj){ const [i, k] = pj.dataset.tdproj.split('|').map(Number); plProjeter(lvl, c, i, k); }
+    else if(co){ const [i, k] = co.dataset.tdcorr.split('|').map(Number), x = liste[i].exos[k], v = document.getElementById(`tdv-${i}-${k}`), on = !v.classList.contains('corr');
+      v.classList.toggle('corr', on); v.querySelector('.pl-corps').innerHTML = plExoCorps(x, on); co.innerHTML = on ? '<span class="gicon">visibility_off</span> Énoncé' : '<span class="gicon">fact_check</span> Correction';
+      if(typeof renderStaticMath === 'function') renderStaticMath(v); }
+    else if(ca){ const [i, k] = ca.dataset.tdcahier.split('|').map(Number); plAjouterCahier(lvl, c, i, k, ca); }
+  };
+}
+// Énoncé (et correction) d'un exercice en HTML autonome, formules rendues : pour le cahier et les sessions.
+function plExoHtml(lvl, c, i, k, mode){
+  const x = plDe(lvl, c.t)[i].exos[k], d = document.createElement('div');
+  d.style.cssText = 'position:absolute;left:-9999px;top:0;width:700px;';
+  d.innerHTML = mode === 'corr' ? `<div class="pl-consigne"><b>${x.consigne}</b></div><div class="pl-corps">${plExoCorps(x, true)}</div>`
+    : `<div class="pl-consigne"><b>${x.consigne}</b></div><div class="pl-corps">${plExoCorps(x, false)}</div>`;
+  document.body.appendChild(d); if(typeof renderStaticMath === 'function') renderStaticMath(d);
+  const h = `<div class="pl-ex-cahier">${d.innerHTML}</div>`; d.remove(); return h;
+}
+async function plAjouterCahier(lvl, c, i, k, btn){
+  if(typeof cahier === 'undefined'){ await niceAlert('Cahier indisponible.'); return; }
+  if(typeof currentClassId !== 'undefined' && !currentClassId){ await niceAlert('Choisissez d\'abord la classe en haut de la page : l\'exercice s\'ajoute au cahier de cette classe.'); return; }
+  const ref = plRef(lvl, c.code, i);
+  const entry = { niveau: lvl, chapitre: `${c.code} · ${c.t}`, exo: 'TD', titre: `${ref} · exercice ${k + 1}`, date: todayISO(), raw: '',
+    html: plExoHtml(lvl, c, i, k, 'eleve').replace('class="pl-ex-cahier"', 'class="pl-ex-cahier pl-ex-enonce"') + `<div class="pl-ex-corr-titre">Correction</div>` + plExoHtml(lvl, c, i, k, 'corr').replace(/^<div class="pl-ex-cahier"><div class="pl-consigne">[\s\S]*?<\/div>/, '<div class="pl-ex-cahier">') };
+  cahier.push(entry);
+  if(typeof sortCahierInPlace === 'function') sortCahierInPlace();
+  if(typeof saveCahier === 'function') saveCahier();
+  if(document.getElementById('cahierList') && typeof renderCahier === 'function') renderCahier();
+  if(btn){ const old = btn.innerHTML; btn.innerHTML = '<span class="gicon">check</span> Ajouté'; setTimeout(() => btn.innerHTML = old, 1600); }
+  if(typeof isSyncEnabled === 'function' && isSyncEnabled()){
+    const res = await syncAddEntry(entry);
+    if(res.ok){ entry.id = res.id; saveCahier(); }
+    else if(!res.offline) await niceAlert('Ajouté sur cet appareil, mais pas dans le cahier partagé : ' + (res.error || 'erreur inconnue') + '.');
+  }
 }
 function plOuvrir(lvl, c){
   const liste = plDe(lvl, c.t); if(!liste.length) return;
@@ -215,8 +339,8 @@ async function plLivre(lvl){
 
 /* ---------- Projection : un exercice à la fois, avec la correction ---------- */
 let plProj = null; // { lvl, c, i, k, corr }
-function plProjeter(lvl, c, i){
-  plProj = { lvl, c, i, k: 0, corr: false };
+function plProjeter(lvl, c, i, k){
+  plProj = { lvl, c, i, k: k || 0, corr: false };
   let v = document.getElementById('plProj');
   if(!v){ v = document.createElement('div'); v.id = 'plProj'; document.body.appendChild(v); }
   v.style.display = 'flex'; document.body.classList.add('plp-ouvert');
@@ -301,7 +425,9 @@ const PL_CSS = `
   .pl-rep{ color:#1F7A4D; font-weight:700; }
   .pl-entoure{ display:inline-block; border:2px solid #1F7A4D; border-radius:50%; padding:2px 6px; }
   .pl-barre-rep{ position:relative; display:inline-block; } .pl-barre-rep::after{ content:''; position:absolute; left:-4px; right:-4px; top:50%; border-top:2.5px solid #C0392B; transform:rotate(-20deg); }
-  .pl-corps svg{ max-width:100%; height:auto; max-height:62px; }
+  .pl-corps svg{ max-width:100%; height:auto; max-height:66px; }
+  .pl-corps svg.pl-libre, .pl-corps .pl-quad svg{ max-height:none; }
+  .pl-unites{ display:inline-flex; gap:5px; flex-wrap:wrap; align-items:center; vertical-align:middle; }
   .pl-corps svg[viewBox$=' 94']{ max-height:none; width:auto !important; height:54px !important; margin:0 auto !important; }
   .pl-corps .cm-redac{ margin:2px 0 6px; }
   .pl-pied{ margin-top:4px; border-top:1px solid #CBD2DC; padding-top:4px; font-size:8.5pt; color:#6B7280; text-align:center; }
@@ -342,6 +468,32 @@ const PL_CSS_LIVRE = `
     .pl-reglages summary{ cursor:pointer; font-weight:700; color:#1F3A5C; } .pl-reglages summary .gicon{ vertical-align:middle; font-size:18px; }
     .pl-reg-grille{ display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:8px 14px; margin-top:8px; }
     .pl-reg-grille label{ display:flex; flex-direction:column; gap:3px; font-size:.85rem; font-weight:600; } .pl-reg-grille .pl-reg-case{ flex-direction:row; align-items:center; gap:6px; margin-top:18px; }
+    .td-intro{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; background:#F4F9EC; border:1.5px solid #CFE3B4; border-radius:14px; padding:10px 14px; margin:6px 0 14px; }
+    .td-intro > div{ flex:1; min-width:240px; } .td-intro .pl-oliv{ width:54px; height:54px; display:inline-block; } .td-intro .pl-oliv svg{ width:100%; height:100%; }
+    .td-planche{ margin:0 0 18px; } .td-p-tete{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin:0 0 8px; font-family:'Space Grotesk',sans-serif; }
+    .td-p-tete .pl-ref, .td-planche .pl-ref{ font:700 .8rem 'Space Grotesk',sans-serif; color:#1F3A5C; border:1.5px solid #1F3A5C; border-radius:6px; padding:0 7px; }
+    .td-p-tete .hint{ flex:1; min-width:200px; }
+    .td-grille{ display:grid; grid-template-columns:repeat(auto-fill,minmax(330px,1fr)); gap:12px; align-items:start; }
+    .td-vig{ background:#fff; border:1.5px solid rgba(28,43,57,.12); border-radius:14px; padding:10px 12px; display:flex; flex-direction:column; gap:6px; min-width:0; }
+    .td-vig.corr{ border-color:#1F7A4D; background:#F6FBF8; }
+    .td-v-tete{ display:flex; justify-content:space-between; align-items:center; } .td-vig .pl-num{ font:700 .95rem 'Space Grotesk',sans-serif; color:#E35D3A; }
+    .td-vig .pl-et{ color:#E9A21C; letter-spacing:2px; } .td-vig .pl-et-off{ color:#D8DCE3; }
+    .td-v-corps{ font-size:.92rem; overflow-x:auto; } .td-v-corps .pl-consigne{ font-weight:600; margin-bottom:6px; }
+    .td-v-pied{ display:flex; gap:6px; flex-wrap:wrap; margin-top:auto; } .td-mini{ padding:4px 10px !important; font-size:.82rem !important; }
+    .td-vig .pl-grille, .pl-ex-cahier .pl-grille{ display:grid; gap:6px 14px; align-items:center; } .td-vig .pl-item, .pl-ex-cahier .pl-item{ display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+    .td-vig .pl-liste, .pl-ex-cahier .pl-liste{ margin:0; padding-left:18px; } .td-vig .pl-liste li, .pl-ex-cahier .pl-liste li{ margin:3px 0; }
+    .td-vig .pl-frac, .pl-ex-cahier .pl-frac, .cd-contenu .pl-frac{ display:inline-flex; flex-direction:column; align-items:center; vertical-align:middle; gap:2px; margin:0 3px; }
+    .td-vig .pl-case, .pl-ex-cahier .pl-case, .cd-contenu .pl-case{ display:inline-block; width:20px; height:16px; border:1.5px solid #8A93A3; border-radius:4px; background:#fff; } .pl-case-seule{ vertical-align:middle; margin:0 4px; }
+    .td-vig .pl-barre, .pl-ex-cahier .pl-barre, .cd-contenu .pl-barre{ display:block; width:26px; border-top:2px solid #1C2B39; }
+    .td-vig .pl-pts, .pl-ex-cahier .pl-pts, .cd-contenu .pl-pts{ display:inline-block; border-bottom:1.5px dotted #8A93A3; height:1.1em; min-width:3em; }
+    .td-vig .pl-rep, .pl-ex-cahier .pl-rep, .cd-contenu .pl-rep{ color:#1F7A4D; font-weight:800; } .pl-entoure{ display:inline-block; border:2px solid #1F7A4D; border-radius:50%; padding:1px 6px; }
+    .pl-barre-rep{ position:relative; display:inline-block; } .pl-barre-rep::after{ content:''; position:absolute; left:-4px; right:-4px; top:50%; border-top:2.5px solid #C0392B; transform:rotate(-20deg); }
+    .td-vig svg, .pl-ex-cahier svg{ max-width:100%; height:auto; } .pl-unites{ display:inline-flex; gap:5px; flex-wrap:wrap; align-items:center; vertical-align:middle; }
+    .pl-cahier{ display:flex; align-items:center; gap:6px; margin-top:4px; } .pl-cahier .pl-oliv{ width:38px; height:38px; display:inline-block; } .pl-cahier .pl-oliv svg{ width:100%; height:100%; }
+    .pl-cahier .pl-bulle{ background:#fff; color:#3E5A1E; border:2px solid #8DB84A; border-radius:12px 12px 12px 3px; padding:1px 9px; font:700 .8rem 'Space Grotesk',sans-serif; white-space:nowrap; }
+    .pl-lignes div{ height:22px; border-bottom:1px solid #CBD2DC; }
+    .pl-ex-corr-titre{ margin:10px 0 4px; font:700 .9rem 'Space Grotesk',sans-serif; color:#1F7A4D; }
+    .plp-corps .pl-unites{ display:inline-flex; gap:5px; flex-wrap:wrap; align-items:center; }
     #plProj{ position:fixed; inset:0; z-index:9500; background:#FBF8F2; display:none; flex-direction:column; }
     .plp-tete{ display:flex; align-items:center; gap:14px; padding:10px 20px; background:#1F3A5C; color:#fff; font-family:'Space Grotesk',sans-serif; flex-wrap:wrap; }
     .plp-tete .pl-ref{ color:#fff; border:1.5px solid #fff; border-radius:6px; padding:0 8px; font-weight:700; } .plp-tete b{ font-size:1.15rem; }

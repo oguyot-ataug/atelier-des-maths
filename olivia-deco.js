@@ -39,10 +39,12 @@ function olivPoseSvg(p){
   } else if(p === 'methode'){ // loupe
     bras += `<path d="M93 72 q10 -2 14 -10" stroke="${E}" stroke-width="4" fill="none" stroke-linecap="round"/>`;
     extra = `<path d="M108 62 L114 74" stroke="#5B3A1A" stroke-width="5" stroke-linecap="round"/><circle cx="104" cy="48" r="13" fill="#CFEFFF" fill-opacity=".7" stroke="#1F3A5C" stroke-width="3.5"/><path d="M98 43 q3 -5 9 -5" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/><circle cx="108" cy="63" r="4.5" fill="${E}"/>`;
-  } else if(p === 'muscle'){ // deux bras musclés
-    bras = `<path d="M27 70 q-16 0 -15 -18" stroke="${E}" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M15 62 q-5 -6 0 -12" stroke="${E}" stroke-width="2.5" fill="none"/><circle cx="12" cy="49" r="6.5" fill="${E}"/>`
-      + `<path d="M93 70 q16 0 15 -18" stroke="${E}" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M105 62 q5 -6 0 -12" stroke="${E}" stroke-width="2.5" fill="none"/><circle cx="108" cy="49" r="6.5" fill="${E}"/>`;
-    visage = sourcils + yeux(false) + joues + bouche;
+  } else if(p === 'muscle'){ // deux petits biceps gonflés et un clin d'œil (demandé : « l'Olive "Muscle ton jeu" semble un peu méchante »)
+    const biceps = (sx) => { const x = v => 60 + sx * (v - 60); // côté gauche (sx = 1) ou droit (sx = -1), par symétrie
+      return `<path d="M${x(28)} 72 L${x(14)} 66 L${x(12)} 50" stroke="${E}" stroke-width="4.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`
+        + `<ellipse cx="${x(20)}" cy="64.5" rx="7" ry="5.4" fill="#A9CF63" stroke="${E}" stroke-width="2"/><circle cx="${x(12)}" cy="47" r="4.8" fill="${E}"/>`; };
+    bras = biceps(1) + biceps(-1);
+    visage = yeux(true) + joues + sourire;
   } else if(p === 'histoire'){ // chapeau d'exploratrice et parchemin
     tete = chapeau;
     bras += `<path d="M93 72 q10 0 13 -6" stroke="${E}" stroke-width="4" fill="none" stroke-linecap="round"/>`;
