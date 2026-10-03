@@ -3335,6 +3335,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.971', date:'2026-10-03', items:[
+    "6e : premières planches imprimables avec corrigés, comme au primaire (version écran, projection, session, Mon TD, pages pleines). « Nombres entiers » (grands nombres ; opérations et division euclidienne), « Droites parallèles et perpendiculaires » (notations, perpendiculaire et parallèle sur quadrillage, propriétés rédigées ; médiatrice), « Fractions : nombres et partage » (écriture fractionnaire, égalités, simplification ; proportions et pourcentages), « Distance et cercles » (distance, milieu, codage ; le cercle).",
+    "Planches : références uniques quand deux chapitres d'un niveau ont le même code (6e-N4a, 6e-N4b…) ; potences de division plus compactes dans les corrigés."
+  ] },
   { version:'2026-08-19.970', date:'2026-10-03', items:[
     "Méthodes pas à pas du CE2, du CM1 et du CM2 : 97 méthodes qui n'étaient qu'en texte ont maintenant un dessin qui évolue à chaque étape, à droite des lignes (quadrillage pour la symétrie et les constructions, compas, équerre, droite numérique avec les sauts du calcul mental, frise du temps, horloges, bandes et disques de fractions, schémas en barres, tableaux de numération, pièces et billets, verres et bouteille, robot…).",
     "Planches à l'écran : le clavier virtuel a une touche majuscule (⇧) ; il passe tout seul en majuscules quand la réponse est un nom de point. Le clavier de l'ordinateur garde aussi les majuscules. Une réponse en minuscule reste acceptée.",

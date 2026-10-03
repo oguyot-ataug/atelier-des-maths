@@ -146,7 +146,7 @@ function cxChoisirCours(){
       if(typeof plDe === 'function') plDe(st.lvl, c.t).forEach((pl, i) => pl.exos.forEach((x, k) => {
         const tmp = document.createElement('div'); tmp.innerHTML = x.consigne;
         const txt = tmp.textContent.replace(/\s+/g, ' ').trim();
-        st.parties.push({ td: [i, k], onglet: 'Mon TD (exercices des planches)', titre: `${plRef(st.lvl, c.code, i)} · exercice ${k + 1} : ${txt.length > 70 ? txt.slice(0, 70) + '…' : txt}`, lecon: false });
+        st.parties.push({ td: [i, k], onglet: 'Mon TD (exercices des planches)', titre: `${(typeof plCode === 'function' ? plRef(st.lvl, plCode(st.lvl, c), i) : plRef(st.lvl, c.code, i))} · exercice ${k + 1} : ${txt.length > 70 ? txt.slice(0, 70) + '…' : txt}`, lecon: false });
       }));
       rendre();
     };

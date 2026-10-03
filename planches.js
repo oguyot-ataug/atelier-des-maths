@@ -141,6 +141,9 @@ function plOliv(pose){ return typeof olivPoseSvg === 'function' ? olivPoseSvg(po
 const PL_NIVEAUX_TXT = { ce2: 'CE2', cm1: 'CM1', cm2: 'CM2', '6e': '6e', '5e': '5e', '4e': '4e', '3e': '3e' };
 function plDe(lvl, titre){ return (typeof PLANCHES !== 'undefined' && PLANCHES[lvl + '|' + titre]) || []; }
 function plRef(lvl, code, i){ return `${PL_NIVEAUX_TXT[lvl] || lvl}-${code}-P${i + 1}`; }
+// Code de chapitre unique dans le niveau (en 6e, deux chapitres N4 et deux N5 : N4a, N4b…).
+function plCode(lvl, c){ const l = ((typeof CHAPITRES_BY_LEVEL !== 'undefined' && CHAPITRES_BY_LEVEL[lvl]) || []).filter(x => x.code === c.code);
+  return l.length > 1 ? c.code + 'abcdef'[Math.max(0, l.findIndex(x => x.t === c.t))] : c.code; }
 function plMaj(lvl, c){
   plTdMaj(lvl, c);
   let b = document.getElementById('plBouton');
@@ -179,7 +182,7 @@ function plTdRendre(lvl, c){
   root.innerHTML = `<div class="td-intro"><span class="pl-oliv">${plOliv('muscle')}</span><div><b>Mon TD : ${liste.reduce((n, p) => n + p.exos.length, 0)} exercices</b>
       <p class="hint" style="margin:2px 0 0;">Les exercices des planches de ce chapitre. Projetez-les un par un, affichez la correction, ajoutez-les au cahier de la classe ou à une session COURS (« Ajouter une partie de cours »).</p></div>
       <button type="button" class="btn secondary" onclick="plOuvrir('${lvl}', CHAPITRES_BY_LEVEL['${lvl}'].find(x => x.code === '${c.code}'))"><span class="gicon">print</span> Planches à imprimer</button></div>
-    ${liste.map((p, i) => `<section class="td-planche"><div class="td-p-tete"><span class="pl-ref">${plRef(lvl, c.code, i)}</span><b>${esc(p.titre)}</b>
+    ${liste.map((p, i) => `<section class="td-planche"><div class="td-p-tete"><span class="pl-ref">${plRef(lvl, plCode(lvl, c), i)}</span><b>${esc(p.titre)}</b>
         <span class="hint" style="margin:0;">${(p.attendus || []).map(esc).join(' · ')}</span>
         <button type="button" class="btn secondary td-mini" data-tdproj="${i}|0"><span class="gicon">present_to_all</span> Projeter la planche</button></div>
       <div class="td-grille">${p.exos.map((x, k) => `<div class="td-vig${x.col === 1 ? '' : ' td-plein'}" id="tdv-${i}-${k}">
@@ -215,7 +218,7 @@ function plExoHtml(lvl, c, i, k, mode){
 // Élément de session COURS : l'exercice à faire à l'écran (planches-num.js) s'il s'y prête, sinon
 // l'énoncé, dont le professeur montre ensuite la correction.
 function plSessionItem(lvl, c, i, k){
-  const x = plDe(lvl, c.t)[i].exos[k], it = { titre: `TD ${plRef(lvl, c.code, i)} · exercice ${k + 1}`, chapitre: `${c.code} · ${c.t}`, html: plExoHtml(lvl, c, i, k, 'eleve'), corr: plExoHtml(lvl, c, i, k, 'corr') };
+  const x = plDe(lvl, c.t)[i].exos[k], it = { titre: `TD ${plRef(lvl, plCode(lvl, c), i)} · exercice ${k + 1}`, chapitre: `${c.code} · ${c.t}`, html: plExoHtml(lvl, c, i, k, 'eleve'), corr: plExoHtml(lvl, c, i, k, 'corr') };
   if(typeof plNumPossible === 'function' && plNumPossible(x)){ it.exo = { type: 'td', lvl, code: c.code, t: c.t, i, k }; it.prog = null; }
   return it;
 }
@@ -232,7 +235,7 @@ async function plAjouterSession(lvl, c, i, k, btn){
 async function plAjouterCahier(lvl, c, i, k, btn){
   if(typeof cahier === 'undefined'){ await niceAlert('Cahier indisponible.'); return; }
   if(typeof currentClassId !== 'undefined' && !currentClassId){ await niceAlert('Choisissez d\'abord la classe en haut de la page : l\'exercice s\'ajoute au cahier de cette classe.'); return; }
-  const ref = plRef(lvl, c.code, i);
+  const ref = plRef(lvl, plCode(lvl, c), i);
   const entry = { niveau: lvl, chapitre: `${c.code} · ${c.t}`, exo: 'TD', titre: `${ref} · exercice ${k + 1}`, date: todayISO(), raw: '',
     html: plExoHtml(lvl, c, i, k, 'eleve').replace('class="pl-ex-cahier"', 'class="pl-ex-cahier pl-ex-enonce"') + `<div class="pl-ex-corr-titre">Correction</div>` + plExoHtml(lvl, c, i, k, 'corr').replace(/^<div class="pl-ex-cahier"><div class="pl-consigne">[\s\S]*?<\/div>/, '<div class="pl-ex-cahier">') };
   cahier.push(entry);
@@ -257,7 +260,7 @@ function plOuvrir(lvl, c){
     <h3><span class="gicon">print</span> Planches d'exercices : ${esc(c.t)}</h3>
     <p class="hint" style="margin:4px 0 10px;">${liste.length} planche${liste.length > 1 ? 's' : ''}, du plus simple (★) au plus difficile (★★★), chacune avec son corrigé. À imprimer (ou « Enregistrer au format PDF »), ou à projeter exercice par exercice.</p>
     <div class="pl-cartes">${liste.map((pl, i) => `<div class="pl-carte">
-      <div class="pl-carte-tete"><span class="pl-ref">${plRef(lvl, c.code, i)}</span><b>${esc(pl.titre)}</b></div>
+      <div class="pl-carte-tete"><span class="pl-ref">${plRef(lvl, plCode(lvl, c), i)}</span><b>${esc(pl.titre)}</b></div>
       <div class="pl-carte-att">${(pl.attendus || []).map(a => `<div><span class="gicon">flag</span> ${esc(a)}</div>`).join('')}</div>
       <div class="pl-carte-pied"><span class="hint" style="margin:0;">${pl.exos.length} exercices${pl.duree ? ' · environ ' + esc(pl.duree) : ''}</span>
         <button type="button" class="btn secondary" data-proj="${i}" title="Les exercices un par un, en grand, avec la correction"><span class="gicon">present_to_all</span> Projeter</button>
@@ -300,7 +303,7 @@ function plOuvrir(lvl, c){
 const plEtoiles = k => '★'.repeat(k) + '<span class="pl-et-off">' + '★'.repeat(3 - k) + '</span>';
 // Exercice « Pour aller plus loin » (x.plus) : la randonneuse, en route vers l'année suivante ; exercice ★★★
 // (un défi) : la petite super-héroïne. Petite vignette dans la ligne du titre (ne change pas la hauteur).
-const PL_SUIVANTE = { ce2: 'En route vers le CM1 !', cm1: 'En route vers le CM2 !', cm2: 'En route vers la 6e !' };
+const PL_SUIVANTE = { ce2: 'En route vers le CM1 !', cm1: 'En route vers le CM2 !', cm2: 'En route vers la 6e !', '6e': 'En route vers la 5e !' };
 function plMarque(lvl, x){
   if(x.plus) return `<span class="pl-marque"><span class="pl-oliv">${plOliv('cm2')}</span><span class="pl-bulle">${PL_SUIVANTE[lvl] || 'Pour aller plus loin !'}</span></span>`;
   if((x.etoiles || 1) >= 3) return `<span class="pl-marque"><span class="pl-oliv">${plOliv('defi')}</span><span class="pl-bulle">Défi !</span></span>`;
@@ -309,7 +312,7 @@ function plMarque(lvl, x){
 function plCahierHtml(){ return `<div class="pl-cahier"><span class="pl-oliv">${plOliv('savoir')}</span><span class="pl-bulle">Dans ton cahier !</span></div>`; }
 function plExoCorps(x, corr){ return corr ? (x.corr || x.eleve || '') : ((x.eleve || '') + (x.cahier ? plCahierHtml() : '')); }
 function plPageHtml(lvl, c, p, i, n, mode, pr, logo){
-  const corr = mode === 'corr', ref = plRef(lvl, c.code, i), niv = PL_NIVEAUX_TXT[lvl] || lvl;
+  const corr = mode === 'corr', ref = plRef(lvl, plCode(lvl, c), i), niv = PL_NIVEAUX_TXT[lvl] || lvl;
   const ident = corr ? '<p class="pl-pour-prof">Corrigé réservé au professeur.</p>'
     : (pr.identite !== 'aucun' || pr.date) ? `<div class="pl-nom">${pr.identite === 'nom' ? '<span>NOM : <span class="pl-pts" style="min-width:10em;"></span></span><span>Prénom : <span class="pl-pts" style="min-width:9em;"></span></span>'
         : pr.identite === 'prenom' ? '<span>Prénom : <span class="pl-pts" style="min-width:13em;"></span></span>' : ''}${pr.date ? '<span>Date : <span class="pl-pts" style="min-width:7em;"></span></span>' : ''}</div>` : '';
@@ -351,7 +354,7 @@ async function plImprimer(lvl, blocs, mode, opts){
   const corps = tmp.innerHTML; tmp.remove();
   const w = window.open('', '_blank', 'width=900,height=1000');
   if(!w){ await niceAlert('La fenêtre n\'a pas pu s\'ouvrir : autorisez les fenêtres (pop-up) pour ce site.'); return; }
-  const premier = blocs[0], titre = opts.titre || `${plRef(lvl, premier.c.code, premier.indices[0])}${blocs.length > 1 || premier.indices.length > 1 ? ' et suivantes' : ''}${mode === 'corr' ? ' (corrigé)' : ''}`;
+  const premier = blocs[0], titre = opts.titre || `${plRef(lvl, plCode(lvl, premier.c), premier.indices[0])}${blocs.length > 1 || premier.indices.length > 1 ? ' et suivantes' : ''}${mode === 'corr' ? ' (corrigé)' : ''}`;
   w.document.open();
   w.document.write(`<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><title>${escapeHtml(titre)}</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">${plFontsLien(pr)}
@@ -438,7 +441,7 @@ async function plLivre(lvl, avecCorriges){
     <div class="pl-som-leg">${Object.values(PL_DOMAINES).filter(d => doms.includes(d)).map(([t, c]) => `<span><i style="background:${c};"></i>${t}</span>`).join('')}</div>
     ${chaps.map(c => { const [, coul, fond] = plDom(c), l = plDe(lvl, c.t);
       return `<div class="pl-som-chap" style="--c:${coul};--f:${fond};"><div class="pl-som-ct"><span class="pl-som-code">${escapeHtml(c.code)}</span><b>${escapeHtml(c.t)}</b><span class="pl-som-nb">${l.length} planche${l.length > 1 ? 's' : ''}</span></div>
-        ${l.map((p, i) => ligne(plRef(lvl, c.code, i), escapeHtml(p.titre), plRef(lvl, c.code, i), plEtoiles(Math.max(...p.exos.map(x => x.etoiles || 1))))).join('')}</div>`; }).join('')}
+        ${l.map((p, i) => ligne(plRef(lvl, plCode(lvl, c), i), escapeHtml(p.titre), plRef(lvl, plCode(lvl, c), i), plEtoiles(Math.max(...p.exos.map(x => x.etoiles || 1))))).join('')}</div>`; }).join('')}
     ${avecCorriges ? `<div class="pl-som-chap" style="--c:#1F7A4D;--f:#E8F5EE;"><div class="pl-som-ct"><span class="pl-som-code">✓</span><b>Corrigés</b></div>${ligne('', 'Toutes les planches, dans le même ordre, avec leurs réponses', 'corriges')}</div>` : ''}
     <div class="pl-guide"><h2>Comment utiliser ce livre ?</h2><div class="pl-guide-g">
       <div><span class="pl-guide-i pl-et">★<span class="pl-et-off">★★</span></span><span><b>Les étoiles</b> : dans chaque planche, les exercices vont du plus simple (★) au plus difficile (★★★).</span></div>
@@ -510,7 +513,7 @@ function plProjRendre(){
   const { lvl, c, i, k, corr } = plProj, liste = plDe(lvl, c.t), p = liste[i], x = p.exos[k];
   const premier = i === 0 && k === 0, dernier = i === liste.length - 1 && k === p.exos.length - 1;
   const num = !corr && typeof plNumPossible === 'function' && plNumPossible(x);
-  v.innerHTML = `<div class="plp-tete"><span class="pl-ref">${plRef(lvl, c.code, i)}</span><b>${escapeHtml(p.titre)}</b>
+  v.innerHTML = `<div class="plp-tete"><span class="pl-ref">${plRef(lvl, plCode(lvl, c), i)}</span><b>${escapeHtml(p.titre)}</b>
       <span class="plp-pos">Exercice ${k + 1} / ${p.exos.length}</span><span class="pl-et">${plEtoiles(x.etoiles || 1)}</span>
       <button class="plp-fermer" onclick="plProjFermer()" title="Fermer (Échap)"><span class="gicon">close</span></button></div>
     <div class="plp-corps${corr ? ' corr' : ''}" id="plpCorps"><div class="plp-boite" id="plpBoite"><div class="plp-consigne">${x.consigne}</div><div class="plp-rep" id="plpRep">${num ? '' : plExoCorps(x, corr)}</div>
@@ -582,6 +585,7 @@ const PL_CSS = `
   .pl-entoure{ display:inline-block; border:2px solid #1F7A4D; border-radius:50%; padding:2px 6px; }
   .pl-barre-rep{ position:relative; display:inline-block; } .pl-barre-rep::after{ content:''; position:absolute; left:-4px; right:-4px; top:50%; border-top:2.5px solid #C0392B; transform:rotate(-20deg); }
   .pl-exos > .pl-exo.pl-demi.pl-seul{ grid-column:1 / -1; }
+  .pl-corrige .pl-div{ zoom:.72; } /* potence de division : plus compacte dans le corrigé */
   .pl-tab{ border-collapse:collapse; margin:2px auto; } .pl-tab th, .pl-tab td{ border:1px solid #8A93A3; padding:3px 8px; text-align:center; } .pl-tab th{ background:#F3F5F8; font-size:.85em; font-weight:600; }
   body.pl-imp{ --ink:#1C2B39; --ink-soft:#4E5665; --accent-orange:#E35D3A; --accent-blue:#2EA8C9; --accent-green:#2E9C6A; }
   .pl-plein{ display:flex; flex-direction:column; box-sizing:border-box; }
