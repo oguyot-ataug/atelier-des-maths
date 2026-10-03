@@ -11,7 +11,7 @@ document.getElementById('view-devoirs-prof').innerHTML = `
   <span class="back-btn" data-nav="home">← Accueil</span>
   <h1 style="margin:6px 0 4px;"><span class=gicon>assignment</span> Devoirs</h1>
   <p style="color:var(--ink-soft);max-width:70ch;">Proposez un travail à faire à une classe -- un fichier ou une figure à rendre, une figure à compléter, une ou plusieurs séquences d'automatismes, un défi Objectif Nombre ou des défis de programmation par blocs.</p>
-  <p class="hint" style="margin:0 0 12px;max-width:75ch;"><span class=gicon style="font-size:1rem;vertical-align:middle;color:#6B3FA0;">quiz</span> Les interrogations notées (questionnaires en ligne) ont leur propre page : <a href="#" onclick="event.preventDefault();qzBanqueOuvrir();">Outils prof › Évaluations › Interrogations en ligne</a>.</p>
+  <p class="hint" style="margin:0 0 12px;max-width:75ch;"><span class=gicon style="font-size:1rem;vertical-align:middle;color:#6B3FA0;">quiz</span> Les interrogations notées (questionnaires en ligne) ont leur propre page : <a href="#" onclick="event.preventDefault();qzBanqueOuvrir();">L'Atelier du prof › Évaluations › Interrogations en ligne</a>.</p>
 
   <div class="tool-shell devoir-zone-create">
     <p class="example-title devoir-zone-title" style="margin-bottom:6px;" id="devoirCreateTitle"><span class=gicon style="color:var(--accent);">add_circle</span> Nouveau devoir</p>

@@ -293,7 +293,7 @@ function toggleMobileNav(){
   document.getElementById('navLinks').classList.toggle('open');
 }
 document.querySelectorAll('#navLinks button').forEach(b=>{
-  // Les intitulés de section (S'entraîner, Outils prof) ouvrent/ferment leur section sans refermer le menu mobile.
+  // Les intitulés de section (L'Atelier, L'Atelier du prof) ouvrent/ferment leur section sans refermer le menu mobile.
   if(b.classList.contains('nav-dropdown-trigger') || b.classList.contains('nav-sub-trigger')) return;
   b.addEventListener('click', ()=>{ document.getElementById('navLinks').classList.remove('open'); });
 });
@@ -513,7 +513,7 @@ function setActiveTopnav(key){
 document.getElementById('chap-back').addEventListener('click',()=>{
   showView('view-niveau'); setActiveTopnav(currentLevel);
 });
-/* Menus déroulants de la navigation (S'entraîner, Outils prof) : un clic ouvre/ferme, un clic
+/* Menus déroulants de la navigation (L'Atelier, L'Atelier du prof) : un clic ouvre/ferme, un clic
    ailleurs referme. Sur mobile, ils restent toujours dépliés (voir styles.css). */
 function toggleNavDropdown(id){
   const el = document.getElementById(id);
@@ -588,6 +588,9 @@ function onLockedChapterClick(){
 }
 function renderNiveau(lvl){
   document.getElementById('niveau-title').textContent = 'Progression de '+niveauLabel(lvl);
+  // Professeur : « Ma progression » de ce niveau, à côté de la frise de l'année.
+  const pb = document.getElementById('niveauProgBtn');
+  if(pb){ pb.style.display = (currentUserRole==='prof' || currentUserRole==='admin') ? '' : 'none'; pb.dataset.lvl = lvl; }
   const data = CHAPITRES_BY_LEVEL[lvl] || CH6;
   renderTheme(data, lvl);
   renderFrise(data, lvl);
@@ -636,6 +639,11 @@ function progEstEvt(t){ return typeof t === 'string' && t.startsWith('evt:'); } 
 let progEditorItems = [];
 let progEditIdx = -1; // index de la carte actuellement en mode édition (-1 = aucune)
 let progUserZone = 'B';
+function ouvrirMaProgression(){
+  const lvl = (document.getElementById('niveauProgBtn') || {}).dataset?.lvl, sel = document.getElementById('progNiveauSelect');
+  if(sel && lvl && [...sel.options].some(o => o.value === lvl)) sel.value = lvl;
+  const b = document.querySelector('.nav-links button[data-nav="progression"]'); if(b) b.click();
+}
 async function renderProgressionEditor(){
   const lvl = document.getElementById('progNiveauSelect').value;
   const status = document.getElementById('progStatus');
@@ -3302,6 +3310,12 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.930', date:'2026-10-03', items:[
+    'Session COURS : en ouvrant la copie d\'un élève, le professeur lui écrit un mot pour l\'aider ; le mot s\'affiche au-dessus de son exercice (avec Oliv\'IA) et reste enregistré',
+    'Session COURS : bouton « Aperçu des copies » : toutes les copies des élèves en miniature dans les vignettes, mises à jour en direct',
+    'Bilan de la séance : par élève, l\'heure d\'entrée, les réponses justes à chaque exercice, les mains levées, les mots reçus et les sorties de la page ; « tout juste » par exercice. Depuis la télécommande (« Bilan »), à la fin de la séance, ou plus tard depuis le Cahier de corrections (« Bilans des séances ») ; imprimable',
+    'Menus : « S\'entraîner » devient « L\'Atelier », « Outils prof » devient « L\'Atelier du prof » (Corrections, Évaluations, Mes classes, Ma progression, Outils de classe) ; bouton « Ma progression » sur la page de chaque niveau, à côté de la frise de l\'année'
+  ]},
   { version:'2026-08-19.929', date:'2026-10-03', items:[
     'Projection des exercices (Mon TD, planches) : l\'exercice est centré et agrandi pour remplir l\'écran, lisible depuis le fond de la classe',
     'Exercices à l\'écran : colorier les parts d\'une figure, compléter les cases avec un clavier virtuel (chiffres, < = >, lettres), entourer, barrer, vrai ou faux, puis « Vérifier ma réponse » (juste en vert, à corriger en rouge). Repère « à l\'écran » sur les vignettes de Mon TD',

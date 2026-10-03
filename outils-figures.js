@@ -6025,7 +6025,7 @@ document.addEventListener('fullscreenchange', ()=>setTimeout(figSplitAligner, 12
    bouton « + Cahier » d'une partie de cours. */
 async function figSplitAjouterCahier(){
   if(currentUserRole!=='prof' && currentUserRole!=='admin'){ await niceAlert('Le cahier est réservé aux professeurs.'); return; }
-  if(!currentClassId){ await niceAlert('Choisissez d\'abord une classe (menu Outils prof) pour ajouter au cahier.'); return; }
+  if(!currentClassId){ await niceAlert('Choisissez d\'abord une classe (menu L\'Atelier du prof) pour ajouter au cahier.'); return; }
   while(figLive.occupe) await new Promise(r=>setTimeout(r, 100));
   if(typeof tbAiFinishPlan==='function') await tbAiFinishPlan();
   const html = typeof tbAiFigureBlockHtml==='function' ? tbAiFigureBlockHtml() : null;

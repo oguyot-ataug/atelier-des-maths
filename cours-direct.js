@@ -58,6 +58,7 @@ function cdItemDe(e){
 function cdBoutonMaj(){
   const b = document.getElementById('cdLancerBtn');
   if(b) b.style.display = (typeof currentUserRole !== 'undefined' && (currentUserRole === 'prof' || currentUserRole === 'admin')) ? '' : 'none';
+  const bb = document.getElementById('cdBilanBtn'); if(bb && b) bb.style.display = b.style.display;
 }
 async function cdPreparer(){
   if(!currentClassId){ await niceAlert('Choisissez d\'abord la classe (en haut de la page) : la session reprend son cahier.'); return; }
@@ -160,7 +161,8 @@ async function cdProfTerminer(){
   if(!(await niceConfirm('Terminer la session ? Les élèves sortent du plein écran.'))) return;
   await sb.from('cours_direct').update({ ended_at: new Date().toISOString() }).eq('id', cdP.id);
   try{ cdP.ch.send({ type: 'broadcast', event: 'etat', payload: { fin: true } }); }catch(e){}
-  setTimeout(() => cdProfFermer(), 400);
+  const id = cdP.id;
+  setTimeout(async () => { cdProfFermer(); if(typeof cdBilan === 'function' && await niceConfirm('Session terminée. Voir le bilan de la séance (réponses, mains levées, sorties) ?')) cdBilan(id); }, 400);
 }
 async function cdProfEtat(etat){
   if(!cdP) return;
@@ -223,7 +225,8 @@ function cdProfRendre(){
   v.innerHTML = `<div class="cd-p-tete">
       <div><div class="cd-p-titre">${cdEsc(cdP.titre)}</div><div class="hint" style="margin:0;">Session COURS en direct · élément ${i + 1} / ${cdP.items.length}</div></div>
       <div class="cd-code" title="À afficher au tableau : les élèves le tapent en haut de « Mon travail »">Code <b>${cdEsc(cdP.code)}</b></div>
-      <div class="cd-p-act"><button class="btn secondary" onclick="cdProfFermer()" title="Fermer la télécommande sans terminer (la session continue)"><span class="gicon">minimize</span> Réduire</button>
+      <div class="cd-p-act"><button class="btn secondary" onclick="cdBilan()" title="Qui a bien répondu à chaque exercice, mains levées, sorties de la page"><span class="gicon">summarize</span> Bilan</button>
+        <button class="btn secondary" onclick="cdProfFermer()" title="Fermer la télécommande sans terminer (la session continue)"><span class="gicon">minimize</span> Réduire</button>
         <button class="btn" style="background:#C0392B;" onclick="cdProfTerminer()"><span class="gicon">stop</span> Terminer</button></div></div>
     <div class="cd-p-corps">
       <div class="cd-p-items">${cdP.items.map((x, k) => `<button class="cd-item${k === i ? ' on' : ''}${k < i ? ' vu' : ''}" onclick="cdProfAller(${k})"><span>${k + 1}</span> ${cdEsc(x.titre)}${x.prog ? ' <span class="gicon">architecture</span>' : ''}${x.exo ? ' <span class="gicon" style="color:#E35D3A;">edit_square</span>' : ''}</button>`).join('')}
@@ -334,6 +337,7 @@ async function cdEleveOuvrir(id){
     .on('broadcast', { event: 'etat' }, ({ payload }) => { if(payload && payload.fin) return cdEleveFin(); cdEleveCharger(); })
     .on('broadcast', { event: 'pilote' }, ({ payload }) => { if(typeof cxElevePilote === 'function') cxElevePilote(payload); })
     .on('broadcast', { event: 'main' }, ({ payload }) => { if(typeof cxEleveMain === 'function') cxEleveMain(payload); })
+    .on('broadcast', { event: 'mot' }, ({ payload }) => { if(typeof cxEleveMot === 'function') cxEleveMot(payload); })
     .subscribe(s => { if(s === 'SUBSCRIBED'){ try{ cdE.ch.send({ type: 'broadcast', event: 'ici', payload: { e: currentUser.id } }); }catch(e){} } });
   cdE.timer = setInterval(() => { if(cdE) sb.rpc('cours_direct_signal', { p_id: cdE.id, p_dehors: cdE.dehors }); }, 20000);
   document.addEventListener('visibilitychange', cdSurVisibilite);

@@ -321,7 +321,23 @@ function cxEtatEleve(k, e){
   return { x, rep: (x && x.rep) || null, ecrit: !!(x && x.vu && Date.now() - x.vu < 15000), aide: !!(cdP.aides && cdP.aides.has(e)),
     main: !!(cdP.main && cdP.main.e === e && cdP.main.k === k), present: !!(m && !m.dehors && Date.now() - Date.parse(m.vu_at) < 60000), dehors: !!(m && m.dehors) };
 }
+// Aperçu de toutes les copies (bouton « Aperçu des copies ») : redessiné au plus une fois par seconde.
+function cxProfApercu(){ if(!cdP) return; cdP.apercu = !cdP.apercu; cxProfMaj(); }
 function cxProfMaj(seul){
+  const it0 = cxProfItem();
+  if(cdP && cdP.apercu && it0 && it0.exo && it0.exo.type !== 'prog'){
+    const t = Date.now();
+    if(cdP.apT && t - cdP.apT < 1000){ clearTimeout(cdP.apTimer); cdP.apTimer = setTimeout(() => cxProfMaj(seul), 1000 - (t - cdP.apT)); return; }
+    cdP.apT = t;
+  }
+  cxProfMajFaire(seul);
+}
+function cxProfMiniCopie(it, rep){
+  if(it.exo.type === 'qz'){ let n = 0;
+    return `<div class="cx-mini">${it.exo.questions.map(q => q.type === 'texte' ? '' : `<div class="cx-mini-q"><b>${++n}.</b> ${qzRenderSaisie(q, rep[q.id], 'corrige', cxCtx('a'))}</div>`).join('')}</div>`; }
+  return `<div class="cx-mini cx-mini-td"></div>`;
+}
+function cxProfMajFaire(seul){
   const it = cxProfItem(); if(!it || !it.exo) return;
   const k = cdP.etat.idx || 0, g = document.getElementById('cxGrille'); if(!g) return;
   const qs = it.exo.type === 'qz' ? cxNbQuestions(it) : [], d = it.exo.type === 'prog' ? progDefiParId(it.exo.defi) : null;
@@ -345,11 +361,16 @@ function cxProfMaj(seul){
     }
     if(s.aide) aides++;
     const cls = [s.aide ? 'aide' : '', s.main ? 'main' : '', s.dehors ? 'dehors' : '', ok ? 'ok' : '', cdP.selEx === e.id ? 'sel' : '', !s.present && !s.rep ? 'absent' : ''].join(' ');
-    return `<button class="cx-t ${cls}" onclick="cxProfVoir('${e.id}')"><span class="cx-t-nom">${cdEsc(e.label)}${s.ecrit ? ' <span class="cx-ecrit" title="en train de travailler"></span>' : ''}${s.aide ? ' <span class="gicon" title="Main levée">front_hand</span>' : ''}${s.main ? ' <span class="gicon" title="Vous avez la main">pan_tool_alt</span>' : ''}</span>${corps}
-      ${s.dehors ? '<small class="cx-rouge">SORTI de la page</small>' : ''}</button>`;
+    const ap = cdP.apercu && it.exo.type !== 'prog';
+    return `<button class="cx-t ${cls}${ap ? ' cx-t-ap' : ''}" data-e="${e.id}" onclick="cxProfVoir('${e.id}')"><span class="cx-t-nom">${cdEsc(e.label)}${s.ecrit ? ' <span class="cx-ecrit" title="en train de travailler"></span>' : ''}${s.aide ? ' <span class="gicon" title="Main levée">front_hand</span>' : ''}${s.main ? ' <span class="gicon" title="Vous avez la main">pan_tool_alt</span>' : ''}</span>${corps}
+      ${s.dehors ? '<small class="cx-rouge">SORTI de la page</small>' : ''}${ap && s.rep ? cxProfMiniCopie(it, rep) : ''}</button>`;
   }).join('') || '<p class="hint">Aucun élève dans cette classe.</p>';
+  g.classList.toggle('cx-grille-ap', !!(cdP.apercu && it.exo.type !== 'prog'));
+  if(cdP.apercu && it.exo.type === 'td'){ const x = cxTdExo(it);
+    if(x) g.querySelectorAll('.cx-mini-td').forEach(z => { const t = cxProfTrav(k).get(z.closest('[data-e]').dataset.e), rp = (t && t.rep) || {}; plNum(z, x, { etat: rp.etat, res: rp.res, lecture: true }); }); }
+  if(cdP.apercu && it.exo.type === 'qz' && typeof qzMonterInter === 'function') qzMonterInter(g);
   const r = document.getElementById('cxResume');
-  if(r) r.innerHTML = `<b>${commence}</b> / ${cdP.eleves.length} ont commencé · <b>${fini}</b> ${it.exo.type === 'prog' ? 'ont réussi' : it.exo.type === 'td' ? 'ont tout juste' : 'ont terminé'}${aides ? ` · <b class="cx-bleu"><span class="gicon">front_hand</span> ${aides} main${aides > 1 ? 's' : ''} levée${aides > 1 ? 's' : ''}</b>` : ''}
+  if(r) r.innerHTML = `${it.exo.type !== 'prog' ? `<button class="btn secondary td-mini cx-ap-btn" onclick="cxProfApercu()"><span class="gicon">${cdP.apercu ? 'view_module' : 'grid_view'}</span> ${cdP.apercu ? 'Vignettes simples' : 'Aperçu des copies'}</button>` : ''}<b>${commence}</b> / ${cdP.eleves.length} ont commencé · <b>${fini}</b> ${it.exo.type === 'prog' ? 'ont réussi' : it.exo.type === 'td' ? 'ont tout juste' : 'ont terminé'}${aides ? ` · <b class="cx-bleu"><span class="gicon">front_hand</span> ${aides} main${aides > 1 ? 's' : ''} levée${aides > 1 ? 's' : ''}</b>` : ''}
     ${it.exo.type === 'td' ? '<span class="cx-leg"><i style="background:#1F7A4D"></i>juste <i style="background:#9E1F5E"></i>faux <i style="background:#D5DBE3"></i>pas vérifié</span>' : ''}
     ${it.exo.type === 'qz' ? '<span class="cx-leg"><i style="background:#1F7A4D"></i>juste <i style="background:#C77D1E"></i>en partie <i style="background:#9E1F5E"></i>faux <i style="background:#3A6EA5"></i>à regarder <i style="background:#D5DBE3"></i>pas répondu</span>' : ''}`;
   if(cdP.selEx && (!seul || seul === cdP.selEx) && !(cdP.main && cdP.main.e === cdP.selEx)) cxProfDetail();
@@ -361,7 +382,20 @@ function cxProfVoir(e){
   cxProfMaj(); if(!cdP.selEx){ const d = document.getElementById('cxDetail'); if(d) d.innerHTML = ''; }
   else document.getElementById('cxDetail')?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
 }
+// Le détail est redessiné à chaque modification de l'élève : le mot en cours d'écriture est gardé.
 function cxProfDetail(){
+  const box = document.getElementById('cxDetail'); if(!box || !cdP) return;
+  const ta = box.querySelector('#cxMotTxt'), br = ta && ta.dataset.e === cdP.selEx ? { v: ta.value, f: document.activeElement === ta, s: ta.selectionStart } : null;
+  cxProfDetailFaire();
+  const nt = box.querySelector('#cxMotTxt');
+  if(nt && br){ nt.value = br.v; if(br.f){ nt.focus(); try{ nt.setSelectionRange(br.s, br.s); }catch(e){} } }
+}
+function cxMotHtml(m, prof){
+  if(!m || !m.t) return '';
+  const h = m.at ? new Date(m.at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : '';
+  return `<span class="cx-mot-oliv">${typeof olivPoseSvg === 'function' ? olivPoseSvg('savoir') : ''}</span><div><b>${prof ? 'Votre dernier mot' : 'Le mot de ton professeur'}</b>${h ? ` <small>${h}</small>` : ''}<p>${cdEsc(m.t).replace(/\n/g, '<br>')}</p></div>`;
+}
+function cxProfDetailFaire(){
   const box = document.getElementById('cxDetail'), it = cxProfItem(); if(!box || !it || !it.exo || !cdP.selEx) return;
   const k = cdP.etat.idx || 0, e = cdP.eleves.find(x => x.id === cdP.selEx), s = cxEtatEleve(k, cdP.selEx), rep = s.rep || {};
   const tete = `<div class="cx-d-tete"><b>${cdEsc(e ? e.label : '')}</b>${s.aide ? ' <span class="cx-bleu"><span class="gicon">front_hand</span> main levée</span>' : ''}
@@ -369,7 +403,10 @@ function cxProfDetail(){
       ${it.exo.type === 'prog' ? `<button class="btn secondary" onclick="cxProfProg('regarder')"><span class="gicon">visibility</span> Voir son programme en direct</button>` : ''}
       ${s.main ? `<button class="btn" style="background:#1F7A4D;" onclick="cxRelacher()"><span class="gicon">pan_tool</span> Rendre la main</button>`
         : `<button class="btn" style="background:#E35D3A;" onclick="${it.exo.type === 'prog' ? 'cxProfProg(\'main\')' : 'cxPrendre()'}"><span class="gicon">pan_tool_alt</span> Prendre la main</button>`}
-      <button class="modal-close" onclick="cxProfVoir('${cdP.selEx}')" title="Fermer"><span class="gicon">close</span></button></div>`;
+      <button class="modal-close" onclick="cxProfVoir('${cdP.selEx}')" title="Fermer"><span class="gicon">close</span></button></div>
+    <div class="cx-mot-prof"><textarea id="cxMotTxt" data-e="${cdP.selEx}" rows="2" placeholder="Un mot pour aider ${cdEsc(e ? (e.prenom || e.label) : 'l\'élève')} : il s'affiche sur son écran, au-dessus de l'exercice."></textarea>
+      <button class="btn" onclick="cxProfMot()"><span class="gicon">send</span> Envoyer</button>
+      ${rep._mot && rep._mot.t ? `<div class="cx-mot cx-mot-envoye">${cxMotHtml(rep._mot, true)}<button class="btn secondary td-mini" onclick="cxProfMot(true)" title="Retirer le mot de son écran"><span class="gicon">delete</span></button></div>` : ''}</div>`;
   if(it.exo.type === 'td'){
     const tenu = s.main, r = rep.res;
     box.innerHTML = `${tete}${tenu ? '<p class="cx-tenu"><span class="gicon">pan_tool_alt</span> Vous avez la main : ce que vous faites ici apparaît en direct sur l\'écran de l\'élève. Rendez-lui la main ensuite.</p>' : ''}
@@ -395,6 +432,19 @@ function cxProfDetail(){
     }).join('')}`;
   if(typeof qzChargerPhotos === 'function') qzChargerPhotos(box);
   if(typeof qzMonterInter === 'function') qzMonterInter(box);
+}
+// Mot d'aide : envoyé à l'élève (canal), qui l'enregistre avec son travail (il le garde en se reconnectant).
+function cxProfMot(effacer){
+  if(!cdP || !cdP.selEx) return;
+  const ta = document.getElementById('cxMotTxt'), t = effacer ? '' : (ta ? ta.value.trim() : '');
+  if(!t && !effacer) return;
+  const e = cdP.selEx, k = cdP.etat.idx || 0, m = { t, at: new Date().toISOString() };
+  cxEnvoyer(cdP.ch, 'mot', { e, k, m });
+  const x = cxProfTrav(k).get(e) || {}; x.rep = Object.assign({}, x.rep, { _mot: m }); cxProfTrav(k).set(e, x);
+  if(cdP.mots == null) cdP.mots = 0; if(t) cdP.mots++;
+  if(ta) ta.value = '';
+  cxProfDetail();
+  if(t) cdToast(`<span class="gicon">send</span> Mot envoyé à <b>${cdEsc((cdP.eleves.find(z => z.id === e) || {}).label || '')}</b>.`);
 }
 // Prise en main d'une copie (questionnaire, figure comprise).
 async function cxPrendre(){
@@ -494,8 +544,8 @@ async function cxEleveTravaux(){
   (data || []).forEach(x => cdE.trav.set(x.item, x.reponses || {}));
 }
 function cxEleveTete(k, it){
-  const tenu = cdE.main === k;
-  return `<div class="cx-e-barre">${tenu ? '<span class="cx-tenu"><span class="gicon">pan_tool_alt</span> Ton professeur a pris la main pour t\'aider : regarde !</span>'
+  const tenu = cdE.main === k, m = (cdE.trav.get(k) || {})._mot;
+  return `<div class="cx-mot" id="cxMot"${m && m.t ? '' : ' hidden'}>${cxMotHtml(m)}</div><div class="cx-e-barre">${tenu ? '<span class="cx-tenu"><span class="gicon">pan_tool_alt</span> Ton professeur a pris la main pour t\'aider : regarde !</span>'
       : `<span class="cx-e-chip"><span class="gicon">edit_square</span> Exercice à faire</span><span class="hint" id="cxSave" style="margin:0;"></span><span style="flex:1"></span>
         <button class="btn secondary${cdE.aide ? ' cx-leve' : ''}" onclick="cxEleveAide()"><span class="gicon">front_hand</span> ${cdE.aide ? 'Main levée : ton professeur arrive' : 'Lever la main'}</button>`}</div>`;
 }
@@ -570,7 +620,7 @@ function cxModifie(){
   if(qzP.prof) return cxProfEnvoi();
   if(!cdE || cdE.main === qzP.k) return;
   const k = qzP.k, avant = cdE.trav.get(k) || {};
-  cdE.trav.set(k, Object.assign(cxClone(qzP.reponses), avant._fini ? { _fini: true } : {}));
+  cdE.trav.set(k, Object.assign(cxClone(qzP.reponses), cxCles(avant)));
   const s = document.getElementById('cxSave'); if(s) s.textContent = 'Enregistrement…';
   clearTimeout(cdE.saveT); cdE.saveT = setTimeout(() => cxEleveSauver(k), 700);
 }
@@ -590,9 +640,26 @@ function cxEleveFini(){
   cdE.trav.set(k, rep); cxEleveSauver(k);
   cxEleveMonter(k, cdE.d.items[k]);
 }
-function cxEleveAide(){
+// Clés gardées quand l'élève réécrit ses réponses : terminé, mot du professeur, mains levées.
+function cxCles(r){ const o = {}; Object.keys(r || {}).forEach(c => { if(c[0] === '_') o[c] = r[c]; }); return o; }
+async function cxEleveMot(p){
+  if(!cdE || !p || p.e !== currentUser.id) return;
+  await cxEleveTravaux();
+  const rep = Object.assign({}, cdE.trav.get(p.k)); rep._mot = p.m; cdE.trav.set(p.k, rep);
+  if(qzP && qzP.cours && qzP.k === p.k) qzP.reponses._mot = p.m;
+  cxEleveSauver(p.k);
+  const z = document.getElementById('cxMot');
+  if(z && cdE.vue === p.k){ z.innerHTML = cxMotHtml(p.m); z.hidden = !(p.m && p.m.t); }
+  if(p.m && p.m.t){ cdToast(`<span class="gicon">chat</span> <b>Ton professeur :</b> ${cdEsc(p.m.t)}`); const t = document.querySelector('.cd-toast:last-of-type'); if(t) t.style.background = '#1F3A5C'; }
+}
+async function cxEleveAide(){
   if(!cdE) return;
   cdE.aide = !cdE.aide;
+  if(cdE.aide){ // compté pour le bilan de la séance, sur l'élément regardé
+    await cxEleveTravaux(); const k = cdE.vue, rep = Object.assign({}, cdE.trav.get(k));
+    rep._mains = (rep._mains || 0) + 1; cdE.trav.set(k, rep); if(qzP && qzP.cours && qzP.k === k) qzP.reponses._mains = rep._mains;
+    cxEleveSauver(k);
+  }
   cxEnvoyer(cdE.ch, 'aide', { e: currentUser.id, on: cdE.aide });
   cxEleveRafraichir();
 }
@@ -783,6 +850,15 @@ function cxFigChange(){
     .cx-leg{display:inline-flex;gap:4px;align-items:center;font:500 .75rem Inter,sans-serif;color:var(--ink-soft);margin-left:auto;} .cx-leg i{width:10px;height:10px;border-radius:3px;display:inline-block;margin-left:6px;}
     .cx-bleu{color:#3A6EA5;} .cx-bleu .gicon,.cx-rouge .gicon{font-size:17px;vertical-align:middle;} .cx-rouge{color:#C0392B;font-weight:800;}
     .cx-grille{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;}
+    .cx-grille.cx-grille-ap{grid-template-columns:repeat(auto-fill,minmax(300px,1fr));align-items:start;}
+    .cx-mini{zoom:.62;pointer-events:none;max-height:420px;overflow:hidden;border-top:1px solid rgba(28,43,57,.1);padding-top:6px;font-size:.95rem;}
+    .cx-mini-q{margin:0 0 6px;} .cx-mini svg{max-width:100%;height:auto;}
+    .cx-ap-btn{float:right;margin-left:8px;}
+    .cx-mot{display:flex;gap:10px;align-items:flex-start;background:#FFF8E6;border:2px solid #F0C24E;border-radius:14px;padding:8px 12px;margin:0 0 10px;}
+    .cx-mot[hidden]{display:none;} .cx-mot p{margin:2px 0 0;white-space:normal;} .cx-mot small{color:var(--ink-soft);}
+    .cx-mot-oliv{width:42px;height:42px;flex:none;display:inline-block;} .cx-mot-oliv svg{width:100%;height:100%;}
+    .cx-mot-prof{display:flex;gap:8px;align-items:flex-start;flex-wrap:wrap;margin:6px 0 10px;} .cx-mot-prof textarea{flex:1;min-width:240px;border-radius:10px;border:1.5px solid rgba(28,43,57,.2);padding:6px 10px;font:inherit;}
+    .cx-mot-envoye{flex-basis:100%;margin:0;} .cx-mot-envoye > div{flex:1;}
     .cx-t{display:flex;flex-direction:column;gap:5px;text-align:left;border:2px solid rgba(28,43,57,.1);background:#fff;border-radius:12px;padding:8px 10px;cursor:pointer;font:inherit;color:var(--ink);}
     .cx-t small{color:var(--ink-soft);font-size:.76rem;}
     .cx-t.sel{border-color:#1F3A5C;box-shadow:0 0 0 3px rgba(31,58,92,.15);} .cx-t.ok{border-left:6px solid #1F7A4D;} .cx-t.absent{opacity:.6;}
