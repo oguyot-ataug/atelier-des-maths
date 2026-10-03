@@ -1108,10 +1108,11 @@ async function qzCResync(){
 async function qzElevesDevoir(devoir){
   let req = sb.from('class_students').select('student_id, profiles(id,nom,prenom)').eq('class_id', devoir.class_id);
   if(devoir.student_ids && devoir.student_ids.length) req = req.in('student_id', devoir.student_ids);
-  const { data } = await req;
+  const [{ data }] = await Promise.all([req, typeof elevesTestCharger === 'function' ? elevesTestCharger() : null]);
+  // Élèves tests (simulateur) : marqués, en fin de liste ; les bilans et moyennes les écartent (elevesReels).
   return (data || []).map(r => r.profiles).filter(Boolean)
-    .map(p => ({ id: p.id, nom: p.nom || '', prenom: p.prenom || '', label: ((p.nom || '') + ' ' + (p.prenom || '')).trim() || '(sans nom)' }))
-    .sort((a, b) => a.label.localeCompare(b.label, 'fr'));
+    .map(p => ({ id: p.id, nom: p.nom || '', prenom: p.prenom || '', label: ((p.nom || '') + ' ' + (p.prenom || '')).trim() || '(sans nom)', test: typeof estEleveTest === 'function' && estEleveTest(p.id) }))
+    .sort((a, b) => (a.test - b.test) || a.label.localeCompare(b.label, 'fr'));
 }
 function qzCQuestions(){ return (qzC.qz.questions || []).filter(q => q.type !== 'texte'); }
 function qzCStatsEleve(e){
@@ -1753,7 +1754,7 @@ async function qzCarnetCharger(){
   const [{ data: copies }, { data: qzs }, eleves] = await Promise.all([
     ids.length ? sb.from('qz_copies').select('*').in('devoir_id', ids) : { data: [] },
     qids.length ? sb.from('questionnaires').select('id,questions,reglages').in('id', qids) : { data: [] },
-    qzElevesDevoir({ class_id: qzK.classId }),
+    qzElevesDevoir({ class_id: qzK.classId }).then(elevesReels),
   ]);
   qzK.qz = new Map((qzs || []).map(q => [q.id, q]));
   qzK.devoirs = (devoirs || []).filter(d => { const reg = (qzK.qz.get(d.questionnaire_id) || {}).reglages; return !qzEstEntrainement(reg) && !qzEstSondage(reg); }); // entraînements, sondages : non notés

@@ -526,12 +526,14 @@ async function refreshDevoirsProfListing(){
   // Décomptes en deux requêtes pour toute la liste (au lieu de deux par devoir).
   const classIds = [...new Set(devoirsList.map(d=>d.class_id))];
   const [{ data: cs }, { data: rr }] = await Promise.all([
-    sb.from('class_students').select('class_id').in('class_id', classIds),
-    sb.from('devoirs_rendus').select('devoir_id').in('devoir_id', devoirsList.map(d=>d.id)).eq('est_rendu', true),
+    sb.from('class_students').select('class_id,student_id').in('class_id', classIds),
+    sb.from('devoirs_rendus').select('devoir_id,student_id').in('devoir_id', devoirsList.map(d=>d.id)).eq('est_rendu', true),
   ]);
   const taille = {}, rendus = {};
-  (cs||[]).forEach(r=>{ taille[r.class_id] = (taille[r.class_id]||0)+1; });
-  (rr||[]).forEach(r=>{ rendus[r.devoir_id] = (rendus[r.devoir_id]||0)+1; });
+  if(typeof elevesTestCharger==='function') await elevesTestCharger();
+  const reel = id => !(typeof estEleveTest==='function' && estEleveTest(id)); // élèves tests du simulateur : pas comptés
+  (cs||[]).forEach(r=>{ if(reel(r.student_id)) taille[r.class_id] = (taille[r.class_id]||0)+1; });
+  (rr||[]).forEach(r=>{ if(reel(r.student_id)) rendus[r.devoir_id] = (rendus[r.devoir_id]||0)+1; });
   const rows = devoirsList.map(d=>{
     const cible = d.student_ids && d.student_ids.length;
     const totalEleves = cible ? d.student_ids.length : (taille[d.class_id]||0);

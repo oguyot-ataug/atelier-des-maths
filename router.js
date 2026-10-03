@@ -21,21 +21,21 @@ const ROUTE_SIMPLE = {
   'view-admin':'admin', 'view-supervision':'supervision', 'view-mesresultats':'mesresultats',
   'view-ia':'ia', 'view-classe':'classe', 'view-convertisseur':'convertisseur', 'view-famille':'famille', 'view-abonnement':'abonnement', 'view-cgv':'cgv',
   'view-confidentialite':'confidentialite', 'view-mentions-legales':'mentions-legales',
-  'view-programmation':'programmation', 'view-qz-carnet':'carnet', 'view-qz-banque':'questionnaires', 'view-qz-form':'questionnaires', 'view-devoirs-prof':'devoirs',
+  'view-programmation':'programmation', 'view-qz-carnet':'carnet', 'view-qz-banque':'questionnaires', 'view-qz-form':'questionnaires', 'view-devoirs-prof':'devoirs', 'view-simulateur':'simulateur',
 };
 const ROUTE_LABELS = {
   cm:'Suivi', compte:'Objectif Nombre', correction:'Correction', evaluation:'Évaluation',
   tableau:'Tableau interactif', cahier:'Cahier élève', admin:'Administration',
   supervision:'Mes classes', mesresultats:'Mes résultats', ia:'Intelligence artificielle', classe:'Outils de classe', convertisseur:'Convertisseur',
   famille:'Espace famille', abonnement:'Mon abonnement', cgv:'Conditions générales de vente', confidentialite:'Confidentialité',
-  'mentions-legales':'Mentions légales', programmation:'Programmation', carnet:'Carnet de notes', questionnaires:'Interrogations en ligne', devoirs:'Devoirs en ligne', groupes:'Groupes de remédiation',
+  'mentions-legales':'Mentions légales', programmation:'Programmation', carnet:'Carnet de notes', simulateur:'Simulateur de classe', questionnaires:'Interrogations en ligne', devoirs:'Devoirs en ligne', groupes:'Groupes de remédiation',
 };
 /* Routes reservees (role requis), miroir exact des gardes déjà présentes dans le
    gestionnaire de clic data-nav de app.js -- ne pas les dupliquer ailleurs. */
 const ROUTE_AUTH = {
   correction:['prof','admin'], evaluation:['prof','admin'],
   admin:['admin'], supervision:['prof','admin'], mesresultats:['eleve'], ia:['prof','admin'], classe:['prof','admin'],
-  carnet:['prof','admin'], questionnaires:['prof','admin'], devoirs:['prof','admin'], groupes:['prof','admin'],
+  carnet:['prof','admin'], questionnaires:['prof','admin'], devoirs:['prof','admin'], groupes:['prof','admin'], simulateur:['prof','admin'],
 };
 
 function routerSlugify(s){
@@ -192,6 +192,8 @@ function routerRestoreFromHash(){
         showView('view-devoirs-prof'); setActiveTopnav('devoirsprof'); if(typeof renderDevoirsProf==='function') renderDevoirsProf();
       } else if(key==='programmation'){
         if(typeof progOuvrir==='function') progOuvrir();
+      } else if(key==='simulateur'){
+        if(typeof simOuvrir==='function') simOuvrir();
       } else if(key==='groupes'){ // ancienne page : c'est maintenant un onglet de « Mes classes »
         if(typeof grOuvrir==='function') grOuvrir();
       } else if(key==='questionnaires'){

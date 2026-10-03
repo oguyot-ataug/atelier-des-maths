@@ -66,7 +66,7 @@ function blTypeIcone(d){ const t = (typeof DEVOIR_TYPES !== 'undefined' ? DEVOIR
 async function blCharger(classe, per, mode){
   const fin = per.au + 'T23:59:59', complet = mode === 'complet', vide = Promise.resolve({ data: [] });
   const [eleves, { data: dv }, { data: cl }] = await Promise.all([
-    qzElevesDevoir({ class_id: classe }),
+    qzElevesDevoir({ class_id: classe }).then(elevesReels), // sans les élèves tests du simulateur
     sb.from('devoirs').select('*').eq('teacher_id', currentUser.id).eq('class_id', classe).not('date_depot', 'is', null).order('date_depot', { ascending: true }),
     sb.from('classes').select('nom,niveau').eq('id', classe).maybeSingle(),
   ]);

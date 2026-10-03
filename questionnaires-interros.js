@@ -291,13 +291,15 @@ async function qzInterrosCharger(){
     .eq('teacher_id', currentUser.id).eq('type', 'questionnaire').order('created_at', { ascending: false });
   const interros = dv || [], ids = interros.map(d => d.id), classIds = Array.from(new Set(interros.map(d => d.class_id)));
   const [{ data: copies }, { data: cs }] = await Promise.all([
-    ids.length ? sb.from('qz_copies').select('devoir_id,statut,deadline_at,reponses,correction').in('devoir_id', ids) : { data: [] },
-    classIds.length ? sb.from('class_students').select('class_id').in('class_id', classIds) : { data: [] },
+    ids.length ? sb.from('qz_copies').select('devoir_id,student_id,statut,deadline_at,reponses,correction').in('devoir_id', ids) : { data: [] },
+    classIds.length ? sb.from('class_students').select('class_id,student_id').in('class_id', classIds) : { data: [] },
+    typeof elevesTestCharger === 'function' ? elevesTestCharger() : null,
   ]);
-  const taille = {}; (cs || []).forEach(r => { taille[r.class_id] = (taille[r.class_id] || 0) + 1; });
+  const reel = id => !(typeof estEleveTest === 'function' && estEleveTest(id)); // élèves tests du simulateur : pas comptés
+  const taille = {}; (cs || []).forEach(r => { if(reel(r.student_id)) taille[r.class_id] = (taille[r.class_id] || 0) + 1; });
   const qzMap = new Map((qzB.mes || []).map(q => [q.id, q]));
   interros.forEach(d => {
-    const q = qzMap.get(d.questionnaire_id), cp = (copies || []).filter(c => c.devoir_id === d.id);
+    const q = qzMap.get(d.questionnaire_id), cp = (copies || []).filter(c => c.devoir_id === d.id && reel(c.student_id));
     const reg = Object.assign({}, QZ_REGLAGES_DEFAUT, (q && q.reglages) || {});
     d._q = q; d._reg = reg;
     d._total = d.student_ids && d.student_ids.length ? d.student_ids.length : (taille[d.class_id] || 0);

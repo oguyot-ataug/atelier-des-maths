@@ -453,6 +453,10 @@ document.querySelectorAll('[data-nav]').forEach(el=>{
       if(currentUserRole!=='prof' && currentUserRole!=='admin'){ toggleAccountMenu(); return; }
       showView('view-classe'); setActiveTopnav(null); if(typeof renderClasseOutils==='function') renderClasseOutils();
     }
+    if(nav==='simulateur'){
+      if(currentUserRole!=='prof' && currentUserRole!=='admin'){ toggleAccountMenu(); return; }
+      if(typeof simOuvrir==='function') simOuvrir();
+    }
     if(nav==='progression'){
       if(currentUserRole!=='prof' && currentUserRole!=='admin'){ toggleAccountMenu(); return; }
       showView('view-progression'); setActiveTopnav('progression'); renderProgressionEditor();
@@ -2673,8 +2677,13 @@ function makeOfflineSupabaseStub(){
   return stub;
 }
 let sb;
+/* Simulateur de classe (simulateur.js) : une page ouverte avec ?simu=<élève fictif> a SA session,
+   rangée à part (storageKey) pour ne jamais remplacer celle du professeur dans les autres fenêtres. */
+const SIMU = new URLSearchParams(location.search).get('simu');
+if(SIMU) document.documentElement.classList.add('simu-frame');
 try{
-  sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  sb = SIMU ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { storageKey: 'sb-simu-' + SIMU, detectSessionInUrl: false } })
+    : supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 }catch(e){
   console.error("Supabase n'a pas pu s'initialiser (probablement un problème réseau) -- le site continue de fonctionner en mode dégradé (chapitres et outils accessibles, comptes/sauvegarde indisponibles) :", e);
   sb = makeOfflineSupabaseStub();
@@ -3314,6 +3323,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.941', date:'2026-10-03', items:[
+    'Nouveau : L\'Atelier du prof › Simulateur de classe. Votre écran de professeur et ceux de un à trois élèves fictifs (Élève A, B, C), côte à côte : lancez une session COURS, des questions flash, une interrogation ou un devoir, puis jouez les élèves dans leurs fenêtres. Chaque écran d\'élève a sa propre session (votre connexion n\'est pas touchée) ; « Simuler une sortie » montre l\'alerte côté professeur ; chaque écran s\'agrandit, se recharge, et l\'ensemble passe en plein écran',
+    'Élèves fictifs : créés en un clic dans la classe de votre choix (ils reçoivent tout ce que vous lui donnez), marqués « (test) », en fin de liste ; exclus des bilans, moyennes, carnet de notes, décomptes de copies rendues et tirage au sort ; supprimables à tout moment'
+  ]},
   { version:'2026-08-19.940', date:'2026-10-03', items:[
     'Notes saisies à la main (Mes classes › Interrogations) : on choisit leur support : sur papier, en ligne avec un autre outil (Google Forms…), ou autre (oral, soin, participation…). Dans le Bilan, elles se rangent avec les interrogations en ligne, sur papier, ou dans « Autres notes » ; IE-EL1 (5B) est passée en ligne',
     'Bilan : les colonnes sont groupées par catégorie, puis dans l\'ordre des dates (les en-têtes de groupe restent alignés)'

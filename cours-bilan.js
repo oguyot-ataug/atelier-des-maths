@@ -29,7 +29,7 @@ async function cdBilan(id){
   if(!row){ o.innerHTML = `<div class="modal-card cdb"><div class="cdb-tete"><b class="cd-h"><span class="gicon">summarize</span> Bilan des séances</b><button class="modal-close" onclick="document.getElementById('cdBilan').style.display='none'"><span class="gicon">close</span></button></div><p class="hint">Aucune séance COURS pour cette classe.</p></div>`; return; }
   const [{ data: seances }, eleves, { data: membres }, { data: travaux }] = await Promise.all([
     sb.from('cours_direct').select('id,titre,created_at').eq('teacher_id', currentUser.id).eq('class_id', row.class_id).order('created_at', { ascending: false }).limit(30),
-    qzElevesDevoir({ class_id: row.class_id }),
+    qzElevesDevoir({ class_id: row.class_id }).then(l => typeof elevesReels === 'function' ? elevesReels(l) : l),
     sb.from('cours_direct_membres').select('student_id,joined_at,sorties,sortie_at').eq('direct_id', row.id),
     sb.from('cours_direct_travaux').select('item,student_id,reponses').eq('direct_id', row.id)
   ]);

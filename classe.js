@@ -206,7 +206,8 @@ async function clRoueCharger(classe){
   } else {
     if(zone) zone.style.display = 'none';
     const { data } = await sb.from('class_students').select('profiles(id,nom,prenom)').eq('class_id', classe);
-    const eleves = (data || []).map(r => r.profiles).filter(Boolean).sort((a, b) => (a.prenom || '').localeCompare(b.prenom || '') || (a.nom || '').localeCompare(b.nom || ''));
+    if(typeof elevesTestCharger === 'function') await elevesTestCharger();
+    const eleves = (data || []).map(r => r.profiles).filter(p => p && !(typeof estEleveTest === 'function' && estEleveTest(p.id))).sort((a, b) => (a.prenom || '').localeCompare(b.prenom || '') || (a.nom || '').localeCompare(b.nom || ''));
     // Prénom seul ; initiale du nom si deux élèves ont le même prénom.
     const nbPrenom = {}; eleves.forEach(e => { const p = (e.prenom || e.nom || '?').trim(); nbPrenom[p] = (nbPrenom[p] || 0) + 1; });
     clRoue.noms = eleves.map(e => { const p = (e.prenom || e.nom || '?').trim(); return nbPrenom[p] > 1 && e.nom ? p + ' ' + e.nom.trim()[0] + '.' : p; });
