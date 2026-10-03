@@ -36,16 +36,18 @@ async function npOngletInterros(){
           <button class="btn secondary qz-mini" onclick="qzOuvrirCorrection('${d.id}')"><span class="gicon">${d.qz_mode === 'entrainement' || d.qz_mode === 'sondage' ? 'insights' : 'fact_check'}</span> ${d.qz_mode === 'entrainement' || d.qz_mode === 'sondage' ? 'Résultats' : 'Corriger'}</button></div>`).join('')}</div>`
         : '<p class="hint">Aucune interrogation en ligne pour cette classe.</p>'}
       <p class="hint" style="margin:6px 0 0;">Pour créer ou donner une interrogation en ligne : <a href="#" onclick="event.preventDefault();qzBanqueOuvrir()">L'Atelier du prof › Évaluations › Interrogations en ligne</a>.</p></div>
-    <div class="np-sec"><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;"><h2 style="margin:0;"><span class="gicon">edit_document</span> Interrogations sur papier</h2>
-        <button class="btn" style="margin-left:auto;" onclick="npEditer()"><span class="gicon">add</span> Saisir les notes d'une interrogation</button></div>
-      <p class="hint" style="margin:4px 0 8px;">Les notes saisies ici entrent dans le Bilan de la classe ; les thèmes abordés aident l'IA à rédiger les appréciations.</p>
+    <div class="np-sec"><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;"><h2 style="margin:0;"><span class="gicon">edit_document</span> Notes saisies</h2>
+        <button class="btn" style="margin-left:auto;" onclick="npEditer()"><span class="gicon">add</span> Saisir des notes</button></div>
+      <p class="hint" style="margin:4px 0 8px;">Interrogations sur papier, interrogations en ligne faites avec un autre outil (Google Forms…), ou autres notes (oral, soin…). Elles entrent dans le Bilan de la classe, rangées selon leur support ; les thèmes abordés aident l'IA à rédiger les appréciations.</p>
       ${npx.liste.length ? `<div class="np-liste">${npx.liste.map(np => { const m = moy(np), n = Object.values(np.notes || {}).filter(x => x !== '' && x != null).length;
-          return `<div class="np-ligne"><div><b>${escapeHtml(np.titre)}</b> <span class="hint" style="margin:0;">${new Date(np.date_eval).toLocaleDateString('fr-FR')} · sur ${num(+np.sur)}${+np.coef && +np.coef !== 1 ? ' · coef ' + num(+np.coef) : ''} · ${n}/${nEl} note${n > 1 ? 's' : ''}${m != null ? ' · moyenne ' + num(m) : ''}</span>
+          return `<div class="np-ligne"><div>${npSupportBadge(np.support)} <b>${escapeHtml(np.titre)}</b> <span class="hint" style="margin:0;">${new Date(np.date_eval).toLocaleDateString('fr-FR')} · sur ${num(+np.sur)}${+np.coef && +np.coef !== 1 ? ' · coef ' + num(+np.coef) : ''} · ${n}/${nEl} note${n > 1 ? 's' : ''}${m != null ? ' · moyenne ' + num(m) : ''}</span>
             ${np.themes ? `<div class="hint" style="margin:2px 0 0;"><span class="gicon" style="font-size:14px;vertical-align:middle;">label</span> ${escapeHtml(np.themes)}</div>` : ''}${np.evaluation_id ? '<div class="hint" style="margin:0;"><span class="gicon" style="font-size:14px;vertical-align:middle;">link</span> reliée à une évaluation enregistrée</div>' : ''}</div>
             <span style="display:flex;gap:6px;"><button class="btn secondary qz-mini" onclick="npEditer('${np.id}')"><span class="gicon">edit</span> Notes</button>
             <button class="btn secondary qz-mini" style="color:#a83c1f;" onclick="npSupprimer('${np.id}')"><span class="gicon">delete</span></button></span></div>`; }).join('')}</div>`
-        : '<p class="hint">Aucune note d\'interrogation papier pour cette classe.</p>'}</div>`;
+        : '<p class="hint">Aucune note saisie pour cette classe.</p>'}</div>`;
 }
+const NP_SUPPORTS = { papier: ['edit_document', 'Papier'], en_ligne: ['language', 'En ligne (autre outil)'], autre: ['star', 'Autre'] };
+function npSupportBadge(s){ const x = NP_SUPPORTS[s] || NP_SUPPORTS.papier; return `<span class="np-sup np-sup-${s || 'papier'}"><span class="gicon">${x[0]}</span> ${x[1]}</span>`; }
 async function npEvaluations(){
   if(npx.evals) return npx.evals;
   const { data } = await sb.from('evaluations').select('id,title,niveau,classes,eval_date,data,updated_at').order('updated_at', { ascending: false }).limit(200);
@@ -58,15 +60,16 @@ function npThemesDe(ev){
 }
 async function npEditer(id){
   if(!currentClassId){ await niceAlert('Choisissez d\'abord la classe active.'); return; }
-  const np = id ? npx.liste.find(x => x.id === id) : { titre: '', date_eval: new Date().toISOString().slice(0, 10), sur: 20, coef: 1, themes: '', evaluation_id: null, notes: {} };
+  const np = id ? npx.liste.find(x => x.id === id) : { support: 'papier', titre: '', date_eval: new Date().toISOString().slice(0, 10), sur: 20, coef: 1, themes: '', evaluation_id: null, notes: {} };
   if(!np) return;
   const [eleves, evals] = await Promise.all([qzElevesDevoir({ class_id: currentClassId }), npEvaluations()]);
   let o = document.getElementById('npOverlay');
   if(!o){ o = document.createElement('div'); o.id = 'npOverlay'; o.className = 'modal-overlay'; o.style.zIndex = '430'; document.body.appendChild(o); }
   const val = v => v == null ? '' : v === 'abs' ? 'abs' : String(v).replace('.', ',');
   o.innerHTML = `<div class="modal-card np-ed">
-    <div style="display:flex;justify-content:space-between;align-items:center;"><b class="cd-h"><span class="gicon">edit_document</span> ${id ? 'Notes de l\'interrogation' : 'Interrogation sur papier'}</b>
+    <div style="display:flex;justify-content:space-between;align-items:center;"><b class="cd-h"><span class="gicon">edit_document</span> ${id ? 'Notes saisies' : 'Saisir des notes'}</b>
       <button class="modal-close" onclick="document.getElementById('npOverlay').style.display='none'"><span class="gicon">close</span></button></div>
+    <div class="np-lab">Support<div class="np-supports">${Object.entries(NP_SUPPORTS).map(([k, [ic, t]]) => `<label><input type="radio" name="npSup" value="${k}"${(np.support || 'papier') === k ? ' checked' : ''}> <span class="gicon">${ic}</span> ${k === 'en_ligne' ? 'En ligne avec un autre outil (Google Forms…)' : k === 'autre' ? 'Autre (oral, soin, participation…)' : 'Sur papier'}</label>`).join('')}</div></div>
     <label class="np-lab">Relier à une évaluation enregistrée <small>(facultatif : son titre, sa date et ses exercices sont repris)</small>
       <select id="npEval"><option value="">— aucune —</option>${evals.map(ev => `<option value="${ev.id}"${ev.id === np.evaluation_id ? ' selected' : ''}>${escapeHtml(ev.title || 'Sans titre')}${ev.eval_date ? ' · ' + new Date(ev.eval_date).toLocaleDateString('fr-FR') : ''}${ev.niveau ? ' · ' + escapeHtml(ev.niveau) : ''}</option>`).join('')}</select></label>
     <div class="np-grille"><label class="np-lab">Titre<input type="text" id="npTitre" value="${escapeHtml(np.titre)}" placeholder="ex. Interrogation fractions"></label>
@@ -108,7 +111,7 @@ async function npEditer(id){
       if(/^abs/i.test(v)) notes[c.dataset.np] = 'abs';
       else if(!isNaN(+v) && +v >= 0 && +v <= sur) notes[c.dataset.np] = +v; else err = c.closest('label').querySelector('span').textContent; });
     if(err){ $('#npEtat').textContent = `Note incorrecte pour ${err} (un nombre entre 0 et ${sur}, ou « abs »).`; return; }
-    const row = { teacher_id: currentUser.id, class_id: currentClassId, titre, date_eval: $('#npDate').value || new Date().toISOString().slice(0, 10), sur, coef, themes: $('#npThemes').value.trim(),
+    const row = { teacher_id: currentUser.id, class_id: currentClassId, support: (o.querySelector('input[name=npSup]:checked') || {}).value || 'papier', titre, date_eval: $('#npDate').value || new Date().toISOString().slice(0, 10), sur, coef, themes: $('#npThemes').value.trim(),
       evaluation_id: $('#npEval').value || null, notes, updated_at: new Date().toISOString() };
     const { error } = id ? await sb.from('notes_papier').update(row).eq('id', id) : await sb.from('notes_papier').insert(row);
     if(error){ $('#npEtat').textContent = 'Erreur : ' + error.message; return; }
@@ -149,6 +152,9 @@ function npOngletBilan(){
     .np-lab{display:flex;flex-direction:column;gap:3px;font-size:.85rem;font-weight:600;margin:8px 0 0;} .np-lab small{font-weight:400;color:var(--ink-soft);}
     .np-lab input, .np-lab select, .np-lab textarea{font:inherit;font-weight:400;padding:6px 8px;border-radius:8px;border:1px solid rgba(28,43,57,.2);}
     .np-grille{display:grid;grid-template-columns:2fr 1.2fr .8fr .8fr;gap:8px;}
+    .np-supports{display:flex;flex-wrap:wrap;gap:6px 14px;font-weight:400;} .np-supports label{display:inline-flex;align-items:center;gap:4px;cursor:pointer;} .np-supports .gicon{font-size:17px;color:#5B6472;}
+    .np-sup{display:inline-flex;align-items:center;gap:3px;font-size:.72rem;font-weight:700;border-radius:999px;padding:1px 8px;vertical-align:middle;} .np-sup .gicon{font-size:14px;}
+    .np-sup-papier{background:#EAF7EF;color:#1F7A4D;} .np-sup-en_ligne{background:#F4EFFA;color:#6B3FA0;} .np-sup-autre{background:#F3F5F8;color:#5B6472;}
     .np-coller{margin:10px 0;border:1px dashed rgba(28,43,57,.2);border-radius:10px;padding:6px 10px;} .np-coller summary{cursor:pointer;font-weight:600;font-size:.88rem;}
     .np-notes{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:4px 14px;margin-top:8px;}
     .np-notes label{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:.88rem;border-bottom:1px solid rgba(28,43,57,.06);padding:2px 0;}

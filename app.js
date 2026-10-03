@@ -3314,6 +3314,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.940', date:'2026-10-03', items:[
+    'Notes saisies à la main (Mes classes › Interrogations) : on choisit leur support : sur papier, en ligne avec un autre outil (Google Forms…), ou autre (oral, soin, participation…). Dans le Bilan, elles se rangent avec les interrogations en ligne, sur papier, ou dans « Autres notes » ; IE-EL1 (5B) est passée en ligne',
+    'Bilan : les colonnes sont groupées par catégorie, puis dans l\'ordre des dates (les en-têtes de groupe restent alignés)'
+  ]},
   { version:'2026-08-19.939', date:'2026-10-03', items:[
     'Coefficients des évaluations : chaque interrogation en ligne, interrogation sur papier et devoir noté a un coefficient (1 par défaut, de 0,25 à 20). Il se change d\'un clic sur « coef » dans le Bilan, le Carnet de notes ou Mes classes › Interrogations, ou dans la fiche d\'une interrogation papier',
     'Moyennes pondérées : la moyenne /20 du Bilan et la nouvelle colonne « Moyenne /20 » du Carnet de notes tiennent compte des coefficients (et des notes sur 10, sur 40…, ramenées sur 20)'

@@ -150,7 +150,9 @@ async function blCharger(classe, per, mode){
   });
   // Interrogations sur papier.
   (pap || []).forEach(np => {
-    colonnes.push({ id: 'pap-' + np.id, np, titre: np.titre, icon: 'edit_document', date: np.date_eval, groupe: 'papier', themes: np.themes, coef: +np.coef || 1, table: 'notes_papier', rid: np.id });
+    // Notes saisies : sur papier, en ligne avec un autre outil (Google Forms…) ou autre (oral, soin…).
+    const sup = np.support || 'papier';
+    colonnes.push({ id: 'pap-' + np.id, np, titre: np.titre, icon: sup === 'en_ligne' ? 'language' : sup === 'autre' ? 'star' : 'edit_document', date: np.date_eval, groupe: sup === 'en_ligne' ? 'interro' : sup === 'autre' ? 'autre' : 'papier', themes: np.themes, coef: +np.coef || 1, table: 'notes_papier', rid: np.id });
     eleves.forEach(e => {
       const v = (np.notes || {})[e.id];
       const c = v === 'abs' ? { txt: 'abs', cl: 'vide', abs: true } : v == null || v === '' ? { txt: '—', cl: 'vide', manque: true } : blNote(+v, +np.sur || 20, np.themes ? 'Thèmes : ' + np.themes : '');
@@ -158,6 +160,9 @@ async function blCharger(classe, per, mode){
       cellules.set('pap-' + np.id + '|' + e.id, c);
     });
   });
+  // Colonnes regroupées (en-têtes de groupe d'un seul tenant), puis dans l'ordre des dates.
+  const ordre = ['auto', 'devoir', 'interro', 'papier', 'autre'];
+  colonnes.sort((a, b) => ordre.indexOf(a.groupe) - ordre.indexOf(b.groupe) || String(a.date || '').localeCompare(String(b.date || '')));
   return { classe, mode, per, nom: cl ? cl.nom : '', niveau: cl ? cl.niveau : '', eleves, colonnes, cellules, points, papier: pap || [],
     appr: new Map((appr || []).map(a => [a.student_id, a])) };
 }
@@ -195,7 +200,7 @@ function blRendre(){
   const moyCol = cols.map(col => { const l = B.eleves.map(e => B.cellules.get(col.id + '|' + e.id)).filter(c => c && !c.nc);
     const v = l.filter(c => c.v != null).map(c => c.v), f = l.filter(c => c.fait).length;
     return `<td class="bl-c">${v.length ? (l.some(c => c.note20 != null) ? blNum(20 * v.reduce((a, b) => a + b, 0) / v.length) + '/20' : Math.round(100 * v.reduce((a, b) => a + b, 0) / v.length) + ' %') : ''}<small>${col.groupe === 'auto' ? (n => n + ' élève' + (n > 1 ? 's' : ''))(l.filter(c => c.n).length) : f + '/' + l.length + ' faits'}</small></td>`; }).join('');
-  const groupes = complet ? [['auto', 'En autonomie'], ['devoir', 'Devoirs en ligne'], ['interro', 'Interrogations en ligne'], ['papier', 'Interrogations sur papier']].map(([g, t]) => [g, t, cols.filter(c => c.groupe === g).length]).filter(x => x[2]) : [];
+  const groupes = complet ? [['auto', 'En autonomie'], ['devoir', 'Devoirs en ligne'], ['interro', 'Interrogations en ligne'], ['papier', 'Interrogations sur papier'], ['autre', 'Autres notes']].map(([g, t]) => [g, t, cols.filter(c => c.groupe === g).length]).filter(x => x[2]) : [];
   B.cible.innerHTML = `<div class="bl">
     <div class="bl-tete"><b class="cd-h"><span class="gicon">table_view</span> Bilan${complet ? '' : ' des devoirs'} · ${escapeHtml(B.nom)}</b>
       <select id="blPer">${pers.map(p => `<option value="${p.k}"${p.k === B.per.k ? ' selected' : ''}>${p.t}</option>`).join('')}<option value="perso"${perso ? ' selected' : ''}>Dates choisies</option></select>
@@ -205,7 +210,7 @@ function blRendre(){
       <button class="btn secondary" id="blCsv"><span class="gicon">download</span> CSV</button>
       <button class="btn secondary" id="blImp"><span class="gicon">print</span> Imprimer</button>
       ${B.fenetre ? '<button class="modal-close" onclick="document.getElementById(\'blOverlay\').style.display=\'none\'"><span class="gicon">close</span></button>' : ''}</div>
-    <p class="hint" style="margin:4px 0 8px;">${complet ? 'Travail en autonomie, devoirs et interrogations (en ligne et sur papier)' : 'Devoirs publiés'} du ${new Date(B.per.du).toLocaleDateString('fr-FR')} au ${new Date(B.per.au).toLocaleDateString('fr-FR')}, archivés compris.${perso ? '' : ' Les dates de chaque période sont modifiables et mémorisées sur cet appareil.'}
+    <p class="hint" style="margin:4px 0 8px;">${complet ? 'Travail en autonomie, devoirs, interrogations (en ligne et sur papier) et autres notes' : 'Devoirs publiés'} du ${new Date(B.per.du).toLocaleDateString('fr-FR')} au ${new Date(B.per.au).toLocaleDateString('fr-FR')}, archivés compris.${perso ? '' : ' Les dates de chaque période sont modifiables et mémorisées sur cet appareil.'}
       ${complet ? '<span class="bl-prive"><span class="gicon">lock</span> Les appréciations ne sont visibles que par vous ; l\'IA ne reçoit jamais les noms ni les prénoms.</span>' : 'Le bilan complet, avec les interrogations et les appréciations, est dans Mes classes › Bilan.'} <span id="blEtat"></span></p>
     ${cols.length ? `<div class="bl-table"><table><thead>${groupes.length > 1 ? `<tr class="bl-grp"><th></th>${groupes.map(([g, t, n]) => `<th colspan="${n}" class="g-${g}">${t}</th>`).join('')}<th colspan="${complet ? 6 : 4}"></th></tr>` : ''}
         <tr><th>Élève</th>${cols.map(col => `<th title="${escapeHtml(col.titre + (col.themes ? ' · ' + col.themes : ''))}"><span class="gicon">${col.icon}</span>${col.date ? `<small>${new Date(col.date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' })}</small>` : ''}<span class="bl-tit">${escapeHtml(col.court || col.titre)}</span>${blNotee(col) ? `<button type="button" class="bl-coef" data-coef="${col.id}" title="Coefficient de cette évaluation dans la moyenne">coef ${blNum(col.coef)}</button>` : ''}</th>`).join('')}
@@ -272,9 +277,9 @@ function blPrepNoms(){
 function blDonneesIa(e, code){
   const s = blSynthese(e);
   const part = s.cs.slice().sort((a, b) => String(a.col.date || '').localeCompare(String(b.col.date || ''))).map(({ col, c }) => {
-    const quoi = col.groupe === 'auto' ? col.titre : col.groupe === 'papier' ? `Interrogation sur papier « ${blAnonyme(col.titre)} »${col.themes ? ' (thèmes : ' + blAnonyme(col.themes) + ')' : ''}`
+    const quoi = col.groupe === 'auto' ? col.titre : col.np ? `${col.groupe === 'interro' ? 'Interrogation en ligne' : col.groupe === 'autre' ? 'Note' : 'Interrogation sur papier'} « ${blAnonyme(col.titre)} »${col.themes ? ' (' + (col.groupe === 'autre' ? 'description' : 'thèmes') + ' : ' + blAnonyme(col.themes) + ')' : ''}`
       : col.groupe === 'interro' ? `Interrogation en ligne « ${blAnonyme(col.titre)} »` : `Devoir ${typeof devoirTypeLabel === 'function' ? devoirTypeLabel(col.d.type).toLowerCase() : ''} « ${blAnonyme(col.titre)} »`;
-    const res = c.abs ? 'absent' : c.manque ? 'non fait' : String(c.txt).replace(/<small>.*<\/small>/, '').replace('✓ ', '') + (c.detail && col.groupe !== 'papier' ? ' (' + c.detail + ')' : '');
+    const res = c.abs ? 'absent' : c.manque ? 'non fait' : String(c.txt).replace(/<small>.*<\/small>/, '').replace('✓ ', '') + (c.detail && !col.np ? ' (' + c.detail + ')' : '');
     return `${col.date ? new Date(col.date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' }) + ' ' : ''}${quoi}${c.note20 != null && (col.coef || 1) !== 1 ? ` (coefficient ${blNum(col.coef)})` : ''} : ${res}${c.retard ? ', en retard' : ''}`;
   });
   const evo = s.evo ? `Évolution sur la période : ${s.evo.t} (${Math.round(100 * s.evo.debut)} % de réussite au début, ${Math.round(100 * s.evo.fin)} % à la fin).` : 'Évolution : trop peu de résultats pour juger.';
@@ -362,7 +367,7 @@ function blImprimer(){
     .bl-table thead th{background:#F3F5F8;vertical-align:bottom;font-weight:600;min-width:62px;max-width:110px;position:sticky;top:0;z-index:2;}
     .bl-table thead tr.bl-grp th{font-size:.72rem;text-transform:uppercase;letter-spacing:.4px;color:#5B6472;top:0;}
     .bl-table thead tr.bl-grp + tr th{top:24px;}
-    .bl-grp .g-auto{background:#FFF4E6;} .bl-grp .g-devoir{background:#EEF4FB;} .bl-grp .g-interro{background:#F4EFFA;} .bl-grp .g-papier{background:#EAF7EF;}
+    .bl-grp .g-auto{background:#FFF4E6;} .bl-grp .g-devoir{background:#EEF4FB;} .bl-grp .g-interro{background:#F4EFFA;} .bl-grp .g-papier{background:#EAF7EF;} .bl-grp .g-autre{background:#F3F5F8;}
     .bl-table thead th .gicon{display:block;font-size:17px;color:#5B6472;} .bl-table thead th small{display:block;color:#5B6472;font-weight:500;}
     .bl-coef{display:inline-block;margin-top:3px;border:1px solid rgba(107,63,160,.35);background:#F4EFFA;color:#6B3FA0;border-radius:6px;font:700 .66rem Inter,sans-serif;padding:1px 6px;cursor:pointer;}
     .bl-tit{display:block;font-size:.72rem;line-height:1.15;max-height:2.4em;overflow:hidden;}
