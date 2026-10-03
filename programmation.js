@@ -382,6 +382,9 @@ function progPleinEcran(on){
   if(!on) delete b.dataset.progFs;
   const btn = document.getElementById('progPleinBtn');
   if(btn) btn.innerHTML = on ? '<span class="gicon">fullscreen_exit</span> Quitter le plein écran' : '<span class="gicon">fullscreen</span> Plein écran';
+  if(prog && prog.ws){ try{
+    if(on){ b.dataset.progEchelle = prog.ws.scale; if(prog.ws.scale < .9) prog.ws.setScale(.9); }
+    else if(b.dataset.progEchelle){ prog.ws.setScale(+b.dataset.progEchelle); delete b.dataset.progEchelle; } }catch(e){} }
   setTimeout(progPleinAjuster, 60); setTimeout(progPleinAjuster, 400);
 }
 function progPleinAjuster(){
@@ -520,6 +523,8 @@ function progArreter(){ if(prog && prog.machine){ prog.machine.arreter(); prog.m
     .prog-plein-btn{margin-left:auto;}
     body.prog-plein .topbar, body.prog-plein .site-footer, body.prog-plein footer, body.prog-plein #aideBtn, body.prog-plein #aideBulle, body.prog-plein .breadcrumb{display:none !important;}
     body.prog-plein #view-programmation{position:fixed;inset:0;z-index:900;background:var(--bg, #FBF8F2);overflow:auto;padding:10px 14px;margin:0;max-width:none;}
+    body.prog-plein .prog{max-width:none !important;width:100%;margin:0;}
+    body.prog-plein .prog-zone{grid-template-columns:minmax(0,1.25fr) minmax(380px,1fr);}
     body.prog-plein .prog-top{margin-bottom:6px;} body.prog-plein .prog-top h1{font-size:1.2rem;}
     body.prog-plein .prog-liste{max-height:calc(100vh - 80px);top:0;}
     body.prog-plein .prog-droite{top:0;}

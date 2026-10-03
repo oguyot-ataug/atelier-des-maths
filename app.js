@@ -3314,6 +3314,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.934', date:'2026-10-03', items:[
+    'Programmation par blocs en plein écran : l\'outil prend toute la largeur de l\'écran (la scène du lutin s\'agrandit aussi) et les blocs sont un peu plus gros'
+  ]},
   { version:'2026-08-19.933', date:'2026-10-03', items:[
     'Outils de L\'Atelier réservés aux comptes : un visiteur non connecté voit, pour chaque outil (Automatismes, Objectif Nombre, Convertisseur, Géométrie interactive, Tableau interactif, Programmation), une page de présentation avec les boutons pour se connecter ; un cadenas le signale dans le menu. Après connexion, l\'outil s\'ouvre directement',
     'Programmation par blocs : bouton « Plein écran » (le menu du site disparaît, la zone des blocs prend toute la hauteur ; Échap ou le bouton pour revenir)'
