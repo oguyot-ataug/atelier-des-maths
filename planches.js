@@ -174,7 +174,7 @@ function plTdRendre(lvl, c){
     ${liste.map((p, i) => `<section class="td-planche"><div class="td-p-tete"><span class="pl-ref">${plRef(lvl, c.code, i)}</span><b>${esc(p.titre)}</b>
         <span class="hint" style="margin:0;">${(p.attendus || []).map(esc).join(' · ')}</span>
         <button type="button" class="btn secondary td-mini" data-tdproj="${i}|0"><span class="gicon">present_to_all</span> Projeter la planche</button></div>
-      <div class="td-grille">${p.exos.map((x, k) => `<div class="td-vig" id="tdv-${i}-${k}">
+      <div class="td-grille">${p.exos.map((x, k) => `<div class="td-vig${x.col === 1 ? '' : ' td-plein'}" id="tdv-${i}-${k}">
         <div class="td-v-tete"><span class="pl-num">Exercice ${k + 1}</span>${typeof plNumPossible === 'function' && plNumPossible(x) ? '<span class="td-num" title="Se fait aussi à l\'écran (au tableau ou en session) : colorier, compléter avec le clavier, vérifier"><span class="gicon">touch_app</span> à l\'écran</span>' : ''}<span class="pl-et">${plEtoiles(x.etoiles || 1)}</span></div>
         <div class="td-v-corps"><div class="pl-consigne">${x.consigne}</div><div class="pl-corps">${plExoCorps(x, false)}</div></div>
         <div class="td-v-pied"><button type="button" class="btn secondary td-mini" data-tdproj="${i}|${k}" title="En grand, un par un"><span class="gicon">present_to_all</span> Projeter</button>
@@ -522,7 +522,9 @@ const PL_CSS_LIVRE = `
     .td-planche{ margin:0 0 18px; } .td-p-tete{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin:0 0 8px; font-family:'Space Grotesk',sans-serif; }
     .td-p-tete .pl-ref, .td-planche .pl-ref{ font:700 .8rem 'Space Grotesk',sans-serif; color:#1F3A5C; border:1.5px solid #1F3A5C; border-radius:6px; padding:0 7px; }
     .td-p-tete .hint{ flex:1; min-width:200px; }
-    .td-grille{ display:grid; grid-template-columns:repeat(auto-fill,minmax(330px,1fr)); gap:12px; align-items:start; }
+    /* Comme sur la planche A4 : un exercice pleine largeur prend toute la ligne, deux demi-largeur côte à côte (même hauteur). */
+    .td-grille{ display:grid; grid-template-columns:1fr 1fr; gap:12px; align-items:stretch; grid-auto-flow:row dense; } .td-vig.td-plein{ grid-column:1 / -1; }
+    @media (max-width:760px){ .td-grille{ grid-template-columns:1fr; } }
     .td-vig{ background:#fff; border:1.5px solid rgba(28,43,57,.12); border-radius:14px; padding:10px 12px; display:flex; flex-direction:column; gap:6px; min-width:0; }
     .td-vig.corr{ border-color:#1F7A4D; background:#F6FBF8; }
     .td-v-tete{ display:flex; justify-content:space-between; align-items:center; } .td-vig .pl-num{ font:700 .95rem 'Space Grotesk',sans-serif; color:#E35D3A; }

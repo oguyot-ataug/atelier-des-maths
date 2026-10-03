@@ -16,6 +16,8 @@
      lesquelles).
    - Fractions à entourer ou à barrer (plEntoure, plBarre) : on touche les bonnes.
    - « vrai · faux » : on touche le bon mot.
+   - Droite à tracer sur un quadrillage (figure marquée data-pltrace) : on touche deux nœuds, la droite
+     passe par eux ; elle est juste si elle passe par le point demandé dans la bonne direction.
    Si une partie du corrigé ne peut pas être vérifiée ainsi (demi-droite à graduer, bande à tracer,
    exercice « Dans ton cahier »), l'exercice reste sur papier : plNumPossible renvoie faux.
 
@@ -103,8 +105,16 @@ function plNumAnalyser(x){
   const groupes = new Map();
   for(let n = 0; n < svE.length; n++){
     const a = svE[n], b = svC[n];
+    // Droite à tracer sur un quadrillage (data-pltrace : { k, w, h, M, v }) : on touche deux nœuds.
+    if(a.hasAttribute('data-pltrace')){
+      const id = 'r' + cibles.length; let P; try{ P = JSON.parse(a.getAttribute('data-pltrace')); }catch(e){ return null; }
+      a.setAttribute('data-pn', id); a.classList.add('pn-trace');
+      a.insertAdjacentHTML('afterend', '<div class="pn-tr-aide">Touche deux points du quadrillage : la droite passe par ces deux points. Touche encore pour recommencer.</div>');
+      cibles.push({ type: 'trace', id, rep: P }); continue;
+    }
     if(a.outerHTML === b.outerHTML) continue;
     const fa = plNumFormes(a), fb = plNumFormes(b);
+    if(!fa.length) continue; // rien à colorier : le corrigé ajoute seulement un dessin (équerre posée, tracé…)
     if(fa.length !== fb.length || !fa.length || fa.some(f => !plNumBlanc(f.getAttribute('fill')))) return null;
     const pleines = fb.filter(f => !plNumBlanc(f.getAttribute('fill')));
     const g = a.closest('.pl-unites') || a;
@@ -127,6 +137,16 @@ function plNum(root, x, o){
   let etat = plNumEtatVide(o.etat), sel = null;
   root.classList.add('pn-ex'); root.classList.toggle('pn-lecture', !!o.lecture);
   root.innerHTML = M.html;
+  const NS = 'http://www.w3.org/2000/svg';
+  M.cibles.filter(c => c.type === 'trace').forEach(c => {
+    const svg = root.querySelector(`[data-pn="${c.id}"]`), P = c.rep; if(!svg) return;
+    const g = document.createElementNS(NS, 'g'); g.setAttribute('class', 'pn-tr');
+    g.innerHTML = `<line class="pn-tr-ligne" stroke="#E35D3A" stroke-width="2.4" stroke-linecap="round" style="display:none"/>`
+      + Array.from({ length: Math.round(P.w / P.k) + 1 }, (_, i) => Array.from({ length: Math.round(P.h / P.k) + 1 }, (_, j) => `<circle class="pn-tr-n" data-pntr="${c.id}:${i}:${j}" cx="${i * P.k}" cy="${j * P.k}" r="${P.k * .42}" fill="transparent"/>`).join('')).join('');
+    svg.appendChild(g);
+  });
+  // Droite passant par deux nœuds, coupée au bord du quadrillage.
+  const trSeg = (P, A, B) => { const v = [B[0] - A[0], B[1] - A[1]]; let t0 = -1e9, t1 = 1e9; [[0, P.w], [0, P.h]].forEach(([mn, mx], i) => { if(Math.abs(v[i]) < 1e-9) return; const a = (mn - A[i]) / v[i], b = (mx - A[i]) / v[i]; t0 = Math.max(t0, Math.min(a, b)); t1 = Math.min(t1, Math.max(a, b)); }); return [A[0] + v[0] * t0, A[1] + v[1] * t0, A[0] + v[0] * t1, A[1] + v[1] * t1]; };
   if(typeof renderStaticMath === 'function') renderStaticMath(root);
   const change = () => { if(o.onChange) o.onChange(plNumCopie(etat)); };
   const afficher = () => {
@@ -135,6 +155,11 @@ function plNum(root, x, o){
       root.querySelectorAll(`[data-pnp^="${c.id}:"]`).forEach(p => { const n = +p.dataset.pnp.split(':')[1];
         p.setAttribute('fill', on.has(n) ? c.coul : '#fff'); p.setAttribute('fill-opacity', on.has(n) ? '.8' : '1'); }); });
     root.querySelectorAll('[data-pnt]').forEach(b => b.classList.toggle('on', etat.t.includes(b.dataset.pnt)));
+    M.cibles.filter(c => c.type === 'trace').forEach(c => { const pts = etat.tr[c.id] || [], P = c.rep, svg = root.querySelector(`[data-pn="${c.id}"]`); if(!svg) return;
+      svg.querySelectorAll('.pn-tr-n').forEach(n => { const [, i, j] = n.dataset.pntr.split(':').map(Number), on = pts.some(q => q[0] === i && q[1] === j); n.setAttribute('fill', on ? '#E35D3A' : 'transparent'); n.setAttribute('r', on ? P.k * .2 : P.k * .42); });
+      const l = svg.querySelector('.pn-tr-ligne');
+      if(pts.length === 2){ const [x1, y1, x2, y2] = trSeg(P, [pts[0][0] * P.k, pts[0][1] * P.k], [pts[1][0] * P.k, pts[1][1] * P.k]); l.setAttribute('x1', x1); l.setAttribute('y1', y1); l.setAttribute('x2', x2); l.setAttribute('y2', y2); l.style.display = ''; }
+      else l.style.display = 'none'; });
     root.querySelectorAll('.pn-choix').forEach(s => s.querySelectorAll('.pn-mot').forEach(b => b.classList.toggle('on', etat.ch[s.dataset.pn] === b.dataset.pnmot)));
   };
   const effacerMarques = () => root.querySelectorAll('.pn-ok, .pn-ko').forEach(e => e.classList.remove('pn-ok', 'pn-ko'));
@@ -160,6 +185,11 @@ function plNum(root, x, o){
     if(o.lecture) return;
     const c = e.target.closest('[data-pnv]'), p = e.target.closest('[data-pnp]'), t = e.target.closest('[data-pnt]'), m = e.target.closest('.pn-mot');
     if(c){ choisir(sel === c.dataset.pnv ? null : c.dataset.pnv); return; }
+    const tr = e.target.closest('[data-pntr]');
+    if(tr){ const [id, i, j] = tr.dataset.pntr.split(':'), q = [+i, +j]; let l = (etat.tr[id] || []).slice();
+      const k = l.findIndex(z => z[0] === q[0] && z[1] === q[1]);
+      if(k >= 0) l.splice(k, 1); else if(l.length >= 2) l = [q]; else l.push(q);
+      etat.tr[id] = l; effacerMarques(); afficher(); change(); return; }
     if(p){ const [id, n] = p.dataset.pnp.split(':'); const l = new Set(etat.c[id] || []); if(l.has(+n)) l.delete(+n); else l.add(+n); etat.c[id] = [...l]; }
     else if(t){ const i = etat.t.indexOf(t.dataset.pnt); if(i < 0) etat.t.push(t.dataset.pnt); else etat.t.splice(i, 1); }
     else if(m){ const id = m.closest('.pn-choix').dataset.pn; etat.ch[id] = etat.ch[id] === m.dataset.pnmot ? undefined : m.dataset.pnmot; }
@@ -171,6 +201,9 @@ function plNum(root, x, o){
     if(c.type === 'frac') return plNumNorm(etat.v[c.id + 'n']) === plNumNorm(c.rep[0]) && plNumNorm(etat.v[c.id + 'd']) === plNumNorm(c.rep[1]);
     if(c.type === 'fig') return (etat.c[c.id] || []).length === c.rep;
     if(c.type === 'choix') return plNumNorm(etat.ch[c.id]) === c.rep;
+    if(c.type === 'trace'){ const p = etat.tr[c.id] || [], P = c.rep; if(p.length !== 2) return false;
+      const A = [p[0][0] * P.k, p[0][1] * P.k], d = [p[1][0] * P.k - A[0], p[1][1] * P.k - A[1]], L = Math.hypot(d[0], d[1]); if(!L) return false;
+      return Math.abs(d[0] * P.v[1] - d[1] * P.v[0]) / L < .02 && Math.abs((P.M[0] - A[0]) * d[1] - (P.M[1] - A[1]) * d[0]) / L < P.k * .1; }
     if(c.type === 'bascule'){ const on = etat.t.filter(s => s.startsWith(c.id + ':')).map(s => +s.split(':')[1]).sort((a, b) => a - b); return on.join() === c.rep.slice().sort((a, b) => a - b).join(); }
     return false;
   };
@@ -189,7 +222,7 @@ function plNum(root, x, o){
     fermer(){ if(sel){ sel = null; plClavier.fermer(); } }
   };
 }
-function plNumEtatVide(e){ e = e || {}; return { v: Object.assign({}, e.v), c: Object.assign({}, e.c), t: (e.t || []).slice(), ch: Object.assign({}, e.ch) }; }
+function plNumEtatVide(e){ e = e || {}; return { v: Object.assign({}, e.v), c: Object.assign({}, e.c), t: (e.t || []).slice(), ch: Object.assign({}, e.ch), tr: JSON.parse(JSON.stringify(e.tr || {})) }; }
 function plNumCopie(e){ return JSON.parse(JSON.stringify(e)); }
 // Phrase de bilan d'une vérification.
 function plNumBilan(res){
@@ -243,6 +276,8 @@ function plClavierPhysique(e){
     .pn-ex .pn-case.pn-sel{ border-color:#E35D3A; box-shadow:0 0 0 3px rgba(227,93,58,.25); background:#FFF6F2; }
     .pn-ex .pn-frac{ display:inline-flex; flex-direction:column; align-items:center; gap:3px; vertical-align:middle; margin:0 3px; }
     .pn-ex .pn-barre{ display:block; width:36px; border-top:2px solid #1C2B39; }
+    .pn-ex svg.pn-trace{ width:min(100%, 520px) !important; height:auto !important; max-height:none !important; display:block; touch-action:manipulation; }
+    .pn-ex .pn-tr-n{ cursor:pointer; } .pn-ex .pn-tr-n:hover{ fill:rgba(227,93,58,.25); } .pn-lecture .pn-tr-n{ cursor:default; } .pn-tr-aide{ font-size:.85rem; color:#4E5665; margin-top:4px; } .pn-lecture .pn-tr-aide{ display:none; }
     .pn-ex .pn-part{ cursor:pointer; } .pn-ex .pn-part:hover{ fill-opacity:.85; }
     .pn-lecture .pn-case, .pn-lecture .pn-part, .pn-lecture .pn-bascule, .pn-lecture .pn-mot{ cursor:default; }
     .pn-ex .pn-bascule{ border:2px dashed rgba(58,110,165,.3); background:none; border-radius:999px; padding:2px 8px; cursor:pointer; font:inherit; color:inherit; position:relative; }

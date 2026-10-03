@@ -296,15 +296,27 @@ function cm1dpFig(o){
       s += ligne(M, u, '#E35D3A', 2.2) + txt(Math.min(W - 18, Math.max(18, M[0] + u[0] * 120)), Math.max(14, M[1] + u[1] * 120 - 10), o.nomSol || "(d')", '#E35D3A');
     }
     s += `<path d="M${M[0] - 5},${M[1] - 5} L${M[0] + 5},${M[1] + 5} M${M[0] - 5},${M[1] + 5} L${M[0] + 5},${M[1] - 5}" stroke="#1F3A5C" stroke-width="2"/>` + txt(M[0] - 12, M[1] - 8, o.nomM || 'M', '#1F3A5C', true);
+    // trace : 'perp' ou 'para' -- à l'écran, l'élève trace la droite en touchant deux nœuds du quadrillage (planches-num.js).
+    if(o.trace && o.k){ const v = o.trace === 'perp' ? n : u; s = s.replace('<svg ', `<svg data-pltrace='${JSON.stringify({ k: o.k, w: W, h: H, M, v: [+v[0].toFixed(4), +v[1].toFixed(4)] })}' `); }
   }
   return s + '</svg>';
 }
 // Deux droites qui se coupent au centre : angles (en degrés) de chacune ; ou parallèles (ecart en px).
-function cm1dpPaire(a1, a2, ecart){
+// equerre : l'équerre posée (corrigé) -- son angle droit au point de croisement, un côté le long de la
+// droite verte ; si l'autre côté suit la droite bleue, les droites sont perpendiculaires.
+function cm1dpPaire(a1, a2, ecart, equerre){
   const r = Math.PI / 180, c = [60, 42], v1 = [Math.cos(a1 * r), Math.sin(a1 * r)], v2 = [Math.cos(a2 * r), Math.sin(a2 * r)];
   const seg = (A, v, col) => `<line x1="${(A[0] - v[0] * 52).toFixed(1)}" y1="${(A[1] - v[1] * 52).toFixed(1)}" x2="${(A[0] + v[0] * 52).toFixed(1)}" y2="${(A[1] + v[1] * 52).toFixed(1)}" stroke="${col}" stroke-width="2.5" stroke-linecap="round"/>`;
   const A2 = ecart ? [c[0] - v1[1] * ecart, c[1] + v1[0] * ecart] : c, A1 = ecart ? [c[0] + v1[1] * ecart, c[1] - v1[0] * ecart] : c;
-  return `<svg class="pl-libre" viewBox="0 0 120 84" style="width:110px;display:block;margin:0 auto;">${seg(A1, v1, '#2E9C6A')}${seg(A2, v2, '#2EA8C9')}</svg>`;
+  let eq = '';
+  if(equerre && !ecart){
+    // Côté de l'équerre le long de la droite verte, vers la droite bleue ; l'autre côté à angle droit, du côté de la bleue.
+    let u = v1, w = [-v1[1], v1[0]]; if(w[0] * v2[0] + w[1] * v2[1] < 0) w = [-w[0], -w[1]];
+    if(u[0] * v2[0] + u[1] * v2[1] < 0) u = [-u[0], -u[1]];
+    const P = (a, b) => `${(c[0] + u[0] * a + w[0] * b).toFixed(1)},${(c[1] + u[1] * a + w[1] * b).toFixed(1)}`;
+    eq = `<path d="M${P(0, 0)} L${P(40, 0)} L${P(0, 30)} Z M${P(7, 6)} L${P(26, 6)} L${P(7, 20)} Z" fill="#9BB7D4" fill-opacity=".6" fill-rule="evenodd" stroke="#4E6E91" stroke-width="1"/>`;
+  }
+  return `<svg class="pl-libre" viewBox="0 0 120 84" style="width:110px;display:block;margin:0 auto;">${eq}${seg(A1, v1, '#2E9C6A')}${seg(A2, v2, '#2EA8C9')}</svg>`;
 }
 function cm1dpRect(){ return `<svg class="pl-libre" viewBox="0 0 170 104" style="width:150px;display:inline-block;vertical-align:middle;"><rect x="22" y="18" width="126" height="66" fill="#2EA8C9" fill-opacity=".1" stroke="#1F3A5C" stroke-width="2"/>${[[22, 18, 'A', -9, -4], [148, 18, 'B', 9, -4], [148, 84, 'C', 9, 14], [22, 84, 'D', -9, 14]].map(([x, y, t, dx, dy]) => `<text x="${x + dx}" y="${y + dy}" font-size="13" font-weight="700" text-anchor="middle" fill="#1F3A5C" font-family="Space Grotesk">${t}</text>`).join('')}<path d="M22,28 h10 v-10 M138,18 v10 h10 M148,74 h-10 v10 M32,84 v-10 h-10" fill="none" stroke="#1F3A5C" stroke-width="1.3"/></svg>`; }
 
@@ -322,7 +334,7 @@ function cm1dpRect(){ return `<svg class="pl-libre" viewBox="0 0 170 104" style=
       attendus: ['Reconnaître et vérifier à l\'équerre que deux droites sont perpendiculaires', 'Reconnaître que deux droites sont parallèles'],
       exos: [
         { etoiles: 1, consigne: 'Ces deux droites sont-elles perpendiculaires ? Vérifie avec ton équerre, puis entoure.',
-          eleve: plGrille(PERP.map(([a, b]) => ouiNon(cm1dpPaire(a, b))), 4), corr: plGrille(PERP.map(([a, b, r]) => ouiNon(cm1dpPaire(a, b), r)), 4) },
+          eleve: plGrille(PERP.map(([a, b]) => ouiNon(cm1dpPaire(a, b))), 4), corr: plGrille(PERP.map(([a, b, r]) => ouiNon(cm1dpPaire(a, b, 0, true), r)), 4) },
         { etoiles: 1, consigne: 'Ces deux droites sont-elles parallèles ? Imagine-les prolongées, puis entoure.',
           eleve: plGrille(PARA.map(([a, b, , e]) => ouiNon(cm1dpPaire(a, b, e))), 4), corr: plGrille(PARA.map(([a, b, r, e]) => ouiNon(cm1dpPaire(a, b, e), r)), 4) },
         { etoiles: 2, col: 1, consigne: `ABCD est un rectangle. Entoure le bon mot.<div style="margin:3px 0;">${cm1dpRect()}</div>`,
@@ -333,11 +345,11 @@ function cm1dpRect(){ return `<svg class="pl-libre" viewBox="0 0 170 104" style=
     { titre: 'Tracer une droite perpendiculaire', duree: '35 min',
       attendus: ['Tracer la droite perpendiculaire à une droite passant par un point : sur quadrillage (lignes et diagonales) et à l\'équerre', 'Pour aller plus loin : tracer la droite parallèle passant par un point'],
       exos: [
-        { etoiles: 1, col: 1, consigne: 'Trace la droite perpendiculaire à la droite (d) passant par le point M, en suivant les lignes du quadrillage.', eleve: F(G1), corr: F(Object.assign({ sol: 'perp' }, G1)) },
-        { etoiles: 2, col: 1, consigne: 'La droite (d) suit les diagonales des carreaux. Trace la droite perpendiculaire à la droite (d) passant par le point M.', eleve: F(G2), corr: F(Object.assign({ sol: 'perp' }, G2)) },
+        { etoiles: 1, col: 1, consigne: 'Trace la droite perpendiculaire à la droite (d) passant par le point M, en suivant les lignes du quadrillage.', eleve: F(Object.assign({ trace: 'perp' }, G1)), corr: F(Object.assign({ sol: 'perp' }, G1)) },
+        { etoiles: 2, col: 1, consigne: 'La droite (d) suit les diagonales des carreaux. Trace la droite perpendiculaire à la droite (d) passant par le point M.', eleve: F(Object.assign({ trace: 'perp' }, G2)), corr: F(Object.assign({ sol: 'perp' }, G2)) },
         { etoiles: 2, consigne: 'Avec ton équerre, trace la droite perpendiculaire à la droite (d) passant par le point A, puis celle passant par le point B. Code les angles droits.',
           eleve: plGrille([F(Object.assign({ taille: 200 }, U1)), F(Object.assign({ taille: 200 }, U2))], 2), corr: plGrille([F(Object.assign({ sol: 'perp', taille: 200 }, U1)), F(Object.assign({ sol: 'perp', taille: 200 }, U2))], 2) },
-        { etoiles: 3, col: 1, consigne: 'Pour aller plus loin : trace la droite parallèle à la droite (d) passant par le point N, sur le quadrillage.', eleve: F(G3), corr: F(Object.assign({ sol: 'para' }, G3)) },
+        { etoiles: 3, col: 1, consigne: 'Pour aller plus loin : trace la droite parallèle à la droite (d) passant par le point N, sur le quadrillage.', eleve: F(Object.assign({ trace: 'para' }, G3)), corr: F(Object.assign({ sol: 'para' }, G3)) },
         { etoiles: 3, col: 1, cahier: true, consigne: 'Sur une feuille blanche, construis un rectangle ABCD de 6 cm de long et 3 cm de large, avec ta règle et ton équerre.',
           corr: cm1Redac('Construction du rectangle ABCD', { suite: ['Je trace le segment [AB] de 6 cm.', 'En A et en B, je trace les perpendiculaires au segment [AB] et j\'y place D et C à 3 cm.', 'Je trace le segment [DC].'] }, 'ABCD a quatre angles droits : c\'est un rectangle de 6 cm sur 3 cm.', cm1dpRect()) },
         { etoiles: 3, consigne: 'Pour aller plus loin : trace la droite parallèle à la droite (d) passant par le point N (avec deux perpendiculaires, ou avec la règle et l\'équerre qui glisse).', eleve: F(Object.assign({ taille: 300 }, U3)), corr: F(Object.assign({ taille: 300, sol: 'para', constr: true, nomConstr: "(d')", nomSol: "(d'')" }, U3)) },

@@ -3327,6 +3327,11 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.952', date:'2026-10-03', items:[
+    'Mon TD : les exercices sont disposés comme sur la planche A4 -- un exercice pleine largeur prend toute la ligne, deux demi-largeur côte à côte, à la même hauteur (une colonne sur téléphone)',
+    'Exercices à l\'écran : tracer une droite sur un quadrillage -- on touche deux points du quadrillage, la droite se trace ; « Vérifier » contrôle qu\'elle passe par le point demandé dans la bonne direction (élève au tableau, session COURS)',
+    'CM1 Droites parallèles et perpendiculaires : corrigé de « perpendiculaires ou non ? » avec l\'équerre posée sur chaque figure ; planche 2, les trois tracés sur quadrillage se font aussi à l\'écran',
+  ] },
   { version:'2026-08-19.951', date:'2026-10-03', items:[
     'CM1 Droites parallèles et perpendiculaires : codage de l\'angle droit corrigé sur le petit carreau (les deux diagonales)',
   ] },
