@@ -3327,8 +3327,11 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.957', date:'2026-10-03', items:[
+    'Lutin olive : stylo levé, l\'olive est seule (sans crayon)',
+  ] },
   { version:'2026-08-19.956', date:'2026-10-03', items:[
-    'Oliv\'IA et ses copines (lutin d\'équipe) : un crayon -- pointe posée sur le point du lutin quand le stylo est en position d\'écriture, levé à côté de l\'olive sinon',
+    'Oliv\'IA et ses copines (lutin d\'équipe) : un crayon, pointe posée sur le point du lutin, quand le stylo est en position d\'écriture (stylo levé : l\'olive seule)',
     'Programmation par blocs : bouton « position de départ » (à côté de Stop) -- le lutin revient à sa place de départ, le dessin est effacé',
     'Nouveau défi CM1 « La perpendiculaire passant par A » : A est sur la droite (d), mais le lutin part d\'un autre point de (d) ; il doit y aller sans tracer, puis tracer la perpendiculaire (aussi dans Mon TD)',
   ] },

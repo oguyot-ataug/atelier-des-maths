@@ -214,9 +214,10 @@ class ProgScene {
       x.beginPath(); x.ellipse(4, 20, 5.5, 2.4, Math.PI / 6, 0, 2 * Math.PI); x.fillStyle = '#7BAE4F'; x.fill(); x.strokeStyle = '#4F6B2A'; x.lineWidth = 1; x.stroke();
       [-4.6, 4.6].forEach(ex => { x.beginPath(); x.arc(ex, 6, 3.7, 0, 2 * Math.PI); x.fillStyle = '#fff'; x.fill(); x.strokeStyle = '#2C3A1A'; x.lineWidth = 1; x.stroke(); x.beginPath(); x.arc(ex, 7.3, 1.8, 0, 2 * Math.PI); x.fillStyle = '#1C2B39'; x.fill(); });
       x.restore();
-      // Le crayon d'Oliv'IA : pointe posée sur le point du lutin (stylo en position d'écriture), ou levé à côté.
+      // Le crayon d'Oliv'IA : pointe posée sur le point du lutin, seulement quand le stylo est en position d'écriture.
+      if(!t.stylo){ this.placerBulle(); return; } // stylo levé : l'olive seule, sans crayon
       x.save(); x.translate(t.x, t.y); x.rotate(-t.dir * Math.PI / 180);
-      const bas = t.stylo; if(!bas) x.translate(17, 2); // levé : à côté de l'olive, la pointe en l'air
+      const bas = true;
       x.rotate(-0.45); // crayon penché vers l'arrière, à droite
       x.beginPath(); x.moveTo(0, 0); x.lineTo(-3, -7); x.lineTo(3, -7); x.closePath(); x.fillStyle = '#F2D3A0'; x.fill(); x.strokeStyle = '#8A5A1A'; x.lineWidth = .8; x.stroke();
       x.beginPath(); x.moveTo(0, 0); x.lineTo(-1.1, -2.6); x.lineTo(1.1, -2.6); x.closePath(); x.fillStyle = t.couleur; x.fill();
