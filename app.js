@@ -3302,6 +3302,12 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.927', date:'2026-10-03', items:[
+    'Planches d\'exercices : logo du site et Oliv\'IA (« Muscle ton jeu ! ») en en-tête ; exercices courts côte à côte sur deux colonnes, jusqu\'à 8 exercices par page ; problèmes à rédiger avec Oliv\'IA et sa bulle « Dans ton cahier ! ».',
+    'Mise en page réglable et mémorisée : en-tête Prénom, NOM et Prénom, ou rien ; ligne Date ; aménagements dys (police Andika, Lexend ou Atkinson Hyperlegible, texte plus grand, interligne aéré, lettres et mots espacés).',
+    'Projeter : chaque exercice en grand, un par un (flèches du clavier), avec le bouton Correction.',
+    'Livre d\'exercices du niveau : couverture, sommaire par références, toutes les planches dans l\'ordre des chapitres, corrigés à la fin, pages numérotées, à enregistrer en PDF pour un imprimeur ou un éditeur. Il grandit avec les planches écrites.',
+  ] },
   { version:'2026-08-19.926', date:'2026-10-03', items:[
     'Planches d\'exercices à imprimer (prototype sur le chapitre Fractions du CM1) : bouton « Planches à imprimer » sur la page du chapitre (professeurs, parents). Chaque planche tient sur une page A4 : référence (CM1-N2-P1…), attendu du programme travaillé, durée indicative, Prénom et Date, exercices gradués de ★ à ★★★ avec des cases et des pointillés pour répondre ; un corrigé à part pour le professeur, problèmes rédigés. Une planche seule, son corrigé, ou tout le chapitre d\'un coup.',
   ] },
