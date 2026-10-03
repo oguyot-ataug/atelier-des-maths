@@ -2680,7 +2680,9 @@ let sb;
 /* Simulateur de classe (simulateur.js) : une page ouverte avec ?simu=<élève fictif> a SA session,
    rangée à part (storageKey) pour ne jamais remplacer celle du professeur dans les autres fenêtres. */
 const SIMU = new URLSearchParams(location.search).get('simu');
-if(SIMU) document.documentElement.classList.add('simu-frame');
+// Fenêtre professeur du simulateur : seuls les élèves fictifs apparaissent dans les listes d'élèves.
+const SIMPROF = !!new URLSearchParams(location.search).get('simprof');
+if(SIMU || SIMPROF) document.documentElement.classList.add('simu-frame');
 try{
   sb = SIMU ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { storageKey: 'sb-simu-' + SIMU, detectSessionInUrl: false } })
     : supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -3323,6 +3325,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.942', date:'2026-10-03', items:[
+    'Simulateur : la fenêtre professeur ne montre que les élèves fictifs (session COURS, questions flash, suivi, correction), plus toute la classe',
+    'Simulateur : les écrans ne passent plus en plein écran sur tout l\'écran (chacun reste dans sa vignette) ; une sortie n\'est signalée que par « Simuler une sortie »'
+  ]},
   { version:'2026-08-19.941', date:'2026-10-03', items:[
     'Nouveau : L\'Atelier du prof › Simulateur de classe. Votre écran de professeur et ceux de un à trois élèves fictifs (Élève A, B, C), côte à côte : lancez une session COURS, des questions flash, une interrogation ou un devoir, puis jouez les élèves dans leurs fenêtres. Chaque écran d\'élève a sa propre session (votre connexion n\'est pas touchée) ; « Simuler une sortie » montre l\'alerte côté professeur ; chaque écran s\'agrandit, se recharge, et l\'ensemble passe en plein écran',
     'Élèves fictifs : créés en un clic dans la classe de votre choix (ils reçoivent tout ce que vous lui donnez), marqués « (test) », en fin de liste ; exclus des bilans, moyennes, carnet de notes, décomptes de copies rendues et tirage au sort ; supprimables à tout moment'

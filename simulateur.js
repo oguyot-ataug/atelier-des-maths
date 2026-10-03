@@ -39,8 +39,8 @@ if(typeof SIMU !== 'undefined' && SIMU){
   });
   // Passer d'un écran à l'autre du simulateur n'est pas une sortie (fenêtre quittée / plein écran).
   window.addEventListener('load', () => {
-    if(typeof cdSurBlur === 'function') cdSurBlur = function(){};
-    if(typeof cdSurPleinEcran === 'function') cdSurPleinEcran = function(){};
+    // Dans le simulateur, une sortie n'est signalée que par le bouton « Simuler une sortie ».
+    if(typeof cdSignaler === 'function'){ const orig = cdSignaler; cdSignaler = function(dehors, motif){ if(dehors && motif !== 'sortie simulée') return; return orig.apply(this, arguments); }; }
     try{ parent.postMessage({ type: 'simu-pret', simu: SIMU }, location.origin); }catch(err){}
   });
 }
@@ -120,12 +120,12 @@ function simLancer(){
       ${id !== 'prof' ? `<button class="btn secondary qz-mini" onclick="simSortieEleve('${id}')" title="Comme si l'élève passait sur un autre onglet"><span class="gicon">logout</span> Simuler une sortie</button>` : ''}
       <button class="btn secondary qz-mini" onclick="simRecharger('${id}')" title="Recharger cet écran"><span class="gicon">refresh</span></button>
       <button class="btn secondary qz-mini" onclick="simGrand('${id}')" title="Agrandir / réduire"><span class="gicon">${sim.grand === id ? 'close_fullscreen' : 'open_in_full'}</span></button></div>
-    <div class="sim-cadre"><iframe src="${src}" data-sim="${id}" allow="clipboard-write" title="${titre}"></iframe></div></div>`;
+    <div class="sim-cadre"><iframe src="${src}" data-sim="${id}" allow="clipboard-write; fullscreen 'none'" title="${titre}"></iframe></div></div>`;
   sc.innerHTML = `<div class="sim-outils"><button class="btn secondary" onclick="simPleinEcran()"><span class="gicon">fullscreen</span> Plein écran</button>
       <button class="btn secondary" onclick="simArreter()"><span class="gicon">stop</span> Arrêter la simulation</button>
       <span class="hint" style="margin:0;">Astuce : dans la fenêtre professeur, ouvrez une session COURS (Cahier de corrections) ou des questions flash : le bandeau « Rejoindre » apparaît chez les élèves fictifs.</span></div>
     <div class="sim-grille ${sim.disposition}${sim.grand ? ' grand' : ''}">
-      ${sim.disposition === 'prof' ? cadre('prof', '<span class="gicon">school</span> Professeur (vous)', base + '#/', 'prof') : ''}
+      ${sim.disposition === 'prof' ? cadre('prof', '<span class="gicon">school</span> Professeur (vous)', base + '?simprof=1#/', 'prof') : ''}
       <div class="sim-eleves n${eleves.length}">${eleves.map(e => cadre(e.student_id, `<span class="gicon">person</span> Élève ${e.lettre} <small>(test)</small>`, `${base}?simu=${e.student_id}#/`, 'eleve')).join('')}</div></div>`;
   simAjuster();
   window.addEventListener('resize', simAjuster);
