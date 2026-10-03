@@ -56,7 +56,7 @@ serve(async (req) => {
         const email = `simu-${moi.id.slice(0, 8)}-${lettre.toLowerCase()}@mathcollege.local`;
         const { data: cree, error } = await admin.auth.admin.createUser({ email, password: motDePasse(), email_confirm: true });
         if (error || !cree?.user) return json({ error: "Création impossible : " + (error?.message || "?") }, 500);
-        const { error: e2 } = await admin.from("profiles").insert({ id: cree.user.id, role: "eleve", nom: "Élève", prenom: lettre + " (test)", email, uai: prof.uai || null });
+        const { error: e2 } = await admin.from("profiles").insert({ id: cree.user.id, role: "eleve", nom: "Élève", prenom: lettre + " (test)", email, uai: prof.uai || null, must_change_password: false }); // pas d'écran « choisis ton mot de passe »
         if (e2) { await admin.auth.admin.deleteUser(cree.user.id); return json({ error: "Profil impossible : " + e2.message }, 500); }
         await admin.from("eleves_test").insert({ student_id: cree.user.id, owner_id: moi.id, lettre });
       }
