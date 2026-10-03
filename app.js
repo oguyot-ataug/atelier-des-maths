@@ -3327,6 +3327,11 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.946', date:'2026-10-03', items:[
+    'CM1 Heures et durées : un petit dessin du moment de la journée sous les horloges (soleil levant, soleil haut, coucher de soleil, lune et étoiles, avec « le matin », « l\'après-midi », « le soir », « la nuit ») ; l\'atelier « Lis l\'heure » demande l\'heure sur 24 heures en s\'aidant du dessin ; l\'exercice de lecture mêle matin et après-midi',
+    'CM1 Heures et durées : 3 planches d\'exercices (lire l\'heure le matin et l\'après-midi ; unités et conversions ; calculer une durée, une heure de fin ou de début), dans Mon TD et faisables à l\'écran (horloges, cases avec le clavier, choix à entourer)',
+    'Exercices à l\'écran : « 05 » et « 5 » sont acceptés pareil (minutes, nombres)'
+  ]},
   { version:'2026-08-19.945', date:'2026-10-03', items:[
     'Session COURS, programmation : la « dernière vérification » d\'un élève ne commence plus par le nom de l\'icône (« celebration Bravo, défi réussi ! » devient « Bravo, défi réussi ! »)'
   ]},

@@ -24,7 +24,9 @@
    ===================================================================== */
 
 const plNumCache = new Map();
-const plNumNorm = s => String(s ?? '').replace(/ /g, ' ').replace(/\s+/g, ' ').trim().toLowerCase().replace(/[.!]$/, '').replace(/’/g, '\'');
+// Normalisation d'une réponse : espaces, casse, ponctuation finale ; un nombre perd ses zéros de tête
+// (« 05 » minutes = « 5 »).
+const plNumNorm = s => { const t = String(s ?? '').replace(/\u00a0/g, ' ').replace(/\s+/g, ' ').trim().toLowerCase().replace(/[.!]$/, '').replace(/’/g, '\''); return /^\d+$/.test(t) ? String(+t) : t; };
 // Fraction écrite en LaTeX dans un bout de corrigé : [numérateur, dénominateur] ou null.
 function plNumFracDe(el){
   const t = el.querySelector('.tex'), m = t && /\\[dt]?frac\{([^}]*)\}\{([^}]*)\}/.exec(t.textContent);
