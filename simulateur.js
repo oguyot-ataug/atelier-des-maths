@@ -28,6 +28,15 @@ function elevesTestCharger(force){
   return elevesTestP;
 }
 function estEleveTest(id){ return elevesTestIds.has(id); }
+// Classe de simulation : visible seulement dans la fenêtre professeur du simulateur (qui ne voit qu'elle).
+let classesSimuIds = new Set(), classesSimuP = null;
+function classesSimuCharger(force){
+  if(typeof currentUser === 'undefined' || !currentUser || !['prof', 'admin'].includes(currentUserRole)) return Promise.resolve(classesSimuIds);
+  if(!force && classesSimuP) return classesSimuP;
+  classesSimuP = sb.from('classes_test').select('class_id').then(({ data }) => { classesSimuIds = new Set((data || []).map(x => x.class_id)); return classesSimuIds; }).catch(() => classesSimuIds);
+  return classesSimuP;
+}
+function classeVisible(id){ return (typeof SIMPROF !== 'undefined' && SIMPROF) ? classesSimuIds.has(id) : !classesSimuIds.has(id); }
 function elevesReels(liste){ return (liste || []).filter(e => !e.test && !estEleveTest(e.id)); }
 
 /* ---------- Côté écran d'élève (page ouverte avec ?simu=) ---------- */
@@ -56,7 +65,8 @@ function simuSortie(){
 }
 
 /* ---------- Côté professeur : l'écran du simulateur ---------- */
-const sim = { eleves: [], classe: null, nb: 3, disposition: 'prof', grand: null };
+const sim = { eleves: [], classe: null, niveau: null, nb: 3, disposition: 'prof', grand: null };
+const SIM_NIVEAUX = ['cm1', 'cm2', '6e', '5e', '4e', '3e'];
 async function simAppel(body){
   const { data: { session } } = await sb.auth.getSession();
   if(!session) throw new Error('Connectez-vous d\'abord.');
@@ -70,48 +80,48 @@ async function simOuvrir(){
   showView('view-simulateur'); if(typeof setActiveTopnav === 'function') setActiveTopnav(null);
   const root = document.getElementById('simRoot');
   root.innerHTML = '<p class="hint">Chargement…</p>';
-  try{ sim.eleves = (await simAppel({ action: 'etat' })).eleves || []; }catch(e){ root.innerHTML = `<p class="hint">Erreur : ${escapeHtml(e.message)}</p>`; return; }
-  const cl = (sim.eleves[0] && sim.eleves[0].classes[0]) || null;
-  sim.classe = cl ? cl.id : (typeof currentClassId !== 'undefined' && currentClassId) || ((accountClassesList || [])[0] || {}).id || null;
-  if(sim.eleves.length) sim.nb = sim.eleves.length;
+  try{ const r = await simAppel({ action: 'etat' }); sim.eleves = r.eleves || []; sim.classe = r.classe || null; }catch(e){ root.innerHTML = `<p class="hint">Erreur : ${escapeHtml(e.message)}</p>`; return; }
+  const act = (accountClassesList || []).find(c => c.id === currentClassId);
+  if(!sim.niveau) sim.niveau = sim.classe ? sim.classe.niveau : (act && SIM_NIVEAUX.includes(String(act.niveau).toLowerCase()) ? String(act.niveau).toLowerCase() : '6e');
+  if(sim.eleves.length && !sim.nbChoisi) sim.nb = Math.min(3, sim.eleves.length);
   simRendre();
 }
 function simRendre(){
   const root = document.getElementById('simRoot'); if(!root) return;
-  const classes = (typeof accountClassesList !== 'undefined' && accountClassesList) || [];
-  const rattache = sim.eleves.length ? (sim.eleves[0].classes[0] || null) : null;
-  const pret = sim.eleves.length && rattache && rattache.id === sim.classe && sim.eleves.length >= sim.nb;
+  const nivTxt = n => typeof niveauLabel === 'function' ? niveauLabel(n) : n.toUpperCase();
+  const dansClasse = e => sim.classe && e.classes.some(c => c.id === sim.classe.id);
+  const pret = sim.classe && sim.classe.niveau === sim.niveau && sim.eleves.length >= sim.nb && sim.eleves.slice(0, sim.nb).every(dansClasse) && sim.eleves.every(e => e.classes.length === 1);
   root.innerHTML = `
     <span class="back-btn" data-nav="home" onclick="showView('view-home')">← Accueil</span>
     <h1 style="margin:6px 0 4px;"><span class="gicon">devices</span> Simulateur de classe</h1>
-    <p style="color:var(--ink-soft);max-width:80ch;">Testez vos outils comme en classe, avant les élèves : votre écran de professeur et ceux de un à trois élèves fictifs, côte à côte. Lancez une session COURS, des questions flash, une interrogation ou un devoir dans la fenêtre professeur, puis jouez les élèves dans leurs fenêtres. Les élèves fictifs sont marqués « (test) » et n'entrent dans aucun bilan, aucune moyenne, aucun décompte.</p>
+    <p style="color:var(--ink-soft);max-width:80ch;">Testez vos outils comme en classe, avant les élèves : votre écran de professeur et ceux de un à trois élèves fictifs, côte à côte. Tout se passe dans une <b>classe de simulation</b> à vous, « Simulation » : dans la fenêtre professeur, c'est la seule classe visible ; ailleurs sur le site, elle n'apparaît jamais. Ce que vous y créez (interrogations, devoirs, sessions) ne touche donc aucune vraie classe.</p>
     <div class="sim-prep">
-      <div><b>1. Classe des élèves fictifs</b>
-        <div class="qz-cl-chips" style="margin:6px 0 0;">${classes.map(c => `<button class="${c.id === sim.classe ? 'on' : ''}" onclick="sim.classe='${c.id}';simRendre()">${escapeHtml(c.label)}</button>`).join('') || '<span class="hint">Aucune classe.</span>'}</div>
-        <p class="hint" style="margin:4px 0 0;">Ils reçoivent tout ce que vous donnez à cette classe. Changer de classe les déplace.</p></div>
+      <div><b>1. Niveau de la classe de simulation</b>
+        <div class="qz-cl-chips" style="margin:6px 0 0;">${SIM_NIVEAUX.map(n => `<button class="${n === sim.niveau ? 'on' : ''}" onclick="sim.niveau='${n}';simRendre()">${nivTxt(n)}</button>`).join('')}</div>
+        <p class="hint" style="margin:4px 0 0;">Pour voir les chapitres, devoirs et interrogations de ce niveau.</p></div>
       <div><b>2. Nombre d'élèves</b>
-        <div class="qz-cl-chips" style="margin:6px 0 0;">${[1, 2, 3].map(n => `<button class="${n === sim.nb ? 'on' : ''}" onclick="sim.nb=${n};simRendre()">${n}</button>`).join('')}</div></div>
+        <div class="qz-cl-chips" style="margin:6px 0 0;">${[1, 2, 3].map(n => `<button class="${n === sim.nb ? 'on' : ''}" onclick="sim.nb=${n};sim.nbChoisi=true;simRendre()">${n}</button>`).join('')}</div></div>
       <div><b>3. Disposition</b>
         <div class="qz-cl-chips" style="margin:6px 0 0;"><button class="${sim.disposition === 'prof' ? 'on' : ''}" onclick="sim.disposition='prof';simRendre()">Professeur + élèves</button><button class="${sim.disposition === 'eleves' ? 'on' : ''}" onclick="sim.disposition='eleves';simRendre()">Élèves seulement</button></div></div>
       <div class="sim-go">${pret ? `<button class="btn" onclick="simLancer()"><span class="gicon">play_arrow</span> Lancer la simulation</button>`
-        : `<button class="btn" onclick="simPreparer()"><span class="gicon">person_add</span> ${sim.eleves.length ? 'Rattacher' : 'Créer'} ${sim.nb} élève${sim.nb > 1 ? 's' : ''} fictif${sim.nb > 1 ? 's' : ''} dans cette classe</button>`}
-        ${sim.eleves.length ? `<button class="btn secondary" style="color:#a83c1f;" onclick="simSupprimer()" title="Supprime vos élèves fictifs et tout ce qu'ils ont fait"><span class="gicon">delete</span></button>` : ''}
-        <span class="hint" id="simEtat" style="margin:0;">${sim.eleves.length ? `Vos élèves fictifs : ${sim.eleves.map(e => 'Élève ' + e.lettre).join(', ')}${rattache ? ' · classe ' + escapeHtml(rattache.nom || '') : ''}.` : ''}</span></div>
+        : `<button class="btn" onclick="simPreparer()"><span class="gicon">person_add</span> Préparer la classe de simulation (${nivTxt(sim.niveau)}, ${sim.nb} élève${sim.nb > 1 ? 's' : ''})</button>`}
+        ${sim.eleves.length ? `<button class="btn secondary" style="color:#a83c1f;" onclick="simSupprimer()" title="Supprime la classe de simulation, vos élèves fictifs et tout ce qui s'y trouve"><span class="gicon">delete</span></button>` : ''}
+        <span class="hint" id="simEtat" style="margin:0;">${sim.classe ? `Classe « ${escapeHtml(sim.classe.nom)} » (${nivTxt(sim.classe.niveau)}) · élèves fictifs : ${sim.eleves.map(e => 'Élève ' + e.lettre).join(', ') || 'aucun'}.` : ''}</span></div>
     </div>
     <div id="simScene"></div>`;
 }
 async function simPreparer(){
-  if(!sim.classe){ await niceAlert('Choisissez une classe.'); return; }
-  const et = document.getElementById('simEtat'); if(et) et.textContent = 'Préparation des élèves fictifs…';
-  try{ sim.eleves = (await simAppel({ action: 'preparer', class_id: sim.classe, nb: sim.nb })).eleves || []; }
+  const et = document.getElementById('simEtat'); if(et) et.textContent = 'Préparation de la classe de simulation…';
+  try{ const r = await simAppel({ action: 'preparer', niveau: sim.niveau, nb: sim.nb }); sim.eleves = r.eleves || []; sim.classe = r.classe || null; }
   catch(e){ if(et) et.textContent = 'Erreur : ' + e.message; return; }
-  elevesTestCharger(true);
+  elevesTestCharger(true); classesSimuCharger(true);
   simRendre();
 }
 async function simSupprimer(){
-  if(!(await niceConfirm('Supprimer vos élèves fictifs ? Tout ce qu\'ils ont fait (copies, résultats, travaux) est supprimé avec eux. Vous pourrez en recréer quand vous voulez.'))) return;
-  try{ await simAppel({ action: 'supprimer' }); }catch(e){ await niceAlert('Erreur : ' + e.message); return; }
-  sim.eleves = []; elevesTestCharger(true); simRendre();
+  if(!(await niceConfirm('Supprimer la classe de simulation et vos élèves fictifs ? Tout ce qui s\'y trouve (interrogations, devoirs, sessions, copies, résultats) est supprimé. Vous pourrez la recréer quand vous voulez.'))) return;
+  let r; try{ r = await simAppel({ action: 'supprimer' }); }catch(e){ await niceAlert('Erreur : ' + e.message); return; }
+  if(r && r.classe) await niceAlert('Élèves fictifs supprimés ; classe de simulation ' + r.classe);
+  sim.eleves = []; sim.classe = null; elevesTestCharger(true); classesSimuCharger(true); simRendre();
 }
 function simLancer(){
   const sc = document.getElementById('simScene'); if(!sc) return;
@@ -125,7 +135,7 @@ function simLancer(){
       <button class="btn secondary" onclick="simArreter()"><span class="gicon">stop</span> Arrêter la simulation</button>
       <span class="hint" style="margin:0;">Astuce : dans la fenêtre professeur, ouvrez une session COURS (Cahier de corrections) ou des questions flash : le bandeau « Rejoindre » apparaît chez les élèves fictifs.</span></div>
     <div class="sim-grille ${sim.disposition}${sim.grand ? ' grand' : ''}">
-      ${sim.disposition === 'prof' ? cadre('prof', '<span class="gicon">school</span> Professeur (vous)', base + '?simprof=1#/', 'prof') : ''}
+      ${sim.disposition === 'prof' ? cadre('prof', '<span class="gicon">school</span> Professeur (vous) · classe de simulation', base + '?simprof=' + eleves.map(e => e.student_id).join(',') + '#/', 'prof') : ''}
       <div class="sim-eleves n${eleves.length}">${eleves.map(e => cadre(e.student_id, `<span class="gicon">person</span> Élève ${e.lettre} <small>(test)</small>`, `${base}?simu=${e.student_id}#/`, 'eleve')).join('')}</div></div>`;
   simAjuster();
   window.addEventListener('resize', simAjuster);

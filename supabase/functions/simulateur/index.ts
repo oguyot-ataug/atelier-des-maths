@@ -6,11 +6,12 @@
 //
 // Actions (professeur ou administrateur connecté) :
 //  - etat      : ses élèves fictifs et leur classe ;
-//  - preparer  : { class_id, nb } crée ceux qui manquent (1 à 3) et les rattache à cette classe
-//                (une de SES classes), en les retirant de toute autre classe ;
+//  - preparer  : { niveau, nb } crée (ou met au niveau) SA classe de simulation « Simulation »
+//                (public.classes_test : cachée hors du simulateur), crée les élèves fictifs qui
+//                manquent (1 à 3) et les rattache à cette classe seulement ;
 //  - session   : { student_id } ouvre la session d'un de SES élèves fictifs (nouveau mot de passe
 //                aléatoire jamais transmis, connexion côté serveur) et renvoie les jetons de session ;
-//  - supprimer : supprime ses élèves fictifs (et tout ce qu'ils ont fait).
+//  - supprimer : supprime ses élèves fictifs, sa classe de simulation et tout ce qui s'y trouve.
 // Jamais pour un vrai élève : tout passe par eleves_test.owner_id = l'appelant.
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
@@ -41,14 +42,24 @@ serve(async (req) => {
       return (data || []).map((x) => ({ ...x, classes: (liens || []).filter((l: any) => l.student_id === x.student_id).map((l: any) => ({ id: l.class_id, nom: l.classes?.nom })) }));
     };
 
-    if (action === "etat") return json({ eleves: await mesEleves() });
+    const maClasse = async () => {
+      const { data } = await admin.from("classes_test").select("class_id, classes(id, nom, niveau)").eq("owner_id", moi.id).maybeSingle();
+      return data?.classes || null;
+    };
+    if (action === "etat") return json({ eleves: await mesEleves(), classe: await maClasse() });
 
     if (action === "preparer") {
-      const classe = body.class_id, nb = Math.max(1, Math.min(3, Number(body.nb) || 3));
-      if (!classe) return json({ error: "Choisissez une classe." }, 400);
-      if (prof.role !== "admin") {
-        const { data: lien } = await admin.from("class_teachers").select("class_id").eq("class_id", classe).eq("teacher_id", moi.id).maybeSingle();
-        if (!lien) return json({ error: "Cette classe n'est pas une de vos classes." }, 403);
+      const niveau = String(body.niveau || "6e"), nb = Math.max(1, Math.min(3, Number(body.nb) || 3));
+      // Classe de simulation du professeur (une seule), au niveau choisi.
+      let cl = await maClasse();
+      if (!cl) {
+        const { data: c, error } = await admin.from("classes").insert({ nom: "Simulation", niveau, uai: prof.uai || null, creee_par: moi.id }).select("id, nom, niveau").single();
+        if (error || !c) return json({ error: "Classe de simulation impossible : " + (error?.message || "?") }, 500);
+        await admin.from("class_teachers").insert({ class_id: c.id, teacher_id: moi.id });
+        await admin.from("classes_test").insert({ class_id: c.id, owner_id: moi.id });
+        cl = c;
+      } else if (cl.niveau !== niveau) {
+        await admin.from("classes").update({ niveau }).eq("id", cl.id); cl.niveau = niveau;
       }
       const existants = await mesEleves();
       for (const lettre of LETTRES.slice(0, nb)) {
@@ -61,12 +72,12 @@ serve(async (req) => {
         await admin.from("eleves_test").insert({ student_id: cree.user.id, owner_id: moi.id, lettre });
       }
       const tous = await mesEleves(), ids = tous.map((e) => e.student_id);
-      // Un seul rattachement à la fois : la classe choisie.
-      if (ids.length) await admin.from("class_students").delete().in("student_id", ids).neq("class_id", classe);
+      // Les élèves fictifs ne sont que dans la classe de simulation (jamais dans une vraie classe).
+      if (ids.length) await admin.from("class_students").delete().in("student_id", ids).neq("class_id", cl.id);
       for (const e of tous) {
-        if (!e.classes.some((c: any) => c.id === classe)) await admin.from("class_students").insert({ class_id: classe, student_id: e.student_id });
+        if (!e.classes.some((c: any) => c.id === cl.id)) await admin.from("class_students").insert({ class_id: cl.id, student_id: e.student_id });
       }
-      return json({ eleves: await mesEleves() });
+      return json({ eleves: await mesEleves(), classe: cl });
     }
 
     if (action === "session") {
@@ -86,6 +97,23 @@ serve(async (req) => {
       const tous = await mesEleves();
       let n = 0;
       for (const e of tous) { const { error } = await admin.auth.admin.deleteUser(e.student_id); if (!error) n++; } // profil, travaux… suivent (cascade)
+      // Classe de simulation : ses devoirs, interrogations, séances… partent avec elle.
+      const cl = await maClasse();
+      if (cl) {
+        const { data: dv } = await admin.from("devoirs").select("id").eq("class_id", cl.id);
+        const dIds = (dv || []).map((d) => d.id);
+        if (dIds.length) {
+          await admin.from("devoirs_rendus").delete().in("devoir_id", dIds);
+          await admin.from("qz_copies").delete().in("devoir_id", dIds);
+          await admin.from("devoir_sessions").delete().in("devoir_id", dIds);
+          await admin.from("devoirs").delete().in("id", dIds);
+        }
+        await admin.from("ceb_results").delete().eq("class_id", cl.id);
+        await admin.from("permis_rapporteur_resultats").delete().eq("classe_id", cl.id);
+        await admin.from("permis_rapporteur_sessions").delete().eq("classe_id", cl.id);
+        const { error } = await admin.from("classes").delete().eq("id", cl.id);
+        if (error) return json({ ok: true, supprimes: n, classe: "non supprimée : " + error.message });
+      }
       return json({ ok: true, supprimes: n });
     }
     return json({ error: "Action inconnue." }, 400);

@@ -664,8 +664,9 @@ async function qzDirectsCharger(){
     sb.from('qz_direct').select('id,titre,class_id,questionnaire_id,created_at,ended_at,etat,student_ids,notee,devoir_id,archive_at,classes(nom)').eq('teacher_id', currentUser.id).not('ended_at', 'is', null).order('created_at', { ascending: false }).limit(500),
   ]);
   if(typeof qzB !== 'undefined' && qzB){
-    qzB.directs = data || [];
-    qzB.directsPasses = passes || [];
+    const vis = d => typeof classeVisible !== 'function' || classeVisible(d.class_id); // classe de simulation : seulement dans le simulateur
+    qzB.directs = (data || []).filter(vis);
+    qzB.directsPasses = (passes || []).filter(vis);
     // Questionnaires déjà utilisés en direct : ils ne sont plus « pas encore donnés ».
     qzB.directParQ = new Map();
     [...(data || []), ...(passes || [])].forEach(d => { if(d.questionnaire_id && !qzB.directParQ.has(d.questionnaire_id)) qzB.directParQ.set(d.questionnaire_id, d); });

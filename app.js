@@ -2680,8 +2680,9 @@ let sb;
 /* Simulateur de classe (simulateur.js) : une page ouverte avec ?simu=<élève fictif> a SA session,
    rangée à part (storageKey) pour ne jamais remplacer celle du professeur dans les autres fenêtres. */
 const SIMU = new URLSearchParams(location.search).get('simu');
-// Fenêtre professeur du simulateur : seuls les élèves fictifs apparaissent dans les listes d'élèves.
-const SIMPROF = !!new URLSearchParams(location.search).get('simprof');
+// Fenêtre professeur du simulateur (?simprof=<élèves simulés>) : seule la classe de simulation est
+// visible, avec les seuls élèves fictifs de la simulation en cours.
+const SIMPROF = new URLSearchParams(location.search).get('simprof') || '';
 if(SIMU || SIMPROF) document.documentElement.classList.add('simu-frame');
 try{
   sb = SIMU ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { storageKey: 'sb-simu-' + SIMU, detectSessionInUrl: false } })
@@ -3325,6 +3326,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.943', date:'2026-10-03', items:[
+    'Simulateur : tout se passe dans une classe de simulation à vous (« Simulation », au niveau choisi). Dans la fenêtre professeur du simulateur, c\'est la seule classe visible ; ailleurs sur le site (listes de classes, interrogations, devoirs, questions flash), elle n\'apparaît jamais. Les élèves fictifs n\'y sont que dans cette classe',
+    'Simulateur : avec 2 élèves, la fenêtre professeur n\'attend plus que ces 2 élèves (seuls les élèves de la simulation en cours apparaissent) ; la poubelle supprime aussi la classe de simulation et tout ce qu\'elle contient'
+  ]},
   { version:'2026-08-19.942', date:'2026-10-03', items:[
     'Simulateur : la fenêtre professeur ne montre que les élèves fictifs (session COURS, questions flash, suivi, correction), plus toute la classe',
     'Simulateur : les écrans ne passent plus en plein écran sur tout l\'écran (chacun reste dans sa vignette) ; une sortie n\'est signalée que par « Simuler une sortie »'
@@ -5946,6 +5951,9 @@ async function loadMyClasses(){
   // currentClassId partout ailleurs.
   const res = await sb.from('class_teachers').select('classes(id,nom,niveau,groupe,archive)').eq('teacher_id', currentUser.id);
   let classesList = (res.data||[]).map(row=>row.classes).filter(Boolean), error = res.error;
+  // Classe de simulation (simulateur.js) : la seule visible dans la fenêtre professeur du simulateur,
+  // cachée partout ailleurs.
+  if(typeof classesSimuCharger==='function'){ await classesSimuCharger(); classesList = classesList.filter(c=>classeVisible(c.id)); }
   classesList.sort((a,b)=>(!!a.groupe - !!b.groupe) || a.nom.localeCompare(b.nom)); // classes d'abord, puis les groupes
   populateAccountClassList(classesList);
   if(!accountClassesList.some(c=>c.id===currentClassId)){

@@ -289,7 +289,8 @@ function qzToast(html, genre){
 async function qzInterrosCharger(){
   const { data: dv } = await sb.from('devoirs').select('id,titre,class_id,date_depot,date_limite,created_at,student_ids,qz_publie_at,questionnaire_id,archive_at,qz_rattrapage,classes(nom,niveau)')
     .eq('teacher_id', currentUser.id).eq('type', 'questionnaire').order('created_at', { ascending: false });
-  const interros = dv || [], ids = interros.map(d => d.id), classIds = Array.from(new Set(interros.map(d => d.class_id)));
+  if(typeof classesSimuCharger === 'function') await classesSimuCharger();
+  const interros = (dv || []).filter(d => typeof classeVisible !== 'function' || classeVisible(d.class_id)), ids = interros.map(d => d.id), classIds = Array.from(new Set(interros.map(d => d.class_id)));
   const [{ data: copies }, { data: cs }] = await Promise.all([
     ids.length ? sb.from('qz_copies').select('devoir_id,student_id,statut,deadline_at,reponses,correction').in('devoir_id', ids) : { data: [] },
     classIds.length ? sb.from('class_students').select('class_id,student_id').in('class_id', classIds) : { data: [] },

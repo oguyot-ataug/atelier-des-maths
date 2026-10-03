@@ -516,10 +516,11 @@ function cancelDevoirEdit(){
 function devoirTypeLabel(type){ const t = DEVOIR_TYPES.find(t=>t.id===type) || (type==='questionnaire' ? DEVOIR_TYPE_INTERRO : null); return t ? t.label : type; }
 async function refreshDevoirsProfListing(){
   const el = document.getElementById('devoirsProfListing');
-  const { data: devoirsList, error } = await sb.from('devoirs')
+  let { data: devoirsList, error } = await sb.from('devoirs')
     .select('id,titre,consigne,date_depot,date_limite,created_at,class_id,type,automatismes_sequences,ceb_n_large,ceb_timer_on,ceb_rounds,prog_defis,student_ids,qz_publie_at,questionnaire_id,archive_at,classes(nom,niveau)')
     .eq('teacher_id', currentUser.id).neq('type','questionnaire').order('created_at',{ascending:false});
   if(error){ el.textContent = 'Erreur : '+error.message; return; }
+  if(typeof classesSimuCharger==='function'){ await classesSimuCharger(); devoirsList = devoirsList.filter(d=>classeVisible(d.class_id)); } // classe de simulation
   if(!devoirsList || !devoirsList.length){ el.innerHTML = '<p class="hint">Aucun devoir assigné pour l\'instant.</p>'; return; }
   // Nombre de rendus / nombre d'élèves concernés (toute la classe, ou la sélection d'élèves
   // ciblée par ce devoir -- signalé : "permettre d'assigner à la classe ou quelques élèves").

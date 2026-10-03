@@ -1112,7 +1112,7 @@ async function qzElevesDevoir(devoir){
   // Élèves tests (simulateur) : marqués, en fin de liste ; les bilans et moyennes les écartent (elevesReels).
   return (data || []).map(r => r.profiles).filter(Boolean)
     .map(p => ({ id: p.id, nom: p.nom || '', prenom: p.prenom || '', label: ((p.nom || '') + ' ' + (p.prenom || '')).trim() || '(sans nom)', test: typeof estEleveTest === 'function' && estEleveTest(p.id) }))
-    .filter(e => typeof SIMPROF === 'undefined' || !SIMPROF || e.test) // simulateur : les élèves fictifs seulement
+    .filter(e => typeof SIMPROF === 'undefined' || !SIMPROF || SIMPROF.split(',').includes(e.id)) // simulateur : les élèves de la simulation seulement
     .sort((a, b) => (a.test - b.test) || a.label.localeCompare(b.label, 'fr'));
 }
 function qzCQuestions(){ return (qzC.qz.questions || []).filter(q => q.type !== 'texte'); }
