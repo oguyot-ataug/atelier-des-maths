@@ -3314,6 +3314,12 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.938', date:'2026-10-03', items:[
+    'Mes classes réorganisé : Comptes, Groupes (½ classe ou remédiation), En autonomie (automatismes et Objectif Nombre faits hors devoirs ; case « Inclure les devoirs »), Devoirs, Interrogations, Bilan',
+    'Mes classes › Interrogations : les interrogations en ligne de la classe, et les notes des interrogations sur papier : titre, date, note sur…, thèmes abordés, ou lien vers une évaluation enregistrée (titre, date et exercices repris) ; notes saisies élève par élève (« abs » pour un absent) ou collées depuis un tableur',
+    'Mes classes › Bilan : tous les résultats d\'une période (trimestre aux dates modifiables, année ou dates choisies) : travail en autonomie, devoirs, interrogations en ligne et sur papier, faits, retards, réussite, moyenne /20 et évolution de chaque élève (↗ → ↘) ; appréciation de 250 caractères au plus, rédigée par l\'IA en tenant compte de l\'évolution, sans jamais lui donner un nom ou un prénom (même dans un titre), visible par l\'enseignant seul',
+    'Devoirs en ligne › Bilan de la classe : les devoirs seulement, sans appréciations'
+  ]},
   { version:'2026-08-19.937', date:'2026-10-03', items:[
     'Devoirs en ligne rangés comme les interrogations : une pastille par classe (la classe active par défaut), une section par classe, « Archiver » sur chaque devoir et « Archiver les terminés » (date limite passée) ; les archives restent consultables en bas de chaque classe. Le formulaire « Nouveau devoir » est replié (un clic l\'ouvre)',
     'Bilan de la classe en tableau, comme un carnet de notes : une ligne par élève, une colonne par devoir et par interrogation de la période (trimestre ou année) : automatismes, comptes trouvés, défis réussis, rendus, notes ; retards encadrés ; travaux faits, réussite moyenne, moyenne /20 et moyenne de la classe. Imprimable et exportable en CSV',
@@ -5945,6 +5951,8 @@ async function applyClassSelection(){
     // le re-rendre si c'est l'onglet actuellement affiché, sinon il resterait sur l'ancienne
     // classe jusqu'au prochain clic sur cet onglet.
     if(document.querySelector('.sup-tab-btn[data-suptab="classes"]')?.classList.contains('active')) renderSupervisionDevoirsTab();
+    if(document.querySelector('.sup-tab-btn[data-suptab="interros"]')?.classList.contains('active') && typeof npOngletInterros==='function') npOngletInterros();
+    if(document.querySelector('.sup-tab-btn[data-suptab="bilan"]')?.classList.contains('active') && typeof npOngletBilan==='function') npOngletBilan();
   }
   updateCourseAddButtonsState();
 }
@@ -6099,6 +6107,8 @@ document.querySelectorAll('.sup-tab-btn').forEach(btn=>{
     btn.classList.add('active');
     document.getElementById('suppanel-'+btn.dataset.suptab).classList.add('active');
     if(btn.dataset.suptab==='classes') renderSupervisionDevoirsTab();
+    if(btn.dataset.suptab==='interros' && typeof npOngletInterros==='function') npOngletInterros();
+    if(btn.dataset.suptab==='bilan' && typeof npOngletBilan==='function') npOngletBilan();
     // Groupes de remédiation : pas liés à la classe active, le sélecteur de classe est masqué.
     const picker = document.getElementById('supervisionClassPickerBox'); if(picker) picker.style.display = btn.dataset.suptab==='groupes' ? 'none' : '';
     if(btn.dataset.suptab==='groupes' && typeof grAfficher==='function') grAfficher();
@@ -6220,10 +6230,12 @@ async function renderSupervision(){
   if(!el) return;
   if(!currentClassId){ el.innerHTML = 'Choisissez une classe dans le menu compte pour voir ses résultats.'; return; }
   el.innerHTML = 'Chargement…';
-  const { data, error } = await sb.from('cm_results')
+  // Onglet « En autonomie » : hors devoirs, sauf si « Inclure les devoirs » est coché.
+  let reqCm = sb.from('cm_results')
     .select('score,total,sequence_label,created_at,duration_ms,profiles(nom,prenom,email)')
-    .eq('class_id', currentClassId)
-    .order('created_at', {ascending:false});
+    .eq('class_id', currentClassId);
+  if(!document.getElementById('supInclDevoirs')?.checked) reqCm = reqCm.is('devoir_id', null);
+  const { data, error } = await reqCm.order('created_at', {ascending:false});
   if(error){ el.innerHTML = "Erreur : "+error.message; return; }
   supervisionData = data || [];
   populateSupervisionFilters();
@@ -6317,10 +6329,11 @@ async function renderSupervisionCeb(){
   if(!el) return;
   if(!currentClassId){ el.innerHTML = 'Choisissez une classe dans le menu compte pour voir ses résultats.'; return; }
   el.innerHTML = 'Chargement…';
-  const { data, error } = await sb.from('ceb_results')
+  let reqCeb = sb.from('ceb_results')
     .select('target,result_value,gap,success,timed,timer_duration,time_used_ms,expression,created_at,profiles(nom,prenom,email)')
-    .eq('class_id', currentClassId)
-    .order('created_at', {ascending:false});
+    .eq('class_id', currentClassId);
+  if(!document.getElementById('supInclDevoirs')?.checked) reqCeb = reqCeb.is('devoir_id', null); // « En autonomie »
+  const { data, error } = await reqCeb.order('created_at', {ascending:false});
   if(error){ el.innerHTML = "Erreur : "+error.message; return; }
   supervisionCebData = data || [];
   if(!data || !data.length){ el.innerHTML = "Aucun résultat d'Objectif Nombre pour cette classe pour le moment."; return; }

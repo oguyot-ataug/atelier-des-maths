@@ -56,10 +56,12 @@ const AIDE_PAGES = [
     { t: 'Oliv\'IA', d: 'La petite robote d\'aide (bouton en bas à droite) réexplique le cours et donne des indices, jamais la réponse. Vous choisissez les élèves qui y ont accès et relisez les échanges.' },
   ] },
   { id: 'classes', titre: 'Mes classes', vue: 'view-supervision', etapes: [
-    { sel: '#view-supervision .sup-tab-btn[data-suptab="comptes"]', t: 'Les comptes', d: 'Identifiants des élèves, réinitialisation d\'un mot de passe, connexions. Le bouton <b>Cartes flashcode</b> attribue les numéros des cartes et imprime les planches.' },
-    { sel: '#view-supervision .sup-tab-btn[data-suptab="resultats"]', t: 'Les résultats', d: 'Automatismes, Objectif Nombre et exercices : réussite de chaque élève, filtrable par dates, exportable en CSV.' },
+    { sel: '#view-supervision .sup-tab-btn[data-suptab="comptes"]', t: 'Les comptes', d: 'Identifiants des élèves, réinitialisation d\'un mot de passe, connexions, cartes flashcode.' },
+    { sel: '#view-supervision .sup-tab-btn[data-suptab="groupes"]', t: 'Les groupes', d: 'Demi-classes ou groupes de remédiation (élèves de plusieurs classes) : un groupe s\'utilise ensuite comme une classe.' },
+    { sel: '#view-supervision .sup-tab-btn[data-suptab="resultats"]', t: 'En autonomie', d: 'Ce que les élèves font d\'eux-mêmes : automatismes et Objectif Nombre hors devoirs, filtrables par dates, exportables en CSV.' },
     { sel: '#view-supervision .sup-tab-btn[data-suptab="classes"]', t: 'Les devoirs', d: 'Les devoirs donnés à la classe active et les rendus des élèves.' },
-    { sel: '#view-supervision .sup-tab-btn[data-suptab="groupes"]', t: 'Groupes de remédiation', d: 'Réunissez des élèves de plusieurs classes : le groupe s\'utilise ensuite comme une classe (devoirs, interrogations, Oliv\'IA, cahier).' },
+    { sel: '#view-supervision .sup-tab-btn[data-suptab="interros"]', t: 'Les interrogations', d: 'Les interrogations en ligne de la classe, et les notes des interrogations sur papier (saisies ou collées depuis un tableur, avec leurs thèmes).' },
+    { sel: '#view-supervision .sup-tab-btn[data-suptab="bilan"]', t: 'Le bilan', d: 'Tous les résultats d\'une période en tableau, l\'évolution de chaque élève et les appréciations (IA possible, sans les noms, visibles par vous seul).' },
   ] },
   { id: 'interros', titre: 'Interrogations en ligne', vue: 'view-qz-banque', etapes: [
     { t: 'Trois onglets', d: '<b>Interrogations données</b> (état, copies rendues, à corriger), <b>Mes questionnaires</b> (vos modèles, réutilisables) et les questionnaires <b>partagés</b> par vos collègues.' },
