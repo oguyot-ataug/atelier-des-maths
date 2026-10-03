@@ -3314,6 +3314,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.939', date:'2026-10-03', items:[
+    'Coefficients des évaluations : chaque interrogation en ligne, interrogation sur papier et devoir noté a un coefficient (1 par défaut, de 0,25 à 20). Il se change d\'un clic sur « coef » dans le Bilan, le Carnet de notes ou Mes classes › Interrogations, ou dans la fiche d\'une interrogation papier',
+    'Moyennes pondérées : la moyenne /20 du Bilan et la nouvelle colonne « Moyenne /20 » du Carnet de notes tiennent compte des coefficients (et des notes sur 10, sur 40…, ramenées sur 20)'
+  ]},
   { version:'2026-08-19.938', date:'2026-10-03', items:[
     'Mes classes réorganisé : Comptes, Groupes (½ classe ou remédiation), En autonomie (automatismes et Objectif Nombre faits hors devoirs ; case « Inclure les devoirs »), Devoirs, Interrogations, Bilan',
     'Mes classes › Interrogations : les interrogations en ligne de la classe, et les notes des interrogations sur papier : titre, date, note sur…, thèmes abordés, ou lien vers une évaluation enregistrée (titre, date et exercices repris) ; notes saisies élève par élève (« abs » pour un absent) ou collées depuis un tableur',

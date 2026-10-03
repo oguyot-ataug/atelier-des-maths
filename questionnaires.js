@@ -1747,7 +1747,7 @@ async function qzCarnetCharger(){
   const body = document.getElementById('qzKBody'); if(!body) return;
   if(!qzK.classId){ body.innerHTML = '<p class="hint">Aucune classe.</p>'; return; }
   body.innerHTML = '<p class="hint">Chargement…</p>';
-  const { data: devoirs } = await sb.from('devoirs').select('id,titre,date_depot,date_limite,created_at,questionnaire_id,qz_publie_at,student_ids,class_id')
+  const { data: devoirs } = await sb.from('devoirs').select('id,titre,date_depot,date_limite,created_at,questionnaire_id,qz_publie_at,student_ids,class_id,coef')
     .eq('class_id', qzK.classId).eq('type', 'questionnaire').order('created_at', { ascending: true });
   const ids = (devoirs || []).map(d => d.id), qids = (devoirs || []).map(d => d.questionnaire_id).filter(Boolean);
   const [{ data: copies }, { data: qzs }, eleves] = await Promise.all([
@@ -1778,13 +1778,32 @@ function qzCarnetRender(){
   body.innerHTML = `<div class="qz-carnet-wrap"><table class="qz-carnet">
     <thead><tr><th>Élève</th>${qzK.devoirs.map((d, i) => { const qz = qzK.qz.get(d.questionnaire_id); const sur = qz ? Object.assign({}, QZ_REGLAGES_DEFAUT, qz.reglages || {}).note_sur : 20;
       return `<th><button class="qz-link" onclick="qzOuvrirCorrection('${d.id}')" title="Ouvrir la correction">${qzEsc(d.titre)}</button><small>/${sur}${d.qz_publie_at ? '' : ' · non publié'}</small>
-        <button class="btn secondary qz-mini" onclick="qzCarnetCopier(${i}, this)"><span class="gicon">content_copy</span> Copier</button></th>`; }).join('')}</tr></thead>
+        <button class="btn secondary qz-mini" onclick="qzCarnetCopier(${i}, this)"><span class="gicon">content_copy</span> Copier</button>
+        <button class="qz-k-coef" onclick="qzCarnetCoef(${i})" title="Coefficient dans la moyenne">coef ${qzNum(+d.coef || 1)}</button></th>`; }).join('')}<th>Moyenne /20<small>pondérée</small></th></tr></thead>
     <tbody>${qzK.eleves.map(e => `<tr><td>${qzEsc(e.label)}</td>${qzK.devoirs.map(d => { const cb = cibles(d);
       if(cb && !cb.has(e.id)) return '<td class="nc" title="Non concerné">–</td>';
-      const x = qzCarnetCellule(d, e); return `<td class="${x.cls}"${x.title ? ` title="${x.title}"` : ''}>${x.cls === 'attente' ? '<span class="gicon">hourglass_top</span>' : qzEsc(x.txt)}</td>`; }).join('')}</tr>`).join('')}</tbody>
+      const x = qzCarnetCellule(d, e); return `<td class="${x.cls}"${x.title ? ` title="${x.title}"` : ''}>${x.cls === 'attente' ? '<span class="gicon">hourglass_top</span>' : qzEsc(x.txt)}</td>`; }).join('')}<td class="qz-k-moy">${(m => m === null ? '' : qzNum(m))(qzCarnetMoyenne(e))}</td></tr>`).join('')}</tbody>
     <tfoot><tr><td>Moyenne</td>${qzK.devoirs.map(d => { const v = qzK.eleves.map(e => qzCarnetCellule(d, e).val).filter(x => x !== null);
-      return `<td>${v.length ? qzNum(v.reduce((a, b) => a + b, 0) / v.length) : ''}</td>`; }).join('')}</tr></tfoot>
+      return `<td>${v.length ? qzNum(v.reduce((a, b) => a + b, 0) / v.length) : ''}</td>`; }).join('')}<td>${(l => l.length ? qzNum(l.reduce((a, b) => a + b, 0) / l.length) : '')(qzK.eleves.map(qzCarnetMoyenne).filter(x => x !== null))}</td></tr></tfoot>
   </table></div>`;
+}
+// Moyenne /20 d'un élève, pondérée par le coefficient de chaque interrogation (devoirs.coef).
+function qzCarnetMoyenne(e){
+  let s = 0, c = 0;
+  qzK.devoirs.forEach(d => { const x = qzCarnetCellule(d, e); if(x.val === null) return;
+    const qz = qzK.qz.get(d.questionnaire_id), sur = qz ? Object.assign({}, QZ_REGLAGES_DEFAUT, qz.reglages || {}).note_sur : 20, k = +d.coef || 1;
+    s += 20 * x.val / (sur || 20) * k; c += k; });
+  return c ? s / c : null;
+}
+async function qzCarnetCoef(i){
+  const d = qzK.devoirs[i]; if(!d) return;
+  const v = await nicePrompt(`Coefficient de « ${d.titre} » dans la moyenne (entre 0,25 et 20) :`, String(+d.coef || 1).replace('.', ','));
+  if(v === null) return;
+  const c = parseFloat(String(v).replace(',', '.'));
+  if(!(c >= .25 && c <= 20)){ await niceAlert('Indiquez un nombre entre 0,25 et 20.'); return; }
+  const { error } = await sb.from('devoirs').update({ coef: c }).eq('id', d.id);
+  if(error){ await niceAlert('Erreur : ' + error.message); return; }
+  d.coef = c; qzCarnetRender();
 }
 async function qzCarnetCopier(i, btn){
   const d = qzK.devoirs[i]; if(!d) return;
@@ -1963,6 +1982,8 @@ function qzCarnetCompetences(body){
     .qz-k-chip:hover{border-color:#6B3FA0;background:#F4EFFA;}
     .qz-k-chip.on{background:#6B3FA0;border-color:#6B3FA0;color:#fff;} .qz-k-chip.on .gicon{color:#fff;}
     .qz-k-absent{display:inline-flex;align-items:center;gap:8px;}
+    .qz-k-coef{display:block;margin:4px auto 0;border:1px solid rgba(107,63,160,.35);background:#F4EFFA;color:#6B3FA0;border-radius:6px;font:700 .7rem Inter,sans-serif;padding:1px 7px;cursor:pointer;}
+    .qz-k-moy{font-weight:800;}
     .qz-k-lab{font-size:.8rem;color:var(--ink-soft);}
     .qz-seg{display:inline-flex;background:rgba(28,43,57,.06);border-radius:999px;padding:3px;gap:2px;}
     .qz-seg button{border:none;background:none;font:inherit;font-size:.8rem;font-weight:700;color:var(--ink-soft);padding:4px 12px;border-radius:999px;cursor:pointer;}

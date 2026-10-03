@@ -110,7 +110,7 @@ async function blCharger(classe, per, mode){
   devoirs.forEach(d => {
     const rg = d.type === 'questionnaire' ? reg.get(d.questionnaire_id) || {} : null;
     if(rg && rg.mode === 'sondage') return;
-    const col = { id: d.id, d, titre: d.titre, icon: blTypeIcone(d), date: d.date_depot, groupe: d.type === 'questionnaire' ? 'interro' : 'devoir' };
+    const col = { id: d.id, d, titre: d.titre, icon: blTypeIcone(d), date: d.date_depot, groupe: d.type === 'questionnaire' ? 'interro' : 'devoir', coef: +d.coef || 1, table: 'devoirs', rid: d.id };
     colonnes.push(col);
     eleves.forEach(e => {
       const r = R.get(d.id + '|' + e.id), cible = !d.student_ids || !d.student_ids.length || d.student_ids.includes(e.id);
@@ -150,7 +150,7 @@ async function blCharger(classe, per, mode){
   });
   // Interrogations sur papier.
   (pap || []).forEach(np => {
-    colonnes.push({ id: 'pap-' + np.id, np, titre: np.titre, icon: 'edit_document', date: np.date_eval, groupe: 'papier', themes: np.themes });
+    colonnes.push({ id: 'pap-' + np.id, np, titre: np.titre, icon: 'edit_document', date: np.date_eval, groupe: 'papier', themes: np.themes, coef: +np.coef || 1, table: 'notes_papier', rid: np.id });
     eleves.forEach(e => {
       const v = (np.notes || {})[e.id];
       const c = v === 'abs' ? { txt: 'abs', cl: 'vide', abs: true } : v == null || v === '' ? { txt: '—', cl: 'vide', manque: true } : blNote(+v, +np.sur || 20, np.themes ? 'Thèmes : ' + np.themes : '');
@@ -165,13 +165,15 @@ async function blCharger(classe, per, mode){
 function blSynthese(e){
   const cs = blx.colonnes.map(col => ({ col, c: blx.cellules.get(col.id + '|' + e.id) })).filter(x => x.c && !x.c.nc);
   const travaux = cs.filter(x => !x.c.auto && !x.c.abs);
-  const pcts = cs.filter(x => x.c.v != null && x.c.note20 == null).map(x => x.c.v), notes = cs.filter(x => x.c.note20 != null).map(x => x.c.note20);
+  // Moyenne /20 pondérée par les coefficients des évaluations.
+  const pcts = cs.filter(x => x.c.v != null && x.c.note20 == null).map(x => x.c.v), notes = cs.filter(x => x.c.note20 != null);
+  const sCoef = notes.reduce((a, x) => a + (x.col.coef || 1), 0);
   const p = (blx.points.get(e.id) || []).slice().sort((a, b) => a.date.localeCompare(b.date));
   let evo = null;
   if(p.length >= 4){ const m = Math.floor(p.length / 2), moy = l => l.reduce((s, x) => s + x.v, 0) / l.length, d = moy(p.slice(p.length - m)) - moy(p.slice(0, m));
     evo = { d, t: d >= .08 ? 'en progrès' : d <= -.08 ? 'en baisse' : 'stable', debut: moy(p.slice(0, m)), fin: moy(p.slice(p.length - m)) }; }
   return { n: travaux.length, faits: travaux.filter(x => x.c.fait).length, retards: cs.filter(x => x.c.retard).length,
-    reussite: pcts.length ? pcts.reduce((a, b) => a + b, 0) / pcts.length : null, moyenne: notes.length ? notes.reduce((a, b) => a + b, 0) / notes.length : null, evo, cs, p };
+    reussite: pcts.length ? pcts.reduce((a, b) => a + b, 0) / pcts.length : null, moyenne: sCoef ? notes.reduce((a, x) => a + x.c.note20 * (x.col.coef || 1), 0) / sCoef : null, evo, cs, p };
 }
 
 /* ---------- Affichage ---------- */
@@ -206,11 +208,11 @@ function blRendre(){
     <p class="hint" style="margin:4px 0 8px;">${complet ? 'Travail en autonomie, devoirs et interrogations (en ligne et sur papier)' : 'Devoirs publiés'} du ${new Date(B.per.du).toLocaleDateString('fr-FR')} au ${new Date(B.per.au).toLocaleDateString('fr-FR')}, archivés compris.${perso ? '' : ' Les dates de chaque période sont modifiables et mémorisées sur cet appareil.'}
       ${complet ? '<span class="bl-prive"><span class="gicon">lock</span> Les appréciations ne sont visibles que par vous ; l\'IA ne reçoit jamais les noms ni les prénoms.</span>' : 'Le bilan complet, avec les interrogations et les appréciations, est dans Mes classes › Bilan.'} <span id="blEtat"></span></p>
     ${cols.length ? `<div class="bl-table"><table><thead>${groupes.length > 1 ? `<tr class="bl-grp"><th></th>${groupes.map(([g, t, n]) => `<th colspan="${n}" class="g-${g}">${t}</th>`).join('')}<th colspan="${complet ? 6 : 4}"></th></tr>` : ''}
-        <tr><th>Élève</th>${cols.map(col => `<th title="${escapeHtml(col.titre + (col.themes ? ' · ' + col.themes : ''))}"><span class="gicon">${col.icon}</span>${col.date ? `<small>${new Date(col.date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' })}</small>` : ''}<span class="bl-tit">${escapeHtml(col.court || col.titre)}</span></th>`).join('')}
+        <tr><th>Élève</th>${cols.map(col => `<th title="${escapeHtml(col.titre + (col.themes ? ' · ' + col.themes : ''))}"><span class="gicon">${col.icon}</span>${col.date ? `<small>${new Date(col.date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' })}</small>` : ''}<span class="bl-tit">${escapeHtml(col.court || col.titre)}</span>${blNotee(col) ? `<button type="button" class="bl-coef" data-coef="${col.id}" title="Coefficient de cette évaluation dans la moyenne">coef ${blNum(col.coef)}</button>` : ''}</th>`).join('')}
         <th>Faits</th><th>Retards</th><th>Réussite</th><th>Moy. /20</th>${complet ? '<th>Évol.</th><th class="bl-appr-h">Appréciation <small>(vous seul, ' + BL_MAX + ' car.)</small></th>' : ''}</tr></thead>
       <tbody>${corps || '<tr><td>Aucun élève.</td></tr>'}</tbody>
       <tfoot><tr><th>Classe</th>${moyCol}<td colspan="${complet ? 6 : 4}"></td></tr></tfoot></table></div>
-      <p class="hint bl-leg"><span class="bl-c ok">≥ 70 %</span> <span class="bl-c moyen">40 à 70 %</span> <span class="bl-c ko">&lt; 40 %</span> <span class="bl-c vide">—</span> pas fait · <span class="bl-c retard">encadré</span> en retard · Réussite : moyenne des pourcentages ; Moy. /20 : notes des interrogations et des devoirs notés${complet ? ' ; Évol. : résultats de la fin de la période comparés au début' : ''}.</p>`
+      <p class="hint bl-leg"><span class="bl-c ok">≥ 70 %</span> <span class="bl-c moyen">40 à 70 %</span> <span class="bl-c ko">&lt; 40 %</span> <span class="bl-c vide">—</span> pas fait · <span class="bl-c retard">encadré</span> en retard · Réussite : moyenne des pourcentages ; Moy. /20 : notes des interrogations et des devoirs notés, pondérées par leur coefficient (cliquez sur « coef » pour le changer)${complet ? ' ; Évol. : résultats de la fin de la période comparés au début' : ''}.</p>`
       : `<p class="hint">Rien sur cette période pour cette classe.</p>`}</div>`;
   const q = sel => B.cible.querySelector(sel);
   const per = () => { const k = q('#blPer').value, du = q('#blDu').value, au = q('#blAu').value; if(!du || !au || du > au) return null;
@@ -226,8 +228,22 @@ function blRendre(){
   B.cible.querySelectorAll('[data-appr]').forEach(t => {
     t.oninput = () => { const c = t.parentElement.querySelector('.bl-cpt'); if(c) c.textContent = t.value.length + '/' + BL_MAX; };
     t.onchange = () => { blx = B; blSauverAppr(t.dataset.appr, t.value, false); }; });
+  B.cible.querySelectorAll('[data-coef]').forEach(b => b.onclick = () => { blx = B; blCoef(b.dataset.coef); });
   if(q('#blIa')) q('#blIa').onclick = () => { blx = B; blAppreciationsIa(); };
   q('#blCsv').onclick = () => { blx = B; blCsv(); }; q('#blImp').onclick = () => { blx = B; blImprimer(); };
+}
+// Colonne notée : une interrogation, une interrogation papier ou un devoir où au moins une note a été mise.
+function blNotee(col){ return !!col.table && (col.groupe !== 'devoir' || blx.eleves.some(e => (blx.cellules.get(col.id + '|' + e.id) || {}).note20 != null)); }
+async function blCoef(colId){
+  const col = blx.colonnes.find(c => c.id === colId); if(!col) return;
+  const v = await nicePrompt(`Coefficient de « ${col.titre} » dans la moyenne (entre 0,25 et 20) :`, String(col.coef).replace('.', ','));
+  if(v === null) return;
+  const c = parseFloat(String(v).replace(',', '.'));
+  if(!(c >= .25 && c <= 20)){ await niceAlert('Indiquez un nombre entre 0,25 et 20.'); return; }
+  const { error } = await sb.from(col.table).update({ coef: c }).eq('id', col.rid);
+  if(error){ await niceAlert('Coefficient non enregistré : ' + error.message); return; }
+  col.coef = c; if(col.d) col.d.coef = c; if(col.np) col.np.coef = c;
+  blRendre();
 }
 async function blSauverAppr(eleve, texte, ia){
   const row = { teacher_id: currentUser.id, class_id: blx.classe, student_id: eleve, periode: blx.per.k, texte, ia, updated_at: new Date().toISOString() };
@@ -259,7 +275,7 @@ function blDonneesIa(e, code){
     const quoi = col.groupe === 'auto' ? col.titre : col.groupe === 'papier' ? `Interrogation sur papier « ${blAnonyme(col.titre)} »${col.themes ? ' (thèmes : ' + blAnonyme(col.themes) + ')' : ''}`
       : col.groupe === 'interro' ? `Interrogation en ligne « ${blAnonyme(col.titre)} »` : `Devoir ${typeof devoirTypeLabel === 'function' ? devoirTypeLabel(col.d.type).toLowerCase() : ''} « ${blAnonyme(col.titre)} »`;
     const res = c.abs ? 'absent' : c.manque ? 'non fait' : String(c.txt).replace(/<small>.*<\/small>/, '').replace('✓ ', '') + (c.detail && col.groupe !== 'papier' ? ' (' + c.detail + ')' : '');
-    return `${col.date ? new Date(col.date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' }) + ' ' : ''}${quoi} : ${res}${c.retard ? ', en retard' : ''}`;
+    return `${col.date ? new Date(col.date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' }) + ' ' : ''}${quoi}${c.note20 != null && (col.coef || 1) !== 1 ? ` (coefficient ${blNum(col.coef)})` : ''} : ${res}${c.retard ? ', en retard' : ''}`;
   });
   const evo = s.evo ? `Évolution sur la période : ${s.evo.t} (${Math.round(100 * s.evo.debut)} % de réussite au début, ${Math.round(100 * s.evo.fin)} % à la fin).` : 'Évolution : trop peu de résultats pour juger.';
   return `${code} : ${s.faits}/${s.n} travaux faits${s.retards ? `, ${s.retards} en retard` : ''}${s.reussite != null ? `, réussite moyenne ${Math.round(100 * s.reussite)} %` : ''}${s.moyenne != null ? `, moyenne des notes ${blNum(s.moyenne)}/20` : ''}. ${evo} Détail dans l'ordre des dates : ${part.join(' ; ') || 'aucun travail'}.`;
@@ -308,7 +324,7 @@ Réponds uniquement par un objet JSON {"E1": "appréciation", …} avec les code
 /* ---------- Export ---------- */
 function blLignes(){
   const complet = blx.mode === 'complet';
-  const tete = ['Élève', ...blx.colonnes.map(c => c.titre), 'Faits', 'Retards', 'Réussite', 'Moyenne /20', ...(complet ? ['Évolution', 'Appréciation'] : [])];
+  const tete = ['Élève', ...blx.colonnes.map(c => c.titre + (c.table && (c.coef || 1) !== 1 ? ` (coef ${blNum(c.coef)})` : '')), 'Faits', 'Retards', 'Réussite', 'Moyenne /20', ...(complet ? ['Évolution', 'Appréciation'] : [])];
   const lignes = blx.eleves.map(e => { const s = blSynthese(e);
     return [e.label, ...blx.colonnes.map(col => { const c = blx.cellules.get(col.id + '|' + e.id); return c.nc ? '' : String(c.txt).replace(/<small>(.*)<\/small>/, ' ($1)').replace('✓ ', '') + (c.retard ? ' (retard)' : ''); }),
       `${s.faits}/${s.n}`, s.retards || '', s.reussite != null ? Math.round(100 * s.reussite) + ' %' : '', s.moyenne != null ? blNum(s.moyenne) : '',
@@ -348,6 +364,7 @@ function blImprimer(){
     .bl-table thead tr.bl-grp + tr th{top:24px;}
     .bl-grp .g-auto{background:#FFF4E6;} .bl-grp .g-devoir{background:#EEF4FB;} .bl-grp .g-interro{background:#F4EFFA;} .bl-grp .g-papier{background:#EAF7EF;}
     .bl-table thead th .gicon{display:block;font-size:17px;color:#5B6472;} .bl-table thead th small{display:block;color:#5B6472;font-weight:500;}
+    .bl-coef{display:inline-block;margin-top:3px;border:1px solid rgba(107,63,160,.35);background:#F4EFFA;color:#6B3FA0;border-radius:6px;font:700 .66rem Inter,sans-serif;padding:1px 6px;cursor:pointer;}
     .bl-tit{display:block;font-size:.72rem;line-height:1.15;max-height:2.4em;overflow:hidden;}
     .bl-table tfoot th, .bl-table tfoot td{background:#F3F5F8;font-weight:700;} .bl-table tfoot small, .bl-c small{display:block;font-weight:500;color:#5B6472;font-size:.68rem;}
     .bl-c.ok{background:#E3F4EA;color:#1F7A4D;font-weight:700;} .bl-c.moyen{background:#FDF1DF;color:#A0620F;font-weight:700;} .bl-c.ko{background:#FBE7EE;color:#9E1F5E;font-weight:700;}
