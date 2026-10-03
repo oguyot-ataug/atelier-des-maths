@@ -3327,6 +3327,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.950', date:'2026-10-03', items:[
+    'CM1 Droites parallèles et perpendiculaires : sur quadrillage, la perpendiculaire se limite aux droites qui suivent les lignes ou les diagonales des carreaux (les deux diagonales d\'un carreau sont perpendiculaires) ; la méthode du « L » pour une droite oblique quelconque reste en 6e ; planche 2, exercice 2 avec une droite qui suit les diagonales',
+  ] },
   { version:'2026-08-19.949', date:'2026-10-03', items:[
     'CM1 Droites parallèles et perpendiculaires : la droite tracée se nomme (d\') (puis (d\'\') pour la parallèle par deux perpendiculaires), comme en 6e, au lieu de (p) et (e) ; la figure « perpendiculaire passant par un point » n\'est plus coupée en haut',
   ] },
