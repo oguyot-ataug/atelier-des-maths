@@ -266,7 +266,9 @@ function plOuvrir(lvl, c){
       </div>
       <p class="hint" style="margin:6px 0 0;">Avec une grande taille ou un interligne aéré, une planche peut tenir sur deux pages. Ces réglages restent mémorisés sur cet appareil.</p></details>
     <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px;flex-wrap:wrap;">
-      <button type="button" class="btn secondary" data-livre title="Toutes les planches du niveau, chapitre par chapitre, avec couverture, sommaire et corrigés : pour imprimer un livre"><span class="gicon">menu_book</span> Livre d'exercices ${esc(niv)} (${nbLivre} chapitre${nbLivre > 1 ? 's' : ''})</button>
+      ${plLivreAutorise() ? `<span class="pl-livre-grp"><span class="pl-livre-t"><span class="gicon">menu_book</span> Livre d'exercices ${esc(niv)} (${nbLivre} chapitre${nbLivre > 1 ? 's' : ''})</span>
+        <button type="button" class="btn secondary td-mini" data-livre="eleve" title="Couverture, sommaire et toutes les planches du niveau, sans les corrigés : le livre de l'élève">Sans corrigés</button>
+        <button type="button" class="btn secondary td-mini" data-livre="corr" title="Le même livre, avec tous les corrigés à la fin">Avec corrigés</button></span>` : ''}
       <span style="flex:1"></span>
       <button type="button" class="btn secondary" data-x>Fermer</button>
       <button type="button" class="btn secondary" data-tout="corr"><span class="gicon">fact_check</span> Tous les corrigés</button>
@@ -282,7 +284,7 @@ function plOuvrir(lvl, c){
     const pr = t.closest('[data-proj]'); if(pr){ plProjeter(lvl, c, Number(pr.dataset.proj)); return; }
     const b = t.closest('[data-imp]'); if(b){ plImprimer(lvl, [{ c, indices: [Number(b.dataset.imp)] }], b.dataset.mode); return; }
     const a = t.closest('[data-tout]'); if(a){ plImprimer(lvl, [{ c, indices: liste.map((_, i) => i) }], a.dataset.tout); return; }
-    if(t.closest('[data-livre]')) plLivre(lvl);
+    const lv = t.closest('[data-livre]'); if(lv) plLivre(lvl, lv.dataset.livre === 'corr');
   });
 }
 
@@ -303,13 +305,14 @@ function plPageHtml(lvl, c, p, i, n, mode, pr, logo){
   const ident = corr ? '<p class="pl-pour-prof">Corrigé réservé au professeur.</p>'
     : (pr.identite !== 'aucun' || pr.date) ? `<div class="pl-nom">${pr.identite === 'nom' ? '<span>NOM : <span class="pl-pts" style="min-width:10em;"></span></span><span>Prénom : <span class="pl-pts" style="min-width:9em;"></span></span>'
         : pr.identite === 'prenom' ? '<span>Prénom : <span class="pl-pts" style="min-width:13em;"></span></span>' : ''}${pr.date ? '<span>Date : <span class="pl-pts" style="min-width:7em;"></span></span>' : ''}</div>` : '';
-  return `<section class="pl-page${corr ? ' pl-corrige' : ''}">
+  return `<section class="pl-page pl-planche${corr ? ' pl-corrige' : ''}" data-ref="${ref}${corr ? '-c' : ''}">
     <header class="pl-tete">${logo ? `<img class="pl-logo" src="${logo}" alt="L'Atelier des Maths">` : '<span class="pl-site">L\'Atelier des Maths</span>'}<span class="pl-site">${niv} · ${escapeHtml(c.t)}</span><span class="pl-ref">${ref}${corr ? ' · CORRIGÉ' : ''}</span></header>
     <div class="pl-titre"><h1>Planche ${i + 1} : ${escapeHtml(p.titre)}</h1>${corr ? '' : `<span class="pl-oliv-tete"><span class="pl-oliv">${plOliv('muscle')}</span><span class="pl-bulle">Muscle ton jeu !</span></span>`}</div>
     ${ident}
     <div class="pl-attendus"><b>Je travaille :</b> ${(p.attendus || []).map(a => escapeHtml(a)).join(' ; ')}</div>
     <div class="pl-exos">${p.exos.map((x, k) => `<div class="pl-exo${x.col === 1 ? ' pl-demi' : ''}"><div class="pl-exo-tete"><span class="pl-num">Exercice ${k + 1}</span>${plMarque(lvl, x)}<span class="pl-et">${plEtoiles(x.etoiles || 1)}</span></div>
       <div class="pl-consigne">${x.consigne}</div><div class="pl-corps">${plExoCorps(x, corr)}</div></div>`).join('')}</div>
+    ${corr ? '' : plPointHtml(p)}
     <footer class="pl-pied">${ref} · Planche ${i + 1} sur ${n} · ${niv} · ${escapeHtml(c.t)} · ${p.duree ? 'environ ' + escapeHtml(p.duree) + ' · ' : ''}L'Atelier des Maths</footer>
   </section>`;
 }
@@ -331,7 +334,7 @@ async function plImprimer(lvl, blocs, mode, opts){
   const pr = plPrefs(), logo = await plLogo();
   const pages = m => blocs.map(({ c, indices }) => { const l = plDe(lvl, c.t); return indices.map(i => plPageHtml(lvl, c, l[i], i, l.length, m, pr, logo)).join(''); }).join('');
   const tmp = document.createElement('div'); tmp.style.cssText = 'position:absolute;left:-9999px;top:0;width:180mm;';
-  tmp.innerHTML = (opts.avant || '') + (mode === 'livre' ? pages('eleve') + (opts.entreCorriges || '') + pages('corr') : pages(mode));
+  tmp.innerHTML = (opts.avant || '') + (mode === 'livre' ? pages('eleve') + (opts.sansCorriges ? '' : (opts.entreCorriges || '') + pages('corr')) : pages(mode));
   document.body.appendChild(tmp);
   plFigerMaths(tmp);
   const corps = tmp.innerHTML; tmp.remove();
@@ -344,27 +347,96 @@ async function plImprimer(lvl, blocs, mode, opts){
     <style>${PL_CSS}${plCssReglages(pr)}${mode === 'livre' ? PL_CSS_LIVRE : ''}</style></head><body class="pl-imp">
     <button type="button" class="pl-bouton-imp" onclick="window.print()">Imprimer / Enregistrer en PDF</button>${corps}</body></html>`);
   w.document.close();
-  const lancer = () => setTimeout(() => { w.focus(); w.print(); }, 300);
-  w.onload = () => { if(w.document.fonts && w.document.fonts.ready) w.document.fonts.ready.then(lancer); else lancer(); };
+  const lancer = () => setTimeout(() => { try{ plRemplirPages(w.document); }catch(e){ console.warn(e); } w.focus(); w.print(); }, 300);
+  let parti = false; const pret = () => { if(parti) return; parti = true; const f = w.document.fonts && w.document.fonts.ready; Promise.race([f || Promise.resolve(), new Promise(ok => setTimeout(ok, 2000))]).then(lancer); };
+  w.onload = pret; if(w.document.readyState === 'complete') pret(); setTimeout(pret, 2500);
 }
 
-/* ---------- Livre d'exercices d'un niveau ---------- */
-async function plLivre(lvl){
+/* ---------- Pages pleines (demandé : « Il faut impérativement que toutes les feuilles soient pleines,
+   au prix de l'impression ») ----------
+   Juste avant d'imprimer, chaque planche est mesurée dans la fenêtre d'impression : un exercice
+   demi-largeur resté seul sur sa ligne prend toute la largeur ; s'il reste de la place sur une planche
+   de l'élève, le bloc « Je fais le point » (auto-évaluation sur les attendus de la planche) s'affiche ;
+   enfin les exercices s'étirent jusqu'en bas de la feuille A4 (plus de place pour écrire, aucun blanc).
+   Une planche qui dépasse déjà une page (gros caractères, interligne aéré) n'est pas touchée. */
+function plVisage(k){
+  const c = ['#2E9E5B', '#E9A21C', '#E35D3A'][k], bouche = ['M7 13 Q11 17 15 13', 'M7 14 L15 14', 'M7 15.5 Q11 11.5 15 15.5'][k];
+  return `<svg viewBox="0 0 22 22" width="20" height="20"><circle cx="11" cy="11" r="9.5" fill="#fff" stroke="${c}" stroke-width="1.8"/><circle cx="8" cy="9" r="1.2" fill="${c}"/><circle cx="14" cy="9" r="1.2" fill="${c}"/><path d="${bouche}" fill="none" stroke="${c}" stroke-width="1.6" stroke-linecap="round"/></svg>`;
+}
+function plPointHtml(p){
+  const att = (p.attendus || []).length ? p.attendus : [p.titre];
+  return `<div class="pl-point" hidden><div class="pl-point-tete"><span class="pl-oliv">${plOliv('quiz')}</span><b>Je fais le point</b><span class="pl-point-aide">Je colorie le visage qui me ressemble.</span>
+      <span class="pl-point-leg">${[0, 1, 2].map(k => `<span>${plVisage(k)} ${['Je sais faire', 'Presque', 'J\'ai besoin d\'aide'][k]}</span>`).join('')}</span></div>
+    ${att.map(a => `<div class="pl-point-l"><span>${escapeHtml(a)}</span><span class="pl-point-v">${[0, 1, 2].map(plVisage).join('')}</span></div>`).join('')}</div>`;
+}
+function plRemplirPages(doc){
+  const sonde = doc.createElement('div'); sonde.style.cssText = 'position:absolute;visibility:hidden;height:277mm;width:1px;';
+  doc.body.appendChild(sonde); const L = sonde.getBoundingClientRect().height - 4; sonde.remove();
+  const H = el => el.getBoundingClientRect().height;
+  doc.querySelectorAll('.pl-planche').forEach(pg => {
+    if(H(pg) > L) return;
+    const ex = [...pg.querySelectorAll('.pl-exos > .pl-exo')];
+    ex.forEach(e => { if(!e.classList.contains('pl-demi')) return; const t = e.getBoundingClientRect().top;
+      if(!ex.some(f => f !== e && f.classList.contains('pl-demi') && Math.abs(f.getBoundingClientRect().top - t) < 3)) e.classList.add('pl-seul'); });
+    const pt = pg.querySelector('.pl-point');
+    if(pt && L - H(pg) > 100){ pt.hidden = false; if(H(pg) > L) pt.hidden = true; }
+    if(H(pg) <= L){ pg.classList.add('pl-plein'); pg.style.height = L + 'px'; }
+  });
+  // Pages pleines du livre (couverture, séparation) et numéros de page du sommaire.
+  doc.querySelectorAll('.pl-couv, .pl-sommaire').forEach(pg => { if(H(pg) < L) pg.style.minHeight = L + 'px'; });
+  let n = 1; const debut = {};
+  doc.querySelectorAll('.pl-page').forEach(pg => { if(pg.dataset.ref) debut[pg.dataset.ref] = n; if(pg.classList.contains('pl-corrige') && !debut.corriges) debut.corriges = n; n += Math.max(1, Math.ceil((H(pg) - 2) / L)); });
+  doc.querySelectorAll('[data-page]').forEach(el => { el.textContent = debut[el.dataset.page] || ''; });
+}
+
+/* ---------- Livre d'exercices d'un niveau (réservé aux professeurs) ----------
+   Demandé : « L'impression d'un livre d'exercices doit être réservée aux profs seulement. Permettre
+   d'imprimer le livre sans les corrections. Bien faire une belle mise en forme de la page de garde et
+   du sommaire (colorée) sans oublier Oliv'IA. » */
+function plLivreAutorise(){ return typeof currentUserRole !== 'undefined' && (currentUserRole === 'prof' || currentUserRole === 'admin'); }
+const PL_DOMAINES = { N: ['Nombres et calcul', '#2E6FD8', '#E8F0FD'], G: ['Espace et géométrie', '#2E9E5B', '#E6F5EC'], M: ['Grandeurs et mesures', '#E8862E', '#FDF0E3'], D: ['Données, probabilités, pensée informatique', '#8E44AD', '#F3EAF8'], P: ['Problèmes', '#C0392B', '#FBE9E7'] };
+const plDom = c => PL_DOMAINES[c.cat] || PL_DOMAINES[String(c.code || '')[0]] || PL_DOMAINES.N;
+function plCouvDeco(){
+  // Petits symboles de maths, en couleur, autour de la page de garde.
+  const f = [['+', 8, 12, '#2E6FD8', 40, -10], ['×', 86, 9, '#E35D3A', 44, 12], ['÷', 92, 44, '#2E9E5B', 36, 0], ['=', 5, 52, '#E8862E', 40, 0], ['π', 88, 78, '#8E44AD', 34, -8], ['%', 9, 84, '#2EA8C9', 32, 10]];
+  const formes = `<svg class="pl-couv-formes" viewBox="0 0 100 100" preserveAspectRatio="none">
+    <polygon points="14,30 22,30 18,23" fill="#F6C343" opacity=".75"/><circle cx="80" cy="28" r="3.4" fill="#2EA8C9" opacity=".55"/>
+    <rect x="76" y="62" width="7" height="5" fill="#9CCB6B" opacity=".7" transform="rotate(12 79 64)"/><circle cx="20" cy="70" r="2.6" fill="#E35D3A" opacity=".5"/></svg>`;
+  return formes + f.map(([t, x, y, c, fs, r]) => `<span class="pl-couv-sym" style="left:${x}%;top:${y}%;color:${c};font-size:${fs}pt;transform:translate(-50%,-50%) rotate(${r}deg);">${t}</span>`).join('');
+}
+async function plLivre(lvl, avecCorriges){
+  if(!plLivreAutorise()){ await niceAlert('Le livre d\'exercices est réservé aux professeurs.'); return; }
   const niv = PL_NIVEAUX_TXT[lvl] || lvl, logo = await plLogo();
   const chaps = (CHAPITRES_BY_LEVEL[lvl] || []).filter(c => plDe(lvl, c.t).length);
   if(!chaps.length){ await niceAlert('Aucune planche n\'est encore écrite pour ce niveau.'); return; }
   const nb = chaps.reduce((s, c) => s + plDe(lvl, c.t).length, 0);
-  const couv = `<section class="pl-page pl-couv">${logo ? `<img class="pl-couv-logo" src="${logo}" alt="L'Atelier des Maths">` : ''}
-    <div class="pl-couv-niv">${niv}</div><h1 class="pl-couv-titre">Mon livre d'exercices de mathématiques</h1>
-    <p class="pl-couv-sous">${chaps.length} chapitre${chaps.length > 1 ? 's' : ''} · ${nb} planche${nb > 1 ? 's' : ''} d'exercices · corrigés à la fin</p>
-    <span class="pl-couv-oliv">${plOliv('muscle')}</span>
+  const doms = [...new Set(chaps.map(c => plDom(c)))];
+  const couv = `<section class="pl-page pl-couv">${plCouvDeco()}
+    <div class="pl-couv-haut">${logo ? `<img class="pl-couv-logo" src="${logo}" alt="L'Atelier des Maths">` : '<b>L\'Atelier des Maths</b>'}</div>
+    <div class="pl-couv-niv">${niv}</div>
+    <h1 class="pl-couv-titre">Mon livre d'exercices<br><span>de mathématiques</span></h1>
+    <div class="pl-couv-olivia"><span class="pl-couv-oliv">${plOliv('muscle')}</span><span class="pl-couv-bulle">À toi de jouer !<small>Du plus simple ★ au défi ★★★</small></span></div>
+    <div class="pl-couv-doms">${Object.values(PL_DOMAINES).filter(d => doms.includes(d)).map(([t, c, f]) => `<span style="background:${f};color:${c};border-color:${c};">${t}</span>`).join('')}</div>
+    <div class="pl-couv-nom">Ce livre appartient à : <span></span></div>
+    <p class="pl-couv-sous">${chaps.length} chapitre${chaps.length > 1 ? 's' : ''} · ${nb} planche${nb > 1 ? 's' : ''} d'exercices${avecCorriges ? ' · corrigés à la fin' : ''}</p>
     <p class="pl-couv-pied">L'Atelier des Maths · L'Atelier Augmenté · édition du ${new Date().toLocaleDateString('fr-FR')}</p></section>`;
-  const sommaire = `<section class="pl-page pl-sommaire"><h1>Sommaire</h1>
-    ${chaps.map(c => `<div class="pl-som-chap"><b>${escapeHtml(c.code)} · ${escapeHtml(c.t)}</b>${c.n ? ` <span class="pl-som-per">chapitre ${c.n}</span>` : ''}
-      ${plDe(lvl, c.t).map((p, i) => `<div class="pl-som-pl"><span class="pl-som-ref">${plRef(lvl, c.code, i)}</span>${escapeHtml(p.titre)}</div>`).join('')}</div>`).join('')}
-    <div class="pl-som-chap"><b>Corrigés</b><div class="pl-som-pl">Toutes les planches, dans le même ordre</div></div></section>`;
-  const sep = `<section class="pl-page pl-separation"><h1>Corrigés</h1><p>Les planches du livre, dans le même ordre, avec leurs réponses.</p></section>`;
-  plImprimer(lvl, chaps.map(c => ({ c, indices: plDe(lvl, c.t).map((_, i) => i) })), 'livre', { avant: couv + sommaire, entreCorriges: sep, titre: `Livre d'exercices ${niv}` });
+  const ligne = (ref, titre, page, et) => `<div class="pl-som-pl"><span class="pl-som-ref">${ref}</span><span class="pl-som-t">${titre}</span>${et ? `<span class="pl-som-et">${et}</span>` : ''}<span class="pl-som-pts"></span><span class="pl-som-num" data-page="${page}"></span></div>`;
+  const sommaire = `<section class="pl-page pl-sommaire">
+    <div class="pl-som-tete"><h1>Sommaire</h1><span class="pl-som-olivia"><span class="pl-couv-bulle">Choisis ta planche,<br>et c'est parti !</span><span class="pl-oliv">${plOliv('methode')}</span></span></div>
+    <div class="pl-som-leg">${Object.values(PL_DOMAINES).filter(d => doms.includes(d)).map(([t, c]) => `<span><i style="background:${c};"></i>${t}</span>`).join('')}</div>
+    ${chaps.map(c => { const [, coul, fond] = plDom(c), l = plDe(lvl, c.t);
+      return `<div class="pl-som-chap" style="--c:${coul};--f:${fond};"><div class="pl-som-ct"><span class="pl-som-code">${escapeHtml(c.code)}</span><b>${escapeHtml(c.t)}</b><span class="pl-som-nb">${l.length} planche${l.length > 1 ? 's' : ''}</span></div>
+        ${l.map((p, i) => ligne(plRef(lvl, c.code, i), escapeHtml(p.titre), plRef(lvl, c.code, i), plEtoiles(Math.max(...p.exos.map(x => x.etoiles || 1))))).join('')}</div>`; }).join('')}
+    ${avecCorriges ? `<div class="pl-som-chap" style="--c:#1F7A4D;--f:#E8F5EE;"><div class="pl-som-ct"><span class="pl-som-code">✓</span><b>Corrigés</b></div>${ligne('', 'Toutes les planches, dans le même ordre, avec leurs réponses', 'corriges')}</div>` : ''}
+    <div class="pl-guide"><h2>Comment utiliser ce livre ?</h2><div class="pl-guide-g">
+      <div><span class="pl-guide-i pl-et">★<span class="pl-et-off">★★</span></span><span><b>Les étoiles</b> : dans chaque planche, les exercices vont du plus simple (★) au plus difficile (★★★).</span></div>
+      <div><span class="pl-guide-i pl-oliv">${plOliv('defi')}</span><span><b>Défi !</b> Un exercice ★★★ pour aller au bout de ce que tu sais faire.</span></div>
+      <div><span class="pl-guide-i pl-oliv">${plOliv('savoir')}</span><span><b>Dans ton cahier !</b> Tu rédiges la réponse dans ton cahier : une phrase, un calcul, une conclusion.</span></div>
+      ${lvl in PL_SUIVANTE ? `<div><span class="pl-guide-i pl-oliv">${plOliv('cm2')}</span><span><b>${PL_SUIVANTE[lvl]}</b> Pour aller plus loin, un avant-goût de l'année prochaine.</span></div>` : ''}
+      <div><span class="pl-guide-i">${plVisage(0)}${plVisage(1)}${plVisage(2)}</span><span><b>Je fais le point</b> : à la fin d'une planche, tu colories le visage qui te ressemble.</span></div>
+      <div><span class="pl-guide-i pl-guide-ref">CM1-N2-P1</span><span><b>La référence</b> de chaque planche : le niveau, le chapitre, puis le numéro de la planche.</span></div>
+    </div></div></section>`;
+  plImprimer(lvl, chaps.map(c => ({ c, indices: plDe(lvl, c.t).map((_, i) => i) })), 'livre', { avant: couv + sommaire, sansCorriges: !avecCorriges, titre: `Livre d'exercices ${niv}${avecCorriges ? ' (avec corrigés)' : ''}` });
 }
 
 /* ---------- Projection : un exercice à la fois, avec la correction ---------- */
@@ -497,6 +569,19 @@ const PL_CSS = `
   .pl-rep{ color:#1F7A4D; font-weight:700; }
   .pl-entoure{ display:inline-block; border:2px solid #1F7A4D; border-radius:50%; padding:2px 6px; }
   .pl-barre-rep{ position:relative; display:inline-block; } .pl-barre-rep::after{ content:''; position:absolute; left:-4px; right:-4px; top:50%; border-top:2.5px solid #C0392B; transform:rotate(-20deg); }
+  .pl-exos > .pl-exo.pl-demi.pl-seul{ grid-column:1 / -1; }
+  .pl-plein{ display:flex; flex-direction:column; box-sizing:border-box; }
+  .pl-plein .pl-exos{ flex:1; align-content:stretch; }
+  .pl-plein .pl-exo{ display:flex; flex-direction:column; }
+  .pl-plein .pl-corps{ flex:1; display:flex; flex-direction:column; justify-content:space-evenly; }
+  .pl-plein .pl-pied{ margin-top:auto; }
+  .pl-point{ border:1.5px solid #8DB84A; background:#F6FAEF; border-radius:10px; padding:4px 11px 5px; margin:0 0 4px; break-inside:avoid; }
+  .pl-point[hidden]{ display:none; }
+  .pl-point-tete{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:2px; } .pl-point-tete b{ font:700 11pt 'Space Grotesk',Arial,sans-serif; color:#3E5A1E; }
+  .pl-point-tete .pl-oliv{ width:28px; height:28px; } .pl-point-aide{ font-size:9pt; color:#4E5665; }
+  .pl-point-leg{ margin-left:auto; display:flex; gap:10px; font-size:8.5pt; color:#4E5665; } .pl-point-leg span{ display:inline-flex; align-items:center; gap:3px; } .pl-point-leg svg{ width:14px; height:14px; }
+  .pl-point-l{ display:flex; align-items:center; gap:10px; border-top:1px dashed #CFE3B4; padding:2px 0; font-size:10pt; } .pl-point-l > span:first-child{ flex:1; }
+  .pl-point-v{ display:inline-flex; gap:6px; }
   .pl-corps svg{ max-width:100%; height:auto; max-height:66px; }
   .pl-corps svg.pl-libre, .pl-corps .pl-quad svg{ max-height:none; }
   .pl-unites{ display:inline-flex; gap:5px; flex-wrap:wrap; align-items:center; vertical-align:middle; }
@@ -516,20 +601,52 @@ const PL_CSS = `
 const PL_CSS_LIVRE = `
   @page{ @bottom-center{ content:counter(page); font:9pt Arial,sans-serif; color:#6B7280; } }
   @page :first{ @bottom-center{ content:none; } }
-  .pl-couv{ min-height:265mm; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:14px; }
-  .pl-couv-logo{ height:70px; width:auto; } .pl-couv-niv{ font:800 64pt 'Space Grotesk',Arial,sans-serif; color:#2E7D32; line-height:1; }
-  .pl-couv-titre{ font:700 26pt 'Space Grotesk',Arial,sans-serif !important; color:#1F3A5C; margin:0; } .pl-couv-sous{ color:#4E5665; font-size:13pt; margin:0; }
-  .pl-couv-oliv{ width:150px; height:150px; display:block; } .pl-couv-oliv svg{ width:100%; height:100%; } .pl-couv-pied{ margin-top:30px; color:#6B7280; font-size:10pt; }
-  .pl-sommaire h1, .pl-separation h1{ font:700 22pt 'Space Grotesk',Arial,sans-serif; color:#1F3A5C; }
-  .pl-som-chap{ margin:0 0 10px; break-inside:avoid; } .pl-som-chap > b{ font-family:'Space Grotesk',Arial,sans-serif; color:#1F3A5C; } .pl-som-per{ color:#6B7280; font-size:9pt; }
-  .pl-som-pl{ margin:2px 0 2px 18px; font-size:10.5pt; } .pl-som-ref{ display:inline-block; min-width:90px; font:700 9pt 'Space Grotesk',Arial,sans-serif; color:#1F3A5C; }
-  .pl-separation{ min-height:240mm; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; }
+  .pl-couv{ display:flex; flex-direction:column; align-items:center; justify-content:space-between; text-align:center; gap:10px; padding:16px 18px 10px; box-sizing:border-box; overflow:hidden;
+    border-radius:18px; background:linear-gradient(165deg,#FFF6DA 0%,#FFFFFF 38%,#E9F3FD 100%); border:3px solid #1F3A5C; }
+  .pl-couv > *{ position:relative; z-index:1; }
+  .pl-couv-formes{ position:absolute !important; inset:0; width:100%; height:100%; z-index:0 !important; }
+  .pl-couv-sym{ position:absolute !important; z-index:0 !important; font-family:'Space Grotesk',Arial,sans-serif; font-weight:800; opacity:.55; }
+  .pl-couv-logo{ height:62px; width:auto; }
+  .pl-couv-niv{ font:800 58pt 'Space Grotesk',Arial,sans-serif; color:#fff; line-height:1; background:linear-gradient(135deg,#E35D3A,#F08A3C); border-radius:26px; padding:8px 34px 12px; box-shadow:0 6px 0 #B8452A; }
+  .pl-couv-titre{ font:800 30pt 'Space Grotesk',Arial,sans-serif !important; color:#1F3A5C !important; margin:6px 0 0 !important; line-height:1.1; }
+  .pl-couv-titre span{ color:#2E6FD8; }
+  .pl-couv-olivia{ display:flex; align-items:center; gap:10px; }
+  .pl-couv-oliv{ width:190px; height:190px; display:block; } .pl-couv-oliv svg{ width:100%; height:100%; }
+  .pl-couv-bulle{ background:#fff; color:#3E5A1E; border:3px solid #8DB84A; border-radius:20px 20px 20px 4px; padding:8px 16px; font:800 17pt 'Space Grotesk',Arial,sans-serif; display:flex; flex-direction:column; text-align:left; }
+  .pl-couv-bulle small{ font:600 10pt Inter,Arial,sans-serif; color:#4E5665; margin-top:2px; }
+  .pl-couv-doms{ display:flex; flex-wrap:wrap; gap:8px; justify-content:center; max-width:150mm; }
+  .pl-couv-doms span{ border:2px solid; border-radius:999px; padding:3px 12px; font:700 10.5pt 'Space Grotesk',Arial,sans-serif; }
+  .pl-couv-nom{ font:700 13pt 'Space Grotesk',Arial,sans-serif; color:#1F3A5C; display:flex; align-items:flex-end; gap:8px; width:140mm; background:#fff; border:2px dashed #8DB84A; border-radius:14px; padding:12px 16px; }
+  .pl-couv-nom span{ flex:1; border-bottom:2px dotted #8A93A3; height:1.2em; }
+  .pl-couv-sous{ color:#1F3A5C; font:600 12pt Inter,Arial,sans-serif; margin:0; }
+  .pl-couv-pied{ margin:0; color:#6B7280; font-size:9.5pt; }
+  .pl-som-tete{ display:flex; align-items:center; justify-content:space-between; border-bottom:3px solid #1F3A5C; margin-bottom:6px; }
+  .pl-sommaire h1{ font:800 26pt 'Space Grotesk',Arial,sans-serif !important; color:#1F3A5C; margin:0 !important; }
+  .pl-som-olivia{ display:flex; align-items:center; gap:6px; } .pl-som-olivia .pl-oliv{ width:76px; height:76px; } .pl-som-olivia .pl-couv-bulle{ font-size:11pt; padding:5px 12px; border-radius:16px 16px 4px 16px; }
+  .pl-som-leg{ display:flex; flex-wrap:wrap; gap:6px 16px; font-size:9pt; color:#4E5665; margin:0 0 10px; } .pl-som-leg i{ display:inline-block; width:12px; height:12px; border-radius:3px; margin-right:5px; vertical-align:-1px; }
+  .pl-som-chap{ margin:0 0 8px; break-inside:avoid; border-left:6px solid var(--c); background:var(--f); border-radius:10px; padding:5px 12px 6px; }
+  .pl-som-ct{ display:flex; align-items:center; gap:8px; margin-bottom:2px; } .pl-som-ct b{ font:700 12pt 'Space Grotesk',Arial,sans-serif; color:#1F3A5C; flex:1; }
+  .pl-som-code{ background:var(--c); color:#fff; font:800 9.5pt 'Space Grotesk',Arial,sans-serif; border-radius:6px; padding:1px 7px; }
+  .pl-som-nb{ font-size:8.5pt; color:var(--c); font-weight:700; }
+  .pl-som-pl{ display:flex; align-items:baseline; gap:6px; margin:1px 0 1px 4px; font-size:10.5pt; }
+  .pl-som-ref{ min-width:84px; font:700 8.5pt 'Space Grotesk',Arial,sans-serif; color:var(--c); }
+  .pl-som-et{ color:#E9A21C; font-size:8.5pt; letter-spacing:1px; } .pl-som-et .pl-et-off{ color:#D8DCE3; }
+  .pl-som-pts{ flex:1; border-bottom:1.5px dotted #A7B0BD; transform:translateY(-3px); min-width:20px; }
+  .pl-som-num{ font:800 10.5pt 'Space Grotesk',Arial,sans-serif; color:#1F3A5C; min-width:22px; text-align:right; }
+  .pl-sommaire{ display:flex; flex-direction:column; justify-content:space-between; }
+  .pl-guide{ margin-top:6px; border:2px solid #8DB84A; background:#F6FAEF; border-radius:14px; padding:8px 14px 10px; break-inside:avoid; }
+  .pl-guide h2{ font:800 13pt 'Space Grotesk',Arial,sans-serif; color:#3E5A1E; margin:0 0 6px; }
+  .pl-guide-g{ display:grid; grid-template-columns:1fr 1fr; gap:6px 16px; font-size:9.5pt; }
+  .pl-guide-g > div{ display:flex; align-items:center; gap:8px; }
+  .pl-guide-i{ flex:none; display:inline-flex; align-items:center; justify-content:center; min-width:46px; } .pl-guide .pl-oliv{ width:40px; height:40px; } .pl-guide-i svg{ width:16px; height:16px; } .pl-guide .pl-oliv svg{ width:100%; height:100%; }
+  .pl-guide-ref{ font:700 7.5pt 'Space Grotesk',Arial,sans-serif; color:#1F3A5C; border:1.5px solid #1F3A5C; border-radius:5px; padding:1px 4px; }
 `;
 (function plStyles(){
   const st = document.createElement('style');
   st.textContent = `
     .pl-bouton{ margin:6px 0 0 8px; }
     .pl-modal{ max-width:720px; width:94vw; max-height:88vh; overflow:auto; }
+    .pl-livre-grp{ display:inline-flex; align-items:center; gap:6px; flex-wrap:wrap; background:#FFF6DA; border:1.5px solid #F0C75E; border-radius:12px; padding:5px 8px; } .pl-livre-t{ font:700 .85rem 'Space Grotesk',sans-serif; color:#7A5A00; display:inline-flex; align-items:center; gap:4px; } .pl-livre-t .gicon{ font-size:18px; }
     .pl-cartes{ display:flex; flex-direction:column; gap:10px; }
     .pl-carte{ border:1.5px solid rgba(28,43,57,.12); border-radius:12px; padding:10px 12px; background:#fff; }
     .pl-carte-tete{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; font-family:'Space Grotesk',sans-serif; }

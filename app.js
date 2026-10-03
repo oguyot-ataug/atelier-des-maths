@@ -3329,6 +3329,11 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.964', date:'2026-10-03', items:[
+    "Planches imprimées : chaque feuille A4 est pleine. Un exercice demi-largeur resté seul prend toute la largeur ; s'il reste de la place sur la planche de l'élève, un bloc « Je fais le point » s'ajoute (l'élève colorie un visage pour chaque attendu) ; les exercices s'étirent ensuite jusqu'en bas de la page, ce qui laisse plus de place pour écrire.",
+    "Livre d'exercices : réservé aux professeurs, et imprimable sans les corrigés (livre de l'élève) ou avec les corrigés à la fin.",
+    "Livre d'exercices : nouvelle page de garde en couleur avec Oliv'IA (« À toi de jouer ! », domaines du programme, « Ce livre appartient à… »). Nouveau sommaire en couleur par domaine avec les numéros de page et un mode d'emploi du livre (étoiles, Défi, Dans ton cahier, Je fais le point). La page de séparation des corrigés, presque vide, est supprimée."
+  ] },
   { version:'2026-08-19.963', date:'2026-10-03', items:[
     "Questions flash : les questions peuvent faire lire un dessin du site (horloge, fraction coloriée sur un disque ou une bande, point sur une droite graduée, segment sur une règle, figure sur un quadrillage, balance). L'IA choisit le dessin et ses réglages, le site le dessine lui-même ; une question d'horloge dont la réponse ne correspond pas au dessin est écartée.",
     "Les dessins apparaissent dans la liste des questions, dans « Essayer », en séance avec les cartes et dans les questionnaires enregistrés dans la banque.",
