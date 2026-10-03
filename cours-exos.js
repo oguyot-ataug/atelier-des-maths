@@ -64,7 +64,7 @@ function cxChoisir(){
                || '<p class="hint">Aucun questionnaire dans votre banque. Créez-en un dans « Questionnaires » : tous les types de questions s\'y trouvent (figure dynamique, tracé sur quadrillage, repère…).</p>'}</div>`
         : st.onglet === 'prog'
         ? `<div class="cx-ch-liste">${typeof PROG_DEFIS === 'undefined' ? '<p class="hint">Défis indisponibles.</p>' : PROG_DEFIS.map(d =>
-            `<button class="cx-ch-it" data-prog="${d.id}"><b>${cdEsc(d.titre)}</b><small>${d.niveau} · ${d.trace ? 'Tracé' : 'Calcul'} · ${cdEsc(String(d.enonce).replace(/<[^>]+>/g, ''))}</small></button>`).join('')}</div>`
+            `<button class="cx-ch-it" data-prog="${d.id}"><b>${cdEsc(d.titre)}</b><small>${d.niveau} · ${d.trace || d.cibles ? 'Tracé' : 'Calcul'} · ${cdEsc(String(d.enonce).replace(/<[^>]+>/g, ''))}</small></button>`).join('')}</div>`
         : `<label class="cd-lab" style="align-items:flex-start;flex-direction:column;">Énoncé<textarea id="cxFigEnonce" rows="3" style="width:100%;">${cdEsc(st.fig.enonce)}</textarea></label>
            <div style="margin:8px 0;">${st.fig.figure && typeof qziFigHtml === 'function' ? qziFigHtml(st.fig.figure, 'Figure de départ') : '<p class="hint" style="margin:4px 0;">Sans figure de départ, l\'élève part d\'une page blanche.</p>'}
              <button class="btn secondary" id="cxFigBtn"><span class="gicon">draw</span> ${st.fig.figure ? 'Modifier' : 'Construire'} la figure de départ</button>

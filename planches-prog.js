@@ -56,7 +56,18 @@ function plTdProgHtml(lvl, c){
     <div class="td-grille">${ids.map((id, j) => { const d = progDefiParId(id); return `<div class="td-vig">
       <div class="td-v-tete"><span class="pl-num">Défi ${j + 1}</span><span class="td-num"><span class="gicon">extension</span> blocs</span><b style="margin-left:auto;color:#1F3A5C;font-family:'Space Grotesk',sans-serif;">${escapeHtml(d.titre)}</b></div>
       <div class="td-v-corps"><div class="pl-consigne">${d.enonce}</div>${plProgApercu(d)}</div>
-      <div class="td-v-pied"><button type="button" class="btn secondary td-mini" data-tdprog="${j}"><span class="gicon">present_to_all</span> Projeter</button></div></div>`; }).join('')}</div></section>`;
+      <div class="td-v-pied"><button type="button" class="btn secondary td-mini" data-tdprog="${j}"><span class="gicon">present_to_all</span> Projeter</button>
+        <button type="button" class="btn secondary td-mini" data-tdprogsess="${id}" title="Chaque élève le fait sur son écran, dans la session COURS en cours (ou en ouverture de la prochaine)"><span class="gicon">cast_for_education</span> Session</button></div></div>`; }).join('')}</div></section>`;
+}
+// Bouton « Session » : le défi devient un exercice de la session COURS (type « prog », comme « Ajouter un
+// exercice › Programmation » de la télécommande) ; sans session ouverte, il attend la prochaine.
+async function plProgAjouterSession(id, btn){
+  const d = progDefiParId(id); if(!d) return;
+  const it = { titre: 'Programmation : ' + d.titre, chapitre: '', html: '', prog: null, exo: { type: 'prog', defi: id } };
+  if(typeof cdP !== 'undefined' && cdP && typeof cxProfAjouterItems === 'function'){ await cxProfAjouterItems([it], 'Exercice'); return; }
+  const l = plAttente(); if(!l.some(x => x.titre === it.titre)){ it.ouverture = true; l.push(it); plAttenteSauver(l); }
+  if(btn){ const old = btn.innerHTML; btn.innerHTML = `<span class="gicon">check</span> Prochaine session (${l.length})`; setTimeout(() => btn.innerHTML = old, 2200); }
+  if(typeof cdToast === 'function') cdToast(`<span class="gicon">cast_for_education</span> Défi mis de côté : il ouvrira votre prochaine session COURS (${l.length} en attente).`);
 }
 
 /* ---------- Projection ---------- */

@@ -184,7 +184,9 @@ function plTdRendre(lvl, c){
   if(typeof renderStaticMath === 'function') renderStaticMath(root);
   root.onclick = e => {
     const t = e.target, pj = t.closest('[data-tdproj]'), co = t.closest('[data-tdcorr]'), ca = t.closest('[data-tdcahier]'), pg = t.closest('[data-tdprog]');
-    if(pg){ plProgProjeter(lvl, c, +pg.dataset.tdprog); }
+    const ps = t.closest('[data-tdprogsess]');
+    if(ps){ plProgAjouterSession(ps.dataset.tdprogsess, ps); }
+    else if(pg){ plProgProjeter(lvl, c, +pg.dataset.tdprog); }
     else if(pj){ const [i, k] = pj.dataset.tdproj.split('|').map(Number); plProjeter(lvl, c, i, k); }
     else if(co){ const [i, k] = co.dataset.tdcorr.split('|').map(Number), x = liste[i].exos[k], v = document.getElementById(`tdv-${i}-${k}`), on = !v.classList.contains('corr');
       v.classList.toggle('corr', on); v.querySelector('.pl-corps').innerHTML = plExoCorps(x, on); co.innerHTML = on ? '<span class="gicon">visibility_off</span> Énoncé' : '<span class="gicon">fact_check</span> Correction';

@@ -308,6 +308,7 @@ function progDefi(id){
   document.getElementById('progModeleLbl').hidden = !d.trace;
   prog.scene.modele = d.trace && prog.modele ? progModeleSegments(d) : null;
   prog.scene.decor = d.decor || null; prog.scene.depart = d.depart || null;
+  prog.scene.equipe = d.niveau === 'CM1' && typeof PL_EQUIPES !== 'undefined' ? PL_EQUIPES[0] : null; // au CM1, le lutin est Oliv'IA
   prog.scene.reset(); prog.scene.fond(); progMajPos();
   document.getElementById('progSortie').hidden = true;
   progListeRender();

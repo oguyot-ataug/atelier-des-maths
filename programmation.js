@@ -507,7 +507,7 @@ function progMode(m){
   prog.ws.updateToolbox(progToolbox(null));
   let json = null; try{ json = JSON.parse(localStorage.getItem('progLibre:' + ((currentUser && currentUser.id) || 'anon')) || 'null'); }catch(e){}
   progCharger(json || progDepartDefaut());
-  prog.scene.modele = null; prog.scene.decor = null; prog.scene.depart = null; prog.scene.reset(); prog.scene.fond(); progMajPos();
+  prog.scene.modele = null; prog.scene.decor = null; prog.scene.depart = null; prog.scene.equipe = null; prog.scene.reset(); prog.scene.fond(); progMajPos();
 }
 function progDepartDefaut(){ return { blocks: { languageVersion: 0, blocks: [{ type: 'sc_drapeau', x: 40, y: 40 }] } }; }
 function progCharger(json){
