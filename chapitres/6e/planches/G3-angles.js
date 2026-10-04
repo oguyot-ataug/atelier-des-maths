@@ -32,6 +32,32 @@ const col = (h, t, w) => `<span style="display:flex;flex-direction:column;align-
 const ch = (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) + '</div>' });
 const vig = (inner, w) => S(110, 80, `<rect x="1" y="1" width="108" height="78" rx="8" fill="#fff" stroke="#C9DCEB"/>` + inner, w || 98);
 const vigs = (V, it, m) => ({ eleve: duo(V.map((v, i) => col(v, `<b>${it[i][0]}</b><br><b>${m}</b>`, 116))), corr: duo(V.map((v, i) => col(v, `<b>${it[i][0]}</b><br>${plEntoure(it[i][1])}`, 116))) });
+// ---- Mesurer et construire au rapporteur (à l'écran : le rapporteur du tableau, outil « rapp » de planches-num.js) ----
+// Angle de sommet V, côtés de directions d1 et d2 (°) ; noms [côté 1, sommet, côté 2]. W × H : taille de la figure.
+const RA = 70, WF = 210, HF = 124;
+function figAng(V, d1, d2, n, sol){ const l = 88, a = pt(V, d1, l), b = pt(V, d2, l), m = Math.abs(((d2 - d1) % 360 + 540) % 360 - 180);
+  let s = L(V, a, K, 1.6) + L(V, b, K, 1.6) + X(V) + T(pt(V, (d1 + d2) / 2 + 180, 13), n[1]) + T(pt(a, d1, 10), n[0]) + T(pt(b, d2, 10), n[2]);
+  if(sol){ const lo = Math.min(d1, d2), hi = lo + m; s += arc(V, lo, hi, 22, Ro) + T(pt(V, (lo + hi) / 2, 36), m + '°', Ro, 12); }
+  return S(WF, HF, `<rect x=".5" y=".5" width="${WF - 1}" height="${HF - 1}" rx="8" fill="#fff" stroke="#C9DCEB"/>` + s, WF); }
+// Exercice « mesure » : une figure par angle, la mesure s'écrit sous la figure ; à l'écran, le rapporteur sert d'aide.
+const mesures = l => ({ eleve: duo(l.map(([V, d1, d2, n, lettre]) => col(plX(figAng(V, d1, d2, n), { t: 'rapp', mode: 'mesure', aide: true, V, d1, som: [[V[0], V[1], [d1, d2]]], r: RA, w: WF, h: HF, p0: [WF - RA - 8, HF - 6] }), `<b>${lettre}</b> ${W(n.join(''))} = ${B(3)} °`, 210))),
+  corr: duo(l.map(([V, d1, d2, n, lettre]) => col(figAng(V, d1, d2, n, true), `<b>${lettre}</b> ${W(n.join(''))} = ${R(Math.abs(((d2 - d1) % 360 + 540) % 360 - 180))} °`, 210))) });
+// Exercice « construire » : le côté [Ox) est tracé ; l'élève trace [Oy) pour que l'angle mesure m.
+function figCons(V, d1, m, sol){ const l = 78, a = pt(V, d1, l); let s = L(V, a, K, 1.6) + X(V) + T(pt(V, d1 + 180 + (m < 90 ? 25 : 0), 13), 'O') + T(pt(a, d1, 10), 'x');
+  if(sol){ const d2 = d1 + m, b = pt(V, d2, l), lo = Math.min(d1, d2);
+    s += L(V, b, Ro, 1.8) + T(pt(b, d2, 10), 'y', Ro) + arc(V, lo, lo + m, 22, Ro) + T(pt(V, lo + m / 2, 36), m + '°', Ro, 12); }
+  return S(WF, HF, `<rect x=".5" y=".5" width="${WF - 1}" height="${HF - 1}" rx="8" fill="#fff" stroke="#C9DCEB"/>` + s, WF); }
+function placeCons(d1, m){ const l = 78, dans = q => q[0] > 10 && q[0] < WF - 10 && q[1] > 12 && q[1] < HF - 8; let best = null;
+  for(let x = 14; x <= WF - 14; x += 4) for(let y = 14; y <= HF - 12; y += 4){ const V = [x, y]; if(!dans(pt(V, d1, l + 10)) || !dans(pt(V, d1 + m, l + 10))) continue;
+    const c = Math.hypot(x - WF / 2, y - HF / 2); if(!best || c < best[1]) best = [V, c]; }
+  return best ? best[0] : [WF / 2, HF / 2]; }
+const constructions = l => (l = l.map(([V, d1, m, lettre]) => [placeCons(d1, m), d1, m, lettre]), { eleve: duo(l.map(([V, d1, m, lettre]) => col(plX(figCons(V, d1, m), { t: 'rapp', mode: 'construire', V, d1, cible: m, som: [[V[0], V[1], [d1]]], r: RA, w: WF, h: HF, p0: [WF - RA - 8, HF - 6] }), `<b>${lettre}</b> ${W('xOy')} = ${m}°`, 210))),
+  corr: duo(l.map(([V, d1, m, lettre]) => col(figCons(V, d1, m, true), `<b>${lettre}</b> ${W('xOy')} = ${m}°`, 210))) });
+// Triangle aux angles entiers : A, côté [AB] de direction 0, angles a en A et b en B.
+function triAng(a, b, sol){ const A = [40, 172], Bp = [220, 172], ta = Math.tan(a * Math.PI / 180), tb = Math.tan(b * Math.PI / 180), x = (Bp[0] * tb + A[0] * ta) / (ta + tb), C = [x, A[1] - (x - A[0]) * ta];
+  let s = `<polygon points="${A.join(',')} ${Bp.join(',')} ${C.map(v => v.toFixed(1)).join(',')}" fill="#fff" stroke="${K}" stroke-width="1.6"/>` + T([A[0] - 8, A[1] + 12], 'A') + T([Bp[0] + 8, Bp[1] + 12], 'B') + T([C[0], C[1] - 7], 'C');
+  if(sol) s += arc(A, 0, a, 20, Ro) + arc(Bp, 180 - b, 180, 20, Bl) + arc(C, 180 + a, 360 - b, 18, Ve);
+  return { svg: S(260, 186, s, 215), A, B: Bp, C }; }
 PLANCHES['6e|Angles et rapporteur'] = [
   { titre: 'Notion d\'angle et notations', duree: '35 min',
     attendus: ['Reconnaître un angle : un sommet et deux côtés (demi-droites)', 'Nommer un angle avec trois lettres, le sommet au milieu', 'Comparer des angles sans les mesurer'],
@@ -87,6 +113,20 @@ PLANCHES['6e|Angles et rapporteur'] = [
       { etoiles: 3, col: 1, cahier: true, consigne: 'Trace un triangle quelconque. Mesure ses trois angles au rapporteur, puis calcule leur somme. Que remarques-tu ?',
         corr: cm1Redac('Somme des angles', 'Par exemple : 50° + 60° + 70° = 180°', 'La somme des trois angles d\'un triangle vaut toujours 180° (aux erreurs de mesure près).') },
     ] },
+  { titre: 'Mesurer des angles au rapporteur', duree: '40 min',
+    attendus: ['Placer le centre du rapporteur sur le sommet de l\'angle', 'Aligner le zéro sur un côté et lire sur la bonne graduation', 'Contrôler sa mesure avec la nature de l\'angle'],
+    exos: [
+      { etoiles: 1, consigne: 'Mesure chaque angle avec ton rapporteur. (À l\'écran : fais glisser le rapporteur sur la figure.)', ...mesures([[[40, 115], 0, 55, ['x', 'O', 'y'], 'a'], [[105, 118], 30, 150, ['x', 'O', 'y'], 'b'], [[55, 112], -10, 60, ['x', 'O', 'y'], 'c']]) },
+      { etoiles: 2, consigne: 'Mesure chaque angle. Attention à l\'orientation : fais tourner le rapporteur.', ...mesures([[[105, 32], 200, 345, ['u', 'A', 'v'], 'd'], [[60, 122], 70, 105, ['s', 'B', 't'], 'e'], [[105, 55], 190, 352, ['m', 'C', 'n'], 'f']]) },
+      { etoiles: 2, consigne: 'Mesure les trois angles du triangle ABC, puis calcule leur somme.',
+        ...(() => { const t = triAng(48, 64), cfg = { t: 'rapp', mode: 'mesure', aide: true, V: t.A, d1: 0, som: [[t.A[0], t.A[1], [0, 48]], [t.B[0], t.B[1], [180, 116]], [t.C[0], t.C[1], [228, 296]]], r: RA, w: 260, h: 186, p0: [RA + 6, 184] };
+          return { eleve: `<div style="text-align:center;">${plX(t.svg, cfg)}</div>` + plGrille([W('BAC') + ' = ' + B() + ' °', W('ABC') + ' = ' + B() + ' °', W('ACB') + ' = ' + B() + ' °', 'Somme : ' + B() + ' °'], 4),
+            corr: `<div style="text-align:center;">${triAng(48, 64, true).svg}</div>` + plGrille([W('BAC') + ' = ' + R(48) + ' °', W('ABC') + ' = ' + R(64) + ' °', W('ACB') + ' = ' + R(68) + ' °', 'Somme : ' + R(180) + ' °'], 4) }; })() },
+      { etoiles: 3, col: 1, cahier: true, consigne: 'Trace un quadrilatère quelconque ABCD. Mesure ses quatre angles et calcule leur somme. Compare avec tes camarades.',
+        corr: cm1Redac('Observation', 'Un quadrilatère se découpe en deux triangles par une diagonale.', 'La somme des angles d\'un quadrilatère vaut 2 × 180° = 360° (aux erreurs de mesure près).') },
+      { etoiles: 3, col: 1, cahier: true, consigne: 'Sans rapporteur, trace un angle qui te semble mesurer 60°, puis un autre de 135°. Mesure-les ensuite : quel écart trouves-tu ?',
+        corr: cm1Redac('Estimer', 'Repères : un angle droit mesure 90°, un angle plat 180°, la moitié d\'un angle droit 45°.', 'On compare la mesure obtenue à l\'estimation : un écart de moins de 10° est une bonne estimation.') },
+    ] },
   { titre: 'Construire un angle avec le rapporteur', duree: '40 min',
     attendus: ['Construire un angle de mesure donnée', 'Construire une figure à partir de mesures d\'angles et de longueurs', 'Vérifier une construction'],
     exos: [
@@ -102,6 +142,15 @@ PLANCHES['6e|Angles et rapporteur'] = [
         corr: cm1Redac('Construction', { suite: ['Je trace [AB] de 6 cm.', 'En A, je construis un angle de 50° ; en B, un angle de 70°.', 'Les deux demi-droites se coupent en C.'] }, 'Je mesure ' + W('ACB') + ' = 60° (car 180 − 50 − 70 = 60).') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Construis un angle ' + W('xOy') + ' de 200° : un angle rentrant. Explique ta méthode.',
         corr: cm1Redac('Angle rentrant', { suite: ['Un rapporteur ne va que jusqu\'à 180°.', '360 − 200 = 160 : je construis un angle saillant de 160°.'] }, 'L\'angle rentrant ' + W('xOy') + ' est l\'autre partie du plan : il mesure 360 − 160 = 200°.') },
+    ] },
+  { titre: 'Construire des angles au rapporteur', duree: '40 min',
+    attendus: ['Construire un angle de mesure donnée à partir d\'un côté tracé', 'Choisir la graduation qui part de zéro sur le côté', 'Reproduire une figure en vraie grandeur (longueurs et angles)'],
+    exos: [
+      { etoiles: 1, consigne: 'Le côté [Ox) est tracé. Construis le côté [Oy) pour que l\'angle ait la mesure indiquée. (À l\'écran : pose le rapporteur, glisse le crayon, puis « Tracer le côté ».)', ...constructions([[[30, 120], 0, 70, 'a'], [[100, 125], 0, 110, 'b'], [[40, 120], 0, 25, 'c']]) },
+      { etoiles: 2, consigne: 'Même consigne : le côté [Ox) n\'est plus horizontal.', ...constructions([[[140, 120], 160, 56, 'd'], [[40, 80], -20, 125, 'e'], [[170, 110], 200, 145, 'f']]) },
+      { etoiles: 2, consigne: 'Encore trois angles, aigus ou obtus.', ...constructions([[[60, 125], 30, 33, 'g'], [[120, 128], 10, 156, 'h'], [[50, 135], 75, 93, 'i']]) },
+      { etoiles: 3, col: 1, cahier: true, consigne: `Reproduis cette ligne brisée en vraie grandeur : AB = 6 cm, ${W('ABC')} = 120° et BC = 4 cm, ${W('BCD')} = 45° et CD = 5 cm.`,
+        corr: cm1Redac('Méthode', { suite: ['[AB] de 6 cm ; en B, angle de 120° et C à 4 cm de B.', 'En C, angle de 45° et D à 5 cm de C.'] }, 'Je vérifie longueurs et angles.') },
     ] },
   { titre: 'Paires d\'angles particuliers', duree: '40 min',
     attendus: ['Reconnaître des angles adjacents', 'Reconnaître des angles opposés par le sommet et savoir qu\'ils ont la même mesure', 'Reconnaître des angles complémentaires et supplémentaires'],
@@ -155,6 +204,8 @@ PLANCHES['6e|Angles et rapporteur'] = [
         corr: cm1Redac('Pourquoi 60° ?', '360 ÷ 6 = 60', 'Les six angles autour du centre font un tour complet (360°), partagé en six angles égaux de 60°.') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Deux angles adjacents ' + W('xOy') + ' = 50° et ' + W('yOz') + ' = 70° sont tracés. Quelle est la mesure de l\'angle formé par leurs deux bissectrices ? Justifie.',
         corr: cm1Redac('Calcul', { suite: ['La bissectrice de ' + W('xOy') + ' fait 25° avec [Oy).', 'La bissectrice de ' + W('yOz') + ' fait 35° avec [Oy).'] }, 'L\'angle formé par les deux bissectrices mesure 25° + 35° = 60°.') },
+      { etoiles: 3, col: 1, cahier: true, consigne: 'Construis un angle ' + W('xOy') + ' de 64°, puis un angle ' + W('yOz') + ' de 52° adjacent au premier. Quelle est la mesure de ' + W('xOz') + ' ? Vérifie au rapporteur.',
+        corr: cm1Redac('Calcul', '64 + 52 = 116', W('xOz') + ' mesure 116° : c\'est un angle obtus.') },
     ] },
 ];
 })();

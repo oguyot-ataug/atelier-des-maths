@@ -158,6 +158,9 @@ function plNum(root, x, o){
   const trSeg = (P, A, B) => { const v = [B[0] - A[0], B[1] - A[1]]; let t0 = -1e9, t1 = 1e9; [[0, P.w], [0, P.h]].forEach(([mn, mx], i) => { if(Math.abs(v[i]) < 1e-9) return; const a = (mn - A[i]) / v[i], b = (mx - A[i]) / v[i]; t0 = Math.max(t0, Math.min(a, b)); t1 = Math.min(t1, Math.max(a, b)); }); return [A[0] + v[0] * t0, A[1] + v[1] * t0, A[0] + v[0] * t1, A[1] + v[1] * t1]; };
   M.cibles.filter(c => c.type === 'x').forEach(c => { const el = root.querySelector(`[data-pn="${c.id}"]`);
     if(el && el.tagName.toLowerCase() === 'svg'){ const g = document.createElementNS(NS, 'g'); g.setAttribute('class', 'pn-xg'); el.appendChild(g); } });
+  // Outils qu'on fait glisser (rapporteur) : K.monter(cfg, svg, lire, ecrire) branche les gestes une fois.
+  M.cibles.filter(c => c.type === 'x' && PLX[c.rep.t].monter).forEach(c => { const el = root.querySelector(`[data-pn="${c.id}"]`); if(!el || o.lecture) return;
+    PLX[c.rep.t].monter(c.rep, el, () => JSON.parse(JSON.stringify(etat.x[c.id] || {})), st => { etat.x[c.id] = st; effacerMarques(); afficher(); change(); }); });
   if(typeof renderStaticMath === 'function') renderStaticMath(root);
   const change = () => { if(o.onChange) o.onChange(plNumCopie(etat)); };
   const afficher = () => {
@@ -232,13 +235,13 @@ function plNum(root, x, o){
   const marquer = res => {
     effacerMarques(); if(!res || !res.d) return;
     M.cibles.forEach((c, i) => { const el = root.querySelector(`[data-pn="${c.id}"]`) || (c.type === 'bascule' ? root.querySelector(`[data-pnt^="${c.id}:"]`)?.closest('.pl-grille, .pl-liste, ul') : null);
-      if(el) el.classList.add(res.d[i] ? 'pn-ok' : 'pn-ko'); });
+      if(el && res.d[i] !== null) el.classList.add(res.d[i] ? 'pn-ok' : 'pn-ko'); });
   };
   afficher(); if(o.res) marquer(o.res);
   return {
-    total: M.cibles.length,
+    total: M.cibles.filter(c => !(c.type === 'x' && c.rep.aide)).length,
     etat: () => plNumCopie(etat),
-    verifier(){ choisir(null); const d = M.cibles.map(juste), res = { juste: d.filter(Boolean).length, total: d.length, d }; marquer(res); return res; },
+    verifier(){ choisir(null); const d = M.cibles.map(c => c.type === 'x' && c.rep.aide ? null : juste(c)), n = d.filter(v => v !== null), res = { juste: n.filter(Boolean).length, total: n.length, d }; marquer(res); return res; },
     effacer(){ etat = plNumEtatVide(); choisir(null); effacerMarques(); afficher(); change(); },
     poser(e, res){ etat = plNumEtatVide(e); afficher(); marquer(res); },
     fermer(){ if(sel){ sel = null; plClavier.fermer(); } }
@@ -348,6 +351,39 @@ const PLX = {
     barre: (C, st, id) => `<span class="pn-xaide">Touche deux points du quadrillage : la droite passe par eux.</span>` + plxBtn(id, 'vide', 'Effacer les droites'),
     juste: (C, st) => { const l = st.l || []; if(l.length !== C.att.length) return false;
       return C.att.every(({ p, v }) => l.some(([a, b, c, d]) => (c - a) * v[1] - (d - b) * v[0] === 0 && (c - a) * (p[1] - b) - (d - b) * (p[0] - a) === 0)); }
+  },
+  // Rapporteur du tableau interactif, à poser sur la figure (mêmes règles que le permis rapporteur :
+  // aimant sur le sommet, accroche de la rotation sur un côté, crayon qui glisse sur l'arc degré par degré).
+  // { V: [x, y] sommet, d1: direction du côté tracé (°, sens direct), r: rayon du rapporteur (px de la figure),
+  //   mode: 'mesure' (aide pour lire, la réponse s'écrit dans les pointillés : aide = true) ou 'construire' (cible : mesure à obtenir) }.
+  rapp: {
+    rot0: C => C.rot0 || 0,
+    pos0: C => C.p0 || [C.r + 6, C.h - 6],
+    monter(C, svg, lire, ecrire){
+      const pt = e => { const P = svg.createSVGPoint(); P.x = e.clientX; P.y = e.clientY; const m = svg.getScreenCTM(); return m ? P.matrixTransform(m.inverse()) : { x: 0, y: 0 }; };
+      svg.style.width = '100%'; svg.style.maxWidth = (C.w * 2) + 'px'; svg.style.touchAction = 'none'; svg.style.overflow = 'visible';
+      let geste = null;
+      svg.addEventListener('pointerdown', e => { const z = e.target.closest('[data-rp]'); if(!z) return; const st = lire(), p = st.p || { x: PLX.rapp.pos0(C)[0], y: PLX.rapp.pos0(C)[1], rot: PLX.rapp.rot0(C) }, q = pt(e);
+        geste = { k: z.dataset.rp, st, p, q }; svg.setPointerCapture && svg.setPointerCapture(e.pointerId); e.preventDefault(); e.stopPropagation(); });
+      svg.addEventListener('pointermove', e => { if(!geste) return; const q = pt(e), { st } = geste, p = Object.assign({}, geste.p);
+        if(geste.k === 'corps'){ p.x = geste.p.x + q.x - geste.q.x; p.y = geste.p.y + q.y - geste.q.y; const S = (C.som || [[C.V[0], C.V[1], [C.d1]]]).find(([x, y]) => Math.hypot(p.x - x, p.y - y) < C.r * .14); if(S){ p.x = S[0]; p.y = S[1]; } }
+        else if(geste.k === 'tourner'){ const ang = z => Math.atan2(p.y - z.y, z.x - p.x) * 180 / Math.PI; let d = (geste.p.rot || 0) + ang(q) - ang(geste.q); const S = (C.som || [[C.V[0], C.V[1], [C.d1]]]).find(([x, y]) => Math.hypot(p.x - x, p.y - y) < 1), dirs = S ? S[2] : []; for(const a of dirs.flatMap(a => [a, a + 180, a - 180])) if(Math.abs(((d - a) % 360 + 540) % 360 - 180) <= 4){ d = a; break; } p.rot = d; }
+        else if(geste.k === 'crayon'){ let d = Math.atan2(p.y - q.y, q.x - p.x) * 180 / Math.PI - p.rot; d = ((d % 360) + 360) % 360; if(d > 180) d = d > 270 ? 0 : 180; st.c = Math.round(d); }
+        st.p = p; ecrire(st); e.preventDefault(); });
+      const fin = () => { geste = null; }; svg.addEventListener('pointerup', fin); svg.addEventListener('pointercancel', fin);
+    },
+    action(C, st, a){ if(a === 'trait'){ const p = st.p || { rot: PLX.rapp.rot0(C) }; st.t = ((((st.c || 0) + p.rot) % 360) + 360) % 360; st.o = p.x != null && Math.hypot(p.x - C.V[0], p.y - C.V[1]) < 1; }
+      if(a === 'replacer'){ delete st.p; delete st.c; } if(a === 'effacer') delete st.t; },
+    dessin: (C, st) => { const p = st.p || { x: PLX.rapp.pos0(C)[0], y: PLX.rapp.pos0(C)[1], rot: PLX.rapp.rot0(C) }, k = C.r / 449, R = C.r * .93; let s = '';
+      if(st.t != null){ const a = st.t * Math.PI / 180, L = C.r * 1.5; s += `<line x1="${C.V[0]}" y1="${C.V[1]}" x2="${(C.V[0] + L * Math.cos(a)).toFixed(1)}" y2="${(C.V[1] - L * Math.sin(a)).toFixed(1)}" stroke="#E35D3A" stroke-width="2.2" stroke-linecap="round"/>`; }
+      s += `<g transform="translate(${p.x.toFixed(1)} ${p.y.toFixed(1)}) rotate(${(-p.rot).toFixed(2)})"><use data-rp="corps" href="#plRapporteur" transform="translate(${(-449.3 * k).toFixed(1)} ${(-451.6 * k).toFixed(1)}) scale(${k.toFixed(4)})" opacity=".88" style="cursor:grab;"/>`
+        + `<circle data-rp="tourner" cx="${(C.r * .55).toFixed(1)}" cy="${(C.r * .2).toFixed(1)}" r="${Math.max(9, C.r * .11).toFixed(1)}" fill="#E35D3A" fill-opacity=".9" style="cursor:grab;"/><text x="${(C.r * .55).toFixed(1)}" y="${(C.r * .2 + 4).toFixed(1)}" font-size="11" text-anchor="middle" fill="#fff" pointer-events="none">↻</text>`;
+      if(C.mode === 'construire'){ const a = (st.c || 0) * Math.PI / 180; s += `<g data-rp="crayon" transform="translate(${(R * Math.cos(a)).toFixed(1)} ${(-R * Math.sin(a)).toFixed(1)}) rotate(${(90 - (st.c || 0)).toFixed(1)})" style="cursor:grab;"><polygon points="-4,-34 4,-34 4,-8 0,0 -4,-8" fill="#E9C46A" stroke="#1C1B2E" stroke-width=".8"/><rect x="-4" y="-38" width="8" height="5" fill="#E35D3A"/><circle r="9" fill="transparent"/></g>`; }
+      return s + '</g>'; },
+    barre: (C, st, id) => C.mode === 'construire'
+      ? `<span class="pn-xaide">Pose le centre du rapporteur sur le sommet, tourne-le (↻) pour aligner le zéro sur le côté, glisse le crayon jusqu'à ${C.cible}°, puis trace.</span>` + plxBtn(id, 'trait', 'Tracer le côté') + plxBtn(id, 'effacer', 'Effacer le trait') + plxBtn(id, 'replacer', 'Ranger le rapporteur')
+      : `<span class="pn-xaide">Fais glisser le rapporteur sur le sommet, tourne-le (↻) pour aligner son zéro sur un côté, puis lis la mesure.</span>` + plxBtn(id, 'replacer', 'Ranger le rapporteur'),
+    juste: (C, st) => { if(C.aide) return true; if(st.t == null) return false; let d = Math.abs(st.t - C.d1) % 360; if(d > 180) d = 360 - d; return Math.abs(d - C.cible) <= 2; }
   },
   fleches: {
     action(C, st, a){ plxActionFleches(st, a); },
