@@ -3335,6 +3335,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.980', date:'2026-10-04', items:[
+    "Cohérence des dessins avec les outils du tableau interactif -- demandé : « vérifie dans les exercices que tu utilises bien les mêmes designs que les outils utilisés dans le tableau interactif ». Opérations posées (cours et planches) : même présentation que les outils du tableau (cases, signe et résultat en orange, virgule dans une colonne étroite). Droites graduées, disques et bandes de fractions, quadrillages coloriés : mêmes traits, mêmes nombres (police à chasse fixe), même orange. Planches de 6e : le rapporteur est la photo du rapporteur du tableau (graduation jaune avec le 0 à gauche, verte avec le 0 à droite) ; diagrammes en barres, diagrammes circulaires, urnes et assemblages de cubes sont ceux des outils du tableau ; les divisions décimales des corrigés sont posées avec l'outil de division.",
+    "Livre d'exercices du collège : nouvelle page de garde, plus sobre que celle de l'école primaire (bandeau « Mathématiques 6e · Cahier d'exercices », domaines du programme, construction géométrique en filigrane, champs Nom, Prénom, Classe) et sommaire sans bulle ni mascotte."
+  ] },
   { version:'2026-08-19.979', date:'2026-10-04', items:[
     "Planches 6e : tous les chapitres sont couverts (21 chapitres, 99 planches, 524 exercices, dont 375 faisables à l'écran). Nouveaux : « Proportionnalité » (4 planches, échelles comprises), « Aire et périmètre » (5), « Probabilités » (3), « Initiation à l'algèbre » (3, avec balances), « Solides et volumes » (4 : solides, vues d'un assemblage de cubes à colorier, volumes, patrons), « Heures et durée » (4) et « Initiation à la pensée informatique » (3 : robot à programmer à l'écran, entrées et sorties, boucles)."
   ] },

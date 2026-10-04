@@ -17,13 +17,13 @@ function arc(V, d1, d2, r, c){ if(Math.abs(d2 - d1 - 90) < .01){ const a = pt(V,
 // Angle de sommet V, côtés de directions d1 et d2 ; n : [nom sur d1, nom du sommet, nom sur d2].
 function ang(V, d1, d2, l, n, c, sansArc){ const a = pt(V, d1, l), b = pt(V, d2, l); let s = (sansArc ? '' : arc(V, d1, d2, 20, c || Ro)) + L(V, pt(V, d1, l + 18)) + L(V, pt(V, d2, l + 18));
   if(n){ const m = (d1 + d2) / 2 + 180; s += X(a) + X(b) + T(pt(a, d1 - 90, 12), n[0]) + T(pt(b, d2 + 90, 12), n[2]) + T(pt(V, m, 14), n[1]); } return s; }
-// Rapporteur centré en V (rayon r) : graduation extérieure de 0 (à droite) à 180, graduation intérieure de 0 (à gauche) à 180.
-function rapp(V, r){ let s = `<path d="M${V[0] - r},${V[1]} A${r},${r} 0 0 1 ${V[0] + r},${V[1]} Z" fill="#EAF4FB" fill-opacity=".85" stroke="#3A6EA5" stroke-width="1.2"/>`;
-  for(let t = 0; t <= 180; t += 5){ const g = t % 10 === 0, a = pt(V, t, r), b = pt(V, t, r - (g ? 8 : 4)); s += L(a, b, '#3A6EA5', g ? 1 : .7);
-    if(t % 20 === 0){ s += cmT(...pt(V, t, r - 15), t, { fs: 7.5, c: '#1F3A5C' }) + cmT(...pt(V, t, r - 26), 180 - t, { fs: 7, c: '#B4472B' }); } }
-  return s + `<circle cx="${V[0]}" cy="${V[1]}" r="2.5" fill="#3A6EA5"/>`; }
-// Lecture au rapporteur : angle de m degrés, un côté sur le 0 de droite (g = false) ou de gauche (g = true).
-const lect = (m, g, n) => { const V = [120, 125], d1 = g ? 180 - m : 0, d2 = g ? 180 : m; return S(240, 140, rapp(V, 100) + L(V, pt(V, d1, 112), Ro, 2.2) + L(V, pt(V, d2, 112), Ro, 2.2) + T([V[0], V[1] + 13], n || 'O'), 220); };
+// Rapporteur : la même photo que le rapporteur du tableau interactif (assets/rapporteur-translucide.png,
+// 900 × 483 px, centre à 49,92 % de la largeur et 93,49 % de la hauteur, bord des graduations à ~449 px).
+// Graduation extérieure (jaune) : 0 à gauche ; graduation intérieure (verte) : 0 à droite.
+// L'image est déclarée une seule fois dans la page (#plRapporteur, planches.js) et réutilisée par <use>.
+function rapp(V, r){ const k = r / 449;
+  return `<use href="#plRapporteur" transform="translate(${(V[0] - 449.3 * k).toFixed(1)} ${(V[1] - 451.6 * k).toFixed(1)}) scale(${k.toFixed(4)})" opacity=".92"/>`; }
+const lect = (m, g, n) => { const V = [125, 122], d1 = g ? 180 - m : 0, d2 = g ? 180 : m; return S(250, 140, rapp(V, 110) + L(V, pt(V, d1, 122), Ro, 2.2) + L(V, pt(V, d2, 122), Ro, 2.2) + T([V[0], V[1] + 14], n || 'O'), 240); };
 // Horloge à h heures pile (grande aiguille sur 12).
 const horl = h => { const O = [40, 40]; let s = `<circle cx="40" cy="40" r="35" fill="#fff" stroke="${K}" stroke-width="2"/>`; for(let i = 0; i < 12; i++) s += L(pt(O, 90 - i * 30, 35), pt(O, 90 - i * 30, i % 3 ? 31 : 28), K, i % 3 ? 1 : 2);
   return S(80, 80, s + L(O, pt(O, 90, 27), Bl, 2.6) + L(O, pt(O, 90 - h * 30, 18), Ro, 3.4) + `<circle cx="40" cy="40" r="3" fill="${K}"/>`, 70); };
@@ -74,9 +74,9 @@ PLANCHES['6e|Angles et rapporteur'] = [
   { titre: 'Mesurer un angle avec le rapporteur', duree: '40 min',
     attendus: ['Placer le centre du rapporteur sur le sommet et le zéro sur un côté', 'Choisir la bonne graduation (celle qui part de 0 sur le côté)', 'Vérifier la mesure par la nature de l\'angle'],
     exos: [
-      { etoiles: 1, consigne: 'Le zéro de la graduation noire est à droite. Lis la mesure de chaque angle.',
+      { etoiles: 1, consigne: 'Un côté de l\'angle passe par le zéro de droite : lis la mesure sur la graduation verte (intérieure).',
         eleve: duo([col(lect(40), 'Mesure : ' + B() + ' °'), col(lect(120), 'Mesure : ' + B() + ' °')]), corr: duo([col(lect(40), 'Mesure : ' + R(40) + ' °'), col(lect(120), 'Mesure : ' + R(120) + ' °')]) },
-      { etoiles: 2, consigne: 'Ici, un côté de l\'angle passe par le zéro de gauche : lis sur la graduation rouge (intérieure).',
+      { etoiles: 2, consigne: 'Ici, un côté de l\'angle passe par le zéro de gauche : lis la mesure sur la graduation jaune (extérieure).',
         eleve: duo([col(lect(70, true), 'Mesure : ' + B() + ' °'), col(lect(150, true), 'Mesure : ' + B() + ' °')]), corr: duo([col(lect(70, true), 'Mesure : ' + R(70) + ' °'), col(lect(150, true), 'Mesure : ' + R(150) + ' °')]) },
       { etoiles: 2, consigne: 'Sans rapporteur, entoure la mesure la plus vraisemblable.',
         ...(() => { const V = [vig(ang([20, 65], 0, 30, 75)), vig(ang([40, 65], 0, 100, 55)), vig(ang([60, 65], 0, 150, 45))], it = [['a', '30°', '30° · 60° · 120°'], ['b', '100°', '45° · 100° · 170°'], ['c', '150°', '15° · 90° · 150°']];
@@ -93,9 +93,9 @@ PLANCHES['6e|Angles et rapporteur'] = [
       { etoiles: 1, col: 1, consigne: 'Remets dans l\'ordre les étapes pour construire un angle ' + W('xOy') + ' de 65° (écris le numéro de 1 à 4).',
         eleve: plListe(['Étape ' + B(1) + ' : je place un repère à 65° sur la graduation qui part de 0 sur [Ox).', 'Étape ' + B(1) + ' : je trace une demi-droite [Ox).', 'Étape ' + B(1) + ' : je trace la demi-droite [Oy) qui passe par le repère.', 'Étape ' + B(1) + ' : je place le centre du rapporteur sur O et le zéro sur [Ox).']),
         corr: plListe(['Étape ' + R(3) + ' : je place un repère à 65° sur la graduation qui part de 0 sur [Ox).', 'Étape ' + R(1) + ' : je trace une demi-droite [Ox).', 'Étape ' + R(4) + ' : je trace la demi-droite [Oy) qui passe par le repère.', 'Étape ' + R(2) + ' : je place le centre du rapporteur sur O et le zéro sur [Ox).']) },
-      { etoiles: 1, col: 1, consigne: 'Pour construire ces angles, sur quelle graduation lis-tu ? Le côté [Ox) part vers la gauche (zéro rouge).',
-        eleve: plListe(['Angle de 30° : repère à <b>30 · 150</b> sur la graduation rouge', 'Angle de 110° : repère à <b>110 · 70</b> sur la graduation rouge']),
-        corr: plListe(['Angle de 30° : repère à ' + plEntoure('30') + ' sur la graduation rouge', 'Angle de 110° : repère à ' + plEntoure('110') + ' sur la graduation rouge']) },
+      { etoiles: 1, col: 1, consigne: 'Le côté [Ox) part vers la gauche : on lit sur la graduation jaune, dont le zéro est à gauche. Où place-t-on le repère ?',
+        eleve: plListe(['Angle de 30° : repère à <b>30 · 150</b> sur la graduation jaune', 'Angle de 110° : repère à <b>110 · 70</b> sur la graduation jaune']),
+        corr: plListe(['Angle de 30° : repère à ' + plEntoure('30') + ' sur la graduation jaune', 'Angle de 110° : repère à ' + plEntoure('110') + ' sur la graduation jaune']) },
       { etoiles: 2, col: 1, cahier: true, consigne: 'Construis les angles ' + W('ABC') + ' = 45°, ' + W('DEF') + ' = 120° et ' + W('GHI') + ' = 90° (sans équerre). Indique leur nature.',
         corr: cm1Redac('Nature', { suite: [W('ABC') + ' = 45° : angle aigu.', W('DEF') + ' = 120° : angle obtus.', W('GHI') + ' = 90° : angle droit.'] }, 'On vérifie l\'angle droit avec l\'équerre.') },
       { etoiles: 2, col: 1, cahier: true, consigne: 'Construis un triangle ABC tel que AB = 6 cm, ' + W('BAC') + ' = 50° et ' + W('ABC') + ' = 70°. Mesure ensuite l\'angle ' + W('ACB') + '.',

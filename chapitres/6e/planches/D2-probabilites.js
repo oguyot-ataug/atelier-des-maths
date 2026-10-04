@@ -7,11 +7,11 @@ const T = (a, b) => cm1Tex(`\\tfrac{${a}}{${b}}`);
 const ligne = (...h) => `<span style="display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap;">${h.join(' ')}</span>`;
 const ch = (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) + '</div>' });
 const S = (w, h, inner, px) => `<svg class="pl-libre" viewBox="0 0 ${w} ${h}" style="width:${px || w}px;max-width:100%;display:inline-block;vertical-align:middle;">${inner}</svg>`;
-// Urne : boules [[nombre, couleur]].
-const urne = l => { let s = `<path d="M20,20 L20,90 Q20,110 40,110 L120,110 Q140,110 140,90 L140,20" fill="#F4F8FB" stroke="#1F3A5C" stroke-width="2"/>`, n = 0; l.forEach(([k, c]) => { for(let i = 0; i < k; i++, n++) s += `<circle cx="${38 + (n % 6) * 17}" cy="${96 - Math.floor(n / 6) * 17}" r="7.5" fill="${c}" stroke="#1F3A5C" stroke-width="1"/>`; }); return S(160, 120, s, 130); };
+// Urne : l'outil « urne » du tableau interactif (urnSvg) ; boules [[nombre, couleur]].
+const urne = l => `<div style="max-width:130px;margin:0 auto;">${urnSvg(l.map(([count, color]) => ({ count, color })), 'urne').replace(/<svg width="[\d.]+" height="[\d.]+"/, '<svg')}</div>`;
 // Roue de loterie : secteurs égaux de couleurs données.
 const roue = cs => { const n = cs.length; let s = ''; cs.forEach((c, i) => { const a = i / n * 2 * Math.PI - Math.PI / 2, b = (i + 1) / n * 2 * Math.PI - Math.PI / 2; s += `<path d="M60,60 L${60 + 50 * Math.cos(a)},${60 + 50 * Math.sin(a)} A50,50 0 0 1 ${60 + 50 * Math.cos(b)},${60 + 50 * Math.sin(b)} Z" fill="${c}" stroke="#fff" stroke-width="2"/>`; }); return S(120, 125, s + '<polygon points="60,4 54,-6 66,-6" fill="#1F3A5C" transform="translate(0,8)"/>', 110); };
-const ROU = '#E35D3A', BLE = '#2EA8C9', VER = '#2E9C6A', JAU = '#F2C94C';
+const ROU = '#D93025', BLE = '#0D5BA3', VER = '#1F7A4D', JAU = '#F2C94C';
 PLANCHES['6e|Probabilités'] = [
   { titre: 'Expériences aléatoires', duree: '30 min',
     attendus: ['Reconnaître une expérience aléatoire', 'Lister les issues d\'une expérience', 'Utiliser le vocabulaire : certain, impossible, probable, peu probable'],

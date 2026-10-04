@@ -34,7 +34,7 @@ PLANCHES['6e|Nombres décimaux'] = [
         eleve: plListe([ligne('0,9 =', Fr), ligne('0,37 =', Fr), ligne('2,4 =', Fr), ligne('0,006 =', Fr), ligne('15,02 =', Fr)]),
         corr: plListe([ligne('0,9 =', R(F(9, 10))), ligne('0,37 =', R(F(37, 100))), ligne('2,4 =', R(F(24, 10))), ligne('0,006 =', R(F(6, 1000))), ligne('15,02 =', R(F(1502, 100)))]) },
       { etoiles: 2, col: 1, consigne: 'Quelle fraction de l\'unité est coloriée ? Écris-la sous forme décimale.',
-        ...(() => { const f = [[cm1Bande(10, 7, { largeur: 150 }), '0,7'], [cm1Quad(10, 10, Array.from({ length: 34 }, (_, i) => [i % 10, Math.floor(i / 10)]), { k: 9, c: '#7A4FC0' }), '0,34']];
+        ...(() => { const f = [[cm1Bande(10, 7, { largeur: 150 }), '0,7'], [cm1Quad(10, 10, Array.from({ length: 34 }, (_, i) => [i % 10, Math.floor(i / 10)]), { k: 9, c: '#FF8208' }), '0,34']];
           return { eleve: plGrille(f.map(([s]) => `<span style="display:flex;flex-direction:column;align-items:center;gap:4px;">${s}<span>${B()}</span></span>`), 2), corr: plGrille(f.map(([s, r]) => `<span style="display:flex;flex-direction:column;align-items:center;gap:4px;">${s}<span>${R(r)}</span></span>`), 2) }; })() },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Combien y a-t-il de centièmes dans 4 unités ? Dans 4,5 ? Dans 0,08 ? Explique.',
         corr: cm1Redac('Nombre de centièmes', { suite: ['4 unités = 4 × 100 centièmes = 400 centièmes.', '4,5 = 4 unités et 5 dixièmes = 400 + 50 = 450 centièmes.', '0,08 = 8 centièmes.'] }, 'Il y a 400, puis 450, puis 8 centièmes.') },

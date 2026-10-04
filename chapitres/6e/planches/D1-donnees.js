@@ -5,6 +5,8 @@
 (() => {
 const B = n => plPointilles(n || 3), R = v => plRep(String(v)), F = cm1Frac, Fr = plFrac();
 const K = '#1F3A5C', Ro = '#E35D3A', Bl = '#2EA8C9', Ve = '#2E9C6A', Vi = '#7A4FC0', Or = '#F2A93B';
+// Couleurs des graphiques du tableau interactif (GRAPH_COLORS, outils-figures.js).
+const GC = typeof GRAPH_COLORS !== 'undefined' ? GRAPH_COLORS : ['#0D5BA3', '#D93025', '#1F7A4D', '#B26A00', '#7B3FA0', '#1C8C9C'];
 const S = (w, h, inner, px) => `<svg class="pl-libre" viewBox="0 0 ${w} ${h}" style="width:${px || w}px;max-width:100%;display:inline-block;vertical-align:middle;">${inner}</svg>`;
 const L = (a, b, c, w, d) => `<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="${c || K}" stroke-width="${w || 1.5}"${d ? ' stroke-dasharray="4 3"' : ''}/>`;
 const T = (x, y, t, o) => cmT(x, y, t, Object.assign({ fs: 11 }, o || {}));
@@ -14,22 +16,24 @@ const ligne = (...h) => `<span style="display:inline-flex;align-items:center;gap
 const ctr = h => `<div style="text-align:center;">${h}</div>`;
 // Diagramme en barres : data [[nom, valeur]], axe de 0 à max, graduation pas ; vides : indices des barres à tracer (null = toutes tracées).
 function barres(data, max, pas, o){ o = o || {}; const n = data.length, W = 60 + n * 70, y0 = 170, u = 140 / max; let s = '';
-  for(let v = 0; v <= max; v += pas){ const y = y0 - v * u; s += L([40, y], [W - 10, y], '#D5E2EE', 1) + T(34, y + 4, v, { a: 'end', fs: 10 }); }
-  s += L([40, 20], [40, y0], K, 1.6) + L([40, y0], [W - 10, y0], K, 1.6) + (o.axe ? T(44, 14, o.axe, { a: 'start', fs: 10 }) : '');
-  data.forEach(([nom, v], i) => { const x = 60 + i * 70; if(!(o.vides || []).includes(i) || o.sol) s += `<rect x="${x}" y="${y0 - v * u}" width="40" height="${v * u}" fill="${(o.vides || []).includes(i) ? Ro : o.coul || Bl}" fill-opacity=".8" stroke="${K}"/>`; s += T(x + 20, y0 + 15, nom, { fs: 10 }); });
+  for(let v = 0; v <= max; v += pas){ const y = y0 - v * u; s += L([40, y], [W - 10, y], 'rgba(28,43,57,.1)', 1) + `<text x="34" y="${y + 4}" font-size="10" text-anchor="end" font-family="JetBrains Mono, monospace" fill="#1C1B2E">${v}</text>`; }
+  s += L([40, 20], [40, y0], '#1C1B2E', 1.6) + L([40, y0], [W - 10, y0], '#1C1B2E', 1.6) + (o.axe ? T(44, 14, o.axe, { a: 'start', fs: 10 }) : '');
+  data.forEach(([nom, v], i) => { const x = 60 + i * 70; if(!(o.vides || []).includes(i) || o.sol) s += `<rect x="${x}" y="${y0 - v * u}" width="40" height="${v * u}" fill="${GC[i % GC.length]}"/>`; s += `<text x="${x + 20}" y="${y0 + 15}" font-size="10" text-anchor="middle" font-family="JetBrains Mono, monospace" fill="#1C1B2E">${nom}</text>`; });
   return S(W, 190, s, Math.min(W, o.px || 420)); }
-const barresX = (data, max, pas, vides, o) => plX(barres(data, max, pas, Object.assign({ vides }, o)), { t: 'barres', xs: data.map((_, i) => 60 + i * 70), larg: 40, y0: 170, u: 140 / max * pas, max: max / pas, coul: Ro, att: data.map(([, v], i) => vides.includes(i) ? v / pas : null) });
-// Diagramme circulaire : parts [[nom, fraction, couleur]].
-function camembert(parts, r){ r = r || 60; const O = [r + 10, r + 10]; let a = -Math.PI / 2, s = '';
-  parts.forEach(([nom, f, c]) => { const b = a + f * 2 * Math.PI, p = [O[0] + r * Math.cos(a), O[1] + r * Math.sin(a)], q = [O[0] + r * Math.cos(b), O[1] + r * Math.sin(b)], m = (a + b) / 2;
-    s += `<path d="M${O[0]},${O[1]} L${p[0].toFixed(1)},${p[1].toFixed(1)} A${r},${r} 0 ${f > .5 ? 1 : 0} 1 ${q[0].toFixed(1)},${q[1].toFixed(1)} Z" fill="${c}" fill-opacity=".85" stroke="#fff" stroke-width="2"/>` + T(O[0] + r * .6 * Math.cos(m), O[1] + r * .6 * Math.sin(m) + 4, nom, { c: '#fff', fs: 11 }); a = b; });
-  return S(2 * r + 20, 2 * r + 20, s, 2 * r + 20); }
+const barresX = (data, max, pas, vides, o) => plX(barres(data, max, pas, Object.assign({ vides }, o)), { t: 'barres', xs: data.map((_, i) => 60 + i * 70), larg: 40, y0: 170, u: 140 / max * pas, max: max / pas, coul: GC[0], att: data.map(([, v], i) => vides.includes(i) ? v / pas : null) });
+// Diagramme circulaire : l'outil « diagramme circulaire » du tableau (pieChartSvg) ; parts [[nom, fraction, couleur]] ;
+// sansPct : on retire les pourcentages écrits dans les secteurs (quand c'est à l'élève de les trouver).
+function camembert(parts, sansPct){ let h = pieChartSvg(parts.map(([label, f, color]) => ({ label, value: f, color }))).split('<div style="display:flex;flex-wrap:wrap')[0].replace(/ width="300" height="300"/, '');
+  if(sansPct) h = h.replace(/<text[^>]*>\d+%<\/text>/g, '');
+  // Légende au style de l'outil, sans les valeurs (c'est à l'élève de les trouver).
+  const leg = parts.map(([label, , color]) => `<span style="display:inline-flex;align-items:center;gap:5px;margin:1px 8px;"><span style="width:11px;height:11px;border-radius:3px;background:${color};display:inline-block;"></span>${label}</span>`).join('');
+  return `<div style="max-width:170px;margin:0 auto;">${h}</div><div style="display:flex;flex-wrap:wrap;justify-content:center;font-size:.9em;">${leg}</div>`; }
 // Graphique cartésien : points [[x, y]], axes gradués.
 function courbe(pts, xs, ys, o){ const X = x => 50 + (x - xs[0]) / (xs[1] - xs[0]) * 380, Y = y => 170 - (y - ys[0]) / (ys[1] - ys[0]) * 150; let s = '';
-  for(let x = xs[0]; x <= xs[1]; x += xs[2]){ s += L([X(x), 20], [X(x), 170], '#E1EAF2', 1) + T(X(x), 184, x, { fs: 10 }); }
-  for(let y = ys[0]; y <= ys[1]; y += ys[2]){ s += L([50, Y(y)], [430, Y(y)], '#E1EAF2', 1) + T(44, Y(y) + 4, y, { a: 'end', fs: 10 }); }
-  s += L([50, 170], [436, 170], K, 1.6) + L([50, 170], [50, 14], K, 1.6) + T(436, 160, o.ax, { a: 'end', fs: 10 }) + T(56, 14, o.ay, { a: 'start', fs: 10 });
-  s += `<polyline points="${pts.map(([x, y]) => X(x) + ',' + Y(y)).join(' ')}" fill="none" stroke="${Ro}" stroke-width="2.4"/>` + pts.map(([x, y]) => `<circle cx="${X(x)}" cy="${Y(y)}" r="3.2" fill="${Ro}"/>`).join('');
+  for(let x = xs[0]; x <= xs[1]; x += xs[2]){ s += L([X(x), 20], [X(x), 170], 'rgba(28,43,57,.1)', 1) + `<text x="${X(x)}" y="184" font-size="10" text-anchor="middle" font-family="JetBrains Mono, monospace" fill="#1C1B2E">${x}</text>`; }
+  for(let y = ys[0]; y <= ys[1]; y += ys[2]){ s += L([50, Y(y)], [430, Y(y)], 'rgba(28,43,57,.1)', 1) + `<text x="44" y="${Y(y) + 4}" font-size="10" text-anchor="end" font-family="JetBrains Mono, monospace" fill="#1C1B2E">${y}</text>`; }
+  s += L([50, 170], [436, 170], '#1C1B2E', 1.6) + L([50, 170], [50, 14], '#1C1B2E', 1.6) + T(436, 160, o.ax, { a: 'end', fs: 10 }) + T(56, 14, o.ay, { a: 'start', fs: 10 });
+  s += `<polyline points="${pts.map(([x, y]) => X(x) + ',' + Y(y)).join(' ')}" fill="none" stroke="${GC[0]}" stroke-width="2.4"/>` + pts.map(([x, y]) => `<circle cx="${X(x)}" cy="${Y(y)}" r="3.2" fill="${GC[0]}"/>`).join('');
   return S(450, 192, s, 440); }
 const SPORTS = [['Foot', 9], ['Danse', 6], ['Judo', 4], ['Basket', 5], ['Natation', 3]];
 const TEMP = [[0, 4], [2, 3], [4, 2], [6, 3], [8, 7], [10, 11], [12, 14], [14, 16], [16, 15], [18, 12], [20, 9], [22, 6], [24, 5]];
@@ -68,10 +72,10 @@ PLANCHES['6e|Gestion de données'] = [
   { titre: 'Diagrammes circulaires', duree: '35 min',
     attendus: ['Lire un diagramme circulaire : la part de chaque catégorie', 'Associer un secteur à une fraction ou un pourcentage', 'Calculer un effectif à partir d\'une proportion'],
     exos: [
-      { etoiles: 1, col: 1, consigne: `Ce diagramme montre comment 40 élèves viennent au collège.${ctr(camembert([['Bus', 1 / 2, Bl], ['Pied', 1 / 4, Ve], ['Vélo', 1 / 8, Or], ['Auto', 1 / 8, Vi]]))}`,
+      { etoiles: 1, col: 1, consigne: `Ce diagramme montre comment 40 élèves viennent au collège.${ctr(camembert([['bus', 1 / 2, GC[0]], ['à pied', 1 / 4, GC[2]], ['vélo', 1 / 8, GC[3]], ['voiture', 1 / 8, GC[4]]], true))}`,
         eleve: plListe([ligne('Proportion d\'élèves en bus :', Fr), ligne('Proportion d\'élèves à pied :', Fr), 'Nombre d\'élèves en bus : ' + B(2), 'Nombre d\'élèves à vélo : ' + B(2)]),
         corr: plListe([ligne('Proportion d\'élèves en bus :', R(F(1, 2))), ligne('Proportion d\'élèves à pied :', R(F(1, 4))), 'Nombre d\'élèves en bus : ' + R(20), 'Nombre d\'élèves à vélo : 40 ÷ 8 = ' + R(5)]) },
-      { etoiles: 2, col: 1, consigne: `Ce diagramme montre la composition d'un repas (en %).${ctr(camembert([['50 %', .5, Or], ['25 %', .25, Ve], ['15 %', .15, Bl], ['10 %', .1, Ro]]))}<div class="pl-petit" style="text-align:center;">orange : féculents ; vert : légumes ; bleu : laitages ; rouge : viande</div>`,
+      { etoiles: 2, col: 1, consigne: `Ce diagramme montre la composition d'un repas (en %).${ctr(camembert([['féculents', .5, GC[3]], ['légumes', .25, GC[2]], ['laitages', .15, GC[0]], ['viande', .1, GC[1]]]))}`,
         eleve: plListe(['Part des légumes : ' + B(2) + ' %', 'Part de la viande : ' + B(2) + ' %', 'Pour un repas de 600 g, masse de féculents : ' + B() + ' g']),
         corr: plListe(['Part des légumes : ' + R(25) + ' %', 'Part de la viande : ' + R(10) + ' %', 'Pour un repas de 600 g, masse de féculents : ' + R(300) + ' g']) },
       { etoiles: 2, col: 1, consigne: 'Un secteur représente un quart du disque. Complète.',

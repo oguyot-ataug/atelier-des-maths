@@ -157,32 +157,32 @@ function cmSauts(min, max, depart, sauts, o){
 
 // Bande (rectangle) partagée en n parts égales dont k sont coloriées ; plusieurs bandes si k > n.
 function cm1Bande(n, k, opts){
-  opts = opts || {}; const L = opts.largeur || 240, H = 34, c = opts.coul || '#E35D3A';
+  opts = opts || {}; const L = opts.largeur || 240, H = 34, c = opts.coul || '#FF8208', op = opts.coul ? .75 : 1;
   const nb = Math.max(1, Math.ceil(k / n)); let s = `<svg viewBox="0 0 ${nb * (L + 14)} ${H + 6}" style="width:${Math.min(100, nb * 46)}%;max-width:${nb * (L + 14)}px;display:inline-block;vertical-align:middle;">`;
   for(let b = 0; b < nb; b++){ const x0 = 3 + b * (L + 14);
-    for(let i = 0; i < n; i++){ const on = b * n + i < k; s += `<rect x="${x0 + i * L / n}" y="3" width="${L / n}" height="${H}" fill="${on ? c : '#fff'}" fill-opacity="${on ? .75 : 1}" stroke="#1F3A5C" stroke-width="1.4"/>`; } }
+    for(let i = 0; i < n; i++){ const on = b * n + i < k; s += `<rect x="${x0 + i * L / n}" y="3" width="${L / n}" height="${H}" fill="${on ? c : '#fff'}" fill-opacity="${on ? op : 1}" stroke="#1C1B2E" stroke-width="1.5"/>`; } }
   return s + '</svg>';
 }
 // Disque partagé en n parts égales dont k sont coloriées.
 function cm1Disque(n, k, opts){
-  opts = opts || {}; const r = 40, cx = 45, cy = 45, c = opts.coul || '#2EA8C9'; let s = `<svg viewBox="0 0 90 90" style="width:${opts.taille || 90}px;display:inline-block;vertical-align:middle;">`;
+  opts = opts || {}; const r = 40, cx = 45, cy = 45, c = opts.coul || '#FF8208', op = opts.coul ? .75 : 1; let s = `<svg viewBox="0 0 90 90" style="width:${opts.taille || 90}px;display:inline-block;vertical-align:middle;">`;
   for(let i = 0; i < n; i++){ const a0 = -Math.PI / 2 + 2 * Math.PI * i / n, a1 = a0 + 2 * Math.PI / n;
     const p = n === 1 ? `M ${cx} ${cy - r} A ${r} ${r} 0 1 1 ${cx - .01} ${cy - r} Z` : `M ${cx} ${cy} L ${(cx + r * Math.cos(a0)).toFixed(2)} ${(cy + r * Math.sin(a0)).toFixed(2)} A ${r} ${r} 0 ${n === 2 ? 0 : 0} 1 ${(cx + r * Math.cos(a1)).toFixed(2)} ${(cy + r * Math.sin(a1)).toFixed(2)} Z`;
-    s += `<path d="${p}" fill="${i < k ? c : '#fff'}" fill-opacity="${i < k ? .75 : 1}" stroke="#1F3A5C" stroke-width="1.4"/>`; }
+    s += `<path d="${p}" fill="${i < k ? c : '#fff'}" fill-opacity="${i < k ? op : 1}" stroke="#1C1B2E" stroke-width="1.5"/>`; }
   return s + '</svg>';
 }
 // Demi-droite graduée : de 0 à max unités, chaque unité partagée en n ; points = [[valeurNumérique, nom, couleur]].
 // etiquettes(i) renvoie le texte sous la graduation i (par défaut : les entiers), ou [a, b] pour une fraction.
 function cm1Graduation(max, n, points, opts){
   opts = opts || {}; const U = opts.unite || Math.min(150, 440 / max), W = 40 + max * U + 30;
-  let s = `<svg viewBox="0 0 ${W} 94" style="width:100%;max-width:${W}px;display:block;margin:6px auto;"><line x1="20" y1="45" x2="${W - 8}" y2="45" stroke="#1F3A5C" stroke-width="2"/><polygon points="${W - 8},45 ${W - 16},40 ${W - 16},50" fill="#1F3A5C"/>`;
+  let s = `<svg viewBox="0 0 ${W} 94" style="width:100%;max-width:${W}px;display:block;margin:6px auto;"><line x1="20" y1="45" x2="${W - 8}" y2="45" stroke="#1C1B2E" stroke-width="1.6"/><polygon points="${W - 8},45 ${W - 16},40 ${W - 16},50" fill="#1C1B2E"/>`;
   for(let i = 0; i <= max * n; i++){ const x = 30 + i * U / n, g = i % n === 0;
-    s += `<line x1="${x}" y1="${g ? 34 : 39}" x2="${x}" y2="${g ? 56 : 51}" stroke="#1F3A5C" stroke-width="${g ? 1.8 : 1}"/>`;
+    s += `<line x1="${x}" y1="${g ? 34 : 39}" x2="${x}" y2="${g ? 56 : 51}" stroke="#1C1B2E" stroke-width="${g ? 1.3 : 1}"/>`;
     const lab = opts.etiquettes ? opts.etiquettes(i) : (g ? String(i / n) : '');
     // [a, b] : fraction écrite en étage (jamais « a/b »).
     if(Array.isArray(lab)) s += `<text x="${x}" y="70" font-size="12" text-anchor="middle" fill="#1F3A5C" font-family="Space Grotesk">${lab[0]}</text><line x1="${x - 7}" y1="74" x2="${x + 7}" y2="74" stroke="#1F3A5C" stroke-width="1.2"/><text x="${x}" y="87" font-size="12" text-anchor="middle" fill="#1F3A5C" font-family="Space Grotesk">${lab[1]}</text>`;
-    else if(lab) s += `<text x="${x}" y="74" font-size="13" text-anchor="middle" fill="#1F3A5C" font-family="Space Grotesk">${lab}</text>`; }
-  (points || []).forEach(([v, nom, c]) => { const x = 30 + v * U; s += `<circle cx="${x}" cy="45" r="5" fill="${c || '#E35D3A'}"/><text x="${x}" y="24" font-size="14" font-weight="700" text-anchor="middle" fill="${c || '#E35D3A'}" font-family="Space Grotesk">${nom}</text>`; });
+    else if(lab) s += `<text x="${x}" y="74" font-size="13" text-anchor="middle" fill="#1C1B2E" font-family="JetBrains Mono, monospace">${lab}</text>`; }
+  (points || []).forEach(([v, nom, c]) => { const x = 30 + v * U; s += `<circle cx="${x}" cy="45" r="4.5" fill="${c || '#FF8208'}"/><text x="${x}" y="24" font-size="14" font-weight="700" text-anchor="middle" fill="${c || '#FF8208'}" font-family="Space Grotesk">${nom}</text>`; });
   return s + '</svg>';
 }
 /* ---- Dessins des corrections rédigées et des planches (demandé : « mieux représenter la correction
@@ -211,7 +211,7 @@ function cm1Paquets(parts, opts){
 // opts : demis [[x, y, coin]] (coin hg, hd, bg, bd : le triangle colorié), k (taille d'un carreau),
 // contour (trait épais autour de la figure), cote (étiquettes de côtés : [[x, y, 'texte']] en carreaux).
 function cm1Quad(w, h, cases, opts){
-  opts = opts || {}; const k = opts.k || 20, c = opts.c || '#2EA8C9', on = new Set((cases || []).map(([x, y]) => x + ',' + y));
+  opts = opts || {}; const k = opts.k || 20, c = opts.c || '#FF8208', on = new Set((cases || []).map(([x, y]) => x + ',' + y));
   const W = w * k + 2, H = h * k + 2;
   let s = `<svg class="pl-libre" viewBox="0 0 ${W} ${H}" style="width:${opts.largeur || W}px;max-width:100%;display:inline-block;vertical-align:middle;">`;
   for(let y = 0; y < h; y++) for(let x = 0; x < w; x++){ const p = on.has(x + ',' + y); s += `<rect x="${1 + x * k}" y="${1 + y * k}" width="${k}" height="${k}" fill="${p ? c : '#fff'}" fill-opacity="${p ? .6 : 1}" stroke="#B9C7D6" stroke-width=".8"/>`; }
@@ -235,9 +235,9 @@ function cm1Rect(x0, y0, l, h){ const r = []; for(let y = y0; y < y0 + h; y++) f
 // etiq ; points [[valeur, nom]].
 function cm1Axe(min, max, pas, etiq, points, opts){
   opts = opts || {}; const L = opts.L || 460, W = L + 60, px = v => 30 + L * (v - min) / (max - min);
-  let s = `<svg class="pl-libre" viewBox="0 0 ${W} 76" style="width:100%;max-width:${W}px;display:block;margin:2px 0;"><line x1="20" y1="44" x2="${W - 10}" y2="44" stroke="#1F3A5C" stroke-width="2"/><polygon points="${W - 10},44 ${W - 18},39 ${W - 18},49" fill="#1F3A5C"/>`;
-  for(let v = min; v <= max + 1e-9; v += pas){ const e = Math.abs((v - min) / etiq - Math.round((v - min) / etiq)) < 1e-6; s += `<line x1="${px(v)}" y1="${e ? 36 : 40}" x2="${px(v)}" y2="${e ? 52 : 48}" stroke="#1F3A5C" stroke-width="${e ? 1.6 : 1}"/>` + (e ? cmT(px(v), 68, (opts.fmt || String)(v), { fs: 11, fw: 600, c: '#4E5665' }) : ''); }
-  (points || []).forEach(([v, nom], i) => { s += `<circle cx="${px(v)}" cy="44" r="5" fill="#E35D3A"/>` + cmT(px(v), i % 2 && opts.alterne ? 30 : 28, nom, { fs: 12, c: '#E35D3A' }); });
+  let s = `<svg class="pl-libre" viewBox="0 0 ${W} 76" style="width:100%;max-width:${W}px;display:block;margin:2px 0;"><line x1="20" y1="44" x2="${W - 10}" y2="44" stroke="#1C1B2E" stroke-width="1.6"/><polygon points="${W - 10},44 ${W - 18},40 ${W - 18},48" fill="#1C1B2E"/>`;
+  for(let v = min; v <= max + 1e-9; v += pas){ const e = Math.abs((v - min) / etiq - Math.round((v - min) / etiq)) < 1e-6; s += `<line x1="${px(v)}" y1="${e ? 37 : 40}" x2="${px(v)}" y2="${e ? 51 : 48}" stroke="#1C1B2E" stroke-width="${e ? 1.3 : 1}"/>` + (e ? `<text x="${px(v)}" y="68" font-size="12" text-anchor="middle" fill="#1C1B2E" font-family="JetBrains Mono, monospace">${(opts.fmt || String)(v)}</text>` : ''); }
+  (points || []).forEach(([v, nom], i) => { s += `<circle cx="${px(v)}" cy="44" r="4.5" fill="#FF8208"/>` + cmT(px(v), i % 2 && opts.alterne ? 30 : 28, nom, { fs: 13, c: '#FF8208' }); });
   return s + '</svg>';
 }
 // Balance à plateaux en équilibre : un objet à gauche, des masses marquées à droite.
@@ -277,11 +277,12 @@ function cm1Tex(src){ return `<span class="tex">${src}</span>`; }
 function cm1Posee(lignes, retenues, opts){
   opts = opts || {};
   const larg = Math.max(...lignes.map(l => l[1].length), retenues ? retenues.length : 0);
-  const cell = (c, st, res) => `<td style="width:22px;height:28px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:1.15rem;font-weight:700;padding:2px 0;${st || ''}">${c === ' ' ? '' : res && opts.trous && typeof plCase === 'function' ? '<span class="pl-case pl-case-seule" style="margin:0;width:18px;"></span>' : res && opts.rep && typeof plRep === 'function' ? plRep(c) : c}</td>`;
-  let h = '<table style="border-collapse:collapse;margin:8px auto;">';
-  if(retenues) h += `<tr><td></td>${retenues.padStart(larg).split('').map(c => cell(c, 'font-size:.75rem;color:#E35D3A;')).join('')}</tr>`;
+  const virg = new Set(); lignes.forEach(([, n]) => n.padStart(larg).split('').forEach((c, j) => { if(c === ',') virg.add(j); }));
+  const cell = (c, st, res, j) => `<td style="width:${virg.has(j) ? 12 : 30}px;height:28px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:700;padding:2px 0;color:#1C1B2E;${st || ''}">${c === ' ' ? '' : res && opts.trous && typeof plCase === 'function' ? '<span class="pl-case pl-case-seule" style="margin:0;width:18px;"></span>' : res && opts.rep && typeof plRep === 'function' ? plRep(c) : c}</td>`;
+  let h = '<table style="border-collapse:collapse;margin:5px auto;">';
+  if(retenues) h += `<tr><td></td>${retenues.padStart(larg).split('').map(c => cell(c, 'font-size:.72rem;color:#FF8208;')).join('')}</tr>`;
   lignes.forEach(([s, n, trait], i) => { const res = i === lignes.length - 1;
-    h += `<tr style="${res || trait ? 'border-top:2px solid #1F3A5C;' : ''}">${cell(s, 'color:#E35D3A;')}${n.padStart(larg).split('').map(c => cell(c, res ? 'color:#2E9C6A;' : '', res)).join('')}</tr>`; });
+    h += `<tr style="${res || trait ? 'border-top:2px solid #1C1B2E;' : ''}">${cell(s, 'width:26px;color:#FF8208;')}${n.padStart(larg).split('').map((c, j) => cell(c, res ? 'color:#FF8208;font-size:1.2rem;' : '', res, j)).join('')}</tr>`; });
   return h + '</table>';
 }
 

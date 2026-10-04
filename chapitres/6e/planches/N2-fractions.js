@@ -6,7 +6,7 @@ const B = n => plPointilles(n || 3), R = v => plRep(String(v)), F = cm1Frac, Fr 
 const T = (a, b) => cm1Tex(`\\tfrac{${a}}{${b}}`);
 const ligne = (...h) => `<span style="display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap;">${h.join(' ')}</span>`;
 const col = (h, t) => `<span style="display:flex;flex-direction:column;align-items:center;gap:3px;">${h}<span>${t}</span></span>`;
-const FIGS = [[cm1Disque(6, 5, { taille: 70 }), 5, 6], [cm1Bande(4, 3, { largeur: 120 }), 3, 4], [cm1Quad(4, 3, [[0, 0], [1, 0], [2, 0], [3, 0], [0, 1], [1, 1], [2, 1]], { k: 16, c: '#7A4FC0' }), 7, 12]];
+const FIGS = [[cm1Disque(6, 5, { taille: 70 }), 5, 6], [cm1Bande(4, 3, { largeur: 120 }), 3, 4], [cm1Quad(4, 3, [[0, 0], [1, 0], [2, 0], [3, 0], [0, 1], [1, 1], [2, 1]], { k: 16, c: '#FF8208' }), 7, 12]];
 PLANCHES['6e|Fractions : nombres et partage'] = [
   { titre: 'Écriture fractionnaire et égalités de fractions', duree: '40 min',
     attendus: ['Utiliser une fraction pour exprimer un partage, un quotient', 'Repérer une fraction sur une demi-droite graduée', 'Reconnaître et produire des fractions égales, simplifier'],

@@ -150,6 +150,19 @@ function plCssReglages(p){
 function plFontsLien(p){ const f = PL_POLICES[p.police]; return f && f.gf ? `<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=${f.gf}&display=swap">` : ''; }
 // Logo du site, intégré à la page imprimée (data URL : rien à télécharger au moment d'imprimer).
 let plLogoData = null;
+// Images partagées par les figures des planches (le rapporteur photographié du tableau interactif) :
+// déclarées une fois dans la page, utilisées par <use href="#plRapporteur">. Dans la fenêtre
+// d'impression, l'image est intégrée (data URL) pour être présente au moment d'imprimer.
+const PL_RAPP_SRC = 'assets/rapporteur-planche.png';
+const plDefsImages = src => `<svg width="0" height="0" style="position:absolute;width:0;height:0;" aria-hidden="true"><defs><image id="plRapporteur" href="${src}" width="900" height="483"/></defs></svg>`;
+document.addEventListener('DOMContentLoaded', () => document.body.insertAdjacentHTML('beforeend', plDefsImages(PL_RAPP_SRC)));
+let plRappData = null;
+async function plRappDataUrl(){
+  if(plRappData != null) return plRappData;
+  try{ const r = await fetch(PL_RAPP_SRC); const b = await r.blob();
+    plRappData = await new Promise(ok => { const fr = new FileReader(); fr.onload = () => ok(fr.result); fr.readAsDataURL(b); }); }catch(e){ plRappData = PL_RAPP_SRC; }
+  return plRappData;
+}
 async function plLogo(){
   if(plLogoData) return plLogoData;
   try{ const r = await fetch('assets/logo-horizontal.png'); const b = await r.blob();
@@ -388,7 +401,7 @@ async function plImprimer(lvl, blocs, mode, opts){
   tmp.innerHTML = (opts.avant || '') + (mode === 'livre' ? pages('eleve') + (opts.sansCorriges ? '' : (opts.entreCorriges || '') + pages('corr')) : pages(mode));
   document.body.appendChild(tmp);
   plFigerMaths(tmp);
-  const corps = tmp.innerHTML; tmp.remove();
+  const corps = tmp.innerHTML + (tmp.innerHTML.includes('#plRapporteur') ? plDefsImages(await plRappDataUrl()) : ''); tmp.remove();
   const w = window.open('', '_blank', 'width=900,height=1000');
   if(!w){ await niceAlert('La fenêtre n\'a pas pu s\'ouvrir : autorisez les fenêtres (pop-up) pour ce site.'); return; }
   const premier = blocs[0], titre = opts.titre || `${plRef(lvl, plCode(lvl, premier.c), premier.indices[0])}${blocs.length > 1 || premier.indices.length > 1 ? ' et suivantes' : ''}${mode === 'corr' ? ' (corrigé)' : ''}`;
@@ -456,6 +469,22 @@ function plCouvDeco(){
     <rect x="76" y="62" width="7" height="5" fill="#9CCB6B" opacity=".7" transform="rotate(12 79 64)"/><circle cx="20" cy="70" r="2.6" fill="#E35D3A" opacity=".5"/></svg>`;
   return formes + f.map(([t, x, y, c, fs, r]) => `<span class="pl-couv-sym" style="left:${x}%;top:${y}%;color:${c};font-size:${fs}pt;transform:translate(-50%,-50%) rotate(${r}deg);">${t}</span>`).join('');
 }
+// Collège (6e → 3e) : page de garde plus sobre que celle de l'école primaire (demandé : « la page de garde
+// en 6e doit être moins enfantine pour se différencier de l'école primaire »).
+const plCollege = lvl => /^[3-6]e$/.test(lvl);
+function plCouvConstruction(){
+  // Construction géométrique en filigrane : triangle, cercle circonscrit, médiatrices, arcs de compas, demi-droite graduée.
+  const A = [70, 300], B = [330, 300], C = [230, 90], O = [200, 236.9], r = Math.hypot(A[0] - O[0], A[1] - O[1]);
+  const L = (p, q, d) => `<line x1="${p[0]}" y1="${p[1]}" x2="${q[0]}" y2="${q[1]}"${d ? ' stroke-dasharray="6 5"' : ''}/>`;
+  const med = (p, q) => { const m = [(p[0] + q[0]) / 2, (p[1] + q[1]) / 2], u = [q[1] - p[1], p[0] - q[0]], l = Math.hypot(...u); return L([m[0] - u[0] / l * 190, m[1] - u[1] / l * 190], [m[0] + u[0] / l * 190, m[1] + u[1] / l * 190], true); };
+  let g = '';
+  for(let i = 0; i <= 20; i++){ const x = 20 + i * 18; g += `<line x1="${x}" y1="${i % 5 ? 386 : 380}" x2="${x}" y2="${i % 5 ? 394 : 400}"/>`; }
+  return `<svg class="pl-couv-constr" viewBox="0 0 400 410" fill="none" stroke="#1F3A5C" stroke-width="1.3">
+    <circle cx="${O[0]}" cy="${O[1]}" r="${r.toFixed(1)}" stroke="#2E6FD8"/>${med(A, B)}${med(B, C)}${med(A, C)}
+    <polygon points="${A.join(',')} ${B.join(',')} ${C.join(',')}" stroke-width="2"/>
+    <path d="M176.0,130.4 A200,200 0 0 1 220.9,168.8" stroke="#E8862E"/><path d="M179.1,168.8 A200,200 0 0 1 224.0,130.4" stroke="#E8862E"/>
+    <circle cx="${O[0]}" cy="${O[1]}" r="3" fill="#1F3A5C"/>${L([20, 390], [395, 390])}${g}</svg>`;
+}
 async function plLivre(lvl, avecCorriges){
   if(!plLivreAutorise()){ await niceAlert('Le livre d\'exercices est réservé aux professeurs.'); return; }
   const niv = PL_NIVEAUX_TXT[lvl] || lvl, logo = await plLogo();
@@ -463,7 +492,13 @@ async function plLivre(lvl, avecCorriges){
   if(!chaps.length){ await niceAlert('Aucune planche n\'est encore écrite pour ce niveau.'); return; }
   const nb = chaps.reduce((s, c) => s + plDe(lvl, c.t).length, 0);
   const doms = [...new Set(chaps.map(c => plDom(c)))];
-  const couv = `<section class="pl-page pl-couv">${plCouvDeco()}
+  const couv = plCollege(lvl) ? `<section class="pl-page pl-couv pl-couv-col">
+    <div class="pl-col-haut">${logo ? `<img class="pl-couv-logo" src="${logo}" alt="L'Atelier des Maths">` : '<b>L\'Atelier des Maths</b>'}<span class="pl-col-cycle">${lvl === '6e' ? 'Cycle 3' : 'Cycle 4'} · nouveau programme</span></div>
+    <div class="pl-col-bande"><span class="pl-col-mat">Mathématiques</span><span class="pl-col-niv">${escapeHtml(lvl.replace('e', ''))}<sup>e</sup></span><span class="pl-col-titre">Cahier d'exercices</span></div>
+    <div class="pl-col-milieu">${plCouvConstruction()}
+      <span class="pl-col-prog">Au programme</span><ul class="pl-col-doms">${Object.values(PL_DOMAINES).filter(d => doms.includes(d)).map(([t, c]) => `<li style="--c:${c};">${t}</li>`).join('')}</ul></div>
+    <div class="pl-col-champs"><span>Nom <i></i></span><span>Prénom <i></i></span><span class="pl-col-classe">Classe <i></i></span></div>
+    <div class="pl-col-pied"><span>${chaps.length} chapitres · ${nb} planches d'exercices · trois niveaux de difficulté${avecCorriges ? ' · corrigés à la fin' : ''}</span><span class="pl-col-sign"><span class="pl-oliv">${plOliv('methode')}</span>L'Atelier des Maths · édition du ${new Date().toLocaleDateString('fr-FR')}</span></div></section>` : `<section class="pl-page pl-couv">${plCouvDeco()}
     <div class="pl-couv-haut">${logo ? `<img class="pl-couv-logo" src="${logo}" alt="L'Atelier des Maths">` : '<b>L\'Atelier des Maths</b>'}</div>
     <div class="pl-couv-niv">${niv}</div>
     <h1 class="pl-couv-titre">Mon livre d'exercices<br><span>de mathématiques</span></h1>
@@ -474,7 +509,7 @@ async function plLivre(lvl, avecCorriges){
     <p class="pl-couv-pied">L'Atelier des Maths · L'Atelier Augmenté · édition du ${new Date().toLocaleDateString('fr-FR')}</p></section>`;
   const ligne = (ref, titre, page, et) => `<div class="pl-som-pl"><span class="pl-som-ref">${ref}</span><span class="pl-som-t">${titre}</span>${et ? `<span class="pl-som-et">${et}</span>` : ''}<span class="pl-som-pts"></span><span class="pl-som-num" data-page="${page}"></span></div>`;
   const sommaire = `<section class="pl-page pl-sommaire">
-    <div class="pl-som-tete"><h1>Sommaire</h1><span class="pl-som-olivia"><span class="pl-couv-bulle">Choisis ta planche,<br>et c'est parti !</span><span class="pl-oliv">${plOliv('methode')}</span></span></div>
+    <div class="pl-som-tete"><h1>Sommaire</h1>${plCollege(lvl) ? `<span class="pl-som-col">Chaque planche : ★ pour s'entraîner, ★★ pour approfondir, ★★★ pour se dépasser.</span>` : `<span class="pl-som-olivia"><span class="pl-couv-bulle">Choisis ta planche,<br>et c'est parti !</span><span class="pl-oliv">${plOliv('methode')}</span></span>`}</div>
     <div class="pl-som-leg">${Object.values(PL_DOMAINES).filter(d => doms.includes(d)).map(([t, c]) => `<span><i style="background:${c};"></i>${t}</span>`).join('')}</div>
     ${chaps.map(c => { const [, coul, fond] = plDom(c), l = plDe(lvl, c.t);
       return `<div class="pl-som-chap" style="--c:${coul};--f:${fond};"><div class="pl-som-ct"><span class="pl-som-code">${escapeHtml(c.code)}</span><b>${escapeHtml(c.t)}</b><span class="pl-som-nb">${l.length} planche${l.length > 1 ? 's' : ''}</span></div>
@@ -660,6 +695,26 @@ const PL_CSS_LIVRE = `
   .pl-couv{ display:flex; flex-direction:column; align-items:center; justify-content:space-between; text-align:center; gap:10px; padding:16px 18px 10px; box-sizing:border-box; overflow:hidden;
     border-radius:18px; background:linear-gradient(165deg,#FFF6DA 0%,#FFFFFF 38%,#E9F3FD 100%); border:3px solid #1F3A5C; }
   .pl-couv > *{ position:relative; z-index:1; }
+  .pl-couv.pl-couv-col{ background:#fff; border:1.5px solid #1F3A5C; border-radius:4px; padding:0; gap:0; justify-content:flex-start; align-items:stretch; text-align:left; }
+  .pl-col-haut{ display:flex; justify-content:space-between; align-items:center; padding:14px 22px 12px; }
+  .pl-col-haut .pl-couv-logo{ height:46px; }
+  .pl-col-cycle{ font:600 10pt Inter,Arial,sans-serif; color:#4E5665; letter-spacing:.04em; text-transform:uppercase; }
+  .pl-col-bande{ background:#1F3A5C; color:#fff; display:grid; grid-template-columns:auto 1fr; grid-template-rows:auto auto; column-gap:22px; align-items:end; padding:26px 30px 24px; border-bottom:6px solid #E8862E; }
+  .pl-col-mat{ grid-column:1 / 3; font:600 13pt Inter,Arial,sans-serif; letter-spacing:.32em; text-transform:uppercase; color:#BFD3EA; }
+  .pl-col-niv{ font:800 96pt 'Space Grotesk',Arial,sans-serif; line-height:.9; }
+  .pl-col-niv sup{ font-size:.42em; vertical-align:top; position:relative; top:.12em; }
+  .pl-col-titre{ font:700 26pt 'Space Grotesk',Arial,sans-serif; padding-bottom:12px; border-left:2px solid rgba(255,255,255,.35); padding-left:20px; }
+  .pl-col-milieu{ flex:1; position:relative; display:flex; flex-direction:column; align-items:flex-start; padding:26px 30px 20px; min-height:330px; gap:10px; }
+  .pl-col-prog{ font:600 10pt Inter,Arial,sans-serif; letter-spacing:.2em; text-transform:uppercase; color:#8A93A3; position:relative; }
+  .pl-couv-constr{ position:absolute; right:14px; bottom:8px; width:64%; height:auto; opacity:.5; }
+  .pl-col-doms{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:12px; position:relative; }
+  .pl-col-doms li{ font:700 13pt 'Space Grotesk',Arial,sans-serif; color:#1F3A5C; border-left:5px solid var(--c); padding:3px 0 3px 12px; background:linear-gradient(90deg,#F5F8FB,rgba(255,255,255,0)); }
+  .pl-col-champs{ display:flex; gap:18px; padding:16px 30px; border-top:1px solid #D5DEE8; font:600 11pt Inter,Arial,sans-serif; color:#1F3A5C; }
+  .pl-col-champs span{ flex:2; display:flex; align-items:flex-end; gap:8px; } .pl-col-champs .pl-col-classe{ flex:1; }
+  .pl-col-champs i{ flex:1; border-bottom:1.5px solid #8A93A3; height:1.2em; }
+  .pl-col-pied{ display:flex; justify-content:space-between; align-items:center; gap:12px; padding:8px 22px 12px; font:500 9.5pt Inter,Arial,sans-serif; color:#4E5665; border-top:1px solid #D5DEE8; }
+  .pl-col-sign{ display:flex; align-items:center; gap:6px; white-space:nowrap; } .pl-col-sign .pl-oliv{ width:34px; height:34px; display:inline-block; } .pl-col-sign .pl-oliv svg{ width:100%; height:100%; }
+  .pl-som-col{ font:600 10pt Inter,Arial,sans-serif; color:#4E5665; max-width:110mm; text-align:right; }
   .pl-couv-formes{ position:absolute !important; inset:0; width:100%; height:100%; z-index:0 !important; }
   .pl-couv-sym{ position:absolute !important; z-index:0 !important; font-family:'Space Grotesk',Arial,sans-serif; font-weight:800; opacity:.55; }
   .pl-couv-logo{ height:62px; width:auto; }

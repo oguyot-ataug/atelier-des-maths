@@ -21,18 +21,15 @@ const SOL = {
   pyr: P([[20, 75], [70, 75], [55, 14]], '#F6C9BD') + P([[70, 75], [90, 60], [55, 14]], '#EFAE9C') + `<line x1="20" y1="75" x2="40" y2="60" stroke="${K}" stroke-dasharray="4 3"/><line x1="40" y1="60" x2="90" y2="60" stroke="${K}" stroke-dasharray="4 3"/><line x1="40" y1="60" x2="55" y2="14" stroke="${K}" stroke-dasharray="4 3"/>`,
   boule: `<circle cx="55" cy="50" r="32" fill="#FBE3B3" stroke="${K}" stroke-width="1.6"/><ellipse cx="55" cy="50" rx="32" ry="9" fill="none" stroke="${K}" stroke-dasharray="4 3"/>`
 };
-// Empilement de cubes (x vers la droite, y en profondeur, z vers le haut), perspective cavalière.
-function pile(c, a){ a = a || 20; const W = 8 * a, H = 7 * a, X = (x, y) => 12 + x * a + y * a * .5, Y = (y, z) => H - 8 - z * a - y * a * .5;
-  const l = c.slice().sort((p, q) => q[1] - p[1] || p[2] - q[2] || p[0] - q[0]); let s = '';
-  l.forEach(([x, y, z]) => { const f = [[X(x, y), Y(y, z)], [X(x + 1, y), Y(y, z)], [X(x + 1, y), Y(y, z + 1)], [X(x, y), Y(y, z + 1)]];
-    s += P([f[3], f[2], [X(x + 1, y + 1), Y(y + 1, z + 1)], [X(x, y + 1), Y(y + 1, z + 1)]], '#DDF0F7') + P([f[1], [X(x + 1, y + 1), Y(y + 1, z)], [X(x + 1, y + 1), Y(y + 1, z + 1)], f[2]], '#9FD3E6') + P(f, '#BFE3F0'); });
-  return S(W, H, s, W); }
+// Empilement de cubes : l'outil « assemblage de cubes » du tableau interactif (cubeStackSvg) ;
+// c = [[x, y, z]] avec x vers la droite, y en profondeur, z vers le haut (converti au repère de l'outil).
+function pile(c, a){ return `<div style="max-width:${(a || 20) * 8}px;margin:0 auto;">${cubeStackSvg(c.map(([x, y, z]) => ({ x, y: z, z: y })))}</div>`; }
 // Vue de face : quadrillage w × h, colonnes de hauteurs données (cases du bas vers le haut).
 const vueFace = (c, w, h) => { const on = []; c.forEach(([x, , z]) => on.push([x, h - 1 - z])); return [...new Set(on.map(p => p.join(',')))].map(s => s.split(',').map(Number)); };
 const vueDessus = (c, w, d) => { const on = []; c.forEach(([x, y]) => on.push([x, d - 1 - y])); return [...new Set(on.map(p => p.join(',')))].map(s => s.split(',').map(Number)); };
 const PILE1 = [[0, 0, 0], [1, 0, 0], [2, 0, 0], [0, 0, 1], [0, 1, 0], [0, 1, 1], [0, 1, 2]];
 const PILE2 = [[0, 0, 0], [1, 0, 0], [1, 0, 1], [2, 0, 0], [2, 1, 0], [2, 1, 1]];
-const grilleX = (att, w, h) => ({ eleve: plX(cm1Quad(w, h, [], { k: 22 }), { t: 'cases', k: 22, ox: 1, oy: 1, w, h, coul: '#2EA8C9', att }), corr: cm1Quad(w, h, att, { k: 22 }) });
+const grilleX = (att, w, h) => ({ eleve: plX(cm1Quad(w, h, [], { k: 22 }), { t: 'cases', k: 22, ox: 1, oy: 1, w, h, coul: '#FF8208', att }), corr: cm1Quad(w, h, att, { k: 22 }) });
 // Patrons de cube (6 carrés) : quelques bons, quelques faux.
 const patron = (l, k) => { k = k || 13; return S(6 * k + 4, 5 * k + 4, l.map(([x, y]) => `<rect x="${2 + x * k}" y="${2 + y * k}" width="${k}" height="${k}" fill="#F8D9A8" stroke="${K}" stroke-width="1.4"/>`).join(''), 6 * k + 4); };
 PLANCHES['6e|Solides et volumes'] = [

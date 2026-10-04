@@ -60,7 +60,7 @@ PLANCHES['6e|Multiplication et division'] = [
         eleve: plListe(['8,4 ÷ 2 = ' + B(), '9,6 ÷ 3 = ' + B(), '1,5 ÷ 5 = ' + B(), '0,48 ÷ 4 = ' + B(), '7 ÷ 2 = ' + B()]),
         corr: plListe(['8,4 ÷ 2 = ' + R('4,2'), '9,6 ÷ 3 = ' + R('3,2'), '1,5 ÷ 5 = ' + R('0,3'), '0,48 ÷ 4 = ' + R('0,12'), '7 ÷ 2 = ' + R('3,5')]) },
       { etoiles: 2, col: 1, cahier: true, consigne: 'Pose et calcule : 57,6 ÷ 4 ; 136,5 ÷ 7 ; 9,45 ÷ 5.',
-        corr: cm1Redac('Résultats', { suite: ['57,6 ÷ 4 = 14,4', '136,5 ÷ 7 = 19,5', '9,45 ÷ 5 = 1,89'] }, 'On place la virgule au quotient au moment où l\'on abaisse le chiffre des dixièmes.') },
+        corr: (typeof divisionDecimaleHTML === 'function' ? `<div style="display:flex;justify-content:space-around;flex-wrap:wrap;">${[['57,6', 4], ['136,5', 7], ['9,45', 5]].map(([a, b]) => `<div class="pl-div">${divisionDecimaleHTML(computeDivisionDecimale(a, b, 2), 2)}</div>`).join('')}</div>` : '') + cm1Redac('Résultats', { suite: ['57,6 ÷ 4 = 14,4', '136,5 ÷ 7 = 19,5', '9,45 ÷ 5 = 1,89'] }, 'On place la virgule au quotient au moment où l\'on abaisse le chiffre des dixièmes.') },
       { etoiles: 2, col: 1, consigne: 'Ces divisions « tombent juste » si on continue après la virgule. Calcule.',
         eleve: plListe(['3 ÷ 4 = ' + B(), '17 ÷ 8 = ' + B(), '21 ÷ 5 = ' + B(), '1 ÷ 8 = ' + B()]),
         corr: plListe(['3 ÷ 4 = ' + R('0,75'), '17 ÷ 8 = ' + R('2,125'), '21 ÷ 5 = ' + R('4,2'), '1 ÷ 8 = ' + R('0,125')]) },
