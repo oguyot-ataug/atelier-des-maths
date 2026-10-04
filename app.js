@@ -3335,6 +3335,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.975', date:'2026-10-04', items:[
+    "Planches 6e : « Nombres entiers » passe à 7 planches (écrire et décomposer, comparer, ranger, arrondir, calcul mental et problèmes, multiples et critères de divisibilité par 3 et 9), « Fractions : nombres et partage » à 5 planches (demi-droite graduée, fractions décimales et quotients, fraction d'une quantité et partages), « Distance et cercles » à 5 planches (milieux sur quadrillage et codages, cercles et distances, construire et reproduire des figures avec des cercles)."
+  ] },
   { version:'2026-08-19.974', date:'2026-10-03', items:[
     "Planches 6e « Droites parallèles et perpendiculaires » : 8 planches au lieu de 2 (40 exercices) : position relative de deux droites, notations et programmes de construction (compléter, remettre dans l'ordre, choisir la figure, écrire), perpendiculaires et parallèles sur quadrillage (plusieurs cas, dans un triangle, dans un quadrilatère) et à l'équerre, propriétés et démonstrations, médiatrice (codages, phrases, propriété), les trois médiatrices d'un triangle, reproduction d'une figure.",
     "Planches à l'écran : nouvel outil pour tracer plusieurs droites sur un même quadrillage (deux points touchés = une droite). Clavier virtuel : parenthèses et crochets pour écrire (AB), [AB] et [AB)."
