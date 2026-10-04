@@ -3335,6 +3335,12 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.977', date:'2026-10-04', items:[
+    "Planches 6e « Opérations et ordre de grandeur » (4 planches) : additions et soustractions de décimaux posées (à compléter case par case à l'écran), calcul mental, ordre de grandeur, problèmes.",
+    "Planches 6e « Construction de triangles » (5 planches) : triangles particuliers, construire avec trois longueurs (inégalité triangulaire), avec des angles, angles des triangles particuliers, placer un sommet sur quadrillage (à l'écran).",
+    "Planches 6e « Multiplication et division » (4 planches) : ×10, ÷10…, multiplication posée de décimaux (à l'écran), division d'un décimal par un entier, valeurs approchées, problèmes.",
+    "Planches 6e « Symétrie axiale » (5 planches) : axes de symétrie, compléter une figure sur quadrillage (axe vertical, horizontal ou diagonal, à l'écran), symétrique d'un point, propriétés, médiatrice et bissectrice comme axes."
+  ] },
   { version:'2026-08-19.976', date:'2026-10-04', items:[
     "Planches 6e « Nombres décimaux » (6 planches) : dixièmes, centièmes, millièmes ; décomposition et nom des chiffres ; demi-droite graduée (lire, et placer les points à l'écran) ; comparer et ranger ; encadrer et arrondir ; problèmes de mesures.",
     "Planches 6e « Angles et rapporteur » (7 planches) : notion d'angle et notations, types d'angles (avec l'horloge), lire une mesure sur un rapporteur dessiné (graduations intérieure et extérieure), construire, paires d'angles, bissectrice, calculs d'angles.",
