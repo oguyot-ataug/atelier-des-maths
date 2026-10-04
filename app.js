@@ -3335,6 +3335,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.978', date:'2026-10-04', items:[
+    "Planches 6e « Fractions : comparaison et addition » (4 planches), « Gestion de données » (5 planches : tableaux, diagrammes en barres à compléter à l'écran, diagrammes circulaires, graphiques, enquête), « Propriétés des triangles » (4 planches : somme des angles, calculs, cercle circonscrit avec le centre à placer à l'écran, synthèse) et « Fractions : multiplication » (4 planches : fraction × entier, fraction d'une quantité, pourcentages, problèmes)."
+  ] },
   { version:'2026-08-19.977', date:'2026-10-04', items:[
     "Planches 6e « Opérations et ordre de grandeur » (4 planches) : additions et soustractions de décimaux posées (à compléter case par case à l'écran), calcul mental, ordre de grandeur, problèmes.",
     "Planches 6e « Construction de triangles » (5 planches) : triangles particuliers, construire avec trois longueurs (inégalité triangulaire), avec des angles, angles des triangles particuliers, placer un sommet sur quadrillage (à l'écran).",
