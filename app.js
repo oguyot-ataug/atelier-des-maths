@@ -3335,6 +3335,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.979', date:'2026-10-04', items:[
+    "Planches 6e : tous les chapitres sont couverts (21 chapitres, 99 planches, 524 exercices, dont 375 faisables à l'écran). Nouveaux : « Proportionnalité » (4 planches, échelles comprises), « Aire et périmètre » (5), « Probabilités » (3), « Initiation à l'algèbre » (3, avec balances), « Solides et volumes » (4 : solides, vues d'un assemblage de cubes à colorier, volumes, patrons), « Heures et durée » (4) et « Initiation à la pensée informatique » (3 : robot à programmer à l'écran, entrées et sorties, boucles)."
+  ] },
   { version:'2026-08-19.978', date:'2026-10-04', items:[
     "Planches 6e « Fractions : comparaison et addition » (4 planches), « Gestion de données » (5 planches : tableaux, diagrammes en barres à compléter à l'écran, diagrammes circulaires, graphiques, enquête), « Propriétés des triangles » (4 planches : somme des angles, calculs, cercle circonscrit avec le centre à placer à l'écran, synthèse) et « Fractions : multiplication » (4 planches : fraction × entier, fraction d'une quantité, pourcentages, problèmes)."
   ] },
