@@ -41,7 +41,7 @@ function QD(w, h, k, o){ const g = q => [q[0] * k, q[1] * k]; let s = '';
 const traceD = (w, h, k, o, sol) => ({ eleve: plX(QD(w, h, k, o), { t: 'droites', k, ox: 0, oy: 0, w, h, att: sol.map(d => ({ p: d.p, v: d.v })) }), corr: QD(w, h, k, { ...o, sol }) });
 // Vignette : deux droites (a, b : [point, point]) dans un cadre 120 × 86, avec codage éventuel.
 // Vignettes avec le choix sous chaque figure (V : figures ; it : [nom, réponse] ; m : les mots ; note : précision du corrigé).
-const vigCap = (t, w) => `<span style="text-align:center;line-height:1.3;max-width:${w}px;font-size:.92em;"><b style="font-size:1.1em;">${t}</b> `;
+const vigCap = (t, w) => `<span class="pl-item" style="display:block;text-align:center;line-height:1.3;max-width:${w}px;font-size:.92em;"><b style="font-size:1.1em;">${t}</b> `;
 const duoH = l => duo(l).replace('align-items:flex-end', 'align-items:flex-start');
 const vigs = (V, it, m, note) => ({ eleve: duoH(V.map((v, i) => `<span style="display:flex;flex-direction:column;align-items:center;gap:2px;">${v}${vigCap(it[i][0], 104)}<b>${m}</b></span></span>`)),
   corr: duoH(V.map((v, i) => `<span style="display:flex;flex-direction:column;align-items:center;gap:2px;">${v}${vigCap(it[i][0], note ? 150 : 104)}${plEntoure(it[i][1])}${note ? `<br><small>${note[i]}</small>` : ''}</span></span>`)) });
@@ -61,7 +61,7 @@ PLANCHES['6e|Droites parallèles et perpendiculaires'] = [
             vig([[[10, 15], [110, 32]], [[10, 72], [110, 50]]])];
           return vigs(V, [['a', 'parallèles'], ['b', 'perpendiculaires'], ['c', 'sécantes'], ['d', 'perpendiculaires'], ['e', 'sécantes']], 'sécantes · perpendiculaires · parallèles'); })() },
       { etoiles: 1, consigne: 'Observe les droites tracées sur le quadrillage. Entoure le mot le plus précis.',
-        ...(() => { const F = `<div>${QD(14, 9, 15, { d: [
+        ...(() => { const F = `<div>${QD(14, 9, 14, { d: [
             { p: [0, 2], v: [1, 0], c: COUL[0], n: '(d1)', lab: [4, 1.5] }, { p: [2, 0], v: [0, 1], c: COUL[1], n: '(d2)', lab: [2.85, .7] },
             { p: [0, 8], v: [1, 0], c: COUL[2], n: '(d3)', lab: [1, 7.5] }, { p: [5, 0], v: [1, 1], c: COUL[3], n: '(d4)', lab: [6.55, .7] },
             { p: [13, 0], v: [1, -1], c: COUL[4], n: '(d5)', lab: [13.4, .7] }, { p: [11, 0], v: [0, 1], c: K, n: '(d6)', lab: [11.85, 4.6] }] })}</div>`;
@@ -74,7 +74,7 @@ PLANCHES['6e|Droites parallèles et perpendiculaires'] = [
         ...choix([['Deux droites perpendiculaires sont sécantes.', 'vrai'], ['Deux droites sécantes sont perpendiculaires.', 'faux'], ['Deux droites qui ne se coupent pas sur le dessin sont parallèles.', 'faux'], ['Deux droites parallèles n\'ont aucun point commun.', 'vrai']], 'vrai · faux') },
       { etoiles: 2, consigne: 'Trace les droites (AB), (CD) et (EF), puis entoure la bonne réponse.',
         ...(() => { const o = { pts: [[[1, 5], 'A', -14, -4], [[5, 3], 'B', 4, -8], [[4, 6], 'C', -14, -4], [[8, 4], 'D', 4, -8], [[9, 1], 'E', -14, -2], [[11, 5], 'F', 8, 12]] },
-            T = traceD(12, 7, 16, o, [{ p: [1, 5], v: [2, -1], n: '(AB)', lab: [.9, 6.1] }, { p: [4, 6], v: [2, -1], n: '(CD)', lab: [10.6, 3.4] }, { p: [9, 1], v: [1, 2], n: '(EF)', lab: [11.3, 3.3] }]),
+            T = traceD(12, 7, 15, o, [{ p: [1, 5], v: [2, -1], n: '(AB)', lab: [.9, 6.1] }, { p: [4, 6], v: [2, -1], n: '(CD)', lab: [10.6, 3.4] }, { p: [9, 1], v: [1, 2], n: '(EF)', lab: [11.3, 3.3] }]),
             it = [['(AB) et (CD) sont', 'parallèles'], ['(AB) et (EF) sont', 'perpendiculaires'], ['(CD) et (EF) sont', 'perpendiculaires']], m = 'perpendiculaires · parallèles';
           return { eleve: cote(T.eleve, '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`)) + '</div>'), corr: cote(T.corr, '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) + '</div>') }; })() },
     ] },

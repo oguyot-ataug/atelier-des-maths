@@ -3335,6 +3335,11 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.976', date:'2026-10-04', items:[
+    "Planches 6e « Nombres décimaux » (6 planches) : dixièmes, centièmes, millièmes ; décomposition et nom des chiffres ; demi-droite graduée (lire, et placer les points à l'écran) ; comparer et ranger ; encadrer et arrondir ; problèmes de mesures.",
+    "Planches 6e « Angles et rapporteur » (7 planches) : notion d'angle et notations, types d'angles (avec l'horloge), lire une mesure sur un rapporteur dessiné (graduations intérieure et extérieure), construire, paires d'angles, bissectrice, calculs d'angles.",
+    "Planches à l'écran : les choix placés sous des petites figures (« aigu · droit · obtus », « oui · non »…) sont maintenant cliquables."
+  ] },
   { version:'2026-08-19.975', date:'2026-10-04', items:[
     "Planches 6e : « Nombres entiers » passe à 7 planches (écrire et décomposer, comparer, ranger, arrondir, calcul mental et problèmes, multiples et critères de divisibilité par 3 et 9), « Fractions : nombres et partage » à 5 planches (demi-droite graduée, fractions décimales et quotients, fraction d'une quantité et partages), « Distance et cercles » à 5 planches (milieux sur quadrillage et codages, cercles et distances, construire et reproduire des figures avec des cercles)."
   ] },
