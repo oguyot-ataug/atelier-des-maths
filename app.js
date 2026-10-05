@@ -3335,6 +3335,11 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.983', date:'2026-10-05', items:[
+    'Bilan, appréciations IA : plus aucun pourcentage ni note dans le texte (l\'IA ne reçoit que des niveaux en mots, et une phrase chiffrée est retirée).',
+    'Les automatismes en autonomie servent à éclairer les élèves faibles ailleurs : peu de séances = manque de travail, beaucoup de séances sans réussite = vraies difficultés.',
+    'Les appréciations s\'appuient sur le contenu des évaluations : thèmes des interros papier et, pour les interros en ligne, les notions réussies et à retravailler question par question.',
+  ] },
   { version:'2026-08-19.982', date:'2026-10-05', items:[
     "Planches « Mesurer / Construire des angles au rapporteur » -- demandé : « n'avoir qu'un seul rapporteur pour les 3 figures et les mettre horizontalement plutôt que verticalement, et dans un cadre blanc plus large ». Les trois angles d'un exercice sont côte à côte dans un même cadre blanc, sur toute la largeur ; à l'écran, un seul rapporteur, rangé sous la figure, se pose sur l'angle de son choix (aimant sur chaque sommet, accroche sur chaque côté). Pour construire, on trace un côté par angle, et l'exercice est juste quand les trois angles le sont."
   ] },

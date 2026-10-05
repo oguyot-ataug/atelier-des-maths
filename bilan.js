@@ -80,14 +80,15 @@ async function blCharger(classe, per, mode){
     de('automatismes').length ? sb.from('cm_results').select('devoir_id,student_id,sequence_id,score,total,created_at').in('devoir_id', de('automatismes')) : vide,
     de('compte_est_bon').length ? sb.from('ceb_results').select('devoir_id,student_id,devoir_round,gap,created_at').in('devoir_id', de('compte_est_bon')) : vide,
     prIds.length && sid.length ? sb.from('prog_progress').select('user_id,defi_id,reussi,reussi_at').in('user_id', sid).in('defi_id', prIds) : vide,
-    de('questionnaire').length ? sb.from('qz_copies').select('devoir_id,student_id,statut,deadline_at,note,total,submitted_at').in('devoir_id', de('questionnaire')) : vide,
-    qIds.length ? sb.from('questionnaires').select('id,reglages').in('id', qIds) : vide,
+    de('questionnaire').length ? sb.from('qz_copies').select('devoir_id,student_id,statut,deadline_at,note,total,submitted_at' + (complet ? ',reponses,correction' : '')).in('devoir_id', de('questionnaire')) : vide,
+    qIds.length ? sb.from('questionnaires').select(complet ? 'id,reglages,questions' : 'id,reglages').in('id', qIds) : vide,
     complet ? sb.from('cm_results').select('student_id,sequence_id,sequence_label,score,total,created_at').eq('class_id', classe).is('devoir_id', null).gte('created_at', per.du).lte('created_at', fin) : vide,
     complet ? sb.from('ceb_results').select('student_id,success,gap,created_at').eq('class_id', classe).is('devoir_id', null).gte('created_at', per.du).lte('created_at', fin) : vide,
     complet ? sb.from('notes_papier').select('*').eq('teacher_id', currentUser.id).eq('class_id', classe).gte('date_eval', per.du).lte('date_eval', per.au).order('date_eval', { ascending: true }) : vide,
     complet ? sb.from('bilan_appreciations').select('student_id,texte,ia,updated_at').eq('teacher_id', currentUser.id).eq('class_id', classe).eq('periode', per.k) : vide,
   ]);
   const R = new Map((rendus || []).map(r => [r.devoir_id + '|' + r.student_id, r]));
+  const qst = new Map((qzs || []).map(q => [q.id, q.questions || []]));
   const reg = new Map((qzs || []).map(q => [q.id, Object.assign({}, typeof QZ_REGLAGES_DEFAUT !== 'undefined' ? QZ_REGLAGES_DEFAUT : {}, q.reglages || {})]));
   const colonnes = [], cellules = new Map(), points = new Map(eleves.map(e => [e.id, []])); // points : évolution
   const pt = (e, date, v, quoi) => { if(v != null && points.has(e)) points.get(e).push({ date: String(date || '').slice(0, 10), v, quoi }); };
@@ -134,6 +135,7 @@ async function blCharger(classe, per, mode){
         else if(rendue && cp.note != null) c = blNote(+cp.note, sur);
         else if(rendue) c = { txt: 'à corriger', cl: 'moyen', fait: true };
         else if(cp) c = { txt: 'en cours', cl: 'vide' };
+        if(complet && rendue && rg.mode !== 'entrainement' && c) c.notions = blNotions(qst.get(d.questionnaire_id), cp, rg);
       } else {
         if(r && r.est_rendu) c = r.note != null ? blNote(+r.note, 20) : { txt: '✓ rendu', cl: 'ok', fait: true };
         else if(r && r.a_reprendre) c = { txt: 'à reprendre', cl: 'moyen' };
@@ -165,6 +167,20 @@ async function blCharger(classe, per, mode){
   colonnes.sort((a, b) => ordre.indexOf(a.groupe) - ordre.indexOf(b.groupe) || String(a.date || '').localeCompare(String(b.date || '')));
   return { classe, mode, per, nom: cl ? cl.nom : '', niveau: cl ? cl.niveau : '', eleves, colonnes, cellules, points, papier: pap || [],
     appr: new Map((appr || []).map(a => [a.student_id, a])) };
+}
+// Contenu d'une interrogation en ligne réussi / raté par l'élève (compétence de la question, sinon début de l'énoncé).
+function blNotions(questions, cp, rg){
+  if(!questions || !questions.length || typeof qzPoints !== 'function') return null;
+  const brut = t => String(t || '').replace(/<[^>]*>/g, ' ').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
+  const ok = new Map(), ko = new Map();
+  questions.forEach(q => {
+    const max = typeof qzMax === 'function' ? qzMax(q) : 0; if(!max) return;
+    const p = qzPoints(q, cp, rg); if(p === null) return;
+    let l = brut(q.competence) || brut(q.enonce); if(!l) return;
+    if(l.length > 70) l = l.slice(0, 68).replace(/\s+\S*$/, '') + '…';
+    const m = p >= .7 * max ? ok : p < .5 * max ? ko : null; if(m) m.set(l, 1);
+  });
+  return ok.size || ko.size ? { ok: [...ok.keys()].slice(0, 6), ko: [...ko.keys()].slice(0, 6) } : null;
 }
 // Synthèse d'un élève : faits, retards, réussite (pourcentages), moyenne des notes, évolution.
 function blSynthese(e){
@@ -274,16 +290,41 @@ function blPrepNoms(){
   const esc = m => m.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   blx.noms = [...mots].map(m => new RegExp(`(^|[^\\p{L}])${esc(m)}(?=$|[^\\p{L}])`, 'giu'));
 }
-function blDonneesIa(e, code){
+// Niveau en mots (l'IA ne reçoit aucun pourcentage, pour n'en citer aucun).
+const blQual = v => v >= .85 ? 'très bien réussi' : v >= .7 ? 'bien réussi' : v >= .5 ? 'moyennement réussi' : v >= .3 ? 'fragile' : 'très fragile';
+// Séances d'automatismes en autonomie : repère de la classe (médiane des élèves).
+function blMedAuto(){
+  const l = blx.eleves.map(e => (blx.cellules.get('auto-cm|' + e.id) || {}).n || 0).sort((a, b) => a - b);
+  return l.length ? l[Math.floor(l.length / 2)] : 0;
+}
+function blDonneesIa(e, code, medAuto){
   const s = blSynthese(e);
-  const part = s.cs.slice().sort((a, b) => String(a.col.date || '').localeCompare(String(b.col.date || ''))).map(({ col, c }) => {
-    const quoi = col.groupe === 'auto' ? col.titre : col.np ? `${col.groupe === 'interro' ? 'Interrogation en ligne' : col.groupe === 'autre' ? 'Note' : 'Interrogation sur papier'} « ${blAnonyme(col.titre)} »${col.themes ? ' (' + (col.groupe === 'autre' ? 'description' : 'thèmes') + ' : ' + blAnonyme(col.themes) + ')' : ''}`
+  const evals = s.cs.filter(x => x.col.groupe !== 'auto').sort((a, b) => String(a.col.date || '').localeCompare(String(b.col.date || ''))).map(({ col, c }) => {
+    const quoi = col.np ? `${col.groupe === 'interro' ? 'Interrogation en ligne' : col.groupe === 'autre' ? 'Note' : 'Interrogation sur papier'} « ${blAnonyme(col.titre)} »${col.themes ? ' (' + (col.groupe === 'autre' ? 'description' : 'contenu évalué') + ' : ' + blAnonyme(col.themes) + ')' : ''}`
       : col.groupe === 'interro' ? `Interrogation en ligne « ${blAnonyme(col.titre)} »` : `Devoir ${typeof devoirTypeLabel === 'function' ? devoirTypeLabel(col.d.type).toLowerCase() : ''} « ${blAnonyme(col.titre)} »`;
-    const res = c.abs ? 'absent' : c.manque ? 'non fait' : String(c.txt).replace(/<small>.*<\/small>/, '').replace('✓ ', '') + (c.detail && !col.np ? ' (' + c.detail + ')' : '');
-    return `${col.date ? new Date(col.date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' }) + ' ' : ''}${quoi}${c.note20 != null && (col.coef || 1) !== 1 ? ` (coefficient ${blNum(col.coef)})` : ''} : ${res}${c.retard ? ', en retard' : ''}`;
+    const res = c.abs ? 'absent' : c.manque ? 'non fait' : c.v != null ? blQual(c.v) : String(c.txt).replace(/<small>.*<\/small>/, '').replace('✓ ', '');
+    const nt = c.notions ? `${c.notions.ok.length ? ' ; réussi : ' + c.notions.ok.map(blAnonyme).join(' / ') : ''}${c.notions.ko.length ? ' ; à retravailler : ' + c.notions.ko.map(blAnonyme).join(' / ') : ''}` : '';
+    return `${quoi}${c.note20 != null && (col.coef || 1) !== 1 ? ' (évaluation importante)' : ''} : ${res}${c.retard ? ', rendu en retard' : ''}${nt}`;
   });
-  const evo = s.evo ? `Évolution sur la période : ${s.evo.t} (${Math.round(100 * s.evo.debut)} % de réussite au début, ${Math.round(100 * s.evo.fin)} % à la fin).` : 'Évolution : trop peu de résultats pour juger.';
-  return `${code} : ${s.faits}/${s.n} travaux faits${s.retards ? `, ${s.retards} en retard` : ''}${s.reussite != null ? `, réussite moyenne ${Math.round(100 * s.reussite)} %` : ''}${s.moyenne != null ? `, moyenne des notes ${blNum(s.moyenne)}/20` : ''}. ${evo} Détail dans l'ordre des dates : ${part.join(' ; ') || 'aucun travail'}.`;
+  // Automatismes et Objectif Nombre en autonomie : quantité de travail et réussite, à part.
+  const ac = blx.cellules.get('auto-cm|' + e.id), ab = blx.cellules.get('auto-ceb|' + e.id);
+  let auto = '';
+  if(ac){
+    const n = ac.n || 0, qte = !n ? 'aucune séance' : n < Math.max(2, medAuto / 2) ? 'très peu de séances (bien moins que la classe)' : n < medAuto ? 'un peu moins de séances que la classe' : n > medAuto * 1.5 ? 'beaucoup de séances (plus que la classe)' : 'autant de séances que la classe';
+    auto = `Automatismes en autonomie : ${qte}${n ? ', ' + blQual(ac.v) : ''}`;
+    if(ab && ab.n) auto += ` ; Objectif Nombre : ${ab.n} partie${ab.n > 1 ? 's' : ''}, ${blQual(ab.v)}`;
+    auto += '. ';
+  }
+  const evo = s.evo ? `Évolution sur la période : ${s.evo.t}.` : 'Évolution : trop peu de résultats pour juger.';
+  const niv = s.moyenne != null ? blQual(s.moyenne / 20) : s.reussite != null ? blQual(s.reussite) : null;
+  return `${code} : ${s.faits}/${s.n} travaux faits${s.retards ? `, ${s.retards} rendus en retard` : ''}${niv ? `, niveau global : ${niv}` : ''}. ${evo} ${auto}Évaluations et devoirs (ordre des dates) : ${evals.join(' ; ') || 'aucun'}.`;
+}
+// Retire les phrases qui citeraient un pourcentage ou une note malgré la consigne.
+function blSansChiffres(t){
+  const re = /\d\s*%|pour ?cent|\d+([,.]\d+)?\s*\/\s*\d+/i;
+  if(!re.test(t)) return t;
+  const ph = String(t).split(/(?<=[.!?])\s+/).filter(p => !re.test(p));
+  return ph.length ? ph.join(' ') : String(t).replace(/\s*(d'environ |de |à |avec )?\d+([,.]\d+)?\s*(%|pour ?cent|\/\s*\d+)/gi, '');
 }
 function blCouper(t){
   t = String(t || '').replace(/\s+/g, ' ').trim();
@@ -303,20 +344,25 @@ async function blAppreciationsIa(){
   if(!cibles.length) return;
   blPrepNoms();
   const et = blx.cible.querySelector('#blEtat'), btn = blx.cible.querySelector('#blIa'); if(btn) btn.disabled = true;
-  const r = blx.eleves.map(e => blSynthese(e).reussite).filter(v => v != null), moyClasse = r.length ? Math.round(100 * r.reduce((a, b) => a + b, 0) / r.length) : null;
+  const medAuto = blMedAuto();
   let faits = 0, erreur = null;
   for(let i = 0; i < cibles.length; i += 6){
     const lot = cibles.slice(i, i + 6), codes = lot.map((e, j) => 'E' + (i + j + 1));
     if(et) et.textContent = `Rédaction des appréciations… ${i}/${cibles.length}`;
     const prompt = `Tu es professeur de mathématiques (classe de ${blx.niveau || '?'}, ${blx.per.t.toLowerCase()} : du ${blx.per.du} au ${blx.per.au}). Pour chaque élève, rédige l'appréciation du bulletin à partir UNIQUEMENT des résultats ci-dessous (travail en autonomie sur le site, devoirs, interrogations en ligne et sur papier).
-Règles impératives : ${BL_MAX} caractères au plus, espaces compris (2 phrases courtes) ; à la 3e personne, sans prénom ni nom (« Élève… », « Bon travail… », « Il faut… ») ; tiens compte de l'évolution des résultats au fil de la période (progrès, baisse, régularité) ; ce qui va bien, puis ce qui est à travailler, avec un conseil concret ; ton bienveillant et professionnel ; n'invente rien. Si presque rien n'est fait, dis-le avec tact.
-${moyClasse != null ? `Réussite moyenne de la classe : ${moyClasse} %.` : ''}
-${lot.map((e, j) => blDonneesIa(e, codes[j])).join('\n')}
+Règles impératives :
+- ${BL_MAX} caractères au plus, espaces compris (2 phrases courtes) ; à la 3e personne, sans prénom ni nom (« Élève… », « Bon travail… », « Il faut… »).
+- AUCUN chiffre de réussite : ni pourcentage, ni note, ni moyenne, ni nombre de séances. Exprime tout avec des mots.
+- Appuie-toi sur le CONTENU des évaluations : nomme précisément les notions réussies et celles à retravailler, d'après les titres et contenus évalués des interrogations et devoirs (par exemple « les fractions », « la proportionnalité »), plutôt que de parler des « évaluations » en général.
+- Le travail d'automatismes en autonomie sert surtout à éclairer les difficultés d'un élève faible ailleurs : s'il a fait peu ou pas de séances, signale qu'il ne travaille pas assez et conseille un entraînement régulier sur le site ; s'il en a fait beaucoup sans bien réussir, signale de réelles difficultés malgré ses efforts et valorise ces efforts. Pour un élève qui réussit bien les évaluations, n'en parle que pour le féliciter s'il s'entraîne beaucoup.
+- Tiens compte de l'évolution au fil de la période (progrès, baisse, régularité) et des travaux non faits ou en retard.
+- Ce qui va bien, puis ce qui est à travailler, avec un conseil concret ; ton bienveillant et professionnel ; n'invente rien. Si presque rien n'est fait, dis-le avec tact.
+${lot.map((e, j) => blDonneesIa(e, codes[j], medAuto)).join('\n')}
 Réponds uniquement par un objet JSON {"E1": "appréciation", …} avec les codes ci-dessus.`;
     try{
       const txt = await callClaude(prompt, 1500, { feature: 'appreciations', niveau: blx.niveau || null });
       const m = txt.match(/\{[\s\S]*\}/), js = m ? JSON.parse(m[0]) : {};
-      for(let j = 0; j < lot.length; j++){ const a = js[codes[j]]; if(typeof a === 'string' && a.trim()){ await blSauverAppr(lot[j].id, blCouper(a), true); faits++; } }
+      for(let j = 0; j < lot.length; j++){ const a = js[codes[j]]; if(typeof a === 'string' && a.trim()){ await blSauverAppr(lot[j].id, blCouper(blSansChiffres(a)), true); faits++; } }
     }catch(e){ erreur = e.message || String(e); break; }
   }
   if(btn) btn.disabled = false;
