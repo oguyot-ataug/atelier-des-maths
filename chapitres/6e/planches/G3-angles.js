@@ -34,14 +34,21 @@ const vig = (inner, w) => S(110, 80, `<rect x="1" y="1" width="108" height="78" 
 const vigs = (V, it, m) => ({ eleve: duo(V.map((v, i) => col(v, `<b>${it[i][0]}</b><br><b>${m}</b>`, 116))), corr: duo(V.map((v, i) => col(v, `<b>${it[i][0]}</b><br>${plEntoure(it[i][1])}`, 116))) });
 // ---- Mesurer et construire au rapporteur (à l'écran : le rapporteur du tableau, outil « rapp » de planches-num.js) ----
 // Angle de sommet V, côtés de directions d1 et d2 (°) ; noms [côté 1, sommet, côté 2]. W × H : taille de la figure.
-const RA = 70, WF = 210, HF = 124;
+const RA = 70, WF = 210, HF = 132;
 function figAng(V, d1, d2, n, sol){ const l = 88, a = pt(V, d1, l), b = pt(V, d2, l), m = Math.abs(((d2 - d1) % 360 + 540) % 360 - 180);
   let s = L(V, a, K, 1.6) + L(V, b, K, 1.6) + X(V) + T(pt(V, (d1 + d2) / 2 + 180, 13), n[1]) + T(pt(a, d1, 10), n[0]) + T(pt(b, d2, 10), n[2]);
   if(sol){ const lo = Math.min(d1, d2), hi = lo + m; s += arc(V, lo, hi, 22, Ro) + T(pt(V, (lo + hi) / 2, 36), m + '°', Ro, 12); }
   return S(WF, HF, `<rect x=".5" y=".5" width="${WF - 1}" height="${HF - 1}" rx="8" fill="#fff" stroke="#C9DCEB"/>` + s, WF); }
-// Exercice « mesure » : une figure par angle, la mesure s'écrit sous la figure ; à l'écran, le rapporteur sert d'aide.
-const mesures = l => ({ eleve: duo(l.map(([V, d1, d2, n, lettre]) => col(plX(figAng(V, d1, d2, n), { t: 'rapp', mode: 'mesure', aide: true, V, d1, som: [[V[0], V[1], [d1, d2]]], r: RA, w: WF, h: HF, p0: [WF - RA - 8, HF - 6] }), `<b>${lettre}</b> ${W(n.join(''))} = ${B(3)} °`, 210))),
-  corr: duo(l.map(([V, d1, d2, n, lettre]) => col(figAng(V, d1, d2, n, true), `<b>${lettre}</b> ${W(n.join(''))} = ${R(Math.abs(((d2 - d1) % 360 + 540) % 360 - 180))} °`, 210))) });
+// Trois angles côte à côte dans un même cadre blanc (zones de ZW × HF), un seul rapporteur pour toute la figure.
+const ZW = 224, NZ = 3, WT = ZW * NZ, cadre = inner => S(WT, HF, `<rect x=".5" y=".5" width="${WT - 1}" height="${HF - 1}" rx="10" fill="#fff" stroke="#C9DCEB"/>` + inner, WT);
+const decale = (svg, dx) => svg.replace(/^<svg[^>]*>/, `<g transform="translate(${dx} 0)">`).replace(/<rect x="\.5"[^>]*\/>/, '').replace(/<\/svg>$/, '</g>');
+const glob = (V, i) => [V[0] + i * ZW + (ZW - WF) / 2, V[1]];
+const legendes = (l, f) => `<div style="display:grid;grid-template-columns:repeat(${l.length},1fr);text-align:center;gap:8px;max-width:${WT}px;margin:4px auto 0;">${l.map(f).map(t => `<span class="pl-item">${t}</span>`).join('')}</div>`;
+const mesures = l => { const m = ([, d1, d2]) => Math.abs(((d2 - d1) % 360 + 540) % 360 - 180);
+  const fig = sol => cadre(l.map(([V, d1, d2, n], i) => decale(figAng(V, d1, d2, n, sol), i * ZW + (ZW - WF) / 2)).join(''));
+  const cfg = { t: 'rapp', mode: 'mesure', aide: true, som: l.map(([V, d1, d2], i) => [...glob(V, i), [d1, d2]]), r: RA, w: WT, h: HF };
+  return { eleve: `<div style="text-align:center;">${plX(fig(false), cfg)}</div>` + legendes(l, ([, , , n, lettre]) => `<b>${lettre}</b> ${W(n.join(''))} = ${B(3)} °`),
+    corr: `<div style="text-align:center;">${fig(true)}</div>` + legendes(l, z => `<b>${z[4]}</b> ${W(z[3].join(''))} = ${R(m(z))} °`) }; };
 // Exercice « construire » : le côté [Ox) est tracé ; l'élève trace [Oy) pour que l'angle mesure m.
 function figCons(V, d1, m, sol){ const l = 78, a = pt(V, d1, l); let s = L(V, a, K, 1.6) + X(V) + T(pt(V, d1 + 180 + (m < 90 ? 25 : 0), 13), 'O') + T(pt(a, d1, 10), 'x');
   if(sol){ const d2 = d1 + m, b = pt(V, d2, l), lo = Math.min(d1, d2);
@@ -51,13 +58,16 @@ function placeCons(d1, m){ const l = 78, dans = q => q[0] > 10 && q[0] < WF - 10
   for(let x = 14; x <= WF - 14; x += 4) for(let y = 14; y <= HF - 12; y += 4){ const V = [x, y]; if(!dans(pt(V, d1, l + 10)) || !dans(pt(V, d1 + m, l + 10))) continue;
     const c = Math.hypot(x - WF / 2, y - HF / 2); if(!best || c < best[1]) best = [V, c]; }
   return best ? best[0] : [WF / 2, HF / 2]; }
-const constructions = l => (l = l.map(([V, d1, m, lettre]) => [placeCons(d1, m), d1, m, lettre]), { eleve: duo(l.map(([V, d1, m, lettre]) => col(plX(figCons(V, d1, m), { t: 'rapp', mode: 'construire', V, d1, cible: m, som: [[V[0], V[1], [d1]]], r: RA, w: WF, h: HF, p0: [WF - RA - 8, HF - 6] }), `<b>${lettre}</b> ${W('xOy')} = ${m}°`, 210))),
-  corr: duo(l.map(([V, d1, m, lettre]) => col(figCons(V, d1, m, true), `<b>${lettre}</b> ${W('xOy')} = ${m}°`, 210))) });
+const constructions = l => { l = l.map(([V, d1, m, lettre]) => [placeCons(d1, m), d1, m, lettre]);
+  const fig = sol => cadre(l.map(([V, d1, m], i) => decale(figCons(V, d1, m, sol), i * ZW + (ZW - WF) / 2)).join(''));
+  const cfg = { t: 'rapp', mode: 'construire', cons: l.map(([V, d1, m], i) => ({ V: glob(V, i), d1, cible: m })), som: l.map(([V, d1], i) => [...glob(V, i), [d1]]), r: RA, w: WT, h: HF };
+  return { eleve: `<div style="text-align:center;">${plX(fig(false), cfg)}</div>` + legendes(l, ([, , m, lettre]) => `<b>${lettre}</b> ${W('xOy')} = ${m}°`),
+    corr: `<div style="text-align:center;">${fig(true)}</div>` + legendes(l, ([, , m, lettre]) => `<b>${lettre}</b> ${W('xOy')} = ${m}°`) }; };
 // Triangle aux angles entiers : A, côté [AB] de direction 0, angles a en A et b en B.
 function triAng(a, b, sol){ const A = [40, 172], Bp = [220, 172], ta = Math.tan(a * Math.PI / 180), tb = Math.tan(b * Math.PI / 180), x = (Bp[0] * tb + A[0] * ta) / (ta + tb), C = [x, A[1] - (x - A[0]) * ta];
   let s = `<polygon points="${A.join(',')} ${Bp.join(',')} ${C.map(v => v.toFixed(1)).join(',')}" fill="#fff" stroke="${K}" stroke-width="1.6"/>` + T([A[0] - 8, A[1] + 12], 'A') + T([Bp[0] + 8, Bp[1] + 12], 'B') + T([C[0], C[1] - 7], 'C');
   if(sol) s += arc(A, 0, a, 20, Ro) + arc(Bp, 180 - b, 180, 20, Bl) + arc(C, 180 + a, 360 - b, 18, Ve);
-  return { svg: S(260, 186, s, 215), A, B: Bp, C }; }
+  return { svg: S(260, 186, s, 196), A, B: Bp, C }; }
 PLANCHES['6e|Angles et rapporteur'] = [
   { titre: 'Notion d\'angle et notations', duree: '35 min',
     attendus: ['Reconnaître un angle : un sommet et deux côtés (demi-droites)', 'Nommer un angle avec trois lettres, le sommet au milieu', 'Comparer des angles sans les mesurer'],

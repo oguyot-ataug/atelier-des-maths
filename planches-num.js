@@ -357,33 +357,44 @@ const PLX = {
   // { V: [x, y] sommet, d1: direction du côté tracé (°, sens direct), r: rayon du rapporteur (px de la figure),
   //   mode: 'mesure' (aide pour lire, la réponse s'écrit dans les pointillés : aide = true) ou 'construire' (cible : mesure à obtenir) }.
   rapp: {
-    rot0: C => C.rot0 || 0,
-    pos0: C => C.p0 || [C.r + 6, C.h - 6],
+    // Plusieurs angles dans une même figure, un seul rapporteur : som = [[x, y, [directions des côtés]]] (aimant et accroche),
+    // cons = [{ V, d1, cible }] pour construire (un côté tracé par sommet). Ancien format accepté : V, d1, cible.
+    cons: C => C.cons || (C.V && C.cible != null ? [{ V: C.V, d1: C.d1, cible: C.cible }] : []),
+    sommets: C => C.som || (C.V ? [[C.V[0], C.V[1], [C.d1]]] : []),
+    pos0: C => C.p0 || [C.w / 2, C.h + C.r + 8],
+    depart: C => ({ x: PLX.rapp.pos0(C)[0], y: PLX.rapp.pos0(C)[1], rot: C.rot0 || 0 }),
     monter(C, svg, lire, ecrire){
+      // Sous la figure, une « réserve » où le rapporteur est rangé au départ.
+      svg.setAttribute('viewBox', `0 0 ${C.w} ${C.h + C.r + 14}`);
+      svg.style.width = '100%'; svg.style.maxWidth = Math.min(900, C.w * 1.45) + 'px'; svg.style.touchAction = 'none'; svg.style.overflow = 'visible';
       const pt = e => { const P = svg.createSVGPoint(); P.x = e.clientX; P.y = e.clientY; const m = svg.getScreenCTM(); return m ? P.matrixTransform(m.inverse()) : { x: 0, y: 0 }; };
-      svg.style.width = '100%'; svg.style.maxWidth = (C.w * 2) + 'px'; svg.style.touchAction = 'none'; svg.style.overflow = 'visible';
       let geste = null;
-      svg.addEventListener('pointerdown', e => { const z = e.target.closest('[data-rp]'); if(!z) return; const st = lire(), p = st.p || { x: PLX.rapp.pos0(C)[0], y: PLX.rapp.pos0(C)[1], rot: PLX.rapp.rot0(C) }, q = pt(e);
-        geste = { k: z.dataset.rp, st, p, q }; svg.setPointerCapture && svg.setPointerCapture(e.pointerId); e.preventDefault(); e.stopPropagation(); });
-      svg.addEventListener('pointermove', e => { if(!geste) return; const q = pt(e), { st } = geste, p = Object.assign({}, geste.p);
-        if(geste.k === 'corps'){ p.x = geste.p.x + q.x - geste.q.x; p.y = geste.p.y + q.y - geste.q.y; const S = (C.som || [[C.V[0], C.V[1], [C.d1]]]).find(([x, y]) => Math.hypot(p.x - x, p.y - y) < C.r * .14); if(S){ p.x = S[0]; p.y = S[1]; } }
-        else if(geste.k === 'tourner'){ const ang = z => Math.atan2(p.y - z.y, z.x - p.x) * 180 / Math.PI; let d = (geste.p.rot || 0) + ang(q) - ang(geste.q); const S = (C.som || [[C.V[0], C.V[1], [C.d1]]]).find(([x, y]) => Math.hypot(p.x - x, p.y - y) < 1), dirs = S ? S[2] : []; for(const a of dirs.flatMap(a => [a, a + 180, a - 180])) if(Math.abs(((d - a) % 360 + 540) % 360 - 180) <= 4){ d = a; break; } p.rot = d; }
+      svg.addEventListener('pointerdown', e => { const z = e.target.closest('[data-rp]'); if(!z) return; const st = lire(), p = st.p || PLX.rapp.depart(C);
+        geste = { k: z.dataset.rp, st, p, q: pt(e) }; svg.setPointerCapture && svg.setPointerCapture(e.pointerId); e.preventDefault(); e.stopPropagation(); });
+      svg.addEventListener('pointermove', e => { if(!geste) return; const q = pt(e), { st } = geste, p = Object.assign({}, geste.p), S = PLX.rapp.sommets(C);
+        if(geste.k === 'corps'){ p.x = geste.p.x + q.x - geste.q.x; p.y = geste.p.y + q.y - geste.q.y; const s0 = S.find(([x, y]) => Math.hypot(p.x - x, p.y - y) < C.r * .14); if(s0){ p.x = s0[0]; p.y = s0[1]; } }
+        else if(geste.k === 'tourner'){ const ang = z => Math.atan2(p.y - z.y, z.x - p.x) * 180 / Math.PI; let d = (geste.p.rot || 0) + ang(q) - ang(geste.q);
+          const s0 = S.find(([x, y]) => Math.hypot(p.x - x, p.y - y) < 1); for(const a of (s0 ? s0[2] : []).flatMap(a => [a, a + 180, a - 180])) if(Math.abs(((d - a) % 360 + 540) % 360 - 180) <= 4){ d = a; break; } p.rot = d; }
         else if(geste.k === 'crayon'){ let d = Math.atan2(p.y - q.y, q.x - p.x) * 180 / Math.PI - p.rot; d = ((d % 360) + 360) % 360; if(d > 180) d = d > 270 ? 0 : 180; st.c = Math.round(d); }
         st.p = p; ecrire(st); e.preventDefault(); });
       const fin = () => { geste = null; }; svg.addEventListener('pointerup', fin); svg.addEventListener('pointercancel', fin);
     },
-    action(C, st, a){ if(a === 'trait'){ const p = st.p || { rot: PLX.rapp.rot0(C) }; st.t = ((((st.c || 0) + p.rot) % 360) + 360) % 360; st.o = p.x != null && Math.hypot(p.x - C.V[0], p.y - C.V[1]) < 1; }
-      if(a === 'replacer'){ delete st.p; delete st.c; } if(a === 'effacer') delete st.t; },
-    dessin: (C, st) => { const p = st.p || { x: PLX.rapp.pos0(C)[0], y: PLX.rapp.pos0(C)[1], rot: PLX.rapp.rot0(C) }, k = C.r / 449, R = C.r * .93; let s = '';
-      if(st.t != null){ const a = st.t * Math.PI / 180, L = C.r * 1.5; s += `<line x1="${C.V[0]}" y1="${C.V[1]}" x2="${(C.V[0] + L * Math.cos(a)).toFixed(1)}" y2="${(C.V[1] - L * Math.sin(a)).toFixed(1)}" stroke="#E35D3A" stroke-width="2.2" stroke-linecap="round"/>`; }
+    // Sommet sur lequel le rapporteur est posé (indice dans cons), ou -1.
+    ici: (C, st) => { const p = st.p; return p ? PLX.rapp.cons(C).findIndex(k => Math.hypot(p.x - k.V[0], p.y - k.V[1]) < 1) : -1; },
+    action(C, st, a){ const i = PLX.rapp.ici(C, st);
+      if(a === 'trait' && i >= 0){ st.t = st.t || {}; st.t[i] = ((((st.c || 0) + st.p.rot) % 360) + 360) % 360; }
+      if(a === 'replacer'){ delete st.p; delete st.c; }
+      if(a === 'effacer'){ if(i >= 0 && st.t) delete st.t[i]; else delete st.t; } },
+    dessin: (C, st) => { const p = st.p || PLX.rapp.depart(C), k = C.r / 449, R = C.r * .93; let s = '';
+      Object.entries(st.t || {}).forEach(([i, t]) => { const V = PLX.rapp.cons(C)[i].V, a = t * Math.PI / 180, L = C.r * 1.3; s += `<line x1="${V[0]}" y1="${V[1]}" x2="${(V[0] + L * Math.cos(a)).toFixed(1)}" y2="${(V[1] - L * Math.sin(a)).toFixed(1)}" stroke="#E35D3A" stroke-width="2.2" stroke-linecap="round"/>`; });
       s += `<g transform="translate(${p.x.toFixed(1)} ${p.y.toFixed(1)}) rotate(${(-p.rot).toFixed(2)})"><use data-rp="corps" href="#plRapporteur" transform="translate(${(-449.3 * k).toFixed(1)} ${(-451.6 * k).toFixed(1)}) scale(${k.toFixed(4)})" opacity=".88" style="cursor:grab;"/>`
         + `<circle data-rp="tourner" cx="${(C.r * .55).toFixed(1)}" cy="${(C.r * .2).toFixed(1)}" r="${Math.max(9, C.r * .11).toFixed(1)}" fill="#E35D3A" fill-opacity=".9" style="cursor:grab;"/><text x="${(C.r * .55).toFixed(1)}" y="${(C.r * .2 + 4).toFixed(1)}" font-size="11" text-anchor="middle" fill="#fff" pointer-events="none">↻</text>`;
       if(C.mode === 'construire'){ const a = (st.c || 0) * Math.PI / 180; s += `<g data-rp="crayon" transform="translate(${(R * Math.cos(a)).toFixed(1)} ${(-R * Math.sin(a)).toFixed(1)}) rotate(${(90 - (st.c || 0)).toFixed(1)})" style="cursor:grab;"><polygon points="-4,-34 4,-34 4,-8 0,0 -4,-8" fill="#E9C46A" stroke="#1C1B2E" stroke-width=".8"/><rect x="-4" y="-38" width="8" height="5" fill="#E35D3A"/><circle r="9" fill="transparent"/></g>`; }
       return s + '</g>'; },
     barre: (C, st, id) => C.mode === 'construire'
-      ? `<span class="pn-xaide">Pose le centre du rapporteur sur le sommet, tourne-le (↻) pour aligner le zéro sur le côté, glisse le crayon jusqu'à ${C.cible}°, puis trace.</span>` + plxBtn(id, 'trait', 'Tracer le côté') + plxBtn(id, 'effacer', 'Effacer le trait') + plxBtn(id, 'replacer', 'Ranger le rapporteur')
-      : `<span class="pn-xaide">Fais glisser le rapporteur sur le sommet, tourne-le (↻) pour aligner son zéro sur un côté, puis lis la mesure.</span>` + plxBtn(id, 'replacer', 'Ranger le rapporteur'),
-    juste: (C, st) => { if(C.aide) return true; if(st.t == null) return false; let d = Math.abs(st.t - C.d1) % 360; if(d > 180) d = 360 - d; return Math.abs(d - C.cible) <= 2; }
+      ? `<span class="pn-xaide">Pose le centre du rapporteur sur un sommet O, tourne-le (↻) pour aligner le zéro sur [Ox), glisse le crayon jusqu'à la mesure demandée, puis trace. Recommence pour chaque angle.</span>` + plxBtn(id, 'trait', 'Tracer le côté') + plxBtn(id, 'effacer', 'Effacer ce trait') + plxBtn(id, 'replacer', 'Ranger le rapporteur')
+      : `<span class="pn-xaide">Fais glisser le rapporteur sur un sommet, tourne-le (↻) pour aligner son zéro sur un côté, puis lis la mesure. Recommence pour chaque angle.</span>` + plxBtn(id, 'replacer', 'Ranger le rapporteur'),
+    juste: (C, st) => { if(C.aide) return true; const L = PLX.rapp.cons(C); return L.length > 0 && L.every((k, i) => { const t = (st.t || {})[i]; if(t == null) return false; let d = Math.abs(t - k.d1) % 360; if(d > 180) d = 360 - d; return Math.abs(d - k.cible) <= 2; }); }
   },
   fleches: {
     action(C, st, a){ plxActionFleches(st, a); },

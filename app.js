@@ -3335,6 +3335,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.982', date:'2026-10-05', items:[
+    "Planches « Mesurer / Construire des angles au rapporteur » -- demandé : « n'avoir qu'un seul rapporteur pour les 3 figures et les mettre horizontalement plutôt que verticalement, et dans un cadre blanc plus large ». Les trois angles d'un exercice sont côte à côte dans un même cadre blanc, sur toute la largeur ; à l'écran, un seul rapporteur, rangé sous la figure, se pose sur l'angle de son choix (aimant sur chaque sommet, accroche sur chaque côté). Pour construire, on trace un côté par angle, et l'exercice est juste quand les trois angles le sont."
+  ] },
   { version:'2026-08-19.981', date:'2026-10-04', items:[
     "Planches 6e « Angles et rapporteur » : deux nouvelles planches -- demandé : « il faut faire une planche pour dessiner des angles ». « Mesurer des angles au rapporteur » (six angles dans toutes les orientations, les angles d'un triangle et leur somme) et « Construire des angles au rapporteur » (neuf angles à construire à partir d'un côté tracé, horizontal ou non, et une ligne brisée à reproduire en vraie grandeur). Sur papier, l'élève utilise son rapporteur ; à l'écran (Mon TD, projection, session), il pose le rapporteur du tableau sur la figure, comme au permis rapporteur : glisser (aimant sur le sommet), faire tourner (accroche sur un côté), puis, pour construire, glisser le crayon sur l'arc jusqu'à la mesure et tracer le côté (vérifié à 2° près)."
   ] },
