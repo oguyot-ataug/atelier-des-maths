@@ -3335,6 +3335,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.984', date:'2026-10-05', items:[
+    "« Mon TD » devient « Manuel » -- demandé : « Peut-on rendre les exercices du TD (à renommer Manuel) disponibles pour les sessions ? ». L'onglet des chapitres s'appelle Manuel. Dans une session COURS, « Ajouter un exercice » (à la préparation ou pendant la séance) a un onglet Manuel en tête : niveau, chapitre (celui qui est ouvert par défaut), puis on coche un ou plusieurs exercices des planches, ajoutés dans l'ordre du manuel. Les exercices qui se font à l'écran sont suivis et vérifiés en direct ; les autres sont projetés chez les élèves, et le professeur montre la correction.",
+  ] },
   { version:'2026-08-19.983', date:'2026-10-05', items:[
     'Bilan, appréciations IA : plus aucun pourcentage ni note dans le texte (l\'IA ne reçoit que des niveaux en mots, et une phrase chiffrée est retirée).',
     'Les automatismes en autonomie servent à éclairer les élèves faibles ailleurs : peu de séances = manque de travail, beaucoup de séances sans réussite = vraies difficultés.',
@@ -6824,7 +6827,7 @@ async function openSharedCorrectionsModal(){
   if(!sharedCorrectionsList.length){ body.innerHTML = '<p class="hint">Aucune correction d\'un collègue trouvée pour ce chapitre, dans votre établissement.</p>'; return; }
   body.innerHTML = sharedCorrectionsList.map((m,i)=>{
     const dateStr = m.entry_date ? new Date(m.entry_date).toLocaleDateString('fr-FR') : '';
-    const refLabel = m.exo==='Cours' ? 'Cours' : (m.exo==='TD' ? 'TD' : ('Exercice '+m.exo));
+    const refLabel = m.exo==='Cours' ? 'Cours' : (m.exo==='TD' ? 'Manuel' : ('Exercice '+m.exo));
     return `<div style="border:1px solid rgba(28,43,57,.12);border-radius:10px;padding:10px 14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;">
       <div>
         <div style="font-weight:600;">${escapeHtml(refLabel)}${m.titre?' : '+escapeHtml(m.titre):''}</div>
@@ -7090,7 +7093,7 @@ function entryRowsHTML(e, idx, editable, showRemoveBtn){
   // exo==='' : entrée sans étiquette (ex. en-tête d'évaluation ajoutée au cahier), distinct de
   // '-' (déjà utilisé par l'outil de correction pour "numéro non renseigné", qui affiche encore
   // "Exercice -").
-  const refLabel = e.exo==='' ? '' : e.exo==='Cours' ? 'Cours' : e.exo==='Interrogation' ? 'Interrogation' : (e.exo==='Questions flash' || e.exo==='Séance en direct') ? 'Questions flash' : (e.exo==='TD' ? 'TD' : ('Exercice '+e.exo)); // Interrogation : questionnaires-cahier.js
+  const refLabel = e.exo==='' ? '' : e.exo==='Cours' ? 'Cours' : e.exo==='Interrogation' ? 'Interrogation' : (e.exo==='Questions flash' || e.exo==='Séance en direct') ? 'Questions flash' : (e.exo==='TD' ? 'Manuel' : ('Exercice '+e.exo)); // Interrogation : questionnaires-cahier.js
   // Vignettes de modalité cliquables (professeur, exercices seulement) -- demandé : « changer le type de
   // correction sans les rééditer, juste par des vignettes cliquables dans le bilan en dessous ».
   const modEditable = editable && !['', 'Cours', 'Interrogation', 'Questions flash', 'Séance en direct'].includes(e.exo);

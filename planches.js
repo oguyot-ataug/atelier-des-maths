@@ -193,7 +193,7 @@ function plMaj(lvl, c){
   }
   b.onclick = () => plOuvrir(lvl, c);
 }
-/* ---------- Mon TD : les exercices des planches en vignettes ----------
+/* ---------- Manuel (ex « Mon TD ») : les exercices des planches en vignettes ----------
    Demandé : « Pour les exercices projetés je les imaginais plutôt dans la partie Exercices et
    Rédaction, ou une nouvelle rubrique : mon TD. Ces exercices sont affichés à l'écran sous forme de
    vignettes, permettent d'être projetés en grand et d'être également corrigés. On doit pouvoir s'en
@@ -213,8 +213,8 @@ function plTdMaj(lvl, c){
 function plTdRendre(lvl, c){
   const root = document.getElementById('tdRoot'); if(!root) return;
   const liste = plDe(lvl, c.t), esc = s => escapeHtml(String(s ?? ''));
-  root.innerHTML = `<div class="td-intro"><span class="pl-oliv">${plOliv('muscle')}</span><div><b>Mon TD : ${liste.reduce((n, p) => n + p.exos.length, 0)} exercices</b>
-      <p class="hint" style="margin:2px 0 0;">Les exercices des planches de ce chapitre. Projetez-les un par un, affichez la correction, ajoutez-les au cahier de la classe ou à une session COURS (« Ajouter une partie de cours »).</p></div>
+  root.innerHTML = `<div class="td-intro"><span class="pl-oliv">${plOliv('muscle')}</span><div><b>Manuel : ${liste.reduce((n, p) => n + p.exos.length, 0)} exercices</b>
+      <p class="hint" style="margin:2px 0 0;">Les exercices des planches de ce chapitre. Projetez-les un par un, affichez la correction, ajoutez-les au cahier de la classe ou à une session COURS (bouton « Session », ou « Ajouter un exercice » dans la session, onglet Manuel).</p></div>
       <button type="button" class="btn secondary" onclick="plOuvrir('${lvl}', CHAPITRES_BY_LEVEL['${lvl}'].find(x => x.code === '${c.code}'))"><span class="gicon">print</span> Planches à imprimer</button></div>
     ${liste.map((p, i) => `<section class="td-planche"><div class="td-p-tete"><span class="pl-ref">${plRef(lvl, plCode(lvl, c), i)}</span><b>${esc(p.titre)}</b>
         <span class="hint" style="margin:0;">${(p.attendus || []).map(esc).join(' · ')}</span>
@@ -252,7 +252,7 @@ function plExoHtml(lvl, c, i, k, mode){
 // Élément de session COURS : l'exercice à faire à l'écran (planches-num.js) s'il s'y prête, sinon
 // l'énoncé, dont le professeur montre ensuite la correction.
 function plSessionItem(lvl, c, i, k){
-  const x = plDe(lvl, c.t)[i].exos[k], it = { titre: `TD ${plRef(lvl, plCode(lvl, c), i)} · exercice ${k + 1}`, chapitre: `${c.code} · ${c.t}`, html: plExoHtml(lvl, c, i, k, 'eleve'), corr: plExoHtml(lvl, c, i, k, 'corr') };
+  const x = plDe(lvl, c.t)[i].exos[k], it = { titre: `Manuel ${plRef(lvl, plCode(lvl, c), i)} · exercice ${k + 1}`, chapitre: `${c.code} · ${c.t}`, html: plExoHtml(lvl, c, i, k, 'eleve'), corr: plExoHtml(lvl, c, i, k, 'corr') };
   if(typeof plNumPossible === 'function' && plNumPossible(x)){ it.exo = { type: 'td', lvl, code: c.code, t: c.t, i, k }; it.prog = null; }
   return it;
 }

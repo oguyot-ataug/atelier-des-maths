@@ -35,7 +35,7 @@ const cdCanal = id => 'cd-' + id;
 
 /* ---------- Éléments : une entrée du cahier → { titre, html, prog } ---------- */
 function cdTitreEntree(e){
-  const ref = e.exo === 'Cours' ? 'Cours' : e.exo === 'Construction' ? 'Construction' : e.exo === 'TD' ? 'TD' : e.exo === '' ? '' : e.exo ? 'Exercice ' + e.exo : '';
+  const ref = e.exo === 'Cours' ? 'Cours' : e.exo === 'Construction' ? 'Construction' : e.exo === 'TD' ? 'Manuel' : e.exo === '' ? '' : e.exo ? 'Exercice ' + e.exo : '';
   return [ref, e.titre].filter(Boolean).join(' : ') || 'Élément';
 }
 function cdProgDe(html){
@@ -107,11 +107,11 @@ async function cdPreparer(){
     o.querySelectorAll('[data-monte]').forEach(b => b.onclick = () => echange(+b.dataset.monte, +b.dataset.monte - 1));
     o.querySelectorAll('[data-descend]').forEach(b => b.onclick = () => echange(+b.dataset.descend, +b.dataset.descend + 1));
     document.getElementById('cdPrepCours').onclick = async () => { o.style.display = 'none'; const its = typeof cxChoisirCours === 'function' ? await cxChoisirCours() : []; o.style.display = 'flex'; if(its.length){ st.exos.push(...its); rendre(); } };
-    document.getElementById('cdPrepExo').onclick = async () => { o.style.display = 'none'; const it = typeof cxChoisir === 'function' ? await cxChoisir() : null; o.style.display = 'flex'; if(it){ st.exos.push(it); rendre(); } };
+    document.getElementById('cdPrepExo').onclick = async () => { o.style.display = 'none'; const it = typeof cxChoisir === 'function' ? await cxChoisir() : null; o.style.display = 'flex'; if(it){ st.exos.push(...[].concat(it)); rendre(); } };
     document.getElementById('cdPrepTitre').oninput = e => { st.titre = e.target.value; };
     document.getElementById('cdPrepCharger').onclick = () => { st.du = document.getElementById('cdPrepDu').value; st.au = document.getElementById('cdPrepAu').value; charger(); };
     document.getElementById('cdPrepGo').onclick = async () => {
-      // Exercices mis de côté depuis Mon TD (« Session ») : en ouverture, avant le cahier.
+      // Exercices mis de côté depuis le Manuel (« Session ») : en ouverture, avant le cahier.
       const items = st.exos.filter(x => x.ouverture).concat(st.entrees.filter(e => st.choisies.has(e.id)).map(cdItemDe), st.exos.filter(x => !x.ouverture));
       if(typeof plAttenteSauver === 'function') plAttenteSauver([]);
       if(!items.length){ await niceAlert('Choisissez au moins un élément du cahier ou un exercice.'); return; }

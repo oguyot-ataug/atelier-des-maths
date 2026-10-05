@@ -45,7 +45,12 @@ function cxChoisir(){
     let o = document.getElementById('cxChoix');
     if(!o){ o = document.createElement('div'); o.id = 'cxChoix'; o.className = 'modal-overlay'; document.body.appendChild(o); }
     o.style.zIndex = '9400';
-    const st = { onglet: 'qz', qzs: null, filtre: '', fig: { enonce: 'Construis…', figure: null } };
+    // Manuel (exercices des planches, planches.js) : niveaux et chapitres qui en ont.
+    const avecPl = l => ((typeof CHAPITRES_BY_LEVEL !== 'undefined' && CHAPITRES_BY_LEVEL[l]) || []).filter(c => typeof plDe === 'function' && plDe(l, c.t).length);
+    const nivMan = ['ce2', 'cm1', 'cm2', '6e', '5e', '4e', '3e'].filter(l => (typeof niveauVisible !== 'function' || niveauVisible(l)) && avecPl(l).length);
+    const lvl0 = typeof currentChapterLevel !== 'undefined' && nivMan.includes(currentChapterLevel) ? currentChapterLevel : nivMan[0];
+    const code0 = lvl0 && typeof currentChapterCode !== 'undefined' && avecPl(lvl0).some(c => c.code === currentChapterCode) ? currentChapterCode : lvl0 ? (avecPl(lvl0)[0] || {}).code : null;
+    const st = { onglet: lvl0 && code0 === (typeof currentChapterCode !== 'undefined' ? currentChapterCode : null) ? 'man' : 'qz', qzs: null, filtre: '', fig: { enonce: 'Construis…', figure: null }, man: { lvl: lvl0, code: code0, sel: [] } };
     let fini = false, veille = null;
     const fin = v => { if(fini) return; fini = true; clearInterval(veille); o.style.display = 'none'; resolve(v); };
     const charger = async () => {
@@ -55,7 +60,18 @@ function cxChoisir(){
     };
     const rendre = () => {
       const f = st.filtre.trim().toLowerCase();
-      const corps = st.onglet === 'qz'
+      const nomNiv = l => ({ ce2: 'CE2', cm1: 'CM1', cm2: 'CM2' })[l] || l;
+      const manC = st.man.lvl ? avecPl(st.man.lvl).find(c => c.code === st.man.code) : null;
+      const corps = st.onglet === 'man'
+        ? (!nivMan.length ? '<p class="hint">Aucun exercice de manuel disponible.</p>'
+          : `<div class="cx-co-sel" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;"><select id="cxManNiv">${nivMan.map(l => `<option value="${l}"${l === st.man.lvl ? ' selected' : ''}>${nomNiv(l)}</option>`).join('')}</select>
+             <select id="cxManCh" style="flex:1;min-width:200px;">${avecPl(st.man.lvl).map(c => `<option value="${cdEsc(c.code)}"${c.code === st.man.code ? ' selected' : ''}>${cdEsc(c.code + ' · ' + c.t)}</option>`).join('')}</select></div>
+           <div class="cx-ch-liste">${manC ? plDe(st.man.lvl, manC.t).map((p, i) => `<div class="cx-man-pl"><b>${cdEsc(plRef(st.man.lvl, plCode(st.man.lvl, manC), i))} · ${cdEsc(p.titre)}</b></div>${p.exos.map((x, k) => {
+               const tmp = document.createElement('div'); tmp.innerHTML = x.consigne; const txt = tmp.textContent.replace(/\s+/g, ' ').trim(), cle = i + '|' + k, ecran = typeof plNumPossible === 'function' && plNumPossible(x);
+               return `<label class="cx-ch-it cx-man-it"><span><input type="checkbox" data-man="${cle}"${st.man.sel.includes(cle) ? ' checked' : ''}> <b>Exercice ${k + 1}</b> <span class="cx-man-et">${typeof plEtoiles === 'function' ? plEtoiles(x.etoiles || 1) : ''}</span></span>
+                 <small>${cdEsc(txt.length > 110 ? txt.slice(0, 110) + '…' : txt)}</small><small>${ecran ? '<span class="gicon" style="font-size:14px;vertical-align:-2px;">touch_app</span> à faire à l\'écran, vérifié et suivi en direct' : '<span class="gicon" style="font-size:14px;vertical-align:-2px;">visibility</span> énoncé projeté chez les élèves, correction montrée par vous'}</small></label>`; }).join('')}`).join('') : ''}</div>
+           <div style="text-align:right;margin-top:10px;"><button class="btn" id="cxManOk"${st.man.sel.length ? '' : ' disabled'}><span class="gicon">add</span> Ajouter ${st.man.sel.length > 1 ? 'ces ' + st.man.sel.length + ' exercices' : 'cet exercice'}</button></div>`)
+        : st.onglet === 'qz'
         ? `<input type="search" id="cxFiltre" placeholder="Chercher un questionnaire…" value="${cdEsc(st.filtre)}" style="width:100%;margin-bottom:8px;">
            <div class="cx-ch-liste">${st.qzs == null ? '<p class="hint">Chargement de votre banque…</p>'
              : st.qzs.filter(q => !f || (q.titre || '').toLowerCase().includes(f)).map(q => { const qs = q.questions.filter(x => x.type !== 'texte');
@@ -75,6 +91,7 @@ function cxChoisir(){
           <button class="modal-close" id="cxChFermer"><span class="gicon">close</span></button></div>
         <p class="hint" style="margin:6px 0 10px;">Les élèves le font sur leur écran ; vous suivez leur travail en direct et vous pouvez prendre la main pour aider.</p>
         <div class="cx-onglets">
+          ${nivMan.length ? `<button data-o="man" class="${st.onglet === 'man' ? 'on' : ''}"><span class="gicon">auto_stories</span> Manuel</button>` : ''}
           <button data-o="qz" class="${st.onglet === 'qz' ? 'on' : ''}"><span class="gicon">quiz</span> Questionnaire de ma banque</button>
           <button data-o="prog" class="${st.onglet === 'prog' ? 'on' : ''}"><span class="gicon">extension</span> Programmation par blocs</button>
           <button data-o="fig" class="${st.onglet === 'fig' ? 'on' : ''}"><span class="gicon">architecture</span> Figure à construire</button></div>
@@ -90,6 +107,15 @@ function cxChoisir(){
         const d = progDefiParId(b.dataset.prog); if(!d) return;
         fin({ titre: 'Programmation : ' + d.titre, chapitre: '', html: '', prog: null, exo: { type: 'prog', defi: d.id } });
       });
+      const mn = o.querySelector('#cxManNiv'); if(mn) mn.onchange = () => { st.man = { lvl: mn.value, code: (avecPl(mn.value)[0] || {}).code, sel: [] }; rendre(); };
+      const mc = o.querySelector('#cxManCh'); if(mc) mc.onchange = () => { st.man.code = mc.value; st.man.sel = []; rendre(); };
+      o.querySelectorAll('[data-man]').forEach(b => b.onchange = () => { const k = b.dataset.man; st.man.sel = st.man.sel.filter(x => x !== k); if(b.checked) st.man.sel.push(k);
+        const ok = o.querySelector('#cxManOk'), n = st.man.sel.length; ok.disabled = !n; ok.innerHTML = `<span class="gicon">add</span> Ajouter ${n > 1 ? 'ces ' + n + ' exercices' : 'cet exercice'}`; });
+      const mo = o.querySelector('#cxManOk');
+      if(mo) mo.onclick = () => { if(!manC || !st.man.sel.length) return;
+        // Dans l'ordre du manuel ; plusieurs exercices d'un coup (tableau d'éléments).
+        const l = st.man.sel.map(x => x.split('|').map(Number)).sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+        fin(l.map(([i, k]) => plSessionItem(st.man.lvl, manC, i, k))); };
       const te = o.querySelector('#cxFigEnonce'); if(te) te.oninput = () => { st.fig.enonce = te.value; };
       const fb = o.querySelector('#cxFigBtn');
       if(fb) fb.onclick = () => {
@@ -142,11 +168,11 @@ function cxChoisirCours(){
           st.parties.push({ h, onglet: nom, titre: t.textContent.trim(), lecon: h.classList.contains('lesson-header') });
         });
       });
-      // Exercices de Mon TD (planches.js) : énoncé, puis correction montrée par le professeur.
+      // Exercices du manuel (planches.js) : énoncé, puis correction montrée par le professeur.
       if(typeof plDe === 'function') plDe(st.lvl, c.t).forEach((pl, i) => pl.exos.forEach((x, k) => {
         const tmp = document.createElement('div'); tmp.innerHTML = x.consigne;
         const txt = tmp.textContent.replace(/\s+/g, ' ').trim();
-        st.parties.push({ td: [i, k], onglet: 'Mon TD (exercices des planches)', titre: `${(typeof plCode === 'function' ? plRef(st.lvl, plCode(st.lvl, c), i) : plRef(st.lvl, c.code, i))} · exercice ${k + 1} : ${txt.length > 70 ? txt.slice(0, 70) + '…' : txt}`, lecon: false });
+        st.parties.push({ td: [i, k], onglet: 'Manuel (exercices des planches)', titre: `${(typeof plCode === 'function' ? plRef(st.lvl, plCode(st.lvl, c), i) : plRef(st.lvl, c.code, i))} · exercice ${k + 1} : ${txt.length > 70 ? txt.slice(0, 70) + '…' : txt}`, lecon: false });
       }));
       rendre();
     };
@@ -156,7 +182,7 @@ function cxChoisirCours(){
       o.innerHTML = `<div class="modal-card cx-ch">
         <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;"><b class="cd-h"><span class="gicon">menu_book</span> Partie de cours</b>
           <button class="modal-close" id="cxCoFermer"><span class="gicon">close</span></button></div>
-        <p class="hint" style="margin:6px 0 10px;">Choisissez le chapitre, puis les parties à montrer (cours, méthodes, ou exercices de Mon TD dont vous montrerez ensuite la correction). Elles sont ajoutées dans cet ordre. Si vous avez personnalisé le cours de ce chapitre, c'est votre version qui est reprise.</p>
+        <p class="hint" style="margin:6px 0 10px;">Choisissez le chapitre, puis les parties à montrer (cours, méthodes, ou exercices du manuel dont vous montrerez ensuite la correction). Elles sont ajoutées dans cet ordre. Si vous avez personnalisé le cours de ce chapitre, c'est votre version qui est reprise.</p>
         <div class="cx-co-sel"><select id="cxCoNiv">${niveaux.map(l => `<option value="${l}"${l === st.lvl ? ' selected' : ''}>${nomNiv(l)}</option>`).join('')}</select>
           <select id="cxCoCh"><option value="">Choisir un chapitre…</option>${chs.map(c => `<option value="${cdEsc(c.code)}"${c.code === st.code ? ' selected' : ''}>${cdEsc(c.code)} · ${cdEsc(c.t)}</option>`).join('')}</select></div>
         <div class="cx-ch-corps cx-co-liste">${!st.code ? '<p class="hint">Choisissez un chapitre.</p>' : st.parties.length ? st.parties.map((p, i) => `${p.onglet !== onglet ? `<b class="cx-co-onglet">${(onglet = p.onglet)}</b>` : ''}
@@ -260,7 +286,7 @@ async function cxProfAjouterItems(nouveaux, quoi){
   if(await niceConfirm(`${quoi} ajouté${nouveaux.length > 1 ? 's' : ''} à la fin de la session. ${nouveaux.length > 1 ? 'Montrer le premier' : 'Le montrer'} aux élèves maintenant ?`)) cdProfAller(premier);
   else cdProfRendre();
 }
-async function cxProfAjouter(){ if(!cdP) return; const it = await cxChoisir(); if(it) cxProfAjouterItems([it], 'Exercice'); }
+async function cxProfAjouter(){ if(!cdP) return; const it = await cxChoisir(); if(it){ const l = [].concat(it); cxProfAjouterItems(l, l.length > 1 ? 'Exercices' : 'Exercice'); } }
 async function cxProfAjouterCours(){ if(!cdP) return; const its = await cxChoisirCours(); if(its.length) cxProfAjouterItems(its, its.length > 1 ? 'Parties de cours' : 'Partie de cours'); }
 
 /* =====================================================================
@@ -552,7 +578,7 @@ function cxEleveTete(k, it){
       : `<span class="cx-e-chip"><span class="gicon">edit_square</span> Exercice à faire</span><span class="hint" id="cxSave" style="margin:0;"></span><span style="flex:1"></span>
         <button class="btn secondary${cdE.aide ? ' cx-leve' : ''}" onclick="cxEleveAide()"><span class="gicon">front_hand</span> ${cdE.aide ? 'Main levée : ton professeur arrive' : 'Lever la main'}</button>`}</div>`;
 }
-/* ---------- Exercices de Mon TD faits à l'écran (planches-num.js) ----------
+/* ---------- Exercices du manuel faits à l'écran (planches-num.js) ----------
    Élément : { titre, html (énoncé figé), corr, exo:{ type:'td', lvl, code, t, i, k } } ; l'exercice est
    relu dans PLANCHES (scripts des chapitres). Travail : { etat, res (dernière vérification), essais }. */
 function cxTdExo(it){
@@ -843,6 +869,7 @@ function cxFigChange(){
     .cx-co-onglet{display:block;color:#1F3A5C;margin:6px 0 2px;font-family:'Space Grotesk',sans-serif;}
     .cx-co-p{display:block;padding:4px 2px;cursor:pointer;font-weight:700;} .cx-co-p.sous{font-weight:500;padding-left:22px;} .cx-co-p small{color:var(--ink-soft);font-weight:500;}
     .cx-ch-it{display:flex;flex-direction:column;gap:2px;text-align:left;border:1.5px solid rgba(28,43,57,.12);background:#fff;border-radius:10px;padding:8px 12px;cursor:pointer;font:inherit;color:var(--ink);}
+    .cx-man-pl{font:700 .82rem 'Space Grotesk',sans-serif;color:#1F3A5C;margin:6px 0 0;} .cx-man-it{cursor:pointer;} .cx-man-et{color:#E9A21C;letter-spacing:2px;font-size:.8rem;} .cx-man-et .pl-et-off{color:#D8DCE3;} .cx-man-it input{vertical-align:-2px;}
     .cx-ch-it:hover{border-color:#1F3A5C;} .cx-ch-it small{color:var(--ink-soft);font-size:.78rem;}
     .cd-exos{margin-top:8px;} .cd-exos > b{display:block;color:#1F3A5C;margin:4px 0;}
     .cd-exo{display:flex;align-items:center;gap:6px;padding:4px 2px;} .cd-exo .gicon{color:#E35D3A;font-size:18px;}
