@@ -3335,6 +3335,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.985', date:'2026-10-05', items:[
+    "Bilan -- demandé : « Ajouter un bouton copier sur chaque appréciation, et un bouton général ». Chaque appréciation a son bouton « Copier » (en bas à gauche de la case). En haut du bilan, « Copier les appréciations » copie celles de toute la classe, une ligne par élève (nom, tabulation, appréciation) : à coller dans un tableur ou un logiciel de bulletins.",
+  ] },
   { version:'2026-08-19.984', date:'2026-10-05', items:[
     "« Mon TD » devient « Manuel » -- demandé : « Peut-on rendre les exercices du TD (à renommer Manuel) disponibles pour les sessions ? ». L'onglet des chapitres s'appelle Manuel. Dans une session COURS, « Ajouter un exercice » (à la préparation ou pendant la séance) a un onglet Manuel en tête : niveau, chapitre (celui qui est ouvert par défaut), puis on coche un ou plusieurs exercices des planches, ajoutés dans l'ordre du manuel. Les exercices qui se font à l'écran sont suivis et vérifiés en direct ; les autres sont projetés chez les élèves, et le professeur montre la correction.",
   ] },

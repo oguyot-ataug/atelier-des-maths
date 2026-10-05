@@ -211,7 +211,7 @@ function blRendre(){
       <td class="bl-s bl-c ${s.reussite != null ? blCl(s.reussite) : 'vide'}">${s.reussite != null ? Math.round(100 * s.reussite) + ' %' : '—'}</td>
       <td class="bl-s bl-c ${s.moyenne != null ? blCl(s.moyenne / 20) : 'vide'}">${s.moyenne != null ? blNum(s.moyenne) : '—'}</td>
       ${complet ? `<td class="bl-s">${evoTxt(s)}</td>
-      <td class="bl-appr"><textarea data-appr="${e.id}" rows="3" maxlength="${BL_MAX}" placeholder="Appréciation (${BL_MAX} caractères au plus)">${escapeHtml(a ? a.texte : '')}</textarea><span class="bl-cpt">${(a ? a.texte : '').length}/${BL_MAX}</span>${a && a.ia ? '<span class="bl-ia" title="Proposée par l\'IA, à relire">IA</span>' : ''}</td>` : ''}</tr>`;
+      <td class="bl-appr"><textarea data-appr="${e.id}" rows="3" maxlength="${BL_MAX}" placeholder="Appréciation (${BL_MAX} caractères au plus)">${escapeHtml(a ? a.texte : '')}</textarea><span class="bl-cpt">${(a ? a.texte : '').length}/${BL_MAX}</span><button type="button" class="bl-copie" data-copie="${e.id}" title="Copier l'appréciation"><span class="gicon">content_copy</span> Copier</button>${a && a.ia ? '<span class="bl-ia" title="Proposée par l\'IA, à relire">IA</span>' : ''}</td>` : ''}</tr>`;
   }).join('');
   const moyCol = cols.map(col => { const l = B.eleves.map(e => B.cellules.get(col.id + '|' + e.id)).filter(c => c && !c.nc);
     const v = l.filter(c => c.v != null).map(c => c.v), f = l.filter(c => c.fait).length;
@@ -223,6 +223,7 @@ function blRendre(){
       <label class="hint" style="margin:0;">du <input type="date" id="blDu" value="${B.per.du}"></label><label class="hint" style="margin:0;">au <input type="date" id="blAu" value="${B.per.au}"></label>
       <span style="flex:1"></span>
       ${complet ? '<button class="btn" style="background:#6B3FA0;" id="blIa"><span class="gicon">auto_awesome</span> Appréciations IA</button>' : ''}
+      ${complet ? '<button class="btn secondary" id="blCopieTout" title="Toutes les appréciations, une ligne par élève (nom, tabulation, appréciation) : à coller dans un tableur ou un logiciel de bulletins"><span class="gicon">content_copy</span> Copier les appréciations</button>' : ''}
       <button class="btn secondary" id="blCsv"><span class="gicon">download</span> CSV</button>
       <button class="btn secondary" id="blImp"><span class="gicon">print</span> Imprimer</button>
       ${B.fenetre ? '<button class="modal-close" onclick="document.getElementById(\'blOverlay\').style.display=\'none\'"><span class="gicon">close</span></button>' : ''}</div>
@@ -250,8 +251,21 @@ function blRendre(){
     t.oninput = () => { const c = t.parentElement.querySelector('.bl-cpt'); if(c) c.textContent = t.value.length + '/' + BL_MAX; };
     t.onchange = () => { blx = B; blSauverAppr(t.dataset.appr, t.value, false); }; });
   B.cible.querySelectorAll('[data-coef]').forEach(b => b.onclick = () => { blx = B; blCoef(b.dataset.coef); });
+  B.cible.querySelectorAll('[data-copie]').forEach(b => b.onclick = () => { const t = B.cible.querySelector(`[data-appr="${b.dataset.copie}"]`);
+    if(!t || !t.value.trim()){ blCopieFait(b, 'Vide'); return; } blCopier(t.value.trim(), b); });
+  if(q('#blCopieTout')) q('#blCopieTout').onclick = () => {
+    const l = B.eleves.map(e => { const t = B.cible.querySelector(`[data-appr="${e.id}"]`); return [e.label, t ? t.value.replace(/\s+/g, ' ').trim() : '']; }).filter(x => x[1]);
+    if(!l.length){ blCopieFait(q('#blCopieTout'), 'Aucune appréciation'); return; }
+    blCopier(l.map(x => x.join('\t')).join('\n'), q('#blCopieTout'), `${l.length} copiée${l.length > 1 ? 's' : ''}`); };
   if(q('#blIa')) q('#blIa').onclick = () => { blx = B; blAppreciationsIa(); };
   q('#blCsv').onclick = () => { blx = B; blCsv(); }; q('#blImp').onclick = () => { blx = B; blImprimer(); };
+}
+// Copier dans le presse-papiers (repli execCommand si l'API n'est pas disponible).
+function blCopieFait(b, txt){ if(!b) return; if(!b.dataset.old) b.dataset.old = b.innerHTML; b.innerHTML = `<span class="gicon">check</span> ${txt}`; clearTimeout(b._t); b._t = setTimeout(() => { b.innerHTML = b.dataset.old; delete b.dataset.old; }, 1600); }
+async function blCopier(txt, b, ok){
+  try{ await navigator.clipboard.writeText(txt); }
+  catch(e){ const t = document.createElement('textarea'); t.value = txt; t.style.cssText = 'position:fixed;left:-9999px;'; document.body.appendChild(t); t.select(); try{ document.execCommand('copy'); }catch(e2){} t.remove(); }
+  blCopieFait(b, ok || 'Copié');
 }
 // Colonne notée : une interrogation, une interrogation papier ou un devoir où au moins une note a été mise.
 function blNotee(col){ return !!col.table && (col.groupe !== 'devoir' || blx.eleves.some(e => (blx.cellules.get(col.id + '|' + e.id) || {}).note20 != null)); }
@@ -426,6 +440,8 @@ function blImprimer(){
     .bl-appr{min-width:300px;position:relative;text-align:left !important;} .bl-appr textarea{width:100%;min-height:84px;border:1px solid rgba(28,43,57,.15);border-radius:8px;padding:5px 8px;font:inherit;font-size:.8rem;resize:vertical;box-sizing:border-box;}
     .bl-appr-h{min-width:300px;} .bl-ia{position:absolute;top:6px;right:10px;background:#6B3FA0;color:#fff;border-radius:6px;font-size:.62rem;font-weight:800;padding:0 5px;}
     .bl-cpt{position:absolute;bottom:8px;right:12px;font-size:.62rem;color:#9AA3AF;}
+    .bl-appr textarea{padding-bottom:18px;} .bl-copie{position:absolute;bottom:7px;left:11px;border:0;background:rgba(255,255,255,.9);color:#1F3A5C;font:600 .66rem Inter,sans-serif;cursor:pointer;padding:0 4px;border-radius:5px;display:inline-flex;align-items:center;gap:2px;}
+    .bl-copie .gicon{font-size:13px;} .bl-copie:hover{background:#EEF1F5;}
     .bl-leg .bl-c{display:inline-block;padding:0 6px;border-radius:5px;}
   `;
   document.head.appendChild(st);
