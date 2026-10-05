@@ -3335,6 +3335,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.986', date:'2026-10-05', items:[
+    "Appréciations IA -- demandé : « ça reste trop précis. Il faut faire une synthèse plus globale en tenant compte de l'importance des évaluations grâce aux coefficients ». L'IA fait une synthèse du trimestre : sans énumérer les évaluations ni citer de titre, d'exercice ou de question, avec au plus un grand domaine réussi et un à consolider. Le niveau se juge d'abord sur la moyenne pondérée par les coefficients et sur les évaluations de poids fort (coefficient au moins double des autres) ; celles de poids faible et les simples travaux ne font que nuancer. Le détail question par question des interrogations en ligne n'est plus envoyé.",
+  ] },
   { version:'2026-08-19.985', date:'2026-10-05', items:[
     "Bilan -- demandé : « Ajouter un bouton copier sur chaque appréciation, et un bouton général ». Chaque appréciation a son bouton « Copier » (en bas à gauche de la case). En haut du bilan, « Copier les appréciations » copie celles de toute la classe, une ligne par élève (nom, tabulation, appréciation) : à coller dans un tableur ou un logiciel de bulletins.",
   ] },
