@@ -259,7 +259,7 @@ function blRendre(){
         <button type="button" class="bl-per-plus" id="blPerAjout" title="Ajouter une période (demi-trimestre…)"><span class="gicon">add</span> Période</button></div>
       <label class="hint" style="margin:0;">du <input type="date" id="blDu" value="${B.per.du}"></label><label class="hint" style="margin:0;">au <input type="date" id="blAu" value="${B.per.au}"></label>
       <span style="flex:1"></span>
-      ${complet ? '<button class="btn" style="background:#6B3FA0;" id="blIa"><span class="gicon">auto_awesome</span> Appréciations IA</button>' : ''}
+      ${complet ? '<button class="btn" style="background:#6B3FA0;" id="blIa"><span class="gicon">auto_awesome</span> Appréciations IA</button><button class="btn secondary" id="blCons" title="Voir et modifier le texte (prompt) envoyé à l\'IA"><span class="gicon">tune</span> Consigne IA</button>' : ''}
       ${complet ? '<button class="btn secondary" id="blCopieTout" title="Toutes les appréciations, une ligne par élève (nom, tabulation, appréciation) : à coller dans un tableur ou un logiciel de bulletins"><span class="gicon">content_copy</span> Copier les appréciations</button>' : ''}
       <button class="btn secondary" id="blCsv"><span class="gicon">download</span> CSV</button>
       <button class="btn secondary" id="blImp"><span class="gicon">print</span> Imprimer</button>
@@ -308,6 +308,7 @@ function blRendre(){
     if(!l.length){ blCopieFait(q('#blCopieTout'), 'Aucune appréciation'); return; }
     blCopier(l.map(x => x.join('\t')).join('\n'), q('#blCopieTout'), `${l.length} copiée${l.length > 1 ? 's' : ''}`); };
   if(q('#blIa')) q('#blIa').onclick = () => { blx = B; blAppreciationsIa(); };
+  if(q('#blCons')) q('#blCons').onclick = () => { blx = B; blConsigneOuvrir(); };
   q('#blCsv').onclick = () => { blx = B; blCsv(); }; q('#blImp').onclick = () => { blx = B; blImprimer(); };
 }
 // Copier dans le presse-papiers (repli execCommand si l'API n'est pas disponible).
@@ -398,6 +399,70 @@ function blCouper(t){
   const c = t.slice(0, BL_MAX), i = Math.max(c.lastIndexOf('. '), c.lastIndexOf('! '));
   return i > 120 ? c.slice(0, i + 1) : c.slice(0, BL_MAX - 1).replace(/\s+\S*$/, '') + '…';
 }
+/* ---------- Consigne donnée à l'IA (prompt) ----------
+   Demandé : « Montrer le prompt complet donné par défaut pour les appréciations IA et permettre au
+   professeur de le modifier. » Le prompt = un en-tête (classe, période), la CONSIGNE (modifiable,
+   enregistrée dans le compte : table bilan_consignes), les données des élèves (codes E1, E2… :
+   jamais de nom), puis le format de réponse. Sans consigne personnalisée : BL_CONSIGNE_DEFAUT, et les
+   phrases chiffrées échappées à la consigne sont retirées (blSansChiffres). */
+const BL_CONSIGNE_DEFAUT = `Règles impératives :
+- 250 caractères au plus, espaces compris (2 phrases courtes) ; à la 3e personne, sans prénom ni nom (« Élève… », « Bon travail… », « Il faut… »).
+- Fais une SYNTHÈSE GLOBALE de la période, pas un compte rendu : n'énumère pas les évaluations une à une, ne cite ni titre d'interrogation ni exercice ni question. Au plus un grand domaine réussi et un grand domaine à consolider (par exemple « le calcul », « la géométrie », « les fractions »), seulement s'il ressort nettement.
+- Le niveau se juge d'abord sur le niveau global (moyenne pondérée par les coefficients) et sur les évaluations de poids fort ; celles de poids faible et les simples travaux ne font que nuancer (régularité, sérieux).
+- AUCUN chiffre : ni pourcentage, ni note, ni moyenne, ni nombre de séances. Exprime tout avec des mots.
+- Le travail d'automatismes en autonomie sert à éclairer un élève faible ailleurs : peu ou pas de séances → il ne travaille pas assez, conseille un entraînement régulier ; beaucoup de séances sans réussite → de réelles difficultés malgré ses efforts, à valoriser. Pour un bon élève, n'en parle que pour le féliciter s'il s'entraîne beaucoup.
+- Tiens compte de l'évolution au fil de la période et des travaux non faits ou en retard.
+- Ton bienveillant et professionnel, un conseil concret ; n'invente rien. Si presque rien n'est fait, dis-le avec tact.`;
+let blConsignePerso; // undefined : pas encore lue ; null : consigne par défaut
+async function blConsigneLire(){
+  if(blConsignePerso === undefined){
+    const { data } = await sb.from('bilan_consignes').select('consigne').eq('teacher_id', currentUser.id).maybeSingle();
+    blConsignePerso = data && data.consigne ? data.consigne : null;
+  }
+  return blConsignePerso || BL_CONSIGNE_DEFAUT;
+}
+const blPromptTete = () => `Tu es professeur de mathématiques (classe de ${blx.niveau || '?'}, ${blx.per.t.toLowerCase()} : du ${blx.per.du} au ${blx.per.au}). Pour chaque élève, rédige l'appréciation du bulletin à partir UNIQUEMENT des résultats ci-dessous (travail en autonomie sur le site, devoirs, interrogations en ligne et sur papier).`;
+const BL_PROMPT_FIN = 'Réponds uniquement par un objet JSON {"E1": "appréciation", …} avec les codes ci-dessus.';
+function blPrompt(lignes, consigne){ return `${blPromptTete()}\n${consigne}\n${lignes.join('\n')}\n${BL_PROMPT_FIN}`; }
+async function blConsigneOuvrir(){
+  if(!blx) return;
+  const consigne = await blConsigneLire();
+  blPrepNoms();
+  const ex = blx.eleves.length ? blDonneesIa(blx.eleves[0], 'E1', blMedAuto()) : 'E1 : (données de l\'élève)';
+  let o = document.getElementById('blCons');
+  if(!o){ o = document.createElement('div'); o.id = 'blCons'; o.className = 'modal-overlay'; o.style.zIndex = '9470'; document.body.appendChild(o); }
+  o.innerHTML = `<div class="modal-card bl-cons"><div style="display:flex;justify-content:space-between;align-items:center;"><b class="cd-h"><span class="gicon">tune</span> Consigne donnée à l'IA</b><button class="modal-close" data-bc="x"><span class="gicon">close</span></button></div>
+    <p class="hint" style="margin:6px 0 10px;">Voici le texte complet envoyé à l'IA, par lots de 6 élèves. Seule la consigne (au milieu) se modifie ; elle est enregistrée dans votre compte et vaut pour toutes vos classes. L'appréciation est coupée à ${BL_MAX} caractères dans tous les cas.</p>
+    <div class="bl-cons-fixe"><small>Début (fixe)</small>${escapeHtml(blPromptTete())}</div>
+    <label class="bl-cons-lab">Consigne ${blConsignePerso ? '<span class="bl-cons-tag">personnalisée</span>' : '<span class="bl-cons-tag def">par défaut</span>'}</label>
+    <textarea id="blConsTxt" rows="14" maxlength="6000">${escapeHtml(consigne)}</textarea>
+    <div class="bl-cons-fixe"><small>Données des élèves (codes E1, E2… : jamais de nom ni de prénom) — exemple avec le premier élève</small>${escapeHtml(ex)}</div>
+    <div class="bl-cons-fixe"><small>Fin (fixe)</small>${escapeHtml(BL_PROMPT_FIN)}</div>
+    <p class="hint" style="margin:6px 0 0;">Avec la consigne par défaut, une phrase qui citerait quand même un pourcentage ou une note est retirée de l'appréciation ; avec une consigne personnalisée, rien n'est retiré.</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;margin-top:12px;">
+      <button class="btn secondary" data-bc="defaut"${blConsignePerso ? '' : ' disabled'}><span class="gicon">restart_alt</span> Rétablir la consigne par défaut</button>
+      <button class="btn secondary" data-bc="x">Annuler</button><button class="btn" data-bc="ok"><span class="gicon">save</span> Enregistrer</button></div></div>`;
+  o.style.display = 'flex';
+  o.onclick = e => { if(e.target === o) o.style.display = 'none'; };
+  o.querySelectorAll('[data-bc]').forEach(b => b.onclick = async () => {
+    const c = b.dataset.bc;
+    if(c === 'x'){ o.style.display = 'none'; return; }
+    if(c === 'defaut'){
+      if(!(await niceConfirm('Revenir à la consigne par défaut ? Votre consigne personnalisée sera effacée.'))) return;
+      const { error } = await sb.from('bilan_consignes').delete().eq('teacher_id', currentUser.id);
+      if(error){ niceAlert('Impossible : ' + error.message); return; }
+      blConsignePerso = null; o.style.display = 'none'; if(typeof cdToast === 'function') cdToast('<span class="gicon">restart_alt</span> Consigne par défaut rétablie.');
+      return;
+    }
+    const t = o.querySelector('#blConsTxt').value.trim();
+    if(!t){ niceAlert('La consigne est vide : utilisez plutôt « Rétablir la consigne par défaut ».'); return; }
+    if(t === BL_CONSIGNE_DEFAUT){ await sb.from('bilan_consignes').delete().eq('teacher_id', currentUser.id); blConsignePerso = null; o.style.display = 'none'; return; }
+    const { error } = await sb.from('bilan_consignes').upsert({ teacher_id: currentUser.id, consigne: t, updated_at: new Date().toISOString() }, { onConflict: 'teacher_id' });
+    if(error){ niceAlert('Consigne non enregistrée : ' + error.message); return; }
+    blConsignePerso = t; o.style.display = 'none';
+    if(typeof cdToast === 'function'){ cdToast('<span class="gicon">save</span> Consigne enregistrée : elle servira aux prochaines appréciations IA.'); const x = document.querySelector('.cd-toast:last-of-type'); if(x) x.style.background = '#1F7A4D'; }
+  });
+}
 async function blAppreciationsIa(){
   if(!blx || !blx.colonnes.length) return;
   const deja = blx.eleves.filter(e => (blx.appr.get(e.id) || {}).texte);
@@ -410,26 +475,16 @@ async function blAppreciationsIa(){
   if(!cibles.length) return;
   blPrepNoms();
   const et = blx.cible.querySelector('#blEtat'), btn = blx.cible.querySelector('#blIa'); if(btn) btn.disabled = true;
-  const medAuto = blMedAuto();
+  const medAuto = blMedAuto(), consigne = await blConsigneLire(), defaut = consigne === BL_CONSIGNE_DEFAUT;
   let faits = 0, erreur = null;
   for(let i = 0; i < cibles.length; i += 6){
     const lot = cibles.slice(i, i + 6), codes = lot.map((e, j) => 'E' + (i + j + 1));
     if(et) et.textContent = `Rédaction des appréciations… ${i}/${cibles.length}`;
-    const prompt = `Tu es professeur de mathématiques (classe de ${blx.niveau || '?'}, ${blx.per.t.toLowerCase()} : du ${blx.per.du} au ${blx.per.au}). Pour chaque élève, rédige l'appréciation du bulletin à partir UNIQUEMENT des résultats ci-dessous (travail en autonomie sur le site, devoirs, interrogations en ligne et sur papier).
-Règles impératives :
-- ${BL_MAX} caractères au plus, espaces compris (2 phrases courtes) ; à la 3e personne, sans prénom ni nom (« Élève… », « Bon travail… », « Il faut… »).
-- Fais une SYNTHÈSE GLOBALE du trimestre, pas un compte rendu : n'énumère pas les évaluations une à une, ne cite ni titre d'interrogation ni exercice ni question. Au plus un grand domaine réussi et un grand domaine à consolider (par exemple « le calcul », « la géométrie », « les fractions »), seulement s'il ressort nettement.
-- Le niveau se juge d'abord sur le niveau global (moyenne pondérée par les coefficients) et sur les évaluations de poids fort ; celles de poids faible et les simples travaux ne font que nuancer (régularité, sérieux).
-- AUCUN chiffre : ni pourcentage, ni note, ni moyenne, ni nombre de séances. Exprime tout avec des mots.
-- Le travail d'automatismes en autonomie sert à éclairer un élève faible ailleurs : peu ou pas de séances → il ne travaille pas assez, conseille un entraînement régulier ; beaucoup de séances sans réussite → de réelles difficultés malgré ses efforts, à valoriser. Pour un bon élève, n'en parle que pour le féliciter s'il s'entraîne beaucoup.
-- Tiens compte de l'évolution au fil de la période et des travaux non faits ou en retard.
-- Ton bienveillant et professionnel, un conseil concret ; n'invente rien. Si presque rien n'est fait, dis-le avec tact.
-${lot.map((e, j) => blDonneesIa(e, codes[j], medAuto)).join('\n')}
-Réponds uniquement par un objet JSON {"E1": "appréciation", …} avec les codes ci-dessus.`;
+    const prompt = blPrompt(lot.map((e, j) => blDonneesIa(e, codes[j], medAuto)), consigne);
     try{
       const txt = await callClaude(prompt, 1500, { feature: 'appreciations', niveau: blx.niveau || null });
       const m = txt.match(/\{[\s\S]*\}/), js = m ? JSON.parse(m[0]) : {};
-      for(let j = 0; j < lot.length; j++){ const a = js[codes[j]]; if(typeof a === 'string' && a.trim()){ await blSauverAppr(lot[j].id, blCouper(blSansChiffres(a)), true); faits++; } }
+      for(let j = 0; j < lot.length; j++){ const a = js[codes[j]]; if(typeof a === 'string' && a.trim()){ await blSauverAppr(lot[j].id, blCouper(defaut ? blSansChiffres(a) : a), true); faits++; } }
     }catch(e){ erreur = e.message || String(e); break; }
   }
   if(btn) btn.disabled = false;
@@ -472,6 +527,12 @@ function blImprimer(){
   st.textContent = `
     .bl-fen{max-width:1400px;width:97vw;max-height:92vh;overflow:auto;}
     .bl-tete{display:flex;gap:8px 10px;align-items:center;flex-wrap:wrap;}
+    .bl-cons{max-width:760px;width:95vw;max-height:92vh;overflow:auto;}
+    .bl-cons-fixe{background:#F3F5F8;border-radius:10px;padding:8px 12px;font:.82rem/1.45 'JetBrains Mono',monospace;color:#3D4654;white-space:pre-wrap;margin:6px 0;max-height:160px;overflow:auto;}
+    .bl-cons-fixe small{display:block;font:700 .72rem Inter,sans-serif;color:#6B3FA0;text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px;}
+    .bl-cons-lab{display:flex;gap:8px;align-items:center;font:800 .95rem 'Space Grotesk',sans-serif;margin:10px 0 4px;}
+    .bl-cons-tag{font:700 .72rem Inter,sans-serif;background:#6B3FA0;color:#fff;border-radius:999px;padding:1px 9px;} .bl-cons-tag.def{background:#E8ECF2;color:#3D4654;}
+    #blConsTxt{width:100%;box-sizing:border-box;border:1.5px solid #6B3FA0;border-radius:10px;padding:10px 12px;font:.86rem/1.5 'JetBrains Mono',monospace;resize:vertical;}
     .bl-pers{display:flex;flex-wrap:wrap;gap:6px;align-items:center;flex-basis:100%;order:1;margin:2px 0;}
     .bl-tete > label, .bl-tete > span[style], .bl-tete > button, .bl-tete > .btn{order:2;}
     .bl-per{display:inline-flex;align-items:center;border:1.5px solid rgba(28,43,57,.16);background:#fff;border-radius:999px;overflow:hidden;transition:.15s;}
