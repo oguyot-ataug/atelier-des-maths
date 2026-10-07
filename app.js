@@ -3287,7 +3287,9 @@ function renderClassQuickPicker(boxId){
   const box = document.getElementById(boxId);
   if(!box) return;
   if(!accountClassesList.length){ box.innerHTML=''; return; }
-  box.innerHTML = accountClassesList.map(c=>`
+  // Cahier et outil de correction : les groupes sans cahier (demi-groupes…) ne sont pas proposés.
+  const liste = boxId==='cahierClassQuickPicker' || boxId==='corClassQuickPicker' ? accountClassesList.filter(c=>!(c.groupe && c.cahier===false)) : accountClassesList;
+  box.innerHTML = liste.map(c=>`
     <button type="button" onclick="selectClassFromModal('${c.id}')" style="border:1.5px solid ${c.id===currentClassId?'#0D5BA3':'rgba(28,43,57,.2)'};background:${c.id===currentClassId?'#0D5BA3':'#fff'};color:${c.id===currentClassId?'#fff':'#333'};border-radius:20px;padding:4px 12px;margin:2px 4px 2px 0;cursor:pointer;font-size:.85rem;">${c.id===currentClassId?'✓ ':''}${escapeHtml(c.label)}</button>
   `).join('');
 }
@@ -3341,6 +3343,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.992', date:'2026-10-07', items:[
+    "Groupes sans cahier masqués dans la page Cahier -- demandé : « Si le groupe n'a pas de cahier, le masquer dans la page Cahier ». Les boutons de choix de classe du Cahier (et de l'outil de correction, dont les corrections vont au cahier) ne proposent plus les groupes dont la case « propre cahier » est décochée. Si un tel groupe est la classe active en arrivant sur le Cahier, la page passe d'elle-même sur sa classe d'origine (ex. Groupe A - 5B → 5B). Les autres outils (devoirs, interrogations, sessions, Mes classes) proposent toujours le groupe.",
+  ] },
   { version:'2026-08-19.991', date:'2026-10-07', items:[
     "Groupes : avoir son propre cahier ou non -- demandé : « un paramètre supplémentaire pour les groupes : apparaître dans les cahiers ou pas. Par exemple les demi-groupes de classe n'ont pas besoin de cahier. » Nouvelle case dans la fiche d'un groupe (Mes classes › Groupes) : « Le groupe a son propre cahier ». Décochée, le groupe utilise le cahier de la classe d'origine de ses élèves (celle de la plupart d'entre eux) : choisir le groupe comme classe active montre ce cahier, avec un bandeau « Ce groupe n'a pas son propre cahier : … le cahier de la classe 5B » ; corrections, parties de cours, interrogations ajoutées au cahier et éléments proposés pour une session COURS y vont aussi. Les groupes existants gardent leur cahier tant qu'on ne décoche pas la case.",
   ] },
@@ -7599,6 +7604,12 @@ async function renderCahierEleve(){
     return;
   }
   await cahierClasseResoudre();
+  // Groupe sans cahier choisi ailleurs : sur la page Cahier, on passe à sa classe d'origine.
+  const vueCahier = document.getElementById('view-cahier-eleve');
+  if(!cahierClasse.propre && cahierClasse.id && cahierClasse.id!==currentClassId && vueCahier && vueCahier.classList.contains('active') && accountClassesList.some(c=>c.id===cahierClasse.id)){
+    await selectClassFromModal(cahierClasse.id);
+    return;
+  }
   if(!cahierClasseId()){
     document.getElementById('cahierEleveContent').innerHTML = '<p class="hint"><span class=gicon>info</span> Ce groupe n\'a pas de cahier (réglage du groupe, dans Mes classes › Groupes) et sa classe d\'origine n\'a pas été trouvée : choisissez une classe pour voir son cahier.</p>';
     return;
