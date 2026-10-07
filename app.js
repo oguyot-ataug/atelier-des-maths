@@ -3343,6 +3343,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.993', date:'2026-10-07', items:[
+    "Listes déroulantes : un même style partout -- demandé : « Pour les listes déroulantes partout, les rendre plus sexy ». Toutes les listes du site (classes, périodes, chapitres, niveaux, réglages…) ont maintenant un bord arrondi, une flèche dessinée aux couleurs du site, un survol et un focus colorés ; les champs de date et d'heure ont le même habillage. Le style est commun (styles.css) : il s'applique aussi aux listes des fenêtres et des outils ajoutés plus tard.",
+  ] },
   { version:'2026-08-19.992', date:'2026-10-07', items:[
     "Groupes sans cahier masqués dans la page Cahier -- demandé : « Si le groupe n'a pas de cahier, le masquer dans la page Cahier ». Les boutons de choix de classe du Cahier (et de l'outil de correction, dont les corrections vont au cahier) ne proposent plus les groupes dont la case « propre cahier » est décochée. Si un tel groupe est la classe active en arrivant sur le Cahier, la page passe d'elle-même sur sa classe d'origine (ex. Groupe A - 5B → 5B). Les autres outils (devoirs, interrogations, sessions, Mes classes) proposent toujours le groupe.",
   ] },

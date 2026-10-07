@@ -1869,3 +1869,41 @@ body.fig-proj #tbSvg{display:block;width:100vw !important;height:100vh !importan
 @media (max-width:600px){ .nbs-nav-t{display:none;} .nbs-titre{font-size:1rem;} .nbs-vignettes{grid-template-columns:repeat(2,1fr);} }
 @media print{ .nbs-tete,.nbs-vignettes{display:none;} }
 .nb-cahier-de{display:flex;gap:6px;align-items:center;background:#EEF4FB;color:#1F3A5C;border-radius:10px;padding:6px 12px;margin:0 0 12px;font-size:.9rem;} .nb-cahier-de .gicon{font-size:18px;}
+
+/* ---------- Listes déroulantes : un même style partout -- demandé : « Pour les listes déroulantes
+   partout, les rendre plus sexy ». Bord arrondi, flèche dessinée, survol et focus colorés. :where()
+   garde une spécificité nulle : les réglages propres à une liste (taille, police, largeur) l'emportent. */
+:where(select:not([multiple]):not([size])){
+  -webkit-appearance:none; -moz-appearance:none; appearance:none;
+  background-color:#fff;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1.5 1.5 6 6l4.5-4.5' fill='none' stroke='%230C5BA0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat; background-position:right 11px center; background-size:12px 8px;
+  border:1.5px solid rgba(28,43,57,.18); border-radius:10px;
+  padding:7px 34px 7px 12px; min-height:36px;
+  font-family:'Inter',sans-serif; font-size:.9rem; font-weight:600; color:var(--ink,#20242E); line-height:1.3;
+  cursor:pointer; box-shadow:0 1px 2px rgba(28,43,57,.06);
+  transition:border-color .15s, box-shadow .15s, background-color .15s;
+  max-width:100%; text-overflow:ellipsis;
+}
+:where(select:not([multiple]):not([size])):hover{ border-color:var(--accent,#0C5BA0); background-color:#F7FAFE; }
+:where(select:not([multiple]):not([size])):focus{ outline:none; border-color:var(--accent,#0C5BA0); box-shadow:0 0 0 3px rgba(12,91,160,.18); }
+:where(select:not([multiple]):not([size])):disabled{ opacity:.55; cursor:not-allowed; background-color:#F3F5F8; }
+:where(select) option{ font-weight:500; color:#20242E; background:#fff; }
+:where(select) optgroup{ font-weight:800; color:var(--accent,#0C5BA0); }
+/* La flèche et sa place ne doivent pas être écrasées par un « padding » ou un fond propre à une liste. */
+select:not([multiple]):not([size]){
+  -webkit-appearance:none; -moz-appearance:none; appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1.5 1.5 6 6l4.5-4.5' fill='none' stroke='%230C5BA0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat; background-position:right 11px center; background-size:12px 8px;
+  padding-right:34px;
+}
+@media print{ select:not([multiple]):not([size]){ background-image:none; box-shadow:none; padding-right:12px; } }
+/* Champs de date et d'heure : même habillage que les listes. */
+:where(input[type=date], input[type=time], input[type=datetime-local], input[type=month], input[type=week]){
+  background-color:#fff; border:1.5px solid rgba(28,43,57,.18); border-radius:10px; padding:6px 10px; min-height:36px;
+  font-family:'Inter',sans-serif; font-size:.9rem; font-weight:600; color:var(--ink,#20242E);
+  box-shadow:0 1px 2px rgba(28,43,57,.06); transition:border-color .15s, box-shadow .15s; box-sizing:border-box; max-width:100%;
+}
+:where(input[type=date], input[type=time], input[type=datetime-local], input[type=month], input[type=week]):hover{ border-color:var(--accent,#0C5BA0); }
+:where(input[type=date], input[type=time], input[type=datetime-local], input[type=month], input[type=week]):focus{ outline:none; border-color:var(--accent,#0C5BA0); box-shadow:0 0 0 3px rgba(12,91,160,.18); }
+:where(input[type=date], input[type=time], input[type=datetime-local])::-webkit-calendar-picker-indicator{ cursor:pointer; opacity:.7; }

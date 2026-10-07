@@ -360,7 +360,7 @@ async function iaLoadAdminTeachers(boxId){
     const modes = siteAllowed ? ['site','etab','perso'] : ['etab','perso'];
     const modeCell = isAdm ? '<span class="hint">clé du site</span>'
       : (!siteAllowed && t.key_mode==='site') ? '<span class="hint">Clé du site<br>(décidé par l\'administrateur)</span>'
-      : `<select onchange="iaSetTeacherKeyMode('${t.teacher_id}', this)" data-prev="${t.key_mode}" style="padding:4px 6px;">${modes.map(m=>`<option value="${m}" ${t.key_mode===m?'selected':''}>${IA_KEY_MODE_LABELS[m]}</option>`).join('')}</select>`;
+      : `<select onchange="iaSetTeacherKeyMode('${t.teacher_id}', this)" data-prev="${t.key_mode}">${modes.map(m=>`<option value="${m}" ${t.key_mode===m?'selected':''}>${IA_KEY_MODE_LABELS[m]}</option>`).join('')}</select>`;
     const okCell = t.key_ok ? '<span style="color:#1F7A4D;">✓ disponible</span>'
       : t.key_mode==='etab' ? '<span style="color:#B3261E;">clé de l\'établissement non enregistrée</span>'
       : '<span style="color:#B3261E;">aucune clé personnelle</span>';

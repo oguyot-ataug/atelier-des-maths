@@ -469,7 +469,7 @@ document.body.insertAdjacentHTML('beforeend', `
       <button class="modal-close" onclick="closeChangeCategoryModal()"><span class=gicon>close</span></button>
     </div>
     <p class="hint" id="changeCategoryModalName" style="margin:0 0 10px;"></p>
-    <select id="changeCategoryModalSelect" style="width:100%;padding:8px;border-radius:6px;border:1px solid rgba(28,43,57,.2);margin-bottom:10px;">
+    <select id="changeCategoryModalSelect" style="width:100%;margin-bottom:10px;">
       <option value="trial">Essai (15 jours)</option>
       <option value="active">Actif -- inscrit sur l'année (sans frais)</option>
       <option value="expired">Expiré</option>

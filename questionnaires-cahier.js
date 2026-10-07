@@ -107,7 +107,7 @@ function qzCahierModal(m){
     <p class="hint qzc-alerte" style="margin:8px 0 0;color:#a83c1f;${fini ? 'display:none;' : ''}"><span class="gicon" style="font-size:1rem;vertical-align:middle;">warning</span> ${qzEsc(m.alerte)}</p>
     <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:12px;">
       <label class="hint" style="display:flex;flex-direction:column;gap:4px;margin:0;font-weight:600;">Chapitre du cahier
-        <select class="qzc-chap" style="padding:6px 8px;border-radius:8px;"><option value="">${qzEsc(m.chapDefaut)} (sans chapitre)</option>
+        <select class="qzc-chap"><option value="">${qzEsc(m.chapDefaut)} (sans chapitre)</option>
           ${chaps.map(c => `<option value="${qzEsc(c.code + ' · ' + c.t)}">${qzEsc(c.code + ' · ' + c.t)}</option>`).join('')}</select></label>
       <label class="hint" style="display:flex;flex-direction:column;gap:4px;margin:0;font-weight:600;">Date
         <input type="date" class="qzc-date" value="${m.date || todayISO()}" style="padding:6px 8px;border-radius:8px;"></label>
