@@ -1868,3 +1868,4 @@ body.fig-proj #tbSvg{display:block;width:100vw !important;height:100vh !importan
 .nbs-p-tete{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-family:'Space Grotesk',sans-serif;font-size:1.05rem;}
 @media (max-width:600px){ .nbs-nav-t{display:none;} .nbs-titre{font-size:1rem;} .nbs-vignettes{grid-template-columns:repeat(2,1fr);} }
 @media print{ .nbs-tete,.nbs-vignettes{display:none;} }
+.nb-cahier-de{display:flex;gap:6px;align-items:center;background:#EEF4FB;color:#1F3A5C;border-radius:10px;padding:6px 12px;margin:0 0 12px;font-size:.9rem;} .nb-cahier-de .gicon{font-size:18px;}

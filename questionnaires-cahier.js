@@ -128,12 +128,15 @@ function qzCahierModal(m){
       const entry = { niveau, chapitre: o.querySelector('.qzc-chap').value || m.chapDefaut, exo: m.exo,
         titre: d.titre + (corr ? ' (correction)' : ''), date: o.querySelector('.qzc-date').value || todayISO(), raw: '',
         html: qzcHtml(d.titre, d.consigne, m.questions, corr) };
-      const { data: ins, error: er } = await sb.from('cahier_entries').insert(Object.assign({ class_id: d.class_id }, entry)).select('id').single();
+      // Groupe « sans cahier » (demi-groupe…) : le cahier de sa classe d'origine (fonction cahier_classe).
+      const { data: cc } = await sb.rpc('cahier_classe', { p_class: d.class_id });
+      const cible = cc && cc.id ? cc : { id: d.class_id, nom: d.classes ? d.classes.nom : '' };
+      const { data: ins, error: er } = await sb.from('cahier_entries').insert(Object.assign({ class_id: cible.id }, entry)).select('id').single();
       if(er){ o.querySelector('.qzc-err').textContent = /row-level security/.test(er.message) ? 'Vous n\'êtes pas professeur de cette classe.' : er.message; b.disabled = false; return; }
       // Classe active : le cahier affiché est mis à jour tout de suite.
-      if(typeof cahier !== 'undefined' && currentClassId === d.class_id){ cahier.push(Object.assign({ id: ins.id, class_id: d.class_id }, entry)); if(typeof sortCahierInPlace === 'function') sortCahierInPlace(); if(typeof saveCahier === 'function') saveCahier(); }
+      if(typeof cahier !== 'undefined' && (typeof cahierClasseId === 'function' ? cahierClasseId() : currentClassId) === cible.id){ cahier.push(Object.assign({ id: ins.id, class_id: cible.id }, entry)); if(typeof sortCahierInPlace === 'function') sortCahierInPlace(); if(typeof saveCahier === 'function') saveCahier(); }
       o.remove();
-      await niceAlert(`« ${d.titre} »${corr ? ' et sa correction' : ''} ${corr ? 'sont ajoutés' : 'est ajouté'} au cahier de ${d.classes ? d.classes.nom : 'la classe'}, à la date du ${new Date(entry.date + 'T12:00:00').toLocaleDateString('fr-FR')}.`);
+      await niceAlert(`« ${d.titre} »${corr ? ' et sa correction' : ''} ${corr ? 'sont ajoutés' : 'est ajouté'} au cahier de ${cible.nom || 'la classe'}, à la date du ${new Date(entry.date + 'T12:00:00').toLocaleDateString('fr-FR')}.`);
     }
   });
 }

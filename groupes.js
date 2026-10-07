@@ -37,12 +37,12 @@ async function grAfficher(){
 }
 async function grCharger(){
   const [g, p] = await Promise.all([
-    sb.from('classes').select('id,nom,niveau,created_at').eq('groupe', true).eq('archive', false).eq('groupe_prof', currentUser.id).order('created_at', { ascending: false }),
+    sb.from('classes').select('id,nom,niveau,created_at,cahier').eq('groupe', true).eq('archive', false).eq('groupe_prof', currentUser.id).order('created_at', { ascending: false }),
     sb.rpc('groupe_eleves_possibles'),
   ]);
   const ids = (g.data || []).map(x => x.id);
   const { data: ins } = ids.length ? await sb.from('class_students').select('class_id, profiles(id,nom,prenom)').in('class_id', ids) : { data: [] };
-  grEtat.groupes = (g.data || []).map(x => ({ id: x.id, nom: x.nom, niveau: x.niveau,
+  grEtat.groupes = (g.data || []).map(x => ({ id: x.id, nom: x.nom, niveau: x.niveau, cahier: x.cahier !== false,
     eleves: (ins || []).filter(r => r.class_id === x.id && r.profiles).map(r => r.profiles) }));
   grEtat.possibles = p.data || [];
   grEtat.erreur = (g.error || p.error) ? (g.error || p.error).message : '';
@@ -71,7 +71,7 @@ function grCarteHtml(g){
   g.eleves.forEach(e => { const c = grClasseDe(e.id); const k = c ? c.classe : 'autre classe'; (parClasse[k] = parClasse[k] || []).push(e); });
   return `<div class="gr-carte">
     <div class="gr-carte-h"><span class="gicon">groups</span><b>${grEsc(g.nom)}</b><span class="gr-niv">${grEsc(g.niveau)}</span>
-      <span class="hint" style="margin:0;">${g.eleves.length} élève${g.eleves.length > 1 ? 's' : ''}</span>
+      <span class="hint" style="margin:0;">${g.eleves.length} élève${g.eleves.length > 1 ? 's' : ''}${g.cahier ? '' : ' · <span class="gicon" style="font-size:15px;vertical-align:-3px;">menu_book</span> cahier de la classe d\'origine'}</span>
       <span class="gr-carte-act">
         <button class="btn secondary qz-mini" onclick="grModifier('${g.id}')"><span class="gicon">edit</span> Modifier</button>
         <button class="btn secondary qz-mini" style="color:#a83c1f;" onclick="grSupprimer('${g.id}')" title="Supprimer le groupe"><span class="gicon">delete</span></button>
@@ -81,10 +81,10 @@ function grCarteHtml(g){
 }
 
 /* ---------- Édition ---------- */
-function grNouveau(){ grEtat.edition = { id: null, nom: '', niveau: '', niveauAuto: true, sel: new Set(), cherche: '', classe: '' }; grRender(); }
+function grNouveau(){ grEtat.edition = { id: null, nom: '', niveau: '', niveauAuto: true, sel: new Set(), cherche: '', classe: '', cahier: true }; grRender(); }
 function grModifier(id){
   const g = grEtat.groupes.find(x => x.id === id); if(!g) return;
-  grEtat.edition = { id, nom: g.nom, niveau: g.niveau, niveauAuto: false, sel: new Set(g.eleves.map(e => e.id)), cherche: '', classe: '' };
+  grEtat.edition = { id, nom: g.nom, niveau: g.niveau, niveauAuto: false, sel: new Set(g.eleves.map(e => e.id)), cherche: '', classe: '', cahier: g.cahier };
   grRender(); document.getElementById('grRoot').scrollIntoView({ block: 'start', behavior: 'smooth' });
 }
 function grAnnuler(){ grEtat.edition = null; grRender(); }
@@ -112,6 +112,8 @@ function grEditeurHtml(ed){
         ${GR_NIVEAUX.map(n => `<option value="${n}"${n === niveau ? ' selected' : ''}>${n}</option>`).join('')}</select>
         <small class="hint" style="margin:0;">${ed.niveauAuto ? 'choisi d\'après les élèves' : ''}</small></label>
     </div>
+    <label class="qz-check gr-cahier"><input type="checkbox" ${ed.cahier ? 'checked' : ''} onchange="grEtat.edition.cahier=this.checked">
+      <span><b>Le groupe a son propre cahier</b><small class="hint" style="display:block;margin:0;">Décochez pour un demi-groupe de classe : ses élèves et vous utilisez le cahier de leur classe d'origine (celle de la plupart des élèves du groupe).</small></span></label>
     <p class="gr-lab">Élèves choisis (${choisis.length})</p>
     <div class="gr-choisis">${choisis.length ? choisis.map(e => `<span class="gr-el on">${grEsc(e.nom)} <small>${grEsc(e.classe)}</small><button type="button" onclick="grCocher('${e.id}',false)" title="Retirer" aria-label="Retirer ${grEsc(e.nom)}">×</button></span>`).join('')
       : '<span class="hint" style="margin:0;">Cochez des élèves ci-dessous, dans une ou plusieurs classes.</span>'}</div>
@@ -165,6 +167,9 @@ async function grEnregistrer(){
   msg.textContent = '';
   const { data, error } = await sb.rpc('groupe_enregistrer', { p_id: ed.id, p_nom: nom, p_niveau: niveau, p_eleves: Array.from(ed.sel) });
   if(error){ msg.textContent = error.message; return; }
+  const gid = ed.id || data, avant = ed.id ? (grEtat.groupes.find(x => x.id === ed.id) || {}).cahier !== false : true;
+  if(gid && ed.cahier !== avant){ const { error: e2 } = await sb.rpc('groupe_cahier', { p_id: gid, p_cahier: !!ed.cahier }); if(e2){ msg.textContent = 'Groupe enregistré, mais pas le réglage du cahier : ' + e2.message; return; } }
+  if(typeof cahierClasse !== 'undefined') cahierClasse.pour = null; // le cahier de ce groupe peut avoir changé
   const nouveau = !ed.id;
   grEtat.edition = null;
   await grCharger(); grRender();
@@ -183,7 +188,8 @@ async function grSupprimer(id){
 
 (function grStyles(){
   const st = document.createElement('style');
-  st.textContent = `
+  st.textContent += '.gr-cahier{display:flex;gap:8px;align-items:flex-start;margin:4px 0 10px;background:#F3F6FA;border-radius:10px;padding:8px 10px;}';
+  st.textContent += `
     .gr-liste{display:flex;flex-direction:column;gap:10px;}
     .gr-carte{background:#fff;border:1px solid rgba(28,43,57,.12);border-left:4px solid #26AAB1;border-radius:12px;padding:12px 14px;}
     .gr-carte-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}

@@ -3323,7 +3323,7 @@ function updateAddCahierButtonLabel(){
 let accountClassesList = [];
 function populateAccountClassList(classesList){
   // Groupes de remédiation (groupes.js) : marqués « groupe » dans le sélecteur ; groupes archivés masqués.
-  accountClassesList = classesList.filter(c=>!c.archive).map(c=>({id:c.id, label: c.groupe ? `${c.nom} · groupe (${c.niveau})` : `${c.nom} (${c.niveau})`, niveau:c.niveau, groupe:!!c.groupe}));
+  accountClassesList = classesList.filter(c=>!c.archive).map(c=>({id:c.id, label: c.groupe ? `${c.nom} · groupe (${c.niveau})` : `${c.nom} (${c.niveau})`, niveau:c.niveau, groupe:!!c.groupe, cahier:c.cahier!==false}));
 }
 /* Le niveau de l'outil de correction suit la classe active -- signalé : "si je choisis la classe
    de 6V, il faudrait que ça modifie tout de suite le niveau dans la partie correction". Resté
@@ -3341,6 +3341,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.991', date:'2026-10-07', items:[
+    "Groupes : avoir son propre cahier ou non -- demandé : « un paramètre supplémentaire pour les groupes : apparaître dans les cahiers ou pas. Par exemple les demi-groupes de classe n'ont pas besoin de cahier. » Nouvelle case dans la fiche d'un groupe (Mes classes › Groupes) : « Le groupe a son propre cahier ». Décochée, le groupe utilise le cahier de la classe d'origine de ses élèves (celle de la plupart d'entre eux) : choisir le groupe comme classe active montre ce cahier, avec un bandeau « Ce groupe n'a pas son propre cahier : … le cahier de la classe 5B » ; corrections, parties de cours, interrogations ajoutées au cahier et éléments proposés pour une session COURS y vont aussi. Les groupes existants gardent leur cahier tant qu'on ne décoche pas la case.",
+  ] },
   { version:'2026-08-19.990', date:'2026-10-07', items:[
     "Cahier élève : vue par semaine -- demandé : « une vision par semaine avec 5-6 vignettes maxi les unes à côté des autres qui se déplient quand on appuie dessus. Au-dessus des vignettes, semaine du ... au ..., avec semaine précédente, semaine suivante (si déjà réalisée) ». En tête, « Semaine du lundi 5 au vendredi 9 octobre » (samedi ou dimanche seulement s'il y a des entrées), entre « Semaine précédente » et « Semaine suivante » (grisés quand il n'y a rien avant ou après). Une vignette par jour travaillé, côte à côte (6 au plus par ligne, 2 sur téléphone) : jour, date, chapitres, pastilles « cours » et « exercices », Oliv'IA les jours de cours. Toucher une vignette déplie le jour en dessous, pleine largeur (PDF du jour et résumé pour le professeur compris) ; la toucher de nouveau le replie. Le cahier s'ouvre sur la dernière semaine et son dernier jour. Les filtres (dates, chapitre) et « Afficher tout l'historique » gardent l'affichage en liste.",
   ] },
@@ -6155,7 +6158,7 @@ async function loadMyClasses(){
   // je ne suis pas professeur dans ces classes" -- un précédent correctif n'avait traité que le
   // nouvel onglet "Mes classes" de Supervision, pas ce sélecteur, qui est la source commune de
   // currentClassId partout ailleurs.
-  const res = await sb.from('class_teachers').select('classes(id,nom,niveau,groupe,archive)').eq('teacher_id', currentUser.id);
+  const res = await sb.from('class_teachers').select('classes(id,nom,niveau,groupe,archive,cahier)').eq('teacher_id', currentUser.id);
   let classesList = (res.data||[]).map(row=>row.classes).filter(Boolean), error = res.error;
   // Classe de simulation (simulateur.js) : la seule visible dans la fenêtre professeur du simulateur,
   // cachée partout ailleurs.
@@ -6173,6 +6176,7 @@ async function applyClassSelection(){
   const className = found ? found.label : null;
   updateClassDisplays(className);
   syncCorNiveauToClass();
+  await cahierClasseResoudre();
   if(currentClassId){
     // Population initiale légère (juste aujourd'hui) -- suffisant pour la liste prof par
     // défaut (corListFilterDate=aujourd'hui) ; renderCahierEleve() affine ensuite avec son
@@ -6676,6 +6680,20 @@ function renderMesResultatsFiltered(){
 }
 
 function isSyncEnabled(){ return !!currentClassId; }
+/* Groupe « sans cahier » (réglage du groupe, groupes.js) -- demandé : « un paramètre supplémentaire
+   pour les groupes : apparaître dans les cahiers ou pas. Par exemple les demi-groupes de classe n'ont
+   pas besoin de cahier. » Le cahier lu et écrit est alors celui de la classe d'origine de ses élèves
+   (fonction cahier_classe) : un demi-groupe de 5B travaille dans le cahier de 5B. */
+let cahierClasse = { pour: null, id: null, nom: '', propre: true };
+async function cahierClasseResoudre(){
+  if(!currentClassId){ cahierClasse = { pour: null, id: null, nom: '', propre: true }; return; }
+  const c = accountClassesList.find(x=>x.id===currentClassId);
+  if(!c || !c.groupe || c.cahier!==false){ cahierClasse = { pour: currentClassId, id: currentClassId, nom: c ? c.label : '', propre: true }; return; }
+  if(cahierClasse.pour===currentClassId) return;
+  const { data } = await sb.rpc('cahier_classe', { p_class: currentClassId });
+  cahierClasse = { pour: currentClassId, id: data && data.id || null, nom: data && data.nom || '', propre: false };
+}
+function cahierClasseId(){ return cahierClasse.pour===currentClassId ? cahierClasse.id : currentClassId; }
 // "Afficher tout l'historique" : réservé profs/admins -- demandé : "Afficher tout
 // l'historique, réservé aux professeurs."
 let cahierShowAll = false;
@@ -6692,12 +6710,12 @@ const CAHIER_COLS_LEGERES = 'id,class_id,niveau,chapitre,exo,titre,date,raw,html
 // l'accordéon sans charger aucun contenu. Quasi gratuit même sur une année entière (juste des
 // chaînes de date, aucune colonne lourde).
 async function fetchCahierDatesList(){
-  if(!currentClassId) return [];
+  if(!cahierClasseId()) return [];
   // Exclut les brouillons (date NULL) -- signalé : "mettre des exercices en attente... sans
   // mettre de date". Ne doivent jamais apparaître dans le cahier normal (vu aussi par les
   // élèves) ni dans son accordéon par date -- seulement via "Récupérer un brouillon", voir
   // fetchCahierBrouillons plus bas.
-  const { data, error } = await sb.from('cahier_entries').select('date,exo').eq('class_id', currentClassId).not('date', 'is', null);
+  const { data, error } = await sb.from('cahier_entries').select('date,exo').eq('class_id', cahierClasseId()).not('date', 'is', null);
   if(error){ console.error('fetch dates list failed', error); return []; }
   const counts = new Map(), cours = new Set();
   data.forEach(r=>{ const d=r.date||''; counts.set(d, (counts.get(d)||0)+1); if(r.exo==='Cours') cours.add(d); });
@@ -6707,8 +6725,8 @@ async function fetchCahierDatesList(){
 // fetchCahierEntryEditData plus bas) d'UN SEUL jour. Appelée au dépli d'une section de
 // l'accordéon, ou pour la vue prof filtrée sur une date précise.
 async function fetchCahierEntriesForDate(date){
-  if(!currentClassId) return null;
-  const { data, error } = await sb.from('cahier_entries').select(CAHIER_COLS_LEGERES).eq('class_id', currentClassId).eq('date', date).order('ordre', {ascending:true, nullsFirst:false}).order('created_at', {ascending:true});
+  if(!cahierClasseId()) return null;
+  const { data, error } = await sb.from('cahier_entries').select(CAHIER_COLS_LEGERES).eq('class_id', cahierClasseId()).eq('date', date).order('ordre', {ascending:true, nullsFirst:false}).order('created_at', {ascending:true});
   if(error){ console.error('fetch entries for date failed', error); return null; }
   return data;
 }
@@ -6716,9 +6734,9 @@ async function fetchCahierEntriesForDate(date){
 // l'historique" (profs/admins) et au filtrage explicite par période (Du/Au), qui bornent alors
 // la requête via fromDate/toDate plutôt que de tout charger sans distinction.
 async function syncFetchAll(fromDate, toDate){
-  if(!currentClassId) return null;
+  if(!cahierClasseId()) return null;
   // Exclut les brouillons (date NULL) -- voir le commentaire de fetchCahierDatesList.
-  let q = sb.from('cahier_entries').select(CAHIER_COLS_LEGERES).eq('class_id', currentClassId).not('date', 'is', null);
+  let q = sb.from('cahier_entries').select(CAHIER_COLS_LEGERES).eq('class_id', cahierClasseId()).not('date', 'is', null);
   if(fromDate) q = q.gte('date', fromDate);
   if(toDate) q = q.lte('date', toDate);
   const { data, error } = await q.order('ordre', {ascending:true, nullsFirst:false}).order('date').order('created_at', {ascending:true});
@@ -6737,14 +6755,14 @@ async function fetchCahierEntryEditData(id){
 // syncFetchAll) : les colonnes lourdes (blocksData/rows/cellBorders) sont chargées à la demande
 // par editCahierEntry au moment où le brouillon choisi est effectivement rouvert.
 async function fetchCahierBrouillons(){
-  if(!currentClassId) return [];
-  const { data, error } = await sb.from('cahier_entries').select(CAHIER_COLS_LEGERES).eq('class_id', currentClassId).is('date', null).order('created_at', {ascending:false});
+  if(!cahierClasseId()) return [];
+  const { data, error } = await sb.from('cahier_entries').select(CAHIER_COLS_LEGERES).eq('class_id', cahierClasseId()).is('date', null).order('created_at', {ascending:false});
   if(error){ console.error('fetch brouillons failed', error); return []; }
   return data;
 }
 async function syncAddEntry(entry){
-  if(!currentClassId) return {ok:false, offline:true};
-  const { data, error } = await sb.from('cahier_entries').insert({ ...entry, class_id: currentClassId }).select().single();
+  if(!cahierClasseId()) return {ok:false, offline:true};
+  const { data, error } = await sb.from('cahier_entries').insert({ ...entry, class_id: cahierClasseId() }).select().single();
   if(error) return {ok:false, error: error.message.includes('row-level security') ? "vous n'êtes pas assigné à cette classe." : error.message};
   return {ok:true, id:data.id};
 }
@@ -6781,7 +6799,7 @@ async function syncUpdateEntryOrdre(id, ordre){
 /* ================= CÔTÉ ÉLÈVE : classes ================= */
 async function loadMyStudentClasses(){
   if(!currentUser) return;
-  const { data, error } = await sb.from('class_students').select('classes(id,nom,niveau,groupe,archive)').eq('student_id', currentUser.id);
+  const { data, error } = await sb.from('class_students').select('classes(id,nom,niveau,groupe,archive,cahier)').eq('student_id', currentUser.id);
   // Sa classe d'abord (classe active par défaut), puis ses groupes de remédiation.
   const classesList = (data||[]).map(row=>row.classes).filter(Boolean).sort((a,b)=>!!a.groupe - !!b.groupe);
   populateAccountClassList(classesList);
@@ -7580,7 +7598,12 @@ async function renderCahierEleve(){
     document.getElementById('cahierEleveContent').innerHTML = '<p class="hint">Choisissez une classe ci-dessus pour voir son cahier.</p>';
     return;
   }
-  let warning = '';
+  await cahierClasseResoudre();
+  if(!cahierClasseId()){
+    document.getElementById('cahierEleveContent').innerHTML = '<p class="hint"><span class=gicon>info</span> Ce groupe n\'a pas de cahier (réglage du groupe, dans Mes classes › Groupes) et sa classe d\'origine n\'a pas été trouvée : choisissez une classe pour voir son cahier.</p>';
+    return;
+  }
+  let warning = cahierClasse.propre ? '' : `<p class="nb-cahier-de"><span class=gicon>info</span> Ce groupe n'a pas son propre cahier : ${currentUserRole==='eleve' ? 'voici le cahier de ta classe' : 'vous voyez et complétez le cahier de la classe'} <b>${escapeHtml(cahierClasse.nom)}</b>.</p>`;
   if(isSyncEnabled()){
     document.getElementById('cahierEleveContent').innerHTML = '<p class="hint">Chargement depuis le cahier partagé…</p>';
     const filtreActif = cahierFilterFrom||cahierFilterTo||cahierFilterChapitre;
