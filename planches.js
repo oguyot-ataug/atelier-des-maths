@@ -605,13 +605,18 @@ function plProjRendre(){
 // L'exercice est centré et agrandi pour remplir l'écran (élève au tableau, fond de classe).
 function plProjAjuster(){
   const corps = document.getElementById('plpCorps'), boite = document.getElementById('plpBoite'); if(!corps || !boite) return;
-  boite.style.zoom = 1;
-  const r = boite.getBoundingClientRect(), cl = document.getElementById('plClavier');
-  const droite = cl && cl.style.display === 'block' ? cl.getBoundingClientRect().width + 24 : 0;
-  const W = corps.clientWidth - 48 - droite, H = corps.clientHeight - 32;
-  const z = Math.max(.6, Math.min(W / r.width, H / r.height, 3.4));
+  // Clavier de l'écran : à droite sur grand écran ; sur téléphone il occupe toute la largeur, en bas.
+  const cl = document.getElementById('plClavier'), clr = cl && cl.style.display === 'block' ? cl.getBoundingClientRect() : null;
+  const cote = clr && clr.width < corps.clientWidth * .6, droite = cote ? clr.width + 24 : 0;
+  const bas = clr && !cote ? Math.max(0, corps.getBoundingClientRect().bottom - clr.top + 12) : 0;
+  corps.style.paddingRight = droite ? droite + 24 + 'px' : ''; corps.style.paddingBottom = bas ? bas + 'px' : '';
+  const etroit = corps.clientWidth < 700, cs = getComputedStyle(corps);
+  const W = corps.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight), H = corps.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+  boite.style.zoom = 1; boite.style.maxWidth = etroit ? Math.max(260, W) + 'px' : '';
+  const r = boite.getBoundingClientRect();
+  // Sur téléphone, on n'écrase jamais le texte : au pire, on fait défiler.
+  const z = etroit ? Math.max(1, Math.min(W / r.width, H / r.height, 1.6)) : Math.max(.6, Math.min(W / r.width, H / r.height, 3.4));
   boite.style.zoom = z.toFixed(3);
-  corps.style.paddingRight = droite ? droite + 24 + 'px' : '';
 }
 const PL_CSS = `
   @page{ size:A4; margin:10mm 12mm; }
@@ -807,6 +812,7 @@ const PL_CSS_LIVRE = `
     .plp-boite{ width:max-content; max-width:760px; font-size:13px; line-height:1.45; color:#1C2B39; margin:auto; }
     .plp-pied .pn-bilan{ flex-basis:100%; margin:0; font-size:1.15rem; } .plp-pied .pn-bilan:empty{ display:none; }
     body.plp-ouvert #plClavier{ left:auto; right:16px; transform:none; bottom:84px; }
+    @media (max-width:700px){ body.plp-ouvert #plClavier{ left:8px; right:8px; bottom:8px; width:auto; } .plp-corps{ padding:10px 12px; } .plp-tete{ padding:6px 12px; gap:8px; } .plp-tete b{ font-size:1rem; flex-basis:100%; order:5; } .plp-pied{ gap:6px !important; padding:8px !important; } .plp-pied .btn{ padding:8px 12px; font-size:.95rem; } }
     .plp-verif{ background:#F08A3C !important; border-color:#F08A3C !important; }
     .plp-consigne{ font-weight:700; margin-bottom:10px; }
     .plp-corps .pl-grille{ display:grid; gap:8px 26px; align-items:center; } .plp-corps .pl-item{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }

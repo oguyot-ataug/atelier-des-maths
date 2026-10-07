@@ -187,6 +187,8 @@ function plNum(root, x, o){
     const c = M.cibles.find(z => z.id === id || z.id + 'n' === id || z.id + 'd' === id);
     plClavier.mode = c && c.type === 'txt' && /[a-zé]/i.test(c.rep) ? 'abc' : '123'; plClavier.maj = !!(c && c.maj);
     plClavier.ouvrir(touche);
+    // Sur téléphone, le clavier couvre le bas de l'écran : on garde la case choisie visible.
+    const vu = root.querySelector('.pn-sel'); if(vu && vu.scrollIntoView) requestAnimationFrame(() => vu.scrollIntoView({ block: 'nearest', behavior: 'smooth' }));
   };
   const touche = t => {
     if(!sel) return;

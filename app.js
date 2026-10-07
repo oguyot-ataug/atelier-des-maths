@@ -3343,6 +3343,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1000', date:'2026-10-07', items:[
+    "Exercices projetés ou faits à l'écran, sur smartphone : l'exercice n'est plus écrasé dans une colonne étroite quand le clavier s'ouvre. Sur téléphone, le clavier reste en bas de l'écran, l'exercice prend toute la largeur avec un texte lisible (on fait défiler si besoin) et la case choisie reste visible au-dessus du clavier."
+  ] },
   { version:'2026-08-19.999', date:'2026-10-07', items:[
     "Manuel de 5e, 4e et dernier lot (géométrie) : Symétrie centrale (5 planches), Angles et parallélisme (5), Droites remarquables du triangle (4), Parallélogrammes (4), Parallélogrammes particuliers (4 : rectangle, losange, carré, reconnaître et justifier), Aires (4 : parallélogramme et triangle, disque, figures composées, unités et problèmes), Représentation de l'espace (4 : prismes et cylindres, perspective cavalière avec arêtes à tracer à l'écran, patrons, volumes). Les 20 chapitres de 5e ont maintenant leur manuel : 88 planches, 590 exercices dont 470 faisables à l'écran ou en session, et des exercices « Dans ton cahier ! » avec une correction rédigée."
   ] },
