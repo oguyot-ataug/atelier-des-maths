@@ -3341,6 +3341,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.990', date:'2026-10-07', items:[
+    "Cahier élève : vue par semaine -- demandé : « une vision par semaine avec 5-6 vignettes maxi les unes à côté des autres qui se déplient quand on appuie dessus. Au-dessus des vignettes, semaine du ... au ..., avec semaine précédente, semaine suivante (si déjà réalisée) ». En tête, « Semaine du lundi 5 au vendredi 9 octobre » (samedi ou dimanche seulement s'il y a des entrées), entre « Semaine précédente » et « Semaine suivante » (grisés quand il n'y a rien avant ou après). Une vignette par jour travaillé, côte à côte (6 au plus par ligne, 2 sur téléphone) : jour, date, chapitres, pastilles « cours » et « exercices », Oliv'IA les jours de cours. Toucher une vignette déplie le jour en dessous, pleine largeur (PDF du jour et résumé pour le professeur compris) ; la toucher de nouveau le replie. Le cahier s'ouvre sur la dernière semaine et son dernier jour. Les filtres (dates, chapitre) et « Afficher tout l'historique » gardent l'affichage en liste.",
+  ] },
   { version:'2026-08-19.989', date:'2026-10-07', items:[
     "Cahier : parties de cours et méthodes interactives -- signalé : « des méthodes ajoutées au cahier n'étaient pas interactives ». Le cahier garde une copie figée de la partie (démos dépliées, animations à l'arrêt) ; un nouveau bouton « Interactif », à côté de « Revoir dans le cours », y installe les vrais blocs du chapitre : animations, démos pas à pas, glisser-déposer et figures manipulables fonctionnent dans le cahier comme dans le cours. Une partie à la fois ; « Copie du cahier » (ou quitter la page) remet la copie figée.",
   ] },
@@ -7613,9 +7616,101 @@ async function renderCahierEleve(){
    réorganisation), pour éviter qu'une re-synchronisation immédiate n'écrase ce changement par
    d'anciennes données si la sauvegarde serveur n'a pas encore eu le temps de se terminer. */
 function renderCahierEleveLocal(warning){
-  document.getElementById('cahierEleveContent').innerHTML = (warning||'') + buildCahierNotebookHTML(currentUserRole==='prof' || currentUserRole==='admin');
+  const editable = currentUserRole==='prof' || currentUserRole==='admin';
+  // Vue par semaine (mode par défaut) ; un filtre ou « Afficher tout l'historique » garde l'accordéon.
+  if(!(cahierFilterFrom||cahierFilterTo||cahierFilterChapitre) && !cahierShowAll){
+    document.getElementById('cahierEleveContent').innerHTML = (warning||'') + '<div id="nbSemaine"></div>';
+    cahierEditableMode = editable;
+    nbSemaineRendre();
+    return;
+  }
+  document.getElementById('cahierEleveContent').innerHTML = (warning||'') + buildCahierNotebookHTML(editable);
   const book=document.getElementById('cahierEleveBook');
   requestAnimationFrame(()=>{ book.scrollTop = book.scrollHeight; });
+}
+/* ---------- Cahier : vue par semaine ----------
+   Demandé : « une vision par semaine avec 5-6 vignettes maxi les unes à côté des autres qui se
+   déplient quand on appuie dessus. Au-dessus des vignettes, semaine du ... au ..., avec semaine
+   précédente, semaine suivante (si déjà réalisée) ». Une vignette par jour qui a des entrées (jour,
+   date, chapitres travaillés, cours / exercices) ; un clic déplie le contenu du jour sous les
+   vignettes (pleine largeur), un second clic le replie. Les jours de la semaine affichée sont chargés
+   ensemble (une requête par jour, comme l'accordéon). S'ouvre sur la semaine la plus récente et son
+   dernier jour ; la semaine et le jour choisis sont gardés tant qu'on reste sur la même classe. */
+let nbSem = { classe: null, lundi: null, jour: null };
+const nbIso = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+function nbLundi(iso){ const d = new Date(iso+'T12:00:00'), k = (d.getDay()+6)%7; d.setDate(d.getDate()-k); return nbIso(d); }
+function nbPlus(iso, n){ const d = new Date(iso+'T12:00:00'); d.setDate(d.getDate()+n); return nbIso(d); }
+// Jours du cahier (dates, nombre d'entrées, cours) : la liste légère du serveur, sinon le cahier local.
+function nbJours(){
+  if(cahierDatesList && cahierDatesList.length) return cahierDatesList;
+  const m = new Map();
+  cahier.filter(e=>e.date).forEach(e=>{ const g = m.get(e.date) || { date: e.date, count: 0, cours: false }; g.count++; if(e.exo==='Cours') g.cours = true; m.set(e.date, g); });
+  return [...m.values()].sort((a,b)=>a.date.localeCompare(b.date));
+}
+async function nbSemaineRendre(){
+  const box = document.getElementById('nbSemaine'); if(!box) return;
+  const jours = nbJours();
+  if(!jours.length){ box.innerHTML = '<p class="hint">Le cahier est vide pour l\'instant.</p>'; return; }
+  const semaines = [...new Set(jours.map(j=>nbLundi(j.date)))].sort();
+  if(nbSem.classe !== currentClassId || !semaines.includes(nbSem.lundi)){ nbSem = { classe: currentClassId, lundi: semaines[semaines.length-1], jour: null }; }
+  const lundi = nbSem.lundi, dimanche = nbPlus(lundi, 6), iS = semaines.indexOf(lundi);
+  const js = jours.filter(j=>j.date>=lundi && j.date<=dimanche);
+  if(nbSem.jour === null || (nbSem.jour && !js.some(j=>j.date===nbSem.jour))) nbSem.jour = js[js.length-1].date;
+  // Contenu des jours de la semaine (pour les vignettes et le dépli).
+  const aCharger = js.filter(j=>!cahierLoadedDates.has(j.date) && isSyncEnabled());
+  const fin = js.some(j=>new Date(j.date+'T12:00:00').getDay()%6===0) ? dimanche : nbPlus(lundi, 4); // samedi/dimanche seulement s'il y a des entrées
+  const f = (iso, o) => new Date(iso+'T12:00:00').toLocaleDateString('fr-FR', o);
+  const memeMois = lundi.slice(0,7)===fin.slice(0,7);
+  box.innerHTML = `<div class="nbs-tete">
+      <button type="button" class="nbs-nav" ${iS>0 ? `onclick="nbSemaineAller(-1)"` : 'disabled'} title="Semaine précédente"><span class=gicon>chevron_left</span><span class="nbs-nav-t">Semaine précédente</span></button>
+      <div class="nbs-titre">Semaine du ${f(lundi, memeMois ? {weekday:'long', day:'numeric'} : {weekday:'long', day:'numeric', month:'long'})} au ${f(fin, {weekday:'long', day:'numeric', month:'long'})}</div>
+      <button type="button" class="nbs-nav" ${iS<semaines.length-1 ? `onclick="nbSemaineAller(1)"` : 'disabled'} title="Semaine suivante"><span class="nbs-nav-t">Semaine suivante</span><span class=gicon>chevron_right</span></button></div>
+    <div class="nbs-vignettes">${js.map(j=>nbVignette(j)).join('')}</div>
+    <div id="nbsJour"></div>`;
+  nbSemaineJour();
+  if(aCharger.length){
+    const res = await Promise.all(aCharger.map(j=>fetchCahierEntriesForDate(j.date)));
+    if(nbSem.lundi!==lundi || !document.getElementById('nbSemaine')) return;
+    const ids = new Set(cahier.map(e=>e.id));
+    res.forEach((entries, k)=>{ if(!entries){ nbSem.echec = (nbSem.echec || new Set()).add(aCharger[k].date); return; } entries.forEach(e=>{ if(!ids.has(e.id)){ cahier.push(e); ids.add(e.id); } }); cahierLoadedDates.add(aCharger[k].date); });
+    sortCahierInPlace(); saveCahier();
+    js.forEach(j=>{ const v = document.querySelector(`.nbs-vig[data-jour="${j.date}"]`); if(v) v.outerHTML = nbVignette(j); });
+    nbSemaineJour();
+  }
+}
+function nbVignette(j){
+  const d = new Date(j.date+'T12:00:00'), es = cahier.filter(e=>e.date===j.date), charge = cahierLoadedDates.has(j.date) || !isSyncEnabled();
+  const chap = [...new Set(es.map(e=>String(e.chapitre||'').split(' · ').slice(1).join(' · ') || String(e.chapitre||'')).filter(Boolean))];
+  const nC = es.filter(e=>e.exo==='Cours').length, nE = es.length - nC;
+  return `<button type="button" class="nbs-vig${nbSem.jour===j.date ? ' on' : ''}" data-jour="${j.date}" onclick="nbSemaineChoisir('${j.date}')">
+    <span class="nbs-j">${d.toLocaleDateString('fr-FR', {weekday:'long'})}</span><span class="nbs-d">${d.toLocaleDateString('fr-FR', {day:'numeric', month:'short'})}</span>${nbOlivCours(j.cours || nC>0)}
+    <span class="nbs-chap">${charge ? chap.map(c=>escapeHtml(c)).join('<br>') || '&nbsp;' : '…'}</span>
+    <span class="nbs-n">${charge && es.length ? `${nC ? `<span class="nbs-c">${nC} cours</span>` : ''}${nE ? `<span class="nbs-e">${nE} exercice${nE>1 ? 's' : ''}</span>` : ''}` : `${j.count} élément${j.count>1 ? 's' : ''}`}</span>
+    <span class=gicon>${nbSem.jour===j.date ? 'expand_less' : 'expand_more'}</span></button>`;
+}
+function nbSemaineJour(){
+  const box = document.getElementById('nbsJour'); if(!box) return;
+  const date = nbSem.jour;
+  if(!date){ box.innerHTML = ''; return; }
+  const charge = cahierLoadedDates.has(date) || !isSyncEnabled();
+  box.innerHTML = `<div class="nbs-panneau"><div class="nbs-p-tete"><b>${fmtDateFR(date)}</b>${nbOlivCours(cahier.some(e=>e.date===date && e.exo==='Cours'))}
+      <button type="button" class="nb-pdf-day-btn" onclick="exportCahierDayAsPDF('${date}')" title="Générer un PDF de ce jour"><span class=gicon>picture_as_pdf</span></button>${nbResumeDayBtn(date)}</div>
+    ${charge ? groupedByChapitreHTML(cahier.filter(e=>e.date===date), (e)=>entryRowsHTML(e, cahier.indexOf(e), cahierEditableMode))
+      : nbSem.echec && nbSem.echec.has(date) ? '<p class="hint" style="padding:8px;"><span class=gicon>warning</span> Échec du chargement : cliquez sur « Actualiser ».</p>' : '<p class="hint" style="padding:8px;">Chargement…</p>'}</div>`;
+}
+function nbSemaineChoisir(date){
+  if(typeof cahierVivFin==='function') cahierVivFin();
+  nbSem.jour = nbSem.jour===date ? '' : date;
+  document.querySelectorAll('.nbs-vig').forEach(v=>{ const on = v.dataset.jour===nbSem.jour; v.classList.toggle('on', on); const i = v.querySelector(':scope > .gicon'); if(i) i.textContent = on ? 'expand_less' : 'expand_more'; });
+  nbSemaineJour();
+  const p = document.getElementById('nbsJour'); if(p && nbSem.jour) p.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+function nbSemaineAller(sens){
+  const semaines = [...new Set(nbJours().map(j=>nbLundi(j.date)))].sort(), i = semaines.indexOf(nbSem.lundi) + sens;
+  if(i<0 || i>=semaines.length) return;
+  if(typeof cahierVivFin==='function') cahierVivFin();
+  nbSem.lundi = semaines[i]; nbSem.jour = null;
+  nbSemaineRendre();
 }
 async function exportCahierAsPDF(){
   if(!cahier.length){ await niceAlert('Le cahier est vide : ajoutez au moins une correction avant de générer le PDF.'); return; }
