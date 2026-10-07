@@ -3343,6 +3343,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.998', date:'2026-10-07', items:[
+    "Manuel de 5e, 3e lot : Statistiques (4 planches : effectifs et fréquences, diagrammes en barres à compléter à l'écran et circulaires, moyenne, interpréter des données), Probabilités (4 : vocabulaire et échelle de probabilité avec points à placer, calculer une probabilité, événement contraire, fréquences et choix d'un jeu), Pensée informatique et programmation (4 : variables, entrées et sorties ; programmes de calcul en blocs ; boucles avec le robot ; tracés de polygones au stylo). Les blocs de programme ont les couleurs de la page Programmation, à l'écran comme à l'impression.",
+  ] },
   { version:'2026-08-19.997', date:'2026-10-07', items:[
     "Manuel de 5e, 2e lot : Opérations sur les nombres relatifs (5 planches : addition, tableaux et carrés magiques, soustraction, sommes algébriques, problèmes), Calcul littéral (5 : écrire une expression, valeur d'une expression, tester une égalité, développer, réduire et factoriser), Équations (4 : notion et balance, x + b = c, ax = b et ax + b = c, mise en équation), Proportionnalité (5 : reconnaître, compléter un tableau, graphique avec points à placer, échelles et vitesses, problèmes), Pourcentages (4 : appliquer, exprimer une proportion, remises et hausses, problèmes), Fonctions (4 : lire un graphique, tableau de valeurs, formule, construire un graphique avec points à placer).",
     "Exercices à choisir : chaque question a ses propres choix (fini les longues listes répétées sous chaque ligne).",
