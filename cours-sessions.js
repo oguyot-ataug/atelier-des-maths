@@ -38,7 +38,7 @@ async function csRafraichir(){
   cs.liste = Array.isArray(data) ? data : [];
   // Sessions arrivées au bout de leur ouverture (heure « jusqu'à » passée, ou 6 h sans le professeur)
   // sans avoir été terminées : on les termine, et leurs interrogations sont enregistrées.
-  const echues = cs.liste.filter(x => !x.ouverte && !x.ended_at);
+  const echues = cs.liste.filter(x => !x.ouverte && !x.programmee && !x.ended_at);
   if(echues.length && !cs.cloture){
     cs.cloture = true;
     let n = 0;
@@ -59,7 +59,8 @@ function csRendre(){
   const root = document.getElementById('csRoot'); if(!root || !cs.liste) return;
   const classes = typeof accountClassesList !== 'undefined' ? accountClassesList : [];
   const l = cs.liste.filter(s => !cs.classe || s.class_id === cs.classe);
-  const ouvertes = l.filter(s => s.ouverte), fermees = l.filter(s => !s.ouverte);
+  const ouvertes = l.filter(s => s.ouverte), fermees = l.filter(s => !s.ouverte && !s.programmee);
+  const prog = l.filter(s => s.programmee).sort((a, b) => String(a.etat.debut).localeCompare(String(b.etat.debut)));
   const cl = classes.find(c => c.id === currentClassId);
   root.innerHTML = `<div class="cs-barre">
       <label class="cs-lab">Nouvelle session pour <select id="csClasseNew">${classes.map(c => `<option value="${c.id}"${c.id === currentClassId ? ' selected' : ''}>${cdEsc(c.label)}</option>`).join('')}</select></label>
@@ -69,6 +70,8 @@ function csRendre(){
       <button class="btn secondary" id="csMaj" title="Actualiser"><span class="gicon">refresh</span></button></div>
     <h2 class="cs-h"><span class="gicon" style="color:#E35D3A;">sensors</span> Ouvertes <small>${ouvertes.length}</small></h2>
     <div class="cs-grille">${ouvertes.map(csCarte).join('') || '<p class="hint">Aucune session ouverte.' + (cl ? '' : '') + '</p>'}</div>
+    ${prog.length ? `<h2 class="cs-h"><span class="gicon" style="color:#C77D1E;">event</span> Programmées <small>${prog.length}</small></h2>
+    <div class="cs-grille">${prog.map(csCarteProg).join('')}</div>` : ''}
     <h2 class="cs-h"><span class="gicon" style="color:#5B6472;">history</span> Terminées <small>${fermees.length}</small></h2>
     <div class="cs-liste">${fermees.map(csLigne).join('') || '<p class="hint">Aucune session terminée.</p>'}</div>`;
   root.querySelector('#csMaj').onclick = csRafraichir;
@@ -100,6 +103,18 @@ function csCarte(s){
       <button class="btn secondary" data-act="bilan"><span class="gicon">summarize</span> Bilan</button>
       <button class="btn" style="background:#C0392B;" data-act="terminer"><span class="gicon">stop</span> Terminer</button></div></div>`;
 }
+function csCarteProg(s){
+  const d = s.etat.debut, j = s.etat.jusqua;
+  return `<div class="cs-carte prog" data-s="${s.id}">
+    <div class="cs-c-tete"><div><b>${cdEsc(s.titre || 'Session')}</b><small>${cdEsc(s.classe || '')}</small></div>
+      <div class="cs-code" title="Code réservé : les élèves pourront l'utiliser à partir du début">${cdEsc(s.code)}</div></div>
+    <div class="cs-quand"><span class="gicon">event</span> ${new Date(d).toLocaleString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })}${j ? ` → ${csDate(j)} ${csHeure(j)}` : ''}</div>
+    <div class="cs-c-info">${csInterrosTxt(s)} · ${csModeTxt(s)}</div>
+    <div class="cs-c-act"><button class="btn secondary" data-act="debut"><span class="gicon">edit_calendar</span> Changer l'heure</button>
+      <button class="btn" data-act="maintenant"><span class="gicon">play_arrow</span> Ouvrir maintenant</button>
+      <button class="btn secondary" data-act="tele" title="Préparer : ajouter des éléments, régler le mode"><span class="gicon">settings_remote</span></button>
+      <button class="btn secondary" data-act="suppr" title="Supprimer"><span class="gicon">delete</span></button></div></div>`;
+}
 function csLigne(s){
   return `<div class="cs-ligne" data-s="${s.id}">
     <div class="cs-l-t"><b>${cdEsc(s.titre || 'Session')}</b><small>${cdEsc(s.classe || '')} · ${csDate(s.created_at)} ${csHeure(s.created_at)} · ${csModeTxt(s)} · ${s.travaux} élève${s.travaux > 1 ? 's' : ''} ${s.travaux > 1 ? 'ont' : 'a'} travaillé</small>
@@ -121,6 +136,8 @@ document.addEventListener('click', async e => {
   else if(a === 'bilan') cdBilan(id);
   else if(a === 'terminer') csTerminer(s);
   else if(a === 'jusqua') csJusqua(s);
+  else if(a === 'debut') csDebut(s);
+  else if(a === 'maintenant'){ if(await niceConfirm(`Ouvrir « ${s.titre} » maintenant ? Les élèves peuvent entrer tout de suite.`) && await csEtat(s, { debut: '' })) csRafraichir(); }
   else if(a === 'noter') csNoter(id);
   else if(a === 'rouvrir') csRouvrir(s);
   else if(a === 'suppr') csSupprimer(s);
@@ -168,6 +185,24 @@ function csJusqua(s){
     if(v && Date.parse(v) < Date.now()){ await niceAlert('Cette heure est déjà passée.'); return res(false); }
     const ok = await csEtat(s, { jusqua: v }); csRafraichir(); res(ok);
   }));
+}
+// Heure de début d'une session programmée.
+function csDebut(s){
+  let o = document.getElementById('cdJq');
+  if(!o){ o = document.createElement('div'); o.id = 'cdJq'; o.className = 'modal-overlay'; o.style.zIndex = '9460'; document.body.appendChild(o); }
+  o.innerHTML = `<div class="modal-card" style="max-width:440px;"><b class="cd-h"><span class="gicon">edit_calendar</span> Début de « ${cdEsc(s.titre)} »</b>
+    <p class="hint" style="margin:6px 0 10px;">Les élèves peuvent entrer à partir de cette heure (bandeau « Rejoindre » dans « Mon travail », ou le code ${cdEsc(s.code)}).</p>
+    <input type="datetime-local" id="csDbVal" value="${cdLocal(new Date(s.etat.debut))}" style="width:100%;box-sizing:border-box;">
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px;"><button class="btn secondary" data-db="x">Annuler</button><button class="btn" data-db="ok">Enregistrer</button></div></div>`;
+  o.style.display = 'flex';
+  o.querySelectorAll('[data-db]').forEach(b => b.onclick = async () => {
+    const x = o.querySelector('#csDbVal').value; o.style.display = 'none';
+    if(b.dataset.db !== 'ok' || !x) return;
+    const d = new Date(x);
+    if(d < new Date()){ await niceAlert('Cette heure est déjà passée : utilisez « Ouvrir maintenant ».'); return; }
+    if(s.etat.jusqua && Date.parse(s.etat.jusqua) <= d.getTime()){ await niceAlert('La session doit commencer avant son heure de fin (' + csDate(s.etat.jusqua) + ' ' + csHeure(s.etat.jusqua) + ').'); return; }
+    if(await csEtat(s, { debut: d.toISOString() })) csRafraichir();
+  });
 }
 async function csTerminer(s){
   if(!(await niceConfirm(`Terminer « ${s.titre} » ? Les élèves sortent de la session.`))) return;
@@ -312,6 +347,7 @@ async function csNoter(id){
     .cs-c-tete{display:flex;gap:10px;align-items:flex-start;} .cs-c-tete > div:first-child{flex:1;min-width:0;}
     .cs-c-tete b{font:800 1.02rem 'Space Grotesk',sans-serif;display:block;} .cs-c-tete small,.cs-l-t small{color:var(--ink-soft);font-size:.8rem;display:block;}
     .cs-code{background:#1F3A5C;color:#fff;border-radius:10px;padding:4px 12px;font:800 1.5rem 'Space Grotesk',sans-serif;letter-spacing:.12em;}
+    .cs-carte.prog{border-color:rgba(199,125,30,.45);} .cs-quand{font:700 .95rem 'Space Grotesk',sans-serif;color:#8A5A00;text-transform:none;} .cs-quand .gicon{vertical-align:-4px;font-size:19px;}
     .cs-c-info{font-size:.85rem;} .cs-c-opts,.cs-c-act{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
     .cs-liste{display:flex;flex-direction:column;gap:6px;}
     .cs-ligne{display:flex;gap:10px;align-items:center;background:#fff;border:1px solid rgba(28,43,57,.1);border-radius:12px;padding:8px 12px;flex-wrap:wrap;}

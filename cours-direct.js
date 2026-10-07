@@ -65,13 +65,13 @@ async function cdPreparer(){
   if(cdP && cdP.classId === currentClassId){ const v = document.getElementById('cdProf'); if(v){ v.style.display = 'flex'; cdProfRendre(); } return; }
   // Session encore ouverte pour cette classe (télécommande réduite, page rechargée…) : on la reprend.
   const { data: ouv } = await sb.from('cours_direct').select('*').eq('teacher_id', currentUser.id).eq('class_id', currentClassId).is('ended_at', null).order('created_at', { ascending: false }).limit(1);
-  if(ouv && ouv.length && (Date.now() - Date.parse(ouv[0].updated_at) < 6 * 3600e3 || Date.parse((ouv[0].etat || {}).jusqua || 0) > Date.now())){
+  if(ouv && ouv.length && !(Date.parse((ouv[0].etat || {}).debut || 0) > Date.now()) && (Date.now() - Date.parse(ouv[0].updated_at) < 6 * 3600e3 || Date.parse((ouv[0].etat || {}).jusqua || 0) > Date.now())){
     const choix = await niceModal({ message: `Une session est encore ouverte pour cette classe : « ${ouv[0].titre} » (code ${ouv[0].code}).`, buttons: [{ label: 'Nouvelle session', value: 'neuf', secondary: true }, { label: 'Reprendre la session', value: 'reprendre' }] });
     if(choix === 'reprendre') return cdProfOuvrir(ouv[0]);
     if(choix !== 'neuf') return;
   }
   const fin = todayISO(), d0 = new Date(); d0.setDate(d0.getDate() - 14);
-  const st = { du: d0.toISOString().slice(0, 10), au: fin, entrees: [], choisies: new Set(), exos: typeof plAttente === 'function' ? plAttente() : [], titre: 'Cours du ' + new Date().toLocaleDateString('fr-FR'), mode: 'presentation', jusqua: '' };
+  const st = { du: d0.toISOString().slice(0, 10), au: fin, entrees: [], choisies: new Set(), exos: typeof plAttente === 'function' ? plAttente() : [], titre: 'Cours du ' + new Date().toLocaleDateString('fr-FR'), mode: 'presentation', jusqua: '', debut: '' };
   let o = document.getElementById('cdPrepOverlay');
   if(!o){ o = document.createElement('div'); o.id = 'cdPrepOverlay'; o.className = 'modal-overlay'; o.style.zIndex = '400'; document.body.appendChild(o); }
   const charger = async () => {
@@ -99,7 +99,7 @@ async function cdPreparer(){
         <button type="button" class="btn secondary" id="cdPrepExo"><span class="gicon">edit_square</span> Ajouter un exercice à faire</button></div>
       <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px;"><span class="hint" style="margin:auto auto auto 0;" id="cdPrepNb"></span>
         <button class="btn secondary" onclick="document.getElementById('cdPrepOverlay').style.display='none'">Annuler</button>
-        <button class="btn" id="cdPrepGo"><span class="gicon">play_arrow</span> Ouvrir la session</button></div></div>`;
+        <button class="btn" id="cdPrepGo">${st.debut ? '<span class="gicon">event</span> Programmer la session' : '<span class="gicon">play_arrow</span> Ouvrir la session'}</button></div></div>`;
     const nb = () => { const n = st.choisies.size + st.exos.length, el = document.getElementById('cdPrepNb'); if(el) el.textContent = n ? n + ' élément' + (n > 1 ? 's' : '') + ' choisi' + (n > 1 ? 's' : '') : 'Aucun élément choisi'; };
     nb();
     o.querySelectorAll('input[data-id]').forEach(c => c.onchange = () => { if(c.checked) st.choisies.add(c.dataset.id); else st.choisies.delete(c.dataset.id); nb(); });
@@ -117,8 +117,11 @@ async function cdPreparer(){
       const items = st.exos.filter(x => x.ouverture).concat(st.entrees.filter(e => st.choisies.has(e.id)).map(cdItemDe), st.exos.filter(x => !x.ouverture));
       if(typeof plAttenteSauver === 'function') plAttenteSauver([]);
       if(!items.length){ await niceAlert('Choisissez au moins un élément du cahier ou un exercice.'); return; }
+      const debut = st.debut ? new Date(st.debut) : null, jusqua = st.jusqua ? new Date(st.jusqua) : null;
+      if(debut && debut < new Date()){ await niceAlert('L\'heure de début est déjà passée : videz-la pour commencer tout de suite.'); return; }
+      if(jusqua && jusqua <= (debut || new Date())){ await niceAlert('L\'heure de fin doit venir après le début de la session.'); return; }
       o.style.display = 'none';
-      cdCreer(st.titre.trim() || 'Cours', items, { mode: st.mode, jusqua: st.jusqua ? new Date(st.jusqua).toISOString() : '' });
+      cdCreer(st.titre.trim() || 'Cours', items, { mode: st.mode, jusqua: jusqua ? jusqua.toISOString() : '', debut: debut ? debut.toISOString() : '' });
     };
   };
   o.style.display = 'flex';
@@ -129,25 +132,36 @@ async function cdPreparer(){
    libre, les élèves avancent. À tout moment le prof reprend la main. » En libre, chaque élève voit tous
    les éléments ; repasser en présentation ramène tout le monde sur l'élément du professeur.
    « Ouverte jusqu'à » : sans date, une session s'éteint 6 h après la dernière action du professeur. */
-function cdMinuit(){ const d = new Date(); d.setHours(23, 59, 0, 0); return d; }
+function cdMinuit(base){ const d = base ? new Date(base) : new Date(); d.setHours(23, 59, 0, 0); return d; }
 function cdLocal(d){ const p = n => String(n).padStart(2, '0'); return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`; }
 function cdOptionsHtml(st){
   return `<div class="cd-opts"><div class="cd-mode-choix">
       <button type="button" data-mode="presentation" class="${st.mode !== 'libre' ? 'on' : ''}"><span class="gicon">co_present</span><span><b>Présentation</b><small>Vous faites passer d'un élément au suivant</small></span></button>
       <button type="button" data-mode="libre" class="${st.mode === 'libre' ? 'on' : ''}"><span class="gicon">directions_walk</span><span><b>Libre</b><small>Les élèves avancent à leur rythme ; vous reprenez la main quand vous voulez</small></span></button></div>
+    <label class="cd-lab cd-jusqua">Commence <input type="datetime-local" id="cdOptDebut" value="${cdEsc(st.debut || '')}">
+      <small class="hint" style="margin:0;font-weight:400;">vide : tout de suite ; sinon les élèves entrent à partir de cette heure (session programmée)</small></label>
     <label class="cd-lab cd-jusqua">Ouverte jusqu'à <input type="datetime-local" id="cdOptJusqua" value="${cdEsc(st.jusqua || '')}"> <button type="button" class="btn secondary td-mini" id="cdOptMinuit">ce soir minuit</button>
       <small class="hint" style="margin:0;font-weight:400;">vide : jusqu'à ce que vous la terminiez</small></label></div>`;
 }
 function cdOptionsBrancher(o, st){
   o.querySelectorAll('[data-mode]').forEach(b => b.onclick = () => { st.mode = b.dataset.mode; o.querySelectorAll('[data-mode]').forEach(x => x.classList.toggle('on', x === b)); });
   const j = o.querySelector('#cdOptJusqua'); if(j) j.onchange = () => { st.jusqua = j.value; };
-  const m = o.querySelector('#cdOptMinuit'); if(m) m.onclick = () => { st.jusqua = cdLocal(cdMinuit()); if(j) j.value = st.jusqua; };
+  const d = o.querySelector('#cdOptDebut'); if(d) d.onchange = () => { st.debut = d.value; const b = o.querySelector('#cdPrepGo'); if(b) b.innerHTML = st.debut ? '<span class="gicon">event</span> Programmer la session' : '<span class="gicon">play_arrow</span> Ouvrir la session'; };
+  const m = o.querySelector('#cdOptMinuit'); if(m) m.onclick = () => { st.jusqua = cdLocal(cdMinuit(st.debut || null)); // minuit du jour de la session if(j) j.value = st.jusqua; };
 }
 async function cdCreer(titre, items, opts){
-  // Une seule session ouverte par classe : la précédente (oubliée ?) est close.
-  await sb.from('cours_direct').update({ ended_at: new Date().toISOString() }).eq('teacher_id', currentUser.id).eq('class_id', currentClassId).is('ended_at', null);
+  const prog = opts && opts.debut && Date.parse(opts.debut) > Date.now();
+  // Une seule session ouverte par classe : la précédente (oubliée ?) est close -- pas les sessions
+  // programmées plus tard, ni celles en cours quand on en programme une.
+  if(!prog) await sb.from('cours_direct').update({ ended_at: new Date().toISOString() }).eq('teacher_id', currentUser.id).eq('class_id', currentClassId).is('ended_at', null)
+    .or('etat->>debut.is.null,etat->>debut.lte.' + new Date().toISOString());
   const { data, error } = await sb.from('cours_direct').insert({ teacher_id: currentUser.id, class_id: currentClassId, titre, items, etat: Object.assign({ idx: 0, etape: null, mode: 'presentation' }, opts || {}) }).select().single();
   if(error || !data){ await niceAlert('La session n\'a pas pu être créée : ' + ((error && error.message) || '?')); return; }
+  if(prog){
+    if(typeof csOuvrir === 'function') csOuvrir();
+    await niceAlert(`Session programmée le ${new Date(opts.debut).toLocaleString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })}, code ${data.code}. Les élèves pourront entrer à partir de cette heure (bandeau « Rejoindre » dans « Mon travail », ou le code). Vous la retrouvez dans « Sessions COURS ».`);
+    return;
+  }
   cdProfOuvrir(data);
 }
 async function cdProfOuvrir(row){
@@ -281,7 +295,7 @@ function cdProfRendre(){
   const i = cdP.etat.idx || 0, it = cdP.items[i] || {}, libre = cdP.etat.mode === 'libre';
   if(typeof cxVivantRestaurer === 'function') cxVivantRestaurer();
   v.innerHTML = `<div class="cd-p-tete">
-      <div><div class="cd-p-titre">${cdEsc(cdP.titre)}</div><div class="hint" style="margin:0;">Session COURS · ${libre ? 'mode libre : les élèves avancent seuls ; vous regardez' : 'en direct :'} élément ${i + 1} / ${cdP.items.length}</div></div>
+      <div><div class="cd-p-titre">${cdEsc(cdP.titre)}</div>${Date.parse(cdP.etat.debut || 0) > Date.now() ? `<div class="cd-prog-info"><span class="gicon">event</span> Programmée : les élèves pourront entrer le ${new Date(cdP.etat.debut).toLocaleString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })} <button class="btn td-mini" onclick="cdProfEtat({ debut: '' })">Ouvrir maintenant</button></div>` : ''}<div class="hint" style="margin:0;">Session COURS · ${libre ? 'mode libre : les élèves avancent seuls ; vous regardez' : 'en direct :'} élément ${i + 1} / ${cdP.items.length}</div></div>
       <div class="cd-code" title="À afficher au tableau : les élèves le tapent en haut de « Mon travail »">Code <b>${cdEsc(cdP.code)}</b></div>
       <div class="cd-p-mode" title="Présentation : vous faites avancer la classe. Libre : chaque élève avance seul ; repasser en Présentation ramène tout le monde sur votre élément.">
         <button class="${libre ? '' : 'on'}" onclick="cdProfMode('presentation')"><span class="gicon">co_present</span> ${libre ? 'Reprendre la main' : 'Présentation'}</button>
@@ -624,6 +638,7 @@ document.addEventListener('DOMContentLoaded', cdBoutonMaj);
     .cd-mode-choix button.on{border-color:#1F3A5C;background:#EEF3F9;box-shadow:inset 0 0 0 1px #1F3A5C;} .cd-mode-choix .gicon{color:#1F3A5C;}
     .cd-mode-choix b{display:block;font-family:'Space Grotesk',sans-serif;} .cd-mode-choix small{color:var(--ink-soft);font-size:.76rem;}
     .cd-jusqua{flex-wrap:wrap;font-weight:600;} .cd-jusqua input{flex:0 1 auto;}
+    .cd-prog-info{display:inline-flex;gap:6px;align-items:center;background:#FFF4E0;color:#8A5A00;border-radius:8px;padding:2px 8px;font-size:.82rem;font-weight:700;margin:2px 0;} .cd-prog-info .gicon{font-size:16px;}
     .cd-p-mode{display:inline-flex;background:#EEF1F5;border-radius:10px;padding:3px;gap:2px;}
     .cd-p-mode button{border:0;background:none;border-radius:8px;padding:6px 10px;font:700 .85rem 'Space Grotesk',sans-serif;cursor:pointer;display:inline-flex;gap:4px;align-items:center;color:var(--ink);}
     .cd-p-mode button.on{background:#1F3A5C;color:#fff;} .cd-p-mode .gicon{font-size:18px;}
