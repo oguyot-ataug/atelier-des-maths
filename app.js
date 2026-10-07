@@ -3343,6 +3343,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.996', date:'2026-10-07', items:[
+    "Manuel de 5e, 1er lot -- demandé : « Construis le manuel de 5e. Exercices variés dans chaque chapitre. Quantité équivalente au manuel de 6e. Même consignes générales. » Quatre chapitres : Opérations sur les nombres décimaux (5 planches : vocabulaire et priorités, parenthèses, division euclidienne, distributivité, calcul décimal), Divisibilité (4 : multiples et diviseurs, critères par 2, 5, 10, par 3, 9, 4, problèmes), Fractions (5 : quotient, égalité et simplification, comparaison, addition et soustraction, problèmes), Nombres relatifs (5 : signe et opposé, droite graduée, comparer et ranger, repère du plan, problèmes). Pages A4 pleines sur deux colonnes, du plus simple au plus difficile, exercices « Dans ton cahier ! » avec correction rédigée ; la plupart se font aussi à l'écran (cases, choix, points à placer sur la droite graduée et dans le repère).",
+    "Exercices à l'écran : le pavé numérique a maintenant les parenthèses et le signe « : » (priorités opératoires) ; une réponse de calcul littéral (« 5x + 3 ») est acceptée avec ou sans espaces.",
+  ] },
   { version:'2026-08-19.995', date:'2026-10-07', items:[
     "Bilan : consigne de l'IA visible et modifiable -- demandé : « Montrer le prompt complet donné par défaut pour les appréciations IA et permettre au professeur de le modifier ». Nouveau bouton « Consigne IA » à côté de « Appréciations IA » : le texte complet envoyé à l'IA s'affiche (début fixe avec la classe et la période, consigne, exemple des données d'un élève, toujours sous code E1 sans nom, et format de réponse). La consigne se modifie, s'enregistre dans le compte (toutes les classes) et sert aux appréciations suivantes ; « Rétablir la consigne par défaut » revient au texte d'origine. La coupe à 250 caractères reste ; le retrait automatique des phrases chiffrées ne s'applique qu'avec la consigne par défaut.",
   ] },

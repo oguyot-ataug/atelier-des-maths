@@ -28,7 +28,7 @@
 const plNumCache = new Map();
 // Normalisation d'une réponse : espaces, casse, ponctuation finale ; un nombre perd ses zéros de tête
 // (« 05 » minutes = « 5 ») et ses espaces (« 1 200 » = « 1200 »).
-const plNumNorm = s => { const t = String(s ?? '').replace(/[\u00a0\u202f]/g, ' ').replace(/\s+/g, ' ').trim().toLowerCase().replace(/[.!]$/, '').replace(/’/g, '\''), n = t.replace(/(\d) (?=\d)/g, '$1').replace(/[−–]/g, '-'); if(/^\d+$/.test(n)) return String(+n); return /[a-zà-ÿ]/i.test(n) ? t.replace(/[−–]/g, '-') : n.replace(/\s+/g, ''); }; // calcul (« 5 000 000 + 8 ») : sans espaces
+const plNumNorm = s => { const t = String(s ?? '').replace(/[\u00a0\u202f]/g, ' ').replace(/\s+/g, ' ').trim().toLowerCase().replace(/[.!]$/, '').replace(/’/g, '\''), n = t.replace(/(\d) (?=\d)/g, '$1').replace(/[−–]/g, '-'); if(/^\d+$/.test(n)) return String(+n); return /[a-zà-ÿ]/i.test(n) ? (/[a-zà-ÿ]{3,}/i.test(t) ? t.replace(/[−–]/g, '-') : n.replace(/\s+/g, '')) : n.replace(/\s+/g, ''); }; // calcul littéral (« 5x + 3 », « 12 h 30 ») : sans espaces non plus // calcul (« 5 000 000 + 8 ») : sans espaces
 // Fraction écrite en LaTeX dans un bout de corrigé : [numérateur, dénominateur] ou null.
 function plNumFracDe(el){
   const t = el.querySelector('.tex'), m = t && /\\[dt]?frac\{([^}]*)\}\{([^}]*)\}/.exec(t.textContent);
@@ -428,7 +428,7 @@ const plClavier = {
   rendre(){
     const k = (t, l, cl) => `<button type="button" data-k="${t}" class="${cl || ''}">${l || t}</button>`;
     const lignes = this.mode === '123'
-      ? [['7', '8', '9', '&lt;'], ['4', '5', '6', '='], ['1', '2', '3', '&gt;'], ['0', ',', '+', '−', '×']]
+      ? [['7', '8', '9', '&lt;', '('], ['4', '5', '6', '=', ')'], ['1', '2', '3', '&gt;', ':'], ['0', ',', '+', '−', '×']] // ( ) et : : priorités opératoires (5e)
       : ['azertyuiop', 'qsdfghjklm', 'wxcvbné', 'èàêç\'-()[]'].map(l => l.split('').map(c => this.maj ? c.toUpperCase() : c));
     this.el.innerHTML = `<div class="pn-cl-lignes">${lignes.map(l => `<div class="pn-cl-l">${l.map(t => k(t === '&lt;' ? '<' : t === '&gt;' ? '>' : t, t)).join('')}</div>`).join('')}
       <div class="pn-cl-l">${this.mode === 'abc' ? `<button type="button" data-maj="1" class="pn-cl-gris${this.maj ? ' pn-cl-on' : ''}" title="Majuscules">⇧ ${this.maj ? 'ABC' : 'abc'}</button>` + k(' ', 'espace', 'pn-cl-large') : ''}${k('⌫', '<span class="gicon">backspace</span>', 'pn-cl-gris')}
