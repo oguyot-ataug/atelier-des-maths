@@ -303,6 +303,7 @@ function showView(id){
   if(typeof FIG_PROJ!=='undefined' && FIG_PROJ && id!=='view-tableau') return; // fenêtre de projection : rien d'autre que le tableau
   if(typeof QZC_PROJ!=='undefined' && QZC_PROJ) return; // projection des Questions flash (cartes) : rien d'autre
   if(typeof oliviaMaj==='function') setTimeout(oliviaMaj, 30); // Oliv'IA : seulement sur les pages de cours
+  if(id!=='view-cahier-eleve' && typeof cahierVivFin==='function') cahierVivFin(); // partie interactive du cahier : les blocs retournent au chapitre
   if(id!=='view-programmation' && document.body.classList.contains('prog-plein') && typeof progPleinEcran==='function') progPleinEcran(false); // programmation : on sort du plein écran
   if(id!=='view-classe' && typeof clBruit!=='undefined' && clBruit.actif && !(typeof clSurvol!=='undefined' && clSurvol.has('clBlocBruit'))) clBruitArreter(); // jauge de bruit : micro coupé en quittant la page (sauf jauge en survol)
   // Sécurité : si un outil (figure, texte, probabilités...) ou l'éditeur de formule était resté
@@ -3340,6 +3341,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.989', date:'2026-10-07', items:[
+    "Cahier : parties de cours et méthodes interactives -- signalé : « des méthodes ajoutées au cahier n'étaient pas interactives ». Le cahier garde une copie figée de la partie (démos dépliées, animations à l'arrêt) ; un nouveau bouton « Interactif », à côté de « Revoir dans le cours », y installe les vrais blocs du chapitre : animations, démos pas à pas, glisser-déposer et figures manipulables fonctionnent dans le cahier comme dans le cours. Une partie à la fois ; « Copie du cahier » (ou quitter la page) remet la copie figée.",
+  ] },
   { version:'2026-08-19.988', date:'2026-10-07', items:[
     "Sessions COURS programmées -- demandé : « Est-il possible de programmer une session (jour et heure) ? ». À la préparation, « Commence » : un jour et une heure (vide : tout de suite). Le bouton devient « Programmer la session » ; la session apparaît dans « Sessions COURS », rubrique Programmées, avec son code déjà réservé, le jour et l'heure, et les boutons Changer l'heure, Ouvrir maintenant, Télécommande (pour préparer) et Supprimer. À l'heure dite, les élèves de la classe voient le bandeau « Rejoindre » dans « Mon travail » et le code fonctionne ; avant, ils ne peuvent pas entrer. Programmer une session ne ferme pas celle en cours, et « ce soir minuit » vise le jour de la session.",
   ] },
@@ -7140,7 +7144,7 @@ function entryRowsHTML(e, idx, editable, showRemoveBtn){
   html += `</div>`;
   if(modEditable) html += `<div class="nb-mod-choix">${Object.entries(COR_MODALITES).map(([k, d])=>`<button type="button" class="nb-mod-chip${e.modalite===k ? ' on' : ''}" style="--c:${d[2]}" onclick="changeCahierEntryModalite(${idx}, '${k}')" title="${e.modalite===k ? 'Retirer' : 'Marquer'} : ${d[0]}"><span class="gicon">${d[1]}</span> ${d[0]}</button>`).join('')}</div>`;
   // Partie de cours : lien direct vers le chapitre (sauf dans l'impression, où idx n'est pas donné).
-  if(e.exo==='Cours' && e.chapitre && idx!==undefined && cahierChapitreDe(e)) html += `<button type="button" class="nb-cours-lien" onclick="cahierOuvrirCours(${idx})" title="Ouvrir ce chapitre à l'onglet Cours"><span class=gicon>menu_book</span> Revoir dans le cours</button>`;
+  if(e.exo==='Cours' && e.chapitre && idx!==undefined && cahierChapitreDe(e)) html += `<button type="button" class="nb-cours-lien" onclick="cahierOuvrirCours(${idx})" title="Ouvrir ce chapitre à l'onglet Cours"><span class=gicon>menu_book</span> Revoir dans le cours</button><button type="button" class="nb-cours-lien nb-vivant-btn" onclick="cahierVivant(${idx}, this)" title="Animations, démos pas à pas et figures manipulables, ici même dans le cahier"><span class=gicon>play_circle</span> Interactif</button>`;
   html += `<div class="nb-body">${e.html!=null ? e.html : renderMathText(e.raw)}</div>`;
   if(e.figure) html += `<div class="nb-figure-row">${e.figure}</div>`;
   html += `</div>`;
@@ -7958,6 +7962,37 @@ function cahierChapitreDe(e){
 function cahierOuvrirCours(idx){
   const e = cahier[idx], r = e && cahierChapitreDe(e);
   if(r) openChapitre(r.c, 'cours', r.n);
+}
+/* Parties de cours et méthodes interactives dans le cahier -- signalé : « des méthodes ajoutées au
+   cahier n'étaient pas interactives ». Le cahier garde une copie figée (démos dépliées, animations à
+   l'arrêt) ; « Interactif » y installe les vrais blocs du chapitre (cxMonterVivant, cours-exos.js,
+   comme dans une session COURS) : animations, démos pas à pas, figures manipulables. Une partie à la
+   fois ; la copie figée revient quand on en anime une autre, qu'on la referme ou qu'on quitte la page. */
+let cahierViv = null; // { host, html, btn }
+function cahierVivFin(){
+  if(!cahierViv) return;
+  const v = cahierViv; cahierViv = null;
+  if(typeof cxVivantRestaurer==='function') cxVivantRestaurer();
+  if(v.host.isConnected){ v.host.innerHTML = v.html; v.host.classList.remove('cd-vivant'); }
+  if(v.btn.isConnected) v.btn.innerHTML = '<span class=gicon>play_circle</span> Interactif';
+}
+async function cahierVivant(idx, btn){
+  const host = btn.closest('.cahier-print-entry') && btn.closest('.cahier-print-entry').querySelector('.nb-body');
+  if(cahierViv && cahierViv.host===host){ cahierVivFin(); return; }
+  cahierVivFin();
+  const e = cahier[idx], r = e && cahierChapitreDe(e);
+  if(!host || !r || typeof cxMonterVivant!=='function') return;
+  cahierViv = { host, html: host.innerHTML, btn };
+  btn.innerHTML = '<span class=gicon>hourglass_top</span> Chargement…';
+  const ok = await cxMonterVivant(host, { lvl: r.n, code: r.c.code, t: r.c.t, titre: e.titre });
+  if(!cahierViv || cahierViv.host!==host) return;
+  if(!ok){
+    cahierVivFin();
+    await niceAlert("Cette partie n'a pas été retrouvée dans le chapitre (cours modifié depuis, ou chapitre non accessible) : la copie du cahier reste affichée. « Revoir dans le cours » ouvre le chapitre.");
+    return;
+  }
+  btn.innerHTML = '<span class=gicon>stop_circle</span> Copie du cahier';
+  if(typeof renderStaticMath==='function') renderStaticMath(host);
 }
 function cahierOutilsCours(root){
   if(!root) return;

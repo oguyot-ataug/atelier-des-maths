@@ -1823,6 +1823,7 @@ body.fig-proj #tbSvg{display:block;width:100vw !important;height:100vh !importan
 /* Cahier : lien « Revoir dans le cours » sur une partie de cours */
 .nb-cours-lien{display:inline-flex;align-items:center;gap:4px;margin:2px 0 6px;border:1.5px solid var(--accent-blue,#0C5BA0);background:#fff;color:var(--accent-blue,#0C5BA0);border-radius:999px;padding:3px 11px;font-weight:700;font-size:.82rem;cursor:pointer;}
 .nb-cours-lien .gicon{font-size:17px;}
+.nb-vivant-btn{margin-left:6px;border-color:#1F7A4D;color:#1F7A4D;}
 @media print{ .nb-cours-lien{display:none;} }
 
 /* Outils du chapitre : une ligne, des couleurs (Personnaliser, Suggérer, Exporter en PDF, Planches, Questions flash) */
