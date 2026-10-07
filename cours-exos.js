@@ -76,7 +76,7 @@ function cxChoisir(){
            <div class="cx-ch-liste">${st.qzs == null ? '<p class="hint">Chargement de votre banque…</p>'
              : st.qzs.filter(q => !f || (q.titre || '').toLowerCase().includes(f)).map(q => { const qs = q.questions.filter(x => x.type !== 'texte');
                const types = [...new Set(qs.map(x => (typeof qzType === 'function' ? qzType(x.type).label : x.type)))].slice(0, 4).join(', ');
-               return `<button class="cx-ch-it" data-qz="${q.id}"><b>${cdEsc(q.titre || 'Sans titre')}</b><small>${qs.length} question${qs.length > 1 ? 's' : ''} · ${cdEsc(types)}</small></button>`; }).join('')
+               return `<button class="cx-ch-it" data-qz="${q.id}"><b>${cdEsc(q.titre || 'Sans titre')} ${typeof qzModeBadge === 'function' ? qzModeBadge(q.reglages || {}) : ''}</b><small>${qs.length} question${qs.length > 1 ? 's' : ''} · ${cdEsc(types)}${['maison', 'classe'].includes(typeof qzModeCle === 'function' ? qzModeCle(q.reglages) : '') ? ' · enregistrée comme interrogation à la fin de la session' : ''}</small></button>`; }).join('')
                || '<p class="hint">Aucun questionnaire dans votre banque. Créez-en un dans « Questionnaires » : tous les types de questions s\'y trouvent (figure dynamique, tracé sur quadrillage, repère…).</p>'}</div>`
         : st.onglet === 'prog'
         ? `<div class="cx-ch-liste">${typeof PROG_DEFIS === 'undefined' ? '<p class="hint">Défis indisponibles.</p>' : PROG_DEFIS.map(d =>
@@ -101,7 +101,11 @@ function cxChoisir(){
       const fl = o.querySelector('#cxFiltre'); if(fl){ fl.oninput = () => { st.filtre = fl.value; const p = fl.selectionStart; rendre(); const n = o.querySelector('#cxFiltre'); n.focus(); n.setSelectionRange(p, p); }; }
       o.querySelectorAll('[data-qz]').forEach(b => b.onclick = () => {
         const q = st.qzs.find(x => x.id === b.dataset.qz); if(!q) return;
-        fin({ titre: 'Exercice : ' + (q.titre || 'questionnaire'), chapitre: '', html: '', prog: null, exo: { type: 'qz', questions: qzPreparer(cxClone(q.questions)) } });
+        // Interrogation (mode « à la maison » ou « en classe ») : enregistrée comme une interrogation à la
+        // fin de la session (cours-sessions.js), les copies des élèves comprises.
+        const mode = typeof qzModeCle === 'function' ? qzModeCle(q.reglages) : 'maison', interro = mode === 'maison' || mode === 'classe';
+        fin({ titre: (interro ? 'Interrogation : ' : 'Exercice : ') + (q.titre || 'questionnaire'), chapitre: '', html: '', prog: null,
+          exo: { type: 'qz', questions: qzPreparer(cxClone(q.questions)), qz_id: q.id, qz_titre: q.titre || '', qz_mode: mode, interro } });
       });
       o.querySelectorAll('[data-prog]').forEach(b => b.onclick = () => {
         const d = progDefiParId(b.dataset.prog); if(!d) return;

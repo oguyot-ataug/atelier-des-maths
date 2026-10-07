@@ -441,6 +441,10 @@ document.querySelectorAll('[data-nav]').forEach(el=>{
       if(typeof adminApplyScopeUI==='function') adminApplyScopeUI();
       showView('view-admin'); setActiveTopnav('admin');
     }
+    if(nav==='sessions'){
+      if(currentUserRole!=='prof' && currentUserRole!=='admin'){ toggleAccountMenu(); return; }
+      if(typeof csOuvrir==='function') csOuvrir();
+    }
     if(nav==='supervision'){
       if(currentUserRole!=='prof' && currentUserRole!=='admin'){ toggleAccountMenu(); return; }
       showView('view-supervision'); setActiveTopnav('supervision');
@@ -509,6 +513,7 @@ function setActiveTopnav(key){
   else if(key==='admin') document.querySelector('.nav-links button[data-nav="admin"]').classList.add('active');
   else if(key==='famille') document.querySelector('.nav-links button[data-nav="famille"]')?.classList.add('active');
   else if(key==='supervision') document.querySelector('.nav-links button[data-nav="supervision"]').classList.add('active');
+  else if(key==='sessions') document.querySelector('.nav-links button[data-nav="sessions"]')?.classList.add('active');
   else if(key==='progression') document.querySelector('.nav-links button[data-nav="progression"]').classList.add('active');
   else if(key==='mesresultats') document.querySelector('.nav-links button[data-nav="mesresultats"]').classList.add('active');
   else if(key==='devoirsprof' || key==='questionnaires') document.querySelector(`.nav-links button[data-nav="${key}"]`)?.classList.add('active');
@@ -3335,6 +3340,12 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.987', date:'2026-10-07', items:[
+    "Nouvelle page « Sessions COURS » dans L'Atelier du prof -- demandé : « il faut faire un menu dans Atelier du prof et supprimer le bouton dans cahier élève. L'idée est d'avoir une page spéciale pour les sessions ». Les boutons « Session COURS » et « Bilans des séances » quittent le Cahier élève. La page montre les sessions ouvertes (code en grand, mode, ouverture, Télécommande, Bilan, Terminer) et les sessions terminées (Bilan, Noter des exercices, Rouvrir, Supprimer), pour toutes les classes ou une seule ; « Nouvelle session » pour la classe choisie.",
+    "Deux modes -- « mode présentation, c'est le prof qui gère le passage d'un exercice au suivant, ou mode libre, les élèves avancent. À tout moment le prof reprend la main. » Le mode se choisit à la préparation et se change à tout moment (télécommande ou page Sessions). En libre, chaque élève voit tous les éléments et avance à son rythme (il retrouve où il en était s'il recharge la page) ; le professeur parcourt les éléments pour suivre le travail sans déplacer les élèves. « Reprendre la main » repasse en présentation : tout le monde revient sur l'élément du professeur.",
+    "Ouverture prolongée : une session peut rester ouverte jusqu'à une heure choisie (bouton « ce soir minuit »), même sans le professeur ; sans heure, elle s'éteint 6 h après sa dernière action. Une session arrivée au bout est terminée à l'ouverture de la page Sessions.",
+    "Interrogations -- « si je mets une interrogation dans une session, l'enregistrer comme une interrogation. Sinon mettre une option, extraire les exercices ». Un questionnaire « à la maison » ou « en classe » ajouté à une session est repéré « Interrogation » ; à la fin de la session, il devient une interrogation de la classe, avec une copie rendue par élève ayant répondu, corrigée automatiquement (lien « Corriger » sur la session ; on vérifie puis on publie les notes). Pour les autres exercices, « Noter des exercices » réunit les exercices cochés en une interrogation de la même façon.",
+  ] },
   { version:'2026-08-19.986', date:'2026-10-05', items:[
     "Appréciations IA -- demandé : « ça reste trop précis. Il faut faire une synthèse plus globale en tenant compte de l'importance des évaluations grâce aux coefficients ». L'IA fait une synthèse du trimestre : sans énumérer les évaluations ni citer de titre, d'exercice ou de question, avec au plus un grand domaine réussi et un à consolider. Le niveau se juge d'abord sur la moyenne pondérée par les coefficients et sur les évaluations de poids fort (coefficient au moins double des autres) ; celles de poids faible et les simples travaux ne font que nuancer. Le détail question par question des interrogations en ligne n'est plus envoyé.",
   ] },

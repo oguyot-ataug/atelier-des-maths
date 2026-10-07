@@ -65,13 +65,13 @@ async function cdPreparer(){
   if(cdP && cdP.classId === currentClassId){ const v = document.getElementById('cdProf'); if(v){ v.style.display = 'flex'; cdProfRendre(); } return; }
   // Session encore ouverte pour cette classe (télécommande réduite, page rechargée…) : on la reprend.
   const { data: ouv } = await sb.from('cours_direct').select('*').eq('teacher_id', currentUser.id).eq('class_id', currentClassId).is('ended_at', null).order('created_at', { ascending: false }).limit(1);
-  if(ouv && ouv.length && Date.now() - Date.parse(ouv[0].updated_at) < 6 * 3600e3){
+  if(ouv && ouv.length && (Date.now() - Date.parse(ouv[0].updated_at) < 6 * 3600e3 || Date.parse((ouv[0].etat || {}).jusqua || 0) > Date.now())){
     const choix = await niceModal({ message: `Une session est encore ouverte pour cette classe : « ${ouv[0].titre} » (code ${ouv[0].code}).`, buttons: [{ label: 'Nouvelle session', value: 'neuf', secondary: true }, { label: 'Reprendre la session', value: 'reprendre' }] });
     if(choix === 'reprendre') return cdProfOuvrir(ouv[0]);
     if(choix !== 'neuf') return;
   }
   const fin = todayISO(), d0 = new Date(); d0.setDate(d0.getDate() - 14);
-  const st = { du: d0.toISOString().slice(0, 10), au: fin, entrees: [], choisies: new Set(), exos: typeof plAttente === 'function' ? plAttente() : [], titre: 'Cours du ' + new Date().toLocaleDateString('fr-FR') };
+  const st = { du: d0.toISOString().slice(0, 10), au: fin, entrees: [], choisies: new Set(), exos: typeof plAttente === 'function' ? plAttente() : [], titre: 'Cours du ' + new Date().toLocaleDateString('fr-FR'), mode: 'presentation', jusqua: '' };
   let o = document.getElementById('cdPrepOverlay');
   if(!o){ o = document.createElement('div'); o.id = 'cdPrepOverlay'; o.className = 'modal-overlay'; o.style.zIndex = '400'; document.body.appendChild(o); }
   const charger = async () => {
@@ -86,8 +86,9 @@ async function cdPreparer(){
     o.innerHTML = `<div class="modal-card cd-prep">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;"><b class="cd-h"><span class="gicon">cast_for_education</span> Session COURS en direct</b>
         <button class="modal-close" onclick="document.getElementById('cdPrepOverlay').style.display='none'"><span class="gicon">close</span></button></div>
-      <p class="hint" style="margin:6px 0 10px;">Choisissez les éléments du cahier à montrer, dans l'ordre du cahier. Les élèves entrent avec le code (en haut de « Mon travail ») et les voient en plein écran ; vous les faites avancer un par un.</p>
+      <p class="hint" style="margin:6px 0 10px;">Choisissez les éléments du cahier à montrer, dans l'ordre du cahier. Les élèves entrent avec le code (en haut de « Mon travail ») et les voient en plein écran. En présentation, vous les faites avancer un par un ; en libre, chacun avance à son rythme.</p>
       <label class="cd-lab">Titre <input type="text" id="cdPrepTitre" value="${cdEsc(st.titre)}"></label>
+      ${cdOptionsHtml(st)}
       <div class="cd-dates"><label>Du <input type="date" id="cdPrepDu" value="${st.du}"></label><label>au <input type="date" id="cdPrepAu" value="${st.au}"></label>
         <button type="button" class="btn secondary" id="cdPrepCharger"><span class="gicon">refresh</span> Afficher</button></div>
       <div class="cd-liste">${msg || ([...parJour.entries()].map(([j, es]) => `<div class="cd-jour"><b>${new Date(j + 'T12:00').toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}</b>
@@ -109,6 +110,7 @@ async function cdPreparer(){
     document.getElementById('cdPrepCours').onclick = async () => { o.style.display = 'none'; const its = typeof cxChoisirCours === 'function' ? await cxChoisirCours() : []; o.style.display = 'flex'; if(its.length){ st.exos.push(...its); rendre(); } };
     document.getElementById('cdPrepExo').onclick = async () => { o.style.display = 'none'; const it = typeof cxChoisir === 'function' ? await cxChoisir() : null; o.style.display = 'flex'; if(it){ st.exos.push(...[].concat(it)); rendre(); } };
     document.getElementById('cdPrepTitre').oninput = e => { st.titre = e.target.value; };
+    cdOptionsBrancher(o, st);
     document.getElementById('cdPrepCharger').onclick = () => { st.du = document.getElementById('cdPrepDu').value; st.au = document.getElementById('cdPrepAu').value; charger(); };
     document.getElementById('cdPrepGo').onclick = async () => {
       // Exercices mis de côté depuis le Manuel (« Session ») : en ouverture, avant le cahier.
@@ -116,16 +118,35 @@ async function cdPreparer(){
       if(typeof plAttenteSauver === 'function') plAttenteSauver([]);
       if(!items.length){ await niceAlert('Choisissez au moins un élément du cahier ou un exercice.'); return; }
       o.style.display = 'none';
-      cdCreer(st.titre.trim() || 'Cours', items);
+      cdCreer(st.titre.trim() || 'Cours', items, { mode: st.mode, jusqua: st.jusqua ? new Date(st.jusqua).toISOString() : '' });
     };
   };
   o.style.display = 'flex';
   charger();
 }
-async function cdCreer(titre, items){
+/* ---------- Options d'une session : mode présentation / libre, ouverture prolongée ----------
+   Demandé : « mode présentation, c'est le prof qui gère le passage d'un exercice au suivant, ou mode
+   libre, les élèves avancent. À tout moment le prof reprend la main. » En libre, chaque élève voit tous
+   les éléments ; repasser en présentation ramène tout le monde sur l'élément du professeur.
+   « Ouverte jusqu'à » : sans date, une session s'éteint 6 h après la dernière action du professeur. */
+function cdMinuit(){ const d = new Date(); d.setHours(23, 59, 0, 0); return d; }
+function cdLocal(d){ const p = n => String(n).padStart(2, '0'); return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`; }
+function cdOptionsHtml(st){
+  return `<div class="cd-opts"><div class="cd-mode-choix">
+      <button type="button" data-mode="presentation" class="${st.mode !== 'libre' ? 'on' : ''}"><span class="gicon">co_present</span><span><b>Présentation</b><small>Vous faites passer d'un élément au suivant</small></span></button>
+      <button type="button" data-mode="libre" class="${st.mode === 'libre' ? 'on' : ''}"><span class="gicon">directions_walk</span><span><b>Libre</b><small>Les élèves avancent à leur rythme ; vous reprenez la main quand vous voulez</small></span></button></div>
+    <label class="cd-lab cd-jusqua">Ouverte jusqu'à <input type="datetime-local" id="cdOptJusqua" value="${cdEsc(st.jusqua || '')}"> <button type="button" class="btn secondary td-mini" id="cdOptMinuit">ce soir minuit</button>
+      <small class="hint" style="margin:0;font-weight:400;">vide : jusqu'à ce que vous la terminiez</small></label></div>`;
+}
+function cdOptionsBrancher(o, st){
+  o.querySelectorAll('[data-mode]').forEach(b => b.onclick = () => { st.mode = b.dataset.mode; o.querySelectorAll('[data-mode]').forEach(x => x.classList.toggle('on', x === b)); });
+  const j = o.querySelector('#cdOptJusqua'); if(j) j.onchange = () => { st.jusqua = j.value; };
+  const m = o.querySelector('#cdOptMinuit'); if(m) m.onclick = () => { st.jusqua = cdLocal(cdMinuit()); if(j) j.value = st.jusqua; };
+}
+async function cdCreer(titre, items, opts){
   // Une seule session ouverte par classe : la précédente (oubliée ?) est close.
   await sb.from('cours_direct').update({ ended_at: new Date().toISOString() }).eq('teacher_id', currentUser.id).eq('class_id', currentClassId).is('ended_at', null);
-  const { data, error } = await sb.from('cours_direct').insert({ teacher_id: currentUser.id, class_id: currentClassId, titre, items, etat: { idx: 0, etape: null } }).select().single();
+  const { data, error } = await sb.from('cours_direct').insert({ teacher_id: currentUser.id, class_id: currentClassId, titre, items, etat: Object.assign({ idx: 0, etape: null, mode: 'presentation' }, opts || {}) }).select().single();
   if(error || !data){ await niceAlert('La session n\'a pas pu être créée : ' + ((error && error.message) || '?')); return; }
   cdProfOuvrir(data);
 }
@@ -155,6 +176,8 @@ function cdProfFermer(silencieux){
   const v = document.getElementById('cdProf'); if(v) v.style.display = 'none';
   document.body.classList.remove('cd-prof-ouvert');
   cdP = null;
+  const vs = document.getElementById('view-sessions');
+  if(vs && vs.classList.contains('active') && typeof csRafraichir === 'function') setTimeout(csRafraichir, 300);
 }
 async function cdProfTerminer(){
   if(!cdP) return;
@@ -162,7 +185,12 @@ async function cdProfTerminer(){
   await sb.from('cours_direct').update({ ended_at: new Date().toISOString() }).eq('id', cdP.id);
   try{ cdP.ch.send({ type: 'broadcast', event: 'etat', payload: { fin: true } }); }catch(e){}
   const id = cdP.id;
-  setTimeout(async () => { cdProfFermer(); if(typeof cdBilan === 'function' && await niceConfirm('Session terminée. Voir le bilan de la séance (réponses, mains levées, sorties) ?')) cdBilan(id); }, 400);
+  setTimeout(async () => {
+    cdProfFermer();
+    const n = typeof csNoterInterros === 'function' ? await csNoterInterros(id) : 0;
+    if(typeof csRafraichir === 'function') csRafraichir();
+    if(typeof cdBilan === 'function' && await niceConfirm(`Session terminée.${n ? ` ${n} interrogation${n > 1 ? 's ont été enregistrées' : ' a été enregistrée'} avec les copies des élèves (à vérifier dans « Corriger » avant de publier les notes).` : ''} Voir le bilan de la séance (réponses, mains levées, sorties) ?`)) cdBilan(id);
+  }, 400);
 }
 async function cdProfEtat(etat){
   if(!cdP) return;
@@ -172,6 +200,33 @@ async function cdProfEtat(etat){
   if(error){ niceAlert('Changement non enregistré : ' + error.message); return; }
   const diffuse = Object.assign({}, cdP.etat); delete diffuse.equipes; delete diffuse.liens; // les équipes : seulement par cours_direct_etat (chaque élève, la sienne)
   try{ cdP.ch.send({ type: 'broadcast', event: 'etat', payload: diffuse }); }catch(e){}
+}
+async function cdProfMode(m){
+  if(!cdP || (cdP.etat.mode || 'presentation') === m) return;
+  await cdProfEtat({ mode: m });
+  cdToast(m === 'libre' ? '<span class="gicon">directions_walk</span> Mode libre : chaque élève avance à son rythme.' : `<span class="gicon">co_present</span> Vous reprenez la main : les élèves reviennent à l'élément ${(cdP.etat.idx || 0) + 1}.`);
+  const t = document.querySelector('.cd-toast:last-of-type'); if(t) t.style.background = '#1F3A5C';
+}
+// Ouverture prolongée, réglable pendant la séance (petite fenêtre au-dessus de la télécommande).
+function cdProfJusqua(){
+  if(!cdP) return;
+  let o = document.getElementById('cdJq');
+  if(!o){ o = document.createElement('div'); o.id = 'cdJq'; o.className = 'modal-overlay'; o.style.zIndex = '9460'; document.body.appendChild(o); }
+  const v0 = cdP.etat.jusqua ? cdLocal(new Date(cdP.etat.jusqua)) : '';
+  o.innerHTML = `<div class="modal-card" style="max-width:440px;"><b class="cd-h"><span class="gicon">schedule</span> Ouverture de la session</b>
+    <p class="hint" style="margin:6px 0 10px;">Les élèves peuvent entrer et travailler jusqu'à cette heure, même sans vous. Sans limite : la session s'éteint 6 h après votre dernière action, ou quand vous la terminez.</p>
+    <input type="datetime-local" id="cdJqVal" value="${cdEsc(v0)}" style="width:100%;box-sizing:border-box;">
+    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;margin-top:12px;">
+      <button class="btn secondary" data-jq="annuler">Annuler</button><button class="btn secondary" data-jq="vide">Sans limite</button>
+      <button class="btn secondary" data-jq="minuit">Ce soir minuit</button><button class="btn" data-jq="ok">Enregistrer</button></div></div>`;
+  o.style.display = 'flex';
+  o.querySelectorAll('[data-jq]').forEach(b => b.onclick = () => {
+    const c = b.dataset.jq, x = o.querySelector('#cdJqVal').value; o.style.display = 'none';
+    if(c === 'annuler' || !cdP) return;
+    const j = c === 'minuit' ? cdMinuit().toISOString() : c === 'ok' && x ? new Date(x).toISOString() : '';
+    if(j && Date.parse(j) < Date.now()){ niceAlert('Cette heure est déjà passée.'); return; }
+    cdProfEtat({ jusqua: j });
+  });
 }
 function cdProfAller(i){
   if(!cdP) return;
@@ -223,16 +278,20 @@ function cdProfRendreClasse(){
 }
 function cdProfRendre(){
   const v = document.getElementById('cdProf'); if(!v || !cdP) return;
-  const i = cdP.etat.idx || 0, it = cdP.items[i] || {};
+  const i = cdP.etat.idx || 0, it = cdP.items[i] || {}, libre = cdP.etat.mode === 'libre';
   if(typeof cxVivantRestaurer === 'function') cxVivantRestaurer();
   v.innerHTML = `<div class="cd-p-tete">
-      <div><div class="cd-p-titre">${cdEsc(cdP.titre)}</div><div class="hint" style="margin:0;">Session COURS en direct · élément ${i + 1} / ${cdP.items.length}</div></div>
+      <div><div class="cd-p-titre">${cdEsc(cdP.titre)}</div><div class="hint" style="margin:0;">Session COURS · ${libre ? 'mode libre : les élèves avancent seuls ; vous regardez' : 'en direct :'} élément ${i + 1} / ${cdP.items.length}</div></div>
       <div class="cd-code" title="À afficher au tableau : les élèves le tapent en haut de « Mon travail »">Code <b>${cdEsc(cdP.code)}</b></div>
-      <div class="cd-p-act"><button class="btn secondary" onclick="cdBilan()" title="Qui a bien répondu à chaque exercice, mains levées, sorties de la page"><span class="gicon">summarize</span> Bilan</button>
+      <div class="cd-p-mode" title="Présentation : vous faites avancer la classe. Libre : chaque élève avance seul ; repasser en Présentation ramène tout le monde sur votre élément.">
+        <button class="${libre ? '' : 'on'}" onclick="cdProfMode('presentation')"><span class="gicon">co_present</span> ${libre ? 'Reprendre la main' : 'Présentation'}</button>
+        <button class="${libre ? 'on' : ''}" onclick="cdProfMode('libre')"><span class="gicon">directions_walk</span> Libre</button></div>
+      <div class="cd-p-act"><button class="btn secondary" onclick="cdProfJusqua()" title="Laisser la session ouverte jusqu'à une heure donnée (par exemple pour finir à la maison)"><span class="gicon">schedule</span> ${cdP.etat.jusqua ? 'Jusqu\'à ' + new Date(cdP.etat.jusqua).toLocaleString('fr-FR', { weekday: 'short', hour: '2-digit', minute: '2-digit' }) : 'Ouverture'}</button>
+        <button class="btn secondary" onclick="cdBilan()" title="Qui a bien répondu à chaque exercice, mains levées, sorties de la page"><span class="gicon">summarize</span> Bilan</button>
         <button class="btn secondary" onclick="cdProfFermer()" title="Fermer la télécommande sans terminer (la session continue)"><span class="gicon">minimize</span> Réduire</button>
         <button class="btn" style="background:#C0392B;" onclick="cdProfTerminer()"><span class="gicon">stop</span> Terminer</button></div></div>
     <div class="cd-p-corps">
-      <div class="cd-p-items">${cdP.items.map((x, k) => `<button class="cd-item${k === i ? ' on' : ''}${k < i ? ' vu' : ''}" onclick="cdProfAller(${k})"><span>${k + 1}</span> ${cdEsc(x.titre)}${x.prog ? ' <span class="gicon">architecture</span>' : ''}${x.exo ? ' <span class="gicon" style="color:#E35D3A;">edit_square</span>' : ''}</button>`).join('')}
+      <div class="cd-p-items">${cdP.items.map((x, k) => `<button class="cd-item${k === i ? ' on' : ''}${k < i ? ' vu' : ''}" onclick="cdProfAller(${k})"><span>${k + 1}</span> ${cdEsc(x.titre)}${x.prog ? ' <span class="gicon">architecture</span>' : ''}${x.exo ? ` <span class="gicon" style="color:${x.exo.interro ? '#6B3FA0' : '#E35D3A'};" title="${x.exo.interro ? 'Interrogation : enregistrée comme interrogation à la fin' : 'Exercice'}">${x.exo.interro ? 'quiz' : 'edit_square'}</span>` : ''}</button>`).join('')}
         <button class="cd-item cd-ajout" onclick="cxProfAjouterCours()"><span class="gicon">menu_book</span> Ajouter une partie de cours</button>
         <button class="cd-item cd-ajout" onclick="cxProfAjouter()"><span class="gicon">edit_square</span> Ajouter un exercice</button></div>
       <div class="cd-p-scene">
@@ -383,10 +442,16 @@ async function cdEleveCharger(){
   const avant = cdE.d;
   cdE.d = data;
   if(typeof cdEleveEquipe === 'function') cdEleveEquipe();
-  if(!avant || avant.idx !== data.idx) cdE.vue = data.idx; // le professeur avance : on le suit
+  // Mode présentation : le professeur avance, on le suit. Mode libre : chacun avance à son rythme ;
+  // quand le professeur reprend la main (retour en présentation), tout le monde revient à son élément.
+  const libre = data.mode === 'libre', repris = avant && avant.mode === 'libre' && !libre;
+  if(!avant || repris || (!libre && avant.idx !== data.idx)) cdE.vue = data.idx;
+  if(libre && !avant){ try{ const v = +localStorage.getItem('cdVue-' + data.id); if(v >= 0 && v <= data.max) cdE.vue = v; }catch(e){} }
+  cdE.vue = Math.min(cdE.vue, data.max != null ? data.max : data.idx);
+  if(repris) cdToast('<span class="gicon">cast</span> Ton professeur reprend la main : tout le monde suit le même élément.');
   // Exercice en cours sur l'écran : on ne le redessine pas (la saisie en cours serait perdue).
   const corrBouge = !!(avant && avant.etat && avant.etat.corr) !== !!(data.etat && data.etat.corr) && ((data.items[cdE.vue] || {}).exo || {}).type === 'td';
-  if(avant && avant.idx === data.idx && avant.n === data.n && (data.items[cdE.vue] || {}).exo && cdE.cxMonte === cdE.vue && !corrBouge) return;
+  if(avant && avant.idx === data.idx && avant.n === data.n && avant.mode === data.mode && avant.max === data.max && (data.items[cdE.vue] || {}).exo && cdE.cxMonte === cdE.vue && !corrBouge) return;
   const it = data.items[data.idx] || {}, etape = data.etat && data.etat.etape;
   // Construction déroulée par le professeur : tableau en plein écran, à la même étape.
   if(it.prog && etape != null && cdE.vue === data.idx){
@@ -399,7 +464,8 @@ async function cdEleveCharger(){
 }
 function cdEleveRendre(){
   const o = document.getElementById('cdEleve'); if(!o || !cdE || !cdE.d) return;
-  const d = cdE.d, k = cdE.vue, it = d.items[k] || {};
+  const d = cdE.d, k = cdE.vue, it = d.items[k] || {}, libre = d.mode === 'libre', mx = d.max != null ? d.max : d.idx;
+  try{ if(libre) localStorage.setItem('cdVue-' + d.id, k); }catch(e){}
   if(it.leger){ cdEleveElement(k); }
   if(typeof cxVivantRestaurer === 'function') cxVivantRestaurer();
   cdE.cxMonte = null;
@@ -407,8 +473,8 @@ function cdEleveRendre(){
   if(!it.exo && qzP && qzP.cours) qzP = null;
   o.innerHTML = `<div class="cd-e-tete"><span class="cd-e-titre">${cdEsc(d.titre)}</span>
       <span class="cd-e-nav"><button onclick="cdEleveVoir(${k - 1})" ${k ? '' : 'disabled'} title="Élément précédent"><span class="gicon">arrow_back</span></button>
-      <b>${k + 1} / ${d.n}</b><button onclick="cdEleveVoir(${k + 1})" ${k < d.idx ? '' : 'disabled'} title="Élément suivant"><span class="gicon">arrow_forward</span></button></span>
-      ${k !== d.idx ? `<button class="cd-e-direct" onclick="cdEleveVoir(${d.idx})"><span class="gicon">cast</span> Revenir au direct</button>` : '<span class="cd-e-live"><span class="dot"></span> En direct</span>'}</div>
+      <b>${k + 1} / ${d.n}</b><button onclick="cdEleveVoir(${k + 1})" ${k < mx ? '' : 'disabled'} title="Élément suivant"><span class="gicon">arrow_forward</span></button></span>
+      ${libre ? '<span class="cd-e-libre"><span class="gicon">directions_walk</span> Avance à ton rythme</span>' : k !== d.idx ? `<button class="cd-e-direct" onclick="cdEleveVoir(${d.idx})"><span class="gicon">cast</span> Revenir au direct</button>` : '<span class="cd-e-live"><span class="dot"></span> En direct</span>'}</div>
     <div id="cdEqBandeau" hidden></div>
     <div class="cd-e-corps"><div class="cd-item-titre">${cdEsc(it.titre || '')}${it.chapitre ? ` <small>${cdEsc(it.chapitre)}</small>` : ''}</div>
       <div class="cd-contenu" id="cdEleveContenu">${it.leger ? '<p class="hint">Chargement…</p>' : it.exo ? '' : it.corr && k === d.idx && d.etat && d.etat.corr ? '<div class="cd-corr-montree"><span class="gicon">fact_check</span> Correction</div>' + it.corr : it.html || ''}</div></div>
@@ -432,7 +498,7 @@ async function cdEleveElement(k){
   cdE.cache.set(k, data); cdE.d.items[k] = data;
   if(cdE.vue === k) cdEleveRendre();
 }
-function cdEleveVoir(k){ if(!cdE || !cdE.d) return; cdE.vue = Math.max(0, Math.min(cdE.d.idx, k)); cdEleveRendre(); }
+function cdEleveVoir(k){ if(!cdE || !cdE.d) return; cdE.vue = Math.max(0, Math.min(cdE.d.max != null ? cdE.d.max : cdE.d.idx, k)); cdEleveRendre(); }
 function cdEleveFin(){
   if(!cdE) return;
   const o = document.getElementById('cdEleve');
@@ -552,6 +618,17 @@ document.addEventListener('DOMContentLoaded', cdBoutonMaj);
     .cd-e-titre{font:800 1.1rem 'Space Grotesk',sans-serif;}
     .cd-e-nav{display:flex;align-items:center;gap:6px;margin-left:auto;} .cd-e-nav button{border:0;border-radius:8px;background:rgba(255,255,255,.15);color:#fff;cursor:pointer;display:flex;padding:4px;} .cd-e-nav button:disabled{opacity:.3;cursor:default;}
     .cd-e-live{display:inline-flex;align-items:center;gap:6px;font-weight:700;} .cd-e-live .dot{width:10px;height:10px;border-radius:50%;background:#E35D3A;animation:cdClign 1.2s infinite;}
+    .cd-opts{margin:8px 0 4px;display:flex;flex-direction:column;gap:8px;}
+    .cd-mode-choix{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+    .cd-mode-choix button{display:flex;gap:8px;align-items:flex-start;text-align:left;border:1.5px solid rgba(28,43,57,.15);background:#fff;border-radius:12px;padding:8px 10px;cursor:pointer;font:inherit;color:var(--ink);}
+    .cd-mode-choix button.on{border-color:#1F3A5C;background:#EEF3F9;box-shadow:inset 0 0 0 1px #1F3A5C;} .cd-mode-choix .gicon{color:#1F3A5C;}
+    .cd-mode-choix b{display:block;font-family:'Space Grotesk',sans-serif;} .cd-mode-choix small{color:var(--ink-soft);font-size:.76rem;}
+    .cd-jusqua{flex-wrap:wrap;font-weight:600;} .cd-jusqua input{flex:0 1 auto;}
+    .cd-p-mode{display:inline-flex;background:#EEF1F5;border-radius:10px;padding:3px;gap:2px;}
+    .cd-p-mode button{border:0;background:none;border-radius:8px;padding:6px 10px;font:700 .85rem 'Space Grotesk',sans-serif;cursor:pointer;display:inline-flex;gap:4px;align-items:center;color:var(--ink);}
+    .cd-p-mode button.on{background:#1F3A5C;color:#fff;} .cd-p-mode .gicon{font-size:18px;}
+    @media (max-width:560px){ .cd-mode-choix{grid-template-columns:1fr;} }
+    .cd-e-libre{display:inline-flex;align-items:center;gap:5px;font-weight:700;background:rgba(255,255,255,.15);border-radius:999px;padding:4px 12px;} .cd-e-libre .gicon{font-size:18px;}
     .cd-e-direct{border:0;border-radius:999px;background:#E35D3A;color:#fff;font-weight:700;padding:5px 12px;cursor:pointer;display:inline-flex;gap:4px;align-items:center;}
     .cd-e-corps{flex:1;overflow:auto;padding:18px max(18px, calc((100vw - 980px) / 2));font-size:1.08rem;}
     .cd-e-retour{position:fixed;inset:0;z-index:9100;background:rgba(28,43,57,.75);display:flex;align-items:center;justify-content:center;}
