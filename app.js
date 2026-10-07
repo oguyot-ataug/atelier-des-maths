@@ -3343,6 +3343,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.994', date:'2026-10-07', items:[
+    "Bilan : choix de la période en chips, périodes du professeur -- demandé : « Fais des chips pour le choix de période du bilan. Permettre au professeur d'ajouter des périodes (demi-trimestre par exemple) ». La liste déroulante devient une rangée de chips dans l'ordre des dates (trimestres, périodes ajoutées, année, « Dates choisies »). « + Période » ajoute une période nommée avec ses dates, ou crée d'un clic les six demi-trimestres (chaque trimestre coupé en deux). Les périodes ajoutées sont enregistrées dans le compte (sur tous les appareils et pour toutes les classes), ont leurs propres appréciations, leurs dates se modifient comme celles des trimestres, et la croix de la chip les supprime.",
+  ] },
   { version:'2026-08-19.993', date:'2026-10-07', items:[
     "Listes déroulantes : un même style partout -- demandé : « Pour les listes déroulantes partout, les rendre plus sexy ». Toutes les listes du site (classes, périodes, chapitres, niveaux, réglages…) ont maintenant un bord arrondi, une flèche dessinée aux couleurs du site, un survol et un focus colorés ; les champs de date et d'heure ont le même habillage. Le style est commun (styles.css) : il s'applique aussi aux listes des fenêtres et des outils ajoutés plus tard.",
   ] },

@@ -14,7 +14,9 @@
    - « devoirs » (page Devoirs en ligne › Bilan de la classe) : les devoirs seulement, sans IA.
 
    Période : 1er, 2e, 3e trimestre ou année, dates modifiables (mémorisées sur l'appareil, par
-   période), ou dates libres. Évolution : résultats de la période dans l'ordre des dates (première
+   période), périodes ajoutées par le professeur (table bilan_periodes : demi-trimestres…, clé
+   « U-<id> »), ou dates libres. Choix par chips (demandé : « Fais des chips pour le choix de période
+   du bilan. Permettre au professeur d'ajouter des périodes (demi-trimestre par exemple) »). Évolution : résultats de la période dans l'ordre des dates (première
    moitié comparée à la seconde : en progrès, stable, en baisse).
    Appréciations : table bilan_appreciations (le professeur seulement). L'IA ne reçoit que des codes
    (E1, E2…) et des résultats ; tout nom ou prénom d'élève présent dans un titre est effacé avant
@@ -26,16 +28,64 @@ const BL_MAX = 250;
 
 /* ---------- Périodes ---------- */
 function blDates(){ try{ return JSON.parse(localStorage.getItem('blDates') || '{}'); }catch(e){ return {}; } }
+let blPerso = null; // périodes du professeur (bilan_periodes), chargées une fois
+async function blChargerPeriodes(force){
+  if(blPerso && !force) return;
+  const { data, error } = await sb.from('bilan_periodes').select('id,titre,du,au').order('du').order('au');
+  blPerso = error ? (blPerso || []) : (data || []).map(r => ({ k: 'U-' + r.id, id: r.id, t: r.titre, du: r.du, au: r.au, perso: true }));
+}
 function blPeriodes(){
   const n = new Date(), a = n.getMonth() >= 7 ? n.getFullYear() : n.getFullYear() - 1, an = `${a}-${a + 1}`, o = blDates();
-  return [
+  const std = [
     { k: `T1-${an}`, t: '1er trimestre', du: `${a}-09-01`, au: `${a}-11-30` },
     { k: `T2-${an}`, t: '2e trimestre', du: `${a}-12-01`, au: `${a + 1}-02-28` },
     { k: `T3-${an}`, t: '3e trimestre', du: `${a + 1}-03-01`, au: `${a + 1}-07-10` },
     { k: `A-${an}`, t: `Année ${an}`, du: `${a}-09-01`, au: `${a + 1}-07-10` },
   ].map(p => Object.assign(p, o[p.k] || {}));
+  // Dans l'ordre des dates (trimestres et périodes ajoutées mêlés), l'année à la fin.
+  return std.slice(0, 3).concat(blPerso || []).sort((x, y) => x.du.localeCompare(y.du) || y.au.localeCompare(x.au)).concat(std[3]);
 }
-function blPeriodeCourante(){ const j = new Date().toISOString().slice(0, 10), p = blPeriodes(); return p.slice(0, 3).find(x => j >= x.du && j <= x.au) || p[0]; }
+function blPeriodeCourante(){ const j = new Date().toISOString().slice(0, 10), p = blPeriodes().filter(x => /^T\d/.test(x.k)); return p.find(x => j >= x.du && j <= x.au) || p[0]; }
+
+/* ---------- Ajout d'une période (titre et dates), ou des six demi-trimestres d'un coup ---------- */
+function blAjouterPeriode(B, rouvrir){
+  let o = document.getElementById('blPerFen');
+  if(!o){ o = document.createElement('div'); o.id = 'blPerFen'; o.className = 'modal-overlay'; o.style.zIndex = '9470'; document.body.appendChild(o); }
+  const std = blPeriodes().filter(x => /^T\d/.test(x.k)), moitie = p => { const a = new Date(p.du + 'T12:00:00'), b = new Date(p.au + 'T12:00:00'), m = new Date((a.getTime() + b.getTime()) / 2);
+    const iso = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`, m2 = new Date(m); m2.setDate(m2.getDate() + 1); return [iso(m), iso(m2)]; };
+  const demis = std.flatMap((p, i) => { const [m, m2] = moitie(p); return [{ titre: `T${i + 1} · 1re moitié`, du: p.du, au: m }, { titre: `T${i + 1} · 2de moitié`, du: m2, au: p.au }]; });
+  const deja = new Set((blPerso || []).map(x => x.t));
+  const fmt = d => new Date(d + 'T12:00:00').toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+  o.innerHTML = `<div class="modal-card" style="max-width:480px;width:94vw;"><div style="display:flex;justify-content:space-between;align-items:center;"><b class="cd-h"><span class="gicon">date_range</span> Ajouter une période</b><button class="modal-close" data-pf="x"><span class="gicon">close</span></button></div>
+    <p class="hint" style="margin:6px 0 10px;">Elle s'ajoute aux trimestres, sur tous vos bilans (toutes vos classes), avec ses propres appréciations.</p>
+    <label class="cd-lab">Nom <input type="text" id="blPfT" maxlength="60" placeholder="ex. Mi-trimestre 1, Période 2…"></label>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin:8px 0;"><label class="hint" style="margin:0;">du <input type="date" id="blPfDu" value="${B.per.du}"></label><label class="hint" style="margin:0;">au <input type="date" id="blPfAu" value="${B.per.au}"></label></div>
+    <div style="text-align:right;"><button class="btn" data-pf="ok"><span class="gicon">add</span> Ajouter</button></div>
+    <hr style="border:0;border-top:1px solid rgba(28,43,57,.12);margin:12px 0;">
+    <b style="font-family:'Space Grotesk',sans-serif;">Demi-trimestres</b>
+    <p class="hint" style="margin:4px 0 8px;">Chaque trimestre coupé en deux : ${demis.map(d => `${escapeHtml(d.titre)} (${fmt(d.du)} – ${fmt(d.au)})`).join(' · ')}. Dates modifiables ensuite.</p>
+    <div style="text-align:right;"><button class="btn secondary" data-pf="demis"${demis.every(d => deja.has(d.titre)) ? ' disabled title="Déjà créés"' : ''}><span class="gicon">splitscreen</span> Créer les demi-trimestres</button></div></div>`;
+  o.style.display = 'flex';
+  o.onclick = e => { if(e.target === o) o.style.display = 'none'; };
+  o.querySelectorAll('[data-pf]').forEach(b => b.onclick = async () => {
+    const c = b.dataset.pf;
+    if(c === 'x'){ o.style.display = 'none'; return; }
+    let rows;
+    if(c === 'ok'){
+      const titre = o.querySelector('#blPfT').value.trim(), du = o.querySelector('#blPfDu').value, au = o.querySelector('#blPfAu').value;
+      if(!titre){ niceAlert('Donnez un nom à la période.'); return; }
+      if(!du || !au || du > au){ niceAlert('Les dates ne vont pas : le début doit précéder la fin.'); return; }
+      rows = [{ titre, du, au }];
+    } else rows = demis.filter(d => !deja.has(d.titre));
+    b.disabled = true;
+    const { data, error } = await sb.from('bilan_periodes').insert(rows).select('id,titre,du,au');
+    if(error){ b.disabled = false; niceAlert('Période non ajoutée : ' + error.message); return; }
+    o.style.display = 'none';
+    await blChargerPeriodes(true);
+    const n = (data || [])[0];
+    rouvrir(c === 'ok' && n ? blPeriodes().find(x => x.k === 'U-' + n.id) : B.per);
+  });
+}
 
 /* ---------- Ouverture ---------- */
 // o : { classe, mode: 'complet' | 'devoirs', cible: élément (sinon fenêtre), periode: { k, t, du, au } }
@@ -49,6 +99,7 @@ async function blOuvrir(o){
     cible = document.getElementById('blFen');
   }
   if(!o.classe){ cible.innerHTML = '<p class="hint">Choisissez d\'abord une classe active.</p>'; return; }
+  try{ await blChargerPeriodes(); }catch(e){ blPerso = blPerso || []; }
   const per = o.periode || (blx && blx.classe === o.classe && blx.mode === o.mode ? blx.per : null) || blPeriodeCourante();
   cible.innerHTML = '<p class="hint">Préparation du bilan…</p>';
   try{ blx = await blCharger(o.classe, per, o.mode || 'complet'); }catch(e){ cible.innerHTML = `<p class="hint">Erreur : ${escapeHtml(e.message || String(e))}</p>`; return; }
@@ -203,7 +254,9 @@ function blRendre(){
   const groupes = complet ? [['auto', 'En autonomie'], ['devoir', 'Devoirs en ligne'], ['interro', 'Interrogations en ligne'], ['papier', 'Interrogations sur papier'], ['autre', 'Autres notes']].map(([g, t]) => [g, t, cols.filter(c => c.groupe === g).length]).filter(x => x[2]) : [];
   B.cible.innerHTML = `<div class="bl">
     <div class="bl-tete"><b class="cd-h"><span class="gicon">table_view</span> Bilan${complet ? '' : ' des devoirs'} · ${escapeHtml(B.nom)}</b>
-      <select id="blPer">${pers.map(p => `<option value="${p.k}"${p.k === B.per.k ? ' selected' : ''}>${p.t}</option>`).join('')}<option value="perso"${perso ? ' selected' : ''}>Dates choisies</option></select>
+      <div class="bl-pers" role="group" aria-label="Période du bilan">${pers.map(p => `<span class="bl-per${p.k === B.per.k ? ' on' : ''}${p.perso ? ' u' : ''}"><button type="button" data-per="${p.k}" title="Du ${new Date(p.du).toLocaleDateString('fr-FR')} au ${new Date(p.au).toLocaleDateString('fr-FR')}">${escapeHtml(p.t)}</button>${p.perso ? `<button type="button" class="bl-per-x" data-persuppr="${p.id}" title="Supprimer cette période" aria-label="Supprimer la période ${escapeHtml(p.t)}">×</button>` : ''}</span>`).join('')}
+        <span class="bl-per${perso ? ' on' : ''}"><button type="button" data-per="perso" title="Dates libres, sans les enregistrer">Dates choisies</button></span>
+        <button type="button" class="bl-per-plus" id="blPerAjout" title="Ajouter une période (demi-trimestre…)"><span class="gicon">add</span> Période</button></div>
       <label class="hint" style="margin:0;">du <input type="date" id="blDu" value="${B.per.du}"></label><label class="hint" style="margin:0;">au <input type="date" id="blAu" value="${B.per.au}"></label>
       <span style="flex:1"></span>
       ${complet ? '<button class="btn" style="background:#6B3FA0;" id="blIa"><span class="gicon">auto_awesome</span> Appréciations IA</button>' : ''}
@@ -211,7 +264,7 @@ function blRendre(){
       <button class="btn secondary" id="blCsv"><span class="gicon">download</span> CSV</button>
       <button class="btn secondary" id="blImp"><span class="gicon">print</span> Imprimer</button>
       ${B.fenetre ? '<button class="modal-close" onclick="document.getElementById(\'blOverlay\').style.display=\'none\'"><span class="gicon">close</span></button>' : ''}</div>
-    <p class="hint" style="margin:4px 0 8px;">${complet ? 'Travail en autonomie, devoirs, interrogations (en ligne et sur papier) et autres notes' : 'Devoirs publiés'} du ${new Date(B.per.du).toLocaleDateString('fr-FR')} au ${new Date(B.per.au).toLocaleDateString('fr-FR')}, archivés compris.${perso ? '' : ' Les dates de chaque période sont modifiables et mémorisées sur cet appareil.'}
+    <p class="hint" style="margin:4px 0 8px;">${complet ? 'Travail en autonomie, devoirs, interrogations (en ligne et sur papier) et autres notes' : 'Devoirs publiés'} du ${new Date(B.per.du).toLocaleDateString('fr-FR')} au ${new Date(B.per.au).toLocaleDateString('fr-FR')}, archivés compris.${perso ? '' : B.per.perso ? ' Les dates de cette période sont modifiables et enregistrées dans votre compte.' : ' Les dates de chaque période sont modifiables et mémorisées sur cet appareil.'}
       ${complet ? '<span class="bl-prive"><span class="gicon">lock</span> Les appréciations ne sont visibles que par vous ; l\'IA ne reçoit jamais les noms ni les prénoms.</span>' : 'Le bilan complet, avec les interrogations et les appréciations, est dans Mes classes › Bilan.'} <span id="blEtat"></span></p>
     ${cols.length ? `<div class="bl-table"><table><thead>${groupes.length > 1 ? `<tr class="bl-grp"><th></th>${groupes.map(([g, t, n]) => `<th colspan="${n}" class="g-${g}">${t}</th>`).join('')}<th colspan="${complet ? 6 : 4}"></th></tr>` : ''}
         <tr><th>Élève</th>${cols.map(col => `<th title="${escapeHtml(col.titre + (col.themes ? ' · ' + col.themes : ''))}"><span class="gicon">${col.icon}</span>${col.date ? `<small>${new Date(col.date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' })}</small>` : ''}<span class="bl-tit">${escapeHtml(col.court || col.titre)}</span>${blNotee(col) ? `<button type="button" class="bl-coef" data-coef="${col.id}" title="Coefficient de cette évaluation dans la moyenne">coef ${blNum(col.coef)}</button>` : ''}</th>`).join('')}
@@ -221,14 +274,27 @@ function blRendre(){
       <p class="hint bl-leg"><span class="bl-c ok">≥ 70 %</span> <span class="bl-c moyen">40 à 70 %</span> <span class="bl-c ko">&lt; 40 %</span> <span class="bl-c vide">—</span> pas fait · <span class="bl-c retard">encadré</span> en retard · Réussite : moyenne des pourcentages ; Moy. /20 : notes des interrogations et des devoirs notés, pondérées par leur coefficient (cliquez sur « coef » pour le changer)${complet ? ' ; Évol. : résultats de la fin de la période comparés au début' : ''}.</p>`
       : `<p class="hint">Rien sur cette période pour cette classe.</p>`}</div>`;
   const q = sel => B.cible.querySelector(sel);
-  const per = () => { const k = q('#blPer').value, du = q('#blDu').value, au = q('#blAu').value; if(!du || !au || du > au) return null;
+  const rouvrir = p => blOuvrir({ classe: B.classe, mode: B.mode, cible: B.fenetre ? null : B.cible, periode: p });
+  const per = () => { const k = perso ? 'perso' : B.per.k, du = q('#blDu').value, au = q('#blAu').value; if(!du || !au || du > au) return null;
     if(k === 'perso') return { k: `P-${du}_${au}`, t: 'Dates choisies', du, au };
     const p = blPeriodes().find(x => x.k === k); return Object.assign({}, p, { du, au }); };
-  q('#blPer').onchange = () => { const k = q('#blPer').value, p = blPeriodes().find(x => x.k === k);
-    if(p){ blOuvrir({ classe: B.classe, mode: B.mode, cible: B.fenetre ? null : B.cible, periode: p }); } };
-  const majDates = () => { const p = per(); if(!p) return;
-    if(!p.k.startsWith('P-')){ const o = blDates(); o[p.k] = { du: p.du, au: p.au }; try{ localStorage.setItem('blDates', JSON.stringify(o)); }catch(e){} }
-    blOuvrir({ classe: B.classe, mode: B.mode, cible: B.fenetre ? null : B.cible, periode: p }); };
+  B.cible.querySelectorAll('[data-per]').forEach(b => b.onclick = () => {
+    const k = b.dataset.per;
+    if(k === 'perso'){ if(!perso) rouvrir({ k: `P-${B.per.du}_${B.per.au}`, t: 'Dates choisies', du: B.per.du, au: B.per.au }); return; }
+    const p = blPeriodes().find(x => x.k === k); if(p && k !== B.per.k) rouvrir(p); });
+  B.cible.querySelectorAll('[data-persuppr]').forEach(b => b.onclick = async () => {
+    const p = (blPerso || []).find(x => x.id === b.dataset.persuppr); if(!p) return;
+    if(!(await niceConfirm(`Supprimer la période « ${p.t} » ? Les appréciations rédigées pour cette période ne seront plus affichées.`))) return;
+    const { error } = await sb.from('bilan_periodes').delete().eq('id', p.id);
+    if(error){ niceAlert('Suppression impossible : ' + error.message); return; }
+    blPerso = blPerso.filter(x => x.id !== p.id);
+    rouvrir(B.per.k === p.k ? blPeriodeCourante() : B.per); });
+  q('#blPerAjout').onclick = () => blAjouterPeriode(B, rouvrir);
+  const majDates = async () => { const p = per(); if(!p) return;
+    if(p.perso){ const { error } = await sb.from('bilan_periodes').update({ du: p.du, au: p.au }).eq('id', p.id); if(error){ niceAlert('Dates non enregistrées : ' + error.message); return; }
+      const x = blPerso.find(y => y.id === p.id); if(x){ x.du = p.du; x.au = p.au; } }
+    else if(!p.k.startsWith('P-')){ const o = blDates(); o[p.k] = { du: p.du, au: p.au }; try{ localStorage.setItem('blDates', JSON.stringify(o)); }catch(e){} }
+    rouvrir(p); };
   q('#blDu').onchange = majDates; q('#blAu').onchange = majDates;
   // Chaque tableau garde son état (un bilan ouvert depuis la page Devoirs ne change pas celui de Mes classes).
   B.cible.querySelectorAll('[data-appr]').forEach(t => {
@@ -406,6 +472,15 @@ function blImprimer(){
   st.textContent = `
     .bl-fen{max-width:1400px;width:97vw;max-height:92vh;overflow:auto;}
     .bl-tete{display:flex;gap:8px 10px;align-items:center;flex-wrap:wrap;}
+    .bl-pers{display:flex;flex-wrap:wrap;gap:6px;align-items:center;flex-basis:100%;order:1;margin:2px 0;}
+    .bl-tete > label, .bl-tete > span[style], .bl-tete > button, .bl-tete > .btn{order:2;}
+    .bl-per{display:inline-flex;align-items:center;border:1.5px solid rgba(28,43,57,.16);background:#fff;border-radius:999px;overflow:hidden;transition:.15s;}
+    .bl-per > button{border:0;background:none;font:700 .84rem 'Space Grotesk',sans-serif;color:#1F3A5C;padding:5px 13px;cursor:pointer;}
+    .bl-per:hover{border-color:#0C5BA0;} .bl-per.u{border-style:dashed;}
+    .bl-per.on{background:#0C5BA0;border-color:#0C5BA0;border-style:solid;} .bl-per.on > button{color:#fff;}
+    .bl-per > .bl-per-x{padding:5px 9px 5px 2px;font-size:1rem;line-height:1;color:#8A93A0;} .bl-per.on > .bl-per-x{color:rgba(255,255,255,.8);}
+    .bl-per-plus{display:inline-flex;align-items:center;gap:2px;border:1.5px dashed #1F7A4D;background:#F2FAF5;color:#1F7A4D;border-radius:999px;padding:4px 12px;font:700 .82rem 'Space Grotesk',sans-serif;cursor:pointer;}
+    .bl-per-plus .gicon{font-size:17px;}
     .bl-tete input[type=date]{padding:4px 6px;border-radius:8px;border:1px solid rgba(28,43,57,.2);}
     .bl-prive{color:#6B3FA0;font-weight:600;} .bl-prive .gicon{font-size:15px;vertical-align:middle;}
     .bl-table{overflow:auto;max-height:72vh;} .bl-table table{border-collapse:collapse;font-size:.82rem;}
