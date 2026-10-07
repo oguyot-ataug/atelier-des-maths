@@ -147,7 +147,7 @@ function cdOptionsBrancher(o, st){
   o.querySelectorAll('[data-mode]').forEach(b => b.onclick = () => { st.mode = b.dataset.mode; o.querySelectorAll('[data-mode]').forEach(x => x.classList.toggle('on', x === b)); });
   const j = o.querySelector('#cdOptJusqua'); if(j) j.onchange = () => { st.jusqua = j.value; };
   const d = o.querySelector('#cdOptDebut'); if(d) d.onchange = () => { st.debut = d.value; const b = o.querySelector('#cdPrepGo'); if(b) b.innerHTML = st.debut ? '<span class="gicon">event</span> Programmer la session' : '<span class="gicon">play_arrow</span> Ouvrir la session'; };
-  const m = o.querySelector('#cdOptMinuit'); if(m) m.onclick = () => { st.jusqua = cdLocal(cdMinuit(st.debut || null)); // minuit du jour de la session if(j) j.value = st.jusqua; };
+  const m = o.querySelector('#cdOptMinuit'); if(m) m.onclick = () => { st.jusqua = cdLocal(cdMinuit(st.debut || null)); /* minuit du jour de la session */ if(j) j.value = st.jusqua; };
 }
 async function cdCreer(titre, items, opts){
   const prog = opts && opts.debut && Date.parse(opts.debut) > Date.now();
