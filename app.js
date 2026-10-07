@@ -3343,6 +3343,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.997', date:'2026-10-07', items:[
+    "Manuel de 5e, 2e lot : Opérations sur les nombres relatifs (5 planches : addition, tableaux et carrés magiques, soustraction, sommes algébriques, problèmes), Calcul littéral (5 : écrire une expression, valeur d'une expression, tester une égalité, développer, réduire et factoriser), Équations (4 : notion et balance, x + b = c, ax = b et ax + b = c, mise en équation), Proportionnalité (5 : reconnaître, compléter un tableau, graphique avec points à placer, échelles et vitesses, problèmes), Pourcentages (4 : appliquer, exprimer une proportion, remises et hausses, problèmes), Fonctions (4 : lire un graphique, tableau de valeurs, formule, construire un graphique avec points à placer).",
+    "Exercices à choisir : chaque question a ses propres choix (fini les longues listes répétées sous chaque ligne).",
+  ] },
   { version:'2026-08-19.996', date:'2026-10-07', items:[
     "Manuel de 5e, 1er lot -- demandé : « Construis le manuel de 5e. Exercices variés dans chaque chapitre. Quantité équivalente au manuel de 6e. Même consignes générales. » Quatre chapitres : Opérations sur les nombres décimaux (5 planches : vocabulaire et priorités, parenthèses, division euclidienne, distributivité, calcul décimal), Divisibilité (4 : multiples et diviseurs, critères par 2, 5, 10, par 3, 9, 4, problèmes), Fractions (5 : quotient, égalité et simplification, comparaison, addition et soustraction, problèmes), Nombres relatifs (5 : signe et opposé, droite graduée, comparer et ranger, repère du plan, problèmes). Pages A4 pleines sur deux colonnes, du plus simple au plus difficile, exercices « Dans ton cahier ! » avec correction rédigée ; la plupart se font aussi à l'écran (cases, choix, points à placer sur la droite graduée et dans le repère).",
     "Exercices à l'écran : le pavé numérique a maintenant les parenthèses et le signe « : » (priorités opératoires) ; une réponse de calcul littéral (« 5x + 3 ») est acceptée avec ou sans espaces.",

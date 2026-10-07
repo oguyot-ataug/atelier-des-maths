@@ -5,6 +5,7 @@
 (() => {
 const B = n => plPointilles(n || 3), R = v => plRep(String(v));
 const ch = (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) + '</div>' });
+const chx = it => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t, , m]) => `${t} <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) + '</div>' }); // choix propres à chaque question
 const rel = v => String(+(+v).toFixed(3)).replace('-', '−').replace('.', ',');
 const rmp = (l, n) => ({ eleve: plListe(l.map(([t]) => t.replace('@', B(n || 3)))), corr: plListe(l.map(([t, r]) => t.replace('@', R(r)))) });
 const lt = '&lt;', gt = '&gt;', C = plCase();
@@ -61,7 +62,7 @@ PLANCHES['5e|Nombres relatifs'] = [
       { etoiles: 1, col: 1, consigne: 'Complète avec &lt; ou &gt;.',
         ...(() => { const l = [[-3, 2], [5, -8], [-1, -6], [-4, -2], [0, -0.5], [-7.5, -7]]; return { eleve: plListe(l.map(([a, b]) => `${rel(a)} ${C} ${rel(b)}`)), corr: plListe(l.map(([a, b]) => `${rel(a)} ${R(a < b ? lt : gt)} ${rel(b)}`)) }; })() },
       { etoiles: 1, col: 1, consigne: 'Entoure le plus grand nombre.',
-        ...ch([['−9 ou −2 :', '−2'], ['−15 ou 1 :', '1'], ['−3,4 ou −3,5 :', '−3,4'], ['−100 ou −99 :', '−99']], '−100 · −99 · −15 · −9 · −3,5 · −3,4 · −2 · 1') },
+        ...chx([['', '−2', '−9 · −2'], ['', '1', '−15 · 1'], ['', '−3,4', '−3,4 · −3,5'], ['', '−99', '−100 · −99']]) },
       { etoiles: 2, consigne: 'Range dans l\'ordre croissant : 3 ; −5 ; 0 ; −1,5 ; 7 ; −8 ; 2.',
         eleve: '<div style="text-align:center;line-height:2.4;">' + Array.from({ length: 7 }, () => B(2)).join(' &lt; ') + '</div>',
         corr: '<div style="text-align:center;line-height:2.4;">' + ['−8', '−5', '−1,5', '0', '2', '3', '7'].map(R).join(' &lt; ') + '</div>' },
@@ -89,7 +90,7 @@ PLANCHES['5e|Nombres relatifs'] = [
       { etoiles: 2, col: 1, consigne: 'Complète avec abscisse ou ordonnée.',
         ...ch([['Dans M(5 ; −2), le nombre 5 est l\'… de M :', 'abscisse'], ['Dans M(5 ; −2), le nombre −2 est l\'… de M :', 'ordonnée'], ['Un point sur l\'axe des abscisses a une … nulle :', 'ordonnée'], ['Un point sur l\'axe des ordonnées a une … nulle :', 'abscisse']], 'abscisse · ordonnée') },
       { etoiles: 2, col: 1, consigne: 'Dans quelle zone est le point ? Entoure.',
-        ...ch([['P(−3 ; 5) :', 'en haut à gauche'], ['Q(4 ; −1) :', 'en bas à droite'], ['S(−2 ; −6) :', 'en bas à gauche']], 'en haut à gauche · en haut à droite · en bas à gauche · en bas à droite') },
+        ...chx([['P(−3 ; 5) : en', 'haut à gauche', 'haut à gauche · haut à droite · bas à gauche'], ['Q(4 ; −1) : en', 'bas à droite', 'haut à droite · bas à gauche · bas à droite'], ['S(−2 ; −6) : en', 'bas à gauche', 'haut à gauche · bas à gauche · bas à droite']]) },
       { etoiles: 2, col: 1, consigne: 'On change le signe de l\'abscisse et de l\'ordonnée. Complète les coordonnées du nouveau point.',
         eleve: plListe(['M(3 ; −2) → M\'(' + B(1) + ' ; ' + B(1) + ')', 'N(−4 ; −1) → N\'(' + B(1) + ' ; ' + B(1) + ')', 'P(0 ; 5) → P\'(' + B(1) + ' ; ' + B(1) + ')']),
         corr: plListe(['M(3 ; −2) → M\'(' + R('−3') + ' ; ' + R('2') + ')', 'N(−4 ; −1) → N\'(' + R('4') + ' ; ' + R('1') + ')', 'P(0 ; 5) → P\'(' + R('0') + ' ; ' + R('−5') + ')']) },
@@ -106,7 +107,7 @@ PLANCHES['5e|Nombres relatifs'] = [
       { etoiles: 2, col: 1, consigne: 'Frise chronologique (une année 0 n\'existe pas, mais on l\'ignore ici).',
         ...rmp([['Nombre d\'années de −50 à 30 : @', 80], ['Jules César est né en −100 et mort en −44. Il a vécu @ ans environ.', 56], ['De −753 (fondation de Rome) à 2026 : @ ans', 2779]], 4) },
       { etoiles: 2, col: 1, consigne: 'Compte en banque : entoure le solde le plus faible.',
-        ...ch([['Lundi −35 € ou mardi −12 € :', 'lundi'], ['Mercredi 0 € ou jeudi −5 € :', 'jeudi'], ['Vendredi −100 € ou samedi 20 € :', 'vendredi']], 'lundi · mardi · mercredi · jeudi · vendredi · samedi') },
+        ...chx([['Lundi −35 € ou mardi −12 € :', 'lundi', 'lundi · mardi'], ['Mercredi 0 € ou jeudi −5 € :', 'jeudi', 'mercredi · jeudi'], ['Vendredi −100 € ou samedi 20 € :', 'vendredi', 'vendredi · samedi']]) },
       { etoiles: 2, col: 1, consigne: 'Complète le tableau des températures.',
         ...rmp([['Minimale −5 °C, maximale 3 °C : écart @ degrés', 8], ['Minimale −8 °C, écart 6 degrés : maximale @ °C', '−2'], ['Maximale 1 °C, écart 9 degrés : minimale @ °C', '−8'], ['Minimale −2,5 °C, maximale 4,5 °C : écart @ degrés', 7]], 2) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'À Moscou, il fait −18 °C ; à Paris, 25 degrés de plus ; à Madrid, 9 degrés de plus qu\'à Paris. Quelle température fait-il à Paris ? À Madrid ?',
