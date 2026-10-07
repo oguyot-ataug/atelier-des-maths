@@ -3343,6 +3343,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.999', date:'2026-10-07', items:[
+    "Manuel de 5e, 4e et dernier lot (géométrie) : Symétrie centrale (5 planches), Angles et parallélisme (5), Droites remarquables du triangle (4), Parallélogrammes (4), Parallélogrammes particuliers (4 : rectangle, losange, carré, reconnaître et justifier), Aires (4 : parallélogramme et triangle, disque, figures composées, unités et problèmes), Représentation de l'espace (4 : prismes et cylindres, perspective cavalière avec arêtes à tracer à l'écran, patrons, volumes). Les 20 chapitres de 5e ont maintenant leur manuel : 88 planches, 590 exercices dont 470 faisables à l'écran ou en session, et des exercices « Dans ton cahier ! » avec une correction rédigée."
+  ] },
   { version:'2026-08-19.998', date:'2026-10-07', items:[
     "Manuel de 5e, 3e lot : Statistiques (4 planches : effectifs et fréquences, diagrammes en barres à compléter à l'écran et circulaires, moyenne, interpréter des données), Probabilités (4 : vocabulaire et échelle de probabilité avec points à placer, calculer une probabilité, événement contraire, fréquences et choix d'un jeu), Pensée informatique et programmation (4 : variables, entrées et sorties ; programmes de calcul en blocs ; boucles avec le robot ; tracés de polygones au stylo). Les blocs de programme ont les couleurs de la page Programmation, à l'écran comme à l'impression.",
   ] },
