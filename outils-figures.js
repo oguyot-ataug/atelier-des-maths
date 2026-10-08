@@ -3380,6 +3380,7 @@ function reopenTree(data){
 function resetFigureState(){
   pushFigHistory();
   figState = {points:[], shapes:[], mode:(figState&&figState.mode)||'point', selected:[], refShape:null, nextLabel:0, lengthGroups:{}};
+  if(typeof figTraces!=='undefined') figTraces.clear();
   renderFigureSvg();
 }
 function clearFigure(){ resetFigureState(); }
@@ -4573,6 +4574,7 @@ async function editShapeMeasure(shape, measure){
   renderFigureSvg();
 }
 function onFigureMouseDown(evt){
+  if(evt.button===2) return; // clic droit : menu de la trace (onFigureContextMenu)
   if(figState.mode!=='deplacer') return;
   const svg=document.getElementById('figureSvg');
   const {x,y} = svgCoordsFromEvent(svg,evt);
@@ -5345,6 +5347,7 @@ function renderFigureSvg(){
     html+=`<line x1="${figState.refShape.p1.x}" y1="${figState.refShape.p1.y}" x2="${figState.refShape.p2.x}" y2="${figState.refShape.p2.y}" stroke="#E35D3A" stroke-width="4" stroke-opacity=".35"/>`;
   }
   figState.shapes.forEach(s=>{
+    const debutObjet = html.length; // pour la trace de l'objet (figTraceNoter)
     if(s.type==='segment'){
       html+=`<line x1="${s.p1.x}" y1="${s.p1.y}" x2="${s.p2.x}" y2="${s.p2.y}" ${shapeStrokeAttrs(s,'#1C1B2E')}/>`;
       if(s.lengthLabel){
@@ -5468,6 +5471,7 @@ function renderFigureSvg(){
       const lx = s.vertex.x+r*Math.cos(bis), ly = s.vertex.y+r*Math.sin(bis);
       html += `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" font-family="JetBrains Mono" font-size="9" fill="#5C5A78" text-anchor="middle">${s.deg}°</text>`;
     }
+    if(s.trace) figTraceNoter(s, html.slice(debutObjet));
   });
   /* Marqueur d'un point selon le nombre d'objets (segment/droite/demi-droite comme
      extrémité, angle/bissectrice comme sommet) auxquels il appartient :
@@ -5569,6 +5573,7 @@ function renderFigureSvg(){
     }
     }
     if(!figState.nomsMasques) html+=`<text x="${p.x+(p.labelDx??9)}" y="${p.y+(p.labelDy??-9)}" font-family="Space Grotesk" font-size="9" font-weight="700" fill="${sel?'#E35D3A':baseColor}">${p.label}</text>`;
+    if(p.trace) figTraceNoter(p, `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="1.6" fill="${baseColor}"/>`);
   });
   if(figInterPremier && figState.shapes.includes(figInterPremier)){
     const cv = figCurve(figInterPremier);
@@ -5584,8 +5589,76 @@ function renderFigureSvg(){
     if(pp.length>1) html+=`<polyline points="${pp.map(q=>q.x.toFixed(1)+','+q.y.toFixed(1)).join(' ')}" fill="none" stroke="#E35D3A" stroke-width="1.2" stroke-dasharray="4 3" pointer-events="none"/>`;
     pp.forEach((q,i)=>{ html+=`<circle cx="${q.x.toFixed(1)}" cy="${q.y.toFixed(1)}" r="${i===0 && pp.length>=3 ? 6 : 3.5}" fill="${i===0 && pp.length>=3 ? 'rgba(227,93,58,.18)' : 'none'}" stroke="#E35D3A" stroke-width="1.1" pointer-events="none"/>`; });
   }
-  svg.innerHTML = html;
+  svg.innerHTML = figTracesHtml() + html;
   if(figLiveActif()) figLivePlanifier();
+}
+/* TRACE D'UN OBJET -- demandé : « permettre dans la géométrie interactive d'activer la trace d'un
+   objet. Clic droit ? ». Clic droit (appui long sur tablette) sur un point ou un objet : « Activer la
+   trace ». Ensuite, quand on déplace la figure, l'objet laisse ses positions successives en plus pâle,
+   sous la figure (comme dans GeoGebra) : lieu d'un point, enveloppe d'une droite… Les traces ne sont
+   pas enregistrées avec la figure (seul le réglage « trace » l'est) ; elles s'effacent par le même
+   menu, ou avec la figure. */
+const figTraces = new Map(); // objet -> fragments SVG de ses positions successives
+function figTraceNoter(obj, frag){
+  frag = frag.replace(/<text[\s\S]*?<\/text>/g, '').replace(/<image[^>]*\/?>(<\/image>)?/g, '');
+  if(!frag) return;
+  const l = figTraces.get(obj) || [];
+  if(l[l.length-1] === frag) return;
+  l.push(frag); if(l.length > 800) l.shift();
+  figTraces.set(obj, l);
+}
+function figTracesHtml(){
+  let h = '';
+  figTraces.forEach((l, obj)=>{
+    const vivant = figState.points.includes(obj) || figState.shapes.includes(obj);
+    if(!vivant || !obj.trace){ figTraces.delete(obj); return; }
+    if(l.length > 1) h += l.slice(0, -1).join(''); // la position actuelle est déjà dessinée
+  });
+  return h ? `<g class="fig-traces" opacity=".38" pointer-events="none">${h}</g>` : '';
+}
+function figNomObjet(o){
+  if(figState.points.includes(o)) return 'le point ' + (o.label || '');
+  const n = q => (q && q.label) || '';
+  const t = { segment: `le segment [${n(o.p1)}${n(o.p2)}]`, droite: `la droite (${n(o.p1)}${n(o.p2)})`, 'demi-droite': `la demi-droite [${n(o.p1)}${n(o.p2)})`,
+    vecteur: `le vecteur ${n(o.p1)}${n(o.p2)}`, cercle: `le cercle de centre ${n(o.p1)}`, arc: 'l\'arc de cercle', 'arc-rayon': 'l\'arc de cercle',
+    perpendiculaire: 'la perpendiculaire', parallele: 'la parallèle', mediatrice: 'la médiatrice', bissectrice: 'la bissectrice', angle: 'l\'angle' }[o.type];
+  return t || 'cet objet';
+}
+function figMenuFermer(){ const m = document.getElementById('figMenuCtx'); if(m) m.remove(); }
+function onFigureContextMenu(evt){
+  evt.preventDefault();
+  figMenuFermer();
+  const svg = document.getElementById('figureSvg');
+  const {x,y} = svgCoordsFromEvent(svg, evt);
+  const p = findNearbyPoint(x,y);
+  const arc = !p && typeof findArcRayonHit==='function' ? findArcRayonHit(x,y) : null;
+  const obj = p || (arc && arc.shape) || findNearbyShape(x,y);
+  const ilYaDesTraces = [...figTraces.values()].some(l=>l.length > 1);
+  const items = [];
+  if(obj){
+    items.push(obj.trace ? ['trace-off', 'location_off', 'Désactiver la trace'] : ['trace-on', 'timeline', 'Activer la trace']);
+    if(figTraces.has(obj) && figTraces.get(obj).length > 1) items.push(['effacer', 'ink_eraser', 'Effacer ses traces']);
+  }
+  if(ilYaDesTraces) items.push(['tout', 'cleaning_services', 'Effacer toutes les traces']);
+  if(!items.length) return;
+  const m = document.createElement('div');
+  m.id = 'figMenuCtx';
+  m.innerHTML = (obj ? `<div class="fig-mc-t">${figNomObjet(obj)}</div>` : '') + items.map(([a, ic, t])=>`<button type="button" data-a="${a}"><span class="gicon">${ic}</span> ${t}</button>`).join('');
+  document.body.appendChild(m);
+  const w = m.offsetWidth, h = m.offsetHeight;
+  m.style.left = Math.min(evt.clientX, window.innerWidth - w - 8) + 'px';
+  m.style.top = Math.min(evt.clientY, window.innerHeight - h - 8) + 'px';
+  m.onclick = e => {
+    const b = e.target.closest('[data-a]'); if(!b) return;
+    const a = b.dataset.a;
+    if(a==='trace-on'){ obj.trace = true; figTraces.delete(obj); const hint = document.getElementById('figureHint'); if(hint) hint.textContent = 'Trace activée : déplacez la figure (outil Déplacer), ' + figNomObjet(obj) + ' laisse sa trace.'; }
+    else if(a==='trace-off'){ delete obj.trace; figTraces.delete(obj); }
+    else if(a==='effacer'){ figTraces.delete(obj); }
+    else if(a==='tout'){ figTraces.clear(); }
+    figMenuFermer();
+    renderFigureSvg();
+  };
+  setTimeout(()=>{ document.addEventListener('pointerdown', function f(e){ if(!m.contains(e.target)){ figMenuFermer(); document.removeEventListener('pointerdown', f, true); } }, true); }, 0);
 }
 
 /* ---- construction à partir d'un énoncé (mini-langage reconnu) ---- */
@@ -5746,6 +5819,7 @@ function reopenFigure(data){
     const svg = document.getElementById('figureSvg');
     if(!svg) return;
     svg.addEventListener('mousedown', onFigureMouseDown);
+    svg.addEventListener('contextmenu', onFigureContextMenu);
     svg.addEventListener('dblclick', onFigureDblClick);
     window.addEventListener('mousemove', onFigureMouseMove);
     window.addEventListener('mouseup', onFigureMouseUp);

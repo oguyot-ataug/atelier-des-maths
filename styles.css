@@ -1958,3 +1958,11 @@ select:not([multiple]):not([size]){
 :where(input[type=date], input[type=time], input[type=datetime-local], input[type=month], input[type=week]):hover{ border-color:var(--accent,#0C5BA0); }
 :where(input[type=date], input[type=time], input[type=datetime-local], input[type=month], input[type=week]):focus{ outline:none; border-color:var(--accent,#0C5BA0); box-shadow:0 0 0 3px rgba(12,91,160,.18); }
 :where(input[type=date], input[type=time], input[type=datetime-local])::-webkit-calendar-picker-indicator{ cursor:pointer; opacity:.7; }
+
+/* Géométrie interactive : menu du clic droit (trace d'un objet, outils-figures.js). */
+#figMenuCtx{position:fixed;z-index:10050;background:#fff;border:1px solid rgba(28,43,57,.15);border-radius:10px;box-shadow:0 10px 28px rgba(28,43,57,.2);padding:4px;min-width:200px;font-size:.9rem;}
+#figMenuCtx .fig-mc-t{padding:6px 10px 4px;font:700 .78rem 'Space Grotesk',sans-serif;color:var(--ink-soft,#5B6472);}
+#figMenuCtx .fig-mc-t::first-letter{text-transform:uppercase;}
+#figMenuCtx button{display:flex;align-items:center;gap:8px;width:100%;border:0;background:none;border-radius:7px;padding:7px 10px;font:inherit;color:var(--ink,#1C2B39);cursor:pointer;text-align:left;}
+#figMenuCtx button:hover{background:#EEF4FB;}
+#figMenuCtx .gicon{font-size:18px;color:var(--accent-blue,#0C5BA0);}
