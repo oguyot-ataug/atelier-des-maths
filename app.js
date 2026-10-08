@@ -3371,6 +3371,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1020', date:'2026-10-08', items:[
+    "Mentions légales et CGV : nouveau numéro de téléphone (07 81 93 08 92, celui déclaré à l'INPI), à la place de l'ancien -- demandé : « Mets le 07 81 93 08 92 sur le site à la place de l'ancien numéro »."
+  ] },
   { version:'2026-08-19.1019', date:'2026-10-08', items:[
     "Exercices « Entoure » / « Barre » à l'écran : chaque nombre est maintenant marqué après vérification -- signalé (copie d'Héloïse, « Entoure les multiples de 6 ») : 40 entouré en trop restait vert comme les bonnes réponses, seul un cadre rouge autour de la grille signalait une erreur, sans dire laquelle. Désormais : entouré juste en vert, entouré à tort en rouge (l'élève voit lequel corriger) ; dans la vue professeur d'une session, les réponses oubliées apparaissent aussi, en pointillés orange, avec une petite légende. Avant vérification, un nombre entouré est en bleu foncé (et non plus en vert, qui laissait croire qu'il était juste)."
   ] },
