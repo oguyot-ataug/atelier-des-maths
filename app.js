@@ -3371,6 +3371,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1028', date:'2026-10-08', items:[
+    "L'Atelier du Prof (adp.latelieraugmente.fr), étapes 0 et 1 -- demandé : « Mon but sur l'atelier des profs est de mettre les outils adaptés à toute matière confondues. Les quizz, les interros, les corrections, les sessions, les cahiers... ». C'est le même site (même code, mêmes comptes, même base) : ouvert à cette adresse, il prend le nom, le logo et le pied de page de L'Atelier du Prof, et se présente sans les contenus de maths. Masqués : niveaux et chapitres, menu « L'Atelier » (automatismes, Objectif Nombre, convertisseur, géométrie), Ma progression, offre Famille, « Créer une évaluation » (à partir des chapitres) ; dans les sessions, les parties de cours, le manuel, la programmation et les figures ; dans la correction et le cahier, les outils de maths (figures, instruments, opérations posées, axe gradué, fractions, cubes, probabilités) ; dans les devoirs, tout sauf « Fichier à rendre ». Un accueil à lui : présentation et connexion pour un visiteur, accès direct aux outils pour un professeur (interrogations, sessions, correction et cahier, devoirs, classes, outils de classe, simulateur), et pour un élève (son travail, le cahier, ses résultats). Sur maths.latelieraugmente.fr, rien ne change (adp.js ne fait rien). Pour l'essayer depuis une autre adresse : ?adp=1."
+  ] },
   { version:'2026-08-19.1027', date:'2026-10-08', items:[
     "Pied de page : lien « Pour toutes les matières : L'Atelier du Prof » vers adp.latelieraugmente.fr, qui réunit les outils du professeur (quiz, interrogations, corrections, séances, cahier) pour toutes les matières."
   ] },

@@ -2012,3 +2012,34 @@ select:not([multiple]):not([size]){
 .fig-liste-act .btn{font-size:.78rem;padding:4px 10px;}
 .fig-liste-act .fig-liste-eff{color:#A83C1F;}
 @media (max-width:520px){ .fig-liste-l{grid-template-columns:90px 1fr;} .fig-liste-ouvrir{width:90px;height:58px;} }
+
+/* ===== L'Atelier du Prof (adp.latelieraugmente.fr, adp.js) : le même site sans les contenus de maths ===== */
+.mode-adp #navLinks [data-nav="niveau"], .mode-adp #navDropdownEntrainer, .mode-adp #navLinks [data-nav="progression"],
+.mode-adp #navFamille, .mode-adp #navLinks [data-nav="evaluation"],
+.mode-adp #view-home > :not(#adpAccueil):not(#profHomeDigest),
+.mode-adp .cd-ajout[onclick^="cxProfAjouterCours"],
+.mode-adp .cx-onglets button[data-o="man"], .mode-adp .cx-onglets button[data-o="prog"], .mode-adp .cx-onglets button[data-o="fig"],
+.mode-adp .devoir-type-btn:not([onclick*="'fichier'"]),
+.mode-adp .tool-icon-btn[onclick*="openFigureTool"], .mode-adp .tool-icon-btn.outil-figdyn, .mode-adp .tool-icon-btn.outil-instruments,
+.mode-adp .tool-icon-btn[onclick*="openDivisionTool"], .mode-adp .tool-icon-btn[onclick*="openAdditionTool"],
+.mode-adp .tool-icon-btn[onclick*="openAxeTool"], .mode-adp .tool-icon-btn[onclick*="openDisqueTool"],
+.mode-adp .tool-icon-btn[onclick*="openCubesTool"], .mode-adp .tool-icon-btn[onclick*="openUrnTool"],
+.mode-adp .tool-icon-btn[onclick*="openGeoAnimTool"]{ display:none !important; }
+.mode-adp .brand .adp-nom{ font:800 1.12rem Montserrat,'Space Grotesk',sans-serif; color:#173F70; letter-spacing:-.01em; white-space:nowrap; }
+.mode-adp .brand .adp-nom b{ color:#F29A1F; font-weight:800; }
+#adpAccueil{ padding:8px 0 24px; }
+.adp-hero{ display:grid; grid-template-columns:minmax(0,1fr) 220px; gap:28px; align-items:center; background:#FBFAF5; border:1px solid rgba(23,63,112,.1); border-radius:18px; padding:28px 32px; }
+.adp-hero h1{ font:800 clamp(1.7rem,3.4vw,2.5rem)/1.15 Montserrat,'Space Grotesk',sans-serif; color:#173F70; margin:6px 0 12px; }
+.adp-hero h1 em{ font-style:normal; color:#F29A1F; }
+.adp-hero p{ color:var(--ink-soft); margin:0 0 18px; max-width:62ch; }
+.adp-hero img{ width:100%; max-width:220px; justify-self:center; }
+.adp-devise{ font:700 .74rem Montserrat,'Space Grotesk',sans-serif; letter-spacing:.08em; text-transform:uppercase; color:#C9700A; background:rgba(242,154,31,.13); padding:4px 11px; border-radius:999px; }
+.adp-actions{ display:flex; gap:10px; flex-wrap:wrap; }
+.adp-tuiles{ display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:14px; margin-top:20px; }
+.adp-tuile{ display:flex; flex-direction:column; gap:6px; text-align:left; background:#fff; border:1.5px solid rgba(23,63,112,.12); border-radius:14px; padding:16px 18px; cursor:pointer; font:inherit; color:var(--ink); box-shadow:0 2px 8px rgba(23,63,112,.05); }
+.adp-tuile:hover{ border-color:#1F5FA8; transform:translateY(-1px); }
+.adp-tuile .gicon{ font-size:26px; color:#1F5FA8; }
+.adp-tuile b{ font:700 1rem Montserrat,'Space Grotesk',sans-serif; color:#173F70; }
+.adp-tuile small{ color:var(--ink-soft); font-size:.85rem; line-height:1.45; }
+.adp-maths{ margin-top:18px; font-size:.9rem; color:var(--ink-soft); }
+@media (max-width:700px){ .adp-hero{ grid-template-columns:1fr; padding:20px; } .adp-hero img{ max-width:150px; grid-row:1; } }
