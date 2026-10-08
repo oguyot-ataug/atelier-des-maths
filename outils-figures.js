@@ -1062,6 +1062,7 @@ function closeFigureTool(){
   figQuitterSplit();
   if(vueInstr && typeof showView==='function') showView(vueInstr); // écran partagé ouvert depuis la correction : on y revient
   figInstrMode = false; document.body.classList.remove('fig-instr');
+  figAnimArreter();
   // Session COURS : la page entière est en plein écran (cours-direct.js) -- on y reste.
   if(document.fullscreenElement && !(document.fullscreenElement === document.documentElement && document.body.classList.contains('cd-eleve-ouvert'))) (document.exitFullscreen || document.webkitExitFullscreen || function(){}).call(document);
   document.getElementById('toolsModalOverlay').style.display='none'; document.getElementById('figurePanel').style.display='none';
@@ -3388,6 +3389,7 @@ function resetFigureState(){
   pushFigHistory();
   figState = {points:[], shapes:[], mode:(figState&&figState.mode)||'point', selected:[], refShape:null, nextLabel:0, lengthGroups:{}};
   if(typeof figTraces!=='undefined') figTraces.clear();
+  if(typeof figAnim!=='undefined'){ figAnim.pts.clear(); if(figAnim.raf){ cancelAnimationFrame(figAnim.raf); figAnim.raf = null; } }
   renderFigureSvg();
 }
 function clearFigure(){ resetFigureState(); }
@@ -5630,7 +5632,7 @@ function renderFigureSvg(){
     pp.forEach((q,i)=>{ html+=`<circle cx="${q.x.toFixed(1)}" cy="${q.y.toFixed(1)}" r="${i===0 && pp.length>=3 ? 6 : 3.5}" fill="${i===0 && pp.length>=3 ? 'rgba(227,93,58,.18)' : 'none'}" stroke="#E35D3A" stroke-width="1.1" pointer-events="none"/>`; });
   }
   svg.innerHTML = figTracesHtml() + html;
-  if(figLiveActif()) figLivePlanifier();
+  if(figLiveActif() && !figAnim.pts.size) figLivePlanifier(); // pas de reconstruction aux instruments à chaque image d'une animation
 }
 /* TRACE D'UN OBJET -- demandé : « permettre dans la géométrie interactive d'activer la trace d'un
    objet. Clic droit ? ». Clic droit (appui long sur tablette) sur un point ou un objet : « Activer la
@@ -5669,6 +5671,58 @@ function figMenuFermer(){ const m = document.getElementById('figMenuCtx'); if(m)
    Supprimer, trace, renommer, aspect, couleur ? ». Point : renommer, trace, afficher/masquer le nom,
    aspect (croix, point, rond), couleur, supprimer. Autre objet : trace, trait (fin/épais,
    plein/pointillé), couleur, longueur ou rayon, supprimer. Sans objet sous le clic : effacer les traces. */
+/* ANIMATION D'UN POINT -- demandé : « un bouton animer (clic droit objet) qui permet par exemple de
+   faire tourner un point sur un cercle ou autre ». Un point posé sur un cercle tourne ; un point posé
+   sur un segment va et vient d'une extrémité à l'autre (sur une droite ou une demi-droite, il va et
+   vient un peu au-delà des deux points qui la définissent) ; l'extrémité d'un segment de longueur
+   donnée tourne autour de l'autre extrémité. Tout ce qui dépend du point suit, image par image ; avec
+   la trace activée, on voit le lieu se dessiner. Plusieurs points peuvent être animés en même temps. */
+const figAnim = { pts: new Map(), raf: null, last: 0 };
+const FIG_VITESSES = [['0.5', 'Lente'], ['1', 'Normale'], ['2', 'Rapide']];
+function figAnimable(p){
+  if(!p || !figState.points.includes(p)) return null;
+  if(p.def && p.def.type==='point-sur-cercle') return 'cercle';
+  if(p.def && p.def.type==='point-sur-droite') return 'droite';
+  if(!p.def && figState.shapes.some(s=>s.type==='segment' && s.lengthCm && s.p2===p)) return 'rayon';
+  return null;
+}
+function figAnimEnCours(){ return figAnim.pts.size > 0; }
+function figAnimDemarrer(p){
+  figAnim.pts.set(p, { sens: 1, vitesse: (figAnim.pts.get(p) || {}).vitesse || 1 });
+  if(!figAnim.raf){ figAnim.last = performance.now(); figAnim.raf = requestAnimationFrame(figAnimImage); }
+}
+function figAnimArreter(p){
+  if(p) figAnim.pts.delete(p); else figAnim.pts.clear();
+  if(!figAnim.pts.size && figAnim.raf){ cancelAnimationFrame(figAnim.raf); figAnim.raf = null; if(typeof renderFigureSvg==='function') renderFigureSvg(); }
+}
+function figAnimImage(now){
+  const dt = Math.min(0.05, (now - figAnim.last) / 1000); figAnim.last = now;
+  const svg = document.getElementById('figureSvg');
+  if(!svg || !svg.isConnected || !svg.getClientRects().length){ figAnimArreter(); return; } // outil fermé
+  figAnim.pts.forEach((a, p)=>{
+    const genre = figAnimable(p);
+    if(!genre){ figAnim.pts.delete(p); return; }
+    if(genre==='cercle'){
+      p.def.offset += a.sens * a.vitesse * 0.9 * dt; // ~ un tour en 7 s à vitesse normale
+    } else if(genre==='droite'){
+      const {p1, p2} = lineShapeEndpoints(p.def.shape);
+      const len = Math.hypot(p2.x-p1.x, p2.y-p1.y) || 1;
+      const [tMin, tMax] = p.def.shape.type==='segment' ? [0, 1] : p.def.shape.type==='demi-droite' ? [0, 2.5] : [-1, 2];
+      let t = p.def.t + a.sens * a.vitesse * 70 * dt / len; // 70 px/s
+      if(t > tMax){ t = tMax; a.sens = -1; } else if(t < tMin){ t = tMin; a.sens = 1; }
+      p.def.t = t;
+      p.x = p1.x + t*(p2.x-p1.x); p.y = p1.y + t*(p2.y-p1.y);
+    } else if(genre==='rayon'){
+      const seg = figState.shapes.find(s=>s.type==='segment' && s.lengthCm && s.p2===p), c = seg.p1;
+      const r = seg.lengthCm * SCALE_PX_PER_CM, ang = Math.atan2(p.y-c.y, p.x-c.x) + a.sens * a.vitesse * 0.9 * dt;
+      p.x = c.x + r*Math.cos(ang); p.y = c.y + r*Math.sin(ang);
+    }
+  });
+  if(!figAnim.pts.size){ figAnim.raf = null; renderFigureSvg(); return; }
+  recomputeDependents();
+  renderFigureSvg();
+  figAnim.raf = requestAnimationFrame(figAnimImage);
+}
 const FIG_COULEURS = [['#1C1B2E','Noir'],['#7A8A98','Gris'],['#D93025','Rouge'],['#0D5BA3','Bleu'],['#1F7A4D','Vert'],['#E35D3A','Orange'],['#8E44AD','Violet']];
 function onFigureContextMenu(evt){
   evt.preventDefault();
@@ -5679,14 +5733,22 @@ function onFigureContextMenu(evt){
   const arc = !p && typeof findArcRayonHit==='function' ? findArcRayonHit(x,y) : null;
   const obj = p || (arc && arc.shape) || findNearbyShape(x,y);
   const ilYaDesTraces = [...figTraces.values()].some(l=>l.length > 1);
-  if(!obj && !ilYaDesTraces) return;
+  if(!obj && !ilYaDesTraces && !figAnim.pts.size) return;
   const estPoint = !!p, mes = obj && !estPoint && typeof findEditableMeasure==='function' ? findEditableMeasure(obj) : null;
   const bouton = (a, ic, t, cl) => `<button type="button" data-a="${a}"${cl ? ` class="${cl}"` : ''}><span class="gicon">${ic}</span> ${t}</button>`;
   const choix = (a, l, cur) => `<div class="fig-mc-choix">${l.map(([v, t])=>`<button type="button" data-a="${a}" data-v="${v}" class="${cur===v ? 'on' : ''}">${t}</button>`).join('')}</div>`;
   let h = '';
   if(obj){
     h += `<div class="fig-mc-t">${figNomObjet(obj)}</div>`;
-    if(estPoint) h += bouton('renommer', 'edit', 'Renommer');
+    if(estPoint){
+      const genre = figAnimable(obj), anime = figAnim.pts.has(obj);
+      if(genre){
+        const centre = genre==='rayon' ? figState.shapes.find(s=>s.type==='segment' && s.lengthCm && s.p2===obj).p1.label : '';
+        h += anime ? bouton('anim-off', 'stop_circle', 'Arrêter l\'animation') : bouton('anim-on', 'play_circle', genre==='cercle' ? 'Animer : tourner sur le cercle' : genre==='rayon' ? 'Animer : tourner autour de ' + centre : 'Animer : aller-retour sur la ligne', 'fig-mc-anim');
+        if(anime) h += `<div class="fig-mc-choix">${FIG_VITESSES.map(([v, t])=>`<button type="button" data-a="vitesse" data-v="${v}" class="${String(figAnim.pts.get(obj).vitesse)===v ? 'on' : ''}">${t}</button>`).join('')}<button type="button" data-a="sens" title="Changer de sens">⇄</button></div>`;
+      } else h += `<div class="fig-mc-note"><span class="gicon">info</span> Pour l'animer, placez le point sur un cercle, un segment ou une droite (outil Point, en cliquant sur l'objet).</div>`;
+      h += bouton('renommer', 'edit', 'Renommer');
+    }
     h += obj.trace ? bouton('trace-off', 'location_off', 'Désactiver la trace') : bouton('trace-on', 'timeline', 'Activer la trace');
     if(figTraces.has(obj) && figTraces.get(obj).length > 1) h += bouton('effacer', 'ink_eraser', 'Effacer ses traces');
     if(estPoint){
@@ -5701,6 +5763,7 @@ function onFigureContextMenu(evt){
     h += bouton('suppr', 'delete', 'Supprimer' + (estPoint ? ' le point' : '') + ' (et ce qui en dépend)', 'fig-mc-suppr');
   }
   if(ilYaDesTraces) h += bouton('tout', 'cleaning_services', 'Effacer toutes les traces');
+  if(figAnim.pts.size && !(obj && figAnim.pts.has(obj) && figAnim.pts.size===1)) h += bouton('anim-tout', 'stop_circle', 'Arrêter toutes les animations');
   const m = document.createElement('div');
   m.id = 'figMenuCtx';
   m.innerHTML = h;
@@ -5712,9 +5775,14 @@ function onFigureContextMenu(evt){
     const b = e.target.closest('[data-a]'); if(!b) return;
     const a = b.dataset.a, v = b.dataset.v;
     if(a==='renommer'){ figMenuFermer(); await figRenommerPoint(obj); return; }
-    if(a==='suppr'){ figMenuFermer(); figTraces.delete(obj); deleteObjectWithDependents(obj); return; }
+    if(a==='suppr'){ figMenuFermer(); figTraces.delete(obj); figAnimArreter(obj); deleteObjectWithDependents(obj); return; }
     if(a==='mesure'){ figMenuFermer(); editShapeMeasure(obj, mes); return; }
     if(a==='tout'){ figTraces.clear(); figMenuFermer(); renderFigureSvg(); return; }
+    if(a==='anim-on'){ figAnimDemarrer(obj); figMenuFermer(); const hint = document.getElementById('figureHint'); if(hint) hint.textContent = 'Animation en cours : clic droit sur le point pour l\'arrêter, changer de vitesse ou de sens. Activez la trace d\'un objet pour voir le chemin qu\'il parcourt.'; return; }
+    if(a==='anim-off'){ figAnimArreter(obj); figMenuFermer(); return; }
+    if(a==='anim-tout'){ figAnimArreter(); figMenuFermer(); return; }
+    if(a==='vitesse'){ const st = figAnim.pts.get(obj); if(st) st.vitesse = Number(v); m.querySelectorAll('[data-a="vitesse"]').forEach(x=>x.classList.toggle('on', x===b)); return; }
+    if(a==='sens'){ const st = figAnim.pts.get(obj); if(st) st.sens = -st.sens; return; }
     if(a==='effacer'){ figTraces.delete(obj); figMenuFermer(); renderFigureSvg(); return; }
     pushFigHistory();
     if(a==='trace-on'){ obj.trace = true; figTraces.delete(obj); const hint = document.getElementById('figureHint'); if(hint) hint.textContent = 'Trace activée : déplacez la figure (outil Déplacer), ' + figNomObjet(obj) + ' laisse sa trace.'; figMenuFermer(); }

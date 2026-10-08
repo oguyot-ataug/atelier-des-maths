@@ -1981,5 +1981,8 @@ select:not([multiple]):not([size]){
 #figMenuCtx .fig-mc-couleurs button{width:22px;height:22px;padding:0;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px rgba(28,43,57,.25);justify-content:center;}
 #figMenuCtx .fig-mc-couleurs button.on{box-shadow:0 0 0 2.5px var(--accent-blue,#0C5BA0);}
 #figMenuCtx .fig-mc-couleurs .fig-mc-auto{background:#fff;font-size:.7rem;font-weight:800;color:var(--ink-soft,#5B6472);}
+#figMenuCtx .fig-mc-anim{font-weight:700;} #figMenuCtx .fig-mc-anim .gicon{color:#1F7A4D;}
+#figMenuCtx .fig-mc-note{display:flex;gap:6px;align-items:flex-start;padding:6px 10px;font-size:.78rem;color:var(--ink-soft,#5B6472);max-width:260px;line-height:1.35;}
+#figMenuCtx .fig-mc-note .gicon{font-size:16px;color:var(--ink-soft,#5B6472);}
 #figMenuCtx .fig-mc-suppr{color:#C0392B;border-top:1px solid rgba(28,43,57,.08);border-radius:0 0 7px 7px;margin-top:4px;}
 #figMenuCtx .fig-mc-suppr .gicon{color:#C0392B;}
