@@ -297,6 +297,11 @@ function cdProfNb(k){ // pastille « nombre d'élèves sur cet élément » (pr�
   const qui = cdP.eleves.filter(e => cdP.vues.get(e.id) === k);
   return qui.length ? `<span class="cd-nb-el" title="${cdEsc(qui.map(e => e.prenom || e.label).join(', '))}"><span class="gicon">person</span>${qui.length}</span>` : '';
 }
+function cdProfOuCourt(id){ // vignette d'un exercice : « → 21 », titre complet au survol
+  if(!cdP || !cdP.vues || !cdP.vues.has(id)) return '';
+  const k = cdP.vues.get(id), it = cdP.items[k] || {}, inf = cdP.vuesInfo && cdP.vuesInfo.get(id);
+  return `<span class="cd-ou-c" title="Est sur : ${cdEsc((k + 1) + '. ' + (it.titre || '') + (inf && inf.travail ? ' (d\'après son dernier travail enregistré)' : ''))}">→ ${k + 1}</span>`;
+}
 function cdProfOu(id){ // « sur 3. Titre » pour la liste de la classe et les vignettes, en mode libre
   if(!cdP || cdP.etat.mode !== 'libre' || !cdP.vues || !cdP.vues.has(id)) return '';
   const k = cdP.vues.get(id), it = cdP.items[k] || {};
@@ -463,7 +468,7 @@ async function cdEleveOuvrir(id){
     .on('broadcast', { event: 'mot' }, ({ payload }) => { if(typeof cxEleveMot === 'function') cxEleveMot(payload); })
     .subscribe(s => { if(s === 'SUBSCRIBED'){ try{ cdE.ch.send({ type: 'broadcast', event: 'ici', payload: { e: currentUser.id, k: cdE.vue } }); }catch(e){} } });
   // Toutes les 20 s : présence, et l'élément affiché (pour un professeur qui vient de rouvrir sa télécommande).
-  cdE.timer = setInterval(() => { if(cdE){ sb.rpc('cours_direct_signal', { p_id: cdE.id, p_dehors: cdE.dehors }); cdEleveSignalerVue(); } }, 20000);
+  cdE.timer = setInterval(() => { if(cdE){ cdSignal(cdE.dehors); cdEleveSignalerVue(); } }, 20000);
   document.addEventListener('visibilitychange', cdSurVisibilite);
   window.addEventListener('blur', cdSurBlur);
   window.addEventListener('focus', cdSurRetour);
@@ -561,6 +566,13 @@ async function cdEleveElement(k){
   cdE.cache.set(k, data); cdE.d.items[k] = data;
   if(cdE.vue === k) cdEleveRendre();
 }
+// Présence et sorties enregistrées en base. La requête Supabase ne part qu'une fois « attendue » (then) : appelée
+// sans, elle n'était jamais envoyée -- signalé : la pastille jaune « plus de nouvelles » en pleine séance, alors que
+// les élèves étaient connectés (seule l'entrée dans la session était enregistrée).
+function cdSignal(dehors){
+  if(!cdE) return;
+  sb.rpc('cours_direct_signal', { p_id: cdE.id, p_dehors: !!dehors }).then(() => {}, () => {});
+}
 function cdEleveSignalerVue(){
   if(!cdE || !cdE.ch || !currentUser) return;
   cdE.vueSignalee = cdE.vue;
@@ -581,7 +593,7 @@ function cdEleveFin(){
 function cdSignaler(dehors, motif){
   if(!cdE || cdE.dehors === dehors) return;
   cdE.dehors = dehors;
-  sb.rpc('cours_direct_signal', { p_id: cdE.id, p_dehors: dehors });
+  cdSignal(dehors);
   try{ cdE.ch.send({ type: 'broadcast', event: 'sortie', payload: { e: currentUser.id, dehors, motif } }); }catch(e){}
   if(dehors){ cdQuitterTableau(); if(typeof cxQuitterProg === 'function') cxQuitterProg(); cdEleveRendre(); }
 }
@@ -593,7 +605,7 @@ async function cdEleveRevenir(){
   if(!cdE) return;
   cdPleinEcran();
   cdE.dehors = false;
-  sb.rpc('cours_direct_signal', { p_id: cdE.id, p_dehors: false });
+  cdSignal(false);
   try{ cdE.ch.send({ type: 'broadcast', event: 'sortie', payload: { e: currentUser.id, dehors: false } }); }catch(e){}
   cdE.d = null; // recharge et retrouve le direct (construction comprise)
   await cdEleveCharger();
