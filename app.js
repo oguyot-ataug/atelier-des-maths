@@ -3381,6 +3381,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1034', date:'2026-10-08', items:[
+    "Un cahier par classe et par professeur -- demandé : « Il faut un cahier par classe et par prof. Un cahier ne peut pas mélanger plusieurs matières comme un cahier d'élève. » Chaque entrée du cahier porte désormais son auteur (rempli par la base) et sa matière (« Mathématiques » sur L'Atelier des Maths, la matière indiquée sur L'Atelier du Prof). Un professeur ne voit, ne modifie et ne retrouve que ses entrées et ses brouillons (Correction, cahier, « Ajouter un document » des sessions) ; la base l'empêche de modifier ou retirer celles d'un collègue. Un élève qui a plusieurs professeurs choisit son cahier par des onglets de matière en haut du cahier (cahier de maths par défaut sur L'Atelier des Maths, dernier choix retenu pour chaque classe). « Voir les corrections des collègues » reste disponible. Les 263 entrées existantes ont été attribuées au professeur de leur classe."
+  ] },
   { version:'2026-08-19.1033', date:'2026-10-08', items:[
     "Ventes fermées jusqu'au 1er décembre 2026 -- demandé : « pour l'instant je ne vends rien tant que ce n'est pas nickel. On peut ajouter une date, genre dispo à la vente à partir de… décembre 2026. Et mettre en démo pour le moment ». Les offres et les prix restent affichés et l'essai gratuit reste possible, mais les boutons de paiement (offres Professeur et offre Famille) indiquent « En vente dès le 1er décembre 2026 » et n'ouvrent plus le paiement : « Les offres seront en vente à partir du 1er décembre 2026. D'ici là, le site est en démonstration : essayez-le gratuitement. » La page Tarifs l'annonce sous son titre. L'administrateur peut toujours payer, pour tester. L'ouverture se fait toute seule à la date (constante VENTE_OUVERTURE dans app.js)."
   ] },
