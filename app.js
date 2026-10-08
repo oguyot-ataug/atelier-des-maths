@@ -6884,7 +6884,46 @@ let cahierShowAll = false;
 let cahierDatesList = [];           // [{date, count}] -- squelette léger de l'accordéon
 let cahierLoadedDates = new Set();  // dates dont le contenu complet est déjà dans `cahier`
 let cahierEditableMode = false;     // mémorisé pour le rendu différé d'un jour déplié
-const CAHIER_COLS_LEGERES = 'id,class_id,niveau,chapitre,exo,titre,date,raw,html,figure,created_at,ordre,modalite';
+const CAHIER_COLS_LEGERES = 'id,class_id,niveau,chapitre,exo,titre,date,raw,html,figure,created_at,ordre,modalite,teacher_id,matiere';
+/* Un cahier par classe ET par professeur -- demandé : « Il faut un cahier par classe et par prof. Un cahier ne
+   peut pas mélanger plusieurs matières comme un cahier d'élève. » Chaque entrée porte son auteur (teacher_id,
+   rempli par la base) et sa matière. Le professeur ne voit et ne modifie que les siennes (et les anciennes,
+   sans auteur) ; l'élève choisit le cahier de l'un de ses professeurs (onglets par matière). */
+let cahierProfChoisi = null; // élève : teacher_id du cahier affiché ('' : entrées sans auteur ; null : pas encore choisi)
+let cahierProfsListe = [];   // élève : [{t: teacher_id ou '', m: matière}] des cahiers de la classe
+function cahierMatiere(){ return window.ADP ? ((typeof adpMatiere === 'function' && adpMatiere()) || null) : 'Mathématiques'; }
+function cahierFiltre(q){
+  if(!currentUser) return q;
+  if(currentUserRole === 'eleve'){
+    if(cahierProfChoisi == null) return q;
+    return cahierProfChoisi === '' ? q.is('teacher_id', null) : q.eq('teacher_id', cahierProfChoisi);
+  }
+  return q.or(`teacher_id.eq.${currentUser.id},teacher_id.is.null`);
+}
+// Élève : les cahiers de sa classe (un par professeur), et celui qu'il regarde (mémorisé par classe).
+async function cahierProfsCharger(){
+  cahierProfsListe = [];
+  if(currentUserRole !== 'eleve' || !cahierClasseId()) return;
+  const { data } = await sb.from('cahier_entries').select('teacher_id,matiere').eq('class_id', cahierClasseId()).not('date', 'is', null).limit(5000);
+  const vus = new Map();
+  (data || []).forEach(r => { const t = r.teacher_id || ''; if(!vus.has(t) || (!vus.get(t) && r.matiere)) vus.set(t, r.matiere || ''); });
+  cahierProfsListe = [...vus.entries()].map(([t, m]) => ({ t, m: m || 'Mathématiques' })).sort((a, b) => a.m.localeCompare(b.m, 'fr'));
+  let memo = null; try{ memo = localStorage.getItem('cahierProf:' + cahierClasseId()); }catch(e){}
+  const pref = window.ADP ? null : cahierProfsListe.find(x => x.m === 'Mathématiques');
+  cahierProfChoisi = cahierProfsListe.some(x => x.t === memo) ? memo : (pref || cahierProfsListe[0] || { t: null }).t;
+}
+function cahierProfsOngletsHtml(){
+  if(currentUserRole !== 'eleve' || cahierProfsListe.length < 2) return '';
+  const nb = {}; cahierProfsListe.forEach(x => { nb[x.m] = (nb[x.m] || 0) + 1; });
+  const vu = {};
+  return `<div class="nb-profs" role="tablist" aria-label="Cahier de quel professeur ?">${cahierProfsListe.map(x => { vu[x.m] = (vu[x.m] || 0) + 1;
+    return `<button type="button" role="tab" class="nb-prof${x.t === cahierProfChoisi ? ' on' : ''}" onclick="cahierProfChoisir('${x.t}')">${escapeHtml(x.m)}${nb[x.m] > 1 ? ' ' + vu[x.m] : ''}</button>`; }).join('')}</div>`;
+}
+function cahierProfChoisir(t){
+  cahierProfChoisi = t;
+  try{ localStorage.setItem('cahierProf:' + cahierClasseId(), t); }catch(e){}
+  renderCahierEleve();
+}
 // Ne récupère que les dates (avec un compte d'entrées par jour) -- construit le squelette de
 // l'accordéon sans charger aucun contenu. Quasi gratuit même sur une année entière (juste des
 // chaînes de date, aucune colonne lourde).
@@ -6894,7 +6933,7 @@ async function fetchCahierDatesList(){
   // mettre de date". Ne doivent jamais apparaître dans le cahier normal (vu aussi par les
   // élèves) ni dans son accordéon par date -- seulement via "Récupérer un brouillon", voir
   // fetchCahierBrouillons plus bas.
-  const { data, error } = await sb.from('cahier_entries').select('date,exo').eq('class_id', cahierClasseId()).not('date', 'is', null);
+  const { data, error } = await cahierFiltre(sb.from('cahier_entries').select('date,exo').eq('class_id', cahierClasseId())).not('date', 'is', null);
   if(error){ console.error('fetch dates list failed', error); return []; }
   const counts = new Map(), cours = new Set();
   data.forEach(r=>{ const d=r.date||''; counts.set(d, (counts.get(d)||0)+1); if(r.exo==='Cours') cours.add(d); });
@@ -6905,7 +6944,7 @@ async function fetchCahierDatesList(){
 // l'accordéon, ou pour la vue prof filtrée sur une date précise.
 async function fetchCahierEntriesForDate(date){
   if(!cahierClasseId()) return null;
-  const { data, error } = await sb.from('cahier_entries').select(CAHIER_COLS_LEGERES).eq('class_id', cahierClasseId()).eq('date', date).order('ordre', {ascending:true, nullsFirst:false}).order('created_at', {ascending:true});
+  const { data, error } = await cahierFiltre(sb.from('cahier_entries').select(CAHIER_COLS_LEGERES).eq('class_id', cahierClasseId())).eq('date', date).order('ordre', {ascending:true, nullsFirst:false}).order('created_at', {ascending:true});
   if(error){ console.error('fetch entries for date failed', error); return null; }
   return data;
 }
@@ -6915,7 +6954,7 @@ async function fetchCahierEntriesForDate(date){
 async function syncFetchAll(fromDate, toDate){
   if(!cahierClasseId()) return null;
   // Exclut les brouillons (date NULL) -- voir le commentaire de fetchCahierDatesList.
-  let q = sb.from('cahier_entries').select(CAHIER_COLS_LEGERES).eq('class_id', cahierClasseId()).not('date', 'is', null);
+  let q = cahierFiltre(sb.from('cahier_entries').select(CAHIER_COLS_LEGERES).eq('class_id', cahierClasseId())).not('date', 'is', null);
   if(fromDate) q = q.gte('date', fromDate);
   if(toDate) q = q.lte('date', toDate);
   const { data, error } = await q.order('ordre', {ascending:true, nullsFirst:false}).order('date').order('created_at', {ascending:true});
@@ -6935,13 +6974,14 @@ async function fetchCahierEntryEditData(id){
 // par editCahierEntry au moment où le brouillon choisi est effectivement rouvert.
 async function fetchCahierBrouillons(){
   if(!cahierClasseId()) return [];
-  const { data, error } = await sb.from('cahier_entries').select(CAHIER_COLS_LEGERES).eq('class_id', cahierClasseId()).is('date', null).order('created_at', {ascending:false});
+  const { data, error } = await cahierFiltre(sb.from('cahier_entries').select(CAHIER_COLS_LEGERES).eq('class_id', cahierClasseId())).is('date', null).order('created_at', {ascending:false});
   if(error){ console.error('fetch brouillons failed', error); return []; }
   return data;
 }
 async function syncAddEntry(entry){
   if(!cahierClasseId()) return {ok:false, offline:true};
-  const { data, error } = await sb.from('cahier_entries').insert({ ...entry, class_id: cahierClasseId() }).select().single();
+  const { teacher_id: _auteur, ...propre } = entry; // l'auteur est rempli par la base (professeur connecté)
+  const { data, error } = await sb.from('cahier_entries').insert({ ...propre, matiere: entry.matiere || cahierMatiere(), class_id: cahierClasseId() }).select().single();
   if(error) return {ok:false, error: error.message.includes('row-level security') ? "vous n'êtes pas assigné à cette classe." : error.message};
   return {ok:true, id:data.id};
 }
@@ -6953,7 +6993,7 @@ async function syncAddEntry(entry){
 // "quand on modifie un exercice, il se met en queue d'exercices et ne reste pas à sa place."
 async function syncUpdateEntry(id, entry){
   if(!id) return {ok:false, offline:true};
-  const { id: _omit, ...payload } = entry; // id déjà ciblé via .eq ci-dessous, inutile (et
+  const { id: _omit, teacher_id: _auteur, ...payload } = entry; // l'auteur ne change pas ; id déjà ciblé via .eq ci-dessous, inutile (et
                                             // redondant) de le renvoyer dans le contenu
   const { error } = await sb.from('cahier_entries').update(payload).eq('id', id);
   if(error) return {ok:false, error: error.message.includes('row-level security') ? "vous n'êtes pas assigné à cette classe." : error.message};
@@ -7755,7 +7795,8 @@ async function renderCahierEleve(){
     document.getElementById('cahierEleveContent').innerHTML = '<p class="hint"><span class=gicon>info</span> Ce groupe n\'a pas de cahier (réglage du groupe, dans Mes classes › Groupes) et sa classe d\'origine n\'a pas été trouvée : choisissez une classe pour voir son cahier.</p>';
     return;
   }
-  let warning = cahierClasse.propre ? '' : `<p class="nb-cahier-de"><span class=gicon>info</span> Ce groupe n'a pas son propre cahier : ${currentUserRole==='eleve' ? 'voici le cahier de ta classe' : 'vous voyez et complétez le cahier de la classe'} <b>${escapeHtml(cahierClasse.nom)}</b>.</p>`;
+  await cahierProfsCharger();
+  let warning = cahierProfsOngletsHtml() + (cahierClasse.propre ? '' : `<p class="nb-cahier-de"><span class=gicon>info</span> Ce groupe n'a pas son propre cahier : ${currentUserRole==='eleve' ? 'voici le cahier de ta classe' : 'vous voyez et complétez le cahier de la classe'} <b>${escapeHtml(cahierClasse.nom)}</b>.</p>`);
   if(isSyncEnabled()){
     document.getElementById('cahierEleveContent').innerHTML = '<p class="hint">Chargement depuis le cahier partagé…</p>';
     const filtreActif = cahierFilterFrom||cahierFilterTo||cahierFilterChapitre;

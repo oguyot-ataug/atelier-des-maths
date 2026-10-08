@@ -131,7 +131,7 @@ function qzCahierModal(m){
       // Groupe « sans cahier » (demi-groupe…) : le cahier de sa classe d'origine (fonction cahier_classe).
       const { data: cc } = await sb.rpc('cahier_classe', { p_class: d.class_id });
       const cible = cc && cc.id ? cc : { id: d.class_id, nom: d.classes ? d.classes.nom : '' };
-      const { data: ins, error: er } = await sb.from('cahier_entries').insert(Object.assign({ class_id: cible.id }, entry)).select('id').single();
+      const { data: ins, error: er } = await sb.from('cahier_entries').insert(Object.assign({ class_id: cible.id, matiere: typeof cahierMatiere === 'function' ? cahierMatiere() : null }, entry)).select('id').single();
       if(er){ o.querySelector('.qzc-err').textContent = /row-level security/.test(er.message) ? 'Vous n\'êtes pas professeur de cette classe.' : er.message; b.disabled = false; return; }
       // Classe active : le cahier affiché est mis à jour tout de suite.
       if(typeof cahier !== 'undefined' && (typeof cahierClasseId === 'function' ? cahierClasseId() : currentClassId) === cible.id){ cahier.push(Object.assign({ id: ins.id, class_id: cible.id }, entry)); if(typeof sortCahierInPlace === 'function') sortCahierInPlace(); if(typeof saveCahier === 'function') saveCahier(); }

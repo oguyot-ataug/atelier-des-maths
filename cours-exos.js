@@ -309,7 +309,7 @@ function cxChoisirDocument(){
     let fini = false;
     const fin = v => { if(fini) return; fini = true; o.style.display = 'none'; resolve(v || []); };
     const charger = async () => {
-      const { data, error } = await sb.from('cahier_entries').select(CAHIER_COLS_LEGERES).eq('class_id', cdP.classId)
+      const { data, error } = await cahierFiltre(sb.from('cahier_entries').select(CAHIER_COLS_LEGERES).eq('class_id', cdP.classId))
         .order('date', { ascending: false, nullsFirst: true }).order('created_at', { ascending: false }).limit(80);
       st.liste = error ? [] : (data || []); st.err = error ? error.message : ''; rendre();
     };
