@@ -174,7 +174,8 @@ async function cdProfOuvrir(row){
   document.body.classList.add('cd-prof-ouvert');
   cdP.ch = sb.channel(cdCanal(row.id), { config: { broadcast: { self: false } } })
     .on('broadcast', { event: 'sortie' }, ({ payload }) => cdProfSortie(payload))
-    .on('broadcast', { event: 'ici' }, () => cdProfMembres())
+    .on('broadcast', { event: 'ici' }, ({ payload }) => { cdProfVue(payload); cdProfMembres(); })
+    .on('broadcast', { event: 'vue' }, ({ payload }) => cdProfVue(payload))
     .on('broadcast', { event: 'trav' }, ({ payload }) => { if(typeof cxProfRecu === 'function') cxProfRecu(payload); })
     .on('broadcast', { event: 'aide' }, ({ payload }) => { if(typeof cxProfAide === 'function') cxProfAide(payload); })
     .subscribe();
@@ -257,6 +258,34 @@ async function cdProfMembres(){
   cdProfRendreClasse();
   if(typeof cxProfTick === 'function') cxProfTick();
 }
+// Mode libre : l'élément sur lequel se trouve chaque élève -- demandé : « En mode session libre, comment savoir
+// quel est l'exercice où est un élève ? ». Signalé par l'élève à chaque changement (et toutes les 20 s).
+function cdProfVue(p){
+  if(!cdP || !p || !p.e || p.k == null) return;
+  if(!cdP.vues) cdP.vues = new Map();
+  if(cdP.vues.get(p.e) === p.k) return;
+  cdP.vues.set(p.e, p.k);
+  cdProfVuesMaj();
+}
+function cdProfVuesMaj(){
+  if(!cdP) return;
+  document.querySelectorAll('#cdProf .cd-item[data-k]').forEach(b => {
+    const n = b.querySelector('.cd-nb-el'); if(n) n.remove();
+    b.insertAdjacentHTML('beforeend', cdProfNb(+b.dataset.k));
+  });
+  cdProfRendreClasse();
+  if(typeof cxProfMaj === 'function' && (cdP.items[cdP.etat.idx || 0] || {}).exo) cxProfMaj();
+}
+function cdProfNb(k){ // pastille « nombre d'élèves sur cet élément » (prénoms au survol), en mode libre
+  if(!cdP || cdP.etat.mode !== 'libre' || !cdP.vues) return '';
+  const qui = cdP.eleves.filter(e => cdP.vues.get(e.id) === k);
+  return qui.length ? `<span class="cd-nb-el" title="${cdEsc(qui.map(e => e.prenom || e.label).join(', '))}"><span class="gicon">person</span>${qui.length}</span>` : '';
+}
+function cdProfOu(id){ // « sur 3. Titre » pour la liste de la classe et les vignettes, en mode libre
+  if(!cdP || cdP.etat.mode !== 'libre' || !cdP.vues || !cdP.vues.has(id)) return '';
+  const k = cdP.vues.get(id), it = cdP.items[k] || {};
+  return `<span class="cd-ou${k === (cdP.etat.idx || 0) ? ' ici' : ''}" title="${cdEsc(it.titre || '')}"><span class="gicon">location_on</span>${k + 1}. ${cdEsc(it.titre || '')}</span>`;
+}
 function cdProfSortie(p){
   if(!cdP || !p || !p.e) return;
   const m = cdP.membres.get(p.e) || { student_id: p.e, sorties: 0 };
@@ -284,7 +313,7 @@ function cdProfRendreClasse(){
     if(etat === 'present') presents++; if(etat === 'dehors') dehors++;
     const info = !m ? 'pas encore entré' : etat === 'dehors' ? 'SORTI de la page' : etat === 'perdu' ? 'plus de nouvelles' : 'présent';
     const eq = typeof cdEqDe === 'function' ? cdEqDe(e.id) : null;
-    return `<div class="cd-el ${etat}"><span class="cd-pastille"></span><span class="cd-nom">${cdEsc(e.label)}</span><small>${info}${m && m.sorties ? ` · ${m.sorties} sortie${m.sorties > 1 ? 's' : ''} (dernière à ${hh(m.sortie_at)})` : ''}</small>${eq ? cdEqInfo(e.id) : ''}
+    return `<div class="cd-el ${etat}"><span class="cd-pastille"></span><span class="cd-nom">${cdEsc(e.label)}</span><small>${info}${m && m.sorties ? ` · ${m.sorties} sortie${m.sorties > 1 ? 's' : ''} (dernière à ${hh(m.sortie_at)})` : ''}</small>${etat === 'absent' ? '' : cdProfOu(e.id)}${eq ? cdEqInfo(e.id) : ''}
       ${typeof cdEqRejoindreChoix === 'function' ? (eq ? `<button class="cd-eq-btn x" onclick="cdEqDetacher('${e.id}')" title="Ne plus travailler en équipe"><span class="gicon">group_remove</span></button>` : `<button class="cd-eq-btn" onclick="cdEqRejoindreChoix('${e.id}', this)" title="Pas d'ordinateur ? Travailler sur l'ordinateur d'un camarade"><span class="gicon">group_add</span></button>`) : ''}</div>`;
   }).join('') || '<p class="hint">Aucun élève dans cette classe.</p>';
   const r = document.getElementById('cdProfResume');
@@ -305,7 +334,7 @@ function cdProfRendre(){
         <button class="btn secondary" onclick="cdProfFermer()" title="Fermer la télécommande sans terminer (la session continue)"><span class="gicon">minimize</span> Réduire</button>
         <button class="btn" style="background:#C0392B;" onclick="cdProfTerminer()"><span class="gicon">stop</span> Terminer</button></div></div>
     <div class="cd-p-corps">
-      <div class="cd-p-items">${cdP.items.map((x, k) => `<button class="cd-item${k === i ? ' on' : ''}${k < i ? ' vu' : ''}" onclick="cdProfAller(${k})"><span>${k + 1}</span> ${cdEsc(x.titre)}${x.prog ? ' <span class="gicon">architecture</span>' : ''}${x.exo ? ` <span class="gicon" style="color:${x.exo.interro ? '#6B3FA0' : '#E35D3A'};" title="${x.exo.interro ? 'Interrogation : enregistrée comme interrogation à la fin' : 'Exercice'}">${x.exo.interro ? 'quiz' : 'edit_square'}</span>` : ''}</button>`).join('')}
+      <div class="cd-p-items">${cdP.items.map((x, k) => `<button class="cd-item${k === i ? ' on' : ''}${k < i ? ' vu' : ''}" data-k="${k}" onclick="cdProfAller(${k})"><span>${k + 1}</span> ${cdEsc(x.titre)}${x.prog ? ' <span class="gicon">architecture</span>' : ''}${x.exo ? ` <span class="gicon" style="color:${x.exo.interro ? '#6B3FA0' : '#E35D3A'};" title="${x.exo.interro ? 'Interrogation : enregistrée comme interrogation à la fin' : 'Exercice'}">${x.exo.interro ? 'quiz' : 'edit_square'}</span>` : ''}${cdProfNb(k)}</button>`).join('')}
         <button class="cd-item cd-ajout" onclick="cxProfAjouterCours()"><span class="gicon">menu_book</span> Ajouter une partie de cours</button>
         <button class="cd-item cd-ajout" onclick="cxProfAjouter()"><span class="gicon">edit_square</span> Ajouter un exercice</button></div>
       <div class="cd-p-scene">
@@ -415,8 +444,9 @@ async function cdEleveOuvrir(id){
     .on('broadcast', { event: 'pilote' }, ({ payload }) => { if(typeof cxElevePilote === 'function') cxElevePilote(payload); })
     .on('broadcast', { event: 'main' }, ({ payload }) => { if(typeof cxEleveMain === 'function') cxEleveMain(payload); })
     .on('broadcast', { event: 'mot' }, ({ payload }) => { if(typeof cxEleveMot === 'function') cxEleveMot(payload); })
-    .subscribe(s => { if(s === 'SUBSCRIBED'){ try{ cdE.ch.send({ type: 'broadcast', event: 'ici', payload: { e: currentUser.id } }); }catch(e){} } });
-  cdE.timer = setInterval(() => { if(cdE) sb.rpc('cours_direct_signal', { p_id: cdE.id, p_dehors: cdE.dehors }); }, 20000);
+    .subscribe(s => { if(s === 'SUBSCRIBED'){ try{ cdE.ch.send({ type: 'broadcast', event: 'ici', payload: { e: currentUser.id, k: cdE.vue } }); }catch(e){} } });
+  // Toutes les 20 s : présence, et l'élément affiché (pour un professeur qui vient de rouvrir sa télécommande).
+  cdE.timer = setInterval(() => { if(cdE){ sb.rpc('cours_direct_signal', { p_id: cdE.id, p_dehors: cdE.dehors }); cdEleveSignalerVue(); } }, 20000);
   document.addEventListener('visibilitychange', cdSurVisibilite);
   window.addEventListener('blur', cdSurBlur);
   window.addEventListener('focus', cdSurRetour);
@@ -481,6 +511,7 @@ function cdEleveRendre(){
   const o = document.getElementById('cdEleve'); if(!o || !cdE || !cdE.d) return;
   const d = cdE.d, k = cdE.vue, it = d.items[k] || {}, libre = d.mode === 'libre', mx = d.max != null ? d.max : d.idx;
   try{ if(libre) localStorage.setItem('cdVue-' + d.id, k); }catch(e){}
+  if(cdE.vueSignalee !== k) cdEleveSignalerVue();
   if(it.leger){ cdEleveElement(k); }
   if(typeof cxVivantRestaurer === 'function') cxVivantRestaurer();
   cdE.cxMonte = null;
@@ -512,6 +543,11 @@ async function cdEleveElement(k){
   if(!cdE.cache) cdE.cache = new Map();
   cdE.cache.set(k, data); cdE.d.items[k] = data;
   if(cdE.vue === k) cdEleveRendre();
+}
+function cdEleveSignalerVue(){
+  if(!cdE || !cdE.ch || !currentUser) return;
+  cdE.vueSignalee = cdE.vue;
+  try{ cdE.ch.send({ type: 'broadcast', event: 'vue', payload: { e: currentUser.id, k: cdE.vue } }); }catch(e){}
 }
 function cdEleveVoir(k){ if(!cdE || !cdE.d) return; cdE.vue = Math.max(0, Math.min(cdE.d.max != null ? cdE.d.max : cdE.d.idx, k)); cdEleveRendre(); }
 function cdEleveFin(){
@@ -610,13 +646,15 @@ document.addEventListener('DOMContentLoaded', cdBoutonMaj);
     .cd-item{display:flex;gap:6px;align-items:flex-start;width:100%;text-align:left;border:0;background:none;padding:7px 8px;border-radius:8px;cursor:pointer;font:600 .85rem Inter,sans-serif;color:var(--ink);}
     .cd-item > span:first-child{min-width:22px;height:22px;border-radius:50%;background:#E8ECF2;display:inline-flex;align-items:center;justify-content:center;font-size:.75rem;}
     .cd-item.vu{color:var(--ink-soft);} .cd-item.on{background:#1F3A5C;color:#fff;} .cd-item.on > span:first-child{background:#fff;color:#1F3A5C;}
+    .cd-nb-el{margin-left:auto;flex:none;display:inline-flex;align-items:center;gap:1px;background:#1F3A5C;color:#fff;border-radius:999px;padding:1px 7px 1px 4px;font:700 .72rem Inter,sans-serif;} .cd-item .cd-nb-el .gicon{font-size:13px;color:#fff;}
+    .cd-ou{display:inline-flex;align-items:center;gap:2px;max-width:100%;font:600 .72rem Inter,sans-serif;color:#1F3A5C;background:#EAF0F8;border-radius:6px;padding:1px 6px 1px 3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;} .cd-ou .gicon{font-size:13px;color:#1F3A5C !important;} .cd-ou.ici{background:#E8F6EE;color:#1F7A4D;} .cd-ou.ici .gicon{color:#1F7A4D !important;}
     .cd-item .gicon{font-size:16px;color:#1F7A4D;} .cd-ajout{margin-top:6px;border:1.5px dashed rgba(28,43,57,.25);color:#1F3A5C;justify-content:center;}
     .cd-p-scene{overflow:auto;background:#fff;border:1px solid rgba(28,43,57,.1);border-radius:12px;padding:12px 16px;}
     .cd-nav{display:flex;gap:8px;justify-content:space-between;flex-wrap:wrap;margin-bottom:10px;}
     .cd-item-titre{font:800 1.05rem 'Space Grotesk',sans-serif;color:#1F3A5C;margin:4px 0 10px;} .cd-item-titre small{font-weight:600;color:var(--ink-soft);font-size:.8rem;}
     .cd-contenu{max-width:100%;overflow-x:auto;} .cd-contenu img,.cd-contenu svg{max-width:100%;height:auto;}
     .cd-p-resume{font-family:'Space Grotesk',sans-serif;margin:2px 4px 8px;} .cd-rouge{color:#C0392B;}
-    .cd-el{display:grid;grid-template-columns:14px 1fr;column-gap:8px;padding:5px 4px;border-radius:8px;} .cd-el small{grid-column:2;color:var(--ink-soft);font-size:.74rem;}
+    .cd-el{display:grid;grid-template-columns:14px 1fr;column-gap:8px;padding:5px 4px;border-radius:8px;} .cd-el small{grid-column:2;color:var(--ink-soft);font-size:.74rem;} .cd-el .cd-ou{grid-column:2;justify-self:start;margin-top:2px;}
     .cd-pastille{width:11px;height:11px;border-radius:50%;background:#C8CDD5;margin-top:4px;}
     .cd-el.present .cd-pastille{background:#2E9C6A;} .cd-el.perdu .cd-pastille{background:#E9C46A;}
     .cd-el.dehors{background:#FBECEA;} .cd-el.dehors .cd-pastille{background:#C0392B;animation:cdClign 1s infinite;} .cd-el.dehors small{color:#C0392B;font-weight:700;}

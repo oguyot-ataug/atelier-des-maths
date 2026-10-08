@@ -3371,6 +3371,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1023', date:'2026-10-08', items:[
+    "Session en mode libre : le professeur voit où en est chaque élève -- demandé : « En mode session libre, comment savoir quel est l'exercice où est un élève ? ». Dans la télécommande : chaque élément de la liste porte le nombre d'élèves qui s'y trouvent (prénoms au survol) ; dans la liste de la classe, sous chaque nom, l'élément affiché (« 3. Exercice 2… », en vert si c'est celui que vous regardez) ; et sur les vignettes d'un exercice, les élèves qui sont ailleurs le sont aussi. L'élève le signale à chaque changement d'élément, et toutes les 20 secondes (une télécommande rouverte le sait donc vite)."
+  ] },
   { version:'2026-08-19.1022', date:'2026-10-08', items:[
     "Session, exercices du manuel : nouvelle option « Vérification par l'élève : oui / non » dans la télécommande (sur un exercice du manuel, à côté de « Montrer la correction ») -- demandé : « mettre ce bouton de correction en option pour que le prof voie directement les erreurs faites. En effet, un élève peut recommencer plusieurs fois et finira par passer au vert ». Sur « non », valable pour tous les exercices du manuel de la session : les élèves n'ont plus le bouton « Vérifier ma réponse » ni de couleurs (un message leur dit que le professeur voit leurs réponses) ; le professeur voit à chaque instant leurs réponses juste ou fausses (pastilles, copie avec chaque erreur marquée, « Réponses actuelles : 0 / 1 juste »). Un clic remet la vérification, en direct."
   ] },

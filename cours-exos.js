@@ -393,7 +393,7 @@ function cxProfMajFaire(seul){
     const cls = [s.aide ? 'aide' : '', s.main ? 'main' : '', s.dehors ? 'dehors' : '', ok ? 'ok' : '', cdP.selEx === e.id ? 'sel' : '', !s.present && !s.rep ? 'absent' : ''].join(' ');
     const ap = cdP.apercu && it.exo.type !== 'prog';
     return `<button class="cx-t ${cls}${ap ? ' cx-t-ap' : ''}" data-e="${e.id}" onclick="cxProfVoir('${e.id}')"><span class="cx-t-nom">${cdEsc(e.label)}${s.ecrit ? ' <span class="cx-ecrit" title="en train de travailler"></span>' : ''}${s.aide ? ' <span class="gicon" title="Main levée">front_hand</span>' : ''}${s.main ? ' <span class="gicon" title="Vous avez la main">pan_tool_alt</span>' : ''}</span>${corps}
-      ${s.dehors ? '<small class="cx-rouge">SORTI de la page</small>' : ''}${typeof cdEqInfo === 'function' ? cdEqInfo(e.id, true) : ''}${ap && s.rep ? cxProfMiniCopie(it, rep) : ''}</button>`;
+      ${s.dehors ? '<small class="cx-rouge">SORTI de la page</small>' : ''}${typeof cdProfOu === 'function' && cdP.vues && cdP.vues.get(e.id) !== k ? cdProfOu(e.id) : ''}${typeof cdEqInfo === 'function' ? cdEqInfo(e.id, true) : ''}${ap && s.rep ? cxProfMiniCopie(it, rep) : ''}</button>`;
   }).join('') || '<p class="hint">Aucun élève dans cette classe.</p>';
   g.classList.toggle('cx-grille-ap', !!(cdP.apercu && it.exo.type !== 'prog'));
   if(cdP.apercu && it.exo.type === 'td'){ const x = cxTdExo(it);
