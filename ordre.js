@@ -13,7 +13,11 @@
    - facile    : étiquettes de quelques mots, un mot mal choisi rebondit dans la réserve ;
    - normal    : mot à mot, un mot mal choisi rebondit ;
    - difficile : mot à mot, sans aide : on place tout, puis « Vérifier » garde le début juste et
-                 renvoie le reste dans la réserve.
+                 renvoie le reste dans la réserve ;
+   - très difficile (demandé : « En niveau très difficile, c'est à l'élève d'écrire les mots ») :
+                 plus de réserve, l'élève tape chaque mot (Espace ou Entrée pour le valider) ; les
+                 formules, notations et la ponctuation s'écrivent seules ; accents et majuscules ne
+                 sont pas exigés ; l'indice donne une lettre de plus.
    Le contenu d'origine de l'encadré est mis de côté (nœuds déplacés, pas recopiés) et remis tel
    quel en quittant.
    ============================================================ */
@@ -21,7 +25,12 @@ const ORD_NIVEAUX = {
   facile:    { label: 'Facile',    groupe: 3, aide: true },
   normal:    { label: 'Normal',    groupe: 1, aide: true },
   difficile: { label: 'Difficile', groupe: 1, aide: false },
+  ecrire:    { label: 'Très difficile', groupe: 1, aide: true, ecrire: true },
 };
+// Comparaison d'un mot tapé : sans accents, majuscules, apostrophes ni ponctuation.
+const ordNorm = t => String(t || '').toLowerCase().replace(/<[^>]*>/g, '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/œ/g, 'oe').replace(/[^a-z0-9]/g, '');
+// Étiquette qui s'écrit seule au niveau « très difficile » : formule, notation ([AB], (d), A, AB'), ponctuation.
+const ordLibre = x => x.cle.startsWith('f:') || /[\[(][A-Za-z0-9'’]{1,4}[\])]/.test(x.cle) || /^[^a-zà-ÿœ]*[A-Z][^a-zà-ÿœ]*$/.test(x.cle) || !ordNorm(x.cle);
 function ordNiveau(){ try { const n = localStorage.getItem('ordNiveau'); if (ORD_NIVEAUX[n]) return n; } catch (e) {} return 'facile'; }
 const ORD_SHAKER = '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><path d="M9.5 2.5h5l-.6 2.5h-3.8z"/><path d="M7.5 6.5h9l-1.6 13.6a1.5 1.5 0 0 1-1.5 1.4h-2.8a1.5 1.5 0 0 1-1.5-1.4z"/><path d="M8.4 11h7.2"/><path d="M3 8l1.6 1M3 12h1.8M21 8l-1.6 1M21 12h-1.8"/></svg>';
 let ordEtat = null; // partie en cours (une seule à la fois)
@@ -107,6 +116,7 @@ function ordDemarrer(box){
       <b>Remets les mots dans l'ordre</b><span class="ord-prog"></span></div>
     <div class="ord-phrase" aria-live="polite"></div>
     <div class="ord-reserve"></div>
+    <div class="ord-saisie"><input type="text" class="ord-champ" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Mot suivant"><button type="button" class="ord-ok"><span class=gicon>keyboard_return</span> OK</button></div>
     <div class="ord-msg"></div>
     <div class="ord-actions">
       <span class="ord-niveaux" role="group" aria-label="Niveau">${Object.entries(ORD_NIVEAUX).map(([k, v]) => `<button type="button" data-niveau="${k}">${v.label}</button>`).join('')}</span>
@@ -127,6 +137,10 @@ function ordDemarrer(box){
   jeu.querySelector('.ord-indice').onclick = ordIndice;
   jeu.querySelector('.ord-secouer').onclick = () => ordEtat.gagne ? ordNouvellePartie() : ordSecouer();
   jeu.querySelector('.ord-stop').onclick = ordQuitter;
+  const champ = jeu.querySelector('.ord-champ');
+  champ.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); ordEcrire(); } });
+  champ.addEventListener('input', () => { champ.classList.remove('ord-non'); if (/\s$/.test(champ.value)) ordEcrire(); });
+  jeu.querySelector('.ord-ok').onclick = () => { ordEcrire(); champ.focus(); };
   ordNouvellePartie();
 }
 
@@ -134,8 +148,13 @@ function ordNouvellePartie(){
   const st = ordEtat; if (!st) return;
   const niv = ORD_NIVEAUX[st.niveau];
   st.solution = ordEtiquettes(st.unites, niv.groupe).map((x, i) => ({ ...x, id: i }));
-  st.places = []; st.erreurs = 0; st.indices = 0; st.gagne = false; st.debut = Date.now();
-  st.reserve = ordMelanger(st.solution);
+  st.places = []; st.erreurs = 0; st.indices = 0; st.gagne = false; st.debut = Date.now(); st.lettres = 0;
+  st.reserve = niv.ecrire ? [] : ordMelanger(st.solution);
+  const champ = st.jeu.querySelector('.ord-champ'); champ.value = '';
+  if (niv.ecrire) {
+    ordMessage('Écris la phrase de mémoire, mot à mot : tape un mot puis Espace ou Entrée. Les formules et notations s\'écrivent seules ; accents et majuscules ne sont pas exigés.');
+    ordAvancerLibres(); ordRendre(true); setTimeout(() => champ.focus(), 60); return;
+  }
   st.jeu.querySelectorAll('.ord-niveaux button').forEach(b => b.classList.toggle('on', b.dataset.niveau === st.niveau));
   st.box.classList.remove('ord-gagne');
   ordMessage(niv.aide ? 'Touche les mots dans l\'ordre de la phrase. Un mot mal choisi retourne dans le shaker.'
@@ -149,6 +168,10 @@ function ordRendre(chute){
   const phrase = st.jeu.querySelector('.ord-phrase'), reserve = st.jeu.querySelector('.ord-reserve');
   phrase.innerHTML = st.places.map((x, i) => `<button type="button" class="ord-p ord-place${x.ok ? ' ok' : ''}" data-i="${i}" ${x.ok || niv.aide ? 'tabindex="-1"' : ''}>${x.html}</button>`).join('')
     + (st.gagne ? '' : '<span class="ord-curseur"></span>');
+  if (niv.ecrire && !st.gagne) phrase.innerHTML = phrase.innerHTML.replace('<span class="ord-curseur"></span>', '') + '<span class="ord-curseur"></span>' + st.solution.slice(st.places.length).map(() => '<span class="ord-trou"></span>').join('');
+  reserve.style.display = niv.ecrire ? 'none' : '';
+  st.jeu.querySelector('.ord-tete b').textContent = niv.ecrire ? 'Écris la phrase de mémoire' : 'Remets les mots dans l\'ordre';
+  st.jeu.querySelector('.ord-saisie').style.display = niv.ecrire && !st.gagne ? '' : 'none';
   reserve.innerHTML = st.reserve.map((x, i) => `<button type="button" class="ord-p${chute ? ' ord-chute' : ''}" data-r="${i}" style="--d:${(Math.random() * .35).toFixed(2)}s;--x:${Math.round(Math.random() * 120 - 60)}px;--y:${Math.round(-60 - Math.random() * 60)}px;--a:${Math.round(Math.random() * 120 - 60)}deg">${x.html}</button>`).join('');
   reserve.querySelectorAll('[data-r]').forEach(b => b.onclick = () => ordChoisir(Number(b.dataset.r), b));
   if (!niv.aide) phrase.querySelectorAll('.ord-place:not(.ok)').forEach(b => b.onclick = () => ordRetirer(Number(b.dataset.i)));
@@ -157,6 +180,7 @@ function ordRendre(chute){
   verif.style.display = niv.aide || st.gagne ? 'none' : '';
   verif.disabled = st.reserve.length > 0;
   st.jeu.querySelector('.ord-indice').style.display = st.gagne ? 'none' : '';
+  st.jeu.querySelector('.ord-secouer').style.display = niv.ecrire && !st.gagne ? 'none' : '';
   st.jeu.querySelector('.ord-secouer').innerHTML = st.gagne ? '<span class=gicon>replay</span> Rejouer' : '<span class=gicon>shuffle</span> Secouer';
   if (chute) { const sh = st.jeu.querySelector('.ord-shaker'); sh.classList.remove('agite'); void sh.offsetWidth; sh.classList.add('agite'); }
 }
@@ -178,6 +202,32 @@ function ordChoisir(r, el){
   if (niv.aide) ordMessage('');
   ordRendre(false);
   if (niv.aide && !st.reserve.length) ordGagne();
+}
+// Niveau « très difficile » : les étiquettes qui s'écrivent seules sont placées dès qu'on les atteint.
+function ordAvancerLibres(){
+  const st = ordEtat;
+  while (st.places.length < st.solution.length && ordLibre(st.solution[st.places.length])) st.places.push({ ...st.solution[st.places.length], ok: true });
+}
+function ordEcrire(){
+  const st = ordEtat; if (!st || st.gagne || !ORD_NIVEAUX[st.niveau].ecrire) return;
+  const champ = st.jeu.querySelector('.ord-champ'), tape = champ.value.trim();
+  if (!tape) { champ.value = ''; return; }
+  const attendu = st.solution[st.places.length]; if (!attendu) return;
+  if (ordNorm(tape) !== ordNorm(attendu.cle)) {
+    st.erreurs++;
+    champ.value = tape;
+    champ.classList.remove('ord-non'); void champ.offsetWidth; champ.classList.add('ord-non');
+    ordMessage(`« ${tape} » n'est pas le mot attendu. Corrige-le, ou demande un indice.`, 'err');
+    champ.select();
+    return;
+  }
+  st.places.push({ ...attendu, ok: true }); st.lettres = 0;
+  champ.value = '';
+  ordAvancerLibres();
+  ordMessage('');
+  if (st.places.length === st.solution.length) { ordGagne(); return; }
+  ordRendre(false);
+  champ.focus();
 }
 function ordRetirer(i){
   const st = ordEtat; if (!st) return;
@@ -206,6 +256,15 @@ function ordVerifier(){
 function ordIndice(){
   const st = ordEtat; if (!st || st.gagne) return;
   const niv = ORD_NIVEAUX[st.niveau];
+  if (niv.ecrire) { // une lettre de plus du mot attendu
+    const attendu = st.solution[st.places.length]; if (!attendu) return;
+    const mot = attendu.cle.replace(/[.,;:!?»)\]]+$/g, '').replace(/^[«(\[]+/, '').trim();
+    st.indices++; st.lettres = Math.min(mot.length, (st.lettres || 0) + 1);
+    const champ = st.jeu.querySelector('.ord-champ');
+    champ.value = mot.slice(0, st.lettres); champ.focus();
+    ordMessage(st.lettres >= mot.length ? 'Indice : voici le mot entier, valide-le.' : `Indice : le mot commence par « ${mot.slice(0, st.lettres)} ».`);
+    return;
+  }
   // Mot attendu après le début juste de la phrase.
   let k = 0;
   while (k < st.places.length && st.places[k].cle === st.solution[k].cle) k++;
@@ -230,7 +289,7 @@ function ordGagne(){
   const s = Math.round((Date.now() - st.debut) / 1000), e = st.erreurs, h = st.indices;
   const duree = s >= 60 ? `${Math.floor(s / 60)} min ${String(s % 60).padStart(2, '0')} s` : `${s} s`;
   st.box.classList.add('ord-gagne');
-  ordMessage(`Bravo ! Phrase reconstituée en ${duree}${e ? `, ${e} erreur${e > 1 ? 's' : ''}` : ', sans erreur'}${h ? `, ${h} indice${h > 1 ? 's' : ''}` : ''} (niveau ${ORD_NIVEAUX[st.niveau].label.toLowerCase()}).${st.niveau !== 'difficile' ? ' Essaie le niveau au-dessus !' : ''}`, 'ok');
+  ordMessage(`Bravo ! Phrase reconstituée en ${duree}${e ? `, ${e} erreur${e > 1 ? 's' : ''}` : ', sans erreur'}${h ? `, ${h} indice${h > 1 ? 's' : ''}` : ''} (niveau ${ORD_NIVEAUX[st.niveau].label.toLowerCase()}).${st.niveau !== 'ecrire' ? ' Essaie le niveau au-dessus !' : ''}`, 'ok');
   ordRendre(false);
 }
 function ordMessage(msg, type){

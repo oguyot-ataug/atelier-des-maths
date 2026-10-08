@@ -3343,6 +3343,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1004', date:'2026-10-08', items:[
+    "Jeu « Remettre dans l'ordre » : nouveau niveau « Très difficile » -- demandé : « En niveau très difficile, c'est à l'élève d'écrire les mots ». Plus de réserve : l'élève écrit la phrase de mémoire, mot à mot (Espace ou Entrée pour valider chaque mot), avec des pointillés pour les mots qui restent. Les formules, les notations ([AB], A, O…) et la ponctuation s'écrivent seules quand on y arrive ; accents et majuscules ne sont pas exigés. Un mot faux est signalé (« … n'est pas le mot attendu ») et reste à corriger ; chaque « Indice » donne une lettre de plus du mot attendu."
+  ] },
   { version:'2026-08-19.1003', date:'2026-10-08', items:[
     "Nouveau jeu d'apprentissage des définitions, règles et propriétés : « Remettre dans l'ordre » -- demandé : « Un petit shaker et voilà que les mots sont mélangés. À l'élève de les remettre dans l'ordre... ». Un bouton shaker sur chaque encadré (à côté du micro du mode apprentissage, dans tous les chapitres et dans le cahier élève). Au clic, le shaker s'agite et les mots retombent en vrac ; l'élève les touche dans l'ordre pour reconstruire la phrase. Les formules et notations restent entières, la ponctuation reste collée à son mot, et deux mots identiques sont interchangeables. Trois niveaux : Facile (étiquettes de quelques mots, un mauvais choix rebondit), Normal (mot à mot, un mauvais choix rebondit), Difficile (mot à mot sans aide : on place tout, « Vérifier » garde le début juste et renvoie le reste dans le shaker). Indice (le mot suivant clignote), « Secouer » pour mélanger à nouveau, temps, erreurs et indices affichés à la fin, « Rejouer ». En quittant, l'encadré redevient exactement comme avant."
   ] },
