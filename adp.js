@@ -154,11 +154,12 @@
       const blocs = [], garde = h => { blocs.push(h); return '\u0000' + (blocs.length - 1) + '\u0000'; };
       const COUL = { rouge: '#D93025', bleu: '#1F3A5C', vert: '#2C5A2E', orange: '#E35D3A' };
       let t = String(raw == null ? '' : raw).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      t = t.replace(/\[\[\s*([\s\S]+?)\s*\]\]/g, '\u0001$1\u0002');
       t = t.replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>').replace(/__([^_]+)__/g, '<u>$1</u>')
            .replace(/\{\{(rouge|bleu|vert|orange)\|([^}]+)\}\}/g, (m, c, x) => `<span style="color:${COUL[c]}">${x}</span>`);
       t = t.replace(/\$([^$]+)\$/g, (m, e) => { const b = e.replace(/&lt;/g, '<').replace(/&gt;/g, '>'), h = typeof katexSpan === 'function' ? katexSpan(b) : b; return garde(h === b ? e : h); });
       t = t.replace(/\n/g, '<br>').replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;').replace(/ {2,}/g, m => '&nbsp;'.repeat(m.length));
-      return t.replace(/\u0000(\d+)\u0000/g, (m, i) => blocs[+i]);
+      return t.replace(/\u0000(\d+)\u0000/g, (m, i) => blocs[+i]).replace(/\u0001/g, '<div class="def-box lecon-box">').replace(/\u0002(<br>)?/g, '</div>');
     };
   }
 

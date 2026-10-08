@@ -292,6 +292,63 @@ async function cxProfAjouterItems(nouveaux, quoi){
 }
 async function cxProfAjouter(){ if(!cdP) return; const it = await cxChoisir(); if(it){ const l = [].concat(it); cxProfAjouterItems(l, l.length > 1 ? 'Exercices' : 'Exercice'); } }
 async function cxProfAjouterCours(){ if(!cdP) return; const its = await cxChoisirCours(); if(its.length) cxProfAjouterItems(its, its.length > 1 ? 'Parties de cours' : 'Partie de cours'); }
+/* Document dans une session -- L'Atelier du Prof (étape 3) : « des documents dans les sessions », pour toutes les
+   matières (là où les maths montrent une partie de cours). Deux sources : une entrée du cahier de la classe ou un
+   brouillon préparé dans Correction (texte, images, tableaux, photo de cahier…), ou un texte écrit sur le moment. */
+async function cxProfAjouterDocument(){ if(!cdP) return; const its = await cxChoisirDocument(); if(its.length) cxProfAjouterItems(its, its.length > 1 ? 'Documents' : 'Document'); }
+function cxDocHtml(e){
+  const corps = e.html != null ? e.html : (typeof renderMathText === 'function' ? renderMathText(e.raw || '') : cdEsc(e.raw || ''));
+  return `<div class="cx-doc">${corps}${e.figure ? `<div class="nb-figure-row">${e.figure}</div>` : ''}</div>`;
+}
+function cxChoisirDocument(){
+  return new Promise(resolve => {
+    let o = document.getElementById('cxDoc');
+    if(!o){ o = document.createElement('div'); o.id = 'cxDoc'; o.className = 'modal-overlay'; document.body.appendChild(o); }
+    o.style.zIndex = '9400';
+    const st = { onglet: 'cahier', liste: null, err: '', choisies: new Set(), titre: '', texte: '' };
+    let fini = false;
+    const fin = v => { if(fini) return; fini = true; o.style.display = 'none'; resolve(v || []); };
+    const charger = async () => {
+      const { data, error } = await sb.from('cahier_entries').select(CAHIER_COLS_LEGERES).eq('class_id', cdP.classId)
+        .order('date', { ascending: false, nullsFirst: true }).order('created_at', { ascending: false }).limit(80);
+      st.liste = error ? [] : (data || []); st.err = error ? error.message : ''; rendre();
+    };
+    const lib = e => [e.exo && e.exo !== '-' ? (/^(Cours|Interrogation|Questions flash|Séance en direct)$/.test(e.exo) ? e.exo : 'Exercice ' + e.exo) : '', e.titre].filter(Boolean).join(' : ') || String(e.chapitre || 'Sans titre');
+    const rendre = () => {
+      const corps = st.onglet === 'cahier'
+        ? (st.liste == null ? '<p class="hint">Chargement du cahier de la classe…</p>'
+          : st.err ? `<p class="hint">Cahier indisponible : ${cdEsc(st.err)}</p>`
+          : !st.liste.length ? '<p class="hint">Rien dans le cahier de cette classe pour l\'instant. Préparez un document dans « Correction » (bouton Brouillons) : texte, images, tableaux, photo d\'un cahier… Il apparaîtra ici.</p>'
+          : `<div class="cx-ch-liste">${st.liste.map((e, i) => `<label class="cx-ch-it cx-man-it"><span><input type="checkbox" data-i="${i}"${st.choisies.has(i) ? ' checked' : ''}> <b>${cdEsc(lib(e))}</b></span>
+              <small>${e.date ? new Date(e.date + 'T12:00:00').toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' }) : '<b style="color:#B8511F;">Brouillon</b>'}${e.chapitre ? ' · ' + cdEsc(e.chapitre) : ''}</small></label>`).join('')}</div>`)
+        : `<label class="qz-lab">Titre<input type="text" id="cxDocTitre" value="${cdEsc(st.titre)}" placeholder="ex. Consigne de l'activité" style="width:100%;box-sizing:border-box;"></label>
+           <label class="qz-lab" style="margin-top:8px;">Texte<textarea id="cxDocTexte" rows="8" style="width:100%;box-sizing:border-box;" placeholder="Le texte montré aux élèves. **gras**, {{rouge|texte en rouge}}">${cdEsc(st.texte)}</textarea></label>
+           <p class="hint" style="margin:6px 0 0;">Pour des images, un tableau ou une photo de cahier : préparez le document dans « Correction » (Brouillons), puis choisissez-le dans l'onglet « Cahier et brouillons ».</p>`;
+      o.innerHTML = `<div class="modal-card cx-ch">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;"><b class="cd-h"><span class="gicon">description</span> Document</b>
+          <button class="modal-close" id="cxDocFermer"><span class="gicon">close</span></button></div>
+        <p class="hint" style="margin:6px 0 10px;">Le document s'affiche sur l'écran des élèves, comme une partie de cours.</p>
+        <div class="cx-onglets"><button data-o="cahier" class="${st.onglet === 'cahier' ? 'on' : ''}"><span class="gicon">menu_book</span> Cahier et brouillons</button>
+          <button data-o="texte" class="${st.onglet === 'texte' ? 'on' : ''}"><span class="gicon">edit_note</span> Texte rapide</button></div>
+        <div class="cx-ch-corps">${corps}</div>
+        <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px;"><button class="btn secondary" id="cxDocAnnuler">Annuler</button><button class="btn" id="cxDocOk"><span class="gicon">add</span> Ajouter</button></div></div>`;
+      const ok = o.querySelector('#cxDocOk');
+      const maj = () => { ok.disabled = st.onglet === 'cahier' ? !st.choisies.size : !(st.texte.trim() || st.titre.trim()); };
+      o.querySelector('#cxDocFermer').onclick = o.querySelector('#cxDocAnnuler').onclick = () => fin([]);
+      o.querySelectorAll('.cx-onglets button').forEach(b => b.onclick = () => { st.onglet = b.dataset.o; rendre(); });
+      o.querySelectorAll('input[data-i]').forEach(c => c.onchange = () => { const i = +c.dataset.i; if(c.checked) st.choisies.add(i); else st.choisies.delete(i); maj(); });
+      const t = o.querySelector('#cxDocTitre'), x = o.querySelector('#cxDocTexte');
+      if(t) t.oninput = () => { st.titre = t.value; maj(); };
+      if(x) x.oninput = () => { st.texte = x.value; maj(); };
+      ok.onclick = () => {
+        if(st.onglet === 'cahier') return fin([...st.choisies].sort((a, b) => a - b).map(i => st.liste[i]).map(e => ({ titre: lib(e), html: cxDocHtml(e), chapitre: e.chapitre || '' })));
+        fin([{ titre: st.titre.trim() || 'Document', html: cxDocHtml({ raw: st.texte }) }]);
+      };
+      maj();
+    };
+    o.style.display = 'flex'; rendre(); charger();
+  });
+}
 
 /* =====================================================================
    PROFESSEUR : suivi en direct
@@ -921,6 +978,7 @@ function cxFigRendre(){
   const st = document.createElement('style');
   st.textContent = `
     .cx-ch{max-width:680px;width:94vw;max-height:88vh;display:flex;flex-direction:column;}
+    .cx-doc img, .cx-doc svg, .cx-doc canvas{max-width:100%;height:auto;} .cx-doc{line-height:1.6;}
     .cx-onglets{display:flex;gap:4px;background:#EEF1F5;border-radius:10px;padding:3px;flex-wrap:wrap;margin-bottom:10px;}
     .cx-onglets button{border:0;background:none;border-radius:8px;padding:6px 12px;font:700 .85rem 'Space Grotesk',sans-serif;cursor:pointer;display:inline-flex;gap:4px;align-items:center;color:var(--ink);}
     .cx-onglets button.on{background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.12);}

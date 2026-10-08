@@ -358,7 +358,8 @@ function cdProfRendre(){
     <div class="cd-p-corps">
       <div class="cd-p-items">${cdP.items.map((x, k) => `<button class="cd-item${k === i ? ' on' : ''}${k < i ? ' vu' : ''}" data-k="${k}" onclick="cdProfAller(${k})"><span>${k + 1}</span> ${cdEsc(x.titre)}${x.prog ? ' <span class="gicon">architecture</span>' : ''}${x.exo ? ` <span class="gicon" style="color:${x.exo.interro ? '#6B3FA0' : '#E35D3A'};" title="${x.exo.interro ? 'Interrogation : enregistrée comme interrogation à la fin' : 'Exercice'}">${x.exo.interro ? 'quiz' : 'edit_square'}</span>` : ''}${cdProfNb(k)}</button>`).join('')}
         <button class="cd-item cd-ajout" onclick="cxProfAjouterCours()"><span class="gicon">menu_book</span> Ajouter une partie de cours</button>
-        <button class="cd-item cd-ajout" onclick="cxProfAjouter()"><span class="gicon">edit_square</span> Ajouter un exercice</button></div>
+        <button class="cd-item cd-ajout" onclick="cxProfAjouter()"><span class="gicon">edit_square</span> Ajouter un exercice</button>
+        <button class="cd-item cd-ajout" onclick="cxProfAjouterDocument()"><span class="gicon">description</span> Ajouter un document</button></div>
       <div class="cd-p-scene">
         <div class="cd-nav"><button class="btn secondary" onclick="cdProfAller(${i - 1})" ${i ? '' : 'disabled'}><span class="gicon">arrow_back</span> Précédent</button>
           ${it.prog ? `<button class="btn" style="background:#1F7A4D;" onclick="cdProfTableau()"><span class="gicon">architecture</span> Dérouler la construction au tableau</button>` : ''}

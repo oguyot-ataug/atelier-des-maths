@@ -2045,3 +2045,9 @@ select:not([multiple]):not([size]){
 .adp-tuile small{ color:var(--ink-soft); font-size:.85rem; line-height:1.45; }
 .adp-maths{ margin-top:18px; font-size:.9rem; color:var(--ink-soft); }
 @media (max-width:700px){ .adp-hero{ grid-template-columns:1fr; padding:20px; } .adp-hero img{ max-width:150px; grid-row:1; } }
+
+/* Encadré « À apprendre » ([[...]] dans l'outil de correction) : une définition du cours, avec son étiquette. */
+.def-box.lecon-box{ margin:8px 0; }
+.def-box.lecon-box::before{ content:'À apprendre'; display:block; font:700 .7rem 'Space Grotesk',sans-serif; letter-spacing:.06em; text-transform:uppercase; color:#B8511F; margin-bottom:4px; }
+.fmt-btn.fmt-lecon{ width:auto; padding:0 10px; display:inline-flex; align-items:center; gap:4px; font:600 .8rem Inter,sans-serif; }
+.fmt-btn.fmt-lecon .gicon{ font-size:16px; }

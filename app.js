@@ -2088,6 +2088,9 @@ function renderMathText(raw){
   function protect(html){ protectedBlocks.push(html); return `\u0000${protectedBlocks.length-1}\u0000`; }
 
   // 0) mini mise en forme : **gras** et {{couleur|texte}}
+  // [[ ... ]] : encadré « À apprendre » (comme une définition du cours) -- les élèves y retrouvent, dans le
+  // cahier et en séance, l'écoute, le mode apprentissage et le jeu « Remettre dans l'ordre ».
+  text = text.replace(/\[\[\s*([\s\S]+?)\s*\]\]/g, '\u0001$1\u0002');
   const COLOR_MAP={rouge:'#D93025',bleu:'#1F3A5C',vert:'#2C5A2E',orange:'#E35D3A'};
   text = text.replace(/\*\*([^*]+)\*\*/g, (m,inner)=>`<b>${inner}</b>`);
   text = text.replace(/__([^_]+)__/g, (m,inner)=>`<u>${inner}</u>`);
@@ -2154,7 +2157,7 @@ function renderMathText(raw){
   text = text.replace(/ {2,}/g, (m)=>'&nbsp;'.repeat(m.length));
   // on restitue les blocs protégés
   text = text.replace(/\u0000(\d+)\u0000/g, (m,i)=>protectedBlocks[+i]);
-  return text;
+  return text.replace(/\u0001/g, '<div class="def-box lecon-box">').replace(/\u0002(<br>)?/g, '</div>');
 }
 /* Mise en page de l'outil de correction : mêmes lignes/colonnes glissables-déposables que dans
    le module évaluation (contexte 'global'), avec un bouton Valider qui cache la barre d'outils
@@ -2306,6 +2309,7 @@ function wrapSelection(before, after){
   renderCorrectionPreview();
 }
 function applyBold(){ wrapSelection('**','**'); }
+function applyLecon(){ wrapSelection('[[',']]'); }
 function applyColor(color){ wrapSelection('{{'+color+'|','}}'); }
 
 /* ---- mini outil de figure géométrique ---- */
@@ -3371,6 +3375,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1031', date:'2026-10-08', items:[
+    "Sessions : nouveau bouton « Ajouter un document » dans la télécommande (L'Atelier du Prof et L'Atelier des Maths). Deux possibilités : choisir une ou plusieurs entrées du cahier de la classe ou des brouillons préparés dans Correction (texte, images, tableaux, photo d'un cahier…), ou écrire un « texte rapide ». Le document s'affiche sur l'écran des élèves comme une partie de cours.",
+    "Correction : nouveau bouton « À apprendre » dans la barre de mise en forme (ou [[ … ]] dans le texte). Le passage devient un encadré « À apprendre », comme une définition du cours : dans le cahier de la classe et en séance, les élèves ont l'écoute, le mode apprentissage (réciter à voix haute) et le jeu « Remettre dans l'ordre ». Utile dans toutes les matières (L'Atelier du Prof), et en maths pour une propriété vue en classe."
+  ] },
   { version:'2026-08-19.1030', date:'2026-10-08', items:[
     "L'Atelier du Prof, étape 3 (début) : la page Correction sans chapitre de maths. Le choix du niveau et du chapitre devient un champ « Thème ou séquence » libre (ex. « La Révolution française »), qui propose les thèmes déjà utilisés ; le cahier de la classe les regroupe comme des chapitres. Le niveau suit la classe active. Textes d'aide et exemples adaptés (« Analyse du document 2, Exercice 3 p. 45 »). Pour une matière autre que les maths, le texte n'est plus mis en forme comme des mathématiques : une date comme 14/07/1789 ne devient plus une fraction, le A de « Partie A » n'est plus en italique ; restent le gras, le souligné, les couleurs et les formules entre $...$. Sur L'Atelier des Maths, rien ne change."
   ] },
