@@ -180,7 +180,7 @@ function plNum(root, x, o){
       if(g) g.innerHTML = K.dessin ? K.dessin(c.rep, st) : ''; else if(K.texte) el.innerHTML = K.texte(c.rep, st);
       if(bar) bar.innerHTML = K.barre ? K.barre(c.rep, st, c.id) : ''; });
   };
-  const effacerMarques = () => root.querySelectorAll('.pn-ok, .pn-ko').forEach(e => e.classList.remove('pn-ok', 'pn-ko'));
+  const effacerMarques = () => root.querySelectorAll('.pn-ok, .pn-ko, .pn-b-ok, .pn-b-ko, .pn-b-oubli').forEach(e => { e.classList.remove('pn-ok', 'pn-ko', 'pn-b-ok', 'pn-b-ko', 'pn-b-oubli'); if(e.dataset.pnt) e.removeAttribute('title'); });
   const choisir = id => {
     sel = id; afficher();
     if(!id){ plClavier.fermer(); return; }
@@ -237,7 +237,14 @@ function plNum(root, x, o){
   const marquer = res => {
     effacerMarques(); if(!res || !res.d) return;
     M.cibles.forEach((c, i) => { const el = root.querySelector(`[data-pn="${c.id}"]`) || (c.type === 'bascule' ? root.querySelector(`[data-pnt^="${c.id}:"]`)?.closest('.pl-grille, .pl-liste, ul') : null);
-      if(el && res.d[i] !== null) el.classList.add(res.d[i] ? 'pn-ok' : 'pn-ko'); });
+      if(el && res.d[i] !== null) el.classList.add(res.d[i] ? 'pn-ok' : 'pn-ko');
+      // Nombres à entourer / barrer : le cadre rouge autour de la grille ne disait pas LEQUEL était faux (signalé :
+      // « Entoure les multiples de 6 », 40 entouré en trop, resté vert comme les autres). Chaque choix est marqué :
+      // vert s'il est juste, rouge s'il est en trop ; les oubliés (orange) ne sont montrés qu'au professeur.
+      if(c.type === 'bascule' && res.d[i] !== null) root.querySelectorAll(`[data-pnt^="${c.id}:"]`).forEach(b => {
+        const j = +b.dataset.pnt.split(':')[1], on = etat.t.includes(b.dataset.pnt), att = c.rep.includes(j);
+        const k = on ? (att ? 'pn-b-ok' : 'pn-b-ko') : (att && o.lecture ? 'pn-b-oubli' : '');
+        if(k){ b.classList.add(k); b.title = { 'pn-b-ok': 'juste', 'pn-b-ko': c.mode === 'barre' ? 'barré à tort' : 'entouré à tort', 'pn-b-oubli': 'oublié' }[k]; } }); });
   };
   afficher(); if(o.res) marquer(o.res);
   return {
@@ -464,11 +471,14 @@ function plClavierPhysique(e){
     .pn-ex .pn-part{ cursor:pointer; } .pn-ex .pn-part:hover{ fill-opacity:.85; }
     .pn-lecture .pn-case, .pn-lecture .pn-part, .pn-lecture .pn-bascule, .pn-lecture .pn-mot{ cursor:default; }
     .pn-ex .pn-bascule{ border:2px dashed rgba(58,110,165,.3); background:none; border-radius:999px; padding:2px 8px; cursor:pointer; font:inherit; color:inherit; position:relative; }
-    .pn-ex .pn-bascule.pn-entoure.on{ border:2.5px solid #1F7A4D; } .pn-lecture .pn-bascule, .pn-lecture .pn-mot{ border-color:transparent; }
+    .pn-ex .pn-bascule.pn-entoure.on{ border:2.5px solid #1F3A5C; } .pn-lecture .pn-bascule, .pn-lecture .pn-mot{ border-color:transparent; }
     .pn-ex .pn-bascule.pn-barre.on::after{ content:''; position:absolute; left:2px; right:2px; top:50%; border-top:3px solid #C0392B; transform:rotate(-20deg); }
     .pn-ex .pn-choix{ display:inline-flex; gap:2px; align-items:center; } .pn-ex .pn-sep{ color:#8A93A3; margin:0 2px; }
     .pn-ex .pn-mot{ border:2px dashed rgba(58,110,165,.3); background:none; border-radius:999px; padding:1px 8px; font:700 1em inherit; color:#1F3A5C; cursor:pointer; }
-    .pn-ex .pn-mot.on{ border:2.5px solid #1F7A4D; background:#F1FAF5; }
+    .pn-ex .pn-mot.on{ border:2.5px solid #1F3A5C; background:#EEF3F9; }
+    .pn-ex .pn-bascule.pn-b-ok{ border:2.5px solid #1F7A4D !important; background:#EAF7EF; }
+    .pn-ex .pn-bascule.pn-b-ko{ border:2.5px solid #C0392B !important; background:#FDECEA; }
+    .pn-ex .pn-bascule.pn-b-oubli{ border:2.5px dashed #E08A1E !important; background:#FFF5E6; }
     .pn-ex .pn-ok{ outline:3px solid #1F7A4D; outline-offset:2px; border-radius:8px; }
     .pn-ex .pn-ko{ outline:3px solid #C0392B; outline-offset:2px; border-radius:8px; }
     .pn-ex .pn-case.pn-ok{ border-color:#1F7A4D; outline:none; background:#EAF7EF; } .pn-ex .pn-case.pn-ko{ border-color:#C0392B; outline:none; background:#FDECEA; }

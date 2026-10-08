@@ -3371,6 +3371,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1019', date:'2026-10-08', items:[
+    "Exercices « Entoure » / « Barre » à l'écran : chaque nombre est maintenant marqué après vérification -- signalé (copie d'Héloïse, « Entoure les multiples de 6 ») : 40 entouré en trop restait vert comme les bonnes réponses, seul un cadre rouge autour de la grille signalait une erreur, sans dire laquelle. Désormais : entouré juste en vert, entouré à tort en rouge (l'élève voit lequel corriger) ; dans la vue professeur d'une session, les réponses oubliées apparaissent aussi, en pointillés orange, avec une petite légende. Avant vérification, un nombre entouré est en bleu foncé (et non plus en vert, qui laissait croire qu'il était juste)."
+  ] },
   { version:'2026-08-19.1018', date:'2026-10-08', items:[
     "Export PDF des cours : plus de badge (Définition, Propriété…) coupé en bas de page -- signalé : « Il reste encore parfois des défauts de découpage » (le haut du badge « Propriété 2 » visible en bas de la page 3, le reste en page 4). Cause : la bibliothèque PDF plaçait ses sauts de page tous les 1046 px, mais découpait l'image tous les 1047,3 px ; ce petit écart s'accumulait de page en page (4 px en bas de la page 3), juste assez pour faire déborder le haut du bloc suivant. La découpe suit maintenant exactement les sauts de page. Le cours occupe aussi exactement la largeur utile de la page (il débordait légèrement à droite)."
   ] },

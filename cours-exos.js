@@ -444,6 +444,7 @@ function cxProfDetailFaire(){
       <p class="hint" style="margin:4px 0;">${r ? `Dernière vérification : ${r.juste} / ${r.total} juste${r.juste > 1 ? 's' : ''}.` : rep.etat ? 'Pas encore vérifié.' : 'Pas encore commencé.'}</p>${xc && xc.consigne ? `<div class="cx-consigne">${xc.consigne}</div>` : ''}<div class="cx-td" id="cxTdProf"></div>`;
     const x = cxTdExo(it), zone = box.querySelector('#cxTdProf');
     if(!x || !plNum(zone, x, { etat: rep.etat, res: tenu ? null : r, lecture: !tenu, onChange: tenu ? e => cxTdProfChange(e) : null })) zone.innerHTML = it.html || '';
+    else if(zone.querySelector('.pn-b-ko, .pn-b-oubli')) zone.insertAdjacentHTML('afterend', '<p class="hint cx-leg-b"><i class="ok"></i>juste <i class="ko"></i>en trop <i class="oubli"></i>oublié</p>');
     return;
   }
   if(it.exo.type === 'prog'){
@@ -881,6 +882,7 @@ function cxFigChange(){
     .cx-apercu{background:#F6F8FB;border-radius:10px;padding:6px 10px;margin-bottom:10px;} .cx-apercu summary{cursor:pointer;font-weight:700;color:#1F3A5C;}
     .cx-consigne{background:#F6F8FB;border-radius:10px;padding:10px 14px;margin-bottom:10px;font-size:1.02rem;}
     .cx-resume{display:flex;gap:6px 14px;flex-wrap:wrap;align-items:center;font-family:'Space Grotesk',sans-serif;margin:4px 0 8px;}
+    .cx-leg-b{display:flex;gap:4px;align-items:center;margin:6px 0 0;} .cx-leg-b i{width:14px;height:14px;border-radius:50%;display:inline-block;margin-left:8px;border:2.5px solid #1F7A4D;} .cx-leg-b i.ko{border-color:#C0392B;} .cx-leg-b i.oubli{border:2.5px dashed #E08A1E;}
     .cx-leg{display:inline-flex;gap:4px;align-items:center;font:500 .75rem Inter,sans-serif;color:var(--ink-soft);margin-left:auto;} .cx-leg i{width:10px;height:10px;border-radius:3px;display:inline-block;margin-left:6px;}
     .cx-bleu{color:#3A6EA5;} .cx-bleu .gicon,.cx-rouge .gicon{font-size:17px;vertical-align:middle;} .cx-rouge{color:#C0392B;font-weight:800;}
     .cx-grille{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;}
