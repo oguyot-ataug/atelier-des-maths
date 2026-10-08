@@ -250,7 +250,9 @@ function plNum(root, x, o){
   return {
     total: M.cibles.filter(c => !(c.type === 'x' && c.rep.aide)).length,
     etat: () => plNumCopie(etat),
-    verifier(){ choisir(null); const d = M.cibles.map(c => c.type === 'x' && c.rep.aide ? null : juste(c)), n = d.filter(v => v !== null), res = { juste: n.filter(Boolean).length, total: n.length, d }; marquer(res); return res; },
+    // Résultat sans rien montrer (session où seul le professeur voit les erreurs).
+    evaluer(){ const d = M.cibles.map(c => c.type === 'x' && c.rep.aide ? null : juste(c)), n = d.filter(v => v !== null); return { juste: n.filter(Boolean).length, total: n.length, d }; },
+    verifier(){ choisir(null); const res = this.evaluer(); marquer(res); return res; },
     effacer(){ etat = plNumEtatVide(); choisir(null); effacerMarques(); afficher(); change(); },
     poser(e, res){ etat = plNumEtatVide(e); afficher(); marquer(res); },
     fermer(){ if(sel){ sel = null; plClavier.fermer(); } }

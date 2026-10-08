@@ -311,6 +311,7 @@ function cdProfRendre(){
       <div class="cd-p-scene">
         <div class="cd-nav"><button class="btn secondary" onclick="cdProfAller(${i - 1})" ${i ? '' : 'disabled'}><span class="gicon">arrow_back</span> Précédent</button>
           ${it.prog ? `<button class="btn" style="background:#1F7A4D;" onclick="cdProfTableau()"><span class="gicon">architecture</span> Dérouler la construction au tableau</button>` : ''}
+          ${it.exo && it.exo.type === 'td' ? `<button class="btn secondary" onclick="cdProfEtat({ verif: ${cdP.etat.verif === false} })" title="${cdP.etat.verif === false ? 'Les élèves répondent sans voir leurs erreurs : vous les voyez directement. Cliquez pour leur rendre le bouton « Vérifier ma réponse ».' : 'Les élèves peuvent vérifier leurs réponses et recommencer. Cliquez pour retirer le bouton « Vérifier ma réponse » (exercices du manuel de toute la session) : vous verrez directement leurs erreurs.'}"><span class="gicon">${cdP.etat.verif === false ? 'visibility_off' : 'task_alt'}</span> Vérification par l'élève : ${cdP.etat.verif === false ? 'non' : 'oui'}</button>` : ''}
           ${it.corr ? `<button class="btn" style="background:${cdP.etat.corr ? '#5B6472' : '#1F7A4D'};" onclick="cdProfEtat({ corr: ${!cdP.etat.corr} })"><span class="gicon">${cdP.etat.corr ? 'visibility_off' : 'fact_check'}</span> ${cdP.etat.corr ? 'Cacher la correction' : 'Montrer la correction aux élèves'}</button>` : ''}
           <button class="btn" onclick="cdProfAller(${i + 1})" ${i < cdP.items.length - 1 ? '' : 'disabled'}>Suivant <span class="gicon">arrow_forward</span></button></div>
         <div class="cd-item-titre">${cdEsc(it.titre || '')}${it.chapitre ? ` <small>${cdEsc(it.chapitre)}</small>` : ''}</div>
@@ -464,7 +465,7 @@ async function cdEleveCharger(){
   cdE.vue = Math.min(cdE.vue, data.max != null ? data.max : data.idx);
   if(repris) cdToast('<span class="gicon">cast</span> Ton professeur reprend la main : tout le monde suit le même élément.');
   // Exercice en cours sur l'écran : on ne le redessine pas (la saisie en cours serait perdue).
-  const corrBouge = !!(avant && avant.etat && avant.etat.corr) !== !!(data.etat && data.etat.corr) && ((data.items[cdE.vue] || {}).exo || {}).type === 'td';
+  const corrBouge = (!!(avant && avant.etat && avant.etat.corr) !== !!(data.etat && data.etat.corr) || ((avant && avant.etat && avant.etat.verif) === false) !== ((data.etat && data.etat.verif) === false)) && ((data.items[cdE.vue] || {}).exo || {}).type === 'td';
   if(avant && avant.idx === data.idx && avant.n === data.n && avant.mode === data.mode && avant.max === data.max && (data.items[cdE.vue] || {}).exo && cdE.cxMonte === cdE.vue && !corrBouge) return;
   const it = data.items[data.idx] || {}, etape = data.etat && data.etat.etape;
   // Construction déroulée par le professeur : tableau en plein écran, à la même étape.

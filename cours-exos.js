@@ -441,7 +441,7 @@ function cxProfDetailFaire(){
     const tenu = s.main, r = rep.res;
     const xc = cxTdExo(it);
     box.innerHTML = `${tete}${tenu ? '<p class="cx-tenu"><span class="gicon">pan_tool_alt</span> Vous avez la main : ce que vous faites ici apparaît en direct sur l\'écran de l\'élève. Rendez-lui la main ensuite.</p>' : ''}
-      <p class="hint" style="margin:4px 0;">${r ? `Dernière vérification : ${r.juste} / ${r.total} juste${r.juste > 1 ? 's' : ''}.` : rep.etat ? 'Pas encore vérifié.' : 'Pas encore commencé.'}</p>${xc && xc.consigne ? `<div class="cx-consigne">${xc.consigne}</div>` : ''}<div class="cx-td" id="cxTdProf"></div>`;
+      <p class="hint" style="margin:4px 0;">${r ? `${cdP.etat.verif === false ? 'Réponses actuelles' : 'Dernière vérification'} : ${r.juste} / ${r.total} juste${r.juste > 1 ? 's' : ''}${cdP.etat.verif === false && r.juste < r.total ? ' (l\'élève ne voit pas ses erreurs)' : ''}.` : rep.etat ? 'Pas encore vérifié.' : 'Pas encore commencé.'}</p>${xc && xc.consigne ? `<div class="cx-consigne">${xc.consigne}</div>` : ''}<div class="cx-td" id="cxTdProf"></div>`;
     const x = cxTdExo(it), zone = box.querySelector('#cxTdProf');
     if(!x || !plNum(zone, x, { etat: rep.etat, res: tenu ? null : r, lecture: !tenu, onChange: tenu ? e => cxTdProfChange(e) : null })) zone.innerHTML = it.html || '';
     else if(zone.querySelector('.pn-b-ko, .pn-b-oubli')) zone.insertAdjacentHTML('afterend', '<p class="hint cx-leg-b"><i class="ok"></i>juste <i class="ko"></i>en trop <i class="oubli"></i>oublié</p>');
@@ -604,26 +604,33 @@ function cxTdProfChange(etat){
   cxProfTrav(k).set(e, Object.assign(x, { rep, t: Date.now() }));
   clearTimeout(cdP.tdT); cdP.tdT = setTimeout(() => { cdP.tdT = null; cxProfSauver(e, k, rep); }, 400);
 }
+// Option de la session (télécommande) : les élèves ne vérifient plus eux-mêmes les exercices du manuel -- demandé :
+// « un élève peut recommencer plusieurs fois et finira par passer au vert » ; le professeur voit directement les erreurs.
+function cxSansVerif(){ return !!(cdE && cdE.d && cdE.d.etat && cdE.d.etat.verif === false); }
 function cxEleveTd(k, it, c){
-  const rep = cdE.trav.get(k) || {}, tenu = cdE.main === k, x = cxTdExo(it);
+  const rep = cdE.trav.get(k) || {}, tenu = cdE.main === k, x = cxTdExo(it), sans = cxSansVerif();
   const corr = it.corr && cdE.d && cdE.d.idx === k && cdE.d.etat && cdE.d.etat.corr;
   if(typeof plClavier !== 'undefined') plClavier.fermer();
   c.innerHTML = `${cxEleveTete(k, it)}${x && x.consigne ? `<div class="cx-consigne">${x.consigne}</div>` : ''}<div class="cx-td" id="cxTdEl"></div>
-    ${tenu ? '' : `<div class="pn-actions"><button class="btn cx-td-verif" onclick="cxEleveTdVerifier()"><span class="gicon">task_alt</span> Vérifier ma réponse</button>
+    ${tenu ? '' : `<div class="pn-actions">${sans ? '' : `<button class="btn cx-td-verif" onclick="cxEleveTdVerifier()"><span class="gicon">task_alt</span> Vérifier ma réponse</button>`}
       <button class="btn secondary" onclick="cxEleveTdEffacer()"><span class="gicon">ink_eraser</span> Effacer</button></div>`}
-    <div class="pn-bilan ${rep.res ? (rep.res.juste === rep.res.total ? 'ok' : 'ko') : ''}" id="cxTdBilan">${rep.res && typeof plNumBilan === 'function' ? plNumBilan(rep.res) : ''}</div>
+    ${sans ? '<p class="hint cx-sans-verif"><span class="gicon">visibility</span> Pas de vérification pour cet exercice : réponds de ton mieux, ton professeur voit tes réponses.</p>'
+      : `<div class="pn-bilan ${rep.res ? (rep.res.juste === rep.res.total ? 'ok' : 'ko') : ''}" id="cxTdBilan">${rep.res && typeof plNumBilan === 'function' ? plNumBilan(rep.res) : ''}</div>`}
     ${corr ? '<div class="cd-corr-montree"><span class="gicon">fact_check</span> Correction</div>' + it.corr : ''}`;
   const zone = c.querySelector('#cxTdEl');
-  cdE.td = x && typeof plNum === 'function' ? plNum(zone, x, { etat: rep.etat, res: rep.res, lecture: tenu, onChange: etat => {
-    const avant = cdE.trav.get(k) || {}; cdE.trav.set(k, Object.assign({}, avant, { etat, res: null }));
+  cdE.td = x && typeof plNum === 'function' ? plNum(zone, x, { etat: rep.etat, res: sans && !corr ? null : rep.res, lecture: tenu, onChange: etat => {
+    // Sans vérification : le résultat est calculé à chaque réponse, pour le professeur seulement.
+    const avant = cdE.trav.get(k) || {}; cdE.trav.set(k, Object.assign({}, avant, { etat, res: cxSansVerif() && cdE.td ? cdE.td.evaluer() : null }));
     const b = document.getElementById('cxTdBilan'); if(b){ b.innerHTML = ''; b.className = 'pn-bilan'; }
     const s = document.getElementById('cxSave'); if(s) s.textContent = 'Enregistrement…';
     clearTimeout(cdE.saveT); cdE.saveT = setTimeout(() => cxEleveSauver(k), 700);
   } }) : null;
   if(!cdE.td){ zone.innerHTML = it.html || ''; if(typeof renderStaticMath === 'function') renderStaticMath(zone); }
+  // Option passée en cours d'exercice : le professeur voit tout de suite où en sont les réponses déjà données.
+  else if(sans && !tenu && rep.etat && !rep.res){ cdE.trav.set(k, Object.assign({}, rep, { res: cdE.td.evaluer() })); clearTimeout(cdE.saveT); cdE.saveT = setTimeout(() => cxEleveSauver(k), 700); }
 }
 function cxEleveTdVerifier(){
-  if(!cdE || !cdE.td) return;
+  if(!cdE || !cdE.td || cxSansVerif()) return;
   const k = cdE.vue, res = cdE.td.verifier(), avant = cdE.trav.get(k) || {};
   cdE.trav.set(k, Object.assign({}, avant, { etat: cdE.td.etat(), res, essais: (avant.essais || 0) + 1 }));
   const b = document.getElementById('cxTdBilan'); if(b){ b.className = 'pn-bilan ' + (res.juste === res.total ? 'ok' : 'ko'); b.innerHTML = plNumBilan(res); }
