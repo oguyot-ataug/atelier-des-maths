@@ -3344,6 +3344,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1015', date:'2026-10-08', items:[
+    "Géométrie dynamique : points d'intersection d'une droite et d'un cercle (ou de deux cercles) qui restaient collés -- signalé (figure 2 p. 83) : « G et H sont les points d'intersection du grand cercle et de la perpendiculaire… quand j'anime C, il y a un moment où G et H sont confondus. Ensuite, ils ne se séparent plus ! ». Chaque point suivait le croisement le plus proche de sa position précédente : après une tangence, G et H suivaient le même. Désormais, chaque point garde son croisement (le premier ou le second le long de la droite) : après la tangence, ils se séparent de nouveau. Quand la droite ne coupe plus le cercle, les deux points (et ce qui s'appuie sur eux, comme le segment [GH]) sont masqués, puis réapparaissent dès que les objets se recoupent. Les figures déjà enregistrées où G et H étaient restés collés se réparent d'elles-mêmes à l'ouverture."
+  ] },
   { version:'2026-08-19.1014', date:'2026-10-08', items:[
     "Mes figures enregistrées : renommer et effacer -- demandé : « Permettre aussi de renommer une figure enregistrée ou d'effacer ». La fenêtre montre maintenant un aperçu de chaque figure (un clic l'ouvre), avec trois boutons : Ouvrir, Renommer (le nom ne peut pas être celui d'une autre de vos figures ; si la figure est ouverte, son bouton « Enregistrer » prend le nouveau nom) et Effacer (après confirmation, avec le nom de la figure ; celles déjà insérées dans un cahier y restent). La figure ouverte est signalée dans la liste."
   ] },

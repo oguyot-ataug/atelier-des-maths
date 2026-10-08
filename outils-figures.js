@@ -4343,11 +4343,22 @@ function recomputeDependents(){
       const inter = intersectLines(p.def.s1, p.def.s2);
       if(inter){ p.x = inter.x; p.y = inter.y; }
     } else if(p.def.type==='intersection-courbes'){
-      // Des deux intersections possibles, on garde celle qui est la plus proche de la position
-      // précédente : le point suit son croisement quand on déplace les objets.
+      // Chaque point garde SON croisement (k : premier ou second, dans l'ordre que donne
+      // figIntersectCurves -- le long de la droite pour droite/cercle). Signalé : « quand j'anime C, il y a
+      // un moment où G et H sont confondus. Ensuite, ils ne se séparent plus ! » -- l'ancien choix « le plus
+      // proche de la position précédente » faisait suivre le même croisement aux deux points après une
+      // tangence. Sans croisement (la droite ne coupe plus le cercle), le point est masqué jusqu'au retour.
       const c1 = figCurve(p.def.s1), c2 = figCurve(p.def.s2);
-      const cands = c1 && c2 ? figIntersectCurves(c1, c2) : [];
-      if(cands.length){ const q = cands.reduce((m,c)=>Math.hypot(c.x-p.x,c.y-p.y)<Math.hypot(m.x-p.x,m.y-p.y)?c:m); p.x = q.x; p.y = q.y; }
+      const cands = c1 && c2 ? figIntersectCurves(c1, c2).filter(q=>isFinite(q.x) && isFinite(q.y)) : [];
+      if(cands.length===2){
+        if(p.def.k===undefined){
+          // Figures d'avant ce réglage : le croisement le plus proche, sauf s'il est déjà pris par le jumeau.
+          const jumeau = figState.points.find(q=>q!==p && q.def && q.def.type==='intersection-courbes' && q.def.s1===p.def.s1 && q.def.s2===p.def.s2 && q.def.k!==undefined);
+          p.def.k = jumeau ? 1 - jumeau.def.k : (Math.hypot(cands[0].x-p.x, cands[0].y-p.y) <= Math.hypot(cands[1].x-p.x, cands[1].y-p.y) ? 0 : 1);
+        }
+        const q = cands[p.def.k]; p.x = q.x; p.y = q.y; delete p.indefini;
+      } else if(cands.length===1){ p.x = cands[0].x; p.y = cands[0].y; delete p.indefini; }
+      else p.indefini = true;
     } else if(p.def.type==='point-sur-arc'){
       // Point auxiliaire (invisible) qui fixe la fin d'un arc « centre, point, point » : reste sur le cercle.
       const {arc} = p.def; const r = Math.hypot(arc.p1.x-arc.center.x, arc.p1.y-arc.center.y);
@@ -5071,7 +5082,7 @@ function handleIntersectionClick(x, y){
   if(!pts.length) hint.textContent = 'Ces deux objets ne se coupent pas (ou sont parallèles).';
   else if(!nouveaux.length) hint.textContent = 'Il y a déjà un point à cette intersection.';
   else {
-    nouveaux.forEach(q=>figState.points.push({label:nextPointLabel(), x:q.x, y:q.y, def:{type:'intersection-courbes', s1, s2}, dependsOn:[s1, s2]}));
+    nouveaux.forEach(q=>figState.points.push({label:nextPointLabel(), x:q.x, y:q.y, def:{type:'intersection-courbes', s1, s2, k:pts.length===2 ? figIntersectCurves(c1, c2).findIndex(c=>Math.hypot(c.x-q.x, c.y-q.y) < 1e-6) : undefined}, dependsOn:[s1, s2]}));
     hint.textContent = nouveaux.length>1 ? 'Deux points d\'intersection placés.' : 'Point d\'intersection placé.';
   }
   renderFigureSvg();
@@ -5091,7 +5102,8 @@ function figPlacerPoint(x, y){
   const croisement = findCurveIntersectionNear(x,y);
   if(croisement){
     const {s1, s2} = croisement;
-    figState.points.push({label:nextPointLabel(), x:croisement.x, y:croisement.y, def:{type:'intersection-courbes', s1, s2}, dependsOn:[s1,s2]});
+    const cs = figIntersectCurves(figCurve(s1), figCurve(s2)), k = cs.length===2 ? (Math.hypot(cs[0].x-croisement.x, cs[0].y-croisement.y) <= Math.hypot(cs[1].x-croisement.x, cs[1].y-croisement.y) ? 0 : 1) : undefined;
+    figState.points.push({label:nextPointLabel(), x:croisement.x, y:croisement.y, def:{type:'intersection-courbes', s1, s2, k}, dependsOn:[s1,s2]});
     return figState.points[figState.points.length-1];
   }
   const shape = findNearbyShape(x,y);
@@ -5414,6 +5426,7 @@ function renderFigureSvg(){
   }
   figState.shapes.forEach(s=>{
     const debutObjet = html.length; // pour la trace de l'objet (figTraceNoter)
+    if([s.p1, s.p2, s.vertex, s.center, s.through].some(q=>q && q.indefini)) return; // s'appuie sur une intersection disparue
     if(s.type==='segment'){
       html+=`<line x1="${s.p1.x}" y1="${s.p1.y}" x2="${s.p2.x}" y2="${s.p2.y}" ${shapeStrokeAttrs(s,'#1C1B2E')}/>`;
       if(s.lengthLabel){
@@ -5589,6 +5602,7 @@ function renderFigureSvg(){
     const defaultColor = isMovableDependent ? '#1F7A4D' : (p.def ? '#7A8A98' : '#1C1B2E');
     const baseColor = p.color || (styledShape ? styledShape.strokeColor : defaultColor);
     const c = sel?'#E35D3A':baseColor;
+    if(p.indefini) return; // intersection qui n'existe plus (les objets ne se coupent plus)
     if(p.hidden){
       // Point auxiliaire (fin d'un arc « centre, point, point ») : invisible, sauf une petite
       // poignée en mode Déplacer pour allonger l'arc.
