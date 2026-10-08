@@ -3371,6 +3371,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1024', date:'2026-10-08', items:[
+    "Session libre, position des élèves -- signalé : « Pour une session déjà ouverte ça ne fonctionne pas ». Les élèves dont la page était ouverte avant la mise à jour ne signalent pas l'élément où ils sont (leur page n'a pas le nouveau code). La télécommande se rabat donc, pour eux, sur l'élément de leur dernier travail enregistré (vérifié toutes les 10 secondes ; au survol : « d'après son dernier travail enregistré ») ; le signal direct de l'élève, plus précis, l'emporte dès qu'il arrive (après un rechargement de sa page)."
+  ] },
   { version:'2026-08-19.1023', date:'2026-10-08', items:[
     "Session en mode libre : le professeur voit où en est chaque élève -- demandé : « En mode session libre, comment savoir quel est l'exercice où est un élève ? ». Dans la télécommande : chaque élément de la liste porte le nombre d'élèves qui s'y trouvent (prénoms au survol) ; dans la liste de la classe, sous chaque nom, l'élément affiché (« 3. Exercice 2… », en vert si c'est celui que vous regardez) ; et sur les vignettes d'un exercice, les élèves qui sont ailleurs le sont aussi. L'élève le signale à chaque changement d'élément, et toutes les 20 secondes (une télécommande rouverte le sait donc vite)."
   ] },

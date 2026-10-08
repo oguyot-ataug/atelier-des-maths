@@ -255,17 +255,33 @@ async function cdProfMembres(){
   if(!cdP) return;
   const { data } = await sb.from('cours_direct_membres').select('student_id,vu_at,dehors,sorties,sortie_at').eq('direct_id', cdP.id);
   cdP.membres = new Map((data || []).map(m => [m.student_id, m]));
+  cdProfVuesTravaux();
   cdProfRendreClasse();
   if(typeof cxProfTick === 'function') cxProfTick();
 }
 // Mode libre : l'élément sur lequel se trouve chaque élève -- demandé : « En mode session libre, comment savoir
 // quel est l'exercice où est un élève ? ». Signalé par l'élève à chaque changement (et toutes les 20 s).
-function cdProfVue(p){
+// Deux sources, la plus récente l'emporte : le signal de l'élève, et (pour un élève dont la page date d'avant
+// cette fonction, dans une session déjà ouverte -- signalé : « pour une session déjà ouverte ça ne fonctionne
+// pas ») l'élément de son dernier travail enregistré.
+function cdProfVue(p, t, travail){
   if(!cdP || !p || !p.e || p.k == null) return;
-  if(!cdP.vues) cdP.vues = new Map();
+  if(!cdP.vues){ cdP.vues = new Map(); cdP.vuesInfo = new Map(); }
+  t = t || Date.now();
+  const avant = cdP.vuesInfo.get(p.e);
+  if(avant && avant.t > t) return;
+  cdP.vuesInfo.set(p.e, { t, travail: !!travail });
   if(cdP.vues.get(p.e) === p.k) return;
   cdP.vues.set(p.e, p.k);
   cdProfVuesMaj();
+}
+async function cdProfVuesTravaux(){
+  if(!cdP || cdP.etat.mode !== 'libre' || (cdP.vuesPoll && Date.now() - cdP.vuesPoll < 10000)) return;
+  cdP.vuesPoll = Date.now();
+  const { data } = await sb.from('cours_direct_travaux').select('student_id,item,updated_at').eq('direct_id', cdP.id);
+  const der = new Map();
+  (data || []).forEach(r => { const t = Date.parse(r.updated_at) || 0, d = der.get(r.student_id); if(!d || t > d.t) der.set(r.student_id, { k: r.item, t }); });
+  der.forEach((d, e) => cdProfVue({ e, k: d.k }, d.t, true));
 }
 function cdProfVuesMaj(){
   if(!cdP) return;
@@ -284,7 +300,8 @@ function cdProfNb(k){ // pastille « nombre d'élèves sur cet élément » (pr�
 function cdProfOu(id){ // « sur 3. Titre » pour la liste de la classe et les vignettes, en mode libre
   if(!cdP || cdP.etat.mode !== 'libre' || !cdP.vues || !cdP.vues.has(id)) return '';
   const k = cdP.vues.get(id), it = cdP.items[k] || {};
-  return `<span class="cd-ou${k === (cdP.etat.idx || 0) ? ' ici' : ''}" title="${cdEsc(it.titre || '')}"><span class="gicon">location_on</span>${k + 1}. ${cdEsc(it.titre || '')}</span>`;
+  const inf = cdP.vuesInfo && cdP.vuesInfo.get(id);
+  return `<span class="cd-ou${k === (cdP.etat.idx || 0) ? ' ici' : ''}" title="${cdEsc((it.titre || '') + (inf && inf.travail ? ' (d\'après son dernier travail enregistré)' : ''))}"><span class="gicon">location_on</span>${k + 1}. ${cdEsc(it.titre || '')}</span>`;
 }
 function cdProfSortie(p){
   if(!cdP || !p || !p.e) return;
