@@ -1037,7 +1037,7 @@ function openFigureTool(){hideAllToolContent(); document.getElementById('toolsMo
   if(splitBtn) splitBtn.style.display = 'none'; // idem
   const projBtn = document.getElementById('figProjBtn');
   if(projBtn) projBtn.style.display = 'none'; // idem
-  figInstrMode = false;
+  figInstrMode = false; document.body.classList.remove('fig-instr');
   const instrBtn = document.getElementById('figInsertInstrBtn');
   if(instrBtn) instrBtn.style.display = 'none'; // affiché par openInstrumentsTool
   // Construction automatique/IA : visible par défaut (usage prof -- correction, évaluation),
@@ -1054,7 +1054,7 @@ function closeFigureTool(){
   const vueInstr = figInstrMode && document.body.classList.contains('fig-split') ? figSplitVueAvant : null;
   figQuitterSplit();
   if(vueInstr && typeof showView==='function') showView(vueInstr); // écran partagé ouvert depuis la correction : on y revient
-  figInstrMode = false;
+  figInstrMode = false; document.body.classList.remove('fig-instr');
   // Session COURS : la page entière est en plein écran (cours-direct.js) -- on y reste.
   if(document.fullscreenElement && !(document.fullscreenElement === document.documentElement && document.body.classList.contains('cd-eleve-ouvert'))) (document.exitFullscreen || document.webkitExitFullscreen || function(){}).call(document);
   document.getElementById('toolsModalOverlay').style.display='none'; document.getElementById('figurePanel').style.display='none';
@@ -6435,6 +6435,7 @@ let figInstrMode = false;
 async function openInstrumentsTool(data){
   if(data && data.figure) reopenFigure(data.figure); else openFigureTool();
   figInstrMode = true;
+  document.body.classList.add('fig-instr'); // écran partagé : « Ajouter au cahier » masqué (doublon du bouton vert)
   const montrer = id => { const b = document.getElementById(id); if(b) b.style.display = 'inline-flex'; };
   montrer('figSplitBtn'); montrer('figInsertInstrBtn');
   const pb = document.getElementById('figProjBtn'); if(pb){ pb.style.display = 'inline-flex'; figProjBouton(); }
