@@ -215,7 +215,7 @@ function opOffresHtml(o, payee){
       ? 'J\'utilise cette offre avec <b>mes élèves</b> (école ou collège), dans le cadre de mon enseignement. Pour des cours particuliers ou du soutien rémunéré, je choisis l\'offre Professeur particulier.'
       : 'J\'utilise ces comptes pour <b>mes élèves de cours particuliers ou de soutien</b>, un compte par élève, dans la limite des élèves payés.'}</span></label>
     <label class="op-check"><input type="checkbox" id="opRenonciation"><span>Je demande l'accès immédiat et renonce à mon droit de rétractation (paiement unique, sans reconduction). J'accepte les <a href="#/cgv" target="_blank">conditions générales de vente</a>.</span></label>
-    <button class="btn op-payer" id="opPayer" onclick="opPayer()" disabled><span class="gicon">credit_card</span> Payer</button>
+    <button class="btn op-payer" id="opPayer" onclick="opPayer()" disabled><span class="gicon">credit_card</span> ${typeof venteOuverte !== 'function' || venteOuverte() ? 'Payer' : 'En vente dès le 1er décembre 2026'}</button>
     <span class="hint" id="opPayMsg" style="display:block;margin-top:6px;"></span>
   </div>`;
 }
@@ -248,6 +248,7 @@ async function opMajDevis(){
 }
 async function opPayer(){
   const btn = document.getElementById('opPayer');
+  if(typeof venteOuverte === 'function' && !venteOuverte()){ opMsg('opPayMsg', VENTE_MSG); return; }
   if(!document.getElementById('opEngagement').checked){ opMsg('opPayMsg', 'Merci de cocher l\'engagement d\'utilisation.'); return; }
   if(!document.getElementById('opRenonciation').checked){ opMsg('opPayMsg', 'Merci de cocher la demande d\'accès immédiat et les conditions de vente.'); return; }
   btn.disabled = true; opMsg('opPayMsg', 'Redirection vers le paiement sécurisé…', true);

@@ -257,6 +257,12 @@ function iaContexteNiveau(n){
 }
 // Niveaux en préparation, réservés aux administrateurs (menu masqué, routes refusées aux autres).
 const NIVEAUX_ADMIN = ['ce2']; // CE2 en préparation (administrateurs) ; la 4e est publiée depuis le build 786, la 3e depuis le build 817
+/* Ouverture des ventes -- demandé : « pour l'instant je ne vends rien tant que ce n'est pas nickel. On peut ajouter
+   une date, genre dispo à la vente à partir de... décembre 2026. Et mettre en démo pour le moment ». Avant cette
+   date : offres et prix affichés, essai gratuit possible, mais aucun paiement (sauf l'administrateur, pour tester). */
+const VENTE_OUVERTURE = '2026-12-01';
+function venteOuverte(){ return currentUserRole === 'admin' || new Date().toISOString().slice(0,10) >= VENTE_OUVERTURE; }
+const VENTE_MSG = 'Les offres seront en vente à partir du 1er décembre 2026. D\'ici là, le site est en démonstration : essayez-le gratuitement.';
 function niveauVisible(lvl){ return !NIVEAUX_ADMIN.includes(lvl) || currentUserRole === 'admin'; }
 
 const VACANCES = {
@@ -3375,6 +3381,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1033', date:'2026-10-08', items:[
+    "Ventes fermées jusqu'au 1er décembre 2026 -- demandé : « pour l'instant je ne vends rien tant que ce n'est pas nickel. On peut ajouter une date, genre dispo à la vente à partir de… décembre 2026. Et mettre en démo pour le moment ». Les offres et les prix restent affichés et l'essai gratuit reste possible, mais les boutons de paiement (offres Professeur et offre Famille) indiquent « En vente dès le 1er décembre 2026 » et n'ouvrent plus le paiement : « Les offres seront en vente à partir du 1er décembre 2026. D'ici là, le site est en démonstration : essayez-le gratuitement. » La page Tarifs l'annonce sous son titre. L'administrateur peut toujours payer, pour tester. L'ouverture se fait toute seule à la date (constante VENTE_OUVERTURE dans app.js)."
+  ] },
   { version:'2026-08-19.1032', date:'2026-10-08', items:[
     "L'Atelier du Prof, étape 4 en phase de test -- demandé : « pour l'instant les tests se feront en interne dans mon établissement et je ne peux rien faire payer tant que mon changement sur l'INPI n'est pas officiel ». Aucune vente : « Mon abonnement » et les CGV affichent que L'Atelier du Prof est en phase de test, ouvert aux professeurs invités par leur établissement (comptes et classes créés par l'administrateur) ; une offre maths déjà payée reste affichée (elle inclut L'Atelier du Prof). Mentions légales et confidentialité au nom de L'Atelier du Prof (adp.latelieraugmente.fr). Administration : les classes peuvent être de niveau 2de, 1re ou terminale (collègues des autres matières). « Générer avec l'IA » propose aussi ces niveaux, avec un exemple de thème hors maths."
   ] },

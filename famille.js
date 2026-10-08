@@ -297,7 +297,7 @@ function famAccesHtml(fam, active){
     </div>
     <div class="fam-prixbox" id="famPrix"></div>
     <label class="fam-check"><input type="checkbox" id="famRenonce"> <span>Je demande l'accès immédiat au contenu numérique dès le paiement et je reconnais perdre ainsi mon droit de rétractation de 14 jours (art. L221-28 13° du Code de la consommation).</span></label>
-    <button class="btn" id="famPayBtn" onclick="famPayer()" disabled><span class="gicon">credit_card</span> Payer par carte</button>
+    <button class="btn" id="famPayBtn" onclick="famPayer()" disabled><span class="gicon">credit_card</span> ${typeof venteOuverte !== 'function' || venteOuverte() ? 'Payer par carte' : 'En vente dès le 1er décembre 2026'}</button>
     <span class="hint" id="famPayMsg" style="display:block;margin-top:6px;"></span>
     <p class="hint" style="margin:8px 0 0;">Paiement unique et sécurisé (Stripe), <b>sans reconduction automatique</b> : rien ne sera prélevé l'an prochain sans votre accord. Facture émise par L'Atelier Augmenté, disponible ci-dessous. En cas de litige, après nous avoir écrit, vous pouvez recourir gratuitement au médiateur de la consommation CM2C (<a href="https://www.cm2c.net/declarer-un-litige.php" target="_blank" rel="noopener">cm2c.net</a>, 49 rue de Ponthieu, 75008 Paris) ; voir les <a href="#/cgv">CGV</a>.${fam.montant_paye_centimes && memePeriode ? ' Déjà payé pour cette année : '+famEuros(fam.montant_paye_centimes)+'.' : ''}</p>
     ${famData.pay.length ? `<details style="margin-top:8px;"><summary class="hint">Historique des paiements</summary><table class="fam-table" style="margin-top:6px;"><tr><th>Date</th><th>Niveaux</th><th>Montant</th><th>Accès jusqu'au</th></tr>${famData.pay.map(p=>`<tr><td>${famDate(p.created_at)}</td><td>${(p.niveaux||[]).map(famLib).join(', ')}</td><td>${famEuros(p.montant_centimes)}${p.test?' <span class="fam-badge" style="background:#6A4FB3;">test</span>':''}</td><td>${famDate(p.acces_until)}</td></tr>`).join('')}</table></details>` : ''}
@@ -331,6 +331,7 @@ function famAppliquerCode(){
 }
 async function famPayer(){
   const choisis = [...document.querySelectorAll('.famNiv:checked:not(:disabled)')].map(c=>c.value);
+  if(typeof venteOuverte === 'function' && !venteOuverte()) return famMsg('famPayMsg', VENTE_MSG);
   if(!document.getElementById('famRenonce').checked) return famMsg('famPayMsg', 'Cochez la case d\'accès immédiat pour continuer.');
   const btn = document.getElementById('famPayBtn'); btn.disabled = true;
   famMsg('famPayMsg', 'Redirection vers le paiement…', true);
