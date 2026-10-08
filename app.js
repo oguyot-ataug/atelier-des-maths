@@ -3343,6 +3343,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1003', date:'2026-10-08', items:[
+    "Nouveau jeu d'apprentissage des définitions, règles et propriétés : « Remettre dans l'ordre » -- demandé : « Un petit shaker et voilà que les mots sont mélangés. À l'élève de les remettre dans l'ordre... ». Un bouton shaker sur chaque encadré (à côté du micro du mode apprentissage, dans tous les chapitres et dans le cahier élève). Au clic, le shaker s'agite et les mots retombent en vrac ; l'élève les touche dans l'ordre pour reconstruire la phrase. Les formules et notations restent entières, la ponctuation reste collée à son mot, et deux mots identiques sont interchangeables. Trois niveaux : Facile (étiquettes de quelques mots, un mauvais choix rebondit), Normal (mot à mot, un mauvais choix rebondit), Difficile (mot à mot sans aide : on place tout, « Vérifier » garde le début juste et renvoie le reste dans le shaker). Indice (le mot suivant clignote), « Secouer » pour mélanger à nouveau, temps, erreurs et indices affichés à la fin, « Rejouer ». En quittant, l'encadré redevient exactement comme avant."
+  ] },
   { version:'2026-08-19.1002', date:'2026-10-08', items:[
     "Construction aux instruments (outil de correction) : en écran partagé, le bouton bleu « Ajouter au cahier » sous la construction est retiré -- demandé : « Il y a un doublon, garder le bouton vert et supprimer le bleu ». On insère avec le bouton vert « Insérer la construction aux instruments ». Le bouton bleu reste dans la Géométrie Interactive."
   ] },
@@ -8157,7 +8160,7 @@ async function cahierVivant(idx, btn){
 }
 function cahierOutilsCours(root){
   if(!root) return;
-  root.querySelectorAll('.zoom-btn, .read-aloud-btn, .learn-btn').forEach(b=>{ if(!b.onclick) b.remove(); });
+  root.querySelectorAll('.zoom-btn, .read-aloud-btn, .learn-btn, .ord-btn').forEach(b=>{ if(!b.onclick) b.remove(); });
   injectReadAloudButtons(root);
   injectZoomButtons(root);
   if(typeof injectLearnButtons==='function') injectLearnButtons(root);

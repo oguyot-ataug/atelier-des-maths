@@ -347,6 +347,48 @@ main{max-width:1080px;margin:0 auto;padding:40px 24px 100px;}
 .def-box:has(.zoom-btn) .learn-btn{right:46px;}
 .def-box:has(.zoom-btn):has(.read-aloud-btn) .learn-btn{right:82px;}
 .def-box.lrn-active .learn-btn{background:var(--accent);color:#fff;}
+.def-box:has(.ord-btn):has(.zoom-btn){padding-right:118px;}
+.def-box:has(.ord-btn):has(.zoom-btn):has(.read-aloud-btn){padding-right:154px;}
+/* Jeu « Remettre dans l'ordre » (ordre.js) : bouton shaker, réserve de mots, phrase reconstruite. */
+.ord-btn{position:absolute;top:10px;right:82px;border:none;background:rgba(28,43,57,.08);color:var(--ink);border-radius:50%;width:28px;height:28px;cursor:pointer;transition:.15s;display:inline-flex;align-items:center;justify-content:center;padding:0;}
+.def-box:has(.read-aloud-btn) .ord-btn{right:118px;}
+.ord-btn:hover{background:rgba(28,43,57,.16);} .ord-btn:hover svg{animation:ordAgite .5s;}
+.def-box.ord-active .ord-btn{background:var(--accent-orange,#E35D3A);color:#fff;}
+.def-box.ord-active{outline:2px dashed rgba(227,93,58,.4);outline-offset:3px;}
+.def-box.ord-gagne{outline:2px solid #1F7A4D;}
+.def-box.ord-secoue{animation:ordSecoueBox .45s;}
+.ord-jeu{display:flex;flex-direction:column;gap:10px;}
+.ord-tete{display:flex;align-items:center;gap:8px;font-family:'Space Grotesk',sans-serif;}
+.ord-shaker{display:inline-flex;color:var(--accent-orange,#E35D3A);transform-origin:50% 90%;}
+.ord-shaker.agite{animation:ordAgite .7s;}
+.ord-prog{margin-left:auto;font:600 .8rem 'JetBrains Mono',monospace;color:var(--ink-soft);}
+.ord-phrase{min-height:46px;display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:8px 10px;background:#fff;border:1.5px solid rgba(28,43,57,.15);border-radius:10px;line-height:1.3;}
+.ord-curseur{display:inline-block;width:2px;height:1.3em;background:var(--accent,#0C5BA0);animation:ordClignote 1s steps(2) infinite;}
+.ord-reserve{display:flex;flex-wrap:wrap;gap:8px;min-height:40px;justify-content:center;padding:4px 0;}
+.ord-p{border:1.5px solid rgba(12,91,160,.35);background:#fff;color:var(--ink);border-radius:9px;padding:6px 11px;font:inherit;font-size:1rem;cursor:pointer;box-shadow:0 2px 0 rgba(12,91,160,.18);transition:transform .12s, background .12s;line-height:1.3;}
+.ord-reserve .ord-p:hover{transform:translateY(-2px);background:#EEF4FB;}
+.ord-phrase .ord-p{box-shadow:none;cursor:default;padding:3px 8px;}
+.ord-phrase .ord-p:not(.ok){cursor:pointer;border-style:dashed;}
+.ord-phrase .ord-p.ok{border-color:rgba(31,122,77,.45);background:#E9F5EE;color:#174F35;}
+.ord-phrase .ord-p.faux{border-color:#B3261E;background:#FBE9E7;color:#8C1D18;}
+.ord-p.ord-chute{animation:ordChute .55s cubic-bezier(.2,.9,.3,1.25) both;animation-delay:var(--d,0s);}
+.ord-p.ord-non{animation:ordNon .45s;border-color:#B3261E;background:#FBE9E7;}
+.ord-p.ord-indice-on{animation:ordIndice 1.6s;}
+.ord-msg{min-height:1.2em;font-size:.9rem;color:var(--ink-soft);} .ord-msg.err{color:#B3261E;font-weight:600;} .ord-msg.ok{color:#1F7A4D;font-weight:700;}
+.ord-actions{display:flex;gap:6px;flex-wrap:wrap;}
+.ord-actions button{border:1px solid rgba(28,43,57,.18);background:#fff;border-radius:8px;padding:5px 10px;font:inherit;font-size:.85rem;cursor:pointer;display:inline-flex;align-items:center;gap:4px;}
+.ord-actions button:hover{background:rgba(12,91,160,.06);} .ord-actions button:disabled{opacity:.45;cursor:default;}
+.ord-actions .ord-verif:not(:disabled){background:#F08A3C;border-color:#F08A3C;color:#fff;font-weight:700;}
+.ord-niveaux{display:inline-flex;border:1px solid rgba(28,43,57,.18);border-radius:8px;overflow:hidden;margin-right:4px;}
+.ord-actions .ord-niveaux button{border:none;border-radius:0;padding:5px 9px;}
+.ord-actions .ord-niveaux button + button{border-left:1px solid rgba(28,43,57,.18);}
+.ord-actions .ord-niveaux button.on{background:var(--accent);color:#fff;font-weight:700;}
+@keyframes ordAgite{0%,100%{transform:rotate(0)}15%{transform:rotate(-22deg) translateY(-3px)}35%{transform:rotate(18deg) translateY(-5px)}55%{transform:rotate(-14deg) translateY(-2px)}75%{transform:rotate(9deg)}}
+@keyframes ordChute{from{opacity:0;transform:translate(var(--x,0),var(--y,-60px)) rotate(var(--a,0)) scale(.6)}to{opacity:1;transform:none}}
+@keyframes ordNon{0%,100%{transform:none}20%{transform:translateX(-7px) rotate(-3deg)}40%{transform:translateX(7px) rotate(3deg)}60%{transform:translateX(-5px)}80%{transform:translateX(4px)}}
+@keyframes ordIndice{0%,100%{box-shadow:0 2px 0 rgba(12,91,160,.18)}20%,60%{box-shadow:0 0 0 4px rgba(248,175,35,.75);background:#FFF6DD}40%,80%{box-shadow:0 0 0 1px rgba(248,175,35,.4)}}
+@keyframes ordSecoueBox{0%,100%{transform:none}25%{transform:rotate(-1deg) translateX(-4px)}50%{transform:rotate(1deg) translateX(4px)}75%{transform:rotate(-.5deg)}}
+@keyframes ordClignote{50%{opacity:0}}
 .def-box.lrn-active{outline:2px dashed rgba(12,91,160,.35);outline-offset:3px;}
 .lrn-active .lrn-w:not(.lrn-ok){color:transparent !important;background:rgba(28,43,57,.13);border-radius:4px;text-decoration:none;}
 .lrn-active .lrn-block:not(.lrn-ok) > *{visibility:hidden;}
@@ -967,7 +1009,8 @@ footer a:hover{color:var(--accent);}
 @media print{
   .topbar, .tabs, .back-btn, .figure-toolbar, footer, .view-toggle, .nav-links,
   .chap-tags, #correctionForm, .correction-toolbar, .cahier-list-actions { display:none !important; }
-  .learn-btn, .lrn-bar{display:none !important;}
+  .learn-btn, .lrn-bar, .ord-btn, .ord-jeu{display:none !important;}
+  .ord-cache{display:block !important;}
   .lrn-active .lrn-w{color:inherit !important;background:none !important;}
   .lrn-active .lrn-block > *{visibility:visible !important;}
   main{padding:0;max-width:100%;}

@@ -207,6 +207,7 @@ function injectLearnButtons(container){
     btn.onclick = e => { e.stopPropagation(); lrnToggle(box); };
     box.appendChild(btn);
   });
+  if (typeof injectOrdreButtons === 'function') injectOrdreButtons(container); // jeu « Remettre dans l'ordre » (ordre.js)
 }
 
 function lrnToggle(box){
@@ -222,6 +223,7 @@ function lrnIntro(level){
 }
 
 function lrnStart(box){
+  if (typeof ordEtat !== 'undefined' && ordEtat && typeof ordQuitter === 'function') ordQuitter(); // un seul jeu à la fois
   const SR = lrnSpeechCtor();
   const { units, expected } = lrnWrap(box);
   // Mot attendu juste après des notations/formules : les mots dictés pour les lire sont ignorés.
