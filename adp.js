@@ -19,7 +19,7 @@
   if(!window.ADP) return;
 
   const ADP_BLOQUEES = ['view-niveau', 'view-chapitre', 'view-cm', 'view-compte', 'view-convertisseur', 'view-tableau',
-    'view-progression', 'view-famille', 'view-evaluation', 'view-demo'];
+    'view-progression', 'view-famille', 'view-evaluation', 'view-demo', 'view-mesresultats']; // « Mes résultats » : automatismes seulement
   const DECOUVRIR = 'https://adp.latelieraugmente.fr/decouvrir/';
   const esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
@@ -204,6 +204,20 @@
     };
   }
 
+  // Visites guidées (aide.js) : l'accueil et l'étape « chapitre » de la correction, sans les maths.
+  if(typeof AIDE_PAGES !== 'undefined'){
+    const acc = AIDE_PAGES.find(p => p.id === 'accueil');
+    if(acc) acc.etapes = [
+      { t: 'Bienvenue dans L\'Atelier du Prof !', d: 'Cette aide vous accompagne sur chaque page : le bouton <b>?</b> en bas à gauche lance la visite guidée de la page ouverte.' },
+      { sel: '#adpAccueil .adp-actions .btn, #adpAccueil .adp-hero', t: 'Votre matière', d: 'Indiquez-la une fois : l\'aide de l\'IA et les compétences de vos interrogations s\'y adaptent.' },
+      { sel: '#adpAccueil .adp-tuiles', t: 'Vos outils', d: 'Interrogations en ligne, sessions en direct, correction et cahier de la classe, devoirs, classes : chaque tuile ouvre un outil. Le menu « L\'Atelier du prof » en haut les reprend tous.' },
+      { t: 'Le menu du compte', d: 'En haut à droite : la classe active, votre compte, et l\'aide à la lecture (police adaptée, voix).' },
+    ];
+    AIDE_PAGES.forEach(p => (p.etapes || []).forEach(e => {
+      if(e.sel === '#corChapitre') e.d = 'Thème ou séquence (ex. « La Révolution française »), numéro (« 3 p. 45 »), date de la séance et titre. Sans date, l\'exercice est rangé dans les <b>Brouillons</b> pour plus tard.';
+    }));
+  }
+
   // Accueil.
   const vh = document.getElementById('view-home');
   if(vh && !document.getElementById('adpAccueil')){
@@ -226,10 +240,9 @@
       return;
     }
     if(role === 'eleve'){
-      box.innerHTML = hero(`Bonjour${prenom ? ' ' + esc(prenom) : ''} !`, 'Tes devoirs, le cahier de ta classe et tes résultats.', '')
-        + `<div class="adp-tuiles">${tuile('mesdevoirs', 'assignment', 'Mon travail', 'Devoirs et interrogations à faire, sessions de ton professeur.')}
-          ${tuile('cahier', 'menu_book', 'Cahier de la classe', 'Ce qui a été fait en classe, jour après jour.')}
-          ${tuile('mesresultats', 'insights', 'Mes résultats', 'Tes notes et tes progrès.')}</div>`;
+      box.innerHTML = hero(`Bonjour${prenom ? ' ' + esc(prenom) : ''} !`, 'Ton travail, tes notes et les cahiers de tes professeurs.', '')
+        + `<div class="adp-tuiles">${tuile('mesdevoirs', 'assignment', 'Mon travail', 'Devoirs et interrogations à faire, sessions de tes professeurs, tes notes.')}
+          ${tuile('cahier', 'menu_book', 'Mes cahiers', 'Le cahier de chacun de tes professeurs, jour après jour.')}</div>`;
       return;
     }
     const mat = adpMatiere();

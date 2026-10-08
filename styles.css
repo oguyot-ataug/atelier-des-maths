@@ -2022,6 +2022,7 @@ select:not([multiple]):not([size]){
 .mode-adp .devoir-type-btn:not([onclick*="'fichier'"]),
 .mode-adp label:has(> #qzGenChap),
 .mode-adp #corNiveau,
+.mode-adp .sup-tab-btn[data-suptab="resultats"], .mode-adp #navMesResultats,
 .mode-adp .tool-icon-btn[onclick*="openFigureTool"], .mode-adp .tool-icon-btn.outil-figdyn, .mode-adp .tool-icon-btn.outil-instruments,
 .mode-adp .tool-icon-btn[onclick*="openDivisionTool"], .mode-adp .tool-icon-btn[onclick*="openAdditionTool"],
 .mode-adp .tool-icon-btn[onclick*="openAxeTool"], .mode-adp .tool-icon-btn[onclick*="openDisqueTool"],

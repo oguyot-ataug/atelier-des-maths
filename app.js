@@ -3381,6 +3381,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1035', date:'2026-10-08', items:[
+    "L'Atelier du Prof, finitions : « Mes classes » sans l'onglet « En autonomie » (automatismes et Objectif Nombre, propres aux maths) ; côté élève, plus de page « Mes résultats » (automatismes seulement) : l'accueil propose « Mon travail » (devoirs, interrogations, sessions, notes) et « Mes cahiers » (le cahier de chacun de ses professeurs). Visite guidée de l'accueil réécrite pour L'Atelier du Prof (matière, outils, menu du compte), et celle de la correction parle de « thème ou séquence » au lieu du chapitre. Sur L'Atelier des Maths, rien ne change."
+  ] },
   { version:'2026-08-19.1034', date:'2026-10-08', items:[
     "Un cahier par classe et par professeur -- demandé : « Il faut un cahier par classe et par prof. Un cahier ne peut pas mélanger plusieurs matières comme un cahier d'élève. » Chaque entrée du cahier porte désormais son auteur (rempli par la base) et sa matière (« Mathématiques » sur L'Atelier des Maths, la matière indiquée sur L'Atelier du Prof). Un professeur ne voit, ne modifie et ne retrouve que ses entrées et ses brouillons (Correction, cahier, « Ajouter un document » des sessions) ; la base l'empêche de modifier ou retirer celles d'un collègue. Un élève qui a plusieurs professeurs choisit son cahier par des onglets de matière en haut du cahier (cahier de maths par défaut sur L'Atelier des Maths, dernier choix retenu pour chaque classe). « Voir les corrections des collègues » reste disponible. Les 263 entrées existantes ont été attribuées au professeur de leur classe."
   ] },
