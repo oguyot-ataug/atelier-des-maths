@@ -32,10 +32,10 @@ const AIDE_PAGES = [
     { sel: '#corClassQuickPicker', t: '1. La classe', d: 'Choisissez d\'abord la classe : la correction ira dans <b>son</b> cahier, que ses élèves consultent. Le niveau suit la classe.' },
     { sel: '#corChapitre', t: '2. L\'exercice', d: 'Chapitre, numéro (« 4 p.23 »), date de la séance et titre. Sans date, l\'exercice est rangé dans les <b>Brouillons</b> pour plus tard.' },
     { sel: '#corModalites', t: '3. Comment il a été travaillé', d: '<b>Correction du travail maison</b>, <b>en classe entière</b> ou <b>en autonomie</b> : l\'exercice est rangé dans la bonne rubrique du résumé pour le cahier de textes.' },
-    { sel: '#corToolsRow', t: '4. La correction', d: 'Tapez le texte (2/3, x^2, sqrt(2) se mettent en forme seuls) et ajoutez des blocs : figure, tableau, opération posée, repère… Mise en page sur plusieurs colonnes avec « + Nouvelle ligne ».' },
+    { sel: '#corToolsRow', t: '4. La correction', d: 'Tapez le texte (2/3, x^2, sqrt(2) se mettent en forme seuls) et ajoutez des blocs : figure, construction aux instruments (tracée en géométrie dynamique), tableau, opération posée, repère… Mise en page sur plusieurs colonnes avec « + Nouvelle ligne ».' },
     { sel: '#btnProjection', t: 'Au vidéoprojecteur', d: 'Ouvrez la fenêtre de projection sur le second écran : les élèves voient la correction s\'écrire pendant que vous tapez.' },
     { sel: '#btnAddCahier', t: '5. Dans le cahier', d: '« Ajouter au cahier de corrections » : l\'exercice apparaît aussitôt dans le cahier de la classe.' },
-    { sel: '#cahierList', t: 'Le cahier de corrections', d: 'Plus bas, tout ce qui a été ajouté, jour par jour : vignettes pour changer le type de correction, date, ordre, « Modifier ». Le bouton <b>Résumé pour le cahier de textes</b> prépare le texte à coller dans École Directe ou Pronote.' },
+    { sel: '#cahierList', t: 'Le cahier de corrections', d: 'Plus bas, le cahier par semaine, comme le cahier élève : une vignette par jour (semaine précédente / suivante, ou « Aller à la semaine du »). Un clic sur un jour déplie ses exercices, avec « Modifier » et « Retirer ». Le bouton <b>Résumé pour le cahier de textes</b> prépare le texte à coller dans École Directe ou Pronote.' },
   ] },
   { id: 'progression', titre: 'Ma progression', vue: 'view-progression', etapes: [
     { sel: '#progNiveauSelect', t: 'Le niveau et la zone', d: 'Choisissez le niveau, puis votre zone de vacances : les vacances s\'affichent en bandeaux orange sur la frise.' },

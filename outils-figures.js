@@ -642,6 +642,7 @@ document.body.insertAdjacentHTML('beforeend', `
       </div>
       <div class="figure-toolbar" style="margin-top:10px;">
         <button type="button" class="btn" id="figValidateBtn" onclick="validateFigure()">✓ Valider et insérer la figure</button>
+        <button type="button" class="btn" id="figInsertInstrBtn" onclick="figInsererInstruments()" style="display:none;background:#1F7A4D;border-color:#1F7A4D;" title="Insère dans l'exercice la construction pas à pas, avec les instruments"><span class=gicon>architecture</span> Insérer la construction aux instruments</button>
         <button type="button" class="btn" id="figSubmitDevoirBtn" onclick="submitCurrentFigureAsDevoir()" style="display:none;"><span class=gicon>send</span> Enregistrer / Rendre le devoir</button>
         <button type="button" class="btn secondary" id="figLoadDevoirBtn" onclick="loadMyDevoirFigure()" style="display:none;"><span class=gicon>folder_open</span> Charger mon dernier rendu</button>
         <button type="button" class="btn" id="figSaveSandboxBtn" onclick="saveSandboxFigurePrompt()" style="display:none;"><span class=gicon>save</span> Enregistrer sous un nom</button>
@@ -945,6 +946,7 @@ const TOOL_ICONS = {
   stats: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="21" x2="21" y2="21"/><rect x="5" y="13" width="4" height="8" fill="currentColor" stroke="none"/><rect x="11" y="8" width="4" height="13" fill="currentColor" stroke="none"/><rect x="17" y="3" width="4" height="18" fill="currentColor" stroke="none"/></svg>`,
   geoanim: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20 L13 20"/><path d="M3 20 L9 8"/><path d="M9 8 A7 7 0 0 1 15 15" stroke-dasharray="2 2"/><path d="M15 12 L21 16 L15 20 Z" fill="currentColor" stroke="none"/></svg>`,
   camera: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2.5"/><circle cx="12" cy="9" r="3"/><line x1="10.5" y1="18.5" x2="13.5" y2="18.5"/></svg>`,
+  instruments: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3 L4.5 15"/><path d="M9 3 L13.5 15"/><circle cx="9" cy="3" r="1.2" fill="currentColor" stroke="none"/><rect x="2" y="17" width="20" height="5" rx="1"/><path d="M6 17 v2 M10 17 v2 M14 17 v2 M18 17 v2"/><path d="M15 9 L21 4" stroke-dasharray="2 2"/></svg>`,
   urn: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4 L4 20 Q4 22 6 22 L18 22 Q20 22 20 20 L18 4"/><circle cx="9" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="14" cy="15" r="1.6" fill="currentColor" stroke="none"/><circle cx="12" cy="9" r="1.6" fill="currentColor" stroke="none"/></svg>`,
 };
 function toolButtonsHTML(ctx){
@@ -954,6 +956,7 @@ function toolButtonsHTML(ctx){
     <button type="button" class="tool-icon-btn" title="Importer une image" onclick="${set}openImageTool()">${TOOL_ICONS.image}</button>
     <button type="button" class="tool-icon-btn" title="Caméra du téléphone : filmer un cahier ou une copie en direct, l'annoter, l'insérer" onclick="${set}if(typeof openCameraTool==='function')openCameraTool()">${TOOL_ICONS.camera}</button>
     <button type="button" class="tool-icon-btn" title="Figure géométrique" onclick="${set}openFigureTool()">${TOOL_ICONS.figure}</button>
+    <button type="button" class="tool-icon-btn outil-instruments" title="Construction aux instruments : tracez la figure en géométrie dynamique, elle se construit avec la règle, l'équerre, le compas… (animation insérée dans l'exercice)" onclick="${set}openInstrumentsTool()">${TOOL_ICONS.instruments}</button>
     <button type="button" class="tool-icon-btn" title="Tableau" onclick="${set}openTableauTool()">${TOOL_ICONS.tableau}</button>
     <button type="button" class="tool-icon-btn" title="Division (euclidienne / décimale)" onclick="${set}openDivisionTool()">${TOOL_ICONS.division}</button>
     <button type="button" class="tool-icon-btn" title="Opération posée (addition / soustraction / multiplication)" onclick="${set}openAdditionTool()">${TOOL_ICONS.operations}</button>
@@ -1034,6 +1037,9 @@ function openFigureTool(){hideAllToolContent(); document.getElementById('toolsMo
   if(splitBtn) splitBtn.style.display = 'none'; // idem
   const projBtn = document.getElementById('figProjBtn');
   if(projBtn) projBtn.style.display = 'none'; // idem
+  figInstrMode = false;
+  const instrBtn = document.getElementById('figInsertInstrBtn');
+  if(instrBtn) instrBtn.style.display = 'none'; // affiché par openInstrumentsTool
   // Construction automatique/IA : visible par défaut (usage prof -- correction, évaluation),
   // masquée explicitement pour les contextes élève (bac à sable, devoir), qui doivent
   // construire la figure eux-mêmes plutôt que de la faire générer.
@@ -1045,7 +1051,10 @@ function openFigureTool(){hideAllToolContent(); document.getElementById('toolsMo
   document.getElementById('figurePanel').scrollIntoView({behavior:'smooth', block:'nearest'});
 }
 function closeFigureTool(){
+  const vueInstr = figInstrMode && document.body.classList.contains('fig-split') ? figSplitVueAvant : null;
   figQuitterSplit();
+  if(vueInstr && typeof showView==='function') showView(vueInstr); // écran partagé ouvert depuis la correction : on y revient
+  figInstrMode = false;
   // Session COURS : la page entière est en plein écran (cours-direct.js) -- on y reste.
   if(document.fullscreenElement && !(document.fullscreenElement === document.documentElement && document.body.classList.contains('cd-eleve-ouvert'))) (document.exitFullscreen || document.webkitExitFullscreen || function(){}).call(document);
   document.getElementById('toolsModalOverlay').style.display='none'; document.getElementById('figurePanel').style.display='none';
@@ -6415,6 +6424,44 @@ async function figSplitActualiser(){
   if(msg.erreur){ await niceAlert('Chaque point doit être nommé par une lettre majuscule (ex. A, B, M) pour être construit au tableau.'); return; }
   await figLiveDiffuser(msg);
 }
+/* Outil « Construction aux instruments » (correction, évaluation) -- demandé : « Dans les outils, on a
+   déjà le module de construction par IA, j'aimerais ajouter l'outil de construction par géométrie
+   dynamique ou son rendu avec les instruments ». On trace la figure dans la géométrie dynamique (sur
+   grand écran, l'écran partagé s'ouvre : elle se construit en direct aux instruments à côté), puis
+   « Insérer la construction aux instruments » la traduit en programme de construction (le même que
+   pour la Géométrie Interactive) et l'ouvre dans l'outil Animation géométrique, sans IA : on la
+   regarde, on choisit les instruments, on l'insère. La figure est gardée dans le bloc pour la modifier. */
+let figInstrMode = false;
+async function openInstrumentsTool(data){
+  if(data && data.figure) reopenFigure(data.figure); else openFigureTool();
+  figInstrMode = true;
+  const montrer = id => { const b = document.getElementById(id); if(b) b.style.display = 'inline-flex'; };
+  montrer('figSplitBtn'); montrer('figInsertInstrBtn');
+  const pb = document.getElementById('figProjBtn'); if(pb){ pb.style.display = 'inline-flex'; figProjBouton(); }
+  figSplitOutilsInit();
+  const o = document.getElementById('figSplitOutils'); if(o) o.style.display = 'flex';
+  const h = document.getElementById('figureHint');
+  if(h) h.textContent = 'Tracez la figure en nommant les points par des majuscules (A, B, C…), puis « Insérer la construction aux instruments ».';
+  if(window.innerWidth >= 1100 && !document.body.classList.contains('fig-split')) await figToggleSplit();
+}
+async function figInsererInstruments(){
+  const pts = figState.points.filter(p=>!p.hidden);
+  if(!pts.length){ await niceAlert('La figure est vide : tracez-la d\'abord.'); return; }
+  if(pts.some(p=>!/^[A-Z][A-Za-z0-9']{0,3}$/.test(p.label||''))){ await niceAlert('Chaque point doit être nommé par une lettre majuscule (ex. A, B, M) pour être construit aux instruments.'); return; }
+  let programme;
+  try{ programme = figVersProgramme().programme; }
+  catch(e){ await niceAlert('Cette figure ne peut pas encore être construite aux instruments : '+(e && e.message ? e.message : e)); return; }
+  const outils = figSplitOutils(), figure = serializeFigState(figState);
+  const titre = document.getElementById('corTitre');
+  const enonce = figInstrEnonce || (currentBlocksContext==='global' && titre ? titre.value.trim() : '');
+  figInstrEnonce = '';
+  closeFigureTool();
+  // L'écran partagé construisait peut-être encore la figure : on laisse finir le geste en cours.
+  figLive.suivant = null;
+  for(let t = 0; (figLive.occupe || (typeof tbAiBusy!=='undefined' && tbAiBusy)) && t < 150; t++) await new Promise(r=>setTimeout(r, 100));
+  if(typeof openGeoAnimTool==='function') openGeoAnimTool({ enonce, program: programme, tools: outils, figure });
+}
+let figInstrEnonce = ''; // énoncé déjà écrit dans l'animation, gardé quand on revient modifier la figure
 async function figConstruireAuTableau(){
   if(!figState.points.some(p=>!p.hidden)){ await niceAlert('La figure est vide : tracez-la d\'abord.'); return; }
   if(figState.points.some(p=>!p.hidden && !/^[A-Z][A-Za-z0-9']{0,3}$/.test(p.label||''))){ await niceAlert('Chaque point doit être nommé par une lettre majuscule (ex. A, B, M) pour être construit au tableau.'); return; }

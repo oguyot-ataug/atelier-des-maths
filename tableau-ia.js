@@ -1762,6 +1762,7 @@ function tbAiFigureBlockHtml(){
 /* ---- Outil « Animation géométrique » de l'outil de correction (demandé : "une fois
    l'exercice ouvert, avoir un outil en plus des autres : Animation géométrique"). ---- */
 let geoAnimData = null; // {enonce, program, tools} de la construction en cours dans l'outil
+let geoAnimFigure = null; // figure de géométrie dynamique d'origine (outil « Construction aux instruments »), sinon null (IA)
 function geoAnimSetTools(tools){
   let saved = tools || null;
   if(!saved){ try{ saved = JSON.parse(localStorage.getItem(TB_AI_TOOLS_KEY)||'null'); }catch(e){} }
@@ -1778,15 +1779,38 @@ function openGeoAnimTool(data){
   if(!tbAiBorrowBoard(document.getElementById('geoAnimStage'), 'tool')) return;
   ov.style.display = 'flex';
   geoAnimData = null;
+  // Construction venue de la géométrie dynamique : pas d'IA, un bouton pour revenir à la figure.
+  geoAnimFigure = (data && data.figure) || null;
+  const fig = !!geoAnimFigure, vu = (id, on) => { const el = document.getElementById(id); if(el) el.style.display = on ? '' : 'none'; };
+  vu('geoAnimIntro', !fig); vu('geoAnimGenerateBtn', !fig); vu('geoAnimFigBtn', fig); vu('geoAnimIntroFig', fig);
+  document.getElementById('geoAnimEnonce').placeholder = fig ? 'Énoncé (facultatif), affiché avec l\'animation. Ex. : Construire le triangle ABC.' : 'Construire un triangle ABC rectangle en A tel que AB = 4 cm et BC = 7 cm.';
   document.getElementById('geoAnimEnonce').value = (data && data.enonce) || '';
   document.getElementById('geoAnimStatus').textContent = '';
   geoAnimSetTools(data && data.tools);
   document.getElementById('geoAnimInsertBtn').disabled = true;
   if(data && Array.isArray(data.program)){
-    try{ geoAnimLoad(data.enonce||'', data.program, data.tools); }
+    try{ geoAnimLoad(data.enonce||'', data.program, data.tools); if(fig) document.getElementById('geoAnimStatus').textContent = 'Construction prête : « Lecture » pour la voir en entier, puis « Insérer dans l\'exercice ».'; }
     catch(e){ document.getElementById('geoAnimStatus').textContent = 'Construction illisible : '+e.message; }
   }
 }
+/* Instruments changés : la construction venue d'une figure est rejouée avec les nouveaux instruments
+   (options d'affichage « sans-… » de la figure gardées). */
+function geoAnimOutilsChange(){
+  if(!geoAnimFigure || !geoAnimData) return;
+  const tools = geoAnimReadTools().concat((geoAnimData.tools||[]).filter(t=>/^sans-/.test(t)));
+  try{ geoAnimLoad(document.getElementById('geoAnimEnonce').value.trim(), geoAnimData.program, tools); }
+  catch(e){ document.getElementById('geoAnimStatus').textContent = 'Construction impossible avec ces instruments : '+e.message; }
+}
+// Retour à la géométrie dynamique pour modifier la figure (l'édition d'un bloc en cours est gardée).
+async function geoAnimVersFigure(){
+  const figure = geoAnimFigure; if(!figure) return;
+  if(typeof figInstrEnonce!=='undefined') figInstrEnonce = document.getElementById('geoAnimEnonce').value.trim();
+  geoAnimData = null; geoAnimFigure = null;
+  await tbAiReturnBoard();
+  document.getElementById('geoAnimOverlay').style.display = 'none';
+  if(typeof openInstrumentsTool==='function') openInstrumentsTool({ figure });
+}
+function reopenGeoInstrBlock(data){ openGeoAnimTool(data); }
 /* Modifier un bloc déjà inséré : rouvre l'outil avec son énoncé et sa construction. */
 function reopenGeoAnimBlock(data){ openGeoAnimTool(data); }
 function geoAnimLoad(enonce, program, tools){
@@ -1827,15 +1851,17 @@ async function geoAnimInsert(){
   await tbAiFinishPlan();
   const html = tbAiFigureBlockHtml();
   const data = JSON.parse(JSON.stringify(geoAnimData));
+  data.enonce = document.getElementById('geoAnimEnonce').value.trim() || data.enonce || '';
+  if(geoAnimFigure) data.figure = geoAnimFigure;
   await tbAiReturnBoard();
   document.getElementById('geoAnimOverlay').style.display = 'none';
-  geoAnimData = null;
+  geoAnimData = null; geoAnimFigure = null;
   if(!html){ await niceAlert('La construction est vide : rien à insérer.'); return; }
-  addPendingBlock('geoanim', html, data, 'reopenGeoAnimBlock');
+  addPendingBlock('geoanim', html, data, data.figure ? 'reopenGeoInstrBlock' : 'reopenGeoAnimBlock');
 }
 async function geoAnimCancel(){
   if(typeof cancelBlockEdit==='function') cancelBlockEdit();
-  geoAnimData = null;
+  geoAnimData = null; geoAnimFigure = null;
   await tbAiReturnBoard();
   document.getElementById('geoAnimOverlay').style.display = 'none';
 }

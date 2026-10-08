@@ -32,7 +32,7 @@ function qzBlocsHtml(q){
 function qzEdBlocsHtml(q){
   if(typeof toolButtonsHTML !== 'function') return '';
   // L'animation de construction (tableau interactif, IA) ne se rejoue pas dans un questionnaire.
-  const outils = toolButtonsHTML('qz:' + q.id).replace(/<button[^>]*needs-ai-geoanim[\s\S]*?<\/button>/, '');
+  const outils = toolButtonsHTML('qz:' + q.id).replace(/<button[^>]*needs-ai-geoanim[\s\S]*?<\/button>/, '').replace(/<button[^>]*outil-instruments[\s\S]*?<\/button>/, '');
   return `<div class="qz-lab" style="margin-top:10px;">Insérer dans l'énoncé <span class="hint" style="margin:0;">(outils de correction : figure, tableau, axe, opération posée, fraction, graphique, probabilités…)</span></div>
     <div class="qz-tools">${outils}</div>
     ${(q.blocs || []).map((b, i) => `<div class="qz-ed-bloc">

@@ -3343,6 +3343,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1001', date:'2026-10-08', items:[
+    "Outil de correction : nouvel outil « Construction aux instruments » (icône compas et règle, à côté de la figure géométrique) -- demandé : « Dans les outils, on a déjà le module de construction par IA, j'aimerais ajouter l'outil de construction par géométrie dynamique ou son rendu avec les instruments ». On trace la figure en géométrie dynamique (points nommés A, B, C…) ; sur grand écran, l'écran partagé s'ouvre et la figure se construit en direct à côté avec la règle, l'équerre, le compas. « Insérer la construction aux instruments » ouvre l'animation pas à pas, sans IA : choix des instruments, lecture, énoncé facultatif, puis « Insérer dans l'exercice ». Le bloc garde la figure : « Modifier » rouvre l'animation, et « Modifier la figure » ramène à la géométrie dynamique. « Valider et insérer la figure » reste possible pour la figure seule. L'outil existe aussi dans les exercices d'évaluation.",
+    "Outil de correction : le cahier de corrections, en bas de page, se présente comme le cahier élève -- demandé : « Sur la partie basse, présenter le cahier comme dans cahier élève ». Semaine du … au …, semaine précédente / suivante, une vignette par jour (chapitres, nombre de cours et d'exercices) ; un clic déplie le jour, avec pour chaque exercice « Modifier » et « Retirer », et le « Résumé pour le cahier de textes ». Le champ « Aller à la semaine du » remplace le filtre par date. Un exercice ajouté ouvre directement sa semaine et son jour."
+  ] },
   { version:'2026-08-19.1000', date:'2026-10-07', items:[
     "Exercices projetés ou faits à l'écran, sur smartphone : l'exercice n'est plus écrasé dans une colonne étroite quand le clavier s'ouvre. Sur téléphone, le clavier reste en bas de l'écran, l'exercice prend toute la largeur avec un texte lisible (on fait défiler si besoin) et la case choisie reste visible au-dessus du clavier."
   ] },
@@ -6210,7 +6214,7 @@ async function applyClassSelection(){
   await cahierClasseResoudre();
   if(currentClassId){
     // Population initiale légère (juste aujourd'hui) -- suffisant pour la liste prof par
-    // défaut (corListFilterDate=aujourd'hui) ; renderCahierEleve() affine ensuite avec son
+    // défaut) ; renderCahierEleve() affine ensuite avec son
     // propre chargement paresseux par jour pour la vue accordéon.
     const remote = await fetchCahierEntriesForDate(todayISO());
     cahier = remote || [];
@@ -7013,6 +7017,9 @@ async function addToCahier(){
     rows: JSON.parse(JSON.stringify(corRows)),
     cellBorders: JSON.parse(JSON.stringify(corCellBorders)),
   };
+  // Vue par semaine : le jour de l'exercice est chargé AVANT l'ajout local -- chargé après, il
+  // ramènerait l'exercice une seconde fois (la copie locale n'a pas encore son id serveur).
+  await corChargerJour(entry.date);
   let oldServerId = null, deplacement = false;
   if(editingEntryId!==null){
     // Classe active changée pendant la modification (signalé : « je me suis trompé de classe, je
@@ -7460,76 +7467,40 @@ async function expandCahierDay(accId, date){
   }
   body.innerHTML = groupedByChapitreHTML(cahier.filter(e=>e.date===date), (e)=>entryRowsHTML(e, cahier.indexOf(e), cahierEditableMode));
 }
-let corListFilterDate = todayISO(); // par défaut, la date du jour -- évite d'afficher toutes
-                                     // les corrections de l'année à chaque ouverture.
-// Changer de date filtrée doit re-fetcher du serveur (pas juste filtrer `cahier`, qui ne
-// contient par défaut que les entrées déjà consultées -- voir le chargement paresseux du
-// cahier élève) -- sinon une date jamais chargée affiche à tort "cahier vide", empêchant
-// toute édition. Signalé : "je n'arrive pas à éditer le 3 septembre en 5B".
-async function applyCorListFilter(){
-  corListFilterDate = document.getElementById('corListFilterDate').value || null;
-  if(corListFilterDate && isSyncEnabled()){
-    document.getElementById('cahierList').innerHTML = '<p class="hint">Chargement…</p>';
-    const entries = await fetchCahierEntriesForDate(corListFilterDate);
-    if(entries){
-      const existingIds = new Set(cahier.map(e=>e.id));
-      entries.forEach(e=>{ if(!existingIds.has(e.id)) cahier.push(e); });
-      sortCahierInPlace(); // l'ordre affiché (groupedEntriesHTML) suit l'ordre du tableau
-                            // `cahier` tel quel, sans re-trier -- indispensable ici, sinon il
-                            // ne reflète que l'ordre d'ARRIVÉE des différents chargements
-                            // (aujourd'hui, puis cette date...), pas l'ordre logique attendu.
-                            // Signalé : "les exercices 1 et 2 [...] inversé[s] dans l'outil de
-                            // correction."
-      saveCahier();
-    }
-  }
-  renderCahier();
-}
-async function showAllCorListDates(){
-  corListFilterDate = null;
-  document.getElementById('corListFilterDate').value = '';
-  if(isSyncEnabled()){
-    document.getElementById('cahierList').innerHTML = '<p class="hint">Chargement de tout l\'historique…</p>';
-    const remote = await syncFetchAll();
-    if(remote){ cahier = remote; saveCahier(); }
-  }
-  renderCahier();
-}
-/* Un seul bouton bidirectionnel : "Voir toutes les dates" <-> "Corrections du jour", plutôt que
-   de devoir resaisir la date manuellement pour revenir à la vue filtrée. */
-async function toggleCorListDateFilter(){
-  if(corListFilterDate){
-    await showAllCorListDates();
-  } else {
-    document.getElementById('corListFilterDate').value = todayISO();
-    await applyCorListFilter();
-  }
+/* Bas de la page Correction : le cahier par semaine, comme le cahier élève -- demandé : « Sur la
+   partie basse, présenter le cahier comme dans cahier élève ». Vignettes des jours de la semaine,
+   semaine précédente / suivante ; le jour déplié montre ses exercices avec Modifier / Retirer et le
+   résumé pour le cahier de textes. Le champ date permet d'aller directement à une semaine. */
+function corCahierCompte(){
+  const c = document.getElementById('cahierCount'); if(!c) return;
+  const n = currentClassId ? nbJours().reduce((t, j)=>t + j.count, 0) : 0;
+  c.textContent = n + ' élément' + (n>1 ? 's' : '');
 }
 function renderCahier(){
-  const dateInput = document.getElementById('corListFilterDate');
-  if(dateInput && !dateInput.value && corListFilterDate) dateInput.value = corListFilterDate;
-  const toggleBtn = document.getElementById('btnCorListDateToggle');
-  if(toggleBtn) toggleBtn.innerHTML = corListFilterDate ? 'Voir toutes les dates' : "<span class=gicon>calendar_month</span> Corrections du jour";
-  // cahierDated() exclut les brouillons (date vide) -- ne doivent jamais apparaître dans le
-  // cahier normal, seulement via "Récupérer un brouillon" (openBrouillonPicker). `cahier` peut
-  // en contenir un transitoirement pendant son édition (voir loadBrouillonEntry).
-  const datedCahier = cahierDated(cahier);
-  document.getElementById('cahierCount').textContent = datedCahier.length+' exercice(s)';
-  const list=document.getElementById('cahierList');
-  const status=document.getElementById('corListFilterStatus');
-  if(!currentClassId){ list.innerHTML = '<div class="placeholder-box">Choisissez une classe ci-dessus pour voir et ajouter des corrections.</div>'; if(status) status.textContent=''; return; }
-  if(!datedCahier.length){ list.innerHTML = '<div class="placeholder-box">Le cahier est vide pour l\'instant, ajoutez une correction ci-dessus.</div>'; if(status) status.textContent=''; return; }
-  const shown = corListFilterDate ? datedCahier.filter(e=>e.date===corListFilterDate) : datedCahier;
-  if(status) status.textContent = corListFilterDate ? `${shown.length} sur ${datedCahier.length} au total` : '';
-  if(!shown.length){ list.innerHTML = '<div class="placeholder-box">Aucune correction à cette date. <a href="#" onclick="showAllCorListDates();return false;">Voir toutes les dates</a>.</div>'; return; }
-  list.innerHTML = groupedEntriesHTML(shown, (e,i)=>`
-    <div class="cahier-entry">
-      <div style="flex:1;">${entryRowsHTML(e, cahier.indexOf(e), true, false)}</div>
-      <div style="display:flex;flex-direction:column;gap:6px;flex:none;">
-        <button class="remove" style="color:var(--accent);" onclick="editCahierEntry(${cahier.indexOf(e)})">Modifier</button>
-        <button class="remove" onclick="removeCahierEntry(${cahier.indexOf(e)})">Retirer</button>
-      </div>
-    </div>`, date=>`<button type="button" class="btn secondary nb-resume-cor-btn" onclick="resumeCahierJour('${date}')" title="Résumé de la séance à copier dans le cahier de textes (École Directe, Pronote…)"><span class="gicon">content_paste</span> Résumé pour le cahier de textes</button>`);
+  const list = document.getElementById('cahierList'); if(!list) return;
+  const status = document.getElementById('corListFilterStatus'); if(status) status.textContent = '';
+  if(!currentClassId){ list.innerHTML = '<div class="placeholder-box">Choisissez une classe ci-dessus pour voir et ajouter des corrections.</div>'; corCahierCompte(); return; }
+  if(!document.getElementById('corSemaine')) list.innerHTML = '<div id="corSemaine"></div>';
+  corCahierCompte();
+  nbSemaineRendre('cor');
+}
+// Charge un jour du cahier (avant d'y ajouter un exercice localement) et ouvre sa semaine en bas de page.
+async function corChargerJour(date){
+  if(!date) return;
+  if(isSyncEnabled() && !cahierLoadedDates.has(date)){
+    const du = await fetchCahierEntriesForDate(date);
+    if(du){ const ids = new Set(cahier.map(e=>e.id)); du.forEach(e=>{ if(!ids.has(e.id)) cahier.push(e); }); cahierLoadedDates.add(date); }
+  }
+  Object.assign(nbSemSt.cor, { classe: currentClassId, lundi: nbLundi(date), jour: date });
+}
+function corAllerDate(){
+  const inp = document.getElementById('corListFilterDate'), d = inp && inp.value, status = document.getElementById('corListFilterStatus');
+  if(!d || !currentClassId) return;
+  const lundi = nbLundi(d), jours = nbJours();
+  if(!jours.some(j=>nbLundi(j.date)===lundi)){ if(status) status.textContent = 'Aucune correction cette semaine-là.'; return; }
+  if(status) status.textContent = '';
+  Object.assign(nbSemSt.cor, { classe: currentClassId, lundi, jour: jours.some(j=>j.date===d) ? d : null });
+  nbSemaineRendre('cor');
 }
 let cahierFilterFrom = null, cahierFilterTo = null;
 let cahierFilterChapitre = '';
@@ -7681,7 +7652,7 @@ function renderCahierEleveLocal(warning){
   if(!(cahierFilterFrom||cahierFilterTo||cahierFilterChapitre) && !cahierShowAll){
     document.getElementById('cahierEleveContent').innerHTML = (warning||'') + '<div id="nbSemaine"></div>';
     cahierEditableMode = editable;
-    nbSemaineRendre();
+    nbSemaineRendre('nb');
     return;
   }
   document.getElementById('cahierEleveContent').innerHTML = (warning||'') + buildCahierNotebookHTML(editable);
@@ -7696,81 +7667,113 @@ function renderCahierEleveLocal(warning){
    vignettes (pleine largeur), un second clic le replie. Les jours de la semaine affichée sont chargés
    ensemble (une requête par jour, comme l'accordéon). S'ouvre sur la semaine la plus récente et son
    dernier jour ; la semaine et le jour choisis sont gardés tant qu'on reste sur la même classe. */
-let nbSem = { classe: null, lundi: null, jour: null };
+// Deux vues par semaine partagent ce code : le cahier élève (« nb ») et le bas de la page Correction
+// (« cor », demandé : « présenter le cahier comme dans cahier élève »), chacune avec sa semaine et
+// son jour ouverts. Côté Correction, chaque exercice garde ses boutons Modifier / Retirer.
+const nbSemSt = { nb: { classe: null, lundi: null, jour: null }, cor: { classe: null, lundi: null, jour: null } };
+const NBS_IDS = { nb: ['nbSemaine', 'nbsJour'], cor: ['corSemaine', 'corsJour'] };
 const nbIso = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 function nbLundi(iso){ const d = new Date(iso+'T12:00:00'), k = (d.getDay()+6)%7; d.setDate(d.getDate()-k); return nbIso(d); }
 function nbPlus(iso, n){ const d = new Date(iso+'T12:00:00'); d.setDate(d.getDate()+n); return nbIso(d); }
-// Jours du cahier (dates, nombre d'entrées, cours) : la liste légère du serveur, sinon le cahier local.
+// Jours du cahier (dates, nombre d'entrées, cours) : la liste légère du serveur, complétée par le
+// cahier local (un exercice qu'on vient d'ajouter à une nouvelle date a tout de suite sa vignette).
 function nbJours(){
-  if(cahierDatesList && cahierDatesList.length) return cahierDatesList;
-  const m = new Map();
-  cahier.filter(e=>e.date).forEach(e=>{ const g = m.get(e.date) || { date: e.date, count: 0, cours: false }; g.count++; if(e.exo==='Cours') g.cours = true; m.set(e.date, g); });
+  const loc = new Map();
+  cahier.filter(e=>e.date).forEach(e=>{ const g = loc.get(e.date) || { date: e.date, count: 0, cours: false }; g.count++; if(e.exo==='Cours') g.cours = true; loc.set(e.date, g); });
+  const m = new Map(loc);
+  (cahierDatesList||[]).forEach(g=>{
+    const l = loc.get(g.date), charge = cahierLoadedDates.has(g.date) || !isSyncEnabled();
+    if(charge){ if(!l) m.delete(g.date); return; } // jour chargé : le local fait foi (entrées retirées)
+    m.set(g.date, { date: g.date, count: Math.max(g.count, l ? l.count : 0), cours: !!g.cours || !!(l && l.cours) });
+  });
   return [...m.values()].sort((a,b)=>a.date.localeCompare(b.date));
 }
-async function nbSemaineRendre(){
-  const box = document.getElementById('nbSemaine'); if(!box) return;
-  const jours = nbJours();
-  if(!jours.length){ box.innerHTML = '<p class="hint">Le cahier est vide pour l\'instant.</p>'; return; }
+async function nbSemaineRendre(k){
+  k = k || 'nb';
+  const box = document.getElementById(NBS_IDS[k][0]); if(!box) return;
+  const st = nbSemSt[k], jours = nbJours();
+  if(!jours.length){ box.innerHTML = k==='cor' ? '<div class="placeholder-box">Le cahier est vide pour l\'instant, ajoutez une correction ci-dessus.</div>' : '<p class="hint">Le cahier est vide pour l\'instant.</p>'; return; }
   const semaines = [...new Set(jours.map(j=>nbLundi(j.date)))].sort();
-  if(nbSem.classe !== currentClassId || !semaines.includes(nbSem.lundi)){ nbSem = { classe: currentClassId, lundi: semaines[semaines.length-1], jour: null }; }
-  const lundi = nbSem.lundi, dimanche = nbPlus(lundi, 6), iS = semaines.indexOf(lundi);
+  if(st.classe !== currentClassId || !semaines.includes(st.lundi)) Object.assign(st, { classe: currentClassId, lundi: semaines[semaines.length-1], jour: null });
+  const lundi = st.lundi, dimanche = nbPlus(lundi, 6), iS = semaines.indexOf(lundi);
   const js = jours.filter(j=>j.date>=lundi && j.date<=dimanche);
-  if(nbSem.jour === null || (nbSem.jour && !js.some(j=>j.date===nbSem.jour))) nbSem.jour = js[js.length-1].date;
+  if(st.jour === null || (st.jour && !js.some(j=>j.date===st.jour))) st.jour = js[js.length-1].date;
   // Contenu des jours de la semaine (pour les vignettes et le dépli).
   const aCharger = js.filter(j=>!cahierLoadedDates.has(j.date) && isSyncEnabled());
   const fin = js.some(j=>new Date(j.date+'T12:00:00').getDay()%6===0) ? dimanche : nbPlus(lundi, 4); // samedi/dimanche seulement s'il y a des entrées
   const f = (iso, o) => new Date(iso+'T12:00:00').toLocaleDateString('fr-FR', o);
   const memeMois = lundi.slice(0,7)===fin.slice(0,7);
   box.innerHTML = `<div class="nbs-tete">
-      <button type="button" class="nbs-nav" ${iS>0 ? `onclick="nbSemaineAller(-1)"` : 'disabled'} title="Semaine précédente"><span class=gicon>chevron_left</span><span class="nbs-nav-t">Semaine précédente</span></button>
+      <button type="button" class="nbs-nav" ${iS>0 ? `onclick="nbSemaineAller(-1,'${k}')"` : 'disabled'} title="Semaine précédente"><span class=gicon>chevron_left</span><span class="nbs-nav-t">Semaine précédente</span></button>
       <div class="nbs-titre">Semaine du ${f(lundi, memeMois ? {weekday:'long', day:'numeric'} : {weekday:'long', day:'numeric', month:'long'})} au ${f(fin, {weekday:'long', day:'numeric', month:'long'})}</div>
-      <button type="button" class="nbs-nav" ${iS<semaines.length-1 ? `onclick="nbSemaineAller(1)"` : 'disabled'} title="Semaine suivante"><span class="nbs-nav-t">Semaine suivante</span><span class=gicon>chevron_right</span></button></div>
-    <div class="nbs-vignettes">${js.map(j=>nbVignette(j)).join('')}</div>
-    <div id="nbsJour"></div>`;
-  nbSemaineJour();
+      <button type="button" class="nbs-nav" ${iS<semaines.length-1 ? `onclick="nbSemaineAller(1,'${k}')"` : 'disabled'} title="Semaine suivante"><span class="nbs-nav-t">Semaine suivante</span><span class=gicon>chevron_right</span></button></div>
+    <div class="nbs-vignettes">${js.map(j=>nbVignette(j, k)).join('')}</div>
+    <div id="${NBS_IDS[k][1]}"></div>`;
+  nbSemaineJour(k);
   if(aCharger.length){
     const res = await Promise.all(aCharger.map(j=>fetchCahierEntriesForDate(j.date)));
-    if(nbSem.lundi!==lundi || !document.getElementById('nbSemaine')) return;
+    if(st.lundi!==lundi || !document.getElementById(NBS_IDS[k][0])) return;
     const ids = new Set(cahier.map(e=>e.id));
-    res.forEach((entries, k)=>{ if(!entries){ nbSem.echec = (nbSem.echec || new Set()).add(aCharger[k].date); return; } entries.forEach(e=>{ if(!ids.has(e.id)){ cahier.push(e); ids.add(e.id); } }); cahierLoadedDates.add(aCharger[k].date); });
+    res.forEach((entries, i)=>{ if(!entries){ st.echec = (st.echec || new Set()).add(aCharger[i].date); return; } entries.forEach(e=>{ if(!ids.has(e.id)){ cahier.push(e); ids.add(e.id); } }); cahierLoadedDates.add(aCharger[i].date); });
     sortCahierInPlace(); saveCahier();
-    js.forEach(j=>{ const v = document.querySelector(`.nbs-vig[data-jour="${j.date}"]`); if(v) v.outerHTML = nbVignette(j); });
-    nbSemaineJour();
+    const zone = document.getElementById(NBS_IDS[k][0]);
+    js.forEach(j=>{ const v = zone && zone.querySelector(`.nbs-vig[data-jour="${j.date}"]`); if(v) v.outerHTML = nbVignette(j, k); });
+    nbSemaineJour(k);
+    if(k==='cor') corCahierCompte();
   }
 }
-function nbVignette(j){
-  const d = new Date(j.date+'T12:00:00'), es = cahier.filter(e=>e.date===j.date), charge = cahierLoadedDates.has(j.date) || !isSyncEnabled();
+function nbVignette(j, k){
+  k = k || 'nb';
+  const st = nbSemSt[k], d = new Date(j.date+'T12:00:00'), es = cahier.filter(e=>e.date===j.date), charge = cahierLoadedDates.has(j.date) || !isSyncEnabled();
   const chap = [...new Set(es.map(e=>String(e.chapitre||'').split(' · ').slice(1).join(' · ') || String(e.chapitre||'')).filter(Boolean))];
   const nC = es.filter(e=>e.exo==='Cours').length, nE = es.length - nC;
-  return `<button type="button" class="nbs-vig${nbSem.jour===j.date ? ' on' : ''}" data-jour="${j.date}" onclick="nbSemaineChoisir('${j.date}')">
+  return `<button type="button" class="nbs-vig${st.jour===j.date ? ' on' : ''}" data-jour="${j.date}" onclick="nbSemaineChoisir('${j.date}','${k}')">
     <span class="nbs-j">${d.toLocaleDateString('fr-FR', {weekday:'long'})}</span><span class="nbs-d">${d.toLocaleDateString('fr-FR', {day:'numeric', month:'short'})}</span>${nbOlivCours(j.cours || nC>0)}
     <span class="nbs-chap">${charge ? chap.map(c=>escapeHtml(c)).join('<br>') || '&nbsp;' : '…'}</span>
     <span class="nbs-n">${charge && es.length ? `${nC ? `<span class="nbs-c">${nC} cours</span>` : ''}${nE ? `<span class="nbs-e">${nE} exercice${nE>1 ? 's' : ''}</span>` : ''}` : `${j.count} élément${j.count>1 ? 's' : ''}`}</span>
-    <span class=gicon>${nbSem.jour===j.date ? 'expand_less' : 'expand_more'}</span></button>`;
+    <span class=gicon>${st.jour===j.date ? 'expand_less' : 'expand_more'}</span></button>`;
 }
-function nbSemaineJour(){
-  const box = document.getElementById('nbsJour'); if(!box) return;
-  const date = nbSem.jour;
+// Page Correction : un exercice du cahier, avec ses boutons Modifier / Retirer (comme l'ancienne liste).
+function corEntreeHTML(e){
+  const i = cahier.indexOf(e);
+  return `<div class="cahier-entry">
+      <div style="flex:1;min-width:0;">${entryRowsHTML(e, i, true, false)}</div>
+      <div style="display:flex;flex-direction:column;gap:6px;flex:none;">
+        <button class="remove" style="color:var(--accent);" onclick="editCahierEntry(${i})">Modifier</button>
+        <button class="remove" onclick="removeCahierEntry(${i})">Retirer</button>
+      </div>
+    </div>`;
+}
+function nbSemaineJour(k){
+  k = k || 'nb';
+  const box = document.getElementById(NBS_IDS[k][1]); if(!box) return;
+  const st = nbSemSt[k], date = st.jour;
   if(!date){ box.innerHTML = ''; return; }
   const charge = cahierLoadedDates.has(date) || !isSyncEnabled();
-  box.innerHTML = `<div class="nbs-panneau"><div class="nbs-p-tete"><b>${fmtDateFR(date)}</b>${nbOlivCours(cahier.some(e=>e.date===date && e.exo==='Cours'))}
-      <button type="button" class="nb-pdf-day-btn" onclick="exportCahierDayAsPDF('${date}')" title="Générer un PDF de ce jour"><span class=gicon>picture_as_pdf</span></button>${nbResumeDayBtn(date)}</div>
-    ${charge ? groupedByChapitreHTML(cahier.filter(e=>e.date===date), (e)=>entryRowsHTML(e, cahier.indexOf(e), cahierEditableMode))
-      : nbSem.echec && nbSem.echec.has(date) ? '<p class="hint" style="padding:8px;"><span class=gicon>warning</span> Échec du chargement : cliquez sur « Actualiser ».</p>' : '<p class="hint" style="padding:8px;">Chargement…</p>'}</div>`;
+  const es = cahier.filter(e=>e.date===date);
+  const outils = k==='cor'
+    ? `<button type="button" class="btn secondary nb-resume-cor-btn" onclick="resumeCahierJour('${date}')" title="Résumé de la séance à copier dans le cahier de textes (École Directe, Pronote…)"><span class="gicon">content_paste</span> Résumé pour le cahier de textes</button>`
+    : `<button type="button" class="nb-pdf-day-btn" onclick="exportCahierDayAsPDF('${date}')" title="Générer un PDF de ce jour"><span class=gicon>picture_as_pdf</span></button>${nbResumeDayBtn(date)}`;
+  box.innerHTML = `<div class="nbs-panneau"><div class="nbs-p-tete"><b>${fmtDateFR(date)}</b>${nbOlivCours(es.some(e=>e.exo==='Cours'))}${outils}</div>
+    ${charge ? groupedByChapitreHTML(es, k==='cor' ? corEntreeHTML : (e)=>entryRowsHTML(e, cahier.indexOf(e), cahierEditableMode))
+      : st.echec && st.echec.has(date) ? '<p class="hint" style="padding:8px;"><span class=gicon>warning</span> Échec du chargement : cliquez sur « Actualiser ».</p>' : '<p class="hint" style="padding:8px;">Chargement…</p>'}</div>`;
 }
-function nbSemaineChoisir(date){
+function nbSemaineChoisir(date, k){
+  k = k || 'nb';
   if(typeof cahierVivFin==='function') cahierVivFin();
-  nbSem.jour = nbSem.jour===date ? '' : date;
-  document.querySelectorAll('.nbs-vig').forEach(v=>{ const on = v.dataset.jour===nbSem.jour; v.classList.toggle('on', on); const i = v.querySelector(':scope > .gicon'); if(i) i.textContent = on ? 'expand_less' : 'expand_more'; });
-  nbSemaineJour();
-  const p = document.getElementById('nbsJour'); if(p && nbSem.jour) p.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  const st = nbSemSt[k], zone = document.getElementById(NBS_IDS[k][0]);
+  st.jour = st.jour===date ? '' : date;
+  if(zone) zone.querySelectorAll('.nbs-vig').forEach(v=>{ const on = v.dataset.jour===st.jour; v.classList.toggle('on', on); const i = v.querySelector(':scope > .gicon'); if(i) i.textContent = on ? 'expand_less' : 'expand_more'; });
+  nbSemaineJour(k);
+  const p = document.getElementById(NBS_IDS[k][1]); if(p && st.jour) p.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
-function nbSemaineAller(sens){
-  const semaines = [...new Set(nbJours().map(j=>nbLundi(j.date)))].sort(), i = semaines.indexOf(nbSem.lundi) + sens;
+function nbSemaineAller(sens, k){
+  k = k || 'nb';
+  const st = nbSemSt[k], semaines = [...new Set(nbJours().map(j=>nbLundi(j.date)))].sort(), i = semaines.indexOf(st.lundi) + sens;
   if(i<0 || i>=semaines.length) return;
   if(typeof cahierVivFin==='function') cahierVivFin();
-  nbSem.lundi = semaines[i]; nbSem.jour = null;
-  nbSemaineRendre();
+  st.lundi = semaines[i]; st.jour = null;
+  nbSemaineRendre(k);
 }
 async function exportCahierAsPDF(){
   if(!cahier.length){ await niceAlert('Le cahier est vide : ajoutez au moins une correction avant de générer le PDF.'); return; }
@@ -8823,6 +8826,7 @@ async function addTdReference(){
     date: document.getElementById('tdDate').value || todayISO(),
     raw: '',
   };
+  await corChargerJour(entry.date);
   cahier.push(entry);
   sortCahierInPlace();
   saveCahier();
@@ -8838,7 +8842,6 @@ async function addTdReference(){
   }
 }
 document.getElementById('corDate').value = todayISO();
-document.getElementById('corListFilterDate').value = corListFilterDate;
 document.getElementById('tdDate').value = todayISO();
 
 /* ============================================================

@@ -1865,6 +1865,7 @@ body.fig-proj #tbSvg{display:block;width:100vw !important;height:100vh !importan
 .nbs-vig > .gicon{position:absolute;right:8px;bottom:5px;font-size:20px;color:var(--ink-soft,#5B6472);}
 .nbs-vig .nb-oliv-cours{position:absolute;top:14px;right:8px;margin:0;} .nbs-vig .nb-oliv-cours::after{display:none;}
 .nbs-panneau{margin-top:14px;border-top:3px solid var(--accent-blue,#0C5BA0);padding-top:10px;}
+.nbs-panneau .nb-page-footer{text-align:right;font-style:italic;color:var(--ink-soft,#5B6472);font-size:.9em;margin:6px 0 14px;}
 .nbs-p-tete{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-family:'Space Grotesk',sans-serif;font-size:1.05rem;}
 @media (max-width:600px){ .nbs-nav-t{display:none;} .nbs-titre{font-size:1rem;} .nbs-vignettes{grid-template-columns:repeat(2,1fr);} }
 @media print{ .nbs-tete,.nbs-vignettes{display:none;} }
