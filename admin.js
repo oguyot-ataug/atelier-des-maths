@@ -4,7 +4,9 @@ const ADMIN_PRIMAIRE = ['CE2', 'CM1', 'CM2'];
 const ADMIN_NIVEAUX = ADMIN_PRIMAIRE.concat(['6e', '5e', '4e', '3e']);
 function adminNiveauxOptions(sel){
   return `<optgroup label="Primaire">${ADMIN_PRIMAIRE.map(n => `<option value="${n}" ${n === sel ? 'selected' : ''}>${n}</option>`).join('')}</optgroup>`
-    + `<optgroup label="Collège">${['6e', '5e', '4e', '3e'].map(n => `<option value="${n}" ${n === sel ? 'selected' : ''}>${n}</option>`).join('')}</optgroup>`;
+    + `<optgroup label="Collège">${['6e', '5e', '4e', '3e'].map(n => `<option value="${n}" ${n === sel ? 'selected' : ''}>${n}</option>`).join('')}</optgroup>`
+    // Lycée : pour les collègues des autres matières (L'Atelier du Prof) -- pas de cours de maths à ces niveaux.
+    + `<optgroup label="Lycée">${['2de', '1re', 'Tle'].map(n => `<option value="${n}" ${n === sel ? 'selected' : ''}>${n}</option>`).join('')}</optgroup>`;
 }
 /* =====================================================================
    ADMIN.JS — Panneau Administration (L'Atelier des Maths)

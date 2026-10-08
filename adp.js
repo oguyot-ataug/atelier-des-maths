@@ -163,6 +163,47 @@
     };
   }
 
+  /* ---------- Étape 4 : phase de test (aucune vente) ----------
+     Demandé : « pour l'instant les tests se feront en interne dans mon établissement et je ne peux rien faire
+     payer tant que mon changement sur l'INPI n'est pas officiel ». Les comptes et les classes des collègues sont
+     créés par l'administrateur (classes de la 6e à la terminale) ; « Mon abonnement » et les CGV le disent. */
+  const MSG_TEST = `<div class="adp-test"><span class="gicon">science</span><div><b>L'Atelier du Prof est en phase de test.</b>
+      <p>Il est ouvert pour l'instant aux professeurs invités par leur établissement : votre compte et vos classes sont créés par l'administrateur du site. Aucune offre n'est encore en vente.</p>
+      <p>Une question, une idée, un problème ? <a href="mailto:contact@latelieraugmente.fr">contact@latelieraugmente.fr</a></p></div></div>`;
+  if(typeof renderAbonnement === 'function'){
+    const o = renderAbonnement;
+    renderAbonnement = async function(){
+      const r = await o.apply(this, arguments);
+      const root = document.getElementById('abonnementRoot');
+      // Une offre maths déjà payée reste visible (elle inclut L'Atelier du Prof) ; sinon, le message de la phase de test.
+      if(root && !(typeof opPayee === 'function' && typeof opOffre !== 'undefined' && opPayee(opOffre))) root.innerHTML = '<h1 style="margin:6px 0 12px;">Mon abonnement</h1>' + MSG_TEST;
+      return r;
+    };
+  }
+  const cgv = document.querySelector('#view-cgv > div');
+  if(cgv) cgv.innerHTML = MSG_TEST + '<p class="hint" style="margin-top:14px;">Les conditions générales de vente de L\'Atelier du Prof seront publiées à l\'ouverture des offres. Celles de L\'Atelier des Maths restent consultables sur <a href="https://maths.latelieraugmente.fr/#/cgv" target="_blank" rel="noopener">maths.latelieraugmente.fr</a>.</p>';
+  // Mentions légales et confidentialité : même éditeur, même hébergement ; le nom et l'adresse du site changent.
+  ['view-mentions-legales', 'view-confidentialite'].forEach(id => {
+    const v = document.getElementById(id); if(!v) return;
+    const w = document.createTreeWalker(v, NodeFilter.SHOW_TEXT);
+    for(let n = w.nextNode(); n; n = w.nextNode()) n.nodeValue = n.nodeValue.replace(/L'Atelier des Maths/g, "L'Atelier du Prof").replace(/maths\.latelieraugmente\.fr/g, 'adp.latelieraugmente.fr');
+  });
+  // Génération par l'IA : niveaux du lycée en plus, exemple de thème hors maths.
+  if(typeof qzGenOuvrir === 'function'){
+    const o = qzGenOuvrir;
+    qzGenOuvrir = function(){
+      const r = o.apply(this, arguments);
+      const sel = document.getElementById('qzGenNiveau');
+      if(sel && !sel.querySelector('option[value="2de"]')){
+        sel.insertAdjacentHTML('beforeend', ['2de', '1re', 'Tle'].map(n => `<option value="${n}">${n === 'Tle' ? 'Terminale' : n}</option>`).join(''));
+        const cl = (typeof accountClassesList !== 'undefined' ? accountClassesList : []).find(c => c.id === (document.getElementById('qzfClasse') || {}).value);
+        if(cl && ['2de', '1re', 'Tle'].includes(cl.niveau)) sel.value = cl.niveau;
+      }
+      const th = document.getElementById('qzGenTheme'); if(th && !estMaths()) th.placeholder = 'ex. la Révolution française, le present perfect, la photosynthèse…';
+      return r;
+    };
+  }
+
   // Accueil.
   const vh = document.getElementById('view-home');
   if(vh && !document.getElementById('adpAccueil')){

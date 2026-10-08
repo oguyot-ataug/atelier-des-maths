@@ -2051,3 +2051,6 @@ select:not([multiple]):not([size]){
 .def-box.lecon-box::before{ content:'À apprendre'; display:block; font:700 .7rem 'Space Grotesk',sans-serif; letter-spacing:.06em; text-transform:uppercase; color:#B8511F; margin-bottom:4px; }
 .fmt-btn.fmt-lecon{ width:auto; padding:0 10px; display:inline-flex; align-items:center; gap:4px; font:600 .8rem Inter,sans-serif; }
 .fmt-btn.fmt-lecon .gicon{ font-size:16px; }
+.adp-test{ display:flex; gap:12px; align-items:flex-start; background:#FFF6E8; border:1px solid rgba(242,154,31,.4); border-radius:14px; padding:16px 18px; max-width:70ch; }
+.adp-test > .gicon{ font-size:28px; color:#C9700A; }
+.adp-test p{ margin:6px 0 0; color:var(--ink-soft); }

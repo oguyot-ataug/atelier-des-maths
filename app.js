@@ -3375,6 +3375,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1032', date:'2026-10-08', items:[
+    "L'Atelier du Prof, étape 4 en phase de test -- demandé : « pour l'instant les tests se feront en interne dans mon établissement et je ne peux rien faire payer tant que mon changement sur l'INPI n'est pas officiel ». Aucune vente : « Mon abonnement » et les CGV affichent que L'Atelier du Prof est en phase de test, ouvert aux professeurs invités par leur établissement (comptes et classes créés par l'administrateur) ; une offre maths déjà payée reste affichée (elle inclut L'Atelier du Prof). Mentions légales et confidentialité au nom de L'Atelier du Prof (adp.latelieraugmente.fr). Administration : les classes peuvent être de niveau 2de, 1re ou terminale (collègues des autres matières). « Générer avec l'IA » propose aussi ces niveaux, avec un exemple de thème hors maths."
+  ] },
   { version:'2026-08-19.1031', date:'2026-10-08', items:[
     "Sessions : nouveau bouton « Ajouter un document » dans la télécommande (L'Atelier du Prof et L'Atelier des Maths). Deux possibilités : choisir une ou plusieurs entrées du cahier de la classe ou des brouillons préparés dans Correction (texte, images, tableaux, photo d'un cahier…), ou écrire un « texte rapide ». Le document s'affiche sur l'écran des élèves comme une partie de cours.",
     "Correction : nouveau bouton « À apprendre » dans la barre de mise en forme (ou [[ … ]] dans le texte). Le passage devient un encadré « À apprendre », comme une définition du cours : dans le cahier de la classe et en séance, les élèves ont l'écoute, le mode apprentissage (réciter à voix haute) et le jeu « Remettre dans l'ordre ». Utile dans toutes les matières (L'Atelier du Prof), et en maths pour une propriété vue en classe."
