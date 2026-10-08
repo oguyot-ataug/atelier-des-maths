@@ -36,6 +36,89 @@
     · <a href="${DECOUVRIR}">Découvrir L'Atelier du Prof</a> · <a href="#" data-nav="mentions-legales">Mentions légales</a> · <a href="#" data-nav="confidentialite">Confidentialité</a>
     · Professeur de maths ? <a href="https://maths.latelieraugmente.fr" target="_blank" rel="noopener">L'Atelier des Maths</a>`;
 
+  /* ---------- Matière du professeur (étape 2) ----------
+     Enregistrée dans son compte de connexion (métadonnées, modifiables par lui-même : aucune table à
+     changer). Elle règle les consignes données à l'IA (« Tu es professeur de … ») et la liste des
+     compétences des interrogations. Mathématiques : tout reste comme sur L'Atelier des Maths. */
+  const ADP_MATIERES = [
+    { m: 'Français', de: 'de français', c: 'fr' }, { m: 'Mathématiques', de: 'de mathématiques', c: 'maths' },
+    { m: 'Histoire-géographie et EMC', de: "d'histoire-géographie et d'EMC", c: 'hg' },
+    { m: 'Anglais', de: "d'anglais", c: 'lv' }, { m: 'Allemand', de: "d'allemand", c: 'lv' }, { m: 'Espagnol', de: "d'espagnol", c: 'lv' },
+    { m: 'Italien', de: "d'italien", c: 'lv' }, { m: 'Autre langue vivante', de: 'de langue vivante', c: 'lv' },
+    { m: 'Latin et grec', de: 'de langues et cultures de l\'Antiquité', c: 'fr' },
+    { m: 'SVT', de: 'de SVT (sciences de la vie et de la Terre)', c: 'sci' }, { m: 'Physique-chimie', de: 'de physique-chimie', c: 'sci' },
+    { m: 'Technologie', de: 'de technologie', c: 'sci' }, { m: 'SNT / NSI', de: "d'informatique (SNT, NSI)", c: 'sci' },
+    { m: 'SES', de: 'de sciences économiques et sociales', c: 'gen' }, { m: 'Philosophie', de: 'de philosophie', c: 'gen' },
+    { m: 'Éducation musicale', de: "d'éducation musicale", c: 'gen' }, { m: 'Arts plastiques', de: "d'arts plastiques", c: 'gen' },
+    { m: 'EPS', de: "d'EPS", c: 'gen' }, { m: 'Documentation', de: 'documentaliste', c: 'gen', seul: true },
+    { m: 'Professeur des écoles', de: 'des écoles', c: 'gen', pe: true }, { m: 'Autre', de: '', c: 'gen' },
+  ];
+  const ADP_COMPETENCES = {
+    fr: [['fr_oral', "Comprendre et s'exprimer à l'oral"], ['fr_lire', 'Lire'], ['fr_ecrire', 'Écrire'], ['fr_langue', 'Comprendre le fonctionnement de la langue'], ['fr_culture', 'Culture littéraire et artistique']],
+    hg: [['hg_temps', 'Se repérer dans le temps'], ['hg_espace', "Se repérer dans l'espace"], ['hg_raisonner', 'Raisonner, justifier une démarche'], ['hg_document', 'Analyser et comprendre un document'], ['hg_langages', 'Pratiquer différents langages'], ['hg_numerique', "S'informer dans le monde du numérique"]],
+    lv: [['lv_ecouter', 'Écouter et comprendre'], ['lv_lire', 'Lire et comprendre'], ['lv_parler', 'Parler en continu'], ['lv_ecrire', 'Écrire'], ['lv_dialoguer', 'Réagir et dialoguer'], ['lv_culture', 'Découvrir la culture']],
+    sci: [['sc_demarche', 'Pratiquer des démarches scientifiques'], ['sc_concevoir', 'Concevoir, créer, réaliser'], ['sc_methodes', "S'approprier des outils et des méthodes"], ['sc_langages', 'Pratiquer des langages'], ['sc_numerique', 'Mobiliser des outils numériques'], ['sc_citoyen', 'Adopter un comportement éthique et responsable']],
+    gen: [['g_connaitre', 'Connaître'], ['g_comprendre', 'Comprendre'], ['g_appliquer', 'Appliquer'], ['g_analyser', 'Analyser'], ['g_raisonner', 'Raisonner'], ['g_communiquer', 'Communiquer']],
+  };
+  const ADP_COULEURS = ['#0C5BA0', '#6B3FA0', '#26AAB1', '#B8511F', '#1F7A4D', '#9E1F5E'];
+  const COMP_MATHS = typeof QZ_COMPETENCES !== 'undefined' ? QZ_COMPETENCES.slice() : [];
+  window.adpMatiere = () => (typeof currentUser !== 'undefined' && currentUser && currentUser.user_metadata && currentUser.user_metadata.matiere) || '';
+  // Sans matière indiquée : réglages communs à toutes les matières (« Autre »).
+  const fiche = () => ADP_MATIERES.find(x => x.m === adpMatiere()) || ADP_MATIERES[ADP_MATIERES.length - 1];
+  const estMaths = () => fiche().c === 'maths';
+  // Compétences : la liste de la matière (le tableau est modifié sur place : toutes les pages s'en servent).
+  window.adpCompetences = adpCompetences;
+  function adpCompetences(){
+    if(typeof QZ_COMPETENCES === 'undefined') return;
+    const f = fiche(), l = f.c === 'maths' ? COMP_MATHS : ADP_COMPETENCES[f.c].map(([id, label], i) => ({ id, label, color: ADP_COULEURS[i % ADP_COULEURS.length] }));
+    QZ_COMPETENCES.splice(0, QZ_COMPETENCES.length, ...l);
+  }
+  // Une compétence d'une autre liste (copie ancienne, collègue d'une autre matière) reste lisible.
+  if(typeof qzComp === 'function'){
+    const toutes = COMP_MATHS.concat(...Object.values(ADP_COMPETENCES).map(l => l.map(([id, label], i) => ({ id, label, color: ADP_COULEURS[i % ADP_COULEURS.length] }))));
+    qzComp = id => QZ_COMPETENCES.find(c => c.id === id) || toutes.find(c => c.id === id) || null;
+  }
+  // Consignes de l'IA : « professeur de [matière] » ; à l'école, le contexte d'âge sans les règles propres aux maths.
+  if(typeof iaEnseignant === 'function'){
+    const o = iaEnseignant;
+    iaEnseignant = function(n){
+      const f = fiche(); if(estMaths()) return o.apply(this, arguments);
+      const ecole = typeof niveauPrimaire === 'function' && niveauPrimaire((typeof niveauCle === 'function' && niveauCle(n)) || n);
+      if(f.pe || ecole) return o.apply(this, arguments).replace(/^professeur des écoles/, (f.pe || f.m === 'Autre') ? 'professeur des écoles' : 'professeur des écoles (enseignement : ' + f.m + ')');
+      if(f.seul) return 'professeur ' + f.de + ' dans un collège ou un lycée français';
+      return f.de ? 'professeur ' + f.de + ' dans un collège ou un lycée français' : 'professeur dans un collège ou un lycée français';
+    };
+  }
+  if(typeof iaContexteNiveau === 'function'){
+    const o = iaContexteNiveau;
+    iaContexteNiveau = function(n){
+      if(estMaths()) return o.apply(this, arguments);
+      const k = (typeof niveauCle === 'function' && niveauCle(n)) || String(n || '').toLowerCase();
+      const ages = { ce2: 'Élèves de CE2 (8-9 ans).', cm1: 'Élèves de CM1 (9-10 ans).', cm2: 'Élèves de CM2 (10-11 ans).' };
+      return ages[k] ? ages[k] + ' Phrases courtes et vocabulaire simple, adaptés à des enfants.' : '';
+    };
+  }
+  window.adpChoisirMatiere = async function(){
+    const actuelle = adpMatiere();
+    let o = document.getElementById('adpMatiereDlg');
+    if(!o){ o = document.createElement('div'); o.id = 'adpMatiereDlg'; o.className = 'modal-overlay'; document.body.appendChild(o); }
+    o.innerHTML = `<div class="modal-card" style="max-width:460px;"><b style="font:700 1.1rem Montserrat,'Space Grotesk',sans-serif;color:#173F70;">Quelle matière enseignez-vous ?</b>
+      <p class="hint" style="margin:6px 0 12px;">Elle règle l'aide de l'IA (« Tu es professeur de … ») et les compétences proposées dans vos interrogations. Vous pourrez la changer à tout moment.</p>
+      <select id="adpMatiereSel" style="width:100%;padding:9px;">${ADP_MATIERES.map(x => `<option${x.m === actuelle ? ' selected' : ''}>${esc(x.m)}</option>`).join('')}</select>
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px;"><button class="btn secondary" id="adpMatiereNon">Plus tard</button><button class="btn" id="adpMatiereOk">Enregistrer</button></div>
+      <p class="hint" id="adpMatiereMsg" style="margin:8px 0 0;"></p></div>`;
+    o.style.display = 'flex';
+    o.querySelector('#adpMatiereNon').onclick = () => { o.style.display = 'none'; };
+    o.querySelector('#adpMatiereOk').onclick = async () => {
+      const m = o.querySelector('#adpMatiereSel').value, msg = o.querySelector('#adpMatiereMsg');
+      msg.textContent = 'Enregistrement…';
+      const { data, error } = await sb.auth.updateUser({ data: { matiere: m } });
+      if(error){ msg.textContent = 'Non enregistré : ' + error.message; return; }
+      if(data && data.user) currentUser = data.user;
+      adpCompetences(); o.style.display = 'none'; adpAccueil();
+    };
+  };
+
   // Accueil.
   const vh = document.getElementById('view-home');
   if(vh && !document.getElementById('adpAccueil')){
@@ -64,8 +147,11 @@
           ${tuile('mesresultats', 'insights', 'Mes résultats', 'Tes notes et tes progrès.')}</div>`;
       return;
     }
+    const mat = adpMatiere();
     box.innerHTML = hero(`Bonjour${prenom ? ' ' + esc(prenom) : ''}, <em>que fait-on aujourd'hui ?</em>`,
-        'Vos classes, vos interrogations, vos séances et vos corrections, quelle que soit votre matière.', '')
+        'Vos classes, vos interrogations, vos séances et vos corrections, quelle que soit votre matière.',
+        mat ? `<span class="hint" style="margin:0;align-self:center;">Votre matière : <b>${esc(mat)}</b></span> <button class="btn secondary td-mini" onclick="adpChoisirMatiere()"><span class="gicon">edit</span> Changer</button>`
+            : `<button class="btn" style="background:#F29A1F;border-color:#F29A1F;" onclick="adpChoisirMatiere()"><span class="gicon">school</span> Indiquer ma matière</button>`)
       + `<div class="adp-tuiles">
         ${tuile('questionnaires', 'quiz', 'Interrogations en ligne', 'Quiz, interrogations notées, entraînements, sondages : à créer, à donner, à corriger.')}
         ${tuile('sessions', 'cast_for_education', 'Sessions en direct', 'Faire la classe avec la télécommande : chaque élève sur son écran, vous voyez tout.')}
@@ -98,6 +184,7 @@
     const o = refreshAuthUI;
     refreshAuthUI = async function(){
       const r = await o.apply(this, arguments);
+      adpCompetences();
       const vhA = document.getElementById('view-home');
       if(vhA && vhA.classList.contains('active')) adpAccueil();
       return r;

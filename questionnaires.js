@@ -1527,7 +1527,7 @@ function qzIaPrompt(q, rep, nbPhotos){
 
 Énoncé : ${q.enonce || '(voir document)'}
 
-Attendus (corrigé du professeur) : ${q.attendus || '(non précisés : juge la justesse mathématique et la qualité de la justification)'}
+Attendus (corrigé du professeur) : ${q.attendus || '(non précisés : juge la justesse du contenu et la qualité de la justification)'}
 
 ${crit}
 
@@ -1656,12 +1656,13 @@ async function qzGenerer(){
   // Seuls les formats des types cochés sont montrés à l'IA (signalé : « il ne tient pas compte des types
   // de questions cochées » -- avec les 5 formats en exemple, elle en utilisait d'autres), et les
   // questions d'un autre type sont écartées à la réception.
+  const cx = i => (QZ_COMPETENCES[i % QZ_COMPETENCES.length] || {}).id || '';
   const FORMATS = {
-    qcm: '{"type":"qcm","enonce":"...","points":1,"competence":"calculer","multiple":false,"choix":[{"texte":"...","correct":true},{"texte":"...","correct":false},{"texte":"...","correct":false}],"explication":"..."}',
-    vf: '{"type":"vf","enonce":"Vrai ou faux ?","points":2,"competence":"raisonner","items":[{"texte":"affirmation","vrai":true},{"texte":"affirmation","vrai":false}],"explication":"..."}',
-    numerique: '{"type":"numerique","enonce":"...","points":1,"competence":"calculer","reponses":"0,75 ; 3/4","tolerance":"","unite":"","explication":"..."}',
-    courte: '{"type":"courte","enonce":"...","points":1,"competence":"communiquer","reponses":"réponse ; variante acceptée","explication":"..."}',
-    ouverte: '{"type":"ouverte","enonce":"...","competence":"raisonner","attendus":"corrigé détaillé","criteres":[{"texte":"critère","points":1},{"texte":"critère","points":1}],"explication":"..."}',
+    qcm: `{"type":"qcm","enonce":"...","points":1,"competence":"${cx(4)}","multiple":false,"choix":[{"texte":"...","correct":true},{"texte":"...","correct":false},{"texte":"...","correct":false}],"explication":"..."}`,
+    vf: `{"type":"vf","enonce":"Vrai ou faux ?","points":2,"competence":"${cx(3)}","items":[{"texte":"affirmation","vrai":true},{"texte":"affirmation","vrai":false}],"explication":"..."}`,
+    numerique: `{"type":"numerique","enonce":"...","points":1,"competence":"${cx(4)}","reponses":"0,75 ; 3/4","tolerance":"","unite":"","explication":"..."}`,
+    courte: `{"type":"courte","enonce":"...","points":1,"competence":"${cx(5)}","reponses":"réponse ; variante acceptée","explication":"..."}`,
+    ouverte: `{"type":"ouverte","enonce":"...","competence":"${cx(3)}","attendus":"corrigé détaillé","criteres":[{"texte":"critère","points":1},{"texte":"critère","points":1}],"explication":"..."}`,
   };
   const consigneTypes = types.length === 1
     ? `TOUTES les questions sont de type « ${noms[types[0]]} » (champ "type" = "${types[0]}") : aucun autre type n'est accepté.`
@@ -1673,7 +1674,7 @@ ${consigneTypes}
 ${consignes ? `Consignes du professeur : ${consignes}\n` : ''}
 Pour aller à la ligne dans un texte (ex. avant « (a) », « (b) »), mets un vrai saut de ligne JSON, c'est-à-dire \\n avec un seul antislash, jamais \\\\n.
 ${types.includes('numerique') ? `Une question « réponse numérique » ne demande QUE un résultat (un nombre à taper, sans phrase ni calcul à écrire)${types.includes('ouverte') ? ' ; dès que l\'élève doit montrer une méthode (« justifie », « explique », « détaille »), c\'est une question ouverte, avec ses attendus et ses critères' : ''}.\n` : ''}Écriture des maths : fractions a/b (ex. 3/4), puissances x^2, racines sqrt(2), virgule décimale (2,5) ; ou LaTeX entre $...$ si nécessaire. Pas de figure à dessiner.
-Pour chaque question, indique la compétence travaillée parmi : chercher, modeliser, representer, raisonner, calculer, communiquer ; et une courte explication (méthode) montrée à l'élève avec la correction.
+Pour chaque question, indique la compétence travaillée (champ "competence") parmi ces identifiants : ${QZ_COMPETENCES.map(c => c.id + ' (' + c.label + ')').join(', ')} ; et une courte explication (méthode) montrée à l'élève avec la correction.
 Réponds UNIQUEMENT par un tableau JSON valide, sans texte autour, dont chaque élément suit ${types.length === 1 ? 'ce format' : 'l\'un de ces formats'} :
 ${types.map(t => FORMATS[t]).join('\n')}`;
   btn.disabled = true; status.textContent = 'L\'IA rédige les questions… (jusqu\'à une minute)';
