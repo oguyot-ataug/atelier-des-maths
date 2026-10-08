@@ -71,7 +71,7 @@ async function cdPreparer(){
     if(choix !== 'neuf') return;
   }
   const fin = todayISO(), d0 = new Date(); d0.setDate(d0.getDate() - 14);
-  const st = { du: d0.toISOString().slice(0, 10), au: fin, entrees: [], choisies: new Set(), exos: typeof plAttente === 'function' ? plAttente() : [], titre: 'Cours du ' + new Date().toLocaleDateString('fr-FR'), mode: 'presentation', jusqua: '', debut: '' };
+  const st = { du: d0.toISOString().slice(0, 10), au: fin, entrees: [], choisies: new Set(), exos: typeof plAttenteCharger === 'function' ? await plAttenteCharger() : [], titre: 'Cours du ' + new Date().toLocaleDateString('fr-FR'), mode: 'presentation', jusqua: '', debut: '' };
   let o = document.getElementById('cdPrepOverlay');
   if(!o){ o = document.createElement('div'); o.id = 'cdPrepOverlay'; o.className = 'modal-overlay'; o.style.zIndex = '400'; document.body.appendChild(o); }
   const charger = async () => {

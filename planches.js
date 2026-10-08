@@ -225,7 +225,7 @@ function plTdRendre(lvl, c){
         <div class="td-v-pied"><button type="button" class="btn secondary td-mini" data-tdproj="${i}|${k}" title="En grand, un par un"><span class="gicon">present_to_all</span> Projeter</button>
           <button type="button" class="btn secondary td-mini" data-tdcorr="${i}|${k}"><span class="gicon">fact_check</span> Correction</button>
           <button type="button" class="btn secondary td-mini" data-tdcahier="${i}|${k}" title="Énoncé et correction dans le cahier de la classe"><span class="gicon">add</span> Cahier</button>
-          <button type="button" class="btn secondary td-mini" data-tdsess="${i}|${k}" title="Dans la session COURS en cours, ou en ouverture de la prochaine"><span class="gicon">cast_for_education</span> Session</button></div></div>`).join('')}</div></section>`).join('')}${typeof plTdProgHtml === 'function' ? plTdProgHtml(lvl, c) : ''}`;
+          <button type="button" class="btn secondary td-mini" data-tdsess="${i}|${k}" title="Ajouter à une session COURS : ouverte, programmée, ou la prochaine que vous préparerez"><span class="gicon">cast_for_education</span> Session</button></div></div>`).join('')}</div></section>`).join('')}${typeof plTdProgHtml === 'function' ? plTdProgHtml(lvl, c) : ''}`;
   if(typeof renderStaticMath === 'function') renderStaticMath(root);
   root.onclick = e => {
     const t = e.target, pj = t.closest('[data-tdproj]'), co = t.closest('[data-tdcorr]'), ca = t.closest('[data-tdcahier]'), pg = t.closest('[data-tdprog]');
@@ -256,16 +256,91 @@ function plSessionItem(lvl, c, i, k){
   if(typeof plNumPossible === 'function' && plNumPossible(x)){ it.exo = { type: 'td', lvl, code: c.code, t: c.t, i, k }; it.prog = null; }
   return it;
 }
-// « Ajouter à la session » : dans la session ouverte, sinon en attente pour l'ouverture de la prochaine.
+/* « + Session » -- demandé : « Si j'ai programmé plusieurs sessions, est-ce que j'aurai le choix de la
+   session ? » puis « fais la fenêtre de choix ». S'il existe des sessions ouvertes ou programmées, une
+   fenêtre propose chacune (classe, titre, jour et heure) : l'exercice est ajouté à la fin de celle qu'on
+   choisit. Dernière ligne : « la prochaine session que je préparerai », la liste d'attente d'avant (les
+   exercices s'y placent en ouverture). Sans aucune session, l'exercice va directement en attente ; avec
+   seulement la session de la télécommande, il y est ajouté comme avant.
+   Liste d'attente : gardée dans le compte (table session_attente) pour la retrouver sur tous ses
+   appareils, avec une copie dans le navigateur (seule utilisée si le compte n'est pas joignable). */
+let plAttenteCompte = true; // false si la table n'est pas joignable : on s'en tient au navigateur
 function plAttente(){ try{ return JSON.parse(localStorage.getItem('cdAttente') || '[]'); }catch(e){ return []; } }
-function plAttenteSauver(l){ try{ localStorage.setItem('cdAttente', JSON.stringify(l)); }catch(e){} }
-async function plAjouterSession(lvl, c, i, k, btn){
-  const it = plSessionItem(lvl, c, i, k);
-  if(typeof cdP !== 'undefined' && cdP){ await cxProfAjouterItems([it], 'Exercice'); return; }
-  const l = plAttente(); if(!l.some(x => x.titre === it.titre)){ it.ouverture = true; l.push(it); plAttenteSauver(l); }
-  if(btn){ const old = btn.innerHTML; btn.innerHTML = `<span class="gicon">check</span> Prochaine session (${l.length})`; setTimeout(() => btn.innerHTML = old, 2200); }
-  if(typeof cdToast === 'function') cdToast(`<span class="gicon">cast_for_education</span> Exercice mis de côté : il ouvrira votre prochaine session COURS (${l.length} en attente).`);
+function plAttenteSauver(l){
+  try{ localStorage.setItem('cdAttente', JSON.stringify(l)); }catch(e){}
+  if(plAttenteCompte && typeof sb !== 'undefined' && sb && typeof currentUser !== 'undefined' && currentUser)
+    sb.from('session_attente').upsert({ teacher_id: currentUser.id, items: l, updated_at: new Date().toISOString() }, { onConflict: 'teacher_id' }).then(({ error }) => { if(error) plAttenteCompte = false; });
 }
+async function plAttenteCharger(){
+  const loc = plAttente();
+  if(!plAttenteCompte || typeof sb === 'undefined' || !sb || typeof currentUser === 'undefined' || !currentUser) return loc;
+  const { data, error } = await sb.from('session_attente').select('items').eq('teacher_id', currentUser.id).maybeSingle();
+  if(error){ plAttenteCompte = false; return loc; }
+  let l = Array.isArray(data && data.items) ? data.items : [];
+  // Une seule fois par navigateur : ce qui n'était mis de côté qu'ici rejoint la liste du compte.
+  let migre = false; try{ migre = localStorage.getItem('cdAttenteCompte') === currentUser.id; }catch(e){}
+  if(!migre){
+    const ajout = loc.filter(x => !l.some(y => y.titre === x.titre));
+    if(ajout.length){ l = l.concat(ajout); plAttenteSauver(l); }
+    try{ localStorage.setItem('cdAttenteCompte', currentUser.id); }catch(e){}
+  }
+  try{ localStorage.setItem('cdAttente', JSON.stringify(l)); }catch(e){}
+  return l;
+}
+async function plMettreDeCote(it, btn, quoi){
+  const l = await plAttenteCharger();
+  if(!l.some(x => x.titre === it.titre)){ l.push(Object.assign({}, it, { ouverture: true })); plAttenteSauver(l); }
+  if(btn){ const old = btn.innerHTML; btn.innerHTML = `<span class="gicon">check</span> Prochaine session (${l.length})`; setTimeout(() => btn.innerHTML = old, 2200); }
+  if(typeof cdToast === 'function') cdToast(`<span class="gicon">cast_for_education</span> ${quoi} mis de côté : il ouvrira votre prochaine session COURS (${l.length} en attente).`);
+}
+// Sessions qui peuvent recevoir l'exercice : ouvertes, puis programmées (la plus proche d'abord).
+async function plSessionsCibles(){
+  if(typeof sb === 'undefined' || !sb || typeof currentUser === 'undefined' || !currentUser) return [];
+  const { data, error } = await sb.rpc('cours_direct_liste', { p_limite: 120 });
+  if(error || !Array.isArray(data)) return [];
+  const ouv = data.filter(x => x.ouverte), prog = data.filter(x => x.programmee).sort((a, b) => String((a.etat || {}).debut).localeCompare(String((b.etat || {}).debut)));
+  return ouv.concat(prog);
+}
+function plChoisirSession(cibles, nAttente){
+  return new Promise(res => {
+    let o = document.getElementById('plSessChoix');
+    if(!o){ o = document.createElement('div'); o.id = 'plSessChoix'; o.className = 'modal-overlay'; o.style.zIndex = '420'; document.body.appendChild(o); }
+    const quand = x => x.programmee ? new Date(x.etat.debut).toLocaleString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' }) : 'ouverte maintenant';
+    o.innerHTML = `<div class="modal-card pl-sc">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;"><b class="cd-h"><span class="gicon">cast_for_education</span> Ajouter à quelle session ?</b>
+        <button class="modal-close" data-sc="annuler"><span class="gicon">close</span></button></div>
+      <p class="hint" style="margin:6px 0 10px;">L'exercice s'ajoute à la fin de la session choisie.</p>
+      ${cibles.map((x, k) => `<button type="button" class="pl-sc-l${x.programmee ? ' prog' : ''}" data-sc="${k}">
+        <span class="gicon">${x.programmee ? 'event' : 'sensors'}</span>
+        <span class="pl-sc-t"><b>${escapeHtml(x.classe || '')}${x.classe ? ' · ' : ''}${escapeHtml(x.titre || 'Session')}</b><small>${quand(x)} · code ${escapeHtml(x.code || '')}</small></span></button>`).join('')}
+      <button type="button" class="pl-sc-l attente" data-sc="attente"><span class="gicon">bookmark_add</span>
+        <span class="pl-sc-t"><b>La prochaine session que je préparerai</b><small>Mis de côté, en ouverture de la session${nAttente ? ` · ${nAttente} déjà en attente` : ''}</small></span></button></div>`;
+    const fin = v => { o.style.display = 'none'; res(v); };
+    o.onclick = e => { if(e.target === o) fin(null); };
+    o.querySelectorAll('[data-sc]').forEach(b => b.onclick = () => { const v = b.dataset.sc; fin(v === 'annuler' ? null : v === 'attente' ? 'attente' : cibles[+v]); });
+    o.style.display = 'flex';
+  });
+}
+// Point d'entrée commun (exercices du Manuel, défis de programmation).
+async function plVersSession(it, btn, quoi){
+  quoi = quoi || 'Exercice';
+  const tele = typeof cdP !== 'undefined' && cdP ? cdP : null;
+  const cibles = await plSessionsCibles();
+  if(tele && !cibles.some(x => x.id !== tele.id)){ await cxProfAjouterItems([it], quoi); return; } // rien d'autre à proposer
+  if(!cibles.length){ await plMettreDeCote(it, btn, quoi); return; }
+  const choix = await plChoisirSession(cibles, plAttente().length);
+  if(!choix) return;
+  if(choix === 'attente'){ await plMettreDeCote(it, btn, quoi); return; }
+  if(tele && choix.id === tele.id && typeof cxProfAjouterItems === 'function'){ await cxProfAjouterItems([it], quoi); return; }
+  const { data, error } = await sb.from('cours_direct').select('items').eq('id', choix.id).maybeSingle();
+  if(error || !data){ await niceAlert('Session introuvable : ' + ((error && error.message) || 'elle a peut-être été supprimée.')); return; }
+  const { error: e2 } = await sb.from('cours_direct').update({ items: (data.items || []).concat([it]) }).eq('id', choix.id);
+  if(e2){ await niceAlert(quoi + ' non ajouté : ' + e2.message); return; }
+  const n = (data.items || []).length + 1;
+  if(btn){ const old = btn.innerHTML; btn.innerHTML = `<span class="gicon">check</span> Ajouté`; setTimeout(() => btn.innerHTML = old, 2200); }
+  if(typeof cdToast === 'function') cdToast(`<span class="gicon">cast_for_education</span> ${quoi} ajouté à la session « ${escapeHtml(choix.titre || 'Session')} »${choix.classe ? ' (' + escapeHtml(choix.classe) + ')' : ''}, en ${n}e position.`);
+}
+async function plAjouterSession(lvl, c, i, k, btn){ await plVersSession(plSessionItem(lvl, c, i, k), btn, 'Exercice'); }
 async function plAjouterCahier(lvl, c, i, k, btn){
   if(typeof cahier === 'undefined'){ await niceAlert('Cahier indisponible.'); return; }
   if(typeof currentClassId !== 'undefined' && !currentClassId){ await niceAlert('Choisissez d\'abord la classe en haut de la page : l\'exercice s\'ajoute au cahier de cette classe.'); return; }
@@ -803,6 +878,9 @@ const PL_CSS_LIVRE = `
     .pl-lignes div{ height:22px; border-bottom:1px solid #CBD2DC; }
     .pl-ex-corr-titre{ margin:10px 0 4px; font:700 .9rem 'Space Grotesk',sans-serif; color:#1F7A4D; }
     .plp-corps .pl-unites{ display:inline-flex; gap:5px; flex-wrap:wrap; align-items:center; }
+    .pl-sc{ max-width:520px; width:94vw; } .pl-sc-l{ display:flex; align-items:center; gap:10px; width:100%; text-align:left; border:1.5px solid rgba(28,43,57,.14); background:#fff; border-radius:12px; padding:10px 12px; margin:0 0 8px; cursor:pointer; font:inherit; color:inherit; }
+    .pl-sc-l:hover{ border-color:var(--accent-blue,#0C5BA0); background:#EEF4FB; } .pl-sc-l > .gicon{ color:#E35D3A; font-size:24px; } .pl-sc-l.prog > .gicon{ color:#C77D1E; } .pl-sc-l.attente{ border-style:dashed; } .pl-sc-l.attente > .gicon{ color:#1F7A4D; }
+    .pl-sc-t{ display:flex; flex-direction:column; gap:2px; } .pl-sc-t small{ color:var(--ink-soft,#5B6472); } .pl-sc-t small::first-letter{ text-transform:uppercase; }
     #plProj{ position:fixed; inset:0; z-index:9500; background:#FBF8F2; display:none; flex-direction:column; }
     .plp-tete{ display:flex; align-items:center; gap:14px; padding:10px 20px; background:#1F3A5C; color:#fff; font-family:'Space Grotesk',sans-serif; flex-wrap:wrap; }
     .plp-tete .pl-ref{ color:#fff; border:1.5px solid #fff; border-radius:6px; padding:0 8px; font-weight:700; } .plp-tete b{ font-size:1.15rem; }

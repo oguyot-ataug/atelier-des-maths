@@ -3343,6 +3343,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1005', date:'2026-10-08', items:[
+    "Bouton « Session » des exercices du Manuel et des défis de programmation : fenêtre de choix de la session -- demandé : « Si j'ai programmé plusieurs sessions, est-ce que j'aurai le choix de la session ? », puis « fais la fenêtre de choix ». Quand des sessions sont ouvertes ou programmées, une fenêtre « Ajouter à quelle session ? » les propose (classe, titre, « ouverte maintenant » ou jour et heure, code) : l'exercice s'ajoute à la fin de la session choisie. Dernière ligne : « La prochaine session que je préparerai » (mis de côté, en ouverture de la session, comme avant). Sans aucune session, l'exercice est mis de côté directement ; avec seulement la session de la télécommande, il y est ajouté comme avant. La liste des exercices mis de côté pourra être gardée dans le compte, pour la retrouver sur tous vos appareils (en attente d'une petite mise à jour de la base) ; d'ici là, elle reste dans le navigateur."
+  ] },
   { version:'2026-08-19.1004', date:'2026-10-08', items:[
     "Jeu « Remettre dans l'ordre » : nouveau niveau « Très difficile » -- demandé : « En niveau très difficile, c'est à l'élève d'écrire les mots ». Plus de réserve : l'élève écrit la phrase de mémoire, mot à mot (Espace ou Entrée pour valider chaque mot), avec des pointillés pour les mots qui restent. Les formules, les notations ([AB], A, O…) et la ponctuation s'écrivent seules quand on y arrive ; accents et majuscules ne sont pas exigés. Un mot faux est signalé (« … n'est pas le mot attendu ») et reste à corriger ; chaque « Indice » donne une lettre de plus du mot attendu."
   ] },
