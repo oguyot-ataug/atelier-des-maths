@@ -1899,7 +1899,9 @@ async function exportCoursPDF(){
   // génération PDF donne une structure trop grosse, on peut réduire la taille d'écriture
   // globale". html2canvas/html2pdf ignore le CSS d'impression du site (@media print), donc
   // toute mise en forme spécifique au PDF doit être faite ici, directement sur ce wrapper.
-  wrapper.style.cssText='width:700px;background:#fff;padding:20px;font-family:Inter,sans-serif;color:#1C1B2E;font-size:12px;line-height:1.5;';
+  // Largeur = la largeur utile de la page (A4 moins 2 × 10 mm de marge = 190 mm ≈ 718 px), celle du conteneur
+  // dans lequel html2pdf recopie le cours : avec 700 px + 2 × 20 px de marge intérieure, le cours débordait.
+  wrapper.style.cssText='width:718px;box-sizing:border-box;background:#fff;padding:20px;font-family:Inter,sans-serif;color:#1C1B2E;font-size:12px;line-height:1.5;';
   // "Chapitre N" (petit) + "CODE - TITRE" en majuscules (grand titre), comme pour
   // l'impression native (signalé : "ni chapitre... ni pagination", puis "écrire en gros N1 -
   // NOMBRES ENTIERS comme titre et supprimer N1 Nombres entiers en dessous de Chapitre 1").
@@ -1971,7 +1973,16 @@ async function exportCoursPDF(){
     return !(calquePdf && (el===calquePdf || calquePdf.contains(el) || el.contains(calquePdf)));
   };
   html2pdf().set({margin:10, filename:title.replace(/[^\w-]+/g,'_')+'.pdf', html2canvas:{scale:1.5, useCORS:true, foreignObjectRendering:false, scrollX:0, scrollY:0, windowHeight:wrapper.scrollHeight, ignoreElements:horsExport}, jsPDF:{unit:'mm',format:'a4'}, pagebreak:{mode:['css']}})
-    .from(wrapper).toPdf().get('pdf').then(pdf=>{
+    .from(wrapper).toCanvas().then(function(){
+      // html2pdf place ses sauts de page tous les 1046 px (hauteur utile arrondie à l'inférieur), mais découpait
+      // ensuite l'image tous les 1047,3 px (calcul fait sur la largeur arrondie de l'image) -- signalé : « il
+      // reste encore parfois des défauts de découpage » : 1,3 px de décalage par page, qui s'accumulait jusqu'à
+      // faire apparaître le haut du badge suivant en bas de page. La découpe suit donc exactement la même
+      // hauteur que les sauts de page (la page imprimée fait 276,5 mm au lieu de 277, invisible).
+      const ps = this.prop.pageSize, largeur = this.prop.canvas.width, hauteur = Math.round(ps.inner.px.height*1.5);
+      ps.inner.ratio = (hauteur + 0.5)/largeur;
+      ps.inner.height = ps.inner.width*hauteur/largeur;
+    }).toPdf().get('pdf').then(pdf=>{
       // Pagination "page / total" -- html2pdf ne le fait pas nativement, on la tamponne
       // nous-mêmes via l'API jsPDF sous-jacente, une fois toutes les pages générées.
       const total = pdf.internal.getNumberOfPages();
@@ -3360,6 +3371,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1018', date:'2026-10-08', items:[
+    "Export PDF des cours : plus de badge (Définition, Propriété…) coupé en bas de page -- signalé : « Il reste encore parfois des défauts de découpage » (le haut du badge « Propriété 2 » visible en bas de la page 3, le reste en page 4). Cause : la bibliothèque PDF plaçait ses sauts de page tous les 1046 px, mais découpait l'image tous les 1047,3 px ; ce petit écart s'accumulait de page en page (4 px en bas de la page 3), juste assez pour faire déborder le haut du bloc suivant. La découpe suit maintenant exactement les sauts de page. Le cours occupe aussi exactement la largeur utile de la page (il débordait légèrement à droite)."
+  ] },
   { version:'2026-08-19.1017', date:'2026-10-08', items:[
     "Export PDF des cours beaucoup plus rapide, sans le message « la page ne répond pas » -- signalé : « L'export en PDF des cours est toujours très long et on a ce message qui s'affiche plusieurs fois de suite ». Cause : pour photographier le cours, la bibliothèque PDF recopiait toute la page du site (plus de 60 000 éléments : vues masquées, outils, autres contenus), pas seulement le cours, ce qui bloquait le navigateur de longues secondes. Elle ne recopie plus que le cours et les styles. Mesuré : Symétrie centrale (5e) passe de plus de 25 s à moins d'une seconde ; Droites parallèles et perpendiculaires (6e), avec ses constructions pas à pas, s'exporte en 2,4 s. Le figement des couleurs (thème du niveau) est aussi fait en une seule passe.",
     "Au passage : le bouton du jeu « Remettre dans l'ordre » (shaker) apparaissait dans les encadrés du PDF, par-dessus le texte ; il est retiré du PDF, des parties de cours ajoutées au cahier et des cours personnalisés (un jeu en cours laisse place au texte d'origine)."
