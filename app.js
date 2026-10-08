@@ -3371,6 +3371,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1026', date:'2026-10-08', items:[
+    "Bilan de séance : la colonne des noms reste figée quand on fait défiler le tableau vers la droite, ainsi que la ligne des titres d'exercices (en haut) et la ligne « Tout juste » (en bas) quand on le fait défiler vers le bas -- demandé : « Dans les bilans, figer les colonnes NOM Prénom ». (Le bilan d'une classe, dans Résultats, avait déjà ses noms figés.)"
+  ] },
   { version:'2026-08-19.1025', date:'2026-10-08', items:[
     "Télécommande de session, vignettes d'un exercice : le liseret dit où en est l'élève -- demandé : « le liseret vert pourrait indiquer que l'élève a terminé, en orange il est dessus actuellement ». Vert : terminé (tout juste, « J'ai terminé », défi réussi) ; orange : il est sur cet exercice en ce moment ; framboise (mode libre) : il est passé à autre chose sans le finir ; rien : pas commencé et ailleurs. Légende en haut des vignettes. L'élément où se trouve un élève, qui prenait une ligne entière, devient une petite pastille « → 21 » à côté du nom (titre complet au survol).",
     "Correctif -- signalé : « j'ai eu souvent cette pastille jaune [plus de nouvelles] en pleine séance alors que les élèves semblaient tous connectés ». La présence de l'élève (toutes les 20 s) et ses sorties de la page n'étaient en fait jamais enregistrées : la requête était préparée mais jamais envoyée (la bibliothèque Supabase n'envoie une requête qu'une fois sa réponse attendue). Seule l'entrée dans la session l'était, d'où « plus de nouvelles » au bout d'une minute. Les élèves présents restent maintenant en vert (après rechargement de leur page pour une session déjà ouverte)."

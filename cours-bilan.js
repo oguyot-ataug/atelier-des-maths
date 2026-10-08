@@ -110,8 +110,14 @@ const CDB_CSS = `
   .cdb-absent th, .cdb-absent td{color:#9AA3AF;} .cdb-gris{color:#9AA3AF;} .cdb-rouge{color:#C0392B;font-weight:700;} .cdb-n .gicon{font-size:15px;vertical-align:middle;}
   .cdb-leg .cdb-c{display:inline-block;padding:0 6px;border-radius:5px;}
   .cdb-eq{color:#3A6EA5;font-weight:600;font-size:.85em;}
+  /* Colonne des noms (et ligne des titres) figée quand on fait défiler -- demandé : « Dans les bilans, figer les
+     colonnes NOM Prénom ». Bordures en ombre : avec border-collapse, une cellule figée perd les siennes. */
+  .cdb-table thead th{position:sticky;top:0;z-index:2;} .cdb-table tfoot th, .cdb-table tfoot td{position:sticky;bottom:0;z-index:2;}
+  .cdb-table tbody th, .cdb-table thead th:first-child, .cdb-table tfoot th{position:sticky;left:0;z-index:3;box-shadow:inset -1px 0 #DCE2EA;}
+  .cdb-table tbody th{background:#fff;z-index:1;} .cdb-table thead th:first-child, .cdb-table tfoot th{z-index:4;}
 `;
 (function(){ const st = document.createElement('style'); st.textContent = CDB_CSS + `
   .cdb{max-width:1100px;width:96vw;max-height:90vh;overflow:auto;}
+  .cdb .cdb-table{max-height:62vh;}
   .cdb-tete{display:flex;gap:10px;align-items:center;flex-wrap:wrap;} .cdb-tete select{max-width:340px;}
 `; document.head.appendChild(st); })();
