@@ -408,7 +408,7 @@ document.querySelectorAll('[data-nav]').forEach(el=>{
             const st = deserializeFigState(JSON.parse(retour));
             figState.points = st.points; figState.shapes = st.shapes;
             figState.nextLabel = figState.points.length;
-            renderFigureSvg();
+            renderFigureSvg(); if(typeof figCadrerSiBesoin==='function'){ figCadrerSiBesoin(); renderFigureSvg(); } // points hors du cadre de base visibles
           }
         }catch(e){ console.warn('Géométrie Interactive : figure du tableau non restaurée', e); }
       }
@@ -3343,6 +3343,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1010', date:'2026-10-08', items:[
+    "Géométrie dynamique : points « manquants » au rechargement d'une figure -- signalé : « j'avais enregistré ma figure mais quand je l'ai rechargée il manquait des points ». La figure était bien enregistrée en entier (vérifié : points, milieux, symétriques, points sur cercle ou sur arc, cercles, droites…), mais pas la vue : en plein écran, en écran partagé ou après un zoom arrière, la zone visible est plus grande que la vue normale, et les points placés au-delà n'étaient plus à l'écran au rechargement. Désormais, à l'ouverture d'une figure enregistrée (Mes figures enregistrées, retour du tableau, figure d'un devoir, rendu d'un élève, figure modifiée depuis la correction), la vue s'agrandit et se centre d'elle-même si un objet dépasse. Les figures déjà enregistrées en profitent sans rien refaire.",
+    "Au passage : au-delà de 26 points (toutes les lettres déjà prises), le point suivant s'appelle A1, B1… ; auparavant, le calcul du nom tournait sans fin et la page se figeait."
+  ] },
   { version:'2026-08-19.1009', date:'2026-10-08', items:[
     "Géométrie dynamique : animer un point -- demandé : « un bouton animer (clic droit objet) qui permet par exemple de faire tourner un point sur un cercle ou autre ». Clic droit sur un point : « Animer ». Un point posé sur un cercle tourne (un tour en 7 s environ) ; un point posé sur un segment fait des allers-retours d'une extrémité à l'autre (sur une droite ou une demi-droite, un peu au-delà des points qui la définissent) ; l'extrémité d'un segment de longueur donnée tourne autour de l'autre extrémité. Tout ce qui dépend du point suit. Pendant l'animation, le même clic droit propose la vitesse (lente, normale, rapide), le changement de sens (⇄) et « Arrêter l'animation » ; plusieurs points peuvent être animés en même temps (« Arrêter toutes les animations »). Avec la trace activée sur un autre objet, on voit son lieu se dessiner (ex. le milieu de [AM] quand M tourne sur un cercle décrit un cercle). Pour un point libre, le menu explique qu'il faut d'abord le poser sur un cercle ou une droite. L'animation s'arrête quand on ferme la figure."
   ] },

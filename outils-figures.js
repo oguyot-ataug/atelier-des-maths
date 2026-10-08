@@ -3851,7 +3851,12 @@ function setFigureMode(mode){
 function nextPointLabel(){
   const letters='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   let lab;
-  do{ lab = letters[figState.nextLabel++ % letters.length]; } while(figState.points.some(p=>p.label===lab));
+  // Au-delà de 26 points (toutes les lettres prises) : A1, B1… -- sans quoi la boucle ne s'arrêtait jamais.
+  for(let essai = 0; essai < 2000; essai++){
+    const n = figState.nextLabel++;
+    lab = letters[n % letters.length] + (n >= letters.length ? Math.floor(n / letters.length) : '');
+    if(!figState.points.some(p=>p.label===lab)) return lab;
+  }
   return lab;
 }
 function svgCoordsFromEvent(svg, evt){
@@ -4364,6 +4369,24 @@ function resetFigViewBox(){
   figViewBox = {x:0, y:0, w:500, h:320};
   const svg = document.getElementById('figureSvg');
   if(svg) svg.setAttribute('viewBox', '0 0 500 320');
+}
+/* Recadrage au chargement d'une figure -- signalé : « j'avais enregistré ma figure mais quand je l'ai
+   rechargée il manquait des points ». La figure était bien enregistrée en entier, mais la vue (zoom,
+   plein écran, écran partagé, plus larges ou plus hautes que la vue normale) ne l'est pas : des points
+   placés hors du cadre de base n'étaient plus visibles au rechargement. Si un objet dépasse de la vue,
+   elle s'agrandit et se centre pour tout montrer (le format de la zone ne change pas). */
+function figCadrerSiBesoin(){
+  const xs = [], ys = [];
+  figState.points.forEach(p=>{ if(!p.hidden && isFinite(p.x) && isFinite(p.y)){ xs.push(p.x); ys.push(p.y); } });
+  figState.shapes.forEach(s=>{ if(s.type==='cercle' && s.p1 && typeof circleRadius==='function'){ const r = circleRadius(s); if(isFinite(r)){ xs.push(s.p1.x-r, s.p1.x+r); ys.push(s.p1.y-r, s.p1.y+r); } } });
+  if(!xs.length) return;
+  const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys), m = 18;
+  const v = figViewBox;
+  if(x0 >= v.x+m && x1 <= v.x+v.w-m && y0 >= v.y+m && y1 <= v.y+v.h-m) return; // tout est déjà visible
+  const w = Math.min(4000, Math.max(v.w, x1-x0+2*m+20, (y1-y0+2*m+20)/figVBRatio)), h = w*figVBRatio;
+  figViewBox = {x:(x0+x1)/2 - w/2, y:(y0+y1)/2 - h/2, w, h};
+  const svg = document.getElementById('figureSvg');
+  if(svg) svg.setAttribute('viewBox', `${figViewBox.x} ${figViewBox.y} ${figViewBox.w} ${figViewBox.h}`);
 }
 function onFigureWheel(evt){
   evt.preventDefault();
@@ -5951,6 +5974,7 @@ function reopenFigure(data){
   figState.shapes = restored.shapes;
   figState.nextLabel = figState.points.length;
   renderFigureSvg();
+  figCadrerSiBesoin(); renderFigureSvg();
 }
 (function initFigureDrag(){
   const attach = ()=>{

@@ -307,7 +307,7 @@ function openDevoirFigureDepartEditor(){
   if(devoirNewFigureDepart){
     const cloned = deserializeFigState(devoirNewFigureDepart);
     figState.points = cloned.points; figState.shapes = cloned.shapes; figState.nextLabel = figState.points.length;
-    renderFigureSvg();
+    renderFigureSvg(); if(typeof figCadrerSiBesoin==='function'){ figCadrerSiBesoin(); renderFigureSvg(); } // points hors du cadre de base visibles
   }
   const validateBtn = document.getElementById('figValidateBtn');
   if(validateBtn){
@@ -338,7 +338,7 @@ async function testDevoirFigureCompleter(){
   openFigureTool();
   const cloned = deserializeFigState(devoirNewFigureDepart);
   figState.points = cloned.points; figState.shapes = cloned.shapes; figState.nextLabel = figState.points.length;
-  renderFigureSvg();
+  renderFigureSvg(); if(typeof figCadrerSiBesoin==='function'){ figCadrerSiBesoin(); renderFigureSvg(); } // points hors du cadre de base visibles
   const validateBtn = document.getElementById('figValidateBtn');
   const submitBtn = document.getElementById('figSubmitDevoirBtn');
   const loadBtn = document.getElementById('figLoadDevoirBtn');
@@ -1057,7 +1057,7 @@ function previewDevoirFigure(studentId){
   if(validateBtn) validateBtn.style.display = 'none';
   const closeBtn = document.getElementById('figCloseBtn');
   if(closeBtn) closeBtn.textContent = 'Fermer';
-  renderFigureSvg();
+  renderFigureSvg(); if(typeof figCadrerSiBesoin==='function'){ figCadrerSiBesoin(); renderFigureSvg(); } // points hors du cadre de base visibles
 }
 
 /* ================= CÔTÉ ÉLÈVE ================= */
@@ -1451,7 +1451,7 @@ async function startDevoirFigureCompleter(devoirId){
     figState.points = restored.points;
     figState.shapes = restored.shapes;
     figState.nextLabel = figState.points.length;
-    renderFigureSvg();
+    renderFigureSvg(); if(typeof figCadrerSiBesoin==='function'){ figCadrerSiBesoin(); renderFigureSvg(); } // points hors du cadre de base visibles
   }
   const validateBtn = document.getElementById('figValidateBtn');
   const submitBtn = document.getElementById('figSubmitDevoirBtn');
@@ -1476,7 +1476,7 @@ async function loadMyDevoirFigure(){
   figState.points = restored.points;
   figState.shapes = restored.shapes;
   figState.nextLabel = figState.points.length;
-  renderFigureSvg();
+  renderFigureSvg(); if(typeof figCadrerSiBesoin==='function'){ figCadrerSiBesoin(); renderFigureSvg(); } // points hors du cadre de base visibles
 }
 async function submitCurrentFigureAsDevoir(){
   if(!currentDevoirSubmission) return;
@@ -1601,7 +1601,7 @@ async function loadSandboxFigure(id){
   figState.points = restored.points;
   figState.shapes = restored.shapes;
   figState.nextLabel = figState.points.length;
-  renderFigureSvg();
+  renderFigureSvg(); if(typeof figCadrerSiBesoin==='function'){ figCadrerSiBesoin(); renderFigureSvg(); } // points hors du cadre de base visibles
   document.querySelectorAll('.modal-overlay[data-kind="sandbox-figures"]').forEach(o=>o.remove());
 }
 async function deleteSandboxFigure(id){
