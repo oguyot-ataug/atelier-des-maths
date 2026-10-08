@@ -119,6 +119,49 @@
     };
   };
 
+  /* ---------- Correction et cahier sans chapitre de maths (étape 3) ----------
+     Le chapitre devient un thème libre (« La Révolution française », « Unit 3 »…), rangé au même endroit
+     (champ chapitre) : le cahier de la classe le regroupe de la même façon. Le niveau suit la classe
+     active (liste masquée). */
+  const corCh = document.getElementById('corChapitre');
+  if(corCh && corCh.tagName === 'SELECT'){
+    const inp = document.createElement('input');
+    inp.type = 'text'; inp.id = 'corChapitre'; inp.style.cssText = 'flex:1;min-width:220px;';
+    inp.placeholder = 'Thème ou séquence (ex. La Révolution française)';
+    inp.setAttribute('list', 'adpThemes'); inp.oninput = () => { if(typeof renderCorrectionPreview === 'function') renderCorrectionPreview(); };
+    corCh.replaceWith(inp);
+    inp.insertAdjacentHTML('afterend', '<datalist id="adpThemes"></datalist>');
+  }
+  // Thèmes déjà utilisés dans le cahier : proposés à la saisie.
+  window.adpThemesMaj = function(){
+    const dl = document.getElementById('adpThemes'); if(!dl || typeof cahier === 'undefined' || !Array.isArray(cahier)) return;
+    dl.innerHTML = [...new Set(cahier.map(e => e.chapitre).filter(Boolean))].sort().map(t => `<option value="${esc(t)}">`).join('');
+  };
+  if(typeof showView === 'function'){
+    const o = showView;
+    showView = function(id){ const r = o.apply(this, arguments); if(id === 'view-correction') adpThemesMaj(); return r; };
+  }
+  const corT = document.getElementById('corTitre'); if(corT) corT.placeholder = "Titre (ex. Analyse du document 2, Exercice 3 p. 45)";
+  const corIntro = document.querySelector('#view-correction > p');
+  if(corIntro) corIntro.innerHTML = "Rédigez la correction pendant le cours et projetez-la ; ajoutez une image, un tableau ou le cahier d'un élève filmé au téléphone. Chaque correction rejoint le cahier de la classe, que les élèves retrouvent jour après jour. Pour une formule, entourez-la de <span class=\"hint-mono\">$...$</span> (LaTeX).";
+
+  // Mise en forme du texte : hors maths, ni fractions automatiques (14/07/1789 restait une fraction), ni
+  // lettres isolées en italique (« Partie A ») : gras, souligné, couleurs et formules $...$ seulement.
+  if(typeof renderMathText === 'function'){
+    const o = renderMathText;
+    renderMathText = function(raw){
+      if(estMaths()) return o.apply(this, arguments);
+      const blocs = [], garde = h => { blocs.push(h); return '\u0000' + (blocs.length - 1) + '\u0000'; };
+      const COUL = { rouge: '#D93025', bleu: '#1F3A5C', vert: '#2C5A2E', orange: '#E35D3A' };
+      let t = String(raw == null ? '' : raw).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      t = t.replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>').replace(/__([^_]+)__/g, '<u>$1</u>')
+           .replace(/\{\{(rouge|bleu|vert|orange)\|([^}]+)\}\}/g, (m, c, x) => `<span style="color:${COUL[c]}">${x}</span>`);
+      t = t.replace(/\$([^$]+)\$/g, (m, e) => { const b = e.replace(/&lt;/g, '<').replace(/&gt;/g, '>'), h = typeof katexSpan === 'function' ? katexSpan(b) : b; return garde(h === b ? e : h); });
+      t = t.replace(/\n/g, '<br>').replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;').replace(/ {2,}/g, m => '&nbsp;'.repeat(m.length));
+      return t.replace(/\u0000(\d+)\u0000/g, (m, i) => blocs[+i]);
+    };
+  }
+
   // Accueil.
   const vh = document.getElementById('view-home');
   if(vh && !document.getElementById('adpAccueil')){
