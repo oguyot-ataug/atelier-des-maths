@@ -1252,16 +1252,23 @@ button.btn.secondary.active{background:var(--accent);color:#fff;}
 
 /* ---------- Outil de figure : barre latérale à icônes ---------- */
 .fig-icon-btn{
-  width:36px;height:36px;flex:none;border:2px solid rgba(28,43,57,.18);border-radius:7px;
-  background:#fff;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;
-  padding:0;line-height:1;
+  width:44px;height:44px;flex:none;border:2px solid rgba(28,43,57,.18);border-radius:9px;
+  background:#fff;cursor:pointer;font-size:1.25rem;display:flex;align-items:center;justify-content:center;
+  padding:0;line-height:1;color:var(--ink,#1C2B39);
 }
+/* Icônes plus grandes et plus lisibles (demandé : « des icônes un peu plus grosses, plus lisibles »). */
+.fig-icon-btn svg{width:28px;height:28px;}
+.fig-icon-btn svg line, .fig-icon-btn svg path, .fig-icon-btn svg polygon, .fig-icon-btn svg polyline, .fig-icon-btn svg rect{stroke-width:1.7;}
+#figTip{position:fixed;z-index:10060;display:none;max-width:260px;background:#1F2A37;color:#fff;border-radius:8px;padding:7px 10px;font-size:.82rem;line-height:1.35;box-shadow:0 6px 18px rgba(0,0,0,.25);pointer-events:none;}
+#figTip b{display:block;font-family:'Space Grotesk',sans-serif;font-size:.9rem;}
+#figTip span{display:block;color:#D5DEE8;margin-top:2px;}
+#figTip span::first-letter{text-transform:uppercase;}
 .fig-icon-btn.active{border-color:#0D5BA3;background:rgba(13,91,163,.12);}
 .fig-icon-btn:hover{border-color:rgba(28,43,57,.35);}
 .fig-group-wrap{position:relative;display:inline-block;}
 .fig-group-corner{
-  position:absolute;bottom:-4px;right:-4px;width:15px;height:15px;border-radius:50%;
-  border:1px solid rgba(28,43,57,.3);background:#fff;font-size:.5rem;line-height:1;
+  position:absolute;bottom:-5px;right:-5px;width:18px;height:18px;border-radius:50%;
+  border:1px solid rgba(28,43,57,.3);background:#fff;font-size:.62rem;line-height:1;
   display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;
   color:var(--ink-soft);z-index:5;
 }
@@ -1966,3 +1973,13 @@ select:not([multiple]):not([size]){
 #figMenuCtx button{display:flex;align-items:center;gap:8px;width:100%;border:0;background:none;border-radius:7px;padding:7px 10px;font:inherit;color:var(--ink,#1C2B39);cursor:pointer;text-align:left;}
 #figMenuCtx button:hover{background:#EEF4FB;}
 #figMenuCtx .gicon{font-size:18px;color:var(--accent-blue,#0C5BA0);}
+#figMenuCtx .fig-mc-s{padding:6px 10px 2px;font-size:.72rem;font-weight:700;color:var(--ink-soft,#5B6472);text-transform:uppercase;letter-spacing:.04em;border-top:1px solid rgba(28,43,57,.08);margin-top:4px;}
+#figMenuCtx .fig-mc-choix{display:flex;gap:4px;padding:3px 10px;}
+#figMenuCtx .fig-mc-choix button{width:auto;flex:1;justify-content:center;border:1px solid rgba(28,43,57,.18);padding:4px 8px;border-radius:7px;}
+#figMenuCtx .fig-mc-choix button.on{background:var(--accent-blue,#0C5BA0);color:#fff;border-color:var(--accent-blue,#0C5BA0);}
+#figMenuCtx .fig-mc-couleurs{display:flex;flex-wrap:wrap;gap:6px;padding:4px 10px 6px;}
+#figMenuCtx .fig-mc-couleurs button{width:22px;height:22px;padding:0;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px rgba(28,43,57,.25);justify-content:center;}
+#figMenuCtx .fig-mc-couleurs button.on{box-shadow:0 0 0 2.5px var(--accent-blue,#0C5BA0);}
+#figMenuCtx .fig-mc-couleurs .fig-mc-auto{background:#fff;font-size:.7rem;font-weight:800;color:var(--ink-soft,#5B6472);}
+#figMenuCtx .fig-mc-suppr{color:#C0392B;border-top:1px solid rgba(28,43,57,.08);border-radius:0 0 7px 7px;margin-top:4px;}
+#figMenuCtx .fig-mc-suppr .gicon{color:#C0392B;}

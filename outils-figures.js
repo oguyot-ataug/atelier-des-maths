@@ -477,11 +477,21 @@ document.body.insertAdjacentHTML('beforeend', `
            icône avec sous-menu (▾), plutôt que 16+ boutons à plat. -->
       <div style="display:flex;flex-wrap:wrap;gap:4px;align-items:flex-start;margin-bottom:8px;">
         <button type="button" class="fig-icon-btn fig-mode" data-mode="deplacer" onclick="setFigureMode('deplacer')" title="Déplacer un point">✥</button>
-        <button type="button" class="fig-icon-btn fig-mode" data-mode="point" onclick="setFigureMode('point')" title="Point">●</button>
+        <!-- Groupe « Points » (demandé : « mettre l'outil milieu et point d'intersection dans le menu point »). -->
+        <div class="fig-group-wrap">
+        <button type="button" class="fig-icon-btn fig-mode" id="figPrimaryPoints" data-mode="point" onclick="setFigureMode(this.dataset.mode)" title="Point (dernier outil choisi dans ce groupe)">●</button>
+        <button type="button" class="fig-group-corner" onclick="event.stopPropagation(); toggleFigGroup('points')" title="Point / Milieu / Point d'intersection">▾</button>
+        <div id="figGroupPoints" class="fig-group-sub">
+          <button type="button" class="fig-icon-btn fig-mode" data-mode="point" onclick="selectFigSubTool('points', this)" title="Point : cliquez dans le plan, sur un objet, ou au croisement de deux objets">●</button>
+          <button type="button" class="fig-icon-btn fig-mode" data-mode="milieu" onclick="selectFigSubTool('points', this)" title="Milieu : cliquez le segment, ou ses 2 extrémités">
+            <svg viewBox="0 0 24 24" width="20" height="20"><line x1="3" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="1.3"/><circle cx="3" cy="12" r="1.8" fill="currentColor"/><circle cx="21" cy="12" r="1.8" fill="currentColor"/><circle cx="12" cy="12" r="2.6" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
+          </button>
+          <button type="button" class="fig-icon-btn fig-mode" data-mode="intersection" onclick="selectFigSubTool('points', this)" title="Point d'intersection : cliquez les deux objets qui se coupent">
+            <svg viewBox="0 0 24 24" width="20" height="20"><line x1="3" y1="19" x2="21" y2="5" stroke="currentColor" stroke-width="1.3"/><line x1="3" y1="7" x2="21" y2="17" stroke="currentColor" stroke-width="1.3"/><circle cx="12" cy="12" r="3.2" fill="none" stroke="#E35D3A" stroke-width="1.6"/></svg>
+          </button>
+        </div>
+        </div>
         <button type="button" class="fig-icon-btn fig-mode" data-mode="renommer" onclick="setFigureMode('renommer')" title="Renommer un point : cliquez le point (ou son nom)" style="font-size:.72rem;font-weight:800;">A→B</button>
-        <button type="button" class="fig-icon-btn fig-mode" data-mode="intersection" onclick="setFigureMode('intersection')" title="Point d'intersection : cliquez les deux objets qui se coupent">
-          <svg viewBox="0 0 24 24" width="20" height="20"><line x1="3" y1="19" x2="21" y2="5" stroke="currentColor" stroke-width="1.3"/><line x1="3" y1="7" x2="21" y2="17" stroke="currentColor" stroke-width="1.3"/><circle cx="12" cy="12" r="3.2" fill="none" stroke="#E35D3A" stroke-width="1.6"/></svg>
-        </button>
 
         <div class="fig-group-wrap">
         <button type="button" class="fig-icon-btn fig-mode" id="figPrimaryLignes" data-mode="segment" onclick="setFigureMode(this.dataset.mode)" title="Segment (dernier outil choisi dans ce groupe)">
@@ -529,9 +539,6 @@ document.body.insertAdjacentHTML('beforeend', `
         </div>
         </div>
 
-        <button type="button" class="fig-icon-btn fig-mode" data-mode="milieu" onclick="setFigureMode('milieu')" title="Milieu (cliquez le segment, ou ses 2 extrémités)">
-          <svg viewBox="0 0 24 24" width="20" height="20"><line x1="3" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="1.3"/><circle cx="3" cy="12" r="1.8" fill="currentColor"/><circle cx="21" cy="12" r="1.8" fill="currentColor"/><circle cx="12" cy="12" r="2.6" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
-        </button>
 
         <div class="fig-group-wrap">
         <button type="button" class="fig-icon-btn fig-mode" id="figPrimaryAngles" data-mode="angle" onclick="setFigureMode(this.dataset.mode)" title="Angle (dernier outil choisi dans ce groupe)">∠</button>
@@ -3749,6 +3756,30 @@ function toggleCompassMode(){
   cb.checked = !cb.checked;
   document.getElementById('compassToggleBtn').classList.toggle('active', cb.checked);
 }
+/* Infobulle des outils -- demandé : « des icônes un peu plus grosses, plus lisibles, avec information au
+   survol ». Le titre de chaque bouton (« Milieu : cliquez le segment… ») devient une bulle immédiate :
+   le nom en gras, puis le mode d'emploi. */
+(function figInfobulles(){
+  let tip = null, minuteur = null;
+  const cacher = () => { clearTimeout(minuteur); if(tip) tip.style.display = 'none'; };
+  document.addEventListener('mouseover', e => {
+    const b = e.target.closest && e.target.closest('#figurePanel .fig-icon-btn, #figurePanel .fig-group-corner');
+    if(!b){ cacher(); return; }
+    if(b.title){ b.dataset.tip = b.title; b.removeAttribute('title'); }
+    const t = b.dataset.tip; if(!t) return;
+    clearTimeout(minuteur);
+    minuteur = setTimeout(() => {
+      if(!tip){ tip = document.createElement('div'); tip.id = 'figTip'; document.body.appendChild(tip); }
+      const m = t.match(/^([^:(]+?)\s*(?:[:(]\s*)(.*?)\)?$/);
+      tip.innerHTML = m && m[2] ? `<b>${m[1]}</b><span>${m[2]}</span>` : `<b>${t}</b>`;
+      tip.style.display = 'block';
+      const r = b.getBoundingClientRect(), w = tip.offsetWidth;
+      tip.style.left = Math.max(8, Math.min(window.innerWidth - w - 8, r.left + r.width / 2 - w / 2)) + 'px';
+      tip.style.top = (r.bottom + 8) + 'px';
+    }, 180);
+  });
+  document.addEventListener('mousedown', cacher, true);
+})();
 function toggleFigGroup(name){
   const id = 'figGroup'+name.charAt(0).toUpperCase()+name.slice(1);
   const el = document.getElementById(id);
@@ -3769,6 +3800,7 @@ function selectFigSubTool(name, btnEl){
   if(primary){
     primary.innerHTML = btnEl.innerHTML;
     primary.dataset.mode = mode;
+    const tip = btnEl.dataset.tip || btnEl.title; if(tip){ primary.dataset.tip = tip; primary.removeAttribute('title'); } // infobulle de l'outil choisi
     primary.classList.add('active');
   }
   const subId = 'figGroup'+name.charAt(0).toUpperCase()+name.slice(1);
@@ -5082,7 +5114,10 @@ async function onFigureClick(evt){
   if(figState.mode==='milieu'){
     // Un clic direct sur le segment (pas seulement ses 2 extrémités) sélectionne les deux
     // points d'un coup -- plus rapide que d'avoir à cliquer précisément chaque extrémité.
-    if(!figState.selected.length){
+    // Seulement si le clic n'est pas sur un point : un clic sur une extrémité (qui touche aussi le
+    // segment) plaçait le milieu dès le premier point (signalé : « il place parfois le milieu alors
+    // que je n'ai sélectionné qu'un seul point »).
+    if(!figState.selected.length && !findNearbyPoint(x,y)){
       const shape = findNearbyShape(x,y);
       if(shape && (shape.type==='segment' || shape.type==='droite' || shape.type==='demi-droite')){ createMidpoint(shape.p1, shape.p2); return; }
     }
@@ -5521,7 +5556,7 @@ function renderFigureSvg(){
     // segment/droite/demi-droite/cercle).
     const isMovableDependent = p.def && (p.def.type==='point-sur-droite' || p.def.type==='point-sur-cercle');
     const defaultColor = isMovableDependent ? '#1F7A4D' : (p.def ? '#7A8A98' : '#1C1B2E');
-    const baseColor = styledShape ? styledShape.strokeColor : defaultColor;
+    const baseColor = p.color || (styledShape ? styledShape.strokeColor : defaultColor);
     const c = sel?'#E35D3A':baseColor;
     if(p.hidden){
       // Point auxiliaire (fin d'un arc « centre, point, point ») : invisible, sauf une petite
@@ -5530,7 +5565,12 @@ function renderFigureSvg(){
       return;
     }
     const debutArc = !linked.length && figState.shapes.find(s=>s.type==='arc' && s.p1===p);
-    if(p.def && (p.def.type==='intersection' || p.def.type==='intersection-courbes')){
+    if(p.aspect){
+      // Aspect choisi au clic droit : croix, point plein ou rond.
+      if(p.aspect==='croix'){ html+=`<line x1="${p.x-2.8}" y1="${p.y-2.8}" x2="${p.x+2.8}" y2="${p.y+2.8}" stroke="${c}" stroke-width="1"/><line x1="${p.x-2.8}" y1="${p.y+2.8}" x2="${p.x+2.8}" y2="${p.y-2.8}" stroke="${c}" stroke-width="1"/>`; }
+      else if(p.aspect==='point') html+=`<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="2.4" fill="${c}"/>`;
+      else if(p.aspect==='rond') html+=`<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="2.8" fill="#fff" stroke="${c}" stroke-width="1.1"/>`;
+    } else if(p.def && (p.def.type==='intersection' || p.def.type==='intersection-courbes')){
       // Un point d'intersection n'a besoin d'aucun marqueur -- le croisement des deux objets
       // le repère déjà visuellement, un marqueur en plus ferait double emploi.
     } else if(p.def && p.def.type==='point-sur-droite'){
@@ -5572,7 +5612,7 @@ function renderFigureSvg(){
       html+=`<line x1="${(p.x-nx*2.8).toFixed(1)}" y1="${(p.y-ny*2.8).toFixed(1)}" x2="${(p.x+nx*2.8).toFixed(1)}" y2="${(p.y+ny*2.8).toFixed(1)}" stroke="${c}" stroke-width="0.9"/>`;
     }
     }
-    if(!figState.nomsMasques) html+=`<text x="${p.x+(p.labelDx??9)}" y="${p.y+(p.labelDy??-9)}" font-family="Space Grotesk" font-size="9" font-weight="700" fill="${sel?'#E35D3A':baseColor}">${p.label}</text>`;
+    if(!figState.nomsMasques && !p.nomCache) html+=`<text x="${p.x+(p.labelDx??9)}" y="${p.y+(p.labelDy??-9)}" font-family="Space Grotesk" font-size="9" font-weight="700" fill="${sel?'#E35D3A':baseColor}">${p.label}</text>`;
     if(p.trace) figTraceNoter(p, `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="1.6" fill="${baseColor}"/>`);
   });
   if(figInterPremier && figState.shapes.includes(figInterPremier)){
@@ -5625,6 +5665,11 @@ function figNomObjet(o){
   return t || 'cet objet';
 }
 function figMenuFermer(){ const m = document.getElementById('figMenuCtx'); if(m) m.remove(); }
+/* Menu du clic droit sur un objet -- demandé : « Permettre de supprimer un point. Clic droit :
+   Supprimer, trace, renommer, aspect, couleur ? ». Point : renommer, trace, afficher/masquer le nom,
+   aspect (croix, point, rond), couleur, supprimer. Autre objet : trace, trait (fin/épais,
+   plein/pointillé), couleur, longueur ou rayon, supprimer. Sans objet sous le clic : effacer les traces. */
+const FIG_COULEURS = [['#1C1B2E','Noir'],['#7A8A98','Gris'],['#D93025','Rouge'],['#0D5BA3','Bleu'],['#1F7A4D','Vert'],['#E35D3A','Orange'],['#8E44AD','Violet']];
 function onFigureContextMenu(evt){
   evt.preventDefault();
   figMenuFermer();
@@ -5634,28 +5679,53 @@ function onFigureContextMenu(evt){
   const arc = !p && typeof findArcRayonHit==='function' ? findArcRayonHit(x,y) : null;
   const obj = p || (arc && arc.shape) || findNearbyShape(x,y);
   const ilYaDesTraces = [...figTraces.values()].some(l=>l.length > 1);
-  const items = [];
+  if(!obj && !ilYaDesTraces) return;
+  const estPoint = !!p, mes = obj && !estPoint && typeof findEditableMeasure==='function' ? findEditableMeasure(obj) : null;
+  const bouton = (a, ic, t, cl) => `<button type="button" data-a="${a}"${cl ? ` class="${cl}"` : ''}><span class="gicon">${ic}</span> ${t}</button>`;
+  const choix = (a, l, cur) => `<div class="fig-mc-choix">${l.map(([v, t])=>`<button type="button" data-a="${a}" data-v="${v}" class="${cur===v ? 'on' : ''}">${t}</button>`).join('')}</div>`;
+  let h = '';
   if(obj){
-    items.push(obj.trace ? ['trace-off', 'location_off', 'Désactiver la trace'] : ['trace-on', 'timeline', 'Activer la trace']);
-    if(figTraces.has(obj) && figTraces.get(obj).length > 1) items.push(['effacer', 'ink_eraser', 'Effacer ses traces']);
+    h += `<div class="fig-mc-t">${figNomObjet(obj)}</div>`;
+    if(estPoint) h += bouton('renommer', 'edit', 'Renommer');
+    h += obj.trace ? bouton('trace-off', 'location_off', 'Désactiver la trace') : bouton('trace-on', 'timeline', 'Activer la trace');
+    if(figTraces.has(obj) && figTraces.get(obj).length > 1) h += bouton('effacer', 'ink_eraser', 'Effacer ses traces');
+    if(estPoint){
+      h += bouton('nom', obj.nomCache ? 'label' : 'label_off', obj.nomCache ? 'Afficher le nom' : 'Masquer le nom');
+      h += `<div class="fig-mc-s">Aspect</div>` + choix('aspect', [['', 'Auto'], ['croix', '×'], ['point', '●'], ['rond', '○']], obj.aspect || '');
+    } else {
+      h += `<div class="fig-mc-s">Trait</div>` + choix('epaisseur', [['fin', 'Fin'], ['epais', 'Épais']], obj.strokeWidth || 'fin') + choix('motif', [['plein', 'Plein'], ['pointille', 'Pointillé']], obj.strokePattern || 'plein');
+    }
+    const cur = estPoint ? obj.color : obj.strokeColor;
+    h += `<div class="fig-mc-s">Couleur</div><div class="fig-mc-couleurs">${FIG_COULEURS.map(([v, t])=>`<button type="button" data-a="couleur" data-v="${v}" title="${t}" class="${cur===v ? 'on' : ''}" style="background:${v};"></button>`).join('')}<button type="button" data-a="couleur" data-v="" title="Couleur d'origine" class="fig-mc-auto${cur ? '' : ' on'}">A</button></div>`;
+    if(mes) h += bouton('mesure', 'straighten', {length:'Modifier la longueur', radius:'Modifier le rayon', angle:'Modifier l\'angle'}[mes.type] + ` (${mes.value} ${mes.unit})`);
+    h += bouton('suppr', 'delete', 'Supprimer' + (estPoint ? ' le point' : '') + ' (et ce qui en dépend)', 'fig-mc-suppr');
   }
-  if(ilYaDesTraces) items.push(['tout', 'cleaning_services', 'Effacer toutes les traces']);
-  if(!items.length) return;
+  if(ilYaDesTraces) h += bouton('tout', 'cleaning_services', 'Effacer toutes les traces');
   const m = document.createElement('div');
   m.id = 'figMenuCtx';
-  m.innerHTML = (obj ? `<div class="fig-mc-t">${figNomObjet(obj)}</div>` : '') + items.map(([a, ic, t])=>`<button type="button" data-a="${a}"><span class="gicon">${ic}</span> ${t}</button>`).join('');
+  m.innerHTML = h;
   document.body.appendChild(m);
-  const w = m.offsetWidth, h = m.offsetHeight;
-  m.style.left = Math.min(evt.clientX, window.innerWidth - w - 8) + 'px';
-  m.style.top = Math.min(evt.clientY, window.innerHeight - h - 8) + 'px';
-  m.onclick = e => {
+  const w = m.offsetWidth, hh = m.offsetHeight;
+  m.style.left = Math.max(8, Math.min(evt.clientX, window.innerWidth - w - 8)) + 'px';
+  m.style.top = Math.max(8, Math.min(evt.clientY, window.innerHeight - hh - 8)) + 'px';
+  m.onclick = async e => {
     const b = e.target.closest('[data-a]'); if(!b) return;
-    const a = b.dataset.a;
-    if(a==='trace-on'){ obj.trace = true; figTraces.delete(obj); const hint = document.getElementById('figureHint'); if(hint) hint.textContent = 'Trace activée : déplacez la figure (outil Déplacer), ' + figNomObjet(obj) + ' laisse sa trace.'; }
-    else if(a==='trace-off'){ delete obj.trace; figTraces.delete(obj); }
-    else if(a==='effacer'){ figTraces.delete(obj); }
-    else if(a==='tout'){ figTraces.clear(); }
-    figMenuFermer();
+    const a = b.dataset.a, v = b.dataset.v;
+    if(a==='renommer'){ figMenuFermer(); await figRenommerPoint(obj); return; }
+    if(a==='suppr'){ figMenuFermer(); figTraces.delete(obj); deleteObjectWithDependents(obj); return; }
+    if(a==='mesure'){ figMenuFermer(); editShapeMeasure(obj, mes); return; }
+    if(a==='tout'){ figTraces.clear(); figMenuFermer(); renderFigureSvg(); return; }
+    if(a==='effacer'){ figTraces.delete(obj); figMenuFermer(); renderFigureSvg(); return; }
+    pushFigHistory();
+    if(a==='trace-on'){ obj.trace = true; figTraces.delete(obj); const hint = document.getElementById('figureHint'); if(hint) hint.textContent = 'Trace activée : déplacez la figure (outil Déplacer), ' + figNomObjet(obj) + ' laisse sa trace.'; figMenuFermer(); }
+    else if(a==='trace-off'){ delete obj.trace; figTraces.delete(obj); figMenuFermer(); }
+    else if(a==='nom'){ obj.nomCache = !obj.nomCache; if(!obj.nomCache) delete obj.nomCache; figMenuFermer(); }
+    else if(a==='aspect'){ if(v) obj.aspect = v; else delete obj.aspect; }
+    else if(a==='epaisseur') obj.strokeWidth = v;
+    else if(a==='motif') obj.strokePattern = v;
+    else if(a==='couleur'){ const k = estPoint ? 'color' : 'strokeColor'; if(v) obj[k] = v; else delete obj[k]; }
+    // Les réglages d'aspect laissent le menu ouvert (on voit l'effet tout de suite) : on met à jour les boutons actifs.
+    if(['aspect','epaisseur','motif','couleur'].includes(a)) m.querySelectorAll(`[data-a="${a}"]`).forEach(x=>x.classList.toggle('on', x===b));
     renderFigureSvg();
   };
   setTimeout(()=>{ document.addEventListener('pointerdown', function f(e){ if(!m.contains(e.target)){ figMenuFermer(); document.removeEventListener('pointerdown', f, true); } }, true); }, 0);

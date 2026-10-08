@@ -3343,6 +3343,12 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1008', date:'2026-10-08', items:[
+    "Géométrie dynamique, corrections et améliorations demandées : « je crée un milieu en cliquant sur deux points : il place parfois le milieu alors que je n'ai sélectionné qu'un seul point ». Cause : un clic sur une extrémité touche aussi le segment, que l'outil Milieu prenait d'un coup. Le raccourci « cliquer le segment » ne s'applique plus quand on clique sur un point : il faut bien les deux extrémités, ou le segment lui-même.",
+    "Clic droit sur un objet (appui long sur tablette) -- demandé : « Permettre de supprimer un point. Clic droit : Supprimer, trace, renommer, aspect, couleur ? ». Sur un point : Renommer, Activer/Désactiver la trace, Masquer/Afficher le nom, Aspect (auto, croix, point plein, rond), Couleur (7 couleurs, ou A pour revenir à la couleur d'origine), Supprimer le point (et ce qui en dépend). Sur un segment, une droite, un cercle… : trace, trait (fin/épais, plein/pointillé), couleur, longueur ou rayon, supprimer. Les réglages d'aspect et de couleur s'appliquent tout de suite, menu ouvert ; « Annuler » (↩) revient en arrière.",
+    "Barre d'outils : icônes plus grandes (44 px au lieu de 36) et traits plus épais, plus lisibles ; au survol, une bulle donne le nom de l'outil en gras et son mode d'emploi (« Milieu — cliquez le segment, ou ses 2 extrémités »). Le bouton principal d'un groupe reprend la bulle de l'outil choisi.",
+    "Nouveau menu « Points » (demandé : « mettre l'outil milieu et point d'intersection dans le menu point ») : Point, Milieu et Point d'intersection sont regroupés sous l'icône du point (▾). Visite guidée mise à jour."
+  ] },
   { version:'2026-08-19.1007', date:'2026-10-08', items:[
     "Exercices mis de côté pour la prochaine session (bouton « Session » › « La prochaine session que je préparerai ») : la liste est maintenant gardée dans le compte du professeur (table session_attente créée), et se retrouve donc sur tous ses appareils. Ce qui avait déjà été mis de côté dans un navigateur y est repris automatiquement à la première ouverture."
   ] },
