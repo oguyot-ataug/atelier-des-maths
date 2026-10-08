@@ -1994,6 +1994,9 @@ select:not([multiple]):not([size]){
 .fig-dyn-tag .gicon{font-size:17px;}
 .fig-dyn-bar button{display:inline-flex;align-items:center;gap:4px;border:1px solid rgba(122,79,192,.35);background:#fff;color:#5A3596;border-radius:999px;padding:3px 10px;font:inherit;font-weight:700;cursor:pointer;}
 .fig-dyn-bar button:hover{background:#F3EEFB;}
+.fig-dyn-choix{display:inline-flex;align-items:center;gap:4px;color:#5A3596;font-weight:600;}
+.fig-dyn-choix button{padding:2px 10px;min-width:32px;justify-content:center;}
+.fig-dyn-choix button.on{background:#7A4FC0;color:#fff;border-color:#7A4FC0;}
 .fig-dyn-bar button .gicon{font-size:17px;}
 #figValidateBtn[style*="display: none"] + #figValidateDynBtn, #figValidateBtn[style*="display:none"] + #figValidateDynBtn{display:none !important;}
 @media print{ .fig-dyn-bar{display:none !important;} }

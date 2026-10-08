@@ -5714,6 +5714,11 @@ function figAnimable(p){
   return null;
 }
 function figAnimEnCours(){ return figAnim.pts.size > 0; }
+// Figure chargée : ses points réglés « animer » se remettent à tourner.
+function figAnimReprendre(){
+  figState.points.forEach(p=>{ if(p.animer && figAnimable(p)) figAnim.pts.set(p, { vitesse: p.animer.vitesse || 1, sens: p.animer.sens || 1 }); });
+  if(figAnim.pts.size && !figAnim.raf){ figAnim.last = performance.now(); figAnim.raf = requestAnimationFrame(figAnimImage); }
+}
 function figAnimDemarrer(p){
   figAnim.pts.set(p, { sens: 1, vitesse: (figAnim.pts.get(p) || {}).vitesse || 1 });
   if(!figAnim.raf){ figAnim.last = performance.now(); figAnim.raf = requestAnimationFrame(figAnimImage); }
@@ -5794,17 +5799,12 @@ function figDynHtml(data){
 // Depuis l'outil figure : la figure en cours, avec les animations en cours comme animations prévues.
 function figInsererDynamique(){
   if(!figState.points.some(p=>!p.hidden)){ niceAlert('La figure est vide : tracez-la d\'abord.'); return; }
-  const fig = serializeFigState(figState);
-  figState.points.forEach((p, i)=>{ const a = figAnim.pts.get(p); if(a) fig.points[i].animer = { vitesse: a.vitesse, sens: a.sens }; });
+  const fig = serializeFigState(figState); // les points réglés « animer » le restent dans le cahier
   const data = { fig, vue: { ...figViewBox } };
   addPendingBlock('figdyn', figDynHtml(data), data, 'reopenFigDyn');
   closeFigureTool();
 }
-function reopenFigDyn(data){
-  reopenFigure(data.fig);
-  (data.fig.points || []).forEach((q, i)=>{ if(q.animer && figState.points[i]) figAnim.pts.set(figState.points[i], { ...q.animer }); });
-  if(figAnim.pts.size && !figAnim.raf){ figAnim.last = performance.now(); figAnim.raf = requestAnimationFrame(figAnimImage); }
-}
+function reopenFigDyn(data){ reopenFigure(data.fig); figAnimReprendre(); }
 // Outil « Figure enregistrée » : choisir une figure de « Mes figures enregistrées ».
 async function figImporterEnregistree(){
   if(typeof sb==='undefined' || !sb || !currentUser){ await niceAlert('Connectez-vous pour retrouver vos figures enregistrées.'); return; }
@@ -5836,14 +5836,20 @@ function figDynActiver(root){
     const svg = el.querySelector('svg.fig-dyn-svg'); if(!svg) return;
     const v = { data, el, svg, etat: null, traces: new Map(), anim: new Map(), raf: null, last: 0, glisse: null };
     const barre = document.createElement('div'); barre.className = 'fig-dyn-bar';
-    barre.innerHTML = `<span class="fig-dyn-tag"><span class="gicon">pan_tool_alt</span> Figure dynamique : déplacez les points</span>
-      <button type="button" data-d="anim"><span class="gicon">play_arrow</span> Animer</button><button type="button" data-d="reset"><span class="gicon">restart_alt</span> Réinitialiser</button>`;
     el.appendChild(barre);
     svg.style.touchAction = 'none';
     figDynReset(v);
-    barre.querySelector('[data-d="anim"]').style.display = figDynAnimables(v).length ? '' : 'none';
+    // « Animer » : les points réglés « animer » dans l'outil Figure. Si aucun ne l'est (figure enregistrée
+    // avant ce réglage), on choisit le point à animer -- jamais tous à la fois.
+    const prevus = figDynPrevus(v), libres = prevus.length ? [] : figAvec(v, v.svg, ()=>v.etat.points.filter(p=>!p.hidden && figAnimable(p)));
+    barre.innerHTML = `<span class="fig-dyn-tag"><span class="gicon">pan_tool_alt</span> Figure dynamique : déplacez les points</span>
+      ${prevus.length ? '<button type="button" data-d="anim"><span class="gicon">play_arrow</span> Animer</button>' : ''}
+      ${libres.length ? `<span class="fig-dyn-choix">Animer le point : ${libres.map(p=>`<button type="button" data-d="pt" data-i="${v.etat.points.indexOf(p)}">${escapeHtml(p.label || '?')}</button>`).join('')}</span>` : ''}
+      <button type="button" data-d="reset"><span class="gicon">restart_alt</span> Réinitialiser</button>`;
     barre.onclick = e=>{ const b = e.target.closest('[data-d]'); if(!b) return; e.stopPropagation();
-      if(b.dataset.d==='reset') figDynReset(v); else figDynBasculerAnim(v); };
+      if(b.dataset.d==='reset') figDynReset(v);
+      else if(b.dataset.d==='anim') figDynBasculerAnim(v);
+      else if(b.dataset.d==='pt') figDynBasculerPoint(v, v.etat.points[+b.dataset.i]); };
     svg.addEventListener('pointerdown', e=>figDynPrendre(v, e));
     svg.addEventListener('pointermove', e=>figDynGlisser(v, e));
     const lacher = ()=>{ if(v.glisse){ v.glisse = null; svg.style.cursor = ''; } };
@@ -5859,17 +5865,22 @@ function figDynReset(v){
   v.svg.setAttribute('viewBox', [vue.x, vue.y, vue.w, vue.h].map(n=>n.toFixed(1)).join(' '));
   figAvec(v, v.svg, ()=>renderFigureSvg());
 }
-// Points à animer : ceux prévus à l'insertion, sinon tous les points animables.
-function figDynAnimables(v){
-  return figAvec(v, v.svg, ()=>{
-    const prevus = (v.data.fig.points || []).map((q, i)=>q.animer ? v.etat.points[i] : null).filter(Boolean);
-    return prevus.length ? prevus : v.etat.points.filter(p=>figAnimable(p));
-  });
-}
+// Points réglés « animer » dans l'outil Figure (état d'origine de la figure).
+function figDynPrevus(v){ return figAvec(v, v.svg, ()=>v.etat.points.filter(p=>p.animer && figAnimable(p))); }
 function figDynBasculerAnim(v){
   if(v.anim.size){ figDynStopAnim(v); return; }
-  figDynAnimables(v).forEach(p=>{ const i = v.etat.points.indexOf(p), q = (v.data.fig.points || [])[i]; v.anim.set(p, { vitesse: 1, sens: 1, ...((q && q.animer) || {}) }); });
-  if(!v.anim.size) return;
+  figDynPrevus(v).forEach(p=>v.anim.set(p, { vitesse: p.animer.vitesse || 1, sens: p.animer.sens || 1 }));
+  figDynLancer(v);
+}
+// Choix d'un point à animer (figure sans point réglé « animer ») : un clic l'anime, un second l'arrête.
+function figDynBasculerPoint(v, p){
+  if(!p) return;
+  if(v.anim.has(p)){ v.anim.delete(p); if(!v.anim.size) figDynStopAnim(v); }
+  else { v.anim.set(p, { vitesse: 1, sens: 1 }); figDynLancer(v); }
+  v.el.querySelectorAll('[data-d="pt"]').forEach(b=>b.classList.toggle('on', v.anim.has(v.etat.points[+b.dataset.i])));
+}
+function figDynLancer(v){
+  if(!v.anim.size || v.raf) return;
   const b = v.el.querySelector('[data-d="anim"]'); if(b) b.innerHTML = '<span class="gicon">pause</span> Pause';
   v.last = performance.now();
   const image = now=>{
@@ -5883,6 +5894,7 @@ function figDynBasculerAnim(v){
 function figDynStopAnim(v){
   v.anim.clear(); if(v.raf){ cancelAnimationFrame(v.raf); v.raf = null; }
   const b = v.el && v.el.querySelector('[data-d="anim"]'); if(b) b.innerHTML = '<span class="gicon">play_arrow</span> Animer';
+  if(v.el) v.el.querySelectorAll('[data-d="pt"].on').forEach(x=>x.classList.remove('on'));
 }
 function figDynPointSous(v, e){
   const {x, y} = svgCoordsFromEvent(v.svg, e), vb = v.svg.viewBox.baseVal, tol = 12 * (vb && vb.width ? vb.width / 500 : 1);
@@ -5980,11 +5992,13 @@ function onFigureContextMenu(evt){
     if(a==='suppr'){ figMenuFermer(); figTraces.delete(obj); figAnimArreter(obj); deleteObjectWithDependents(obj); return; }
     if(a==='mesure'){ figMenuFermer(); editShapeMeasure(obj, mes); return; }
     if(a==='tout'){ figTraces.clear(); figMenuFermer(); renderFigureSvg(); return; }
-    if(a==='anim-on'){ figAnimDemarrer(obj); figMenuFermer(); const hint = document.getElementById('figureHint'); if(hint) hint.textContent = 'Animation en cours : clic droit sur le point pour l\'arrêter, changer de vitesse ou de sens. Activez la trace d\'un objet pour voir le chemin qu\'il parcourt.'; return; }
-    if(a==='anim-off'){ figAnimArreter(obj); figMenuFermer(); return; }
-    if(a==='anim-tout'){ figAnimArreter(); figMenuFermer(); return; }
-    if(a==='vitesse'){ const st = figAnim.pts.get(obj); if(st) st.vitesse = Number(v); m.querySelectorAll('[data-a="vitesse"]').forEach(x=>x.classList.toggle('on', x===b)); return; }
-    if(a==='sens'){ const st = figAnim.pts.get(obj); if(st) st.sens = -st.sens; return; }
+    if(a==='anim-on'){ figAnimDemarrer(obj); obj.animer = { vitesse: figAnim.pts.get(obj).vitesse, sens: 1 }; figMenuFermer(); const hint = document.getElementById('figureHint'); if(hint) hint.textContent = 'Animation en cours : clic droit sur le point pour l\'arrêter, changer de vitesse ou de sens. Activez la trace d\'un objet pour voir le chemin qu\'il parcourt.'; return; }
+    // « Animer » est aussi un réglage du point (animer), enregistré avec la figure : c'est lui que
+    // retrouvent la figure rechargée et la figure dynamique du cahier (seuls ces points s'animent).
+    if(a==='anim-off'){ figAnimArreter(obj); delete obj.animer; figMenuFermer(); return; }
+    if(a==='anim-tout'){ figAnim.pts.forEach((x, q)=>delete q.animer); figAnimArreter(); figMenuFermer(); return; }
+    if(a==='vitesse'){ const st = figAnim.pts.get(obj); if(st){ st.vitesse = Number(v); obj.animer = { vitesse: st.vitesse, sens: st.sens }; } m.querySelectorAll('[data-a="vitesse"]').forEach(x=>x.classList.toggle('on', x===b)); return; }
+    if(a==='sens'){ const st = figAnim.pts.get(obj); if(st){ st.sens = -st.sens; obj.animer = { vitesse: st.vitesse, sens: st.sens }; } return; }
     if(a==='effacer'){ figTraces.delete(obj); figMenuFermer(); renderFigureSvg(); return; }
     pushFigHistory();
     if(a==='trace-on'){ obj.trace = true; figTraces.delete(obj); const hint = document.getElementById('figureHint'); if(hint) hint.textContent = 'Trace activée : déplacez la figure (outil Déplacer), ' + figNomObjet(obj) + ' laisse sa trace.'; figMenuFermer(); }

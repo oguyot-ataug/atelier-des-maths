@@ -1602,6 +1602,7 @@ async function loadSandboxFigure(id){
   figState.shapes = restored.shapes;
   figState.nextLabel = figState.points.length;
   renderFigureSvg(); if(typeof figCadrerSiBesoin==='function'){ figCadrerSiBesoin(); renderFigureSvg(); } // points hors du cadre de base visibles
+  if(typeof figAnimReprendre==='function') figAnimReprendre(); // points réglés « animer »
   document.querySelectorAll('.modal-overlay[data-kind="sandbox-figures"]').forEach(o=>o.remove());
 }
 async function deleteSandboxFigure(id){
