@@ -649,6 +649,7 @@ document.body.insertAdjacentHTML('beforeend', `
       </div>
       <div class="figure-toolbar" style="margin-top:10px;">
         <button type="button" class="btn" id="figValidateBtn" onclick="validateFigure()">✓ Valider et insérer la figure</button>
+        <button type="button" class="btn" id="figValidateDynBtn" onclick="figInsererDynamique()" style="background:#7A4FC0;border-color:#7A4FC0;" title="La figure reste dynamique dans le cahier : on peut déplacer ses points, l'animer, puis la réinitialiser"><span class=gicon>animation</span> Insérer en figure dynamique</button>
         <button type="button" class="btn" id="figInsertInstrBtn" onclick="figInsererInstruments()" style="display:none;background:#1F7A4D;border-color:#1F7A4D;" title="Insère dans l'exercice la construction pas à pas, avec les instruments"><span class=gicon>architecture</span> Insérer la construction aux instruments</button>
         <button type="button" class="btn" id="figSubmitDevoirBtn" onclick="submitCurrentFigureAsDevoir()" style="display:none;"><span class=gicon>send</span> Enregistrer / Rendre le devoir</button>
         <button type="button" class="btn secondary" id="figLoadDevoirBtn" onclick="loadMyDevoirFigure()" style="display:none;"><span class=gicon>folder_open</span> Charger mon dernier rendu</button>
@@ -953,6 +954,7 @@ const TOOL_ICONS = {
   stats: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="21" x2="21" y2="21"/><rect x="5" y="13" width="4" height="8" fill="currentColor" stroke="none"/><rect x="11" y="8" width="4" height="13" fill="currentColor" stroke="none"/><rect x="17" y="3" width="4" height="18" fill="currentColor" stroke="none"/></svg>`,
   geoanim: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20 L13 20"/><path d="M3 20 L9 8"/><path d="M9 8 A7 7 0 0 1 15 15" stroke-dasharray="2 2"/><path d="M15 12 L21 16 L15 20 Z" fill="currentColor" stroke="none"/></svg>`,
   camera: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2.5"/><circle cx="12" cy="9" r="3"/><line x1="10.5" y1="18.5" x2="13.5" y2="18.5"/></svg>`,
+  figdyn: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="12" r="7"/><circle cx="11" cy="12" r="1.2" fill="currentColor" stroke="none"/><circle cx="16" cy="7" r="2" fill="currentColor" stroke="none"/><path d="M19.5 14.5 a8.5 8.5 0 0 1 -4 5.5" /><path d="M14 20.6 l1.6 -.6 -.4 -1.7"/></svg>`,
   instruments: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3 L4.5 15"/><path d="M9 3 L13.5 15"/><circle cx="9" cy="3" r="1.2" fill="currentColor" stroke="none"/><rect x="2" y="17" width="20" height="5" rx="1"/><path d="M6 17 v2 M10 17 v2 M14 17 v2 M18 17 v2"/><path d="M15 9 L21 4" stroke-dasharray="2 2"/></svg>`,
   urn: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4 L4 20 Q4 22 6 22 L18 22 Q20 22 20 20 L18 4"/><circle cx="9" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="14" cy="15" r="1.6" fill="currentColor" stroke="none"/><circle cx="12" cy="9" r="1.6" fill="currentColor" stroke="none"/></svg>`,
 };
@@ -963,6 +965,7 @@ function toolButtonsHTML(ctx){
     <button type="button" class="tool-icon-btn" title="Importer une image" onclick="${set}openImageTool()">${TOOL_ICONS.image}</button>
     <button type="button" class="tool-icon-btn" title="Caméra du téléphone : filmer un cahier ou une copie en direct, l'annoter, l'insérer" onclick="${set}if(typeof openCameraTool==='function')openCameraTool()">${TOOL_ICONS.camera}</button>
     <button type="button" class="tool-icon-btn" title="Figure géométrique" onclick="${set}openFigureTool()">${TOOL_ICONS.figure}</button>
+    <button type="button" class="tool-icon-btn outil-figdyn" title="Importer une figure enregistrée (Géométrie Interactive) : elle reste dynamique dans le cahier (déplacer, animer, réinitialiser)" onclick="${set}figImporterEnregistree()">${TOOL_ICONS.figdyn}</button>
     <button type="button" class="tool-icon-btn outil-instruments" title="Construction aux instruments : tracez la figure en géométrie dynamique, elle se construit avec la règle, l'équerre, le compas… (animation insérée dans l'exercice)" onclick="${set}openInstrumentsTool()">${TOOL_ICONS.instruments}</button>
     <button type="button" class="tool-icon-btn" title="Tableau" onclick="${set}openTableauTool()">${TOOL_ICONS.tableau}</button>
     <button type="button" class="tool-icon-btn" title="Division (euclidienne / décimale)" onclick="${set}openDivisionTool()">${TOOL_ICONS.division}</button>
@@ -5400,8 +5403,9 @@ function shapeStrokeAttrs(s, defaultColor){
   const dash = s.strokePattern==='pointille' ? ' stroke-dasharray="5,4"' : '';
   return `stroke="${color}" stroke-width="${sw}"${dash}`;
 }
+let figRenderCible = null; // autre SVG que celui de l'outil (figure dynamique du cahier, voir figAvec)
 function renderFigureSvg(){
-  const svg=document.getElementById('figureSvg');
+  const svg = figRenderCible || document.getElementById('figureSvg');
   let html='';
   if(figState.refShape){
     html+=`<line x1="${figState.refShape.p1.x}" y1="${figState.refShape.p1.y}" x2="${figState.refShape.p2.x}" y2="${figState.refShape.p2.y}" stroke="#E35D3A" stroke-width="4" stroke-opacity=".35"/>`;
@@ -5655,7 +5659,7 @@ function renderFigureSvg(){
     pp.forEach((q,i)=>{ html+=`<circle cx="${q.x.toFixed(1)}" cy="${q.y.toFixed(1)}" r="${i===0 && pp.length>=3 ? 6 : 3.5}" fill="${i===0 && pp.length>=3 ? 'rgba(227,93,58,.18)' : 'none'}" stroke="#E35D3A" stroke-width="1.1" pointer-events="none"/>`; });
   }
   svg.innerHTML = figTracesHtml() + html;
-  if(figLiveActif() && !figAnim.pts.size) figLivePlanifier(); // pas de reconstruction aux instruments à chaque image d'une animation
+  if(!figRenderCible && figLiveActif() && !figAnim.pts.size) figLivePlanifier(); // pas de reconstruction aux instruments à chaque image d'une animation
 }
 /* TRACE D'UN OBJET -- demandé : « permettre dans la géométrie interactive d'activer la trace d'un
    objet. Clic droit ? ». Clic droit (appui long sur tablette) sur un point ou un objet : « Activer la
@@ -5663,7 +5667,7 @@ function renderFigureSvg(){
    sous la figure (comme dans GeoGebra) : lieu d'un point, enveloppe d'une droite… Les traces ne sont
    pas enregistrées avec la figure (seul le réglage « trace » l'est) ; elles s'effacent par le même
    menu, ou avec la figure. */
-const figTraces = new Map(); // objet -> fragments SVG de ses positions successives
+let figTraces = new Map(); // objet -> fragments SVG de ses positions successives (une table par figure dynamique, voir figAvec)
 function figTraceNoter(obj, frag){
   frag = frag.replace(/<text[\s\S]*?<\/text>/g, '').replace(/<image[^>]*\/?>(<\/image>)?/g, '');
   if(!frag) return;
@@ -5722,9 +5726,16 @@ function figAnimImage(now){
   const dt = Math.min(0.05, (now - figAnim.last) / 1000); figAnim.last = now;
   const svg = document.getElementById('figureSvg');
   if(!svg || !svg.isConnected || !svg.getClientRects().length){ figAnimArreter(); return; } // outil fermé
-  figAnim.pts.forEach((a, p)=>{
+  figAnim.pts.forEach((a, p)=>{ if(!figAnimPas(p, a, dt)) figAnim.pts.delete(p); });
+  if(!figAnim.pts.size){ figAnim.raf = null; renderFigureSvg(); return; }
+  recomputeDependents();
+  renderFigureSvg();
+  figAnim.raf = requestAnimationFrame(figAnimImage);
+}
+// Un pas d'animation du point p (état a : sens, vitesse) ; false si le point ne s'anime plus.
+function figAnimPas(p, a, dt){
     const genre = figAnimable(p);
-    if(!genre){ figAnim.pts.delete(p); return; }
+    if(!genre) return false;
     if(genre==='cercle'){
       p.def.offset += a.sens * a.vitesse * 0.9 * dt; // ~ un tour en 7 s à vitesse normale
     } else if(genre==='droite'){
@@ -5740,12 +5751,180 @@ function figAnimImage(now){
       const r = seg.lengthCm * SCALE_PX_PER_CM, ang = Math.atan2(p.y-c.y, p.x-c.x) + a.sens * a.vitesse * 0.9 * dt;
       p.x = c.x + r*Math.cos(ang); p.y = c.y + r*Math.sin(ang);
     }
-  });
-  if(!figAnim.pts.size){ figAnim.raf = null; renderFigureSvg(); return; }
-  recomputeDependents();
-  renderFigureSvg();
-  figAnim.raf = requestAnimationFrame(figAnimImage);
+    return true;
 }
+/* ================= FIGURE DYNAMIQUE DANS LE CAHIER =================
+   Demandé : « Dans l'outil cahier, permettre d'importer une figure enregistrée mais la laisser en format
+   dynamique… qu'elle se réinitialise dans son format initial mais que l'outil bouger ou animer puisse être
+   présent ». Le bloc garde la construction complète (points, objets, dépendances : data-fig) et son image
+   (impression, PDF, fenêtre de projection). Partout où il s'affiche (correction, cahier élève, cahier par
+   semaine), il est activé : on déplace les points libres (et les points posés sur un objet, le long de cet
+   objet), « Animer » fait tourner ou glisser les points prévus, « Réinitialiser » remet la figure telle
+   qu'à l'insertion -- et chaque ouverture du cahier repart de cet état. Le moteur est celui de l'outil
+   figure : figAvec branche le temps d'un rendu l'état et le SVG de la figure dynamique. */
+function figAvec(v, cible, fn){
+  const s0 = figState, t0 = figTraces, c0 = figRenderCible, i0 = figInterPremier, p0 = figPolygonPts;
+  figState = v.etat; figTraces = v.traces; figRenderCible = cible; figInterPremier = null; figPolygonPts = [];
+  try{ return fn(); } finally { figState = s0; figTraces = t0; figRenderCible = c0; figInterPremier = i0; figPolygonPts = p0; }
+}
+function figEtatDe(fig){
+  const r = deserializeFigState(JSON.parse(JSON.stringify(fig)));
+  return { points: r.points, shapes: r.shapes, mode: 'vue', selected: [], refShape: null, nextLabel: r.points.length, lengthGroups: {} };
+}
+// Cadre de la figure : la vue donnée, agrandie si un objet en dépasse (même format 500 × 320).
+function figDynVue(etat, vue){
+  let v = vue && isFinite(vue.w) ? { ...vue } : { x: 0, y: 0, w: 500, h: 320 };
+  const xs = [], ys = [];
+  etat.points.forEach(p=>{ if(!p.hidden){ xs.push(p.x); ys.push(p.y); } });
+  etat.shapes.forEach(s=>{ if(s.type==='cercle' && s.p1){ const r = circleRadius(s); xs.push(s.p1.x-r, s.p1.x+r); ys.push(s.p1.y-r, s.p1.y+r); } });
+  if(xs.length){
+    const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys), m = 16, ratio = v.h / v.w || 0.64;
+    if(x0 < v.x+m || x1 > v.x+v.w-m || y0 < v.y+m || y1 > v.y+v.h-m){
+      const w = Math.max(v.w, x1-x0+2*m+20, (y1-y0+2*m+20)/ratio); v = { x: (x0+x1)/2 - w/2, y: (y0+y1)/2 - w*ratio/2, w, h: w*ratio };
+    }
+  }
+  return v;
+}
+function figDynHtml(data){
+  const v = { etat: figEtatDe(data.fig), traces: new Map() }, vue = figDynVue(v.etat, data.vue);
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  figAvec(v, svg, ()=>renderFigureSvg());
+  return `<div class="fig-dyn" data-fig="${encodeURIComponent(JSON.stringify(data))}"><svg class="fig-dyn-svg" viewBox="${[vue.x, vue.y, vue.w, vue.h].map(n=>n.toFixed(1)).join(' ')}" style="width:100%;display:block;margin:6px auto;border:1px solid rgba(28,43,57,.12);border-radius:8px;background:#fff;">${svg.innerHTML}</svg></div>`;
+}
+// Depuis l'outil figure : la figure en cours, avec les animations en cours comme animations prévues.
+function figInsererDynamique(){
+  if(!figState.points.some(p=>!p.hidden)){ niceAlert('La figure est vide : tracez-la d\'abord.'); return; }
+  const fig = serializeFigState(figState);
+  figState.points.forEach((p, i)=>{ const a = figAnim.pts.get(p); if(a) fig.points[i].animer = { vitesse: a.vitesse, sens: a.sens }; });
+  const data = { fig, vue: { ...figViewBox } };
+  addPendingBlock('figdyn', figDynHtml(data), data, 'reopenFigDyn');
+  closeFigureTool();
+}
+function reopenFigDyn(data){
+  reopenFigure(data.fig);
+  (data.fig.points || []).forEach((q, i)=>{ if(q.animer && figState.points[i]) figAnim.pts.set(figState.points[i], { ...q.animer }); });
+  if(figAnim.pts.size && !figAnim.raf){ figAnim.last = performance.now(); figAnim.raf = requestAnimationFrame(figAnimImage); }
+}
+// Outil « Figure enregistrée » : choisir une figure de « Mes figures enregistrées ».
+async function figImporterEnregistree(){
+  if(typeof sb==='undefined' || !sb || !currentUser){ await niceAlert('Connectez-vous pour retrouver vos figures enregistrées.'); return; }
+  const { data, error } = await sb.from('figures_sauvegardees').select('id,nom,updated_at').eq('user_id', currentUser.id).order('updated_at', { ascending: false });
+  if(error){ await niceAlert('Erreur : ' + error.message); return; }
+  if(!data || !data.length){ await niceAlert('Aucune figure enregistrée pour l\'instant. Dans la Géométrie Interactive, construisez une figure puis « Enregistrer sous un nom ».'); return; }
+  const id = await new Promise(res=>{
+    const o = document.createElement('div'); o.className = 'modal-overlay'; o.style.zIndex = '420';
+    o.innerHTML = `<div class="modal-card" style="max-width:440px;max-height:80vh;overflow-y:auto;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><strong style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;"><span class="gicon">animation</span> Importer une figure enregistrée</strong>
+        <button class="modal-close" data-f=""><span class=gicon>close</span></button></div>
+      <p class="hint" style="margin:0 0 10px;">Elle restera dynamique dans le cahier : déplacer les points, animer, réinitialiser.</p>
+      ${data.map(f=>`<button type="button" class="pl-sc-l" data-f="${f.id}"><span class="gicon" style="color:#7A4FC0;">category</span><span class="pl-sc-t"><b>${escapeHtml(f.nom)}</b><small>enregistrée le ${new Date(f.updated_at).toLocaleDateString('fr-FR')}</small></span></button>`).join('')}</div>`;
+    document.body.appendChild(o);
+    o.onclick = e=>{ const b = e.target.closest('[data-f]'); if(e.target===o || b){ o.remove(); res(b ? b.dataset.f : ''); } };
+  });
+  if(!id) return;
+  const { data: f, error: e2 } = await sb.from('figures_sauvegardees').select('figure_data').eq('id', id).single();
+  if(e2 || !f){ await niceAlert('Figure introuvable.'); return; }
+  const d = { fig: f.figure_data, vue: null };
+  addPendingBlock('figdyn', figDynHtml(d), d, 'reopenFigDyn');
+}
+// Activation des figures dynamiques affichées (observateur plus bas).
+function figDynActiver(root){
+  (root || document).querySelectorAll('.fig-dyn:not([data-actif])').forEach(el=>{
+    if(el.closest('#figurePanel')) return;
+    el.dataset.actif = '1';
+    let data; try{ data = JSON.parse(decodeURIComponent(el.dataset.fig)); }catch(e){ return; }
+    const svg = el.querySelector('svg.fig-dyn-svg'); if(!svg) return;
+    const v = { data, el, svg, etat: null, traces: new Map(), anim: new Map(), raf: null, last: 0, glisse: null };
+    const barre = document.createElement('div'); barre.className = 'fig-dyn-bar';
+    barre.innerHTML = `<span class="fig-dyn-tag"><span class="gicon">pan_tool_alt</span> Figure dynamique : déplacez les points</span>
+      <button type="button" data-d="anim"><span class="gicon">play_arrow</span> Animer</button><button type="button" data-d="reset"><span class="gicon">restart_alt</span> Réinitialiser</button>`;
+    el.appendChild(barre);
+    svg.style.touchAction = 'none';
+    figDynReset(v);
+    barre.querySelector('[data-d="anim"]').style.display = figDynAnimables(v).length ? '' : 'none';
+    barre.onclick = e=>{ const b = e.target.closest('[data-d]'); if(!b) return; e.stopPropagation();
+      if(b.dataset.d==='reset') figDynReset(v); else figDynBasculerAnim(v); };
+    svg.addEventListener('pointerdown', e=>figDynPrendre(v, e));
+    svg.addEventListener('pointermove', e=>figDynGlisser(v, e));
+    const lacher = ()=>{ if(v.glisse){ v.glisse = null; svg.style.cursor = ''; } };
+    svg.addEventListener('pointerup', lacher); svg.addEventListener('pointercancel', lacher);
+    svg.addEventListener('pointermove', e=>{ if(!v.glisse) svg.style.cursor = figDynPointSous(v, e) ? 'grab' : ''; });
+  });
+}
+function figDynRendre(v){ figAvec(v, v.svg, ()=>{ recomputeDependents(); renderFigureSvg(); }); }
+function figDynReset(v){
+  figDynStopAnim(v);
+  v.etat = figEtatDe(v.data.fig); v.traces = new Map();
+  const vue = figDynVue(v.etat, v.data.vue);
+  v.svg.setAttribute('viewBox', [vue.x, vue.y, vue.w, vue.h].map(n=>n.toFixed(1)).join(' '));
+  figAvec(v, v.svg, ()=>renderFigureSvg());
+}
+// Points à animer : ceux prévus à l'insertion, sinon tous les points animables.
+function figDynAnimables(v){
+  return figAvec(v, v.svg, ()=>{
+    const prevus = (v.data.fig.points || []).map((q, i)=>q.animer ? v.etat.points[i] : null).filter(Boolean);
+    return prevus.length ? prevus : v.etat.points.filter(p=>figAnimable(p));
+  });
+}
+function figDynBasculerAnim(v){
+  if(v.anim.size){ figDynStopAnim(v); return; }
+  figDynAnimables(v).forEach(p=>{ const i = v.etat.points.indexOf(p), q = (v.data.fig.points || [])[i]; v.anim.set(p, { vitesse: 1, sens: 1, ...((q && q.animer) || {}) }); });
+  if(!v.anim.size) return;
+  const b = v.el.querySelector('[data-d="anim"]'); if(b) b.innerHTML = '<span class="gicon">pause</span> Pause';
+  v.last = performance.now();
+  const image = now=>{
+    if(!v.el.isConnected){ figDynStopAnim(v); return; }
+    const dt = Math.min(0.05, (now - v.last) / 1000); v.last = now;
+    figAvec(v, v.svg, ()=>{ v.anim.forEach((a, p)=>{ if(!figAnimPas(p, a, dt)) v.anim.delete(p); }); recomputeDependents(); renderFigureSvg(); });
+    v.raf = v.anim.size ? requestAnimationFrame(image) : null;
+  };
+  v.raf = requestAnimationFrame(image);
+}
+function figDynStopAnim(v){
+  v.anim.clear(); if(v.raf){ cancelAnimationFrame(v.raf); v.raf = null; }
+  const b = v.el && v.el.querySelector('[data-d="anim"]'); if(b) b.innerHTML = '<span class="gicon">play_arrow</span> Animer';
+}
+function figDynPointSous(v, e){
+  const {x, y} = svgCoordsFromEvent(v.svg, e), vb = v.svg.viewBox.baseVal, tol = 12 * (vb && vb.width ? vb.width / 500 : 1);
+  let best = null, bd = tol;
+  v.etat.points.forEach(p=>{
+    if(p.hidden) return;
+    const mobile = !p.def || ['point-sur-droite', 'point-sur-cercle'].includes(p.def.type);
+    if(!mobile) return;
+    const d = Math.hypot(p.x - x, p.y - y); if(d < bd){ bd = d; best = p; }
+  });
+  return best;
+}
+function figDynPrendre(v, e){
+  const p = figDynPointSous(v, e); if(!p) return;
+  e.preventDefault(); v.glisse = p; v.svg.style.cursor = 'grabbing';
+  try{ v.svg.setPointerCapture(e.pointerId); }catch(er){}
+}
+function figDynGlisser(v, e){
+  const p = v.glisse; if(!p) return;
+  e.preventDefault();
+  const {x, y} = svgCoordsFromEvent(v.svg, e);
+  figAvec(v, v.svg, ()=>{
+    if(p.def && p.def.type==='point-sur-droite'){
+      const {p1, p2} = lineShapeEndpoints(p.def.shape), dx = p2.x-p1.x, dy = p2.y-p1.y, len2 = dx*dx+dy*dy || 1;
+      const t = clampTForShapeType(((x-p1.x)*dx + (y-p1.y)*dy)/len2, p.def.shape.type);
+      p.def.t = t; p.x = p1.x + t*dx; p.y = p1.y + t*dy;
+    } else if(p.def && p.def.type==='point-sur-cercle'){
+      const sh = p.def.shape, r = circleRadius(sh), ref = sh.radius!=null ? (sh.angle||0) : Math.atan2(sh.p2.y-sh.p1.y, sh.p2.x-sh.p1.x), a = Math.atan2(y-sh.p1.y, x-sh.p1.x);
+      p.def.offset = a - ref; p.x = sh.p1.x + r*Math.cos(a); p.y = sh.p1.y + r*Math.sin(a);
+    } else {
+      const seg = figState.shapes.find(s=>s.type==='segment' && s.lengthCm && s.p2===p);
+      if(seg){ const c = seg.p1, L = seg.lengthCm*SCALE_PX_PER_CM, a = Math.atan2(y-c.y, x-c.x); p.x = c.x + L*Math.cos(a); p.y = c.y + L*Math.sin(a); }
+      else {
+        const dx = x - p.x, dy = y - p.y; p.x = x; p.y = y;
+        figState.shapes.filter(s=>s.type==='segment' && s.lengthCm && s.p1===p).forEach(s=>{ s.p2.x += dx; s.p2.y += dy; }); // bloc rigide
+      }
+    }
+    recomputeDependents(); renderFigureSvg();
+  });
+}
+let figDynPlanifie = false;
+new MutationObserver(()=>{ if(figDynPlanifie) return; figDynPlanifie = true; requestAnimationFrame(()=>{ figDynPlanifie = false; figDynActiver(document); }); }).observe(document.body, { childList: true, subtree: true });
 const FIG_COULEURS = [['#1C1B2E','Noir'],['#7A8A98','Gris'],['#D93025','Rouge'],['#0D5BA3','Bleu'],['#1F7A4D','Vert'],['#E35D3A','Orange'],['#8E44AD','Violet']];
 function onFigureContextMenu(evt){
   evt.preventDefault();

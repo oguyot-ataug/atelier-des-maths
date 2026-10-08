@@ -1986,3 +1986,14 @@ select:not([multiple]):not([size]){
 #figMenuCtx .fig-mc-note .gicon{font-size:16px;color:var(--ink-soft,#5B6472);}
 #figMenuCtx .fig-mc-suppr{color:#C0392B;border-top:1px solid rgba(28,43,57,.08);border-radius:0 0 7px 7px;margin-top:4px;}
 #figMenuCtx .fig-mc-suppr .gicon{color:#C0392B;}
+
+/* Figure dynamique dans le cahier (outils-figures.js : figDynActiver). */
+.fig-dyn{position:relative;}
+.fig-dyn-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px;margin:2px 0 6px;font-size:.82rem;}
+.fig-dyn-tag{display:inline-flex;align-items:center;gap:4px;color:#7A4FC0;font-weight:700;margin-right:4px;}
+.fig-dyn-tag .gicon{font-size:17px;}
+.fig-dyn-bar button{display:inline-flex;align-items:center;gap:4px;border:1px solid rgba(122,79,192,.35);background:#fff;color:#5A3596;border-radius:999px;padding:3px 10px;font:inherit;font-weight:700;cursor:pointer;}
+.fig-dyn-bar button:hover{background:#F3EEFB;}
+.fig-dyn-bar button .gicon{font-size:17px;}
+#figValidateBtn[style*="display: none"] + #figValidateDynBtn, #figValidateBtn[style*="display:none"] + #figValidateDynBtn{display:none !important;}
+@media print{ .fig-dyn-bar{display:none !important;} }

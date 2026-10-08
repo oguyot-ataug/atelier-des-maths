@@ -2373,7 +2373,7 @@ function singleBlockHTML(b, ctx, withControls, draggable){
   // calibrage précis, le type 'figure' serait tombé dans le générique 260px (comme les
   // petites figures ci-dessous), et un segment déclaré "5cm" se serait imprimé à environ
   // 1,38cm réels seulement -- pas du tout la longueur annoncée à l'élève.
-  const defaultWidth = b.type==='axe' ? 500 : b.type==='repere' ? 340 : b.type==='graph' ? 420 : b.type==='figure' ? 944 : b.type==='texte' ? null : 260;
+  const defaultWidth = b.type==='axe' ? 500 : b.type==='repere' ? 340 : b.type==='graph' ? 420 : (b.type==='figure' || b.type==='figdyn') ? 944 : b.type==='texte' ? null : 260;
   let html = b.html;
   if(b.type==='disque'){
     // Réglage manuel (toujours prioritaire, fiable dans tous les contextes y compris la
@@ -2392,7 +2392,7 @@ function singleBlockHTML(b, ctx, withControls, draggable){
     // aucun effet sur le résultat imprimé réel, seulement sur l'aperçu dans l'éditeur. Les
     // autres types de blocs gardent leur comportement d'impression inchangé (pas de risque
     // de régression sur ce qui fonctionne déjà).
-    const printWidthStyle = sizeStyle || (b.type==='figure' ? `width:${defaultWidth}px;` : '');
+    const printWidthStyle = sizeStyle || ((b.type==='figure' || b.type==='figdyn') ? `width:${defaultWidth}px;` : '');
     // divisionPosee (mode étape par étape) peut être bien plus haut qu'un bloc "figure"
     // typique -- overflow:hidden risquerait de couper les dernières étapes si le conteneur
     // se trouvait contraint en hauteur par ailleurs.
@@ -3343,6 +3343,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1011', date:'2026-10-08', items:[
+    "Figures dynamiques dans le cahier -- demandé : « Dans l'outil cahier, permettre d'importer une figure enregistrée mais la laisser en format dynamique… qu'elle se réinitialise dans son format initial mais que l'outil bouger ou animer puisse être présent ». Deux façons de l'insérer dans une correction : le nouvel outil « Figure enregistrée » (icône cercle et flèche, dans la barre des blocs) qui liste « Mes figures enregistrées » de la Géométrie Interactive, ou le bouton violet « Insérer en figure dynamique » de l'outil Figure (à côté de « Valider et insérer la figure »). Dans le cahier (correction, cahier élève, vue par semaine), la figure reste dynamique : on fait glisser ses points libres (et les points posés sur un cercle ou une droite, le long de leur objet), tout ce qui en dépend suit ; « Animer » fait tourner ou glisser les points qui étaient animés à l'insertion (sinon tous les points animables), « Pause » l'arrête ; « Réinitialiser » la remet exactement dans son état d'origine, et chaque ouverture du cahier repart de cet état. Les traces activées dans la figure se dessinent aussi. À l'impression et dans le PDF, c'est la figure d'origine qui apparaît. « Modifier » rouvre la figure dans l'outil Figure."
+  ] },
   { version:'2026-08-19.1010', date:'2026-10-08', items:[
     "Géométrie dynamique : points « manquants » au rechargement d'une figure -- signalé : « j'avais enregistré ma figure mais quand je l'ai rechargée il manquait des points ». La figure était bien enregistrée en entier (vérifié : points, milieux, symétriques, points sur cercle ou sur arc, cercles, droites…), mais pas la vue : en plein écran, en écran partagé ou après un zoom arrière, la zone visible est plus grande que la vue normale, et les points placés au-delà n'étaient plus à l'écran au rechargement. Désormais, à l'ouverture d'une figure enregistrée (Mes figures enregistrées, retour du tableau, figure d'un devoir, rendu d'un élève, figure modifiée depuis la correction), la vue s'agrandit et se centre d'elle-même si un objet dépasse. Les figures déjà enregistrées en profitent sans rien refaire.",
     "Au passage : au-delà de 26 points (toutes les lettres déjà prises), le point suivant s'appelle A1, B1… ; auparavant, le calcul du nom tournait sans fin et la page se figeait."
