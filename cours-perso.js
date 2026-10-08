@@ -433,6 +433,7 @@ function cpFigOpenEditor(data, cb){
         cpFigHook = null;
         const b = document.getElementById('figValidateBtn');
         if(b && b.dataset.cpText){ b.textContent = b.dataset.cpText; delete b.dataset.cpText; }
+        const d = document.getElementById('figValidateDynBtn'); if(d) d.style.display = '';
       }
       return oc.apply(this, arguments);
     };
@@ -441,6 +442,8 @@ function cpFigOpenEditor(data, cb){
   cpFigHook = cb;
   const b = document.getElementById('figValidateBtn');
   if(b){ if(!b.dataset.cpText) b.dataset.cpText = b.textContent; b.textContent = '✓ Valider la figure pour le cours'; }
+  // « Insérer en figure dynamique » ne concerne que le cahier : masqué pour un cours personnalisé ou une question.
+  const d = document.getElementById('figValidateDynBtn'); if(d) d.style.display = 'none';
 }
 
 /* ---------- réécriture d'un bloc d'origine ---------- */

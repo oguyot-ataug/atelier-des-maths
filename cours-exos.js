@@ -499,14 +499,19 @@ async function cxPrendre(){
 function cxRelacher(){
   if(!cdP || !cdP.main) return;
   const { e, k } = cdP.main;
-  if(cdP.tdT){ clearTimeout(cdP.tdT); cdP.tdT = null; const x = cxProfTrav(k).get(e); if(x) cxProfSauver(e, k, x.rep); }
+  // La main n'est rendue qu'une fois la copie enregistrée -- signalé : « quand je prends la main et que je modifie
+  // sa figure, il faut [...] qu'il puisse continuer avec les modifications que j'ai pu faire » : l'élève rechargeait
+  // sa copie avant la fin de l'enregistrement, et la figure ouverte jetait la dernière modification.
+  let att = null;
+  if(cdP.tdT){ clearTimeout(cdP.tdT); cdP.tdT = null; const x = cxProfTrav(k).get(e); if(x) att = cxProfSauver(e, k, x.rep); }
   if(typeof plClavier !== 'undefined') plClavier.fermer();
   if(qzP && qzP.cours && qzP.prof){
     if(cx.figQid && typeof closeFigureTool === 'function'){ const t = document.getElementById('toolsModalOverlay'); if(t && t.style.display !== 'none') closeFigureTool(); }
-    cxProfEnvoi(true); qzP = null;
+    att = cxProfEnvoi(true); qzP = null;
   }
   cdP.main = null;
-  cxEnvoyer(cdP.ch, 'main', { e, k, on: false });
+  const ch = cdP.ch, rendre = () => cxEnvoyer(ch, 'main', { e, k, on: false });
+  if(att) att.then(rendre, rendre); else rendre();
   cxProfMaj(); cxProfDetail();
 }
 // Le professeur écrit dans la copie de l'élève : enregistré (RLS : sa session), puis signalé.
@@ -516,8 +521,10 @@ function cxProfEnvoi(tout_de_suite){
   const x = cxProfTrav(k).get(e) || {}; cxProfTrav(k).set(e, Object.assign(x, { rep, t: Date.now() }));
   clearTimeout(cdP.envT);
   const go = () => cxProfSauver(e, k, rep);
-  if(tout_de_suite) go(); else cdP.envT = setTimeout(go, 400);
+  let p = null;
+  if(tout_de_suite) p = go(); else cdP.envT = setTimeout(go, 400);
   cxProfMaj(e);
+  return p;
 }
 async function cxProfSauver(e, k, rep){
   if(!cdP) return;
@@ -700,17 +707,19 @@ async function cxEleveAide(){
 function cxEleveRafraichir(){
   if(!cdE || !cdE.d) return;
   if(cx.prog && cx.prog.role === 'eleve') return cxBandeau();
-  const it = cdE.d.items[cdE.vue]; if(it && it.exo) cxEleveMonter(cdE.vue, it);
+  const it = cdE.d.items[cdE.vue]; if(it && it.exo) return cxEleveMonter(cdE.vue, it);
 }
 // Messages du professeur.
 async function cxEleveMain(p){
   if(!cdE || !p || p.e !== currentUser.id) return;
   const it = cdE.d && cdE.d.items[p.k];
   if(p.on){
+    // Figure en cours : enregistrée (dernier trait compris) puis fermée, et rouverte quand l'élève récupère la main.
+    cdE.figReprendre = null;
+    if(cx.figQid && typeof closeFigureTool === 'function'){ const t = document.getElementById('toolsModalOverlay'); if(t && t.style.display !== 'none'){ cdE.figReprendre = { k: p.k, q: cx.figQid }; closeFigureTool(); } }
     if(cdE.saveT) await cxEleveSauver(qzP && qzP.cours ? qzP.k : p.k);
     if(cx.prog && cx.prog.role === 'eleve'){ clearTimeout(cx.prog.envT); if(cx.prog.mode === 'travail') cxProgEnvoi(true); }
     cdE.main = p.k; cdE.aide = false;
-    if(cx.figQid && typeof closeFigureTool === 'function'){ const t = document.getElementById('toolsModalOverlay'); if(t && t.style.display !== 'none') closeFigureTool(); }
     if(it && it.exo && it.exo.type === 'prog'){
       if(cdE.vue !== p.k){ cdE.vue = p.k; cdEleveRendre(); }
       if(!cx.prog) await cxEleveProg();
@@ -722,7 +731,10 @@ async function cxEleveMain(p){
     cdE.main = null;
     await cxElevePilote({ e: p.e, k: p.k });
     if(cx.prog && cx.prog.role === 'eleve'){ cx.prog.mode = 'travail'; cxBandeau(); }
-    else cxEleveRafraichir();
+    else await cxEleveRafraichir();
+    // Il retrouve sa figure ouverte, avec ce que le professeur y a fait.
+    const fr = cdE.figReprendre; cdE.figReprendre = null;
+    if(fr && fr.k === p.k && cdE.vue === p.k && qzP && qzP.cours && !qzP.prof && qzP.k === p.k && typeof qziFigOuvrir === 'function') qziFigOuvrir(fr.q);
     cdToast('<span class="gicon">pan_tool</span> À toi de jouer : tu as de nouveau la main.');
     const t = document.querySelector('.cd-toast:last-of-type'); if(t) t.style.background = '#1F7A4D';
   }
@@ -835,8 +847,18 @@ let cxLancerOrig = null;
     const o = qziFigOuvrir;
     qziFigOuvrir = function(qid){
       if(qzP && qzP.cours){ if(!qzP.prof && cdE && cdE.main === qzP.k) return; cx.figQid = qid; }
-      return o.apply(this, arguments);
+      const r = o.apply(this, arguments);
+      if(qzP && qzP.cours){
+        // En session, la figure est enregistrée au fil de l'eau : on la ferme sans rien perdre.
+        const f = document.getElementById('figCloseBtn'); if(f){ if(!f.dataset.cxText) f.dataset.cxText = f.textContent; f.textContent = 'Fermer (tout est enregistré)'; }
+        if(qzP.prof && cdP && cdP.main) cxFigBoutonsProf();
+      }
+      return r;
     };
+  }
+  if(typeof confirmAndCloseFigureTool === 'function'){
+    const o = confirmAndCloseFigureTool;
+    confirmAndCloseFigureTool = function(){ if(cx.figQid && typeof closeFigureTool === 'function') return closeFigureTool(); return o.apply(this, arguments); };
   }
   if(typeof renderFigureSvg === 'function'){
     const o = renderFigureSvg;
@@ -844,18 +866,42 @@ let cxLancerOrig = null;
   }
   if(typeof closeFigureTool === 'function'){
     const o = closeFigureTool;
-    closeFigureTool = function(){ if(cx.figQid){ clearTimeout(cx.figT); cx.figQid = null; } return o.apply(this, arguments); };
+    closeFigureTool = function(){
+      const qid = cx.figQid;
+      if(qid){ if(cx.figT) cxFigEnregistrer(); clearTimeout(cx.figT); cx.figT = null; cx.figQid = null; }
+      const b = document.getElementById('cxFigRendre'); if(b) b.remove();
+      const f = document.getElementById('figCloseBtn'); if(f && f.dataset.cxText){ f.textContent = f.dataset.cxText; delete f.dataset.cxText; }
+      const r = o.apply(this, arguments);
+      if(qid && qzP && qzP.cours && typeof qzRafraichirQuestion === 'function') qzRafraichirQuestion(qid); // vignette à jour
+      return r;
+    };
   }
 })();
 function cxFigChange(){
   clearTimeout(cx.figT);
-  cx.figT = setTimeout(() => {
-    const qid = cx.figQid; if(!qid || !qzP || !qzP.cours || typeof serializeFigState !== 'function') return;
-    const t = document.getElementById('toolsModalOverlay'); if(!t || t.style.display === 'none') return;
-    const vb = [figViewBox.x, figViewBox.y, figViewBox.w, figViewBox.h].map(v => Math.round(v * 10) / 10);
-    qzP.reponses[qid] = { f: serializeFigState(figState), vb };
-    cxModifie();
-  }, 600);
+  cx.figT = setTimeout(cxFigEnregistrer, 600);
+}
+function cxFigEnregistrer(){
+  clearTimeout(cx.figT); cx.figT = null;
+  const qid = cx.figQid; if(!qid || !qzP || !qzP.cours || typeof serializeFigState !== 'function') return;
+  const t = document.getElementById('toolsModalOverlay'); if(!t || t.style.display === 'none') return;
+  const vb = [figViewBox.x, figViewBox.y, figViewBox.w, figViewBox.h].map(v => Math.round(v * 10) / 10);
+  qzP.reponses[qid] = { f: serializeFigState(figState), vb };
+  cxModifie();
+}
+// Le professeur a la main dans la figure d'un élève : il en sort d'un clic, en lui rendant la main
+// (tout est enregistré, l'élève retrouve la figure modifiée).
+function cxFigBoutonsProf(){
+  const v = document.getElementById('figValidateBtn'); if(!v) return;
+  v.textContent = '✓ Enregistrer et fermer';
+  const e = cdP && cdP.main && cdP.eleves.find(x => x.id === cdP.main.e);
+  let b = document.getElementById('cxFigRendre');
+  if(!b){ b = document.createElement('button'); b.type = 'button'; b.id = 'cxFigRendre'; b.className = 'btn'; b.style.cssText = 'background:#1F7A4D;border-color:#1F7A4D;'; b.onclick = cxFigRendre; v.insertAdjacentElement('afterend', b); }
+  b.innerHTML = `<span class="gicon">pan_tool</span> Rendre la main${e ? ' à ' + cdEsc(e.prenom || e.label) : ''}`;
+}
+function cxFigRendre(){
+  if(cx.figQid && typeof closeFigureTool === 'function') closeFigureTool();
+  cxRelacher();
 }
 
 (function cxStyles(){

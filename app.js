@@ -3371,6 +3371,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1021', date:'2026-10-08', items:[
+    "Session, prise en main d'une figure d'élève -- signalé : « Quand je prends la main pour un élève et que je modifie sa figure, il faut que je puisse quitter sa figure facilement et qu'il puisse continuer avec les modifications que j'ai pu faire ». Dans la figure de l'élève, deux boutons : « Enregistrer et fermer » et « Rendre la main à [prénom] », qui enregistre la figure, la ferme et rend la main en un clic. La main n'est rendue qu'une fois la figure enregistrée (l'élève pouvait recharger sa copie avant la fin de l'enregistrement), et fermer la figure ne perd plus la dernière modification (elle était jetée si l'on fermait moins d'une demi-seconde après). Côté élève : s'il avait sa figure ouverte quand le professeur a pris la main, elle se rouvre d'elle-même quand il la récupère, avec les modifications du professeur.",
+    "Au passage, dans les figures d'une session : le bouton « Fermer sans insérer » (« la figure sera perdue ») devient « Fermer (tout est enregistré) », sans question, puisque la figure est enregistrée au fil de l'eau ; le bouton « Insérer en figure dynamique », réservé au cahier, n'apparaît plus dans les figures des questions ni des cours personnalisés."
+  ] },
   { version:'2026-08-19.1020', date:'2026-10-08', items:[
     "Mentions légales et CGV : nouveau numéro de téléphone (07 81 93 08 92, celui déclaré à l'INPI), à la place de l'ancien -- demandé : « Mets le 07 81 93 08 92 sur le site à la place de l'ancien numéro »."
   ] },
