@@ -6400,6 +6400,11 @@ function figVersProgramme(){
     if(t==='bissectrice'){ assurerPoint(sh.p1); assurerPoint(sh.vertex); assurerPoint(sh.p2); const id = nouvelId(sh); prog.push(couleur(sh, {op:'angle_bisector', id, angle:[sh.p1.label, sh.vertex.label, sh.p2.label]})); return id; }
     return null;
   }
+  // Instruments de chaque étape : ceux de l'objet (ou du point construit) qui l'a produite, retenus au
+  // moment du tracé (o.outils, voir figTamponOutils). Les étapes ajoutées pendant la construction d'un
+  // objet en héritent, sauf celles d'un objet intermédiaire qui a les siens.
+  const avecOutils = f => function(o){ const debut = prog.length, r = f(o); if(o && Array.isArray(o.outils)) for(let k = debut; k < prog.length; k++) if(!prog[k].outils) prog[k].outils = o.outils; return r; };
+  assurerObjet = avecOutils(assurerObjet); assurerPoint = avecOutils(assurerPoint);
   // Ordre de la figure : les objets dans l'ordre où ils ont été tracés, chacun précédé des points
   // dont il a besoin ; puis les points restants (points libres isolés, milieux non reliés...).
   figState.shapes.forEach(sh=>{
@@ -6694,6 +6699,20 @@ function figSplitOutils(){
   if(figState.nomsMasques) l.push('sans-noms');
   return l;
 }
+// Instruments cochés au moment où un objet est tracé : retenus sur l'objet (o.outils). Les tracés déjà faits
+// gardent les leurs quand on change les cases ; seuls les suivants prennent les nouveaux.
+function figOutilsReels(){ return figSplitOutils().filter(t=>typeof TB_AI_TOOL_NAMES==='undefined' || TB_AI_TOOL_NAMES[t]); }
+function figTamponOutils(){
+  const o = figOutilsReels(); if(!o.length) return;
+  figState.shapes.forEach(s=>{ if(!s.outils) s.outils = o.slice(); });
+  figState.points.forEach(p=>{ if(p.def && !p.outils) p.outils = o.slice(); });
+}
+// Tous les instruments utilisés par la figure (pour le tableau) : ceux des objets et ceux cochés.
+function figOutilsFigure(){
+  const t = new Set(figSplitOutils());
+  figState.shapes.concat(figState.points).forEach(o=>(o.outils || []).forEach(x=>t.add(x)));
+  return [...t];
+}
 function figSplitOutilsInit(){
   let memo = null;
   try{ memo = JSON.parse(localStorage.getItem(typeof TB_AI_TOOLS_KEY!=='undefined' ? TB_AI_TOOLS_KEY : 'tbAiTools') || 'null'); }catch(e){}
@@ -6707,6 +6726,10 @@ async function figSplitOutilsChange(){
   try{ localStorage.setItem(typeof TB_AI_TOOLS_KEY!=='undefined' ? TB_AI_TOOLS_KEY : 'tbAiTools', JSON.stringify(outils)); }catch(e){}
   document.querySelectorAll('#tbAiToolChecks input[type=checkbox]').forEach(c=>{ c.checked = outils.includes(c.value); });
   if(!outils.some(o=>typeof TB_AI_TOOL_NAMES==='undefined' || TB_AI_TOOL_NAMES[o])){ document.getElementById('figureHint').textContent = 'Cochez au moins un instrument.'; return; }
+  // Les tracés déjà faits gardent leurs instruments (ils ne sont pas refaits) : les nouveaux s'appliquent
+  // aux prochains tracés. Les options d'affichage (codage des milieux, noms) valent pour toute la figure.
+  const h = document.getElementById('figureHint');
+  if(h) h.textContent = 'Instruments changés : ils serviront aux prochains tracés. Les tracés déjà faits gardent les leurs (↻ pour rejouer toute la construction).';
   await figLiveSync(true, {reset:true});
 }
 /* La construction en direct se fait en deux temps : figLiveSync (côté figure) traduit la figure en
@@ -6724,9 +6747,10 @@ function figLiveMessageFigure(opts){
   const visibles = figState.points.filter(p=>!p.hidden);
   if(!visibles.length) return {vide:true};
   if(visibles.some(p=>!/^[A-Z][A-Za-z0-9']{0,3}$/.test(p.label||''))) return {erreur:'Pour la construction en direct, chaque point doit être nommé par une lettre majuscule.'};
+  figTamponOutils(); // les nouveaux objets prennent les instruments cochés maintenant
   const programme = figVersProgramme().programme;
   const origine = figState.points.find(p=>p.label===programme[0].name);
-  return Object.assign({programme, outils: figSplitOutils(), centre: figLiveCentre(origine), cadre: figLiveCadreCm()}, opts||{});
+  return Object.assign({programme, outils: figOutilsFigure(), centre: figLiveCentre(origine), cadre: figLiveCadreCm()}, opts||{});
 }
 async function figLiveSync(rapide, opts){
   if(!figLiveActif() || typeof tbAiLoadProgram!=='function') return;
@@ -6895,9 +6919,10 @@ async function figInsererInstruments(){
   if(!pts.length){ await niceAlert('La figure est vide : tracez-la d\'abord.'); return; }
   if(pts.some(p=>!/^[A-Z][A-Za-z0-9']{0,3}$/.test(p.label||''))){ await niceAlert('Chaque point doit être nommé par une lettre majuscule (ex. A, B, M) pour être construit aux instruments.'); return; }
   let programme;
+  figTamponOutils();
   try{ programme = figVersProgramme().programme; }
   catch(e){ await niceAlert('Cette figure ne peut pas encore être construite aux instruments : '+(e && e.message ? e.message : e)); return; }
-  const outils = figSplitOutils(), figure = serializeFigState(figState);
+  const outils = figOutilsFigure(), figure = serializeFigState(figState);
   const titre = document.getElementById('corTitre');
   const enonce = figInstrEnonce || (currentBlocksContext==='global' && titre ? titre.value.trim() : '');
   figInstrEnonce = '';

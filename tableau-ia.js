@@ -161,7 +161,10 @@ function tbAiEvaluate(program, flips, allowed){
   const addPoint = (name,p)=>{ pts.set(name,p); marks.push(p); };
   const linearObj = (kind,p,u,len)=>({kind, p, u, t0: kind==='line'?-Infinity:0, t1: kind==='segment'?len:Infinity, hits:[]});
   // ---- outils autorisés ----
-  const has = t=>allowed.has(t);
+  // Instruments de l'ÉTAPE en cours : une étape peut porter les siens (« outils », posés par la Géométrie
+  // interactive au moment du tracé), sinon ceux de toute la construction.
+  let etapeAllowed = allowed;
+  const has = t=>etapeAllowed.has(t);
   const need = (i,t)=>{ if(!has(t)) err(i, 'outil non autorisé : '+TB_AI_TOOL_NAMES[t]); };
   const needStraight = i=>{ if(!has('regle') && !has('requerre')) err(i, 'il faut une règle ou une réquerre pour tracer un trait droit (non autorisées)'); };
   // Mesure d'une longueur (règle jusqu'à 15 cm, réquerre jusqu'à 10 cm depuis son 0).
@@ -195,6 +198,7 @@ function tbAiEvaluate(program, flips, allowed){
 
   program.forEach((s,i)=>{
     if(!s || typeof s!=='object') err(i, 'étape invalide');
+    etapeAllowed = Array.isArray(s.outils) && s.outils.length ? new Set(s.outils.filter(t=>TB_AI_TOOL_NAMES[t])) : allowed;
     switch(s.op){
       case 'point': {
         newName(i,s.name);
@@ -563,21 +567,27 @@ function tbAiFinalize(ev, opts){
 /* Médiatrice sans compas -- signalé : « si je décoche compas, il ne sait pas tracer la médiatrice ».
    Avec la règle graduée et l'équerre (ou la réquerre) : on place le milieu à la règle (s'il n'existe
    pas déjà), puis on trace la perpendiculaire en ce milieu à l'équerre. */
+/* Chaque étape peut avoir ses propres instruments (s.outils) : seules les étapes tracées sans compas sont
+   transformées -- signalé : « je décoche le compas pour construire les médiatrices à l'équerre, mais après je
+   ne peux pas tracer le cercle ; si je recoche le compas, il refait les médiatrices au compas ». */
 function tbAiSansCompas(program, allowed){
-  if(!allowed || allowed.has('compas') || !allowed.has('regle')) return program;
-  program = tbAiSymSansCompas(program);
-  if(!(allowed.has('equerre') || allowed.has('requerre'))) return program;
-  if(!program.some(s=>s && s.op==='perpendicular_bisector')) return program;
+  const aDe = s=>s && Array.isArray(s.outils) && s.outils.length ? new Set(s.outils) : allowed;
+  const sansCompas = s=>{ const a = aDe(s); return !!a && !a.has('compas') && a.has('regle'); };
+  if(!program.some(sansCompas)) return program;
+  program = tbAiSymSansCompas(program, sansCompas);
+  const aEquerre = s=>{ const a = aDe(s); return a.has('equerre') || a.has('requerre'); };
+  if(!program.some(s=>s && s.op==='perpendicular_bisector' && sansCompas(s) && aEquerre(s))) return program;
   const noms = new Set(); program.forEach(s=>{ if(s && typeof s.name==='string') noms.add(s.name); (Array.isArray(s && s.points) ? s.points : []).forEach(n=>noms.add(n)); });
   const libre = ()=>{ for(const n of ['I','M','J','K','N','O','L','H','Q','R','S','T','U','V','W','X','Y','Z']) if(!noms.has(n)){ noms.add(n); return n; } return null; };
   const out = [];
   program.forEach(s=>{
-    if(!s || s.op!=='perpendicular_bisector' || !Array.isArray(s.of) || s.of.length!==2 || (Array.isArray(s.points) && s.points.some(Boolean))){ out.push(s); return; }
+    if(!s || s.op!=='perpendicular_bisector' || !sansCompas(s) || !aEquerre(s) || !Array.isArray(s.of) || s.of.length!==2 || (Array.isArray(s.points) && s.points.some(Boolean))){ out.push(s); return; }
+    const outils = Array.isArray(s.outils) ? {outils: s.outils} : {};
     const [a, b] = s.of, deja = out.find(t=>t && t.op==='midpoint' && Array.isArray(t.of) && ((t.of[0]===a && t.of[1]===b) || (t.of[0]===b && t.of[1]===a)));
     let m = deja ? deja.name : null;
-    if(!m){ m = libre(); if(!m){ out.push(s); return; } out.push({op:'midpoint', name:m, of:[a, b]}); }
+    if(!m){ m = libre(); if(!m){ out.push(s); return; } out.push(Object.assign({op:'midpoint', name:m, of:[a, b]}, outils)); }
     const seg = out.find(t=>t && (t.op==='segment' || t.op==='line') && ((t.from===a && t.to===b) || (t.from===b && t.to===a) || (Array.isArray(t.through) && t.through.includes(a) && t.through.includes(b))) && t.id);
-    out.push(Object.assign({op:'perpendicular', id:s.id, through:m, to: seg ? seg.id : [a, b], kind:'line'}, s.color ? {color:s.color} : {}, s.style ? {style:s.style} : {}));
+    out.push(Object.assign({op:'perpendicular', id:s.id, through:m, to: seg ? seg.id : [a, b], kind:'line'}, s.color ? {color:s.color} : {}, s.style ? {style:s.style} : {}, outils));
   });
   return out;
 }
@@ -585,14 +595,14 @@ function tbAiSansCompas(program, allowed){
    symétrique de A par rapport à B : le tracé aux instruments ne se fait pas » (compas décoché). La
    construction « demi-droite [MO), puis report de OM au compas depuis O » devient « demi-droite [MO),
    puis report de la longueur OM à la règle graduée depuis O, sur la demi-droite ». */
-function tbAiSymSansCompas(program){
+function tbAiSymSansCompas(program, sansCompas){
   const out = [];
   for(let k = 0; k < program.length; k++){
     const s = program[k], n = program[k+1];
-    const ray = s && s.op==='circle' && Array.isArray(s.radius_from) && s.radius_from[0]===s.center && n && n.op==='intersect' && n.name && Array.isArray(n.of) && n.of.includes(s.id)
+    const ray = s && s.op==='circle' && (!sansCompas || sansCompas(s)) && Array.isArray(s.radius_from) && s.radius_from[0]===s.center && n && n.op==='intersect' && n.name && Array.isArray(n.of) && n.of.includes(s.id)
       ? out.find(t=>t && t.op==='ray' && t.id===n.of.find(x=>x!==s.id) && t.from===s.radius_from[1] && t.through===s.center) : null;
     if(!ray){ out.push(s); continue; }
-    out.push({op:'segment_length', from:s.center, to:n.name, length_from:[s.center, s.radius_from[1]], along:ray.id, show_length:false, style:s.style||'construction'});
+    out.push(Object.assign({op:'segment_length', from:s.center, to:n.name, length_from:[s.center, s.radius_from[1]], along:ray.id, show_length:false, style:s.style||'construction'}, Array.isArray(s.outils) ? {outils: s.outils} : {}));
     k++; // l'intersection est remplacée par le report
   }
   return out;
