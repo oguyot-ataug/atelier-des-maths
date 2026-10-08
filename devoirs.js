@@ -1593,10 +1593,25 @@ async function saveSandboxFigurePrompt(){
   figFichierChanger({ id: (ecrit && ecrit.id) || (existing && existing.id), nom: nomTrim }); // les prochains « Enregistrer » mettent à jour cette figure
   await niceAlert(`Figure "${nomTrim}" enregistrée.`);
 }
-/* Fenêtre listant les figures déjà enregistrées par l'utilisateur, avec ouverture ou
-   suppression. */
+/* Fenêtre « Mes figures enregistrées » : un aperçu de chaque figure, avec Ouvrir, Renommer (demandé :
+   « Permettre aussi de renommer une figure enregistrée ou d'effacer ») et Effacer (après confirmation). */
+function figApercu(data){
+  try{
+    if(typeof figAvec!=='function' || typeof figEtatDe!=='function') return '';
+    const v = { etat: figEtatDe(data), traces: new Map() };
+    // Vignette : cadrée au plus près de la figure (format 500 × 320).
+    const xs = [], ys = [];
+    v.etat.points.forEach(p=>{ if(!p.hidden){ xs.push(p.x); ys.push(p.y); } });
+    v.etat.shapes.forEach(s=>{ if(s.type==='cercle' && s.p1){ const r = circleRadius(s); xs.push(s.p1.x-r, s.p1.x+r); ys.push(s.p1.y-r, s.p1.y+r); } });
+    let vue = { x: 0, y: 0, w: 500, h: 320 };
+    if(xs.length){ const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys), w = Math.max(120, x1-x0+50, (y1-y0+50)/0.64); vue = { x: (x0+x1)/2 - w/2, y: (y0+y1)/2 - w*0.32, w, h: w*0.64 }; }
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    figAvec(v, svg, ()=>renderFigureSvg());
+    return `<svg viewBox="${[vue.x, vue.y, vue.w, vue.h].map(n=>n.toFixed(1)).join(' ')}" class="fig-liste-ap">${svg.innerHTML}</svg>`;
+  }catch(e){ return ''; }
+}
 async function openSandboxFiguresModal(){
-  const { data, error } = await sb.from('figures_sauvegardees').select('id,nom,updated_at').eq('user_id', currentUser.id).order('updated_at', {ascending:false});
+  const { data, error } = await sb.from('figures_sauvegardees').select('id,nom,updated_at,figure_data').eq('user_id', currentUser.id).order('updated_at', {ascending:false});
   if(error){ await niceAlert('Erreur : '+error.message); return; }
   document.querySelectorAll('.modal-overlay[data-kind="sandbox-figures"]').forEach(o=>o.remove());
   const overlay = document.createElement('div');
@@ -1605,24 +1620,44 @@ async function openSandboxFiguresModal(){
   overlay.style.zIndex = '300';
   const rows = (data||[]).map(f=>{
     const dateStr = new Date(f.updated_at).toLocaleDateString('fr-FR');
-    return `<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(28,43,57,.06);">
-      <span>${escapeHtml(f.nom)} <span class="hint">(${dateStr})</span></span>
-      <span style="display:flex;gap:6px;flex:none;">
-        <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="loadSandboxFigure('${f.id}')">Ouvrir</button>
-        <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;color:#a83c1f;" onclick="deleteSandboxFigure('${f.id}')"><span class=gicon>delete</span></button>
-      </span>
+    const ouverte = typeof figFichier!=='undefined' && figFichier && figFichier.id===f.id;
+    return `<div class="fig-liste-l${ouverte ? ' ouverte' : ''}">
+      <button type="button" class="fig-liste-ouvrir" onclick="loadSandboxFigure('${f.id}')" title="Ouvrir cette figure">${figApercu(f.figure_data)}</button>
+      <div class="fig-liste-t"><b>${escapeHtml(f.nom)}</b><small>${ouverte ? 'ouverte · ' : ''}modifiée le ${dateStr}</small></div>
+      <div class="fig-liste-act">
+        <button type="button" class="btn secondary" onclick="loadSandboxFigure('${f.id}')"><span class=gicon>folder_open</span> Ouvrir</button>
+        <button type="button" class="btn secondary" onclick="renameSandboxFigure('${f.id}')"><span class=gicon>edit</span> Renommer</button>
+        <button type="button" class="btn secondary fig-liste-eff" onclick="deleteSandboxFigure('${f.id}')"><span class=gicon>delete</span> Effacer</button>
+      </div>
     </div>`;
   }).join('');
   overlay.innerHTML = `
-    <div class="modal-card" style="max-width:420px;max-height:80vh;overflow-y:auto;">
+    <div class="modal-card" style="max-width:620px;width:94vw;max-height:84vh;overflow-y:auto;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-        <strong style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;">Mes figures enregistrées</strong>
+        <strong style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;"><span class=gicon>folder_open</span> Mes figures enregistrées</strong>
         <button class="modal-close" onclick="this.closest('.modal-overlay').remove()"><span class=gicon>close</span></button>
       </div>
       ${rows || '<p class="hint">Aucune figure enregistrée pour l\'instant.</p>'}
     </div>`;
   document.body.appendChild(overlay);
   overlay.addEventListener('click', e=>{ if(e.target===overlay) overlay.remove(); });
+}
+async function renameSandboxFigure(id){
+  const { data: f } = await sb.from('figures_sauvegardees').select('nom').eq('id', id).single();
+  let msg = 'Nouveau nom de la figure :';
+  for(;;){
+    const nom = await nicePrompt(msg, f ? f.nom : '');
+    if(nom==null) return;
+    const n = String(nom).trim();
+    if(!n || (f && n===f.nom)) return;
+    const { data: pris } = await sb.from('figures_sauvegardees').select('id').eq('user_id', currentUser.id).eq('nom', n).maybeSingle();
+    if(pris && pris.id!==id){ msg = `Le nom « ${n} » est déjà pris par une autre figure. Nouveau nom :`; continue; }
+    const { error } = await sb.from('figures_sauvegardees').update({ nom: n }).eq('id', id).eq('user_id', currentUser.id);
+    if(error){ await niceAlert('Erreur : '+error.message); return; }
+    if(typeof figFichier!=='undefined' && figFichier && figFichier.id===id) figFichierChanger({ id, nom: n });
+    await openSandboxFiguresModal();
+    return;
+  }
 }
 async function loadSandboxFigure(id){
   const { data, error } = await sb.from('figures_sauvegardees').select('figure_data,nom').eq('id', id).single();
@@ -1637,7 +1672,8 @@ async function loadSandboxFigure(id){
   document.querySelectorAll('.modal-overlay[data-kind="sandbox-figures"]').forEach(o=>o.remove());
 }
 async function deleteSandboxFigure(id){
-  if(!(await niceConfirm('Supprimer définitivement cette figure enregistrée ?'))) return;
+  const { data: f } = await sb.from('figures_sauvegardees').select('nom').eq('id', id).single();
+  if(!(await niceConfirm(`Effacer définitivement la figure « ${f ? f.nom : ''} » ? (Celles déjà insérées dans un cahier y restent.)`))) return;
   await sb.from('figures_sauvegardees').delete().eq('id', id);
   if(figFichier && figFichier.id===id) figFichierChanger(null);
   await openSandboxFiguresModal();

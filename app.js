@@ -3344,6 +3344,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1014', date:'2026-10-08', items:[
+    "Mes figures enregistrées : renommer et effacer -- demandé : « Permettre aussi de renommer une figure enregistrée ou d'effacer ». La fenêtre montre maintenant un aperçu de chaque figure (un clic l'ouvre), avec trois boutons : Ouvrir, Renommer (le nom ne peut pas être celui d'une autre de vos figures ; si la figure est ouverte, son bouton « Enregistrer » prend le nouveau nom) et Effacer (après confirmation, avec le nom de la figure ; celles déjà insérées dans un cahier y restent). La figure ouverte est signalée dans la liste."
+  ] },
   { version:'2026-08-19.1013', date:'2026-10-08', items:[
     "Géométrie Interactive : enregistrer une figure ouverte sans en créer une nouvelle -- demandé : « Quand on ouvre une figure… et qu'on la modifie, permettre de l'enregistrer sous le même nom sans créer un nouveau fichier ». Une figure ouverte depuis « Mes figures enregistrées » (ou tout juste enregistrée) fait apparaître le bouton « Enregistrer « nom de la figure » » : il met à jour cette même figure, sans question (raccourci Ctrl+S, ou Cmd+S sur Mac). « Enregistrer sous un nom » (nom proposé : celui de la figure ouverte) reste là pour en faire une copie sous un autre nom. « Effacer tout » ou une nouvelle figure oublient le fichier ouvert ; l'aller-retour vers le tableau aux instruments le garde."
   ] },

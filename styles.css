@@ -2000,3 +2000,15 @@ select:not([multiple]):not([size]){
 .fig-dyn-bar button .gicon{font-size:17px;}
 #figValidateBtn[style*="display: none"] + #figValidateDynBtn, #figValidateBtn[style*="display:none"] + #figValidateDynBtn{display:none !important;}
 @media print{ .fig-dyn-bar{display:none !important;} }
+
+/* Mes figures enregistrées (devoirs.js : openSandboxFiguresModal). */
+.fig-liste-l{display:grid;grid-template-columns:120px 1fr;grid-template-areas:"ap t" "ap act";gap:4px 12px;align-items:center;padding:10px 0;border-bottom:1px solid rgba(28,43,57,.08);}
+.fig-liste-l.ouverte .fig-liste-ouvrir{border-color:#7A4FC0;box-shadow:0 0 0 2px rgba(122,79,192,.25);}
+.fig-liste-ouvrir{grid-area:ap;width:120px;height:77px;padding:0;border:1px solid rgba(28,43,57,.15);border-radius:8px;background:#fff;cursor:pointer;overflow:hidden;}
+.fig-liste-ouvrir:hover{border-color:var(--accent-blue,#0C5BA0);}
+.fig-liste-ap{width:100%;height:100%;display:block;}
+.fig-liste-t{grid-area:t;display:flex;flex-direction:column;gap:1px;} .fig-liste-t small{color:var(--ink-soft,#5B6472);font-size:.78rem;}
+.fig-liste-act{grid-area:act;display:flex;gap:6px;flex-wrap:wrap;}
+.fig-liste-act .btn{font-size:.78rem;padding:4px 10px;}
+.fig-liste-act .fig-liste-eff{color:#A83C1F;}
+@media (max-width:520px){ .fig-liste-l{grid-template-columns:90px 1fr;} .fig-liste-ouvrir{width:90px;height:58px;} }
