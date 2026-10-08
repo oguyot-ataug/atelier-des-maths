@@ -653,7 +653,8 @@ document.body.insertAdjacentHTML('beforeend', `
         <button type="button" class="btn" id="figInsertInstrBtn" onclick="figInsererInstruments()" style="display:none;background:#1F7A4D;border-color:#1F7A4D;" title="Insère dans l'exercice la construction pas à pas, avec les instruments"><span class=gicon>architecture</span> Insérer la construction aux instruments</button>
         <button type="button" class="btn" id="figSubmitDevoirBtn" onclick="submitCurrentFigureAsDevoir()" style="display:none;"><span class=gicon>send</span> Enregistrer / Rendre le devoir</button>
         <button type="button" class="btn secondary" id="figLoadDevoirBtn" onclick="loadMyDevoirFigure()" style="display:none;"><span class=gicon>folder_open</span> Charger mon dernier rendu</button>
-        <button type="button" class="btn" id="figSaveSandboxBtn" onclick="saveSandboxFigurePrompt()" style="display:none;"><span class=gicon>save</span> Enregistrer sous un nom</button>
+        <button type="button" class="btn" id="figSaveCurrentBtn" onclick="saveSandboxFigureCourante()" style="display:none;" title="Enregistre les modifications dans la même figure (Ctrl+S)"><span class=gicon>save</span> Enregistrer</button>
+        <button type="button" class="btn" id="figSaveSandboxBtn" onclick="saveSandboxFigurePrompt()" style="display:none;"><span class=gicon>save_as</span> Enregistrer sous un nom</button>
         <button type="button" class="btn secondary" id="figLoadSandboxBtn" onclick="openSandboxFiguresModal()" style="display:none;"><span class=gicon>folder_open</span> Mes figures enregistrées</button>
         <button type="button" class="btn secondary" id="figToTableauBtn" onclick="figConstruireAuTableau()" style="display:none;" title="Rejoue la construction de cette figure au tableau interactif, avec la règle, l'équerre, le compas… étape par étape"><span class=gicon>architecture</span> Construire au tableau avec les instruments</button>
         <button type="button" class="btn secondary" id="figCloseBtn" onclick="confirmAndCloseFigureTool()">Fermer sans insérer</button>
@@ -3392,6 +3393,7 @@ function resetFigureState(){
   pushFigHistory();
   figState = {points:[], shapes:[], mode:(figState&&figState.mode)||'point', selected:[], refShape:null, nextLabel:0, lengthGroups:{}};
   if(typeof figTraces!=='undefined') figTraces.clear();
+  if(typeof figFichierChanger==='function') figFichierChanger(null);
   if(typeof figAnim!=='undefined'){ figAnim.pts.clear(); if(figAnim.raf){ cancelAnimationFrame(figAnim.raf); figAnim.raf = null; } }
   renderFigureSvg();
 }
@@ -6897,7 +6899,7 @@ async function figConstruireAuTableau(){
   if(figState.points.some(p=>!p.hidden && !/^[A-Z][A-Za-z0-9']{0,3}$/.test(p.label||''))){ await niceAlert('Chaque point doit être nommé par une lettre majuscule (ex. A, B, M) pour être construit au tableau.'); return; }
   const {programme, approches} = figVersProgramme();
   // La figure est gardée pour la retrouver en revenant à la Géométrie Interactive.
-  try{ sessionStorage.setItem('figSandboxRetour', JSON.stringify(serializeFigState(figState))); }catch(e){}
+  try{ sessionStorage.setItem('figSandboxRetour', JSON.stringify(serializeFigState(figState))); sessionStorage.setItem('figSandboxRetourFichier', JSON.stringify(typeof figFichier!=='undefined' ? figFichier : null)); }catch(e){}
   closeFigureTool();
   const lien = document.querySelector('.nav-links [data-nav="tableau"], [data-nav="tableau"]');
   if(lien) lien.click(); else { showView('view-tableau'); if(typeof initTableauView==='function') initTableauView(); }

@@ -1543,12 +1543,41 @@ async function refreshDevoirCEBProgress(devoirId){
    pour récupérer le tirage fixé (numbers/target) de la manche demandée. */
 
 /* ================= BAC À SABLE : sauvegarde nommée ================= */
+/* Figure ouverte depuis « Mes figures enregistrées » (ou tout juste enregistrée) -- demandé : « Quand on
+   ouvre une figure… et qu'on la modifie, permettre de l'enregistrer sous le même nom sans créer un nouveau
+   fichier ». Le bouton « Enregistrer » (et Ctrl+S) met à jour cette même figure ; « Enregistrer sous un
+   nom » en crée une autre (ou remplace celle qui porte le nom tapé). Effacer la figure ou en commencer
+   une nouvelle oublie le fichier courant. */
+let figFichier = null; // { id, nom }
+function figFichierChanger(f){
+  figFichier = f && f.id ? { id: f.id, nom: f.nom } : null;
+  const b = document.getElementById('figSaveCurrentBtn'), sous = document.getElementById('figSaveSandboxBtn');
+  if(!b) return;
+  const visible = !!figFichier && sous && sous.style.display !== 'none';
+  b.style.display = visible ? 'inline-flex' : 'none';
+  if(figFichier) b.innerHTML = `<span class=gicon>save</span> Enregistrer « ${escapeHtml(figFichier.nom)} »`;
+}
+async function saveSandboxFigureCourante(){
+  if(!figFichier){ return saveSandboxFigurePrompt(); }
+  const b = document.getElementById('figSaveCurrentBtn');
+  const { error } = await sb.from('figures_sauvegardees').update({ figure_data: serializeFigState(figState), updated_at: new Date().toISOString() }).eq('id', figFichier.id).eq('user_id', currentUser.id);
+  if(error){ await niceAlert('Erreur : ' + error.message); return; }
+  if(b){ const old = b.innerHTML; b.innerHTML = '<span class=gicon>check</span> Enregistrée'; setTimeout(()=>{ if(figFichier) figFichierChanger(figFichier); else b.innerHTML = old; }, 1600); }
+}
+// Ctrl+S (Cmd+S) dans la Géométrie Interactive : enregistrer.
+document.addEventListener('keydown', e=>{
+  if(!(e.ctrlKey || e.metaKey) || e.key.toLowerCase()!=='s') return;
+  const sous = document.getElementById('figSaveSandboxBtn'), panneau = document.getElementById('figurePanel');
+  if(!panneau || panneau.style.display==='none' || !sous || sous.style.display==='none') return;
+  e.preventDefault();
+  saveSandboxFigureCourante();
+});
 /* Enregistre la figure courante sous un nom choisi -- permet de la reprendre ultérieurement
    (signalé : "permettre de donner un nom à l'enregistrement pour le reprendre
    ultérieurement"). Si le nom existe déjà pour cet utilisateur, propose de l'écraser plutôt
    que de créer un doublon. */
 async function saveSandboxFigurePrompt(){
-  const nom = await nicePrompt('Nom de cette figure :', '');
+  const nom = await nicePrompt('Nom de cette figure :', figFichier ? figFichier.nom : '');
   if(!nom || !nom.trim()) return;
   const nomTrim = nom.trim();
   const { data: existing } = await sb.from('figures_sauvegardees').select('id').eq('user_id', currentUser.id).eq('nom', nomTrim).maybeSingle();
@@ -1557,10 +1586,11 @@ async function saveSandboxFigurePrompt(){
   }
   const snapshot = serializeFigState(figState);
   const payload = { user_id: currentUser.id, nom: nomTrim, figure_data: snapshot, updated_at: new Date().toISOString() };
-  const { error } = existing
-    ? await sb.from('figures_sauvegardees').update(payload).eq('id', existing.id)
-    : await sb.from('figures_sauvegardees').insert(payload);
+  const { data: ecrit, error } = existing
+    ? await sb.from('figures_sauvegardees').update(payload).eq('id', existing.id).select('id').single()
+    : await sb.from('figures_sauvegardees').insert(payload).select('id').single();
   if(error){ await niceAlert('Erreur : '+error.message); return; }
+  figFichierChanger({ id: (ecrit && ecrit.id) || (existing && existing.id), nom: nomTrim }); // les prochains « Enregistrer » mettent à jour cette figure
   await niceAlert(`Figure "${nomTrim}" enregistrée.`);
 }
 /* Fenêtre listant les figures déjà enregistrées par l'utilisateur, avec ouverture ou
@@ -1595,7 +1625,7 @@ async function openSandboxFiguresModal(){
   overlay.addEventListener('click', e=>{ if(e.target===overlay) overlay.remove(); });
 }
 async function loadSandboxFigure(id){
-  const { data, error } = await sb.from('figures_sauvegardees').select('figure_data').eq('id', id).single();
+  const { data, error } = await sb.from('figures_sauvegardees').select('figure_data,nom').eq('id', id).single();
   if(error){ await niceAlert('Erreur : '+error.message); return; }
   const restored = deserializeFigState(data.figure_data);
   figState.points = restored.points;
@@ -1603,10 +1633,12 @@ async function loadSandboxFigure(id){
   figState.nextLabel = figState.points.length;
   renderFigureSvg(); if(typeof figCadrerSiBesoin==='function'){ figCadrerSiBesoin(); renderFigureSvg(); } // points hors du cadre de base visibles
   if(typeof figAnimReprendre==='function') figAnimReprendre(); // points réglés « animer »
+  figFichierChanger({ id, nom: data.nom }); // « Enregistrer » met à jour cette même figure
   document.querySelectorAll('.modal-overlay[data-kind="sandbox-figures"]').forEach(o=>o.remove());
 }
 async function deleteSandboxFigure(id){
   if(!(await niceConfirm('Supprimer définitivement cette figure enregistrée ?'))) return;
   await sb.from('figures_sauvegardees').delete().eq('id', id);
+  if(figFichier && figFichier.id===id) figFichierChanger(null);
   await openSandboxFiguresModal();
 }

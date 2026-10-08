@@ -405,6 +405,7 @@ document.querySelectorAll('[data-nav]').forEach(el=>{
           const retour = sessionStorage.getItem('figSandboxRetour');
           if(retour && typeof deserializeFigState==='function'){
             sessionStorage.removeItem('figSandboxRetour');
+            try{ const f = JSON.parse(sessionStorage.getItem('figSandboxRetourFichier') || 'null'); sessionStorage.removeItem('figSandboxRetourFichier'); if(typeof figFichierChanger==='function') setTimeout(()=>figFichierChanger(f), 0); }catch(e){}
             const st = deserializeFigState(JSON.parse(retour));
             figState.points = st.points; figState.shapes = st.shapes;
             figState.nextLabel = figState.points.length;
@@ -3343,6 +3344,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1013', date:'2026-10-08', items:[
+    "Géométrie Interactive : enregistrer une figure ouverte sans en créer une nouvelle -- demandé : « Quand on ouvre une figure… et qu'on la modifie, permettre de l'enregistrer sous le même nom sans créer un nouveau fichier ». Une figure ouverte depuis « Mes figures enregistrées » (ou tout juste enregistrée) fait apparaître le bouton « Enregistrer « nom de la figure » » : il met à jour cette même figure, sans question (raccourci Ctrl+S, ou Cmd+S sur Mac). « Enregistrer sous un nom » (nom proposé : celui de la figure ouverte) reste là pour en faire une copie sous un autre nom. « Effacer tout » ou une nouvelle figure oublient le fichier ouvert ; l'aller-retour vers le tableau aux instruments le garde."
+  ] },
   { version:'2026-08-19.1012', date:'2026-10-08', items:[
     "Figures dynamiques : « Animer » n'anime plus tous les points -- signalé : « Le problème est qu'animer les points anime tous les points ! ». Une figure enregistrée ne savait pas quels points devaient tourner : « Animer » les animait donc tous. Désormais, dans l'outil Figure, « Animer » (clic droit sur un point) est aussi un réglage du point, enregistré avec la figure (« Arrêter l'animation » le retire ; vitesse et sens sont gardés). Dans le cahier, le bouton « Animer » n'anime que ces points-là. Pour une figure où aucun point n'a ce réglage (figures enregistrées auparavant), le bouton est remplacé par « Animer le point : D · E · F » : on choisit le ou les points à animer (un second clic arrête le point). Une figure rechargée dans la Géométrie Interactive reprend aussi ses animations."
   ] },
