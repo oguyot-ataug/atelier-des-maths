@@ -73,7 +73,8 @@ function cpText(node){
   const c = node.cloneNode(true);
   // Formules : leur source (identique avant et après le rendu KaTeX), pas le rendu.
   c.querySelectorAll('.tex').forEach(t=>{ t.textContent = t.dataset.texSource || t.textContent; });
-  c.querySelectorAll('button, .gicon, .add-to-cahier-btn, .read-aloud-btn, .zoom-btn, .learn-btn, .lrn-bar, .katex').forEach(b=>b.remove());
+  if(typeof ordNettoyer==='function') ordNettoyer(c);
+  c.querySelectorAll('button, .gicon, .add-to-cahier-btn, .read-aloud-btn, .zoom-btn, .learn-btn, .lrn-bar, .ord-btn, .katex').forEach(b=>b.remove());
   return (c.textContent||'').replace(/\s+/g,' ').trim();
 }
 function cpBlockId(nodes){
@@ -450,7 +451,8 @@ const CP_SUB = {'0':'₀','1':'₁','2':'₂','3':'₃','4':'₄','5':'₅','6':
    si le contenu comporte autre chose que du texte mis en forme (figure, tableau, bouton...). */
 function cpToMarkup(el){
   const c = el.cloneNode(true);
-  c.querySelectorAll('.add-to-cahier-btn, .read-aloud-btn, .zoom-btn, .learn-btn, .lrn-bar').forEach(b=>b.remove());
+  if(typeof ordNettoyer==='function') ordNettoyer(c);
+  c.querySelectorAll('.add-to-cahier-btn, .read-aloud-btn, .zoom-btn, .learn-btn, .lrn-bar, .ord-btn').forEach(b=>b.remove());
   let ok = true;
   const walk = n=>{
     if(n.nodeType===3) return n.nodeValue.replace(/\s+/g,' ');

@@ -306,3 +306,10 @@ function ordQuitter(){
   st.box.classList.remove('ord-active', 'ord-gagne', 'ord-secoue');
 }
 window.addEventListener('hashchange', () => { if (ordEtat) ordQuitter(); });
+// Copie d'un cours (PDF, cahier, cours personnalisé) : un jeu en cours laisse place au texte d'origine.
+function ordNettoyer(root){
+  if (!root) return;
+  root.querySelectorAll('.ord-jeu').forEach(j => j.remove());
+  root.querySelectorAll('.ord-cache').forEach(c => { [...c.childNodes].forEach(n => c.parentNode.insertBefore(n, c)); c.remove(); });
+  root.querySelectorAll('.ord-active, .ord-gagne, .ord-secoue').forEach(b => b.classList.remove('ord-active', 'ord-gagne', 'ord-secoue'));
+}

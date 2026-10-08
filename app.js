@@ -1812,7 +1812,8 @@ async function exportCoursPDF(){
   filterCoursByParagraph(clone);
   blankOutSelectedBoxes(clone);
   clone.querySelectorAll('.add-to-cahier-btn').forEach(el=>el.remove());
-  clone.querySelectorAll('.read-aloud-btn, .learn-btn, .lrn-bar, .zoom-btn').forEach(el=>el.remove());
+  if(typeof ordNettoyer==='function') ordNettoyer(clone); // jeu « Remettre dans l'ordre » : texte en clair, sans bouton
+  clone.querySelectorAll('.read-aloud-btn, .learn-btn, .lrn-bar, .zoom-btn, .ord-btn').forEach(el=>el.remove());
   clone.querySelectorAll('.oliv-b, .oliv-sh, .oliv-haut').forEach(el=>{ el.classList.remove('oliv-b','oliv-sh','oliv-haut',...[...el.classList].filter(c=>c.startsWith('oliv-'))); delete el.dataset.oliv; }); // vignettes d'Oliv'IA
   clone.querySelectorAll('.lrn-active').forEach(el=>el.classList.remove('lrn-active')); // mode apprentissage : texte en clair
   clone.querySelectorAll('.figure-toolbar').forEach(el=>el.remove());
@@ -1928,14 +1929,18 @@ async function exportCoursPDF(){
     // rendu "voilé" (signalé : "ça paraît tout pâle, comme voilé").
     wrapper.className = ['lvl-cm', 'lvl-cm2', 'lvl-6e', 'lvl-5e', 'lvl-4e', 'lvl-3e'].filter(c => realChapView.classList.contains(c)).join(' ');
   }
-  wrapper.querySelectorAll('*').forEach(el=>{
+  // Toutes les lectures d'abord, puis toutes les écritures : alterner les deux forçait le navigateur à
+  // recalculer les styles à chaque élément.
+  Array.from(wrapper.querySelectorAll('*')).map(el=>{
     const cs = window.getComputedStyle(el);
-    el.style.setProperty('color', cs.color, 'important');
-    el.style.setProperty('background-color', cs.backgroundColor, 'important');
-    el.style.setProperty('border-top-color', cs.borderTopColor, 'important');
-    el.style.setProperty('border-right-color', cs.borderRightColor, 'important');
-    el.style.setProperty('border-bottom-color', cs.borderBottomColor, 'important');
-    el.style.setProperty('border-left-color', cs.borderLeftColor, 'important');
+    return [el, cs.color, cs.backgroundColor, cs.borderTopColor, cs.borderRightColor, cs.borderBottomColor, cs.borderLeftColor];
+  }).forEach(([el, c, bg, bt, br, bb, bl])=>{
+    el.style.setProperty('color', c, 'important');
+    el.style.setProperty('background-color', bg, 'important');
+    el.style.setProperty('border-top-color', bt, 'important');
+    el.style.setProperty('border-right-color', br, 'important');
+    el.style.setProperty('border-bottom-color', bb, 'important');
+    el.style.setProperty('border-left-color', bl, 'important');
   });
   wrapper.id = wrapperHadId; // retiré aussitôt -- évite tout id dupliqué durable dans le document
   // Attend que TOUTES les polices personnalisées (Space Grotesk, JetBrains Mono, Inter) soient
@@ -1954,7 +1959,18 @@ async function exportCoursPDF(){
   const defilX = window.scrollX, defilY = window.scrollY;
   window.scrollTo(0, 0);
   const revenir = ()=>window.scrollTo(defilX, defilY);
-  html2pdf().set({margin:10, filename:title.replace(/[^\w-]+/g,'_')+'.pdf', html2canvas:{scale:1.5, useCORS:true, foreignObjectRendering:false, scrollX:0, scrollY:0, windowHeight:wrapper.scrollHeight}, jsPDF:{unit:'mm',format:'a4'}, pagebreak:{mode:['css']}})
+  // html2canvas recopie TOUTE la page avant de photographier le cours (plusieurs dizaines de milliers
+  // d'éléments : vues masquées, autres chapitres…) -- signalé : « L'export en PDF des cours est toujours
+  // très long et on a ce message [la page ne répond pas] qui s'affiche plusieurs fois de suite ». Mesuré :
+  // 24 s de blocage pour un cours de 370 éléments, 0,8 s en ne recopiant que le cours (la copie que
+  // html2pdf place dans son calque .html2pdf__overlay) et les styles de la page (head).
+  let calquePdf = null;
+  const horsExport = el=>{
+    if(el.tagName==='HEAD' || (el.closest && el.closest('head'))) return false;
+    if(!calquePdf || !calquePdf.isConnected) calquePdf = document.querySelector('.html2pdf__overlay');
+    return !(calquePdf && (el===calquePdf || calquePdf.contains(el) || el.contains(calquePdf)));
+  };
+  html2pdf().set({margin:10, filename:title.replace(/[^\w-]+/g,'_')+'.pdf', html2canvas:{scale:1.5, useCORS:true, foreignObjectRendering:false, scrollX:0, scrollY:0, windowHeight:wrapper.scrollHeight, ignoreElements:horsExport}, jsPDF:{unit:'mm',format:'a4'}, pagebreak:{mode:['css']}})
     .from(wrapper).toPdf().get('pdf').then(pdf=>{
       // Pagination "page / total" -- html2pdf ne le fait pas nativement, on la tamponne
       // nous-mêmes via l'API jsPDF sous-jacente, une fois toutes les pages générées.
@@ -3344,6 +3360,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1017', date:'2026-10-08', items:[
+    "Export PDF des cours beaucoup plus rapide, sans le message « la page ne répond pas » -- signalé : « L'export en PDF des cours est toujours très long et on a ce message qui s'affiche plusieurs fois de suite ». Cause : pour photographier le cours, la bibliothèque PDF recopiait toute la page du site (plus de 60 000 éléments : vues masquées, outils, autres contenus), pas seulement le cours, ce qui bloquait le navigateur de longues secondes. Elle ne recopie plus que le cours et les styles. Mesuré : Symétrie centrale (5e) passe de plus de 25 s à moins d'une seconde ; Droites parallèles et perpendiculaires (6e), avec ses constructions pas à pas, s'exporte en 2,4 s. Le figement des couleurs (thème du niveau) est aussi fait en une seule passe.",
+    "Au passage : le bouton du jeu « Remettre dans l'ordre » (shaker) apparaissait dans les encadrés du PDF, par-dessus le texte ; il est retiré du PDF, des parties de cours ajoutées au cahier et des cours personnalisés (un jeu en cours laisse place au texte d'origine)."
+  ] },
   { version:'2026-08-19.1016', date:'2026-10-08', items:[
     "Construction aux instruments (écran partagé, projection, outil de correction) : les instruments sont retenus tracé par tracé -- signalé : « Consigne : construire les 3 médiatrices à l'équerre, puis le cercle circonscrit. Je décoche le compas pour forcer la construction à l'équerre mais après je ne peux pas tracer le cercle. Si je coche compas, il repart de zéro en construisant les médiatrices au compas ». Chaque objet garde désormais les instruments cochés au moment où il a été tracé : changer les cases ne vaut plus que pour les tracés suivants. Exemple : compas décoché, les trois médiatrices se construisent à la règle (milieu) et à l'équerre ; compas recoché, le cercle circonscrit se trace au compas, et les médiatrices restent à l'équerre quand la construction est rejouée (↻), insérée dans une correction ou envoyée au tableau. Le message sous la figure le rappelle quand on change les instruments."
   ] },
@@ -8313,7 +8333,7 @@ function openZoomBox(box){
   zoomedBoxPlaceholder = document.createComment('zoom-placeholder');
   box.parentNode.insertBefore(zoomedBoxPlaceholder, box);
   if(typeof lrnState!=='undefined' && lrnState && lrnState.box===box) lrnStop();
-  box.querySelectorAll('.zoom-btn, .read-aloud-btn, .learn-btn').forEach(b=>{ b.dataset.zoomHidden='1'; b.style.display='none'; });
+  box.querySelectorAll('.zoom-btn, .read-aloud-btn, .learn-btn, .ord-btn').forEach(b=>{ b.dataset.zoomHidden='1'; b.style.display='none'; });
   // Proportions de chaque figure SVG : en zoom, sa largeur est limitée pour qu'elle tienne
   // entière en hauteur dans l'écran (voir #zoomBoxOverlay dans styles.css).
   box.querySelectorAll('svg').forEach(svg=>{
@@ -8811,7 +8831,7 @@ async function sectionVersHtml(headerEl){
   const wrapper = document.createElement('div');
   const headerClone = headerEl.cloneNode(true);
   headerClone.querySelectorAll('.add-to-cahier-btn').forEach(b=>b.remove());
-  headerClone.querySelectorAll('.read-aloud-btn, .learn-btn, .lrn-bar').forEach(b=>b.remove());
+  headerClone.querySelectorAll('.read-aloud-btn, .learn-btn, .lrn-bar, .ord-btn').forEach(b=>b.remove());
   wrapper.appendChild(headerClone);
   let node = headerEl.nextElementSibling;
   while(node){
@@ -8823,7 +8843,8 @@ async function sectionVersHtml(headerEl){
     node = node.nextElementSibling;
   }
   wrapper.querySelectorAll('.add-to-cahier-btn').forEach(b=>b.remove());
-  wrapper.querySelectorAll('.read-aloud-btn, .learn-btn, .lrn-bar').forEach(b=>b.remove());
+  if(typeof ordNettoyer==='function') ordNettoyer(wrapper);
+  wrapper.querySelectorAll('.read-aloud-btn, .learn-btn, .lrn-bar, .ord-btn').forEach(b=>b.remove());
   wrapper.querySelectorAll('.oliv-b, .oliv-sh, .oliv-haut').forEach(el=>{ el.classList.remove('oliv-b','oliv-sh','oliv-haut',...[...el.classList].filter(c=>c.startsWith('oliv-'))); delete el.dataset.oliv; }); // vignettes d'Oliv'IA
   wrapper.querySelectorAll('.lrn-active').forEach(el=>el.classList.remove('lrn-active'));
   wrapper.querySelectorAll('.figure-toolbar').forEach(b=>b.remove());
@@ -8845,14 +8866,18 @@ async function sectionVersHtml(headerEl){
   }
   clip2.appendChild(wrapper);
   document.body.appendChild(clip2);
-  wrapper.querySelectorAll('*').forEach(el=>{
+  // Toutes les lectures d'abord, puis toutes les écritures : alterner les deux forçait le navigateur à
+  // recalculer les styles à chaque élément.
+  Array.from(wrapper.querySelectorAll('*')).map(el=>{
     const cs = window.getComputedStyle(el);
-    el.style.setProperty('color', cs.color, 'important');
-    el.style.setProperty('background-color', cs.backgroundColor, 'important');
-    el.style.setProperty('border-top-color', cs.borderTopColor, 'important');
-    el.style.setProperty('border-right-color', cs.borderRightColor, 'important');
-    el.style.setProperty('border-bottom-color', cs.borderBottomColor, 'important');
-    el.style.setProperty('border-left-color', cs.borderLeftColor, 'important');
+    return [el, cs.color, cs.backgroundColor, cs.borderTopColor, cs.borderRightColor, cs.borderBottomColor, cs.borderLeftColor];
+  }).forEach(([el, c, bg, bt, br, bb, bl])=>{
+    el.style.setProperty('color', c, 'important');
+    el.style.setProperty('background-color', bg, 'important');
+    el.style.setProperty('border-top-color', bt, 'important');
+    el.style.setProperty('border-right-color', br, 'important');
+    el.style.setProperty('border-bottom-color', bb, 'important');
+    el.style.setProperty('border-left-color', bl, 'important');
   });
   wrapper.id = wrapperHadId2;
   wrapper.className = '';
