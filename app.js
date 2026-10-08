@@ -3372,7 +3372,7 @@ function syncCorNiveauToClass(){
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
   { version:'2026-08-19.1027', date:'2026-10-08', items:[
-    "Pied de page : L'Atelier des Maths se présente comme le premier module de L'Atelier du Prof, avec un lien vers son site (adp.latelieraugmente.fr)."
+    "Pied de page : lien « Pour toutes les matières : L'Atelier du Prof » vers adp.latelieraugmente.fr, qui réunit les outils du professeur (quiz, interrogations, corrections, séances, cahier) pour toutes les matières."
   ] },
   { version:'2026-08-19.1026', date:'2026-10-08', items:[
     "Bilan de séance : la colonne des noms reste figée quand on fait défiler le tableau vers la droite, ainsi que la ligne des titres d'exercices (en haut) et la ligne « Tout juste » (en bas) quand on le fait défiler vers le bas -- demandé : « Dans les bilans, figer les colonnes NOM Prénom ». (Le bilan d'une classe, dans Résultats, avait déjà ses noms figés.)"
