@@ -3343,6 +3343,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1007', date:'2026-10-08', items:[
+    "Exercices mis de côté pour la prochaine session (bouton « Session » › « La prochaine session que je préparerai ») : la liste est maintenant gardée dans le compte du professeur (table session_attente créée), et se retrouve donc sur tous ses appareils. Ce qui avait déjà été mis de côté dans un navigateur y est repris automatiquement à la première ouverture."
+  ] },
   { version:'2026-08-19.1006', date:'2026-10-08', items:[
     "Géométrie interactive : trace d'un objet -- demandé : « permettre dans la géométrie interactive d'activer la trace d'un objet. Clic droit ? ». Clic droit (appui long sur tablette) sur un point, un segment, une droite, un cercle, une médiatrice… : un petit menu propose « Activer la trace » (ou « Désactiver la trace »), « Effacer ses traces » et « Effacer toutes les traces ». En déplaçant un point de la figure (outil Déplacer), l'objet tracé laisse ses positions successives en plus pâle, sous la figure : chemin d'un milieu ou d'un symétrique, balayage d'une droite… Les traces apparaissent aussi dans la figure insérée par « Valider ». Le réglage « trace » est gardé avec la figure enregistrée, les traces elles-mêmes non. Valable partout où l'on construit une figure (Géométrie interactive, correction, évaluations, devoirs). Visite guidée complétée.",
     "Liste des exercices mis de côté pour la prochaine session : son passage dans le compte attend toujours la création de la table en base (non faite à ce jour) ; elle reste dans le navigateur d'ici là."
