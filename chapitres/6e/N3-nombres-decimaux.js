@@ -24,6 +24,43 @@ function ndGridCentieme(shadedIndex){
   return `<div style="display:flex;flex-direction:column;width:160px;height:160px;border:1.5px solid #1C1B2E;margin:10px auto;">${rows}</div>`;
 }
 
+/* ---- Millièmes : le cube unité partagé en 1 000 petits cubes, avec la plaque (dixième), la barre (centième)
+   et le petit cube (millième), à la même échelle (perspective cavalière). ---- */
+function ndPave(nx, ny, nz, colore){
+  const u = 13, kx = 5.2, ky = 3.9, m = 4;                       // côté d'un petit cube ; fuyantes par petit cube
+  const W = nx * u + nz * kx, H = ny * u + nz * ky;
+  const P = (x, y, z) => [m + x * u + z * kx, m + nz * ky + (ny - y) * u - z * ky];
+  const poly = (pts, fill) => `<polygon points="${pts.map(p => P(...p).map(v => v.toFixed(1)).join(',')).join(' ')}" fill="${fill}" stroke="none"/>`;
+  const ligne = (a, b, w, c) => { const [x1, y1] = P(...a), [x2, y2] = P(...b); return `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="${c}" stroke-width="${w}"/>`; };
+  const [cf, ct, cr] = colore ? ['#F29A1F', '#F8C27A', '#D9800E'] : ['#FCE9CF', '#FFF6E8', '#F2D6AE'];
+  let g = poly([[0, 0, 0], [nx, 0, 0], [nx, ny, 0], [0, ny, 0]], cf)            // face avant
+    + poly([[0, ny, 0], [nx, ny, 0], [nx, ny, nz], [0, ny, nz]], ct)            // dessus
+    + poly([[nx, 0, 0], [nx, 0, nz], [nx, ny, nz], [nx, ny, 0]], cr);           // côté droit
+  const fin = 'rgba(28,43,57,.35)';
+  for(let i = 1; i < nx; i++) g += ligne([i, 0, 0], [i, ny, 0], .6, fin) + ligne([i, ny, 0], [i, ny, nz], .6, fin);
+  for(let j = 1; j < ny; j++) g += ligne([0, j, 0], [nx, j, 0], .6, fin) + ligne([nx, j, 0], [nx, j, nz], .6, fin);
+  for(let k = 1; k < nz; k++) g += ligne([0, ny, k], [nx, ny, k], .6, fin) + ligne([nx, 0, k], [nx, ny, k], .6, fin);
+  // Dans le cube unité : un petit cube coloré, au coin avant, en haut à droite (ses trois faces sont visibles).
+  if(nx === 10 && nz === 10 && !colore){
+    g += poly([[9, 9, 0], [10, 9, 0], [10, 10, 0], [9, 10, 0]], '#F29A1F') + poly([[9, 10, 0], [10, 10, 0], [10, 10, 1], [9, 10, 1]], '#F8C27A')
+      + poly([[10, 9, 0], [10, 9, 1], [10, 10, 1], [10, 10, 0]], '#D9800E');
+  }
+  const bord = '#1C1B2E';
+  [[[0, 0, 0], [nx, 0, 0]], [[nx, 0, 0], [nx, ny, 0]], [[nx, ny, 0], [0, ny, 0]], [[0, ny, 0], [0, 0, 0]],
+   [[0, ny, 0], [0, ny, nz]], [[nx, ny, 0], [nx, ny, nz]], [[nx, 0, 0], [nx, 0, nz]],
+   [[0, ny, nz], [nx, ny, nz]], [[nx, ny, nz], [nx, 0, nz]]].forEach(([a, b]) => g += ligne(a, b, 1.3, bord));
+  return `<svg viewBox="0 0 ${(W + 2 * m).toFixed(1)} ${(H + 2 * m).toFixed(1)}" width="${(W + 2 * m).toFixed(0)}" height="${(H + 2 * m).toFixed(0)}" style="display:block;margin:0 auto;max-width:100%;" role="img">${g}</svg>`;
+}
+function ndCubeMilliemes(){
+  const bloc = (svg, legende) => `<figure style="margin:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:6px;">${svg}<figcaption style="text-align:center;font-size:.9rem;line-height:1.35;">${legende}</figcaption></figure>`;
+  return `<div style="display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-end;gap:18px 24px;margin:12px auto 6px;max-width:860px;">
+    ${bloc(ndPave(10, 10, 10), '<b>1 unité</b><br>1 000 petits cubes')}
+    ${bloc(ndPave(10, 10, 1, true), '<b>1 plaque</b> = 1 dixième<br><span class="tex">\\dfrac{1}{10} = \\dfrac{100}{1\\,000}</span>')}
+    ${bloc(ndPave(10, 1, 1, true), '<b>1 barre</b> = 1 centième<br><span class="tex">\\dfrac{1}{100} = \\dfrac{10}{1\\,000}</span>')}
+    ${bloc(ndPave(1, 1, 1, true), '<b>1 petit cube</b> = 1 millième<br><span class="tex">\\dfrac{1}{1\\,000}</span>')}
+  </div>`;
+}
+
 /* ---- Figure interactive : repérage sur une demi-droite graduée (points déplaçables) ---- */
 const ND_LINE_MIN = 0, ND_LINE_MAX = 6, ND_LINE_ORIGIN_X = 30, ND_LINE_UNIT = 70, ND_LINE_Y = 60;
 function ndLineValToX(v){ return ND_LINE_ORIGIN_X + v*ND_LINE_UNIT; }
@@ -105,6 +142,8 @@ ${ndGridCentieme(47)}
 <div class="sub-header"><span class="letter">C</span><h4>Les millièmes</h4></div>
 <span class="def-badge">Définition</span>
 <div class="def-box">Quand on coupe une unité en 1 000 parties égales, on obtient des <b>millièmes</b>. Un millième se note <span class="tex">\\dfrac{1}{1\\,000}</span>. Dans l'unité, il y a 1 000 millièmes, donc <span class="tex">1 = \\dfrac{1\\,000}{1\\,000}</span>.</div>
+<p>On représente l'unité par un grand cube, partagé en 10 × 10 × 10 = 1 000 petits cubes : chaque petit cube (en orange dans le grand cube) est <b>un millième</b> de l'unité. Une barre de 10 petits cubes est un centième ; une plaque de 100 petits cubes est un dixième ; 10 plaques font l'unité.</p>
+${ndCubeMilliemes()}
 <p class="example-title">Exemple :</p>
 <p style="text-align:center;margin:4px 0 12px;"><span class="tex">\\dfrac{8\\,347}{1\\,000} = 8 + \\dfrac{347}{1\\,000} = 8,347</span></p>
 
