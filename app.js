@@ -3381,6 +3381,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1044', date:'2026-10-09', items:[
+    "Exercices à l'écran : le clavier des chiffres a une touche « espace ». Un nombre de 5 chiffres ou plus doit être écrit par classes de trois chiffres (2 300 000) quand le corrigé l'écrit ainsi : « 2300000 » est compté faux, et la case explique pourquoi. Jusqu'à 4 chiffres, 1 200 et 1200 restent acceptés.",
+    "6e, Nombres entiers, planche 1, exercice 3 : le tableau est aligné à gauche et la colonne « Décomposition » va jusqu'à la marge droite (relecture du manuel).",
+  ]},
   { version:'2026-08-19.1043', date:'2026-10-09', items:[
     "Relecture du manuel (administrateur) : dans l'onglet « Manuel » d'un chapitre, chaque exercice reçoit une barre Validé / Non examiné / Commenté. « Commenté » et « Non examiné » ouvrent une fenêtre avec des remarques à cocher (au programme ?, plus d'exemples, formatage, erreur, consigne, figure, étoiles, papier, écran) et un commentaire libre. En tête : le compte du chapitre, un filtre, et « Toutes les remarques » (tous niveaux). Quand une remarque a été traitée, l'exercice affiche « Chgt effectué » jusqu'à la relecture suivante.",
   ]},
