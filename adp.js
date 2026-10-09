@@ -224,6 +224,8 @@
   const ADP_OUTILS = [
     { id: 'verbes', matieres: ['Anglais'], ouvrir: 'lvOuvrir', icone: 'translate', titre: 'Verbes irréguliers',
       aide: 'Cocher les verbes irréguliers vus en classe : les questions s\'ajoutent à l\'interrogation' },
+    { id: 'conjugaison', matieres: ['Français', 'Professeur des écoles'], ouvrir: 'cjOuvrir', icone: 'edit_note', titre: 'Conjugaison',
+      aide: 'Cocher les verbes et les temps vus en classe : les questions s\'ajoutent à l\'interrogation' },
   ];
   window.adpOutilsEditeur = function(){
     const m = adpMatiere();

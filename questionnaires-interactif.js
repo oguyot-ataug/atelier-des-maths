@@ -404,7 +404,7 @@ QZ_EXT.trous = {
     return `<label class="qz-lab">Texte à compléter <span class="hint" style="margin:0;">(mettez chaque réponse entre [[ ]] ; variantes acceptées séparées par | , ex. [[3/4|0,75]])</span></label>
       <textarea rows="4" oninput="qzEdSet('${id}','trous_source',this.value);qziMajApercu('${id}')">${qzEsc(q.trous_source)}</textarea>
       <div class="qz-apercu" id="qziAp_${id}">${this.apercu(q)}</div>
-      <label class="qz-check" style="margin-top:6px;"><input type="checkbox" ${q.casse ? 'checked' : ''} onchange="qzEdSet('${id}','casse',this.checked)"> Respecter majuscules et accents</label>`;
+      <label class="qz-check" style="margin-top:6px;"><input type="checkbox" ${q.casse ? 'checked' : ''} onchange="qzEdSet('${id}','casse',this.checked)"> ${q.casse === 'accents' ? 'Respecter les accents (pas les majuscules)' : 'Respecter majuscules et accents'}</label>`;
   },
   apercu(q){ const t = qziTrous(q.trous_source); return t.segs.map(s => typeof s === 'string' ? qzMath(s) : `<span class="qz-trou-ap">${qzEsc(t.rep[s.t].join(' / '))}</span>`).join(''); },
   verifier(q){ return qziTrous(q.trous_source).rep.length ? null : 'mettez au moins une réponse entre [[ ]].'; },
@@ -416,7 +416,7 @@ QZ_EXT.trous = {
       const v = r[s.t] == null ? '' : String(r[s.t]);
       const ok = sol && sol[s.t] && sol[s.t].some(a => qziEgal(a, v, q.casse));
       const larg = Math.max(5, Math.min(24, (sol && sol[s.t] ? sol[s.t][0].length : 6) + 3));
-      return `<input type="text" class="qz-trou${corr ? (ok ? ' juste' : ' faux') : ''}" value="${qzEsc(v)}" size="${larg}" ${mode === 'passer' ? '' : 'disabled'} autocomplete="off" spellcheck="false"
+      return `<input type="text" class="qz-trou${corr ? (ok ? ' juste' : ' faux') : ''}" value="${qzEsc(v)}" size="${larg}" ${mode === 'passer' ? '' : 'disabled'} autocomplete="off" autocapitalize="off" spellcheck="false"
         oninput="qziTrou('${q.id}',${s.t},this.value)">${corr && !ok && sol && sol[s.t] ? `<span class="qz-attendu">${qzEsc(sol[s.t][0])}</span>` : ''}`;
     }).join('')}</div>`;
   },

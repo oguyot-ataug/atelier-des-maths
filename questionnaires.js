@@ -101,9 +101,11 @@ function qzNumApercu(v){
   if(/\//.test(v) && !isNaN(qzParseNombre(v))) return qzMath(v);
   return v.trim() && isNaN(qzValeurNum(v)) ? '<span class="qz-num-warn"><span class="gicon">info</span> Écrivez seulement le résultat : un nombre (ex. 10 ou 3/4).</span>' : '';
 }
+// casse : false = ni majuscules ni accents ; 'accents' = accents exigés, pas les majuscules (conjugaison) ; true = les deux.
 function qzNormTexte(s, casse){
-  let t = String(s ?? '').trim().replace(/\s+/g, ' ').replace(/[.!;]+$/, '');
-  if(!casse) t = t.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  let t = String(s ?? '').trim().replace(/\s+/g, ' ').replace(/[.!;]+$/, '').replace(/[’ʼ]/g, "'");
+  if(casse === 'accents') t = t.toLowerCase().normalize('NFC');
+  else if(!casse) t = t.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
   return t;
 }
 function qzListe(s){ return String(s ?? '').split(/\s*[;\n]\s*/).map(x => x.trim()).filter(Boolean); }
