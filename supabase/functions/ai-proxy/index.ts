@@ -31,6 +31,10 @@
 // quota de questions par jour (olivia_daily_quota). Chaque échange est rangé dans olivia_messages :
 // le professeur qui paie peut relire les conversations.
 //
+// ALERTES (v21) : clé refusée, crédit épuisé, erreur d'Anthropic ou plantage → SMS à l'administrateur par
+// la fonction alerte-sms (limitée à un SMS par type toutes les 30 minutes ; rien si ALERTE_CLE n'est pas
+// configuré). Jamais sur le chemin d'un appel réussi.
+//
 // Actions : { prompt, ... } (appel IA) ; { action:'set_key'|'remove_key' } (clé personnelle) ;
 // { action:'set_etab_key'|'remove_etab_key', uai? } (clé d'établissement : référent de cet
 // établissement, ou administrateur en précisant l'uai).
@@ -50,6 +54,17 @@ const STUDENT_FEATURE: Record<string, string> = { "quiz": "quiz", "tableau-ia": 
 const MODEL = "claude-sonnet-4-6";
 
 type KeyChoice = { key: string; source: string };
+
+// SMS à l'administrateur (alerte-sms) ; ne bloque jamais la réponse plus de 4 secondes.
+async function alerte(type: string, message: string) {
+  const cle = Deno.env.get("ALERTE_CLE"); if (!cle) return;
+  try {
+    await fetch(Deno.env.get("SUPABASE_URL") + "/functions/v1/alerte-sms", {
+      method: "POST", headers: { "Content-Type": "application/json", "x-alerte-cle": cle },
+      body: JSON.stringify({ type, message }), signal: AbortSignal.timeout(4000),
+    });
+  } catch (_e) { /* l'alerte ne doit jamais gêner l'utilisateur */ }
+}
 
 function coupe(s: unknown, n: number): string { const t = String(s ?? ""); return t.length > n ? t.slice(0, n) + "…" : t; }
 
@@ -273,8 +288,9 @@ serve(async (req) => {
       const keyProblem = res.status === 401 || /credit balance/i.test(msg);
       if (keyProblem && i < keys.length - 1) continue;
       const who = keySource === "prof" ? "du professeur" : keySource === "parent" ? "du parent" : keySource === "etab" ? "de l'établissement" : "du site";
-      if (res.status === 401) return json({ error: "La clé Anthropic " + who + " est refusée (supprimée ou désactivée ?).", code: "ai_key" }, 502);
-      if (/credit balance/i.test(msg)) return json({ error: "Crédit Anthropic " + who + " épuisé : il faut recharger le compte sur console.anthropic.com.", code: "ai_credit" }, 402);
+      if (res.status === 401) { await alerte("ia-cle-" + keySource, "IA : la clé Anthropic " + who + " est refusée (appel d'un compte " + role + ")."); return json({ error: "La clé Anthropic " + who + " est refusée (supprimée ou désactivée ?).", code: "ai_key" }, 502); }
+      if (/credit balance/i.test(msg)) { await alerte("ia-credit-" + keySource, "IA : crédit Anthropic " + who + " épuisé (appel d'un compte " + role + ")."); return json({ error: "Crédit Anthropic " + who + " épuisé : il faut recharger le compte sur console.anthropic.com.", code: "ai_credit" }, 402); }
+      if (res.status >= 500 || res.status === 429) await alerte("ia-api", "IA : erreur Anthropic " + res.status + " : " + coupe(msg, 120));
       return json({ error: msg || "Erreur API Anthropic" }, res.status);
     }
     const text = (data.content || []).map((b: any) => b.text || "").join("");
@@ -300,6 +316,7 @@ serve(async (req) => {
 
     return json({ text });
   } catch (e) {
+    await alerte("ia-proxy", "IA : erreur du serveur ai-proxy : " + coupe(String(e), 150));
     return json({ error: String(e) }, 500);
   }
 });

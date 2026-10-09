@@ -1,0 +1,84 @@
+# Surveillance des sites et veille par SMS (alertes à l'administrateur, API Free Mobile).
+#
+# Demandé : « go pour 1 + 3 + 4 + 5 » (nouveaux comptes et demandes, erreurs, surveillance du site,
+# résumé quotidien). Toutes les 15 minutes :
+#  1. vérifie que maths.latelieraugmente.fr, adp.latelieraugmente.fr, www.latelieraugmente.fr et
+#     Supabase répondent ; SMS quand l'un tombe (après une seconde tentative) et quand il revient.
+#     Le SMS part directement d'ici (secrets GitHub), pour fonctionner même si Supabase est en panne.
+#  2. appelle la fonction Supabase alerte-sms (action « veille ») : nouveaux comptes, signalements,
+#     devis signés, seuil d'appels IA, résumé de 18 h.
+# Secrets du dépôt (Settings > Secrets and variables > Actions) : FREE_SMS_USER, FREE_SMS_PASS,
+# ALERTE_CLE. Sans eux, le workflow ne fait rien (aucune erreur).
+# État (sites en panne ou non) gardé d'une exécution à l'autre dans le cache des Actions.
+name: Surveillance
+
+on:
+  schedule:
+    - cron: '4,19,34,49 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: surveillance
+  cancel-in-progress: false
+
+jobs:
+  veille:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Clé publique Supabase (app.js)
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: app.js
+          sparse-checkout-cone-mode: false
+
+      - name: État précédent
+        uses: actions/cache/restore@v4
+        with:
+          path: etat
+          key: surveillance-${{ github.run_id }}
+          restore-keys: surveillance-
+
+      - name: Sites et veille
+        env:
+          FREE_SMS_USER: ${{ secrets.FREE_SMS_USER }}
+          FREE_SMS_PASS: ${{ secrets.FREE_SMS_PASS }}
+          ALERTE_CLE: ${{ secrets.ALERTE_CLE }}
+        run: |
+          mkdir -p etat
+          if [ -z "$FREE_SMS_USER" ] || [ -z "$FREE_SMS_PASS" ]; then echo "Secrets SMS absents : rien à faire."; exit 0; fi
+          SUPA=https://rngzubhnypmistjsumpz.supabase.co
+          ANON=$(grep -o "SUPABASE_ANON_KEY = '[^']*'" app.js | head -1 | cut -d"'" -f2)
+          sms() { curl -s -o /dev/null -w "SMS %{http_code}\n" -G https://smsapi.free-mobile.fr/sendmsg \
+                    --data-urlencode "user=$FREE_SMS_USER" --data-urlencode "pass=$FREE_SMS_PASS" --data-urlencode "msg=$1"; }
+          code() { curl -s -o /dev/null -w "%{http_code}" --max-time 20 -L ${2:+-H "apikey: $2"} "$1"; }
+          verifier() { # nom url [apikey]
+            local c; c=$(code "$2" "$3")
+            if ! [[ "$c" =~ ^[23] ]]; then sleep 30; c=$(code "$2" "$3"); fi
+            local avant; avant=$(cat "etat/$1" 2>/dev/null || echo ok)
+            if [[ "$c" =~ ^[23] ]]; then
+              [ "$avant" != ok ] && sms "Atelier · RÉTABLI : $1 répond de nouveau."
+              echo ok > "etat/$1"; echo "$1 : ok ($c)"
+            else
+              [ "$avant" = ok ] && sms "Atelier · ALERTE : $1 ne répond plus (code $c). Vérification toutes les 15 minutes, nouveau SMS quand il revient."
+              echo panne > "etat/$1"; echo "$1 : PANNE ($c)"
+            fi
+          }
+          verifier "maths.latelieraugmente.fr" "https://maths.latelieraugmente.fr/"
+          verifier "adp.latelieraugmente.fr" "https://adp.latelieraugmente.fr/"
+          verifier "www.latelieraugmente.fr" "https://www.latelieraugmente.fr/"
+          verifier "Supabase (base et comptes)" "$SUPA/auth/v1/health" "$ANON"
+          if [ -n "$ALERTE_CLE" ] && [ "$(cat 'etat/Supabase (base et comptes)')" = ok ]; then
+            curl -s --max-time 60 -X POST "$SUPA/functions/v1/alerte-sms" -H "Content-Type: application/json" \
+              -H "x-alerte-cle: $ALERTE_CLE" -d '{"action":"veille"}'; echo
+          fi
+
+      - name: Enregistrer l'état
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: etat
+          key: surveillance-${{ github.run_id }}
