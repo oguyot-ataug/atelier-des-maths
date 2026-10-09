@@ -3381,6 +3381,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1043', date:'2026-10-09', items:[
+    "Relecture du manuel (administrateur) : dans l'onglet « Manuel » d'un chapitre, chaque exercice reçoit une barre Validé / Non examiné / Commenté. « Commenté » et « Non examiné » ouvrent une fenêtre avec des remarques à cocher (au programme ?, plus d'exemples, formatage, erreur, consigne, figure, étoiles, papier, écran) et un commentaire libre. En tête : le compte du chapitre, un filtre, et « Toutes les remarques » (tous niveaux). Quand une remarque a été traitée, l'exercice affiche « Chgt effectué » jusqu'à la relecture suivante.",
+  ]},
   { version:'2026-08-19.1042', date:'2026-10-09', items:[
     "Sessions COURS : une session terminée peut être archivée (bouton « Archiver », ou « Tout archiver » pour les terminées affichées). Les archivées sont rangées, repliées, en bas de la page ; on peut toujours voir leur bilan, les rouvrir ou les désarchiver. Une session rouverte sort des archives.",
     "Sessions COURS : tri « par classe » (les terminées et les archivées regroupées sous le nom de chaque classe) ou « par date » ; le choix est retenu.",
