@@ -3381,6 +3381,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1045', date:'2026-10-09', items:[
+    "Sessions COURS : bouton « Cahier » sur chaque session (ouverte ou terminée). On coche les éléments à garder (parties de cours, exercices du manuel, exercices et interrogations, documents), avec ou sans les corrections, on choisit le chapitre (par défaut celui de chaque élément) et la date (par défaut le jour de la session) : chaque élément devient une entrée du cahier de la classe. Les réponses des élèves n'y vont jamais ; les défis de programmation ne s'écrivent pas dans le cahier.",
+  ]},
   { version:'2026-08-19.1044', date:'2026-10-09', items:[
     "Exercices à l'écran : le clavier des chiffres a une touche « espace ». Un nombre de 5 chiffres ou plus doit être écrit par classes de trois chiffres (2 300 000) quand le corrigé l'écrit ainsi : « 2300000 » est compté faux, et la case explique pourquoi. Jusqu'à 4 chiffres, 1 200 et 1200 restent acceptés.",
     "6e, Nombres entiers, planche 1, exercice 3 : le tableau est aligné à gauche et la colonne « Décomposition » va jusqu'à la marge droite (relecture du manuel).",

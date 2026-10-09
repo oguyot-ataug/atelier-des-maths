@@ -23,6 +23,10 @@
    repliée), les terminées et archivées se regroupent par classe au choix, et « Bilan d'un élève » montre
    toutes les sessions d'un élève (cdBilanEleve, cours-bilan.js).
 
+   « Permettre d'ajouter le contenu d'une session au cahier » : bouton « Cahier » (csCahier) -- on coche les
+   éléments, avec ou sans corrections, chapitre et date ; chaque élément devient une entrée du cahier de la
+   classe de la session (le contenu seulement, jamais les réponses des élèves).
+
    Données : fonction cours_direct_liste (résumé des sessions), cours_direct (complet pour noter),
    cours_direct_travaux (réponses des élèves). Dépend de cours-direct.js (cdPreparer, cdProfOuvrir,
    cdLocal, cdMinuit, cdCanal), cours-bilan.js (cdBilan), questionnaires*.js (qzScoreCopie,
@@ -131,6 +135,7 @@ function csCarte(s){
       <button class="btn secondary td-mini" data-act="jusqua"><span class="gicon">schedule</span> ${j ? 'Ouverte jusqu\'à ' + csDate(j) + ' ' + csHeure(j) : 'Ouverture : sans limite'}</button></div>
     <div class="cs-c-act"><button class="btn" data-act="tele"><span class="gicon">settings_remote</span> Télécommande</button>
       <button class="btn secondary" data-act="bilan"><span class="gicon">summarize</span> Bilan</button>
+      <button class="btn secondary" data-act="cahier" title="Ajouter le contenu de la session au cahier de la classe"><span class="gicon">menu_book</span> Cahier</button>
       <button class="btn" style="background:#C0392B;" data-act="terminer"><span class="gicon">stop</span> Terminer</button></div></div>`;
 }
 function csCarteProg(s){
@@ -150,6 +155,7 @@ function csLigne(s){
     <div class="cs-l-t"><b>${cdEsc(s.titre || 'Session')}</b><small>${cdEsc(s.classe || '')} · ${csDate(s.created_at)} ${csHeure(s.created_at)} · ${csModeTxt(s)} · ${s.travaux} élève${s.travaux > 1 ? 's' : ''} ${s.travaux > 1 ? 'ont' : 'a'} travaillé</small>
       <small>${csInterrosTxt(s)}</small></div>
     <div class="cs-l-act"><button class="btn secondary td-mini" data-act="bilan"><span class="gicon">summarize</span> Bilan</button>
+      <button class="btn secondary td-mini" data-act="cahier" title="Ajouter le contenu de la session au cahier de la classe"><span class="gicon">menu_book</span> Cahier</button>
       ${(s.etat || {}).archivee ? '<button class="btn secondary td-mini" data-act="desarchiver" title="Remettre dans « Terminées »"><span class="gicon">unarchive</span> Désarchiver</button>'
         : '<button class="btn secondary td-mini" data-act="archiver" title="Ranger dans « Archivées » (repliées en bas de la page)"><span class="gicon">inventory_2</span> Archiver</button>'}
       ${(s.items || []).some(x => x.type === 'qz') ? '<button class="btn secondary td-mini" data-act="noter" title="Créer une interrogation avec les réponses des élèves aux exercices choisis"><span class="gicon">grading</span> Noter des exercices</button>' : ''}
@@ -166,6 +172,7 @@ document.addEventListener('click', async e => {
   const a = b.dataset.act;
   if(a === 'tele'){ const { data } = await sb.from('cours_direct').select('*').eq('id', id).maybeSingle(); if(data) cdProfOuvrir(data); }
   else if(a === 'bilan') cdBilan(id);
+  else if(a === 'cahier') csCahier(id);
   else if(a === 'terminer') csTerminer(s);
   else if(a === 'jusqua') csJusqua(s);
   else if(a === 'debut') csDebut(s);
@@ -285,6 +292,78 @@ async function csSupprimer(s){
   const { error } = await sb.from('cours_direct').delete().eq('id', s.id);
   if(error){ await niceAlert('Suppression impossible : ' + error.message); return; }
   csRafraichir();
+}
+
+/* ---------- Contenu d'une session → cahier de la classe ---------- */
+// Nature de l'élément, pour la colonne « exercice » du cahier.
+function csCahierNature(it){
+  const e = it.exo || {};
+  if(e.type === 'qz') return e.interro ? 'Interrogation' : 'Exercice';
+  if(e.type === 'td' || /^Manuel /.test(it.titre || '')) return 'TD';
+  if(e.type === 'prog') return 'Programmation';
+  if(/^(Cours|Méthode)\b/i.test(it.titre || '')) return 'Cours';
+  return 'Document';
+}
+// Contenu HTML d'un élément (énoncé, et correction si demandée) ; null s'il ne s'écrit pas dans un cahier.
+function csCahierHtml(it, corr){
+  const e = it.exo || {}, titre = String(it.titre || '').replace(/^(Exercice|Interrogation|Figure)\s*:\s*/, '');
+  if(e.type === 'qz' && (e.questions || []).length) return typeof qzcHtml === 'function' ? qzcHtml(titre, '', e.questions, corr) : null;
+  if(e.type === 'prog') return null;
+  if(!it.html) return null;
+  if(corr && it.corr) return it.html.replace('class="pl-ex-cahier"', 'class="pl-ex-cahier pl-ex-enonce"') + '<div class="pl-ex-corr-titre">Correction</div>'
+    + it.corr.replace(/^<div class="pl-ex-cahier"><div class="pl-consigne">[\s\S]*?<\/div>/, '<div class="pl-ex-cahier">');
+  return it.html;
+}
+async function csCahier(id){
+  const { data: row } = await sb.from('cours_direct').select('id,titre,class_id,items,created_at,classes(nom,niveau)').eq('id', id).maybeSingle();
+  if(!row){ await niceAlert('Session introuvable.'); return; }
+  const lignes = (row.items || []).map((it, k) => ({ it, k, html: csCahierHtml(it, false) })).filter(x => x.it);
+  if(!lignes.some(x => x.html)){ await niceAlert('Cette session n\'a pas de contenu à mettre dans le cahier (seulement des défis de programmation).'); return; }
+  const niveau = (row.classes && (typeof niveauCle === 'function' ? niveauCle(row.classes.niveau) : '') || (row.classes && row.classes.niveau)) || '';
+  const chaps = (typeof CHAPITRES_BY_LEVEL !== 'undefined' && CHAPITRES_BY_LEVEL[niveau]) || [];
+  const d = new Date(row.created_at), iso = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  let o = document.getElementById('csCahier');
+  if(!o){ o = document.createElement('div'); o.id = 'csCahier'; o.className = 'modal-overlay'; o.style.zIndex = '9455'; document.body.appendChild(o); }
+  o.innerHTML = `<div class="modal-card" style="max-width:640px;width:94vw;max-height:90vh;display:flex;flex-direction:column;">
+    <div style="display:flex;justify-content:space-between;align-items:center;"><b class="cd-h"><span class="gicon">menu_book</span> Ajouter au cahier</b><button class="modal-close" data-c="x"><span class="gicon">close</span></button></div>
+    <p class="hint" style="margin:6px 0 8px;"><b>${cdEsc(row.titre || 'Session')}</b> · cahier de ${cdEsc((row.classes && row.classes.nom) || 'la classe')}. Chaque élément coché devient une entrée du cahier ; les réponses des élèves n'y vont pas.</p>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px;"><button class="btn secondary td-mini" data-c="tout">Tout cocher</button><button class="btn secondary td-mini" data-c="rien">Tout décocher</button></div>
+    <div class="cs-n-liste">${lignes.map(({ it, k, html }) => `<label class="cs-n-it${html ? '' : ' off'}"><input type="checkbox" data-k="${k}" ${html ? 'checked' : 'disabled'}>
+      <span><b>${k + 1}. ${cdEsc(it.titre || 'Élément')}</b><small>${html ? cdEsc(csCahierNature(it)) + (it.chapitre ? ' · ' + cdEsc(it.chapitre) : '') : 'défi de programmation : ne s\'écrit pas dans le cahier'}</small></span></label>`).join('')}</div>
+    <label class="qz-check" style="margin-top:10px;"><input type="checkbox" id="csCCorr" checked> Avec les corrections (bonnes réponses, corrigés du manuel)</label>
+    <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:8px;">
+      <label class="hint" style="display:flex;flex-direction:column;gap:4px;margin:0;font-weight:600;">Chapitre du cahier
+        <select id="csCChap"><option value="">Celui de chaque élément (sinon « Sessions »)</option>${chaps.map(c => `<option value="${cdEsc(c.code + ' · ' + c.t)}">${cdEsc(c.code + ' · ' + c.t)}</option>`).join('')}</select></label>
+      <label class="hint" style="display:flex;flex-direction:column;gap:4px;margin:0;font-weight:600;">Date
+        <input type="date" id="csCDate" value="${iso}" style="padding:6px 8px;border-radius:8px;"></label></div>
+    <p class="hint" id="csCErr" style="margin:8px 0 0;color:#a83c1f;"></p>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px;"><button class="btn secondary" data-c="x">Annuler</button><button class="btn" data-c="ok"><span class="gicon">add</span> Ajouter au cahier</button></div></div>`;
+  o.style.display = 'flex';
+  o.onclick = async e => {
+    const b = e.target.closest('[data-c]'); if(!b && e.target !== o) return;
+    const c = b ? b.dataset.c : 'x';
+    if(c === 'x'){ o.style.display = 'none'; return; }
+    if(c === 'tout' || c === 'rien'){ o.querySelectorAll('input[data-k]:not(:disabled)').forEach(x => x.checked = c === 'tout'); return; }
+    const ks = [...o.querySelectorAll('input[data-k]:checked')].map(x => +x.dataset.k);
+    if(!ks.length){ o.querySelector('#csCErr').textContent = 'Cochez au moins un élément.'; return; }
+    const corr = o.querySelector('#csCCorr').checked, chap = o.querySelector('#csCChap').value, date = o.querySelector('#csCDate').value || iso;
+    b.disabled = true; b.innerHTML = 'Ajout…';
+    // Groupe « sans cahier » (demi-groupe…) : le cahier de sa classe d'origine (fonction cahier_classe).
+    const { data: cc } = await sb.rpc('cahier_classe', { p_class: row.class_id });
+    const cible = cc && cc.id ? cc : { id: row.class_id, nom: (row.classes && row.classes.nom) || '' };
+    const matiere = typeof cahierMatiere === 'function' ? cahierMatiere() : null;
+    const entrees = ks.map(k => { const it = row.items[k]; return { niveau, chapitre: chap || it.chapitre || 'Sessions', exo: csCahierNature(it),
+      titre: String(it.titre || 'Élément') + (corr && (it.corr || (it.exo && it.exo.type === 'qz')) ? ' (avec correction)' : ''), date, raw: '', html: csCahierHtml(it, corr) }; }).filter(x => x.html);
+    const { data: ins, error } = await sb.from('cahier_entries').insert(entrees.map(x => Object.assign({ class_id: cible.id, matiere }, x))).select('id');
+    if(error){ o.querySelector('#csCErr').textContent = /row-level security/.test(error.message) ? 'Vous n\'êtes pas professeur de cette classe.' : error.message; b.disabled = false; b.innerHTML = '<span class="gicon">add</span> Ajouter au cahier'; return; }
+    // Classe active : le cahier affiché est mis à jour tout de suite.
+    if(typeof cahier !== 'undefined' && (typeof cahierClasseId === 'function' ? cahierClasseId() : currentClassId) === cible.id){
+      entrees.forEach((x, i) => cahier.push(Object.assign({ id: ins && ins[i] && ins[i].id, class_id: cible.id }, x)));
+      if(typeof sortCahierInPlace === 'function') sortCahierInPlace(); if(typeof saveCahier === 'function') saveCahier();
+    }
+    o.style.display = 'none';
+    await niceAlert(`${entrees.length} élément${entrees.length > 1 ? 's ajoutés' : ' ajouté'} au cahier de ${cible.nom || 'la classe'}, à la date du ${new Date(date + 'T12:00:00').toLocaleDateString('fr-FR')}${corr ? ', avec les corrections' : ''}.`);
+  };
 }
 
 /* ---------- Noter : réponses d'une session → interrogation ---------- */
