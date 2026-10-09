@@ -24,6 +24,12 @@
 
 // Changements faits à la suite d'une remarque : clé → { date (ISO, heure UTC du changement), note }.
 const RELECTURE_CHGT = {
+  // Build 1044 : grands nombres à l'écran, tableau de 6e-N1-P1-E3.
+  '6e-N1-P1-E1': { date: '2026-10-09T14:24:20Z', note: "À l'écran, touche « espace » sur le clavier des chiffres ; un nombre de 5 chiffres ou plus doit être écrit par classes (2 300 000), sinon il est compté faux avec l'explication" },
+  '6e-N1-P1-E2': { date: '2026-10-09T14:24:20Z', note: "À l'écran, touche « espace » sur le clavier des chiffres ; un nombre de 5 chiffres ou plus doit être écrit par classes (2 300 000), sinon il est compté faux avec l'explication" },
+  '6e-N1-P1-E5': { date: '2026-10-09T14:24:20Z', note: "À l'écran, touche « espace » sur le clavier des chiffres ; un nombre de 5 chiffres ou plus doit être écrit par classes (2 300 000), sinon il est compté faux avec l'explication" },
+  '6e-N1-P1-E6': { date: '2026-10-09T14:24:20Z', note: "À l'écran, touche « espace » sur le clavier des chiffres ; un nombre de 5 chiffres ou plus doit être écrit par classes (2 300 000), sinon il est compté faux avec l'explication" },
+  '6e-N1-P1-E3': { date: '2026-10-09T14:24:20Z', note: "Tableau aligné à gauche, la colonne Décomposition va jusqu'à la marge droite ; à l'écran, nombres écrits par classes comme ci-dessus" },
 };
 
 const RL_REMARQUES = [

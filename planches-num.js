@@ -29,6 +29,19 @@ const plNumCache = new Map();
 // Normalisation d'une réponse : espaces, casse, ponctuation finale ; un nombre perd ses zéros de tête
 // (« 05 » minutes = « 5 ») et ses espaces (« 1 200 » = « 1200 »).
 const plNumNorm = s => { const t = String(s ?? '').replace(/[\u00a0\u202f]/g, ' ').replace(/\s+/g, ' ').trim().toLowerCase().replace(/[.!]$/, '').replace(/’/g, '\''), n = t.replace(/(\d) (?=\d)/g, '$1').replace(/[−–]/g, '-'); if(/^\d+$/.test(n)) return String(+n); return /[a-zà-ÿ]/i.test(n) ? (/[a-zà-ÿ]{3,}/i.test(t) ? t.replace(/[−–]/g, '-') : n.replace(/\s+/g, '')) : n.replace(/\s+/g, ''); }; // calcul littéral (« 5x + 3 », « 12 h 30 ») : sans espaces non plus // calcul (« 5 000 000 + 8 ») : sans espaces
+// Grands nombres écrits par classes -- relecture 6e-N1-P1 : « En version numérique, respecter l'écriture avec
+// espace des grands nombres ». Un entier de 5 chiffres ou plus doit être écrit par classes de trois chiffres
+// séparées par un espace (2 300 000) ; « 2300000 » ou « 2 30 0000 » sont faux. Jusqu'à 4 chiffres, les deux
+// écritures restent acceptées (1 200 ou 1200). La partie décimale n'est pas concernée.
+function plNumClassesOk(s){
+  const t = String(s ?? '').replace(/[\u00a0\u202f]/g, ' ').replace(/\s+/g, ' ');
+  const re = /\d+(?: \d+)*/g; let m;
+  while((m = re.exec(t))){
+    if(m.index > 0 && /[,.]/.test(t[m.index - 1])) continue;
+    if(m[0].replace(/ /g, '').length >= 5 && !/^\d{1,3}(?: \d{3})+$/.test(m[0])) return false;
+  }
+  return true;
+}
 // Fraction écrite en LaTeX dans un bout de corrigé : [numérateur, dénominateur] ou null.
 function plNumFracDe(el){
   const t = el.querySelector('.tex'), m = t && /\\[dt]?frac\{([^}]*)\}\{([^}]*)\}/.exec(t.textContent);
@@ -103,7 +116,9 @@ function plNumAnalyser(x){
       const large = tr.classList.contains('pl-pts') && /[a-z]/i.test(rep);
       const lg = r.textContent.replace(/\s+/g, ' ').trim().length; // case à la taille de la réponse attendue
       tr.outerHTML = `<button type="button" class="pn-case${large ? ' pn-large' : ''}${tr.classList.contains('pl-case-seule') ? ' pn-signe' : ''}" data-pn="${id}" data-pnv="${id}"${!tr.classList.contains('pl-case-seule') && lg > 4 ? ` style="min-width:${Math.min(320, lg * 11 + 16)}px"` : ''}></button>`;
-      cibles.push({ type: 'txt', id, rep, maj: /^[(\[]?[A-ZÉÈ]/.test(r.textContent.trim()) }); // réponse en majuscule (nom de point…) : clavier en majuscules
+      // classes : la réponse attendue contient un grand nombre écrit par classes, l'élève doit l'écrire ainsi.
+      const brut = r.textContent.replace(/[\u00a0\u202f]/g, ' '), classes = /\d{1,3}(?: \d{3})+/.test(brut) && /\d{5}/.test(brut.replace(/(\d) (?=\d)/g, '$1')) && plNumClassesOk(brut);
+      cibles.push({ type: 'txt', id, rep, classes, maj: /^[(\[]?[A-ZÉÈ]/.test(r.textContent.trim()) }); // réponse en majuscule (nom de point…) : clavier en majuscules
     }
   }
   // 3. Figures blanches dans l'énoncé, coloriées dans le corrigé.
@@ -198,6 +213,7 @@ function plNum(root, x, o){
     else if(t === 'ok'){ const cases = [...root.querySelectorAll('[data-pnv]')].map(b => b.dataset.pnv), i = cases.indexOf(sel); choisir(cases[i + 1] || null); return; }
     else if(t === 'vider') v = '';
     else if(/^[<>=]$/.test(t)) v = t;
+    else if(t === ' ' && (!v || v.endsWith(' '))) return; // pas d'espace au début ni deux de suite
     else if(v.length < 24) v += t;
     etat.v[sel] = v; effacerMarques(); afficher(); change();
   };
@@ -223,7 +239,7 @@ function plNum(root, x, o){
     effacerMarques(); afficher(); change();
   };
   const juste = c => {
-    if(c.type === 'txt') return plNumNorm(etat.v[c.id]) === c.rep;
+    if(c.type === 'txt') return plNumNorm(etat.v[c.id]) === c.rep && (!c.classes || plNumClassesOk(etat.v[c.id]));
     if(c.type === 'frac') return plNumNorm(etat.v[c.id + 'n']) === plNumNorm(c.rep[0]) && plNumNorm(etat.v[c.id + 'd']) === plNumNorm(c.rep[1]);
     if(c.type === 'fig') return (etat.c[c.id] || []).length === c.rep;
     if(c.type === 'choix') return plNumNorm(etat.ch[c.id]) === c.rep;
@@ -238,6 +254,8 @@ function plNum(root, x, o){
     effacerMarques(); if(!res || !res.d) return;
     M.cibles.forEach((c, i) => { const el = root.querySelector(`[data-pn="${c.id}"]`) || (c.type === 'bascule' ? root.querySelector(`[data-pnt^="${c.id}:"]`)?.closest('.pl-grille, .pl-liste, ul') : null);
       if(el && res.d[i] !== null) el.classList.add(res.d[i] ? 'pn-ok' : 'pn-ko');
+      // Bon nombre mais mal écrit : on dit pourquoi.
+      if(el && res.d[i] === false && c.type === 'txt' && c.classes && plNumNorm(etat.v[c.id]) === c.rep) el.title = 'Écris le nombre par classes de trois chiffres, séparées par un espace (comme 2 300 000).';
       // Nombres à entourer / barrer : le cadre rouge autour de la grille ne disait pas LEQUEL était faux (signalé :
       // « Entoure les multiples de 6 », 40 entouré en trop, resté vert comme les autres). Chaque choix est marqué :
       // vert s'il est juste, rouge s'il est en trop ; les oubliés (orange) ne sont montrés qu'au professeur.
@@ -442,7 +460,7 @@ const plClavier = {
       ? [['7', '8', '9', '&lt;', '('], ['4', '5', '6', '=', ')'], ['1', '2', '3', '&gt;', ':'], ['0', ',', '+', '−', '×']] // ( ) et : : priorités opératoires (5e)
       : ['azertyuiop', 'qsdfghjklm', 'wxcvbné', 'èàêç\'-()[]'].map(l => l.split('').map(c => this.maj ? c.toUpperCase() : c));
     this.el.innerHTML = `<div class="pn-cl-lignes">${lignes.map(l => `<div class="pn-cl-l">${l.map(t => k(t === '&lt;' ? '<' : t === '&gt;' ? '>' : t, t)).join('')}</div>`).join('')}
-      <div class="pn-cl-l">${this.mode === 'abc' ? `<button type="button" data-maj="1" class="pn-cl-gris${this.maj ? ' pn-cl-on' : ''}" title="Majuscules">⇧ ${this.maj ? 'ABC' : 'abc'}</button>` + k(' ', 'espace', 'pn-cl-large') : ''}${k('⌫', '<span class="gicon">backspace</span>', 'pn-cl-gris')}
+      <div class="pn-cl-l">${this.mode === 'abc' ? `<button type="button" data-maj="1" class="pn-cl-gris${this.maj ? ' pn-cl-on' : ''}" title="Majuscules">⇧ ${this.maj ? 'ABC' : 'abc'}</button>` + k(' ', 'espace', 'pn-cl-large') : k(' ', 'espace', 'pn-cl-esp')}${k('⌫', '<span class="gicon">backspace</span>', 'pn-cl-gris')}
         <button type="button" data-m="${this.mode === '123' ? 'abc' : '123'}" class="pn-cl-gris">${this.mode === '123' ? 'abc' : '123'}</button>${k('ok', '<span class="gicon">keyboard_return</span>', 'pn-cl-ok')}${k('fermer', '<span class="gicon">keyboard_hide</span>', 'pn-cl-gris')}</div></div>`;
   }
 };
@@ -462,7 +480,7 @@ function plClavierPhysique(e){
     .pn-ex .pl-liste{ margin:0; padding-left:20px; } .pn-ex .pl-liste li{ margin:6px 0; }
     .pn-ex .pl-unites{ display:inline-flex; gap:5px; flex-wrap:wrap; align-items:center; vertical-align:middle; }
     .cx-td .pn-ex, .cx-td.pn-ex{ font-size:1.1rem; line-height:1.5; } @media (min-width:700px){ .cx-td.pn-ex{ zoom:1.3; } } .cx-td svg{ max-width:100%; height:auto; }
-    .pn-ex .pn-case{ display:inline-flex; align-items:center; justify-content:center; min-width:30px; height:26px; padding:0 5px; border:2px solid #3A6EA5; border-radius:6px; background:#fff;
+    .pn-ex .pn-case{ white-space:pre; display:inline-flex; align-items:center; justify-content:center; min-width:30px; height:26px; padding:0 5px; border:2px solid #3A6EA5; border-radius:6px; background:#fff;
       font:700 1rem 'Space Grotesk',Arial,sans-serif; color:#1F3A5C; cursor:pointer; vertical-align:middle; margin:0 2px; }
     .pn-ex .pn-case.pn-large{ min-width:120px; } .pn-ex .pn-case.pn-vide{ background:#F3F7FC; }
     .pn-ex .pn-case.pn-sel{ border-color:#E35D3A; box-shadow:0 0 0 3px rgba(227,93,58,.25); background:#FFF6F2; }
@@ -489,7 +507,7 @@ function plClavierPhysique(e){
     #plClavier{ display:none; position:fixed; left:50%; bottom:12px; transform:translateX(-50%); z-index:9700; background:#1F3A5C; border-radius:18px; padding:10px; box-shadow:0 10px 30px rgba(0,0,0,.3); touch-action:none; user-select:none; }
     .pn-cl-lignes{ display:flex; flex-direction:column; gap:6px; } .pn-cl-l{ display:flex; gap:6px; justify-content:center; }
     #plClavier button{ min-width:52px; height:52px; border:0; border-radius:12px; background:#fff; color:#1F3A5C; font:700 1.35rem 'Space Grotesk',Arial,sans-serif; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; padding:0 10px; }
-    #plClavier button:active{ transform:scale(.95); } #plClavier .pn-cl-gris{ background:#DCE4EE; font-size:1rem; } #plClavier .pn-cl-on{ background:#3A6EA5; color:#fff; } #plClavier .pn-cl-ok{ background:#F08A3C; color:#fff; } #plClavier .pn-cl-large{ min-width:200px; font-size:1rem; }
+    #plClavier button:active{ transform:scale(.95); } #plClavier .pn-cl-gris{ background:#DCE4EE; font-size:1rem; } #plClavier .pn-cl-on{ background:#3A6EA5; color:#fff; } #plClavier .pn-cl-ok{ background:#F08A3C; color:#fff; } #plClavier .pn-cl-large{ min-width:200px; font-size:1rem; } #plClavier .pn-cl-esp{ min-width:96px; font-size:.95rem; }
     @media (max-width:600px){ #plClavier button{ min-width:30px; height:44px; font-size:1.1rem; padding:0 6px; } #plClavier{ padding:6px; width:calc(100vw - 16px); box-sizing:border-box; } .pn-cl-l{ gap:4px; } }
     .pn-ex .pl-papier{ display:none; } /* ce qui ne sert que sur la feuille (ligne pour écrire…) */
     .pn-ex svg.pn-x{ width:min(100%, 520px) !important; height:auto !important; max-height:none !important; touch-action:manipulation; cursor:pointer; }

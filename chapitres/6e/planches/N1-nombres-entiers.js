@@ -5,7 +5,8 @@
 (() => {
 const B = n => plPointilles(n || 5), R = v => plRep(String(v)), C = plCase();
 const lt = '&lt;', gt = '&gt;';
-const tab = (ent, lignes) => `<table class="pl-tab"><tr>${ent.map(e => `<th>${e}</th>`).join('')}</tr>${lignes.map(l => `<tr>${l.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</table>`;
+// large : tableau aligné à gauche, la dernière colonne va jusqu'à la marge droite (relecture 6e-N1-P1-E3).
+const tab = (ent, lignes, large) => `<table class="pl-tab${large ? ' pl-tab-large' : ''}"><tr>${ent.map(e => `<th>${e}</th>`).join('')}</tr>${lignes.map(l => `<tr>${l.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</table>`;
 const duo = l => `<div style="display:flex;justify-content:space-around;align-items:flex-start;gap:8px;flex-wrap:wrap;">${l.join('')}</div>`;
 const pose = (a, op, b, res, o) => cm1Posee([[' ', a], [op, b], [' ', res]], '', o);
 const div = (a, b) => typeof divisionPoseeHTML === 'function' ? `<div class="pl-div">${divisionPoseeHTML(computeDivisionPosee(a, b))}</div>` : '';
@@ -24,8 +25,8 @@ PLANCHES['6e|Nombres entiers'] = [
         eleve: plListe(['le chiffre des millions ? ' + B(2), 'le chiffre des centaines de mille ? ' + B(2), 'le nombre de millions ? ' + B(4), 'le nombre de milliers ? ' + B(6)]),
         corr: plListe(['le chiffre des millions ? ' + R(3), 'le chiffre des centaines de mille ? ' + R(0), 'le nombre de millions ? ' + R('7 253'), 'le nombre de milliers ? ' + R('7 253 048')]) },
       { etoiles: 2, consigne: 'Complète le tableau : écris chaque nombre en chiffres, puis décompose-le.',
-        eleve: tab(['En lettres', 'En chiffres', 'Décomposition'], [['cinq-millions-quarante-mille-huit', B(7), B(14)], ['douze-millions-trois-cents', B(7), B(14)]]),
-        corr: tab(['En lettres', 'En chiffres', 'Décomposition'], [['cinq-millions-quarante-mille-huit', R('5 040 008'), R('5 000 000 + 40 000 + 8')], ['douze-millions-trois-cents', R('12 000 300'), R('12 000 000 + 300')]]) },
+        eleve: tab(['En lettres', 'En chiffres', 'Décomposition'], [['cinq-millions-quarante-mille-huit', B(7), B(14)], ['douze-millions-trois-cents', B(7), B(14)]], true),
+        corr: tab(['En lettres', 'En chiffres', 'Décomposition'], [['cinq-millions-quarante-mille-huit', R('5 040 008'), R('5 000 000 + 40 000 + 8')], ['douze-millions-trois-cents', R('12 000 300'), R('12 000 000 + 300')]], true) },
       { etoiles: 2, col: 1, consigne: 'Complète avec &lt;, &gt; ou =.',
         eleve: plListe([`3 400 500 ${C} 3 045 500`, `999 999 ${C} 1 000 000`, `12 milliards ${C} 12 000 000 000`, `80 080 800 ${C} 80 800 080`]),
         corr: plListe([`3 400 500 ${R(gt)} 3 045 500`, `999 999 ${R(lt)} 1 000 000`, `12 milliards ${R('=')} 12 000 000 000`, `80 080 800 ${R(lt)} 80 800 080`]) },
