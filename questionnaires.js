@@ -576,6 +576,7 @@ function qzEdHtml(){
     <div class="qz-ed-bar"><span class="gicon">quiz</span> <span id="qzEdTotal"></span>
       <button type="button" class="btn secondary qz-mini" style="margin-left:auto;" onclick="qzImporterOuvrir()" title="Reprendre des questions de vos questionnaires ou de ceux de vos collègues"><span class="gicon">inventory_2</span> Importer des questions</button>
       <button type="button" class="btn secondary qz-mini needs-ai-eval" id="qzEdGen" onclick="qzGenOuvrir()"><span class="gicon">smart_toy</span> Générer avec l'IA</button>
+      <button type="button" class="btn secondary qz-mini adp-seul" onclick="if(typeof lvOuvrir==='function') lvOuvrir()" title="Cocher les verbes irréguliers anglais vus en classe : les questions s'ajoutent à l'interrogation (listes.js)"><span class="gicon">translate</span> Verbes irréguliers</button>
       <button type="button" class="btn secondary qz-mini" onclick="qzApercu()"><span class="gicon">visibility</span> Tester comme un élève</button>
       <button type="button" class="btn secondary qz-mini" onclick="qzEnregistrerSeul()" title="Enregistrer maintenant, même incomplet (c'est aussi fait automatiquement)"><span class="gicon">save</span> Enregistrer</button></div>
     <div id="qzEdListe"></div>
