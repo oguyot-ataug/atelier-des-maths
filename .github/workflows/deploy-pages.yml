@@ -27,15 +27,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Récupération du dépôt
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Configuration de Pages
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@v6
       - name: Préparation du contenu à publier (exclut .git et .github)
         run: |
           mkdir _site
           rsync -a --exclude='.git' --exclude='.github' --exclude='_site' ./ _site/
       - name: Empaquetage du site (contenu statique, sans compilation)
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: _site
 
@@ -48,4 +48,4 @@ jobs:
     steps:
       - name: Déploiement sur GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5

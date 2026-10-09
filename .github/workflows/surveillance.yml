@@ -35,13 +35,13 @@ jobs:
     timeout-minutes: 6
     steps:
       - name: Clé publique Supabase (app.js)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           sparse-checkout: app.js
           sparse-checkout-cone-mode: false
 
       - name: État précédent
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: etat
           key: surveillance-${{ github.run_id }}
@@ -90,7 +90,7 @@ jobs:
 
       - name: Enregistrer l'état
         if: always()
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: etat
           key: surveillance-${{ github.run_id }}
