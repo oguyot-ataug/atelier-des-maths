@@ -229,10 +229,11 @@
     { id: 'homophones', matieres: ['Français', 'Professeur des écoles'], ouvrir: 'hoOuvrir', icone: 'hearing', titre: 'Homophones',
       aide: 'Cocher les séries d\'homophones vues en classe (a / à, et / est…) : des phrases à compléter s\'ajoutent à l\'interrogation' },
   ];
+  // L'administrateur voit tous les outils (pour les tester), avec la matière qui les reçoit en infobulle.
   window.adpOutilsEditeur = function(){
-    const m = adpMatiere();
-    return ADP_OUTILS.filter(o => o.matieres.includes(m) && typeof window[o.ouvrir] === 'function')
-      .map(o => `<button type="button" class="btn secondary qz-mini" onclick="${o.ouvrir}()" title="${esc(o.aide)}"><span class="gicon">${o.icone}</span> ${esc(o.titre)}</button>`).join('');
+    const m = adpMatiere(), admin = typeof currentUserRole !== 'undefined' && currentUserRole === 'admin';
+    return ADP_OUTILS.filter(o => (admin || o.matieres.includes(m)) && typeof window[o.ouvrir] === 'function')
+      .map(o => `<button type="button" class="btn secondary qz-mini" onclick="${o.ouvrir}()" title="${esc(o.aide + (admin && !o.matieres.includes(m) ? ' (visible ici car vous êtes administrateur ; professeurs concernés : ' + o.matieres.join(', ') + ')' : ''))}"><span class="gicon">${o.icone}</span> ${esc(o.titre)}</button>`).join('');
   };
 
   // Accueil.

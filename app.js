@@ -3381,6 +3381,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1040', date:'2026-10-09', items:[
+    "L'Atelier du Prof : l'administrateur voit tous les outils de matière dans l'éditeur d'interrogation (verbes irréguliers, conjugaison, homophones), quelle que soit sa matière, pour pouvoir les tester. Les professeurs ne voient toujours que ceux de leur matière.",
+  ]},
   { version:'2026-08-19.1039', date:'2026-10-09', items:[
     "L'Atelier du Prof : générateur de questions d'homophones pour les professeurs de français et des écoles (bouton « Homophones » de l'éditeur d'interrogation). 22 séries rangées par niveau (dès le CE : a / as / à, et / est / es, son / sont, on / ont, ou / où, ces / ses, ce / se, mes / mais / met / mets, la / là / l'a / l'as ; dès le CM : leur / leurs, -é / -er / -ez, c'est / s'est / ces / ses, ça / sa, peu / peut / peux, tout / tous / toute / toutes, près / prêt, plus tôt / plutôt ; collège : quel / qu'elle, sans / s'en, dans / d'en, si / s'y / ni / n'y, quand / quant / qu'en), 348 phrases rédigées sans ambiguïté.",
     "Homophones : on coche les séries vues en classe (l'astuce et les phrases de chaque série se consultent d'un clic), puis le type de questions (phrases à compléter regroupées, une phrase par question, QCM jouable avec les cartes A B C D) et le nombre de phrases. Les phrases sont tirées à tour de rôle entre les mots de la série ; l'astuce (« a » : on peut dire « avait »…) est montrée à l'élève avec la correction. L'accent est exigé, pas la majuscule.",
