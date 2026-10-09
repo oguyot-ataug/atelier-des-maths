@@ -226,6 +226,8 @@
       aide: 'Cocher les verbes irréguliers vus en classe : les questions s\'ajoutent à l\'interrogation' },
     { id: 'conjugaison', matieres: ['Français', 'Professeur des écoles'], ouvrir: 'cjOuvrir', icone: 'edit_note', titre: 'Conjugaison',
       aide: 'Cocher les verbes et les temps vus en classe : les questions s\'ajoutent à l\'interrogation' },
+    { id: 'homophones', matieres: ['Français', 'Professeur des écoles'], ouvrir: 'hoOuvrir', icone: 'hearing', titre: 'Homophones',
+      aide: 'Cocher les séries d\'homophones vues en classe (a / à, et / est…) : des phrases à compléter s\'ajoutent à l\'interrogation' },
   ];
   window.adpOutilsEditeur = function(){
     const m = adpMatiere();
