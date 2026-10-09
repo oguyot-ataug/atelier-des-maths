@@ -16,6 +16,11 @@ on:
   schedule:
     - cron: '4,19,34,49 * * * *'
   workflow_dispatch:
+    inputs:
+      test:
+        description: "Envoyer deux SMS de test (un depuis GitHub, un depuis Supabase)"
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -67,6 +72,13 @@ jobs:
               echo panne > "etat/$1"; echo "$1 : PANNE ($c)"
             fi
           }
+          if [ "${{ inputs.test }}" = "true" ]; then
+            sms "Atelier · Test 1/2 : les SMS partent bien de GitHub (surveillance des sites)."
+            if [ -n "$ALERTE_CLE" ]; then
+              curl -s --max-time 60 -X POST "$SUPA/functions/v1/alerte-sms" -H "Content-Type: application/json" \
+                -H "x-alerte-cle: $ALERTE_CLE" -d '{"action":"test"}'; echo "  ← réponse de Supabase (ok:true attendu)"
+            else echo "ALERTE_CLE absent dans les secrets GitHub"; fi
+          fi
           verifier "maths.latelieraugmente.fr" "https://maths.latelieraugmente.fr/"
           verifier "adp.latelieraugmente.fr" "https://adp.latelieraugmente.fr/"
           verifier "www.latelieraugmente.fr" "https://www.latelieraugmente.fr/"
