@@ -3382,7 +3382,7 @@ function syncCorNiveauToClass(){
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
   { version:'2026-08-19.1038', date:'2026-10-09', items:[
-    "L'Atelier du Prof : générateur de questions de conjugaison pour les professeurs de français et des écoles (bouton « Conjugaison » de l'éditeur d'interrogation). On coche les verbes (être, avoir, 76 verbes du 1er groupe, 27 du 2e, 80 du 3e, et tout verbe en -er ou du 2e groupe que l'on ajoute) et les temps (13 temps simples et composés), puis le type de questions : conjuguer à toutes les personnes, à une personne, QCM sur la bonne forme, QCM pour reconnaître le temps. La sélection est retenue d'une fois sur l'autre.",
+    "L'Atelier du Prof : générateur de questions de conjugaison pour les professeurs de français et des écoles (bouton « Conjugaison » de l'éditeur d'interrogation). On coche les verbes (être, avoir, 81 verbes du 1er groupe, 27 du 2e, 80 du 3e, et tout verbe en -er ou du 2e groupe que l'on ajoute) et les temps (13 temps simples et composés), puis le type de questions : conjuguer à toutes les personnes, à une personne, QCM sur la bonne forme, QCM pour reconnaître le temps. La sélection est retenue d'une fois sur l'autre.",
     "Conjugaison : accord du participe avec être (je suis allé ou allée), « j' » devant une voyelle, « qu'il » au subjonctif ; les variantes admises sont acceptées (orthographe de 1990 : il connait, je préfèrerai ; je paie ou je paye ; j'épelle ou j'épèle). L'accent est exigé, la majuscule non. Les formes ont été vérifiées contre un lexique de référence du français.",
     "Textes à trous et réponses courtes : l'apostrophe typographique (’) est acceptée comme l'apostrophe droite.",
   ]},
