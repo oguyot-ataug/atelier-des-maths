@@ -3381,6 +3381,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1037', date:'2026-10-09', items:[
+    "L'Atelier du Prof : les outils d'apprentissage dépendent de la matière du professeur. Le bouton « Verbes irréguliers » n'apparaît plus que pour les professeurs d'anglais, pour ne pas surcharger la page de création des autres.",
+  ]},
   { version:'2026-08-19.1036', date:'2026-10-09', items:[
     "L'Atelier du Prof : verbes irréguliers anglais -- demandé : « Il faut toute la liste. Après le professeur pourrait générer des questions en cochant ceux qu'il a traités en classe ». Dans l'éditeur d'une interrogation, bouton « Verbes irréguliers » : les 163 verbes (base, prétérit, participe passé, traduction ; variantes comme learnt / learned ou got / gotten acceptées), avec recherche (anglais ou français) et sélections rapides (« les 92 plus courants », « tous », « aucun »). Le professeur coche ceux vus en classe -- sa sélection est retenue dans son compte -- et choisit les formes de questions : compléter le prétérit et le participe passé (texte à trous, un demi-point par forme), traduire du français vers la base verbale, ou QCM sur le prétérit ou le participe (pièges : forme régulière inventée comme « goed », l'autre forme, la forme d'un autre verbe ; jouable avec les cartes A B C D). Il peut en tirer N au hasard. Les questions s'ajoutent à l'interrogation, dans le désordre : elle se donne ensuite comme toute interrogation (devoir, entraînement où l'élève réessaie, séance en direct, correction, notes)."
   ] },

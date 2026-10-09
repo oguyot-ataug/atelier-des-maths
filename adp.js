@@ -218,6 +218,19 @@
     }));
   }
 
+  /* Outils d'apprentissage propres à une matière -- demandé : « ces outils doivent dépendre de notre matière
+     d'enseignement pour ne pas surcharger la page de création ». Chaque outil liste ses matières ; l'éditeur
+     d'interrogation n'affiche que ceux de la matière du professeur. */
+  const ADP_OUTILS = [
+    { id: 'verbes', matieres: ['Anglais'], ouvrir: 'lvOuvrir', icone: 'translate', titre: 'Verbes irréguliers',
+      aide: 'Cocher les verbes irréguliers vus en classe : les questions s\'ajoutent à l\'interrogation' },
+  ];
+  window.adpOutilsEditeur = function(){
+    const m = adpMatiere();
+    return ADP_OUTILS.filter(o => o.matieres.includes(m) && typeof window[o.ouvrir] === 'function')
+      .map(o => `<button type="button" class="btn secondary qz-mini" onclick="${o.ouvrir}()" title="${esc(o.aide)}"><span class="gicon">${o.icone}</span> ${esc(o.titre)}</button>`).join('');
+  };
+
   // Accueil.
   const vh = document.getElementById('view-home');
   if(vh && !document.getElementById('adpAccueil')){
