@@ -3381,6 +3381,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1041', date:'2026-10-09', items:[
+    "6e, Nombres décimaux : les millièmes sont représentés dans un cube. Le cube unité est partagé en 1 000 petits cubes (un petit cube coloré = un millième), à côté de la plaque (un dixième = 100 millièmes), de la barre (un centième = 10 millièmes) et du petit cube, à la même échelle.",
+  ]},
   { version:'2026-08-19.1040', date:'2026-10-09', items:[
     "L'Atelier du Prof : l'administrateur voit tous les outils de matière dans l'éditeur d'interrogation (verbes irréguliers, conjugaison, homophones), quelle que soit sa matière, pour pouvoir les tester. Les professeurs ne voient toujours que ceux de leur matière.",
   ]},
