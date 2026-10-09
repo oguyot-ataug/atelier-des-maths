@@ -18,13 +18,19 @@
      répondu, corrigée automatiquement), comme une séance de questions flash notée
      (qzDirectNoter, questionnaires-direct.js). Le professeur vérifie puis publie les notes.
 
+   Puis : « il faudrait faire aussi un archivage et un tri par classe. Permettre aussi d'isoler les bilans
+   complets d'un élève » : une session terminée peut être archivée (etat.archivee : rangée dans « Archivées »,
+   repliée), les terminées et archivées se regroupent par classe au choix, et « Bilan d'un élève » montre
+   toutes les sessions d'un élève (cdBilanEleve, cours-bilan.js).
+
    Données : fonction cours_direct_liste (résumé des sessions), cours_direct (complet pour noter),
    cours_direct_travaux (réponses des élèves). Dépend de cours-direct.js (cdPreparer, cdProfOuvrir,
    cdLocal, cdMinuit, cdCanal), cours-bilan.js (cdBilan), questionnaires*.js (qzScoreCopie,
    qzModeCle, qzOuvrirCorrection).
    ===================================================================== */
 
-const cs = { liste: null, classe: '' };
+const cs = { liste: null, classe: '', tri: 'date', archives: false };
+try{ cs.tri = localStorage.getItem('csTri') === 'classe' ? 'classe' : 'date'; }catch(e){}
 
 function csOuvrir(){
   showView('view-sessions'); if(typeof setActiveTopnav === 'function') setActiveTopnav('sessions');
@@ -59,7 +65,17 @@ function csRendre(){
   const root = document.getElementById('csRoot'); if(!root || !cs.liste) return;
   const classes = typeof accountClassesList !== 'undefined' ? accountClassesList : [];
   const l = cs.liste.filter(s => !cs.classe || s.class_id === cs.classe);
-  const ouvertes = l.filter(s => s.ouverte), fermees = l.filter(s => !s.ouverte && !s.programmee);
+  const archivee = s => !!(s.etat || {}).archivee;
+  const ouvertes = l.filter(s => s.ouverte), fermees = l.filter(s => !s.ouverte && !s.programmee && !archivee(s));
+  const archivees = l.filter(s => !s.ouverte && !s.programmee && archivee(s));
+  // Par classe (toutes les classes affichées) : un intertitre par classe, les plus récentes d'abord dans chacune.
+  const groupes = liste => {
+    if(cs.tri !== 'classe' || cs.classe) return liste.map(csLigne).join('');
+    const parClasse = new Map();
+    liste.forEach(x => { const c = x.classe || 'Sans classe'; if(!parClasse.has(c)) parClasse.set(c, []); parClasse.get(c).push(x); });
+    return [...parClasse.keys()].sort((a, b) => a.localeCompare(b, 'fr', { numeric: true }))
+      .map(c => `<h3 class="cs-sous">${cdEsc(c)} <small>${parClasse.get(c).length}</small></h3>${parClasse.get(c).map(csLigne).join('')}`).join('');
+  };
   const prog = l.filter(s => s.programmee).sort((a, b) => String(a.etat.debut).localeCompare(String(b.etat.debut)));
   const cl = classes.find(c => c.id === currentClassId);
   root.innerHTML = `<div class="cs-barre">
@@ -67,13 +83,27 @@ function csRendre(){
       <button class="btn" style="background:#1F7A4D;" id="csNouvelle"${classes.length ? '' : ' disabled'}><span class="gicon">add</span> Nouvelle session</button>
       <span style="flex:1"></span>
       <label class="cs-lab">Afficher <select id="csFiltre"><option value="">toutes les classes</option>${classes.map(c => `<option value="${c.id}"${c.id === cs.classe ? ' selected' : ''}>${cdEsc(c.label)}</option>`).join('')}</select></label>
+      <label class="cs-lab">Trier <select id="csTri"${cs.classe ? ' disabled title="Une seule classe affichée"' : ''}><option value="date">par date</option><option value="classe"${cs.tri === 'classe' ? ' selected' : ''}>par classe</option></select></label>
+      <button class="btn secondary" id="csBilanEl" title="Toutes les sessions d'un élève : présence, résultats exercice par exercice, sorties de la page"><span class="gicon">person_search</span> Bilan d'un élève</button>
       <button class="btn secondary" id="csMaj" title="Actualiser"><span class="gicon">refresh</span></button></div>
     <h2 class="cs-h"><span class="gicon" style="color:#E35D3A;">sensors</span> Ouvertes <small>${ouvertes.length}</small></h2>
     <div class="cs-grille">${ouvertes.map(csCarte).join('') || '<p class="hint">Aucune session ouverte.' + (cl ? '' : '') + '</p>'}</div>
     ${prog.length ? `<h2 class="cs-h"><span class="gicon" style="color:#C77D1E;">event</span> Programmées <small>${prog.length}</small></h2>
     <div class="cs-grille">${prog.map(csCarteProg).join('')}</div>` : ''}
-    <h2 class="cs-h"><span class="gicon" style="color:#5B6472;">history</span> Terminées <small>${fermees.length}</small></h2>
-    <div class="cs-liste">${fermees.map(csLigne).join('') || '<p class="hint">Aucune session terminée.</p>'}</div>`;
+    <h2 class="cs-h"><span class="gicon" style="color:#5B6472;">history</span> Terminées <small>${fermees.length}</small>
+      ${fermees.length > 1 ? `<button class="btn secondary td-mini cs-h-btn" id="csToutArch" title="Ranger dans « Archivées » toutes les sessions terminées affichées"><span class="gicon">inventory_2</span> Tout archiver</button>` : ''}</h2>
+    <div class="cs-liste">${groupes(fermees) || '<p class="hint">Aucune session terminée.</p>'}</div>
+    ${archivees.length ? `<h2 class="cs-h"><span class="gicon" style="color:#8A94A3;">inventory_2</span> Archivées <small>${archivees.length}</small>
+      <button class="btn secondary td-mini cs-h-btn" id="csVoirArch"><span class="gicon">${cs.archives ? 'expand_less' : 'expand_more'}</span> ${cs.archives ? 'Masquer' : 'Afficher'}</button></h2>
+    ${cs.archives ? `<div class="cs-liste cs-arch">${groupes(archivees)}</div>` : ''}` : ''}`;
+  root.querySelector('#csTri').onchange = e => { cs.tri = e.target.value; try{ localStorage.setItem('csTri', cs.tri); }catch(x){} csRendre(); };
+  root.querySelector('#csBilanEl').onclick = () => cdBilanEleve(cs.classe || currentClassId || (classes[0] && classes[0].id));
+  const va = root.querySelector('#csVoirArch'); if(va) va.onclick = () => { cs.archives = !cs.archives; csRendre(); };
+  const ta = root.querySelector('#csToutArch'); if(ta) ta.onclick = async () => {
+    if(!(await niceConfirm(`Archiver les ${fermees.length} sessions terminées affichées ? Elles restent consultables (bilan, rouvrir) dans « Archivées ».`))) return;
+    for(const x of fermees) await csArchiver(x, true, true);
+    csRafraichir();
+  };
   root.querySelector('#csMaj').onclick = csRafraichir;
   root.querySelector('#csFiltre').onchange = e => { cs.classe = e.target.value; csRendre(); };
   root.querySelector('#csNouvelle').onclick = async () => {
@@ -120,6 +150,8 @@ function csLigne(s){
     <div class="cs-l-t"><b>${cdEsc(s.titre || 'Session')}</b><small>${cdEsc(s.classe || '')} · ${csDate(s.created_at)} ${csHeure(s.created_at)} · ${csModeTxt(s)} · ${s.travaux} élève${s.travaux > 1 ? 's' : ''} ${s.travaux > 1 ? 'ont' : 'a'} travaillé</small>
       <small>${csInterrosTxt(s)}</small></div>
     <div class="cs-l-act"><button class="btn secondary td-mini" data-act="bilan"><span class="gicon">summarize</span> Bilan</button>
+      ${(s.etat || {}).archivee ? '<button class="btn secondary td-mini" data-act="desarchiver" title="Remettre dans « Terminées »"><span class="gicon">unarchive</span> Désarchiver</button>'
+        : '<button class="btn secondary td-mini" data-act="archiver" title="Ranger dans « Archivées » (repliées en bas de la page)"><span class="gicon">inventory_2</span> Archiver</button>'}
       ${(s.items || []).some(x => x.type === 'qz') ? '<button class="btn secondary td-mini" data-act="noter" title="Créer une interrogation avec les réponses des élèves aux exercices choisis"><span class="gicon">grading</span> Noter des exercices</button>' : ''}
       <button class="btn secondary td-mini" data-act="rouvrir"><span class="gicon">replay</span> Rouvrir</button>
       <button class="btn secondary td-mini" data-act="suppr" title="Supprimer la session et les réponses des élèves"><span class="gicon">delete</span></button></div></div>`;
@@ -140,6 +172,7 @@ document.addEventListener('click', async e => {
   else if(a === 'maintenant'){ if(await niceConfirm(`Ouvrir « ${s.titre} » maintenant ? Les élèves peuvent entrer tout de suite.`) && await csEtat(s, { debut: '' })) csRafraichir(); }
   else if(a === 'noter') csNoter(id);
   else if(a === 'rouvrir') csRouvrir(s);
+  else if(a === 'archiver' || a === 'desarchiver') csArchiver(s, a === 'archiver');
   else if(a === 'suppr') csSupprimer(s);
 });
 
@@ -231,11 +264,20 @@ async function csRouvrir(s){
   const { data } = await sb.from('cours_direct').select('etat,code').eq('id', s.id).maybeSingle();
   // Code repris par une session ouverte entre-temps : on en tire un nouveau (déclencheur sur code vide).
   const { data: pris } = await sb.from('cours_direct').select('id').eq('code', s.code).is('ended_at', null).neq('id', s.id).limit(1);
-  const maj = { ended_at: null, etat: Object.assign({}, (data && data.etat) || {}, { jusqua }) };
+  const maj = { ended_at: null, etat: Object.assign({}, (data && data.etat) || {}, { jusqua, archivee: false }) };
   if(pris && pris.length) maj.code = csNouveauCode();
   const { error } = await sb.from('cours_direct').update(maj).eq('id', s.id);
   if(error){ await niceAlert('Session non rouverte : ' + error.message); return; }
   await csRafraichir();
+}
+// Archiver / désarchiver une session terminée (repère dans etat ; rien ne change pour les élèves).
+async function csArchiver(s, oui, groupe){
+  const { data } = await sb.from('cours_direct').select('etat').eq('id', s.id).maybeSingle();
+  const etat = Object.assign({}, (data && data.etat) || {}, { archivee: !!oui });
+  const { error } = await sb.from('cours_direct').update({ etat }).eq('id', s.id);
+  if(error){ await niceAlert('Changement non enregistré : ' + error.message); return; }
+  s.etat = etat;
+  if(!groupe) csRendre();
 }
 function csNouveauCode(){ return String(Math.floor(1000 + Math.random() * 9000)); }
 async function csSupprimer(s){
@@ -350,6 +392,8 @@ async function csNoter(id){
     .cs-carte.prog{border-color:rgba(199,125,30,.45);} .cs-quand{font:700 .95rem 'Space Grotesk',sans-serif;color:#8A5A00;text-transform:none;} .cs-quand .gicon{vertical-align:-4px;font-size:19px;}
     .cs-c-info{font-size:.85rem;} .cs-c-opts,.cs-c-act{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
     .cs-liste{display:flex;flex-direction:column;gap:6px;}
+    .cs-sous{font:700 .95rem 'Space Grotesk',sans-serif;margin:10px 0 2px;color:#1F3A5C;display:flex;align-items:center;gap:6px;} .cs-sous small{background:#E8ECF2;border-radius:999px;padding:0 8px;font-size:.75rem;}
+    .cs-h-btn{margin-left:8px;font-family:Inter,sans-serif;} .cs-arch .cs-ligne{background:#F7F8FA;}
     .cs-ligne{display:flex;gap:10px;align-items:center;background:#fff;border:1px solid rgba(28,43,57,.1);border-radius:12px;padding:8px 12px;flex-wrap:wrap;}
     .cs-l-t{flex:1;min-width:240px;} .cs-l-t b{font-family:'Space Grotesk',sans-serif;} .cs-l-act{display:flex;gap:6px;flex-wrap:wrap;}
     .cs-tag{display:inline-flex;align-items:center;gap:2px;font-weight:700;color:#1F3A5C;} .cs-tag.libre{color:#1F7A4D;} .cs-tag .gicon{font-size:15px;}

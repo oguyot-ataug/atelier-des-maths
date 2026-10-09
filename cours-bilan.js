@@ -10,6 +10,10 @@
    télécommande (« Bilan »), à la fin de la séance, ou plus tard depuis le Cahier de corrections
    (« Bilans des séances » : les séances de la classe active). Imprimable.
 
+   Bilan d'un élève (« Permettre aussi d'isoler les bilans complets d'un élève ») : toutes les sessions de sa
+   classe, de la plus récente à la plus ancienne, avec sa présence, ses résultats exercice par exercice, ses
+   mains levées et ses sorties de la page. Depuis la page Sessions, ou d'un clic sur son nom dans un bilan.
+
    Données : cours_direct (éléments, corrigés compris côté professeur), cours_direct_membres (entrée,
    sorties), cours_direct_travaux (réponses ; _mains = mains levées, _mot = mot du professeur).
    ===================================================================== */
@@ -71,7 +75,7 @@ function cdBilanRendre(o, row, seances, eleves, membres, travaux){
     items.forEach((_, k) => { const r = T.get(k + '|' + e.id); if(r){ mains += r._mains || 0; if(r._mot && r._mot.t) mots++; } });
     mainsTot += mains; motsTot += mots; sortiesTot += (m && m.sorties) || 0;
     const cases = exos.map(({ it, k }, i) => { const x = repDe(k, e.id), c = cdBilanCase(it, x.r); if(c.cl !== 'vide') parEx[i].commence++; if(c.ok) parEx[i].ok++; return `<td class="cdb-c ${c.cl}">${c.txt}${x.eq ? '<small class="cdb-eq"> en équipe</small>' : ''}</td>`; }).join('');
-    return `<tr class="${m || via.has(e.id) ? '' : 'cdb-absent'}"><th>${cdEsc(e.nom)}</th><td>${m ? hh(m.joined_at) : via.has(e.id) ? `<span class="cdb-eq">avec ${cdEsc(nomDe(via.get(e.id)))}</span>` : '<span class="cdb-gris">pas entré</span>'}</td>${cases}
+    return `<tr class="${m || via.has(e.id) ? '' : 'cdb-absent'}"><th><a href="#" class="cdb-el" data-el="${e.id}" title="Toutes les sessions de cet élève">${cdEsc(e.nom)}</a></th><td>${m ? hh(m.joined_at) : via.has(e.id) ? `<span class="cdb-eq">avec ${cdEsc(nomDe(via.get(e.id)))}</span>` : '<span class="cdb-gris">pas entré</span>'}</td>${cases}
       <td class="cdb-n">${mains ? `<span class="gicon">front_hand</span> ${mains}` : ''}</td><td class="cdb-n">${mots ? `<span class="gicon">chat</span> ${mots}` : ''}</td>
       <td class="cdb-n ${m && m.sorties ? 'cdb-rouge' : ''}">${m && m.sorties ? `${m.sorties} <small>(dernière à ${hh(m.sortie_at)})</small>` : ''}</td></tr>`;
   }).join('');
@@ -90,6 +94,7 @@ function cdBilanRendre(o, row, seances, eleves, membres, travaux){
       ${exos.length ? `<tfoot><tr><th>Tout juste</th><td></td>${parEx.map(p => `<td class="cdb-c">${p.ok} / ${p.commence}</td>`).join('')}<td colspan="3"></td></tr></tfoot>` : ''}</table></div>
     <p class="hint cdb-leg"><span class="cdb-c ok">tout juste</span> <span class="cdb-c moyen">au moins la moitié</span> <span class="cdb-c ko">moins de la moitié</span> <span class="cdb-c vide">—</span> pas répondu. Pour les questions à corriger soi-même, voir la copie dans la télécommande.</p></div></div>`;
   o.querySelector('#cdbSeance').onchange = e => cdBilan(e.target.value);
+  o.querySelectorAll('[data-el]').forEach(a => a.onclick = ev => { ev.preventDefault(); cdBilanEleve(row.class_id, a.dataset.el); });
   o.querySelector('#cdbImprimer').onclick = () => {
     const w = window.open('', '_blank'); if(!w){ niceAlert('Autorisez les fenêtres pour imprimer.'); return; }
     w.document.write(`<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Bilan · ${cdEsc(row.titre || 'Séance')}</title><style>${CDB_CSS}
@@ -97,6 +102,80 @@ function cdBilanRendre(o, row, seances, eleves, membres, travaux){
       <body>${o.querySelector('#cdbFeuille').innerHTML}<script>setTimeout(()=>print(),300)<\/script></body></html>`);
     w.document.close();
   };
+}
+/* ---------- Bilan d'un élève : toutes ses sessions ---------- */
+async function cdBilanEleve(classId, eleveId){
+  let o = document.getElementById('cdBilanEl');
+  if(!o){ o = document.createElement('div'); o.id = 'cdBilanEl'; o.className = 'modal-overlay'; o.style.zIndex = '9465'; document.body.appendChild(o); }
+  o.onclick = e => { if(e.target === o) o.style.display = 'none'; };
+  o.style.display = 'flex';
+  const classes = typeof accountClassesList !== 'undefined' ? accountClassesList : [];
+  if(!classId){ o.innerHTML = '<div class="modal-card cdb"><p class="hint">Aucune classe.</p></div>'; return; }
+  o.innerHTML = '<div class="modal-card cdb"><p class="hint">Chargement…</p></div>';
+  const eleves = await qzElevesDevoir({ class_id: classId }).then(l => typeof elevesReels === 'function' ? elevesReels(l) : l);
+  if(!eleveId || !eleves.some(e => e.id === eleveId)) eleveId = eleves[0] && eleves[0].id;
+  const tete = `<div class="cdb-tete"><b class="cd-h"><span class="gicon">person_search</span> Bilan d'un élève</b>
+      <select id="cdbElClasse">${classes.map(c => `<option value="${c.id}"${c.id === classId ? ' selected' : ''}>${cdEsc(c.label)}</option>`).join('')}</select>
+      <select id="cdbElEleve">${eleves.map(e => `<option value="${e.id}"${e.id === eleveId ? ' selected' : ''}>${cdEsc(e.label)}</option>`).join('')}</select>
+      <span style="flex:1"></span><button class="btn secondary" id="cdbElImprimer"><span class="gicon">print</span> Imprimer</button>
+      <button class="modal-close" onclick="document.getElementById('cdBilanEl').style.display='none'"><span class="gicon">close</span></button></div>`;
+  const brancher = () => {
+    o.querySelector('#cdbElClasse').onchange = e => cdBilanEleve(e.target.value, null);
+    o.querySelector('#cdbElEleve').onchange = e => cdBilanEleve(classId, e.target.value);
+    o.querySelector('#cdbElImprimer').onclick = () => {
+      const f = o.querySelector('#cdbElFeuille'); if(!f) return;
+      const w = window.open('', '_blank'); if(!w){ niceAlert('Autorisez les fenêtres pour imprimer.'); return; }
+      w.document.write(`<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Bilan des sessions</title><style>${CDB_CSS}
+        body{font-family:Inter,Arial,sans-serif;color:#1C2B39;margin:12mm;} .gicon{display:none;} @page{size:A4;margin:10mm;}</style></head>
+        <body>${f.innerHTML}<script>setTimeout(()=>print(),300)<\/script></body></html>`);
+      w.document.close();
+    };
+  };
+  if(!eleveId){ o.innerHTML = `<div class="modal-card cdb">${tete}<p class="hint">Aucun élève dans cette classe.</p></div>`; brancher(); return; }
+  const { data: rows0 } = await sb.from('cours_direct').select('id,titre,created_at,ended_at,items,etat').eq('teacher_id', currentUser.id).eq('class_id', classId).order('created_at', { ascending: false }).limit(80);
+  // Sessions programmées pas encore commencées : écartées.
+  const rows = (rows0 || []).filter(r => !((r.etat || {}).debut && Date.parse(r.etat.debut) > Date.now()));
+  const ids = rows.map(r => r.id);
+  // Travail en équipe : l'élève sans ordinateur reçoit le travail du poste de son équipe.
+  const postes = new Map(rows.map(r => [r.id, typeof cdEqPostes === 'function' ? cdEqPostes(r.etat).get(eleveId) : null]));
+  const qui = [...new Set([eleveId, ...[...postes.values()].filter(Boolean)])];
+  const [{ data: membres }, { data: travaux }] = ids.length ? await Promise.all([
+    sb.from('cours_direct_membres').select('direct_id,joined_at,sorties,sortie_at').in('direct_id', ids).eq('student_id', eleveId),
+    sb.from('cours_direct_travaux').select('direct_id,item,student_id,reponses').in('direct_id', ids).in('student_id', qui)
+  ]) : [{ data: [] }, { data: [] }];
+  const M = new Map((membres || []).map(m => [m.direct_id, m])), T = new Map();
+  (travaux || []).forEach(t => T.set(t.direct_id + '|' + t.item + '|' + t.student_id, t.reponses || {}));
+  const eleve = eleves.find(e => e.id === eleveId), nomDe = id => { const e = eleves.find(x => x.id === id); return e ? (e.prenom || e.label) : ''; };
+  const hh = d => d ? new Date(d).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : '';
+  let presentes = 0, exTot = 0, exFaits = 0, exJustes = 0, mainsTot = 0, sortiesTot = 0;
+  const blocs = rows.map(r => {
+    const m = M.get(r.id), poste = postes.get(r.id), items = r.items || [];
+    const exos = items.map((it, k) => ({ it, k })).filter(x => x.it && x.it.exo);
+    if(m || poste) presentes++;
+    let mains = 0;
+    items.forEach((_, k) => { const x = T.get(r.id + '|' + k + '|' + eleveId); if(x) mains += x._mains || 0; });
+    mainsTot += mains; sortiesTot += (m && m.sorties) || 0; exTot += exos.length;
+    const lignes = exos.map(({ it, k }, i) => {
+      let rep = T.get(r.id + '|' + k + '|' + eleveId), eq = false;
+      if(!rep && poste){ rep = T.get(r.id + '|' + k + '|' + poste); eq = !!rep; }
+      const c = cdBilanCase(it, rep);
+      if(c.cl !== 'vide') exFaits++; if(c.ok) exJustes++;
+      return `<tr><th>Ex. ${i + 1} <small>${cdEsc(String(it.titre || '').replace(/^(Exercice|Programmation|Figure)\s*:\s*/, ''))}</small></th><td class="cdb-c ${c.cl}">${c.txt}${eq ? '<small class="cdb-eq"> en équipe</small>' : ''}</td></tr>`;
+    }).join('');
+    const statut = m ? `entré à ${hh(m.joined_at)}` : poste ? `<span class="cdb-eq">avec ${cdEsc(nomDe(poste))}</span>` : '<span class="cdb-gris">pas entré</span>';
+    return `<div class="cdbe-s${m || poste ? '' : ' cdb-absent'}"><div class="cdbe-t"><b>${cdEsc(r.titre || 'Séance')}</b>
+        <small>${new Date(r.created_at).toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })}${r.ended_at ? '' : ' · en cours'} · ${statut}${mains ? ` · <span class="gicon">front_hand</span> ${mains}` : ''}${m && m.sorties ? ` · <span class="cdb-rouge">${m.sorties} sortie${m.sorties > 1 ? 's' : ''} de la page</span>` : ''}</small></div>
+      ${exos.length ? `<div class="cdb-table"><table>${lignes}</table></div>` : '<small class="cdb-gris">Pas d\'exercice dans cette session.</small>'}</div>`;
+  }).join('');
+  o.innerHTML = `<div class="modal-card cdb">${tete}
+    <div id="cdbElFeuille"><h2 class="cdb-h">${cdEsc(eleve ? eleve.label : '')} <small>${cdEsc((classes.find(c => c.id === classId) || {}).label || '')} · sessions COURS</small></h2>
+    <div class="cdb-chiffres"><span><b>${presentes}</b> / ${rows.length} session${rows.length > 1 ? 's' : ''} suivie${presentes > 1 ? 's' : ''}</span>
+      <span><b>${exJustes}</b> exercice${exJustes > 1 ? 's' : ''} tout juste · <b>${exFaits}</b> commencé${exFaits > 1 ? 's' : ''} · ${exTot} proposé${exTot > 1 ? 's' : ''}</span>
+      <span><span class="gicon">front_hand</span> <b>${mainsTot}</b> main${mainsTot > 1 ? 's' : ''} levée${mainsTot > 1 ? 's' : ''}</span>
+      <span class="${sortiesTot ? 'cdb-rouge' : ''}"><span class="gicon">logout</span> <b>${sortiesTot}</b> sortie${sortiesTot > 1 ? 's' : ''} de la page</span></div>
+    ${blocs || '<p class="hint">Aucune session pour cette classe.</p>'}
+    <p class="hint cdb-leg"><span class="cdb-c ok">tout juste</span> <span class="cdb-c moyen">au moins la moitié</span> <span class="cdb-c ko">moins de la moitié</span> <span class="cdb-c vide">—</span> pas répondu.</p></div></div>`;
+  brancher();
 }
 const CDB_CSS = `
   .cdb-h{font:700 1.2rem 'Space Grotesk',Arial,sans-serif;margin:6px 0;} .cdb-h small{font-weight:500;color:#5B6472;font-size:.8em;}
@@ -110,6 +189,11 @@ const CDB_CSS = `
   .cdb-absent th, .cdb-absent td{color:#9AA3AF;} .cdb-gris{color:#9AA3AF;} .cdb-rouge{color:#C0392B;font-weight:700;} .cdb-n .gicon{font-size:15px;vertical-align:middle;}
   .cdb-leg .cdb-c{display:inline-block;padding:0 6px;border-radius:5px;}
   .cdb-eq{color:#3A6EA5;font-weight:600;font-size:.85em;}
+  .cdb-el{color:inherit;text-decoration:none;} .cdb-el:hover{text-decoration:underline;color:#1F5FA8;}
+  .cdbe-s{border:1px solid #DCE2EA;border-radius:10px;padding:8px 10px;margin:8px 0;break-inside:avoid;}
+  .cdbe-t b{font-family:'Space Grotesk',Arial,sans-serif;} .cdbe-t small{display:block;color:#5B6472;margin:1px 0 6px;} .cdbe-t .gicon{font-size:15px;vertical-align:-3px;}
+  .cdbe-s .cdb-table table{min-width:0;} .cdbe-s .cdb-table tbody th{position:static;box-shadow:none;font-weight:600;} .cdbe-s .cdb-table th small{color:#5B6472;font-weight:500;margin-left:4px;}
+  .cdbe-s.cdb-absent{opacity:.65;}
   /* Colonne des noms (et ligne des titres) figée quand on fait défiler -- demandé : « Dans les bilans, figer les
      colonnes NOM Prénom ». Bordures en ombre : avec border-collapse, une cellule figée perd les siennes. */
   .cdb-table thead th{position:sticky;top:0;z-index:2;} .cdb-table tfoot th, .cdb-table tfoot td{position:sticky;bottom:0;z-index:2;}

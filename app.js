@@ -3381,6 +3381,11 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1042', date:'2026-10-09', items:[
+    "Sessions COURS : une session terminée peut être archivée (bouton « Archiver », ou « Tout archiver » pour les terminées affichées). Les archivées sont rangées, repliées, en bas de la page ; on peut toujours voir leur bilan, les rouvrir ou les désarchiver. Une session rouverte sort des archives.",
+    "Sessions COURS : tri « par classe » (les terminées et les archivées regroupées sous le nom de chaque classe) ou « par date » ; le choix est retenu.",
+    "Sessions COURS : « Bilan d'un élève » montre toutes les sessions de sa classe, de la plus récente à la plus ancienne : présence (heure d'entrée, ou travail en équipe), résultat à chaque exercice, mains levées, sorties de la page, avec un total en tête. Imprimable. On y arrive aussi en cliquant sur le nom d'un élève dans le bilan d'une séance.",
+  ]},
   { version:'2026-08-19.1041', date:'2026-10-09', items:[
     "6e, Nombres décimaux : les millièmes sont représentés dans un cube. Le cube unité est partagé en 1 000 petits cubes (un petit cube coloré = un millième), à côté de la plaque (un dixième = 100 millièmes), de la barre (un centième = 10 millièmes) et du petit cube, à la même échelle.",
   ]},
