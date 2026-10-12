@@ -633,8 +633,12 @@ async function applyCustomProgressionIfAny(lvl){
     if(!ct) return;
     ownerId = ct.teacher_id;
   } else return;
-  const { data: rows, error } = await sb.from('progressions').select('*').eq('owner_id', ownerId).eq('niveau', lvl).order('ordre');
-  if(error || !rows || !rows.length) return;
+  let { data: rows, error } = await sb.from('progressions').select('*').eq('owner_id', ownerId).eq('niveau', lvl).order('ordre');
+  if(error) return;
+  // Pas de progression personnelle (professeur, ou professeur de l'élève) : progression validée de
+  // l'établissement, modèle par défaut (progression-etab.js), sinon celle du site.
+  if((!rows || !rows.length) && typeof peEtabRows==='function') rows = await peEtabRows(lvl);
+  if(!rows || !rows.length) return;
   const defaultData = CHAPITRES_BY_LEVEL[lvl] || CH6;
   const merged = rows.map(r=>{
     const base = defaultData.find(c=>c.t===r.chapitre_titre);
@@ -671,8 +675,11 @@ async function renderProgressionEditor(){
   progUserZone = (profile && profile.zone_vacances) || 'B';
   document.getElementById('progZoneSelect').value = progUserZone;
 
-  const { data: rows, error } = await sb.from('progressions').select('*').eq('owner_id', currentUser.id).eq('niveau', lvl).order('ordre');
+  let { data: rows, error } = await sb.from('progressions').select('*').eq('owner_id', currentUser.id).eq('niveau', lvl).order('ordre');
   if(error){ status.textContent = 'Erreur : '+error.message; return; }
+  // Pas encore de progression personnelle : on part de celle de l'établissement si elle existe.
+  let depuisEtab = false;
+  if((!rows || !rows.length) && typeof peEtabRows==='function'){ rows = await peEtabRows(lvl); depuisEtab = !!(rows && rows.length); }
   if(rows && rows.length){
     progEditorItems = rows.map(r=>{
       const base = defaultData.find(c=>c.t===r.chapitre_titre) || {};
@@ -693,8 +700,9 @@ async function renderProgressionEditor(){
     progEditorItems = defaultData.map(c=>({ titre:c.t, nomPerso:'', code:c.code, cat:c.cat, p:c.p, s:c.s, dateDebut: friseStartDate(c.d), dateFin: friseEndDate(c.d) }));
   }
   progEditIdx = -1;
-  status.textContent = '';
+  status.textContent = depuisEtab ? 'Vous voyez la progression de l\'établissement : adaptez-la si besoin, puis « Enregistrer » pour en faire la vôtre.' : '';
   renderProgressionList();
+  if(typeof peEtabPanneau==='function') peEtabPanneau(lvl);
 }
 async function onZoneChange(){
   progUserZone = document.getElementById('progZoneSelect').value;
@@ -3381,6 +3389,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1047', date:'2026-10-12', items:[
+    "Progression d'établissement (demandé : « établir une progression, comme une progression établissement. N'importe quel prof peut établir cette progression mais elle est validée par le référent » ; choix : modèle par défaut). Dans « Ma progression », un encadré « Progression de l'établissement » : un professeur propose la progression affichée au référent (avec un mot), suit sa proposition (en attente, ou non retenue avec la réponse du référent), voit la progression en vigueur et peut « Partir de cette progression » pour l'adapter. Le référent a un onglet « Progressions » dans « Mon établissement » (pastille du nombre de propositions en attente) : il compare une proposition à la progression en vigueur (chapitres avancés, reculés, renommés, durées changées, événements ajoutés), la valide (l'ancienne est archivée et peut être remise en vigueur) ou la refuse avec un commentaire ; il peut aussi publier directement la sienne ou retirer la progression en vigueur. Une progression validée sert de modèle : un professeur sans progression personnelle la voit (pages de niveau, frise, « Ma progression »), ses élèves aussi ; chacun garde la possibilité d'avoir la sienne."
+  ]},
   { version:'2026-08-19.1046', date:'2026-10-12', items:[
     "Multiplier et diviser par 10, 100, 1 000 (CE2, CM1, CM2) : méthode « moins recette de cuisine » (demandé : « repérer le chiffre des unités du nombre initial ; il devient le chiffre des dizaines, des centaines ou des milliers ; les autres chiffres suivent et on complète avec des zéros si besoin »). Le glisse-nombre animé a été refait : on repère le chiffre des unités (en rouge), il part seul vers son nouveau rang, les autres chiffres le suivent, puis on complète avec des zéros (en bleu) ; un zéro inutile tout à gauche (0,56 × 10) ou tout à droite après la virgule (380 ÷ 1 000) s'efface. Règles, exemples, corrections et consignes des chapitres concernés reformulés de la même façon (plus de « chaque chiffre glisse »), ainsi que les objectifs de la planche « Multiplier et diviser par 10, 100, 1 000 » de 6e, dont le cours suivait déjà cette méthode."
   ]},
