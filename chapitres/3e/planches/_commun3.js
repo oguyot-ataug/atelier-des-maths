@@ -29,6 +29,8 @@ const P3 = {
   // Questions enchaînées d'un problème de brevet (numérotées comme au brevet) ; une question peut
   // avoir des sous-questions : ['texte', ['a)…', 'b)…']].
   qs: items => `<ol class="pl-bq">${items.map(x => Array.isArray(x) ? `<li>${x[0]}<ol>${x[1].map(y => `<li>${y}</li>`).join('')}</ol></li>` : `<li>${x}</li>`).join('')}</ol>`,
+  // Figure à côté d'un texte (questions d'un problème de brevet).
+  cote: (fig, html) => `<div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;"><div style="flex:0 0 auto;">${fig}</div><div style="flex:1;min-width:220px;">${html}</div></div>`,
   // Figure SVG simple.
   svg: (w, h, inner, px) => `<svg class="pl-libre" viewBox="0 0 ${w} ${h}" style="width:${px || w}px;max-width:100%;display:inline-block;vertical-align:middle;">${inner}</svg>`,
   K: '#1F3A5C', Ro: '#E35D3A', Bl: '#2EA8C9', Ve: '#2E9C6A', Vi: '#7A4FC0', Or: '#E9A21C',
@@ -46,6 +48,7 @@ const P3 = {
     for(let x = a; x <= b + 1e-9; x += sx) g += `<line x1="${X(x)}" y1="${Y(c)}" x2="${X(x)}" y2="${Y(d)}" stroke="#D5E2EE" stroke-width="1"/>`;
     for(let y = c; y <= d + 1e-9; y += sy) g += `<line x1="${X(a)}" y1="${Y(y)}" x2="${X(b)}" y2="${Y(y)}" stroke="#D5E2EE" stroke-width="1"/>`;
     const x0 = a <= 0 && b >= 0 ? 0 : a, y0 = c <= 0 && d >= 0 ? 0 : c;
+    if(o.axes !== false){
     g += `<line x1="${X(a)}" y1="${Y(y0)}" x2="${X(b) + 10}" y2="${Y(y0)}" stroke="#1F3A5C" stroke-width="1.6"/><path d="M${X(b) + 10},${Y(y0)} l-7,-4 v8 z" fill="#1F3A5C"/>`;
     g += `<line x1="${X(x0)}" y1="${Y(c)}" x2="${X(x0)}" y2="${Y(d) - 10}" stroke="#1F3A5C" stroke-width="1.6"/><path d="M${X(x0)},${Y(d) - 10} l-4,7 h8 z" fill="#1F3A5C"/>`;
     const nb = t => String(Math.round(t * 1000) / 1000).replace('.', ',').replace('-', '−');
@@ -54,6 +57,8 @@ const P3 = {
     g += P3.Tx([X(x0) - 5, Y(y0) + 14], x0 === 0 && y0 === 0 ? '0' : '', '#1F3A5C', 10, 'end');
     if(o.nx) g += P3.Tx([X(b) + 8, Y(y0) - 6], o.nx, '#1F3A5C', 10, 'end');
     if(o.ny) g += P3.Tx([X(x0) + 6, Y(d) - 4], o.ny, '#1F3A5C', 10, 'start');
+    }
+    (o.polys || []).forEach(([pts, col, fill]) => { g += `<polygon points="${pts.map(([x, y]) => X(x) + ',' + Y(y)).join(' ')}" fill="${fill || 'none'}" stroke="${col || '#1F3A5C'}" stroke-width="2"/>`; });
     (o.segs || []).forEach(([p, q, col, dash]) => { g += P3.L([X(p[0]), Y(p[1])], [X(q[0]), Y(q[1])], col || '#E35D3A', 1.4, dash); });
     (o.fns || []).forEach(F => { const de = F.de ?? a, fin = F.a ?? b, n = 160; let path = '', on = false;
       for(let i = 0; i <= n; i++){ const x = de + (fin - de) * i / n, y = F.f(x); if(y < c - .01 || y > d + .01 || !isFinite(y)){ on = false; continue; }
@@ -74,4 +79,28 @@ const P3 = {
     if(o.nx) g += P3.Tx([X(b), Y(0) + 27], o.nx, '#1F3A5C', 10, 'end');
     if(o.ny) g += P3.Tx([X(a) + 4, Y(top) - 12], o.ny, '#1F3A5C', 10, 'start');
     return P3.svg(W, H + 6, g, o.px || Math.min(W, 300)); },
+  // Figure de géométrie : o = { pts: { A: [x, y] }, segs: [['A', 'B', { c, d (pointillés), w }]], noms: ['A', …] ou true,
+  // off: { A: [dx, dy] }, cotes: [['A', 'B', 'texte', côté (1 / −1)]], droits: [['A', 'B', 'C']] (angle droit en B),
+  // arcs: [['A', 'B', 'C', 'texte', couleur]] (angle en B), poly: [['A', 'B', 'C'], fond], marques: [['A', 'B', n]] (n traits),
+  // px, marge }.
+  geo: o => { const P = o.pts, m = o.marge ?? 22, xs = Object.values(P).map(p => p[0]), ys = Object.values(P).map(p => p[1]);
+    const x0 = Math.min(...xs) - m, y0 = Math.min(...ys) - m, W = Math.max(...xs) - x0 + m, H = Math.max(...ys) - y0 + m;
+    const Q = n => [P[n][0] - x0, P[n][1] - y0], G = [xs.reduce((s, v) => s + v, 0) / xs.length - x0, ys.reduce((s, v) => s + v, 0) / ys.length - y0];
+    const u = (a, b) => { const d = Math.hypot(b[0] - a[0], b[1] - a[1]) || 1; return [(b[0] - a[0]) / d, (b[1] - a[1]) / d]; };
+    let g = '';
+    (o.poly || []).forEach(([l, f]) => { g += `<polygon points="${l.map(n => Q(n).join(',')).join(' ')}" fill="${f || '#EAF4FB'}" stroke="none"/>`; });
+    (o.segs || []).forEach(([a, b, s]) => { s = s || {}; g += P3.L(Q(a), Q(b), s.c, s.w || 2, s.d); });
+    (o.droits || []).forEach(([a, b, c]) => { const B = Q(b), e = u(B, Q(a)), f = u(B, Q(c)), k = 9;
+      g += `<path d="M${B[0] + e[0] * k},${B[1] + e[1] * k} L${B[0] + (e[0] + f[0]) * k},${B[1] + (e[1] + f[1]) * k} L${B[0] + f[0] * k},${B[1] + f[1] * k}" fill="none" stroke="#1F3A5C" stroke-width="1.4"/>`; });
+    (o.arcs || []).forEach(([a, b, c, t, col]) => { const B = Q(b), e = u(B, Q(a)), f = u(B, Q(c)), r = 18, p = [B[0] + e[0] * r, B[1] + e[1] * r], q = [B[0] + f[0] * r, B[1] + f[1] * r];
+      const cr = e[0] * f[1] - e[1] * f[0], mid = u([0, 0], [e[0] + f[0], e[1] + f[1]]);
+      g += `<path d="M${p[0].toFixed(1)},${p[1].toFixed(1)} A${r},${r} 0 0 ${cr > 0 ? 1 : 0} ${q[0].toFixed(1)},${q[1].toFixed(1)}" fill="none" stroke="${col || '#E35D3A'}" stroke-width="2"/>`;
+      if(t) g += P3.Tx([B[0] + mid[0] * (r + 13), B[1] + mid[1] * (r + 13) + 4], t, col || '#E35D3A', 11); });
+    (o.marques || []).forEach(([a, b, n]) => { const A = Q(a), B = Q(b), M = [(A[0] + B[0]) / 2, (A[1] + B[1]) / 2], e = u(A, B), nn = [-e[1], e[0]];
+      for(let i = 0; i < (n || 1); i++){ const c = [M[0] + e[0] * (i - ((n || 1) - 1) / 2) * 4, M[1] + e[1] * (i - ((n || 1) - 1) / 2) * 4]; g += P3.L([c[0] - nn[0] * 5, c[1] - nn[1] * 5], [c[0] + nn[0] * 5, c[1] + nn[1] * 5], '#1F3A5C', 1.4); } });
+    (o.cotes || []).forEach(([a, b, t, cote]) => { const A = Q(a), B = Q(b), e = u(A, B), s = cote || 1, M = [(A[0] + B[0]) / 2 - e[1] * 12 * s, (A[1] + B[1]) / 2 + e[0] * 12 * s + 4]; g += P3.Tx(M, t, '#2E9C6A', 11); });
+    const noms = o.noms === true || !o.noms ? Object.keys(P) : o.noms;
+    noms.forEach(n => { const p = Q(n), off = (o.off || {})[n], v = u(G, p), d = off ? off : [v[0] * 12, v[1] * 12 + 4];
+      g += `<circle cx="${p[0]}" cy="${p[1]}" r="1.8" fill="#1F3A5C"/>` + P3.Tx([p[0] + d[0], p[1] + d[1]], n, '#1F3A5C', 12); });
+    return P3.svg(W, H, g, o.px || Math.min(W, 260)); },
 };
