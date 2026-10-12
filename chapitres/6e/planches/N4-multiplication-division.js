@@ -20,7 +20,7 @@ const mults = (l, o) => duo(l.map(([a, b]) => mult(a, b, o)));
 const exoMult = (consigne, l, x) => Object.assign({ consigne, eleve: mults(l), corr: mults(l, {}), ecran: { eleve: mults(l, { trous: true }), corr: mults(l, { rep: true }) } }, x);
 PLANCHES['6e|Multiplication et division'] = [
   { titre: 'Multiplier et diviser par 10, 100, 1 000', duree: '30 min',
-    attendus: ['Multiplier un décimal par 10, 100, 1 000 : la virgule se décale vers la droite', 'Diviser un décimal par 10, 100, 1 000 : la virgule se décale vers la gauche', 'Multiplier par 0,1 ; 0,01 ; 0,001'],
+    attendus: ['Multiplier un décimal par 10, 100, 1 000 : le chiffre des unités devient celui des dizaines, des centaines, des milliers', 'Diviser un décimal par 10, 100, 1 000 : le chiffre des unités devient celui des dixièmes, des centièmes, des millièmes', 'Multiplier par 0,1 ; 0,01 ; 0,001'],
     exos: [
       { etoiles: 1, col: 1, consigne: 'Calcule.',
         eleve: plListe(['3,47 × 10 = ' + B(), '3,47 × 100 = ' + B(), '0,08 × 1 000 = ' + B(), '12,5 × 100 = ' + B(), '0,6 × 10 = ' + B()]),

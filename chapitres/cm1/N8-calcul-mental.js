@@ -57,13 +57,13 @@ ${cm1Lecon(3, 'Décomposer pour calculer')}
 ${cm1Exemple('On décompose un nombre pour faire des calculs plus simples :', ['35 + 48 = 35 + 40 + 8 = 75 + 8 = <b>83</b>', '14 × 6 = 10 × 6 + 4 × 6 = 60 + 24 = <b>84</b>', '23 × 11 = 23 × 10 + 23 = 230 + 23 = <b>253</b>', '15 × 9 = 15 × 10 − 15 = 150 − 15 = <b>135</b>'])}
 
 ${cm1Lecon(4, 'Multiplier par 10, 100, 1 000 (nombres entiers)')}
-${cm1Regle('Multiplier un nombre entier par 10, c\'est rendre chaque chiffre 10 fois plus grand : les unités deviennent des dizaines… On écrit donc <b>un 0</b> à droite. Par 100 : <b>deux 0</b>. Par 1 000 : <b>trois 0</b>.')}
+${cm1Regle(`Multiplier un nombre entier par 10 : le chiffre des unités devient le <b>chiffre des dizaines</b>, les autres chiffres le suivent, et on complète avec <b>un 0</b> au rang des unités.${cm1Liste(['× 100 : il devient le chiffre des centaines, on complète avec <b>deux 0</b>.', '× 1 000 : il devient le chiffre des milliers, on complète avec <b>trois 0</b>.'])}`)}
 ${cm1Exemple('Exemples :', ['36 × 10 = <b>360</b> (36 unités deviennent 36 dizaines)', '36 × 100 = <b>3 600</b>', '36 × 1 000 = <b>36 000</b>'])}
 ${cmAnimGlisseDec('cm1-cm-glisse', { presets: [{ nom: '36 × 100', n: '36', f: 100, op: '×' }, { nom: '2,5 × 10', n: '2,5', f: 10, op: '×' }, { nom: '5,4 ÷ 10', n: '5,4', f: 10, op: '÷' }, { nom: '27 ÷ 10', n: '27', f: 10, op: '÷' }] })}
-${cm1Astuce('Cette astuce « j\'ajoute des zéros » ne marche <b>que pour les nombres entiers</b> ! Pour 2,5 × 10, on n\'écrit pas 2,50 : chaque chiffre glisse d\'un rang, et 2,5 × 10 = <b>25</b>.')}
+${cm1Astuce('Cette astuce « j\'ajoute des zéros » ne marche <b>que pour les nombres entiers</b> ! Pour 2,5 × 10, on n\'écrit pas 2,50 : le chiffre des unités, 2, devient le chiffre des dizaines, le 5 le suit aux unités, et 2,5 × 10 = <b>25</b>.')}
 
 ${cm1Lecon(5, 'Décimaux : × 10 et ÷ 10')}
-${cm1Regle('× 10 : chaque chiffre glisse d\'<b>un rang vers la gauche</b>. ÷ 10 : chaque chiffre glisse d\'<b>un rang vers la droite</b>.')}
+${cm1Regle(`On repère le chiffre des unités :${cm1Liste(['× 10 : il devient le <b>chiffre des dizaines</b> ;', '÷ 10 : il devient le <b>chiffre des dixièmes</b>.'])}Les autres chiffres le suivent, et on complète avec des zéros si besoin.`)}
 ${cm1Exemple('Exemples :', ['4,6 × 10 = <b>46</b>', '0,35 × 10 = <b>3,5</b>', '27 ÷ 10 = <b>2,7</b>', '5,4 ÷ 10 = <b>0,54</b>'])}
 
 ${cm1Lecon(6, 'Multiplier par 4, par 5, par 20')}
@@ -101,7 +101,7 @@ ${cm1Sous('A', 'Atelier : 10 calculs pour t\'entraîner')}
     ['Une boîte contient 52 crayons. Combien y a-t-il de crayons dans 10 boîtes ? dans 100 boîtes ?',
       cm1Redac('Crayons dans 10 boîtes', '52 × 10 = 520', 'Il y a 520 crayons dans 10 boîtes.') + cm1Redac('Crayons dans 100 boîtes', '52 × 100 = 5 200', 'Il y a 5 200 crayons dans 100 boîtes.')],
     [`Calcule.${cm1Liste(['3,8 × 10', '0,6 × 10', '45 ÷ 10', '1,2 ÷ 10'])}`,
-      cm1Redac('Multiplier et diviser par 10', { suite: ['3,8 × 10 = 38', '0,6 × 10 = 6', '45 ÷ 10 = 4,5', '1,2 ÷ 10 = 0,12'] }, 'Chaque chiffre glisse d\'un rang : vers la gauche pour × 10, vers la droite pour ÷ 10.')],
+      cm1Redac('Multiplier et diviser par 10', { suite: ['3,8 × 10 = 38', '0,6 × 10 = 6', '45 ÷ 10 = 4,5', '1,2 ÷ 10 = 0,12'] }, 'Le chiffre des unités devient le chiffre des dizaines pour × 10, le chiffre des dixièmes pour ÷ 10 ; les autres chiffres le suivent.')],
     [`Calcule en expliquant ta méthode.${cm1Liste(['25 × 4', '64 × 5', '18 × 11'])}`,
       cm1Redac('25 × 4 : le double du double', { suite: ['2 × 25 = 50', '2 × 50 = 100'] }, '25 × 4 donne 100.')
       + cm1Redac('64 × 5 : × 10 puis la moitié', { suite: ['64 × 10 = 640', 'la moitié de 640 est 320'] }, '64 × 5 donne 320.')
@@ -147,7 +147,7 @@ PLANCHES['cm1|Procédures de calcul mental'] = [
     attendus: ['Multiplier un nombre entier par 10, 100, 1 000', 'Multiplier et diviser un nombre décimal par 10', 'Multiplier par 4, par 5, par 20'],
     exos: [
       { etoiles: 1, col: 1, consigne: 'Multiplie par 10, 100 ou 1 000.', ...ex([['36 × 10 = …', 360], ['36 × 100 = …', '3 600'], ['36 × 1 000 = …', '36 000'], ['205 × 10 = …', '2 050'], ['40 × 100 = …', '4 000']]) },
-      { etoiles: 1, col: 1, consigne: 'Nombres décimaux : chaque chiffre glisse d\'un rang.', ...ex([['4,6 × 10 = …', 46], ['0,35 × 10 = …', '3,5'], ['27 ÷ 10 = …', '2,7'], ['5,4 ÷ 10 = …', '0,54'], ['2,5 × 10 = …', 25]]) },
+      { etoiles: 1, col: 1, consigne: 'Nombres décimaux : suis le chiffre des unités.', ...ex([['4,6 × 10 = …', 46], ['0,35 × 10 = …', '3,5'], ['27 ÷ 10 = …', '2,7'], ['5,4 ÷ 10 = …', '0,54'], ['2,5 × 10 = …', 25]]) },
       { etoiles: 2, col: 1, consigne: '× 4, c\'est le double du double.', ...ex([['23 × 4 = …', 92], ['15 × 4 = …', 60], ['45 × 4 = …', 180], ['125 × 4 = …', 500]]) },
       { etoiles: 2, col: 1, consigne: '× 5, c\'est × 10 puis la moitié.', ...ex([['36 × 5 = …', 180], ['48 × 5 = …', 240], ['14 × 5 = …', 70], ['120 × 5 = …', 600]]) },
       { etoiles: 2, col: 1, consigne: '× 20, c\'est × 2 puis × 10.', ...ex([['13 × 20 = …', 260], ['25 × 20 = …', 500], ['31 × 20 = …', 620], ['45 × 20 = …', 900]]) },
@@ -155,7 +155,7 @@ PLANCHES['cm1|Procédures de calcul mental'] = [
       { etoiles: 3, col: 1, cahier: true, consigne: 'Un carnet coûte 5 €. Combien coûtent 48 carnets ? Calcule de tête et explique.',
         corr: cm1Redac('Prix des carnets', ['48 × 5', '480 ÷ 2', '240'], '48 carnets coûtent 240 € : j\'ai multiplié par 10 (480), puis j\'ai pris la moitié.') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Léo dit : « 2,5 × 10 = 2,50, j\'ajoute un zéro. » A-t-il raison ? Explique.',
-        corr: cm1Redac('Calcul de 2,5 × 10', '2,5 × 10 = 25', 'Léo a tort : 2,50 est égal à 2,5. Avec un nombre décimal, chaque chiffre glisse d\'un rang vers la gauche ; on n\'ajoute pas de zéro.') },
+        corr: cm1Redac('Calcul de 2,5 × 10', '2,5 × 10 = 25', 'Léo a tort : 2,50 est égal à 2,5. Avec un nombre décimal, le chiffre des unités devient le chiffre des dizaines et les autres chiffres le suivent ; on n\'ajoute pas de zéro après la virgule.') },
     ] },
 ];
 })();

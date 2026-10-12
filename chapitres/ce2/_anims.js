@@ -126,22 +126,30 @@ function ce2AnimJetons(id, o){
     } });
 }
 
-/* ---------------- Glisse-nombre : multiplier par 10 ou par 100 ---------------- */
+/* ---------------- Glisse-nombre : multiplier par 10 ou par 100 ----------------
+   Même méthode que cmAnimGlisseDec : on repère le chiffre des unités (en rouge), il devient le chiffre
+   des dizaines (× 10) ou des centaines (× 100), les autres chiffres le suivent, on complète avec des
+   zéros (en bleu). */
 function ce2AnimGlisse(id, o){
   const P = o.presets, COLS = ['milliers', 'centaines', 'dizaines', 'unités'];
-  return ce2Film(id, { duree: 7000, legende: o.legende || 'Chaque chiffre glisse vers la gauche : il prend une valeur 10 fois (ou 100 fois) plus grande.', controles: a => ce2Choix(id, P, a),
+  return ce2Film(id, { duree: 8000, legende: o.legende || 'On suit le chiffre des unités (en rouge) : il change de rang, les autres chiffres le suivent.', controles: a => ce2Choix(id, P, a),
     film: a => {
       const p = P[a.etat.p], d = String(p.n).split(''), dec = p.f === 100 ? 2 : 1, CW = 96, X0 = 20, W = X0 * 2 + 4 * CW, colX = j => X0 + j * CW + CW / 2;
       let fond = '';
-      COLS.forEach((c, j) => { fond += `<rect x="${X0 + j * CW}" y="20" width="${CW}" height="34" fill="${CE2C.encre}" stroke="#fff"/>` + ce2T(colX(j), 42, c, { c: '#fff', t: 13 }) + `<rect x="${X0 + j * CW}" y="54" width="${CW}" height="56" fill="#fff" stroke="${CE2C.encre}"/>`; });
-      const debut = 4 - d.length;
-      const chiffres = k => d.map((ch, i) => ce2T(colX(ce2Mix(debut + i, debut + i - dec, k)), 94, ch, { t: 34, c: CE2C.encre, g: 700 })).join('');
-      const zeros = k => Array.from({ length: dec }, (_, z) => ce2T(colX(3 - z), 94, '0', { t: 34, c: CE2C.rouge, g: 700, op: k })).join('');
+      COLS.forEach((c, j) => { fond += `<rect x="${X0 + j * CW}" y="20" width="${CW}" height="34" fill="${CE2C.encre}" stroke="#fff"/>` + ce2T(colX(j), 42, c, { c: '#fff', t: 13 }) + `<rect x="${X0 + j * CW}" y="54" width="${CW}" height="56" fill="#fff" stroke="${CE2C.clair}"/>`; });
+      const debut = 4 - d.length, iu = d.length - 1, nouveau = dec > 1 ? 'centaines' : 'dizaines';
+      const pos = (i, t) => colX(ce2Mix(debut + i, debut + i - dec, cmDoux(i === iu ? cmPhase(t, .24, .44) : cmPhase(t, .48, .64))));
       return { w: W, h: 150, scenes: [
         { de: 0, a: .1, dessin: () => fond, texte: `Voici <b>${ce2Nb(p.n)}</b> dans le tableau.` },
-        { de: .15, a: .6, dessin: k => chiffres(k), texte: `On multiplie par ${p.f} : chaque chiffre prend une valeur ${p.f} fois plus grande et glisse de ${dec} rang${dec > 1 ? 's' : ''} vers la gauche.` },
-        { de: .65, a: .8, dessin: k => zeros(k), texte: `Les unités sont vides : on y écrit ${dec > 1 ? 'des zéros' : 'un zéro'}.` },
-        { de: .85, a: 1, dessin: k => ce2T(W / 2, 140, `${ce2Nb(p.n)} × ${p.f} = ${ce2Nb(p.n * p.f)}`, { t: 18, c: CE2C.vert, op: k }), texte: `<b>${ce2Nb(p.n)} × ${p.f} = ${ce2Nb(p.n * p.f)}</b>` },
+        { de: 0, a: 1, dessin: (k, t) => {
+            let s = '';
+            if(t >= .1){ const op = Math.min(1, (t - .1) / .08), x = pos(iu, t); s += `<rect x="${x - 30}" y="60" width="60" height="44" rx="10" fill="${CE2C.rouge}" fill-opacity="${(.14 * op).toFixed(3)}" stroke="${CE2C.rouge}" stroke-opacity="${(.8 * op).toFixed(3)}" stroke-width="2"/>`; }
+            return s + d.map((ch, i) => ce2T(pos(i, t), 94, ch, { t: 34, c: i === iu && t >= .1 ? CE2C.rouge : CE2C.encre, g: 700 })).join(''); } },
+        { de: .1, texte: `On repère le <b style="color:${CE2C.rouge}">chiffre des unités</b> : <b>${d[iu]}</b>. C'est lui qui nous intéresse.` },
+        { de: .24, texte: `On multiplie par ${p.f} : le chiffre des unités devient le <b>chiffre des ${nouveau}</b>.` },
+        { de: .48, texte: d.length > 1 ? 'Les autres chiffres <b>le suivent</b>, dans le même ordre.' : 'Il n\'y a pas d\'autre chiffre à déplacer.' },
+        { de: .68, a: .8, dessin: k => Array.from({ length: dec }, (_, z) => ce2T(colX(3 - z), 94, '0', { t: 34, c: CE2C.bleu, g: 700, op: k })).join(''), texte: `On complète avec ${dec > 1 ? 'des zéros' : 'un zéro'} (en bleu).` },
+        { de: .84, a: 1, dessin: k => ce2T(W / 2, 140, `${ce2Nb(p.n)} × ${p.f} = ${ce2Nb(p.n * p.f)}`, { t: 18, c: CE2C.vert, op: k }), texte: `<b>${ce2Nb(p.n)} × ${p.f} = ${ce2Nb(p.n * p.f)}</b>` },
       ] };
     } });
 }
@@ -492,31 +500,47 @@ function ce2AnimReport(id, o){
 }
 
 /* ---------------- Glisse-nombre avec virgule : × ou ÷ 10, 100, 1 000 (CM1, CM2) ----------------
-   presets : [{ nom, n: '4,27', f: 10, op: '×' | '÷' }]. Les chiffres glissent de rang en rang ; la
-   virgule reste en place ; les zéros nécessaires apparaissent en rouge. */
+   presets : [{ nom, n: '4,27', f: 10, op: '×' | '÷' }]. Demandé (méthode « moins recette de cuisine ») :
+   on repère le chiffre des unités du nombre de départ (en rouge) ; c'est lui qui nous intéresse : il
+   devient le chiffre des dizaines, des centaines, des milliers (×) ou des dixièmes, centièmes,
+   millièmes (÷). Il part seul vers son nouveau rang, les autres chiffres le suivent, puis on complète
+   avec des zéros si besoin (en bleu) ; un zéro inutile tout à gauche s'efface. La virgule ne bouge pas. */
 function cmAnimGlisseDec(id, o){
   const P = o.presets, RANGS = [3, 2, 1, 0, -1, -2, -3], NOMS = { 3: 'milliers', 2: 'centaines', 1: 'dizaines', 0: 'unités', '-1': 'dixièmes', '-2': 'centièmes', '-3': 'millièmes' };
-  return ce2Film(id, { duree: 7500, legende: o.legende || 'La virgule ne bouge pas : ce sont les chiffres qui glissent vers la gauche (×) ou vers la droite (÷).', controles: a => ce2Choix(id, P, a),
+  return ce2Film(id, { duree: 9000, legende: o.legende || 'On suit le chiffre des unités (en rouge) : il change de rang, les autres chiffres le suivent, la virgule ne bouge pas.', controles: a => ce2Choix(id, P, a),
     film: a => {
-      const p = P[a.etat.p], [e, d = ''] = String(p.n).split(','), dec = Math.round(Math.log10(p.f)), sh = p.op === '÷' ? -dec : dec;
-      const ent = e.replace(/^0+/, ''), zeroDepart = !ent; // « 0,56 » : le 0 des unités ne glisse pas, il s'efface
-      const chiffres = [...ent].map((c, i) => ({ c, r: ent.length - 1 - i })).concat([...d].map((c, i) => ({ c, r: -1 - i })));
+      const p = P[a.etat.p], [e0, d = ''] = String(p.n).split(','), dec = Math.round(Math.log10(p.f)), sh = p.op === '÷' ? -dec : dec;
+      const e = e0.replace(/^0+(?=\d)/, '');
+      const chiffres = [...e].map((c, i) => ({ c, r: e.length - 1 - i })).concat([...d].map((c, i) => ({ c, r: -1 - i })));
       const CW = 70, X0 = 14, VG = 18, colX = r => X0 + (3 - r) * CW + CW / 2 + (r < 0 ? VG : 0), W = X0 * 2 + 7 * CW + VG;
-      const occ = new Set(chiffres.map(x => x.r + sh)), hi = Math.max(...occ), lo = Math.min(...occ), zeros = [];
+      // Après le déplacement, un zéro tout à gauche (avant les unités) ou tout à droite (après la virgule) ne
+      // sert à rien : il s'efface (0,56 × 10 = 5,6 ; 380 ÷ 1 000 = 0,38).
+      const nz = chiffres.filter(x => x.c !== '0').map(x => x.r + sh), hautUtile = Math.max(0, ...nz), basUtile = Math.min(0, ...nz);
+      chiffres.forEach(x => { x.inutile = x.c === '0' && (x.r + sh > hautUtile ? 'gauche' : x.r + sh < basUtile ? 'droite' : false); });
+      const efface = [...new Set(chiffres.map(x => x.inutile).filter(Boolean))].map(c => c === 'gauche' ? 'le zéro tout à gauche ne sert plus' : 'le zéro tout à droite, après la virgule, ne sert plus').join(' ; ');
+      const occ = new Set(chiffres.filter(x => !x.inutile).map(x => x.r + sh)), hi = Math.max(...occ), lo = Math.min(...occ), zeros = [];
       for(let r = Math.min(lo, 0); r <= Math.max(hi, 0); r++) if(!occ.has(r) && (r >= 0 || r > lo)) zeros.push(r);
-      // Résultat écrit : chiffres décalés et zéros utiles (à gauche de la virgule jusqu'aux unités, entre les chiffres).
-      const res = {}; chiffres.forEach(x => res[x.r + sh] = x.c); zeros.forEach(r => res[r] = '0');
+      const res = {}; chiffres.filter(x => !x.inutile).forEach(x => res[x.r + sh] = x.c); zeros.forEach(r => res[r] = '0');
       const rs = Object.keys(res).map(Number), top = Math.max(...rs, 0), bas = Math.min(...rs, 0);
       let txt = ''; for(let r = top; r >= bas; r--){ txt += res[r] ?? '0'; if(r === 0 && bas < 0) txt += ','; if(r === 3 && top >= 3) txt += ' '; }
       let fond = '';
-      RANGS.forEach(r => { const x = colX(r) - CW / 2; fond += `<rect x="${x}" y="20" width="${CW}" height="30" fill="${r >= 0 ? CE2C.encre : CE2C.violet}" stroke="#fff"/>` + ce2T(x + CW / 2, 40, NOMS[r], { c: '#fff', t: 11 }) + `<rect x="${x}" y="50" width="${CW}" height="56" fill="#fff" stroke="${CE2C.encre}"/>`; });
+      RANGS.forEach(r => { const x = colX(r) - CW / 2; fond += `<rect x="${x}" y="20" width="${CW}" height="30" fill="${r >= 0 ? CE2C.encre : CE2C.violet}" stroke="#fff"/>` + ce2T(x + CW / 2, 40, NOMS[r], { c: '#fff', t: 11 }) + `<rect x="${x}" y="50" width="${CW}" height="56" fill="#fff" stroke="${CE2C.clair}"/>`; });
       fond += ce2T(colX(0) + CW / 2 + VG / 2, 92, ',', { t: 34, g: 700, c: CE2C.rouge });
-      const lu = p.op === '÷' ? 'plus petite' : 'plus grande', sens = p.op === '÷' ? 'la droite' : 'la gauche';
+      const u = chiffres.find(x => x.r === 0), nouveau = NOMS[sh];
+      // Temps : repérage .10 ; le chiffre des unités part seul .24 → .44 ; les autres suivent .48 → .64 ; zéros .68 → .80 ; résultat .84.
+      const pos = (x, t) => { const k = x.r === 0 ? cmDoux(cmPhase(t, .24, .44)) : cmDoux(cmPhase(t, .48, .64)); return ce2Mix(colX(x.r), colX(x.r + sh), k); };
       return { w: W, h: 150, scenes: [
         { de: 0, a: .1, dessin: () => fond, texte: `Voici <b>${p.n}</b> dans le tableau.` },
-        { de: 0, a: .11, dessin: k => k < 1 ? (zeroDepart ? ce2T(colX(0), 90, '0', { t: 32, g: 700 }) : '') + chiffres.map(x => ce2T(colX(x.r), 90, x.c, { t: 32, g: 700 })).join('') : '' },
-        { de: .12, a: .62, dessin: k => (zeroDepart ? ce2T(colX(0), 90, '0', { t: 32, g: 700, op: 1 - k }) : '') + chiffres.map(x => ce2T(ce2Mix(colX(x.r), colX(x.r + sh), k), 90, x.c, { t: 32, g: 700 })).join(''), texte: `${p.op === '÷' ? 'On divise' : 'On multiplie'} par ${ce2Nb(p.f)} : chaque chiffre prend une valeur ${ce2Nb(p.f)} fois ${lu} et glisse de ${dec} rang${dec > 1 ? 's' : ''} vers ${sens}.` },
-        { de: .66, a: .8, dessin: k => zeros.map(r => ce2T(colX(r), 90, '0', { t: 32, g: 700, c: CE2C.rouge, op: k })).join(''), texte: zeros.length ? 'On écrit les zéros nécessaires (en rouge).' : 'Aucun zéro à ajouter.' },
+        { de: 0, a: 1, dessin: (k, t) => {
+            let s = '';
+            if(t >= .1){ const op = Math.min(1, (t - .1) / .08) * (u.inutile ? 1 - cmPhase(t, .68, .78) : 1), x = pos(u, t); s += `<rect x="${x - 26}" y="56" width="52" height="44" rx="10" fill="${CE2C.rouge}" fill-opacity="${(.14 * op).toFixed(3)}" stroke="${CE2C.rouge}" stroke-opacity="${(.8 * op).toFixed(3)}" stroke-width="2"/>`; }
+            chiffres.forEach(x => { const op = x.inutile ? 1 - cmPhase(t, .68, .78) : 1; s += ce2T(pos(x, t), 90, x.c, { t: 32, g: 700, c: x.r === 0 && t >= .1 ? CE2C.rouge : CE2C.encre, op }); });
+            return s; } },
+        { de: .1, texte: `On repère le <b style="color:${CE2C.rouge}">chiffre des unités</b> : <b>${u.c}</b>. C'est lui qui nous intéresse.` },
+        { de: .24, texte: `${p.op === '÷' ? 'On divise' : 'On multiplie'} par ${ce2Nb(p.f)} : le chiffre des unités devient le <b>chiffre des ${nouveau}</b>.` },
+        { de: .48, texte: chiffres.length > 1 ? 'Les autres chiffres <b>le suivent</b> : ils restent à côté de lui, dans le même ordre.' : 'Il n\'y a pas d\'autre chiffre à déplacer.' },
+        { de: .68, a: .8, dessin: k => zeros.map(r => ce2T(colX(r), 90, '0', { t: 32, g: 700, c: CE2C.bleu, op: k })).join(''),
+          texte: zeros.length ? `On complète avec ${zeros.length > 1 ? 'des zéros' : 'un zéro'} (en bleu)${efface ? ` ; ${efface} : on l'efface` : ''}.` : efface ? `${efface[0].toUpperCase() + efface.slice(1)} : on l'efface.` : 'Pas besoin de zéro ici.' },
         { de: .84, a: 1, dessin: k => ce2T(W / 2, 140, `${p.n} ${p.op} ${ce2Nb(p.f)} = ${txt}`, { t: 18, c: CE2C.vert, op: k }), texte: `<b>${p.n} ${p.op} ${ce2Nb(p.f)} = ${txt}</b>` },
       ] };
     } });

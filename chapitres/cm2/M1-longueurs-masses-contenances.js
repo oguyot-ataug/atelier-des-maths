@@ -41,9 +41,9 @@ ${cm1Demo('c2-lmc-pb', 'Résoudre un problème de contenance', 'Une bouteille co
   demos: [
     ['c2-lmc-conv', [
       { expr: '1 m = 100 cm', note: 'Relation connue.' },
-      { expr: '4,08 m = 4,08 × 100 cm = 408 cm', note: 'Multiplier par 100 : chaque chiffre glisse de deux rangs vers la gauche.' },
+      { expr: '4,08 m = 4,08 × 100 cm = 408 cm', note: 'Multiplier par 100 : le chiffre des unités, 4, devient le chiffre des centaines ; les autres chiffres le suivent.' },
       { expr: '1 000 m = 1 km, donc 1 m = 0,001 km', note: 'Pour passer à une unité plus grande, on divise.' },
-      { expr: '625 m = 625 ÷ 1 000 km = 0,625 km', note: 'Diviser par 1 000 : chaque chiffre glisse de trois rangs vers la droite.' },
+      { expr: '625 m = 625 ÷ 1 000 km = 0,625 km', note: 'Diviser par 1 000 : le chiffre des unités, 5, devient le chiffre des millièmes ; les autres chiffres le suivent.' },
     ]],
     ['c2-lmc-pb', [
       { expr: '1,5 L = 150 cL', note: 'Même unité que les verres : 1 L = 100 cL.' },

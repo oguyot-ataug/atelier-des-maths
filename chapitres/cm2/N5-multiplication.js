@@ -13,7 +13,7 @@ cm1Chapitre({
   niveau: 'cm2', titre: 'Multiplication', slug: 'multiplication',
   cours: `
 ${cm1Lecon(1, 'Multiplier par 10, 100, 1 000')}
-${cm1Regle('Multiplier par 10, 100 ou 1 000, c\'est rendre le nombre 10, 100 ou 1 000 fois plus grand : chaque chiffre glisse de <b>1, 2 ou 3 rangs vers la gauche</b>.')}
+${cm1Regle(`Multiplier par 10, 100 ou 1 000, c'est rendre le nombre 10, 100 ou 1 000 fois plus grand. On repère le <b>chiffre des unités</b> :${cm1Liste(['× 10 : il devient le <b>chiffre des dizaines</b> ;', '× 100 : il devient le <b>chiffre des centaines</b> ;', '× 1 000 : il devient le <b>chiffre des milliers</b>.'])}Les autres chiffres le suivent, et on complète avec des zéros si besoin.`)}
 ${cm1Exemple('Exemples (le chiffre des unités de départ est en rouge) :', [`${U('2')},75 × 10 = 27,5`, `${U('3')},46 × 100 = 346`, `${U('0')},8 × 1 000 = 800`, '45 × 100 = 4 500'])}
 ${cmAnimGlisseDec('c2-mu-glisse', { presets: [{ nom: '2,75 × 10', n: '2,75', f: 10, op: '×' }, { nom: '3,46 × 100', n: '3,46', f: 100, op: '×' }, { nom: '0,8 × 1 000', n: '0,8', f: 1000, op: '×' }, { nom: '45 × 100', n: '45', f: 100, op: '×' }] })}
 ${cm1Regle('On peut multiplier des dizaines, centaines ou milliers entre eux : 30 × 400 = 3 × 4 × 10 × 100 = 12 × 1 000 = <b>12 000</b>.', 'Astuce')}
@@ -54,7 +54,7 @@ ${cm1Demo('c2-mu-pb', 'Résoudre un problème', 'Un croissant coûte 1,35 €. C
   ],
   exos: cm1Exos('c2mu', [
     [`Calcule.${cm1Liste(['4,7 × 10', '0,36 × 100', '5,2 × 1 000', '0,008 × 1 000'])}`,
-      cm1Redac('Multiplier par 10, 100, 1 000', { suite: ['4,7 × 10 = 47', '0,36 × 100 = 36', '5,2 × 1 000 = 5 200', '0,008 × 1 000 = 8'] }, 'Chaque chiffre glisse de 1, 2 ou 3 rangs vers la gauche.')],
+      cm1Redac('Multiplier par 10, 100, 1 000', { suite: ['4,7 × 10 = 47', '0,36 × 100 = 36', '5,2 × 1 000 = 5 200', '0,008 × 1 000 = 8'] }, 'Le chiffre des unités devient le chiffre des dizaines, des centaines ou des milliers ; les autres chiffres le suivent.')],
     [`Calcule mentalement.${cm1Liste(['20 × 300', '40 × 50', '600 × 7 000'])}`,
       cm1Redac('20 × 300', '2 × 3 × 1 000 = 6 000', '20 × 300 donne 6 000.') + cm1Redac('40 × 50', '4 × 5 × 100 = 2 000', '40 × 50 donne 2 000.') + cm1Redac('600 × 7 000', '6 × 7 × 100 000 = 4 200 000', '600 × 7 000 donne 4 200 000.')],
     [`Pose et calcule.${cm1Liste(['356 × 47', '1 208 × 305'])}`,

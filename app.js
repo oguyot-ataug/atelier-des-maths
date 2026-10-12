@@ -3381,6 +3381,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1046', date:'2026-10-12', items:[
+    "Multiplier et diviser par 10, 100, 1 000 (CE2, CM1, CM2) : méthode « moins recette de cuisine » (demandé : « repérer le chiffre des unités du nombre initial ; il devient le chiffre des dizaines, des centaines ou des milliers ; les autres chiffres suivent et on complète avec des zéros si besoin »). Le glisse-nombre animé a été refait : on repère le chiffre des unités (en rouge), il part seul vers son nouveau rang, les autres chiffres le suivent, puis on complète avec des zéros (en bleu) ; un zéro inutile tout à gauche (0,56 × 10) ou tout à droite après la virgule (380 ÷ 1 000) s'efface. Règles, exemples, corrections et consignes des chapitres concernés reformulés de la même façon (plus de « chaque chiffre glisse »), ainsi que les objectifs de la planche « Multiplier et diviser par 10, 100, 1 000 » de 6e, dont le cours suivait déjà cette méthode."
+  ]},
   { version:'2026-08-19.1045', date:'2026-10-09', items:[
     "Sessions COURS : bouton « Cahier » sur chaque session (ouverte ou terminée). On coche les éléments à garder (parties de cours, exercices du manuel, exercices et interrogations, documents), avec ou sans les corrections, on choisit le chapitre (par défaut celui de chaque élément) et la date (par défaut le jour de la session) : chaque élément devient une entrée du cahier de la classe. Les réponses des élèves n'y vont jamais ; les défis de programmation ne s'écrivent pas dans le cahier.",
   ]},

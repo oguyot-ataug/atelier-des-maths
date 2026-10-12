@@ -29,7 +29,7 @@ ${cm1Regle('Quand le reste n\'est pas nul, on peut <b>continuer la division</b> 
 ${cm1Exemple('Résultats :', ['17 ÷ 4 = <b>4,25</b>', 'vérification : 4 × 4,25 = 17', '25,8 ÷ 6 = <b>4,3</b>', 'vérification : 6 × 4,3 = 25,8'])}
 
 ${cm1Lecon(4, 'Diviser par 10, 100, 1 000')}
-${cm1Regle('Diviser par 10, 100 ou 1 000, c\'est rendre le nombre 10, 100 ou 1 000 fois plus petit : chaque chiffre glisse de <b>1, 2 ou 3 rangs vers la droite</b>.')}
+${cm1Regle(`Diviser par 10, 100 ou 1 000, c'est rendre le nombre 10, 100 ou 1 000 fois plus petit. On repère le <b>chiffre des unités</b> :${cm1Liste(['÷ 10 : il devient le <b>chiffre des dixièmes</b> ;', '÷ 100 : il devient le <b>chiffre des centièmes</b> ;', '÷ 1 000 : il devient le <b>chiffre des millièmes</b>.'])}Les autres chiffres le suivent, et on complète avec des zéros si besoin.`)}
 ${cm1Exemple('Exemples (chiffre des unités de départ en rouge) :', [`4${U('5')} ÷ 10 = 4,5`, `${U('7')},2 ÷ 100 = 0,072`, `38${U('0')} ÷ 1 000 = 0,38`])}
 ${cmAnimGlisseDec('c2-dv-glisse', { presets: [{ nom: '45 ÷ 10', n: '45', f: 10, op: '÷' }, { nom: '7,2 ÷ 100', n: '7,2', f: 100, op: '÷' }, { nom: '380 ÷ 1 000', n: '380', f: 1000, op: '÷' }] })}
 
@@ -62,7 +62,7 @@ ${cm1Demo('c2-dv-dec', 'Partager une somme d\'argent', 'Quatre amis se partagent
     [`Pose et effectue la division décimale.${cm1Liste(['23 ÷ 4, jusqu\'aux centièmes', '9 ÷ 8, jusqu\'aux millièmes', '37,2 ÷ 3'])}`,
       cm1Redac('23 ÷ 4', { pose: deci(23, 4, 2) }, '23 divisé par 4 donne 5,75.') + cm1Redac('9 ÷ 8', { pose: deci(9, 8, 3) }, '9 divisé par 8 donne 1,125.') + cm1Redac('37,2 ÷ 3', { pose: deci('37,2', 3, 1) }, '37,2 divisé par 3 donne 12,4.')],
     [`Calcule.${cm1Liste(['56 ÷ 10', '3,4 ÷ 10', '250 ÷ 100', '8 ÷ 1 000'])}`,
-      cm1Redac('Diviser par 10, 100, 1 000', { suite: ['56 ÷ 10 = 5,6', '3,4 ÷ 10 = 0,34', '250 ÷ 100 = 2,5', '8 ÷ 1 000 = 0,008'] }, 'Chaque chiffre glisse de 1, 2 ou 3 rangs vers la droite.')],
+      cm1Redac('Diviser par 10, 100, 1 000', { suite: ['56 ÷ 10 = 5,6', '3,4 ÷ 10 = 0,34', '250 ÷ 100 = 2,5', '8 ÷ 1 000 = 0,008'] }, 'Le chiffre des unités devient le chiffre des dixièmes, des centièmes ou des millièmes ; les autres chiffres le suivent.')],
     [`Calcule de tête.${cm1Liste(['64 ÷ 4', '200 ÷ 8', '36 ÷ 4', '88 ÷ 8'])}`,
       cm1Redac('64 ÷ 4', '64 → 32 → 16', '64 divisé par 4 donne 16 : c\'est la moitié de la moitié.') + cm1Redac('200 ÷ 8', '200 → 100 → 50 → 25', '200 divisé par 8 donne 25.') + cm1Redac('36 ÷ 4', '36 → 18 → 9', '36 divisé par 4 donne 9.') + cm1Redac('88 ÷ 8', '88 → 44 → 22 → 11', '88 divisé par 8 donne 11.')],
     [`Partage ou groupement ?${cm1Liste(['96 cartes pour 8 joueurs : combien chacun en reçoit-il ?', '96 cartes par paquets de 8 : combien de paquets ?'])}`,

@@ -46,7 +46,7 @@ ${cm1Lecon(1, 'Faits numériques à connaître')}
 ${cm1Regle(`Moitiés des nombres impairs :${cm1Liste(['la moitié de 7 est 3,5', 'la moitié de 9 est 4,5', 'la moitié de 15 est 7,5'])}Fractions usuelles :${cm1Liste([`${cm1Frac(1, 2)} = 0,5`, `${cm1Frac(1, 4)} = 0,25`, `${cm1Frac(3, 4)} = 0,75`, `${cm1Frac(1, 5)} = 0,2`, `${cm1Frac(1, 10)} = 0,1`, `${cm1Frac(1, 100)} = 0,01`])}Relations :${cm1Liste([`${cm1Frac(1, 2)} = ${cm1Frac(2, 4)} = ${cm1Frac(5, 10)}`, `${cm1Frac(1, 4)} = ${cm1Frac(25, 100)}`, 'deux quarts font un demi'])}`, 'À savoir par cœur')}
 
 ${cm1Lecon(2, 'Décimaux et numération')}
-${cm1Exemple('Exemples :', ['4,6 + 3 = 7,6 : on ne change que les unités ;', '12,35 − 2 = 10,35 ;', '8,7 + 5 = 13,7 ;', '2,4 + 3,8 = 5 + 1,2 = 6,2 : les unités ensemble, les dixièmes ensemble ;', '3,25 × 100 = 325 : chaque chiffre glisse ;', '48 ÷ 1 000 = 0,048.'])}
+${cm1Exemple('Exemples :', ['4,6 + 3 = 7,6 : on ne change que les unités ;', '12,35 − 2 = 10,35 ;', '8,7 + 5 = 13,7 ;', '2,4 + 3,8 = 5 + 1,2 = 6,2 : les unités ensemble, les dixièmes ensemble ;', '3,25 × 100 = 325 : le chiffre des unités, 3, devient le chiffre des centaines ;', '48 ÷ 1 000 = 0,048.'])}
 ${cmAnimGlisseDec('c2-cm-glisse', { presets: [{ nom: '3,25 × 100', n: '3,25', f: 100, op: '×' }, { nom: '48 ÷ 1 000', n: '48', f: 1000, op: '÷' }] })}
 
 ${cm1Lecon(3, 'Ajouter ou soustraire 9, 19, 99…')}
@@ -71,7 +71,7 @@ ${cm1Sous('A', 'Atelier : 10 calculs pour t\'entraîner')}
   demos: [
     ['c2-cm-50', [
       { expr: '50 = 100 ÷ 2', note: 'Multiplier par 50, c\'est multiplier par 100 puis prendre la moitié.' },
-      { expr: '3,4 × 100 = 340', note: 'Chaque chiffre glisse de deux rangs vers la gauche.' },
+      { expr: '3,4 × 100 = 340', note: 'Le chiffre des unités, 3, devient le chiffre des centaines ; le 4 le suit, et on complète avec un 0.' },
       { expr: 'moitié de 340 = 170', note: 'Moitié de 300 = 150, moitié de 40 = 20.' },
       { expr: '3,4 × 50 = 170', note: 'Résultat.' },
     ]],

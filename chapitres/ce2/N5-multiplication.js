@@ -19,7 +19,7 @@ ${cm1Lecon(2, 'Les mots de la multiplication')}
 ${cm1Def(`<ul style="margin:0;padding-left:20px;line-height:1.8;"><li>Dans <b>3 × 25 = 75</b> : 3 et 25 sont les <b>facteurs</b>, 75 est le <b>produit</b>. « Le produit de 3 et de 25 est 75. »</li><li>75 est un <b>multiple</b> de 25 (et de 3) : il est dans la « table » de 25.</li><li>Les nombres <b>pairs</b> (0, 2, 4, 6, 8…) sont les multiples de 2. Les nombres <b>impairs</b> ne sont pas des multiples de 2.</li></ul>`, 'Vocabulaire')}
 
 ${cm1Lecon(3, 'Multiplier par 10 et par 100')}
-${cm1Regle('Quand on multiplie par <b>10</b>, chaque chiffre prend une valeur <b>10 fois plus grande</b> : les unités deviennent des dizaines, les dizaines des centaines, les centaines des milliers. On écrit donc un <b>0</b> à droite. Par <b>100</b>, chaque chiffre prend une valeur 100 fois plus grande : on écrit <b>00</b> à droite.')}
+${cm1Regle(`Quand on multiplie par <b>10</b>, chaque chiffre prend une valeur <b>10 fois plus grande</b>. On repère le <b>chiffre des unités</b> : il devient le <b>chiffre des dizaines</b>, les autres chiffres le suivent, et on complète avec un <b>0</b> au rang des unités.${cm1Liste(['× 100 : le chiffre des unités devient le <b>chiffre des centaines</b>, on complète avec <b>deux 0</b>.'])}`)}
 ${ce2AnimGlisse('ce2-mu-glisse', { presets: [{ nom: '724 × 10', n: 724, f: 10 }, { nom: '36 × 10', n: 36, f: 10 }, { nom: '58 × 100', n: 58, f: 100 }, { nom: '9 × 100', n: 9, f: 100 }] })}
 ${cm1Exemple('Exemples :', ['36 × 10 = 360', '58 × 100 = 5 800', '9 × 40 = 9 × 4 × 10 = 36 × 10 = <b>360</b>'])}
 
