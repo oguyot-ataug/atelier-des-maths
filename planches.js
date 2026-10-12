@@ -21,6 +21,10 @@
    - Projection : chaque exercice, un par un, en grand, avec le bouton Correction.
    - Livre d'exercices d'un niveau : couverture, sommaire, planches dans l'ordre des chapitres, corrigés
      à la fin, pages numérotées ; il grandit avec les planches écrites (pour un éditeur ou un imprimeur).
+   - Objectif Brevet (3e) -- demandé : « des exercices type Objectif Brevet en plus ! En se basant sur les
+     derniers sujets du brevet ». Planche { brevet: true } : bandeau « Objectif Brevet » ; exercice
+     { auto: true } = automatismes (partie 1 de l'épreuve depuis 2026 : sans calculatrice, sans justification),
+     { pts: n } = barème indiqué comme au brevet.
    - Règles de rédaction du primaire (CLAUDE.md) : fractions en LaTeX (cm1Frac), pas de numérotation
      « 1. » devant les questions, un calcul par ligne, problèmes corrigés avec cm1Redac.
    ===================================================================== */
@@ -216,7 +220,7 @@ function plTdRendre(lvl, c){
   root.innerHTML = `<div class="td-intro"><span class="pl-oliv">${plOliv('muscle')}</span><div><b>Manuel : ${liste.reduce((n, p) => n + p.exos.length, 0)} exercices</b>
       <p class="hint" style="margin:2px 0 0;">Les exercices des planches de ce chapitre. Projetez-les un par un, affichez la correction, ajoutez-les au cahier de la classe ou à une session COURS (bouton « Session », ou « Ajouter un exercice » dans la session, onglet Manuel).</p></div>
       <button type="button" class="btn secondary" onclick="plOuvrir('${lvl}', CHAPITRES_BY_LEVEL['${lvl}'].find(x => x.code === '${c.code}'))"><span class="gicon">print</span> Planches à imprimer</button></div>
-    ${liste.map((p, i) => `<section class="td-planche"><div class="td-p-tete"><span class="pl-ref">${plRef(lvl, plCode(lvl, c), i)}</span><b>${esc(p.titre)}</b>
+    ${liste.map((p, i) => `<section class="td-planche"><div class="td-p-tete"><span class="pl-ref">${plRef(lvl, plCode(lvl, c), i)}</span>${p.brevet ? '<span class="pl-brevet">Objectif Brevet</span>' : ''}<b>${esc(p.titre)}</b>
         <span class="hint" style="margin:0;">${(p.attendus || []).map(esc).join(' · ')}</span>
         <button type="button" class="btn secondary td-mini" data-tdproj="${i}|0"><span class="gicon">present_to_all</span> Projeter la planche</button></div>
       <div class="td-grille">${p.exos.map((x, k) => `<div class="td-vig${x.col === 1 ? '' : ' td-plein'}" id="tdv-${i}-${k}">
@@ -369,7 +373,7 @@ function plOuvrir(lvl, c){
     <h3><span class="gicon">print</span> Planches d'exercices : ${esc(c.t)}</h3>
     <p class="hint" style="margin:4px 0 10px;">${liste.length} planche${liste.length > 1 ? 's' : ''}, du plus simple (★) au plus difficile (★★★), chacune avec son corrigé. À imprimer (ou « Enregistrer au format PDF »), ou à projeter exercice par exercice.</p>
     <div class="pl-cartes">${liste.map((pl, i) => `<div class="pl-carte">
-      <div class="pl-carte-tete"><span class="pl-ref">${plRef(lvl, plCode(lvl, c), i)}</span><b>${esc(pl.titre)}</b></div>
+      <div class="pl-carte-tete"><span class="pl-ref">${plRef(lvl, plCode(lvl, c), i)}</span>${pl.brevet ? '<span class="pl-brevet">Objectif Brevet</span>' : ''}<b>${esc(pl.titre)}</b></div>
       <div class="pl-carte-att">${(pl.attendus || []).map(a => `<div><span class="gicon">flag</span> ${esc(a)}</div>`).join('')}</div>
       <div class="pl-carte-pied"><span class="hint" style="margin:0;">${pl.exos.length} exercices${pl.duree ? ' · environ ' + esc(pl.duree) : ''}</span>
         <button type="button" class="btn secondary" data-proj="${i}" title="Les exercices un par un, en grand, avec la correction"><span class="gicon">present_to_all</span> Projeter</button>
@@ -414,6 +418,8 @@ const plEtoiles = k => '★'.repeat(k) + '<span class="pl-et-off">' + '★'.repe
 // (un défi) : la petite super-héroïne. Petite vignette dans la ligne du titre (ne change pas la hauteur).
 const PL_SUIVANTE = { ce2: 'En route vers le CM1 !', cm1: 'En route vers le CM2 !', cm2: 'En route vers la 6e !', '6e': 'En route vers la 5e !' };
 function plMarque(lvl, x){
+  const b = (x.auto ? '<span class="pl-auto" title="Partie 1 du brevet : sans calculatrice, sans justification">Sans calculatrice</span>' : '') + (x.pts ? `<span class="pl-bareme">${x.pts} point${x.pts > 1 ? 's' : ''}</span>` : '');
+  if(b) return `<span class="pl-marque-b">${b}</span>`;
   if(x.plus) return `<span class="pl-marque"><span class="pl-oliv">${plOliv('cm2')}</span><span class="pl-bulle">${PL_SUIVANTE[lvl] || 'Pour aller plus loin !'}</span></span>`;
   if((x.etoiles || 1) >= 3) return `<span class="pl-marque"><span class="pl-oliv">${plOliv('defi')}</span><span class="pl-bulle">Défi !</span></span>`;
   return '';
@@ -443,7 +449,7 @@ function plPageHtml(lvl, c, p, i, n, mode, pr, logo){
         : pr.identite === 'prenom' ? '<span>Prénom : <span class="pl-pts" style="min-width:13em;"></span></span>' : ''}${pr.date ? '<span>Date : <span class="pl-pts" style="min-width:7em;"></span></span>' : ''}</div>` : '';
   return `<section class="pl-page pl-planche${corr ? ' pl-corrige' : ''}" data-ref="${ref}${corr ? '-c' : ''}">
     <header class="pl-tete">${logo ? `<img class="pl-logo" src="${logo}" alt="L'Atelier des Maths">` : '<span class="pl-site">L\'Atelier des Maths</span>'}<span class="pl-site">${niv} · ${escapeHtml(c.t)}</span><span class="pl-ref">${ref}${corr ? ' · CORRIGÉ' : ''}</span></header>
-    <div class="pl-titre"><h1>Planche ${i + 1} : ${escapeHtml(p.titre)}</h1>${corr ? '' : `<span class="pl-oliv-tete"><span class="pl-oliv">${plOliv('muscle')}</span><span class="pl-bulle">Muscle ton jeu !</span></span>`}</div>
+    <div class="pl-titre"><h1>${p.brevet ? '<span class="pl-brevet">Objectif Brevet</span> ' : ''}Planche ${i + 1} : ${escapeHtml(p.titre)}</h1>${corr ? '' : `<span class="pl-oliv-tete"><span class="pl-oliv">${plOliv(p.brevet ? 'savoir' : 'muscle')}</span><span class="pl-bulle">${p.brevet ? 'Objectif Brevet !' : 'Muscle ton jeu !'}</span></span>`}</div>
     ${ident}
     <div class="pl-attendus"><b>Je travaille :</b> ${(p.attendus || []).map(a => escapeHtml(a)).join(' ; ')}</div>
     <div class="pl-exos">${p.exos.map((x, k) => `<div class="pl-exo${x.col === 1 ? ' pl-demi' : ''}"><div class="pl-exo-tete"><span class="pl-num">Exercice ${k + 1}</span>${plMarque(lvl, x)}<span class="pl-et">${plEtoiles(x.etoiles || 1)}</span></div>
@@ -720,6 +726,11 @@ const PL_CSS = `
   .pl-attendus{ font-size:9.5pt; background:#F3F5F8; border-radius:8px; padding:3px 10px; margin-bottom:6px; }
   .pl-exo{ border:1px solid #CBD2DC; border-radius:10px; padding:5px 11px 7px; margin:0 0 6px; break-inside:avoid; page-break-inside:avoid; }
   .pl-exo-tete{ display:flex; justify-content:space-between; align-items:center; margin-bottom:2px; }
+  .pl-brevet{ display:inline-block; background:#1F3A5C; color:#fff; font:700 .78em 'Space Grotesk',Arial,sans-serif; letter-spacing:.04em; text-transform:uppercase; padding:2px 8px; border-radius:6px; vertical-align:middle; margin-right:4px; }
+  .pl-marque-b{ display:inline-flex; gap:5px; margin-left:8px; margin-right:auto; } .pl-auto, .pl-bareme{ font:700 8.5pt 'Space Grotesk',Arial,sans-serif; border-radius:10px; padding:0 7px; white-space:nowrap; }
+  .pl-auto{ background:#FDECEA; color:#B3261E; border:1.5px solid #E8A39B; } .pl-bareme{ background:#EEF4FB; color:#1F3A5C; border:1.5px solid #9FBEDC; }
+  .pl-consigne:has(ol.pl-bq){ font-weight:400; }
+  ol.pl-bq{ margin:4px 0 2px; padding-left:22px; } ol.pl-bq > li{ margin:3px 0; } ol.pl-bq > li::marker{ font-weight:700; color:#1F3A5C; } ol.pl-bq ol{ list-style:lower-alpha; padding-left:20px; }
   .pl-marque{ display:inline-flex; align-items:center; gap:3px; margin:-9px auto -9px 8px; } .pl-marque .pl-oliv{ width:30px; height:30px; } .pl-marque .pl-bulle{ font-size:8.5pt; padding:0 7px; }
   .pl-num{ font:700 11pt 'Space Grotesk',Arial,sans-serif; color:#E35D3A; }
   .pl-et{ color:#E9A21C; letter-spacing:2px; font-size:11pt; } .pl-et-off{ color:#D8DCE3; }
@@ -852,6 +863,11 @@ const PL_CSS_LIVRE = `
     .pl-reg-grille label{ display:flex; flex-direction:column; gap:3px; font-size:.85rem; font-weight:600; } .pl-reg-grille .pl-reg-case{ flex-direction:row; align-items:center; gap:6px; margin-top:18px; }
     .td-intro{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; background:#F4F9EC; border:1.5px solid #CFE3B4; border-radius:14px; padding:10px 14px; margin:6px 0 14px; }
     .td-intro > div{ flex:1; min-width:240px; } .td-intro .pl-oliv{ width:54px; height:54px; display:inline-block; } .td-intro .pl-oliv svg{ width:100%; height:100%; }
+    .pl-brevet{ display:inline-block; background:#1F3A5C; color:#fff; font:700 .72rem 'Space Grotesk',sans-serif; letter-spacing:.04em; text-transform:uppercase; padding:2px 8px; border-radius:6px; vertical-align:middle; }
+    .pl-marque-b{ display:inline-flex; gap:5px; margin-left:8px; margin-right:auto; } .pl-auto, .pl-bareme{ font:700 .7rem 'Space Grotesk',sans-serif; border-radius:10px; padding:0 7px; white-space:nowrap; }
+    .pl-auto{ background:#FDECEA; color:#B3261E; border:1.5px solid #E8A39B; } .pl-bareme{ background:#EEF4FB; color:#1F3A5C; border:1.5px solid #9FBEDC; }
+    .pl-consigne:has(ol.pl-bq){ font-weight:400; }
+    ol.pl-bq{ margin:4px 0 2px; padding-left:22px; } ol.pl-bq > li{ margin:3px 0; } ol.pl-bq > li::marker{ font-weight:700; color:#1F3A5C; } ol.pl-bq ol{ list-style:lower-alpha; padding-left:20px; }
     .td-planche{ margin:0 0 18px; } .td-p-tete{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin:0 0 8px; font-family:'Space Grotesk',sans-serif; }
     .td-p-tete .pl-ref, .td-planche .pl-ref{ font:700 .8rem 'Space Grotesk',sans-serif; color:#1F3A5C; border:1.5px solid #1F3A5C; border-radius:6px; padding:0 7px; }
     .td-p-tete .hint{ flex:1; min-width:200px; }
