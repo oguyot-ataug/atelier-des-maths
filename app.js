@@ -638,13 +638,20 @@ async function applyCustomProgressionIfAny(lvl){
   // Pas de progression personnelle (professeur, ou professeur de l'élève) : progression validée de
   // l'établissement, modèle par défaut (progression-etab.js), sinon celle du site.
   if((!rows || !rows.length) && typeof peEtabRows==='function') rows = await peEtabRows(lvl);
-  if(!rows || !rows.length) return;
   const defaultData = CHAPITRES_BY_LEVEL[lvl] || CH6;
+  if(!rows || !rows.length){
+    // Pas de progression : la progression du site, avec les chapitres personnalisés (chapitres-perso.js).
+    if(typeof chpAppliquerListe!=='function') return;
+    const r0 = await chpAppliquerListe(defaultData.slice(), lvl);
+    if(r0.change && currentLevel===lvl){ renderTheme(r0.liste, lvl); renderFrise(r0.liste, lvl); }
+    return;
+  }
   const merged = rows.map(r=>{
     const base = defaultData.find(c=>c.t===r.chapitre_titre);
     const dd = r.date_debut ? new Date(r.date_debut+'T00:00:00') : null;
     const df = r.date_fin ? new Date(r.date_fin+'T00:00:00') : null;
     if(progEstEvt(r.chapitre_titre)) return { evt: true, t: r.chapitre_titre, dispT: r.nom_perso || 'Événement', code: '', cat: 'E', p: '', s: '', d: (dd&&df) ? formatDateRangeFr(dd,df) : '' };
+    if(typeof chpEstPerso==='function' && chpEstPerso(r.chapitre_titre)) return { t: r.chapitre_titre, dispT: r.nom_perso || '', code: '', cat: 'N', p: '', s: 1, d: (dd&&df) ? formatDateRangeFr(dd,df) : '' }; // chapitre personnalisé, complété par chapitres-perso.js
     if(!base) return null;
     // dispT (nom affiché) est distinct de t (jamais modifié : c'est la clé de recherche dans
     // DEMO_REGISTRY, utilisée par openChapitre -- la renommer casserait l'ouverture du chapitre).
@@ -653,7 +660,8 @@ async function applyCustomProgressionIfAny(lvl){
   // Ajoute en fin de liste tout chapitre du programme par défaut absent de la progression
   // personnalisée (ex. un chapitre ajouté au site depuis la dernière sauvegarde du prof).
   defaultData.forEach(c=>{ if(!merged.some(m=>m.t===c.t)) merged.push(c); });
-  if(currentLevel===lvl){ renderTheme(merged, lvl); renderFrise(merged, lvl); }
+  const liste = typeof chpAppliquerListe==='function' ? (await chpAppliquerListe(merged, lvl)).liste : merged;
+  if(currentLevel===lvl){ renderTheme(liste, lvl); renderFrise(liste, lvl); }
 }
 /* ---- Éditeur de progression personnalisée ("Ma progression") ---- */
 function progEstEvt(t){ return typeof t === 'string' && t.startsWith('evt:'); } // événement ajouté par le prof (voyage, semaine des maths…)
@@ -685,6 +693,8 @@ async function renderProgressionEditor(){
       const base = defaultData.find(c=>c.t===r.chapitre_titre) || {};
       if(progEstEvt(r.chapitre_titre)) return { titre: r.chapitre_titre, nomPerso: r.nom_perso || 'Événement', evt: true, code: '', cat: 'E', p: '', s: 1,
         dateDebut: r.date_debut ? new Date(r.date_debut+'T00:00:00') : null, dateFin: r.date_fin ? new Date(r.date_fin+'T00:00:00') : null };
+      if(typeof chpEstPerso==='function' && chpEstPerso(r.chapitre_titre)) return { titre: r.chapitre_titre, nomPerso: r.nom_perso || '', code: '', cat: 'N', p: '', s: 1,
+        dateDebut: r.date_debut ? new Date(r.date_debut+'T00:00:00') : null, dateFin: r.date_fin ? new Date(r.date_fin+'T00:00:00') : null };
       return {
         titre: r.chapitre_titre, nomPerso: r.nom_perso||'', code: base.code||'', cat: base.cat||'N', p: base.p||'', s: base.s||1,
         dateDebut: r.date_debut ? new Date(r.date_debut+'T00:00:00') : null,
@@ -699,10 +709,12 @@ async function renderProgressionEditor(){
   } else {
     progEditorItems = defaultData.map(c=>({ titre:c.t, nomPerso:'', code:c.code, cat:c.cat, p:c.p, s:c.s, dateDebut: friseStartDate(c.d), dateFin: friseEndDate(c.d) }));
   }
+  if(typeof chpAppliquerEditeur==='function') await chpAppliquerEditeur(lvl); // chapitres personnalisés (chapitres-perso.js)
   progEditIdx = -1;
   status.textContent = depuisEtab ? 'Vous voyez la progression de l\'établissement : adaptez-la si besoin, puis « Enregistrer » pour en faire la vôtre.' : '';
   renderProgressionList();
-  if(typeof peEtabPanneau==='function') peEtabPanneau(lvl);
+  if(typeof peEtabPanneau==='function') await peEtabPanneau(lvl);
+  if(typeof chpPanneau==='function') chpPanneau(lvl);
 }
 async function onZoneChange(){
   progUserZone = document.getElementById('progZoneSelect').value;
@@ -746,7 +758,7 @@ function renderProgressionList(){
     const dd = it.dateDebut ? it.dateDebut.toISOString().slice(0,10) : '';
     const df = it.dateFin ? it.dateFin.toISOString().slice(0,10) : '';
     const catInfo = CATS[it.cat] || {text:'#999'};
-    const displayName = it.nomPerso || it.titre;
+    const displayName = it.nomPerso || it.affiche || it.titre;
     if(progEditIdx===i){
       return `<div class="prog-card" style="border-left-color:${catInfo.text};cursor:default;">
         <div class="prog-card-edit">
@@ -1091,7 +1103,7 @@ function openChapitre(c, tab, lvlOverride, opts){
   document.getElementById('chap-code-tag').textContent = c.code;
   document.getElementById('chap-code-tag').style.background = CATS[c.cat].bg;
   document.getElementById('chap-code-tag').style.color = CATS[c.cat].text;
-  document.getElementById('chap-title').textContent = c.t;
+  document.getElementById('chap-title').textContent = demo && demo.chp ? demo.chp.titre : c.t; // chapitre personnalisé (chapitres-perso.js) : son titre
   document.getElementById('chap-meta').textContent = `${c.p ? 'pages ' + c.p + ' · ' : ''}${c.s} semaine(s) · ${c.d}`;
   // En-tête visible UNIQUEMENT à l'impression (voir @media print, styles.css) -- signalé :
   // "en haut de page à gauche : Chapitre 1... puis N1 - Nombres décimaux."
@@ -1100,7 +1112,7 @@ function openChapitre(c, tab, lvlOverride, opts){
   // niveau si absent (signalé : "Chapitre undefined" à l'impression).
   const chapNum = c.n ?? (CHAPITRES_BY_LEVEL[lvl] || CH6).find(x=>x.code===c.code)?.n;
   document.getElementById('printChapHeader').innerHTML = `Chapitre ${chapNum ?? ''}`;
-  document.getElementById('printChapBigTitle').textContent = `${c.code} - ${c.t}`.toUpperCase();
+  document.getElementById('printChapBigTitle').textContent = `${c.code} - ${demo && demo.chp ? demo.chp.titre : c.t}`.toUpperCase();
 
   const allIds = new Set();
   Object.values(DEMO_REGISTRY).forEach(d=>{ allIds.add(d.cours); allIds.add(d.methode); allIds.add(d.exos); if(d.histoire) allIds.add(d.histoire); });
@@ -1585,7 +1597,8 @@ function renderQuizHTML(bank, prefixHtml){
   renderStaticMath(area); // fractions en LaTeX (cm1Frac) dans les questions et les réponses
 }
 function generateDemoQuiz(){
-  const bank = DEMO_QUIZZES[currentChapterLevel+'|'+currentChapterTitle] || DEMO_QUIZZES['5e|Symétrie centrale'];
+  const chpSrc0 = (()=>{ const d = DEMO_REGISTRY[currentChapterLevel+'|'+currentChapterTitle]; return d && d.chp && (d.chp.sources||[])[0]; })(); // chapitre personnalisé : quiz de son premier chapitre source
+  const bank = DEMO_QUIZZES[currentChapterLevel+'|'+currentChapterTitle] || (chpSrc0 && DEMO_QUIZZES[currentChapterLevel+'|'+chpSrc0]) || DEMO_QUIZZES['5e|Symétrie centrale'];
   renderQuizHTML(bank, '<p class="hint">Démonstration avec des questions pré-écrites.</p>');
 }
 async function generateQuiz(){
@@ -1604,7 +1617,7 @@ Génère un quiz de 5 questions à choix multiples pour vérifier la compréhens
 [{"q":"...","opts":["...","...","..."],"correct":0}]
 Le champ "correct" est l'index (0, 1 ou 2) de la bonne réponse dans "opts".`;
   try{
-    const raw = await callClaude(prompt, 1500, {feature:'quiz', chapitre:currentChapterTitle});
+    const raw = await callClaude(prompt, 1500, {feature:'quiz', chapitre:typeof chapTitreAffiche==='function' ? chapTitreAffiche() : currentChapterTitle});
     const match = raw.match(/\[[\s\S]*\]/);
     if(!match) throw new Error('no-json');
     const quiz = JSON.parse(match[0]);
@@ -3389,6 +3402,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1048', date:'2026-10-12', items:[
+    "Chapitres personnalisés (demandé : « Permettre de créer de nouveaux chapitres (ou en regrouper). Ceci pour scinder des chapitres, les renommer, avec possibilité de récupérer des blocs existants »). Dans « Ma progression », un encadré « Mes chapitres » : « Nouveau chapitre » (titre, code, domaine, chapitres où puiser), « Scinder un chapitre » (les blocs de chaque onglet répartis en un clic entre deux parties, coupure proposée à un titre de paragraphe ; les deux chapitres remplacent l'original), « Regrouper des chapitres » (tous les blocs des chapitres cochés, à trier ; il les remplace). « Composer ce chapitre » : pour chaque onglet (Cours, Méthode, Exercices), on ajoute des blocs pris dans les chapitres d'origine (ou dans tout autre chapitre du niveau), on les ordonne, on en retire, et on ajoute ses propres blocs (titre, définition, propriété, règle, remarque, exemple…). Les blocs repris restent vivants (animations, figures, méthodes pas à pas) et retournent dans leur chapitre quand on le quitte ; la numérotation des paragraphes est recalculée. Le chapitre prend la place des chapitres qu'il remplace sur la page du niveau, la frise et « Ma progression » (déplaçable et étirable comme les autres), et les élèves du professeur le voient. Un bandeau en haut du chapitre renvoie aux chapitres d'origine (planches, quiz, questions flash). Partage aux collègues de l'établissement (copie), publication pour tout l'établissement par le référent."
+  ]},
   { version:'2026-08-19.1047', date:'2026-10-12', items:[
     "Progression d'établissement (demandé : « établir une progression, comme une progression établissement. N'importe quel prof peut établir cette progression mais elle est validée par le référent » ; choix : modèle par défaut). Dans « Ma progression », un encadré « Progression de l'établissement » : un professeur propose la progression affichée au référent (avec un mot), suit sa proposition (en attente, ou non retenue avec la réponse du référent), voit la progression en vigueur et peut « Partir de cette progression » pour l'adapter. Le référent a un onglet « Progressions » dans « Mon établissement » (pastille du nombre de propositions en attente) : il compare une proposition à la progression en vigueur (chapitres avancés, reculés, renommés, durées changées, événements ajoutés), la valide (l'ancienne est archivée et peut être remise en vigueur) ou la refuse avec un commentaire ; il peut aussi publier directement la sienne ou retirer la progression en vigueur. Une progression validée sert de modèle : un professeur sans progression personnelle la voit (pages de niveau, frise, « Ma progression »), ses élèves aussi ; chacun garde la possibilité d'avoir la sienne."
   ]},
@@ -6348,7 +6364,7 @@ function openSuggestionModal(){
   const activeTab = document.querySelector('.tab-btn.active');
   const moduleLabel = activeTab ? activeTab.textContent.trim() : '';
   const section = (NIVEAUX_ORDRE.includes(currentLevel) ? niveauLabel(currentLevel) : '6e') + ' · Chapitres';
-  const chapitre = (currentChapterTitle||'') + (moduleLabel ? ' · '+moduleLabel : '');
+  const chapitre = (typeof chapTitreAffiche==='function' ? chapTitreAffiche() : (currentChapterTitle||'')) + (moduleLabel ? ' · '+moduleLabel : '');
   openBugReportModal({section, chapitre, reportType:'suggestion'});
 }
 function closeBugReportModal(){
@@ -8972,7 +8988,7 @@ async function addSectionToCahier(headerEl){
   const niveauSel = document.getElementById('corNiveau');
   const entry = {
     niveau: niveauSel ? niveauSel.value : '5e',
-    chapitre: currentChapterCode ? `${currentChapterCode} · ${currentChapterTitle}` : (currentChapterTitle || ''),
+    chapitre: (t => currentChapterCode ? `${currentChapterCode} · ${t}` : t)(typeof chapTitreAffiche==='function' ? chapTitreAffiche() : (currentChapterTitle || '')),
     exo: 'Cours',
     titre: titre,
     date: todayISO(),

@@ -101,7 +101,7 @@ function peRender(){
   const bandes = pe.bands.map(b => `<div class="pe-vac" style="top:${pe.weekY[b.avant] - PE_VAC + 3}px;height:${PE_VAC - 6}px;"><span class="gicon">beach_access</span><b>${escapeHtml(b.vac.label)}</b><span class="pe-vac-dates">${formatDateRangeFr(peJour(b.vac.debut), peJour(b.vac.fin))}</span></div>`).join('');
   const finAnnee = `<div class="pe-fin" style="top:${pe.weekY[dispo]}px;">Fin de l'année · vendredi 2 juillet</div>` + (fin > dispo ? `<div class="pe-hors" style="top:${pe.weekY[dispo]}px;height:${peY(fin) - pe.weekY[dispo]}px;"></div>` : '');
   const blocs = progEditorItems.map((it, i) => {
-    const c = it.evt ? PE_EVT_COUL : (CATS[it.cat] || {}).text || '#999', h = peYFin(it._off + it._d) - peY(it._off) - 3, nom = it.nomPerso || it.titre;
+    const c = it.evt ? PE_EVT_COUL : (CATS[it.cat] || {}).text || '#999', h = peYFin(it._off + it._d) - peY(it._off) - 3, nom = it.nomPerso || it.affiche || it.titre;
     return `<div class="pe-bloc${it.evt ? ' evt' : ''}${pe.sel === i ? ' sel' : ''}${h < 30 ? ' mini' : ''}" data-i="${i}" style="top:${peY(it._off) + 1}px;height:${h}px;--c:${c};" onclick="peSelect(${i})" tabindex="0" onkeydown="peClavier(event,${i})">
       <span class="pe-poignee" title="Glisser pour déplacer le chapitre" onpointerdown="peDebutDeplacer(event,${i})">⠿</span>
       <div class="pe-txt">${it.evt ? '<span class="gicon pe-evt-ic">event</span>' : ''}<b class="${it.nomPerso && !it.evt ? 'perso' : ''}">${escapeHtml(nom)}</b> <span class="pe-code">${escapeHtml(it.evt ? 'événement' : (it.code || ''))}</span>
@@ -118,7 +118,7 @@ function peRender(){
       <button class="btn secondary" onclick="peAjouterEvt()" title="Voyage scolaire, semaine des maths, évaluations communes…"><span class="gicon">add</span> Ajouter un événement</button>
       <label class="hint" style="margin:0;display:flex;align-items:center;gap:6px;">Premier chapitre le <select onchange="pe.start=parseFloat(this.value);peRender()">${debutOpts}</select></label>
     </div>
-    <div class="pe-outils">${s ? `<b>${escapeHtml(s.nomPerso || s.titre)}</b>
+    <div class="pe-outils">${s ? `<b>${escapeHtml(s.nomPerso || s.affiche || s.titre)}</b>
         <button class="btn secondary" onclick="peDeplacer(${pe.sel},-1)" ${pe.sel === 0 ? 'disabled' : ''} title="Avancer dans l'année">▲</button>
         <button class="btn secondary" onclick="peDeplacer(${pe.sel},1)" ${pe.sel === progEditorItems.length - 1 ? 'disabled' : ''} title="Reculer dans l'année">▼</button>
         <span class="pe-duree"><button class="btn secondary" onclick="peDuree(${pe.sel},-.5)" ${s._d <= .5 ? 'disabled' : ''}>−</button> ${String(s._d).replace('.', ',')} sem. <button class="btn secondary" onclick="peDuree(${pe.sel},.5)">+</button></span>
@@ -136,7 +136,7 @@ async function peRenommer(i){
     if(n && n.trim()){ it.nomPerso = n.trim().slice(0, 80); peRender(); }
     return;
   }
-  const n = await nicePrompt('Nom du chapitre dans votre progression (laisser vide pour le nom d\'origine) :', it.nomPerso || it.titre);
+  const n = await nicePrompt('Nom du chapitre dans votre progression (laisser vide pour le nom d\'origine) :', it.nomPerso || it.affiche || it.titre);
   if(n === null || n === undefined) return;
   it.nomPerso = (n.trim() && n.trim() !== it.titre) ? n.trim() : ''; peRender();
 }

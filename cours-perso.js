@@ -669,6 +669,8 @@ function cpIsStaff(){ return typeof currentUserRole!=='undefined' && (currentUse
 /* Appelée par openChapitre, une fois le chapitre affiché et ses figures initialisées. */
 async function cpOnChapterOpen(demo){
   if(cpEditing) cpCancelEdit(true);
+  // Chapitre personnalisé (chapitres-perso.js) : il a son propre éditeur (« Composer ce chapitre »).
+  if(demo && demo.chp){ cpCurrentDemo = null; cpPreview = null; cpSharedOpen = false; cpRenderBar(); return; }
   cpCurrentDemo = demo;
   cpShowOriginal = false;
   cpPreview = null; cpSharedOpen = false;

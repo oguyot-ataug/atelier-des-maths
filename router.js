@@ -93,7 +93,7 @@ function routerUpdateBreadcrumb(){
   } else if(id==='view-chapitre'){
     const lvl = currentChapterLevel || currentLevel;
     parts.push({label:niveauLabel(lvl), route:'#/niveau/'+lvl});
-    parts.push({label:currentChapterTitle||'', route:null});
+    parts.push({label:(typeof chapTitreAffiche==='function' ? chapTitreAffiche() : currentChapterTitle)||'', route:null});
     const tabBtn = document.querySelector('.tab-btn.active');
     if(tabBtn){
       const clone = tabBtn.cloneNode(true);

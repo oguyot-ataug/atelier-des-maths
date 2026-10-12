@@ -98,7 +98,7 @@ function oliviaOuvrir(on){
 function oliviaNouvelle(){ oliv.conv = oliviaUuid(); oliv.hist = []; oliv.focus = ''; oliviaRendreFil(); }
 
 function oliviaBonjour(){
-  const chap = typeof currentChapterTitle !== 'undefined' && currentChapterTitle ? `« ${currentChapterTitle} »` : 'ce chapitre';
+  const chap = typeof currentChapterTitle !== 'undefined' && currentChapterTitle ? `« ${typeof chapTitreAffiche === 'function' ? chapTitreAffiche() : currentChapterTitle} »` : 'ce chapitre';
   return `Bonjour ! Je suis **Oliv'IA**. Je peux t'expliquer autrement une partie du cours ${chap}, te donner un autre exemple, ou t'aider à démarrer un exercice (sans te donner la réponse !).\nTu peux aussi sélectionner un passage du cours avec ta souris.`;
 }
 function oliviaBulleHtml(qui, html){
@@ -177,7 +177,7 @@ async function oliviaEnvoyer(texte){
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session.access_token },
       body: JSON.stringify({ feature: 'olivia', question: q, focus: entree.focus || undefined, onglet: oliviaOnglet(), contexte: oliviaContexte(),
         historique: oliv.hist.filter(e => e !== entree && e.r && !e.erreur).slice(-6).map(e => ({ q: e.q, r: e.r })),
-        conversationId: oliv.conv, chapitre: currentChapterTitle || null, niveau: currentChapterLevel ? niveauLabel(currentChapterLevel) : null }),
+        conversationId: oliv.conv, chapitre: (typeof chapTitreAffiche === 'function' ? chapTitreAffiche() : currentChapterTitle) || null, niveau: currentChapterLevel ? niveauLabel(currentChapterLevel) : null }),
     });
     const data = await res.json();
     if(data.error) throw new Error(data.error);
