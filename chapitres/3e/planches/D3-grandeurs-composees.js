@@ -1,0 +1,95 @@
+/* ============================================================
+   3e · Planches : Grandeurs composées (D3)
+   Vitesse ; autres grandeurs quotients (débit, masse volumique, densité, consommation) ; grandeurs
+   produits (énergie en kWh) ; problèmes avec conversions ; Objectif Brevet.
+   ============================================================ */
+(() => {
+const { rmp, ch, chx, auto, qs } = P3;
+PLANCHES['3e|Grandeurs composées'] = [
+  { titre: 'La vitesse', duree: '35 min',
+    attendus: ['Calculer une vitesse moyenne, une distance, une durée', 'Convertir des durées (heures décimales, h et min)', 'Convertir des km/h en m/s et inversement'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'Complète.',
+        ...rmp([['150 km en 2 h : @ km/h', 75], ['30 m en 4 s : @ m/s', '7,5'], ['À 90 km/h pendant 3 h : @ km', 270], ['180 km à 60 km/h : @ h', 3]]) },
+      { etoiles: 1, col: 1, consigne: 'Convertis les durées.',
+        ...rmp([['1 h 30 min = @ h', '1,5'], ['0,25 h = @ min', 15], ['2,4 h = @ h @ min', 2, 24], ['45 min = @ h', '0,75']]) },
+      { etoiles: 2, col: 1, consigne: 'Convertis les vitesses.',
+        ...rmp([['36 km/h = @ m/s', 10], ['15 m/s = @ km/h', 54], ['120 km/h ≈ @ m/s (au dixième)', '33,3'], ['1 m/s = @ km/h', '3,6']]) },
+      { etoiles: 2, col: 1, consigne: 'Complète.',
+        ...rmp([['Un cycliste parcourt 42 km en 1 h 45 min : @ km/h', 24], ['Un TGV à 300 km/h parcourt 450 km en @ h @ min', 1, 30], ['Un escargot avance à 1 mm/s : en 1 h, il parcourt @ m', '3,6']]) },
+      { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.',
+        ...ch([['Rouler 1 h à 60 km/h puis 1 h à 100 km/h donne une moyenne de 80 km/h.', 'vrai'], ['Aller à 60 km/h et revenir à 100 km/h sur la même route donne 80 km/h de moyenne.', 'faux'], ['Le son (340 m/s) va plus vite que 1 000 km/h.', 'vrai'], ['50 km/h, c\'est plus que 15 m/s.', 'faux']], 'vrai · faux') },
+      { etoiles: 2, col: 1, cahier: true, consigne: 'Un randonneur part à 9 h 15 et marche à 4,5 km/h. Il parcourt 15,75 km. À quelle heure arrive-t-il ?',
+        corr: cm1Redac('Durée', { suite: ['15,75 : 4,5 = 3,5 h', '3,5 h = 3 h 30 min'] }, '') + cm1Redac('Heure d\'arrivée', '9 h 15 min + 3 h 30 min = 12 h 45 min', 'Il arrive à 12 h 45.') },
+      { etoiles: 3, col: 1, cahier: true, consigne: 'Léa fait 120 km à l\'aller à 60 km/h, puis revient par la même route à 40 km/h. Quelle est sa vitesse moyenne sur l\'aller-retour ?',
+        corr: cm1Redac('Durées', { suite: ['Aller : 120 : 60 = 2 h', 'Retour : 120 : 40 = 3 h'] }, '') + cm1Redac('Vitesse moyenne', '240 : 5 = 48', 'Sa vitesse moyenne est 48 km/h, et non 50 km/h.') },
+    ] },
+  { titre: 'Débit, masse volumique et autres quotients', duree: '35 min',
+    attendus: ['Calculer une grandeur quotient (débit, masse volumique, densité, consommation)', 'Utiliser une grandeur quotient pour calculer une quantité', 'Convertir les unités composées'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'Calcule.',
+        ...rmp([['600 L en 15 min : débit de @ L/min', 40], ['540 g pour 200 cm³ : @ g/cm³', '2,7'], ['12 000 habitants sur 40 km² : @ hab./km²', 300], ['18 L pour 300 km : @ L/100 km', 6]]) },
+      { etoiles: 2, col: 1, consigne: 'Complète.',
+        ...rmp([['Un robinet débite 12 L/min : une baignoire de 180 L se remplit en @ min', 15], ['L\'or a une masse volumique de 19,3 g/cm³ : un lingot de 50 cm³ pèse @ g', 965], ['Une voiture consomme 5,5 L/100 km : pour 340 km, il faut @ L', '18,7']]) },
+      { etoiles: 2, col: 1, consigne: 'Convertis.',
+        ...rmp([['1 m³ = @ L', '1 000'], ['3 L/min = @ L/h', 180], ['7,8 g/cm³ = @ kg/m³', '7 800'], ['72 L/h = @ L/min', '1,2']]) },
+      { etoiles: 2, col: 1, consigne: 'Entoure l\'unité qui convient.',
+        ...chx([['Vitesse :', 'km/h', 'km/h · km·h · km²'], ['Débit :', 'L/min', 'L·min · L/min · L²'], ['Énergie électrique :', 'kWh', 'kW/h · kWh · kW'], ['Masse volumique :', 'kg/m³', 'kg·m³ · kg/m³ · m³/kg']]) },
+      { etoiles: 2, col: 1, cahier: true, consigne: 'Une piscine de 10 m sur 5 m, profonde de 1,6 m, est remplie avec un débit de 20 m³/h. Combien de temps faut-il pour la remplir ?',
+        corr: cm1Redac('Volume', '10 × 5 × 1,6 = 80', 'La piscine contient 80 m³.') + cm1Redac('Durée', '80 : 20 = 4', 'Il faut 4 heures.') },
+      { etoiles: 2, col: 1, cahier: true, consigne: 'Un robinet fuit : une goutte par seconde, et 20 gouttes font 1 mL. Quel volume d\'eau perd-on en un an (365 jours) ?',
+        corr: cm1Redac('Nombre de gouttes', '365 × 24 × 3 600 = 31 536 000', '') + cm1Redac('Volume', { suite: ['31 536 000 : 20 = 1 576 800 mL', '1 576 800 mL ≈ 1 577 L'] }, 'On perd environ 1 577 L, soit près de 1,6 m³ d\'eau par an.') },
+      { etoiles: 3, col: 1, cahier: true, consigne: 'La France compte 68 millions d\'habitants pour 552 000 km² ; Monaco, 38 000 habitants pour 2 km². Combien de fois Monaco est-il plus densément peuplé ?',
+        corr: cm1Redac('Densités', { suite: ['France : 68 000 000 : 552 000 ≈ 123 hab./km²', 'Monaco : 38 000 : 2 = 19 000 hab./km²'] }, '') + cm1Redac('Comparaison', '19 000 : 123 ≈ 154', 'Monaco est environ 150 fois plus densément peuplé que la France.') },
+    ] },
+  { titre: 'Les grandeurs produits : l\'énergie', duree: '35 min',
+    attendus: ['Calculer une énergie en kWh (puissance × durée)', 'Calculer le coût d\'une consommation', 'Utiliser d\'autres grandeurs produits'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'Calcule l\'énergie consommée.',
+        ...rmp([['Radiateur de 2 kW pendant 3 h : @ kWh', 6], ['Ampoule de 10 W pendant 50 h : @ kWh', '0,5'], ['Four de 2 500 W pendant 30 min : @ kWh', '1,25'], ['À 0,25 € le kWh, 6 kWh coûtent @ €', '1,5']]) },
+      { etoiles: 2, col: 1, consigne: 'Une télévision de 120 W est allumée 3 h par jour pendant 30 jours.',
+        ...rmp([['Énergie consommée : @ kWh', '10,8'], ['Coût à 0,25 € le kWh : @ €', '2,7']]) },
+      { etoiles: 2, col: 1, consigne: 'Complète.',
+        ...rmp([['4 ouvriers travaillent 6 jours : @ jours de travail', 24], ['Le même travail avec 8 ouvriers : @ jours', 3], ['Un chantier de 60 heures de travail, à 5 personnes : @ h', 12]]) },
+      { etoiles: 2, col: 1, consigne: 'Convertis.',
+        ...rmp([['1 kWh = @ Wh', '1 000'], ['1 kWh = @ J (1 J = 1 W pendant 1 s)', '3 600 000'], ['2 h 15 min = @ h', '2,25']]) },
+      { etoiles: 2, col: 1, cahier: true, consigne: 'Un chauffe-eau de 2 200 W fonctionne 4 h par jour. Combien coûte-t-il en 30 jours, avec un kWh à 0,25 € ?',
+        corr: cm1Redac('Énergie', '2,2 × 4 × 30 = 264', '') + cm1Redac('Coût', '264 × 0,25 = 66', 'Le chauffe-eau coûte 66 € en 30 jours.') },
+      { etoiles: 2, col: 1, cahier: true, consigne: 'Un train transporte 450 passagers sur 320 km ; un car, 50 passagers sur 120 km. Calcule, pour chacun, le nombre de « passagers-kilomètres ».',
+        corr: cm1Redac('Train', '450 × 320 = 144 000', '') + cm1Redac('Car', '50 × 120 = 6 000', 'Le train réalise 144 000 passagers-kilomètres, le car 6 000.') },
+      { etoiles: 3, col: 1, cahier: true, consigne: 'Un collège remplace 200 tubes de 36 W par des LED de 18 W. L\'éclairage fonctionne 8 h par jour, 140 jours par an. Quelle économie annuelle, avec un kWh à 0,25 € ?',
+        corr: cm1Redac('Puissance économisée', '200 × (36 − 18) = 3 600 W = 3,6 kW', '') + cm1Redac('Énergie économisée', '3,6 × 8 × 140 = 4 032', '') + cm1Redac('Économie', '4 032 × 0,25 = 1 008', 'Le collège économise 1 008 € par an.') },
+    ] },
+  { titre: 'Problèmes avec conversions', duree: '40 min',
+    attendus: ['Choisir la bonne grandeur et la bonne unité', 'Enchaîner calculs et conversions', 'Rédiger la solution d\'un problème'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'Vrai ou faux ? Entoure.',
+        ...ch([['1 m³ = 1 000 L', 'vrai'], ['1 L = 1 dm³', 'vrai'], ['1 km/h = 1 000 m/s', 'faux'], ['1 h = 3 600 s', 'vrai']], 'vrai · faux') },
+      { etoiles: 2, col: 1, consigne: 'Un coureur parcourt 10 km en 50 min.',
+        ...rmp([['Sa vitesse : @ km/h', 12], ['Son allure : @ min par km', 5], ['À cette vitesse, 18 km prennent @ h @ min', 1, 30]]) },
+      { etoiles: 2, col: 1, cahier: true, consigne: 'Usain Bolt a couru le 100 m en 9,58 s. Calcule sa vitesse moyenne en m/s, puis en km/h (au dixième).',
+        corr: cm1Redac('En m/s', '100 : 9,58 ≈ 10,44', '') + cm1Redac('En km/h', '10,44 × 3,6 ≈ 37,6', 'Sa vitesse moyenne est d\'environ 37,6 km/h.') },
+      { etoiles: 2, col: 1, cahier: true, consigne: 'Une rivière a un débit de 35 m³/s. Quel volume d\'eau s\'écoule en un jour ? Donne-le en écriture scientifique.',
+        corr: cm1Redac('Volume', { suite: ['1 jour = 24 × 3 600 = 86 400 s', '35 × 86 400 = 3 024 000'] }, 'Il s\'écoule 3,024 × 10⁶ m³ d\'eau par jour.') },
+      { etoiles: 2, col: 1, cahier: true, consigne: 'Une voiture électrique a une batterie de 60 kWh, rechargée sur une borne de 7 kW. Combien de temps dure une recharge complète ? Elle consomme 15 kWh aux 100 km : quelle est son autonomie ?',
+        corr: cm1Redac('Recharge', { suite: ['60 : 7 ≈ 8,57 h', '0,57 h × 60 ≈ 34 min'] }, 'La recharge dure environ 8 h 34 min.') + cm1Redac('Autonomie', '60 : 15 × 100 = 400', 'L\'autonomie est de 400 km.') },
+      { etoiles: 2, col: 1, cahier: true, consigne: 'Une connexion internet télécharge 50 Mo par seconde. Combien de temps faut-il pour un film de 4,5 Go (1 Go = 1 000 Mo) ?',
+        corr: cm1Redac('Durée', '4 500 : 50 = 90', 'Il faut 90 s, soit 1 min 30 s.') },
+      { etoiles: 3, col: 1, cahier: true, consigne: 'Il tombe 12 mm de pluie sur un toit de 80 m². Combien de litres d\'eau peut-on récupérer ?',
+        corr: cm1Redac('Volume', { suite: ['12 mm = 0,012 m', '0,012 × 80 = 0,96 m³'] }, 'On peut récupérer 960 L d\'eau.') },
+    ] },
+  { titre: 'Grandeurs composées', duree: '45 min', brevet: true,
+    attendus: ['Automatismes : vitesses, durées, conversions', 'Résoudre un problème de vitesse et d\'horaires', 'Calculer une consommation d\'énergie et son coût'],
+    exos: [
+      { etoiles: 1, auto: true, pts: 3, consigne: 'Automatismes (sans calculatrice) : écris ou entoure la réponse. Aucune justification n\'est demandée.',
+        ...auto([['120 km en 1 h 30 min : vitesse moyenne', '80 km/h', ['80 km/h', '90 km/h', '100 km/h']], ['36 km/h = … m/s', 10], ['Un appareil de 2 kW fonctionne 2 h 30 min. Énergie (en kWh) :', 5], ['1 h 15 min =', '1,25 h', ['1,15 h', '1,25 h', '1,5 h']], ['600 L en 20 min : débit (en L/min)', 30], ['1 m³ =', '1 000 L', ['100 L', '1 000 L', '10 000 L']]]) },
+      { etoiles: 2, cahier: true, pts: 5, consigne: 'Inès participe à un trail de 42 km. Elle part à 7 h 45. Elle parcourt les 30 premiers kilomètres en 3 h 45 min, puis les 12 derniers à la vitesse moyenne de 9 km/h.'
+          + qs(['Calculer sa vitesse moyenne sur les 30 premiers kilomètres.', 'Combien de temps met-elle pour les 12 derniers kilomètres ?', 'À quelle heure franchit-elle la ligne d\'arrivée ?', 'Calculer sa vitesse moyenne sur l\'ensemble du trail, arrondie au dixième de km/h.']),
+        corr: cm1Redac('Premiers 30 km', { suite: ['3 h 45 min = 3,75 h', '30 : 3,75 = 8'] }, 'Elle court à 8 km/h en moyenne.') + cm1Redac('Derniers 12 km', { suite: ['12 : 9 ≈ 1,333 h', '0,333 h × 60 = 20 min'] }, 'Elle met 1 h 20 min.')
+          + cm1Redac('Heure d\'arrivée', '7 h 45 + 3 h 45 + 1 h 20 = 12 h 50', 'Elle arrive à 12 h 50.') + cm1Redac('Vitesse moyenne', { suite: ['Durée totale : 5 h 05 min ≈ 5,083 h', '42 : 5,083 ≈ 8,3'] }, 'Sa vitesse moyenne est d\'environ 8,3 km/h.') },
+      { etoiles: 2, cahier: true, pts: 4, consigne: 'Un ordinateur de 65 W est allumé 6 h par jour, 220 jours par an. Le kWh coûte 0,25 €.'
+          + qs(['Calculer l\'énergie consommée en un an, en kWh.', 'Calculer le coût annuel de cette consommation.', 'Le collège compte 150 ordinateurs identiques. Quel est le coût annuel total ?']),
+        corr: cm1Redac('Énergie', '0,065 × 6 × 220 = 85,8', 'L\'ordinateur consomme 85,8 kWh par an.') + cm1Redac('Coût', '85,8 × 0,25 = 21,45', 'Cela coûte 21,45 € par an.') + cm1Redac('150 ordinateurs', '21,45 × 150 = 3 217,5', 'Le coût total est de 3 217,50 € par an.') },
+    ] },
+];
+})();
