@@ -133,7 +133,7 @@ async function renderAbonnement(){
   const root = document.getElementById('abonnementRoot'); if(!root) return;
   if(!currentUser || currentUserRole !== 'prof'){ root.innerHTML = '<p class="hint">Réservé aux comptes professeur.</p>'; return; }
   root.innerHTML = '<p class="hint">Chargement…</p>';
-  await Promise.all([opChargerPrix(), offreLoad('prof', !!currentEtabLicence)]);
+  await Promise.all([opChargerPrix(), offreLoad('prof', !!currentEtabLicence), typeof venteCharger === 'function' ? venteCharger() : null]);
   const { data: prof } = await sb.from('profiles').select('subscription_status,subscription_expires_at,signup_status').eq('id', currentUser.id).maybeSingle();
   const o = opOffre, payee = opPayee(o);
   const essai = !payee && prof && prof.subscription_status === 'trial' && prof.subscription_expires_at && new Date(prof.subscription_expires_at) > new Date();
@@ -215,7 +215,7 @@ function opOffresHtml(o, payee){
       ? 'J\'utilise cette offre avec <b>mes élèves</b> (école ou collège), dans le cadre de mon enseignement. Pour des cours particuliers ou du soutien rémunéré, je choisis l\'offre Professeur particulier.'
       : 'J\'utilise ces comptes pour <b>mes élèves de cours particuliers ou de soutien</b>, un compte par élève, dans la limite des élèves payés.'}</span></label>
     <label class="op-check"><input type="checkbox" id="opRenonciation"><span>Je demande l'accès immédiat et renonce à mon droit de rétractation (paiement unique, sans reconduction). J'accepte les <a href="#/cgv" target="_blank">conditions générales de vente</a>.</span></label>
-    <button class="btn op-payer" id="opPayer" onclick="opPayer()" disabled><span class="gicon">credit_card</span> ${typeof venteOuverte !== 'function' || venteOuverte() ? 'Payer' : 'En vente dès le 1er décembre 2026'}</button>
+    <button class="btn op-payer" id="opPayer" onclick="opPayer()" disabled><span class="gicon">credit_card</span> ${typeof venteOuverte !== 'function' || venteOuverte(opOffre && opOffre.stripe_test) ? 'Payer' : VENTE_BOUTON}</button>
     <span class="hint" id="opPayMsg" style="display:block;margin-top:6px;"></span>
   </div>`;
 }
@@ -248,7 +248,7 @@ async function opMajDevis(){
 }
 async function opPayer(){
   const btn = document.getElementById('opPayer');
-  if(typeof venteOuverte === 'function' && !venteOuverte()){ opMsg('opPayMsg', VENTE_MSG); return; }
+  if(typeof venteOuverte === 'function' && !venteOuverte(opOffre && opOffre.stripe_test)){ opMsg('opPayMsg', VENTE_MSG); return; }
   if(!document.getElementById('opEngagement').checked){ opMsg('opPayMsg', 'Merci de cocher l\'engagement d\'utilisation.'); return; }
   if(!document.getElementById('opRenonciation').checked){ opMsg('opPayMsg', 'Merci de cocher la demande d\'accès immédiat et les conditions de vente.'); return; }
   btn.disabled = true; opMsg('opPayMsg', 'Redirection vers le paiement sécurisé…', true);
@@ -441,6 +441,7 @@ async function opAdminRefresh(){
     sb.from('classes').select('id,nom,niveau,creee_par,created_at').not('creee_par', 'is', null),
     sb.from('prof_paiements').select('prof_id,montant_centimes,test,created_at'),
     sb.from('prof_parametres').select('prix').eq('id', 1).maybeSingle(),
+    typeof venteCharger === 'function' ? venteCharger() : null,
   ]);
   const P = Object.assign({}, opPrix, (param && param.prix) || {});
   const offreDe = new Map((offres || []).map(o => [o.prof_id, o]));
@@ -483,7 +484,16 @@ async function opAdminRefresh(){
   }).join('');
   const ca = (pays || []).filter(x => !x.test).reduce((a, x) => a + x.montant_centimes, 0);
   const eurIn = c => (c / 100).toFixed(2);
+  const ouvertes = typeof VENTES_OUVERTES !== 'undefined' && VENTES_OUVERTES;
   root.innerHTML = `
+    <div class="tool-shell op-card" style="border:2px solid ${ouvertes ? '#BFE0C8' : '#F0D48A'};">
+      <strong class="op-h"><span class="gicon">${ouvertes ? 'storefront' : 'lock'}</span> Ventes ${ouvertes ? 'ouvertes' : 'fermées'}</strong>
+      <p class="hint" style="margin:0 0 8px;">${ouvertes
+        ? 'Les professeurs et les familles peuvent payer par carte.'
+        : 'Aucun paiement réel n\'est possible (offres professeur et Famille) : le site reste en démonstration, l\'essai gratuit fonctionne. Les comptes cochés « test » et l\'administrateur peuvent toujours payer avec les cartes fictives de Stripe. Les ventes ne s\'ouvriront jamais toutes seules.'}</p>
+      <button class="btn ${ouvertes ? 'secondary' : ''}" onclick="opAdminVentes(${ouvertes ? 'false' : 'true'})"><span class="gicon">${ouvertes ? 'lock' : 'lock_open'}</span> ${ouvertes ? 'Fermer les ventes' : 'Ouvrir les ventes'}</button>
+      <span class="hint" id="opVentesMsg"></span>
+    </div>
     <div class="tool-shell op-card">
       <strong class="op-h"><span class="gicon">policy</span> Vigilance : classes à regarder</strong>
       <p class="hint" style="margin:0 0 8px;">Classes créées par des professeurs (essai ou Professeur seul) qui ressemblent à des cours particuliers : nom évocateur, 5 élèves au plus après 15 jours, activité surtout le soir, le mercredi après-midi et le week-end. Ce ne sont que des indices (groupe de soutien, AP, ULIS…) : à vérifier avant d'écrire au professeur.</p>
@@ -509,6 +519,15 @@ async function opAdminRefresh(){
         <button class="btn" onclick="opAdminPrix()">Enregistrer</button> <span class="hint" id="opPxMsg"></span>
       </div>
     </div>`;
+}
+async function opAdminVentes(ouvrir){
+  const ok = await niceConfirm(ouvrir
+    ? 'Ouvrir les ventes ? Les professeurs et les familles pourront payer par carte, avec de vrais paiements. À faire seulement une fois l\'autorisation de cumul d\'activités obtenue.'
+    : 'Fermer les ventes ? Plus aucun paiement réel ne sera possible jusqu\'à leur réouverture.');
+  if(!ok) return;
+  const { error } = await sb.from('prof_parametres').update({ ventes_ouvertes: !!ouvrir, updated_at: new Date().toISOString() }).eq('id', 1);
+  if(error){ opMsg('opVentesMsg', 'Erreur : ' + error.message); return; }
+  opAdminRefresh();
 }
 async function opAdminTest(profId, cb){
   const { error } = await sb.from('prof_offres').upsert({ prof_id: profId, stripe_test: cb.checked, updated_at: new Date().toISOString() }, { onConflict: 'prof_id' });

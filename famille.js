@@ -233,6 +233,7 @@ async function renderFamille(){
   if(!famData) root.innerHTML = '<p class="hint">Chargement…</p>';
   const paye = /[?&]famille=paye/.test(location.search);
   const since30 = new Date(Date.now()-30*24*3600e3).toISOString();
+  const venteP = typeof venteCharger === 'function' ? venteCharger() : null; // ventes ouvertes à la main (app.js)
   const [{ data: fam }, { data: enf }, { data: pay }, { data: ai }, { data: factures }] = await Promise.all([
     sb.from('familles').select('*').eq('parent_id', currentUser.id).maybeSingle(),
     sb.from('famille_enfants').select('*, profiles(prenom,nom,email)').eq('parent_id', currentUser.id).order('created_at'),
@@ -247,6 +248,7 @@ async function renderFamille(){
     sb.from('ceb_results').select('student_id,target,result_value,gap,success,timed,created_at').in('student_id', ids).order('created_at', {ascending:false}).limit(300),
     sb.from('ai_usage_log').select('user_id,feature,input_tokens,output_tokens,created_at').eq('billed_to', currentUser.id).gte('created_at', since30).order('created_at', {ascending:false}),
   ]) : [{data:[]},{data:[]},(await sb.from('ai_usage_log').select('user_id,feature,input_tokens,output_tokens,created_at').eq('billed_to', currentUser.id).gte('created_at', since30))];
+  await venteP;
   famData = { fam: fam||{}, enfants, pay: pay||[], ai: ai||{}, cm: cm||[], ceb: ceb||[], use: use||[], factures: factures||[], code: (famData && famData.code) || '' };
   const today = new Date().toISOString().slice(0,10);
   const active = !!(fam && fam.acces_until && fam.acces_until >= today);
@@ -297,7 +299,7 @@ function famAccesHtml(fam, active){
     </div>
     <div class="fam-prixbox" id="famPrix"></div>
     <label class="fam-check"><input type="checkbox" id="famRenonce"> <span>Je demande l'accès immédiat au contenu numérique dès le paiement et je reconnais perdre ainsi mon droit de rétractation de 14 jours (art. L221-28 13° du Code de la consommation).</span></label>
-    <button class="btn" id="famPayBtn" onclick="famPayer()" disabled><span class="gicon">credit_card</span> ${typeof venteOuverte !== 'function' || venteOuverte() ? 'Payer par carte' : 'En vente dès le 1er décembre 2026'}</button>
+    <button class="btn" id="famPayBtn" onclick="famPayer()" disabled><span class="gicon">credit_card</span> ${typeof venteOuverte !== 'function' || venteOuverte(fam.stripe_test) ? 'Payer par carte' : VENTE_BOUTON}</button>
     <span class="hint" id="famPayMsg" style="display:block;margin-top:6px;"></span>
     <p class="hint" style="margin:8px 0 0;">Paiement unique et sécurisé (Stripe), <b>sans reconduction automatique</b> : rien ne sera prélevé l'an prochain sans votre accord. Facture émise par L'Atelier Augmenté, disponible ci-dessous. En cas de litige, après nous avoir écrit, vous pouvez recourir gratuitement au médiateur de la consommation CM2C (<a href="https://www.cm2c.net/declarer-un-litige.php" target="_blank" rel="noopener">cm2c.net</a>, 49 rue de Ponthieu, 75008 Paris) ; voir les <a href="#/cgv">CGV</a>.${fam.montant_paye_centimes && memePeriode ? ' Déjà payé pour cette année : '+famEuros(fam.montant_paye_centimes)+'.' : ''}</p>
     ${famData.pay.length ? `<details style="margin-top:8px;"><summary class="hint">Historique des paiements</summary><table class="fam-table" style="margin-top:6px;"><tr><th>Date</th><th>Niveaux</th><th>Montant</th><th>Accès jusqu'au</th></tr>${famData.pay.map(p=>`<tr><td>${famDate(p.created_at)}</td><td>${(p.niveaux||[]).map(famLib).join(', ')}</td><td>${famEuros(p.montant_centimes)}${p.test?' <span class="fam-badge" style="background:#6A4FB3;">test</span>':''}</td><td>${famDate(p.acces_until)}</td></tr>`).join('')}</table></details>` : ''}
@@ -331,7 +333,7 @@ function famAppliquerCode(){
 }
 async function famPayer(){
   const choisis = [...document.querySelectorAll('.famNiv:checked:not(:disabled)')].map(c=>c.value);
-  if(typeof venteOuverte === 'function' && !venteOuverte()) return famMsg('famPayMsg', VENTE_MSG);
+  if(typeof venteOuverte === 'function' && !venteOuverte(famData && famData.fam.stripe_test)) return famMsg('famPayMsg', VENTE_MSG);
   if(!document.getElementById('famRenonce').checked) return famMsg('famPayMsg', 'Cochez la case d\'accès immédiat pour continuer.');
   const btn = document.getElementById('famPayBtn'); btn.disabled = true;
   famMsg('famPayMsg', 'Redirection vers le paiement…', true);

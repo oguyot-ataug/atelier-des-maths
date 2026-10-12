@@ -258,11 +258,20 @@ function iaContexteNiveau(n){
 // Niveaux en préparation, réservés aux administrateurs (menu masqué, routes refusées aux autres).
 const NIVEAUX_ADMIN = ['ce2']; // CE2 en préparation (administrateurs) ; la 4e est publiée depuis le build 786, la 3e depuis le build 817
 /* Ouverture des ventes -- demandé : « pour l'instant je ne vends rien tant que ce n'est pas nickel. On peut ajouter
-   une date, genre dispo à la vente à partir de... décembre 2026. Et mettre en démo pour le moment ». Avant cette
-   date : offres et prix affichés, essai gratuit possible, mais aucun paiement (sauf l'administrateur, pour tester). */
-const VENTE_OUVERTURE = '2026-12-01';
-function venteOuverte(){ return currentUserRole === 'admin' || new Date().toISOString().slice(0,10) >= VENTE_OUVERTURE; }
-const VENTE_MSG = 'Les offres seront en vente à partir du 1er décembre 2026. D\'ici là, le site est en démonstration : essayez-le gratuitement.';
+   une date, genre dispo à la vente à partir de... décembre 2026. Et mettre en démo pour le moment ». Puis (12/10/2026) :
+   « bloque l'ouverture des ventes » : plus d'ouverture automatique à une date. Les ventes s'ouvrent seulement à la main,
+   dans Administration › Offres profs (prof_parametres.ventes_ouvertes), et les fonctions de paiement refusent tout
+   paiement réel tant qu'elles sont fermées. Offres et prix restent affichés, l'essai gratuit reste possible ; les comptes
+   de test Stripe et l'administrateur peuvent toujours payer pour essayer. */
+let VENTES_OUVERTES = false;
+async function venteCharger(){
+  try{ const { data } = await sb.from('prof_parametres').select('ventes_ouvertes').eq('id', 1).maybeSingle(); VENTES_OUVERTES = !!(data && data.ventes_ouvertes === true); }
+  catch(e){ VENTES_OUVERTES = false; }
+  return VENTES_OUVERTES;
+}
+function venteOuverte(test){ return currentUserRole === 'admin' || VENTES_OUVERTES || !!test; }
+const VENTE_MSG = 'Les offres ne sont pas encore en vente. D\'ici là, le site est en démonstration : essayez-le gratuitement.';
+const VENTE_BOUTON = 'Bientôt en vente';
 function niveauVisible(lvl){ return !NIVEAUX_ADMIN.includes(lvl) || currentUserRole === 'admin'; }
 
 const VACANCES = {
@@ -3402,6 +3411,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1049', date:'2026-10-12', items:[
+    "Ventes bloquées jusqu'à leur ouverture à la main (demandé : « bloque l'ouverture des ventes »). Les ventes ne s'ouvrent plus automatiquement le 1er décembre 2026 : elles restent fermées tant que l'administrateur ne les a pas ouvertes, avec le nouvel encadré « Ventes fermées / Ouvrir les ventes » en tête d'Administration › Offres profs (confirmation demandée). Tant qu'elles sont fermées, les boutons de paiement des offres professeur et Famille affichent « Bientôt en vente », et les fonctions de paiement du serveur refusent tout paiement réel, même appelées directement ; les comptes cochés « test » paient toujours avec les cartes fictives de Stripe. L'ancienne fonction d'abonnement (create-checkout-session), que le site n'utilisait plus mais qui restait en ligne, refuse désormais toute demande. Page Tarifs : « Ouverture des ventes prochainement ».",
+  ]},
   { version:'2026-08-19.1048', date:'2026-10-12', items:[
     "Chapitres personnalisés (demandé : « Permettre de créer de nouveaux chapitres (ou en regrouper). Ceci pour scinder des chapitres, les renommer, avec possibilité de récupérer des blocs existants »). Dans « Ma progression », un encadré « Mes chapitres » : « Nouveau chapitre » (titre, code, domaine, chapitres où puiser), « Scinder un chapitre » (les blocs de chaque onglet répartis en un clic entre deux parties, coupure proposée à un titre de paragraphe ; les deux chapitres remplacent l'original), « Regrouper des chapitres » (tous les blocs des chapitres cochés, à trier ; il les remplace). « Composer ce chapitre » : pour chaque onglet (Cours, Méthode, Exercices), on ajoute des blocs pris dans les chapitres d'origine (ou dans tout autre chapitre du niveau), on les ordonne, on en retire, et on ajoute ses propres blocs (titre, définition, propriété, règle, remarque, exemple…). Les blocs repris restent vivants (animations, figures, méthodes pas à pas) et retournent dans leur chapitre quand on le quitte ; la numérotation des paragraphes est recalculée. Le chapitre prend la place des chapitres qu'il remplace sur la page du niveau, la frise et « Ma progression » (déplaçable et étirable comme les autres), et les élèves du professeur le voient. Un bandeau en haut du chapitre renvoie aux chapitres d'origine (planches, quiz, questions flash). Partage aux collègues de l'établissement (copie), publication pour tout l'établissement par le référent."
   ]},

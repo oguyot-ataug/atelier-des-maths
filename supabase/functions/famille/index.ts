@@ -272,6 +272,12 @@ serve(async (req) => {
       if (body.renonciation !== true) return json({ error: "Pour un accès immédiat, merci de cocher la renonciation au délai de rétractation." }, 400);
 
       const test = famille.stripe_test === true;
+      // Ventes fermées tant que l'administrateur ne les a pas ouvertes à la main (prof_parametres.ventes_ouvertes,
+      // demandé le 12/10/2026 : « bloque l'ouverture des ventes ») ; les comptes de test paient toujours.
+      if (!test) {
+        const { data: vente } = await admin.from("prof_parametres").select("ventes_ouvertes").eq("id", 1).maybeSingle();
+        if (vente?.ventes_ouvertes !== true) return json({ error: "Les offres ne sont pas encore en vente. D'ici là, le site est en démonstration : essayez-le gratuitement." }, 403);
+      }
       const stripeKey = Deno.env.get(test ? "STRIPE_TEST_SECRET_KEY" : "STRIPE_SECRET_KEY");
       if (!stripeKey) return json({ error: test ? "Mode test : le secret STRIPE_TEST_SECRET_KEY n'est pas encore enregistré dans Supabase." : "Paiement indisponible pour le moment." }, 500);
       if (test && !stripeKey.startsWith("sk_test_")) return json({ error: "Mode test : STRIPE_TEST_SECRET_KEY doit être une clé de test (sk_test_…)." }, 500);
