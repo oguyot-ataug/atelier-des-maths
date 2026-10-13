@@ -3464,6 +3464,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1077', date:'2026-10-13', items:[
+    "Questionnaires → cahier : même choix que pour les sessions, « en ligne » (par défaut), « sur l'ordinateur » ou sans précision. Les interrogations et questions flash faites en ligne portent la mention dans le cahier de texte et le badge sur l'entrée du cahier.",
+  ]},
   { version:'2026-08-19.1076', date:'2026-10-13', items:[
     "Session → cahier : en ajoutant le contenu d'une session au cahier, on choisit ce qui s'écrira dans le cahier de texte : « en ligne » (par défaut), « sur l'ordinateur » ou sans précision. Les exercices apparaissent dans une rubrique « Exercices en ligne (session sur les appareils des élèves) » ou « Exercices sur l'ordinateur », les interrogations avec « (en ligne) », et un badge « En ligne » ou « Sur l'ordinateur » s'affiche sur l'entrée du cahier.",
   ]},

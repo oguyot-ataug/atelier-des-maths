@@ -112,6 +112,10 @@ function qzCahierModal(m){
       <label class="hint" style="display:flex;flex-direction:column;gap:4px;margin:0;font-weight:600;">Date
         <input type="date" class="qzc-date" value="${m.date || todayISO()}" style="padding:6px 8px;border-radius:8px;"></label>
     </div>
+    <div style="display:flex;gap:6px 14px;flex-wrap:wrap;align-items:center;margin-top:10px;"><span class="hint" style="margin:0;font-weight:600;">Écrit dans le cahier de texte :</span>
+      <label class="qz-check"><input type="radio" name="qzcMod" value="enligne" checked> <span class="gicon">wifi</span> en ligne</label>
+      <label class="qz-check"><input type="radio" name="qzcMod" value="ordinateur"> <span class="gicon">computer</span> sur l'ordinateur</label>
+      <label class="qz-check"><input type="radio" name="qzcMod" value=""> sans précision</label></div>
     <p class="hint qzc-err" style="margin:10px 0 0;color:#a83c1f;"></p>
     <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px;"><button type="button" class="btn secondary" data-x>Annuler</button>
       <button type="button" class="btn" data-go><span class="gicon">add</span> Ajouter au cahier</button></div></div>`;
@@ -127,7 +131,9 @@ function qzCahierModal(m){
       const b = t.closest('[data-go]'); b.disabled = true;
       const entry = { niveau, chapitre: o.querySelector('.qzc-chap').value || m.chapDefaut, exo: m.exo,
         titre: d.titre + (corr ? ' (correction)' : ''), date: o.querySelector('.qzc-date').value || todayISO(), raw: '',
-        html: qzcHtml(d.titre, d.consigne, m.questions, corr) };
+        html: qzcHtml(d.titre, d.consigne, m.questions, corr),
+        // fait en ligne (ou sur l'ordinateur) : précisé dans le cahier de texte (badge, « (en ligne) »)
+        modalite: (o.querySelector('input[name="qzcMod"]:checked') || {}).value || null };
       // Groupe « sans cahier » (demi-groupe…) : le cahier de sa classe d'origine (fonction cahier_classe).
       const { data: cc } = await sb.rpc('cahier_classe', { p_class: d.class_id });
       const cible = cc && cc.id ? cc : { id: d.class_id, nom: d.classes ? d.classes.nom : '' };
