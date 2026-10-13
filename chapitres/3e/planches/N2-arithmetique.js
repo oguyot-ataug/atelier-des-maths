@@ -5,6 +5,10 @@
    ============================================================ */
 (() => {
 const { R, F, T, ligne, rmp, ch, chx, auto, qs } = P3, Fr = plFrac();
+// Illustrations des problèmes concrets.
+const DS = P3.D, illu = P3.illu;
+const roues2436 = DS.fig(202, 128, DS.roue(44, 60, 36, 24, '#F6DFA4') + DS.roue(44 + 36 + 54 + 4, 60, 54, 36, '#DCE6F0').replace(/<path/, `<path transform="rotate(5 138 60)"`)
+  + `<circle cx="80" cy="60" r="3.5" fill="#E35D3A"/>` + DS.tx([44, 112], '24 dents', { fs: 10 }) + DS.tx([138, 126], '36 dents', { fs: 10 }), 150);
 const sq = '<b style="display:inline-block;border:1.5px solid #1F3A5C;width:.9em;height:1em;vertical-align:-2px;"></b>';
 const simp = l => ({ eleve: plListe(l.map(([a, b]) => ligne(F(a, b), '=', Fr))), corr: plListe(l.map(([a, b, c, d]) => ligne(F(a, b), '=', R(F(c, d))))) });
 PLANCHES['3e|Arithmétique'] = [
@@ -70,7 +74,7 @@ PLANCHES['3e|Arithmétique'] = [
         corr: cm1Redac('Côté d\'un carreau', { suite: ['420 = 2² × 3 × 5 × 7', '300 = 2² × 3 × 5²', 'Plus grand diviseur commun : 2² × 3 × 5 = 60'] }, 'Le côté mesure 60 cm.') + cm1Redac('Nombre de carreaux', { suite: ['420 : 60 = 7', '300 : 60 = 5', '7 × 5 = 35'] }, 'Il faut 35 carreaux.') },
       { etoiles: 2, col: 1, cahier: true, consigne: 'Deux phares s\'allument ensemble à 20 h. L\'un s\'allume toutes les 12 secondes, l\'autre toutes les 18 secondes. À quelle heure s\'allumeront-ils de nouveau ensemble ?',
         corr: cm1Redac('Multiples communs', { suite: ['Multiples de 12 : 12, 24, 36, 48…', 'Multiples de 18 : 18, 36, 54…'] }, 'Ils se rallument ensemble 36 secondes plus tard, à 20 h 00 min 36 s.') },
-      { etoiles: 2, col: 1, consigne: 'Deux roues dentées s\'engrènent : l\'une a 24 dents, l\'autre 36. Elles partent d\'une position repérée. Quand reviennent-elles pour la première fois à cette position ?',
+      { etoiles: 2, col: 1, consigne: illu(roues2436, 'Deux roues dentées s\'engrènent : l\'une a 24 dents, l\'autre 36. Elles partent d\'une position repérée. Quand reviennent-elles pour la première fois à cette position ?'),
         ...rmp([['Nombre de dents passées : @', 72], ['La petite roue a fait @ tours.', 3], ['La grande roue a fait @ tours.', 2]]) },
       { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.',
         ...ch([['Tout nombre premier est impair.', 'faux'], ['Le produit de deux nombres premiers est premier.', 'faux'], ['91 est un nombre premier.', 'faux'], ['Il y a une infinité de nombres premiers.', 'vrai']], 'vrai · faux') },

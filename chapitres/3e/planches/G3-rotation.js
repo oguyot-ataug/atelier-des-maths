@@ -6,6 +6,10 @@
    ============================================================ */
 (() => {
 const { rmp, ch, chx, auto, qs, repere, cote, Ro } = P3;
+// Illustrations des problèmes concrets.
+const DS = P3.D, illu = P3.illu;
+const roues2050 = DS.fig(212, 150, DS.roue(38, 68, 26, 20, '#F6DFA4') + DS.roue(38 + 26 + 65 + 3, 68, 65, 50, '#DCE6F0') + `<circle cx="38" cy="42" r="3" fill="#E35D3A"/><circle cx="132" cy="3" r="0" fill="none"/>`
+  + DS.tx([38, 112], '20 dents', { fs: 10 }) + DS.tx([132, 146], '50 dents', { fs: 10 }), 132);
 const fig = (g, l) => ({ eleve: `<div style="text-align:center;">${g}</div>` + rmp(l).eleve, corr: `<div style="text-align:center;">${g}</div>` + rmp(l).corr });
 const R = P3.R;
 // Repère avec trois points (rotation de centre O).
@@ -49,7 +53,7 @@ PLANCHES['3e|Rotation'] = [
         corr: cm1Redac('Rotation', '', 'C\'est la rotation de centre O et d\'angle 90° (dans le sens A → B). L\'image de [AC] est [BD].') },
       { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.',
         ...ch([['Un rectangle (non carré) se superpose à lui-même par une rotation de 90°.', 'faux'], ['Un rectangle se superpose à lui-même par une rotation de 180°.', 'vrai'], ['Un cercle se superpose à lui-même par toute rotation de centre son centre.', 'vrai']], 'vrai · faux') },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'Une roue dentée de 20 dents entraîne une roue de 50 dents. La petite roue fait un tour complet (360°). De quel angle tourne la grande roue ?',
+      { etoiles: 3, cahier: true, consigne: illu(roues2050, 'Une roue dentée de 20 dents entraîne une roue de 50 dents. La petite roue fait un tour complet (360°). De quel angle tourne la grande roue ?'),
         corr: cm1Redac('Raisonnement', { suite: ['20 dents passent : 20 / 50 = 0,4 tour', '0,4 × 360 = 144'] }, 'La grande roue tourne de 144°.') },
     ] },
   { titre: 'Les transformations du plan', duree: '40 min',

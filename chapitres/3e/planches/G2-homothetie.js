@@ -5,6 +5,16 @@
    ============================================================ */
 (() => {
 const { T, rmp, ch, chx, auto, qs, repere, geo, cote, Bl, Ro } = P3;
+// Illustrations des problèmes concrets.
+const DS = P3.D, illu = P3.illu;
+const verreTiers = DS.fig(118, 116, DS.verreCone(50, 12, 40, 96, 1 / 3) + DS.cote([100, 108], [100, 12], 'h', 0, { dt: -6, a: 'start' }) + DS.tx([50, 98], 'eau', { c: '#2EA8C9', fs: 10 }), 92);
+const pizza = (cx, cy, r) => `<circle cx="${cx}" cy="${cy}" r="${r}" fill="#E9B872" stroke="#A0622D" stroke-width="2"/><circle cx="${cx}" cy="${cy}" r="${r - 5}" fill="#E35D3A" opacity=".8"/>`
+  + [[.3, .2], [-.35, .1], [.05, -.4], [-.1, .45], [.45, -.3]].map(([a, b]) => `<circle cx="${cx + a * r}" cy="${cy + b * r}" r="${r * .12}" fill="#FFF3D6"/>`).join('');
+const pizzas = DS.fig(186, 94, pizza(40, 42, 36) + DS.tx([40, 92], '30 cm', { fs: 10 }) + pizza(106, 42, 24) + pizza(158, 42, 24) + DS.tx([106, 82], '20 cm', { fs: 10 }) + DS.tx([158, 82], '20 cm', { fs: 10 }), 150);
+const lampeOmbre = (() => { const L = [14, 62], m = [56, 54], M = [56, 70], E = 182, k = (E - L[0]) / (m[0] - L[0]), o1 = [E, L[1] + (m[1] - L[1]) * k], o2 = [E, L[1] + (M[1] - L[1]) * k];
+  return DS.fig(200, 150, DS.ln(L, o1, '#E9A21C', 1, true) + DS.ln(L, o2, '#E9A21C', 1, true) + `<rect x="${E}" y="6" width="8" height="112" fill="#F3F6FA" stroke="#1F3A5C" stroke-width="1.2"/>`
+    + DS.ln(o1, o2, '#5B6676', 5) + DS.ln(m, M, '#E35D3A', 4) + DS.lampe(L[0], L[1]) + DS.tx([56, 48], 'main', { fs: 10, c: '#E35D3A' }) + DS.tx([176, 62], 'ombre', { fs: 10, a: 'end' })
+    + DS.cote([L[0], 120], [56, 120], '1 m', 0, { dt: 8 }) + DS.cote([L[0], 120], [E, 120], '4 m', -12, { dt: 7 }), 168); })();
 // Triangle ABC et centre O sur quadrillage ; image par l'homothétie de centre O, rapport 2 (dans le corrigé).
 const tri = [[3, 2], [5, 2], [3, 4]], img = tri.map(([x, y]) => [1 + 2 * (x - 1), 1 + 2 * (y - 1)]);
 const quad = corr => repere({ x: [0, 10], y: [0, 8], u: 18, axes: false, px: 150,
@@ -46,9 +56,9 @@ PLANCHES['3e|Homothétie'] = [
         ...rmp([['1 cm sur la carte représente @ m', 250], ['1 cm² sur la carte représente @ m²', '62 500']]) },
       { etoiles: 2, col: 1, cahier: true, consigne: 'La maquette d\'un immeuble est à l\'échelle 1/100. Elle mesure 45 cm de haut et a un volume de 0,03 m³. Quelle est la hauteur réelle ? Le volume réel ?',
         corr: cm1Redac('Hauteur', '45 × 100 = 4 500 cm', 'L\'immeuble mesure 45 m.') + cm1Redac('Volume', '0,03 × 100³ = 0,03 × 1 000 000 = 30 000', 'Le volume réel est 30 000 m³.') },
-      { etoiles: 2, col: 1, cahier: true, consigne: 'Une pizza de 30 cm de diamètre, ou deux pizzas de 20 cm de même épaisseur : où y a-t-il le plus à manger ?',
+      { etoiles: 2, col: 1, cahier: true, consigne: illu(pizzas, 'Une pizza de 30 cm de diamètre, ou deux pizzas de 20 cm de même épaisseur : où y a-t-il le plus à manger ?'),
         corr: cm1Redac('Aires', { suite: ['Grande : π × 15² = 225π', 'Deux petites : 2 × π × 10² = 200π'] }, 'La grande pizza est plus copieuse.') },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'Un verre conique est rempli d\'eau jusqu\'au tiers de sa hauteur (en partant de la pointe). Quelle fraction du volume du verre contient-il ?',
+      { etoiles: 3, col: 1, cahier: true, consigne: illu(verreTiers, 'Un verre conique est rempli d\'eau jusqu\'au tiers de sa hauteur (en partant de la pointe). Quelle fraction du volume du verre contient-il ?'),
         corr: cm1Redac('Réduction', 'Le cône d\'eau est une réduction de rapport 1/3 du verre : volume multiplié par (1/3)³ = 1/27', 'Le verre ne contient que 1/27 de son volume, moins de 4 % !') },
     ] },
   { titre: 'Homothétie et Thalès', duree: '35 min',
@@ -62,7 +72,7 @@ PLANCHES['3e|Homothétie'] = [
         corr: cm1Redac('Homothétie', 'Centre A, rapport AM : AB = 3 : 7,5 = 0,4', '') + cm1Redac('Longueur MN', 'MN = 0,4 × 10 = 4', 'MN = 4.') },
       { etoiles: 2, col: 1, cahier: true, consigne: 'Un projecteur agrandit une diapositive de 3,6 cm de large en une image de 2,4 m de large. Quel est le rapport ? Quelle est la hauteur de l\'image si la diapositive mesure 2,4 cm de haut ?',
         corr: cm1Redac('Rapport', '240 : 3,6 ≈ 66,7', '') + cm1Redac('Hauteur', '2,4 × 240 : 3,6 = 160', 'L\'image mesure 160 cm, soit 1,6 m de haut.') },
-      { etoiles: 2, col: 1, cahier: true, consigne: 'Une lampe éclaire une main de 15 cm placée à 1 m d\'elle. L\'écran est à 4 m de la lampe. Quelle est la taille de l\'ombre ?',
+      { etoiles: 2, col: 1, cahier: true, consigne: illu(lampeOmbre, 'Une lampe éclaire une main de 15 cm placée à 1 m d\'elle. L\'écran est à 4 m de la lampe. Quelle est la taille de l\'ombre ?'),
         corr: cm1Redac('Homothétie', { suite: ['Centre : la lampe ; rapport 4 : 1 = 4', '15 × 4 = 60'] }, 'L\'ombre mesure 60 cm.') },
       { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.',
         ...ch([['Le centre d\'une homothétie est sa propre image.', 'vrai'], ['A, A\' et le centre sont toujours alignés.', 'vrai'], ['Une homothétie de rapport 1 ne bouge aucun point.', 'vrai']], 'vrai · faux') },

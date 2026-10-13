@@ -3411,6 +3411,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1055', date:'2026-10-13', items:[
+    "Manuel 3e : une trentaine de problèmes concrets sont maintenant illustrés, avec le dessin à côté de l'énoncé. Échelles appuyées contre un mur, ombres au soleil (arbre, immeuble), rampe d'accès, escabeau, charpente, visée avec une règle (Thalès) ; échelle à 70°, cerf-volant, arbre vu sous un angle, route en pente avec son panneau, toit de maison, avion, phare et bateau, côte, tour (trigonométrie) ; balles dans leur boîte, cornet de glace, verres, piscines, pyramide de Khéops, pyramide coupée, aquarium, silo, gourde, glaçons, ballon dans son carton, boule dans un cylindre, ballon publicitaire (espace) ; verre conique, lampe et ombre, pizzas (homothétie) ; roues dentées, mur à peindre avec sa porte, piscine à remplir.",
+  ]},
   { version:'2026-08-19.1054', date:'2026-10-13', items:[
     "Planches d'exercices (tous niveaux) : les fractions écrites dans les consignes ont maintenant la même taille que le reste du texte, à l'impression comme à l'écran (elles étaient réduites). Un point ou une virgule qui suit une fraction reste sur la même ligne.",
   ]},

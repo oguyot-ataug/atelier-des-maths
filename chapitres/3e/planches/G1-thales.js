@@ -5,6 +5,32 @@
    ============================================================ */
 (() => {
 const { R, T, rmp, ch, chx, auto, qs, geo, cote, Bl, Ro } = P3;
+// Illustrations des problèmes concrets.
+const DS = P3.D, illu = P3.illu;
+// Ombres au soleil : grand objet à gauche (dessiné par g(x, y, h)), petit objet vertical, rayon de soleil.
+const ombres = (grand, petit, hPetit, oPetit, oGrand) => { const y = 95, X = 42, H = 72, S = [170, y], top = [X, y - H], hp = 16, xp = S[0] - (S[0] - X) * hp / H;
+  return DS.fig(182, 134, DS.soleil(18, 9.5, 5) + DS.ln([18, 9.5], S, '#E9A21C', 1.2, true) + DS.sol(4, 178, y) + grand(X, y, H)
+    + DS.ln([xp, y], [xp, y - hp], '#A0622D', 3) + DS.tx([xp - 5, y - 4], hPetit, { a: 'end' })
+    + DS.cote([xp, y], S, oPetit, -9, { dt: 7 }) + DS.cote([X, y], S, oGrand, -25, { dt: 7 }) + DS.cote([X - 26, y], [X - 26, y - H], '?', 0), 165); };
+const ombreArbre = ombres((x, y, h) => DS.arbre(x, y, h), '', '1,5 m', '2 m', '12 m');
+const ombreImmeuble = ombres((x, y, h) => DS.immeuble(x - 14, y, 28, h), '', '2 m', '3 m', '36 m');
+const echelleMur = DS.fig(178, 136, DS.sol(55, 150, 110) + DS.mur(120, 110, 24, 100) + DS.echelle([88, 110], [118, 14]) + DS.droit([88, 110], [120, 110], [120, 14])
+  + DS.tx([96, 64], '5 m', { a: 'end' }) + DS.cote([88, 110], [120, 110], '1,4 m', -8, { dt: 8 }) + DS.cote([154, 110], [154, 14], '?', 0, { dt: -9 }), 150);
+const rampeAcces = DS.fig(205, 128, DS.sol(4, 200, 100) + `<rect x="140" y="78" width="40" height="22" fill="#D5DCE4" stroke="#1F3A5C" stroke-width="1.4"/>` + DS.mur(152, 78, 28, 70)
+  + `<rect x="158" y="38" width="16" height="40" fill="#C98B5A" stroke="#1F3A5C" stroke-width="1"/>` + DS.ln([15, 100], [140, 78], '#2EA8C9', 3.5)
+  + DS.tx([70, 82], 'rampe', { c: '#2EA8C9' }) + DS.cote([140, 100], [140, 78], '0,4 m', 0, { dt: 9, a: 'end', dx: -2 }) + DS.cote([15, 100], [140, 100], '?', -10, { dt: 8 }), 175);
+const regleOeil = (() => { const E = [24, 57], T = [165, 20], B = [165, 100], xr = 64, yt = E[1] + (T[1] - E[1]) * (xr - E[0]) / (T[0] - E[0]), yb = E[1] + (B[1] - E[1]) * (xr - E[0]) / (B[0] - E[0]);
+  return DS.fig(195, 136, DS.sol(4, 185, 100) + DS.perso(20, 100, 48) + DS.arbre(165, 100, 80) + DS.ln(E, T, '#7A4FC0', 1.2, true) + DS.ln(E, B, '#7A4FC0', 1.2, true)
+    + `<rect x="${xr - 2}" y="${yt}" width="4" height="${yb - yt}" fill="#E9A21C" stroke="#1F3A5C" stroke-width=".8"/>` + DS.tx([xr + 4, yb + 12], '30 cm')
+    + DS.cote([E[0], 100], [xr, 100], '60 cm', -9, { dt: 7 }) + DS.cote([E[0], 100], [165, 100], '40 m', -25, { dt: 7 }) + DS.cote([186, 100], [186, 20], '?', 0, { dt: -8 }), 170); })();
+const charpente = (() => { const A = [90, 12], B = [22, 88], C = [158, 88], M = [A[0] + (B[0] - A[0]) * .4, A[1] + (B[1] - A[1]) * .4], N = [A[0] + (C[0] - A[0]) * .4, A[1] + (C[1] - A[1]) * .4];
+  return DS.fig(180, 128, `<rect x="34" y="88" width="112" height="34" fill="#F4E7D3" stroke="#1F3A5C" stroke-width="1.2"/><rect x="80" y="98" width="20" height="24" fill="#C98B5A" stroke="#1F3A5C" stroke-width="1"/>`
+    + DS.poly([A, B, C], '#F7EBDD', '#A0622D', 4) + DS.ln(M, N, '#2EA8C9', 4) + DS.pt(A, 'A', [0, -4]) + DS.pt(B, 'B', [-9, 4]) + DS.pt(C, 'C', [9, 4]) + DS.pt(M, 'M', [-10, 2]) + DS.pt(N, 'N', [10, 2]), 150); })();
+const escabeau = (() => { const A = [75, 12], B = [38, 118], C = [112, 118], M = [A[0] + (B[0] - A[0]) * .25, A[1] + (B[1] - A[1]) * .25], N = [A[0] + (C[0] - A[0]) * .25, A[1] + (C[1] - A[1]) * .25];
+  let g = DS.sol(10, 140, 118) + DS.ln(A, B, '#A0622D', 4) + DS.ln(A, C, '#A0622D', 4);
+  for(const t of [.45, .65, .85]){ const p = [A[0] + (B[0] - A[0]) * t, A[1] + (B[1] - A[1]) * t]; g += DS.ln([p[0] - 6, p[1]], [p[0] + 5, p[1]], '#A0622D', 2.4); }
+  return DS.fig(150, 140, g + DS.ln(M, N, '#2EA8C9', 3) + DS.pt(A, 'A', [0, -4]) + DS.pt(B, 'B', [-9, -3]) + DS.pt(C, 'C', [9, -3]) + DS.pt(M, 'M', [-10, 2]) + DS.pt(N, 'N', [10, 2])
+    + DS.cote(B, C, '1,2 m', -9, { dt: 7 }), 130); })();
 const fig = (g, l) => ({ eleve: `<div style="text-align:center;">${g}</div>` + rmp(l).eleve, corr: `<div style="text-align:center;">${g}</div>` + rmp(l).corr });
 const sur = (A, B, t) => [A[0] + (B[0] - A[0]) * t, A[1] + (B[1] - A[1]) * t];
 // Triangle ABC, (MN) parallèle à (BC), AM/AB = 3/5.
@@ -37,9 +63,9 @@ PLANCHES['3e|Théorème de Thalès'] = [
         ...ch([['M ∈ [AB], N ∈ [AC] et (MN) // (BC) :', 'oui'], ['M ∈ [AB], N ∈ [AC], sans droites parallèles :', 'non'], ['Deux droites sécantes en C coupées par deux droites parallèles :', 'oui']], 'oui · non') },
       { etoiles: 2, col: 1, cahier: true, consigne: 'A, M, B sont alignés, ainsi que A, N, C ; (MN) // (BC). AM = 2,4 cm, MB = 3,6 cm et MN = 3 cm. Calcule BC.',
         corr: cm1Redac('Thalès', { suite: ['AB = 2,4 + 3,6 = 6 cm', `(MN) // (BC) : ${cm1Frac('AM', 'AB')} = ${cm1Frac('MN', 'BC')}, soit ${cm1Frac('2,4', 6)} = ${cm1Frac(3, 'BC')}`, 'BC = 3 × 6 : 2,4 = 7,5'] }, 'BC = 7,5 cm.') },
-      { etoiles: 2, col: 1, cahier: true, consigne: 'Un bâton vertical de 1,5 m a une ombre de 2 m. Au même moment, l\'ombre d\'un arbre mesure 12 m. Quelle est la hauteur de l\'arbre ?',
+      { etoiles: 2, col: 1, cahier: true, consigne: illu(ombreArbre, 'Un bâton vertical de 1,5 m a une ombre de 2 m. Au même moment, l\'ombre d\'un arbre mesure 12 m. Quelle est la hauteur de l\'arbre ?'),
         corr: cm1Redac('Thalès', { suite: ['Les rayons du soleil sont parallèles.', `${cm1Frac('h', '1,5')} = ${cm1Frac(12, 2)}`, 'h = 1,5 × 12 : 2 = 9'] }, 'L\'arbre mesure 9 m.') },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'Pour mesurer la largeur AB d\'une rivière, on utilise une figure en papillon : (AB) // (DE), C est le point d\'intersection de (AD) et (BE). CA = 12 m, CD = 4 m et DE = 5 m. Calcule AB.',
+      { etoiles: 3, cahier: true, consigne: 'Pour mesurer la largeur AB d\'une rivière, on utilise une figure en papillon : (AB) // (DE), C est le point d\'intersection de (AD) et (BE). CA = 12 m, CD = 4 m et DE = 5 m. Calcule AB.',
         corr: cm1Redac('Thalès', { suite: [`${cm1Frac('CA', 'CD')} = ${cm1Frac('AB', 'DE')}`, `${cm1Frac(12, 4)} = ${cm1Frac('AB', 5)}`, 'AB = 5 × 3 = 15'] }, 'La rivière mesure 15 m de large.') },
     ] },
   { titre: 'La réciproque : droites parallèles ?', duree: '35 min',
@@ -69,11 +95,11 @@ PLANCHES['3e|Théorème de Thalès'] = [
         ...ch([['Côtés 6 ; 8 ; 10 :', 'oui'], ['Côtés 5 ; 6 ; 8 :', 'non'], ['Côtés 9 ; 12 ; 15 :', 'oui'], ['Côtés 7 ; 24 ; 25 :', 'oui']], 'oui · non') },
       { etoiles: 2, col: 1, consigne: 'Complète (au dixième si besoin).',
         ...rmp([['Diagonale d\'un carré de 5 cm de côté : @ cm', '7,1'], ['Diagonale d\'un rectangle de 9 cm sur 12 cm : @ cm', 15]]) },
-      { etoiles: 2, col: 1, cahier: true, consigne: 'Une échelle de 5 m est appuyée contre un mur vertical ; son pied est à 1,4 m du mur. À quelle hauteur arrive-t-elle ?',
+      { etoiles: 2, col: 1, cahier: true, consigne: illu(echelleMur, 'Une échelle de 5 m est appuyée contre un mur vertical ; son pied est à 1,4 m du mur. À quelle hauteur arrive-t-elle ?'),
         corr: cm1Redac('Pythagore', { suite: ['h² + 1,4² = 5²', 'h² = 25 − 1,96 = 23,04', 'h = √23,04 = 4,8'] }, 'L\'échelle arrive à 4,8 m de hauteur.') },
       { etoiles: 2, cahier: true, consigne: `<span>ABC est rectangle en B, AB = 8 cm et BC = 6 cm. M ∈ [AB] avec AM = 2 cm, N ∈ [AC] et (MN) // (BC). Calcule AC, puis MN et AN.</span><div style="text-align:center;">${rectT}</div>`,
         corr: cm1Redac('AC (Pythagore)', 'AC² = 8² + 6² = 100, donc AC = 10', '') + cm1Redac('MN et AN (Thalès)', { suite: [`${cm1Frac('AM', 'AB')} = ${cm1Frac('AN', 'AC')} = ${cm1Frac('MN', 'BC')}, soit ${cm1Frac(2, 8)} = ${cm1Frac('AN', 10)} = ${cm1Frac('MN', 6)}`, 'MN = 6 × 2 : 8 = 1,5', 'AN = 10 × 2 : 8 = 2,5'] }, 'AC = 10 cm, MN = 1,5 cm et AN = 2,5 cm.') },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'Une rampe d\'accès doit avoir une pente d\'au plus 5 % (hauteur : longueur horizontale). Pour monter de 0,4 m, quelle longueur horizontale faut-il au minimum ? Quelle est alors la longueur de la rampe ?',
+      { etoiles: 3, cahier: true, consigne: illu(rampeAcces, 'Une rampe d\'accès doit avoir une pente d\'au plus 5 % (hauteur : longueur horizontale). Pour monter de 0,4 m, quelle longueur horizontale faut-il au minimum ? Quelle est alors la longueur de la rampe ?'),
         corr: cm1Redac('Longueur horizontale', '0,4 : 0,05 = 8', 'Il faut au moins 8 m.') + cm1Redac('Longueur de la rampe', 'L² = 8² + 0,4² = 64,16 ; L ≈ 8,01', 'La rampe mesure environ 8,01 m.') },
     ] },
   { titre: 'Agrandissements, réductions et problèmes', duree: '40 min',
@@ -83,15 +109,15 @@ PLANCHES['3e|Théorème de Thalès'] = [
         ...rmp([['Coefficient d\'agrandissement : @', '1,5'], ['Nouveaux côtés : 4,5 ; @ ; @', 6, '7,5'], ['Les aires sont multipliées par @', '2,25']]) },
       { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.',
         ...ch([['Si les longueurs sont multipliées par 2, les aires aussi.', 'faux'], ['Un agrandissement conserve les angles.', 'vrai'], ['Si les longueurs sont multipliées par 2, les volumes sont multipliés par 8.', 'vrai'], ['Une réduction a un coefficient supérieur à 1.', 'faux']], 'vrai · faux') },
-      { etoiles: 2, col: 1, cahier: true, consigne: 'Un poteau de 2 m projette une ombre de 3 m. Au même moment, l\'ombre d\'un immeuble mesure 36 m. Quelle est la hauteur de l\'immeuble ?',
+      { etoiles: 2, col: 1, cahier: true, consigne: illu(ombreImmeuble, 'Un poteau de 2 m projette une ombre de 3 m. Au même moment, l\'ombre d\'un immeuble mesure 36 m. Quelle est la hauteur de l\'immeuble ?'),
         corr: cm1Redac('Thalès', { suite: [`${cm1Frac('h', 2)} = ${cm1Frac(36, 3)}`, 'h = 2 × 12 = 24'] }, 'L\'immeuble mesure 24 m.') },
-      { etoiles: 2, col: 1, cahier: true, consigne: 'Les montants [AB] et [AC] d\'un escabeau mesurent 2 m. Une barre [MN] parallèle au sol est fixée à 0,5 m du sommet A sur chaque montant. L\'écartement au sol est BC = 1,2 m. Quelle est la longueur de la barre ?',
+      { etoiles: 2, col: 1, cahier: true, consigne: illu(escabeau, 'Les montants [AB] et [AC] d\'un escabeau mesurent 2 m. Une barre [MN] parallèle au sol est fixée à 0,5 m du sommet A sur chaque montant. L\'écartement au sol est BC = 1,2 m. Quelle est la longueur de la barre ?'),
         corr: cm1Redac('Thalès', { suite: [`${cm1Frac('AM', 'AB')} = ${cm1Frac('MN', 'BC')}, soit ${cm1Frac('0,5', 2)} = ${cm1Frac('MN', '1,2')}`, 'MN = 1,2 × 0,5 : 2 = 0,3'] }, 'La barre mesure 0,3 m, soit 30 cm.') },
-      { etoiles: 2, col: 1, cahier: true, consigne: 'Une règle de 30 cm, tenue verticalement à 60 cm de l\'œil, cache exactement un arbre situé à 40 m. Quelle est la hauteur de l\'arbre ?',
+      { etoiles: 2, col: 1, cahier: true, consigne: illu(regleOeil, 'Une règle de 30 cm, tenue verticalement à 60 cm de l\'œil, cache exactement un arbre situé à 40 m. Quelle est la hauteur de l\'arbre ?'),
         corr: cm1Redac('Thalès', { suite: [`${cm1Frac('h', '0,3')} = ${cm1Frac(40, '0,6')}`, 'h = 0,3 × 40 : 0,6 = 20'] }, 'L\'arbre mesure environ 20 m.') },
-      { etoiles: 2, col: 1, cahier: true, consigne: 'La charpente d\'une cabane est un triangle ABC. Une poutre [MN] est parallèle à [BC], avec M ∈ [AB], AM = 1,2 m et AB = 3 m. Sachant que BC = 4 m, calcule MN.',
+      { etoiles: 2, col: 1, cahier: true, consigne: illu(charpente, 'La charpente d\'une cabane est un triangle ABC. Une poutre [MN] est parallèle à [BC], avec M ∈ [AB], AM = 1,2 m et AB = 3 m. Sachant que BC = 4 m, calcule MN.'),
         corr: cm1Redac('Thalès', 'MN = 4 × 1,2 : 3 = 1,6', 'La poutre mesure 1,6 m.') },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'Dans le triangle ABC, AB = 9 cm ; M ∈ [AB], N ∈ [AC] et (MN) // (BC). Où placer M pour que MN soit le tiers de BC ? Et pour que l\'aire de AMN soit le quart de celle de ABC ?',
+      { etoiles: 3, cahier: true, consigne: 'Dans le triangle ABC, AB = 9 cm ; M ∈ [AB], N ∈ [AC] et (MN) // (BC). Où placer M pour que MN soit le tiers de BC ? Et pour que l\'aire de AMN soit le quart de celle de ABC ?',
         corr: cm1Redac('MN = BC : 3', 'Le coefficient de réduction est 1/3 : AM = 9 : 3 = 3', 'Il faut AM = 3 cm.') + cm1Redac('Aire divisée par 4', 'Les aires sont multipliées par k² : k² = 1/4, donc k = 1/2', 'Il faut AM = 4,5 cm.') },
     ] },
   { titre: 'Théorème de Thalès', duree: '45 min', brevet: true,

@@ -5,6 +5,10 @@
    ============================================================ */
 (() => {
 const { B, R, F, T, ligne, rmp, ch, chx, auto, qs } = P3, Fr = plFrac();
+// Illustrations des problèmes concrets.
+const DS = P3.D, illu = P3.illu;
+const murPorte = DS.fig(206, 104, DS.sol(30, 196, 80) + DS.mur(40, 80, 150, 60) + `<rect x="138" y="34" width="22" height="46" fill="#C98B5A" stroke="#1F3A5C" stroke-width="1.2"/><circle cx="155" cy="58" r="1.6" fill="#1F3A5C"/>`
+  + DS.cote([40, 80], [190, 80], '6,5 m', -8, { dt: 7 }) + DS.cote([34, 80], [34, 20], '2,6 m', 0, { dt: 4, a: 'end' }) + DS.tx([149, 30], '0,9 m', { c: '#2E9C6A', fs: 10 }) + DS.tx([164, 60], '2 m', { c: '#2E9C6A', fs: 10, a: 'start' }), 180);
 PLANCHES['3e|Nombres et calculs'] = [
   { titre: 'Calculer avec les relatifs et les fractions', duree: '35 min',
     attendus: ['Respecter les priorités opératoires', 'Calculer avec des nombres relatifs', 'Calculer avec des fractions et simplifier le résultat'],
@@ -58,7 +62,7 @@ PLANCHES['3e|Nombres et calculs'] = [
         corr: cm1Redac('Prix payé en mars', { suite: ['340 − 200 = 140 SMS en plus', '140 × 0,05 = 7', '12 + 7 = 19'] }, 'Sam paie 19 € en mars.') },
       { etoiles: 2, col: 1, cahier: true, consigne: 'Un manteau à 120 € est soldé à −30 %, puis on applique une remise de 10 % sur le prix soldé. A-t-on payé 40 % de moins ?',
         corr: cm1Redac('Prix payé', { suite: ['120 × 0,7 = 84', '84 × 0,9 = 75,6', '120 × 0,6 = 72 (prix avec 40 % de remise)'] }, 'On paie 75,60 € et non 72 € : ce n\'est pas une remise de 40 % (seulement 37 %).') },
-      { etoiles: 3, cahier: true, consigne: 'Un mur rectangulaire mesure 6,5 m sur 2,6 m ; il a une porte de 0,9 m sur 2 m. On le peint en deux couches. Un pot de peinture couvre 10 m² et coûte 23,90 €. Combien de pots faut-il acheter, et pour quel prix ?',
+      { etoiles: 3, cahier: true, consigne: illu(murPorte, 'Un mur rectangulaire mesure 6,5 m sur 2,6 m ; il a une porte de 0,9 m sur 2 m. On le peint en deux couches. Un pot de peinture couvre 10 m² et coûte 23,90 €. Combien de pots faut-il acheter, et pour quel prix ?'),
         corr: cm1Redac('Surface à peindre', { suite: ['6,5 × 2,6 = 16,9 m² (mur)', '0,9 × 2 = 1,8 m² (porte)', '16,9 − 1,8 = 15,1 m²', '15,1 × 2 = 30,2 m² pour deux couches'] }, '')
           + cm1Redac('Pots et prix', { suite: ['30,2 : 10 = 3,02 : 3 pots ne suffisent pas.', '4 × 23,90 = 95,6'] }, 'Il faut acheter 4 pots, pour 95,60 €.') },
     ] },

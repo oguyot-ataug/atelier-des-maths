@@ -5,6 +5,10 @@
    ============================================================ */
 (() => {
 const { rmp, ch, chx, auto, qs } = P3;
+// Illustrations des problèmes concrets.
+const DS = P3.D, illu = P3.illu;
+const piscinePave = DS.fig(216, 92, DS.pave(36, 70, 124, 34, 40, 24, 28) + DS.cote([36, 70], [160, 70], '10 m', -8, { dt: 7 })
+  + DS.cote([160, 70], [200, 46], '5 m', -8, { dt: 6, a: 'start' }) + DS.cote([30, 70], [30, 36], '1,6 m', 0, { dt: 4, a: 'end' }), 180);
 PLANCHES['3e|Grandeurs composées'] = [
   { titre: 'La vitesse', duree: '35 min',
     attendus: ['Calculer une vitesse moyenne, une distance, une durée', 'Convertir des durées (heures décimales, h et min)', 'Convertir des km/h en m/s et inversement'],
@@ -35,7 +39,7 @@ PLANCHES['3e|Grandeurs composées'] = [
         ...rmp([['1 m³ = @ L', '1 000'], ['3 L/min = @ L/h', 180], ['7,8 g/cm³ = @ kg/m³', '7 800'], ['72 L/h = @ L/min', '1,2']]) },
       { etoiles: 2, col: 1, consigne: 'Entoure l\'unité qui convient.',
         ...chx([['Vitesse :', 'km/h', 'km/h · km·h · km²'], ['Débit :', 'L/min', 'L·min · L/min · L²'], ['Énergie électrique :', 'kWh', 'kW/h · kWh · kW'], ['Masse volumique :', 'kg/m³', 'kg·m³ · kg/m³ · m³/kg']]) },
-      { etoiles: 2, col: 1, cahier: true, consigne: 'Une piscine de 10 m sur 5 m, profonde de 1,6 m, est remplie avec un débit de 20 m³/h. Combien de temps faut-il pour la remplir ?',
+      { etoiles: 2, col: 1, cahier: true, consigne: illu(piscinePave, 'Une piscine de 10 m sur 5 m, profonde de 1,6 m, est remplie avec un débit de 20 m³/h. Combien de temps faut-il pour la remplir ?'),
         corr: cm1Redac('Volume', '10 × 5 × 1,6 = 80', 'La piscine contient 80 m³.') + cm1Redac('Durée', '80 : 20 = 4', 'Il faut 4 heures.') },
       { etoiles: 2, col: 1, cahier: true, consigne: 'Un robinet fuit : une goutte par seconde, et 20 gouttes font 1 mL. Quel volume d\'eau perd-on en un an (365 jours) ?',
         corr: cm1Redac('Nombre de gouttes', '365 × 24 × 3 600 = 31 536 000', '') + cm1Redac('Volume', { suite: ['31 536 000 : 20 = 1 576 800 mL', '1 576 800 mL ≈ 1 577 L'] }, 'On perd environ 1 577 L, soit près de 1,6 m³ d\'eau par an.') },
