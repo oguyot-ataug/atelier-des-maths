@@ -7104,7 +7104,7 @@ let cahierShowAll = false;
 let cahierDatesList = [];           // [{date, count}] -- squelette léger de l'accordéon
 let cahierLoadedDates = new Set();  // dates dont le contenu complet est déjà dans `cahier`
 let cahierEditableMode = false;     // mémorisé pour le rendu différé d'un jour déplié
-const CAHIER_COLS_LEGERES = 'id,class_id,niveau,chapitre,exo,titre,date,raw,html,figure,created_at,ordre,modalite,teacher_id,matiere';
+const CAHIER_COLS_LEGERES = 'id,class_id,niveau,chapitre,exo,titre,date,raw,html,figure,created_at,ordre,modalite,support,teacher_id,matiere';
 /* Un cahier par classe ET par professeur -- demandé : « Il faut un cahier par classe et par prof. Un cahier ne
    peut pas mélanger plusieurs matières comme un cahier d'élève. » Chaque entrée porte son auteur (teacher_id,
    rempli par la base) et sa matière. Le professeur ne voit et ne modifie que les siennes (et les anciennes,
@@ -7411,6 +7411,7 @@ async function addToCahier(){
     exo: document.getElementById('corExoNum').value || '-',
     titre: document.getElementById('corTitre').value.trim(),
     modalite: corModalite(),
+    support: corSupport(),
     // Date vide = brouillon (voir startBrouillon) -- ne retombe PLUS sur aujourd'hui par défaut,
     // signalé : "un bouton brouillons... qui annule la date par défaut". Reste null tant que le
     // prof n'a pas explicitement choisi une date, plutôt que de silencieusement la fixer.
@@ -7480,7 +7481,7 @@ async function editCahierEntry(i){
   document.getElementById('corChapitre').value = e.chapitre;
   document.getElementById('corExoNum').value = e.exo==='-'?'':e.exo;
   document.getElementById('corTitre').value = e.titre||'';
-  corModalite(e.modalite||null);
+  corModalite(entreeModalite(e)); corSupport(entreeSupport(e));
   // Reste vide pour un brouillon (e.date null) -- ne retombe plus sur aujourd'hui, sinon
   // rouvrir un brouillon lui assignait silencieusement une date et le faisait sortir des
   // brouillons sans que le prof l'ait demandé.
@@ -7529,20 +7530,30 @@ function cancelEditCahier(){
 }
 /* Modalité de l'exercice (outil de correction) : correction du travail maison, en classe entière ou en
    autonomie -- un seul choix, ou aucun. Gardée d'un exercice à l'autre (souvent la même pendant une séance). */
-const COR_MODALITES = { maison: ['Correction du travail maison', 'home', '#8A4B08'], classe: ['En classe entière', 'groups', '#0C5BA0'], autonomie: ['En autonomie', 'person', '#2E7D32'],
-  // Exercices d'une session COURS -- demandé : « Quand j'ajoute les exercices d'une session, bien préciser dans le
-  // cahier de texte que c'est en ligne ou sur l'ordinateur. »
-  enligne: ['En ligne', 'wifi', '#00838F'], ordinateur: ['Sur l\'ordinateur', 'computer', '#5E35B1'] };
-// Mention courte (cahier de texte) : « en ligne », « sur l'ordinateur ».
-const COR_MODALITES_COURT = { enligne: 'en ligne', ordinateur: 'sur l\'ordinateur' };
+const COR_MODALITES = { maison: ['Correction du travail maison', 'home', '#8A4B08'], classe: ['En classe entière', 'groups', '#0C5BA0'], autonomie: ['En autonomie', 'person', '#2E7D32'] };
+// Support (colonne « support ») -- demandé : « bien préciser dans le cahier de texte que c'est en ligne ou sur
+// l'ordinateur », puis « on peut faire en ligne + à la maison ou autonomie. Choisir un des deux entre en ligne ou
+// ordinateur » : le support se combine avec la modalité (maison, classe, autonomie) ; un seul support à la fois.
+const COR_SUPPORTS = { enligne: ['En ligne', 'wifi', '#00838F'], ordinateur: ['Sur l\'ordinateur', 'computer', '#5E35B1'] };
+const COR_SUPPORTS_COURT = { enligne: 'en ligne', ordinateur: 'sur l\'ordinateur' };
+// Entrées marquées avant la colonne « support » (modalite « enligne » / « ordinateur ») : lues comme un support.
+function entreeModalite(e){ return e && COR_MODALITES[e.modalite] ? e.modalite : null; }
+function entreeSupport(e){ return e && (COR_SUPPORTS[e.support] ? e.support : COR_SUPPORTS[e.modalite] ? e.modalite : null); }
 function corModalite(v){
   const cases = document.querySelectorAll('#corModalites input');
   if(v !== undefined){ cases.forEach(c=>{ c.checked = c.value===v; }); return v; }
   const c = [...cases].find(x=>x.checked); return c ? c.value : null;
 }
-function corChoisirModalite(el){ if(el.checked) document.querySelectorAll('#corModalites input').forEach(c=>{ if(c!==el) c.checked = false; }); }
+function corChoisirModalite(el){ if(el.checked) document.querySelectorAll('#corModalites input:not(.cor-sup-in)').forEach(c=>{ if(c!==el) c.checked = false; }); }
+// Support de l'outil de correction : en ligne ou sur l'ordinateur (un seul), à côté de la modalité.
+function corSupport(v){
+  const cases = document.querySelectorAll('#corModalites input.cor-sup-in');
+  if(v !== undefined){ cases.forEach(c=>{ c.checked = c.value===v; }); return v; }
+  const c = [...cases].find(x=>x.checked); return c ? c.value : null;
+}
+function corChoisirSupport(el){ if(el.checked) document.querySelectorAll('#corModalites input.cor-sup-in').forEach(c=>{ if(c!==el) c.checked = false; }); }
 function modaliteBadge(m){
-  const d = COR_MODALITES[m]; if(!d) return '';
+  const d = COR_MODALITES[m] || COR_SUPPORTS[m]; if(!d) return '';
   return `<span class="nb-modalite" style="--c:${d[2]}"><span class="gicon">${d[1]}</span> ${d[0]}</span>`;
 }
 function clearCorrectionInput(){
@@ -7589,7 +7600,7 @@ function entryRowsHTML(e, idx, editable, showRemoveBtn){
   // Vignettes de modalité cliquables (professeur, exercices seulement) -- demandé : « changer le type de
   // correction sans les rééditer, juste par des vignettes cliquables dans le bilan en dessous ».
   const modEditable = editable && !['', 'Cours', 'Interrogation', 'Questions flash', 'Séance en direct'].includes(e.exo);
-  let html = `<div class="cahier-print-entry"><div class="nb-ref-row"><div class="nb-ref">${refLabel}${e.titre?' : '+escapeHtml(e.titre):''}${e.modalite && !modEditable ? ' '+modaliteBadge(e.modalite) : ''}</div>`;
+  let html = `<div class="cahier-print-entry"><div class="nb-ref-row"><div class="nb-ref">${refLabel}${e.titre?' : '+escapeHtml(e.titre):''}${!modEditable ? [entreeModalite(e), entreeSupport(e)].filter(Boolean).map(m=>' '+modaliteBadge(m)).join('') : ''}</div>`;
   if(editable){
     // Le déplacement ne peut se faire QU'À L'INTÉRIEUR du même groupe (même date + même
     // chapitre) -- au-delà, ça mélangerait des exercices de jours différents et casserait le
@@ -7610,7 +7621,8 @@ function entryRowsHTML(e, idx, editable, showRemoveBtn){
     </span>`;
   }
   html += `</div>`;
-  if(modEditable) html += `<div class="nb-mod-choix">${Object.entries(COR_MODALITES).map(([k, d])=>`<button type="button" class="nb-mod-chip${e.modalite===k ? ' on' : ''}" style="--c:${d[2]}" onclick="changeCahierEntryModalite(${idx}, '${k}')" title="${e.modalite===k ? 'Retirer' : 'Marquer'} : ${d[0]}"><span class="gicon">${d[1]}</span> ${d[0]}</button>`).join('')}</div>`;
+  if(modEditable){ const em = entreeModalite(e), es = entreeSupport(e);
+    html += `<div class="nb-mod-choix">${Object.entries(COR_MODALITES).map(([k, d])=>`<button type="button" class="nb-mod-chip${em===k ? ' on' : ''}" style="--c:${d[2]}" onclick="changeCahierEntryModalite(${idx}, '${k}')" title="${em===k ? 'Retirer' : 'Marquer'} : ${d[0]}"><span class="gicon">${d[1]}</span> ${d[0]}</button>`).join('')}<span class="nb-mod-sep"></span>${Object.entries(COR_SUPPORTS).map(([k, d])=>`<button type="button" class="nb-mod-chip${es===k ? ' on' : ''}" style="--c:${d[2]}" onclick="changeCahierEntrySupport(${idx}, '${k}')" title="${es===k ? 'Retirer' : 'Marquer'} : ${d[0]}"><span class="gicon">${d[1]}</span> ${d[0]}</button>`).join('')}</div>`; }
   // Partie de cours : lien direct vers le chapitre (sauf dans l'impression, où idx n'est pas donné).
   if(e.exo==='Cours' && e.chapitre && idx!==undefined && cahierChapitreDe(e)) html += `<button type="button" class="nb-cours-lien" onclick="cahierOuvrirCours(${idx})" title="Ouvrir ce chapitre à l'onglet Cours"><span class=gicon>menu_book</span> Revoir dans le cours</button><button type="button" class="nb-cours-lien nb-vivant-btn" onclick="cahierVivant(${idx}, this)" title="Animations, démos pas à pas et figures manipulables, ici même dans le cahier"><span class=gicon>play_circle</span> Interactif</button>`;
   html += `<div class="nb-body">${e.html!=null ? e.html : renderMathText(e.raw)}</div>`;
@@ -7623,9 +7635,23 @@ function entryRowsHTML(e, idx, editable, showRemoveBtn){
 // les blocs de correction, risqué pour un Cours qui n'a pas cette structure). Demandé :
 // "permettre de modifier la date pour le cours et les exercices déjà posés".
 // Change UNIQUEMENT la modalité (travail maison / classe entière / autonomie) ; re-cliquer la vignette active la retire.
+// Change UNIQUEMENT le support (en ligne / sur l'ordinateur) ; re-cliquer la vignette active le retire.
+async function changeCahierEntrySupport(idx, m){
+  const e = cahier[idx]; if(!e) return;
+  const avant = { support: e.support || null, modalite: e.modalite || null }, apres = entreeSupport(e)===m ? null : m;
+  const maj = { support: apres }; if(COR_SUPPORTS[e.modalite]) maj.modalite = null; // ancienne écriture dans « modalite »
+  Object.assign(e, maj); saveCahier(); renderCahier();
+  if(isSyncEnabled() && e.id){
+    const res = await syncUpdateEntry(e.id, maj);
+    if(!res.ok && !res.offline){
+      Object.assign(e, avant); saveCahier(); renderCahier();
+      await niceAlert("<span class=gicon>warning</span> Échec de la synchronisation avec le serveur : "+(res.error||'erreur inconnue')+". Le support n'a pas été changé.");
+    }
+  }
+}
 async function changeCahierEntryModalite(idx, m){
   const e = cahier[idx]; if(!e) return;
-  const avant = e.modalite || null, apres = avant===m ? null : m;
+  const avant = entreeModalite(e), apres = avant===m ? null : m;
   e.modalite = apres; saveCahier(); renderCahier();
   if(isSyncEnabled() && e.id){
     const res = await syncUpdateEntry(e.id, {modalite: apres});
@@ -8315,7 +8341,8 @@ function resumeSeanceContenu(date){
   entries.forEach(e=>{
     const nom = String(e.chapitre||'').replace(/^[A-Z]{1,3}\d+[a-z]?\s*·\s*/, '').trim() || 'Chapitre non précisé';
     const titre = String(e.titre||'').replace(/\s+/g, ' ').trim();
-    const type = e.exo==='Cours' ? 'cours' : e.exo==='Interrogation' ? 'interro' : (e.exo==='Questions flash' || e.exo==='Séance en direct') ? 'flash' : (COR_MODALITES[e.modalite] ? 'exos-' + e.modalite : 'exos');
+    const type = e.exo==='Cours' ? 'cours' : e.exo==='Interrogation' ? 'interro' : (e.exo==='Questions flash' || e.exo==='Séance en direct') ? 'flash' : ('exos' + (entreeModalite(e) ? '-' + entreeModalite(e) : '') + (entreeSupport(e) ? '+' + entreeSupport(e) : ''));
+    const sup = COR_SUPPORTS_COURT[entreeSupport(e)];
     let c = blocs[blocs.length-1];
     if(!c || c.nom!==nom){ c = {nom, rubs:[]}; blocs.push(c); }
     let r = c.rubs[c.rubs.length-1];
@@ -8332,8 +8359,8 @@ function resumeSeanceContenu(date){
       });
     }
     // Interrogations et questions flash : rubriques à part, jamais dans « Exercices ».
-    else if(type==='interro') rubrique().items.push((court(titre) || 'Interrogation') + (COR_MODALITES_COURT[e.modalite] ? ' (' + COR_MODALITES_COURT[e.modalite] + ')' : ''));
-    else if(type==='flash') rubrique().items.push((court(titre) || 'Questions flash') + (COR_MODALITES_COURT[e.modalite] ? ' (' + COR_MODALITES_COURT[e.modalite] + ')' : ''));
+    else if(type==='interro') rubrique().items.push((court(titre) || 'Interrogation') + (sup ? ' (' + sup + ')' : ''));
+    else if(type==='flash') rubrique().items.push((court(titre) || 'Questions flash') + (sup ? ' (' + sup + ')' : ''));
     else if(e.exo==='TD') rubrique().items.push(titre || 'Exercices');
     else if(e.exo==='Construction') rubrique().items.push('Construction' + (titre && titre!=='Construction' ? ' : '+court(titre) : ''));
     else {
@@ -8343,8 +8370,10 @@ function resumeSeanceContenu(date){
   });
   // Cours (bleu), Exercices (orange), Interrogation (violet, 📝), Questions flash (rouge, ⚡).
   const STYLE = { cours: ['Cours', '#0C5BA0', ''], exos: ['Exercices', '#C45F00', ''], interro: ['Interrogation', '#6B3FA0', '📝 '], flash: ['Questions flash', '#C62828', '⚡ '],
-    'exos-maison': ['Correction du travail maison', '#8A4B08', '🏠 '], 'exos-classe': ['Exercices en classe entière', '#C45F00', ''], 'exos-autonomie': ['Exercices en autonomie', '#2E7D32', ''],
-    'exos-enligne': ['Exercices en ligne (session sur les appareils des élèves)', '#00838F', ''], 'exos-ordinateur': ['Exercices sur l\'ordinateur', '#5E35B1', ''] };
+    'exos-maison': ['Correction du travail maison', '#8A4B08', '🏠 '], 'exos-classe': ['Exercices en classe entière', '#C45F00', ''], 'exos-autonomie': ['Exercices en autonomie', '#2E7D32', ''] };
+  // Rubrique d'exercices avec un support : « Exercices en autonomie, en ligne », « Correction du travail maison, sur l'ordinateur »…
+  const styleDe = t => { if(STYLE[t]) return STYLE[t]; const [base, sup] = t.split('+'), st = STYLE[base] || STYLE.exos;
+    return [st[0] + (sup ? (base === 'exos' ? ' ' : ', ') + COR_SUPPORTS_COURT[sup] : ''), st[1], st[2]]; };
   const ENCRE = '#20242E', esc = t => escapeHtml(t);
   let html = '', txt = '';
   blocs.forEach((c, i)=>{
@@ -8352,7 +8381,7 @@ function resumeSeanceContenu(date){
     txt += (i ? '\n' : '') + 'Chapitre : ' + c.nom + '\n';
     c.rubs.forEach(r=>{
       if(!r.items.length) return;
-      const [nomR, coul, logo] = STYLE[r.type];
+      const [nomR, coul, logo] = styleDe(r.type);
       const li = r.type==='cours'
         ? r.items.map(it=>`<li>${esc(it.t)}${it.subs.length ? `<ul style="margin:2px 0 0;padding-left:20px;list-style:circle;">${it.subs.map(u=>`<li>${esc(u)}</li>`).join('')}</ul>` : ''}</li>`).join('')
         : r.items.map(t=>`<li>${esc(t)}</li>`).join('');

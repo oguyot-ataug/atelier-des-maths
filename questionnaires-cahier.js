@@ -72,7 +72,7 @@ async function qzCahierOuvrir(devoirId){
   if(!q || !(q.questions || []).length){ await niceAlert('Ce questionnaire n\'a pas de question.'); return; }
   const fini = !!d.qz_publie_at || (d.date_limite && new Date(d.date_limite) < new Date());
   qzCahierModal({ titre: d.titre, consigne: d.consigne, questions: q.questions, class_id: d.class_id, classes: d.classes, fini,
-    exo: 'Interrogation', chapDefaut: 'Interrogations', alerte: 'Cette interrogation n\'est pas encore terminée : les élèves verront la correction dans leur cahier dès maintenant.' });
+    exo: 'Interrogation', chapDefaut: 'Interrogations', modalite: q.reglages && ['maison', 'classe'].includes(q.reglages.mode) ? q.reglages.mode : null, alerte: 'Cette interrogation n\'est pas encore terminée : les élèves verront la correction dans leur cahier dès maintenant.' });
 }
 /* Questions flash (ex-« séance en direct ») -- signalé : « Pour les Séances en direct, je ne peux pas les insérer dans le cahier ».
    Même fenêtre que pour une interrogation : les questions réellement posées pendant la séance (toutes
@@ -88,7 +88,7 @@ async function qzDirectCahierOuvrir(id){
   const d = new Date(row.created_at), iso = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
   qzCahierModal({ titre: row.titre, consigne: '', questions: garde, class_id: row.class_id, classes: row.classes, fini: !!row.ended_at, date: iso,
     // Notées, elles sont devenues une interrogation : on les range comme telle.
-    exo: row.devoir_id ? 'Interrogation' : 'Questions flash', chapDefaut: row.devoir_id ? 'Interrogations' : 'Questions flash', alerte: 'Cette séance n\'est pas terminée : les élèves verront la correction dans leur cahier dès maintenant.' });
+    exo: row.devoir_id ? 'Interrogation' : 'Questions flash', modalite: 'classe', chapDefaut: row.devoir_id ? 'Interrogations' : 'Questions flash', alerte: 'Cette séance n\'est pas terminée : les élèves verront la correction dans leur cahier dès maintenant.' });
 }
 // Fenêtre commune : sujet seul ou avec correction, chapitre et date, puis insertion dans cahier_entries.
 function qzCahierModal(m){
@@ -112,10 +112,7 @@ function qzCahierModal(m){
       <label class="hint" style="display:flex;flex-direction:column;gap:4px;margin:0;font-weight:600;">Date
         <input type="date" class="qzc-date" value="${m.date || todayISO()}" style="padding:6px 8px;border-radius:8px;"></label>
     </div>
-    <div style="display:flex;gap:6px 14px;flex-wrap:wrap;align-items:center;margin-top:10px;"><span class="hint" style="margin:0;font-weight:600;">Écrit dans le cahier de texte :</span>
-      <label class="qz-check"><input type="radio" name="qzcMod" value="enligne" checked> <span class="gicon">wifi</span> en ligne</label>
-      <label class="qz-check"><input type="radio" name="qzcMod" value="ordinateur"> <span class="gicon">computer</span> sur l'ordinateur</label>
-      <label class="qz-check"><input type="radio" name="qzcMod" value=""> sans précision</label></div>
+    ${typeof csModChoix === 'function' ? csModChoix('qzc', m.modalite) : ''}
     <p class="hint qzc-err" style="margin:10px 0 0;color:#a83c1f;"></p>
     <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px;"><button type="button" class="btn secondary" data-x>Annuler</button>
       <button type="button" class="btn" data-go><span class="gicon">add</span> Ajouter au cahier</button></div></div>`;
@@ -132,8 +129,8 @@ function qzCahierModal(m){
       const entry = { niveau, chapitre: o.querySelector('.qzc-chap').value || m.chapDefaut, exo: m.exo,
         titre: d.titre + (corr ? ' (correction)' : ''), date: o.querySelector('.qzc-date').value || todayISO(), raw: '',
         html: qzcHtml(d.titre, d.consigne, m.questions, corr),
-        // fait en ligne (ou sur l'ordinateur) : précisé dans le cahier de texte (badge, « (en ligne) »)
-        modalite: (o.querySelector('input[name="qzcMod"]:checked') || {}).value || null };
+        // travaillé (maison, classe, autonomie) et support (en ligne, ordinateur) : écrits dans le cahier de texte
+        ...(typeof csModLire === 'function' ? csModLire(o, 'qzc') : {}) };
       // Groupe « sans cahier » (demi-groupe…) : le cahier de sa classe d'origine (fonction cahier_classe).
       const { data: cc } = await sb.rpc('cahier_classe', { p_class: d.class_id });
       const cible = cc && cc.id ? cc : { id: d.class_id, nom: d.classes ? d.classes.nom : '' };
