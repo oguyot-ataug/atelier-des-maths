@@ -109,6 +109,7 @@ document.getElementById('view-evaluation').innerHTML = `
     <div class="tool-row" style="margin-bottom:10px;">
       <button class="btn" onclick="saveEvaluation()"><span class=gicon>save</span> Sauvegarder / renommer</button>
       <button class="btn secondary" onclick="openEvalListModal()">📂 Mes évaluations</button>
+      <button class="btn secondary" onclick="duplicateEvaluation()" title="Crée une copie de l'évaluation ouverte, que vous pouvez modifier sans toucher à l'originale"><span class=gicon>content_copy</span> Faire une copie</button>
       <button class="btn secondary" onclick="shareEvaluation()"><span class=gicon>link</span> Partager avec un collègue</button>
       <button class="btn secondary" onclick="addEvaluationToCahier()"><span class=gicon>menu_book</span> Ajouter au cahier</button>
       <button class="btn secondary" id="btnEvalUndo" onclick="undoEvaluation()" style="display:none;"><span class=gicon>undo</span> Annuler la dernière modification</button>
@@ -367,10 +368,35 @@ async function openEvalListModal(){
       </div>
       <span style="display:flex;gap:6px;flex:none;">
         <button class="btn secondary" onclick="loadEvaluation('${e.id}')">Ouvrir</button>
+        <button class="btn secondary" title="Faire une copie (pour l'adapter à une autre classe, une autre année…)" onclick="duplicateEvaluation('${e.id}')"><span class=gicon>content_copy</span></button>
         ${isMine ? `<button class="btn secondary" style="color:#a83c1f;" onclick="deleteEvaluationPrompt('${e.id}','${escapeHtml(e.title||'Sans titre').replace(/'/g,"\\'")}')"><span class=gicon>delete</span></button>` : ''}
       </span>
     </div>`;
   }).join('');
+}
+/* Copie d'une évaluation -- demandé : « Peut-on faire une copie d'une évaluation ? ». La copie
+   appartient à celui qui la fait (même si l'originale lui a été partagée), sans les collègues
+   de l'originale ni son historique (« Annuler ») ; elle s'ouvre aussitôt, l'originale reste intacte.
+   Sans id : copie de l'évaluation ouverte (enregistrée d'abord si besoin). */
+async function duplicateEvaluation(id){
+  if(!currentUser){ await niceAlert("Connectez-vous pour faire une copie d'une évaluation."); return; }
+  if(!id){
+    if(!evaluationExercises.length){ await niceAlert("Ouvrez ou créez d'abord une évaluation."); return; }
+    clearTimeout(evalAutoSaveTimer);
+    await autoSaveEvaluation(); // la copie part de l'état affiché
+    id = currentEvaluationId;
+    if(!id){ await niceAlert("L'évaluation n'a pas pu être enregistrée : copie impossible pour l'instant."); return; }
+  }
+  const { data: src, error } = await sb.from('evaluations').select('title,niveau,classes,eval_date,duree,data').eq('id', id).single();
+  if(error || !src){ await niceAlert("Copie impossible : " + ((error && error.message) || 'évaluation introuvable')); return; }
+  const titre = await nicePrompt("Titre de la copie :", 'Copie de ' + (src.title || 'Évaluation'));
+  if(titre === null) return;
+  const { data: copie, error: e2 } = await sb.from('evaluations').insert({
+    title: titre.trim() || ('Copie de ' + (src.title || 'Évaluation')), niveau: src.niveau, classes: src.classes, eval_date: src.eval_date, duree: src.duree,
+    data: src.data, owner_id: currentUser.id, updated_by: currentUser.id }).select('id').single();
+  if(e2){ await niceAlert("Copie impossible : " + e2.message); return; }
+  await loadEvaluation(copie.id);
+  document.getElementById('evalSaveStatus').textContent = '✓ Copie créée et ouverte : vous travaillez maintenant sur la copie.';
 }
 /* Suppression réservée au propriétaire (signalé : "permettre au propriétaire de supprimer
    une évaluation") -- vérifié aussi côté serveur (RLS) par owner_id=auth.uid(), ce contrôle

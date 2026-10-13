@@ -3464,6 +3464,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1063', date:'2026-10-13', items:[
+    "Créer une évaluation : on peut faire une copie d'une évaluation, avec le bouton « Faire une copie » (évaluation ouverte) ou l'icône de copie dans « Mes évaluations ». On choisit le titre de la copie, qui s'ouvre aussitôt ; l'originale reste intacte. La copie vous appartient, même si l'originale vous avait été partagée par un collègue, et elle repart sans partage ni historique.",
+  ]},
   { version:'2026-08-19.1062', date:'2026-10-13', items:[
     "Créer une évaluation : écart réduit entre deux exercices sur la feuille (aperçu et PDF), de 2,2 à 1 interligne.",
   ]},
