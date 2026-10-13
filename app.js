@@ -3464,6 +3464,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1067', date:'2026-10-13', items:[
+    "Manuel 4e, lot 2 : géométrie. 5 chapitres, 20 planches et 87 exercices corrigés : triangles égaux et théorème de Thalès (calcul, réciproque, problèmes : ombres, toboggan), Pythagore (carrés et racines, calculs, réciproque, échelle, écran), cosinus (longueurs, angles, rampe, mât), translations sur quadrillage (l'élève trace l'image, le corrigé la montre en vert ; frise), pyramides et cônes (volumes, cornet, repérage dans un pavé).",
+  ]},
   { version:'2026-08-19.1066', date:'2026-10-13', items:[
     "Manuel 4e, lot 1 : nombres et calcul (ancien programme, en vigueur jusqu'en 2027). 7 chapitres, 28 planches et 157 exercices corrigés : opérations sur les relatifs, divisibilité, fractions (comparaison et addition, multiplication et division), puissances, calcul littéral, équations. Problèmes illustrés : avion et sous-marin, carrelage, verres de jus, rectangles et figure en L, balance, Terre et Soleil.",
   ]},
