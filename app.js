@@ -3464,6 +3464,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1083', date:'2026-10-13', items:[
+    "Cahier de texte : sous « Planche 6e-N2-P1 : exercices 1 à 4 », les consignes des exercices du manuel du site sont reprises une par une (« Exercice 1 : Indique quelle fraction… »), comme pour les pages d'un manuel papier.",
+  ]},
   { version:'2026-08-19.1082', date:'2026-10-13', items:[
     "Cahier de texte : un logo devant chaque support : 💻 ordinateur, 📖 manuel, 📒 cahier ou classeur (« 💻 Exercices en autonomie, sur ordinateur », « 🏠 📖 Correction du travail maison, sur le manuel »). Ce sont des émojis : ils restent quand on colle le texte dans Pronote ou École Directe.",
   ]},
@@ -8364,6 +8367,20 @@ function resumeParagrapheParent(e, sousTitre){
 /* Demandé ensuite : « Peux-tu respecter l'ordre du cahier pour faire le cahier de texte ? ». Le résumé
    suit l'ordre des blocs du cahier ce jour-là : un nouveau « Chapitre : » dès que le chapitre change, une
    nouvelle rubrique (Cours, Exercices, Interrogation, Questions flash) dès que le type de bloc change. */
+// Consigne d'un exercice des planches du site, en texte (pour le cahier de texte) -- demandé : « Peut-on récupérer
+// aussi les consignes des exercices qui viennent du manuel en ligne ? ». ref : « 6e-N2-P1 », n : numéro d'exercice.
+function resumeConsignePlanche(ref, n){
+  try{
+    const m = /^(.+)-([A-Z]+\d+[a-z]?)-P(\d+)$/.exec(ref); if(!m || typeof PL_NIVEAUX_TXT === 'undefined' || typeof plDe !== 'function') return '';
+    const lvl = Object.keys(PL_NIVEAUX_TXT).find(k=>PL_NIVEAUX_TXT[k]===m[1]); if(!lvl) return '';
+    const c = (CHAPITRES_BY_LEVEL[lvl] || []).find(x=>plCode(lvl, x)===m[2]); if(!c) return '';
+    const x = ((plDe(lvl, c.t)[+m[3] - 1] || {}).exos || [])[n - 1]; if(!x || !x.consigne) return '';
+    const d = document.createElement('div'); d.innerHTML = x.consigne;
+    d.querySelectorAll('svg, img, .pl-grille, table').forEach(el=>el.remove());
+    d.querySelectorAll('.tex').forEach(el=>{ el.textContent = el.textContent.replace(/\\[dt]?frac\{([^{}]*)\}\{([^{}]*)\}/g, '$1/$2').replace(/\\times/g, '×').replace(/\\div/g, '÷').replace(/\\[a-zA-Z]+/g, '').replace(/[{}]/g, ''); });
+    return d.textContent.replace(/\s+/g, ' ').trim();
+  }catch(e){ return ''; }
+}
 // « exercices 1 à 5 », « exercices 1, 3 et 5 », « exercice 2 ».
 function nbNumeros(l){
   const n = [...new Set(l)].sort((a, b)=>a-b); if(!n.length) return 'exercices';
@@ -8406,7 +8423,8 @@ function resumeSeanceContenu(date){
     else if(type==='interro') rubrique().items.push((supLogo ? supLogo + ' ' : '') + (court(titre) || 'Interrogation') + (sup ? ' (' + sup + ')' : ''));
     else if(type==='flash') rubrique().items.push((supLogo ? supLogo + ' ' : '') + (court(titre) || 'Questions flash') + (sup ? ' (' + sup + ')' : ''));
     else if((m = /^(?:Manuel\s+)?([A-Z0-9]+-[A-Z]+\d+[a-z]?-P\d+)\s*·\s*exercice\s+(\d+)/i.exec(sansCorr(titre)))){
-      groupe('pl|' + m[1], ()=>({ planche: m[1], nums: [] })).nums.push(+m[2]);
+      const g = groupe('pl|' + m[1], ()=>({ planche: m[1], nums: [], subs: [] }));
+      if(!g.nums.includes(+m[2])){ g.nums.push(+m[2]); const cs = resumeConsignePlanche(m[1], +m[2]); if(cs) g.subs.push({ n: +m[2], t: 'Exercice ' + m[2] + ' : ' + court(cs) }); }
     }
     else if(e.exo==='TD') rubrique().items.push(sansCorr(titre) || 'Exercices');
     else if(e.exo==='Construction') rubrique().items.push('Construction' + (titre && titre!=='Construction' ? ' : '+court(titre) : ''));
@@ -8432,7 +8450,7 @@ function resumeSeanceContenu(date){
     txt += (i ? '\n' : '') + 'Chapitre : ' + c.nom + '\n';
     c.rubs.forEach(r=>{
       if(!r.items.length) return;
-      if(r.type!=='cours') r.items = r.items.map(it=>typeof it==='string' ? it : it.planche ? `Planche ${it.planche} : ${nbNumeros(it.nums)}`
+      if(r.type!=='cours') r.items = r.items.map(it=>typeof it==='string' ? it : it.planche ? { t: `Planche ${it.planche} : ${nbNumeros(it.nums)}`, subs: it.subs.sort((a, b)=>a.n - b.n).map(x=>x.t) }
         : { t: `Page ${it.page} : ${nbNumeros(it.nums)}`, subs: it.subs.length > 1 || (it.subs[0] || '').length ? [...new Set(it.subs)] : [] });
       const [nomR, coul, logo] = styleDe(r.type);
       const li = r.items.some(it=>typeof it!=='string')
