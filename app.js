@@ -3464,6 +3464,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1064', date:'2026-10-13', items:[
+    "Relecture du manuel (administrateur et bêta-testeurs) : chaque exercice affiche son état pour toute l'équipe : « Validé » (validé par l'administrateur, sans remarque en attente), « En cours d'examen » (avec le nombre de remarques en attente, ou « modifié, à revoir ») ou « Non examiné ». Chacun garde en dessous son propre avis (Validé, Non examiné, Commenté). Filtres « Équipe : Validés / En cours d'examen » en tête de l'onglet Manuel. Le contenu des remarques des autres testeurs reste privé.",
+  ]},
   { version:'2026-08-19.1063', date:'2026-10-13', items:[
     "Créer une évaluation : on peut faire une copie d'une évaluation, avec le bouton « Faire une copie » (évaluation ouverte) ou l'icône de copie dans « Mes évaluations ». On choisit le titre de la copie, qui s'ouvre aussitôt ; l'originale reste intacte. La copie vous appartient, même si l'originale vous avait été partagée par un collègue, et elle repart sans partage ni historique.",
   ]},

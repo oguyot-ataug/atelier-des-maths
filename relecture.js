@@ -28,6 +28,10 @@
      par exercice et par testeur ; il ne voit que les siens) ;
    - l'administrateur voit sous chaque vignette les retours des testeurs (nom, remarques), les marque
      « Traité », et les retrouve dans « Toutes les remarques » et dans le filtre « Retours bêta ».
+   - État commun de chaque exercice, vu par tous (demandé : « il faut que chacun sache si l'exercice est
+     validé ou en cours d'examen ») : Validé (validé par l'administrateur, aucune remarque en attente),
+     En cours d'examen (remarque non traitée de l'administrateur ou d'un testeur, ou changement à revoir),
+     Non examiné. Fonction relecture_etat_global() (compte les remarques, sans en montrer le contenu).
    ===================================================================== */
 
 // Changements faits à la suite d'une remarque : clé → { date (ISO, heure UTC du changement), note }.
@@ -54,7 +58,7 @@ const RL_REMARQUES = [
   'Écran : devrait pouvoir se faire à l\'écran',
 ];
 const RL_ETATS = { ok: ['check_circle', 'Validé'], non: ['radio_button_unchecked', 'Non examiné'], com: ['chat', 'Commenté'] };
-const rl = { lignes: null, filtre: '', beta: null, betaUid: null, retours: new Map() };
+const rl = { lignes: null, filtre: '', beta: null, betaUid: null, retours: new Map(), etats: new Map() };
 const rlAdmin = () => typeof currentUserRole !== 'undefined' && currentUserRole === 'admin';
 // Professeur bêta-testeur (profiles.beta_testeur, posé par l'administrateur) : relu une fois par compte.
 async function rlEstBeta(){
@@ -87,11 +91,25 @@ async function rlCharger(force){
   const { data, error } = await q;
   if(error){ rl.erreur = error.message; rl.lignes = new Map(); return rl.lignes; }
   rl.erreur = null; rl.lignes = new Map((data || []).map(r => [r.cle, r]));
+  await rlEtatsCharger();
   if(rlAdmin()){ // retours des bêta-testeurs, regroupés par exercice
     const { data: b } = await sb.from('relecture_beta').select('*, profiles(nom, prenom)').order('updated_at');
     rl.retours = new Map(); (b || []).forEach(r => { if(!rl.retours.has(r.cle)) rl.retours.set(r.cle, []); rl.retours.get(r.cle).push(r); });
   }
   return rl.lignes;
+}
+// État commun de chaque exercice (administrateur et bêta-testeurs) : statut de l'administrateur et
+// nombre de remarques de testeurs en attente / de validations.
+async function rlEtatsCharger(){
+  const { data, error } = await sb.rpc('relecture_etat_global');
+  rl.etats = new Map(error ? [] : (data || []).map(r => [r.cle, r]));
+}
+function rlEtat(cle){
+  const e = rl.etats.get(cle) || {}, chgt = !!RELECTURE_CHGT[cle] && !!rlChgt(cle);
+  const n = (e.remarques_ouvertes || 0) + (e.statut_admin === 'com' ? 1 : 0);
+  if(n || chgt) return ['examen', 'hourglass_top', 'En cours d\'examen', n ? `${n} remarque${n > 1 ? 's' : ''} en attente` : 'modifié, à revoir'];
+  if(e.statut_admin === 'ok') return ['valide', 'verified', 'Validé', ''];
+  return ['nonex', 'radio_button_unchecked', 'Non examiné', e.validations ? `validé par ${e.validations} testeur${e.validations > 1 ? 's' : ''}` : ''];
 }
 async function rlEnregistrer(lvl, c, i, k, maj){
   const x = plDe(lvl, c.t)[i].exos[k], cle = rlCle(lvl, c, i, k);
@@ -104,6 +122,7 @@ async function rlEnregistrer(lvl, c, i, k, maj){
   const { error } = await sb.from(table).upsert(ligne, { onConflict: beta ? 'cle,user_id' : 'cle' });
   if(error){ await niceAlert('Relecture non enregistrée : ' + error.message + (/relation|does not exist|schema cache/i.test(error.message) ? `\n\nLa table ${table} n'existe pas encore : exécutez le SQL fourni dans Supabase.` : '')); return false; }
   rl.lignes.set(cle, ligne);
+  await rlEtatsCharger();
   return true;
 }
 
@@ -111,7 +130,9 @@ async function rlEnregistrer(lvl, c, i, k, maj){
 function rlBarreHtml(cle){
   const l = rl.lignes.get(cle), st = (l && l.statut) || 'non', ch = rlChgt(cle);
   const rem = l && (l.tags.length || l.commentaire) ? `<div class="rl-rem">${l.tags.map(t => `<span>${rlEsc(t)}</span>`).join('')}${l.commentaire ? `<em>${rlEsc(l.commentaire)}</em>` : ''}</div>` : '';
-  return `<div class="rl-barre">${Object.entries(RL_ETATS).map(([k, [ic, t]]) => `<button type="button" class="rl-b rl-${k}${st === k ? ' on' : ''}" data-rl="${k}"><span class="gicon">${ic}</span> ${t}</button>`).join('')}
+  const [ek, eic, et, ed] = rlEtat(cle);
+  return `<div class="rl-etat rl-etat-${ek}" title="État de l'exercice pour toute l'équipe de relecture"><span class="gicon">${eic}</span> ${et}${ed ? ` <small>· ${rlEsc(ed)}</small>` : ''}</div>
+    <div class="rl-barre"><span class="rl-moi">${rlBeta() ? 'Mon avis :' : 'Mon statut :'}</span>${Object.entries(RL_ETATS).map(([k, [ic, t]]) => `<button type="button" class="rl-b rl-${k}${st === k ? ' on' : ''}" data-rl="${k}"><span class="gicon">${ic}</span> ${t}</button>`).join('')}
       ${ch ? `<span class="rl-chgt" title="${rlEsc(ch.note || '')}"><span class="gicon">published_with_changes</span> Chgt effectué le ${new Date(ch.date).toLocaleDateString('fr-FR')}${ch.note ? ' : ' + rlEsc(ch.note) : ''}</span>` : ''}
       <span class="rl-cle">${rlEsc(cle)}</span></div>${rem}${rlAdmin() ? rlRetoursHtml(cle) : ''}`;
 }
@@ -128,7 +149,7 @@ async function rlTraiter(id){
   const r = [...rl.retours.values()].flat().find(x => String(x.id) === String(id)); if(!r) return false;
   const { error } = await sb.from('relecture_beta').update({ traite: !r.traite }).eq('id', r.id);
   if(error){ await niceAlert('Non enregistré : ' + error.message); return false; }
-  r.traite = !r.traite; return true;
+  r.traite = !r.traite; await rlEtatsCharger(); return true;
 }
 function rlEtatVig(v, cle){
   const l = rl.lignes.get(cle), st = (l && l.statut) || 'non';
@@ -166,10 +187,12 @@ function rlEntete(lvl, c){
   if(!h){ h = document.createElement('div'); h.className = 'rl-entete'; root.insertBefore(h, root.querySelector('.td-planche') || root.firstChild.nextSibling); }
   const n = { ok: 0, non: 0, com: 0, chgt: 0 };
   (rl.cles || []).forEach(k => { if(rlChgt(k)) n.chgt++; else n[((rl.lignes.get(k) || {}).statut) || 'non']++; });
+  const nG = { valide: 0, examen: 0 }; (rl.cles || []).forEach(k => { const e = rlEtat(k)[0]; if(e in nG) nG[e]++; });
   const nBeta = rlAdmin() ? (rl.cles || []).filter(k => (rl.retours.get(k) || []).some(rlATraiter)).length : 0;
   const f = (id, t, nb) => `<button type="button" class="rl-f${rl.filtre === id ? ' on' : ''}" data-rlf="${id}">${t} <b>${nb}</b></button>`;
   h.innerHTML = `<b><span class="gicon">rate_review</span> ${rlBeta() ? 'Bêta-test : vos retours' : 'Relecture'}</b>
     ${f('', 'Tous', (rl.cles || []).length)}${f('ok', 'Validés', n.ok)}${f('non', 'Non examinés', n.non)}${f('com', 'Commentés', n.com)}${f('chgt', 'Chgt effectué', n.chgt)}${rlAdmin() ? f('beta', 'Retours bêta', nBeta) : ''}
+    <span class="rl-moi" style="margin-left:6px;">Équipe :</span>${f('g-valide', 'Validés', nG.valide)}${f('g-examen', 'En cours d\'examen', nG.examen)}
     <span style="flex:1"></span><button type="button" class="btn secondary td-mini" data-rlsynth><span class="gicon">list_alt</span> Toutes les remarques</button>
     ${rl.erreur ? `<span class="rl-err">Relecture indisponible : ${rlEsc(rl.erreur)}</span>` : ''}`;
   h.onclick = e => {
@@ -181,7 +204,7 @@ function rlEntete(lvl, c){
 function rlFiltrer(){
   document.querySelectorAll('#tdRoot .td-vig[data-rl]').forEach(v => {
     const cle = v.dataset.rl, st = rlChgt(cle) ? 'chgt' : ((rl.lignes.get(cle) || {}).statut || 'non');
-    const beta = rl.filtre === 'beta' && (rl.retours.get(cle) || []).some(rlATraiter);
+    const beta = (rl.filtre === 'beta' && (rl.retours.get(cle) || []).some(rlATraiter)) || rl.filtre === 'g-' + rlEtat(cle)[0];
     v.style.display = !rl.filtre || rl.filtre === st || beta ? '' : 'none';
   });
   document.querySelectorAll('#tdRoot .td-planche').forEach(s => {
@@ -269,6 +292,9 @@ async function rlSynthese(){
     .rl-chgt{display:inline-flex;align-items:center;gap:3px;background:#E6EEFB;color:#1F5FA8;border-radius:999px;padding:2px 9px;font:700 .74rem Inter,sans-serif;} .rl-chgt .gicon{font-size:15px;}
     .rl-cle{margin-left:auto;font:600 .7rem 'Space Grotesk',monospace;color:#9AA3AF;}
     .rl-rem{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px;font-size:.76rem;} .rl-rem span{background:#FDF1DF;color:#8A5A00;border-radius:6px;padding:1px 6px;} .rl-rem em{color:#3C4654;flex-basis:100%;}
+    .rl-etat{display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:2px 10px 2px 7px;margin-bottom:5px;font:700 .76rem Inter,sans-serif;} .rl-etat .gicon{font-size:15px;} .rl-etat small{font-weight:500;}
+    .rl-etat-valide{background:#E3F4EA;color:#1F7A4D;} .rl-etat-examen{background:#FDF1DF;color:#A0620F;} .rl-etat-nonex{background:#EEF1F5;color:#5B6472;}
+    .rl-moi{font:600 .72rem Inter,sans-serif;color:#9AA3AF;margin-right:2px;}
     .rl-betas{margin-top:5px;display:flex;flex-direction:column;gap:4px;}
     .rl-beta{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px;background:#F3EEFB;border-radius:8px;padding:4px 8px;font-size:.78rem;} .rl-beta .gicon, .rl-beta-ok .gicon{font-size:15px;color:#7A4FC0;}
     .rl-beta .rl-rem{margin:0;flex:1;} .rl-beta.traite{opacity:.55;} .rl-beta-ok{font-size:.76rem;color:#5B6472;display:flex;align-items:center;gap:4px;}
