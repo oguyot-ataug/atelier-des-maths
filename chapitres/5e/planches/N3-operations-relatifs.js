@@ -3,6 +3,20 @@
    Addition (même signe, signes contraires), soustraction (ajouter l'opposé), sommes algébriques, problèmes.
    ============================================================ */
 (() => {
+// Illustrations des problèmes concrets (chapitres/planches-dessins.js).
+const DS = PL_DESSINS, illu = plIllu;
+const thermometre = (() => { const Y = t => 70 - t * 4.4; let g = `<rect x="30" y="${Y(15) - 4}" width="12" height="${Y(-15) - Y(15) + 8}" rx="6" fill="#fff" stroke="#1F3A5C" stroke-width="1.4"/><circle cx="36" cy="${Y(-15) + 12}" r="10" fill="#E35D3A" stroke="#1F3A5C" stroke-width="1.4"/>`
+    + `<rect x="33" y="${Y(-6)}" width="6" height="${Y(-15) + 8 - Y(-6)}" fill="#E35D3A"/>`;
+  for(let t = -15; t <= 15; t += 5){ g += DS.ln([42, Y(t)], [50, Y(t)], '#1F3A5C', 1.2) + DS.tx([54, Y(t) + 4], (t > 0 ? '+' : '') + String(t).replace('-', '−'), { a: 'start', fs: 9 }); }
+  for(let t = -15; t <= 15; t++) if(t % 5) g += DS.ln([42, Y(t)], [46, Y(t)], '#1F3A5C', .7);
+  return DS.fig(84, 160, g + DS.tx([14, Y(-6) + 4], '−6', { c: '#E35D3A', fs: 10 }) + DS.tx([60, 152], '°C', { fs: 10 }), 72); })();
+const everest = DS.fig(196, 150, `<rect x="96" y="62" width="100" height="88" fill="#CDEAF6"/><path d="M96,62 L118,62 L140,140 L156,140 L176,62 L196,62 L196,150 L96,150 Z" fill="#B9C2CC"/>`
+  + `<path d="M4,62 L30,30 L52,6 L70,28 L96,62 Z" fill="#B9A58A" stroke="#1F3A5C" stroke-width="1.2"/><path d="M44,16 L52,6 L60,16 L55,14 L52,17 L48,14 Z" fill="#fff"/>` + DS.vagues(98, 194, 62)
+  + DS.ln([4, 62], [196, 62], '#2EA8C9', 1.2, true) + DS.tx([52, 2 + 0], '', {}) + DS.tx([66, 10], '8 849 m', { a: 'start', fs: 10 }) + DS.tx([148, 148], '−10 994 m', { fs: 10 }).replace('y="148"', 'y="136"') + DS.tx([6, 74], 'niveau de la mer : 0 m', { a: 'start', fs: 9, c: '#2EA8C9' }), 165);
+const sousMarin = (() => { const Y = m => 18 + m * .36; let g = `<rect x="0" y="${Y(0)}" width="170" height="${Y(300) - Y(0) + 10}" fill="#E3F2FA"/>` + DS.vagues(40, 168, Y(0));
+  for(let m = 0; m <= 300; m += 50){ g += DS.ln([34, Y(m)], [40, Y(m)], '#1F3A5C', 1) + DS.tx([30, Y(m) + 3], m ? '−' + m : '0', { a: 'end', fs: 8 }); }
+  const sm = `<g transform="translate(110,${Y(250)})"><ellipse cx="0" cy="0" rx="30" ry="9" fill="#F6C343" stroke="#1F3A5C" stroke-width="1.3"/><rect x="-6" y="-17" width="14" height="9" rx="2" fill="#F6C343" stroke="#1F3A5C" stroke-width="1.2"/><line x1="2" y1="-17" x2="2" y2="-24" stroke="#1F3A5C" stroke-width="1.4"/><circle cx="-14" cy="0" r="2.5" fill="#9CC8E8"/><circle cx="-2" cy="0" r="2.5" fill="#9CC8E8"/><circle cx="10" cy="0" r="2.5" fill="#9CC8E8"/></g>`;
+  return DS.fig(170, 136, g + DS.ln([40, Y(0)], [40, Y(300)], '#1F3A5C', 1.2) + sm + DS.tx([40, Y(300) + 12], 'profondeur (m)', { a: 'start', fs: 9 }).replace(/y="[\d.]+"/, 'y="12"').replace(/x="40"/, 'x="44"'), 150); })();
 const B = n => plPointilles(n || 3), R = v => plRep(String(v));
 const ch = (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) + '</div>' });
 const rel = v => String(+(+v).toFixed(3)).replace('-', '−').replace('.', ',');
@@ -25,7 +39,7 @@ PLANCHES['5e|Opérations sur les nombres relatifs'] = [
         ...rmp([['(−4) + @ = 3', 7], ['@ + (+6) = −2', -8], ['(+9) + @ = 0', -9], ['(−5) + @ = −12', -7]], 2) },
       { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.',
         ...ch([['La somme de deux nombres négatifs est négative :', 'vrai'], ['La somme d\'un positif et d\'un négatif est toujours négative :', 'faux'], ['(−3) + (+3) = 0 :', 'vrai'], ['(−6) + (−2) = −4 :', 'faux']], 'vrai · faux') },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'Le matin, il fait −6 °C. La température augmente de 9 °C dans la journée, puis baisse de 11 °C la nuit. Quelle est la température la nuit ? Écris les additions.',
+      { etoiles: 3, col: 1, cahier: true, consigne: illu(thermometre, 'Le matin, il fait −6 °C. La température augmente de 9 °C dans la journée, puis baisse de 11 °C la nuit. Quelle est la température la nuit ? Écris les additions.'),
         corr: cm1Redac('Température', '(−6) + (+9) + (−11) = (+3) + (−11) = −8', 'La nuit, il fait −8 °C.') },
     ] },
   { titre: 'Additionner : tableaux et carrés magiques', duree: '35 min',
@@ -66,7 +80,7 @@ PLANCHES['5e|Opérations sur les nombres relatifs'] = [
           return { eleve: tab(() => B(2)), corr: tab(v => R(rel(v))) }; })() },
       { etoiles: 2, col: 1, consigne: 'Entoure le résultat juste.',
         ...ch([['(−8) − (−3) =', '−5'], ['(+2) − (+9) =', '−7'], ['(−6) − (+6) =', '−12'], ['(+1,5) − (−1,5) =', '3']], '−12 · −11 · −7 · −5 · 0 · 3 · 7') },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'L\'écart entre deux altitudes est la différence « plus haute − plus basse ». Calcule l\'écart entre le sommet de l\'Everest (8 849 m) et le fond de la fosse des Mariannes (−10 994 m).',
+      { etoiles: 3, col: 1, cahier: true, consigne: illu(everest, 'L\'écart entre deux altitudes est la différence « plus haute − plus basse ». Calcule l\'écart entre le sommet de l\'Everest (8 849 m) et le fond de la fosse des Mariannes (−10 994 m).'),
         corr: cm1Redac('Écart', '8 849 − (−10 994) = 8 849 + 10 994 = 19 843', 'L\'écart est de 19 843 m.') },
     ] },
   { titre: 'Sommes algébriques', duree: '40 min',
@@ -106,7 +120,7 @@ PLANCHES['5e|Opérations sur les nombres relatifs'] = [
         ...ch([['Écart entre −7 °C et 4 °C :', '4 − (−7)'], ['Température si −7 °C augmente de 4 °C :', '−7 + 4'], ['Solde si −7 € puis un retrait de 4 € :', '−7 − 4']], '4 − (−7) · −7 + 4 · −7 − 4') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Pythagore est né vers −580 et mort vers −495. Archimède est né vers −287. Combien d\'années environ sépare la mort de Pythagore de la naissance d\'Archimède ? Combien de temps Pythagore a-t-il vécu ?',
         corr: cm1Redac('Durées', { suite: ['Pythagore a vécu : −495 − (−580) = −495 + 580 = 85 ans.', 'Entre sa mort et la naissance d\'Archimède : −287 − (−495) = 208 ans.'] }, 'Pythagore a vécu environ 85 ans ; 208 ans séparent sa mort de la naissance d\'Archimède.') },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'Un sous-marin est à −250 m. Il remonte de 120 m, redescend de 75 m puis remonte de 180 m. À quelle profondeur est-il ? Est-il remonté à la surface ?',
+      { etoiles: 3, col: 1, cahier: true, consigne: illu(sousMarin, 'Un sous-marin est à −250 m. Il remonte de 120 m, redescend de 75 m puis remonte de 180 m. À quelle profondeur est-il ? Est-il remonté à la surface ?'),
         corr: cm1Redac('Profondeur', '−250 + 120 − 75 + 180 = 300 − 325 = −25', 'Il est à −25 m : il n\'est pas encore à la surface.') },
     ] },
 ];

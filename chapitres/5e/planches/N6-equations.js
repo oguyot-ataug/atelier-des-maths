@@ -3,6 +3,11 @@
    Tester une solution, résoudre x + b = c, ax = b et ax + b = c, mettre un problème en équation.
    ============================================================ */
 (() => {
+// Illustrations des problèmes concrets (chapitres/planches-dessins.js).
+const DS = PL_DESSINS, illu = plIllu;
+const balanceSac = DS.fig(150, 112, `<rect x="20" y="78" width="110" height="26" rx="5" fill="#DCE6F0" stroke="#1F3A5C" stroke-width="1.4"/><rect x="46" y="84" width="58" height="15" rx="2" fill="#1F3A5C"/>` + DS.tx([75, 95], '2,4 kg', { c: '#7CE38B', fs: 11 })
+  + `<rect x="14" y="72" width="122" height="6" rx="2" fill="#B9C2CC" stroke="#1F3A5C" stroke-width="1"/><path d="M30,72 L36,30 L76,30 L82,72 Z" fill="#7A4FC0" stroke="#1F3A5C" stroke-width="1.3"/><path d="M44,30 q12,-18 24,0" fill="none" stroke="#1F3A5C" stroke-width="2"/>`
+  + `<rect x="90" y="52" width="40" height="20" fill="#E35D3A" stroke="#1F3A5C" stroke-width="1.2"/><rect x="90" y="66" width="40" height="3" fill="#fff"/>` + DS.tx([56, 56], 'sac', { fs: 10, c: '#fff' }) + DS.tx([110, 47], 'livre', { fs: 9 }), 130);
 const B = n => plPointilles(n || 3), R = v => plRep(String(v));
 const ch = (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) + '</div>' });
 const chx = it => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t, , m]) => `${t} <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) + '</div>' }); // choix propres à chaque question
@@ -42,7 +47,7 @@ PLANCHES['5e|Équations'] = [
         ...chx([['x + 5 = 17 :', 'soustraire 5', 'ajouter 5 · soustraire 5'], ['x − 8 = 2 :', 'ajouter 8', 'ajouter 8 · soustraire 8'], ['x + 1,5 = 4 :', 'soustraire 1,5', 'ajouter 1,5 · soustraire 1,5']]) },
       { etoiles: 1, col: 1, consigne: 'Vérifie : la solution trouvée est-elle juste ? Entoure.',
         ...ch([['x + 6 = 14 → x = 8 :', 'juste'], ['x − 3 = 9 → x = 6 :', 'fausse'], ['x + 2,5 = 3 → x = 0,5 :', 'juste']], 'juste · fausse') },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'Un sac et un livre pèsent ensemble 2,4 kg. Le livre pèse 0,65 kg. Écris une équation dont l\'inconnue est la masse du sac, puis résous-la.',
+      { etoiles: 3, col: 1, cahier: true, consigne: illu(balanceSac, 'Un sac et un livre pèsent ensemble 2,4 kg. Le livre pèse 0,65 kg. Écris une équation dont l\'inconnue est la masse du sac, puis résous-la.'),
         corr: cm1Redac('Équation', 'x + 0,65 = 2,4 donc x = 2,4 − 0,65 = 1,75', 'Le sac pèse 1,75 kg.') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'La température a baissé de 7 degrés depuis ce matin ; il fait maintenant −3 °C. Écris une équation, puis trouve la température du matin.',
         corr: cm1Redac('Équation', 'x − 7 = −3 donc x = −3 + 7 = 4', 'Ce matin, il faisait 4 °C.') },

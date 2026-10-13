@@ -4,6 +4,11 @@
    quadrillage faisables à l'écran (outil « droites »).
    ============================================================ */
 (() => {
+// Illustrations des problèmes concrets (chapitres/planches-dessins.js).
+const DS = PL_DESSINS, illu = plIllu;
+const maisonsPuits = DS.fig(196, 128, `<rect x="0" y="0" width="196" height="128" fill="#EAF5E4" rx="8"/>` + DS.maison(14, 108, 30, 18, 12) + DS.maison(150, 118, 30, 18, 12) + DS.maison(84, 40, 30, 18, 12)
+  + DS.tx([29, 122], 'A', { fs: 12 }) + DS.tx([165, 112 - 34], 'B', { fs: 12 }).replace(/y="[\d.]+"/, 'y="80"') + DS.tx([99, 12], 'C', { fs: 12 })
+  + `<circle cx="96" cy="84" r="9" fill="#B9C2CC" stroke="#1F3A5C" stroke-width="1.4"/><circle cx="96" cy="84" r="5" fill="#2EA8C9"/>` + DS.tx([112, 88], 'puits ?', { a: 'start', fs: 10, c: '#E35D3A' }), 165);
 const B = n => plPointilles(n || 3), R = v => plRep(String(v));
 const K = '#1F3A5C', Ro = '#E35D3A', Bl = '#2EA8C9', Ve = '#2E9C6A', Vi = '#7A4FC0';
 const S = (w, h, inner, px) => `<svg class="pl-libre" viewBox="0 0 ${w} ${h}" style="width:${px || w}px;max-width:100%;display:inline-block;vertical-align:middle;">${inner}</svg>`;
@@ -66,7 +71,7 @@ PLANCHES['5e|Droites remarquables dans un triangle'] = [
         ...ch([['Deux médiatrices suffisent pour trouver le centre du cercle circonscrit :', 'vrai'], ['Le centre du cercle circonscrit est toujours dans le triangle :', 'faux'], ['Dans un triangle rectangle, ce centre est le milieu de l\'hypoténuse :', 'vrai']], 'vrai · faux') },
       { etoiles: 2, col: 1, consigne: 'Triangle rectangle : le centre du cercle circonscrit est le milieu de l\'hypoténuse. Complète.',
         ...rmp([['ABC rectangle en A, BC = 10 cm : rayon du cercle circonscrit @ cm', 5], ['DEF rectangle en E, DF = 7 cm : rayon @ cm', '3,5'], ['Le rayon vaut 4,5 cm : l\'hypoténuse mesure @ cm', 9]], 2) },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'Trois maisons A, B et C ne sont pas alignées. On veut construire un puits à égale distance des trois maisons. Où le placer ? Explique ta construction.',
+      { etoiles: 3, col: 1, cahier: true, consigne: illu(maisonsPuits, 'Trois maisons A, B et C ne sont pas alignées. On veut construire un puits à égale distance des trois maisons. Où le placer ? Explique ta construction.'),
         corr: cm1Redac('Construction', { suite: ['Le puits doit être à égale distance de A et de B : sur la médiatrice de [AB].', 'Et à égale distance de A et de C : sur la médiatrice de [AC].'] }, 'On place le puits au point d\'intersection des médiatrices : le centre du cercle circonscrit au triangle ABC.') },
     ] },
   { titre: 'Hauteurs d\'un triangle', duree: '40 min',

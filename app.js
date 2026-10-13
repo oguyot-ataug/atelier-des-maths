@@ -3411,6 +3411,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1057', date:'2026-10-13', items:[
+    "Manuel 5e : 24 problèmes concrets illustrés, avec le dessin à côté de l'énoncé. Ascenseur et ses étages, thermomètre, Everest et fosse des Mariannes, sous-marin (relatifs) ; pizzas à partager, réservoir, gâteau en 12 parts (fractions) ; maisons et puits (droites remarquables) ; jardin et bassin, disque dans un carré, pièce carrelée, champ triangulaire, triangle et sa hauteur (aires) ; étiquette d'une boîte, boîte de conserve, tente (espace) ; bougie et sa règle (fonctions) ; deux phares (divisibilité) ; mur à repeindre, robinet et cuve (proportionnalité) ; rectangles et triangle aux côtés écrits avec des lettres (calcul littéral) ; sac et livre sur la balance (équations). Les dessins sont désormais communs à tous les niveaux (chapitres/planches-dessins.js).",
+  ]},
   { version:'2026-08-19.1056', date:'2026-10-13', items:[
     "Bêta-testeurs : dans Administration, la fiche d'un professeur a une case « Bêta-testeur ». Un bêta-testeur a, dans l'onglet Manuel de chaque chapitre, la même barre de relecture que l'administrateur (Validé, Non examiné, Commenté, avec les remarques à cocher et un commentaire) ; il ne voit que ses propres retours. L'administrateur voit sous chaque exercice les retours des testeurs (nom, remarques, « Validé par … »), les marque « Traité », les filtre (« Retours bêta ») et les retrouve dans « Toutes les remarques ».",
   ]},

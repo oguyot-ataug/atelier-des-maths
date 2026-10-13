@@ -3,6 +3,18 @@
    Quotient et égalité de quotients, simplification, comparaison, addition et soustraction, problèmes.
    ============================================================ */
 (() => {
+// Illustrations des problèmes concrets (chapitres/planches-dessins.js).
+const DS = PL_DESSINS, illu = plIllu;
+const pizza = (cx, cy, r) => `<circle cx="${cx}" cy="${cy}" r="${r}" fill="#E9B872" stroke="#A0622D" stroke-width="1.6"/><circle cx="${cx}" cy="${cy}" r="${r - 3}" fill="#E35D3A" opacity=".8"/>`
+  + [[.3, .2], [-.35, .1], [.05, -.4], [-.1, .45]].map(([a, b]) => `<circle cx="${cx + a * r}" cy="${cy + b * r}" r="${r * .14}" fill="#FFF3D6"/>`).join('');
+const pizzas5 = DS.fig(186, 84, [0, 1, 2, 3, 4].map(k => pizza(20 + k * 36, 22, 15)).join('') + [0, 1, 2, 3, 4, 5, 6, 7].map(k => DS.perso(18 + k * 21, 80, 26, k % 2 ? '#2E9C6A' : '#7A4FC0')).join(''), 160);
+const reservoir = (() => { let g = DS.cylindre(44, 112, 32, 96, 72, '#F3F6FA');
+  for(let k = 1; k < 4; k++) g += DS.ln([76, 112 - k * 24], [84, 112 - k * 24], '#1F3A5C', 1.2);
+  return DS.fig(110, 124, g + DS.tx([44, 60], '60 L', { fs: 11 }) + `<rect x="80" y="104" width="22" height="7" fill="#8A93A3"/><path d="M102,107 l6,0" stroke="#8A93A3" stroke-width="3"/>`, 92); })();
+const gateau12 = (() => { const cx = 56, cy = 54, r = 46; let g = `<circle cx="${cx}" cy="${cy}" r="${r + 4}" fill="#F7E7C6" stroke="#A0622D" stroke-width="1.4"/><circle cx="${cx}" cy="${cy}" r="${r}" fill="#F2B8C9" stroke="#A0622D" stroke-width="1.2"/>`;
+  for(let k = 0; k < 12; k++){ const a = k * Math.PI / 6; g += DS.ln([cx, cy], [cx + r * Math.cos(a), cy + r * Math.sin(a)], '#A0622D', 1.1); }
+  for(let k = 0; k < 12; k++){ const a = (k + .5) * Math.PI / 6; g += `<circle cx="${(cx + r * .72 * Math.cos(a)).toFixed(1)}" cy="${(cy + r * .72 * Math.sin(a)).toFixed(1)}" r="3.2" fill="#C0392B"/>`; }
+  return DS.fig(112, 110, g, 96); })();
 const B = n => plPointilles(n || 3), R = v => plRep(String(v)), F = cm1Frac, Fr = plFrac(), C = plCase();
 const T = (a, b) => cm1Tex(`\\dfrac{${a}}{${b}}`);
 const lt = '&lt;', gt = '&gt;';
@@ -33,7 +45,7 @@ PLANCHES['5e|Fractions'] = [
       { etoiles: 2, col: 1, consigne: 'Entoure les fractions égales à 2.',
         ...(() => { const l = [[6, 3], [4, 8], [10, 5], [2, 1], [20, 10], [8, 2], [14, 7], [3, 6]];
           return { eleve: plGrille(l.map(([a, b]) => F(a, b)), 4), corr: plGrille(l.map(([a, b]) => a === 2 * b ? plEntoure(F(a, b)) : F(a, b)), 4) }; })() },
-      { etoiles: 3, col: 1, cahier: true, consigne: `On partage équitablement 5 pizzas entre 8 personnes. Quelle part chaque personne reçoit-elle ? Écris-la sous forme de fraction, puis en écriture décimale.`,
+      { etoiles: 3, col: 1, cahier: true, consigne: illu(pizzas5, `On partage équitablement 5 pizzas entre 8 personnes. Quelle part chaque personne reçoit-elle ? Écris-la sous forme de fraction, puis en écriture décimale.`),
         corr: cm1Redac('Part de chacun', `5 : 8 = ${F(5, 8)} = 0,625`, `Chaque personne reçoit ${F(5, 8)} de pizza, soit 0,625 pizza.`) },
     ] },
   { titre: 'Égalité de quotients et simplification', duree: '40 min',
@@ -100,11 +112,11 @@ PLANCHES['5e|Fractions'] = [
         corr: plListe([ligne('À pied :', F(1, 4), '; en bus :', F(1, 2), '. En voiture :', R(F(1, 4))), ligne('À pied :', F(2, 5), '; en bus :', F(3, 10), '. En voiture :', R(F(3, 10)))]) },
       { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.',
         ...ch([[`${T(1, 2)} + ${T(1, 3)} = ${T(2, 5)} :`, 'faux'], [`${T(3, 4)} de 100 € = 75 € :`, 'vrai'], [`${T(1, 3)} + ${T(1, 3)} + ${T(1, 3)} = 1 :`, 'vrai'], [`La moitié de ${T(1, 2)} est ${T(1, 4)} :`, 'vrai']], 'vrai · faux') },
-      { etoiles: 3, col: 1, cahier: true, consigne: `Un réservoir de 60 L est rempli aux ${T(3, 4)}. On utilise ${T(1, 3)} de sa contenance totale. Combien de litres reste-t-il ?`,
+      { etoiles: 3, col: 1, cahier: true, consigne: illu(reservoir, `Un réservoir de 60 L est rempli aux ${T(3, 4)}. On utilise ${T(1, 3)} de sa contenance totale. Combien de litres reste-t-il ?`),
         corr: cm1Redac('Litres restants', { suite: [`${F(3, 4)} de 60 L = 45 L`, `${F(1, 3)} de 60 L = 20 L`, '45 − 20 = 25'] }, 'Il reste 25 L dans le réservoir.') },
       { etoiles: 3, col: 1, cahier: true, consigne: `Lina dépense ${T(2, 5)} de son argent de poche en livres et ${T(1, 4)} en sorties. Quelle fraction de son argent lui reste-t-il ? Elle avait 40 € : combien lui reste-t-il ?`,
         corr: cm1Redac('Fraction restante', `1 − ${F(2, 5)} − ${F(1, 4)} = ${F(20, 20)} − ${F(8, 20)} − ${F(5, 20)} = ${F(7, 20)}`, `Il lui reste les ${F(7, 20)} de son argent.`) + cm1Redac('Somme restante', `${F(7, 20)} de 40 € = 40 : 20 × 7 = 14 €`, 'Il lui reste 14 €.') },
-      { etoiles: 3, col: 1, cahier: true, consigne: `Un gâteau est coupé en 12 parts égales. Paul en mange ${T(1, 4)}, Léa ${T(1, 3)} et Sam ${T(1, 6)}. Reste-t-il du gâteau ? Si oui, combien de parts ?`,
+      { etoiles: 3, cahier: true, consigne: illu(gateau12, `Un gâteau est coupé en 12 parts égales. Paul en mange ${T(1, 4)}, Léa ${T(1, 3)} et Sam ${T(1, 6)}. Reste-t-il du gâteau ? Si oui, combien de parts ?`),
         corr: cm1Redac('Parts mangées', `${F(3, 12)} + ${F(4, 12)} + ${F(2, 12)} = ${F(9, 12)}`, 'Ils ont mangé 9 parts sur 12 : il reste 3 parts.') },
     ] },
 ];

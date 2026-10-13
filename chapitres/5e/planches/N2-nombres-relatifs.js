@@ -3,6 +3,13 @@
    Signe et opposé, droite graduée (lire, placer), comparer et ranger, repérage dans le plan.
    ============================================================ */
 (() => {
+// Illustrations des problèmes concrets (chapitres/planches-dessins.js).
+const DS = PL_DESSINS, illu = plIllu;
+const ascenseur = (() => { const y0 = 18, e = 13, Y = n => y0 + (5 - n) * e; let g = '';
+  for(let n = 5; n >= -2; n--){ g += `<rect x="36" y="${Y(n)}" width="70" height="${e}" fill="${n >= 0 ? '#F4E7D3' : '#D9D2C5'}" stroke="#1F3A5C" stroke-width="1"/>` + DS.tx([30, Y(n) + 10], String(n).replace('-', '−'), { a: 'end', fs: 10 }); }
+  g += `<rect x="62" y="${Y(0)}" width="18" height="${e}" fill="#9CC8E8" stroke="#1F3A5C" stroke-width="1.4"/>` + DS.ln([71, Y(5)], [71, Y(-2) + e], '#8A93A3', .8, true);
+  return DS.fig(150, 132, `<path d="M36,${Y(-1)} L4,${Y(-1)} L4,${Y(-2) + e} L36,${Y(-2) + e} Z" fill="#E8D9B5"/><path d="M106,${Y(-1)} L146,${Y(-1)} L146,${Y(-2) + e} L106,${Y(-2) + e} Z" fill="#E8D9B5"/>`
+    + g + DS.sol(4, 146, Y(-1)).replace(/<line[^>]*>/, '') + DS.ln([4, Y(-1)], [146, Y(-1)], '#2E9C6A', 2) + DS.tx([112, Y(0) + 10], 'RDC', { a: 'start', fs: 9, c: '#2E9C6A' }) + DS.tx([112, Y(-1) + 12], 'sous-sol', { a: 'start', fs: 9 }), 120); })();
 const B = n => plPointilles(n || 3), R = v => plRep(String(v));
 const ch = (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) + '</div>' });
 const chx = it => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t, , m]) => `${t} <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) + '</div>' }); // choix propres à chaque question
@@ -41,7 +48,7 @@ PLANCHES['5e|Nombres relatifs'] = [
         ...rmp([['Matin −6 °C, il gagne 9 degrés : après-midi @ °C', '3'], ['Matin 2 °C, il perd 5 degrés : soir @ °C', '−3'], ['Matin −1 °C, il perd 4 degrés : soir @ °C', '−5']], 3) },
       { etoiles: 2, col: 1, consigne: 'Entoure les nombres négatifs.',
         ...(() => { const l = ['−4', '7', '−0,5', '+2', '−10', '0', '3,2', '−1']; return { eleve: plGrille(l, 4), corr: plGrille(l.map(t => t[0] === '−' ? plEntoure(t) : t), 4) }; })() },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'Un ascenseur part du rez-de-chaussée (étage 0). Il descend de 2 étages, monte de 5, puis descend de 4. À quel étage arrive-t-il ? Explique avec des nombres relatifs.',
+      { etoiles: 3, cahier: true, consigne: illu(ascenseur, 'Un ascenseur part du rez-de-chaussée (étage 0). Il descend de 2 étages, monte de 5, puis descend de 4. À quel étage arrive-t-il ? Explique avec des nombres relatifs.'),
         corr: cm1Redac('Étage d\'arrivée', '0 → −2 → +3 → −1', 'L\'ascenseur arrive à l\'étage −1 (le premier sous-sol).') },
     ] },
   { titre: 'Repérer sur une droite graduée', duree: '35 min',

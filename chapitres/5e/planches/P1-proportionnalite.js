@@ -3,6 +3,12 @@
    Reconnaître, compléter un tableau (coefficient, linéarité, unité), graphique, échelles et problèmes.
    ============================================================ */
 (() => {
+// Illustrations des problèmes concrets (chapitres/planches-dessins.js).
+const DS = PL_DESSINS, illu = plIllu;
+const murPeinture = DS.fig(184, 108, DS.sol(4, 180, 92) + DS.mur(8, 92, 120, 72) + `<rect x="8" y="20" width="70" height="72" fill="#9CC8E8" opacity=".85"/>` + DS.tx([43, 60], '15 m²', { fs: 11 })
+  + DS.cylindre(148, 92, 12, 24, 0, '#E9A21C') + DS.cylindre(172, 92, 12, 24, 0, '#E9A21C') + DS.tx([160, 56], '2 pots', { fs: 9 }), 165);
+const robinetCuve = DS.fig(150, 130, `<path d="M8,14 h40 v10 h-8 v8 h-10 v-8 h-22 Z" fill="#B9C2CC" stroke="#1F3A5C" stroke-width="1.2"/><rect x="28" y="4" width="10" height="10" fill="#E35D3A" stroke="#1F3A5C" stroke-width="1"/>`
+  + DS.ln([35, 32], [35, 92], '#2EA8C9', 3) + DS.pave(16, 120, 80, 64, 30, 18, 30) + DS.tx([118, 128], 'cuve', { fs: 9 }), 120);
 const B = n => plPointilles(n || 3), R = v => plRep(String(v));
 const ch = (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) + '</div>' });
 const chx = it => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t, , m]) => `${t} <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) + '</div>' }); // choix propres à chaque question
@@ -75,7 +81,7 @@ PLANCHES['5e|Proportionnalité'] = [
         ...rmp([['Prix de 3 kg : @ €', 6], ['Masse achetée avec 12 € : @ kg', 6], ['Les points sont-ils alignés avec l\'origine ? @', 'oui']], 3) },
       { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.',
         ...ch([['Des points alignés représentent toujours une situation de proportionnalité :', 'faux'], ['Si la situation est proportionnelle, la droite passe par l\'origine du repère :', 'vrai'], ['Un graphique qui « monte » est toujours de proportionnalité :', 'faux']], 'vrai · faux') },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'Un robinet remplit une cuve : 15 L en 2 min, 45 L en 6 min, 60 L en 8 min. Ces valeurs sont-elles proportionnelles ? Combien de litres en 10 min ?',
+      { etoiles: 3, col: 1, cahier: true, consigne: illu(robinetCuve, 'Un robinet remplit une cuve : 15 L en 2 min, 45 L en 6 min, 60 L en 8 min. Ces valeurs sont-elles proportionnelles ? Combien de litres en 10 min ?'),
         corr: cm1Redac('Débit', '15 : 2 = 7,5 ; 45 : 6 = 7,5 ; 60 : 8 = 7,5', 'Oui, le coefficient est 7,5 L par minute.') + cm1Redac('En 10 min', '10 × 7,5 = 75', 'En 10 minutes, la cuve reçoit 75 L.') },
     ] },
   { titre: 'Échelles et vitesses', duree: '40 min',
@@ -112,7 +118,7 @@ PLANCHES['5e|Proportionnalité'] = [
       { etoiles: 2, col: 1, consigne: 'Complète (consommation d\'une voiture : 6 L pour 100 km).', ...tabExo('Distance (km)', 'Essence (L)', [100, 50, 250, null], [6, null, null, 21], 0.06) },
       { etoiles: 1, col: 1, consigne: 'Vrai ou faux ? Entoure (situations de proportionnalité).',
         ...ch([['Si 2 kg coûtent 5 €, alors 6 kg coûtent 15 € :', 'vrai'], ['Si 4 pains coûtent 6 €, alors 5 pains coûtent 7 € :', 'faux'], ['Si 10 L pèsent 10 kg, alors 3 L pèsent 3 kg :', 'vrai']], 'vrai · faux') },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'Pour repeindre 15 m² de mur, il faut 2 pots de peinture. Combien de pots faut-il pour 52,5 m² ? Un pot coûte 23 € : quel est le prix total ?',
+      { etoiles: 3, col: 1, cahier: true, consigne: illu(murPeinture, 'Pour repeindre 15 m² de mur, il faut 2 pots de peinture. Combien de pots faut-il pour 52,5 m² ? Un pot coûte 23 € : quel est le prix total ?'),
         corr: cm1Redac('Pots', '52,5 : 15 = 3,5 et 3,5 × 2 = 7', 'Il faut 7 pots de peinture.') + cm1Redac('Prix', '7 × 23 = 161', 'Le prix total est 161 €.') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Une imprimante imprime 45 pages en 3 minutes. Combien de pages en 20 minutes ? Combien de temps pour imprimer 420 pages ?',
         corr: cm1Redac('Pages par minute', '45 : 3 = 15', '') + cm1Redac('Réponses', { suite: ['En 20 min : 20 × 15 = 300 pages.', 'Pour 420 pages : 420 : 15 = 28 minutes.'] }, 'Elle imprime 300 pages en 20 minutes et 420 pages en 28 minutes.') },

@@ -4,6 +4,17 @@
    cavalière (arêtes à tracer sur quadrillage, à l'écran), patrons, volumes et unités de volume.
    ============================================================ */
 (() => {
+// Illustrations des problèmes concrets (chapitres/planches-dessins.js).
+const DS = PL_DESSINS, illu = plIllu;
+const boite = (cx, yb, r, h, label) => DS.cylindre(cx, yb, r, h, 0, '#E6EEF6') + (label ? `<path d="M${cx - r},${yb - h * .7} L${cx - r},${yb - h * .3} A${r},${r * .28} 0 0 0 ${cx + r},${yb - h * .3} L${cx + r},${yb - h * .7} A${r},${r * .28} 0 0 1 ${cx - r},${yb - h * .7} Z" fill="${label}" stroke="#1F3A5C" stroke-width="1"/>` : '');
+const etiquette = DS.fig(206, 120, boite(36, 104, 26, 84, '#F6C343') + DS.ln([36, 20], [62, 20], '#E35D3A', 1.2) + DS.tx([49, 16], '5 cm', { c: '#E35D3A', fs: 9 }) + DS.cote([70, 104], [70, 20], '12 cm', 0, { dt: -4, a: 'start', fs: 10 })
+  + `<path d="M108,62 l12,0 m-5,-4 l5,4 l-5,4" stroke="#1F3A5C" stroke-width="1.4" fill="none"/><rect x="124" y="42" width="74" height="40" fill="#F6C343" stroke="#1F3A5C" stroke-width="1.2"/>` + DS.tx([161, 66], '?', { fs: 14 }) + DS.tx([161, 96], 'étiquette', { fs: 9 }), 175);
+const conserve = DS.fig(112, 126, boite(42, 112, 32, 92, '#E35D3A') + DS.tx([42, 74], 'PETITS POIS', { fs: 6, c: '#fff' }) + DS.ln([10, 20], [74, 20], '#2E9C6A', 1.1, true) + DS.tx([42, 15], '8 cm', { c: '#2E9C6A', fs: 10 })
+  + DS.cote([84, 112], [84, 20], '11 cm', 0, { dt: -4, a: 'start', fs: 10 }), 96);
+const tente = (() => { const a = [16, 108], b = [80, 108], s = [48, 50], dx = 70, dy = -32, T = p => [p[0] + dx, p[1] + dy];
+  return DS.fig(184, 126, DS.poly([b, T(b), T(s), s], '#F6C343', '#1F3A5C', 1.4) + DS.poly([a, b, s], '#E9A21C', '#1F3A5C', 1.6) + DS.ln(a, T(a), '#1F3A5C', 1, true) + DS.ln(T(a), T(b), '#1F3A5C', 1, true) + DS.ln(T(a), T(s), '#1F3A5C', 1, true)
+    + DS.ln(s, [48, 108], '#E35D3A', 1.2, true) + `<path d="M40,108 L48,78 L56,108" fill="#A0622D" opacity=".55"/>` + DS.tx([52, 72], '1,5 m', { a: 'start', fs: 9, c: '#E35D3A' })
+    + DS.cote(a, b, '2 m', -8, { dt: 7 }) + DS.cote(b, T(b), '3 m', -6, { dt: 6, a: 'start' }), 160); })();
 const B = n => plPointilles(n || 3), R = v => plRep(String(v));
 const K = '#1F3A5C', Ro = '#E35D3A', Bl = '#2EA8C9', Ve = '#2E9C6A';
 const S = (w, h, inner, px) => `<svg class="pl-libre" viewBox="0 0 ${w} ${h}" style="width:${px || w}px;max-width:100%;display:inline-block;vertical-align:middle;">${inner}</svg>`;
@@ -94,7 +105,7 @@ PLANCHES['5e|Représentation de l\'espace'] = [
         ...rmp([['Nombre de rectangles du patron : @', 3], ['Longueur totale des rectangles mis bout à bout : @ cm', 12], ['Aire des faces latérales : @ cm²', 72]], 2) },
       { etoiles: 2, col: 1, consigne: 'Un prisme a une base à n côtés. Complète.',
         ...rmp([['Base à 4 côtés : @ faces', 6], ['Base à 4 côtés : @ sommets', 8], ['Base à 5 côtés : @ faces', 7], ['Base à 5 côtés : @ arêtes', 15]], 2) },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'Une boîte cylindrique a un diamètre de 10 cm et une hauteur de 12 cm. Quelles sont les dimensions de l\'étiquette qui fait le tour de la boîte ?',
+      { etoiles: 3, cahier: true, consigne: illu(etiquette, 'Une boîte cylindrique a un diamètre de 10 cm et une hauteur de 12 cm. Quelles sont les dimensions de l\'étiquette qui fait le tour de la boîte ?'),
         corr: cm1Redac('Dimensions de l\'étiquette', { suite: ['Largeur : la hauteur, 12 cm.', 'Longueur : π × 10 ≈ 31,4'] }, 'L\'étiquette mesure environ 31,4 cm sur 12 cm.') },
     ] },
   { titre: 'Volumes', duree: '45 min',
@@ -110,9 +121,9 @@ PLANCHES['5e|Représentation de l\'espace'] = [
         ...chx([['Le volume d\'une piscine :', 'm³', 'cm³ · L · m³'], ['Le volume d\'un dé à jouer :', 'cm³', 'cm³ · L · m³'], ['La contenance d\'une bouteille d\'eau :', 'L', 'mm³ · L · m³']]) },
       { etoiles: 2, col: 1, consigne: 'Un aquarium est un pavé droit de 50 cm sur 30 cm sur 40 cm. Complète.',
         ...rmp([['V = @ cm³', 60000], ['V = @ dm³', 60], ['Contenance : @ L', 60]], 2) },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'Une boîte de conserve est un cylindre de diamètre 8 cm et de hauteur 11 cm. Calcule son volume (arrondi au cm³), puis sa contenance en litres.',
+      { etoiles: 3, col: 1, cahier: true, consigne: illu(conserve, 'Une boîte de conserve est un cylindre de diamètre 8 cm et de hauteur 11 cm. Calcule son volume (arrondi au cm³), puis sa contenance en litres.'),
         corr: cm1Redac('Volume de la boîte', { suite: ['r = 8 ÷ 2 = 4', 'V = π × 4 × 4 × 11 = 176π ≈ 553'] }, 'La boîte a un volume d\'environ 553 cm³, soit environ 0,55 L.') },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'Une tente est un prisme droit. Sa base est un triangle de base 2 m et de hauteur 1,5 m ; la tente est longue de 3 m. Calcule son volume.',
+      { etoiles: 3, col: 1, cahier: true, consigne: illu(tente, 'Une tente est un prisme droit. Sa base est un triangle de base 2 m et de hauteur 1,5 m ; la tente est longue de 3 m. Calcule son volume.'),
         corr: cm1Redac('Volume de la tente', { suite: ['Aire de la base : 2 × 1,5 ÷ 2 = 1,5', 'V = 1,5 × 3 = 4,5'] }, 'La tente a un volume de 4,5 m³.') },
     ] },
 ];

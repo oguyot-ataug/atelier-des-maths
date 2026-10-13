@@ -3,6 +3,11 @@
    Multiples et diviseurs, critères de divisibilité par 2, 3, 4, 5, 9 et 10, problèmes.
    ============================================================ */
 (() => {
+// Illustrations des problèmes concrets (chapitres/planches-dessins.js).
+const DS = PL_DESSINS, illu = plIllu;
+const rayons = (x, y, c) => [-1, 1].map(s => `<path d="M${x},${y} L${x + s * 30},${y - 8} L${x + s * 30},${y + 8} Z" fill="${c}" opacity=".35"/>`).join('');
+const deuxPhares = DS.fig(180, 120, `<rect x="0" y="100" width="180" height="20" fill="#E3F2FA"/>` + DS.vagues(2, 178, 100) + rayons(48, 22, '#F6C343') + rayons(132, 22, '#F6C343') + DS.phare(48, 100, 84) + DS.phare(132, 100, 84)
+  + DS.tx([48, 116], 'toutes les 6 s', { fs: 9 }) + DS.tx([132, 116], 'toutes les 8 s', { fs: 9 }), 160);
 const B = n => plPointilles(n || 3), R = v => plRep(String(v));
 const ch = (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) + '</div>' });
 // Ligne à trous : les @ sont remplacés dans l'ordre par les réponses.
@@ -75,7 +80,7 @@ PLANCHES['5e|Divisibilité'] = [
       { etoiles: 2, col: 1, consigne: 'Entoure les nombres divisibles à la fois par 3 et par 5.', ...entoure([30, 45, 50, 63, 75, 90, 105, 110, 120, 135, 150, 200], n => n % 15 === 0) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Un fleuriste a 48 roses et 36 tulipes. Il veut faire des bouquets tous identiques, en utilisant toutes les fleurs. Combien de bouquets au maximum ? Que contient chaque bouquet ?',
         corr: cm1Redac('Bouquets', { suite: ['Le nombre de bouquets divise 48 et 36.', 'Diviseurs communs : 1 ; 2 ; 3 ; 4 ; 6 ; 12. Le plus grand est 12.'] }, 'Il peut faire 12 bouquets de 4 roses et 3 tulipes.') },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'Deux phares s\'allument en même temps. L\'un s\'allume toutes les 6 secondes, l\'autre toutes les 8 secondes. Dans combien de secondes s\'allumeront-ils de nouveau ensemble ?',
+      { etoiles: 3, cahier: true, consigne: illu(deuxPhares, 'Deux phares s\'allument en même temps. L\'un s\'allume toutes les 6 secondes, l\'autre toutes les 8 secondes. Dans combien de secondes s\'allumeront-ils de nouveau ensemble ?'),
         corr: cm1Redac('Multiples communs', { suite: ['Multiples de 6 : 6 ; 12 ; 18 ; 24 ; 30…', 'Multiples de 8 : 8 ; 16 ; 24 ; 32…'] }, 'Ils s\'allumeront de nouveau ensemble dans 24 secondes.') },
     ] },
 ];

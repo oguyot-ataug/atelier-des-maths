@@ -3,6 +3,12 @@
    Une grandeur en fonction d'une autre : lire un graphique, tableau de valeurs, formule, construire un graphique.
    ============================================================ */
 (() => {
+// Illustrations des problèmes concrets (chapitres/planches-dessins.js).
+const DS = PL_DESSINS, illu = plIllu;
+const bougie = (() => { let g = `<rect x="22" y="30" width="22" height="100" fill="#FDF3D6" stroke="#1F3A5C" stroke-width="1.4"/><path d="M33,30 l0,-6" stroke="#1F3A5C" stroke-width="1.4"/><path d="M33,4 q8,10 0,18 q-8,-8 0,-18 Z" fill="#F6C343" stroke="#E9A21C" stroke-width="1"/>`
+    + `<rect x="56" y="30" width="16" height="100" fill="#FFF8E1" stroke="#1F3A5C" stroke-width="1"/>`;
+  for(let c = 0; c <= 20; c++) g += DS.ln([56, 130 - c * 5], [c % 5 ? 61 : 65, 130 - c * 5], '#1F3A5C', c % 5 ? .6 : 1.1) + (c % 5 ? '' : DS.tx([76, 133 - c * 5], String(c), { a: 'start', fs: 8 }));
+  return DS.fig(100, 140, g + DS.tx([86, 22], 'cm', { fs: 8 }), 82); })();
 const B = n => plPointilles(n || 3), R = v => plRep(String(v));
 const ch = (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) + '</div>' });
 const chx = it => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t, , m]) => `${t} <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) + '</div>' }); // choix propres à chaque question
@@ -52,7 +58,7 @@ PLANCHES['5e|Fonctions'] = [
         ...(() => { const m = [500, 1000, 1500, 2000]; return { eleve: tabV('Masse (g)', 'Durée (min)', m, m.map(() => B(1))), corr: tabV('Masse (g)', 'Durée (min)', m, m.map(v => R(v / 500 * 20 + 15))) }; })() },
       { etoiles: 2, col: 1, consigne: 'Un réservoir contient 60 L. Il se vide de 4 L par minute. Complète.',
         ...(() => { const t = [0, 1, 5, 10, 15]; return { eleve: tabV('Temps (min)', 'Volume (L)', t, t.map(() => B(1))), corr: tabV('Temps (min)', 'Volume (L)', t, t.map(v => R(60 - 4 * v))) }; })() },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'Une bougie de 20 cm diminue de 1,5 cm par heure. Fais un tableau donnant sa hauteur toutes les 2 heures, de 0 h à 10 h. Au bout de combien d\'heures sera-t-elle entièrement consumée ?',
+      { etoiles: 3, col: 1, cahier: true, consigne: illu(bougie, 'Une bougie de 20 cm diminue de 1,5 cm par heure. Fais un tableau donnant sa hauteur toutes les 2 heures, de 0 h à 10 h. Au bout de combien d\'heures sera-t-elle entièrement consumée ?'),
         corr: cm1Redac('Tableau', { suite: ['0 h : 20 cm ; 2 h : 17 cm ; 4 h : 14 cm', '6 h : 11 cm ; 8 h : 8 cm ; 10 h : 5 cm'] }, '') + cm1Redac('Consumée', '20 : 1,5 ≈ 13,3', 'Elle sera entièrement consumée au bout d\'environ 13 h 20 min.') },
     ] },
   { titre: 'Produire une formule', duree: '40 min',

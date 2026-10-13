@@ -4,6 +4,11 @@
    Réponses à l'écran sans exposant (le carré se choisit dans une liste).
    ============================================================ */
 (() => {
+// Illustrations des problèmes concrets (chapitres/planches-dessins.js).
+const DS = PL_DESSINS, illu = plIllu;
+const rectX5 = DS.fig(186, 82, `<rect x="30" y="10" width="140" height="50" fill="#EAF4FB" stroke="#1F3A5C" stroke-width="1.8"/>` + DS.tx([100, 76], 'x + 5', { fs: 12, c: '#E35D3A' }) + DS.tx([22, 39], '3', { a: 'end', fs: 12, c: '#E35D3A' }), 160);
+const rectLl = DS.fig(170, 80, `<rect x="24" y="8" width="132" height="54" fill="#EAF4FB" stroke="#1F3A5C" stroke-width="1.8"/>` + DS.tx([90, 76], 'L', { fs: 13, c: '#E35D3A' }) + DS.tx([16, 39], 'ℓ', { a: 'end', fs: 13, c: '#E35D3A' }), 140);
+const triExpr = DS.fig(180, 116, DS.poly([[20, 100], [160, 100], [64, 16]], '#EAF4FB', '#1F3A5C', 1.8) + DS.tx([90, 114], '3x + 1', { fs: 12, c: '#E35D3A' }) + DS.tx([34, 56], '2x', { a: 'end', fs: 12, c: '#E35D3A' }) + DS.tx([120, 54], 'x + 4', { a: 'start', fs: 12, c: '#E35D3A' }), 150);
 const B = n => plPointilles(n || 3), R = v => plRep(String(v));
 const ch = (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) + '</div>' });
 const rmp = (l, n) => ({ eleve: plListe(l.map(([t]) => t.replace('@', B(n || 3)))), corr: plListe(l.map(([t, r]) => t.replace('@', R(r)))) });
@@ -47,7 +52,7 @@ PLANCHES['5e|Calcul littéral'] = [
         ...rmp([['Pour 10 km : @ €', 19], ['Pour 4 km : @ €', 10], ['Pour 0 km : @ €', 4]], 3) },
       { etoiles: 2, col: 1, consigne: 'Calcule D = 2x − 5 pour…',
         ...rmp([['x = 1 : D = @', '−3'], ['x = −2 : D = @', '−9'], ['x = 2,5 : D = @', 0]], 3) },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'L\'aire d\'un rectangle de longueur L et de largeur ℓ est L × ℓ. Calcule l\'aire pour L = 7,5 cm et ℓ = 4 cm, puis le périmètre 2(L + ℓ).',
+      { etoiles: 3, col: 1, cahier: true, consigne: illu(rectLl, 'L\'aire d\'un rectangle de longueur L et de largeur ℓ est L × ℓ. Calcule l\'aire pour L = 7,5 cm et ℓ = 4 cm, puis le périmètre 2(L + ℓ).'),
         corr: cm1Redac('Aire', '7,5 × 4 = 30', 'L\'aire est 30 cm².') + cm1Redac('Périmètre', '2 × (7,5 + 4) = 2 × 11,5 = 23', 'Le périmètre est 23 cm.') },
     ] },
   { titre: 'Tester une égalité', duree: '35 min',
@@ -85,7 +90,7 @@ PLANCHES['5e|Calcul littéral'] = [
         ...rmp([['2(x + 3) + 5 = @', '2x+11'], ['3(a − 1) + 2a = @', '5a−3'], ['4(y + 2) + 3(y + 1) = @', '7y+11']], 6) },
       { etoiles: 1, col: 1, consigne: 'Calcule mentalement en développant.',
         ...rmp([['7 × 102 = 7 × 100 + 7 × 2 = @', 714], ['9 × 51 = 9 × 50 + 9 × 1 = @', 459], ['6 × 98 = 6 × 100 − 6 × 2 = @', 588], ['15 × 21 = @', 315]], 3) },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'Un rectangle a pour longueur x + 5 et pour largeur 3. Exprime son aire de deux façons (avec et sans parenthèses), puis calcule-la pour x = 2.',
+      { etoiles: 3, col: 1, cahier: true, consigne: illu(rectX5, 'Un rectangle a pour longueur x + 5 et pour largeur 3. Exprime son aire de deux façons (avec et sans parenthèses), puis calcule-la pour x = 2.'),
         corr: cm1Redac('Aire', { suite: ['3(x + 5) = 3x + 15', 'Pour x = 2 : 3 × 2 + 15 = 21'] }, 'L\'aire est 3x + 15 ; pour x = 2, elle vaut 21.') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Développe A = 2(3x + 1) + 4(x − 2), puis réduis.',
         corr: cm1Redac('A', 'A = 6x + 2 + 4x − 8 = 10x − 6', 'A = 10x − 6.') },
@@ -105,7 +110,7 @@ PLANCHES['5e|Calcul littéral'] = [
         ...ch([['2x + 3x = 5x² :', 'faux'], ['2x + 3 = 5x :', 'faux'], ['6a − 6 = 6(a − 1) :', 'vrai'], ['x + x = x² :', 'faux']], 'vrai · faux') },
       { etoiles: 2, col: 1, consigne: 'Factorise (cherche le facteur commun).',
         ...rmp([['4x + 4 = @', '4(x+1)'], ['9a − 9b = @', '9(a−b)'], ['6y + 3 = @', '3(2y+1)']], 6) },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'Le périmètre d\'un triangle a pour côtés 2x, 3x + 1 et x + 4. Exprime son périmètre sous forme réduite, puis calcule-le pour x = 5.',
+      { etoiles: 3, col: 1, cahier: true, consigne: illu(triExpr, 'Le périmètre d\'un triangle a pour côtés 2x, 3x + 1 et x + 4. Exprime son périmètre sous forme réduite, puis calcule-le pour x = 5.'),
         corr: cm1Redac('Périmètre', { suite: ['2x + 3x + 1 + x + 4 = 6x + 5', 'Pour x = 5 : 6 × 5 + 5 = 35'] }, 'Le périmètre vaut 6x + 5, soit 35 pour x = 5.') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Calcule astucieusement en factorisant : 4,5 × 17 + 4,5 × 3, puis 25 × 13 − 25 × 9.',
         corr: cm1Redac('Calculs', { suite: ['4,5 × 17 + 4,5 × 3 = 4,5 × (17 + 3) = 4,5 × 20 = 90', '25 × 13 − 25 × 9 = 25 × (13 − 9) = 25 × 4 = 100'] }, 'La factorisation simplifie le calcul.') },

@@ -4,6 +4,24 @@
    et arrondie), figures composées, unités d'aire et problèmes.
    ============================================================ */
 (() => {
+// Illustrations des problèmes concrets (chapitres/planches-dessins.js).
+const DS = PL_DESSINS, illu = plIllu;
+const jardinBassin = DS.fig(214, 128, '<g transform="translate(14,0)">' + `<rect x="20" y="10" width="160" height="96" fill="#BFE3B0" stroke="#2E9C6A" stroke-width="2"/><circle cx="112" cy="54" r="24" fill="#9CC8E8" stroke="#2EA8C9" stroke-width="2"/>`
+  + DS.ln([112, 54], [136, 54], '#E35D3A', 1.4) + DS.pt([112, 54], '') + DS.tx([124, 50], '3 m', { c: '#E35D3A', fs: 10 }) + DS.cote([20, 106], [180, 106], '20 m', -8, { dt: 7 }) + DS.cote([14, 106], [14, 10], '12 m', 0, { dt: 3, a: 'end' }) + '</g>', 158);
+const disqueCarre = DS.fig(138, 132, `<rect x="20" y="8" width="100" height="100" fill="#F6C343" stroke="#1F3A5C" stroke-width="1.6"/><circle cx="70" cy="58" r="50" fill="#fff" stroke="#1F3A5C" stroke-width="1.6"/>`
+  + DS.ln([70, 58], [120, 58], '#E35D3A', 1.3) + DS.pt([70, 58], '') + DS.tx([95, 54], '5 cm', { c: '#E35D3A', fs: 10 }) + DS.cote([20, 108], [120, 108], '10 cm', -8, { dt: 7 }), 112);
+const carrelage = (() => { let g = `<rect x="22" y="8" width="130" height="104" fill="#F4F1EA" stroke="#1F3A5C" stroke-width="1.8"/>`;
+  for(let i = 1; i < 10; i++) g += DS.ln([22 + i * 13, 8], [22 + i * 13, 112], '#B9C2CC', .8);
+  for(let j = 1; j < 8; j++) g += DS.ln([22, 8 + j * 13], [152, 8 + j * 13], '#B9C2CC', .8);
+  return DS.fig(184, 136, '<g transform="translate(12,0)">' + g + `<rect x="22" y="99" width="13" height="13" fill="#E9A21C" stroke="#1F3A5C" stroke-width="1"/>` + DS.tx([40, 108], '50 cm', { a: 'start', fs: 9, c: '#A0620F' }).replace(/y="108"/, 'y="96"')
+    + DS.cote([22, 112], [152, 112], '5 m', -8, { dt: 7 }) + DS.cote([16, 112], [16, 8], '4 m', 0, { dt: 3, a: 'end' }) + '</g>', 124); })();
+const champ = (() => { const A = [12, 104], B = [180, 104], C = [70, 14], H = [70, 104];
+  return DS.fig(192, 130, DS.poly([A, B, C], '#CFE8B5', '#2E9C6A', 2) + DS.ln(C, H, '#E35D3A', 1.4, true) + DS.droit(A, H, C) + DS.tx([76, 70], '80 m', { a: 'start', c: '#E35D3A', fs: 10 })
+    + DS.cote(A, B, '150 m', -8, { dt: 7 }), 140); })();
+const triHauteur = (() => { const A = [42, 100], B = [162, 100], C = [17, 28], H = [17, 100];
+  return DS.fig(180, 124, DS.poly([A, B, C], '#EAF4FB', '#1F3A5C', 1.8) + DS.ln(A, H, '#1F3A5C', 1, true) + DS.ln(C, H, '#E35D3A', 1.4, true) + DS.droit(A, H, C)
+    + DS.pt(A, 'A', [2, 14]) + DS.pt(B, 'B', [6, 14]) + DS.pt(C, 'C', [-2, -6]) + DS.pt(H, 'H', [-8, 12]) + DS.tx([20, 70], '6 cm', { a: 'start', fs: 10, c: '#E35D3A' })
+    + DS.tx([102, 114], '10 cm', { fs: 10, c: '#2E9C6A' }) + DS.tx([98, 56], '12 cm', { fs: 10, c: '#2E9C6A' }), 150); })();
 const B = n => plPointilles(n || 3), R = v => plRep(String(v));
 const K = '#1F3A5C', Ro = '#E35D3A', Bl = '#2EA8C9', Ve = '#2E9C6A';
 const S = (w, h, inner, px) => `<svg class="pl-libre" viewBox="0 0 ${w} ${h}" style="width:${px || w}px;max-width:100%;display:inline-block;vertical-align:middle;">${inner}</svg>`;
@@ -49,7 +67,7 @@ PLANCHES['5e|Aires'] = [
         ...figs([[GP, [['A = @ u.a.', 12]]], [GT, [['A = @ u.a.', 12]]]]) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Un parallélogramme a une base de 8 cm et une aire de 36 cm². Calcule sa hauteur.',
         corr: cm1Redac('Hauteur du parallélogramme', { suite: ['b × h = 36, donc 8 × h = 36', 'h = 36 ÷ 8 = 4,5'] }, 'La hauteur mesure 4,5 cm.') },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'Dans le triangle ABC, AB = 10 cm et la hauteur issue de C mesure 6 cm. BC = 12 cm. Calcule l\'aire de ABC, puis la hauteur issue de A.',
+      { etoiles: 3, col: 1, cahier: true, consigne: illu(triHauteur, 'Dans le triangle ABC, AB = 10 cm et la hauteur issue de C mesure 6 cm. BC = 12 cm. Calcule l\'aire de ABC, puis la hauteur issue de A.'),
         corr: cm1Redac('Aire et hauteur', { suite: ['A = 10 × 6 ÷ 2 = 30', 'BC × h ÷ 2 = 30, donc 12 × h = 60', 'h = 60 ÷ 12 = 5'] }, 'L\'aire vaut 30 cm² et la hauteur issue de A mesure 5 cm.') },
     ] },
   { titre: 'Aire d\'un disque', duree: '40 min',
@@ -81,9 +99,9 @@ PLANCHES['5e|Aires'] = [
         ...figs([[STADE, [['Rectangle : @ cm²', 32], ['Demi-disque : @ π cm²', 2], ['Figure : A ≈ @ cm²', '38,3']]]]) },
       { etoiles: 2, col: 1, consigne: 'Un carreau vaut 1 u.a. Découpe la figure et calcule son aire.',
         ...figs([[GL, [['Rectangle : @ u.a.', 12], ['Triangle : @ u.a.', 9], ['Figure : @ u.a.', 21]]]]) },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'Un jardin rectangulaire de 20 m sur 12 m contient un bassin circulaire de rayon 3 m. Quelle est l\'aire de pelouse, arrondie au dixième ?',
+      { etoiles: 3, col: 1, cahier: true, consigne: illu(jardinBassin, 'Un jardin rectangulaire de 20 m sur 12 m contient un bassin circulaire de rayon 3 m. Quelle est l\'aire de pelouse, arrondie au dixième ?'),
         corr: cm1Redac('Aire de la pelouse', { suite: ['Jardin : 20 × 12 = 240', 'Bassin : π × 3 × 3 = 9π ≈ 28,27', 'Pelouse : 240 − 28,27 ≈ 211,7'] }, 'L\'aire de pelouse est d\'environ 211,7 m².') },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'Un disque de rayon 5 cm est dessiné dans un carré de 10 cm de côté (il touche les 4 côtés). Calcule l\'aire de la partie du carré hors du disque, arrondie au dixième.',
+      { etoiles: 3, col: 1, cahier: true, consigne: illu(disqueCarre, 'Un disque de rayon 5 cm est dessiné dans un carré de 10 cm de côté (il touche les 4 côtés). Calcule l\'aire de la partie du carré hors du disque, arrondie au dixième.'),
         corr: cm1Redac('Aire hors du disque', { suite: ['Carré : 10 × 10 = 100', 'Disque : π × 5 × 5 = 25π ≈ 78,54', 'Reste : 100 − 78,54 ≈ 21,5'] }, 'La partie hors du disque mesure environ 21,5 cm².') },
     ] },
   { titre: 'Unités d\'aire et problèmes', duree: '40 min',
@@ -101,9 +119,9 @@ PLANCHES['5e|Aires'] = [
         ...chx([['Aire d\'un parallélogramme :', 'b × h', 'b × h · b × h ÷ 2 · (b + h) × 2'], ['Aire d\'un triangle :', 'b × h ÷ 2', 'b × h · b × h ÷ 2 · b + h'], ['Aire d\'un rectangle de longueur L et de largeur ℓ :', 'L × ℓ', 'L × ℓ · (L + ℓ) × 2 · L × ℓ ÷ 2']]) },
       { etoiles: 2, col: 1, consigne: 'Attention aux unités ! Calcule l\'aire dans l\'unité demandée.',
         ...rmp([['Rectangle de 2,5 m sur 80 cm : @ m²', 2], ['Carré de 30 cm de côté : @ dm²', 9], ['Triangle de base 4 dm et de hauteur 50 cm : @ cm²', 1000]], 2) },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'Une pièce de 5 m sur 4 m est carrelée avec des carreaux carrés de 50 cm de côté. Combien faut-il de carreaux ?',
+      { etoiles: 3, col: 1, cahier: true, consigne: illu(carrelage, 'Une pièce de 5 m sur 4 m est carrelée avec des carreaux carrés de 50 cm de côté. Combien faut-il de carreaux ?'),
         corr: cm1Redac('Nombre de carreaux', { suite: ['Pièce : 5 × 4 = 20 m²', 'Carreau : 0,5 × 0,5 = 0,25 m²', '20 ÷ 0,25 = 80'] }, 'Il faut 80 carreaux.') },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'Un champ triangulaire a une base de 150 m et une hauteur de 80 m. Calcule son aire en m², puis en hectares.',
+      { etoiles: 3, col: 1, cahier: true, consigne: illu(champ, 'Un champ triangulaire a une base de 150 m et une hauteur de 80 m. Calcule son aire en m², puis en hectares.'),
         corr: cm1Redac('Aire du champ', { suite: ['A = 150 × 80 ÷ 2 = 6 000 m²', '6 000 m² = 0,6 ha'] }, 'Le champ mesure 6 000 m², soit 0,6 ha.') },
     ] },
 ];
