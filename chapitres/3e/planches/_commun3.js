@@ -12,7 +12,7 @@ const P3 = {
   B: n => plPointilles(n || 3),
   R: v => plRep(String(v)),
   F: cm1Frac,
-  T: (a, b) => cm1Tex(`\\tfrac{${a}}{${b}}`),
+  T: (a, b) => cm1Tex(`\\dfrac{${a}}{${b}}`),
   // Une ligne de calcul qui ne se coupe pas.
   ligne: (...h) => `<span style="display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap;">${h.join(' ')}</span>`,
   // Réponses à écrire : [['texte avec @', réponse], …] (@ = pointillés dans l'énoncé, réponse dans le corrigé).

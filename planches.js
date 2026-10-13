@@ -466,7 +466,10 @@ function plFigerMaths(el){
   for(let n = tw.nextNode(); n; n = tw.nextNode()) if(/\d \d{3}/.test(n.nodeValue)) n.nodeValue = n.nodeValue.replace(/(\d) (?=\d{3}(?!\d))/g, '$1\u00a0');
   el.querySelectorAll('span.tex').forEach(t => {
     const h = t.textContent.replace(/\\[dt]?frac\{([^{}]*)\}\{([^{}]*)\}/g, (m, a, b) => `<span class="pl-f"><span>${a}</span><span>${b}</span></span>`);
-    if(!/\\/.test(h)){ const sp = document.createElement('span'); sp.className = 'pl-tex'; sp.innerHTML = h; t.replaceWith(sp); }
+    if(!/\\/.test(h)){ const sp = document.createElement('span'); sp.className = 'pl-tex'; sp.innerHTML = h; t.replaceWith(sp);
+      // La ponctuation qui suit une fraction reste sur sa ligne (pas de « . » seul en début de ligne).
+      const n = sp.nextSibling;
+      if(n && n.nodeType === 3 && /^[.,;:!?)]/.test(n.nodeValue)){ const w = document.createElement('span'); w.style.whiteSpace = 'nowrap'; sp.replaceWith(w); w.append(sp, n.nodeValue[0]); n.nodeValue = n.nodeValue.slice(1); } }
   });
   if(typeof renderStaticMath === 'function') renderStaticMath(el);
   el.querySelectorAll('.katex-mathml').forEach(x => x.remove()); // copie pour lecteur d'écran : sur papier, elle doublerait chaque formule
@@ -771,13 +774,13 @@ const PL_CSS = `
   .pl-pied{ margin-top:4px; border-top:1px solid #CBD2DC; padding-top:4px; font-size:8.5pt; color:#6B7280; text-align:center; }
   .pl-f{ display:inline-flex; flex-direction:column; align-items:center; vertical-align:middle; margin:0 2px; line-height:1.1; font-size:1.05em; }
   .pl-f > span{ padding:0 3px; } .pl-f > span:first-child{ border-bottom:1.5px solid currentColor; }
-  .pl-consigne .pl-f{ font-size:.78em; vertical-align:middle; line-height:1; }
+  .pl-consigne .pl-f{ font-size:1em; vertical-align:middle; line-height:1.05; } .pl-consigne .pl-f > span:first-child{ border-bottom-width:1.2px; }
   .cm-redac{ margin:2px 0 6px; line-height:1.45; } .cm-redac-titre{ text-decoration:underline; text-underline-offset:3px; font-weight:600; margin-bottom:2px; }
   .cm-redac-ligne{ margin:2px 0 2px 18px; } .cm-redac-phrase{ margin:3px 0 0; } .cm-encadre{ display:inline-block; border:2px solid #1F3A5C; border-radius:3px; padding:1px 8px; font-weight:700; } .cm-redac-fig{ margin:2px 0 3px 18px; } .cm-redac-fig svg{ max-width:100%; height:auto; } .pl-corrige .cm-redac-fig svg{ max-height:64px; width:auto !important; margin:0 !important; }
   .cm-fig-d{ float:right; margin:0 0 2px 8px; } .cm-fig-d svg, .pl-corrige .cm-redac-fig .cm-fig-d svg{ max-width:none !important; height:72px !important; max-height:none !important; width:auto !important; } .cm-redac::after{ content:''; display:block; clear:both; }
   .cm-redac-col{ border-collapse:collapse; margin:2px 0 4px 18px; } .cm-redac-col td{ padding:2px 4px; }
   .katex{ font-size:1.12em; }
-  .pl-consigne .katex{ font-size:1em; } .pl-consigne .katex .mfrac .frac-line{ border-bottom-width:1px; }
+  .pl-consigne .katex .mfrac .frac-line{ border-bottom-width:1px; }
 `;
 // Livre : couverture, sommaire, séparation des corrigés, numéros de page.
 const PL_CSS_LIVRE = `

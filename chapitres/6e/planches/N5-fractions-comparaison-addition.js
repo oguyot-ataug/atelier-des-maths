@@ -3,7 +3,7 @@
    ============================================================ */
 (() => {
 const B = n => plPointilles(n || 3), R = v => plRep(String(v)), F = cm1Frac, Fr = plFrac(), C = plCase();
-const T = (a, b) => cm1Tex(`\\tfrac{${a}}{${b}}`);
+const T = (a, b) => cm1Tex(`\\dfrac{${a}}{${b}}`);
 const lt = '&lt;', gt = '&gt;';
 const ligne = (...h) => `<span style="display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap;">${h.join(' ')}</span>`;
 const cmp = l => ({ eleve: plListe(l.map(([a, b, c, d]) => ligne(F(a, b), C, F(c, d)))), corr: plListe(l.map(([a, b, c, d]) => { const x = a * d - c * b; return ligne(F(a, b), R(x > 0 ? gt : x < 0 ? lt : '='), F(c, d)); })) });

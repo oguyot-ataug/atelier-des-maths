@@ -3,7 +3,7 @@
    ============================================================ */
 (() => {
 const B = n => plPointilles(n || 3), R = v => plRep(String(v)), F = cm1Frac, Fr = plFrac();
-const T = (a, b) => cm1Tex(`\\tfrac{${a}}{${b}}`);
+const T = (a, b) => cm1Tex(`\\dfrac{${a}}{${b}}`);
 const ligne = (...h) => `<span style="display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap;">${h.join(' ')}</span>`;
 const ch = (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) + '</div>' });
 PLANCHES['6e|Fractions : multiplication'] = [

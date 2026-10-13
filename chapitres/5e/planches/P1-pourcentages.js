@@ -8,7 +8,7 @@ const ch = (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) =
 const chx = it => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t, , m]) => `${t} <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) + '</div>' }); // choix propres à chaque question
 const d = v => String(+(+v).toFixed(3)).replace('.', ',');
 const rmp = (l, n) => ({ eleve: plListe(l.map(([t]) => t.replace('@', B(n || 3)))), corr: plListe(l.map(([t, r]) => t.replace('@', R(typeof r === 'number' ? d(r) : r)))) });
-const T = (a, b) => cm1Tex(`\\tfrac{${a}}{${b}}`), F = cm1Frac;
+const T = (a, b) => cm1Tex(`\\dfrac{${a}}{${b}}`), F = cm1Frac;
 // Barre de 100 carreaux (10 × 10) dont n sont colorés : pour visualiser un pourcentage.
 const cent = (n, w) => { let s = ''; for(let i = 0; i < 100; i++){ const x = (i % 10) * 11, y = Math.floor(i / 10) * 11; s += `<rect x="${x + 1}" y="${y + 1}" width="10" height="10" fill="${i < n ? '#7FC29B' : '#fff'}" stroke="#9AB"/>`; } return `<svg class="pl-libre" viewBox="0 0 112 112" style="width:${w || 92}px;display:block;">${s}</svg>`; };
 const col = (h, t) => `<span style="display:flex;flex-direction:column;align-items:center;gap:2px;">${h}<span class="pl-item" style="text-align:center;display:block;">${t}</span></span>`;

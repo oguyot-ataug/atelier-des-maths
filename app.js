@@ -3411,6 +3411,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1054', date:'2026-10-13', items:[
+    "Planches d'exercices (tous niveaux) : les fractions écrites dans les consignes ont maintenant la même taille que le reste du texte, à l'impression comme à l'écran (elles étaient réduites). Un point ou une virgule qui suit une fraction reste sur la même ligne.",
+  ]},
   { version:'2026-08-19.1053', date:'2026-10-13', items:[
     "3e, chapitre « Nombres et calculs » : l'exemple du jardin partagé est maintenant rédigé avec un titre devant chaque calcul (« Aire du terrain : », « Aire de la cabane : »…), le calcul en colonne et une phrase de conclusion. Une rédaction plus courte est aussi proposée (surface à semer en un seul calcul), avec une remarque : on ne peut pas tout mettre dans une seule formule, car on achète des sachets entiers. La méthode « Calculer en rédigeant » est reformulée de la même façon.",
   ]},

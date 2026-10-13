@@ -8,7 +8,7 @@
    ============================================================ */
 (() => {
 const F = cm1Frac;
-const T = (a, b) => cm1Tex(`\\tfrac{${a}}{${b}}`); // fraction en ligne (consignes des planches)
+const T = (a, b) => cm1Tex(`\\dfrac{${a}}{${b}}`); // fraction des consignes des planches (même taille que les autres)
 cm1Chapitre({
   titre: 'Fractions', slug: 'fractions',
   cours: `
@@ -182,7 +182,7 @@ ${cm1Demo('fr-quantite', 'Calculer une fraction d\'une quantité', `Dans une cla
           eleve: plListe([`${F(4, 4)} est sur la graduation 1. <b>vrai · faux</b>`, `${F(6, 3)} est entre 1 et 2. <b>vrai · faux</b>`, `${F(5, 4)} est plus loin de 0 que 1. <b>vrai · faux</b>`]),
           corr: plListe([`${F(4, 4)} est sur la graduation 1. ${plEntoure('vrai')}`, `${F(6, 3)} est entre 1 et 2. ${plEntoure('faux')} (c'est 2)`, `${F(5, 4)} est plus loin de 0 que 1. ${plEntoure('vrai')}`]) },
         { etoiles: 3, col: 1, cahier: true, consigne: "Sur une demi-droite graduée, l'unité est partagée en 6 parts égales. Le point R est sur la 9e graduation après 0. Quelle fraction correspond à R ? Le point R est-il avant ou après 1 ?",
-          corr: cm1Redac('Fraction du point R', '9 parts de sixièmes', `Le point R correspond à ${F(9, 6)}.`) + cm1Redac('Position de R', cm1Tex('\\dfrac{9}{6} = 1 + \\dfrac{3}{6}'), 'Le point R est après 1.') },
+          corr: cm1Redac('Point R', cm1Tex('\\dfrac{9}{6} = 1 + \\dfrac{3}{6}'), `9 parts de sixièmes : le point R correspond à ${F(9, 6)}. C'est plus que 1, donc R est après 1.`) },
         { etoiles: 3, cahier: true, consigne: `Une course fait 1 km. Théo a parcouru ${T(3, 4)} de la course et Inès ${T(5, 8)}. Place T pour Théo et I pour Inès sur la demi-droite, puis explique qui est le plus avancé.`,
           eleve: cm1Graduation(1, 8, [], { unite: 400 }),
           corr: cm1Graduation(1, 8, [[0.75, 'T', '#1F7A4D'], [0.625, 'I', '#1F7A4D']], { unite: 400 }) + cm1Redac('Le plus avancé', cm1Tex('\\dfrac{3}{4} = \\dfrac{6}{8}'), `Théo a parcouru ${F(6, 8)} de la course et Inès ${F(5, 8)} : Théo est le plus avancé.`) },
