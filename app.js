@@ -3464,6 +3464,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1078', date:'2026-10-13', items:[
+    "Cahier : le support (en ligne ou sur l'ordinateur, un seul des deux) est maintenant séparé de la façon de travailler (à la maison, en classe entière, en autonomie) : les deux se combinent, par exemple « en autonomie, en ligne ». Deux groupes de choix dans l'outil de correction, sur les vignettes du cahier, et en ajoutant une session ou un questionnaire au cahier. Le cahier de texte écrit « Exercices en autonomie, en ligne », « Correction du travail maison, sur l'ordinateur », « Interrogation (en ligne) ».",
+  ]},
   { version:'2026-08-19.1077', date:'2026-10-13', items:[
     "Questionnaires → cahier : même choix que pour les sessions, « en ligne » (par défaut), « sur l'ordinateur » ou sans précision. Les interrogations et questions flash faites en ligne portent la mention dans le cahier de texte et le badge sur l'entrée du cahier.",
   ]},
