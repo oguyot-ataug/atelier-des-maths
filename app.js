@@ -3464,6 +3464,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1073', date:'2026-10-13', items:[
+    "Fractions de figures, dans les manuels : nouvelles planches « lire la fraction coloriée » et « colorier la fraction demandée », avec des disques, des rectangles de carreaux, des hexagones, des triangles et des carrés partagés en 4 ou en 8. En 6e, deux planches (dont des carrés aux parts inégales à lire par les aires, et des fractions à colorier quand le nombre de parts n'est pas le dénominateur) ; en CM2 et en CM1, une planche chacun. Toutes se font aussi à l'écran ; pour lire une figure, une fraction égale est acceptée (1/2 pour 2/4).",
+    "Questionnaires : nouveau type de question « Fraction d'une figure ». L'élève écrit la fraction coloriée (numérateur et dénominateur) ou touche les parts à colorier. Corrigé automatiquement ; fraction égale acceptée ou non, au choix. Option « une fraction différente pour chaque élève », tirée au hasard.",
+  ]},
   { version:'2026-08-19.1072', date:'2026-10-13', items:[
     "Manuel CM2, lot 4 : données. 4 chapitres, 12 planches et 42 exercices corrigés : probabilités (roue de loterie, sac de billes, « a chances sur b », tableau et arbre) ; organisation de données (tableau d'effectifs, diagramme en barres, diagramme circulaire, courbe de température, points à placer) ; proportionnalité (fois plus, ajouter, passer par 1, sans tableau) ; pensée informatique (robot qui s'oriente, boucles, programmes de calcul en blocs, tableur). Le manuel CM2 est complet : 25 chapitres, 75 planches, 291 exercices.",
   ]},

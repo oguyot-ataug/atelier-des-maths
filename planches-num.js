@@ -109,7 +109,7 @@ function plNumAnalyser(x){
     if(tr.classList.contains('pl-frac')){
       const f = plNumFracDe(r); if(!f) return null;
       tr.outerHTML = `<span class="pn-frac" data-pn="${id}"><button type="button" class="pn-case" data-pnv="${id}n"></button><span class="pn-barre"></span><button type="button" class="pn-case" data-pnv="${id}d"></button></span>`;
-      cibles.push({ type: 'frac', id, rep: f });
+      cibles.push({ type: 'frac', id, rep: f, equiv: r.hasAttribute('data-equiv') }); // data-equiv : une fraction égale est acceptée (lire une figure)
     } else {
       if(plNumFracDe(r)) return null;
       const rep = plNumNorm(r.textContent); if(!rep) return null;
@@ -240,7 +240,10 @@ function plNum(root, x, o){
   };
   const juste = c => {
     if(c.type === 'txt') return plNumNorm(etat.v[c.id]) === c.rep && (!c.classes || plNumClassesOk(etat.v[c.id]));
-    if(c.type === 'frac') return plNumNorm(etat.v[c.id + 'n']) === plNumNorm(c.rep[0]) && plNumNorm(etat.v[c.id + 'd']) === plNumNorm(c.rep[1]);
+    if(c.type === 'frac'){
+      if(c.equiv){ const a = +plNumNorm(etat.v[c.id + 'n']), b = +plNumNorm(etat.v[c.id + 'd']); return b > 0 && Number.isInteger(a) && Number.isInteger(b) && a * +c.rep[1] === b * +c.rep[0]; }
+      return plNumNorm(etat.v[c.id + 'n']) === plNumNorm(c.rep[0]) && plNumNorm(etat.v[c.id + 'd']) === plNumNorm(c.rep[1]);
+    }
     if(c.type === 'fig') return (etat.c[c.id] || []).length === c.rep;
     if(c.type === 'choix') return plNumNorm(etat.ch[c.id]) === c.rep;
     if(c.type === 'trace'){ const p = etat.tr[c.id] || [], P = c.rep; if(p.length !== 2) return false;

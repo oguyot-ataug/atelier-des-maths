@@ -24,6 +24,22 @@ PLANCHES['cm2|Fractions'] = [
       { etoiles: 3, cahier: true, consigne: `Une tablette de chocolat a 24 carrés. Léa en mange ${F(1, 4)} et Tom ${F(1, 3)}. Combien de carrés chacun a-t-il mangés ? Combien en reste-t-il ?`,
         corr: cm1Redac('Carrés de Léa', `${F(1, 4)} de 24 = 24 : 4 = 6`, 'Léa a mangé 6 carrés.') + cm1Redac('Carrés de Tom', `${F(1, 3)} de 24 = 24 : 3 = 8`, 'Tom a mangé 8 carrés.') + cm1Redac('Carrés restants', { suite: ['6 + 8 = 14', '24 − 14 = 10'] }, 'Il reste 10 carrés.') },
     ] },
+  // Lire et colorier des fractions de figures (fractions-figures.js) -- demandé : « Reconnaître les parts
+  // coloriées et remplir les parts… Il faut ce genre d'exercices en nombre. »
+  { titre: 'Lire et colorier des fractions', duree: '35 min',
+    attendus: ['Écrire la fraction d\'une figure qui est coloriée', 'Colorier une fraction donnée d\'une figure', 'Utiliser des fractions égales pour colorier'],
+    exos: [
+      { etoiles: 1, consigne: 'Écris la fraction de chaque figure qui est coloriée.',
+        ...FRF.lire([[{ forme: 'disque', n: 3 }, [0, 1]], [{ forme: 'rect', l: 2, c: 3 }, [0, 1, 3, 4, 5]], [{ forme: 'hexagone' }, [0, 3]], [{ forme: 'triangle', k: 2 }, [0, 2, 3]], [{ forme: 'disque', n: 10 }, [0, 1, 2, 5, 6, 7, 8]], [{ forme: 'carre8' }, [1, 2, 5]]], { coul: '#9ED3DA' }) },
+      { etoiles: 1, consigne: 'Colorie la fraction de la figure qui est indiquée.',
+        ...FRF.colorier([[{ forme: 'disque', n: 4 }, 3, 4], [{ forme: 'rect', l: 2, c: 4 }, 5, 8], [{ forme: 'hexagone' }, 4, 6], [{ forme: 'disque', n: 9 }, 7, 9], [{ forme: 'rect', l: 3, c: 4 }, 7, 12], [{ forme: 'triangle', k: 3 }, 5, 9]]) },
+      { etoiles: 2, consigne: 'Colorie la fraction du rectangle qui est indiquée.',
+        ...FRF.colorier([[{ forme: 'rect', l: 2, c: 5 }, 3, 10], [{ forme: 'rect', l: 2, c: 5 }, 9, 10], [{ forme: 'rect', l: 3, c: 5 }, 8, 15], [{ forme: 'rect', l: 4, c: 4 }, 11, 16], [{ forme: 'rect', l: 4, c: 5 }, 13, 20], [{ forme: 'rect', l: 3, c: 6 }, 7, 18]], { coul: '#CDE8C4' }) },
+      { etoiles: 3, consigne: 'Attention : le nombre de parts n\'est pas le dénominateur ! Colorie la fraction indiquée.',
+        ...FRF.colorier([[{ forme: 'disque', n: 4 }, 1, 2], [{ forme: 'rect', l: 2, c: 4 }, 3, 4], [{ forme: 'disque', n: 6 }, 1, 3], [{ forme: 'rect', l: 2, c: 5 }, 2, 5], [{ forme: 'disque', n: 8 }, 1, 4], [{ forme: 'rect', l: 3, c: 4 }, 2, 3]], { coul: '#F8C9A8' }) },
+      { etoiles: 3, cahier: true, consigne: `Une tablette de chocolat a 12 carreaux. Léo veut en colorier ${F(2, 3)} sur son dessin. Combien de carreaux doit-il colorier ?`,
+        corr: cm1Redac('Carreaux à colorier', { suite: ['12 : 3 = 4', '4 × 2 = 8'] }, `${F(1, 3)} de la tablette, c'est 4 carreaux : Léo doit colorier 8 carreaux.`) },
+    ] },
   { titre: 'Fractions supérieures à 1 et demi-droite graduée', duree: '35 min',
     attendus: ['Reconnaître une fraction plus grande que 1', 'Écrire une fraction comme un entier plus une fraction', 'Placer une fraction sur une demi-droite graduée'],
     exos: [

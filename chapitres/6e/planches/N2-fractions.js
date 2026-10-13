@@ -8,6 +8,40 @@ const ligne = (...h) => `<span style="display:inline-flex;align-items:center;gap
 const col = (h, t) => `<span style="display:flex;flex-direction:column;align-items:center;gap:3px;">${h}<span>${t}</span></span>`;
 const FIGS = [[cm1Disque(6, 5, { taille: 70 }), 5, 6], [cm1Bande(4, 3, { largeur: 120 }), 3, 4], [cm1Quad(4, 3, [[0, 0], [1, 0], [2, 0], [3, 0], [0, 1], [1, 1], [2, 1]], { k: 16, c: '#FF8208' }), 7, 12]];
 PLANCHES['6e|Fractions : nombres et partage'] = [
+  // Lire et colorier des fractions de figures (demandé : « Reconnaître les parts coloriées et remplir
+  // les parts… Il faut ce genre d'exercices en nombre. ») -- figures de fractions-figures.js.
+  { titre: 'Lire une fraction sur une figure', duree: '35 min',
+    attendus: ['Écrire la fraction d\'une figure qui est coloriée', 'Vérifier que les parts sont égales', 'Lire une fraction quand les parts ne sont pas toutes égales'],
+    exos: [
+      { etoiles: 1, consigne: 'Indique quelle fraction de chaque figure représente la partie coloriée.',
+        ...FRF.lire([[{ forme: 'rect', l: 2, c: 2 }, [0]], [{ forme: 'rect', l: 2, c: 2 }, [2, 3]], [{ forme: 'rect', l: 1, c: 3 }, [1]], [{ forme: 'hexagone' }, [1, 3]], [{ forme: 'hexagone' }, [0, 1, 2]], [{ forme: 'hexagone' }, [0, 1, 3, 4]]], { coul: '#9ED3DA' }) },
+      { etoiles: 1, consigne: 'Indique quelle fraction de chaque disque représente la partie coloriée.',
+        ...FRF.lire([[{ forme: 'disque', n: 2 }, [0]], [{ forme: 'disque', n: 4 }, [0, 1]], [{ forme: 'disque', n: 5 }, [0, 2, 3]], [{ forme: 'disque', n: 6 }, [0, 1, 2, 4]], [{ forme: 'disque', n: 8 }, [0, 2, 4, 6]], [{ forme: 'disque', n: 12 }, [0, 1, 2, 3, 5, 7, 9]]], { coul: '#F8C9A8' }) },
+      { etoiles: 2, consigne: 'Les parts de ces carrés ne sont pas toutes égales ! Compare chaque part au carré entier, puis indique quelle fraction du carré est coloriée.',
+        ...FRF.lire([
+          [{ forme: 'pieces', p: [[0, 0, 1, .5], [0, .5, .5, .5], [.5, .5, .5, .5]] }, [1]],
+          [{ forme: 'pieces', p: [[0, 0, .5, 1], [.5, 0, .5, .5], [.5, .5, .25, .5], [.75, .5, .25, .5]] }, [2]],
+          [{ forme: 'pieces', p: [[0, 0, .25, 1], [.25, 0, .75, .5], [.25, .5, .75, .5]] }, [1]],
+          [{ forme: 'pieces', p: [[0, 0, 1 / 3, 1], [1 / 3, 0, 1 / 3, 1], [2 / 3, 0, 1 / 3, .5], [2 / 3, .5, 1 / 3, .5]] }, [0, 3]],
+          [{ forme: 'pieces', p: [[0, 0, .5, .5], [.5, 0, .5, .5], [0, .5, .5, .5], [.5, .5, .25, .25], [.75, .5, .25, .25], [.5, .75, .25, .25], [.75, .75, .25, .25]] }, [0, 3]],
+          [{ forme: 'pieces', p: [[0, 0, .5, .5], [.5, 0, .25, .25], [.75, 0, .25, .25], [.5, .25, .25, .25], [.75, .25, .25, .25], [0, .5, 1, .5]] }, [0, 1, 4]],
+        ], { coul: '#CDE8C4' }) },
+      { etoiles: 2, consigne: 'Écris la fraction coloriée, puis simplifie-la le plus possible.',
+        eleve: plGrille([[{ forme: 'rect', l: 3, c: 4 }, [0, 1, 2, 4, 5, 6]], [{ forme: 'disque', n: 8 }, [0, 1, 2, 3, 4, 5]], [{ forme: 'triangle', k: 3 }, [0, 1, 3]], [{ forme: 'carre8' }, [0, 1, 4, 5]]].map(([f, c]) => ligne(FRF.svg(f, c, { px: 70, coul: '#C9B6E8' }), Fr, '=', Fr)), 2),
+        corr: plGrille([[{ forme: 'rect', l: 3, c: 4 }, [0, 1, 2, 4, 5, 6], 6, 12, 1, 2], [{ forme: 'disque', n: 8 }, [0, 1, 2, 3, 4, 5], 6, 8, 3, 4], [{ forme: 'triangle', k: 3 }, [0, 1, 3], 3, 9, 1, 3], [{ forme: 'carre8' }, [0, 1, 4, 5], 4, 8, 1, 2]].map(([f, c, a, b, x, y]) => ligne(FRF.svg(f, c, { px: 70, coul: '#C9B6E8' }), R(F(a, b)), '=', R(F(x, y)))), 2) },
+    ] },
+  { titre: 'Colorier une fraction d\'une figure', duree: '35 min',
+    attendus: ['Colorier une fraction donnée d\'une figure partagée en parts égales', 'Utiliser des fractions égales pour colorier', 'Expliquer un coloriage'],
+    exos: [
+      { etoiles: 1, consigne: 'Colorie la fraction du disque qui est indiquée.',
+        ...FRF.colorier([[{ forme: 'disque', n: 2 }, 1, 2], [{ forme: 'disque', n: 4 }, 1, 4], [{ forme: 'disque', n: 5 }, 4, 5], [{ forme: 'disque', n: 6 }, 5, 6], [{ forme: 'disque', n: 10 }, 7, 10], [{ forme: 'disque', n: 12 }, 11, 12]]) },
+      { etoiles: 1, consigne: 'Colorie la fraction du rectangle qui est indiquée.',
+        ...FRF.colorier([[{ forme: 'rect', l: 4, c: 2 }, 1, 8], [{ forme: 'rect', l: 4, c: 2 }, 5, 8], [{ forme: 'rect', l: 4, c: 5 }, 11, 20], [{ forme: 'rect', l: 4, c: 5 }, 13, 20], [{ forme: 'rect', l: 4, c: 3 }, 5, 12], [{ forme: 'rect', l: 4, c: 3 }, 7, 12]], { coul: '#9ED3DA' }) },
+      { etoiles: 2, consigne: 'Colorie la fraction de la figure qui est indiquée.',
+        ...FRF.colorier([[{ forme: 'hexagone' }, 5, 6], [{ forme: 'triangle', k: 2 }, 3, 4], [{ forme: 'triangle', k: 3 }, 4, 9], [{ forme: 'carre4' }, 3, 4], [{ forme: 'carre8' }, 5, 8], [{ forme: 'triangle', k: 4 }, 7, 16]], { coul: '#CDE8C4' }) },
+      { etoiles: 3, consigne: 'Attention : le nombre de parts n\'est pas le dénominateur ! Colorie la fraction indiquée (cherche une fraction égale).',
+        ...FRF.colorier([[{ forme: 'disque', n: 4 }, 1, 2], [{ forme: 'disque', n: 6 }, 2, 3], [{ forme: 'disque', n: 8 }, 3, 4], [{ forme: 'disque', n: 10 }, 4, 5], [{ forme: 'disque', n: 12 }, 1, 3], [{ forme: 'disque', n: 12 }, 5, 6]], { coul: '#F8C9A8' }) },
+    ] },
   { titre: 'Écriture fractionnaire et égalités de fractions', duree: '40 min',
     attendus: ['Utiliser une fraction pour exprimer un partage, un quotient', 'Repérer une fraction sur une demi-droite graduée', 'Reconnaître et produire des fractions égales, simplifier'],
     exos: [
