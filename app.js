@@ -3464,6 +3464,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1062', date:'2026-10-13', items:[
+    "Créer une évaluation : écart réduit entre deux exercices sur la feuille (aperçu et PDF), de 2,2 à 1 interligne.",
+  ]},
   { version:'2026-08-19.1061', date:'2026-10-13', items:[
     "Créer une évaluation : l'éditeur retrouve sa largeur habituelle (annulation du build 1060). Le bouton « Aperçu de l'évaluation » affiche désormais exactement la page du PDF (mêmes styles, même police, mêmes largeurs de colonnes, mêmes retours à la ligne) : il ne peut plus différer de l'impression. Repères de pages recalés sur les marges réelles du PDF (15 mm).",
   ]},
