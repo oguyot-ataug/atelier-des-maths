@@ -2230,6 +2230,7 @@ function corRemoveRow(rowIdx){
     if(r===rowIdx) b.row = Math.max(0, rowIdx-1);
     else if(r>rowIdx) b.row = r-1;
   });
+  colDecalerLargeurs(corCellBorders, rowIdx, corRows.length);
   corRows.splice(rowIdx,1);
   renderCorrectionPreview();
 }
@@ -2591,6 +2592,10 @@ function blocksRowsHTML(ctx, rows, withControls, cellBorders){
     }
     const cols = Array.from({length:nCols}, ()=>[]);
     rowBlocks.forEach(b=>{ const c = Math.min(b.col||0, nCols-1); cols[c].push(b); });
+    // Largeurs choisies à la souris (poignées entre les colonnes) : cellBorders['w'+ligne] =
+    // une part par colonne ; sinon colonnes identiques.
+    const wts = Array.isArray(cellBorders['w'+rowIdx]) && cellBorders['w'+rowIdx].length===nCols ? cellBorders['w'+rowIdx] : null;
+    const fx = ci => `flex:${wts ? wts[ci] : 1} 1 0%;`;
     const colsHtml = cols.map((blocksInCol, ci)=>{
       const inner = blocksInCol.map(b=>singleBlockHTML(b, ctx, withControls, true)).join('');
       const key = rowIdx+'-'+ci;
@@ -2601,7 +2606,7 @@ function blocksRowsHTML(ctx, rows, withControls, cellBorders){
       if(!withControls){
         const realBorder = (cb.right?'border-right:1.3px solid #1C1B2E;':'') + (cb.bottom?'border-bottom:1.3px solid #1C1B2E;':'') + (cb.left?'border-left:1.3px solid #1C1B2E;':'') + (cb.top?'border-top:1.3px solid #1C1B2E;':'');
         const bgStyle = cb.bg ? `background-color:${CELL_BG_COLORS[cb.bg]}22;border-radius:6px;` : '';
-        return `<div class="eval-col" style="flex:1;min-width:0;padding:${(realBorder||bgStyle)?'6px':'0'};${realBorder}${bgStyle}">${inner}</div>`;
+        return `<div class="eval-col" style="${fx(ci)}min-width:0;padding:${(realBorder||bgStyle)?'6px':'0'};${realBorder}${bgStyle}">${inner}</div>`;
       }
       const dropAttrs = `ondragover="event.preventDefault()" ondrop="evalDropInRowCol(event,'${ctx}',${rowIdx},${ci})"`;
       const isTarget = blockTargetCtx===ctx && blockTargetRow===rowIdx && blockTargetCol===ci;
@@ -2612,10 +2617,58 @@ function blocksRowsHTML(ctx, rows, withControls, cellBorders){
       const bgSwatches = Object.keys(CELL_BG_COLORS).map(k=>`<button type="button" onclick="setCellBg('${ctx}','${key}','${k}')" title="Fond ${k}" style="width:13px;height:13px;border-radius:50%;border:${cb.bg===k?'2px solid #1C1B2E':'1px solid rgba(28,43,57,.3)'};background:${CELL_BG_COLORS[k]};cursor:pointer;padding:0;"></button>`).join('');
       const bgSwatchesBox = `<div style="position:absolute;bottom:3px;left:3px;display:flex;gap:3px;z-index:2;">${bgSwatches}</div>`;
       const cellBgStyle = cb.bg ? `background-color:${CELL_BG_COLORS[cb.bg]}22;` : '';
-      return `<div class="eval-col" ${dropAttrs} onclick="selectBlockTarget('${ctx}',${rowIdx},${ci})" title="Cliquer pour choisir cette zone comme destination des prochains blocs ajoutés" style="cursor:pointer;position:relative;flex:1;min-width:0;min-height:50px;${targetBorder}border-radius:8px;padding:6px;background:#fff;${cellBgStyle}">${targetTag}${inner}${borderBtns}${bgSwatchesBox}</div>`;
+      return (ci ? `<div class="col-split" onpointerdown="colSplitStart(event,'${ctx}',${rowIdx},${ci-1})" ondblclick="colSplitReset('${ctx}',${rowIdx})" title="Glisser pour changer la largeur des colonnes (double-clic : colonnes identiques)"></div>` : '')
+        + `<div class="eval-col" ${dropAttrs} onclick="selectBlockTarget('${ctx}',${rowIdx},${ci})" title="Cliquer pour choisir cette zone comme destination des prochains blocs ajoutés" style="cursor:pointer;position:relative;${fx(ci)}min-width:0;min-height:50px;${targetBorder}border-radius:8px;padding:6px;background:#fff;${cellBgStyle}">${targetTag}${inner}${borderBtns}${bgSwatchesBox}</div>`;
     }).join('');
-    return `<div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:6px;">${colsHtml}</div>`;
+    return `<div style="display:flex;gap:${withControls ? 0 : 10}px;align-items:${withControls ? 'stretch' : 'flex-start'};margin-bottom:6px;">${colsHtml}</div>`;
   }).join('');
+}
+/* Largeur des colonnes à la souris -- demandé : « permettre de modifier la largeur des colonnes à
+   la souris : ne pas être obligé de faire des colonnes identiques ». On tire la poignée entre deux
+   colonnes ; les largeurs (en %) sont rangées dans cellBorders['w'+ligne], donc sauvegardées avec
+   l'exercice (évaluation, cahier, outil de correction). Double-clic : colonnes identiques. */
+function colBordersDe(ctx){
+  if(ctx==='global') return corCellBorders;
+  const ex = getExerciseByCtx(ctx); if(!ex) return null;
+  if(!ex.cellBorders) ex.cellBorders = {};
+  return ex.cellBorders;
+}
+function colRerendre(ctx){ ctx==='global' ? renderCorrectionPreview() : renderEvalExercicesList(); }
+function colSplitStart(e, ctx, rowIdx, ci){
+  e.preventDefault(); e.stopPropagation();
+  const split = e.currentTarget, ligne = split.parentElement;
+  const cols = [...ligne.children].filter(x=>x.classList.contains('eval-col'));
+  const px = cols.map(c=>c.getBoundingClientRect().width), x0 = e.clientX, a0 = px[ci], b0 = px[ci+1], MIN = 50;
+  split.classList.add('actif');
+  try { split.setPointerCapture(e.pointerId); } catch(_){}
+  let bouge_ = false;
+  const bouge = ev=>{
+    if(Math.abs(ev.clientX - x0) > 2) bouge_ = true;
+    const d = Math.max(MIN - a0, Math.min(b0 - MIN, ev.clientX - x0));
+    px[ci] = a0 + d; px[ci+1] = b0 - d;
+    cols.forEach((c,i)=>{ c.style.flex = `${px[i]} 1 0%`; });
+  };
+  const fin = ()=>{
+    split.removeEventListener('pointermove', bouge); split.removeEventListener('pointerup', fin); split.removeEventListener('pointercancel', fin);
+    split.classList.remove('actif');
+    const tot = px.reduce((a,b)=>a+b, 0), borders = colBordersDe(ctx);
+    if(!bouge_ || !borders || !tot) return; // simple clic (ou double-clic) : rien à enregistrer
+    borders['w'+rowIdx] = px.map(w=>Math.round(w / tot * 1000) / 10);
+    colRerendre(ctx);
+  };
+  split.addEventListener('pointermove', bouge); split.addEventListener('pointerup', fin); split.addEventListener('pointercancel', fin);
+}
+// Largeurs de colonnes (cellBorders['w'+ligne]) : quand une ligne est retirée, celles des lignes
+// suivantes remontent d'un cran.
+function colDecalerLargeurs(borders, rowIdx, nLignes){
+  if(!borders) return;
+  delete borders['w'+rowIdx];
+  for(let r = rowIdx + 1; r < nLignes; r++){ if(borders['w'+r]){ borders['w'+(r-1)] = borders['w'+r]; delete borders['w'+r]; } }
+}
+function colSplitReset(ctx, rowIdx){
+  const borders = colBordersDe(ctx); if(!borders) return;
+  delete borders['w'+rowIdx];
+  colRerendre(ctx);
 }
 /* Barre des 7 outils, réutilisable pour l'outil de correction ou pour un exercice d'évaluation
    -- chaque bouton fixe le contexte visé juste avant d'ouvrir le panneau de l'outil. */
@@ -3411,6 +3464,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1058', date:'2026-10-13', items:[
+    "Créer une évaluation (et outil de correction) : la largeur des colonnes d'un exercice se règle à la souris. Tirez la barre grise entre deux colonnes ; les colonnes n'ont plus besoin d'être identiques. Les largeurs sont gardées dans l'aperçu, le PDF, le cahier et la sauvegarde. Double-clic sur la barre : colonnes de nouveau identiques.",
+  ]},
   { version:'2026-08-19.1057', date:'2026-10-13', items:[
     "Manuel 5e : 24 problèmes concrets illustrés, avec le dessin à côté de l'énoncé. Ascenseur et ses étages, thermomètre, Everest et fosse des Mariannes, sous-marin (relatifs) ; pizzas à partager, réservoir, gâteau en 12 parts (fractions) ; maisons et puits (droites remarquables) ; jardin et bassin, disque dans un carré, pièce carrelée, champ triangulaire, triangle et sa hauteur (aires) ; étiquette d'une boîte, boîte de conserve, tente (espace) ; bougie et sa règle (fonctions) ; deux phares (divisibilité) ; mur à repeindre, robinet et cuve (proportionnalité) ; rectangles et triangle aux côtés écrits avec des lettres (calcul littéral) ; sac et livre sur la balance (équations). Les dessins sont désormais communs à tous les niveaux (chapitres/planches-dessins.js).",
   ]},

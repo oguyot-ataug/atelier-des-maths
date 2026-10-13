@@ -660,7 +660,7 @@ function renderEvalExercicesList(){
         ${hasDisks ? `<label class="hint" style="margin:0;"><span class=gicon>pie_chart</span> Taille des disques : <input type="number" min="30" max="300" step="10" value="${ex.diskSize||150}" onchange="updateEvalExerciceField(${ex.id},'diskSize',parseInt(this.value)||150); renderEvalExercicesList();" style="width:60px;margin-left:4px;"> px</label>` : ''}
         ${hasRects ? `<label class="hint" style="margin:0;">▭ Taille des rectangles : <input type="number" min="30" max="350" step="10" value="${ex.rectSize||180}" onchange="updateEvalExerciceField(${ex.id},'rectSize',parseInt(this.value)||180); renderEvalExercicesList();" style="width:60px;margin-left:4px;"> px</label>` : ''}
       </div>
-      <p class="hint" style="margin:4px 0 0;">Fais glisser un bloc pour changer sa ligne/colonne (utilise les outils ci-dessous pour en ajouter, y compris du texte).</p>
+      <p class="hint" style="margin:4px 0 0;">Fais glisser un bloc pour changer sa ligne/colonne (utilise les outils ci-dessous pour en ajouter, y compris du texte). Pour élargir une colonne, tire la barre grise entre deux colonnes (double-clic : colonnes identiques).</p>
       <div class="tool-row" style="margin-top:6px;">${toolButtonsHTML(ctx)}</div>
     </div>
     ${evalPageBreaksAfter.has(ex.id) ? '<div style="border-top:2px dashed #1F3A5C;margin:0 0 8px;padding-top:4px;text-align:center;"><span class="hint" style="color:#1F3A5C;">✂ Saut de page ici à l\'impression</span></div>' : ''}
@@ -696,6 +696,7 @@ function removeEvalRow(id, rowIdx){
     if(r===rowIdx) b.row = Math.max(0, rowIdx-1);
     else if(r>rowIdx) b.row = r-1;
   });
+  colDecalerLargeurs(ex.cellBorders, rowIdx, ex.rows.length);
   ex.rows.splice(rowIdx,1);
   renderEvalExercicesList();
 }

@@ -2059,3 +2059,10 @@ select:not([multiple]):not([size]){
 .nb-profs{ display:flex; gap:6px; flex-wrap:wrap; margin:0 0 12px; }
 .nb-prof{ border:1.5px solid rgba(28,43,57,.15); background:#fff; border-radius:999px; padding:6px 14px; font:700 .88rem 'Space Grotesk',sans-serif; color:var(--ink); cursor:pointer; }
 .nb-prof.on{ background:var(--accent); border-color:var(--accent); color:#fff; }
+
+/* Poignée entre deux colonnes d'un exercice (évaluation papier, outil de correction) : on la tire
+   à la souris pour changer la largeur des colonnes ; double-clic = colonnes identiques. */
+.col-split{flex:0 0 10px;align-self:stretch;cursor:col-resize;position:relative;touch-action:none;}
+.col-split::after{content:'';position:absolute;top:4px;bottom:4px;left:4px;width:2px;border-radius:2px;background:rgba(28,43,57,.18);transition:background .15s,width .15s,left .15s;}
+.col-split:hover::after, .col-split.actif::after{left:3px;width:4px;background:var(--accent, #0C5BA0);}
+@media print{ .col-split{ display:none; } }
