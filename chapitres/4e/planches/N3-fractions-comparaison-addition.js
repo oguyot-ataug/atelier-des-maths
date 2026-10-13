@@ -1,0 +1,83 @@
+/* ============================================================
+   4e · Planches : Fractions : comparaison et addition (N3)
+   Écritures égales d'un quotient ; même dénominateur ; comparer ; additionner et soustraire
+   (avec un entier, avec trois termes) ; problèmes.
+   ============================================================ */
+(() => {
+const { R, F, T, ligne, rmp, ch } = P3, Fr = plFrac(), C = plCase();
+const lt = '&lt;', gt = '&gt;';
+PLANCHES['4e|Fractions : comparaison et addition'] = [
+  { titre: 'Écritures d\'une même fraction', duree: '30 min',
+    attendus: ['Multiplier ou diviser le numérateur et le dénominateur par un même nombre', 'Simplifier une fraction', 'Mettre deux fractions au même dénominateur'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'Écris chaque fraction avec le dénominateur indiqué.',
+        eleve: plListe([ligne(F(2, 3), '=', Fr, '(dénominateur 12)'), ligne(F(5, 4), '=', Fr, '(dénominateur 20)'), ligne(F(7, 6), '=', Fr, '(dénominateur 18)'), ligne(F(3, 5), '=', Fr, '(dénominateur 35)')]),
+        corr: plListe([ligne(F(2, 3), '=', R(F(8, 12))), ligne(F(5, 4), '=', R(F(25, 20))), ligne(F(7, 6), '=', R(F(21, 18))), ligne(F(3, 5), '=', R(F(21, 35)))]) },
+      { etoiles: 1, col: 1, consigne: 'Simplifie le plus possible.',
+        eleve: plListe([ligne(F(15, 25), '=', Fr), ligne(F(24, 36), '=', Fr), ligne(F(45, 60), '=', Fr), ligne(F(56, 42), '=', Fr)]),
+        corr: plListe([ligne(F(15, 25), '=', R(F(3, 5))), ligne(F(24, 36), '=', R(F(2, 3))), ligne(F(45, 60), '=', R(F(3, 4))), ligne(F(56, 42), '=', R(F(4, 3)))]) },
+      { etoiles: 2, col: 1, consigne: 'Ces deux fractions sont-elles égales ? Entoure.',
+        ...ch([[`${T(3, 4)} et ${T(9, 12)} :`, 'oui'], [`${T(2, 5)} et ${T(5, 2)} :`, 'non'], [`${T(6, 9)} et ${T(10, 15)} :`, 'oui'], [`${T(4, 7)} et ${T(8, 21)} :`, 'non']], 'oui · non') },
+      { etoiles: 2, col: 1, consigne: 'Écris les deux fractions avec un même dénominateur, le plus petit possible.',
+        eleve: plListe([ligne(F(1, 4), 'et', F(5, 6), ':', Fr, 'et', Fr), ligne(F(2, 3), 'et', F(4, 9), ':', Fr, 'et', Fr), ligne(F(3, 10), 'et', F(7, 15), ':', Fr, 'et', Fr)]),
+        corr: plListe([ligne(F(1, 4), 'et', F(5, 6), ':', R(F(3, 12)), 'et', R(F(10, 12))), ligne(F(2, 3), 'et', F(4, 9), ':', R(F(6, 9)), 'et', R(F(4, 9))), ligne(F(3, 10), 'et', F(7, 15), ':', R(F(9, 30)), 'et', R(F(14, 30)))]) },
+      { etoiles: 2, col: 1, consigne: 'Complète.',
+        ...rmp([[`${T(3, 8)} = ${T('?', 24)} : numérateur : @`, 9], [`${T(5, 6)} = ${T(35, '?')} : dénominateur : @`, 42], [`${T(18, 27)} = ${T(2, '?')} : dénominateur : @`, 3]]) },
+      { etoiles: 3, cahier: true, consigne: `Lina a mangé ${T(3, 8)} d'une pizza et Max ${T(6, 16)} d'une pizza identique. Ont-ils mangé la même quantité ? Justifie.`,
+        corr: cm1Redac('Comparaison', `${F(6, 16)} = ${F('6 : 2', '16 : 2')} = ${F(3, 8)}`, 'Les deux fractions sont égales : Lina et Max ont mangé la même quantité de pizza.') },
+    ] },
+  { titre: 'Comparer des fractions', duree: '30 min',
+    attendus: ['Comparer deux fractions de même dénominateur', 'Comparer deux fractions de dénominateurs différents', 'Ranger des fractions'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'Complète avec &lt;, &gt; ou =.',
+        eleve: plListe([ligne(F(5, 7), C, F(3, 7)), ligne(F(4, 9), C, F(4, 5)), ligne(F(7, 4), C, '1'), ligne(F(6, 8), C, F(3, 4))]),
+        corr: plListe([ligne(F(5, 7), R(gt), F(3, 7)), ligne(F(4, 9), R(lt), F(4, 5)), ligne(F(7, 4), R(gt), '1'), ligne(F(6, 8), R('='), F(3, 4))]) },
+      { etoiles: 2, col: 1, consigne: 'Mets au même dénominateur, puis complète avec &lt;, &gt; ou =.',
+        eleve: plListe([ligne(F(2, 3), C, F(5, 6)), ligne(F(3, 4), C, F(7, 10)), ligne(F(5, 8), C, F(7, 12)), ligne(F(11, 9), C, F(4, 3))]),
+        corr: plListe([ligne(F(2, 3), R(lt), F(5, 6), `(${T(4, 6)} et ${T(5, 6)})`), ligne(F(3, 4), R(gt), F(7, 10), `(${T(15, 20)} et ${T(14, 20)})`), ligne(F(5, 8), R(gt), F(7, 12), `(${T(15, 24)} et ${T(14, 24)})`), ligne(F(11, 9), R(lt), F(4, 3), `(${T(11, 9)} et ${T(12, 9)})`)]) },
+      { etoiles: 2, col: 1, consigne: `Range dans l'ordre croissant : ${T(1, 2)} ; ${T(3, 8)} ; ${T(5, 16)} ; ${T(3, 4)}.`,
+        eleve: plListe([ligne(Fr, lt, Fr, lt, Fr, lt, Fr)]),
+        corr: plListe([ligne(R(F(5, 16)), lt, R(F(3, 8)), lt, R(F(1, 2)), lt, R(F(3, 4)))]) },
+      { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.',
+        ...ch([['À numérateur égal, plus le dénominateur est grand, plus la fraction est petite.', 'vrai'], [`${T(7, 6)} ${lt} 1`, 'faux'], ['Une fraction dont le numérateur est plus petit que le dénominateur est inférieure à 1.', 'vrai']], 'vrai · faux') },
+      { etoiles: 3, cahier: true, consigne: `En 4e A, ${T(5, 8)} des élèves sont externes ; en 4e B, ${T(13, 20)} des élèves. Dans quelle classe la proportion d'externes est-elle la plus grande ?`,
+        corr: cm1Redac('Même dénominateur', { suite: [`${F(5, 8)} = ${F(25, 40)}`, `${F(13, 20)} = ${F(26, 40)}`, `${F(25, 40)} ${lt} ${F(26, 40)}`] }, 'La proportion d\'externes est la plus grande en 4e B.') },
+      { etoiles: 3, cahier: true, consigne: `Trouve une fraction comprise entre ${T(2, 5)} et ${T(3, 5)}. Explique ta méthode.`,
+        corr: cm1Redac('Dénominateur 10', { suite: [`${F(2, 5)} = ${F(4, 10)} et ${F(3, 5)} = ${F(6, 10)}`, `${F(4, 10)} ${lt} ${F(5, 10)} ${lt} ${F(6, 10)}`] }, `${F(5, 10)}, c'est-à-dire ${F(1, 2)}, est comprise entre ${F(2, 5)} et ${F(3, 5)}.`) },
+    ] },
+  { titre: 'Additionner et soustraire des fractions', duree: '35 min',
+    attendus: ['Additionner et soustraire des fractions de même dénominateur', 'Additionner et soustraire des fractions de dénominateurs différents', 'Calculer avec un entier'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'Calcule et simplifie si possible.',
+        eleve: plListe([ligne(F(3, 7), '+', F(2, 7), '=', Fr), ligne(F(9, 11), '−', F(4, 11), '=', Fr), ligne(F(2, 9), '+', F(4, 9), '=', Fr)]),
+        corr: plListe([ligne(F(3, 7), '+', F(2, 7), '=', R(F(5, 7))), ligne(F(9, 11), '−', F(4, 11), '=', R(F(5, 11))), ligne(F(2, 9), '+', F(4, 9), '=', F(6, 9), '=', R(F(2, 3)))]) },
+      { etoiles: 2, col: 1, consigne: 'Calcule et simplifie si possible.',
+        eleve: plListe([ligne(F(1, 2), '+', F(1, 4), '=', Fr), ligne(F(2, 3), '+', F(1, 6), '=', Fr), ligne(F(3, 4), '−', F(1, 8), '=', Fr), ligne(F(5, 6), '−', F(2, 9), '=', Fr)]),
+        corr: plListe([ligne(F(1, 2), '+', F(1, 4), '=', F(2, 4), '+', F(1, 4), '=', R(F(3, 4))), ligne(F(2, 3), '+', F(1, 6), '=', F(4, 6), '+', F(1, 6), '=', R(F(5, 6))), ligne(F(3, 4), '−', F(1, 8), '=', F(6, 8), '−', F(1, 8), '=', R(F(5, 8))), ligne(F(5, 6), '−', F(2, 9), '=', F(15, 18), '−', F(4, 18), '=', R(F(11, 18)))]) },
+      { etoiles: 2, col: 1, consigne: 'Calcule.',
+        eleve: plListe([ligne('2 +', F(3, 4), '=', Fr), ligne('1 −', F(5, 8), '=', Fr), ligne(F(3, 5), '+ 3 =', Fr), ligne('4 −', F(7, 3), '=', Fr)]),
+        corr: plListe([ligne('2 +', F(3, 4), '=', F(8, 4), '+', F(3, 4), '=', R(F(11, 4))), ligne('1 −', F(5, 8), '=', F(8, 8), '−', F(5, 8), '=', R(F(3, 8))), ligne(F(3, 5), '+ 3 =', F(3, 5), '+', F(15, 5), '=', R(F(18, 5))), ligne('4 −', F(7, 3), '=', F(12, 3), '−', F(7, 3), '=', R(F(5, 3)))]) },
+      { etoiles: 3, col: 1, consigne: 'Calcule.',
+        eleve: plListe([ligne(F(1, 2), '+', F(1, 3), '+', F(1, 6), '=', Fr), ligne(F(5, 4), '−', F(1, 2), '−', F(1, 8), '=', Fr)]),
+        corr: plListe([ligne(F(1, 2), '+', F(1, 3), '+', F(1, 6), '=', F(3, 6), '+', F(2, 6), '+', F(1, 6), '=', F(6, 6), '=', R('1')), ligne(F(5, 4), '−', F(1, 2), '−', F(1, 8), '=', F(10, 8), '−', F(4, 8), '−', F(1, 8), '=', R(F(5, 8)))]) },
+      { etoiles: 3, cahier: true, consigne: `Dans un champ, ${T(1, 3)} de la surface est semé de blé et ${T(2, 5)} de maïs. Le reste est en herbe. Quelle fraction du champ est en herbe ?`,
+        corr: cm1Redac('Fraction en herbe', { suite: [`1 − ${F(1, 3)} − ${F(2, 5)}`, `= ${F(15, 15)} − ${F(5, 15)} − ${F(6, 15)}`, `= ${F(4, 15)}`] }, `L'herbe occupe ${F(4, 15)} du champ.`) },
+    ] },
+  { titre: 'Problèmes avec des fractions', duree: '40 min',
+    attendus: ['Additionner des fractions dans un problème', 'Trouver la part restante', 'Rédiger la solution d\'un problème'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'Complète.',
+        eleve: plListe([ligne(`Il lit ${T(1, 3)} d'un livre lundi et ${T(1, 4)} mardi : il a lu`, Fr, 'du livre.'), ligne(`Un réservoir plein aux ${T(3, 4)} perd ${T(1, 8)} de sa contenance : il est plein aux`, Fr)]),
+        corr: plListe([ligne(`Il lit ${T(1, 3)} d'un livre lundi et ${T(1, 4)} mardi : il a lu`, R(F(7, 12)), 'du livre.'), ligne(`Un réservoir plein aux ${T(3, 4)} perd ${T(1, 8)} de sa contenance : il est plein aux`, R(F(5, 8)))]) },
+      { etoiles: 2, col: 1, consigne: `Un gâteau est partagé entre trois amis : Inès prend ${T(1, 4)}, Tom ${T(1, 3)}, et Sam ${T(1, 6)} du gâteau.`,
+        eleve: plListe([ligne('Fraction mangée :', Fr), ligne('Fraction restante :', Fr)]),
+        corr: plListe([ligne('Fraction mangée :', R(F(3, 4))), ligne('Fraction restante :', R(F(1, 4)))]) },
+      { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.',
+        ...ch([[`${T(1, 2)} + ${T(1, 3)} = ${T(2, 5)}`, 'faux'], [`${T(3, 4)} − ${T(1, 4)} = ${T(1, 2)}`, 'vrai'], [`${T(1, 5)} + ${T(1, 5)} + ${T(1, 5)} + ${T(1, 5)} + ${T(1, 5)} = 1`, 'vrai']], 'vrai · faux') },
+      { etoiles: 2, cahier: true, consigne: `Pour une recette, il faut ${T(3, 4)} L de lait. Paul a déjà versé ${T(1, 2)} L, puis ${T(1, 8)} L. Combien de lait doit-il encore ajouter ?`,
+        corr: cm1Redac('Lait versé', `${F(1, 2)} + ${F(1, 8)} = ${F(4, 8)} + ${F(1, 8)} = ${F(5, 8)}`, `Paul a versé ${F(5, 8)} L.`) + cm1Redac('Lait à ajouter', `${F(3, 4)} − ${F(5, 8)} = ${F(6, 8)} − ${F(5, 8)} = ${F(1, 8)}`, `Il doit encore ajouter ${F(1, 8)} L de lait.`) },
+      { etoiles: 3, cahier: true, consigne: `Une randonnée se fait en trois étapes : la première représente ${T(2, 5)} du parcours, la deuxième ${T(1, 3)}. Quelle fraction représente la troisième étape ? Quelle étape est la plus longue ?`,
+        corr: cm1Redac('Troisième étape', `1 − ${F(2, 5)} − ${F(1, 3)} = ${F(15, 15)} − ${F(6, 15)} − ${F(5, 15)} = ${F(4, 15)}`, `La troisième étape représente ${F(4, 15)} du parcours.`) + cm1Redac('Comparaison', `${F(2, 5)} = ${F(6, 15)} ; ${F(1, 3)} = ${F(5, 15)}`, 'La première étape est la plus longue.') },
+    ] },
+];
+})();

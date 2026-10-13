@@ -3464,6 +3464,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1066', date:'2026-10-13', items:[
+    "Manuel 4e, lot 1 : nombres et calcul (ancien programme, en vigueur jusqu'en 2027). 7 chapitres, 28 planches et 157 exercices corrigés : opérations sur les relatifs, divisibilité, fractions (comparaison et addition, multiplication et division), puissances, calcul littéral, équations. Problèmes illustrés : avion et sous-marin, carrelage, verres de jus, rectangles et figure en L, balance, Terre et Soleil.",
+  ]},
   { version:'2026-08-19.1065', date:'2026-10-13', items:[
     "Mes évaluations : vue par classe. Les évaluations sont regroupées par classe (une évaluation donnée à « 5B & 5L » apparaît dans les deux groupes), la plus récente en premier, avec un groupe « Sans classe ». Bascule « Par classe / Par date de modification », mémorisée sur l'appareil ; chaque groupe se replie d'un clic.",
   ]},
