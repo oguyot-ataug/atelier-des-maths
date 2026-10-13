@@ -3464,6 +3464,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1059', date:'2026-10-13', items:[
+    "Créer une évaluation : l'aperçu de l'évaluation respecte maintenant les largeurs de colonnes choisies à la souris. Un bloc redimensionné (texte, figure, repère…) ne dépasse plus de sa colonne : il s'adapte à sa largeur, à l'écran comme dans le PDF.",
+  ]},
   { version:'2026-08-19.1058', date:'2026-10-13', items:[
     "Créer une évaluation (et outil de correction) : la largeur des colonnes d'un exercice se règle à la souris. Tirez la barre grise entre deux colonnes ; les colonnes n'ont plus besoin d'être identiques. Les largeurs sont gardées dans l'aperçu, le PDF, le cahier et la sauvegarde. Double-clic sur la barre : colonnes de nouveau identiques.",
   ]},
