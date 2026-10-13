@@ -3464,6 +3464,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1069', date:'2026-10-13', items:[
+    "Manuel CM2, lot 1 : nombres. 6 chapitres, 18 planches et 80 exercices corrigés : nombres entiers jusqu'à 999 999, fractions (partage, mesure, demi-droite, fraction d'une quantité), décimaux jusqu'aux millièmes, addition et soustraction (avec un ticket de caisse illustré), multiplication, fractions : comparer et calculer. Règles du primaire respectées : fractions écrites en mathématiques, un calcul par ligne, réponses rédigées (titre, calcul, phrase).",
+  ]},
   { version:'2026-08-19.1068', date:'2026-10-13', items:[
     "Manuel 4e, lot 3 : organisation et gestion de données. 3 chapitres, 12 planches et 53 exercices corrigés : proportionnalité (quatrième proportionnelle, pourcentages, vitesse moyenne, débit, énergie), statistiques (moyenne pondérée, médiane, étendue, diagramme en barres), probabilités (vocabulaire, urne, roue, fréquences). Le manuel de 4e est complet : 15 chapitres, 60 planches, environ 300 exercices corrigés.",
   ]},
