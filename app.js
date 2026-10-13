@@ -3464,6 +3464,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1068', date:'2026-10-13', items:[
+    "Manuel 4e, lot 3 : organisation et gestion de données. 3 chapitres, 12 planches et 53 exercices corrigés : proportionnalité (quatrième proportionnelle, pourcentages, vitesse moyenne, débit, énergie), statistiques (moyenne pondérée, médiane, étendue, diagramme en barres), probabilités (vocabulaire, urne, roue, fréquences). Le manuel de 4e est complet : 15 chapitres, 60 planches, environ 300 exercices corrigés.",
+  ]},
   { version:'2026-08-19.1067', date:'2026-10-13', items:[
     "Manuel 4e, lot 2 : géométrie. 5 chapitres, 20 planches et 87 exercices corrigés : triangles égaux et théorème de Thalès (calcul, réciproque, problèmes : ombres, toboggan), Pythagore (carrés et racines, calculs, réciproque, échelle, écran), cosinus (longueurs, angles, rampe, mât), translations sur quadrillage (l'élève trace l'image, le corrigé la montre en vert ; frise), pyramides et cônes (volumes, cornet, repérage dans un pavé).",
   ]},
