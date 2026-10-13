@@ -331,6 +331,10 @@ async function csCahier(id){
     <div class="cs-n-liste">${lignes.map(({ it, k, html }) => `<label class="cs-n-it${html ? '' : ' off'}"><input type="checkbox" data-k="${k}" ${html ? 'checked' : 'disabled'}>
       <span><b>${k + 1}. ${cdEsc(it.titre || 'Élément')}</b><small>${html ? cdEsc(csCahierNature(it)) + (it.chapitre ? ' · ' + cdEsc(it.chapitre) : '') : 'défi de programmation : ne s\'écrit pas dans le cahier'}</small></span></label>`).join('')}</div>
     <label class="qz-check" style="margin-top:10px;"><input type="checkbox" id="csCCorr" checked> Avec les corrections (bonnes réponses, corrigés du manuel)</label>
+    <div class="cs-c-mod" style="display:flex;gap:6px 14px;flex-wrap:wrap;align-items:center;margin-top:8px;"><span class="hint" style="margin:0;font-weight:600;">Écrit dans le cahier de texte :</span>
+      <label class="qz-check"><input type="radio" name="csCMod" value="enligne" checked> <span class="gicon">wifi</span> en ligne</label>
+      <label class="qz-check"><input type="radio" name="csCMod" value="ordinateur"> <span class="gicon">computer</span> sur l'ordinateur</label>
+      <label class="qz-check"><input type="radio" name="csCMod" value=""> sans précision</label></div>
     <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:8px;">
       <label class="hint" style="display:flex;flex-direction:column;gap:4px;margin:0;font-weight:600;">Chapitre du cahier
         <select id="csCChap"><option value="">Celui de chaque élément (sinon « Sessions »)</option>${chaps.map(c => `<option value="${cdEsc(c.code + ' · ' + c.t)}">${cdEsc(c.code + ' · ' + c.t)}</option>`).join('')}</select></label>
@@ -347,14 +351,21 @@ async function csCahier(id){
     const ks = [...o.querySelectorAll('input[data-k]:checked')].map(x => +x.dataset.k);
     if(!ks.length){ o.querySelector('#csCErr').textContent = 'Cochez au moins un élément.'; return; }
     const corr = o.querySelector('#csCCorr').checked, chap = o.querySelector('#csCChap').value, date = o.querySelector('#csCDate').value || iso;
+    const mod = (o.querySelector('input[name="csCMod"]:checked') || {}).value || null; // en ligne / sur l'ordinateur (cahier de texte)
     b.disabled = true; b.innerHTML = 'Ajout…';
     // Groupe « sans cahier » (demi-groupe…) : le cahier de sa classe d'origine (fonction cahier_classe).
     const { data: cc } = await sb.rpc('cahier_classe', { p_class: row.class_id });
     const cible = cc && cc.id ? cc : { id: row.class_id, nom: (row.classes && row.classes.nom) || '' };
     const matiere = typeof cahierMatiere === 'function' ? cahierMatiere() : null;
     const entrees = ks.map(k => { const it = row.items[k]; return { niveau, chapitre: chap || it.chapitre || 'Sessions', exo: csCahierNature(it),
-      titre: String(it.titre || 'Élément') + (corr && (it.corr || (it.exo && it.exo.type === 'qz')) ? ' (avec correction)' : ''), date, raw: '', html: csCahierHtml(it, corr) }; }).filter(x => x.html);
-    const { data: ins, error } = await sb.from('cahier_entries').insert(entrees.map(x => Object.assign({ class_id: cible.id, matiere }, x))).select('id');
+      titre: String(it.titre || 'Élément') + (corr && (it.corr || (it.exo && it.exo.type === 'qz')) ? ' (avec correction)' : ''), date, raw: '', html: csCahierHtml(it, corr),
+      modalite: mod && csCahierNature(it) !== 'Cours' ? mod : null }; }).filter(x => x.html);
+    let { data: ins, error } = await sb.from('cahier_entries').insert(entrees.map(x => Object.assign({ class_id: cible.id, matiere }, x))).select('id');
+    // Base pas encore à jour (modalités « en ligne » / « sur l'ordinateur » refusées) : la mention passe dans le titre.
+    if(error && mod && /modalite|check constraint/i.test(error.message)){
+      entrees.forEach(x => { if(x.modalite){ x.titre += ' · ' + (mod === 'enligne' ? 'en ligne' : 'sur l\'ordinateur'); x.modalite = null; } });
+      ({ data: ins, error } = await sb.from('cahier_entries').insert(entrees.map(x => Object.assign({ class_id: cible.id, matiere }, x))).select('id'));
+    }
     if(error){ o.querySelector('#csCErr').textContent = /row-level security/.test(error.message) ? 'Vous n\'êtes pas professeur de cette classe.' : error.message; b.disabled = false; b.innerHTML = '<span class="gicon">add</span> Ajouter au cahier'; return; }
     // Classe active : le cahier affiché est mis à jour tout de suite.
     if(typeof cahier !== 'undefined' && (typeof cahierClasseId === 'function' ? cahierClasseId() : currentClassId) === cible.id){
@@ -362,7 +373,7 @@ async function csCahier(id){
       if(typeof sortCahierInPlace === 'function') sortCahierInPlace(); if(typeof saveCahier === 'function') saveCahier();
     }
     o.style.display = 'none';
-    await niceAlert(`${entrees.length} élément${entrees.length > 1 ? 's ajoutés' : ' ajouté'} au cahier de ${cible.nom || 'la classe'}, à la date du ${new Date(date + 'T12:00:00').toLocaleDateString('fr-FR')}${corr ? ', avec les corrections' : ''}.`);
+    await niceAlert(`${entrees.length} élément${entrees.length > 1 ? 's ajoutés' : ' ajouté'} au cahier de ${cible.nom || 'la classe'}, à la date du ${new Date(date + 'T12:00:00').toLocaleDateString('fr-FR')}${corr ? ', avec les corrections' : ''}${mod ? (mod === 'enligne' ? ', notés « en ligne »' : ', notés « sur l\'ordinateur »') : ''}.`);
   };
 }
 

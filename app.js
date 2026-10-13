@@ -3464,6 +3464,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1076', date:'2026-10-13', items:[
+    "Session → cahier : en ajoutant le contenu d'une session au cahier, on choisit ce qui s'écrira dans le cahier de texte : « en ligne » (par défaut), « sur l'ordinateur » ou sans précision. Les exercices apparaissent dans une rubrique « Exercices en ligne (session sur les appareils des élèves) » ou « Exercices sur l'ordinateur », les interrogations avec « (en ligne) », et un badge « En ligne » ou « Sur l'ordinateur » s'affiche sur l'entrée du cahier.",
+  ]},
   { version:'2026-08-19.1075', date:'2026-10-13', items:[
     "Outil de correction : copier-coller d'une image. Ctrl+V (⌘+V sur Mac) colle une capture d'écran, une image copiée d'une page web ou d'un document : le panneau Image s'ouvre avec l'image, prête à insérer ou à modifier (recadrer, annoter…). Le panneau Image a aussi un bouton « Coller une image ». Cela marche aussi dans les exercices d'une évaluation et les questions d'un questionnaire ; un texte collé reste un texte.",
   ]},
@@ -7523,7 +7526,12 @@ function cancelEditCahier(){
 }
 /* Modalité de l'exercice (outil de correction) : correction du travail maison, en classe entière ou en
    autonomie -- un seul choix, ou aucun. Gardée d'un exercice à l'autre (souvent la même pendant une séance). */
-const COR_MODALITES = { maison: ['Correction du travail maison', 'home', '#8A4B08'], classe: ['En classe entière', 'groups', '#0C5BA0'], autonomie: ['En autonomie', 'person', '#2E7D32'] };
+const COR_MODALITES = { maison: ['Correction du travail maison', 'home', '#8A4B08'], classe: ['En classe entière', 'groups', '#0C5BA0'], autonomie: ['En autonomie', 'person', '#2E7D32'],
+  // Exercices d'une session COURS -- demandé : « Quand j'ajoute les exercices d'une session, bien préciser dans le
+  // cahier de texte que c'est en ligne ou sur l'ordinateur. »
+  enligne: ['En ligne', 'wifi', '#00838F'], ordinateur: ['Sur l\'ordinateur', 'computer', '#5E35B1'] };
+// Mention courte (cahier de texte) : « en ligne », « sur l'ordinateur ».
+const COR_MODALITES_COURT = { enligne: 'en ligne', ordinateur: 'sur l\'ordinateur' };
 function corModalite(v){
   const cases = document.querySelectorAll('#corModalites input');
   if(v !== undefined){ cases.forEach(c=>{ c.checked = c.value===v; }); return v; }
@@ -8321,18 +8329,19 @@ function resumeSeanceContenu(date){
       });
     }
     // Interrogations et questions flash : rubriques à part, jamais dans « Exercices ».
-    else if(type==='interro') rubrique().items.push(court(titre) || 'Interrogation');
-    else if(type==='flash') rubrique().items.push(court(titre) || 'Questions flash');
+    else if(type==='interro') rubrique().items.push((court(titre) || 'Interrogation') + (COR_MODALITES_COURT[e.modalite] ? ' (' + COR_MODALITES_COURT[e.modalite] + ')' : ''));
+    else if(type==='flash') rubrique().items.push((court(titre) || 'Questions flash') + (COR_MODALITES_COURT[e.modalite] ? ' (' + COR_MODALITES_COURT[e.modalite] + ')' : ''));
     else if(e.exo==='TD') rubrique().items.push(titre || 'Exercices');
     else if(e.exo==='Construction') rubrique().items.push('Construction' + (titre && titre!=='Construction' ? ' : '+court(titre) : ''));
     else {
-      const num = String(e.exo||'').trim(), n = num && num!=='-' ? 'Exercice '+num : 'Exercice';
+      const num = String(e.exo||'').trim(), n = num && num!=='-' ? (/^[A-Za-zÀ-ÿ]/.test(num) ? num : 'Exercice '+num) : 'Exercice'; // « Exercice », « Document » (sessions) : le mot seul
       rubrique().items.push(n + (titre ? ' : '+court(titre) : ''));
     }
   });
   // Cours (bleu), Exercices (orange), Interrogation (violet, 📝), Questions flash (rouge, ⚡).
   const STYLE = { cours: ['Cours', '#0C5BA0', ''], exos: ['Exercices', '#C45F00', ''], interro: ['Interrogation', '#6B3FA0', '📝 '], flash: ['Questions flash', '#C62828', '⚡ '],
-    'exos-maison': ['Correction du travail maison', '#8A4B08', '🏠 '], 'exos-classe': ['Exercices en classe entière', '#C45F00', ''], 'exos-autonomie': ['Exercices en autonomie', '#2E7D32', ''] };
+    'exos-maison': ['Correction du travail maison', '#8A4B08', '🏠 '], 'exos-classe': ['Exercices en classe entière', '#C45F00', ''], 'exos-autonomie': ['Exercices en autonomie', '#2E7D32', ''],
+    'exos-enligne': ['Exercices en ligne (session sur les appareils des élèves)', '#00838F', ''], 'exos-ordinateur': ['Exercices sur l\'ordinateur', '#5E35B1', ''] };
   const ENCRE = '#20242E', esc = t => escapeHtml(t);
   let html = '', txt = '';
   blocs.forEach((c, i)=>{
