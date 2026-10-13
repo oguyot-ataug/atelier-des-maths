@@ -20,6 +20,14 @@
 
    Données : table relecture_exercices (une ligne par exercice relu ; lecture et écriture réservées à
    l'administrateur, is_admin()).
+
+   Bêta-testeurs (demandé : « je propose que des professeurs soient bêta-testeurs (réglage dans admin). Les
+   bêta-testeurs peuvent faire des retours sur les exercices des manuels (comme en mode admin) ») :
+   - case « Bêta-testeur » dans la fiche d'un professeur (Administration, admin.js) → profiles.beta_testeur ;
+   - le bêta-testeur a la même barre sous chaque vignette ; ses retours vont dans relecture_beta (une ligne
+     par exercice et par testeur ; il ne voit que les siens) ;
+   - l'administrateur voit sous chaque vignette les retours des testeurs (nom, remarques), les marque
+     « Traité », et les retrouve dans « Toutes les remarques » et dans le filtre « Retours bêta ».
    ===================================================================== */
 
 // Changements faits à la suite d'une remarque : clé → { date (ISO, heure UTC du changement), note }.
@@ -46,8 +54,22 @@ const RL_REMARQUES = [
   'Écran : devrait pouvoir se faire à l\'écran',
 ];
 const RL_ETATS = { ok: ['check_circle', 'Validé'], non: ['radio_button_unchecked', 'Non examiné'], com: ['chat', 'Commenté'] };
-const rl = { lignes: null, filtre: '' };
+const rl = { lignes: null, filtre: '', beta: null, betaUid: null, retours: new Map() };
 const rlAdmin = () => typeof currentUserRole !== 'undefined' && currentUserRole === 'admin';
+// Professeur bêta-testeur (profiles.beta_testeur, posé par l'administrateur) : relu une fois par compte.
+async function rlEstBeta(){
+  if(typeof currentUserRole === 'undefined' || currentUserRole !== 'prof' || !currentUser) return false;
+  if(rl.betaUid !== currentUser.id){
+    rl.betaUid = currentUser.id; rl.beta = false; rl.lignes = null;
+    const { data } = await sb.from('profiles').select('beta_testeur').eq('id', currentUser.id).maybeSingle();
+    rl.beta = !!(data && data.beta_testeur);
+  }
+  return rl.beta;
+}
+const rlBeta = () => !rlAdmin() && rl.beta && currentUser && rl.betaUid === currentUser.id;
+const rlNom = r => r && r.profiles ? [r.profiles.prenom, r.profiles.nom].filter(Boolean).join(' ') : 'Bêta-testeur';
+// Retours des bêta-testeurs à traiter (vus par l'administrateur).
+const rlATraiter = r => r.statut === 'com' && !r.traite;
 const rlEsc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const rlCle = (lvl, c, i, k) => `${plRef(lvl, plCode(lvl, c), i)}-E${k + 1}`;
 // Changement effectué et pas encore revu (la ligne a été mise à jour avant la date du changement).
@@ -58,10 +80,17 @@ function rlChgt(cle){
 }
 
 async function rlCharger(force){
-  if(rl.lignes && !force) return rl.lignes;
-  const { data, error } = await sb.from('relecture_exercices').select('*');
+  const uid = currentUser && currentUser.id;
+  if(rl.lignes && !force && rl.uid === uid) return rl.lignes;
+  rl.uid = uid;
+  const q = rlBeta() ? sb.from('relecture_beta').select('*').eq('user_id', currentUser.id) : sb.from('relecture_exercices').select('*');
+  const { data, error } = await q;
   if(error){ rl.erreur = error.message; rl.lignes = new Map(); return rl.lignes; }
   rl.erreur = null; rl.lignes = new Map((data || []).map(r => [r.cle, r]));
+  if(rlAdmin()){ // retours des bêta-testeurs, regroupés par exercice
+    const { data: b } = await sb.from('relecture_beta').select('*, profiles(nom, prenom)').order('updated_at');
+    rl.retours = new Map(); (b || []).forEach(r => { if(!rl.retours.has(r.cle)) rl.retours.set(r.cle, []); rl.retours.get(r.cle).push(r); });
+  }
   return rl.lignes;
 }
 async function rlEnregistrer(lvl, c, i, k, maj){
@@ -70,8 +99,10 @@ async function rlEnregistrer(lvl, c, i, k, maj){
   const ligne = Object.assign({ cle, niveau: lvl, chapitre: `${c.code} · ${c.t}`, consigne, tags: [], commentaire: '' },
     (rl.lignes && rl.lignes.get(cle)) || {}, maj, { updated_at: new Date().toISOString() });
   delete ligne.updated_by;
-  const { error } = await sb.from('relecture_exercices').upsert(ligne, { onConflict: 'cle' });
-  if(error){ await niceAlert('Relecture non enregistrée : ' + error.message + (/relation|does not exist|schema cache/i.test(error.message) ? '\n\nLa table relecture_exercices n\'existe pas encore : exécutez le SQL fourni dans Supabase.' : '')); return false; }
+  const beta = rlBeta(), table = beta ? 'relecture_beta' : 'relecture_exercices';
+  if(beta){ delete ligne.id; delete ligne.profiles; ligne.user_id = currentUser.id; ligne.traite = false; }
+  const { error } = await sb.from(table).upsert(ligne, { onConflict: beta ? 'cle,user_id' : 'cle' });
+  if(error){ await niceAlert('Relecture non enregistrée : ' + error.message + (/relation|does not exist|schema cache/i.test(error.message) ? `\n\nLa table ${table} n'existe pas encore : exécutez le SQL fourni dans Supabase.` : '')); return false; }
   rl.lignes.set(cle, ligne);
   return true;
 }
@@ -82,15 +113,31 @@ function rlBarreHtml(cle){
   const rem = l && (l.tags.length || l.commentaire) ? `<div class="rl-rem">${l.tags.map(t => `<span>${rlEsc(t)}</span>`).join('')}${l.commentaire ? `<em>${rlEsc(l.commentaire)}</em>` : ''}</div>` : '';
   return `<div class="rl-barre">${Object.entries(RL_ETATS).map(([k, [ic, t]]) => `<button type="button" class="rl-b rl-${k}${st === k ? ' on' : ''}" data-rl="${k}"><span class="gicon">${ic}</span> ${t}</button>`).join('')}
       ${ch ? `<span class="rl-chgt" title="${rlEsc(ch.note || '')}"><span class="gicon">published_with_changes</span> Chgt effectué le ${new Date(ch.date).toLocaleDateString('fr-FR')}${ch.note ? ' : ' + rlEsc(ch.note) : ''}</span>` : ''}
-      <span class="rl-cle">${rlEsc(cle)}</span></div>${rem}`;
+      <span class="rl-cle">${rlEsc(cle)}</span></div>${rem}${rlAdmin() ? rlRetoursHtml(cle) : ''}`;
+}
+// Retours des bêta-testeurs sur un exercice (administrateur) : remarques, puis « validé par … ».
+function rlRetoursHtml(cle){
+  const l = rl.retours.get(cle) || []; if(!l.length) return '';
+  const ok = l.filter(r => r.statut === 'ok'), com = l.filter(r => r.statut === 'com');
+  return `<div class="rl-betas">${com.map(r => `<div class="rl-beta${r.traite ? ' traite' : ''}"><span class="gicon">group</span> <b>${rlEsc(rlNom(r))}</b>
+      <span class="rl-rem">${(r.tags || []).map(t => `<span>${rlEsc(t)}</span>`).join('')}${r.commentaire ? `<em>${rlEsc(r.commentaire)}</em>` : ''}</span>
+      <button type="button" class="rl-b rl-tr${r.traite ? ' on' : ''}" data-rltr="${r.id}"><span class="gicon">${r.traite ? 'task_alt' : 'radio_button_unchecked'}</span> Traité</button></div>`).join('')}
+    ${ok.length ? `<div class="rl-beta-ok"><span class="gicon">group</span> Validé par ${ok.map(r => rlEsc(rlNom(r))).join(', ')}</div>` : ''}</div>`;
+}
+async function rlTraiter(id){
+  const r = [...rl.retours.values()].flat().find(x => String(x.id) === String(id)); if(!r) return false;
+  const { error } = await sb.from('relecture_beta').update({ traite: !r.traite }).eq('id', r.id);
+  if(error){ await niceAlert('Non enregistré : ' + error.message); return false; }
+  r.traite = !r.traite; return true;
 }
 function rlEtatVig(v, cle){
   const l = rl.lignes.get(cle), st = (l && l.statut) || 'non';
-  v.classList.remove('rl-v-ok', 'rl-v-com', 'rl-v-chgt');
+  v.classList.remove('rl-v-ok', 'rl-v-com', 'rl-v-chgt', 'rl-v-beta');
   if(rlChgt(cle)) v.classList.add('rl-v-chgt'); else if(st !== 'non') v.classList.add('rl-v-' + st);
+  if(rlAdmin() && (rl.retours.get(cle) || []).some(rlATraiter)) v.classList.add('rl-v-beta');
 }
 async function rlDecorer(lvl, c){
-  const root = document.getElementById('tdRoot'); if(!root || !rlAdmin()) return;
+  const root = document.getElementById('tdRoot'); if(!root || !(rlAdmin() || await rlEstBeta())) return;
   await rlCharger();
   const liste = plDe(lvl, c.t); if(!liste.length) return;
   const cles = [];
@@ -101,6 +148,8 @@ async function rlDecorer(lvl, c){
     if(!b){ b = document.createElement('div'); b.className = 'rl-zone'; v.appendChild(b); }
     b.innerHTML = rlBarreHtml(cle); v.dataset.rl = cle; rlEtatVig(v, cle);
     b.onclick = async e => {
+      const tr = e.target.closest('[data-rltr]');
+      if(tr){ e.stopPropagation(); if(await rlTraiter(tr.dataset.rltr)){ b.innerHTML = rlBarreHtml(cle); rlEtatVig(v, cle); rlEntete(lvl, c); } return; }
       const t = e.target.closest('[data-rl]'); if(!t) return;
       e.stopPropagation();
       if(t.dataset.rl === 'ok'){ if(await rlEnregistrer(lvl, c, i, k, { statut: 'ok' })){ b.innerHTML = rlBarreHtml(cle); rlEtatVig(v, cle); rlEntete(lvl, c); } }
@@ -117,9 +166,10 @@ function rlEntete(lvl, c){
   if(!h){ h = document.createElement('div'); h.className = 'rl-entete'; root.insertBefore(h, root.querySelector('.td-planche') || root.firstChild.nextSibling); }
   const n = { ok: 0, non: 0, com: 0, chgt: 0 };
   (rl.cles || []).forEach(k => { if(rlChgt(k)) n.chgt++; else n[((rl.lignes.get(k) || {}).statut) || 'non']++; });
+  const nBeta = rlAdmin() ? (rl.cles || []).filter(k => (rl.retours.get(k) || []).some(rlATraiter)).length : 0;
   const f = (id, t, nb) => `<button type="button" class="rl-f${rl.filtre === id ? ' on' : ''}" data-rlf="${id}">${t} <b>${nb}</b></button>`;
-  h.innerHTML = `<b><span class="gicon">rate_review</span> Relecture</b>
-    ${f('', 'Tous', (rl.cles || []).length)}${f('ok', 'Validés', n.ok)}${f('non', 'Non examinés', n.non)}${f('com', 'Commentés', n.com)}${f('chgt', 'Chgt effectué', n.chgt)}
+  h.innerHTML = `<b><span class="gicon">rate_review</span> ${rlBeta() ? 'Bêta-test : vos retours' : 'Relecture'}</b>
+    ${f('', 'Tous', (rl.cles || []).length)}${f('ok', 'Validés', n.ok)}${f('non', 'Non examinés', n.non)}${f('com', 'Commentés', n.com)}${f('chgt', 'Chgt effectué', n.chgt)}${rlAdmin() ? f('beta', 'Retours bêta', nBeta) : ''}
     <span style="flex:1"></span><button type="button" class="btn secondary td-mini" data-rlsynth><span class="gicon">list_alt</span> Toutes les remarques</button>
     ${rl.erreur ? `<span class="rl-err">Relecture indisponible : ${rlEsc(rl.erreur)}</span>` : ''}`;
   h.onclick = e => {
@@ -131,7 +181,8 @@ function rlEntete(lvl, c){
 function rlFiltrer(){
   document.querySelectorAll('#tdRoot .td-vig[data-rl]').forEach(v => {
     const cle = v.dataset.rl, st = rlChgt(cle) ? 'chgt' : ((rl.lignes.get(cle) || {}).statut || 'non');
-    v.style.display = !rl.filtre || rl.filtre === st ? '' : 'none';
+    const beta = rl.filtre === 'beta' && (rl.retours.get(cle) || []).some(rlATraiter);
+    v.style.display = !rl.filtre || rl.filtre === st || beta ? '' : 'none';
   });
   document.querySelectorAll('#tdRoot .td-planche').forEach(s => {
     s.style.display = [...s.querySelectorAll('.td-vig[data-rl]')].some(v => v.style.display !== 'none') || !rl.filtre ? '' : 'none';
@@ -181,7 +232,21 @@ async function rlSynthese(){
       <div class="rl-rem">${(r.tags || []).map(t => `<span>${rlEsc(t)}</span>`).join('')}${r.commentaire ? `<em>${rlEsc(r.commentaire)}</em>` : ''}</div>
       ${ch ? `<small class="rl-chgt"><span class="gicon">published_with_changes</span> Chgt effectué le ${new Date(ch.date).toLocaleDateString('fr-FR')}${ch.note ? ' : ' + rlEsc(ch.note) : ''}</small>` : ''}</div>`; }).join('') || '<p class="hint">Aucune remarque en cours.</p>'}</div>`;
   document.body.appendChild(o);
-  o.addEventListener('click', e => { if(e.target === o || e.target.closest('[data-rlx]')) o.remove(); });
+  if(rlAdmin()){ // retours des bêta-testeurs à traiter, tous niveaux
+    const rb = [...rl.retours.values()].flat().filter(rlATraiter).sort((a, b) => a.cle.localeCompare(b.cle, 'fr', { numeric: true }));
+    const d = document.createElement('div');
+    d.innerHTML = `<h4 style="margin:16px 0 4px;"><span class="gicon" style="vertical-align:-4px;">group</span> Retours des bêta-testeurs à traiter (${rb.length})</h4>`
+      + (rb.map(r => `<div class="rl-s-l"><div><b>${rlEsc(r.cle)}</b> <small>${rlEsc(r.chapitre || '')}</small> · <b>${rlEsc(rlNom(r))}</b></div>
+        <small class="rl-s-c">${rlEsc(r.consigne || '')}</small>
+        <div class="rl-rem">${(r.tags || []).map(t => `<span>${rlEsc(t)}</span>`).join('')}${r.commentaire ? `<em>${rlEsc(r.commentaire)}</em>` : ''}</div>
+        <button type="button" class="rl-b rl-tr" data-rltr="${r.id}" style="margin-top:4px;"><span class="gicon">radio_button_unchecked</span> Traité</button></div>`).join('') || '<p class="hint">Aucun retour à traiter.</p>');
+    o.querySelector('.modal-card').appendChild(d);
+  }
+  o.addEventListener('click', async e => {
+    if(e.target === o || e.target.closest('[data-rlx]')) return o.remove();
+    const tr = e.target.closest('[data-rltr]');
+    if(tr && await rlTraiter(tr.dataset.rltr)) tr.closest('.rl-s-l').classList.add('fait');
+  });
 }
 
 // Branchement : après chaque affichage de l'onglet Manuel (planches.js › plTdRendre).
@@ -189,7 +254,7 @@ async function rlSynthese(){
   const brancher = () => {
     if(typeof plTdRendre !== 'function' || plTdRendre.rl) return false;
     const orig = plTdRendre;
-    plTdRendre = function(lvl, c){ const r = orig.apply(this, arguments); if(rlAdmin()) rlDecorer(lvl, c); return r; };
+    plTdRendre = function(lvl, c){ const r = orig.apply(this, arguments); if(rlAdmin() || (typeof currentUserRole !== 'undefined' && currentUserRole === 'prof')) rlDecorer(lvl, c); return r; };
     plTdRendre.rl = true;
     return true;
   };
@@ -204,6 +269,11 @@ async function rlSynthese(){
     .rl-chgt{display:inline-flex;align-items:center;gap:3px;background:#E6EEFB;color:#1F5FA8;border-radius:999px;padding:2px 9px;font:700 .74rem Inter,sans-serif;} .rl-chgt .gicon{font-size:15px;}
     .rl-cle{margin-left:auto;font:600 .7rem 'Space Grotesk',monospace;color:#9AA3AF;}
     .rl-rem{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px;font-size:.76rem;} .rl-rem span{background:#FDF1DF;color:#8A5A00;border-radius:6px;padding:1px 6px;} .rl-rem em{color:#3C4654;flex-basis:100%;}
+    .rl-betas{margin-top:5px;display:flex;flex-direction:column;gap:4px;}
+    .rl-beta{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px;background:#F3EEFB;border-radius:8px;padding:4px 8px;font-size:.78rem;} .rl-beta .gicon, .rl-beta-ok .gicon{font-size:15px;color:#7A4FC0;}
+    .rl-beta .rl-rem{margin:0;flex:1;} .rl-beta.traite{opacity:.55;} .rl-beta-ok{font-size:.76rem;color:#5B6472;display:flex;align-items:center;gap:4px;}
+    .rl-b.rl-tr.on{background:#E3F4EA;border-color:#1F7A4D;color:#1F7A4D;} .rl-s-l.fait{opacity:.45;}
+    .td-vig.rl-v-beta{box-shadow:inset 0 0 0 2px #A07BE0;}
     .td-vig.rl-v-ok{box-shadow:inset 0 0 0 2px #7CC29A;} .td-vig.rl-v-com{box-shadow:inset 0 0 0 2px #E8A64B;} .td-vig.rl-v-chgt{box-shadow:inset 0 0 0 2px #5B8FD6;}
     .rl-entete{display:flex;flex-wrap:wrap;gap:6px;align-items:center;background:#F7F9FC;border:1px solid rgba(28,43,57,.1);border-radius:12px;padding:8px 12px;margin:10px 0;font-size:.85rem;}
     .rl-entete > b .gicon{vertical-align:-4px;font-size:18px;color:#1F5FA8;}

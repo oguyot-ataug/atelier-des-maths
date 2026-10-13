@@ -3411,6 +3411,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1056', date:'2026-10-13', items:[
+    "Bêta-testeurs : dans Administration, la fiche d'un professeur a une case « Bêta-testeur ». Un bêta-testeur a, dans l'onglet Manuel de chaque chapitre, la même barre de relecture que l'administrateur (Validé, Non examiné, Commenté, avec les remarques à cocher et un commentaire) ; il ne voit que ses propres retours. L'administrateur voit sous chaque exercice les retours des testeurs (nom, remarques, « Validé par … »), les marque « Traité », les filtre (« Retours bêta ») et les retrouve dans « Toutes les remarques ».",
+  ]},
   { version:'2026-08-19.1055', date:'2026-10-13', items:[
     "Manuel 3e : une trentaine de problèmes concrets sont maintenant illustrés, avec le dessin à côté de l'énoncé. Échelles appuyées contre un mur, ombres au soleil (arbre, immeuble), rampe d'accès, escabeau, charpente, visée avec une règle (Thalès) ; échelle à 70°, cerf-volant, arbre vu sous un angle, route en pente avec son panneau, toit de maison, avion, phare et bateau, côte, tour (trigonométrie) ; balles dans leur boîte, cornet de glace, verres, piscines, pyramide de Khéops, pyramide coupée, aquarium, silo, gourde, glaçons, ballon dans son carton, boule dans un cylindre, ballon publicitaire (espace) ; verre conique, lampe et ombre, pizzas (homothétie) ; roues dentées, mur à peindre avec sa porte, piscine à remplir.",
   ]},

@@ -418,6 +418,10 @@ document.body.insertAdjacentHTML('beforeend', `
       <label style="display:flex;align-items:center;gap:8px;margin:4px 0;"><input type="radio" name="editProfAiKey" value="perso"> Clé personnelle du professeur</label>
       <p class="hint" id="editProfAiInfo" style="margin:6px 0 0;"></p>
     </div>
+    <div id="editProfBetaBox" style="display:none;background:rgba(122,79,192,.07);border-radius:10px;padding:12px 14px;margin-bottom:14px;">
+      <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;"><input type="checkbox" id="editProfBeta" style="margin-top:3px;">
+        <span><b><span class=gicon>science</span> Bêta-testeur</b><br><span class="hint">Il peut faire des retours sur les exercices des manuels (onglet Manuel : Validé, Non examiné, Commenté). Ses retours apparaissent sous chaque exercice et dans « Toutes les remarques ».</span></span></label>
+    </div>
     <div style="display:flex;justify-content:flex-end;gap:8px;">
       <span class="hint" id="editProfStatus" style="margin:auto 8px auto 0;"></span>
       <button class="btn secondary" onclick="closeEditProfModal()">Annuler</button>
@@ -530,6 +534,7 @@ let editProfTargetId = null, editProfTargetName = '', editProfTargetRole = 'prof
    le bouton n'existait jusqu'ici que pour les comptes prof/admin. L'UAI et les classes
    rattachées (établissement) n'ont de sens que pour un prof (class_teachers) -- masqués pour
    un élève, dont la classe se gère depuis la section "Affecter" du panneau admin. */
+let editProfHasBeta = false;
 async function openEditProfModal(id){
   editProfTargetId = id;
   document.getElementById('editProfModalOverlay').style.display='flex';
@@ -564,6 +569,10 @@ async function openEditProfModal(id){
       ? 'Par ses classes : ' + opRevisionEtab(niv).map(niveauLabel).join(', ') + '.'
       : 'Aucune classe de CM1 à 3e : il voit seulement les niveaux cochés ci-dessus' + (extra.size ? '.' : ' (aucun pour l\'instant).');
   }
+  // Bêta-testeur (relecture.js) : administrateur général seulement, colonne profiles.beta_testeur.
+  editProfHasBeta = prof.role==='prof' && !adminScopeUai() && ('beta_testeur' in prof);
+  document.getElementById('editProfBetaBox').style.display = editProfHasBeta ? '' : 'none';
+  document.getElementById('editProfBeta').checked = !!prof.beta_testeur;
   // Clé IA (professeurs seulement : l'administrateur utilise toujours la clé du site).
   const aiBox = document.getElementById('editProfAiBox');
   const aiBoxShown = prof.role==='prof' && !adminScopeUai(); // choix de clé : administrateur général
@@ -621,6 +630,7 @@ async function saveEditProfModal(){
     const extra = Array.from(document.querySelectorAll('.editProfNivCheck:checked')).map(el=>el.value);
     patch.niveaux_extra = extra.length ? extra : null;
   }
+  if(editProfHasBeta) patch.beta_testeur = document.getElementById('editProfBeta').checked;
   const { error } = await sb.from('profiles').update(patch).eq('id', editProfTargetId);
   if(error){ status.textContent = 'Erreur : '+error.message; return; }
   if(editProfTargetRole!=='eleve'){
