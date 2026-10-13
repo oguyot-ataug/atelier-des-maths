@@ -3464,6 +3464,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1081', date:'2026-10-13', items:[
+    "Cahier de texte plus lisible : une seule rubrique par type dans un chapitre ; les exercices des planches du site sont regroupés (« Planche 6e-N2-P1 : exercices 1 à 4 ») ; ceux d'un manuel sont regroupés par page (« Page 16 : exercices 1 à 6 », avec les titres en dessous) ; la mention « (avec correction) » n'est plus répétée.",
+  ]},
   { version:'2026-08-19.1080', date:'2026-10-13', items:[
     "Cahier : les supports sont maintenant Ordinateur, Manuel (le cahier d'exercices à remplir) et Cahier / classeur, un seul à la fois, en plus de « à la maison / en classe entière / en autonomie ». « En ligne » et « sur l'ordinateur » ne font plus qu'un : Ordinateur. Le cahier de texte écrit par exemple « Exercices en autonomie, sur ordinateur » ou « Correction du travail maison, sur le manuel ».",
   ]},
@@ -8355,11 +8358,19 @@ function resumeParagrapheParent(e, sousTitre){
 /* Demandé ensuite : « Peux-tu respecter l'ordre du cahier pour faire le cahier de texte ? ». Le résumé
    suit l'ordre des blocs du cahier ce jour-là : un nouveau « Chapitre : » dès que le chapitre change, une
    nouvelle rubrique (Cours, Exercices, Interrogation, Questions flash) dès que le type de bloc change. */
+// « exercices 1 à 5 », « exercices 1, 3 et 5 », « exercice 2 ».
+function nbNumeros(l){
+  const n = [...new Set(l)].sort((a, b)=>a-b); if(!n.length) return 'exercices';
+  const plages = []; n.forEach(x=>{ const p = plages[plages.length-1]; if(p && x===p[1]+1) p[1] = x; else plages.push([x, x]); });
+  const t = plages.map(([a, b])=>a===b ? String(a) : b===a+1 ? a + ', ' + b : a + ' à ' + b);
+  return (n.length > 1 ? 'exercices ' : 'exercice ') + (t.length > 1 ? t.slice(0, -1).join(', ') + ' et ' + t[t.length-1] : t[0]);
+}
 function resumeSeanceContenu(date){
   if(typeof sortCahierInPlace === 'function') sortCahierInPlace();
   const entries = cahier.filter(e=>e.date===date);
   const blocs = [], coursVus = new Map(); // coursVus : chapitre → paragraphes déjà listés (doublons)
   const court = t => t.length > 110 ? t.slice(0, 107).replace(/\s+\S*$/, '') + '…' : t;
+  let m;
   entries.forEach(e=>{
     const nom = String(e.chapitre||'').replace(/^[A-Z]{1,3}\d+[a-z]?\s*·\s*/, '').trim() || 'Chapitre non précisé';
     const titre = String(e.titre||'').replace(/\s+/g, ' ').trim();
@@ -8367,8 +8378,13 @@ function resumeSeanceContenu(date){
     const sup = COR_SUPPORTS_COURT[entreeSupport(e)];
     let c = blocs[blocs.length-1];
     if(!c || c.nom!==nom){ c = {nom, rubs:[]}; blocs.push(c); }
-    let r = c.rubs[c.rubs.length-1];
-    const rubrique = ()=>{ if(!r || r.type!==type){ r = {type, items:[]}; c.rubs.push(r); } return r; };
+    // Une seule rubrique par type dans un chapitre (signalé : « Exercices en autonomie, sur le manuel » en double).
+    let r = c.rubs.find(x=>x.type===type);
+    const rubrique = ()=>{ if(!r){ r = {type, items:[]}; c.rubs.push(r); } return r; };
+    // Regroupements : planches du site (« Planche 6e-N2-P1 : exercices 1 à 4 ») et pages d'un manuel
+    // (« Page 16 : exercices 1 à 6 », titres en dessous).
+    const groupe = (cle, cree)=>{ const R = rubrique(); let g = R.items.find(x=>x.cle===cle); if(!g){ g = cree(); g.cle = cle; R.items.push(g); } return g; };
+    const sansCorr = t => t.replace(/\s*\((avec )?correction\)\s*$/i, '').trim();
     if(type==='cours'){
       if(!coursVus.has(nom)) coursVus.set(nom, []);
       const vus = coursVus.get(nom);
@@ -8383,11 +8399,18 @@ function resumeSeanceContenu(date){
     // Interrogations et questions flash : rubriques à part, jamais dans « Exercices ».
     else if(type==='interro') rubrique().items.push((court(titre) || 'Interrogation') + (sup ? ' (' + sup + ')' : ''));
     else if(type==='flash') rubrique().items.push((court(titre) || 'Questions flash') + (sup ? ' (' + sup + ')' : ''));
-    else if(e.exo==='TD') rubrique().items.push(titre || 'Exercices');
+    else if((m = /^(?:Manuel\s+)?([A-Z0-9]+-[A-Z]+\d+[a-z]?-P\d+)\s*·\s*exercice\s+(\d+)/i.exec(sansCorr(titre)))){
+      groupe('pl|' + m[1], ()=>({ planche: m[1], nums: [] })).nums.push(+m[2]);
+    }
+    else if(e.exo==='TD') rubrique().items.push(sansCorr(titre) || 'Exercices');
     else if(e.exo==='Construction') rubrique().items.push('Construction' + (titre && titre!=='Construction' ? ' : '+court(titre) : ''));
+    else if((m = /^(\d+)\s*(?:p\.?|page)\s*(\d+)$/i.exec(String(e.exo||'').trim()))){
+      const g = groupe('pg|' + m[2], ()=>({ page: m[2], nums: [], subs: [] })); g.nums.push(+m[1]);
+      if(titre) g.subs.push('Exercice ' + m[1] + ' : ' + court(sansCorr(titre)));
+    }
     else {
       const num = String(e.exo||'').trim(), n = num && num!=='-' ? (/^[A-Za-zÀ-ÿ]/.test(num) ? num : 'Exercice '+num) : 'Exercice'; // « Exercice », « Document » (sessions) : le mot seul
-      rubrique().items.push(n + (titre ? ' : '+court(titre) : ''));
+      rubrique().items.push(n + (titre ? ' : '+court(sansCorr(titre)) : ''));
     }
   });
   // Cours (bleu), Exercices (orange), Interrogation (violet, 📝), Questions flash (rouge, ⚡).
@@ -8403,13 +8426,15 @@ function resumeSeanceContenu(date){
     txt += (i ? '\n' : '') + 'Chapitre : ' + c.nom + '\n';
     c.rubs.forEach(r=>{
       if(!r.items.length) return;
+      if(r.type!=='cours') r.items = r.items.map(it=>typeof it==='string' ? it : it.planche ? `Planche ${it.planche} : ${nbNumeros(it.nums)}`
+        : { t: `Page ${it.page} : ${nbNumeros(it.nums)}`, subs: it.subs.length > 1 || (it.subs[0] || '').length ? [...new Set(it.subs)] : [] });
       const [nomR, coul, logo] = styleDe(r.type);
-      const li = r.type==='cours'
-        ? r.items.map(it=>`<li>${esc(it.t)}${it.subs.length ? `<ul style="margin:2px 0 0;padding-left:20px;list-style:circle;">${it.subs.map(u=>`<li>${esc(u)}</li>`).join('')}</ul>` : ''}</li>`).join('')
+      const li = r.items.some(it=>typeof it!=='string')
+        ? r.items.map(it=>typeof it==='string' ? `<li>${esc(it)}</li>` : `<li>${esc(it.t)}${it.subs.length ? `<ul style="margin:2px 0 0;padding-left:20px;list-style:circle;">${it.subs.map(u=>`<li>${esc(u)}</li>`).join('')}</ul>` : ''}</li>`).join('')
         : r.items.map(t=>`<li>${esc(t)}</li>`).join('');
       html += `<p style="margin:4px 0 2px;font-weight:bold;color:${coul};">${logo}${nomR}</p><ul style="margin:0 0 6px;padding-left:22px;color:${coul};">${li}</ul>`;
-      txt += logo + nomR + ' :\n' + (r.type==='cours'
-        ? r.items.map(it=>'  - '+it.t + it.subs.map(u=>'\n      '+u).join('')).join('\n')
+      txt += logo + nomR + ' :\n' + (r.items.some(it=>typeof it!=='string')
+        ? r.items.map(it=>typeof it==='string' ? '  - '+it : '  - '+it.t + it.subs.map(u=>'\n      '+u).join('')).join('\n')
         : r.items.map(t=>'  - '+t).join('\n')) + '\n';
     });
   });
