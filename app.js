@@ -3464,8 +3464,11 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1071', date:'2026-10-13', items:[
+    "Manuel CM2, lot 3 : géométrie et mesures. 9 chapitres, 27 planches et 97 exercices corrigés, avec des figures dessinées : droites, segments et cercles (notations expliquées) ; figures planes et codages ; programmes de construction ; symétrie axiale sur quadrillage (axe vertical, horizontal, en diagonale) ; solides, patrons du cube, assemblages de cubes et chemins ; longueurs, masses et contenances (conversions en raisonnant, sans tableau) ; aires ; angles (sans rapporteur, avec l'horloge) ; heures et durées (horloges, tableau d'horaires).",
+  ]},
   { version:'2026-08-19.1070', date:'2026-10-13', items:[
-    "Manuel CM2, lot 2 : 6 chapitres, 18 planches et 74 exercices corrigés. Chapitres : grands nombres jusqu'à 999 999 999 (avec une demi-droite graduée) ; multiples et diviseurs ; division euclidienne et décimale ; résolution de problèmes (schéma en barres, problèmes à étapes, dénombrer, optimiser, motif d'allumettes) ; calcul mental ; algèbre (égalités à trous, lettres, suites de motifs, programmes de calcul).",
+    "Manuel CM2, lot 2 : 6 chapitres, 18 planches et 72 exercices corrigés. Chapitres : grands nombres jusqu'à 999 999 999 (avec une demi-droite graduée) ; multiples et diviseurs ; division euclidienne et décimale ; résolution de problèmes (schéma en barres, problèmes à étapes, dénombrer, optimiser, motif d'allumettes) ; calcul mental ; algèbre (égalités à trous, lettres, suites de motifs, programmes de calcul).",
   ]},
   { version:'2026-08-19.1069', date:'2026-10-13', items:[
     "Manuel CM2, lot 1 : nombres. 6 chapitres, 18 planches et 80 exercices corrigés : nombres entiers jusqu'à 999 999, fractions (partage, mesure, demi-droite, fraction d'une quantité), décimaux jusqu'aux millièmes, addition et soustraction (avec un ticket de caisse illustré), multiplication, fractions : comparer et calculer. Règles du primaire respectées : fractions écrites en mathématiques, un calcul par ligne, réponses rédigées (titre, calcul, phrase).",
