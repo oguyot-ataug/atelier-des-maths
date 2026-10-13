@@ -3411,6 +3411,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1053', date:'2026-10-13', items:[
+    "3e, chapitre « Nombres et calculs » : l'exemple du jardin partagé est maintenant rédigé avec un titre devant chaque calcul (« Aire du terrain : », « Aire de la cabane : »…), le calcul en colonne et une phrase de conclusion. Une rédaction plus courte est aussi proposée (surface à semer en un seul calcul), avec une remarque : on ne peut pas tout mettre dans une seule formule, car on achète des sachets entiers. La méthode « Calculer en rédigeant » est reformulée de la même façon.",
+  ]},
   { version:'2026-08-19.1052', date:'2026-10-12', items:[
     "Manuel 3e, lot 3 : géométrie ; le manuel de 3e est complet (15 chapitres, 73 planches, environ 450 exercices corrigés, dont 15 planches « Objectif Brevet »). Théorème de Thalès (calculs, réciproque, Thalès et Pythagore, agrandissements), Homothétie (construction sur quadrillage, longueurs, aires et volumes, lien avec Thalès), Rotation (coordonnées après une rotation de 90° ou 180°, horloges, rosaces, transformations du plan), Trigonométrie (formules, longueurs, angles, problèmes) et Espace (sphère et boule, repérage sur la Terre et dans un pavé, volumes et sections). Planches Objectif Brevet : rampe de skate et largeur d'une rivière, logo agrandi et théâtre d'ombres, programme de rosace et rotation dans un repère, tyrolienne et rampe d'accès, cornet de glace et ballon publicitaire. Figures dessinées dans les planches (triangles codés, configurations de Thalès, quadrillages, pavé en perspective, sphère) ; dans les problèmes de brevet, la figure se place à côté des questions.",
   ]},

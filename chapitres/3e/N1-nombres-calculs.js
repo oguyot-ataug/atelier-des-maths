@@ -32,20 +32,22 @@ document.getElementById('cours-demo-nombres-calculs-3e').innerHTML = `
 ${nc3Encadre(`<ol style="margin:0;padding-left:22px;line-height:1.8;">
   <li><b>Lire et trier</b> : repérer la question posée et les données utiles (dans le texte, un tableau, un schéma). Certaines données ne servent à rien !</li>
   <li><b>Chercher un chemin</b> : découper le problème en étapes (« pour trouver ceci, il me faut d'abord cela »).</li>
-  <li><b>Calculer en rédigeant</b> : nommer chaque calcul (A = …, N = …), l'écrire en colonne et préciser les unités.</li>
+  <li><b>Calculer en rédigeant</b> : pour chaque étape, un <b>titre</b> (« Aire du terrain : »), le <b>calcul nommé</b> écrit en colonne (A = …), puis une <b>phrase de conclusion</b> avec l'unité.</li>
   <li><b>Contrôler et conclure</b> : le résultat est-il vraisemblable (ordre de grandeur, arrondi adapté) ? On répond par une phrase.</li>
 </ol>`)}
 <p class="example-title">Exemple :</p>
 <p style="margin:0 0 8px;">Un jardin partagé rectangulaire mesure 48 m sur 25 m. On y installe une cabane sur un carré de 12 m de côté ; le reste est semé d'engrais vert. Un sachet de graines couvre 40 m² et coûte 6,50 €. Combien coûtent les graines ?</p>
-${r4Ex('', [
-  [nc3Tex('A = 48 \\times 25 = 1\\,200'), 'Étape 1 : l\'aire du jardin, en m².'],
-  [nc3Tex('B = 12 \\times 12 = 144'), 'Étape 2 : l\'aire occupée par la cabane, en m².'],
-  [nc3Tex('S = 1\\,200 - 144 = 1\\,056'), 'Étape 3 : l\'aire à semer, en m².'],
-  [nc3Tex('N = 1\\,056 \\div 40 = 26{,}4'), 'Étape 4 : le nombre de sachets nécessaires.'],
-  ['Il faut donc acheter 27 sachets.', 'On arrondit à l\'unité supérieure : 26 sachets ne suffiraient pas.'],
-  [nc3Tex('P = 27 \\times 6{,}50 = 175{,}50'), 'Étape 5 : le prix, en euros.'],
-  ['Les graines coûtent 175,50 €.', 'Contrôle : environ 1 000 m², soit 25 sachets à 7 € : environ 175 €. C\'est cohérent.'],
-])}
+<p style="margin:0 0 6px;"><b>Rédaction détaillée</b> : un titre, le calcul, une phrase.</p>
+${cm1Redac('Aire du terrain', { nom: 'A', lignes: [nc3Tex('48 \\times 25'), nc3Tex('1\\,200')] }, 'Le terrain a une aire de 1 200 m².')}
+${cm1Redac('Aire de la cabane', { nom: 'C', lignes: [nc3Tex('12 \\times 12'), nc3Tex('144')] }, 'La cabane occupe 144 m².')}
+${cm1Redac('Surface à semer', { nom: 'S', lignes: [nc3Tex('A - C'), nc3Tex('1\\,200 - 144'), nc3Tex('1\\,056')] }, 'Il reste 1 056 m² à semer.')}
+${cm1Redac('Nombre de sachets', { nom: 'N', lignes: [nc3Tex('1\\,056 \\div 40'), nc3Tex('26{,}4')] }, '26 sachets ne suffisent pas : il faut acheter 27 sachets.')}
+${cm1Redac('Coût des graines', { nom: 'P', lignes: [nc3Tex('27 \\times 6{,}50'), nc3Tex('175{,}50')] }, 'Les graines coûtent 175,50 €.')}
+<p style="margin:10px 0 6px;"><b>Rédaction plus courte</b> : on regroupe les calculs d'aires en un seul.</p>
+${cm1Redac('Surface à semer', { nom: 'S', lignes: [nc3Tex('48 \\times 25 - 12 \\times 12'), nc3Tex('1\\,200 - 144'), nc3Tex('1\\,056')] }, 'Il reste 1 056 m² à semer.')}
+${cm1Redac('Nombre de sachets', { nom: 'N', lignes: [nc3Tex('1\\,056 \\div 40'), nc3Tex('26{,}4')] }, 'Il faut acheter 27 sachets (26 ne suffisent pas).')}
+${cm1Redac('Coût des graines', { nom: 'P', lignes: [nc3Tex('27 \\times 6{,}50'), nc3Tex('175{,}50')] }, 'Les graines coûtent 175,50 €.')}
+<div class="redaction-note" ${R4_REM}><b>Attention</b> : on ne peut pas tout écrire en une seule formule ici. ${nc3Tex('(48 \\times 25 - 12 \\times 12) \\div 40 \\times 6{,}50')} donne 171,60 €, le prix de 26,4 sachets ; or on n'achète que des sachets entiers. <b>Contrôle</b> : environ 1 000 m², soit 25 sachets à 7 € : environ 175 €. Le résultat est cohérent.</div>
 
 <div class="sub-header"><span class="letter">B</span><h4>Vrai ou faux : justifier une affirmation</h4></div>
 <span class="prop-badge">Propriétés</span>
