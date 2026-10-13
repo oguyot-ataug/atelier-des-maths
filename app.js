@@ -3464,6 +3464,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1079', date:'2026-10-13', items:[
+    "Cahier : un clic sur une pastille (à la maison, en classe entière, en autonomie, en ligne, sur l'ordinateur) s'affiche tout de suite, dans toutes les vues du cahier ; il fallait changer de jour et revenir pour voir le changement.",
+  ]},
   { version:'2026-08-19.1078', date:'2026-10-13', items:[
     "Cahier : le support (en ligne ou sur l'ordinateur, un seul des deux) est maintenant séparé de la façon de travailler (à la maison, en classe entière, en autonomie) : les deux se combinent, par exemple « en autonomie, en ligne ». Deux groupes de choix dans l'outil de correction, sur les vignettes du cahier, et en ajoutant une session ou un questionnaire au cahier. Le cahier de texte écrit « Exercices en autonomie, en ligne », « Correction du travail maison, sur l'ordinateur », « Interrogation (en ligne) ».",
   ]},
@@ -7594,6 +7597,17 @@ function clearCahier(btn){
   cahier=[]; editingEntryId=null; saveCahier(); renderCahier();
 }
 
+// Vignettes « travaillé » et « support » d'une entrée (cliquables) ; réécrites seules après un clic, dans toutes
+// les vues où l'entrée est affichée -- signalé : « Les clics sur les pastilles de type dans le cahier n'ont pas
+// d'effet visuellement directement ».
+function nbModChoixInner(e, idx){
+  const em = entreeModalite(e), es = entreeSupport(e);
+  return `${Object.entries(COR_MODALITES).map(([k, d])=>`<button type="button" class="nb-mod-chip${em===k ? ' on' : ''}" style="--c:${d[2]}" onclick="changeCahierEntryModalite(${idx}, '${k}')" title="${em===k ? 'Retirer' : 'Marquer'} : ${d[0]}"><span class="gicon">${d[1]}</span> ${d[0]}</button>`).join('')}<span class="nb-mod-sep"></span>${Object.entries(COR_SUPPORTS).map(([k, d])=>`<button type="button" class="nb-mod-chip${es===k ? ' on' : ''}" style="--c:${d[2]}" onclick="changeCahierEntrySupport(${idx}, '${k}')" title="${es===k ? 'Retirer' : 'Marquer'} : ${d[0]}"><span class="gicon">${d[1]}</span> ${d[0]}</button>`).join('')}`;
+}
+function nbModMaj(idx){
+  const e = cahier[idx]; if(!e) return;
+  document.querySelectorAll(`.nb-mod-choix[data-nbmod="${idx}"]`).forEach(el=>{ el.innerHTML = nbModChoixInner(e, idx); });
+}
 function entryRowsHTML(e, idx, editable, showRemoveBtn){
   if(showRemoveBtn===undefined) showRemoveBtn = true; // rétrocompatible (accordéon élève)
   // exo==='' : entrée sans étiquette (ex. en-tête d'évaluation ajoutée au cahier), distinct de
@@ -7624,8 +7638,7 @@ function entryRowsHTML(e, idx, editable, showRemoveBtn){
     </span>`;
   }
   html += `</div>`;
-  if(modEditable){ const em = entreeModalite(e), es = entreeSupport(e);
-    html += `<div class="nb-mod-choix">${Object.entries(COR_MODALITES).map(([k, d])=>`<button type="button" class="nb-mod-chip${em===k ? ' on' : ''}" style="--c:${d[2]}" onclick="changeCahierEntryModalite(${idx}, '${k}')" title="${em===k ? 'Retirer' : 'Marquer'} : ${d[0]}"><span class="gicon">${d[1]}</span> ${d[0]}</button>`).join('')}<span class="nb-mod-sep"></span>${Object.entries(COR_SUPPORTS).map(([k, d])=>`<button type="button" class="nb-mod-chip${es===k ? ' on' : ''}" style="--c:${d[2]}" onclick="changeCahierEntrySupport(${idx}, '${k}')" title="${es===k ? 'Retirer' : 'Marquer'} : ${d[0]}"><span class="gicon">${d[1]}</span> ${d[0]}</button>`).join('')}</div>`; }
+  if(modEditable) html += `<div class="nb-mod-choix" data-nbmod="${idx}">${nbModChoixInner(e, idx)}</div>`;
   // Partie de cours : lien direct vers le chapitre (sauf dans l'impression, où idx n'est pas donné).
   if(e.exo==='Cours' && e.chapitre && idx!==undefined && cahierChapitreDe(e)) html += `<button type="button" class="nb-cours-lien" onclick="cahierOuvrirCours(${idx})" title="Ouvrir ce chapitre à l'onglet Cours"><span class=gicon>menu_book</span> Revoir dans le cours</button><button type="button" class="nb-cours-lien nb-vivant-btn" onclick="cahierVivant(${idx}, this)" title="Animations, démos pas à pas et figures manipulables, ici même dans le cahier"><span class=gicon>play_circle</span> Interactif</button>`;
   html += `<div class="nb-body">${e.html!=null ? e.html : renderMathText(e.raw)}</div>`;
@@ -7643,11 +7656,11 @@ async function changeCahierEntrySupport(idx, m){
   const e = cahier[idx]; if(!e) return;
   const avant = { support: e.support || null, modalite: e.modalite || null }, apres = entreeSupport(e)===m ? null : m;
   const maj = { support: apres }; if(COR_SUPPORTS[e.modalite]) maj.modalite = null; // ancienne écriture dans « modalite »
-  Object.assign(e, maj); saveCahier(); renderCahier();
+  Object.assign(e, maj); saveCahier(); renderCahier(); nbModMaj(idx);
   if(isSyncEnabled() && e.id){
     const res = await syncUpdateEntry(e.id, maj);
     if(!res.ok && !res.offline){
-      Object.assign(e, avant); saveCahier(); renderCahier();
+      Object.assign(e, avant); saveCahier(); renderCahier(); nbModMaj(idx);
       await niceAlert("<span class=gicon>warning</span> Échec de la synchronisation avec le serveur : "+(res.error||'erreur inconnue')+". Le support n'a pas été changé.");
     }
   }
@@ -7655,11 +7668,11 @@ async function changeCahierEntrySupport(idx, m){
 async function changeCahierEntryModalite(idx, m){
   const e = cahier[idx]; if(!e) return;
   const avant = entreeModalite(e), apres = avant===m ? null : m;
-  e.modalite = apres; saveCahier(); renderCahier();
+  e.modalite = apres; saveCahier(); renderCahier(); nbModMaj(idx);
   if(isSyncEnabled() && e.id){
     const res = await syncUpdateEntry(e.id, {modalite: apres});
     if(!res.ok && !res.offline){
-      e.modalite = avant; saveCahier(); renderCahier();
+      e.modalite = avant; saveCahier(); renderCahier(); nbModMaj(idx);
       await niceAlert("<span class=gicon>warning</span> Échec de la synchronisation avec le serveur : "+(res.error||'erreur inconnue')+". Le type de correction n'a pas été changé.");
     }
   }
