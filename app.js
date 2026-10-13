@@ -3464,6 +3464,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1080', date:'2026-10-13', items:[
+    "Cahier : les supports sont maintenant Ordinateur, Manuel (le cahier d'exercices à remplir) et Cahier / classeur, un seul à la fois, en plus de « à la maison / en classe entière / en autonomie ». « En ligne » et « sur l'ordinateur » ne font plus qu'un : Ordinateur. Le cahier de texte écrit par exemple « Exercices en autonomie, sur ordinateur » ou « Correction du travail maison, sur le manuel ».",
+  ]},
   { version:'2026-08-19.1079', date:'2026-10-13', items:[
     "Cahier : un clic sur une pastille (à la maison, en classe entière, en autonomie, en ligne, sur l'ordinateur) s'affiche tout de suite, dans toutes les vues du cahier ; il fallait changer de jour et revenir pour voir le changement.",
   ]},
