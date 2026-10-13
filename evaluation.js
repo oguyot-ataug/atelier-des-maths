@@ -598,8 +598,6 @@ function updateEvalBaremeTotalDisplay(){
   const total = evalBaremeTotal();
   el.textContent = evaluationExercises.length ? `Barème total : ${total} point${total>1?'s':''}` : '';
 }
-// Interligne choisi pour l'impression, appliqué aussi aux exercices dans l'éditeur (largeur de feuille).
-function evalInterligne(){ const el = document.getElementById('evalLineHeight'); return el && el.value ? `line-height:${el.value};` : ''; }
 function renderEvalExercicesList(){
   const box = document.getElementById('evalExercicesList');
   if(!box) return;
@@ -627,7 +625,7 @@ function renderEvalExercicesList(){
             <button type="button" onclick="toggleEvalPageBreak(${ex.id})" title="Insérer un saut de page après cet exercice" style="border:none;background:${evalPageBreaksAfter.has(ex.id)?'rgba(31,58,92,.15)':'rgba(28,43,57,.06)'};color:${evalPageBreaksAfter.has(ex.id)?'#1F3A5C':'inherit'};border-radius:6px;padding:4px 10px;cursor:pointer;">✂</button>
           </span>
         </div>
-        <div class="eval-feuille" style="${evalInterligne()}">${blocksRowsHTML(ctx, ex.rows, false, ex.cellBorders)}</div>
+        <div>${blocksRowsHTML(ctx, ex.rows, false, ex.cellBorders)}</div>
       </div>
       ${evalPageBreaksAfter.has(ex.id) ? '<div style="border-top:2px dashed #1F3A5C;margin:0 0 8px;padding-top:4px;text-align:center;"><span class="hint" style="color:#1F3A5C;">✂ Saut de page ici à l\'impression</span></div>' : ''}
     `;
@@ -648,7 +646,7 @@ function renderEvalExercicesList(){
         <input type="text" placeholder="Titre de l'exercice (facultatif)" value="${escapeHtml(ex.title||'')}" oninput="updateEvalExerciceField(${ex.id},'title',this.value)" style="flex:1;min-width:200px;padding:7px 10px;border-radius:8px;border:1px solid rgba(28,43,57,.2);">
         <label class="hint" style="margin:0;">Barème : <input type="number" min="0" step="0.5" value="${ex.bareme!=null?ex.bareme:''}" oninput="updateEvalExerciceField(${ex.id},'bareme',this.value)" style="width:60px;margin-left:4px;"> <span id="baremeSuffixe-${ex.id}">${Number(ex.bareme)===1?'pt':'pts'}</span></label>
       </div>
-      <div class="eval-blocks-preview eval-feuille" style="margin-top:2px;${evalInterligne()}">${blocksRowsHTML(ctx, ensureExRows(ex), true, ex.cellBorders)}</div>
+      <div class="eval-blocks-preview" style="margin-top:2px;">${blocksRowsHTML(ctx, ensureExRows(ex), true, ex.cellBorders)}</div>
       <div class="tool-row" style="margin-top:10px;align-items:center;flex-wrap:wrap;">
         <span class="hint" style="margin:0;">Mise en page :</span>
         ${ex.rows.map((nc,rowIdx)=>`
@@ -958,21 +956,11 @@ async function replaceSvgsWithImages(container){
     svg.replaceWith(img);
   }
 }
-async function exportEvaluationPDF(){
-  if(!evaluationExercises.length){ await niceAlert("Ajoutez au moins un exercice avant de générer le PDF."); return; }
-  const missing = [];
-  if(!document.getElementById('evalClasses').value.trim()) missing.push('la classe');
-  if(!document.getElementById('evalDate').value) missing.push('la date');
-  if(missing.length && !(await niceConfirm(`Tu n'as pas renseigné ${missing.join(' ni ')}. Générer quand même la feuille d'évaluation ?`))) return;
-  // La capture d'écran (html2canvas) reproduit une page blanche de façon récurrente avec ce
-  // contenu, malgré plusieurs correctifs essayés. L'impression native du navigateur, elle,
-  // donne un rendu fidèle et fiable : l'utilisateur choisit "Enregistrer au format PDF" comme
-  // destination dans la boîte d'impression (celle-ci bloque l'onglet tant qu'elle est ouverte
-  // -- comportement normal du navigateur, pas un bug).
-  const w = window.open('', '_blank', 'width=900,height:700');
-  if(!w){ await niceAlert("La fenêtre n'a pas pu s'ouvrir : autorisez les pop-up pour ce site, ou utilisez Ctrl/Cmd+P."); return; }
-  w.document.open();
-  w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8">
+/* Page HTML complète de l'évaluation, telle qu'elle est imprimée (PDF). Servie aussi à l'aperçu
+   (« Aperçu de l'évaluation »), dans un cadre : l'aperçu est ainsi rigoureusement identique au PDF --
+   demandé : « l'éditeur était bon et le PDF respectait l'éditeur. C'est le bouton aperçu qui était faux ». */
+function evalDocumentHTML(){
+  return `<!DOCTYPE html><html><head><meta charset="utf-8">
     <title>Évaluation</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
     <link rel="stylesheet" href="${document.querySelector('link[href*="styles.css"]').href}">
@@ -991,7 +979,23 @@ async function exportEvaluationPDF(){
       svg{ max-width:100%; }
       .katex{ font-size:1.18em; }
     </style>
-  </head><body><div class="print-page">${buildEvaluationContentHTML()}</div></body></html>`);
+  </head><body><div class="print-page">${buildEvaluationContentHTML()}</div></body></html>`;
+}
+async function exportEvaluationPDF(){
+  if(!evaluationExercises.length){ await niceAlert("Ajoutez au moins un exercice avant de générer le PDF."); return; }
+  const missing = [];
+  if(!document.getElementById('evalClasses').value.trim()) missing.push('la classe');
+  if(!document.getElementById('evalDate').value) missing.push('la date');
+  if(missing.length && !(await niceConfirm(`Tu n'as pas renseigné ${missing.join(' ni ')}. Générer quand même la feuille d'évaluation ?`))) return;
+  // La capture d'écran (html2canvas) reproduit une page blanche de façon récurrente avec ce
+  // contenu, malgré plusieurs correctifs essayés. L'impression native du navigateur, elle,
+  // donne un rendu fidèle et fiable : l'utilisateur choisit "Enregistrer au format PDF" comme
+  // destination dans la boîte d'impression (celle-ci bloque l'onglet tant qu'elle est ouverte
+  // -- comportement normal du navigateur, pas un bug).
+  const w = window.open('', '_blank', 'width=900,height:700');
+  if(!w){ await niceAlert("La fenêtre n'a pas pu s'ouvrir : autorisez les pop-up pour ce site, ou utilisez Ctrl/Cmd+P."); return; }
+  w.document.open();
+  w.document.write(evalDocumentHTML());
   w.document.close();
   w.onload = () => {
     // Petit délai de sécurité : laisse le temps à la mise en page de se stabiliser
@@ -1013,59 +1017,43 @@ async function exportEvaluationPDF(){
 async function openEvalPreview(){
   if(!evaluationExercises.length){ await niceAlert("Ajoutez au moins un exercice avant l'aperçu."); return; }
   const content = document.getElementById('evalPreviewContent');
-  content.style.lineHeight = document.getElementById('evalLineHeight').value;
-  content.innerHTML = buildEvaluationContentHTML();
+  document.getElementById('evalPreviewPageMarks').innerHTML = '';
+  // Même page que le PDF (evalDocumentHTML), dans un cadre de la largeur utile de la feuille (680 px) :
+  // mêmes styles, mêmes largeurs de colonnes, mêmes retours à la ligne qu'à l'impression.
+  content.innerHTML = '<iframe id="evalPreviewFrame" title="Aperçu de l\'évaluation" style="display:block;width:680px;height:400px;border:0;"></iframe>';
   document.getElementById('evalPreviewModalOverlay').style.display='flex';
-  // Repères de saut de page : la largeur de ce conteneur (700px) correspond à la largeur
-  // utile du PDF (A4, marges de 10mm de chaque côté) -- on peut donc déduire la hauteur d'une
-  // page dans les mêmes proportions et matérialiser où les pages se coupent réellement.
-  // Combine deux sources : les sauts EXPLICITES (evalPageBreaksAfter, garantis à cette
-  // position précise) et une estimation automatique par hauteur pour le reste (un segment
-  // entre deux sauts explicites, ou toute l'évaluation s'il n'y en a aucun, qui dépasse une
-  // page).
-  requestAnimationFrame(()=>{
-    // Important : la modale vient tout juste de devenir visible (display:flex) -- il faut
-    // attendre que sa mise en page (largeur réelle du conteneur à 700px) soit stabilisée avant
-    // de mesurer quoi que ce soit, sinon les disques se synchronisent sur des valeurs erronées.
-    syncDiskSizes(content);
-    const pxPerMm = 700/190; // largeur utile A4 (210mm - 2x10mm de marge) mise à l'échelle sur 700px
-    const pageHeightPx = 277*pxPerMm; // hauteur utile A4 (297mm - 2x10mm de marge)
-    const totalHeight = content.scrollHeight;
-
-    // Position Y (bas) de chaque saut de page EXPLICITE, dans l'ordre d'apparition.
-    const sautsExplicites = evaluationExercises
-      .filter(ex=>evalPageBreaksAfter.has(ex.id))
-      .map(ex=>content.querySelector('[data-ex-id="'+ex.id+'"]'))
-      .filter(Boolean)
-      .map(el=>el.offsetTop + el.offsetHeight)
-      .sort((a,b)=>a-b);
-
-    const marks = document.getElementById('evalPreviewPageMarks');
-    let html = '';
-    let pageNum = 1;
-    let segmentStart = 0;
-    function marqueAutoDansSegment(finSegment){
-      // Place des repères automatiques (par hauteur de page) à l'intérieur du segment
-      // [segmentStart, finSegment) -- seulement si ce segment dépasse une page.
-      let y = segmentStart + pageHeightPx;
-      while(y < finSegment){
-        pageNum++;
-        html += `<div style="position:absolute;top:${y}px;left:0;width:100%;border-top:2px dashed #E35D3A;"></div>
-          <div style="position:absolute;top:${y+4}px;left:0;background:#E35D3A;color:#fff;font-size:.7rem;padding:1px 6px;border-radius:0 4px 4px 0;font-family:'Space Grotesk',sans-serif;">Page ${pageNum} →</div>`;
-        y += pageHeightPx;
-      }
-    }
-    sautsExplicites.forEach(y=>{
-      marqueAutoDansSegment(y);
-      pageNum++;
-      html += `<div style="position:absolute;top:${y}px;left:0;width:100%;border-top:2px dashed #1F3A5C;"></div>
-        <div style="position:absolute;top:${y+4}px;left:0;background:#1F3A5C;color:#fff;font-size:.7rem;padding:1px 6px;border-radius:0 4px 4px 0;font-family:'Space Grotesk',sans-serif;">✂ Page ${pageNum} →</div>`;
-      segmentStart = y;
+  const frame = document.getElementById('evalPreviewFrame');
+  frame.onload = () => setTimeout(() => {
+    const doc = frame.contentDocument; if(!doc) return;
+    syncDiskSizes(doc);
+    requestAnimationFrame(() => {
+      const totalHeight = doc.documentElement.scrollHeight;
+      frame.style.height = totalHeight + 'px';
+      evalPreviewMarques(doc, totalHeight, 10); // 10 px : marge intérieure du conteneur de l'aperçu
     });
-    marqueAutoDansSegment(totalHeight);
-
-    marks.innerHTML = html;
-    marks.style.height = totalHeight+'px';
-  });
+  }, 200);
+  frame.srcdoc = evalDocumentHTML();
+}
+// Repères de saut de page de l'aperçu : la largeur utile du PDF (A4, marges de 15 mm) fait 680 px ;
+// on en déduit la hauteur d'une page dans les mêmes proportions. Deux sources : les sauts EXPLICITES
+// (evalPageBreaksAfter, garantis à cette position) et une estimation par hauteur pour le reste.
+function evalPreviewMarques(doc, totalHeight, decalage){
+  const pxPerMm = 680/180;
+  const pageHeightPx = 267*pxPerMm; // hauteur utile A4 (297 mm - 2 x 15 mm de marge)
+  const sautsExplicites = evaluationExercises
+    .filter(ex=>evalPageBreaksAfter.has(ex.id))
+    .map(ex=>doc.querySelector('[data-ex-id="'+ex.id+'"]'))
+    .filter(Boolean)
+    .map(el=>el.getBoundingClientRect().bottom + doc.documentElement.scrollTop)
+    .sort((a,b)=>a-b);
+  const marks = document.getElementById('evalPreviewPageMarks');
+  let html = '', pageNum = 1, segmentStart = 0;
+  const repere = (y, explicite) => `<div style="position:absolute;top:${y+decalage}px;left:0;width:100%;border-top:2px dashed ${explicite ? '#1F3A5C' : '#E35D3A'};"></div>
+      <div style="position:absolute;top:${y+decalage+4}px;left:0;background:${explicite ? '#1F3A5C' : '#E35D3A'};color:#fff;font-size:.7rem;padding:1px 6px;border-radius:0 4px 4px 0;font-family:'Space Grotesk',sans-serif;">${explicite ? '✂ ' : ''}Page ${pageNum} →</div>`;
+  const auto = fin => { let y = segmentStart + pageHeightPx; while(y < fin){ pageNum++; html += repere(y, false); y += pageHeightPx; } };
+  sautsExplicites.forEach(y=>{ auto(y); pageNum++; html += repere(y, true); segmentStart = y; });
+  auto(totalHeight);
+  marks.innerHTML = html;
+  marks.style.height = (totalHeight + 2*decalage)+'px';
 }
 function closeEvalPreview(){ document.getElementById('evalPreviewModalOverlay').style.display='none'; }
