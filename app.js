@@ -3464,6 +3464,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1084', date:'2026-10-13', items:[
+    "Cahier : on peut maintenant modifier une entrée qui n'a pas été écrite dans l'outil de correction (construction aux instruments, exercice d'une session, d'un questionnaire ou du manuel du site) : son contenu s'ouvre comme un bloc dans l'éditeur, on peut changer le numéro, le titre, le chapitre, la date, le type, écrire autour ou ajouter des blocs. Avant, l'éditeur s'ouvrait vide et rien ne s'enregistrait.",
+  ]},
   { version:'2026-08-19.1083', date:'2026-10-13', items:[
     "Cahier de texte : sous « Planche 6e-N2-P1 : exercices 1 à 4 », les consignes des exercices du manuel du site sont reprises une par une (« Exercice 1 : Indique quelle fraction… »), comme pour les pages d'un manuel papier.",
   ]},
@@ -7436,6 +7439,7 @@ async function addToCahier(){
     date: document.getElementById('corDate').value || null,
     raw: raw,
     figure: figureHtml,
+    html: null, // le contenu est dans les blocs (figure) : une ancienne version « html » ne doit pas s'afficher en double
     blocksData: JSON.parse(JSON.stringify(blocksStores['global']||[])),
     rows: JSON.parse(JSON.stringify(corRows)),
     cellBorders: JSON.parse(JSON.stringify(corCellBorders)),
@@ -7521,10 +7525,14 @@ async function editCahierEntry(i){
     blocksStores['global'] = JSON.parse(JSON.stringify(e.blocksData));
     corRows = e.rows ? JSON.parse(JSON.stringify(e.rows)) : [1];
     corCellBorders = e.cellBorders ? JSON.parse(JSON.stringify(e.cellBorders)) : {};
-  } else if(e.figure){
+  } else if(e.figure || (e.html && !(e.raw && e.raw.trim()))){
     // Ancienne entrée, enregistrée avant ce correctif : seul le rendu final avait été gardé,
     // pas la structure -- affiché tel quel, mais non détaillable bloc par bloc.
-    blocksStores['global'] = [{id: pendingBlockNextId++, type:'legacy', html: e.figure, data:null, editFn:null, row:0, col:0}];
+    // Même chose pour une entrée ajoutée d'ailleurs que l'outil de correction (construction aux instruments,
+    // session, questionnaire, manuel, partie de cours) : son contenu (e.html) devient un bloc qu'on garde,
+    // déplace ou retire, et on peut écrire autour -- signalé : « Exercice Construction : 4p82. Cet
+    // exercice ne peut pas être modifié ! » (l'éditeur s'ouvrait vide et rien ne s'enregistrait).
+    blocksStores['global'] = [{id: pendingBlockNextId++, type:'legacy', html: e.figure || e.html, data:null, editFn:null, row:0, col:0}];
     corRows = [1];
     corCellBorders = {};
   } else {
@@ -8327,7 +8335,7 @@ async function assurerJourCahierCharge(date){
    (lettre M) garde son seul titre (« Méthode 1 : … »). Sans titre lisible : le titre de l'entrée. */
 function resumeCoursTitres(e, titre){
   const tpl = document.createElement('template');
-  tpl.innerHTML = e.html || '';
+  tpl.innerHTML = e.html || e.figure || '';
   const texte = el=>{ if(!el) return ''; const c = el.cloneNode(true); c.querySelectorAll('.katex-mathml, .gicon').forEach(x=>x.remove()); return c.textContent.replace(/\s+/g, ' ').trim(); };
   const out = [];
   tpl.content.querySelectorAll('.lesson-header, .sub-header').forEach(h=>{
