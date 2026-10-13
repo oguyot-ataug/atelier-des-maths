@@ -7540,18 +7540,21 @@ const COR_MODALITES = { maison: ['Correction du travail maison', 'home', '#8A4B0
 // Support (colonne « support ») -- demandé : « bien préciser dans le cahier de texte que c'est en ligne ou sur
 // l'ordinateur », puis « on peut faire en ligne + à la maison ou autonomie. Choisir un des deux entre en ligne ou
 // ordinateur » : le support se combine avec la modalité (maison, classe, autonomie) ; un seul support à la fois.
-const COR_SUPPORTS = { enligne: ['En ligne', 'wifi', '#00838F'], ordinateur: ['Sur l\'ordinateur', 'computer', '#5E35B1'] };
-const COR_SUPPORTS_COURT = { enligne: 'en ligne', ordinateur: 'sur l\'ordinateur' };
-// Entrées marquées avant la colonne « support » (modalite « enligne » / « ordinateur ») : lues comme un support.
+// Puis : « Je n'ai pas besoin de "en ligne" et "sur ordinateur" : c'est la même chose. En support, je veux bien :
+// ordinateur, manuel, cahier/classeur (manuel = cahier d'exercices remplissable) ».
+const COR_SUPPORTS = { ordinateur: ['Ordinateur', 'computer', '#00838F'], manuel: ['Manuel', 'menu_book', '#5E35B1'], cahier: ['Cahier / classeur', 'edit_note', '#6D4C41'] };
+const COR_SUPPORTS_COURT = { ordinateur: 'sur ordinateur', manuel: 'sur le manuel', cahier: 'sur le cahier ou le classeur' };
+// Anciennes valeurs : « enligne » (support ou modalité) se lit « ordinateur ».
+const COR_SUPPORT_ANCIEN = { enligne: 'ordinateur', ordinateur: 'ordinateur' };
 function entreeModalite(e){ return e && COR_MODALITES[e.modalite] ? e.modalite : null; }
-function entreeSupport(e){ return e && (COR_SUPPORTS[e.support] ? e.support : COR_SUPPORTS[e.modalite] ? e.modalite : null); }
+function entreeSupport(e){ if(!e) return null; const v = COR_SUPPORT_ANCIEN[e.support] || e.support; return COR_SUPPORTS[v] ? v : COR_SUPPORT_ANCIEN[e.modalite] || null; }
 function corModalite(v){
   const cases = document.querySelectorAll('#corModalites input');
   if(v !== undefined){ cases.forEach(c=>{ c.checked = c.value===v; }); return v; }
   const c = [...cases].find(x=>x.checked); return c ? c.value : null;
 }
 function corChoisirModalite(el){ if(el.checked) document.querySelectorAll('#corModalites input:not(.cor-sup-in)').forEach(c=>{ if(c!==el) c.checked = false; }); }
-// Support de l'outil de correction : en ligne ou sur l'ordinateur (un seul), à côté de la modalité.
+// Support de l'outil de correction : ordinateur, manuel ou cahier/classeur (un seul), à côté de la modalité.
 function corSupport(v){
   const cases = document.querySelectorAll('#corModalites input.cor-sup-in');
   if(v !== undefined){ cases.forEach(c=>{ c.checked = c.value===v; }); return v; }
@@ -7655,7 +7658,7 @@ function entryRowsHTML(e, idx, editable, showRemoveBtn){
 async function changeCahierEntrySupport(idx, m){
   const e = cahier[idx]; if(!e) return;
   const avant = { support: e.support || null, modalite: e.modalite || null }, apres = entreeSupport(e)===m ? null : m;
-  const maj = { support: apres }; if(COR_SUPPORTS[e.modalite]) maj.modalite = null; // ancienne écriture dans « modalite »
+  const maj = { support: apres }; if(COR_SUPPORT_ANCIEN[e.modalite]) maj.modalite = null; // ancienne écriture dans « modalite »
   Object.assign(e, maj); saveCahier(); renderCahier(); nbModMaj(idx);
   if(isSyncEnabled() && e.id){
     const res = await syncUpdateEntry(e.id, maj);

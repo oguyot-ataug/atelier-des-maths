@@ -316,14 +316,14 @@ function csCahierHtml(it, corr){
 }
 /* Travaillé (maison, classe entière, autonomie) et support (en ligne, sur l'ordinateur), écrits dans le cahier de
    texte -- demandé : « on peut faire en ligne + à la maison ou autonomie. Choisir un des deux entre en ligne ou
-   ordinateur ». Aussi pour les questionnaires (questionnaires-cahier.js). */
+   ordinateur » ; supports : ordinateur, manuel, cahier/classeur. Aussi pour les questionnaires (questionnaires-cahier.js). */
 function csModChoix(pfx, defMod){
   const r = (nom, v, ic, t, on) => `<label class="qz-check"><input type="radio" name="${pfx}${nom}" value="${v}"${on ? ' checked' : ''}>${ic ? ` <span class="gicon">${ic}</span>` : ''} ${t}</label>`;
   return `<div style="display:flex;flex-direction:column;gap:6px;margin-top:10px;"><span class="hint" style="margin:0;font-weight:600;">Écrit dans le cahier de texte :</span>
     <div style="display:flex;gap:6px 14px;flex-wrap:wrap;align-items:center;"><span class="hint" style="margin:0;min-width:70px;">Travaillé</span>
       ${r('Mod', 'maison', 'home', 'à la maison', defMod === 'maison')}${r('Mod', 'classe', 'groups', 'en classe entière', defMod === 'classe')}${r('Mod', 'autonomie', 'person', 'en autonomie', defMod === 'autonomie')}${r('Mod', '', '', 'non précisé', !defMod)}</div>
     <div style="display:flex;gap:6px 14px;flex-wrap:wrap;align-items:center;"><span class="hint" style="margin:0;min-width:70px;">Support</span>
-      ${r('Sup', 'enligne', 'wifi', 'en ligne', true)}${r('Sup', 'ordinateur', 'computer', 'sur l\'ordinateur', false)}${r('Sup', '', '', 'non précisé', false)}</div></div>`;
+      ${r('Sup', 'ordinateur', 'computer', 'ordinateur', true)}${r('Sup', 'manuel', 'menu_book', 'manuel', false)}${r('Sup', 'cahier', 'edit_note', 'cahier / classeur', false)}${r('Sup', '', '', 'non précisé', false)}</div></div>`;
 }
 function csModLire(o, pfx){
   const v = n => ((o.querySelector(`input[name="${pfx}${n}"]:checked`) || {}).value) || null;
@@ -380,7 +380,7 @@ async function csCahier(id){
       if(typeof sortCahierInPlace === 'function') sortCahierInPlace(); if(typeof saveCahier === 'function') saveCahier();
     }
     o.style.display = 'none';
-    await niceAlert(`${entrees.length} élément${entrees.length > 1 ? 's ajoutés' : ' ajouté'} au cahier de ${cible.nom || 'la classe'}, à la date du ${new Date(date + 'T12:00:00').toLocaleDateString('fr-FR')}${corr ? ', avec les corrections' : ''}${sup ? (sup === 'enligne' ? ', notés « en ligne »' : ', notés « sur l\'ordinateur »') : ''}.`);
+    await niceAlert(`${entrees.length} élément${entrees.length > 1 ? 's ajoutés' : ' ajouté'} au cahier de ${cible.nom || 'la classe'}, à la date du ${new Date(date + 'T12:00:00').toLocaleDateString('fr-FR')}${corr ? ', avec les corrections' : ''}${sup && typeof COR_SUPPORTS_COURT !== 'undefined' && COR_SUPPORTS_COURT[sup] ? `, notés « ${COR_SUPPORTS_COURT[sup]} »` : ''}.`);
   };
 }
 
