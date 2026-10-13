@@ -3464,6 +3464,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1074', date:'2026-10-13', items:[
+    "Manuel : « Autre version » d'un exercice. Le même exercice avec d'autres nombres et son corrigé recalculé, pour faire répéter sans alourdir le manuel. La version affichée sert aussi pour Projeter (bouton « Autre version » en projection), Correction, Cahier et Session (l'élève la fait à l'écran). « Fiche de répétition » imprime de 2 à 8 versions de l'exercice, puis leur corrigé.",
+    "Exercices concernés pour commencer, environ cent : listes de calculs (tables, calcul mental, × 10 et ÷ 100, + 9 et − 99, calculs à trou, priorités, décimaux), conversions d'unités, divisions euclidiennes, comparaisons, et fractions de figures. Les nombres gardent leur forme (chiffres, décimales, nombres ronds) et le nombre travaillé est conservé (× 10, + 9, × 25…). Les listes où les nombres se répondent restent telles quelles.",
+  ]},
   { version:'2026-08-19.1073', date:'2026-10-13', items:[
     "Fractions de figures, dans les manuels : nouvelles planches « lire la fraction coloriée » et « colorier la fraction demandée », avec des disques, des rectangles de carreaux, des hexagones, des triangles et des carrés partagés en 4 ou en 8. En 6e, deux planches (dont des carrés aux parts inégales à lire par les aires, et des fractions à colorier quand le nombre de parts n'est pas le dénominateur) ; en CM2 et en CM1, une planche chacun. Toutes se font aussi à l'écran ; pour lire une figure, une fraction égale est acceptée (1/2 pour 2/4).",
     "Questionnaires : nouveau type de question « Fraction d'une figure ». L'élève écrit la fraction coloriée (numérateur et dénominateur) ou touche les parts à colorier. Corrigé automatiquement ; fraction égale acceptée ou non, au choix. Option « une fraction différente pour chaque élève », tirée au hasard.",

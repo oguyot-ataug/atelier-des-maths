@@ -658,7 +658,8 @@ function cxEleveTete(k, it){
    relu dans PLANCHES (scripts des chapitres). Travail : { etat, res (dernière vérification), essais }. */
 function cxTdExo(it){
   const e = it && it.exo; if(!e || typeof plDe !== 'function') return null;
-  const p = plDe(e.lvl, e.t)[e.i]; return p && p.exos[e.k] ? p.exos[e.k] : null;
+  const p = plDe(e.lvl, e.t)[e.i], x = p && p.exos[e.k];
+  return x ? (e.v && typeof plVariante === 'function' ? plVariante(x, e.v) : x) : null; // e.v : autre version (planches-variantes.js)
 }
 function cxTdTotal(it){ const x = cxTdExo(it), m = x && typeof plNumModele === 'function' ? plNumModele(x) : null; return m ? m.cibles.length : 0; }
 function cxTdProfChange(etat){

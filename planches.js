@@ -224,29 +224,59 @@ function plTdRendre(lvl, c){
         <span class="hint" style="margin:0;">${(p.attendus || []).map(esc).join(' · ')}</span>
         <button type="button" class="btn secondary td-mini" data-tdproj="${i}|0"><span class="gicon">present_to_all</span> Projeter la planche</button></div>
       <div class="td-grille">${p.exos.map((x, k) => `<div class="td-vig${x.col === 1 ? '' : ' td-plein'}" id="tdv-${i}-${k}">
-        <div class="td-v-tete"><span class="pl-num">Exercice ${k + 1}</span>${plMarque(lvl, x)}${typeof plNumPossible === 'function' && plNumPossible(x) ? '<span class="td-num" title="Se fait aussi à l\'écran (au tableau ou en session) : colorier, compléter avec le clavier, vérifier"><span class="gicon">touch_app</span> à l\'écran</span>' : ''}<span class="pl-et">${plEtoiles(x.etoiles || 1)}</span></div>
-        <div class="td-v-corps"><div class="pl-consigne">${x.consigne}</div><div class="pl-corps">${plExoCorps(x, false)}</div></div>
+        <div class="td-v-tete"><span class="pl-num">Exercice ${k + 1}</span><span class="td-ver" id="tdver-${i}-${k}">${plTdVerTxt(lvl, c, i, k)}</span>${plMarque(lvl, x)}${typeof plNumPossible === 'function' && plNumPossible(x) ? '<span class="td-num" title="Se fait aussi à l\'écran (au tableau ou en session) : colorier, compléter avec le clavier, vérifier"><span class="gicon">touch_app</span> à l\'écran</span>' : ''}<span class="pl-et">${plEtoiles(x.etoiles || 1)}</span></div>
+        <div class="td-v-corps"><div class="pl-consigne">${x.consigne}</div><div class="pl-corps">${plExoCorps(plTdX(lvl, c, i, k), false)}</div></div>
         <div class="td-v-pied"><button type="button" class="btn secondary td-mini" data-tdproj="${i}|${k}" title="En grand, un par un"><span class="gicon">present_to_all</span> Projeter</button>
           <button type="button" class="btn secondary td-mini" data-tdcorr="${i}|${k}"><span class="gicon">fact_check</span> Correction</button>
           <button type="button" class="btn secondary td-mini" data-tdcahier="${i}|${k}" title="Énoncé et correction dans le cahier de la classe"><span class="gicon">add</span> Cahier</button>
-          <button type="button" class="btn secondary td-mini" data-tdsess="${i}|${k}" title="Ajouter à une session COURS : ouverte, programmée, ou la prochaine que vous préparerez"><span class="gicon">cast_for_education</span> Session</button></div></div>`).join('')}</div></section>`).join('')}${typeof plTdProgHtml === 'function' ? plTdProgHtml(lvl, c) : ''}`;
+          <button type="button" class="btn secondary td-mini" data-tdsess="${i}|${k}" title="Ajouter à une session COURS : ouverte, programmée, ou la prochaine que vous préparerez"><span class="gicon">cast_for_education</span> Session</button>
+          ${typeof plVariable === 'function' && plVariable(x) ? `<button type="button" class="btn secondary td-mini td-var" data-tdvar="${i}|${k}" title="Le même exercice avec d'autres nombres (corrigé recalculé) : pour s'entraîner encore"><span class="gicon">autorenew</span> Autre version</button>
+          <button type="button" class="btn secondary td-mini td-var" data-tdfiche="${i}|${k}" title="Imprimer plusieurs versions de cet exercice sur une feuille, avec leur corrigé"><span class="gicon">content_copy</span> Fiche de répétition</button>` : ''}</div></div>`).join('')}</div></section>`).join('')}${typeof plTdProgHtml === 'function' ? plTdProgHtml(lvl, c) : ''}`;
   if(typeof renderStaticMath === 'function') renderStaticMath(root);
   root.onclick = e => {
     const t = e.target, pj = t.closest('[data-tdproj]'), co = t.closest('[data-tdcorr]'), ca = t.closest('[data-tdcahier]'), pg = t.closest('[data-tdprog]');
     const ps = t.closest('[data-tdprogsess]');
     if(ps){ plProgAjouterSession(ps.dataset.tdprogsess, ps); }
     else if(pg){ plProgProjeter(lvl, c, +pg.dataset.tdprog); }
-    else if(pj){ const [i, k] = pj.dataset.tdproj.split('|').map(Number); plProjeter(lvl, c, i, k); }
-    else if(co){ const [i, k] = co.dataset.tdcorr.split('|').map(Number), x = liste[i].exos[k], v = document.getElementById(`tdv-${i}-${k}`), on = !v.classList.contains('corr');
+    else if(pj){ const [i, k] = pj.dataset.tdproj.split('|').map(Number); plProjeter(lvl, c, i, k, plTdV[plTdCle(lvl, c, i, k)]); }
+    else if(t.closest('[data-tdvar]')){ const [i, k] = t.closest('[data-tdvar]').dataset.tdvar.split('|').map(Number); plTdAutre(lvl, c, i, k, 1); }
+    else if(t.closest('[data-tdorig]')){ const [i, k] = t.closest('[data-tdorig]').dataset.tdorig.split('|').map(Number); plTdAutre(lvl, c, i, k, 0); }
+    else if(t.closest('[data-tdfiche]')){ const [i, k] = t.closest('[data-tdfiche]').dataset.tdfiche.split('|').map(Number); plRepetition(lvl, c, i, k); }
+    else if(co){ const [i, k] = co.dataset.tdcorr.split('|').map(Number), x = plTdX(lvl, c, i, k), v = document.getElementById(`tdv-${i}-${k}`), on = !v.classList.contains('corr');
       v.classList.toggle('corr', on); v.querySelector('.pl-corps').innerHTML = plExoCorps(x, on); co.innerHTML = on ? '<span class="gicon">visibility_off</span> Énoncé' : '<span class="gicon">fact_check</span> Correction';
       if(typeof renderStaticMath === 'function') renderStaticMath(v); }
-    else if(ca){ const [i, k] = ca.dataset.tdcahier.split('|').map(Number); plAjouterCahier(lvl, c, i, k, ca); }
-    else if(t.closest('[data-tdsess]')){ const b = t.closest('[data-tdsess]'), [i, k] = b.dataset.tdsess.split('|').map(Number); plAjouterSession(lvl, c, i, k, b); }
+    else if(ca){ const [i, k] = ca.dataset.tdcahier.split('|').map(Number); plAjouterCahier(lvl, c, i, k, ca, plTdV[plTdCle(lvl, c, i, k)]); }
+    else if(t.closest('[data-tdsess]')){ const b = t.closest('[data-tdsess]'), [i, k] = b.dataset.tdsess.split('|').map(Number); plAjouterSession(lvl, c, i, k, b, plTdV[plTdCle(lvl, c, i, k)]); }
   };
 }
+/* Autres versions d'un exercice (planches-variantes.js) -- demandé : « Beaucoup d'exercices pourraient être
+   dupliqués ou régénérés avec d'autres exemples […] pour faire des répétitions d'un même exercice. »
+   La version affichée sur une vignette (0 = celle du manuel) sert aussi pour Projeter, Correction, Cahier
+   et Session ; « Fiche de répétition » imprime plusieurs versions et leur corrigé. */
+const plTdV = {};
+function plTdCle(lvl, c, i, k){ return `${lvl}|${c.code}|${i}|${k}`; }
+function plTdX(lvl, c, i, k){ const x = plDe(lvl, c.t)[i].exos[k], v = plTdV[plTdCle(lvl, c, i, k)]; return v && typeof plVariante === 'function' ? plVariante(x, v) : x; }
+function plTdVerTxt(lvl, c, i, k){ const v = plTdV[plTdCle(lvl, c, i, k)]; return v ? `Version ${v + 1} <button type="button" class="td-orig" data-tdorig="${i}|${k}" title="Revenir à l'exercice du manuel">manuel</button>` : ''; }
+function plTdAutre(lvl, c, i, k, d){
+  const cle = plTdCle(lvl, c, i, k); plTdV[cle] = d ? (plTdV[cle] || 0) + 1 : 0;
+  const v = document.getElementById(`tdv-${i}-${k}`); if(!v) return;
+  const corr = v.classList.contains('corr');
+  v.querySelector('.pl-corps').innerHTML = plExoCorps(plTdX(lvl, c, i, k), corr);
+  const t = document.getElementById(`tdver-${i}-${k}`); if(t) t.innerHTML = plTdVerTxt(lvl, c, i, k);
+  if(typeof renderStaticMath === 'function') renderStaticMath(v);
+}
+// Fiche de répétition : n versions de l'exercice (à partir de la version suivant celle affichée).
+async function plRepetition(lvl, c, i, k){
+  const r = await nicePrompt('Combien de versions de cet exercice sur la fiche ? (de 2 à 8)', '4');
+  if(r === null) return;
+  const n = Math.max(2, Math.min(8, parseInt(r, 10) || 4)), p = plDe(lvl, c.t)[i], x = p.exos[k], v0 = plTdV[plTdCle(lvl, c, i, k)] || 0;
+  const exos = Array.from({ length: n }, (_, j) => Object.assign({}, plVariante(x, v0 + j + 1), { etoiles: x.etoiles }));
+  const fiche = { titre: `${p.titre} · exercice ${k + 1} en ${n} versions`, attendus: p.attendus, duree: '', exos };
+  plImprimer(lvl, [{ c, planches: [{ p: fiche, i }] }], 'les2', { titre: `${plRef(lvl, plCode(lvl, c), i)} · exercice ${k + 1} · répétition` });
+}
 // Énoncé (et correction) d'un exercice en HTML autonome, formules rendues : pour le cahier et les sessions.
-function plExoHtml(lvl, c, i, k, mode){
-  const x = plDe(lvl, c.t)[i].exos[k], d = document.createElement('div');
+function plExoHtml(lvl, c, i, k, mode, ver){
+  const x0 = plDe(lvl, c.t)[i].exos[k], x = ver && typeof plVariante === 'function' ? plVariante(x0, ver) : x0, d = document.createElement('div');
   d.style.cssText = 'position:absolute;left:-9999px;top:0;width:700px;';
   d.innerHTML = mode === 'corr' ? `<div class="pl-consigne"><b>${x.consigne}</b></div><div class="pl-corps">${plExoCorps(x, true)}</div>`
     : `<div class="pl-consigne"><b>${x.consigne}</b></div><div class="pl-corps">${plExoCorps(x, false)}</div>`;
@@ -255,9 +285,10 @@ function plExoHtml(lvl, c, i, k, mode){
 }
 // Élément de session COURS : l'exercice à faire à l'écran (planches-num.js) s'il s'y prête, sinon
 // l'énoncé, dont le professeur montre ensuite la correction.
-function plSessionItem(lvl, c, i, k){
-  const x = plDe(lvl, c.t)[i].exos[k], it = { titre: `Manuel ${plRef(lvl, plCode(lvl, c), i)} · exercice ${k + 1}`, chapitre: `${c.code} · ${c.t}`, html: plExoHtml(lvl, c, i, k, 'eleve'), corr: plExoHtml(lvl, c, i, k, 'corr') };
-  if(typeof plNumPossible === 'function' && plNumPossible(x)){ it.exo = { type: 'td', lvl, code: c.code, t: c.t, i, k }; it.prog = null; }
+function plSessionItem(lvl, c, i, k, ver){
+  const x0 = plDe(lvl, c.t)[i].exos[k], x = ver && typeof plVariante === 'function' ? plVariante(x0, ver) : x0;
+  const it = { titre: `Manuel ${plRef(lvl, plCode(lvl, c), i)} · exercice ${k + 1}${ver ? ' · version ' + (ver + 1) : ''}`, chapitre: `${c.code} · ${c.t}`, html: plExoHtml(lvl, c, i, k, 'eleve', ver), corr: plExoHtml(lvl, c, i, k, 'corr', ver) };
+  if(typeof plNumPossible === 'function' && plNumPossible(x)){ it.exo = { type: 'td', lvl, code: c.code, t: c.t, i, k }; if(ver) it.exo.v = ver; it.prog = null; }
   return it;
 }
 /* « + Session » -- demandé : « Si j'ai programmé plusieurs sessions, est-ce que j'aurai le choix de la
@@ -344,13 +375,13 @@ async function plVersSession(it, btn, quoi){
   if(btn){ const old = btn.innerHTML; btn.innerHTML = `<span class="gicon">check</span> Ajouté`; setTimeout(() => btn.innerHTML = old, 2200); }
   if(typeof cdToast === 'function') cdToast(`<span class="gicon">cast_for_education</span> ${quoi} ajouté à la session « ${escapeHtml(choix.titre || 'Session')} »${choix.classe ? ' (' + escapeHtml(choix.classe) + ')' : ''}, en ${n}e position.`);
 }
-async function plAjouterSession(lvl, c, i, k, btn){ await plVersSession(plSessionItem(lvl, c, i, k), btn, 'Exercice'); }
-async function plAjouterCahier(lvl, c, i, k, btn){
+async function plAjouterSession(lvl, c, i, k, btn, ver){ await plVersSession(plSessionItem(lvl, c, i, k, ver), btn, 'Exercice'); }
+async function plAjouterCahier(lvl, c, i, k, btn, ver){
   if(typeof cahier === 'undefined'){ await niceAlert('Cahier indisponible.'); return; }
   if(typeof currentClassId !== 'undefined' && !currentClassId){ await niceAlert('Choisissez d\'abord la classe en haut de la page : l\'exercice s\'ajoute au cahier de cette classe.'); return; }
   const ref = plRef(lvl, plCode(lvl, c), i);
-  const entry = { niveau: lvl, chapitre: `${c.code} · ${c.t}`, exo: 'TD', titre: `${ref} · exercice ${k + 1}`, date: todayISO(), raw: '',
-    html: plExoHtml(lvl, c, i, k, 'eleve').replace('class="pl-ex-cahier"', 'class="pl-ex-cahier pl-ex-enonce"') + `<div class="pl-ex-corr-titre">Correction</div>` + plExoHtml(lvl, c, i, k, 'corr').replace(/^<div class="pl-ex-cahier"><div class="pl-consigne">[\s\S]*?<\/div>/, '<div class="pl-ex-cahier">') };
+  const entry = { niveau: lvl, chapitre: `${c.code} · ${c.t}`, exo: 'TD', titre: `${ref} · exercice ${k + 1}${ver ? ' · version ' + (ver + 1) : ''}`, date: todayISO(), raw: '',
+    html: plExoHtml(lvl, c, i, k, 'eleve', ver).replace('class="pl-ex-cahier"', 'class="pl-ex-cahier pl-ex-enonce"') + `<div class="pl-ex-corr-titre">Correction</div>` + plExoHtml(lvl, c, i, k, 'corr', ver).replace(/^<div class="pl-ex-cahier"><div class="pl-consigne">[\s\S]*?<\/div>/, '<div class="pl-ex-cahier">') };
   cahier.push(entry);
   if(typeof sortCahierInPlace === 'function') sortCahierInPlace();
   if(typeof saveCahier === 'function') saveCahier();
@@ -480,15 +511,16 @@ function plFigerMaths(el){
 async function plImprimer(lvl, blocs, mode, opts){
   opts = opts || {};
   const pr = plPrefs(), logo = await plLogo();
-  const pages = m => blocs.map(({ c, indices }) => { const l = plDe(lvl, c.t); return indices.map(i => plPageHtml(lvl, c, l[i], i, l.length, m, pr, logo)).join(''); }).join('');
+  const pages = m => blocs.map(({ c, indices, planches }) => { const l = plDe(lvl, c.t);
+    return planches ? planches.map(({ p, i }) => plPageHtml(lvl, c, p, i, l.length, m, pr, logo)).join('') : indices.map(i => plPageHtml(lvl, c, l[i], i, l.length, m, pr, logo)).join(''); }).join('');
   const tmp = document.createElement('div'); tmp.style.cssText = 'position:absolute;left:-9999px;top:0;width:180mm;';
-  tmp.innerHTML = (opts.avant || '') + (mode === 'livre' ? pages('eleve') + (opts.sansCorriges ? '' : (opts.entreCorriges || '') + pages('corr')) : pages(mode));
+  tmp.innerHTML = (opts.avant || '') + (mode === 'livre' ? pages('eleve') + (opts.sansCorriges ? '' : (opts.entreCorriges || '') + pages('corr')) : mode === 'les2' ? pages('eleve') + pages('corr') : pages(mode));
   document.body.appendChild(tmp);
   plFigerMaths(tmp);
   const corps = tmp.innerHTML + (tmp.innerHTML.includes('#plRapporteur') ? plDefsImages(await plRappDataUrl()) : ''); tmp.remove();
   const w = window.open('', '_blank', 'width=900,height=1000');
   if(!w){ await niceAlert('La fenêtre n\'a pas pu s\'ouvrir : autorisez les fenêtres (pop-up) pour ce site.'); return; }
-  const premier = blocs[0], titre = opts.titre || `${plRef(lvl, plCode(lvl, premier.c), premier.indices[0])}${blocs.length > 1 || premier.indices.length > 1 ? ' et suivantes' : ''}${mode === 'corr' ? ' (corrigé)' : ''}`;
+  const premier = blocs[0], titre = opts.titre || `${plRef(lvl, plCode(lvl, premier.c), (premier.indices || [0])[0])}${blocs.length > 1 || premier.indices.length > 1 ? ' et suivantes' : ''}${mode === 'corr' ? ' (corrigé)' : ''}`;
   w.document.open();
   w.document.write(`<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><title>${escapeHtml(titre)}</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">${plFontsLien(pr)}
@@ -612,9 +644,9 @@ async function plLivre(lvl, avecCorriges){
 
 /* ---------- Projection : un exercice à la fois, avec la correction ---------- */
 let plProj = null; // { lvl, c, i, k, corr, pn (exercice à l'écran), res }
-function plProjeter(lvl, c, i, k){
+function plProjeter(lvl, c, i, k, ver){
   if(plProj && plProj.prog && typeof plProgQuitter === 'function') plProgQuitter();
-  plProj = { lvl, c, i, k: k || 0, corr: false };
+  plProj = { lvl, c, i, k: k || 0, corr: false, vers: ver ? { [`${i}-${k || 0}`]: ver } : {} };
   plProjOuvrirVue();
   plProjRendre();
 }
@@ -662,21 +694,24 @@ function plProjVerifier(){
   const b = document.getElementById('plpBilan'); if(b){ b.className = 'pn-bilan ' + (plProj.res.juste === plProj.res.total ? 'ok' : 'ko'); b.innerHTML = plNumBilan(plProj.res); }
   plProjAjuster();
 }
+function plProjAutre(){ if(!plProj || plProj.prog) return; const cle = `${plProj.i}-${plProj.k}`; plProj.vers = plProj.vers || {}; plProj.vers[cle] = (plProj.vers[cle] || 0) + 1; Object.assign(plProj, { corr: false, etat: null, res: null }); plProjRendre(); }
 function plProjEffacer(){ if(plProj && plProj.pn){ plProj.pn.effacer(); plProj.res = null; const b = document.getElementById('plpBilan'); if(b) b.innerHTML = ''; } }
 function plProjRendre(){
   const v = document.getElementById('plProj'); if(!v || !plProj) return;
   if(typeof plClavier !== 'undefined') plClavier.fermer();
-  const { lvl, c, i, k, corr } = plProj, liste = plDe(lvl, c.t), p = liste[i], x = p.exos[k];
+  const { lvl, c, i, k, corr } = plProj, liste = plDe(lvl, c.t), p = liste[i], x0 = p.exos[k], ver = (plProj.vers || {})[`${i}-${k}`] || 0;
+  const x = ver && typeof plVariante === 'function' ? plVariante(x0, ver) : x0, variable = typeof plVariable === 'function' && plVariable(x0);
   const premier = i === 0 && k === 0, dernier = i === liste.length - 1 && k === p.exos.length - 1;
   const num = !corr && typeof plNumPossible === 'function' && plNumPossible(x);
   v.innerHTML = `<div class="plp-tete"><span class="pl-ref">${plRef(lvl, plCode(lvl, c), i)}</span><b>${escapeHtml(p.titre)}</b>
-      <span class="plp-pos">Exercice ${k + 1} / ${p.exos.length}</span><span class="pl-et">${plEtoiles(x.etoiles || 1)}</span>
+      <span class="plp-pos">Exercice ${k + 1} / ${p.exos.length}${ver ? ` · version ${ver + 1}` : ''}</span><span class="pl-et">${plEtoiles(x.etoiles || 1)}</span>
       <button class="plp-fermer" onclick="plProjFermer()" title="Fermer (Échap)"><span class="gicon">close</span></button></div>
     <div class="plp-corps${corr ? ' corr' : ''}" id="plpCorps"><div class="plp-boite" id="plpBoite"><div class="plp-consigne">${x.consigne}</div><div class="plp-rep" id="plpRep">${num ? '' : plExoCorps(x, corr)}</div>
 </div></div>
     <div class="plp-pied">${num ? `<div class="pn-bilan" id="plpBilan"></div>` : ''}<button class="btn secondary" onclick="plProjAller(-1)" ${premier ? 'disabled' : ''}><span class="gicon">arrow_back</span> Précédent</button>
       ${num ? `<button class="btn plp-verif" onclick="plProjVerifier()"><span class="gicon">task_alt</span> Vérifier ma réponse</button>
         <button class="btn secondary" onclick="plProjEffacer()" title="Tout effacer"><span class="gicon">ink_eraser</span> Effacer</button>` : ''}
+      ${variable ? `<button class="btn secondary" onclick="plProjAutre()" title="Le même exercice avec d'autres nombres"><span class="gicon">autorenew</span> Autre version</button>` : ''}
       <button class="btn plp-corr${corr ? ' on' : ''}" onclick="plProjCorr()"><span class="gicon">${corr ? 'visibility_off' : 'fact_check'}</span> ${corr ? 'Cacher la correction' : 'Correction'}</button>
       <button class="btn secondary" onclick="plProjAller(1)" ${dernier ? 'disabled' : ''}>Suivant <span class="gicon">arrow_forward</span></button></div>`;
   plProj.pn = null;
@@ -884,6 +919,9 @@ const PL_CSS_LIVRE = `
     .td-v-corps{ font-size:.92rem; overflow-x:auto; } .td-v-corps .pl-consigne{ font-weight:600; margin-bottom:6px; }
     .td-num{ margin:0 auto 0 10px; font:700 .72rem 'Space Grotesk',sans-serif; color:#3A6EA5; background:#EEF4FB; border-radius:999px; padding:1px 8px; display:inline-flex; align-items:center; gap:3px; } .td-num .gicon{ font-size:14px; }
     .td-v-pied{ display:flex; gap:6px; flex-wrap:wrap; margin-top:auto; } .td-mini{ padding:4px 10px !important; font-size:.82rem !important; }
+    .td-var{ border-color:rgba(46,158,91,.45) !important; color:#1E7B34 !important; }
+    .td-ver{ margin-left:8px; font-size:.78rem; font-weight:700; color:#1E7B34; display:inline-flex; align-items:center; gap:4px; }
+    .td-ver:empty{ display:none; } .td-orig{ border:1px solid rgba(30,123,52,.4); background:#fff; color:#1E7B34; border-radius:999px; font-size:.72rem; padding:0 7px; cursor:pointer; }
     .td-vig .pl-grille, .pl-ex-cahier .pl-grille{ display:grid; gap:6px 14px; align-items:center; } .td-vig .pl-item, .pl-ex-cahier .pl-item{ display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
     .td-vig .pl-liste, .pl-ex-cahier .pl-liste{ margin:0; padding-left:18px; } .td-vig .pl-liste li, .pl-ex-cahier .pl-liste li{ margin:3px 0; }
     .td-vig .pl-frac, .pl-ex-cahier .pl-frac, .cd-contenu .pl-frac{ display:inline-flex; flex-direction:column; align-items:center; vertical-align:middle; gap:2px; margin:0 3px; }

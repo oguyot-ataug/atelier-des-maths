@@ -97,13 +97,20 @@ const FRF = (() => {
     o = o || {}; const Fr = plFrac(), cols = o.cols || 6;
     const fig = it => svg(it[0], it[1], { px: o.px || 66, coul: o.coul });
     const rep = it => { const [a, b] = it[2] || lue(it[0], it[1]); return plRep(cm1Frac(a, b)).replace('class="pl-rep"', 'class="pl-rep" data-equiv="1"'); }; // à l'écran : une fraction égale est acceptée
-    return { eleve: plGrille(items.map(it => carte(fig(it), Fr)), cols), corr: plGrille(items.map(it => carte(fig(it), rep(it))), cols) };
+    return { eleve: plGrille(items.map(it => carte(fig(it), Fr)), cols), corr: plGrille(items.map(it => carte(fig(it), rep(it))), cols),
+      // Autre version (planches-variantes.js) : mêmes figures, autres parts coloriées (les carrés aux
+      // parts inégales restent tels quels).
+      gen: alea => lire(items.map(it => { if(it[0].forme === 'pieces') return it; const n = nb(it[0]), k = 1 + Math.floor(alea() * (n - 1));
+        return [it[0], it[0].forme === 'disque' || it[0].forme === 'barre' ? Array.from({ length: k }, (_, i) => i) : melange(n, alea).slice(0, k)]; }), o) };
   }
+  const melange = (n, alea) => { const t = Array.from({ length: n }, (_, i) => i); for(let i = n - 1; i > 0; i--){ const j = Math.floor(alea() * (i + 1)); [t[i], t[j]] = [t[j], t[i]]; } return t; };
   function colorier(items, o){
     o = o || {}; const cols = o.cols || 6;
     const k = it => Math.round(it[1] * nb(it[0]) / it[2]);
     const fig = (it, c) => svg(it[0], c ? Array.from({ length: k(it) }, (_, i) => i) : [], { px: o.px || 66, coul: o.coul || '#E9A21C' });
-    return { eleve: plGrille(items.map(it => carte(fig(it, false), cm1Frac(it[1], it[2]))), cols), corr: plGrille(items.map(it => carte(fig(it, true), cm1Frac(it[1], it[2]))), cols) };
+    return { eleve: plGrille(items.map(it => carte(fig(it, false), cm1Frac(it[1], it[2]))), cols), corr: plGrille(items.map(it => carte(fig(it, true), cm1Frac(it[1], it[2]))), cols),
+      // Autre version : mêmes figures, même dénominateur, autre numérateur.
+      gen: alea => colorier(items.map(it => [it[0], 1 + Math.floor(alea() * (it[2] - 1)), it[2]]), o) };
   }
   return { parts, nb, svg, lue, pgcd, lire, colorier };
 })();
