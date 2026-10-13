@@ -2070,3 +2070,7 @@ select:not([multiple]):not([size]){
    rétrécie à la souris gardait visuellement l'ancienne largeur de son contenu. */
 .eval-col > .nb-figure-row, .eval-col > .resizable-block, .eval-col .resizable-block{max-width:100%;box-sizing:border-box;}
 .eval-col svg{max-width:100%;}
+/* Exercice d'une évaluation dans l'éditeur : affiché à la largeur utile d'une feuille A4 (680 px,
+   comme l'aperçu et le PDF), pour que les retours à la ligne et les largeurs de colonnes réglées à
+   la souris correspondent à ce qui sera imprimé. Le trait pointillé à droite marque le bord de la feuille. */
+.eval-feuille{max-width:680px;box-sizing:content-box;padding-right:8px;border-right:2px dashed rgba(31,58,92,.18);font-size:11.5pt;}

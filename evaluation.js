@@ -598,6 +598,8 @@ function updateEvalBaremeTotalDisplay(){
   const total = evalBaremeTotal();
   el.textContent = evaluationExercises.length ? `Barème total : ${total} point${total>1?'s':''}` : '';
 }
+// Interligne choisi pour l'impression, appliqué aussi aux exercices dans l'éditeur (largeur de feuille).
+function evalInterligne(){ const el = document.getElementById('evalLineHeight'); return el && el.value ? `line-height:${el.value};` : ''; }
 function renderEvalExercicesList(){
   const box = document.getElementById('evalExercicesList');
   if(!box) return;
@@ -625,7 +627,7 @@ function renderEvalExercicesList(){
             <button type="button" onclick="toggleEvalPageBreak(${ex.id})" title="Insérer un saut de page après cet exercice" style="border:none;background:${evalPageBreaksAfter.has(ex.id)?'rgba(31,58,92,.15)':'rgba(28,43,57,.06)'};color:${evalPageBreaksAfter.has(ex.id)?'#1F3A5C':'inherit'};border-radius:6px;padding:4px 10px;cursor:pointer;">✂</button>
           </span>
         </div>
-        <div>${blocksRowsHTML(ctx, ex.rows, false, ex.cellBorders)}</div>
+        <div class="eval-feuille" style="${evalInterligne()}">${blocksRowsHTML(ctx, ex.rows, false, ex.cellBorders)}</div>
       </div>
       ${evalPageBreaksAfter.has(ex.id) ? '<div style="border-top:2px dashed #1F3A5C;margin:0 0 8px;padding-top:4px;text-align:center;"><span class="hint" style="color:#1F3A5C;">✂ Saut de page ici à l\'impression</span></div>' : ''}
     `;
@@ -646,7 +648,7 @@ function renderEvalExercicesList(){
         <input type="text" placeholder="Titre de l'exercice (facultatif)" value="${escapeHtml(ex.title||'')}" oninput="updateEvalExerciceField(${ex.id},'title',this.value)" style="flex:1;min-width:200px;padding:7px 10px;border-radius:8px;border:1px solid rgba(28,43,57,.2);">
         <label class="hint" style="margin:0;">Barème : <input type="number" min="0" step="0.5" value="${ex.bareme!=null?ex.bareme:''}" oninput="updateEvalExerciceField(${ex.id},'bareme',this.value)" style="width:60px;margin-left:4px;"> <span id="baremeSuffixe-${ex.id}">${Number(ex.bareme)===1?'pt':'pts'}</span></label>
       </div>
-      <div class="eval-blocks-preview" style="margin-top:2px;">${blocksRowsHTML(ctx, ensureExRows(ex), true, ex.cellBorders)}</div>
+      <div class="eval-blocks-preview eval-feuille" style="margin-top:2px;${evalInterligne()}">${blocksRowsHTML(ctx, ensureExRows(ex), true, ex.cellBorders)}</div>
       <div class="tool-row" style="margin-top:10px;align-items:center;flex-wrap:wrap;">
         <span class="hint" style="margin:0;">Mise en page :</span>
         ${ex.rows.map((nc,rowIdx)=>`
