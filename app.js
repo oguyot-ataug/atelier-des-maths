@@ -3464,6 +3464,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1072', date:'2026-10-13', items:[
+    "Manuel CM2, lot 4 : données. 4 chapitres, 12 planches et 42 exercices corrigés : probabilités (roue de loterie, sac de billes, « a chances sur b », tableau et arbre) ; organisation de données (tableau d'effectifs, diagramme en barres, diagramme circulaire, courbe de température, points à placer) ; proportionnalité (fois plus, ajouter, passer par 1, sans tableau) ; pensée informatique (robot qui s'oriente, boucles, programmes de calcul en blocs, tableur). Le manuel CM2 est complet : 25 chapitres, 75 planches, 291 exercices.",
+  ]},
   { version:'2026-08-19.1071', date:'2026-10-13', items:[
     "Manuel CM2, lot 3 : géométrie et mesures. 9 chapitres, 27 planches et 97 exercices corrigés, avec des figures dessinées : droites, segments et cercles (notations expliquées) ; figures planes et codages ; programmes de construction ; symétrie axiale sur quadrillage (axe vertical, horizontal, en diagonale) ; solides, patrons du cube, assemblages de cubes et chemins ; longueurs, masses et contenances (conversions en raisonnant, sans tableau) ; aires ; angles (sans rapporteur, avec l'horloge) ; heures et durées (horloges, tableau d'horaires).",
   ]},
