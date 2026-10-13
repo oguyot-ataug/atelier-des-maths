@@ -3464,6 +3464,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1075', date:'2026-10-13', items:[
+    "Outil de correction : copier-coller d'une image. Ctrl+V (⌘+V sur Mac) colle une capture d'écran, une image copiée d'une page web ou d'un document : le panneau Image s'ouvre avec l'image, prête à insérer ou à modifier (recadrer, annoter…). Le panneau Image a aussi un bouton « Coller une image ». Cela marche aussi dans les exercices d'une évaluation et les questions d'un questionnaire ; un texte collé reste un texte.",
+  ]},
   { version:'2026-08-19.1074', date:'2026-10-13', items:[
     "Manuel : « Autre version » d'un exercice. Le même exercice avec d'autres nombres et son corrigé recalculé, pour faire répéter sans alourdir le manuel. La version affichée sert aussi pour Projeter (bouton « Autre version » en projection), Correction, Cahier et Session (l'élève la fait à l'écran). « Fiche de répétition » imprime de 2 à 8 versions de l'exercice, puis leur corrigé.",
     "Exercices concernés pour commencer, environ cent : listes de calculs (tables, calcul mental, × 10 et ÷ 100, + 9 et − 99, calculs à trou, priorités, décimaux), conversions d'unités, divisions euclidiennes, comparaisons, et fractions de figures. Les nombres gardent leur forme (chiffres, décimales, nombres ronds) et le nombre travaillé est conservé (× 10, + 9, × 25…). Les listes où les nombres se répondent restent telles quelles.",

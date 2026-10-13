@@ -41,10 +41,11 @@ document.body.insertAdjacentHTML('beforeend', `
       </div>
     </div>
     <div id="imagePanel" class="figure-wrap" style="display:none;">
-      <p class="hint" style="margin:0 0 10px;">Importer une image (photo, capture d'écran, figure scannée...) à insérer dans le contenu.</p>
+      <p class="hint" style="margin:0 0 10px;">Importer une image (photo, capture d'écran, figure scannée...) à insérer dans le contenu. Vous pouvez aussi la <b>coller</b> (Ctrl+V, ou ⌘+V sur Mac).</p>
       <input type="file" id="imageImportInput" accept="image/*" style="display:none;" onchange="previewImportedImage(this.files[0])">
       <div class="tool-row" style="margin:0 0 8px;">
         <button type="button" class="btn secondary" onclick="document.getElementById('imageImportInput').click()"><span class=gicon>photo_camera</span> Choisir une image</button>
+        <button type="button" class="btn secondary" onclick="imageCollerBouton()" title="Coller l'image copiée (capture d'écran, image d'une page web, d'un document…)"><span class=gicon>content_paste</span> Coller une image</button>
       </div>
       <div id="imageImportPreview" style="margin-top:4px;"></div>
       <div class="figure-toolbar" style="margin-top:10px;">
@@ -895,6 +896,55 @@ function openImageTool(){
   document.getElementById('imageImportEditBtn').disabled = true;
   document.getElementById('imageImportInput').value = '';
   document.getElementById('imagePanel').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+/* Copier-coller d'une image -- demandé : « Dans l'outil correction, permettre le copier coller d'une image ».
+   Ctrl+V (⌘+V) avec une image dans le presse-papiers : dans le panneau Image, elle remplace l'aperçu ;
+   ailleurs, dans une zone qui a sa barre d'outils (correction, exercice d'évaluation, question d'un
+   questionnaire…), le panneau Image s'ouvre pour cette zone avec l'image collée, prête à insérer ou à
+   modifier. Un collage de texte (avec ou sans image, depuis un traitement de texte) reste un collage de
+   texte dans un champ de saisie. */
+function imageDuPressePapiers(dt){
+  const it = [...((dt && dt.items) || [])].find(i => i.kind === 'file' && /^image\//.test(i.type));
+  const f = it && it.getAsFile(); if(!f) return null;
+  return f.name && f.name !== 'image.png' ? f : new File([f], `image-collee-${Date.now()}.${(f.type.split('/')[1] || 'png').replace(/[^a-z0-9]/g, '') || 'png'}`, { type: f.type });
+}
+// Contexte d'outils de la zone où l'on colle : la barre d'outils la plus proche (son setToolContext).
+function imageCollerContexte(el){
+  for(let n = el; n && n !== document.documentElement; n = n.parentElement){
+    const b = n.querySelector && n.querySelector('.tool-icon-btn[onclick*="setToolContext("]');
+    if(b){ const m = /setToolContext\('([^']*)'\)/.exec(b.getAttribute('onclick') || ''); if(m) return m[1]; }
+  }
+  const vc = document.getElementById('view-correction');
+  return vc && vc.offsetParent !== null && document.getElementById('corToolsRow') && document.getElementById('corToolsRow').offsetParent !== null ? 'global' : null;
+}
+function imageCollerFichier(file, ctx){
+  const panel = document.getElementById('imagePanel');
+  if(!(panel && panel.style.display === 'block')){ if(!ctx) return false; setToolContext(ctx); openImageTool(); }
+  previewImportedImage(file); return true;
+}
+document.addEventListener('paste', ev => {
+  const file = imageDuPressePapiers(ev.clipboardData); if(!file) return;
+  const t = ev.target && ev.target.nodeType === 1 ? ev.target : ev.target && ev.target.parentElement;
+  const saisie = t && (t.closest('textarea, input, [contenteditable="true"]'));
+  const texte = ev.clipboardData.getData('text/plain');
+  const panel = document.getElementById('imagePanel'), ouvert = panel && panel.style.display === 'block';
+  if(saisie && texte && texte.trim() && !ouvert) return; // texte copié depuis un document : collage normal
+  // fenêtres d'outils ouvertes par-dessus (figure, tableau…) : on ne détourne pas le collage
+  if(!ouvert && document.getElementById('toolsModalOverlay') && document.getElementById('toolsModalOverlay').style.display === 'flex') return;
+  const ctx = ouvert ? null : (imageCollerContexte(t) || imageCollerContexte(document.activeElement));
+  if(!ouvert && !ctx) return;
+  ev.preventDefault();
+  imageCollerFichier(file, ctx);
+});
+// Bouton « Coller une image » du panneau (API presse-papiers ; sinon on rappelle Ctrl+V).
+async function imageCollerBouton(){
+  try{
+    if(!navigator.clipboard || !navigator.clipboard.read) throw new Error('api');
+    const items = await navigator.clipboard.read();
+    for(const it of items){ const type = it.types.find(t => /^image\//.test(t)); if(type){ const b = await it.getType(type);
+      previewImportedImage(new File([b], `image-collee-${Date.now()}.${(type.split('/')[1] || 'png').replace(/[^a-z0-9]/g, '') || 'png'}`, { type })); return; } }
+    await niceAlert('Le presse-papiers ne contient pas d\'image. Copiez une image (clic droit › Copier l\'image, ou une capture d\'écran), puis réessayez.');
+  }catch(e){ await niceAlert('Votre navigateur ne laisse pas lire le presse-papiers depuis ce bouton : appuyez simplement sur Ctrl+V (⌘+V sur Mac) pour coller l\'image ici.'); }
 }
 function closeImageTool(){ document.getElementById('toolsModalOverlay').style.display='none'; document.getElementById('imagePanel').style.display='none'; }
 async function insertImageBlock(){
