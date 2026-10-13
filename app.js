@@ -3464,6 +3464,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1082', date:'2026-10-13', items:[
+    "Cahier de texte : un logo devant chaque support : 💻 ordinateur, 📖 manuel, 📒 cahier ou classeur (« 💻 Exercices en autonomie, sur ordinateur », « 🏠 📖 Correction du travail maison, sur le manuel »). Ce sont des émojis : ils restent quand on colle le texte dans Pronote ou École Directe.",
+  ]},
   { version:'2026-08-19.1081', date:'2026-10-13', items:[
     "Cahier de texte plus lisible : une seule rubrique par type dans un chapitre ; les exercices des planches du site sont regroupés (« Planche 6e-N2-P1 : exercices 1 à 4 ») ; ceux d'un manuel sont regroupés par page (« Page 16 : exercices 1 à 6 », avec les titres en dessous) ; la mention « (avec correction) » n'est plus répétée.",
   ]},
@@ -7550,6 +7553,9 @@ const COR_MODALITES = { maison: ['Correction du travail maison', 'home', '#8A4B0
 // ordinateur, manuel, cahier/classeur (manuel = cahier d'exercices remplissable) ».
 const COR_SUPPORTS = { ordinateur: ['Ordinateur', 'computer', '#00838F'], manuel: ['Manuel', 'menu_book', '#5E35B1'], cahier: ['Cahier / classeur', 'edit_note', '#6D4C41'] };
 const COR_SUPPORTS_COURT = { ordinateur: 'sur ordinateur', manuel: 'sur le manuel', cahier: 'sur le cahier ou le classeur' };
+// Logos du cahier de texte (des émojis : ils restent quand on colle le texte dans Pronote ou École Directe) --
+// demandé : « On pourrait avoir des logos ordinateur, manuel… devant ».
+const COR_SUPPORTS_LOGO = { ordinateur: '💻', manuel: '📖', cahier: '📒' };
 // Anciennes valeurs : « enligne » (support ou modalité) se lit « ordinateur ».
 const COR_SUPPORT_ANCIEN = { enligne: 'ordinateur', ordinateur: 'ordinateur' };
 function entreeModalite(e){ return e && COR_MODALITES[e.modalite] ? e.modalite : null; }
@@ -8375,7 +8381,7 @@ function resumeSeanceContenu(date){
     const nom = String(e.chapitre||'').replace(/^[A-Z]{1,3}\d+[a-z]?\s*·\s*/, '').trim() || 'Chapitre non précisé';
     const titre = String(e.titre||'').replace(/\s+/g, ' ').trim();
     const type = e.exo==='Cours' ? 'cours' : e.exo==='Interrogation' ? 'interro' : (e.exo==='Questions flash' || e.exo==='Séance en direct') ? 'flash' : ('exos' + (entreeModalite(e) ? '-' + entreeModalite(e) : '') + (entreeSupport(e) ? '+' + entreeSupport(e) : ''));
-    const sup = COR_SUPPORTS_COURT[entreeSupport(e)];
+    const sup = COR_SUPPORTS_COURT[entreeSupport(e)], supLogo = COR_SUPPORTS_LOGO[entreeSupport(e)];
     let c = blocs[blocs.length-1];
     if(!c || c.nom!==nom){ c = {nom, rubs:[]}; blocs.push(c); }
     // Une seule rubrique par type dans un chapitre (signalé : « Exercices en autonomie, sur le manuel » en double).
@@ -8397,8 +8403,8 @@ function resumeSeanceContenu(date){
       });
     }
     // Interrogations et questions flash : rubriques à part, jamais dans « Exercices ».
-    else if(type==='interro') rubrique().items.push((court(titre) || 'Interrogation') + (sup ? ' (' + sup + ')' : ''));
-    else if(type==='flash') rubrique().items.push((court(titre) || 'Questions flash') + (sup ? ' (' + sup + ')' : ''));
+    else if(type==='interro') rubrique().items.push((supLogo ? supLogo + ' ' : '') + (court(titre) || 'Interrogation') + (sup ? ' (' + sup + ')' : ''));
+    else if(type==='flash') rubrique().items.push((supLogo ? supLogo + ' ' : '') + (court(titre) || 'Questions flash') + (sup ? ' (' + sup + ')' : ''));
     else if((m = /^(?:Manuel\s+)?([A-Z0-9]+-[A-Z]+\d+[a-z]?-P\d+)\s*·\s*exercice\s+(\d+)/i.exec(sansCorr(titre)))){
       groupe('pl|' + m[1], ()=>({ planche: m[1], nums: [] })).nums.push(+m[2]);
     }
@@ -8418,7 +8424,7 @@ function resumeSeanceContenu(date){
     'exos-maison': ['Correction du travail maison', '#8A4B08', '🏠 '], 'exos-classe': ['Exercices en classe entière', '#C45F00', ''], 'exos-autonomie': ['Exercices en autonomie', '#2E7D32', ''] };
   // Rubrique d'exercices avec un support : « Exercices en autonomie, en ligne », « Correction du travail maison, sur l'ordinateur »…
   const styleDe = t => { if(STYLE[t]) return STYLE[t]; const [base, sup] = t.split('+'), st = STYLE[base] || STYLE.exos;
-    return [st[0] + (sup ? (base === 'exos' ? ' ' : ', ') + COR_SUPPORTS_COURT[sup] : ''), st[1], st[2]]; };
+    return [st[0] + (sup ? (base === 'exos' ? ' ' : ', ') + COR_SUPPORTS_COURT[sup] : ''), st[1], st[2] + (sup && COR_SUPPORTS_LOGO[sup] ? COR_SUPPORTS_LOGO[sup] + ' ' : '')]; };
   const ENCRE = '#20242E', esc = t => escapeHtml(t);
   let html = '', txt = '';
   blocs.forEach((c, i)=>{
