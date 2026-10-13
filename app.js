@@ -3464,6 +3464,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1065', date:'2026-10-13', items:[
+    "Mes évaluations : vue par classe. Les évaluations sont regroupées par classe (une évaluation donnée à « 5B & 5L » apparaît dans les deux groupes), la plus récente en premier, avec un groupe « Sans classe ». Bascule « Par classe / Par date de modification », mémorisée sur l'appareil ; chaque groupe se replie d'un clic.",
+  ]},
   { version:'2026-08-19.1064', date:'2026-10-13', items:[
     "Relecture du manuel (administrateur et bêta-testeurs) : chaque exercice affiche son état pour toute l'équipe : « Validé » (validé par l'administrateur, sans remarque en attente), « En cours d'examen » (avec le nombre de remarques en attente, ou « modifié, à revoir ») ou « Non examiné ». Chacun garde en dessous son propre avis (Validé, Non examiné, Commenté). Filtres « Équipe : Validés / En cours d'examen » en tête de l'onglet Manuel. Le contenu des remarques des autres testeurs reste privé.",
   ]},

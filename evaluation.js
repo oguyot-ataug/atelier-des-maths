@@ -357,22 +357,45 @@ async function openEvalListModal(){
   const { data, error } = await sb.from('evaluations').select('id,title,niveau,classes,eval_date,owner_id,collaborators,viewers,updated_at').order('updated_at', {ascending:false});
   if(error){ box.innerHTML = "Erreur : "+error.message; return; }
   if(!data || !data.length){ box.innerHTML = "Aucune évaluation sauvegardée pour le moment."; return; }
-  box.innerHTML = data.map(e=>{
-    const isMine = e.owner_id===currentUser.id;
-    const shareTag = isMine ? '' : (e.collaborators||[]).includes(currentUser.id) ? '<span class="hint">(partagée · <span class=gicon>edit</span> éditeur)</span>' : '<span class="hint">(partagée · <span class=gicon>visibility</span> lecteur)</span>';
-    const dateFmt = e.eval_date ? new Date(e.eval_date+'T00:00:00').toLocaleDateString('fr-FR') : '';
-    return `<div class="tool-shell" style="margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:10px;">
-      <div>
-        <strong>${escapeHtml(e.title||'Sans titre')}</strong> ${shareTag}<br>
-        <span class="hint">${escapeHtml(e.niveau||'')}${e.classes?' · '+escapeHtml(e.classes):''}${dateFmt?' · '+dateFmt:''}</span>
-      </div>
-      <span style="display:flex;gap:6px;flex:none;">
-        <button class="btn secondary" onclick="loadEvaluation('${e.id}')">Ouvrir</button>
-        <button class="btn secondary" title="Faire une copie (pour l'adapter à une autre classe, une autre année…)" onclick="duplicateEvaluation('${e.id}')"><span class=gicon>content_copy</span></button>
-        ${isMine ? `<button class="btn secondary" style="color:#a83c1f;" onclick="deleteEvaluationPrompt('${e.id}','${escapeHtml(e.title||'Sans titre').replace(/'/g,"\\'")}')"><span class=gicon>delete</span></button>` : ''}
-      </span>
-    </div>`;
-  }).join('');
+  evalListeDonnees = data;
+  evalListeRendre();
+}
+/* Vue par classe -- demandé : « Quand j'ouvre une évaluation, est-ce possible de faire une vue par
+   classe ? ». Le champ « Classe(s) » est libre (« 5B & 5L », « 6O-6V », « 6E ») : on le découpe, et une
+   évaluation donnée à deux classes apparaît dans les deux groupes. Bascule « Par classe / Par date »,
+   mémorisée sur cet appareil ; dans un groupe, la plus récente (date d'évaluation) en premier. */
+let evalListeDonnees = [];
+const evalClassesDe = e => [...new Set(String(e.classes || '').split(/\s*(?:,|;|&|\+|\/|-|\bet\b)\s*/i).map(c => c.trim().toUpperCase()).filter(Boolean))];
+function evalListeMode(){ try { return localStorage.getItem('evalListeMode') || 'classe'; } catch(_){ return 'classe'; } }
+function evalListeChoisir(m){ try { localStorage.setItem('evalListeMode', m); } catch(_){} evalListeRendre(); }
+function evalCarteHtml(e){
+  const isMine = e.owner_id===currentUser.id;
+  const shareTag = isMine ? '' : (e.collaborators||[]).includes(currentUser.id) ? '<span class="hint">(partagée · <span class=gicon>edit</span> éditeur)</span>' : '<span class="hint">(partagée · <span class=gicon>visibility</span> lecteur)</span>';
+  const dateFmt = e.eval_date ? new Date(e.eval_date+'T00:00:00').toLocaleDateString('fr-FR') : '';
+  return `<div class="tool-shell" style="margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:10px;">
+    <div>
+      <strong>${escapeHtml(e.title||'Sans titre')}</strong> ${shareTag}<br>
+      <span class="hint">${escapeHtml(e.niveau||'')}${e.classes?' · '+escapeHtml(e.classes):''}${dateFmt?' · '+dateFmt:''}</span>
+    </div>
+    <span style="display:flex;gap:6px;flex:none;">
+      <button class="btn secondary" onclick="loadEvaluation('${e.id}')">Ouvrir</button>
+      <button class="btn secondary" title="Faire une copie (pour l'adapter à une autre classe, une autre année…)" onclick="duplicateEvaluation('${e.id}')"><span class=gicon>content_copy</span></button>
+      ${isMine ? `<button class="btn secondary" style="color:#a83c1f;" onclick="deleteEvaluationPrompt('${e.id}','${escapeHtml(e.title||'Sans titre').replace(/'/g,"\\'")}')"><span class=gicon>delete</span></button>` : ''}
+    </span>
+  </div>`;
+}
+function evalListeRendre(){
+  const box = document.getElementById('evalListContent'); if(!box) return;
+  const mode = evalListeMode(), data = evalListeDonnees;
+  const bascule = `<div style="display:flex;gap:6px;align-items:center;margin:0 0 12px;flex-wrap:wrap;"><span class="hint" style="margin:0;">Afficher :</span>
+    ${[['classe', 'groups', 'Par classe'], ['date', 'schedule', 'Par date de modification']].map(([m, ic, t]) => `<button type="button" class="btn ${mode === m ? '' : 'secondary'}" style="font-size:.8rem;padding:4px 10px;" onclick="evalListeChoisir('${m}')"><span class=gicon>${ic}</span> ${t}</button>`).join('')}</div>`;
+  if(mode !== 'classe'){ box.innerHTML = bascule + data.map(evalCarteHtml).join(''); return; }
+  const groupes = new Map();
+  data.forEach(e => { const cl = evalClassesDe(e); (cl.length ? cl : ['']).forEach(c => { if(!groupes.has(c)) groupes.set(c, []); groupes.get(c).push(e); }); });
+  const cles = [...groupes.keys()].sort((x, y) => !x ? 1 : !y ? -1 : x.localeCompare(y, 'fr', { numeric: true }));
+  const parDate = (x, y) => String(y.eval_date || y.updated_at || '').localeCompare(String(x.eval_date || x.updated_at || ''));
+  box.innerHTML = bascule + cles.map(c => `<details open style="margin:0 0 10px;"><summary style="cursor:pointer;font:700 1rem 'Space Grotesk',sans-serif;margin:0 0 8px;">${c ? 'Classe ' + escapeHtml(c) : 'Sans classe'} <span class="hint" style="margin:0;font-weight:400;">· ${groupes.get(c).length} évaluation${groupes.get(c).length > 1 ? 's' : ''}</span></summary>
+    ${groupes.get(c).sort(parDate).map(evalCarteHtml).join('')}</details>`).join('');
 }
 /* Copie d'une évaluation -- demandé : « Peut-on faire une copie d'une évaluation ? ». La copie
    appartient à celui qui la fait (même si l'originale lui a été partagée), sans les collègues
