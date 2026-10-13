@@ -2071,3 +2071,7 @@ select:not([multiple]):not([size]){
    rétrécie à la souris gardait visuellement l'ancienne largeur de son contenu. */
 .eval-col > .nb-figure-row, .eval-col > .resizable-block, .eval-col .resizable-block{max-width:100%;box-sizing:border-box;}
 .eval-col svg{max-width:100%;}
+
+/* Exercices des planches déjà mis au cahier avec « énoncé + correction » : on n'affiche que la consigne et la
+   correction (l'énoncé à remplir faisait doublon). */
+.nb-body:has(.pl-ex-corr-titre) .pl-ex-enonce .pl-corps, .nb-body .pl-ex-corr-titre{display:none;}

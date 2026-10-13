@@ -381,7 +381,10 @@ async function plAjouterCahier(lvl, c, i, k, btn, ver){
   if(typeof currentClassId !== 'undefined' && !currentClassId){ await niceAlert('Choisissez d\'abord la classe en haut de la page : l\'exercice s\'ajoute au cahier de cette classe.'); return; }
   const ref = plRef(lvl, plCode(lvl, c), i);
   const entry = { niveau: lvl, chapitre: `${c.code} · ${c.t}`, exo: 'TD', titre: `${ref} · exercice ${k + 1}${ver ? ' · version ' + (ver + 1) : ''}`, date: todayISO(), raw: '',
-    html: plExoHtml(lvl, c, i, k, 'eleve', ver).replace('class="pl-ex-cahier"', 'class="pl-ex-cahier pl-ex-enonce"') + `<div class="pl-ex-corr-titre">Correction</div>` + plExoHtml(lvl, c, i, k, 'corr', ver).replace(/^<div class="pl-ex-cahier"><div class="pl-consigne">[\s\S]*?<\/div>/, '<div class="pl-ex-cahier">') };
+    // La correction seule (consigne + réponses) : l'énoncé à côté ferait doublon -- demandé : « Dans le cahier de
+    // l'élève, pour les exercices venant des planches, il y a énoncé et correction : ce qui fait doublon. La
+    // correction est suffisante. »
+    html: plExoHtml(lvl, c, i, k, 'corr', ver) };
   cahier.push(entry);
   if(typeof sortCahierInPlace === 'function') sortCahierInPlace();
   if(typeof saveCahier === 'function') saveCahier();

@@ -310,8 +310,8 @@ function csCahierHtml(it, corr){
   if(e.type === 'qz' && (e.questions || []).length) return typeof qzcHtml === 'function' ? qzcHtml(titre, '', e.questions, corr) : null;
   if(e.type === 'prog') return null;
   if(!it.html) return null;
-  if(corr && it.corr) return it.html.replace('class="pl-ex-cahier"', 'class="pl-ex-cahier pl-ex-enonce"') + '<div class="pl-ex-corr-titre">Correction</div>'
-    + it.corr.replace(/^<div class="pl-ex-cahier"><div class="pl-consigne">[\s\S]*?<\/div>/, '<div class="pl-ex-cahier">');
+  // Avec la correction : la correction seule (elle reprend la consigne) ; l'énoncé ferait doublon.
+  if(corr && it.corr) return it.corr;
   return it.html;
 }
 /* Travaillé (maison, classe entière, autonomie) et support (en ligne, sur l'ordinateur), écrits dans le cahier de

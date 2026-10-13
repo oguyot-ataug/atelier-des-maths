@@ -3464,6 +3464,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1085', date:'2026-10-13', items:[
+    "Cahier : un exercice du manuel du site (depuis l'onglet Manuel ou une session) n'y figure plus en double « énoncé puis correction » : seulement la consigne et la correction. Les exercices déjà dans les cahiers s'affichent de la même façon.",
+  ]},
   { version:'2026-08-19.1084', date:'2026-10-13', items:[
     "Cahier : on peut maintenant modifier une entrée qui n'a pas été écrite dans l'outil de correction (construction aux instruments, exercice d'une session, d'un questionnaire ou du manuel du site) : son contenu s'ouvre comme un bloc dans l'éditeur, on peut changer le numéro, le titre, le chapitre, la date, le type, écrire autour ou ajouter des blocs. Avant, l'éditeur s'ouvrait vide et rien ne s'enregistrait.",
   ]},
