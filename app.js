@@ -3464,6 +3464,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1087', date:'2026-10-14', items:[
+    "6e, Fractions : nombres et partage : repérage d'une fraction sur une demi-droite graduée. Dans le cours, un paragraphe « Repérer une fraction sur une demi-droite graduée » (règle et exemple illustré). Dans les méthodes animées, 4 nouvelles méthodes avec une figure qui évolue à chaque étape : placer un point d'abscisse fractionnaire et lire l'abscisse d'un point sous forme de fraction, chaque fois quand l'axe commence à 0 et quand 0 n'est pas sur l'axe (on passe alors par le nombre mixte). Dans les exercices, 3 exercices corrigés avec figures (lire, placer en passant par des fractions égales, lire sans 0), et une question de plus dans le quiz.",
+    "6e, Nombres décimaux : la mention « 0 n'est pas sur l'axe » ne chevauche plus le nom du point.",
+  ]},
   { version:'2026-08-19.1086', date:'2026-10-14', items:[
     "6e, onglet Exercices et rédactions : chaque exercice a maintenant sa correction rédigée (bouton sous l'exercice) dans 15 chapitres : gestion de données, probabilités, pensée informatique, distances et cercles, angles, symétrie axiale, construction et propriétés des triangles, aire et périmètre, heures et durées, fractions, nombres décimaux, opérations, fractions (comparaison, addition).",
     "6e, Proportionnalité : l'onglet Exercices et rédactions (qui était « en préparation ») propose une rédaction type et 5 exercices corrigés.",

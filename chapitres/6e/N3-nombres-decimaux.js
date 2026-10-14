@@ -381,7 +381,7 @@ function ndAxeFig(o){
   if(o.acc){ const [a, b, t] = o.acc; g += `<path d="M${X(a)},${Y - 14} q0,-8 8,-8 h${X(b) - X(a) - 16} q8,0 8,8" fill="none" stroke="${VE}" stroke-width="1.6"/><text x="${(X(a) + X(b)) / 2}" y="${Y - 27}" font-size="13" font-weight="700" text-anchor="middle" fill="${VE}">${t}</text>`; }
   if(o.sauts){ const [a, b] = o.sauts, d = a < b ? 1 : -1; for(let i = a, k = 1; i !== b; i += d, k++) g += `<path d="M${X(i)},${Y - 3} q${w / 2 * d},-16 ${w * d},0" fill="none" stroke="${OR}" stroke-width="1.5"/><text x="${X(i) + w / 2 * d}" y="${Y - 17}" font-size="11" font-weight="700" text-anchor="middle" fill="${OR}">${k}</text>`; }
   if(o.pt){ const [i, nom, t] = o.pt; g += `<path d="M${X(i) - 5},${Y - 5} L${X(i) + 5},${Y + 5} M${X(i) - 5},${Y + 5} L${X(i) + 5},${Y - 5}" stroke="${OR}" stroke-width="2.6" stroke-linecap="round"/><text x="${X(i)}" y="${Y - 30}" font-size="17" font-weight="700" text-anchor="middle" fill="${OR}">${nom}</text>` + (t ? `<text x="${X(i)}" y="${Y + 48}" font-size="14" font-weight="700" text-anchor="middle" fill="${OR}">${t}</text>` : ''); }
-  if(o.origine) g += `<text x="12" y="${Y - 40}" font-size="12" fill="#7A4FC0">${o.origine}</text>`;
+  if(o.origine) g += `<text x="12" y="${Y - 54}" font-size="12" fill="#7A4FC0">${o.origine}</text>`;
   return `<svg viewBox="0 0 350 126" style="width:100%;min-width:300px;max-width:460px;display:block;">${g}</svg>`;
 }
 // Placer A(1,7) : axe de 0 à 3, unité partagée en 10.
