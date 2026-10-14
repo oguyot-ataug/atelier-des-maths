@@ -180,14 +180,20 @@ document.getElementById('exos-demo-distance-cercles').innerHTML = `
   <div class="exo-card">
     <div class="num">Exercice 1</div>
     Trace un segment [PQ] de longueur 8 cm, puis construis son milieu à la règle.
+    <button type="button" class="exo-correction-toggle" data-target="c6-g1-c1" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-g1-c1"><div><ol style="margin:0 0 6px;padding-left:20px;"><li>Je trace le segment [PQ] de 8 cm à la règle.</li><li>Le milieu est à égale distance de P et de Q : 8 ÷ 2 = 4 cm.</li><li>Je place le point I sur [PQ] à 4 cm de P et je code PI = IQ (deux petits traits identiques).</li></ol></div></div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 2</div>
     Un cercle a pour centre O et pour rayon 4 cm. Un point K est tel que OK = 4 cm, et un point L est tel que OL = 6 cm. K et L appartiennent-ils au cercle ? Au disque ? Rédige tes réponses.
+    <button type="button" class="exo-correction-toggle" data-target="c6-g1-c2" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-g1-c2"><div><p style="margin:0 0 6px;">Le cercle de centre O et de rayon 4 cm est formé des points situés à 4 cm de O ; le disque, des points situés à 4 cm ou moins de O.</p><p style="margin:0 0 6px;">OK = 4 cm, égal au rayon : <b>K appartient au cercle</b>, donc aussi au disque.</p><p style="margin:0 0 6px;">OL = 6 cm, plus grand que le rayon : <b>L n'appartient ni au cercle ni au disque.</b></p></div></div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 3</div>
     Sur un cercle de centre O, place deux points E et F tels que [EF] soit un diamètre, puis deux points M et N tels que [MN] soit une corde qui n'est pas un diamètre.
+    <button type="button" class="exo-correction-toggle" data-target="c6-g1-c3" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-g1-c3"><div><p style="margin:0 0 6px;">Un diamètre est une corde qui passe par le centre : je place E sur le cercle, je trace la droite (EO), elle recoupe le cercle en F. [EF] est un diamètre (EF = 2 × rayon).</p><p style="margin:0 0 6px;">Une corde relie deux points du cercle : je place M et N sur le cercle de façon que [MN] ne passe pas par O. C'est une corde qui n'est pas un diamètre (elle est plus courte qu'un diamètre).</p></div></div>
   </div>
 </div>
 `;

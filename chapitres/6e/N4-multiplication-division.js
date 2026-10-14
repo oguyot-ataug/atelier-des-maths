@@ -294,22 +294,32 @@ document.getElementById('exos-demo-multiplication-division-6e').innerHTML = `
   <div class="exo-card">
     <div class="num">Exercice 1</div>
     Calcule sans poser d'opération : 7,3 &times; 100 ; 512 ÷ 1 000 ; 9,4 &times; 0,01 ; 6 &times; 0,1.
+    <button type="button" class="exo-correction-toggle" data-target="c6-n4m-c1" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-n4m-c1"><div><p style="margin:0 0 6px;">7,3 × 100 = <b>730</b> (la virgule se décale de deux rangs vers la droite)</p><p style="margin:0 0 6px;">512 ÷ 1 000 = <b>0,512</b> (trois rangs vers la gauche)</p><p style="margin:0 0 6px;">9,4 × 0,01 = <b>0,094</b> (multiplier par 0,01, c'est diviser par 100)</p><p style="margin:0 0 6px;">6 × 0,1 = <b>0,6</b> (multiplier par 0,1, c'est diviser par 10)</p></div></div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 2</div>
     Effectue la multiplication de 2,6 par 1,4, en détaillant chaque étape.
+    <button type="button" class="exo-correction-toggle" data-target="c6-n4m-c2" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-n4m-c2"><div><p style="margin:0 0 6px;">Sans les virgules : 26 × 14 = 364.</p><p style="margin:0 0 6px;">Nombre de chiffres après la virgule : 1 (dans 2,6) + 1 (dans 1,4) = 2.</p><p style="margin:0 0 6px;">On place la virgule pour avoir 2 chiffres après : <b>2,6 × 1,4 = 3,64</b>.</p><p style="margin:0 0 6px;">Ordre de grandeur : 3 × 1 = 3, le résultat est cohérent.</p></div></div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 3</div>
     Calcule 15,4 &times; 2,3, en détaillant chaque étape (multiplication sans les virgules, puis placement de la virgule).
+    <button type="button" class="exo-correction-toggle" data-target="c6-n4m-c3" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-n4m-c3"><div><p style="margin:0 0 6px;">Sans les virgules : 154 × 23 = 3 542 (154 × 3 = 462 ; 154 × 20 = 3 080 ; 462 + 3 080 = 3 542).</p><p style="margin:0 0 6px;">Nombre de chiffres après la virgule : 1 + 1 = 2.</p><p style="margin:0 0 6px;"><b>15,4 × 2,3 = 35,42</b>.</p><p style="margin:0 0 6px;">Ordre de grandeur : 15 × 2 = 30, le résultat est cohérent.</p></div></div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 4</div>
     Pose et effectue la division de 63 par 4. Donne la valeur exacte du quotient.
+    <button type="button" class="exo-correction-toggle" data-target="c6-n4m-c4" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-n4m-c4"><div><p style="margin:0 0 6px;">63 ÷ 4 : en 6 dizaines, 1 fois 4, reste 2 ; en 23, 5 fois 4, reste 3 : quotient 15, reste 3.</p><p style="margin:0 0 6px;">On continue après la virgule : 30 dixièmes ÷ 4 = 7, reste 2 ; 20 centièmes ÷ 4 = 5, reste 0.</p><p style="margin:0 0 6px;"><b>63 ÷ 4 = 15,75</b> (valeur exacte : le reste est nul).</p></div></div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 5</div>
     Pose et effectue la division de 7,1 par 6. Donne une valeur approchée du quotient au centième.
+    <button type="button" class="exo-correction-toggle" data-target="c6-n4m-c5" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-n4m-c5"><div><p style="margin:0 0 6px;">7,1 ÷ 6 : 7 ÷ 6 = 1, reste 1 ; 11 dixièmes ÷ 6 = 1, reste 5 ; 50 centièmes ÷ 6 = 8, reste 2 ; 20 millièmes ÷ 6 = 3, reste 2… : 7,1 ÷ 6 = 1,183…</p><p style="margin:0 0 6px;">La division ne s'arrête pas (le reste 2 revient sans fin).</p><p style="margin:0 0 6px;"><b>Valeur approchée au centième : 1,18.</b></p></div></div>
   </div>
 </div>
 `;

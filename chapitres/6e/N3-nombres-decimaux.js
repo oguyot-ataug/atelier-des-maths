@@ -256,6 +256,42 @@ document.getElementById('histoire-demo-decimaux-6e').innerHTML = `
 `;
 
 document.getElementById('methode-demo-decimaux-6e').innerHTML = `
+<div class="sub-header"><span class="letter">M</span><h4>Méthode : placer un point d'abscisse donnée (l'axe commence à 0)</h4></div>
+<div class="figure-wrap" style="margin-top:12px;">
+  <p class="interaction-hint" style="margin:6px 0;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
+  <div class="step-display" id="ndPlacer0Display"></div>
+  <div class="figure-toolbar">
+    <button class="btn" onclick="ndPlacer0Demo.next()">Étape suivante →</button>
+    <button class="btn secondary" onclick="ndPlacer0Demo.reset()">Recommencer</button>
+  </div>
+</div>
+<div class="sub-header"><span class="letter">M</span><h4>Méthode : placer un point d'abscisse donnée (l'axe ne commence pas à 0)</h4></div>
+<div class="figure-wrap" style="margin-top:12px;">
+  <p class="interaction-hint" style="margin:6px 0;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
+  <div class="step-display" id="ndPlacerSans0Display"></div>
+  <div class="figure-toolbar">
+    <button class="btn" onclick="ndPlacerSans0Demo.next()">Étape suivante →</button>
+    <button class="btn secondary" onclick="ndPlacerSans0Demo.reset()">Recommencer</button>
+  </div>
+</div>
+<div class="sub-header"><span class="letter">M</span><h4>Méthode : lire l'abscisse d'un point (l'axe commence à 0)</h4></div>
+<div class="figure-wrap" style="margin-top:12px;">
+  <p class="interaction-hint" style="margin:6px 0;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
+  <div class="step-display" id="ndLire0Display"></div>
+  <div class="figure-toolbar">
+    <button class="btn" onclick="ndLire0Demo.next()">Étape suivante →</button>
+    <button class="btn secondary" onclick="ndLire0Demo.reset()">Recommencer</button>
+  </div>
+</div>
+<div class="sub-header"><span class="letter">M</span><h4>Méthode : lire l'abscisse d'un point (l'axe ne commence pas à 0)</h4></div>
+<div class="figure-wrap" style="margin-top:12px;">
+  <p class="interaction-hint" style="margin:6px 0;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
+  <div class="step-display" id="ndLireSans0Display"></div>
+  <div class="figure-toolbar">
+    <button class="btn" onclick="ndLireSans0Demo.next()">Étape suivante →</button>
+    <button class="btn secondary" onclick="ndLireSans0Demo.reset()">Recommencer</button>
+  </div>
+</div>
 <div class="sub-header"><span class="letter">M</span><h4>Méthode : comparer deux nombres décimaux</h4></div>
 <div class="figure-wrap">
   <p class="interaction-hint" style="margin-top:6px;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
@@ -299,25 +335,97 @@ document.getElementById('exos-demo-decimaux-6e').innerHTML = `
   <div class="exo-card">
     <div class="num">Exercice 1</div>
     Écris en toutes lettres le nombre 3 067,452, puis donnes-en une décomposition.
+    <button type="button" class="exo-correction-toggle" data-target="c6-n3-c1" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-n3-c1"><div><p style="margin:0 0 6px;"><b>Trois-mille-soixante-sept unités et quatre-cent-cinquante-deux millièmes</b> (ou trois-mille-soixante-sept virgule quatre-cent-cinquante-deux).</p><p style="margin:0 0 6px;">3 067,452 = (3 × 1 000) + (0 × 100) + (6 × 10) + (7 × 1) + (4 × 0,1) + (5 × 0,01) + (2 × 0,001)</p><p style="margin:0 0 6px;">ou encore : 3 067,452 = 3 067 + <span class="tex">\\dfrac{4}{10}</span> + <span class="tex">\\dfrac{5}{100}</span> + <span class="tex">\\dfrac{2}{1000}</span></p></div></div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 2</div>
     Compare les nombres 58,371 et 58,38. Rédige ta réponse.
+    <button type="button" class="exo-correction-toggle" data-target="c6-n3-c2" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-n3-c2"><div><p style="margin:0 0 6px;">Les parties entières sont égales : 58 = 58.</p><p style="margin:0 0 6px;">Les chiffres des dixièmes sont égaux : 3 = 3.</p><p style="margin:0 0 6px;">Chiffres des centièmes : 7 &lt; 8.</p><p style="margin:0 0 6px;"><b>Donc 58,371 &lt; 58,38.</b></p></div></div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 3</div>
     Range dans l'ordre décroissant : 7,05 ; 7,5 ; 70,5 ; 7,505.
+    <button type="button" class="exo-correction-toggle" data-target="c6-n3-c3" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-n3-c3"><div><p style="margin:0 0 6px;">Le plus grand est 70,5 (partie entière 70). Les trois autres ont pour partie entière 7 ; on compare les dixièmes : 5 pour 7,5 et 7,505, 0 pour 7,05. Enfin 7,505 = 7,505 et 7,5 = 7,500 : 7,505 &gt; 7,5.</p><p style="margin:0 0 6px;"><b>70,5 &gt; 7,505 &gt; 7,5 &gt; 7,05</b></p></div></div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 4</div>
     Sur une demi-droite graduée, place les points R(2,3) et S(0,8).
+    <button type="button" class="exo-correction-toggle" data-target="c6-n3-c4" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-n3-c4"><div><p style="margin:0 0 6px;">On choisit une unité de 10 carreaux : chaque carreau représente un dixième.</p><p style="margin:0 0 6px;">R(2,3) : 2 unités et 3 dixièmes, soit 23 dixièmes à partir de 0 ; S(0,8) : 8 dixièmes à partir de 0.</p><svg viewBox="0 0 350 62" style="width:350px;max-width:100%;display:block;margin:4px 0;"><line x1="20" y1="34" x2="340" y2="34" stroke="#1F3A5C" stroke-width="1.6"/><path d="M340,34 l-7,-4 v8 z" fill="#1F3A5C"/><line x1="20" y1="26" x2="20" y2="42" stroke="#1F3A5C" stroke-width="1.6"/><line x1="30" y1="30" x2="30" y2="38" stroke="#1F3A5C" stroke-width="1"/><line x1="40" y1="30" x2="40" y2="38" stroke="#1F3A5C" stroke-width="1"/><line x1="50" y1="30" x2="50" y2="38" stroke="#1F3A5C" stroke-width="1"/><line x1="60" y1="30" x2="60" y2="38" stroke="#1F3A5C" stroke-width="1"/><line x1="70" y1="30" x2="70" y2="38" stroke="#1F3A5C" stroke-width="1"/><line x1="80" y1="30" x2="80" y2="38" stroke="#1F3A5C" stroke-width="1"/><line x1="90" y1="30" x2="90" y2="38" stroke="#1F3A5C" stroke-width="1"/><line x1="100" y1="30" x2="100" y2="38" stroke="#1F3A5C" stroke-width="1"/><line x1="110" y1="30" x2="110" y2="38" stroke="#1F3A5C" stroke-width="1"/><line x1="120" y1="26" x2="120" y2="42" stroke="#1F3A5C" stroke-width="1.6"/><line x1="130" y1="30" x2="130" y2="38" stroke="#1F3A5C" stroke-width="1"/><line x1="140" y1="30" x2="140" y2="38" stroke="#1F3A5C" stroke-width="1"/><line x1="150" y1="30" x2="150" y2="38" stroke="#1F3A5C" stroke-width="1"/><line x1="160" y1="30" x2="160" y2="38" stroke="#1F3A5C" stroke-width="1"/><line x1="170" y1="30" x2="170" y2="38" stroke="#1F3A5C" stroke-width="1"/><line x1="180" y1="30" x2="180" y2="38" stroke="#1F3A5C" stroke-width="1"/><line x1="190" y1="30" x2="190" y2="38" stroke="#1F3A5C" stroke-width="1"/><line x1="200" y1="30" x2="200" y2="38" stroke="#1F3A5C" stroke-width="1"/><line x1="210" y1="30" x2="210" y2="38" stroke="#1F3A5C" stroke-width="1"/><line x1="220" y1="26" x2="220" y2="42" stroke="#1F3A5C" stroke-width="1.6"/><line x1="230" y1="30" x2="230" y2="38" stroke="#1F3A5C" stroke-width="1"/><line x1="240" y1="30" x2="240" y2="38" stroke="#1F3A5C" stroke-width="1"/><line x1="250" y1="30" x2="250" y2="38" stroke="#1F3A5C" stroke-width="1"/><line x1="260" y1="30" x2="260" y2="38" stroke="#1F3A5C" stroke-width="1"/><line x1="270" y1="30" x2="270" y2="38" stroke="#1F3A5C" stroke-width="1"/><line x1="280" y1="30" x2="280" y2="38" stroke="#1F3A5C" stroke-width="1"/><line x1="290" y1="30" x2="290" y2="38" stroke="#1F3A5C" stroke-width="1"/><line x1="300" y1="30" x2="300" y2="38" stroke="#1F3A5C" stroke-width="1"/><line x1="310" y1="30" x2="310" y2="38" stroke="#1F3A5C" stroke-width="1"/><line x1="320" y1="26" x2="320" y2="42" stroke="#1F3A5C" stroke-width="1.6"/><text x="20" y="56" font-size="11" text-anchor="middle">0</text><text x="120" y="56" font-size="11" text-anchor="middle">1</text><text x="220" y="56" font-size="11" text-anchor="middle">2</text><text x="320" y="56" font-size="11" text-anchor="middle">3</text><circle cx="250" cy="34" r="3.5" fill="#E35D3A"/><text x="250" y="20" font-size="12" font-weight="700" fill="#E35D3A" text-anchor="middle">R</text><circle cx="100" cy="34" r="3.5" fill="#E35D3A"/><text x="100" y="20" font-size="12" font-weight="700" fill="#E35D3A" text-anchor="middle">S</text></svg></div></div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 5</div>
     Pour le nombre 62,489, donne : <b>a.</b> le chiffre des centièmes ; <b>b.</b> le nombre de centièmes. Explique la différence entre les deux réponses.
+    <button type="button" class="exo-correction-toggle" data-target="c6-n3-c5" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-n3-c5"><div><p style="margin:0 0 6px;"><b>a.</b> Le chiffre des centièmes est <b>8</b> (le deuxième chiffre après la virgule).</p><p style="margin:0 0 6px;"><b>b.</b> Le nombre de centièmes est <b>6 248</b> : 62,489 = 6 248 centièmes + 9 millièmes (6 248 × 0,01 = 62,48).</p><p style="margin:0 0 6px;">Le chiffre des centièmes est un seul chiffre, à une position ; le nombre de centièmes compte tous les centièmes contenus dans le nombre : on lit tous les chiffres jusqu'à cette position.</p></div></div>
   </div>
 </div>
 `;
+
+/* ---- Méthodes : placer un point d'abscisse donnée, lire l'abscisse d'un point (axe gradué), avec ou sans 0 --
+   demandé : « expliquer le placement d'un point avec son abscisse sur un axe gradué. Avec la présence de 0 ou pas.
+   Dans les deux sens, lire et placer ». La figure évolue à chaque étape (stepAvecFig). ---- */
+// o = { n : nombre d'intervalles ; lab : {graduation: texte} ; hl : graduations repérées à entourer ;
+//       acc : [i0, i1, texte] accolade (la valeur d'une graduation) ; gras : [i0, i1] (une unité) ;
+//       sauts : [i0, i1] (les bonds comptés) ; pt : [i, nom, texte sous le point] ; origine : texte en début d'axe }
+function ndAxeFig(o){
+  const n = o.n, w = 300 / n, X = i => 22 + i * w, Y = 70, K = '#1F3A5C', OR = '#E35D3A', VE = '#1E7B34';
+  let g = `<line x1="10" y1="${Y}" x2="${X(n) + 16}" y2="${Y}" stroke="${K}" stroke-width="1.8"/><path d="M${X(n) + 20},${Y} l-8,-4 v8 z" fill="${K}"/>`;
+  if(o.gras) g += `<line x1="${X(o.gras[0])}" y1="${Y}" x2="${X(o.gras[1])}" y2="${Y}" stroke="#2EA8C9" stroke-width="6" stroke-linecap="round" opacity=".7"/>`;
+  for(let i = 0; i <= n; i++){ const lab = o.lab && o.lab[i] != null; g += `<line x1="${X(i)}" y1="${Y - (lab ? 9 : 5)}" x2="${X(i)}" y2="${Y + (lab ? 9 : 5)}" stroke="${K}" stroke-width="${lab ? 1.8 : 1}"/>`; }
+  Object.entries(o.lab || {}).forEach(([i, t]) => { const on = (o.hl || []).includes(+i);
+    g += (on ? `<rect x="${X(+i) - 20}" y="${Y + 12}" width="40" height="21" rx="10" fill="#FFF3D6" stroke="#E9A21C" stroke-width="1.4"/>` : '') + `<text x="${X(+i)}" y="${Y + 28}" font-size="14" font-weight="700" text-anchor="middle" fill="${K}">${t}</text>`; });
+  if(o.acc){ const [a, b, t] = o.acc; g += `<path d="M${X(a)},${Y - 14} q0,-8 8,-8 h${X(b) - X(a) - 16} q8,0 8,8" fill="none" stroke="${VE}" stroke-width="1.6"/><text x="${(X(a) + X(b)) / 2}" y="${Y - 27}" font-size="13" font-weight="700" text-anchor="middle" fill="${VE}">${t}</text>`; }
+  if(o.sauts){ const [a, b] = o.sauts, d = a < b ? 1 : -1; for(let i = a, k = 1; i !== b; i += d, k++) g += `<path d="M${X(i)},${Y - 3} q${w / 2 * d},-16 ${w * d},0" fill="none" stroke="${OR}" stroke-width="1.5"/><text x="${X(i) + w / 2 * d}" y="${Y - 17}" font-size="11" font-weight="700" text-anchor="middle" fill="${OR}">${k}</text>`; }
+  if(o.pt){ const [i, nom, t] = o.pt; g += `<path d="M${X(i) - 5},${Y - 5} L${X(i) + 5},${Y + 5} M${X(i) - 5},${Y + 5} L${X(i) + 5},${Y - 5}" stroke="${OR}" stroke-width="2.6" stroke-linecap="round"/><text x="${X(i)}" y="${Y - 30}" font-size="17" font-weight="700" text-anchor="middle" fill="${OR}">${nom}</text>` + (t ? `<text x="${X(i)}" y="${Y + 48}" font-size="14" font-weight="700" text-anchor="middle" fill="${OR}">${t}</text>` : ''); }
+  if(o.origine) g += `<text x="12" y="${Y - 40}" font-size="12" fill="#7A4FC0">${o.origine}</text>`;
+  return `<svg viewBox="0 0 350 126" style="width:100%;min-width:300px;max-width:460px;display:block;">${g}</svg>`;
+}
+// Placer A(1,7) : axe de 0 à 3, unité partagée en 10.
+const ND_PL0 = { n: 30, lab: { 0: '0', 10: '1', 20: '2', 30: '3' } };
+const ND_PLACER0_STEPS = [
+  { expr: 'Placer le point A d\'abscisse 1,7.', note: "L'axe commence à 0 : c'est l'origine. On repère d'abord les nombres écrits sous l'axe.", fig: ndAxeFig(ND_PL0) },
+  { expr: 'Une unité (de 0 à 1) est partagée en 10 : une graduation vaut 1 ÷ 10 = 0,1.', note: "On compte les intervalles (les « sauts ») entre 0 et 1, pas les traits : il y en a 10.", fig: ndAxeFig(Object.assign({ acc: [0, 10, '10 sauts : 1 unité'], gras: [0, 10] }, ND_PL0)) },
+  { expr: '1,7 = 1 + 0,7 = 1 + 7 × 0,1', note: "On décompose l'abscisse : la partie entière 1, puis 7 dixièmes.", fig: ndAxeFig(Object.assign({ hl: [10] }, ND_PL0)) },
+  { expr: 'On part de 1 et on avance de 7 graduations.', note: "Chaque saut vaut 0,1 : 1,1 ; 1,2 ; … ; 1,7.", fig: ndAxeFig(Object.assign({ hl: [10], sauts: [10, 17] }, ND_PL0)) },
+  { expr: 'On place le point A : A(1,7).', note: "On marque le point d'une croix et on écrit son nom. On vérifie : A est entre 1 et 2, plus près de 2.", fig: ndAxeFig(Object.assign({ pt: [17, 'A', '1,7'] }, ND_PL0)) },
+];
+const ndPlacer0Demo = makeStepDemo(ND_PLACER0_STEPS, 'ndPlacer0Display');
+// Placer B(2,47) : l'axe commence à 2,4 (pas de 0), graduations de 0,01.
+const ND_PLS = { n: 20, lab: { 0: '2,4', 10: '2,5', 20: '2,6' }, origine: '0 n\'est pas sur l\'axe' };
+const ND_PLACERSANS0_STEPS = [
+  { expr: 'Placer le point B d\'abscisse 2,47.', note: "Ici, l'axe ne commence pas à 0 : on ne peut pas compter depuis l'origine.", fig: ndAxeFig(ND_PLS) },
+  { expr: 'On repère deux nombres écrits qui se suivent : 2,4 et 2,5.', note: "Ce sont eux qui donnent la valeur d'une graduation.", fig: ndAxeFig(Object.assign({ hl: [0, 10] }, ND_PLS)) },
+  { expr: 'Écart : 2,5 − 2,4 = 0,1, partagé en 10 sauts : une graduation vaut 0,1 ÷ 10 = 0,01.', note: "Valeur d'une graduation = écart entre deux nombres écrits ÷ nombre de sauts entre eux.", fig: ndAxeFig(Object.assign({ hl: [0, 10], acc: [0, 10, '10 sauts : 0,1'] }, ND_PLS)) },
+  { expr: '2,47 = 2,4 + 0,07 = 2,4 + 7 × 0,01', note: "On part du nombre écrit juste avant 2,47 : c'est 2,4.", fig: ndAxeFig(Object.assign({ hl: [0] }, ND_PLS)) },
+  { expr: 'On part de 2,4 et on avance de 7 graduations.', note: "2,41 ; 2,42 ; … ; 2,47.", fig: ndAxeFig(Object.assign({ hl: [0], sauts: [0, 7] }, ND_PLS)) },
+  { expr: 'On place le point B : B(2,47).', note: "Vérification : B est entre 2,4 et 2,5, plus près de 2,5 (2,47 est proche de 2,5).", fig: ndAxeFig(Object.assign({ pt: [7, 'B', '2,47'] }, ND_PLS)) },
+];
+const ndPlacerSans0Demo = makeStepDemo(ND_PLACERSANS0_STEPS, 'ndPlacerSans0Display');
+// Lire C : axe de 0 à 2, unité partagée en 5 (graduation 0,2).
+const ND_L0 = { n: 10, lab: { 0: '0', 5: '1', 10: '2' } };
+const ND_LIRE0_STEPS = [
+  { expr: 'Quelle est l\'abscisse du point C ?', note: "L'axe commence à 0. On cherche d'abord la valeur d'une graduation.", fig: ndAxeFig(Object.assign({ pt: [7, 'C'] }, ND_L0)) },
+  { expr: 'De 0 à 1, il y a 5 sauts : une graduation vaut 1 ÷ 5 = 0,2.', note: "Attention : ici, une graduation ne vaut pas 0,1 ! On compte toujours les sauts dans une unité.", fig: ndAxeFig(Object.assign({ pt: [7, 'C'], acc: [0, 5, '5 sauts : 1 unité'], gras: [0, 5] }, ND_L0)) },
+  { expr: 'C est 2 graduations après 1.', note: "On part du nombre écrit le plus proche avant C : 1.", fig: ndAxeFig(Object.assign({ pt: [7, 'C'], hl: [5], sauts: [5, 7] }, ND_L0)) },
+  { expr: '1 + 2 × 0,2 = 1 + 0,4 = 1,4', note: "On ajoute la valeur des sauts au nombre de départ.", fig: ndAxeFig(Object.assign({ pt: [7, 'C', '1,4'], hl: [5], sauts: [5, 7] }, ND_L0)) },
+  { expr: 'L\'abscisse de C est 1,4 : C(1,4).', note: "On écrit le nom du point, puis son abscisse entre parenthèses.", fig: ndAxeFig(Object.assign({ pt: [7, 'C', '1,4'] }, ND_L0)) },
+];
+const ndLire0Demo = makeStepDemo(ND_LIRE0_STEPS, 'ndLire0Display');
+// Lire D : l'axe commence à 7,5 (pas de 0), graduation 0,1, D après 8.
+const ND_LS = { n: 10, lab: { 0: '7,5', 5: '8', 10: '8,5' }, origine: '0 n\'est pas sur l\'axe' };
+const ND_LIRESANS0_STEPS = [
+  { expr: 'Quelle est l\'abscisse du point D ?', note: "Il n'y a pas de 0 sur l'axe : on ne compte pas depuis le début de l'axe.", fig: ndAxeFig(Object.assign({ pt: [8, 'D'] }, ND_LS)) },
+  { expr: 'On repère deux nombres écrits : 7,5 et 8.', note: "Ils se suivent sur l'axe.", fig: ndAxeFig(Object.assign({ pt: [8, 'D'], hl: [0, 5] }, ND_LS)) },
+  { expr: 'Écart : 8 − 7,5 = 0,5, partagé en 5 sauts : une graduation vaut 0,5 ÷ 5 = 0,1.', note: "Valeur d'une graduation = écart ÷ nombre de sauts.", fig: ndAxeFig(Object.assign({ pt: [8, 'D'], hl: [0, 5], acc: [0, 5, '5 sauts : 0,5'] }, ND_LS)) },
+  { expr: 'D est 3 graduations après 8.', note: "On part du nombre écrit le plus proche avant D : 8.", fig: ndAxeFig(Object.assign({ pt: [8, 'D'], hl: [5], sauts: [5, 8] }, ND_LS)) },
+  { expr: '8 + 3 × 0,1 = 8 + 0,3 = 8,3', note: "On ajoute la valeur des sauts au nombre de départ.", fig: ndAxeFig(Object.assign({ pt: [8, 'D', '8,3'], hl: [5], sauts: [5, 8] }, ND_LS)) },
+  { expr: 'L\'abscisse de D est 8,3 : D(8,3).', note: "Vérification : D est entre 8 et 8,5 ; 8,3 aussi.", fig: ndAxeFig(Object.assign({ pt: [8, 'D', '8,3'] }, ND_LS)) },
+];
+const ndLireSans0Demo = makeStepDemo(ND_LIRESANS0_STEPS, 'ndLireSans0Display');
 
 /* ---- Méthode : comparer deux nombres décimaux ---- */
 const ND_COMPARER_STEPS = [
@@ -352,6 +460,7 @@ DEMO_REGISTRY['6e|Nombres décimaux'] = {
   cours:'cours-demo-decimaux-6e', methode:'methode-demo-decimaux-6e', exos:'exos-demo-decimaux-6e', histoire:'histoire-demo-decimaux-6e',
   init:()=>{
     ndInitDemiDroiteDrag();
+    ndPlacer0Demo.reset(); ndPlacerSans0Demo.reset(); ndLire0Demo.reset(); ndLireSans0Demo.reset();
     ndComparerDemo.reset();
     ndDecomposerDemo.reset();
     ndChiffreNombreDemo.reset();

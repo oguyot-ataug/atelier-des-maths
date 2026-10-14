@@ -1197,18 +1197,26 @@ document.getElementById('exos-demo-angles-rapporteur-6e').innerHTML = `
   <div class="exo-card">
     <div class="num">Exercice 1</div>
     Trace un angle <span class="tex">\\widehat{xOy}</span> de 128° avec un rapporteur.
+    <button type="button" class="exo-correction-toggle" data-target="c6-g3-c1" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-g3-c1"><div><ol style="margin:0 0 6px;padding-left:20px;"><li>Je trace une demi-droite [Ox).</li><li>Je place le centre du rapporteur sur O et la graduation 0 sur [Ox).</li><li>Je lis 128° sur la graduation qui part de 0 (l'angle est obtus : plus grand qu'un angle droit) et je marque un point.</li><li>Je trace la demi-droite [Oy) qui passe par ce point, et je code l'angle.</li></ol></div></div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 2</div>
     Deux droites sécantes en O forment quatre angles. L'un d'eux mesure 38°. Donne les mesures des trois autres.
+    <button type="button" class="exo-correction-toggle" data-target="c6-g3-c2" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-g3-c2"><div><p style="margin:0 0 6px;">Deux angles opposés par le sommet ont la même mesure : l'angle opposé à celui de 38° mesure <b>38°</b>.</p><p style="margin:0 0 6px;">Deux angles voisins forment un angle plat : 180° − 38° = 142°.</p><p style="margin:0 0 6px;"><b>Les trois autres angles mesurent 142°, 38° et 142°.</b></p></div></div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 3</div>
     Les angles adjacents <span class="tex">\\widehat{DOE}</span> et <span class="tex">\\widehat{EOF}</span> forment un angle plat. Sachant que <span class="tex">\\widehat{DOE} = 95°</span>, calcule la mesure de <span class="tex">\\widehat{EOF}</span>. Rédige ta réponse.
+    <button type="button" class="exo-correction-toggle" data-target="c6-g3-c3" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-g3-c3"><div><p style="margin:0 0 6px;">Les angles <span class="tex">\\widehat{DOE}</span> et <span class="tex">\\widehat{EOF}</span> sont adjacents et forment un angle plat, donc leur somme vaut 180°.</p><p style="margin:0 0 6px;"><span class="tex">\\widehat{EOF} = 180° - 95° = 85°</span></p><p style="margin:0 0 6px;"><b>L'angle <span class="tex">\\widehat{EOF}</span> mesure 85°.</b></p></div></div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 4</div>
     Construis un angle de 75°, puis trace sa bissectrice à l'aide d'un rapporteur.
+    <button type="button" class="exo-correction-toggle" data-target="c6-g3-c4" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-g3-c4"><div><p style="margin:0 0 6px;">La bissectrice partage l'angle en deux angles de même mesure : 75° ÷ 2 = 37,5°.</p><ol style="margin:0 0 6px;padding-left:20px;"><li>Je trace un angle <span class="tex">\\widehat{xOy}</span> de 75° au rapporteur.</li><li>Je place de nouveau le rapporteur sur O, le 0 sur [Ox), et je marque 37,5°.</li><li>Je trace la demi-droite [Oz) : c'est la bissectrice. Je code les deux angles égaux.</li></ol></div></div>
   </div>
 </div>
 `;

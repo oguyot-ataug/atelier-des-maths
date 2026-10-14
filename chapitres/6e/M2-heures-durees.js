@@ -175,26 +175,38 @@ document.getElementById('exos-demo-heures-durees').innerHTML = `
   <div class="exo-card">
     <div class="num">Exercice 1</div>
     Combien de secondes y a-t-il dans 1 h 15 min 42 s ?
+    <button type="button" class="exo-correction-toggle" data-target="c6-m2-c1" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-m2-c1"><div><p style="margin:0 0 6px;">1 h = 3 600 s</p><p style="margin:0 0 6px;">15 min = 15 × 60 = 900 s</p><p style="margin:0 0 6px;">3 600 + 900 + 42 = 4 542</p><p style="margin:0 0 6px;"><b>1 h 15 min 42 s = 4 542 s.</b></p></div></div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 2</div>
     Combien d'heures, minutes et secondes y a-t-il dans 9 500 s ?
+    <button type="button" class="exo-correction-toggle" data-target="c6-m2-c2" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-m2-c2"><div><p style="margin:0 0 6px;">9 500 = 2 × 3 600 + 2 300 : cela fait 2 h et il reste 2 300 s.</p><p style="margin:0 0 6px;">2 300 = 38 × 60 + 20 : cela fait 38 min et il reste 20 s.</p><p style="margin:0 0 6px;"><b>9 500 s = 2 h 38 min 20 s.</b></p></div></div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 3</div>
     Convertis 3 h 12 min en écriture décimale.
+    <button type="button" class="exo-correction-toggle" data-target="c6-m2-c3" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-m2-c3"><div><p style="margin:0 0 6px;">12 min = <span class="tex">\\dfrac{12}{60}</span> h = 0,2 h</p><p style="margin:0 0 6px;"><b>3 h 12 min = 3,2 h.</b></p></div></div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 4</div>
     Convertis 4,6 h en heures et minutes.
+    <button type="button" class="exo-correction-toggle" data-target="c6-m2-c4" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-m2-c4"><div><p style="margin:0 0 6px;">0,6 h = 0,6 × 60 min = 36 min</p><p style="margin:0 0 6px;"><b>4,6 h = 4 h 36 min.</b></p></div></div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 5</div>
     Pose et calcule 3 h 35 min 50 s + 2 h 48 min 22 s.
+    <button type="button" class="exo-correction-toggle" data-target="c6-m2-c5" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-m2-c5"><div><table style="border-collapse:collapse;margin:4px 0 8px;"><tr><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;font-weight:700;background:#EEF4FB;"></td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">h</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">min</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">s</td></tr><tr><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;font-weight:700;background:#EEF4FB;"></td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">3</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">35</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">50</td></tr><tr><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;font-weight:700;background:#EEF4FB;">+</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">2</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">48</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">22</td></tr><tr><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;font-weight:700;background:#EEF4FB;">=</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">5</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">83</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">72</td></tr></table><p style="margin:0 0 6px;">72 s = 1 min 12 s : on obtient 5 h 84 min 12 s.</p><p style="margin:0 0 6px;">84 min = 1 h 24 min : on obtient 6 h 24 min 12 s.</p><p style="margin:0 0 6px;"><b>3 h 35 min 50 s + 2 h 48 min 22 s = 6 h 24 min 12 s.</b></p></div></div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 6</div>
     Pose et calcule 6 h 10 min 5 s − 3 h 42 min 38 s.
+    <button type="button" class="exo-correction-toggle" data-target="c6-m2-c6" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-m2-c6"><div><p style="margin:0 0 6px;">On ne peut pas retirer 38 s de 5 s : on transforme 1 min en 60 s. 6 h 10 min 5 s = 6 h 9 min 65 s.</p><p style="margin:0 0 6px;">On ne peut pas retirer 42 min de 9 min : on transforme 1 h en 60 min. 6 h 9 min 65 s = 5 h 69 min 65 s.</p><table style="border-collapse:collapse;margin:4px 0 8px;"><tr><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;font-weight:700;background:#EEF4FB;"></td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">h</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">min</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">s</td></tr><tr><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;font-weight:700;background:#EEF4FB;"></td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">5</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">69</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">65</td></tr><tr><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;font-weight:700;background:#EEF4FB;">−</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">3</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">42</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">38</td></tr><tr><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;font-weight:700;background:#EEF4FB;">=</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">2</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">27</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">27</td></tr></table><p style="margin:0 0 6px;"><b>6 h 10 min 5 s − 3 h 42 min 38 s = 2 h 27 min 27 s.</b></p><p style="margin:0 0 6px;">Vérification : 3 h 42 min 38 s + 2 h 27 min 27 s = 6 h 10 min 5 s.</p></div></div>
   </div>
 </div>
 `;

@@ -114,22 +114,32 @@ document.getElementById('exos-demo-probabilites').innerHTML = `
   <div class="exo-card">
     <div class="num">Exercice 1</div>
     On lance un dé à jouer à huit faces numérotées de 1 à 8. Quelles sont les issues de cette expérience aléatoire ?
+    <button type="button" class="exo-correction-toggle" data-target="c6-d2-c1" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-d2-c1"><div><p style="margin:0 0 6px;">Les issues sont les résultats possibles : <b>1, 2, 3, 4, 5, 6, 7 et 8</b>. Il y en a 8.</p></div></div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 2</div>
     On lance le dé à huit faces de l'exercice 1. L'évènement « <i>Obtenir un multiple de 3.</i> » est-il certain, impossible, ou ni l'un ni l'autre ? Justifie.
+    <button type="button" class="exo-correction-toggle" data-target="c6-d2-c2" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-d2-c2"><div><p style="margin:0 0 6px;">Parmi les issues 1 à 8, les multiples de 3 sont 3 et 6.</p><p style="margin:0 0 6px;">L'évènement peut se produire (avec 3 ou 6) : il n'est pas impossible.</p><p style="margin:0 0 6px;">Il peut aussi ne pas se produire (avec 1, par exemple) : il n'est pas certain.</p><p style="margin:0 0 6px;"><b>Il n'est donc ni certain, ni impossible.</b></p></div></div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 3</div>
     Une roue est partagée en 8 secteurs identiques : 3 jaunes et 5 verts. On fait tourner la roue. Calcule la probabilité d'obtenir un secteur jaune.
+    <button type="button" class="exo-correction-toggle" data-target="c6-d2-c3" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-d2-c3"><div><p style="margin:0 0 6px;">Les 8 secteurs sont identiques : chacun a la même chance de sortir.</p><p style="margin:0 0 6px;">3 secteurs sur 8 sont jaunes.</p><p style="margin:0 0 6px;"><b>La probabilité d'obtenir un secteur jaune est <span class="tex">\\dfrac{3}{8}</span>.</b></p></div></div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 4</div>
     On lance le dé à huit faces de l'exercice 1. Calcule la probabilité de l'évènement « <i>Obtenir un multiple de 3.</i> ».
+    <button type="button" class="exo-correction-toggle" data-target="c6-d2-c4" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-d2-c4"><div><p style="margin:0 0 6px;">Le dé est équilibré : les 8 issues ont la même probabilité.</p><p style="margin:0 0 6px;">Les issues favorables sont 3 et 6 : il y en a 2.</p><p style="margin:0 0 6px;">La probabilité est <span class="tex">\\dfrac{2}{8}</span>, c'est-à-dire <span class="tex">\\dfrac{1}{4}</span>.</p></div></div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 5</div>
     Un sac contient des billes rouges et des billes bleues, indiscernables au toucher, 12 en tout. La probabilité de tirer une bille rouge est <span class="tex">\\dfrac{1}{4}</span>. Combien y a-t-il de billes rouges dans le sac ? Rédige ta réponse.
+    <button type="button" class="exo-correction-toggle" data-target="c6-d2-c5" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-d2-c5"><div><p style="margin:0 0 6px;">La probabilité de tirer une bille rouge est <span class="tex">\\dfrac{1}{4}</span> : le quart des billes sont rouges.</p><p style="margin:0 0 6px;">Le quart de 12, c'est 12 ÷ 4 = 3.</p><p style="margin:0 0 6px;"><b>Il y a 3 billes rouges dans le sac</b> (et 9 bleues).</p></div></div>
   </div>
 </div>
 `;

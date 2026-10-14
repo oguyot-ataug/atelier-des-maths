@@ -343,18 +343,26 @@ document.getElementById('exos-demo-operations-ordre-grandeur-6e').innerHTML = `
   <div class="exo-card">
     <div class="num">Exercice 1</div>
     Pose et effectue : 23,7 + 4,08 + 9, puis 18 − 5,64.
+    <button type="button" class="exo-correction-toggle" data-target="c6-n4o-c1" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-n4o-c1"><div><p style="margin:0 0 6px;">On aligne les virgules (9 = 9,00 et 18 = 18,00) :</p><table style="border-collapse:collapse;margin:4px 0 8px;"><tr><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;font-weight:700;background:#EEF4FB;"></td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">2</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">3</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">,</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">7</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">0</td></tr><tr><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;font-weight:700;background:#EEF4FB;">+</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;"></td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">4</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">,</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">0</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">8</td></tr><tr><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;font-weight:700;background:#EEF4FB;">+</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;"></td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">9</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">,</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">0</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">0</td></tr><tr><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;font-weight:700;background:#EEF4FB;">=</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">3</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">6</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">,</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">7</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">8</td></tr></table><p style="margin:0 0 6px;"><b>23,7 + 4,08 + 9 = 36,78</b></p><p style="margin:0 0 6px;"><b>18 − 5,64 = 12,36</b> (18,00 − 5,64)</p></div></div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 2</div>
     Arrondis 14,378 au centième.
+    <button type="button" class="exo-correction-toggle" data-target="c6-n4o-c2" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-n4o-c2"><div><p style="margin:0 0 6px;">Au centième, on garde 2 chiffres après la virgule : 14,37|8. Le chiffre suivant est 8, plus grand que 5 : on arrondit à 14,38.</p><p style="margin:0 0 6px;"><b>14,378 ≈ 14,38</b></p></div></div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 3</div>
     Arrondis 6,95 à l'unité (attention à la retenue).
+    <button type="button" class="exo-correction-toggle" data-target="c6-n4o-c3" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-n4o-c3"><div><p style="margin:0 0 6px;">À l'unité : 6,|95. Le chiffre des dixièmes est 9, plus grand que 5 : on arrondit à l'unité supérieure, 6 + 1 = 7.</p><p style="margin:0 0 6px;"><b>6,95 ≈ 7</b></p></div></div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 4</div>
     Pour le nombre 12,367, donne : la troncature au dixième, l'arrondi par défaut au dixième, l'arrondi par excès au dixième, puis l'arrondi classique au dixième.
+    <button type="button" class="exo-correction-toggle" data-target="c6-n4o-c4" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-n4o-c4"><div><p style="margin:0 0 6px;">12,367 est compris entre 12,3 et 12,4.</p><p style="margin:0 0 6px;">Troncature au dixième : <b>12,3</b> (on coupe après les dixièmes).</p><p style="margin:0 0 6px;">Arrondi par défaut au dixième : <b>12,3</b> ; par excès : <b>12,4</b>.</p><p style="margin:0 0 6px;">Arrondi au dixième : le chiffre des centièmes est 6, plus grand que 5 : <b>12,4</b>.</p></div></div>
   </div>
 </div>
 `;

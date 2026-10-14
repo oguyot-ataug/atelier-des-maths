@@ -377,7 +377,47 @@ const PP6LIN2_STEPS = [
 ];
 
 document.getElementById('exos-demo-proportionnalite-6e').innerHTML = `
-<p class="hint" style="margin:8px 0;">Les exercices de ce chapitre sont en cours de préparation, ils arriveront dans une prochaine mise à jour.</p>
+<div class="redaction-block">
+  <h3>Rédaction type : « Utiliser la proportionnalité »</h3>
+  <div class="redaction-template">
+    <div class="we-row"><span class="we-expr">Le prix est proportionnel au nombre d'objets (ils sont identiques).</span><span class="we-comment">On justifie qu'on peut utiliser la proportionnalité.</span></div>
+    <div class="we-row"><span class="we-expr">12 objets, c'est 4 fois plus que 3 objets : 2,50 × 4 = 10.</span><span class="we-comment">On explique le raisonnement, puis on calcule.</span></div>
+    <div class="we-row"><span class="we-expr">Donc 12 objets coûtent 10 €.</span><span class="we-comment">Conclusion avec l'unité.</span></div>
+  </div>
+</div>
+<div class="redaction-block">
+  <h3>Exercices</h3>
+  <div class="exo-card">
+    <div class="num">Exercice 1</div>
+    3 cahiers identiques coûtent 4,50 €. Combien coûtent 9 de ces cahiers ? Rédige ta réponse.
+    <button type="button" class="exo-correction-toggle" data-target="c6-d3-c1" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-d3-c1"><div><p style="margin:0 0 6px;">Le prix est proportionnel au nombre de cahiers (ils sont identiques).</p><p style="margin:0 0 6px;">9 cahiers, c'est 3 fois plus que 3 cahiers (3 × 3 = 9) : le prix est 3 fois plus grand.</p><p style="margin:0 0 6px;">4,50 × 3 = 13,50</p><p style="margin:0 0 6px;"><b>9 cahiers coûtent 13,50 €.</b></p></div></div>
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 2</div>
+    Le prix des pommes est proportionnel à leur masse. Complète ce tableau, puis donne le coefficient de proportionnalité.<table style="border-collapse:collapse;margin:6px 0;"><tr><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;font-weight:700;background:#EEF4FB;">Masse (kg)</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">2</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">5</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">7</td></tr><tr><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;font-weight:700;background:#EEF4FB;">Prix (€)</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">6</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">…</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">…</td></tr></table>
+    <button type="button" class="exo-correction-toggle" data-target="c6-d3-c2" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-d3-c2"><div><p style="margin:0 0 6px;">Pour passer de la masse au prix, on multiplie par 3 (2 × 3 = 6) : <b>le coefficient de proportionnalité est 3</b> (les pommes coûtent 3 € le kilogramme).</p><table style="border-collapse:collapse;margin:6px 0;"><tr><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;font-weight:700;background:#EEF4FB;">Masse (kg)</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">2</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">5</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">7</td></tr><tr><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;font-weight:700;background:#EEF4FB;">Prix (€)</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">6</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">15</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">21</td></tr></table><p style="margin:0 0 6px;">5 × 3 = 15 et 7 × 3 = 21.</p></div></div>
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 3</div>
+    Un taxi demande 3 € au départ, puis 2 € par kilomètre. Le prix de la course est-il proportionnel à la distance parcourue ? Justifie à l'aide de deux exemples.
+    <button type="button" class="exo-correction-toggle" data-target="c6-d3-c3" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-d3-c3"><div><p style="margin:0 0 6px;">Pour 1 km : 3 + 2 × 1 = 5 €. Pour 2 km : 3 + 2 × 2 = 7 €.</p><p style="margin:0 0 6px;">Si le prix était proportionnel, 2 km coûteraient 2 fois plus que 1 km : 5 × 2 = 10 €. Or ils coûtent 7 €.</p><p style="margin:0 0 6px;"><b>Le prix n'est pas proportionnel à la distance</b> (à cause des 3 € de départ).</p></div></div>
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 4</div>
+    Pour 4 personnes, une recette demande 200 g de farine. Quelle masse de farine faut-il pour 10 personnes ? Rédige ta réponse.
+    <button type="button" class="exo-correction-toggle" data-target="c6-d3-c4" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-d3-c4"><div><p style="margin:0 0 6px;">La masse de farine est proportionnelle au nombre de personnes.</p><p style="margin:0 0 6px;">Pour 1 personne : 200 ÷ 4 = 50 g.</p><p style="margin:0 0 6px;">Pour 10 personnes : 50 × 10 = 500 g.</p><p style="margin:0 0 6px;"><b>Il faut 500 g de farine pour 10 personnes.</b></p></div></div>
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 5</div>
+    Au marché, 5 kg de tomates coûtent 12 € et 3 kg coûtent 7,20 €. Le prix est proportionnel à la masse. Calcule le prix de 8 kg, puis de 2 kg, sans calculer le prix d'un kilogramme.
+    <button type="button" class="exo-correction-toggle" data-target="c6-d3-c5" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-d3-c5"><div><p style="margin:0 0 6px;">8 kg = 5 kg + 3 kg : on additionne les prix. 12 + 7,20 = 19,20 : <b>8 kg coûtent 19,20 €.</b></p><p style="margin:0 0 6px;">2 kg = 5 kg − 3 kg : on soustrait les prix. 12 − 7,20 = 4,80 : <b>2 kg coûtent 4,80 €.</b></p></div></div>
+  </div>
+</div>
 `;
 
 DEMO_REGISTRY['6e|Proportionnalité'] = {

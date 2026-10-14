@@ -140,22 +140,32 @@ document.getElementById('exos-demo-fractions-comp-add').innerHTML = `
   <div class="exo-card">
     <div class="num">Exercice 1</div>
     Ordonne dans l'ordre croissant les fractions <span class="tex">\\dfrac{11}{9}</span>, <span class="tex">\\dfrac{4}{9}</span>, <span class="tex">\\dfrac{7}{9}</span> et <span class="tex">\\dfrac{2}{9}</span>.
+    <button type="button" class="exo-correction-toggle" data-target="c6-n5-c1" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-n5-c1"><div><p style="margin:0 0 6px;">Les dénominateurs sont égaux : on compare les numérateurs, 2 &lt; 4 &lt; 7 &lt; 11.</p><p style="margin:0 0 6px;"><b><span class="tex">\\dfrac{2}{9}</span> &lt; <span class="tex">\\dfrac{4}{9}</span> &lt; <span class="tex">\\dfrac{7}{9}</span> &lt; <span class="tex">\\dfrac{11}{9}</span></b></p></div></div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 2</div>
     Compare les fractions <span class="tex">\\dfrac{5}{3}</span> et <span class="tex">\\dfrac{13}{9}</span>. Rédige ta réponse.
+    <button type="button" class="exo-correction-toggle" data-target="c6-n5-c2" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-n5-c2"><div><p style="margin:0 0 6px;">9 = 3 × 3 : on écrit <span class="tex">\\dfrac{5}{3}</span> avec le dénominateur 9.</p><p style="margin:0 0 6px;"><span class="tex">\\dfrac{5}{3} = \\dfrac{5 \\times 3}{3 \\times 3} = \\dfrac{15}{9}</span></p><p style="margin:0 0 6px;">Or 15 &gt; 13, donc <span class="tex">\\dfrac{15}{9}</span> &gt; <span class="tex">\\dfrac{13}{9}</span>.</p><p style="margin:0 0 6px;"><b><span class="tex">\\dfrac{5}{3}</span> &gt; <span class="tex">\\dfrac{13}{9}</span></b></p></div></div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 3</div>
     Compare les fractions <span class="tex">\\dfrac{2}{5}</span> et <span class="tex">\\dfrac{5}{8}</span>. Rédige ta réponse.
+    <button type="button" class="exo-correction-toggle" data-target="c6-n5-c3" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-n5-c3"><div><p style="margin:0 0 6px;">On compare à <span class="tex">\\dfrac{1}{2}</span> : <span class="tex">\\dfrac{2}{5}</span> &lt; <span class="tex">\\dfrac{1}{2}</span> (car 2 × 2 = 4 &lt; 5) et <span class="tex">\\dfrac{5}{8}</span> &gt; <span class="tex">\\dfrac{1}{2}</span> (car 5 × 2 = 10 &gt; 8).</p><p style="margin:0 0 6px;">Autre méthode : avec le même dénominateur 40, <span class="tex">\\dfrac{2}{5}</span> = <span class="tex">\\dfrac{16}{40}</span> et <span class="tex">\\dfrac{5}{8}</span> = <span class="tex">\\dfrac{25}{40}</span>, et 16 &lt; 25.</p><p style="margin:0 0 6px;"><b><span class="tex">\\dfrac{2}{5}</span> &lt; <span class="tex">\\dfrac{5}{8}</span></b></p></div></div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 4</div>
     Calcule <span class="tex">G = \\dfrac{5}{4} + \\dfrac{3}{8}</span> et <span class="tex">H = \\dfrac{11}{6} - \\dfrac{2}{3}</span>.
+    <button type="button" class="exo-correction-toggle" data-target="c6-n5-c4" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-n5-c4"><div><p style="margin:0 0 6px;"><span class="tex">G = \\dfrac{5}{4} + \\dfrac{3}{8} = \\dfrac{10}{8} + \\dfrac{3}{8} = \\dfrac{13}{8}</span></p><p style="margin:0 0 6px;"><span class="tex">H = \\dfrac{11}{6} - \\dfrac{2}{3} = \\dfrac{11}{6} - \\dfrac{4}{6} = \\dfrac{7}{6}</span></p></div></div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 5</div>
     Calcule <span class="tex">K = \\dfrac{3}{4} + \\dfrac{2}{5}</span> et <span class="tex">L = \\dfrac{7}{6} - \\dfrac{3}{10}</span>. Rédige tes réponses.
+    <button type="button" class="exo-correction-toggle" data-target="c6-n5-c5" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-n5-c5"><div><p style="margin:0 0 6px;">Le plus petit dénominateur commun à 4 et 5 est 20 :</p><p style="margin:0 0 6px;"><span class="tex">K = \\dfrac{3}{4} + \\dfrac{2}{5} = \\dfrac{15}{20} + \\dfrac{8}{20} = \\dfrac{23}{20}</span></p><p style="margin:0 0 6px;">Le plus petit dénominateur commun à 6 et 10 est 30 :</p><p style="margin:0 0 6px;"><span class="tex">L = \\dfrac{7}{6} - \\dfrac{3}{10} = \\dfrac{35}{30} - \\dfrac{9}{30} = \\dfrac{26}{30} = \\dfrac{13}{15}</span></p></div></div>
   </div>
 </div>
 `;

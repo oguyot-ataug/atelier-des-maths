@@ -3464,6 +3464,12 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1086', date:'2026-10-14', items:[
+    "6e, onglet Exercices et rédactions : chaque exercice a maintenant sa correction rédigée (bouton sous l'exercice) dans 15 chapitres : gestion de données, probabilités, pensée informatique, distances et cercles, angles, symétrie axiale, construction et propriétés des triangles, aire et périmètre, heures et durées, fractions, nombres décimaux, opérations, fractions (comparaison, addition).",
+    "6e, Proportionnalité : l'onglet Exercices et rédactions (qui était « en préparation ») propose une rédaction type et 5 exercices corrigés.",
+    "6e, Gestion de données, exercice 5 : l'angle du secteur « à pied » est corrigé (192° au lieu de 168°, qui ne faisait pas plus de la moitié du disque).",
+    "6e, Nombres décimaux, méthodes animées : 4 nouvelles méthodes sur l'axe gradué, avec une figure qui évolue à chaque étape : placer un point d'abscisse donnée, et lire l'abscisse d'un point, chaque fois quand l'axe commence à 0 et quand 0 n'est pas sur l'axe (valeur d'une graduation = écart entre deux nombres écrits ÷ nombre de sauts).",
+  ]},
   { version:'2026-08-19.1085', date:'2026-10-13', items:[
     "Cahier : un exercice du manuel du site (depuis l'onglet Manuel ou une session) n'y figure plus en double « énoncé puis correction » : seulement la consigne et la correction. Les exercices déjà dans les cahiers s'affichent de la même façon.",
   ]},

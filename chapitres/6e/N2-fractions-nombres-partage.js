@@ -100,14 +100,20 @@ document.getElementById('exos-demo-fractions-partage').innerHTML = `
   <div class="exo-card">
     <div class="num">Exercice 1</div>
     Dans quel ensemble de nombres se trouve chacune des fractions <span class="tex">\\dfrac{36}{4}</span>, <span class="tex">\\dfrac{5}{2}</span> et <span class="tex">\\dfrac{2}{7}</span> ? Rédige tes réponses.
+    <button type="button" class="exo-correction-toggle" data-target="c6-n2-c1" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-n2-c1"><div><p style="margin:0 0 6px;"><span class="tex">\\dfrac{36}{4}</span> = 36 ÷ 4 = 9 : <b>c'est un nombre entier</b> (donc aussi un nombre décimal).</p><p style="margin:0 0 6px;"><span class="tex">\\dfrac{5}{2}</span> = 5 ÷ 2 = 2,5 : <b>c'est un nombre décimal</b> (non entier).</p><p style="margin:0 0 6px;"><span class="tex">\\dfrac{2}{7}</span> = 2 ÷ 7 ≈ 0,2857… : la division ne s'arrête jamais ; <b>ce n'est pas un nombre décimal</b>, il ne s'écrit qu'en écriture fractionnaire.</p></div></div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 2</div>
     Complète l'égalité de fractions <span class="tex">\\dfrac{4}{7} = \\dfrac{?}{28}</span>.
+    <button type="button" class="exo-correction-toggle" data-target="c6-n2-c2" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-n2-c2"><div><p style="margin:0 0 6px;">Pour passer de 7 à 28, on multiplie par 4 (7 × 4 = 28).</p><p style="margin:0 0 6px;">On multiplie aussi le numérateur par 4 : 4 × 4 = 16.</p><p style="margin:0 0 6px;"><b><span class="tex">\\dfrac{4}{7} = \\dfrac{16}{28}</span></b></p></div></div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 3</div>
     Un sac contient 5 boules jaunes et 15 boules bleues. Calcule le pourcentage de boules jaunes dans ce sac.
+    <button type="button" class="exo-correction-toggle" data-target="c6-n2-c3" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-n2-c3"><div><p style="margin:0 0 6px;">Il y a 5 + 15 = 20 boules, dont 5 jaunes.</p><p style="margin:0 0 6px;">La proportion de boules jaunes est <span class="tex">\\dfrac{5}{20}</span> = <span class="tex">\\dfrac{1}{4}</span> = <span class="tex">\\dfrac{25}{100}</span>.</p><p style="margin:0 0 6px;"><b>25 % des boules sont jaunes.</b></p></div></div>
   </div>
 </div>
 `;

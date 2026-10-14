@@ -304,26 +304,38 @@ document.getElementById('exos-demo-aire-perimetre').innerHTML = `
   <div class="exo-card">
     <div class="num">Exercice 1</div>
     Calcule le périmètre d'un rectangle de longueur 8 cm et de largeur 5 cm.
+    <button type="button" class="exo-correction-toggle" data-target="c6-m1-c1" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-m1-c1"><div><p style="margin:0 0 6px;">Périmètre du rectangle = 2 × (longueur + largeur)</p><p style="margin:0 0 6px;">P = 2 × (8 + 5) = 2 × 13 = 26</p><p style="margin:0 0 6px;"><b>Le périmètre est 26 cm.</b></p></div></div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 2</div>
     Calcule le périmètre d'un carré de côté 6 cm.
+    <button type="button" class="exo-correction-toggle" data-target="c6-m1-c2" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-m1-c2"><div><p style="margin:0 0 6px;">Périmètre du carré = 4 × côté</p><p style="margin:0 0 6px;">P = 4 × 6 = 24</p><p style="margin:0 0 6px;"><b>Le périmètre est 24 cm.</b></p></div></div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 3</div>
     Calcule la longueur d'un cercle de rayon 4 cm. Donne la valeur exacte, puis la valeur arrondie au centième.
+    <button type="button" class="exo-correction-toggle" data-target="c6-m1-c3" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-m1-c3"><div><p style="margin:0 0 6px;">Longueur du cercle = 2 × π × rayon</p><p style="margin:0 0 6px;">L = 2 × π × 4 = 8π</p><p style="margin:0 0 6px;"><b>Valeur exacte : 8π cm ; valeur arrondie au centième : 25,13 cm</b> (8 × 3,14159… = 25,132…).</p></div></div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 4</div>
     Calcule l'aire d'un rectangle de longueur 9 cm et de largeur 3 cm, puis celle d'un carré de côté 6 cm.
+    <button type="button" class="exo-correction-toggle" data-target="c6-m1-c4" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-m1-c4"><div><p style="margin:0 0 6px;">Aire du rectangle = longueur × largeur = 9 × 3 = 27 : <b>27 cm²</b>.</p><p style="margin:0 0 6px;">Aire du carré = côté × côté = 6 × 6 = 36 : <b>36 cm²</b>.</p></div></div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 5</div>
     Convertis 2,8 dm² en cm², puis 540 cm² en dm².
+    <button type="button" class="exo-correction-toggle" data-target="c6-m1-c5" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-m1-c5"><div><p style="margin:0 0 6px;">1 dm² = 100 cm², donc 2,8 dm² = 2,8 × 100 = <b>280 cm²</b>.</p><p style="margin:0 0 6px;">540 cm² = 540 ÷ 100 = <b>5,4 dm²</b>.</p></div></div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 6</div>
     Un champ mesure 4,5 ha. Convertis cette aire en ares (a), puis en m².
+    <button type="button" class="exo-correction-toggle" data-target="c6-m1-c6" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-m1-c6"><div><p style="margin:0 0 6px;">1 ha = 100 a, donc 4,5 ha = 4,5 × 100 = <b>450 a</b>.</p><p style="margin:0 0 6px;">1 a = 100 m², donc 450 a = 450 × 100 = <b>45 000 m²</b>.</p></div></div>
   </div>
 </div>
 `;

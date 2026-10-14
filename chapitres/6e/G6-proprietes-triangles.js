@@ -190,22 +190,32 @@ document.getElementById('exos-demo-proprietes-triangles').innerHTML = `
   <div class="exo-card">
     <div class="num">Exercice 1</div>
     Dans un triangle MNP, <span class="tex">\\widehat{NMP} = 62°</span> et <span class="tex">\\widehat{MNP} = 74°</span>. Calcule la mesure de l'angle <span class="tex">\\widehat{MPN}</span>. Rédige ta réponse.
+    <button type="button" class="exo-correction-toggle" data-target="c6-g6-c1" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-g6-c1"><div><p style="margin:0 0 6px;">La somme des angles d'un triangle vaut 180°.</p><p style="margin:0 0 6px;"><span class="tex">\\widehat{MPN} = 180° - (62° + 74°) = 180° - 136° = 44°</span></p><p style="margin:0 0 6px;"><b>L'angle <span class="tex">\\widehat{MPN}</span> mesure 44°.</b></p></div></div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 2</div>
     Un triangle a deux angles de même mesure 55°. Calcule la mesure du troisième angle.
+    <button type="button" class="exo-correction-toggle" data-target="c6-g6-c2" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-g6-c2"><div><p style="margin:0 0 6px;">La somme des trois angles vaut 180°.</p><p style="margin:0 0 6px;">180° − 2 × 55° = 180° − 110° = 70°.</p><p style="margin:0 0 6px;"><b>Le troisième angle mesure 70°.</b> (Le triangle est isocèle.)</p></div></div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 3</div>
     Trace un triangle ABC tel que AB = 7 cm, BC = 6 cm et CA = 5 cm. Construis le cercle circonscrit à ce triangle, en laissant apparents tous les traits de construction (arcs de compas, médiatrices).
+    <button type="button" class="exo-correction-toggle" data-target="c6-g6-c3" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-g6-c3"><div><ol style="margin:0 0 6px;padding-left:20px;"><li>Je construis le triangle ABC au compas (AB = 7 cm, BC = 6 cm, CA = 5 cm).</li><li>Je construis au compas la médiatrice de [AB], puis celle de [BC].</li><li>Elles se coupent en O (la médiatrice de [CA] passe aussi par O).</li><li>Je trace le cercle de centre O qui passe par A : il passe aussi par B et C. C'est le cercle circonscrit.</li></ol></div></div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 4</div>
     Un point O vérifie OA = OB = OC pour un triangle ABC. Explique pourquoi O est le centre du cercle circonscrit à ce triangle.
+    <button type="button" class="exo-correction-toggle" data-target="c6-g6-c4" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-g6-c4"><div><p style="margin:0 0 6px;">OA = OB : O est à égale distance de A et de B, donc O est sur la médiatrice de [AB].</p><p style="margin:0 0 6px;">OB = OC : O est aussi sur la médiatrice de [BC].</p><p style="margin:0 0 6px;">Le cercle de centre O et de rayon OA passe par A, B et C, puisque OA = OB = OC.</p><p style="margin:0 0 6px;"><b>O est donc le centre du cercle circonscrit au triangle ABC.</b></p></div></div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 5</div>
     Dans un triangle RST rectangle en S, on donne <span class="tex">\\widehat{RTS} = 35°</span>. Calcule la mesure de l'angle <span class="tex">\\widehat{SRT}</span>. Rédige ta réponse.
+    <button type="button" class="exo-correction-toggle" data-target="c6-g6-c5" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-g6-c5"><div><p style="margin:0 0 6px;">Le triangle est rectangle en S : <span class="tex">\\widehat{RST} = 90°</span>.</p><p style="margin:0 0 6px;">La somme des angles d'un triangle vaut 180° :</p><p style="margin:0 0 6px;"><span class="tex">\\widehat{SRT} = 180° - (90° + 35°) = 55°</span></p><p style="margin:0 0 6px;"><b>L'angle <span class="tex">\\widehat{SRT}</span> mesure 55°.</b></p></div></div>
   </div>
 </div>
 `;

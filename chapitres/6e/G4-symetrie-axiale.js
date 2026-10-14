@@ -316,22 +316,32 @@ document.getElementById('exos-demo-symetrie-axiale-6e').innerHTML = `
   <div class="exo-card">
     <div class="num">Exercice 1</div>
     Trace une droite (d) et un point M n'appartenant pas à (d). Construis le symétrique M' de M par rapport à (d), à la règle et à l'équerre, en laissant apparents les traits de construction.
+    <button type="button" class="exo-correction-toggle" data-target="c6-g4-c1" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-g4-c1"><div><ol style="margin:0 0 6px;padding-left:20px;"><li>Avec l'équerre, je trace la perpendiculaire à (d) qui passe par M ; elle coupe (d) en H.</li><li>Au compas (ou à la règle), je reporte la longueur HM de l'autre côté de (d), sur cette perpendiculaire : j'obtiens M'.</li><li>Je code l'angle droit en H et les longueurs égales HM = HM'.</li></ol></div></div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 2</div>
     Trace un segment [AB] de 6 cm. Construis sa médiatrice au compas, en laissant apparents les deux couples d'arcs de cercle. Code le milieu et l'angle droit obtenus.
+    <button type="button" class="exo-correction-toggle" data-target="c6-g4-c2" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-g4-c2"><div><ol style="margin:0 0 6px;padding-left:20px;"><li>Je trace [AB] de 6 cm.</li><li>Avec un écartement de compas plus grand que la moitié de AB (par exemple 4 cm), je trace un arc de centre A au-dessus et au-dessous de [AB].</li><li>Avec le même écartement, je trace deux arcs de centre B : ils coupent les premiers en deux points.</li><li>La droite qui passe par ces deux points est la médiatrice de [AB]. Elle coupe [AB] en son milieu I : je code AI = IB = 3 cm et l'angle droit.</li></ol></div></div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 3</div>
     Trace un angle <span class="tex">\\widehat{xOy}</span> de 70°. Construis sa bissectrice au compas, en laissant apparents les traits de construction. Code les deux angles obtenus.
+    <button type="button" class="exo-correction-toggle" data-target="c6-g4-c3" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-g4-c3"><div><ol style="margin:0 0 6px;padding-left:20px;"><li>Je trace <span class="tex">\\widehat{xOy}</span> de 70° au rapporteur.</li><li>Je trace un arc de cercle de centre O qui coupe [Ox) en E et [Oy) en F.</li><li>Avec un même écartement, je trace un arc de centre E et un arc de centre F : ils se coupent en K.</li><li>La demi-droite [OK) est la bissectrice : je code les deux angles de 35°.</li></ol></div></div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 4</div>
     ABC est un triangle isocèle en A. La droite (d) est la médiatrice de [BC] et passe par A. Explique pourquoi B et C sont symétriques par rapport à (d).
+    <button type="button" class="exo-correction-toggle" data-target="c6-g4-c4" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-g4-c4"><div><p style="margin:0 0 6px;">(d) est la médiatrice de [BC] : c'est la droite perpendiculaire à [BC] qui passe par son milieu.</p><p style="margin:0 0 6px;">Or le symétrique d'un point B par rapport à une droite est le point C tel que la droite soit la médiatrice de [BC].</p><p style="margin:0 0 6px;"><b>Donc B et C sont symétriques par rapport à (d).</b> (Comme le triangle est isocèle en A, AB = AC : c'est pour cela que (d) passe par A.)</p></div></div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 5</div>
     P est un point tel que PA = 5 cm et PB = 5 cm, où A et B sont les extrémités d'un segment. Explique pourquoi P appartient à la médiatrice de [AB].
+    <button type="button" class="exo-correction-toggle" data-target="c6-g4-c5" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-g4-c5"><div><p style="margin:0 0 6px;">Propriété : un point situé à égale distance des extrémités d'un segment appartient à la médiatrice de ce segment.</p><p style="margin:0 0 6px;">PA = PB = 5 cm : P est à égale distance de A et de B.</p><p style="margin:0 0 6px;"><b>Donc P appartient à la médiatrice de [AB].</b></p></div></div>
   </div>
 </div>
 `;

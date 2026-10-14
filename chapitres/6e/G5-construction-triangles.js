@@ -269,22 +269,32 @@ document.getElementById('exos-demo-construction-triangles').innerHTML = `
   <div class="exo-card">
     <div class="num">Exercice 1</div>
     Construis un triangle ABC tel que AB = 5 cm, BC = 6 cm et CA = 7 cm, en laissant apparents les arcs de compas.
+    <button type="button" class="exo-correction-toggle" data-target="c6-g5-c1" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-g5-c1"><div><ol style="margin:0 0 6px;padding-left:20px;"><li>Je trace [AB] de 5 cm.</li><li>Je trace un arc de cercle de centre B et de rayon 6 cm.</li><li>Je trace un arc de cercle de centre A et de rayon 7 cm : il coupe le premier en C.</li><li>Je trace [BC] et [CA], en laissant les arcs.</li></ol><p style="margin:0 0 6px;">Le triangle existe bien : le plus grand côté, 7 cm, est plus petit que 5 + 6 = 11 cm.</p></div></div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 2</div>
     Construis un triangle DEF tel que DE = 6 cm, DF = 4 cm et <span class="tex">\\widehat{EDF} = 40°</span>, en laissant apparents les traits de construction.
+    <button type="button" class="exo-correction-toggle" data-target="c6-g5-c2" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-g5-c2"><div><ol style="margin:0 0 6px;padding-left:20px;"><li>Je trace [DE] de 6 cm.</li><li>Au rapporteur, je trace la demi-droite d'origine D qui fait un angle de 40° avec [DE].</li><li>Sur cette demi-droite, je place F à 4 cm de D.</li><li>Je trace [EF].</li></ol></div></div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 3</div>
     Construis un triangle GHI tel que GH = 5 cm, <span class="tex">\\widehat{HGI} = 55°</span> et <span class="tex">\\widehat{GHI} = 65°</span>, en laissant apparents les traits de construction.
+    <button type="button" class="exo-correction-toggle" data-target="c6-g5-c3" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-g5-c3"><div><ol style="margin:0 0 6px;padding-left:20px;"><li>Je trace [GH] de 5 cm.</li><li>En G, je trace une demi-droite qui fait un angle de 55° avec [GH].</li><li>En H, du même côté, je trace une demi-droite qui fait un angle de 65° avec [HG].</li><li>Les deux demi-droites se coupent en I.</li></ol><p style="margin:0 0 6px;">Le troisième angle mesure 180° − (55° + 65°) = 60°.</p></div></div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 4</div>
     Un triangle a pour côtés 4 cm, 4 cm et 4 cm. Quelle est sa nature ? Justifie.
+    <button type="button" class="exo-correction-toggle" data-target="c6-g5-c4" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-g5-c4"><div><p style="margin:0 0 6px;">Ses trois côtés ont la même longueur (4 cm) : <b>c'est un triangle équilatéral.</b></p></div></div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 5</div>
     Un triangle MNP est tel que MN = MP = 6 cm et NP = 4 cm. Quelle est sa nature ? Justifie.
+    <button type="button" class="exo-correction-toggle" data-target="c6-g5-c5" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c6-g5-c5"><div><p style="margin:0 0 6px;">MN = MP = 6 cm : deux côtés ont la même longueur.</p><p style="margin:0 0 6px;"><b>MNP est un triangle isocèle en M</b> ; sa base est [NP].</p></div></div>
   </div>
 </div>
 `;
