@@ -536,11 +536,21 @@ async function cdEleveCharger(){
   if(data.fin) return cdEleveFin();
   // Élément retiré par le professeur (etat.rev change) : les numéros ont bougé, on oublie ce qui était en mémoire.
   const rev = (data.etat && data.etat.rev) || 0;
-  if(cdE.rev != null && cdE.rev !== rev){ cdE.cache = new Map(); cdE.trav = null; cdE.cxMonte = null; if(typeof cxEleveTravaux === 'function') await cxEleveTravaux(); }
+  // Signalé : « j'ai supprimé des exercices mais ils apparaissent chez les élèves ». Tout ce qui est rangé par
+  // numéro d'élément est remis à zéro : éléments gardés en mémoire, réponses, exercice monté, éditeur de blocs
+  // resté ouvert sur un défi retiré (même numéro, autre exercice), élément en cours de lecture.
+  if(cdE.rev != null && cdE.rev !== rev){
+    cdE.cache = new Map(); cdE.charge = null; cdE.trav = null; cdE.cxMonte = null; cdE.td = null; cdE.main = null;
+    if(typeof cx !== 'undefined' && cx.prog && cx.prog.role === 'eleve' && typeof cxQuitterProg === 'function') cxQuitterProg();
+    if(data.mode !== 'libre') cdE.vue = data.idx; else cdE.vue = Math.min(cdE.vue || 0, data.max != null ? data.max : data.idx);
+    cdE.d = null; // tout est redessiné
+    if(typeof cxEleveTravaux === 'function') await cxEleveTravaux();
+  }
   cdE.rev = rev;
-  // Seul l'élément en cours arrive en entier ; les précédents déjà relus restent en mémoire.
+  // Seul l'élément en cours arrive en entier ; les précédents déjà relus restent en mémoire -- seulement s'il
+  // s'agit bien du même élément (même titre), par sécurité si la liste a changé.
   if(!cdE.cache) cdE.cache = new Map();
-  data.items = (data.items || []).map((x, k) => x && x.leger && cdE.cache.has(k) ? cdE.cache.get(k) : x);
+  data.items = (data.items || []).map((x, k) => { const c = cdE.cache.get(k); return x && x.leger && c && c.titre === x.titre ? c : x; });
   data.items.forEach((x, k) => { if(x && !x.leger) cdE.cache.set(k, x); });
   const avant = cdE.d;
   cdE.d = data;

@@ -3465,6 +3465,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1095', date:'2026-10-15', items:[
+    "Sessions -- signalé : « j'ai supprimé des exercices mais ils apparaissent chez les élèves ». Quand le professeur retire un élément, l'écran de l'élève repart de zéro : il oublie les éléments gardés en mémoire, ferme l'éditeur de blocs s'il était ouvert sur un défi retiré, et revient sur l'élément montré par le professeur. Par sécurité, un élément gardé en mémoire n'est plus réutilisé si son titre a changé.",
+  ]},
   { version:'2026-08-19.1094', date:'2026-10-15', items:[
     "Exercices du manuel faits à l'écran (sessions, questionnaires, projection) : le clavier virtuel se déplace. On le fait glisser par sa poignée « déplacer le clavier » en haut (à la souris ou au doigt) pour dégager l'exercice ; il garde sa place les fois suivantes sur cet appareil. Double-clic sur la poignée : il revient en bas de l'écran.",
   ]},
