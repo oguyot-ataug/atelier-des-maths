@@ -3464,6 +3464,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1090', date:'2026-10-15', items:[
+    "Interrogations en ligne : bouton « Copier les notes » dans la page de correction d'une interrogation (barre d'outils, à côté de « Recorriger à zéro »). Il copie la colonne des notes, une ligne par élève de la classe dans l'ordre alphabétique, prête à coller dans Pronote ou un tableur ; un message rappelle les copies dont des questions restent à corriger. Le même bouton existe toujours colonne par colonne dans le Carnet de notes.",
+  ]},
   { version:'2026-08-19.1089', date:'2026-10-15', items:[
     "Évaluation papier : nouveau bouton « Exercices du manuel ». On choisit des exercices des planches (niveau, chapitre, exercices affichés en entier), dans un ou plusieurs chapitres, dans l'ordre où on les coche ; chacun devient un exercice de l'évaluation, tel qu'il s'imprime (figures, cases, tableaux), auquel on peut ajouter un titre, un barème ou d'autres blocs.",
     "Questionnaires et interrogations en ligne : nouveau type de question « Exercice du manuel ». L'élève fait l'exercice des planches à l'écran (cases à remplir avec le clavier, parts à colorier, nombres à entourer…), et il est corrigé automatiquement : les points sont partagés entre les réponses à donner. L'énoncé reprend la consigne (modifiable) ; plusieurs exercices cochés d'un coup donnent une question chacun. Option « Une version différente pour chaque élève » quand l'exercice a des versions (mêmes questions, autres nombres). En correction, la copie de l'élève est marquée juste / faux et le corrigé est affiché dessous.",

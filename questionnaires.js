@@ -1175,6 +1175,7 @@ function qzCRender(){
         return abs || r ? `<button class="btn secondary" onclick="qzCRattrapageOuvrir()" title="Rouvrir l'interrogation pour les élèves absents seulement, même fermée ou publiée"><span class="gicon">event_repeat</span> Rattrapage des absents${r ? ` (${r})` : ''}</button>` : ''; })()}
       ${qzCRattrapesAPublier().length && publie ? `<button class="btn" onclick="qzCPublierRattrapages()" title="Copies de rattrapage rendues : les élèves verront leur note et la correction"><span class="gicon">publish</span> Publier les rattrapages (${qzCRattrapesAPublier().length})</button>` : ''}
       <label class="qz-check" title="Plus aucun élève ne peut commencer ; ceux qui ont commencé peuvent seulement rendre."><input type="checkbox" ${qzC.reglages.ferme ? 'checked' : ''} onchange="qzCFermerAcces(this.checked)"> Questionnaire fermé</label>
+      <button class="btn secondary" onclick="qzCCopierNotes(this)" title="Copie la colonne des notes (une ligne par élève, dans l'ordre alphabétique de la classe) pour la coller dans Pronote ou un tableur"><span class="gicon">content_copy</span> Copier les notes</button>
       <button class="btn secondary" onclick="qzCRecorriger()" title="Efface toutes vos corrections (points, commentaires, propositions de l'IA) et recalcule les notes avec le corrigé actuel du questionnaire"><span class="gicon">restart_alt</span> Recorriger à zéro</button>
       ${qzC.directId && typeof qzDirectAnnulerNotationUI === 'function' ? `<button class="btn secondary" style="color:#a83c1f;" onclick="qzDirectAnnulerNotationUI('${qzC.directId}')" title="Interrogation créée pour noter des questions flash : la supprimer (copies, notes). La séance et les réponses restent."><span class="gicon">undo</span> Annuler la notation de la séance</button>` : ''}
       ${publie ? `<button class="btn secondary" onclick="qzCPublier(false)"><span class="gicon">visibility_off</span> Retirer la publication</button>`
@@ -1182,6 +1183,34 @@ function qzCRender(){
     </div>
     <div id="qzCBody"></div>`;
   if(qzC.vue === 'copies') qzCRenderCopies(); else qzCRenderQuestions();
+}
+// Copier les notes de cette interrogation -- signalé : « Je ne trouve plus le bouton qui permet de copier
+// toutes les notes d'une interrogation afin de les copier dans un autre logiciel » (il n'était que dans le
+// Carnet de notes, colonne par colonne). Même colonne que le Carnet : tous les élèves de la classe, dans
+// l'ordre alphabétique, une note par ligne ; ligne vide pour un élève non concerné, une copie non rendue
+// (ou « Abs » / « 0 », selon le réglage du Carnet) et une copie dont des questions restent à corriger.
+async function qzCCopierNotes(btn){
+  if(!qzC) return;
+  const d = qzC.devoir, cibles = d.student_ids && d.student_ids.length ? new Set(d.student_ids) : null;
+  let eleves = await qzElevesDevoir({ class_id: d.class_id });
+  eleves = typeof elevesReels === 'function' ? elevesReels(eleves) : eleves;
+  const absent = qzK ? qzK.absent : '';
+  let attente = 0, n = 0;
+  const lignes = eleves.map(e => {
+    if(cibles && !cibles.has(e.id)) return '';
+    const c = qzC.copies.get(e.id);
+    if(!qzEstRendue(c)) return absent;
+    const sc = qzScoreCopie(qzC.qz.questions, c, qzC.reglages);
+    if(sc.aCorriger){ attente++; return ''; }
+    n++; return qzNum(sc.note);
+  });
+  const texte = lignes.join('\n');
+  try{ await navigator.clipboard.writeText(texte); }
+  catch(_){ const t = document.createElement('textarea'); t.value = texte; document.body.appendChild(t); t.select(); document.execCommand('copy'); t.remove(); }
+  if(btn){ const old = btn.innerHTML; btn.innerHTML = '<span class="gicon">check</span> Copié'; setTimeout(() => { btn.innerHTML = old; }, 1800); }
+  const msg = `${n} note${n > 1 ? 's' : ''} copiée${n > 1 ? 's' : ''} (${eleves.length} lignes, une par élève de la classe, dans l'ordre alphabétique) : collez-les dans la colonne de votre logiciel.`
+    + (attente ? ` Attention : ${attente} copie${attente > 1 ? 's ont' : ' a'} encore des questions à corriger (ligne vide).` : '');
+  if(typeof qzToast === 'function') qzToast(msg, attente ? 'warn' : undefined); else niceAlert(msg);
 }
 // Reprendre la correction à zéro -- demandé : « Je dois pouvoir annuler une correction et la reprendre à
 // zéro ». Toutes les corrections du professeur (et de l'IA) sont effacées ; chaque copie est recorrigée
