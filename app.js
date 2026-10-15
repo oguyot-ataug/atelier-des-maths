@@ -3465,6 +3465,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1094', date:'2026-10-15', items:[
+    "Exercices du manuel faits à l'écran (sessions, questionnaires, projection) : le clavier virtuel se déplace. On le fait glisser par sa poignée « déplacer le clavier » en haut (à la souris ou au doigt) pour dégager l'exercice ; il garde sa place les fois suivantes sur cet appareil. Double-clic sur la poignée : il revient en bas de l'écran.",
+  ]},
   { version:'2026-08-19.1093', date:'2026-10-15', items:[
     "Sessions : bouton « Retirer de la session » à côté du titre de l'élément affiché dans la télécommande (session ouverte ou programmée). L'élément disparaît de la liste pour tout le monde ; si des élèves avaient commencé cet exercice, leurs réponses sortent du bilan (un message le rappelle avant) ; les réponses aux éléments suivants restent attachées au bon exercice. Pendant la préparation d'une session, la croix à droite de chaque ajout permet toujours de le retirer.",
   ]},

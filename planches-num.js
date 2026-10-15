@@ -446,7 +446,9 @@ function plNumBilan(res){
 const plClavier = {
   el: null, cb: null, mode: '123', maj: false,
   ouvrir(cb){ this.cb = cb; if(!this.el){ this.el = document.createElement('div'); this.el.id = 'plClavier'; document.body.appendChild(this.el);
-      this.el.addEventListener('pointerdown', e => { const b = e.target.closest('button'); if(!b) return; e.preventDefault();
+      // Double-clic sur la poignée : le clavier revient à sa place (en bas, au milieu).
+      this.el.addEventListener('dblclick', e => { if(e.target.closest('.pn-cl-poignee')){ try{ localStorage.removeItem('plClavierPos'); }catch(_){} this.placer(null); } });
+      this.el.addEventListener('pointerdown', e => { if(e.target.closest('.pn-cl-poignee')){ this.glisser(e); return; } const b = e.target.closest('button'); if(!b) return; e.preventDefault();
         if(b.dataset.m){ this.mode = b.dataset.m; this.rendre(); return; }
         if(b.dataset.maj){ this.maj = !this.maj; this.rendre(); return; }
         if(b.dataset.k === 'fermer'){ if(this.cb) this.cb('ok-fin'); this.fermer(); return; }
@@ -454,15 +456,36 @@ const plClavier = {
     const h = document.fullscreenElement && document.fullscreenElement !== document.documentElement ? document.fullscreenElement : document.body;
     if(this.el.parentNode !== h) h.appendChild(this.el);
     this.rendre(); this.el.style.display = 'block'; document.addEventListener('keydown', plClavierPhysique, true);
+    let pos = null; try{ pos = JSON.parse(localStorage.getItem('plClavierPos') || 'null'); }catch(_){} this.placer(pos);
     document.body.classList.add('pn-clavier-ouvert'); window.dispatchEvent(new Event('resize')); },
   fermer(){ if(this.el) this.el.style.display = 'none'; this.cb = null; document.removeEventListener('keydown', plClavierPhysique, true);
     document.body.classList.remove('pn-clavier-ouvert'); window.dispatchEvent(new Event('resize')); },
+  /* Clavier déplaçable -- signalé : « on a le pavé numérique qui peut gêner la vision. Il faudrait qu'il
+     soit déplaçable. » On le fait glisser par sa poignée (souris ou doigt) ; la position est gardée sur
+     l'appareil (localStorage) et ramenée dans l'écran s'il a changé de taille. */
+  placer(pos){
+    const s = this.el.style;
+    if(!pos){ s.left = s.top = s.right = s.bottom = s.transform = ''; return; }
+    const r = this.el.getBoundingClientRect(), x = Math.max(4, Math.min(window.innerWidth - r.width - 4, pos.x)), y = Math.max(4, Math.min(window.innerHeight - r.height - 4, pos.y));
+    s.left = x + 'px'; s.top = y + 'px'; s.right = 'auto'; s.bottom = 'auto'; s.transform = 'none';
+  },
+  glisser(e){
+    e.preventDefault();
+    const r = this.el.getBoundingClientRect(), dx = e.clientX - r.left, dy = e.clientY - r.top, poignee = e.target.closest('.pn-cl-poignee');
+    try{ poignee.setPointerCapture(e.pointerId); }catch(_){}
+    this.el.classList.add('pn-cl-glisse');
+    const bouge = ev => this.placer({ x: ev.clientX - dx, y: ev.clientY - dy });
+    const fin = () => { poignee.removeEventListener('pointermove', bouge); poignee.removeEventListener('pointerup', fin); poignee.removeEventListener('pointercancel', fin);
+      this.el.classList.remove('pn-cl-glisse');
+      const q = this.el.getBoundingClientRect(); try{ localStorage.setItem('plClavierPos', JSON.stringify({ x: q.left, y: q.top })); }catch(_){} };
+    poignee.addEventListener('pointermove', bouge); poignee.addEventListener('pointerup', fin); poignee.addEventListener('pointercancel', fin);
+  },
   rendre(){
     const k = (t, l, cl) => `<button type="button" data-k="${t}" class="${cl || ''}">${l || t}</button>`;
     const lignes = this.mode === '123'
       ? [['7', '8', '9', '&lt;', '('], ['4', '5', '6', '=', ')'], ['1', '2', '3', '&gt;', ':'], ['0', ',', '+', '−', '×']] // ( ) et : : priorités opératoires (5e)
       : ['azertyuiop', 'qsdfghjklm', 'wxcvbné', 'èàêç\'-()[]'].map(l => l.split('').map(c => this.maj ? c.toUpperCase() : c));
-    this.el.innerHTML = `<div class="pn-cl-lignes">${lignes.map(l => `<div class="pn-cl-l">${l.map(t => k(t === '&lt;' ? '<' : t === '&gt;' ? '>' : t, t)).join('')}</div>`).join('')}
+    this.el.innerHTML = `<div class="pn-cl-poignee" title="Glisser pour déplacer le clavier (double-clic : le remettre en bas)"><span class="gicon">drag_indicator</span> déplacer le clavier</div><div class="pn-cl-lignes">${lignes.map(l => `<div class="pn-cl-l">${l.map(t => k(t === '&lt;' ? '<' : t === '&gt;' ? '>' : t, t)).join('')}</div>`).join('')}
       <div class="pn-cl-l">${this.mode === 'abc' ? `<button type="button" data-maj="1" class="pn-cl-gris${this.maj ? ' pn-cl-on' : ''}" title="Majuscules">⇧ ${this.maj ? 'ABC' : 'abc'}</button>` + k(' ', 'espace', 'pn-cl-large') : k(' ', 'espace', 'pn-cl-esp')}${k('⌫', '<span class="gicon">backspace</span>', 'pn-cl-gris')}
         <button type="button" data-m="${this.mode === '123' ? 'abc' : '123'}" class="pn-cl-gris">${this.mode === '123' ? 'abc' : '123'}</button>${k('ok', '<span class="gicon">keyboard_return</span>', 'pn-cl-ok')}${k('fermer', '<span class="gicon">keyboard_hide</span>', 'pn-cl-gris')}</div></div>`;
   }
@@ -508,7 +531,9 @@ function plClavierPhysique(e){
     .pn-ex .pn-frac.pn-ok .pn-case{ border-color:#1F7A4D; background:#EAF7EF; } .pn-ex .pn-frac.pn-ko .pn-case{ border-color:#C0392B; background:#FDECEA; }
     .pn-ex .pn-frac.pn-ok, .pn-ex .pn-frac.pn-ko{ outline:none; }
     #plClavier{ display:none; position:fixed; left:50%; bottom:12px; transform:translateX(-50%); z-index:9700; background:#1F3A5C; border-radius:18px; padding:10px; box-shadow:0 10px 30px rgba(0,0,0,.3); touch-action:none; user-select:none; }
-    .pn-cl-lignes{ display:flex; flex-direction:column; gap:6px; } .pn-cl-l{ display:flex; gap:6px; justify-content:center; }
+    .pn-cl-lignes{ display:flex; flex-direction:column; gap:6px; }
+    .pn-cl-poignee{ display:flex; align-items:center; justify-content:center; gap:4px; margin:-4px 0 6px; padding:3px 0; color:#C9D6E6; font:600 .75rem Inter,Arial,sans-serif; cursor:grab; border-radius:10px; touch-action:none; }
+    .pn-cl-poignee:hover{ background:rgba(255,255,255,.1); color:#fff; } .pn-cl-poignee .gicon{ font-size:18px; } #plClavier.pn-cl-glisse .pn-cl-poignee{ cursor:grabbing; } #plClavier.pn-cl-glisse{ opacity:.92; } .pn-cl-l{ display:flex; gap:6px; justify-content:center; }
     #plClavier button{ min-width:52px; height:52px; border:0; border-radius:12px; background:#fff; color:#1F3A5C; font:700 1.35rem 'Space Grotesk',Arial,sans-serif; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; padding:0 10px; }
     #plClavier button:active{ transform:scale(.95); } #plClavier .pn-cl-gris{ background:#DCE4EE; font-size:1rem; } #plClavier .pn-cl-on{ background:#3A6EA5; color:#fff; } #plClavier .pn-cl-ok{ background:#F08A3C; color:#fff; } #plClavier .pn-cl-large{ min-width:200px; font-size:1rem; } #plClavier .pn-cl-esp{ min-width:96px; font-size:.95rem; }
     @media (max-width:600px){ #plClavier button{ min-width:30px; height:44px; font-size:1.1rem; padding:0 6px; } #plClavier{ padding:6px; width:calc(100vw - 16px); box-sizing:border-box; } .pn-cl-l{ gap:4px; } }
