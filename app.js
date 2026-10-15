@@ -3464,6 +3464,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1088', date:'2026-10-15', items:[
+    "Sessions, « Exercice à faire en direct », onglet Manuel : chaque exercice s'affiche maintenant en entier, comme dans le manuel (consigne, figures, tableaux, cases à remplir, formules), au lieu d'une consigne coupée. La fenêtre est plus large et l'exercice coché est surligné.",
+  ]},
   { version:'2026-08-19.1087', date:'2026-10-14', items:[
     "6e, Fractions : nombres et partage : repérage d'une fraction sur une demi-droite graduée. Dans le cours, un paragraphe « Repérer une fraction sur une demi-droite graduée » (règle et exemple illustré). Dans les méthodes animées, 4 nouvelles méthodes avec une figure qui évolue à chaque étape : placer un point d'abscisse fractionnaire et lire l'abscisse d'un point sous forme de fraction, chaque fois quand l'axe commence à 0 et quand 0 n'est pas sur l'axe (on passe alors par le nombre mixte). Dans les exercices, 3 exercices corrigés avec figures (lire, placer en passant par des fractions égales, lire sans 0), et une question de plus dans le quiz.",
     "6e, Nombres décimaux : la mention « 0 n'est pas sur l'axe » ne chevauche plus le nom du point.",

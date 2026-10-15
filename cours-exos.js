@@ -67,9 +67,12 @@ function cxChoisir(){
           : `<div class="cx-co-sel" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;"><select id="cxManNiv">${nivMan.map(l => `<option value="${l}"${l === st.man.lvl ? ' selected' : ''}>${nomNiv(l)}</option>`).join('')}</select>
              <select id="cxManCh" style="flex:1;min-width:200px;">${avecPl(st.man.lvl).map(c => `<option value="${cdEsc(c.code)}"${c.code === st.man.code ? ' selected' : ''}>${cdEsc(c.code + ' · ' + c.t)}</option>`).join('')}</select></div>
            <div class="cx-ch-liste">${manC ? plDe(st.man.lvl, manC.t).map((p, i) => `<div class="cx-man-pl"><b>${cdEsc(plRef(st.man.lvl, plCode(st.man.lvl, manC), i))} · ${cdEsc(p.titre)}</b></div>${p.exos.map((x, k) => {
-               const tmp = document.createElement('div'); tmp.innerHTML = x.consigne; const txt = tmp.textContent.replace(/\s+/g, ' ').trim(), cle = i + '|' + k, ecran = typeof plNumPossible === 'function' && plNumPossible(x);
-               return `<label class="cx-ch-it cx-man-it"><span><input type="checkbox" data-man="${cle}"${st.man.sel.includes(cle) ? ' checked' : ''}> <b>Exercice ${k + 1}</b> <span class="cx-man-et">${typeof plEtoiles === 'function' ? plEtoiles(x.etoiles || 1) : ''}</span></span>
-                 <small>${cdEsc(txt.length > 110 ? txt.slice(0, 110) + '…' : txt)}</small><small>${ecran ? '<span class="gicon" style="font-size:14px;vertical-align:-2px;">touch_app</span> à faire à l\'écran, vérifié et suivi en direct' : '<span class="gicon" style="font-size:14px;vertical-align:-2px;">visibility</span> énoncé projeté chez les élèves, correction montrée par vous'}</small></label>`; }).join('')}`).join('') : ''}</div>
+               // L'exercice en entier (consigne, figures, tableaux…), comme dans le manuel -- demandé : « Il serait
+               // préférable d'avoir une vue des exercices dans leur globalité » (au lieu de la consigne tronquée).
+               const cle = i + '|' + k, ecran = typeof plNumPossible === 'function' && plNumPossible(x);
+               return `<label class="cx-ch-it cx-man-it"><span class="cx-man-tete"><span><input type="checkbox" data-man="${cle}"${st.man.sel.includes(cle) ? ' checked' : ''}> <b>Exercice ${k + 1}</b> <span class="cx-man-et">${typeof plEtoiles === 'function' ? plEtoiles(x.etoiles || 1) : ''}</span></span>
+                 <small>${ecran ? '<span class="gicon" style="font-size:14px;vertical-align:-2px;">touch_app</span> à faire à l\'écran, vérifié et suivi en direct' : '<span class="gicon" style="font-size:14px;vertical-align:-2px;">visibility</span> énoncé projeté, correction montrée par vous'}</small></span>
+                 <div class="pl-ex-cahier cx-man-ap"><div class="pl-consigne"><b>${x.consigne}</b></div><div class="pl-corps">${typeof plExoCorps === 'function' ? plExoCorps(x, false) : x.eleve || ''}</div></div></label>`; }).join('')}`).join('') : ''}</div>
            <div style="text-align:right;margin-top:10px;"><button class="btn" id="cxManOk"${st.man.sel.length ? '' : ' disabled'}><span class="gicon">add</span> Ajouter ${st.man.sel.length > 1 ? 'ces ' + st.man.sel.length + ' exercices' : 'cet exercice'}</button></div>`)
         : st.onglet === 'qz'
         ? `<input type="search" id="cxFiltre" placeholder="Chercher un questionnaire…" value="${cdEsc(st.filtre)}" style="width:100%;margin-bottom:8px;">
@@ -86,7 +89,7 @@ function cxChoisir(){
              <button class="btn secondary" id="cxFigBtn"><span class="gicon">draw</span> ${st.fig.figure ? 'Modifier' : 'Construire'} la figure de départ</button>
              ${st.fig.figure ? '<button class="btn secondary" id="cxFigSuppr"><span class="gicon">delete</span></button>' : ''}</div>
            <div style="text-align:right;"><button class="btn" id="cxFigOk"><span class="gicon">add</span> Ajouter cet exercice</button></div>`;
-      o.innerHTML = `<div class="modal-card cx-ch">
+      o.innerHTML = `<div class="modal-card cx-ch${st.onglet === 'man' ? ' cx-ch-large' : ''}">
         <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;"><b class="cd-h"><span class="gicon">edit_square</span> Exercice à faire en direct</b>
           <button class="modal-close" id="cxChFermer"><span class="gicon">close</span></button></div>
         <p class="hint" style="margin:6px 0 10px;">Les élèves le font sur leur écran ; vous suivez leur travail en direct et vous pouvez prendre la main pour aider.</p>
@@ -96,6 +99,7 @@ function cxChoisir(){
           <button data-o="prog" class="${st.onglet === 'prog' ? 'on' : ''}"><span class="gicon">extension</span> Programmation par blocs</button>
           <button data-o="fig" class="${st.onglet === 'fig' ? 'on' : ''}"><span class="gicon">architecture</span> Figure à construire</button></div>
         <div class="cx-ch-corps">${corps}</div></div>`;
+      if(st.onglet === 'man' && typeof renderStaticMath === 'function'){ const li = o.querySelector('.cx-ch-liste'); if(li) renderStaticMath(li); }
       o.querySelector('#cxChFermer').onclick = () => fin(null);
       o.querySelectorAll('.cx-onglets button').forEach(b => b.onclick = () => { st.onglet = b.dataset.o; rendre(); });
       const fl = o.querySelector('#cxFiltre'); if(fl){ fl.oninput = () => { st.filtre = fl.value; const p = fl.selectionStart; rendre(); const n = o.querySelector('#cxFiltre'); n.focus(); n.setSelectionRange(p, p); }; }
@@ -978,7 +982,10 @@ function cxFigRendre(){
 (function cxStyles(){
   const st = document.createElement('style');
   st.textContent = `
-    .cx-ch{max-width:680px;width:94vw;max-height:88vh;display:flex;flex-direction:column;}
+    .cx-ch{max-width:680px;width:94vw;max-height:88vh;display:flex;flex-direction:column;} .cx-ch.cx-ch-large{max-width:940px;max-height:92vh;}
+    .cx-man-tete{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;}
+    .cx-man-ap{border-top:1px dashed rgba(28,43,57,.15);margin-top:6px;padding-top:8px;font-size:.9rem;line-height:1.45;overflow-x:auto;} .cx-man-ap .pl-consigne{margin-bottom:6px;}
+    .cx-man-it:has(input:checked){border-color:#2EA8C9;background:#F2FAFD;box-shadow:0 0 0 1px #2EA8C9;}
     .cx-doc img, .cx-doc svg, .cx-doc canvas{max-width:100%;height:auto;} .cx-doc{line-height:1.6;}
     .cx-onglets{display:flex;gap:4px;background:#EEF1F5;border-radius:10px;padding:3px;flex-wrap:wrap;margin-bottom:10px;}
     .cx-onglets button{border:0;background:none;border-radius:8px;padding:6px 12px;font:700 .85rem 'Space Grotesk',sans-serif;cursor:pointer;display:inline-flex;gap:4px;align-items:center;color:var(--ink);}
