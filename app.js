@@ -3465,6 +3465,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1096', date:'2026-10-15', items:[
+    "Programmation, défis de calcul -- signalé : un programme qui dit « le résultat est 11 » était refusé (« on attendait 11 »). Une phrase est maintenant acceptée : pour un nombre, c'est le dernier nombre de la phrase qui compte ; pour un mot (pair, majeur…), le mot entier doit y être (« impair » ne vaut pas « pair »). Pour un défi créé par un professeur, si sa solution dit une phrase, c'est le nombre qu'elle contient qui est retenu.",
+    "Sessions : quand le professeur retire un élément, l'écran de l'élève n'enregistre plus rien sous l'ancien numéro (l'éditeur de blocs resté ouvert sur un exercice retiré envoyait le programme sous le numéro d'un autre exercice).",
+  ]},
   { version:'2026-08-19.1095', date:'2026-10-15', items:[
     "Sessions -- signalé : « j'ai supprimé des exercices mais ils apparaissent chez les élèves ». Quand le professeur retire un élément, l'écran de l'élève repart de zéro : il oublie les éléments gardés en mémoire, ferme l'éditeur de blocs s'il était ouvert sur un défi retiré, et revient sur l'élément montré par le professeur. Par sécurité, un élément gardé en mémoire n'est plus réutilisé si son titre a changé.",
   ]},

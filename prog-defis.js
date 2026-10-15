@@ -194,9 +194,21 @@ function progIndiceTrace(eleve, ref){
 function progCompter(ws){
   const n = {}; ws.getAllBlocks(false).forEach(b => { if(!b.isShadow()) n[b.type] = (n[b.type] || 0) + 1; }); return n;
 }
+// Signalé (session) : « le résultat est 11 » refusé alors qu'on attendait 11 -- réponse jugée « farfelue ».
+// Une phrase est acceptée : pour un nombre, le dernier nombre qu'elle contient ; pour un mot (pair, majeur…),
+// le mot entier présent dans la phrase (« impair » ne contient pas le mot « pair »).
 function progEgal(dit, att){
-  if(typeof att === 'number'){ const v = parseFloat(String(dit).replace(',', '.').trim()); return !isNaN(v) && Math.abs(v - att) < 1e-6; }
-  return String(dit).trim().toLowerCase() === String(att).trim().toLowerCase();
+  const t = String(dit ?? '').trim();
+  if(typeof att === 'number'){
+    const v = parseFloat(t.replace(',', '.'));
+    if(/^[-−]?\d+([.,]\d+)?$/.test(t)) return !isNaN(v) && Math.abs(v - att) < 1e-6;
+    const n = t.replace(/−/g, '-').match(/-?\d+(?:[.,]\d+)?/g);
+    return !!n && Math.abs(parseFloat(n[n.length - 1].replace(',', '.')) - att) < 1e-6;
+  }
+  const a = String(att).trim().toLowerCase(), d = t.toLowerCase();
+  if(d === a) return true;
+  const esc = a.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return new RegExp('(^|[^a-zàâçéèêëîïôûùüÿœ])' + esc + '($|[^a-zàâçéèêëîïôûùüÿœ])', 'i').test(d);
 }
 function progFmt(v){ return typeof v === 'number' ? String(Math.round(v * 1e6) / 1e6).replace('.', ',') : String(v); }
 // Lance le programme sans l'afficher (autant de fois qu'il y a de tests) ; { ok, message }.

@@ -540,8 +540,11 @@ async function cdEleveCharger(){
   // numéro d'élément est remis à zéro : éléments gardés en mémoire, réponses, exercice monté, éditeur de blocs
   // resté ouvert sur un défi retiré (même numéro, autre exercice), élément en cours de lecture.
   if(cdE.rev != null && cdE.rev !== rev){
+    // Rien n'est plus enregistré sous l'ancien numéro (l'élève avait encore « Programme de calcul » ouvert : son
+    // programme est parti sous le numéro d'un autre exercice) : sauvegarde en attente annulée, éditeur fermé sans envoi.
+    clearTimeout(cdE.saveT); cdE.saveT = null;
+    if(typeof cx !== 'undefined' && cx.prog && cx.prog.role === 'eleve' && typeof cxQuitterProg === 'function'){ clearTimeout(cx.prog.envT); cx.prog.mode = 'retire'; cxQuitterProg(); }
     cdE.cache = new Map(); cdE.charge = null; cdE.trav = null; cdE.cxMonte = null; cdE.td = null; cdE.main = null;
-    if(typeof cx !== 'undefined' && cx.prog && cx.prog.role === 'eleve' && typeof cxQuitterProg === 'function') cxQuitterProg();
     if(data.mode !== 'libre') cdE.vue = data.idx; else cdE.vue = Math.min(cdE.vue || 0, data.max != null ? data.max : data.idx);
     cdE.d = null; // tout est redessiné
     if(typeof cxEleveTravaux === 'function') await cxEleveTravaux();

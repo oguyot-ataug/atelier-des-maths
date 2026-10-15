@@ -157,7 +157,9 @@ async function progPersoCalculer(C){
     for(const t of T){
       const m = await lancer(t), dit = m.dits[m.dits.length - 1];
       if(dit === undefined) throw new Error(`Avec ${t.length ? t.join(' puis ') : 'ces valeurs'}, votre solution ne dit rien : terminez-la par un bloc « dire ».`);
-      attendus.push(progPersoValeur(dit));
+      // Une phrase (« le double est 6 ») : on retient le nombre, l'élève peut répondre « 6 » ou une autre phrase.
+      const nb = String(dit).replace(/−/g, '-').match(/-?\d+(?:[.,]\d+)?/g);
+      attendus.push(typeof progPersoValeur(dit) === 'number' || !nb ? progPersoValeur(dit) : parseFloat(nb[nb.length - 1].replace(',', '.')));
     }
     return { tests: T, attendus };
   }
