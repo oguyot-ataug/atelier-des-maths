@@ -3465,6 +3465,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1093', date:'2026-10-15', items:[
+    "Sessions : bouton « Retirer de la session » à côté du titre de l'élément affiché dans la télécommande (session ouverte ou programmée). L'élément disparaît de la liste pour tout le monde ; si des élèves avaient commencé cet exercice, leurs réponses sortent du bilan (un message le rappelle avant) ; les réponses aux éléments suivants restent attachées au bon exercice. Pendant la préparation d'une session, la croix à droite de chaque ajout permet toujours de le retirer.",
+  ]},
   { version:'2026-08-19.1092', date:'2026-10-15', items:[
     "Programmation par blocs : les professeurs peuvent créer leurs propres défis (bouton « Créer un défi » en bas de la liste des défis). On écrit le titre, le niveau, l'énoncé et une aide, puis on PROGRAMME LA SOLUTION avec les blocs : le site en déduit la vérification. Trois sortes de défis : figure à tracer (n'importe où, dans n'importe quel sens), tracé sur place (départ imposé, les traits de la solution deviennent des pointillés à repasser), calcul (le lutin demande des valeurs, la solution calcule ce qu'il faut dire). Option « répéter obligatoire », choix des blocs proposés. Les défis créés se rangent dans « Mes défis », se modifient ou se suppriment, et se donnent en devoir ou dans une session comme les autres ; les élèves ne voient jamais la solution.",
   ]},

@@ -243,6 +243,37 @@ function cdProfJusqua(){
     cdProfEtat({ jusqua: j });
   });
 }
+/* Retirer un élément de la session -- signalé : « Dans une session, on ne peut pas supprimer un exercice ».
+   Les réponses des élèves sont rangées par numéro d'élément (cours_direct_travaux.item) : celles de l'élément
+   retiré sont mises à l'écart (numéro négatif, plus jamais affichées), celles des éléments suivants reprennent
+   leur nouveau numéro. etat.rev change : les écrans des élèves oublient les éléments gardés en mémoire. */
+async function cdProfRetirer(j){
+  if(!cdP || !cdP.items[j] || cdP.items.length < 2) return;
+  const it = cdP.items[j];
+  const { data: rows, error: e0 } = await sb.from('cours_direct_travaux').select('item,student_id').eq('direct_id', cdP.id).gte('item', j);
+  if(e0){ niceAlert('Impossible de lire les réponses des élèves : ' + e0.message); return; }
+  const ici = (rows || []).filter(r => r.item === j).length;
+  if(!(await niceConfirm(`Retirer « ${it.titre || 'cet élément'} » de la session ?${ici ? `\n\n${ici} élève${ici > 1 ? 's ont' : ' a'} déjà commencé : ${ici > 1 ? 'leurs réponses' : 'sa réponse'} à cet exercice ne ${ici > 1 ? 'seront' : 'sera'} plus dans le bilan.` : ''}`))) return;
+  if(typeof cxRelacher === 'function'){ cxRelacher(); cxQuitterProg(); }
+  cdQuitterTableau();
+  // 1. Réponses de l'élément retiré : à l'écart. 2. Éléments suivants : un numéro de moins, dans l'ordre.
+  if(ici){ const { error } = await sb.from('cours_direct_travaux').update({ item: -(Math.floor(Date.now() / 1000) % 1000000000) - 1 }).eq('direct_id', cdP.id).eq('item', j);
+    if(error){ niceAlert('Retrait impossible : ' + error.message); return; } }
+  for(const v of [...new Set((rows || []).map(r => r.item).filter(v => v > j))].sort((a, b) => a - b)){
+    const { error } = await sb.from('cours_direct_travaux').update({ item: v - 1 }).eq('direct_id', cdP.id).eq('item', v);
+    if(error){ niceAlert('Retrait interrompu : ' + error.message); return; }
+  }
+  const items = cdP.items.slice(); items.splice(j, 1);
+  const idx = cdP.etat.idx || 0, etat = Object.assign({}, cdP.etat, { idx: Math.min(items.length - 1, idx > j ? idx - 1 : idx), etape: null, corr: false, rev: (cdP.etat.rev || 0) + 1 });
+  const { error } = await sb.from('cours_direct').update({ items, etat }).eq('id', cdP.id);
+  if(error){ niceAlert('Retrait impossible : ' + error.message); return; }
+  cdP.items = items; cdP.etat = etat; cdP.trav = null; cdP.selEx = null;
+  const diffuse = Object.assign({}, etat); delete diffuse.equipes; delete diffuse.liens;
+  try{ cdP.ch.send({ type: 'broadcast', event: 'etat', payload: diffuse }); }catch(e){}
+  cdProfRendre();
+  if(typeof cxProfTick === 'function') cxProfTick();
+  cdToast('<span class="gicon">delete</span> Élément retiré de la session.');
+}
 function cdProfAller(i){
   if(!cdP) return;
   i = Math.max(0, Math.min(cdP.items.length - 1, i));
@@ -366,7 +397,7 @@ function cdProfRendre(){
           ${it.exo && it.exo.type === 'td' ? `<button class="btn secondary" onclick="cdProfEtat({ verif: ${cdP.etat.verif === false} })" title="${cdP.etat.verif === false ? 'Les élèves répondent sans voir leurs erreurs : vous les voyez directement. Cliquez pour leur rendre le bouton « Vérifier ma réponse ».' : 'Les élèves peuvent vérifier leurs réponses et recommencer. Cliquez pour retirer le bouton « Vérifier ma réponse » (exercices du manuel de toute la session) : vous verrez directement leurs erreurs.'}"><span class="gicon">${cdP.etat.verif === false ? 'visibility_off' : 'task_alt'}</span> Vérification par l'élève : ${cdP.etat.verif === false ? 'non' : 'oui'}</button>` : ''}
           ${it.corr ? `<button class="btn" style="background:${cdP.etat.corr ? '#5B6472' : '#1F7A4D'};" onclick="cdProfEtat({ corr: ${!cdP.etat.corr} })"><span class="gicon">${cdP.etat.corr ? 'visibility_off' : 'fact_check'}</span> ${cdP.etat.corr ? 'Cacher la correction' : 'Montrer la correction aux élèves'}</button>` : ''}
           <button class="btn" onclick="cdProfAller(${i + 1})" ${i < cdP.items.length - 1 ? '' : 'disabled'}>Suivant <span class="gicon">arrow_forward</span></button></div>
-        <div class="cd-item-titre">${cdEsc(it.titre || '')}${it.chapitre ? ` <small>${cdEsc(it.chapitre)}</small>` : ''}</div>
+        <div class="cd-item-titre">${cdEsc(it.titre || '')}${it.chapitre ? ` <small>${cdEsc(it.chapitre)}</small>` : ''}${cdP.items.length > 1 ? `<button type="button" class="cd-retirer" onclick="cdProfRetirer(${i})" title="Retirer cet élément de la session (exercice ajouté par erreur…)"><span class="gicon">delete</span> Retirer de la session</button>` : ''}</div>
         <div class="cd-contenu" id="cdProfContenu">${it.exo ? '' : it.corr && cdP.etat.corr ? it.corr : it.html || ''}</div></div>
       <div class="cd-p-classe"><div class="cd-p-resume" id="cdProfResume"></div>${typeof cdEqOuvrir === 'function' ? `<button class="btn secondary td-mini cd-eq-ouvrir" onclick="cdEqOuvrir()" title="Équipes de 2, 3, 4… tirées au sort ou faites à la main"><span class="gicon">groups</span> Équipes${(cdP.etat.equipes || []).length ? ` (${cdP.etat.equipes.length})` : ''}</button>` : ''}<div id="cdProfClasse"></div></div>
     </div>`;
@@ -503,6 +534,10 @@ async function cdEleveCharger(){
   const { data, error } = await sb.rpc('cours_direct_etat', { p_id: cdE.id });
   if(error || !data){ if(cdE) document.getElementById('cdEleve').innerHTML = `<div class="cd-e-msg"><p>${cdEsc(error ? error.message : 'Session introuvable.')}</p><button class="btn" onclick="cdEleveFermer()">Fermer</button></div>`; return; }
   if(data.fin) return cdEleveFin();
+  // Élément retiré par le professeur (etat.rev change) : les numéros ont bougé, on oublie ce qui était en mémoire.
+  const rev = (data.etat && data.etat.rev) || 0;
+  if(cdE.rev != null && cdE.rev !== rev){ cdE.cache = new Map(); cdE.trav = null; cdE.cxMonte = null; if(typeof cxEleveTravaux === 'function') await cxEleveTravaux(); }
+  cdE.rev = rev;
   // Seul l'élément en cours arrive en entier ; les précédents déjà relus restent en mémoire.
   if(!cdE.cache) cdE.cache = new Map();
   data.items = (data.items || []).map((x, k) => x && x.leger && cdE.cache.has(k) ? cdE.cache.get(k) : x);
