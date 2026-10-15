@@ -2442,7 +2442,7 @@ function singleBlockHTML(b, ctx, withControls, draggable){
   // calibrage précis, le type 'figure' serait tombé dans le générique 260px (comme les
   // petites figures ci-dessous), et un segment déclaré "5cm" se serait imprimé à environ
   // 1,38cm réels seulement -- pas du tout la longueur annoncée à l'élève.
-  const defaultWidth = b.type==='axe' ? 500 : b.type==='repere' ? 340 : b.type==='graph' ? 420 : (b.type==='figure' || b.type==='figdyn') ? 944 : b.type==='texte' ? null : 260;
+  const defaultWidth = b.type==='axe' ? 500 : b.type==='repere' ? 340 : b.type==='graph' ? 420 : (b.type==='figure' || b.type==='figdyn') ? 944 : (b.type==='texte' || b.type==='manuel') ? null : 260;
   let html = b.html;
   if(b.type==='disque'){
     // Réglage manuel (toujours prioritaire, fiable dans tous les contextes y compris la
@@ -3464,6 +3464,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1089', date:'2026-10-15', items:[
+    "Évaluation papier : nouveau bouton « Exercices du manuel ». On choisit des exercices des planches (niveau, chapitre, exercices affichés en entier), dans un ou plusieurs chapitres, dans l'ordre où on les coche ; chacun devient un exercice de l'évaluation, tel qu'il s'imprime (figures, cases, tableaux), auquel on peut ajouter un titre, un barème ou d'autres blocs.",
+    "Questionnaires et interrogations en ligne : nouveau type de question « Exercice du manuel ». L'élève fait l'exercice des planches à l'écran (cases à remplir avec le clavier, parts à colorier, nombres à entourer…), et il est corrigé automatiquement : les points sont partagés entre les réponses à donner. L'énoncé reprend la consigne (modifiable) ; plusieurs exercices cochés d'un coup donnent une question chacun. Option « Une version différente pour chaque élève » quand l'exercice a des versions (mêmes questions, autres nombres). En correction, la copie de l'élève est marquée juste / faux et le corrigé est affiché dessous.",
+  ]},
   { version:'2026-08-19.1088', date:'2026-10-15', items:[
     "Sessions, « Exercice à faire en direct », onglet Manuel : chaque exercice s'affiche maintenant en entier, comme dans le manuel (consigne, figures, tableaux, cases à remplir, formules), au lieu d'une consigne coupée. La fenêtre est plus large et l'exercice coché est surligné.",
   ]},

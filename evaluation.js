@@ -104,6 +104,7 @@ document.getElementById('view-evaluation').innerHTML = `
     <div class="tool-row" style="margin-bottom:10px;">
       <label class="hint needs-ai-eval" style="margin:0;"><input type="checkbox" id="evalUseAI" onchange="toggleEvalAIOptions()"> <span class=gicon>smart_toy</span> Laisser l'IA proposer des exercices</label>
       <button class="btn secondary" onclick="addManualExercise()">+ Ajouter un exercice vierge</button>
+      <button class="btn secondary" onclick="evalAjouterManuel()" title="Choisir des exercices dans le manuel du site (planches), affichés en entier"><span class=gicon>auto_stories</span> Exercices du manuel</button>
       <button class="btn secondary" onclick="openEvalPreview()"><span class=gicon>visibility</span> Aperçu de l'évaluation</button>
     </div>
     <div class="tool-row" style="margin-bottom:10px;">
@@ -794,6 +795,25 @@ function editEvalExercice(id){
   if(ex) ex.validated = false;
   renderEvalExercicesList();
 }
+/* Exercices du manuel (planches, planches-choix.js) -- demandé : « profiter de cette base d'exercices
+   pour les insérer dans une interrogation en ligne ou papier ». Chaque exercice choisi devient un
+   exercice de l'évaluation, avec un bloc « manuel » (énoncé tel qu'il s'imprime, figures comprises) :
+   on peut ensuite ajouter un titre, un barème, d'autres blocs, ou le retirer comme les autres. */
+async function evalAjouterManuel(){
+  if(typeof plChoisirExos !== 'function') return;
+  const l = await plChoisirExos({ titre: 'Exercices du manuel pour l\'évaluation', lvl: document.getElementById('evalNiveau').value,
+    aide: 'Cochez les exercices dans l\'ordre où ils doivent apparaître, dans un ou plusieurs chapitres. Ils s\'ajoutent à la fin de l\'évaluation, tels qu\'ils s\'impriment.',
+    bouton: n => n > 1 ? `Ajouter ces ${n} exercices à l'évaluation` : 'Ajouter cet exercice à l\'évaluation' });
+  if(!l || !l.length) return;
+  l.forEach(e => {
+    const id = evalNextExoId++, ctx = 'ex-' + id;
+    evaluationExercises.push({ id, text: '', title: '', bareme: null, rows: [1], validated: true });
+    blocksStores[ctx] = [{ id: pendingBlockNextId++, type: 'manuel', html: plExoCopieHtml(e.x), data: { lvl: e.lvl, t: e.c.t, i: e.i, k: e.k, ref: plRef(e.lvl, plCode(e.lvl, e.c), e.i) + ' · exercice ' + (e.k + 1) }, editFn: null, ctx, col: 0, row: 0 }];
+  });
+  renderEvalExercicesList();
+  const box = document.getElementById('evalExercicesList'), der = box && box.lastElementChild;
+  if(der) der.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
 function addManualExercise(){
   evaluationExercises.push({id: evalNextExoId++, text: '', title:'', bareme:null, rows:[1]});
   renderEvalExercicesList();
@@ -1013,6 +1033,7 @@ function evalDocumentHTML(){
     <title>Évaluation</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
     <link rel="stylesheet" href="${document.querySelector('link[href*="styles.css"]').href}">
+    ${typeof PL_CSS !== 'undefined' && evaluationExercises.some(ex => (blocksStores['ex-' + ex.id] || []).some(b => b.type === 'manuel')) ? `<style>${PL_CSS.replace(/@page\s*\{[^}]*\}/, '')}</style>` : ''}
     <style>
       @page{ size:A4; margin:15mm; }
       body{ font-family:Inter,Arial,sans-serif; color:#20242E; font-size:11.5pt; line-height:${document.getElementById('evalLineHeight').value}; margin:0; }
