@@ -50,7 +50,7 @@ function cxChoisir(){
     const nivMan = ['ce2', 'cm1', 'cm2', '6e', '5e', '4e', '3e'].filter(l => (typeof niveauVisible !== 'function' || niveauVisible(l)) && avecPl(l).length);
     const lvl0 = typeof currentChapterLevel !== 'undefined' && nivMan.includes(currentChapterLevel) ? currentChapterLevel : nivMan[0];
     const code0 = lvl0 && typeof currentChapterCode !== 'undefined' && avecPl(lvl0).some(c => c.code === currentChapterCode) ? currentChapterCode : lvl0 ? (avecPl(lvl0)[0] || {}).code : null;
-    const st = { onglet: lvl0 && code0 === (typeof currentChapterCode !== 'undefined' ? currentChapterCode : null) ? 'man' : 'qz', qzs: null, filtre: '', fig: { enonce: 'Construis…', figure: null }, man: { lvl: lvl0, code: code0, sel: [] } };
+    const st = { onglet: lvl0 && code0 === (typeof currentChapterCode !== 'undefined' ? currentChapterCode : null) ? 'man' : 'qz', qzs: null, filtre: '', qzSel: [], progSel: [], fig: { enonce: 'Construis…', figure: null }, man: { lvl: lvl0, code: code0, sel: [] } };
     let fini = false, veille = null;
     const fin = v => { if(fini) return; fini = true; clearInterval(veille); o.style.display = 'none'; resolve(v); };
     const charger = async () => {
@@ -62,6 +62,11 @@ function cxChoisir(){
       const f = st.filtre.trim().toLowerCase();
       const nomNiv = l => ({ ce2: 'CE2', cm1: 'CM1', cm2: 'CM2' })[l] || l;
       const manC = st.man.lvl ? avecPl(st.man.lvl).find(c => c.code === st.man.code) : null;
+      // Plusieurs exercices d'un coup -- demandé : « Permettre de cocher plusieurs exercices en même temps
+      // (session) » : questionnaires et défis de programmation se cochent comme les exercices du manuel ;
+      // ils sont ajoutés dans l'ordre des coches (numéro affiché).
+      const okBtn = (id, n) => `<div class="cx-ok-bar"><button class="btn" id="${id}"${n ? '' : ' disabled'}><span class="gicon">add</span> Ajouter ${n > 1 ? 'ces ' + n + ' exercices' : 'cet exercice'}</button></div>`;
+      const rang = (l, id) => { const n = l.indexOf(id); return n < 0 ? '' : ` <span class="cx-rang">n° ${n + 1}</span>`; };
       const corps = st.onglet === 'man'
         ? (!nivMan.length ? '<p class="hint">Aucun exercice de manuel disponible.</p>'
           : `<div class="cx-co-sel" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;"><select id="cxManNiv">${nivMan.map(l => `<option value="${l}"${l === st.man.lvl ? ' selected' : ''}>${nomNiv(l)}</option>`).join('')}</select>
@@ -73,17 +78,17 @@ function cxChoisir(){
                return `<label class="cx-ch-it cx-man-it"><span class="cx-man-tete"><span><input type="checkbox" data-man="${cle}"${st.man.sel.includes(cle) ? ' checked' : ''}> <b>Exercice ${k + 1}</b> <span class="cx-man-et">${typeof plEtoiles === 'function' ? plEtoiles(x.etoiles || 1) : ''}</span></span>
                  <small>${ecran ? '<span class="gicon" style="font-size:14px;vertical-align:-2px;">touch_app</span> à faire à l\'écran, vérifié et suivi en direct' : '<span class="gicon" style="font-size:14px;vertical-align:-2px;">visibility</span> énoncé projeté, correction montrée par vous'}</small></span>
                  <div class="pl-ex-cahier cx-man-ap"><div class="pl-consigne"><b>${x.consigne}</b></div><div class="pl-corps">${typeof plExoCorps === 'function' ? plExoCorps(x, false) : x.eleve || ''}</div></div></label>`; }).join('')}`).join('') : ''}</div>
-           <div style="text-align:right;margin-top:10px;"><button class="btn" id="cxManOk"${st.man.sel.length ? '' : ' disabled'}><span class="gicon">add</span> Ajouter ${st.man.sel.length > 1 ? 'ces ' + st.man.sel.length + ' exercices' : 'cet exercice'}</button></div>`)
+           <div class="cx-ok-bar"><button class="btn" id="cxManOk"${st.man.sel.length ? '' : ' disabled'}><span class="gicon">add</span> Ajouter ${st.man.sel.length > 1 ? 'ces ' + st.man.sel.length + ' exercices' : 'cet exercice'}</button></div>`)
         : st.onglet === 'qz'
         ? `<input type="search" id="cxFiltre" placeholder="Chercher un questionnaire…" value="${cdEsc(st.filtre)}" style="width:100%;margin-bottom:8px;">
            <div class="cx-ch-liste">${st.qzs == null ? '<p class="hint">Chargement de votre banque…</p>'
              : st.qzs.filter(q => !f || (q.titre || '').toLowerCase().includes(f)).map(q => { const qs = q.questions.filter(x => x.type !== 'texte');
                const types = [...new Set(qs.map(x => (typeof qzType === 'function' ? qzType(x.type).label : x.type)))].slice(0, 4).join(', ');
-               return `<button class="cx-ch-it" data-qz="${q.id}"><b>${cdEsc(q.titre || 'Sans titre')} ${typeof qzModeBadge === 'function' ? qzModeBadge(q.reglages || {}) : ''}</b><small>${qs.length} question${qs.length > 1 ? 's' : ''} · ${cdEsc(types)}${['maison', 'classe'].includes(typeof qzModeCle === 'function' ? qzModeCle(q.reglages) : '') ? ' · enregistrée comme interrogation à la fin de la session' : ''}</small></button>`; }).join('')
-               || '<p class="hint">Aucun questionnaire dans votre banque. Créez-en un dans « Questionnaires » : tous les types de questions s\'y trouvent (figure dynamique, tracé sur quadrillage, repère…).</p>'}</div>`
+               return `<label class="cx-ch-it cx-man-it"><span><input type="checkbox" data-qz="${q.id}"${st.qzSel.includes(q.id) ? ' checked' : ''}> <b>${cdEsc(q.titre || 'Sans titre')} ${typeof qzModeBadge === 'function' ? qzModeBadge(q.reglages || {}) : ''}</b>${rang(st.qzSel, q.id)}</span><small>${qs.length} question${qs.length > 1 ? 's' : ''} · ${cdEsc(types)}${['maison', 'classe'].includes(typeof qzModeCle === 'function' ? qzModeCle(q.reglages) : '') ? ' · enregistrée comme interrogation à la fin de la session' : ''}</small></label>`; }).join('')
+               || '<p class="hint">Aucun questionnaire dans votre banque. Créez-en un dans « Questionnaires » : tous les types de questions s\'y trouvent (figure dynamique, tracé sur quadrillage, repère…).</p>'}</div>${okBtn('cxQzOk', st.qzSel.length)}`
         : st.onglet === 'prog'
         ? `<div class="cx-ch-liste">${typeof PROG_DEFIS === 'undefined' ? '<p class="hint">Défis indisponibles.</p>' : PROG_DEFIS.map(d =>
-            `<button class="cx-ch-it" data-prog="${d.id}"><b>${cdEsc(d.titre)}</b><small>${d.niveau} · ${d.trace || d.cibles ? 'Tracé' : 'Calcul'} · ${cdEsc(String(d.enonce).replace(/<[^>]+>/g, ''))}</small></button>`).join('')}</div>`
+            `<label class="cx-ch-it cx-man-it"><span><input type="checkbox" data-prog="${d.id}"${st.progSel.includes(d.id) ? ' checked' : ''}> <b>${cdEsc(d.titre)}</b>${rang(st.progSel, d.id)}</span><small>${d.niveau} · ${d.trace || d.cibles ? 'Tracé' : 'Calcul'} · ${cdEsc(String(d.enonce).replace(/<[^>]+>/g, ''))}</small></label>`).join('')}</div>${okBtn('cxProgOk', st.progSel.length)}`
         : `<label class="cd-lab" style="align-items:flex-start;flex-direction:column;">Énoncé<textarea id="cxFigEnonce" rows="3" style="width:100%;">${cdEsc(st.fig.enonce)}</textarea></label>
            <div style="margin:8px 0;">${st.fig.figure && typeof qziFigHtml === 'function' ? qziFigHtml(st.fig.figure, 'Figure de départ') : '<p class="hint" style="margin:4px 0;">Sans figure de départ, l\'élève part d\'une page blanche.</p>'}
              <button class="btn secondary" id="cxFigBtn"><span class="gicon">draw</span> ${st.fig.figure ? 'Modifier' : 'Construire'} la figure de départ</button>
@@ -103,18 +108,30 @@ function cxChoisir(){
       o.querySelector('#cxChFermer').onclick = () => fin(null);
       o.querySelectorAll('.cx-onglets button').forEach(b => b.onclick = () => { st.onglet = b.dataset.o; rendre(); });
       const fl = o.querySelector('#cxFiltre'); if(fl){ fl.oninput = () => { st.filtre = fl.value; const p = fl.selectionStart; rendre(); const n = o.querySelector('#cxFiltre'); n.focus(); n.setSelectionRange(p, p); }; }
-      o.querySelectorAll('[data-qz]').forEach(b => b.onclick = () => {
-        const q = st.qzs.find(x => x.id === b.dataset.qz); if(!q) return;
-        // Interrogation (mode « à la maison » ou « en classe ») : enregistrée comme une interrogation à la
-        // fin de la session (cours-sessions.js), les copies des élèves comprises.
-        const mode = typeof qzModeCle === 'function' ? qzModeCle(q.reglages) : 'maison', interro = mode === 'maison' || mode === 'classe';
-        fin({ titre: (interro ? 'Interrogation : ' : 'Exercice : ') + (q.titre || 'questionnaire'), chapitre: '', html: '', prog: null,
-          exo: { type: 'qz', questions: qzPreparer(cxClone(q.questions)), qz_id: q.id, qz_titre: q.titre || '', qz_mode: mode, interro } });
+      // Coche / décoche : liste dans l'ordre des coches, numéros et bouton mis à jour sans réafficher.
+      const cocher = (attr, liste, okId) => o.querySelectorAll(`[data-${attr}]`).forEach(b => b.onchange = () => {
+        const id = b.dataset[attr], i = liste.indexOf(id); if(i >= 0) liste.splice(i, 1); if(b.checked) liste.push(id);
+        o.querySelectorAll(`[data-${attr}]`).forEach(c => { const sp = c.parentElement, r = sp.querySelector('.cx-rang'), n = liste.indexOf(c.dataset[attr]);
+          if(n < 0){ if(r) r.remove(); } else if(r) r.textContent = 'n° ' + (n + 1); else sp.insertAdjacentHTML('beforeend', ` <span class="cx-rang">n° ${n + 1}</span>`); });
+        const ok = o.querySelector('#' + okId), n = liste.length; ok.disabled = !n; ok.innerHTML = `<span class="gicon">add</span> Ajouter ${n > 1 ? 'ces ' + n + ' exercices' : 'cet exercice'}`;
       });
-      o.querySelectorAll('[data-prog]').forEach(b => b.onclick = () => {
-        const d = progDefiParId(b.dataset.prog); if(!d) return;
-        fin({ titre: 'Programmation : ' + d.titre, chapitre: '', html: '', prog: null, exo: { type: 'prog', defi: d.id } });
-      });
+      cocher('qz', st.qzSel, 'cxQzOk'); cocher('prog', st.progSel, 'cxProgOk');
+      const qo = o.querySelector('#cxQzOk');
+      if(qo) qo.onclick = () => {
+        const l = st.qzSel.map(id => st.qzs.find(x => x.id === id)).filter(Boolean).map(q => {
+          // Interrogation (mode « à la maison » ou « en classe ») : enregistrée comme une interrogation à la
+          // fin de la session (cours-sessions.js), les copies des élèves comprises.
+          const mode = typeof qzModeCle === 'function' ? qzModeCle(q.reglages) : 'maison', interro = mode === 'maison' || mode === 'classe';
+          return { titre: (interro ? 'Interrogation : ' : 'Exercice : ') + (q.titre || 'questionnaire'), chapitre: '', html: '', prog: null,
+            exo: { type: 'qz', questions: qzPreparer(cxClone(q.questions)), qz_id: q.id, qz_titre: q.titre || '', qz_mode: mode, interro } };
+        });
+        if(l.length) fin(l);
+      };
+      const po = o.querySelector('#cxProgOk');
+      if(po) po.onclick = () => {
+        const l = st.progSel.map(id => progDefiParId(id)).filter(Boolean).map(d => ({ titre: 'Programmation : ' + d.titre, chapitre: '', html: '', prog: null, exo: { type: 'prog', defi: d.id } }));
+        if(l.length) fin(l);
+      };
       const mn = o.querySelector('#cxManNiv'); if(mn) mn.onchange = () => { st.man = { lvl: mn.value, code: (avecPl(mn.value)[0] || {}).code, sel: [] }; rendre(); };
       const mc = o.querySelector('#cxManCh'); if(mc) mc.onchange = () => { st.man.code = mc.value; st.man.sel = []; rendre(); };
       o.querySelectorAll('[data-man]').forEach(b => b.onchange = () => { const k = b.dataset.man; st.man.sel = st.man.sel.filter(x => x !== k); if(b.checked) st.man.sel.push(k);
@@ -985,6 +1002,8 @@ function cxFigRendre(){
     .cx-ch{max-width:680px;width:94vw;max-height:88vh;display:flex;flex-direction:column;} .cx-ch.cx-ch-large{max-width:940px;max-height:92vh;}
     .cx-man-tete{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;}
     .cx-man-ap{border-top:1px dashed rgba(28,43,57,.15);margin-top:6px;padding-top:8px;font-size:.9rem;line-height:1.45;overflow-x:auto;} .cx-man-ap .pl-consigne{margin-bottom:6px;}
+    .cx-ok-bar{position:sticky;bottom:0;text-align:right;margin-top:10px;padding:8px 0 2px;background:linear-gradient(rgba(255,255,255,0),#fff 30%);z-index:2;}
+    .cx-rang{font:700 .7rem 'Space Grotesk',sans-serif;color:#fff;background:#2EA8C9;border-radius:999px;padding:1px 8px;margin-left:4px;}
     .cx-man-it:has(input:checked){border-color:#2EA8C9;background:#F2FAFD;box-shadow:0 0 0 1px #2EA8C9;}
     .cx-doc img, .cx-doc svg, .cx-doc canvas{max-width:100%;height:auto;} .cx-doc{line-height:1.6;}
     .cx-onglets{display:flex;gap:4px;background:#EEF1F5;border-radius:10px;padding:3px;flex-wrap:wrap;margin-bottom:10px;}

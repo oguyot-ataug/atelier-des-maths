@@ -3464,6 +3464,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1091', date:'2026-10-15', items:[
+    "Sessions, « Exercice à faire en direct » : on peut maintenant cocher plusieurs défis de programmation par blocs, ou plusieurs questionnaires de sa banque, et les ajouter d'un coup (comme les exercices du manuel). Un numéro indique l'ordre dans lequel ils seront ajoutés ; le bouton « Ajouter » reste visible en bas de la fenêtre, même dans une longue liste.",
+  ]},
   { version:'2026-08-19.1090', date:'2026-10-15', items:[
     "Interrogations en ligne : bouton « Copier les notes » dans la page de correction d'une interrogation (barre d'outils, à côté de « Recorriger à zéro »). Il copie la colonne des notes, une ligne par élève de la classe dans l'ordre alphabétique, prête à coller dans Pronote ou un tableur ; un message rappelle les copies dont des questions restent à corriger. Le même bouton existe toujours colonne par colonne dans le Carnet de notes.",
   ]},
