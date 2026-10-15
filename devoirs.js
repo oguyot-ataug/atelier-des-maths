@@ -194,8 +194,9 @@ function renderDevoirTypePicker(){
 function renderDevoirProgPicker(){
   const box = document.getElementById('devoirProgPicker');
   if(!box || typeof PROG_DEFIS==='undefined') return;
+  if(typeof progPerso!=='undefined' && !progPerso.charge && typeof progPersoCharger==='function'){ progPersoCharger().then(renderDevoirProgPicker); } // défis créés par le professeur
   let niv = '';
-  box.innerHTML = PROG_DEFIS.map(d=>`${d.niveau!==niv ? `<p class="hint" style="margin:${niv?'8px':'0'} 0 2px;font-weight:700;">${(niv = d.niveau)}</p>` : ''}<label style="display:flex;align-items:center;gap:6px;padding:3px 0;font-size:.85rem;">
+  box.innerHTML = PROG_DEFIS.map(d=>`${(d.groupe||d.niveau)!==niv ? `<p class="hint" style="margin:${niv?'8px':'0'} 0 2px;font-weight:700;">${escapeHtml(niv = d.groupe||d.niveau)}</p>` : ''}<label style="display:flex;align-items:center;gap:6px;padding:3px 0;font-size:.85rem;">
     <input type="checkbox" value="${d.id}" ${devoirNewProgDefis.has(d.id)?'checked':''} onchange="toggleDevoirProgDefi('${d.id}',this.checked)">
     <span style="flex:1;"><b>${escapeHtml(d.titre)}</b> <span class="hint" style="margin:0;">· ${d.type==='calcul'?'Calcul':'Tracé'}</span></span>
     <button type="button" class="btn secondary" style="font-size:.68rem;padding:2px 7px;flex:none;" onclick="event.preventDefault();progOuvrir({defi:'${d.id}'})">Essayer</button>

@@ -160,6 +160,8 @@ function cxChoisir(){
     };
     o.style.display = 'flex';
     rendre(); charger();
+    // Défis de programmation créés par le professeur (prog-perso.js) : ajoutés à la liste une fois chargés.
+    if(typeof progPerso !== 'undefined' && !progPerso.charge && typeof progPersoCharger === 'function') progPersoCharger().then(() => { if(!fini && st.onglet === 'prog') rendre(); });
   });
 }
 /* ---------- Partie de cours d'un chapitre (demandé : « permettre d'ajouter une partie de cours ») ----------
@@ -731,6 +733,8 @@ async function cxEleveMonter(k, it){
   if(it.exo.type === 'td'){ if(qzP && qzP.cours) qzP = null; cxEleveTd(k, it, c); return; }
   if(it.exo.type === 'prog'){
     if(qzP && qzP.cours) qzP = null;
+    // Défi créé par un professeur (prog-perso.js) : chargé à la première ouverture.
+    if(typeof progPersoAssurer === 'function' && /^p-/.test(String(it.exo.defi)) && !progDefiParId(it.exo.defi) && !it._persoCharge){ it._persoCharge = true; c.innerHTML = '<p class="hint">Chargement du défi…</p>'; await progPersoAssurer([it.exo.defi]); if(cdE && cdE.cxMonte === k) return cxEleveMonter(k, it); return; }
     const d = typeof progDefiParId === 'function' ? progDefiParId(it.exo.defi) : null;
     c.innerHTML = `${cxEleveTete(k, it)}<div class="cx-consigne">${d ? d.enonce : 'Défi introuvable.'}</div>
       <p>${rep.reussi ? '<b style="color:#1F7A4D;">Bravo, défi réussi !</b> Tu peux encore améliorer ton programme.' : rep.programme ? 'Ton programme est enregistré : continue !' : 'Construis ton programme avec les blocs, puis clique sur « Vérifier mon programme ».'}</p>
@@ -857,6 +861,7 @@ async function cxProgOuvrir(defiId, programme){
   if(typeof progOuvrir !== 'function'){ cxQuitterProg(); return false; }
   await progOuvrir({});
   if(!cx.prog) return false;
+  if(typeof progPersoAssurer === 'function') await progPersoAssurer([defiId]);
   if(!prog || !prog.ws || !progDefiParId(defiId)){ const r = cx.prog.role; cxQuitterProg(); if(r) niceAlert('L\'éditeur de blocs n\'a pas pu être chargé (connexion ?).'); return false; }
   progDefi(defiId);
   ['progTabs', 'progListe'].forEach(id => { const el = document.getElementById(id); if(el) el.hidden = true; });

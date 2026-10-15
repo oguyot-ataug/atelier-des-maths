@@ -258,6 +258,8 @@ function progDefiSauver(d, json){
    Affichage : liste des défis, consigne, vérification
    --------------------------------------------------------------------- */
 async function progDefisInit(opts){
+  // Défis créés par les professeurs (prog-perso.js) : les siens, et ceux d'un devoir ou d'une lecture.
+  if(typeof progPersoCharger === 'function'){ await progPersoCharger(); await progPersoAssurer([].concat(prog.devoir ? prog.devoir.prog_defis || [] : [], prog.lecture ? [prog.lecture.defi] : [])); }
   await progChargerSuivi();
   if(prog.lecture) return progLecture();
   if(prog.devoir){ progDefisAfficher(); return progDevoirRendre(); }
@@ -279,10 +281,10 @@ function progListeRender(){
   const el = document.getElementById('progListe'); if(!el) return;
   const liste = progDefisVisibles(); let niv = '';
   el.innerHTML = liste.map((d, i) => {
-    const s = progSuivi[d.id] || {}, titreNiv = !prog.devoir && d.niveau !== niv ? `<p class="prog-niv">${(niv = d.niveau)}</p>` : '';
+    const s = progSuivi[d.id] || {}, titreNiv = !prog.devoir && (d.groupe || d.niveau) !== niv ? `<p class="prog-niv">${progEsc(niv = d.groupe || d.niveau)}</p>` : '';
     return `${titreNiv}<button type="button" class="prog-item${prog.defi && prog.defi.id === d.id ? ' on' : ''}${s.reussi ? ' ok' : ''}" onclick="progDefi('${d.id}')">
       <span class="n">${s.reussi ? '<span class="gicon">check</span>' : i + 1}</span><span class="t">${progEsc(d.titre)}<small>${d.trace || d.cibles ? 'Tracé' : 'Calcul'}${s.tentatives ? ' · ' + s.tentatives + ' essai' + (s.tentatives > 1 ? 's' : '') : ''}</small></span></button>`;
-  }).join('');
+  }).join('') + (typeof progPersoListeBouton === 'function' ? progPersoListeBouton() : '');
   const b = document.getElementById('progDevoirBandeau');
   if(prog.devoir){ const n = liste.filter(x => (progSuivi[x.id] || {}).reussi).length;
     b.hidden = false; b.innerHTML = `<span class="gicon">assignment</span> Devoir : ${progEsc(prog.devoir.titre)} · <b>${n} / ${liste.length}</b> réussi${n > 1 ? 's' : ''}`; }
@@ -292,13 +294,13 @@ function progDefi(id){
   const d = progDefiParId(id); if(!d) return;
   if(prog.defi && prog.defi.id !== id) progSauverCourant();
   if(typeof dsEnd === 'function' && prog.ds){ dsEnd(prog.ds, (progSuivi[prog.defi && prog.defi.id] || {}).reussi ? 'terminee' : 'abandonnee'); prog.ds = null; }
-  prog.defi = d; prog.mode = 'defis';
+  prog.defi = d; prog.mode = 'defis'; prog.creation = null;
   prog.ws.updateToolbox(progToolbox(d.blocs || null));
   const s = progSuivi[d.id] || {};
   progCharger(s.programme || progDepartDefaut());
   const c = document.getElementById('progConsigne'); c.hidden = false;
   c.innerHTML = `<div class="prog-c-head"><span class="prog-c-niv">${d.niveau}</span><b>${progEsc(d.titre)}</b>${s.reussi ? '<span class="prog-c-ok"><span class="gicon">check_circle</span> Réussi</span>' : ''}
-      <span style="flex:1"></span><button type="button" class="btn secondary qz-mini" onclick="progAide()"><span class="gicon">lightbulb</span> Aide</button>
+      <span style="flex:1"></span>${typeof progPersoBouton === 'function' ? progPersoBouton(d) : ''}<button type="button" class="btn secondary qz-mini" onclick="progAide()"><span class="gicon">lightbulb</span> Aide</button>
       <button type="button" class="btn secondary qz-mini" onclick="progRecommencer()" title="Effacer ton programme et repartir de zéro"><span class="gicon">restart_alt</span></button></div>
     <p class="prog-c-txt">${d.enonce}</p>
     ${d.tests && d.tests.length > 1 && d.trace ? '<p class="hint" style="margin:0;">Pour vérifier, le programme sera lancé avec plusieurs réponses.</p>' : ''}

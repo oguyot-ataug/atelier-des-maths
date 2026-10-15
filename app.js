@@ -3123,6 +3123,7 @@ async function refreshAuthUI(){
       ({ data: profile } = await sb.from('profiles').select(profileCols).eq('id', currentUser.id).maybeSingle());
     }
     currentUserRole = profile ? profile.role : null;
+    if(typeof progPersoCharger === 'function') progPersoCharger(true); // défis de programmation créés par le professeur (prog-perso.js)
     // Offre Famille (parent, ou enfant d'une famille) : niveaux ouverts -- voir famille.js.
     const prevFamilleNiveaux = JSON.stringify(typeof familleNiveaux!=='undefined' ? familleNiveaux : null);
     if(typeof familleLoad==='function') await familleLoad(currentUserRole);
@@ -3464,6 +3465,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1092', date:'2026-10-15', items:[
+    "Programmation par blocs : les professeurs peuvent créer leurs propres défis (bouton « Créer un défi » en bas de la liste des défis). On écrit le titre, le niveau, l'énoncé et une aide, puis on PROGRAMME LA SOLUTION avec les blocs : le site en déduit la vérification. Trois sortes de défis : figure à tracer (n'importe où, dans n'importe quel sens), tracé sur place (départ imposé, les traits de la solution deviennent des pointillés à repasser), calcul (le lutin demande des valeurs, la solution calcule ce qu'il faut dire). Option « répéter obligatoire », choix des blocs proposés. Les défis créés se rangent dans « Mes défis », se modifient ou se suppriment, et se donnent en devoir ou dans une session comme les autres ; les élèves ne voient jamais la solution.",
+  ]},
   { version:'2026-08-19.1091', date:'2026-10-15', items:[
     "Sessions, « Exercice à faire en direct » : on peut maintenant cocher plusieurs défis de programmation par blocs, ou plusieurs questionnaires de sa banque, et les ajouter d'un coup (comme les exercices du manuel). Un numéro indique l'ordre dans lequel ils seront ajoutés ; le bouton « Ajouter » reste visible en bas de la fenêtre, même dans une longue liste.",
   ]},
