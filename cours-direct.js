@@ -689,7 +689,7 @@ function cdEleveSignalerVue(){
   cdE.vueSignalee = cdE.vue;
   try{ cdE.ch.send({ type: 'broadcast', event: 'vue', payload: { e: currentUser.id, k: cdE.vue } }); }catch(e){}
 }
-function cdEleveVoir(k){ if(!cdE || !cdE.d) return; cdE.vue = Math.max(0, Math.min(cdE.d.max != null ? cdE.d.max : cdE.d.idx, k)); cdEleveRendre(); }
+function cdEleveVoir(k){ if(!cdE || !cdE.d) return; cdE.ouvrirProg = null; cdE.vue = Math.max(0, Math.min(cdE.d.max != null ? cdE.d.max : cdE.d.idx, k)); cdEleveRendre(); }
 function cdEleveFin(){
   if(!cdE) return;
   const o = document.getElementById('cdEleve');

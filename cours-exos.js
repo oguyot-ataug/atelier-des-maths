@@ -729,16 +729,18 @@ async function cxEleveMonter(k, it){
   await cxEleveTravaux();
   const c = document.getElementById('cdEleveContenu'); if(!c || !cdE) return;
   cdE.cxMonte = k;
-  const rep = cdE.trav.get(k) || {}, tenu = cdE.main === k;
+  const rep = cdE.trav.get(k) || {}, tenu = cdE.main === k, ouvrir = cdE.ouvrirProg === k;
+  if(ouvrir) cdE.ouvrirProg = null;
   if(it.exo.type === 'td'){ if(qzP && qzP.cours) qzP = null; cxEleveTd(k, it, c); return; }
   if(it.exo.type === 'prog'){
     if(qzP && qzP.cours) qzP = null;
     // Défi créé par un professeur (prog-perso.js) : chargé à la première ouverture.
-    if(typeof progPersoAssurer === 'function' && /^p-/.test(String(it.exo.defi)) && !progDefiParId(it.exo.defi) && !it._persoCharge){ it._persoCharge = true; c.innerHTML = '<p class="hint">Chargement du défi…</p>'; await progPersoAssurer([it.exo.defi]); if(cdE && cdE.cxMonte === k) return cxEleveMonter(k, it); return; }
+    if(typeof progPersoAssurer === 'function' && /^p-/.test(String(it.exo.defi)) && !progDefiParId(it.exo.defi) && !it._persoCharge){ it._persoCharge = true; c.innerHTML = '<p class="hint">Chargement du défi…</p>'; await progPersoAssurer([it.exo.defi]); if(cdE && ouvrir) cdE.ouvrirProg = k; if(cdE && cdE.cxMonte === k) return cxEleveMonter(k, it); return; }
     const d = typeof progDefiParId === 'function' ? progDefiParId(it.exo.defi) : null;
     c.innerHTML = `${cxEleveTete(k, it)}<div class="cx-consigne">${d ? d.enonce : 'Défi introuvable.'}</div>
       <p>${rep.reussi ? '<b style="color:#1F7A4D;">Bravo, défi réussi !</b> Tu peux encore améliorer ton programme.' : rep.programme ? 'Ton programme est enregistré : continue !' : 'Construis ton programme avec les blocs, puis clique sur « Vérifier mon programme ».'}</p>
       <button class="btn" onclick="cxEleveProg()"><span class="gicon">extension</span> ${rep.programme ? 'Reprendre mon programme' : 'Ouvrir l\'éditeur de blocs'}</button>`;
+    if(ouvrir && d && !tenu) cxEleveProg();
     return;
   }
   const qs = it.exo.questions;
@@ -843,6 +845,26 @@ async function cxElevePilote(p){
   cdE.trav.set(p.k, data.reponses || {});
   if(cx.prog && cx.prog.role === 'eleve' && cx.prog.k === p.k){ if(data.reponses && data.reponses.programme) progCharger(data.reponses.programme); return; }
   if(cdE.vue === p.k) cxEleveRafraichir();
+}
+/* Après « Vérifier mon programme » réussi, dans une session. Mode libre : bouton vers l'élément suivant, l'éditeur
+   s'ouvre directement si c'est encore un défi de programmation -- signalé : « en mode libre, les élèves testent leur
+   code, ont juste et sont obligés de revenir au cours afin de pouvoir passer à l'exercice suivant ». Mode
+   présentation : c'est le professeur qui fait avancer la classe. */
+function cxEleveSuivantHtml(){
+  if(!cx.prog || cx.prog.role !== 'eleve' || !cdE || !cdE.d) return '';
+  const d = cdE.d, k = cx.prog.k, mx = d.max != null ? d.max : d.idx;
+  if(d.mode !== 'libre') return '<p class="hint" style="margin:8px 0 0;">Exercice réussi ! Ton professeur fera passer la classe à la suite.</p>';
+  if(k >= mx) return '<p class="hint" style="margin:8px 0 0;">Exercice réussi : c\'était le dernier élément de la session. Bravo !</p>';
+  const t = (d.items[k + 1] || {}).titre || 'élément ' + (k + 2);
+  return `<button type="button" class="btn qz-mini" style="margin-top:8px;" onclick="cxEleveSuivant()">Suivant : ${cdEsc(t)} <span class="gicon">arrow_forward</span></button>`;
+}
+function cxEleveSuivant(){
+  if(!cx.prog || cx.prog.role !== 'eleve' || !cdE || !cdE.d || cdE.d.mode !== 'libre') return;
+  const k = cx.prog.k + 1;
+  if(k > (cdE.d.max != null ? cdE.d.max : cdE.d.n - 1)) return;
+  cdE.ouvrirProg = k; // l'éditeur s'ouvre tout seul si l'élément suivant est un défi (cxEleveMonter)
+  cdE.vue = k;
+  cxQuitterProg(); // envoie le programme, puis la session s'affiche directement sur l'élément suivant
 }
 async function cxEleveProg(){
   if(!cdE || !cdE.d) return;
