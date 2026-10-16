@@ -3465,6 +3465,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1098', date:'2026-10-16', items:[
+    "Figures : on peut tracer une parallèle (ou une perpendiculaire) à une droite déjà construite -- perpendiculaire, parallèle, médiatrice ou bissectrice. Elle suit la figure quand on la déplace.",
+    "Figures : supprimer un point ou une droite supprime aussi les perpendiculaires et parallèles qui s'appuient dessus ; annuler/refaire les garde bien liées."
+  ]},
   { version:'2026-08-19.1097', date:'2026-10-16', items:[
     "Sessions : l'éditeur de blocs reste sur l'exercice de la session (plus de « Défi suivant » qui ouvrait un autre défi et mélangeait les consignes et les réponses).",
     "Sessions : moins de requêtes envoyées pendant le travail sur les blocs (allège le serveur quand toute la classe travaille)."

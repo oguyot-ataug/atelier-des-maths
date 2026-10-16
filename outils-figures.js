@@ -3510,7 +3510,7 @@ function openCodageManager(){
   }).join('');
   const perpRows = perps.map((s,i)=>{
     const existing = figState.shapes.find(x=>x.type==='code-droit' && x.sourceShape===s);
-    const desc = s.type==='mediatrice' ? `Médiatrice de [${s.p1.label}${s.p2.label}]` : `Perpendiculaire à [${s.refA.label}${s.refB.label}] en ${s.through.label}`;
+    const desc = s.type==='mediatrice' ? `Médiatrice de [${s.p1.label}${s.p2.label}]` : `Perpendiculaire à ${s.refLigne ? figNomObjet(s.refLigne) : `[${s.refA.label}${s.refB.label}]`} en ${s.through.label}`;
     return `
     <div class="tool-row" style="margin:0 0 6px;align-items:center;">
       <label class="hint" style="margin:0;display:flex;align-items:center;gap:6px;"><input type="checkbox" data-kind="perp" data-idx="${i}" ${existing?'checked':''}> ${desc}</label>
@@ -3577,8 +3577,9 @@ function openCodageManager(){
           p2 = {x:vertex.x-(s.p2.y-s.p1.y), y:vertex.y+(s.p2.x-s.p1.x)};
         } else {
           vertex = s.through;
-          p1 = {x:vertex.x+(s.refB.x-s.refA.x), y:vertex.y+(s.refB.y-s.refA.y)};
-          p2 = {x:vertex.x-(s.refB.y-s.refA.y), y:vertex.y+(s.refB.x-s.refA.x)};
+          const {a:rA, b:rB} = figRefAB(s);
+          p1 = {x:vertex.x+(rB.x-rA.x), y:vertex.y+(rB.y-rA.y)};
+          p2 = {x:vertex.x-(rB.y-rA.y), y:vertex.y+(rB.x-rA.x)};
         }
         figState.shapes.push({type:'code-droit', vertex, p1, p2, sourceShape:s});
       }
@@ -3759,10 +3760,11 @@ function cloneFigState(state){
   const shapeMap = new Map();
   const newShapes = state.shapes.map(s=>{
     const c={...s};
-    ['p1','p2','vertex','center'].forEach(k=>{ if(c[k] && pointMap.has(c[k])) c[k]=pointMap.get(c[k]); });
+    ['p1','p2','vertex','center','refA','refB','through'].forEach(k=>{ if(c[k] && pointMap.has(c[k])) c[k]=pointMap.get(c[k]); });
     shapeMap.set(s,c);
     return c;
   });
+  newShapes.forEach(c=>{ if(c.refLigne && shapeMap.has(c.refLigne)) c.refLigne = shapeMap.get(c.refLigne); });
   newPoints.forEach(p=>{
     if(p.def){
       const nd={...p.def};
@@ -4095,16 +4097,27 @@ function findTwoNearbyLineShapes(x,y){
    elle-même) et perpendiculaire/parallèle (refA/refB/through) ont une structure différente.
    Permet de traiter tous ces types UNIFORMÉMENT (détection de clic, point posé dessus,
    intersection) -- signalé : "la médiatrice n'est pas reconnue comme un vrai objet". */
+/* Direction de référence d'une perpendiculaire / parallèle : deux points (refA, refB), ou une droite
+   déjà construite (refLigne : perpendiculaire, parallèle, médiatrice, bissectrice), suivie en direct.
+   Signalé : « J'ai tracé une droite (AB), un point C, puis la perpendiculaire. Ensuite l'outil
+   parallèle ne fonctionne pas » -- cliquer sur la perpendiculaire donnait une référence vide. */
+function figRefAB(s){
+  if(s.refLigne){ const e = lineShapeEndpoints(s.refLigne); return {a:e.p1, b:e.p2}; }
+  return {a:s.refA, b:s.refB};
+}
+const FIG_LIGNES_CONSTRUITES = ['mediatrice','perpendiculaire','parallele','bissectrice'];
 function lineShapeEndpoints(s){
   if(s.type==='mediatrice'){
     const mid = {x:(s.p1.x+s.p2.x)/2, y:(s.p1.y+s.p2.y)/2};
     return {p1:mid, p2:{x:mid.x-(s.p2.y-s.p1.y), y:mid.y+(s.p2.x-s.p1.x)}};
   }
   if(s.type==='perpendiculaire'){
-    return {p1:s.through, p2:{x:s.through.x-(s.refB.y-s.refA.y), y:s.through.y+(s.refB.x-s.refA.x)}};
+    const {a, b} = figRefAB(s);
+    return {p1:s.through, p2:{x:s.through.x-(b.y-a.y), y:s.through.y+(b.x-a.x)}};
   }
   if(s.type==='parallele'){
-    return {p1:s.through, p2:{x:s.through.x+(s.refB.x-s.refA.x), y:s.through.y+(s.refB.y-s.refA.y)}};
+    const {a, b} = figRefAB(s);
+    return {p1:s.through, p2:{x:s.through.x+(b.x-a.x), y:s.through.y+(b.y-a.y)}};
   }
   if(s.type==='bissectrice'){
     const a1=Math.atan2(s.p1.y-s.vertex.y, s.p1.x-s.vertex.x);
@@ -4266,10 +4279,13 @@ async function handleLineToolClick(x,y){
     }
     const shape = findNearbyShape(x,y);
     if(shape){
+      const ligne = FIG_LIGNES_CONSTRUITES.includes(shape.type);
       // La médiatrice ne dépend que du segment lui-même (pas d'un point "par lequel elle
       // passe" à préciser en plus, contrairement à perpendiculaire/parallèle) -- un clic
       // suffit donc, pas besoin d'un second (signalé : "on est obligé de cliquer 2 fois").
-      if(figState.mode==='mediatrice'){ figState.shapes.push({type:'mediatrice', p1:shape.p1, p2:shape.p2}); renderFigureSvg(); return; }
+      if(figState.mode==='mediatrice'){ if(ligne || !shape.p1 || !shape.p2) return; figState.shapes.push({type:'mediatrice', p1:shape.p1, p2:shape.p2}); renderFigureSvg(); return; }
+      if(ligne){ figState.refShape = Object.assign({ligne:shape}, lineShapeEndpoints(shape)); renderFigureSvg(); return; }
+      if(!shape.p1 || !shape.p2) return;
       figState.refShape = {p1:shape.p1, p2:shape.p2}; renderFigureSvg(); return;
     }
     const pt = findNearbyPoint(x,y);
@@ -4291,7 +4307,8 @@ async function handleLineToolClick(x,y){
   }
   const through = findNearbyPoint(x,y);
   if(!through) return;
-  figState.shapes.push({type:figState.mode, refA:figState.refShape.p1, refB:figState.refShape.p2, through});
+  const ref = figState.refShape;
+  figState.shapes.push(ref.ligne ? {type:figState.mode, refLigne:ref.ligne, through} : {type:figState.mode, refA:ref.p1, refB:ref.p2, through});
   figState.refShape = null;
   renderFigureSvg();
 }
@@ -4624,8 +4641,8 @@ function deleteObjectWithDependents(target){
     });
     const before = figState.shapes.length;
     figState.shapes = figState.shapes.filter(s=>{
-      const pts = [s.p1,s.p2,s.vertex,s.center,s.point,s.refP1,s.refP2].filter(Boolean);
-      return pts.every(pt=>figState.points.includes(pt));
+      const pts = [s.p1,s.p2,s.vertex,s.center,s.point,s.refP1,s.refP2,s.refA,s.refB,s.through].filter(Boolean);
+      return pts.every(pt=>figState.points.includes(pt)) && (!s.refLigne || figState.shapes.includes(s.refLigne));
     });
     if(figState.shapes.length !== before) changed = true;
   }
@@ -5549,7 +5566,8 @@ function renderFigureSvg(){
       const bisA=a1+delta/2, len=260;
       html+=`<line x1="${s.vertex.x}" y1="${s.vertex.y}" x2="${s.vertex.x+len*Math.cos(bisA)}" y2="${s.vertex.y+len*Math.sin(bisA)}" ${shapeStrokeAttrs(s,'#8A2F52')}/>`;
     } else if(s.type==='perpendiculaire' || s.type==='parallele'){
-      let dx=s.refB.x-s.refA.x, dy=s.refB.y-s.refA.y;
+      const {a:rA, b:rB} = figRefAB(s);
+      let dx=rB.x-rA.x, dy=rB.y-rA.y;
       if(s.type==='perpendiculaire'){ const t=dx; dx=-dy; dy=t; }
       const len=Math.hypot(dx,dy)||1; const ext=400;
       const defaultColor = s.type==='perpendiculaire' ? '#2C5A2E' : '#1F3A5C';
@@ -6434,7 +6452,11 @@ function figVersProgramme(){
       // elle-même (identifiant de l'objet déjà construit), le point y n'existant pas au tableau.
       const cache = q => q && q.hidden && q.def && q.def.type==='angle-cote';
       let to;
-      if(cache(sh.refA) || cache(sh.refB)){
+      if(sh.refLigne){
+        const idL = assurerObjet(sh.refLigne);
+        if(!idL) return null;
+        to = idL;
+      } else if(cache(sh.refA) || cache(sh.refB)){
         const y = cache(sh.refB) ? sh.refB : sh.refA, autre = y===sh.refB ? sh.refA : sh.refB;
         const rayon = figState.shapes.find(r=>r.type==='demi-droite' && r.p2===y && (r.p1===autre || y.def.vertex===autre));
         const idR = rayon ? assurerObjet(rayon) : null;
