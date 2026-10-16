@@ -3465,6 +3465,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1100', date:'2026-10-16', items:[
+    "Sessions : on peut changer l'ordre des éléments pendant la session -- glisser un élément dans la liste de la télécommande, ou flèches ↑ ↓ à côté de son titre. Les réponses déjà données suivent leur exercice ; en mode libre, chaque élève reste sur l'exercice où il était."
+  ]},
   { version:'2026-08-19.1099', date:'2026-10-16', items:[
     "Sessions : dans l'éditeur de blocs, ni liste des défis ni onglets, même pendant le chargement ; l'élève ne peut travailler que sur l'exercice de la session."
   ]},

@@ -1009,6 +1009,8 @@ function cxFigRendre(){
     .cx-man-ap{border-top:1px dashed rgba(28,43,57,.15);margin-top:6px;padding-top:8px;font-size:.9rem;line-height:1.45;overflow-x:auto;} .cx-man-ap .pl-consigne{margin-bottom:6px;}
     .cx-ok-bar{position:sticky;bottom:0;text-align:right;margin-top:10px;padding:8px 0 2px;background:linear-gradient(rgba(255,255,255,0),#fff 30%);z-index:2;}
     .cd-retirer{margin-left:10px;border:1px solid rgba(179,38,30,.35);background:#fff;color:#B3261E;border-radius:999px;font:600 .75rem Inter,sans-serif;padding:2px 9px;cursor:pointer;display:inline-flex;align-items:center;gap:3px;vertical-align:middle;} .cd-retirer .gicon{font-size:15px;} .cd-retirer:hover{background:#FDECEA;}
+    .cd-ordre{margin-left:10px;display:inline-flex;gap:3px;vertical-align:middle;} .cd-ordre button{border:1px solid rgba(31,58,92,.3);background:#fff;color:#1F3A5C;border-radius:999px;width:26px;height:24px;padding:0;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;} .cd-ordre button .gicon{font-size:16px;} .cd-ordre button:hover:not(:disabled){background:#EEF3F8;} .cd-ordre button:disabled{opacity:.35;cursor:default;}
+    #cdProf .cd-item[draggable=true]{cursor:grab;} #cdProf .cd-item.cd-glisse{opacity:.45;} #cdProf .cd-item.cd-cible-av{box-shadow:inset 0 3px 0 #2EA8C9;} #cdProf .cd-item.cd-cible-ap{box-shadow:inset 0 -3px 0 #2EA8C9;}
     .cx-rang{font:700 .7rem 'Space Grotesk',sans-serif;color:#fff;background:#2EA8C9;border-radius:999px;padding:1px 8px;margin-left:4px;}
     .cx-man-it:has(input:checked){border-color:#2EA8C9;background:#F2FAFD;box-shadow:0 0 0 1px #2EA8C9;}
     .cx-doc img, .cx-doc svg, .cx-doc canvas{max-width:100%;height:auto;} .cx-doc{line-height:1.6;}

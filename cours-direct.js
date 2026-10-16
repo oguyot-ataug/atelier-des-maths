@@ -274,6 +274,62 @@ async function cdProfRetirer(j){
   if(typeof cxProfTick === 'function') cxProfTick();
   cdToast('<span class="gicon">delete</span> Élément retiré de la session.');
 }
+/* Ordre des éléments -- demandé : « Permettre de modifier l'ordre des exercices des sessions ». L'élément j
+   passe en position k (glisser-déposer dans la liste, ou flèches à côté du titre). Les réponses des élèves sont
+   rangées par numéro d'élément : elles suivent leur exercice. etat.dep permet à l'élève en mode libre de rester
+   sur le même exercice (son numéro a changé). */
+function cdOrdreNouveau(v, j, k){
+  if(v === j) return k;
+  if(j < k && v > j && v <= k) return v - 1;
+  if(k < j && v >= k && v < j) return v + 1;
+  return v;
+}
+async function cdProfDeplacer(j, k){
+  if(!cdP || cdP.deplace || j === k || !cdP.items[j] || k < 0 || k >= cdP.items.length) return;
+  cdP.deplace = true;
+  try{
+    if(typeof cxRelacher === 'function'){ cxRelacher(); cxQuitterProg(); }
+    cdQuitterTableau();
+    const lo = Math.min(j, k), hi = Math.max(j, k);
+    const { data: rows, error: e0 } = await sb.from('cours_direct_travaux').select('item').eq('direct_id', cdP.id).gte('item', lo).lte('item', hi);
+    if(e0){ niceAlert('Impossible de lire les réponses des élèves : ' + e0.message); return; }
+    const vs = [...new Set((rows || []).map(r => r.item))], TMP = 1000000;
+    // Deux temps (numéros provisoires hors de portée, puis la vraie place) : deux exercices ne partagent jamais un numéro.
+    for(const v of vs){
+      const { error } = await sb.from('cours_direct_travaux').update({ item: TMP + cdOrdreNouveau(v, j, k) }).eq('direct_id', cdP.id).eq('item', v);
+      if(error){ niceAlert('Déplacement interrompu : ' + error.message); return; }
+    }
+    for(const v of vs){
+      const n = cdOrdreNouveau(v, j, k);
+      const { error } = await sb.from('cours_direct_travaux').update({ item: n }).eq('direct_id', cdP.id).eq('item', TMP + n);
+      if(error){ niceAlert('Déplacement interrompu : ' + error.message); return; }
+    }
+    const items = cdP.items.slice(), [x] = items.splice(j, 1); items.splice(k, 0, x);
+    const rev = (cdP.etat.rev || 0) + 1;
+    const etat = Object.assign({}, cdP.etat, { idx: cdOrdreNouveau(cdP.etat.idx || 0, j, k), rev, dep: { rev, de: j, a: k } });
+    const { error } = await sb.from('cours_direct').update({ items, etat }).eq('id', cdP.id);
+    if(error){ niceAlert('Nouvel ordre non enregistré : ' + error.message); return; }
+    cdP.items = items; cdP.etat = etat; cdP.trav = null; cdP.selEx = null;
+    if(cdP.vues) cdP.vues.forEach((v, e) => cdP.vues.set(e, cdOrdreNouveau(v, j, k)));
+    const diffuse = Object.assign({}, etat); delete diffuse.equipes; delete diffuse.liens;
+    try{ cdP.ch.send({ type: 'broadcast', event: 'etat', payload: diffuse }); }catch(e){}
+    cdProfRendre();
+    if(typeof cxProfTick === 'function') cxProfTick();
+  } finally { if(cdP) cdP.deplace = false; }
+}
+function cdProfGlisser(){
+  const l = document.querySelector('#cdProf .cd-p-items'); if(!l) return;
+  let de = null;
+  l.querySelectorAll('.cd-item[data-k]').forEach(b => {
+    b.draggable = true;
+    b.ondragstart = e => { de = +b.dataset.k; b.classList.add('cd-glisse'); try{ e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', b.dataset.k); }catch(x){} };
+    b.ondragend = () => { de = null; l.querySelectorAll('.cd-item').forEach(x => x.classList.remove('cd-glisse', 'cd-cible-av', 'cd-cible-ap')); };
+    b.ondragover = e => { if(de == null) return; e.preventDefault(); const k = +b.dataset.k;
+      l.querySelectorAll('.cd-item').forEach(x => x.classList.remove('cd-cible-av', 'cd-cible-ap'));
+      if(k !== de) b.classList.add(k < de ? 'cd-cible-av' : 'cd-cible-ap'); };
+    b.ondrop = e => { e.preventDefault(); const j = de, k = +b.dataset.k; de = null; if(j != null && j !== k) cdProfDeplacer(j, k); };
+  });
+}
 function cdProfAller(i){
   if(!cdP) return;
   i = Math.max(0, Math.min(cdP.items.length - 1, i));
@@ -397,13 +453,14 @@ function cdProfRendre(){
           ${it.exo && it.exo.type === 'td' ? `<button class="btn secondary" onclick="cdProfEtat({ verif: ${cdP.etat.verif === false} })" title="${cdP.etat.verif === false ? 'Les élèves répondent sans voir leurs erreurs : vous les voyez directement. Cliquez pour leur rendre le bouton « Vérifier ma réponse ».' : 'Les élèves peuvent vérifier leurs réponses et recommencer. Cliquez pour retirer le bouton « Vérifier ma réponse » (exercices du manuel de toute la session) : vous verrez directement leurs erreurs.'}"><span class="gicon">${cdP.etat.verif === false ? 'visibility_off' : 'task_alt'}</span> Vérification par l'élève : ${cdP.etat.verif === false ? 'non' : 'oui'}</button>` : ''}
           ${it.corr ? `<button class="btn" style="background:${cdP.etat.corr ? '#5B6472' : '#1F7A4D'};" onclick="cdProfEtat({ corr: ${!cdP.etat.corr} })"><span class="gicon">${cdP.etat.corr ? 'visibility_off' : 'fact_check'}</span> ${cdP.etat.corr ? 'Cacher la correction' : 'Montrer la correction aux élèves'}</button>` : ''}
           <button class="btn" onclick="cdProfAller(${i + 1})" ${i < cdP.items.length - 1 ? '' : 'disabled'}>Suivant <span class="gicon">arrow_forward</span></button></div>
-        <div class="cd-item-titre">${cdEsc(it.titre || '')}${it.chapitre ? ` <small>${cdEsc(it.chapitre)}</small>` : ''}${cdP.items.length > 1 ? `<button type="button" class="cd-retirer" onclick="cdProfRetirer(${i})" title="Retirer cet élément de la session (exercice ajouté par erreur…)"><span class="gicon">delete</span> Retirer de la session</button>` : ''}</div>
+        <div class="cd-item-titre">${cdEsc(it.titre || '')}${it.chapitre ? ` <small>${cdEsc(it.chapitre)}</small>` : ''}${cdP.items.length > 1 ? `<span class="cd-ordre"><button type="button" onclick="cdProfDeplacer(${i}, ${i - 1})" ${i ? '' : 'disabled'} title="Placer cet élément avant le précédent (vous pouvez aussi glisser les éléments dans la liste de gauche)"><span class="gicon">arrow_upward</span></button><button type="button" onclick="cdProfDeplacer(${i}, ${i + 1})" ${i < cdP.items.length - 1 ? '' : 'disabled'} title="Placer cet élément après le suivant"><span class="gicon">arrow_downward</span></button></span><button type="button" class="cd-retirer" onclick="cdProfRetirer(${i})" title="Retirer cet élément de la session (exercice ajouté par erreur…)"><span class="gicon">delete</span> Retirer de la session</button>` : ''}</div>
         <div class="cd-contenu" id="cdProfContenu">${it.exo ? '' : it.corr && cdP.etat.corr ? it.corr : it.html || ''}</div></div>
       <div class="cd-p-classe"><div class="cd-p-resume" id="cdProfResume"></div>${typeof cdEqOuvrir === 'function' ? `<button class="btn secondary td-mini cd-eq-ouvrir" onclick="cdEqOuvrir()" title="Équipes de 2, 3, 4… tirées au sort ou faites à la main"><span class="gicon">groups</span> Équipes${(cdP.etat.equipes || []).length ? ` (${cdP.etat.equipes.length})` : ''}</button>` : ''}<div id="cdProfClasse"></div></div>
     </div>`;
   const c = document.getElementById('cdProfContenu');
   if(c && it.exo){ if(typeof cxProfMonter === 'function') cxProfMonter(i, it); }
   else if(c){ c.querySelectorAll('[data-tbprog]').forEach(x => x.remove()); if(typeof cahierOutilsCours === 'function') cahierOutilsCours(c); if(it.src && typeof cxMonterVivant === 'function') cxMonterVivant(c, it.src); }
+  cdProfGlisser();
   cdProfRendreClasse();
 }
 
@@ -540,6 +597,11 @@ async function cdEleveCharger(){
   // numéro d'élément est remis à zéro : éléments gardés en mémoire, réponses, exercice monté, éditeur de blocs
   // resté ouvert sur un défi retiré (même numéro, autre exercice), élément en cours de lecture.
   if(cdE.rev != null && cdE.rev !== rev){
+    // Éléments déplacés (etat.dep, juste ce changement-là) : en mode libre, l'élève reste sur son exercice.
+    const dep = data.etat && data.etat.dep;
+    if(dep && dep.rev === rev && cdE.rev === rev - 1 && cdE.vue != null && data.mode === 'libre'){
+      try{ localStorage.setItem('cdVue-' + data.id, cdOrdreNouveau(cdE.vue, dep.de, dep.a)); }catch(e){}
+    }
     // Rien n'est plus enregistré sous l'ancien numéro (l'élève avait encore « Programme de calcul » ouvert : son
     // programme est parti sous le numéro d'un autre exercice) : sauvegarde en attente annulée, éditeur fermé sans envoi.
     clearTimeout(cdE.saveT); cdE.saveT = null;
