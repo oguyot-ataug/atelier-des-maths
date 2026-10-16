@@ -285,10 +285,12 @@ function progDefisAfficher(id){
   progSauverCourant();
   prog.mode = 'defis';
   document.querySelectorAll('#progTabs button').forEach(b => b.classList.toggle('on', b.dataset.m === 'defis'));
-  document.getElementById('progTabs').hidden = !!prog.devoir;
-  document.getElementById('progListe').hidden = false; document.getElementById('progModeleLbl').hidden = false;
+  // Session COURS : ni onglets ni liste des défis, même un instant (un élève pouvait changer de défi -- signalé :
+  // « En mode Présentation, les élèves pouvaient passer à l'exercice suivant (codage) »).
+  document.getElementById('progTabs').hidden = !!prog.devoir || progEnSession();
+  document.getElementById('progListe').hidden = progEnSession(); document.getElementById('progModeleLbl').hidden = false;
   const liste = progDefisVisibles();
-  const d = progDefiParId(id) || liste.find(x => !(progSuivi[x.id] || {}).reussi) || liste[0];
+  const d = progDefiParId(progEnSession() ? cx.prog.defi : id) || liste.find(x => !(progSuivi[x.id] || {}).reussi) || liste[0];
   progDefi(d.id);
 }
 function progListeRender(){

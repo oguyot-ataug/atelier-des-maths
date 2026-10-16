@@ -3465,6 +3465,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1099', date:'2026-10-16', items:[
+    "Sessions : dans l'éditeur de blocs, ni liste des défis ni onglets, même pendant le chargement ; l'élève ne peut travailler que sur l'exercice de la session."
+  ]},
   { version:'2026-08-19.1098', date:'2026-10-16', items:[
     "Figures : on peut tracer une parallèle (ou une perpendiculaire) à une droite déjà construite -- perpendiculaire, parallèle, médiatrice ou bissectrice. Elle suit la figure quand on la déplace.",
     "Figures : supprimer un point ou une droite supprime aussi les perpendiculaires et parallèles qui s'appuient dessus ; annuler/refaire les garde bien liées."
