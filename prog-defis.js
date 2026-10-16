@@ -263,6 +263,7 @@ async function progSuiviBase(id, champs){
 function progDefiSauver(d, json){
   progSuivi[d.id] = Object.assign(progSuivi[d.id] || {}, { programme: json });
   progSuiviLocal(d.id);
+  if(progEnSession()) return; // session : le travail est déjà enregistré par la session (moins de requêtes)
   clearTimeout(progDefiSauver.t); progDefiSauver.t = setTimeout(() => progSuiviBase(d.id), 800);
 }
 
@@ -278,6 +279,7 @@ async function progDefisInit(opts){
   if(opts && opts.libre) return progMode('libre');
   return progDefisAfficher(opts && opts.defi);
 }
+function progEnSession(){ return typeof cx !== 'undefined' && !!(cx && cx.prog && cx.prog.defi); }
 function progDefisVisibles(){ return prog.devoir ? (prog.devoir.prog_defis || []).map(progDefiParId).filter(Boolean) : PROG_DEFIS; }
 function progDefisAfficher(id){
   progSauverCourant();
@@ -304,6 +306,11 @@ function progListeRender(){
 }
 function progDefi(id){
   const d = progDefiParId(id); if(!d) return;
+  // Session COURS (cours-exos.js) : l'éditeur reste sur le défi de l'exercice en cours -- signalé : « les
+  // instructions se mélangent d'un exercice au suivant, certains exercices ne doivent pas être présents ».
+  // Le bouton « Défi suivant » (liste générale) et le choix automatique du premier défi non réussi
+  // ouvraient un autre défi (triangle, programme de calcul…) dont le travail partait sous l'exercice de la session.
+  if(progEnSession() && id !== cx.prog.defi) return;
   if(prog.defi && prog.defi.id !== id) progSauverCourant();
   if(typeof dsEnd === 'function' && prog.ds){ dsEnd(prog.ds, (progSuivi[prog.defi && prog.defi.id] || {}).reussi ? 'terminee' : 'abandonnee'); prog.ds = null; }
   prog.defi = d; prog.mode = 'defis'; prog.creation = null;
@@ -350,7 +357,7 @@ async function progVerifier(){
   progSuiviBase(d.id, premiere ? { reussi: true, reussi_at: new Date().toISOString() } : {});
   if(prog.ds && typeof dsAction === 'function') dsAction(prog.ds);
   msg.innerHTML = `<div class="prog-res ${r.ok ? 'ok' : 'ko'}"><span class="gicon">${r.ok ? 'celebration' : 'info'}</span> ${progEsc(r.message)}</div>
-    ${r.ok ? (() => { const l = progDefisVisibles(), i = l.findIndex(x => x.id === d.id), n = l.slice(i + 1).find(x => !(progSuivi[x.id] || {}).reussi) || l.find(x => !(progSuivi[x.id] || {}).reussi);
+    ${r.ok && progEnSession() ? '<p class="hint" style="margin:8px 0 0;">Exercice réussi : reviens à la session pour passer à l\'exercice suivant.</p>' : r.ok ? (() => { const l = progDefisVisibles(), i = l.findIndex(x => x.id === d.id), n = l.slice(i + 1).find(x => !(progSuivi[x.id] || {}).reussi) || l.find(x => !(progSuivi[x.id] || {}).reussi);
       return n ? `<button type="button" class="btn qz-mini" style="margin-top:8px;" onclick="progDefi('${n.id}')">Défi suivant : ${progEsc(n.titre)} <span class="gicon">arrow_forward</span></button>` : '<p class="hint" style="margin:8px 0 0;">Tous les défis sont réussis. Bravo !</p>'; })() : ''}`;
   if(r.ok && (d.trace || d.cibles)) progLancer(); // un tracé se redessine ; un calcul redemanderait un nombre
   if(premiere && prog.devoir) await progDevoirRendre();

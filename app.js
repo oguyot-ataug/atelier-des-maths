@@ -3465,6 +3465,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1097', date:'2026-10-16', items:[
+    "Sessions : l'éditeur de blocs reste sur l'exercice de la session (plus de « Défi suivant » qui ouvrait un autre défi et mélangeait les consignes et les réponses).",
+    "Sessions : moins de requêtes envoyées pendant le travail sur les blocs (allège le serveur quand toute la classe travaille)."
+  ]},
   { version:'2026-08-19.1096', date:'2026-10-15', items:[
     "Programmation, défis de calcul -- signalé : un programme qui dit « le résultat est 11 » était refusé (« on attendait 11 »). Une phrase est maintenant acceptée : pour un nombre, c'est le dernier nombre de la phrase qui compte ; pour un mot (pair, majeur…), le mot entier doit y être (« impair » ne vaut pas « pair »). Pour un défi créé par un professeur, si sa solution dit une phrase, c'est le nombre qu'elle contient qui est retenu.",
     "Sessions : quand le professeur retire un élément, l'écran de l'élève n'enregistre plus rien sous l'ancien numéro (l'éditeur de blocs resté ouvert sur un exercice retiré envoyait le programme sous le numéro d'un autre exercice).",
