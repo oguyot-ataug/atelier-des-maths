@@ -6477,6 +6477,10 @@ function figVersProgramme(){
   // objet en héritent, sauf celles d'un objet intermédiaire qui a les siens.
   const avecOutils = f => function(o){ const debut = prog.length, r = f(o); if(o && Array.isArray(o.outils)) for(let k = debut; k < prog.length; k++) if(!prog[k].outils) prog[k].outils = o.outils; return r; };
   assurerObjet = avecOutils(assurerObjet); assurerPoint = avecOutils(assurerPoint);
+  // Le premier point libre posé sert d'origine, toujours en tête : sinon l'origine changeait dès qu'un objet
+  // reliait d'autres points (tous les « from » et le cadrage aussi), et la construction en direct repartait
+  // de zéro sans animation.
+  const p0 = pts.find(p=>!p.def); if(p0) assurerPoint(p0);
   // Ordre de la figure : les objets dans l'ordre où ils ont été tracés, chacun précédé des points
   // dont il a besoin ; puis les points restants (points libres isolés, milieux non reliés...).
   figState.shapes.forEach(sh=>{
@@ -6836,9 +6840,24 @@ async function figLiveAppliquer(msg){
   if(figLive.occupe){ figLive.suivant = msg; return; }
   if(msg.reset || msg.rejouer){ figLive.cles = []; figLive.nActions = 0; figLive.centreCle = ''; }
   if(msg.vide){ if(figLive.cles.length || msg.reset){ tbClearAll(); tbAiPlaybackHide(); } figLive.cles = []; figLive.nActions = 0; return; }
-  const programme = msg.programme, centre = msg.centre, centreCle = centre.x+'|'+centre.y;
+  let programme = msg.programme;
+  const centre = msg.centre, centreCle = centre.x+'|'+centre.y;
   figLive.cadre = msg.cadre;
-  const cles = programme.map(o=>JSON.stringify(o));
+  // Clé d'une étape : un point se place sans instrument (ses « outils » arrivent avec le premier objet qui
+  // l'utilise, ils ne changent rien au tracé).
+  const cleDe = o => JSON.stringify(o && o.op==='point' && o.outils ? Object.assign({}, o, {outils: undefined}) : o);
+  let cles = programme.map(cleDe);
+  // Les étapes déjà jouées d'abord, dans leur ordre, puis les nouvelles : un point libre tracé avant passe
+  // juste avant le premier objet qui l'utilise, ce qui changeait l'ordre et forçait une reconstruction
+  // instantanée -- signalé : « on ne voit plus en live la construction, on est obligé de revenir en arrière
+  // pour voir la lecture ». Les nouvelles étapes gardent leur ordre entre elles ; les anciennes ne dépendent
+  // jamais d'elles (elles se construisaient déjà sans).
+  if(!msg.rejouer && !msg.reset && figLive.cles.length && centreCle===figLive.centreCle){
+    const places = new Map(); cles.forEach((k,i)=>{ if(!places.has(k)) places.set(k, []); places.get(k).push(i); });
+    const ordre = [];
+    const tous = figLive.cles.every(k=>{ const l = places.get(k); if(!l || !l.length) return false; ordre.push(l.shift()); return true; });
+    if(tous){ const pris = new Set(ordre); cles.forEach((k,i)=>{ if(!pris.has(i)) ordre.push(i); }); programme = ordre.map(i=>programme[i]); cles = ordre.map(i=>cles[i]); }
+  }
   const prolonge = !msg.rejouer && centreCle===figLive.centreCle && figLive.cles.length<=cles.length && figLive.cles.every((k,i)=>k===cles[i]);
   if(prolonge && cles.length===figLive.cles.length) return; // rien de nouveau à construire
   figLive.occupe = true;

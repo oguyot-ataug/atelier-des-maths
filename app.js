@@ -3465,6 +3465,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1102', date:'2026-10-17', items:[
+    "Géométrie dynamique + construction aux instruments : chaque nouvel objet se construit de nouveau en direct au tableau (il était parfois ajouté d'un coup, sans animation, quand l'objet reliait des points déjà posés)."
+  ]},
   { version:'2026-08-19.1101', date:'2026-10-16', items:[
     "Sessions en mode libre : après un défi de programmation réussi, bouton « Suivant » qui enregistre le programme et passe à l'élément suivant (l'éditeur s'ouvre directement si c'est encore un défi). En mode présentation, le message indique que le professeur fera avancer la classe."
   ]},
