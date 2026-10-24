@@ -126,10 +126,14 @@ document.getElementById('methode-demo-aires-5e').innerHTML = `
 
 <div class="sub-header"><span class="letter">M</span><h4>Méthode 3 : pourquoi l'aire d'un disque est π × r²</h4></div>
 <div class="figure-wrap" style="margin-top:20px;">
-  <p class="interaction-hint" style="margin:6px 0;">On découpe le disque en parts égales, puis on les range tête-bêche. Augmentez le nombre de parts avec le curseur.</p>
-  <svg id="ar-disqueSvg" viewBox="0 0 470 190" style="width:100%;max-width:520px;display:block;margin:8px auto;"></svg>
-  <div style="display:flex;gap:10px;align-items:center;justify-content:center;"><label for="ar-parts" style="font-weight:700;">Nombre de parts</label><input id="ar-parts" type="range" min="4" max="40" step="2" value="8" oninput="arDisque()"><span id="ar-partsVal" style="font-family:'JetBrains Mono',monospace;min-width:28px;"></span></div>
-  <div id="ar-disqueNote" class="step-note" style="text-align:center;margin-top:8px;"></div>
+  <p class="interaction-hint" style="margin:6px 0;">On découpe le disque en parts égales, on ouvre ses deux moitiés comme un éventail et on range les parts tête-bêche. Cliquez sur « Étape suivante ».</p>
+  <svg id="ar-disqueSvg" viewBox="0 0 470 236" style="width:100%;max-width:560px;display:block;margin:8px auto;"></svg>
+  <div id="ar-disqueNote" class="step-note" style="text-align:center;margin-top:8px;min-height:3.6em;"></div>
+  <div class="figure-toolbar">
+    <button class="btn" id="ar-dqSuiv" onclick="arDqSuivant()">Étape suivante →</button>
+    <button class="btn secondary" onclick="arDisque()">Recommencer</button>
+  </div>
+</div>
 </div>
 
 <div class="sub-header"><span class="letter">M</span><h4>Méthode 4 : calculer l'aire avec le formulaire</h4></div>
@@ -234,28 +238,105 @@ function arTriJouer(){
   arRaf.t = requestAnimationFrame(f);
 }
 
-/* ---- Méthode 3 : disque découpé en parts rangées tête-bêche ---- */
-function arDisque(){
-  const n = Number(document.getElementById('ar-parts').value), r = 62, a = 2 * Math.PI / n, cx = 80, cy = 90;
-  document.getElementById('ar-partsVal').textContent = n;
-  let h = '';
-  for(let i = 0; i < n; i++){ // disque de départ : parts alternées bleu / orange
-    const a0 = -Math.PI / 2 + i * a, a1 = a0 + a, c = i % 2 ? AR_ORANGE : AR_BLEU;
-    h += `<path d="M${cx},${cy} L${(cx + r * Math.cos(a0)).toFixed(1)},${(cy + r * Math.sin(a0)).toFixed(1)} A${r},${r} 0 0 1 ${(cx + r * Math.cos(a1)).toFixed(1)},${(cy + r * Math.sin(a1)).toFixed(1)} Z" fill="${c}" fill-opacity=".75" stroke="#fff" stroke-width="1"/>`;
+/* ---- Méthode 3 : le disque découpé puis « déroulé », animé étape par étape -- demandé d'après une vidéo
+   (« elle montre comment on trouve l'aire du disque ») : on découpe le disque en parts égales ; la moitié du
+   bas (bleue) et la moitié du haut (verte) s'ouvrent comme un éventail et se rangent tête-bêche (pointe en
+   haut, pointe en bas) ; les arcs de chaque moitié forment un côté de longueur π × r, le côté d'une part est
+   un rayon ; on coupe la première part en deux pour redresser les bords ; avec 16 puis 48 parts on obtient un
+   rectangle π × r sur r. ---- */
+const AR_DQ = { R: 64, cx: 100, cy: 112, x0: 232, y0: 80, VERT: '#2E9E8A' };
+const AR_DQ_ETAPES = [
+  { n: 8, mode: 'disque', note: 'Voici un disque de rayon r. La longueur de son cercle (son périmètre) vaut 2 × π × r. On cherche son aire A.' },
+  { n: 8, mode: 'coupe', note: 'On découpe le disque en 8 parts égales : 4 parts dans la moitié du haut (en vert), 4 parts dans la moitié du bas (en bleu).' },
+  { n: 8, mode: 'rang', note: 'On ouvre les deux moitiés comme un éventail et on range les parts en alternant : pointe en haut (bleu), pointe en bas (vert). On n\'a rien ajouté ni rien enlevé : la figure a toujours la même aire A.' },
+  { n: 8, mode: 'rang', cotes: true, note: 'En haut, les arcs verts forment la moitié du cercle : bout à bout, ils mesurent la moitié du périmètre, soit π × r. En bas, les arcs bleus aussi. Le côté penché d\'une part est un rayon : il mesure r.' },
+  { n: 8, mode: 'demi', cotes: true, note: 'On coupe la première part en deux et on déplace une moitié à l\'autre bout : les bords de gauche et de droite deviennent droits.' },
+  { n: 16, mode: 'demi', cotes: true, note: 'Avec 16 parts, les bords du haut et du bas sont presque droits.' },
+  { n: 48, mode: 'demi', cotes: true, rect: true, note: 'Avec 48 parts, on obtient presque un rectangle, de longueur π × r et de largeur r.' },
+  { n: 48, mode: 'demi', cotes: true, rect: true, fin: true, note: '<b>Aire du disque = aire du rectangle = longueur × largeur = π × r × r = π × r²</b>' }
+];
+let arDq = { i: 0, pieces: null, raf: 0 };
+// Position de chaque part : sommet (x, y), rotation (degrés), angles de bord t0 < t1 dans son repère
+// (la part « regarde » vers +x). Une part coupée en deux a deux moitiés, qui partent de la part entière.
+function arDqPlacer(e){
+  const { R, cx, cy, x0, y0, VERT } = AR_DQ, n = e.n, a = 2 * Math.PI / n, m = n / 2, s = R * Math.sin(a / 2), k = R * Math.cos(a / 2), deg = v => v * 180 / Math.PI;
+  const P = [];
+  const ajoute = (id, c, x, y, rot, parent) => {
+    if(id === n + 'b0' && e.mode === 'demi'){ // première part coupée : moitié droite en place, moitié gauche au bout
+      P.push({ id: id + 'd', parent: id, c, x, y, rot, t0: -a / 2, t1: 0 });
+      P.push({ id: id + 'g', parent: id, c, x: x + n * s, y, rot, t0: 0, t1: a / 2 });
+      return;
+    }
+    P.push({ id, parent, c: e.mode === 'disque' ? '#4F86C6' : c, x, y, rot, t0: -a / 2, t1: a / 2 });
+  };
+  for(let b = 0; b < m; b++){ // moitié du bas, de gauche à droite
+    const th = Math.PI - a / 2 - b * a, ec = e.mode === 'coupe' ? 5 : 0;
+    if(e.mode === 'disque' || e.mode === 'coupe') ajoute(n + 'b' + b, AR_BLEU, cx + ec * Math.cos(th), cy + ec * Math.sin(th), deg(th));
+    else ajoute(n + 'b' + b, AR_BLEU, x0 + 2 * b * s, y0, 90);
   }
-  // Rangement tête-bêche : chaque part est décalée d'une demi-corde ; largeur totale ≈ π × r.
-  const s = r * Math.sin(a / 2), k = r * Math.cos(a / 2), x0 = 190, y0 = 60;
-  for(let i = 0; i < n; i++){
-    const haut = i % 2 === 0, ax = x0 + i * s, ay = haut ? y0 : y0 + k, phi = haut ? Math.PI / 2 : -Math.PI / 2, c = haut ? AR_BLEU : AR_ORANGE;
-    const p0 = [ax + r * Math.cos(phi - a / 2), ay + r * Math.sin(phi - a / 2)], p1 = [ax + r * Math.cos(phi + a / 2), ay + r * Math.sin(phi + a / 2)];
-    h += `<path d="M${ax.toFixed(1)},${ay.toFixed(1)} L${p0[0].toFixed(1)},${p0[1].toFixed(1)} A${r},${r} 0 0 ${haut ? 1 : 1} ${p1[0].toFixed(1)},${p1[1].toFixed(1)} Z" fill="${c}" fill-opacity=".75" stroke="#fff" stroke-width="1"/>`;
+  for(let g = 0; g < m; g++){ // moitié du haut, de gauche à droite
+    const th = Math.PI + a / 2 + g * a, ec = e.mode === 'coupe' ? 5 : 0;
+    if(e.mode === 'disque' || e.mode === 'coupe') ajoute(n + 'v' + g, VERT, cx + ec * Math.cos(th), cy + ec * Math.sin(th), deg(th));
+    else ajoute(n + 'v' + g, VERT, x0 + (2 * g + 1) * s, y0 + k, 270);
   }
-  const L = n * s;
-  h += arDoubleFleche([x0, y0 + k + 26], [x0 + L, y0 + k + 26]) + arTxt(x0 + L / 2, y0 + k + 44, 'environ π × r (la moitié du périmètre)', '#4E5665', false);
-  document.getElementById('ar-disqueSvg').innerHTML = AR_DEFS + h;
-  document.getElementById('ar-disqueNote').innerHTML = n >= 24 ? 'Avec beaucoup de parts, on obtient presque un <b>rectangle</b> de longueur π × r (la moitié du périmètre du cercle) et de largeur r : <b>Aire = π × r × r = π × r²</b>.'
-    : 'Les parts forment une figure qui ressemble de plus en plus à un rectangle… Augmentez encore le nombre de parts.';
+  return P;
 }
+function arDqDessin(pieces, e, fondu){
+  const { R, cx, cy, x0, y0 } = AR_DQ, n = e.n, a = 2 * Math.PI / n, s = R * Math.sin(a / 2), k = R * Math.cos(a / 2), L = n * s;
+  const f = v => v.toFixed(1);
+  // Disque entier : un fond plein sous les parts (pas de fines lignes entre elles).
+  let h = e.mode === 'disque' ? `<circle cx="${cx}" cy="${cy}" r="${R}" fill="#4F86C6" fill-opacity=".78"/>` : '';
+  if(e.mode !== 'disque') pieces.forEach(p => {
+    const op = p.op == null ? 1 : p.op;
+    if(op <= 0.01) return;
+    h += `<path transform="translate(${f(p.x)},${f(p.y)}) rotate(${f(p.rot)})" d="M0,0 L${f(R * Math.cos(p.t0))},${f(R * Math.sin(p.t0))} A${R},${R} 0 0 1 ${f(R * Math.cos(p.t1))},${f(R * Math.sin(p.t1))} Z" fill="${p.c}" fill-opacity=".78" stroke="${e.mode === 'disque' ? 'none' : '#fff'}" stroke-width="${n > 16 ? .4 : .9}" stroke-linejoin="round" opacity="${op.toFixed(2)}"/>`;
+  });
+  const o = `opacity="${fondu.toFixed(2)}"`;
+  if(e.mode === 'disque'){
+    h += `<g ${o}><circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="${AR_ENCRE}" stroke-width="1.6"/><circle cx="${cx}" cy="${cy}" r="2.4" fill="${AR_ENCRE}"/>`
+      + `<line x1="${cx}" y1="${cy}" x2="${cx + R}" y2="${cy}" stroke="${AR_ENCRE}" stroke-width="1.6"/>` + arTxt(cx + R / 2, cy - 7, 'r') + arTxt(cx - 22, cy + 28, 'A', '#fff', false) + '</g>';
+  }
+  // Le disque de départ reste dessiné en pointillés : la figure obtenue a la même aire A.
+  if(e.mode === 'rang' || e.mode === 'demi') h += `<g ${o}><circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="#8C96A5" stroke-width="1.4" stroke-dasharray="5 4"/>`
+    + arTxt(cx, cy + 9, 'A', AR_ENCRE, false).replace('font-size="14"', 'font-size="26" font-weight="700"') + arTxt(cx, cy + R + 22, 'même aire A', '#4E5665', false) + '</g>';
+  if(e.cotes){
+    const haut = y0 + k - R - 12, bas = y0 + R + 14;
+    h += `<g ${o}>` + arDoubleFleche([x0, haut], [x0 + L, haut]) + arTxt(x0 + L / 2, haut - 6, 'π × r', AR_VERT)
+      + arDoubleFleche([x0 - (e.mode === 'demi' ? 0 : s), bas], [x0 + L - (e.mode === 'demi' ? 0 : s), bas]) + arTxt(x0 + L / 2 - (e.mode === 'demi' ? 0 : s / 2), bas + 17, 'π × r', AR_BLEU);
+    if(e.mode === 'demi') h += arDoubleFleche([x0 + L + 14, y0], [x0 + L + 14, y0 + R]) + arTxt(x0 + L + 26, y0 + R / 2 + 5, 'r');
+    else h += arTxt(x0 - s / 2 - 10, y0 + k / 2 + 4, 'r');
+    h += '</g>';
+  }
+  if(e.rect) h += `<rect x="${f(x0)}" y="${f(y0)}" width="${f(L)}" height="${R}" fill="none" stroke="${AR_ENCRE}" stroke-width="1.4" stroke-dasharray="5 4" ${o}/>`;
+  if(e.fin) h += `<g ${o}>` + arTxt(x0 + L / 2, 222, 'A = π × r × r = π × r²', AR_ENCRE, false).replace('font-size="14"', 'font-size="17" font-weight="700"') + '</g>';
+  return AR_DEFS + h;
+}
+function arDqAller(i, anime){
+  cancelAnimationFrame(arDq.raf);
+  const e = AR_DQ_ETAPES[i], cible = arDqPlacer(e), svg = document.getElementById('ar-disqueSvg'); if(!svg) return;
+  arDq.i = i;
+  document.getElementById('ar-disqueNote').innerHTML = e.note;
+  const b = document.getElementById('ar-dqSuiv'); if(b) b.disabled = i >= AR_DQ_ETAPES.length - 1;
+  const avant = new Map((arDq.pieces || []).map(p => [p.id, p]));
+  arDq.pieces = cible;
+  if(!anime || !avant.size){ svg.innerHTML = arDqDessin(cible, e, 1); return; }
+  // Départ de chaque part : sa position précédente, celle de la part dont elle est une moitié, sinon elle apparaît.
+  const dep = cible.map(p => { const q = avant.get(p.id) || avant.get(p.parent); return q ? Object.assign({}, q, { t0: p.t0, t1: p.t1, op: 1 }) : Object.assign({}, p, { op: 0 }); });
+  const partent = [...avant.values()].filter(q => !cible.some(p => p.id === q.id || p.parent === q.id));
+  const duree = partent.length ? 900 : e.mode === 'coupe' ? 600 : 1500, t0 = performance.now();
+  const lisse = t => t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+  const pas = now => {
+    const t = Math.min(1, (now - t0) / duree), u = lisse(t);
+    const cur = cible.map((p, k) => { const d = dep[k], dr = ((p.rot - d.rot) % 360 + 540) % 360 - 180;
+      return Object.assign({}, p, { x: d.x + (p.x - d.x) * u, y: d.y + (p.y - d.y) * u, rot: d.rot + dr * u, op: d.op + (1 - d.op) * u }); });
+    partent.forEach(q => cur.push(Object.assign({}, q, { op: 1 - u })));
+    svg.innerHTML = arDqDessin(cur, e, Math.max(0, (t - .6) / .4));
+    if(t < 1) arDq.raf = requestAnimationFrame(pas);
+  };
+  arDq.raf = requestAnimationFrame(pas);
+}
+function arDqSuivant(){ if(arDq.i < AR_DQ_ETAPES.length - 1) arDqAller(arDq.i + 1, true); }
+function arDisque(){ arDq.pieces = null; arDqAller(0, false); }
 
 /* ---- Méthode 4 : formulaire interactif ---- */
 const AR_CHAMPS = [[['L', 'Longueur L', 6], ['l', 'Largeur ℓ', 4]], [['c', 'Côté c', 5]], [['r', 'Rayon r', 3]], [['a', 'Côté a', 6], ['b', 'Côté b', 4]], [['b', 'Base b', 8], ['h', 'Hauteur h', 5]], [['b', 'Base b', 7], ['h', 'Hauteur h', 3]]];

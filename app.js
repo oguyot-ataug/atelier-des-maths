@@ -3465,6 +3465,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1103', date:'2026-10-24', items:[
+    "5e, Aires (méthode 3) : l'aire du disque démontrée par une animation pas à pas -- le disque est découpé en parts, ses deux moitiés s'ouvrent comme un éventail et se rangent tête-bêche, les arcs forment deux côtés de longueur π × r, puis avec 16 et 48 parts on obtient un rectangle π × r sur r : A = π × r²."
+  ]},
   { version:'2026-08-19.1102', date:'2026-10-17', items:[
     "Géométrie dynamique + construction aux instruments : chaque nouvel objet se construit de nouveau en direct au tableau (il était parfois ajouté d'un coup, sans animation, quand l'objet reliait des points déjà posés)."
   ]},
