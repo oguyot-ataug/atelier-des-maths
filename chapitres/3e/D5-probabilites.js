@@ -116,6 +116,8 @@ document.getElementById('histoire-demo-probabilites-3e').innerHTML = `
   <div class="history-title"><span class=gicon>history_edu</span> Un peu d'histoire</div>
   En 1654, le chevalier de <b>Méré</b>, grand amateur de jeux de dés, pose une question à son ami <b>Blaise Pascal</b> : en lançant <b>deux dés</b> 24 fois de suite, a-t-on plus d'une chance sur deux d'obtenir au moins un « double six » ? Il avait perdu de l'argent en pariant que oui ! Pascal en discute par lettres avec <b>Pierre de Fermat</b>, et les deux mathématiciens mettent au point, au fil de leur correspondance, les premières méthodes de calcul des probabilités, en comptant soigneusement toutes les issues possibles. (La réponse est non : la probabilité est d'environ 0,49.) Quelques années plus tard, le Néerlandais <b>Christiaan Huygens</b> publie le premier livre consacré au calcul des chances dans les jeux de hasard (1657).
 </div>
+
+${typeof NA_HISTOIRE_HTML !== 'undefined' ? NA_HISTOIRE_HTML : ''}
 `;
 
 document.getElementById('methode-demo-probabilites-3e').innerHTML = `
@@ -165,6 +167,11 @@ document.getElementById('methode-demo-probabilites-3e').innerHTML = `
     <button class="btn secondary" onclick="pb3JeuDemo.reset()">Recommencer</button>
   </div>
 </div>
+
+<div class="sub-header" style="margin-top:28px;"><span class="letter">M</span><h4>Maths et nature : combien de poissons dans l'étang ?</h4></div>
+<div class="figure-wrap"><p class="hint interaction-hint" style="margin-top:6px;">Comment les biologistes comptent-ils les animaux sauvages sans les attraper tous ? Avec la proportionnalité et un peu de hasard.</p>
+  <div class="na-etang"></div></div>
+
 `;
 
 // Exercice avec correction repliable (même présentation que les autres chapitres).
@@ -303,7 +310,7 @@ DEMO_REGISTRY['3e|Probabilités'] = {
     pb3SacMaj(); pb3DesReset(); pb3ArbreReset(); pb3JeuDemo.reset();
     ['cours-demo-probabilites-3e', 'methode-demo-probabilites-3e', 'exos-demo-probabilites-3e'].forEach(id => renderStaticMath(document.getElementById(id)));
     injectCourseAddButtons(document.getElementById('cours-demo-probabilites-3e'));
-    injectCourseAddButtons(document.getElementById('methode-demo-probabilites-3e'));
+    injectCourseAddButtons(document.getElementById('methode-demo-probabilites-3e')); if(typeof naInitTout === 'function') naInitTout(document.getElementById('methode-demo-probabilites-3e'));
   }
 };
 

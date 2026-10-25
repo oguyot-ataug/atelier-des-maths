@@ -78,6 +78,8 @@ ${cm1Sous('A', 'Atelier : complète la figure par symétrie')}
 <div id="c2sy-grille"></div><p id="c2sy-msg" class="hint" style="margin:8px 0;"></p>
 <div class="figure-toolbar"><button class="btn" onclick="c2SyVerifier()">Vérifier</button><button class="btn secondary" onclick="c2SyEffacer()">Effacer</button></div></div>
 ${cm1Demo('c2-sy-pt', 'Construire le symétrique d\'un point sans quadrillage', 'Construis le symétrique du point M par rapport à la droite (d), avec l\'équerre et la règle graduée.')}
+${cm1Sous('M', 'Maths et nature : fabrique un flocon')}<div class="figure-wrap"><p class="hint interaction-hint" style="margin-top:6px;">Les ailes d'un papillon, les branches d'un flocon de neige : la nature est pleine de symétries. Dessine et regarde ton dessin se recopier.</p>
+  <div class="na-flocon" data-modes="axe,flocon"></div></div>
 `,
   demos: [
     ['c2-sy-pt', [
@@ -104,7 +106,7 @@ ${cm1Demo('c2-sy-pt', 'Construire le symétrique d\'un point sans quadrillage', 
   histoire: cm1Histoire('Un peu d\'histoire : la symétrie dans les jardins à la française', [
     'Au XVII<sup>e</sup> siècle, le jardinier <b>André Le Nôtre</b> dessine les jardins de Versailles et de Vaux-le-Vicomte. Tout y est symétrique par rapport à une grande allée centrale : parterres, bassins, statues.',
     'Pour tracer ces jardins sur le terrain, les jardiniers utilisaient des cordeaux et des piquets… exactement comme on construit un symétrique avec une règle et une équerre !',
-  ]),
+  ]) + (typeof NA_HISTOIRE_HTML !== 'undefined' ? NA_HISTOIRE_HTML : ''),
   quiz: [
     { q: 'Combien d\'axes de symétrie a un rectangle (non carré) ?', opts: ['1', '2', '4'], correct: 1 },
     { q: 'La symétrie axiale conserve…', opts: ['les longueurs', 'la position', 'rien'], correct: 0 },

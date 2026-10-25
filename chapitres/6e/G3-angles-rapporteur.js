@@ -1096,6 +1096,8 @@ document.getElementById('histoire-demo-angles-rapporteur-6e').innerHTML = `
   <div class="history-title"><span class=gicon>history_edu</span> Un peu d'histoire</div>
   Pourquoi un cercle complet mesure-t-il 360° et pas 100°, comme le reste de nos unités ? La réponse vient des astronomes babyloniens, en Mésopotamie, il y a environ 3 500 ans : ils comptaient en base 60 (au lieu de notre base 10), et 360 est un nombre qui se divise très facilement par beaucoup d'autres (2, 3, 4, 5, 6, 8, 9, 10, 12...), en plus d'être proche du nombre de jours dans une année. Le rapporteur lui-même, tel qu'on le connaît, est un instrument bien plus récent : le premier outil vraiment dédié à tracer et mesurer des angles est décrit en 1589 par l'Anglais Thomas Blundeville, dans un ouvrage destiné à la navigation en mer.
 </div>
+
+${typeof NA_HISTOIRE_HTML !== 'undefined' ? NA_HISTOIRE_HTML : ''}
 `;
 
 /* ================= METHODE ================= */
@@ -1180,6 +1182,11 @@ document.getElementById('methode-demo-angles-rapporteur-6e').innerHTML = `
     </div>
   </div>
 </div>
+
+<div class="sub-header" style="margin-top:28px;"><span class="letter">M</span><h4>Maths et nature : le tournesol et l'angle d'or</h4></div>
+<div class="figure-wrap"><p class="hint interaction-hint" style="margin-top:6px;">Les graines d'un tournesol sont disposées en spirales grâce à un angle bien particulier. Lequel ?</p>
+  <div class="na-tournesol"></div></div>
+
 `;
 
 /* ================= EXOS ================= */
@@ -1287,7 +1294,7 @@ DEMO_REGISTRY['6e|Angles et rapporteur'] = {
     renderStaticMath(document.getElementById('cours-demo-angles-rapporteur-6e'));
     renderStaticMath(document.getElementById('exos-demo-angles-rapporteur-6e'));
     injectCourseAddButtons(document.getElementById('cours-demo-angles-rapporteur-6e'));
-    injectCourseAddButtons(document.getElementById('methode-demo-angles-rapporteur-6e'));
+    injectCourseAddButtons(document.getElementById('methode-demo-angles-rapporteur-6e')); if(typeof naInitTout === 'function') naInitTout(document.getElementById('methode-demo-angles-rapporteur-6e'));
   }
 };
 

@@ -3465,6 +3465,12 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1111', date:'2026-10-25', items:[
+    "Maths et nature, « Fabrique un flocon » (CM2 et 6e Symétrie axiale, 3e Rotation) : on dessine à main levée, le tracé est recopié par symétrie (papillon), par 6 axes et rotations de 60° (flocon) ou par rotations seules (moulin, 3e).",
+    "Maths et nature, « Le tournesol et l'angle d'or » (6e Angles et rapporteur) : les graines poussent une à une en tournant d'un même angle ; 90°, 120°, 144°, 137°… seul l'angle d'or (137,5°) remplit la fleur ; spirales de Fibonacci.",
+    "Maths et nature, « Combien de poissons dans l'étang ? » (4e et 3e Probabilités) : capture, marquage, recapture ; estimation par proportionnalité, comparaison avec le vrai nombre, fluctuation d'échantillonnage.",
+    "Onglet Histoire « Maths et nature » dans ces six chapitres : les lapins de Fibonacci et les spirales, le flocon de Kepler et les photos de Bentley, les alvéoles des abeilles (Pappus, Hales), la capture-recapture (Petersen, Laplace), les fractales de Mandelbrot."
+  ]},
   { version:'2026-08-19.1110', date:'2026-10-25', items:[
     "Maths et cuisine, « Adapter une recette » (CM2, 6e, 5e Proportionnalité) : crêpes, cookies, quatre-quarts ; les quantités suivent le nombre de personnes ; « La méthode » (passage par l'unité au CM2, tableau et coefficient en 6e et 5e) et « Défi du chef ».",
     "Maths et cuisine, « La pizza party » (CM2 Fractions : comparer et calculer, 6e Fractions : multiplication) : combien de pizzas commander ? Estimation, parts servies une à une, calcul n × a/b, partie entière et reste.",

@@ -294,6 +294,11 @@ document.getElementById('methode-demo-symetrie-axiale-6e').innerHTML = `
     <button class="btn secondary" onclick="medReset()">Revoir depuis le début</button>
   </div>
 </div>
+
+<div class="sub-header" style="margin-top:28px;"><span class="letter">M</span><h4>Maths et nature : fabrique un flocon</h4></div>
+<div class="figure-wrap"><p class="hint interaction-hint" style="margin-top:6px;">Les ailes d'un papillon, les branches d'un flocon de neige : la nature est pleine de symétries. Dessine et regarde ton dessin se recopier.</p>
+  <div class="na-flocon" data-modes="axe,flocon"></div></div>
+
 `;
 
 document.getElementById('exos-demo-symetrie-axiale-6e').innerHTML = `
@@ -351,6 +356,8 @@ document.getElementById('histoire-demo-symetrie-axiale-6e').innerHTML = `
   <div class="history-title"><span class=gicon>history_edu</span> Un peu d'histoire</div>
   La symétrie axiale est sans doute la plus ancienne notion de géométrie observée par l'être humain : on la retrouve dans la nature (le corps humain, les ailes d'un papillon, les feuilles de nombreuses plantes) bien avant toute étude mathématique. Les architectes de l'Antiquité l'utilisent systématiquement pour donner un sentiment d'équilibre à leurs monuments : les temples grecs, comme le Parthénon, sont conçus autour d'un axe de symétrie central, tout comme de nombreuses façades de cathédrales gothiques bien plus tard. Le mot « symétrie » vient d'ailleurs du grec <i>sun</i> (avec) et <i>metron</i> (mesure) : une figure symétrique est littéralement une figure de « même mesure » de part et d'autre de son axe. Euclide, dans ses <i>Éléments</i> (IIIe siècle avant J.-C.), utilise déjà des constructions à la règle et au compas qui reposent sur ces idées, sans disposer du vocabulaire moderne. Il faut attendre le XIXe siècle et le développement de la théorie des groupes, notamment les travaux du mathématicien allemand Felix Klein, pour que la symétrie soit formalisée comme une transformation géométrique à part entière, ouvrant la voie à son usage en cristallographie et en physique moderne.
 </div>
+
+${typeof NA_HISTOIRE_HTML !== 'undefined' ? NA_HISTOIRE_HTML : ''}
 `;
 
 /* ================= Figure 1 : vrai pliage le long de (d) (figures symétriques) =================
@@ -970,7 +977,7 @@ DEMO_REGISTRY['6e|Symétrie axiale'] = {
     renderStaticMath(document.getElementById('methode-demo-symetrie-axiale-6e'));
     renderStaticMath(document.getElementById('exos-demo-symetrie-axiale-6e'));
     injectCourseAddButtons(document.getElementById('cours-demo-symetrie-axiale-6e'));
-    injectCourseAddButtons(document.getElementById('methode-demo-symetrie-axiale-6e'));
+    injectCourseAddButtons(document.getElementById('methode-demo-symetrie-axiale-6e')); if(typeof naInitTout === 'function') naInitTout(document.getElementById('methode-demo-symetrie-axiale-6e'));
     symF1Reset(); symF2Init(); symF3Init(); symF4Init(); symF5Init(); symF6Init(); symF7Init(); symF8Init();
     bisReset(); medReset();
   }
