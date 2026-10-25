@@ -251,6 +251,11 @@ document.getElementById('methode-demo-translations-4e').innerHTML = `
 </div>
 
 ${qgMethodeHtml('t4Quad', 'Méthode 3 : construire l\'image d\'un triangle sur un quadrillage')}
+
+<div class="sub-header" style="margin-top:28px;"><span class="letter">M</span><h4>Maths et musique : translations et symétries d'une mélodie</h4></div>
+<div class="figure-wrap"><p class="hint interaction-hint" style="margin-top:6px;">Une mélodie dessinée sur un quadrillage : une translation la répète (ou la transpose), une symétrie la retourne. Monte le son, puis joue à « Devine la transformation » !</p>
+  <div class="mm-canon" data-mm="mm-4e-canon" data-transf="rep,transp,axeV,axeH,centre"></div></div>
+
 `;
 
 // Exercice avec correction repliable (même présentation que les autres chapitres de 4e).
@@ -301,6 +306,7 @@ DEMO_REGISTRY['4e|Translations'] = {
     renderStaticMath(document.getElementById('cours-demo-translations-4e'));
     injectCourseAddButtons(document.getElementById('cours-demo-translations-4e'));
     injectCourseAddButtons(document.getElementById('methode-demo-translations-4e'));
+    if(typeof mmInitTout === 'function') mmInitTout(document.getElementById('methode-demo-translations-4e'));
   }
 };
 

@@ -3465,6 +3465,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1104', date:'2026-10-25', items:[
+    "Maths et musique, méthode « Remplis la mesure » (CM2 Fractions : comparer et calculer ; 6e Fractions : comparaison et addition) : la durée d'une note est une fraction de la mesure (ronde 1, blanche 1/2, noire 1/4, croche 1/8) ; on remplit une mesure qui doit faire exactement 1, le calcul s'écrit, on écoute. Défis et « rythme mystère » à reproduire.",
+    "Maths et musique, méthode « Canon miroir » (5e Symétrie centrale ; 4e Translations) : une mélodie sur un quadrillage, puis sa translation (répétée, transposée), ses symétries axiales (à l'envers, renversée) et sa symétrie centrale, en image et en son ; jeu « Devine la transformation »."
+  ]},
   { version:'2026-08-19.1103', date:'2026-10-24', items:[
     "5e, Aires (méthode 3) : l'aire du disque démontrée par une animation pas à pas -- le disque est découpé en parts, ses deux moitiés s'ouvrent comme un éventail et se rangent tête-bêche, les arcs forment deux côtés de longueur π × r, puis avec 16 et 48 parts on obtient un rectangle π × r sur r : A = π × r²."
   ]},

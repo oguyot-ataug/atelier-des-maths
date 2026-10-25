@@ -117,6 +117,11 @@ document.getElementById('methode-demo-fractions-comp-add').innerHTML = `
     <button class="btn secondary" onclick="fcaSubDemo.reset()">Recommencer</button>
   </div>
 </div>
+
+<div class="sub-header" style="margin-top:28px;"><span class="letter">M</span><h4>Maths et musique : remplis la mesure</h4></div>
+<div class="figure-wrap"><p class="hint interaction-hint" style="margin-top:6px;">En musique, la durée d'une note est une fraction de la mesure : une ronde vaut 1, une blanche la moitié, une noire le quart, une croche le huitième. Monte le son !</p>
+  <div class="mm-mesure" data-mm="mm-6e-mesure"></div></div>
+
 `;
 
 document.getElementById('exos-demo-fractions-comp-add').innerHTML = `
@@ -213,5 +218,6 @@ DEMO_REGISTRY['6e|Fractions : comparaison et addition'] = {
     injectCourseAddButtons(document.getElementById('cours-demo-fractions-comp-add'));
     injectCourseAddButtons(document.getElementById('methode-demo-fractions-comp-add'));
     fcaCompareDemo.reset(); fcaAddDemo.reset(); fcaSubDemo.reset();
+    if(typeof mmInitTout === 'function') mmInitTout(document.getElementById('methode-demo-fractions-comp-add'));
   }
 };

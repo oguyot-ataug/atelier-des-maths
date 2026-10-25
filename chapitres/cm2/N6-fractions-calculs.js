@@ -42,6 +42,8 @@ ${cm1Rem(`À retenir aussi :${cm1Liste([`${F(1, 2)} = ${F(2, 4)} = ${F(5, 10)} =
   methode: `
 ${cm1Demo('c2-fc-add', 'Additionner des fractions de dénominateurs différents', `Calcule ${F(2, 3)} + ${F(5, 12)}.`)}
 ${cm1Demo('c2-fc-comp', 'Comparer deux fractions', `Range dans l'ordre croissant : ${F(3, 4)} ; ${F(5, 8)} ; ${F(7, 8)}.`)}
+${cm1Sous('M', 'Maths et musique : remplis la mesure')}<div class="figure-wrap"><p class="hint interaction-hint" style="margin-top:6px;">En musique, la durée d'une note est une fraction de la mesure : une ronde vaut 1, une blanche ${F(1, 2)}, une noire ${F(1, 4)}, une croche ${F(1, 8)}. Monte le son !</p>
+  <div class="mm-mesure" data-mm="mm-cm2-mesure"></div></div>
 `,
   demos: [
     ['c2-fc-add', [

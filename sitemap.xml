@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://maths.latelieraugmente.fr/</loc><lastmod>2026-10-24</lastmod><priority>1.0</priority></url>
+  <url><loc>https://maths.latelieraugmente.fr/</loc><lastmod>2026-10-25</lastmod><priority>1.0</priority></url>
   <url><loc>https://maths.latelieraugmente.fr/cm1/nombres-entiers-jusqu-a-9-999/</loc><lastmod>2026-10-04</lastmod><priority>0.8</priority></url>
   <url><loc>https://maths.latelieraugmente.fr/cm1/fractions/</loc><lastmod>2026-10-04</lastmod><priority>0.8</priority></url>
   <url><loc>https://maths.latelieraugmente.fr/cm1/droites-paralleles-et-perpendiculaires/</loc><lastmod>2026-10-03</lastmod><priority>0.8</priority></url>
@@ -34,7 +34,7 @@
   <url><loc>https://maths.latelieraugmente.fr/cm2/figures-planes/</loc><lastmod>2026-10-03</lastmod><priority>0.8</priority></url>
   <url><loc>https://maths.latelieraugmente.fr/cm2/multiplication/</loc><lastmod>2026-10-12</lastmod><priority>0.8</priority></url>
   <url><loc>https://maths.latelieraugmente.fr/cm2/probabilites/</loc><lastmod>2026-10-03</lastmod><priority>0.8</priority></url>
-  <url><loc>https://maths.latelieraugmente.fr/cm2/fractions-comparer-et-calculer/</loc><lastmod>2026-10-04</lastmod><priority>0.8</priority></url>
+  <url><loc>https://maths.latelieraugmente.fr/cm2/fractions-comparer-et-calculer/</loc><lastmod>2026-10-25</lastmod><priority>0.8</priority></url>
   <url><loc>https://maths.latelieraugmente.fr/cm2/grands-nombres-jusqu-a-999-999-999/</loc><lastmod>2026-10-04</lastmod><priority>0.8</priority></url>
   <url><loc>https://maths.latelieraugmente.fr/cm2/aires/</loc><lastmod>2026-10-03</lastmod><priority>0.8</priority></url>
   <url><loc>https://maths.latelieraugmente.fr/cm2/multiples-et-diviseurs/</loc><lastmod>2026-10-03</lastmod><priority>0.8</priority></url>
@@ -61,7 +61,7 @@
   <url><loc>https://maths.latelieraugmente.fr/6e/construction-de-triangles/</loc><lastmod>2026-10-14</lastmod><priority>0.8</priority></url>
   <url><loc>https://maths.latelieraugmente.fr/6e/multiplication-et-division/</loc><lastmod>2026-10-14</lastmod><priority>0.8</priority></url>
   <url><loc>https://maths.latelieraugmente.fr/6e/symetrie-axiale/</loc><lastmod>2026-10-14</lastmod><priority>0.8</priority></url>
-  <url><loc>https://maths.latelieraugmente.fr/6e/fractions-comparaison-et-addition/</loc><lastmod>2026-10-14</lastmod><priority>0.8</priority></url>
+  <url><loc>https://maths.latelieraugmente.fr/6e/fractions-comparaison-et-addition/</loc><lastmod>2026-10-25</lastmod><priority>0.8</priority></url>
   <url><loc>https://maths.latelieraugmente.fr/6e/gestion-de-donnees/</loc><lastmod>2026-10-14</lastmod><priority>0.8</priority></url>
   <url><loc>https://maths.latelieraugmente.fr/6e/proprietes-des-triangles/</loc><lastmod>2026-10-14</lastmod><priority>0.8</priority></url>
   <url><loc>https://maths.latelieraugmente.fr/6e/fractions-multiplication/</loc><lastmod>2026-10-02</lastmod><priority>0.8</priority></url>
@@ -74,7 +74,7 @@
   <url><loc>https://maths.latelieraugmente.fr/6e/initiation-a-la-pensee-informatique/</loc><lastmod>2026-10-14</lastmod><priority>0.8</priority></url>
   <url><loc>https://maths.latelieraugmente.fr/6e/</loc><lastmod>2026-09-30</lastmod><priority>0.9</priority></url>
   <url><loc>https://maths.latelieraugmente.fr/5e/operations-sur-les-nombres-decimaux/</loc><lastmod>2026-10-02</lastmod><priority>0.8</priority></url>
-  <url><loc>https://maths.latelieraugmente.fr/5e/symetrie-centrale/</loc><lastmod>2026-10-02</lastmod><priority>0.8</priority></url>
+  <url><loc>https://maths.latelieraugmente.fr/5e/symetrie-centrale/</loc><lastmod>2026-10-25</lastmod><priority>0.8</priority></url>
   <url><loc>https://maths.latelieraugmente.fr/5e/divisibilite/</loc><lastmod>2026-10-02</lastmod><priority>0.8</priority></url>
   <url><loc>https://maths.latelieraugmente.fr/5e/angles-et-parallelisme/</loc><lastmod>2026-10-02</lastmod><priority>0.8</priority></url>
   <url><loc>https://maths.latelieraugmente.fr/5e/fractions/</loc><lastmod>2026-10-02</lastmod><priority>0.8</priority></url>
@@ -97,7 +97,7 @@
   <url><loc>https://maths.latelieraugmente.fr/4e/operations-sur-les-nombres-relatifs/</loc><lastmod>2026-10-02</lastmod><priority>0.8</priority></url>
   <url><loc>https://maths.latelieraugmente.fr/4e/triangles-et-paralleles/</loc><lastmod>2026-10-02</lastmod><priority>0.8</priority></url>
   <url><loc>https://maths.latelieraugmente.fr/4e/divisibilite/</loc><lastmod>2026-10-02</lastmod><priority>0.8</priority></url>
-  <url><loc>https://maths.latelieraugmente.fr/4e/translations/</loc><lastmod>2026-10-02</lastmod><priority>0.8</priority></url>
+  <url><loc>https://maths.latelieraugmente.fr/4e/translations/</loc><lastmod>2026-10-25</lastmod><priority>0.8</priority></url>
   <url><loc>https://maths.latelieraugmente.fr/4e/fractions-comparaison-et-addition/</loc><lastmod>2026-10-02</lastmod><priority>0.8</priority></url>
   <url><loc>https://maths.latelieraugmente.fr/4e/statistiques/</loc><lastmod>2026-10-02</lastmod><priority>0.8</priority></url>
   <url><loc>https://maths.latelieraugmente.fr/4e/fractions-multiplication-et-division/</loc><lastmod>2026-10-02</lastmod><priority>0.8</priority></url>

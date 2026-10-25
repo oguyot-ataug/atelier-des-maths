@@ -470,6 +470,11 @@ document.getElementById('methode-demo-symetrie').innerHTML = `
 ${qgMethodeHtml('qgPoint', "Construire le symétrique d'un point dans un quadrillage")}
 ${qgMethodeHtml('qgSegment', "Construire le symétrique d'un segment dans un quadrillage")}
 ${qgMethodeHtml('qgDroite', "Construire le symétrique d'une droite dans un quadrillage")}
+
+<div class="sub-header" style="margin-top:28px;"><span class="letter">M</span><h4>Maths et musique : le canon miroir</h4></div>
+<div class="figure-wrap"><p class="hint interaction-hint" style="margin-top:6px;">Une mélodie dessinée sur un quadrillage : on lui applique une symétrie, et on écoute ce que devient la musique. Monte le son, puis joue à « Devine la transformation » !</p>
+  <div class="mm-canon" data-mm="mm-5e-canon" data-transf="axeV,axeH,centre"></div></div>
+
 `;
 document.getElementById('exos-demo-symetrie').innerHTML = `
       <div class="redaction-block">
@@ -1228,7 +1233,7 @@ const symEx2Demo = makeRedactionStepDemo(SYM_EX2_ROWS, 'sym-ex2-display');
 
 
 DEMO_REGISTRY['5e|Symétrie centrale'] = { cours:'cours-demo-symetrie', methode:'methode-demo-symetrie', exos:'exos-demo-symetrie', histoire:'histoire-demo-symetrie',
-  init:()=>{ initPointDemo(); initTriDemo(); resetMethod(); initDroiteDemo(); initSegmentDemo(); initCercleDemo(); initPolygoneCodeDemo(); resetHexaDemo(); symEx1Demo.init(); symEx2Demo.reset(); qgInitTout(); registerGeoStepDemo('svgMethod', { steps:()=>M_STEPS, getIdx:()=>methodStep-1, goto:(i)=>mGotoStep(i) }); injectCourseAddButtons(document.getElementById('cours-demo-symetrie')); injectCourseAddButtons(document.getElementById('methode-demo-symetrie')); } };
+  init:()=>{ initPointDemo(); initTriDemo(); resetMethod(); initDroiteDemo(); initSegmentDemo(); initCercleDemo(); initPolygoneCodeDemo(); resetHexaDemo(); symEx1Demo.init(); symEx2Demo.reset(); qgInitTout(); registerGeoStepDemo('svgMethod', { steps:()=>M_STEPS, getIdx:()=>methodStep-1, goto:(i)=>mGotoStep(i) }); injectCourseAddButtons(document.getElementById('cours-demo-symetrie')); injectCourseAddButtons(document.getElementById('methode-demo-symetrie')); if(typeof mmInitTout === 'function') mmInitTout(document.getElementById('methode-demo-symetrie')); } };
 
 DEMO_QUIZZES['5e|Symétrie centrale'] = [
   {q:"O est le milieu de [AA']. Que peut-on dire de A' par rapport à A ?",
