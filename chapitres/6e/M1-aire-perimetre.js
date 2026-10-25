@@ -284,6 +284,11 @@ document.getElementById('methode-demo-aire-perimetre').innerHTML = `
     <button class="btn secondary" onclick="convAireReset()">Recommencer</button>
   </div>
 </div>
+
+<div class="sub-header" style="margin-top:28px;"><span class="letter">M</span><h4>Maths et sport : la piste d'athlétisme</h4></div>
+<div class="figure-wrap"><p class="hint interaction-hint" style="margin-top:6px;">Au 400 m, les coureurs ne partent pas sur la même ligne. Pourquoi ? La réponse est dans la longueur du cercle.</p>
+  <div class="sp-piste"></div></div>
+
 `;
 
 document.getElementById('exos-demo-aire-perimetre').innerHTML = `
@@ -440,6 +445,8 @@ document.getElementById('histoire-demo-aire-perimetre').innerHTML = `
   <p style="margin:0 0 12px;">Pendant plus de deux mille ans, d'innombrables mathématiciens et amateurs ont proposé des « solutions » à la quadrature du cercle, au point qu'en 1775, l'Académie des sciences de Paris, lassée de recevoir des preuves toujours fausses, décide de ne plus en examiner aucune.</p>
   <p style="margin:0;">La réponse définitive n'arrive qu'en 1882 : le mathématicien allemand <b>Ferdinand von Lindemann</b> démontre que le nombre π est un nombre <b>transcendant</b> (il n'est solution d'aucune équation à coefficients entiers), ce qui prouve que la quadrature du cercle est en réalité <b>impossible</b> à réaliser à la règle et au compas. L'expression « chercher la quadrature du cercle » est restée dans le langage courant pour désigner une tâche impossible.</p>
 </div>
+
+${typeof SP_HISTOIRE_HTML !== 'undefined' ? SP_HISTOIRE_HTML : ''}
 `;
 
 DEMO_REGISTRY['6e|Aire et périmètre'] = {
@@ -450,7 +457,7 @@ DEMO_REGISTRY['6e|Aire et périmètre'] = {
     renderStaticMath(document.getElementById('exos-demo-aire-perimetre'));
     renderStaticMath(document.getElementById('histoire-demo-aire-perimetre'));
     injectCourseAddButtons(document.getElementById('cours-demo-aire-perimetre'));
-    injectCourseAddButtons(document.getElementById('methode-demo-aire-perimetre'));
+    injectCourseAddButtons(document.getElementById('methode-demo-aire-perimetre')); if(typeof spInitTout === 'function') spInitTout(document.getElementById('methode-demo-aire-perimetre'));
     convAireReset();
   }
 };

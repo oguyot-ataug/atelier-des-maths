@@ -80,6 +80,8 @@ document.getElementById('histoire-demo-grandeurs-composees-3e').innerHTML = `
   <div class="history-title"><span class=gicon>history_edu</span> Un peu d'histoire</div>
   Comment mesurer la vitesse d'un bateau en pleine mer, sans repère ? À partir du 16e siècle, les marins utilisent le <b>loch</b> : une planchette lestée, attachée à une longue corde sur laquelle on a fait des <b>nœuds</b> régulièrement espacés. On jette la planchette à l'eau, qui reste presque immobile, et l'on compte le nombre de nœuds qui filent entre les mains pendant la durée d'un petit sablier. Plus il en passe, plus le bateau va vite ! C'est l'origine du <b>nœud</b>, l'unité de vitesse encore utilisée en mer et dans les airs : 1 nœud correspond à 1 mille marin par heure, soit 1,852 km/h. Encore une grandeur quotient : une distance divisée par une durée.
 </div>
+
+${typeof SP_HISTOIRE_HTML !== 'undefined' ? SP_HISTOIRE_HTML : ''}
 `;
 
 document.getElementById('methode-demo-grandeurs-composees-3e').innerHTML = `
@@ -126,6 +128,11 @@ document.getElementById('methode-demo-grandeurs-composees-3e').innerHTML = `
     <button class="btn secondary" onclick="gc3EnergieDemo.reset()">Recommencer</button>
   </div>
 </div>
+
+<div class="sub-header" style="margin-top:28px;"><span class="letter">M</span><h4>Maths et sport : cours contre Usain Bolt</h4></div>
+<div class="figure-wrap"><p class="hint interaction-hint" style="margin-top:6px;">Une course de 100 m contre les plus grands sprinteurs (et un guépard) : la distance est proportionnelle à la durée, et la vitesse est le coefficient.</p>
+  <div class="sp-bolt"></div></div>
+
 `;
 
 // Exercice avec correction repliable (même présentation que les autres chapitres).
@@ -271,7 +278,7 @@ DEMO_REGISTRY['3e|Grandeurs composées'] = {
     gc3RouteMaj(); gc3Convertir(); gc3CuveMaj(); gc3EnergieDemo.reset();
     ['cours-demo-grandeurs-composees-3e', 'methode-demo-grandeurs-composees-3e', 'exos-demo-grandeurs-composees-3e'].forEach(id => renderStaticMath(document.getElementById(id)));
     injectCourseAddButtons(document.getElementById('cours-demo-grandeurs-composees-3e'));
-    injectCourseAddButtons(document.getElementById('methode-demo-grandeurs-composees-3e'));
+    injectCourseAddButtons(document.getElementById('methode-demo-grandeurs-composees-3e')); if(typeof spInitTout === 'function') spInitTout(document.getElementById('methode-demo-grandeurs-composees-3e'));
   }
 };
 

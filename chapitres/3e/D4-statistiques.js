@@ -118,6 +118,8 @@ document.getElementById('histoire-demo-statistiques-3e').innerHTML = `
   <div class="history-title"><span class=gicon>history_edu</span> Un peu d'histoire</div>
   Pendant la guerre de Crimée (1853-1856), l'infirmière britannique <b>Florence Nightingale</b> constate que bien plus de soldats meurent des maladies attrapées à l'hôpital que de leurs blessures. Pour convaincre les responsables politiques, elle ne se contente pas de tableaux de nombres : elle invente un diagramme coloré, en forme de rosace, qui montre mois par mois les causes de décès. Son travail conduit à de grandes réformes de l'hygiène dans les hôpitaux, et elle devient en 1859 la première femme membre de la Société royale de statistique de Londres. Quelques décennies plus tard, le statisticien <b>Karl Pearson</b> popularise le mot « <b>histogramme</b> » pour les graphiques en rectangles accolés que l'on utilise dans ce chapitre.
 </div>
+
+${typeof SP_HISTOIRE_HTML !== 'undefined' ? SP_HISTOIRE_HTML : ''}
 `;
 
 document.getElementById('methode-demo-statistiques-3e').innerHTML = `
@@ -159,6 +161,11 @@ document.getElementById('methode-demo-statistiques-3e').innerHTML = `
     <button class="btn secondary" onclick="sa3DispDemo.reset()">Recommencer</button>
   </div>
 </div>
+
+<div class="sub-header" style="margin-top:28px;"><span class="letter">M</span><h4>Maths et sport : qui sélectionner ?</h4></div>
+<div class="figure-wrap"><p class="hint interaction-hint" style="margin-top:6px;">Trois sauteurs en longueur, six sauts chacun. Selon l'épreuve, quel athlète choisir ? Les indicateurs statistiques ne donnent pas tous la même réponse !</p>
+  <div class="sp-stats" data-crit="max,moyenne,mediane,etendue"></div></div>
+
 `;
 
 // Exercice avec correction repliable (même présentation que les autres chapitres).
@@ -275,7 +282,7 @@ DEMO_REGISTRY['3e|Statistiques'] = {
     sa3HistoInit(); sa3BalBoutons(); sa3BalReset(); sa3MedDemo.reset(); sa3DispDemo.reset();
     ['cours-demo-statistiques-3e', 'methode-demo-statistiques-3e', 'exos-demo-statistiques-3e'].forEach(id => renderStaticMath(document.getElementById(id)));
     injectCourseAddButtons(document.getElementById('cours-demo-statistiques-3e'));
-    injectCourseAddButtons(document.getElementById('methode-demo-statistiques-3e'));
+    injectCourseAddButtons(document.getElementById('methode-demo-statistiques-3e')); if(typeof spInitTout === 'function') spInitTout(document.getElementById('methode-demo-statistiques-3e'));
   }
 };
 

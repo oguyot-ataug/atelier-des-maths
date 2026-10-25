@@ -3465,6 +3465,12 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1108', date:'2026-10-25', items:[
+    "Maths et sport, « La piste d'athlétisme » (6e Aire et périmètre) : pourquoi les départs du 400 m sont décalés ; course animée (départs alignés ou décalés) et calcul de chaque couloir avec 2 × π × r.",
+    "Maths et sport, « Cours contre Usain Bolt » (4e Proportionnalité, 3e Grandeurs composées) : course de 100 m animée (Bolt, Florence Griffith-Joyner, ton temps, un guépard, un piéton), graphique distance-durée (droites par l'origine), vitesses en m/s et en km/h.",
+    "Maths et sport, « Qui sélectionner ? » (5e, 4e, 3e Statistiques) : trois sauteurs en longueur ; selon l'épreuve, le meilleur saut, la moyenne, la médiane (4e, 3e) ou l'étendue (3e) désignent un athlète différent.",
+    "Onglet Histoire « Maths et sport » dans ces six chapitres : le stade (unité de longueur), le marathon de 42,195 km, le chronométrage au millième, la piste de 400 m, le ballon Telstar (icosaèdre tronqué), les statistiques au service des équipes, le saut de Bob Beamon."
+  ]},
   { version:'2026-08-19.1107', date:'2026-10-25', items:[
     "Onglet Histoire « Maths et musique » (CM2 Fractions : comparer et calculer, 6e Fractions : comparaison et addition, 5e Symétrie centrale, 4e Translations) : le monocorde de Pythagore et ses fractions, la musique au quadrivium, le rythme écrit en fractions, les canons en miroir de Bach et le duo de table attribué à Mozart, Mersenne et les fréquences, Fourier et le son numérique ; deux schémas et une expérience à faire soi-même."
   ]},

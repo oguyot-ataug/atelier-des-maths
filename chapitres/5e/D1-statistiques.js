@@ -138,6 +138,8 @@ document.getElementById('histoire-demo-statistiques-5e').innerHTML = `
   <div class="history-title"><span class=gicon>history_edu</span> Un peu d'histoire</div>
   Compter la population n'a rien de nouveau : les Égyptiens, les Chinois et les Romains organisaient déjà des <b>recensements</b> pour lever les impôts ou recruter des soldats. Le mot « statistique » est plus récent : il vient du latin <i>status</i> (l'État) et apparaît au 18e siècle en Allemagne, pour désigner l'étude chiffrée d'un pays. Au 19e siècle, l'infirmière britannique <b>Florence Nightingale</b>, pendant la guerre de Crimée, montre grâce à des diagrammes circulaires de son invention que la plupart des soldats meurent de maladies dues au manque d'hygiène plutôt que de leurs blessures : ses graphiques convainquent le gouvernement d'améliorer les hôpitaux. Un bon diagramme peut sauver des vies !
 </div>
+
+${typeof SP_HISTOIRE_HTML !== 'undefined' ? SP_HISTOIRE_HTML : ''}
 `;
 
 document.getElementById('methode-demo-statistiques-5e').innerHTML = `
@@ -189,6 +191,11 @@ document.getElementById('methode-demo-statistiques-5e').innerHTML = `
   <textarea id="s5-enqueteSaisie" rows="3" style="width:100%;box-sizing:border-box;font-family:'JetBrains Mono',monospace;font-size:1rem;padding:8px 10px;border-radius:8px;border:1px solid #C9D6E6;" oninput="s5Enquete()">2 3 1 2 2 4 3 2 1 0 2 3 1 2 5 2 3 1 2 4</textarea>
   <div id="s5-enqueteResultat" style="margin-top:8px;"></div>
 </div>
+
+<div class="sub-header" style="margin-top:28px;"><span class="letter">M</span><h4>Maths et sport : qui sélectionner ?</h4></div>
+<div class="figure-wrap"><p class="hint interaction-hint" style="margin-top:6px;">Trois sauteurs en longueur, six sauts chacun. Selon l'épreuve, quel athlète choisir ? Les indicateurs statistiques ne donnent pas tous la même réponse !</p>
+  <div class="sp-stats" data-crit="max,moyenne"></div></div>
+
 `;
 
 // Exercice avec correction repliable.
@@ -298,7 +305,7 @@ DEMO_REGISTRY['5e|Statistiques'] = {
     s5FrequenceDemo.reset(); s5MoyenneDemo.reset(); s5BatonsReset(); s5SecteursReset(); s5Enquete();
     ['cours-demo-statistiques-5e', 'methode-demo-statistiques-5e', 'exos-demo-statistiques-5e'].forEach(id => renderStaticMath(document.getElementById(id)));
     injectCourseAddButtons(document.getElementById('cours-demo-statistiques-5e'));
-    injectCourseAddButtons(document.getElementById('methode-demo-statistiques-5e'));
+    injectCourseAddButtons(document.getElementById('methode-demo-statistiques-5e')); if(typeof spInitTout === 'function') spInitTout(document.getElementById('methode-demo-statistiques-5e'));
   }
 };
 
