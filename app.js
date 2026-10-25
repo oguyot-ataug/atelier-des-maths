@@ -3468,6 +3468,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1114', date:'2026-10-25', items:[
+    "5e Divisibilité, tables sur le cercle : uniquement des tables entières (curseur et saisie arrondis à l'entier) ; « Animer » passe d'une table à la suivante (2, 3, 4…), avec un réglage du nombre de tables par seconde."
+  ]},
   { version:'2026-08-19.1113', date:'2026-10-25', items:[
     "5e Divisibilité, nouvelle méthode animée « Les tables de multiplication sur le cercle » : les nombres de 0 à n − 1 sur un cercle, chaque i relié au reste de la division euclidienne de k × i par n ; au survol, le calcul (7 × 2 = 14 = 1 × 10 + 4) ; figures célèbres (cardioïde, néphroïde…), animation, couleurs, liste des restes."
   ]},

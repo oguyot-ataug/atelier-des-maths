@@ -7,7 +7,8 @@
 
    Les nombres de 0 à n − 1 sont répartis sur un cercle. Pour la table de k, chaque nombre i est relié
    au reste de la division euclidienne de k × i par n. Table de 2 : une cardioïde ; table de 3 : une
-   néphroïde… Survol (ou toucher) d'un point : le calcul « i × k = q × n + r » s'affiche.
+   néphroïde… Survol (ou toucher) d'un point : le calcul « i × k = q × n + r » s'affiche. Tables entières
+   seulement (programme) : l'animation passe d'une table à la suivante.
    Placement : <div class="tc-cercle"></div> ; tcInitTout(conteneur) à l'ouverture du chapitre.
    ===================================================================== */
 function tcMonter(el){
@@ -17,9 +18,9 @@ function tcMonter(el){
       <div class="tc-grp"><label class="tc-lab">Nombre de points n (on divise par n)</label>
         <div class="tc-ligne"><input type="range" data-a="nR" min="2" max="300" step="1" value="10"><input type="number" data-a="nN" min="2" max="300" value="10" aria-label="n"></div></div>
       <div class="tc-grp"><div class="tc-tete"><label class="tc-lab">Table de k</label><span class="tc-formule"></span></div>
-        <div class="tc-ligne"><input type="range" data-a="kR" min="0" max="10" step="0.01" value="2"><input type="number" data-a="kN" min="0" step="0.01" value="2" aria-label="k"></div>
+        <div class="tc-ligne"><input type="range" data-a="kR" min="0" max="10" step="1" value="2"><input type="number" data-a="kN" min="0" step="1" value="2" aria-label="k"></div>
         <div class="tc-ligne"><button type="button" data-a="kM">−1</button><button type="button" data-a="kP">+1</button><button type="button" class="tc-prim" data-a="jouer">Animer</button>
-          <label class="tc-lab" style="margin-left:auto;">vitesse</label><input type="range" data-a="v" min="0.02" max="3" step="0.01" value="0.25" style="width:90px;" aria-label="Vitesse"></div></div>
+          <label class="tc-lab" style="margin-left:auto;">vitesse</label><input type="range" data-a="v" min="0.3" max="4" step="0.1" value="1" style="width:90px;" aria-label="Tables par seconde"></div></div>
       <div class="tc-grp"><span class="tc-lab">Couleurs</span>
         <div class="tc-seg">${[['encre', 'Encre'], ['arc', 'Arc-en-ciel'], ['long', 'Longueur']].map(([v, t]) => `<button type="button" data-c="${v}"${v === 'arc' ? ' class="on"' : ''}>${t}</button>`).join('')}</div>
         <div class="tc-ligne"><label><input type="checkbox" data-a="nb" checked> nombres</label><label><input type="checkbox" data-a="pts" checked> points</label></div></div>
@@ -91,18 +92,18 @@ function tcMonter(el){
   }
   function synchro(){ $('[data-a="nR"]').value = st.n; $('[data-a="nN"]').value = st.n; $('[data-a="kR"]').max = st.n; $('[data-a="kR"]').value = st.k; $('[data-a="kN"]').value = ecr(st.k).replace(',', '.'); $('.tc-formule').textContent = `i → reste de ${ecr(st.k)} × i par ${st.n}`; }
   function setN(v){ v = Math.round(Number(v)); if(!isFinite(v)) return; st.n = Math.max(2, Math.min(300, v)); if(st.k > st.n) st.k = mod(st.k, st.n); if(st.epingle !== null && st.epingle >= st.n) st.epingle = null; synchro(); paires(); dessiner(); }
-  function setK(v){ v = Number(String(v).replace(',', '.')); if(!isFinite(v)) return; st.k = Math.round(Math.max(0, Math.min(st.n, v)) * 100) / 100; synchro(); paires(); dessiner(); }
+  function setK(v){ v = Number(String(v).replace(',', '.')); if(!isFinite(v)) return; st.k = Math.round(Math.max(0, Math.min(st.n, v))); synchro(); paires(); dessiner(); } // tables entières seulement (programme)
   $('[data-a="nR"]').oninput = e => setN(e.target.value); $('[data-a="nN"]').onchange = e => setN(e.target.value);
   $('[data-a="kR"]').oninput = e => setK(e.target.value); $('[data-a="kN"]').onchange = e => setK(e.target.value);
-  $('[data-a="kM"]').onclick = () => setK(Math.max(0, Math.ceil(st.k) - 1)); $('[data-a="kP"]').onclick = () => setK(Math.min(st.n, Math.floor(st.k) + 1));
+  $('[data-a="kM"]').onclick = () => setK(Math.max(0, st.k - 1)); $('[data-a="kP"]').onclick = () => setK(Math.min(st.n, st.k + 1));
   el.querySelectorAll('[data-c]').forEach(b => b.onclick = () => { st.coul = b.dataset.c; el.querySelectorAll('[data-c]').forEach(x => x.classList.toggle('on', x === b)); dessiner(); });
   $('[data-a="nb"]').onchange = e => { st.nb = e.target.checked; dessiner(); }; $('[data-a="pts"]').onchange = e => { st.pts = e.target.checked; dessiner(); };
   $('.tc-presets').onclick = e => { const b = e.target.closest('button'); if(!b) return; st.epingle = null; setN(b.dataset.n); setK(b.dataset.k); };
-  // Animation : k avance en continu (entre deux tables, il passe par des nombres décimaux).
-  let avant = 0;
-  const tic = now => { if(!st.joue || !el.isConnected) { st.joue = false; return; } const dt = Math.min(.1, (now - avant) / 1000); avant = now;
-    st.k = mod(st.k + Number($('[data-a="v"]').value) * dt, st.n); $('[data-a="kR"]').value = st.k; $('[data-a="kN"]').value = st.k.toFixed(2); $('.tc-formule').textContent = `i → reste de ${st.k.toFixed(2).replace('.', ',')} × i par ${st.n}`; dessiner(); requestAnimationFrame(tic); };
-  $('[data-a="jouer"]').onclick = e => { st.joue = !st.joue; e.target.textContent = st.joue ? 'Pause' : 'Animer'; if(st.joue){ avant = performance.now(); requestAnimationFrame(tic); } else setK(st.k); };
+  // Animation : on passe d'une table à la suivante (2, 3, 4…), uniquement des nombres entiers -- demandé :
+  // « Si on veut vraiment coller au programme, il ne faut prendre que des nombres entiers pour k ».
+  let minuteur = null;
+  const suivante = () => { if(!st.joue || !el.isConnected){ st.joue = false; return; } setK(st.k >= st.n ? 0 : st.k + 1); minuteur = setTimeout(suivante, 1000 / Number($('[data-a="v"]').value)); };
+  $('[data-a="jouer"]').onclick = e => { st.joue = !st.joue; e.target.textContent = st.joue ? 'Pause' : 'Animer'; clearTimeout(minuteur); if(st.joue) minuteur = setTimeout(suivante, 1000 / Number($('[data-a="v"]').value)); };
   const indice = e => { const r = canvas.getBoundingClientRect(), x = e.clientX - r.left - cx, y = e.clientY - r.top - cy, d = Math.hypot(x, y); if(d < R * .6 || d > R + marge) return null; const a = mod(Math.atan2(y, x) + Math.PI / 2, 2 * Math.PI); return mod(Math.round(a / (2 * Math.PI) * st.n), st.n); };
   canvas.addEventListener('pointermove', e => { if(e.pointerType === 'touch') return; const i = indice(e); if(i !== st.survol){ st.survol = i; if(!st.joue) dessiner(); } });
   canvas.addEventListener('pointerleave', () => { st.survol = null; if(!st.joue) dessiner(); });
