@@ -1,0 +1,67 @@
+# Test de charge -- demandé : « vendre un produit qui bloque, non merci ! » puis « oui, prépare le test de
+# charge » (25/10/2026). Lancé à la main (Actions › Test de charge › Run workflow), de préférence la nuit ou
+# pendant les vacances. Crée des élèves fictifs (fonction Supabase test-charge), joue connexion, veille,
+# séance COURS et automatismes (tools/charge/charge.mjs), puis supprime tout. Résultats : résumé de l'exécution.
+# Secret : ALERTE_CLE (le même que pour la surveillance).
+name: Test de charge
+
+on:
+  workflow_dispatch:
+    inputs:
+      eleves:
+        description: "Nombre d'élèves fictifs (30 par classe, 200 au plus)"
+        default: '30'
+      minutes_seance:
+        description: "Durée de la séance COURS (minutes)"
+        default: '5'
+      minutes_veille:
+        description: "Durée de la veille (minutes)"
+        default: '3'
+      temps_reel:
+        description: "Connexions temps réel pendant la séance"
+        type: boolean
+        default: true
+      nettoyer:
+        description: "Nettoyer seulement (après un test interrompu)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: test-charge
+  cancel-in-progress: false
+
+jobs:
+  charge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          sparse-checkout: |
+            app.js
+            tools/charge
+          sparse-checkout-cone-mode: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - name: Dépendances
+        working-directory: tools/charge
+        run: npm install --no-audit --no-fund
+      - name: Test
+        working-directory: tools/charge
+        env:
+          ALERTE_CLE: ${{ secrets.ALERTE_CLE }}
+          MINUTES_SEANCE: ${{ inputs.minutes_seance }}
+          MINUTES_VEILLE: ${{ inputs.minutes_veille }}
+          TEMPS_REEL: ${{ inputs.temps_reel && '1' || '0' }}
+        run: node charge.mjs ${{ inputs.nettoyer && 'nettoyer' || inputs.eleves }}
+      - name: Résultats
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: resultats-test-charge
+          path: tools/charge/resultats.json
+          if-no-files-found: ignore

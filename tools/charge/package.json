@@ -1,0 +1,10 @@
+{
+  "name": "atelier-test-charge",
+  "private": true,
+  "type": "module",
+  "description": "Test de charge de L'Atelier des Maths (workflow GitHub « Test de charge »)",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.0",
+    "ws": "^8.18.0"
+  }
+}
