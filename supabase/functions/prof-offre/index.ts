@@ -16,6 +16,7 @@
 //  - classe-creer / classe-renommer / classe-supprimer, eleve-creer / eleve-supprimer : classes du
 //    professeur (classes.creee_par) et comptes élèves identifiant@mathcollege.local.
 //    Pendant l'essai de 15 jours : 1 classe de 30 élèves au plus.
+//    Phase de démonstration (ventes fermées) : essai sans date de fin (subscription_expires_at vide), mêmes droits.
 //
 // Secrets : SUPABASE_*, STRIPE_SECRET_KEY, STRIPE_TEST_SECRET_KEY (professeur marqué « test »).
 
@@ -73,7 +74,9 @@ serve(async (req) => {
     const { data: param } = await admin.from("prof_parametres").select("prix").eq("id", 1).maybeSingle();
     const P = Object.assign({}, PRIX_DEFAUT, param?.prix || {});
     const payee = !!(offre && offre.offre && offre.acces_until && offre.acces_until >= today);
-    const essai = !payee && profile.subscription_status === "trial" && !!profile.subscription_expires_at && new Date(profile.subscription_expires_at) > new Date();
+    // Essai sans date de fin = phase de démonstration (ventes fermées) : mêmes droits que l'essai.
+    const demo = !payee && profile.subscription_status === "trial" && !profile.subscription_expires_at;
+    const essai = demo || (!payee && profile.subscription_status === "trial" && !!profile.subscription_expires_at && new Date(profile.subscription_expires_at) > new Date());
 
     // ---------- Devis / paiement ----------
     if (action === "devis" || action === "paiement") {
@@ -176,7 +179,7 @@ serve(async (req) => {
       const niveau = ORDRE.includes(demande) ? demande : null;
       if (!nom) return json({ error: "Donnez un nom à la classe (ex. 6e B)." }, 400);
       if (!niveau || !NIVEAUX_DISPONIBLES.includes(niveau)) return json({ error: "Choisissez le niveau (" + NIVEAUX_DISPONIBLES.map(lib).join(", ") + ")." }, 400);
-      if (regime === "essai" && classes.length >= 1) return json({ error: "Pendant l'essai : une classe. Choisissez une offre pour en créer d'autres." }, 400);
+      if (regime === "essai" && classes.length >= 1) return json({ error: demo ? "Pendant la démonstration : une classe. Écrivez à contact@latelieraugmente.fr s'il vous en faut d'autres." : "Pendant l'essai : une classe. Choisissez une offre pour en créer d'autres." }, 400);
       if (regime === "seul") {
         if (!(offre.niveaux || []).includes(niveau)) return json({ error: "Votre offre ne comprend pas le niveau " + lib(niveau) + " : ajoutez-le dans « Mon abonnement »." }, 400);
         const permises = classesComprises(offre.niveaux || [], offre.classes_sup || 0);

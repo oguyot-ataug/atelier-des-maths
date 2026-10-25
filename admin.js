@@ -1652,7 +1652,10 @@ async function adminAssignStudent(){
 
 /* Demandes d'inscription prof (signup_status='pending') : approuver démarre l'essai de
    15 jours (trial_started_at + subscription_expires_at à +15 jours), rejeter bloque
-   l'accès sans supprimer le compte (l'utilisateur peut recontacter l'admin). */
+   l'accès sans supprimer le compte (l'utilisateur peut recontacter l'admin).
+   Ventes fermées (phase de démonstration, demandé : « oui, fais-le » le 25/10/2026) : l'essai n'a pas
+   de date de fin (subscription_expires_at vide) -- personne n'est bloqué sans pouvoir acheter ; les
+   15 jours démarrent pour tous à l'ouverture des ventes (opAdminVentes, offres-prof.js). */
 async function adminRefreshSignupRequests(){
   const el = document.getElementById('adminSignupRequestsListing');
   if(!el) return;
@@ -1686,14 +1689,17 @@ async function adminRefreshSignupRequests(){
   </table>`;
 }
 async function adminApproveSignup(id, name){
-  if(!(await niceConfirm(`Approuver l'inscription de ${name} ? L'essai gratuit de 15 jours démarre immédiatement.`))) return;
+  const demo = !(typeof venteCharger === 'function' ? await venteCharger() : true);
+  if(!(await niceConfirm(demo
+    ? `Approuver l'inscription de ${name} ? Pendant la démonstration, son accès est complet et sans date de fin ; ses 15 jours d'essai démarreront à l'ouverture des ventes.`
+    : `Approuver l'inscription de ${name} ? L'essai gratuit de 15 jours démarre immédiatement.`))) return;
   const now = new Date();
-  const trialEnd = new Date(now.getTime() + 15*24*60*60*1000);
+  const trialEnd = demo ? null : new Date(now.getTime() + 15*24*60*60*1000);
   const { error } = await sb.from('profiles').update({
     signup_status: 'approved',
     subscription_status: 'trial',
     trial_started_at: now.toISOString(),
-    subscription_expires_at: trialEnd.toISOString(),
+    subscription_expires_at: trialEnd ? trialEnd.toISOString() : null,
   }).eq('id', id);
   if(error){ await niceAlert('Erreur : '+error.message); return; }
   await adminRefreshSignupRequests();

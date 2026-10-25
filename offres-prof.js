@@ -137,6 +137,8 @@ async function renderAbonnement(){
   const { data: prof } = await sb.from('profiles').select('subscription_status,subscription_expires_at,signup_status').eq('id', currentUser.id).maybeSingle();
   const o = opOffre, payee = opPayee(o);
   const essai = !payee && prof && prof.subscription_status === 'trial' && prof.subscription_expires_at && new Date(prof.subscription_expires_at) > new Date();
+  // Phase de démonstration (ventes fermées) : essai sans date de fin, voir adminApproveSignup (admin.js).
+  const demo = !payee && prof && prof.subscription_status === 'trial' && !prof.subscription_expires_at;
   const gere = !payee && !essai && prof && prof.subscription_status === 'active' && !prof.subscription_expires_at; // compte activé par l'administrateur
   if(!opEtat){
     opEtat = { choix: payee ? o.offre : 'seul', niveaux: new Set(payee && o.offre === 'seul' ? o.niveaux : ['6e']), classesSup: payee && o.offre === 'seul' ? (o.classes_sup || 0) : 0,
@@ -147,10 +149,11 @@ async function renderAbonnement(){
   else if(payee) statut = `<div class="op-statut ok"><span class="gicon">verified</span><div><b>${o.offre === 'seul' ? 'Professeur seul · ' + (o.niveaux || []).map(opLib).join(', ') + ' · ' + opNbClasses(o) + ' classe' + (opNbClasses(o) > 1 ? 's' : '') : 'Professeur particulier · ' + o.places + ' élève' + (o.places > 1 ? 's' : '')}</b>${o.stripe_test ? ' <span class="op-badge">test</span>' : ''}<br>Jusqu'au ${opDate(o.acces_until)} (paiement unique, sans reconduction).${o.offre === 'seul' ? ' Cours ouverts : ' + opRevision(o.niveaux || []).map(opLib).join(', ') + '.' : ''}</div></div>`;
   else if(essai) { const j = Math.max(0, Math.ceil((new Date(prof.subscription_expires_at) - new Date()) / 86400000));
     statut = `<div class="op-statut essai"><span class="gicon">hourglass_top</span><div><b>Essai gratuit : encore ${j} jour${j > 1 ? 's' : ''}</b> (jusqu'au ${opDate(prof.subscription_expires_at)}). Pour essayer avec vos élèves : une classe de ${opPrix.seul_eleves_max} élèves au plus. Choisissez ensuite votre offre.</div></div>`; }
+  else if(demo) statut = `<div class="op-statut ok"><span class="gicon">verified</span><div><b>Phase de démonstration : accès complet et gratuit</b>, sans date de fin. Pour travailler avec vos élèves : une classe de ${opPrix.seul_eleves_max} élèves au plus (écrivez à contact@latelieraugmente.fr s'il vous en faut d'autres). Vous serez prévenu avant l'ouverture des offres ; vous aurez alors 15 jours pour choisir.</div></div>`;
   else if(gere) statut = `<div class="op-statut ok"><span class="gicon">verified</span><div><b>Compte actif</b>, géré par l'administrateur du site : vos classes sont créées pour vous.</div></div>`;
   else statut = `<div class="op-statut ko"><span class="gicon">lock</span><div><b>Votre essai ou votre offre est terminé.</b> Choisissez une offre ci-dessous pour retrouver l'accès.</div></div>`;
-  const peutPayer = !currentEtabLicence && !gere;
-  const peutClasses = !currentEtabLicence && (payee || essai);
+  const peutPayer = !currentEtabLicence && !gere && !(demo && !venteOuverte(o && o.stripe_test)); // rien à acheter pendant la démonstration
+  const peutClasses = !currentEtabLicence && (payee || essai || demo);
   const { data: factures } = await sb.from('facturation_documents').select('*').eq('prof_id', currentUser.id).order('date_emission', { ascending:false });
   opFactures = factures || [];
   root.innerHTML = `
@@ -461,6 +464,7 @@ async function opAdminRefresh(){
     let statut;
     if(opPayee(o)) statut = `<span class="op-badge" style="background:#1E7B34;">${o.offre === 'seul' ? 'Prof seul ' + (o.niveaux || []).join(', ') + ' · ' + opNbClasses(o) + ' cl.' : 'Particulier ' + o.places + ' él.'}</span><div class="hint" style="margin:0;">jusqu'au ${opDate(o.acces_until)}</div>`;
     else if(p.subscription_status === 'trial' && p.subscription_expires_at && new Date(p.subscription_expires_at) > now) statut = `<span class="op-badge" style="background:#B8860B;">essai</span><div class="hint" style="margin:0;">jusqu'au ${opDate(p.subscription_expires_at)}</div>`;
+    else if(p.subscription_status === 'trial' && !p.subscription_expires_at && p.signup_status === 'approved') statut = '<span class="op-badge" style="background:#B8860B;">démonstration</span><div class="hint" style="margin:0;">essai à l\'ouverture des ventes</div>';
     else if(p.subscription_status === 'active' && !p.subscription_expires_at) statut = '<span class="op-badge" style="background:#0C5BA0;">géré (admin)</span>';
     else if(p.signup_status !== 'approved') statut = `<span class="op-badge" style="background:#8A8F98;">${opEsc(p.signup_status || '')}</span>`;
     else statut = '<span class="op-badge" style="background:#8A8F98;">sans accès</span>';
@@ -522,11 +526,17 @@ async function opAdminRefresh(){
 }
 async function opAdminVentes(ouvrir){
   const ok = await niceConfirm(ouvrir
-    ? 'Ouvrir les ventes ? Les professeurs et les familles pourront payer par carte, avec de vrais paiements. À faire seulement une fois l\'autorisation de cumul d\'activités obtenue.'
+    ? 'Ouvrir les ventes ? Les professeurs et les familles pourront payer par carte, avec de vrais paiements. Les professeurs en démonstration commencent alors leurs 15 jours d\'essai (prévenez-les). À faire seulement une fois l\'autorisation de cumul d\'activités obtenue.'
     : 'Fermer les ventes ? Plus aucun paiement réel ne sera possible jusqu\'à leur réouverture.');
   if(!ok) return;
   const { error } = await sb.from('prof_parametres').update({ ventes_ouvertes: !!ouvrir, updated_at: new Date().toISOString() }).eq('id', 1);
   if(error){ opMsg('opVentesMsg', 'Erreur : ' + error.message); return; }
+  if(ouvrir){ // fin de la démonstration : les essais sans date de fin passent à 15 jours à partir d'aujourd'hui
+    const fin = new Date(Date.now() + 15 * 86400000).toISOString();
+    const { error: e2 } = await sb.from('profiles').update({ subscription_expires_at: fin })
+      .eq('role', 'prof').eq('signup_status', 'approved').eq('subscription_status', 'trial').is('subscription_expires_at', null);
+    if(e2) await niceAlert('Ventes ouvertes, mais les essais n\'ont pas pu démarrer : ' + e2.message);
+  }
   opAdminRefresh();
 }
 async function opAdminTest(profId, cb){

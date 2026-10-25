@@ -2983,6 +2983,14 @@ const PROF_SIGNUP_UAI_RE = /^[0-9]{7}[A-Za-z]$/;
 function openProfSignupModal(){
   document.getElementById('profSignupModalOverlay').style.display = 'flex';
   document.getElementById('profSignupStatus').textContent = '';
+  profSignupTextes();
+}
+// Ventes fermées : phase de démonstration, accès complet sans date de fin (voir adminApproveSignup).
+async function profSignupTextes(){
+  const demo = !(await venteCharger());
+  const sub = document.getElementById('profSignupSub'), foot = document.getElementById('profSignupFin');
+  if(sub) sub.textContent = demo ? 'Accès complet et gratuit pendant la phase de démonstration' : "15 jours d'essai gratuit après validation de votre compte";
+  if(foot) foot.textContent = demo ? "Votre compte est vérifié par l'administrateur, puis vous avez accès à tout, gratuitement, pendant toute la phase de démonstration." : "Votre compte est vérifié par l'administrateur, puis l'essai gratuit commence.";
 }
 function closeProfSignupModal(){
   document.getElementById('profSignupModalOverlay').style.display = 'none';
@@ -3053,7 +3061,9 @@ async function submitProfSignup(){
   // elle-même reste enregistrée et valide, seule la notification est manquée.
   try{ await sb.functions.invoke('notify-prof-signup', { body: { nom, prenom, email, uai } }); }catch(e){ /* silencieux, voir commentaire ci-dessus */ }
 
-  status.textContent = "Inscription enregistrée ! Votre compte sera activé après vérification par l'administrateur, avec 15 jours d'essai gratuit à compter de l'activation.";
+  status.textContent = VENTES_OUVERTES
+    ? "Inscription enregistrée ! Votre compte sera activé après vérification par l'administrateur, avec 15 jours d'essai gratuit à compter de l'activation."
+    : "Inscription enregistrée ! Votre compte sera activé après vérification par l'administrateur : pendant la phase de démonstration, vous aurez accès à tout, gratuitement.";
   document.getElementById('profSignupPrenom').value = '';
   document.getElementById('profSignupNom').value = '';
   document.getElementById('profSignupEmail').value = '';
@@ -3222,7 +3232,7 @@ async function refreshAuthUI(){
     if(btnSubscribe){
       const showSubscribe = profile && profile.role==='prof' && profile.signup_status==='approved' && !currentEtabLicence;
       btnSubscribe.style.display = showSubscribe ? 'block' : 'none';
-      btnSubscribe.innerHTML = (profile && (subscriptionExpired || profile.subscription_status==='trial'))
+      btnSubscribe.innerHTML = (profile && (subscriptionExpired || (profile.subscription_status==='trial' && profile.subscription_expires_at))) // essai sans date : démonstration
         ? '<span class="gicon">credit_card</span> Choisir mon offre' : '<span class="gicon">workspace_premium</span> Mon abonnement'; // « Mes classes » = le suivi des classes (Outils prof)
     }
     const btnGenerateQuiz = document.getElementById('btnGenerateQuiz'), quizLoginHint = document.getElementById('quizLoginHint');
@@ -3468,6 +3478,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1117', date:'2026-10-25', items:['Phase de démonstration : tant que les offres ne sont pas en vente, un professeur validé a un accès complet et gratuit, sans date de fin (avant, son essai de 15 jours pouvait se terminer alors qu\'il ne pouvait rien acheter). Ses 15 jours d\'essai démarrent le jour de l\'ouverture des ventes.','Inscription, « Mon abonnement » et conditions générales annoncent la phase de démonstration ; « Mon abonnement » ne montre plus d\'offres à acheter pendant cette phase.','Administration : les professeurs concernés portent le badge « démonstration ».'] },
   { version:'2026-08-19.1116', date:'2026-10-25', items:['Référencement : les titres des pages de chapitres affichent les notions principales du cours (« Angles et parallélisme : paires d\'angles particuliers – Cours de maths 5ème ») et le niveau s\'écrit comme dans les recherches (6ème, 5ème…).','Description de la page d\'accueil plus parlante dans les résultats Google.','La page professeurs n\'annonce plus de prix ni d\'offre d\'abonnement.'] },
   { version:'2026-08-19.1115', date:'2026-10-25', items:[
     "5e Divisibilité, tables sur le cercle : case « k décimal » (décochée par défaut). Décochée : tables entières, l'animation passe d'une table à la suivante. Cochée : k décimal au centième, la figure se transforme en continu d'une table à l'autre."
