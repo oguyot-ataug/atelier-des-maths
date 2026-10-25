@@ -4,7 +4,7 @@
    rubrique bien à elle ? » ; nom choisi : « Maths & la vie ».
 
    Les activités « maths et… » (musique-maths.js, perspective-arts.js, sport-maths.js, cuisine-maths.js,
-   nature-maths.js, argent-maths.js, jeux-maths.js, sciences-maths.js) et leurs pages d'histoire thématiques ne sont plus dans les onglets Méthode et
+   nature-maths.js, argent-maths.js, jeux-maths.js, sciences-maths.js, geographie-maths.js) et leurs pages d'histoire thématiques ne sont plus dans les onglets Méthode et
    Histoire : elles sont rangées ici, par thème. L'onglet n'apparaît que dans les chapitres qui en ont
    (VIE_CHAPITRES) : inutile de remplir tous les chapitres.
    vieMaj(niveau, titre) : appelé par openChapitre (app.js) ; vieA(niveau, titre) : le chapitre en a-t-il ?
@@ -17,6 +17,7 @@ const VIE_THEMES = {
   nature: { ou: 'dans la nature', titre: 'Maths et nature', icone: 'eco', coul: '#2E8B57', histoire: () => typeof NA_HISTOIRE_HTML !== 'undefined' ? NA_HISTOIRE_HTML : '' },
   argent: { ou: 'avec l\'argent', titre: 'Maths et argent', icone: 'payments', coul: '#B7791F', histoire: () => typeof AR_HISTOIRE_HTML !== 'undefined' ? AR_HISTOIRE_HTML : '' },
   sciences: { ou: 'en sciences', titre: 'Maths et sciences', icone: 'science', coul: '#1F6F8B', histoire: () => typeof SC_HISTOIRE_HTML !== 'undefined' ? SC_HISTOIRE_HTML : '' },
+  geo: { ou: 'en géographie', titre: 'Maths et géographie', icone: 'travel_explore', coul: '#2E7D4F', histoire: () => typeof GE_HISTOIRE_HTML !== 'undefined' ? GE_HISTOIRE_HTML : '' },
   jeux: { ou: 'dans les jeux', titre: 'Maths et jeux', icone: 'extension', coul: '#5B2F9E', histoire: () => typeof JX_HISTOIRE_HTML !== 'undefined' ? JX_HISTOIRE_HTML : '' } };
 const vieFr = (a, b) => `<span class="tex">\\dfrac{${a}}{${b}}</span>`;
 // Activités : titre, petite consigne, et la balise que le module du thème transforme en activité.
@@ -63,12 +64,24 @@ const VIE_ACTIVITES = {
   univers: { theme: 'sciences', titre: 'De l\'atome à l\'Univers', aide: 'Les scientifiques mesurent des objets minuscules et immenses : les puissances de 10 et l\'écriture scientifique sont faites pour ça.', html: '<div class="sc-univers"></div>' },
   chute5: { theme: 'sciences', titre: 'La bille de Galilée', aide: 'Une bille roule sur un plan incliné : la distance est une fonction du temps… mais pas proportionnelle !', html: '<div class="sc-chute" data-niv="5e"></div>' },
   chute3: { theme: 'sciences', titre: 'La bille de Galilée', aide: 'Une bille roule sur un plan incliné : la distance est une fonction du temps, ni linéaire ni affine.', html: '<div class="sc-chute" data-niv="3e"></div>' },
+  echelle: { theme: 'geo', titre: 'L\'échelle d\'une carte', aide: 'Sur une carte, toutes les distances sont réduites de la même façon : avec l\'échelle, on retrouve les vraies distances.', html: '<div class="ge-echelle"></div>' },
+  echelle5: { theme: 'geo', titre: 'L\'échelle d\'une carte', aide: 'Une échelle, c\'est un coefficient de proportionnalité entre les distances sur la carte et les distances réelles.', html: '<div class="ge-echelle" data-niv="5e"></div>' },
+  fuseaux: { theme: 'geo', titre: 'Les fuseaux horaires', aide: 'Quand il est midi à Paris, il est la nuit à Tokyo et le matin à New York : on ajoute ou on retranche des heures.', html: '<div class="ge-fuseaux"></div>' },
+  fuseaux5: { theme: 'geo', titre: 'Les fuseaux horaires', aide: 'Le décalage horaire de chaque ville est un nombre relatif : on l\'ajoute à l\'heure de Paris.', html: '<div class="ge-fuseaux" data-niv="5e"></div>' },
+  climat: { theme: 'geo', titre: 'Le climat en graphique', aide: 'Les géographes résument le climat d\'une ville dans un graphique : des barres pour la pluie, une courbe pour la température.', html: '<div class="ge-climat"></div>' },
+  climat5: { theme: 'geo', titre: 'Le climat en graphique', aide: 'Lire un climatogramme, calculer une moyenne et une étendue de températures (parfois négatives).', html: '<div class="ge-climat" data-niv="5e"></div>' },
+  altitudes: { theme: 'geo', titre: 'Des sommets aux abysses', aide: 'Les altitudes sont des nombres relatifs : positives au-dessus du niveau de la mer, négatives en dessous.', html: '<div class="ge-altitudes"></div>' },
   etang: { theme: 'nature', titre: 'Combien de poissons dans l\'étang ?', aide: 'Comment les biologistes comptent-ils les animaux sauvages sans les attraper tous ? Avec la proportionnalité et un peu de hasard.', html: '<div class="na-etang"></div>' } };
 // Chapitres (clé « niveau|titre ») -> activités, dans l'ordre d'affichage (les thèmes suivent cet ordre).
 const VIE_CHAPITRES = {
   'cm1|Opérations sur les nombres décimaux': ['monnaie'],
   'cm1|Procédures de calcul mental': ['carre'],
   'cm1|Proportionnalité': ['affaire'],
+  'cm1|Heures et durées': ['fuseaux'],
+  'cm1|Organisation et gestion de données': ['climat'],
+  'cm2|Heures et durées': ['fuseaux'],
+  'cm2|Organisation et gestion de données': ['climat'],
+  'cm2|Résolution de problèmes': ['echelle'],
   'cm1|Longueurs, masses, contenances': ['eprouvette'],
   'cm2|Longueurs, masses, contenances': ['eprouvette'],
   'cm2|Addition et soustraction': ['monnaie'],
@@ -82,7 +95,9 @@ const VIE_CHAPITRES = {
   '6e|Fractions : multiplication': ['pizza'],
   '6e|Proportionnalité': ['recette6', 'affaire6', 'orage'],
   '6e|Nombres décimaux': ['monnaie'],
-  '6e|Opérations et ordre de grandeur': ['carre'],
+  '6e|Opérations et ordre de grandeur': ['carre', 'echelle'],
+  '6e|Heures et durée': ['fuseaux'],
+  '6e|Gestion de données': ['climat'],
   '6e|Multiplication et division': ['nim'],
   '6e|Initiation à la pensée informatique': ['hanoi'],
   '6e|Aire et périmètre': ['piste'],
@@ -91,11 +106,13 @@ const VIE_CHAPITRES = {
   '6e|Solides et volumes': ['cube', 'eprouvette6'],
   '5e|Symétrie centrale': ['canonSym'],
   '5e|Représentation de l\'espace': ['fuite', 'cube'],
-  '5e|Proportionnalité': ['recette5', 'orage5'],
-  '5e|Statistiques': ['stats5'],
+  '5e|Proportionnalité': ['recette5', 'orage5', 'echelle5'],
+  '5e|Statistiques': ['stats5', 'climat5'],
+  '5e|Nombres relatifs': ['fuseaux5'],
   '5e|Pourcentages': ['soldes5'],
   '5e|Divisibilité': ['nim5'],
-  '5e|Opérations sur les nombres relatifs': ['carreRel'],
+  '5e|Opérations sur les nombres relatifs': ['carreRel', 'altitudes'],
+  '4e|Opérations sur les nombres relatifs': ['altitudes'],
   '5e|Probabilités': ['des'],
   '5e|Fonctions': ['chute5'],
   '4e|Translations': ['canonTr'],
@@ -136,7 +153,7 @@ function vieMaj(niv, titre){
   [typeof mmInitTout === 'function' && mmInitTout, typeof paInitTout === 'function' && paInitTout, typeof spInitTout === 'function' && spInitTout,
    typeof cuInitTout === 'function' && cuInitTout, typeof naInitTout === 'function' && naInitTout,
    typeof arInitTout === 'function' && arInitTout, typeof jxInitTout === 'function' && jxInitTout,
-   typeof scInitTout === 'function' && scInitTout].forEach(f => { if(f) f(box); });
+   typeof scInitTout === 'function' && scInitTout, typeof geInitTout === 'function' && geInitTout].forEach(f => { if(f) f(box); });
 }
 
 (function vieStyles(){
