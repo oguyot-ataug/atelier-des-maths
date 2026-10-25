@@ -166,6 +166,11 @@ document.getElementById('methode-demo-solides-6e').innerHTML = `
   <div id="sv-morphNote" class="step-note" style="text-align:center;min-height:1.6em;"></div>
   <div class="figure-toolbar"><button class="btn" onclick="svMorphJouer()">Déplacer les cubes</button><button class="btn secondary" onclick="svMorphReset()">Recommencer</button></div>
 </div>
+
+<div class="sub-header" style="margin-top:28px;"><span class="letter">M</span><h4>Maths et arts : dessiner en perspective</h4></div>
+<div class="figure-wrap"><p class="hint interaction-hint" style="margin-top:6px;">Deux façons de dessiner un solide : la perspective centrale des peintres (avec un point de fuite) et la perspective cavalière du cahier de maths.</p>
+  <div class="pa-cube"></div></div>
+
 `;
 
 function svExo(n, enonce, lignes){
@@ -264,7 +269,7 @@ DEMO_REGISTRY['6e|Solides et volumes'] = {
   init: () => {
     svVueDessin(); svGrilleReset(); svMorphReset();
     injectCourseAddButtons(document.getElementById('cours-demo-solides-6e'));
-    injectCourseAddButtons(document.getElementById('methode-demo-solides-6e'));
+    injectCourseAddButtons(document.getElementById('methode-demo-solides-6e')); if(typeof paInitTout === 'function') paInitTout(document.getElementById('methode-demo-solides-6e'));
   }
 };
 

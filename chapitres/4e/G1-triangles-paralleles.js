@@ -257,6 +257,11 @@ document.getElementById('methode-demo-triangles-paralleles-4e').innerHTML = `
     <button class="btn secondary" onclick="g4IsoReset()">Recommencer</button>
   </div>
 </div>
+
+<div class="sub-header" style="margin-top:28px;"><span class="letter">M</span><h4>Maths et arts : le pavement d’Alberti</h4></div>
+<div class="figure-wrap"><p class="hint interaction-hint" style="margin-top:6px;">En 1435, Leon Battista Alberti explique aux peintres comment dessiner un carrelage en perspective. Suis sa construction pas à pas : on y retrouve la proportionnalité et le théorème de Thalès.</p>
+  <div class="pa-alberti"></div></div>
+
 `;
 
 // Exercice avec correction repliable (même présentation que N1 et N2).
@@ -387,7 +392,7 @@ DEMO_REGISTRY['4e|Triangles et parallèles'] = {
     g4ThDessiner(); g4CalculDemo.reset(); g4ReciproqueDemo.reset(); g4IsoReset();
     ['cours-demo-triangles-paralleles-4e', 'methode-demo-triangles-paralleles-4e', 'exos-demo-triangles-paralleles-4e'].forEach(id => renderStaticMath(document.getElementById(id)));
     injectCourseAddButtons(document.getElementById('cours-demo-triangles-paralleles-4e'));
-    injectCourseAddButtons(document.getElementById('methode-demo-triangles-paralleles-4e'));
+    injectCourseAddButtons(document.getElementById('methode-demo-triangles-paralleles-4e')); if(typeof paInitTout === 'function') paInitTout(document.getElementById('methode-demo-triangles-paralleles-4e'));
   }
 };
 

@@ -172,6 +172,11 @@ document.getElementById('methode-demo-thales-3e').innerHTML = `
     <button class="btn secondary" onclick="th3ReciproqueDemo.reset()">Recommencer</button>
   </div>
 </div>
+
+<div class="sub-header" style="margin-top:28px;"><span class="letter">M</span><h4>Maths et arts : le pavement d’Alberti</h4></div>
+<div class="figure-wrap"><p class="hint interaction-hint" style="margin-top:6px;">En 1435, Leon Battista Alberti explique aux peintres comment dessiner un carrelage en perspective. Suis sa construction pas à pas : on y retrouve la proportionnalité et le théorème de Thalès.</p>
+  <div class="pa-alberti"></div></div>
+
 `;
 
 // Exercice avec correction repliable (même présentation que les autres chapitres).
@@ -299,7 +304,7 @@ DEMO_REGISTRY['3e|Théorème de Thalès'] = {
     th3ExDessiner(); th3CalculDemo.reset(); th3ReciproqueDemo.reset();
     ['cours-demo-thales-3e', 'methode-demo-thales-3e', 'exos-demo-thales-3e'].forEach(id => renderStaticMath(document.getElementById(id)));
     injectCourseAddButtons(document.getElementById('cours-demo-thales-3e'));
-    injectCourseAddButtons(document.getElementById('methode-demo-thales-3e'));
+    injectCourseAddButtons(document.getElementById('methode-demo-thales-3e')); if(typeof paInitTout === 'function') paInitTout(document.getElementById('methode-demo-thales-3e'));
   }
 };
 

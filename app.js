@@ -3465,6 +3465,11 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1105', date:'2026-10-25', items:[
+    "Maths et arts, « Trouve le point de fuite » (5e Représentation de l'espace) : trois tableaux redessinés (une salle à la manière de La Cène, une place à la manière de La Cité idéale, un bâtiment vu de l'angle) ; on devine, puis on prolonge les fuyantes : elles se rejoignent au point de fuite, sur la ligne d'horizon (deux points de fuite pour le bâtiment).",
+    "Maths et arts, « Dessiner en perspective » (6e Solides et volumes, 5e Représentation de l'espace) : des solides dont on fait glisser le point de fuite (faces vues, arêtes cachées), bascule en perspective cavalière, petits défis.",
+    "Maths et arts, « Le pavement d'Alberti » (4e Triangles et parallèles, 3e Théorème de Thalès) : construction pas à pas du carrelage en perspective (ligne de terre, horizon, point de fuite, point de distance), mesure (hauteur inversement proportionnelle à la distance) et théorème de Thalès."
+  ]},
   { version:'2026-08-19.1104', date:'2026-10-25', items:[
     "Maths et musique, méthode « Remplis la mesure » (CM2 Fractions : comparer et calculer ; 6e Fractions : comparaison et addition) : la durée d'une note est une fraction de la mesure (ronde 1, blanche 1/2, noire 1/4, croche 1/8) ; on remplit une mesure qui doit faire exactement 1, le calcul s'écrit, on écoute. Défis et « rythme mystère » à reproduire.",
     "Maths et musique, méthode « Canon miroir » (5e Symétrie centrale ; 4e Translations) : une mélodie sur un quadrillage, puis sa translation (répétée, transposée), ses symétries axiales (à l'envers, renversée) et sa symétrie centrale, en image et en son ; jeu « Devine la transformation »."
