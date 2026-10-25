@@ -3465,6 +3465,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1109', date:'2026-10-25', items:[
+    "Histoire « Maths et sport » : l'activité « À toi ! » devient réaliste (mesurer son pas, compter ses pas sur un tour de piste, puis calculer sa vitesse) au lieu de mesurer la piste au mètre ruban."
+  ]},
   { version:'2026-08-19.1108', date:'2026-10-25', items:[
     "Maths et sport, « La piste d'athlétisme » (6e Aire et périmètre) : pourquoi les départs du 400 m sont décalés ; course animée (départs alignés ou décalés) et calcul de chaque couloir avec 2 × π × r.",
     "Maths et sport, « Cours contre Usain Bolt » (4e Proportionnalité, 3e Grandeurs composées) : course de 100 m animée (Bolt, Florence Griffith-Joyner, ton temps, un guépard, un piéton), graphique distance-durée (droites par l'origine), vitesses en m/s et en km/h.",
