@@ -4,7 +4,7 @@
    rubrique bien à elle ? » ; nom choisi : « Maths & la vie ».
 
    Les activités « maths et… » (musique-maths.js, perspective-arts.js, sport-maths.js, cuisine-maths.js,
-   nature-maths.js, argent-maths.js, jeux-maths.js) et leurs pages d'histoire thématiques ne sont plus dans les onglets Méthode et
+   nature-maths.js, argent-maths.js, jeux-maths.js, sciences-maths.js) et leurs pages d'histoire thématiques ne sont plus dans les onglets Méthode et
    Histoire : elles sont rangées ici, par thème. L'onglet n'apparaît que dans les chapitres qui en ont
    (VIE_CHAPITRES) : inutile de remplir tous les chapitres.
    vieMaj(niveau, titre) : appelé par openChapitre (app.js) ; vieA(niveau, titre) : le chapitre en a-t-il ?
@@ -16,6 +16,7 @@ const VIE_THEMES = {
   cuisine: { ou: 'en cuisine', titre: 'Maths et cuisine', icone: 'skillet', coul: '#C0533E', histoire: () => typeof CU_HISTOIRE_HTML !== 'undefined' ? CU_HISTOIRE_HTML : '' },
   nature: { ou: 'dans la nature', titre: 'Maths et nature', icone: 'eco', coul: '#2E8B57', histoire: () => typeof NA_HISTOIRE_HTML !== 'undefined' ? NA_HISTOIRE_HTML : '' },
   argent: { ou: 'avec l\'argent', titre: 'Maths et argent', icone: 'payments', coul: '#B7791F', histoire: () => typeof AR_HISTOIRE_HTML !== 'undefined' ? AR_HISTOIRE_HTML : '' },
+  sciences: { ou: 'en sciences', titre: 'Maths et sciences', icone: 'science', coul: '#1F6F8B', histoire: () => typeof SC_HISTOIRE_HTML !== 'undefined' ? SC_HISTOIRE_HTML : '' },
   jeux: { ou: 'dans les jeux', titre: 'Maths et jeux', icone: 'extension', coul: '#5B2F9E', histoire: () => typeof JX_HISTOIRE_HTML !== 'undefined' ? JX_HISTOIRE_HTML : '' } };
 const vieFr = (a, b) => `<span class="tex">\\dfrac{${a}}{${b}}</span>`;
 // Activités : titre, petite consigne, et la balise que le module du thème transforme en activité.
@@ -53,22 +54,33 @@ const VIE_ACTIVITES = {
   nim5: { theme: 'jeux', titre: 'Le jeu des allumettes', aide: 'Le jeu de Fort Boyard : celui qui prend la dernière allumette a perdu. Les multiples de 4 donnent le secret pour gagner à tous les coups.', html: '<div class="jx-nim" data-niv="5e"></div>' },
   hanoi: { theme: 'jeux', titre: 'Les tours de Hanoï', aide: 'Le casse-tête d\'Édouard Lucas (1883) : combien de déplacements faut-il au minimum ? La réponse est une puissance de 2.', html: '<div class="jx-hanoi"></div>' },
   des: { theme: 'jeux', titre: 'Les trois dés de Galilée', aide: 'Avec trois dés, la somme 10 sort plus souvent que la somme 9 : l\'énigme qui a fait naître les probabilités.', html: '<div class="jx-des"></div>' },
+  orage: { theme: 'sciences', titre: 'À quelle distance est l\'orage ?', aide: 'Le son du tonnerre parcourt 340 mètres chaque seconde : en comptant les secondes entre l\'éclair et le tonnerre, on sait où est l\'orage. Monte le son !', html: '<div class="sc-orage" data-niv="cm"></div>' },
+  orage5: { theme: 'sciences', titre: 'À quelle distance est l\'orage ?', aide: 'Le son du tonnerre parcourt 340 mètres chaque seconde : la distance est proportionnelle à la durée. Monte le son !', html: '<div class="sc-orage" data-niv="5e"></div>' },
+  orage3: { theme: 'sciences', titre: 'À quelle distance est l\'orage ?', aide: 'La vitesse du son est une grandeur composée : 340 m/s. Avec d = v × t, on trouve la distance de l\'orage. Monte le son !', html: '<div class="sc-orage" data-niv="3e"></div>' },
+  eprouvette: { theme: 'sciences', titre: 'Le volume d\'un caillou', aide: 'Avec une éprouvette graduée, on mesure le volume d\'un objet de n\'importe quelle forme : c\'est l\'idée d\'Archimède.', html: '<div class="sc-eprouvette" data-niv="cm"></div>' },
+  eprouvette6: { theme: 'sciences', titre: 'Le volume d\'un caillou', aide: 'Avec une éprouvette graduée, on mesure le volume d\'un objet de n\'importe quelle forme. Et 1 mL = 1 cm³ !', html: '<div class="sc-eprouvette" data-niv="6e"></div>' },
+  eprouvette3: { theme: 'sciences', titre: 'Flotte ou coule ?', aide: 'Volume avec une éprouvette, masse avec une balance : la masse volumique (une grandeur composée) dit si l\'objet flotte.', html: '<div class="sc-eprouvette" data-niv="3e"></div>' },
+  univers: { theme: 'sciences', titre: 'De l\'atome à l\'Univers', aide: 'Les scientifiques mesurent des objets minuscules et immenses : les puissances de 10 et l\'écriture scientifique sont faites pour ça.', html: '<div class="sc-univers"></div>' },
+  chute5: { theme: 'sciences', titre: 'La bille de Galilée', aide: 'Une bille roule sur un plan incliné : la distance est une fonction du temps… mais pas proportionnelle !', html: '<div class="sc-chute" data-niv="5e"></div>' },
+  chute3: { theme: 'sciences', titre: 'La bille de Galilée', aide: 'Une bille roule sur un plan incliné : la distance est une fonction du temps, ni linéaire ni affine.', html: '<div class="sc-chute" data-niv="3e"></div>' },
   etang: { theme: 'nature', titre: 'Combien de poissons dans l\'étang ?', aide: 'Comment les biologistes comptent-ils les animaux sauvages sans les attraper tous ? Avec la proportionnalité et un peu de hasard.', html: '<div class="na-etang"></div>' } };
 // Chapitres (clé « niveau|titre ») -> activités, dans l'ordre d'affichage (les thèmes suivent cet ordre).
 const VIE_CHAPITRES = {
   'cm1|Opérations sur les nombres décimaux': ['monnaie'],
   'cm1|Procédures de calcul mental': ['carre'],
   'cm1|Proportionnalité': ['affaire'],
+  'cm1|Longueurs, masses, contenances': ['eprouvette'],
+  'cm2|Longueurs, masses, contenances': ['eprouvette'],
   'cm2|Addition et soustraction': ['monnaie'],
   'cm2|Procédures de calcul mental': ['carre'],
   'cm2|Division': ['affaire', 'nim'],
   'cm2|Multiples et diviseurs': ['nim'],
   'cm2|Fractions : comparer et calculer': ['mesure', 'pizza'],
-  'cm2|Proportionnalité': ['recetteCm2', 'affaire'],
+  'cm2|Proportionnalité': ['recetteCm2', 'affaire', 'orage'],
   'cm2|Symétrie axiale': ['flocon'],
   '6e|Fractions : comparaison et addition': ['mesure'],
   '6e|Fractions : multiplication': ['pizza'],
-  '6e|Proportionnalité': ['recette6', 'affaire6'],
+  '6e|Proportionnalité': ['recette6', 'affaire6', 'orage'],
   '6e|Nombres décimaux': ['monnaie'],
   '6e|Opérations et ordre de grandeur': ['carre'],
   '6e|Multiplication et division': ['nim'],
@@ -76,34 +88,35 @@ const VIE_CHAPITRES = {
   '6e|Aire et périmètre': ['piste'],
   '6e|Angles et rapporteur': ['tournesol'],
   '6e|Symétrie axiale': ['flocon'],
-  '6e|Solides et volumes': ['cube'],
+  '6e|Solides et volumes': ['cube', 'eprouvette6'],
   '5e|Symétrie centrale': ['canonSym'],
   '5e|Représentation de l\'espace': ['fuite', 'cube'],
-  '5e|Proportionnalité': ['recette5'],
+  '5e|Proportionnalité': ['recette5', 'orage5'],
   '5e|Statistiques': ['stats5'],
   '5e|Pourcentages': ['soldes5'],
   '5e|Divisibilité': ['nim5'],
   '5e|Opérations sur les nombres relatifs': ['carreRel'],
   '5e|Probabilités': ['des'],
+  '5e|Fonctions': ['chute5'],
   '4e|Translations': ['canonTr'],
   '4e|Triangles et parallèles': ['alberti'],
   '4e|Proportionnalité': ['bolt', 'soldes4'],
-  '4e|Puissances': ['interets4', 'hanoi'],
+  '4e|Puissances': ['interets4', 'hanoi', 'univers'],
   '4e|Statistiques': ['stats4'],
   '4e|Probabilités': ['etang', 'des'],
   '3e|Théorème de Thalès': ['alberti'],
-  '3e|Grandeurs composées': ['bolt'],
+  '3e|Grandeurs composées': ['bolt', 'orage3', 'eprouvette3'],
   '3e|Statistiques': ['stats3'],
   '3e|Fonctions linéaires et affines': ['four', 'soldes3'],
-  '3e|Généralités sur les fonctions': ['interets3'],
-  '3e|Puissances': ['hanoi'],
+  '3e|Généralités sur les fonctions': ['interets3', 'chute3'],
+  '3e|Puissances': ['hanoi', 'univers'],
   '3e|Rotation': ['floconRot'],
   '3e|Probabilités': ['etang', 'des'] };
 function vieA(niv, titre){ return !!VIE_CHAPITRES[niv + '|' + titre]; }
 function vieHtml(liste){
   const themes = [];
   liste.forEach(k => { const a = VIE_ACTIVITES[k]; if(!a) return; let t = themes.find(x => x.k === a.theme); if(!t){ t = { k: a.theme, acts: [] }; themes.push(t); } t.acts.push(a); });
-  return `<div class="vie-intro"><span class="gicon">public</span><div><b>Maths &amp; la vie</b> : les maths de ce chapitre, on les croise ${themes.map(t => VIE_THEMES[t.k].ou).join(', ').replace(/, ([^,]*)$/, ' et $1')}. Des activités à manipuler${themes.some(t => t.k === 'musique') ? ' (monte le son pour la musique !)' : ''} et un peu d'histoire.</div></div>`
+  return `<div class="vie-intro"><span class="gicon">public</span><div><b>Maths &amp; la vie</b> : les maths de ce chapitre, on les croise ${themes.map(t => VIE_THEMES[t.k].ou).join(', ').replace(/, ([^,]*)$/, ' et $1')}. Des activités à manipuler${themes.some(t => t.k === 'musique' || t.k === 'sciences') ? ' (monte le son !)' : ''} et un peu d'histoire.</div></div>`
     + themes.map(t => { const T = VIE_THEMES[t.k];
       return `<section class="vie-theme" style="--vie:${T.coul}"><h3 class="vie-theme-h"><span class="gicon">${T.icone}</span> ${T.titre}</h3>`
         + t.acts.map(a => `<div class="sub-header" style="margin-top:14px;"><span class="letter">${T.titre.split(' ').pop()[0].toUpperCase()}</span><h4>${a.titre}</h4></div>
@@ -122,7 +135,8 @@ function vieMaj(niv, titre){
   if(typeof renderStaticMath === 'function') renderStaticMath(box);
   [typeof mmInitTout === 'function' && mmInitTout, typeof paInitTout === 'function' && paInitTout, typeof spInitTout === 'function' && spInitTout,
    typeof cuInitTout === 'function' && cuInitTout, typeof naInitTout === 'function' && naInitTout,
-   typeof arInitTout === 'function' && arInitTout, typeof jxInitTout === 'function' && jxInitTout].forEach(f => { if(f) f(box); });
+   typeof arInitTout === 'function' && arInitTout, typeof jxInitTout === 'function' && jxInitTout,
+   typeof scInitTout === 'function' && scInitTout].forEach(f => { if(f) f(box); });
 }
 
 (function vieStyles(){
