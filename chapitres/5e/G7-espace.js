@@ -215,7 +215,6 @@ document.getElementById('histoire-demo-espace-5e').innerHTML = `
   <div class="history-title"><span class=gicon>history_edu</span> Un peu d'histoire</div>
   Le savant grec <b>Archimède</b> (3e siècle av. J.-C.) était si fier d'avoir démontré que le volume d'une boule vaut exactement les deux tiers de celui du cylindre dans lequel elle s'emboîte qu'il avait demandé que ce dessin soit gravé sur sa tombe. Plus d'un siècle plus tard, l'orateur romain <b>Cicéron</b> raconte avoir retrouvé cette tombe, envahie par les ronces, grâce à la sphère et au cylindre sculptés dessus. Quant à la <b>perspective cavalière</b>, utilisée pour dessiner les solides au collège, elle doit son nom au « cavalier », une butte de terre des fortifications d'où l'on voyait le terrain de haut et de biais.
 </div>
-${typeof PA_HISTOIRE_HTML !== 'undefined' ? PA_HISTOIRE_HTML : ''}
 `;
 
 document.getElementById('methode-demo-espace-5e').innerHTML = `
@@ -251,15 +250,6 @@ document.getElementById('methode-demo-espace-5e').innerHTML = `
   <div class="step-display" id="e5-volDisplay"></div>
   <div class="figure-toolbar"><button class="btn" onclick="e5VolDemo.next()">Étape suivante →</button><button class="btn secondary" onclick="e5VolDemo.reset()">Recommencer</button></div>
 </div>
-
-<div class="sub-header" style="margin-top:28px;"><span class="letter">M</span><h4>Maths et arts : trouve le point de fuite d’un tableau</h4></div>
-<div class="figure-wrap"><p class="hint interaction-hint" style="margin-top:6px;">À la Renaissance, les peintres découvrent la perspective : sur le tableau, des droites parallèles dans la réalité se rejoignent toutes en un même point, le point de fuite. Retrouve-le dans ces tableaux redessinés.</p>
-  <div class="pa-fuite"></div></div>
-
-<div class="sub-header" style="margin-top:28px;"><span class="letter">M</span><h4>Maths et arts : dessiner en perspective</h4></div>
-<div class="figure-wrap"><p class="hint interaction-hint" style="margin-top:6px;">Deux façons de dessiner un solide : la perspective centrale des peintres (avec un point de fuite) et la perspective cavalière du cahier de maths.</p>
-  <div class="pa-cube"></div></div>
-
 `;
 
 function e5Exo(n, enonce, lignes){
@@ -417,7 +407,7 @@ DEMO_REGISTRY["5e|Représentation de l'espace"] = {
     e5VueChoix(); e5Plier(); e5Rouler(); e5VolDemo.reset();
     ['cours-demo-espace-5e', 'exos-demo-espace-5e'].forEach(id => renderStaticMath(document.getElementById(id)));
     injectCourseAddButtons(document.getElementById('cours-demo-espace-5e'));
-    injectCourseAddButtons(document.getElementById('methode-demo-espace-5e')); if(typeof paInitTout === 'function') paInitTout(document.getElementById('methode-demo-espace-5e'));
+    injectCourseAddButtons(document.getElementById('methode-demo-espace-5e'));
   }
 };
 

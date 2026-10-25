@@ -112,8 +112,6 @@ document.getElementById('histoire-demo-probabilites-4e').innerHTML = `
   <div class="history-title"><span class=gicon>history_edu</span> Un peu d'histoire</div>
   En 1713 paraît <i>Ars conjectandi</i> (« l'art de conjecturer ») du Suisse <b>Jacques Bernoulli</b> : il y démontre la <b>loi des grands nombres</b>, c'est-à-dire le résultat du paragraphe 3 de ce chapitre, sur lequel il avait travaillé pendant vingt ans. Beaucoup ont voulu le vérifier à la main : le naturaliste français <b>Buffon</b> lance une pièce 4 040 fois et obtient 2 048 fois pile (une fréquence d'environ 0,507), et au début du 20e siècle, le statisticien anglais <b>Karl Pearson</b> la lance 24 000 fois pour obtenir 12 012 fois pile (0,500 5) ! En 1812, <b>Pierre-Simon de Laplace</b> écrit la définition « nombre de cas favorables divisé par nombre de cas possibles » que tu utilises. Enfin, dans les années 1940, les mathématiciens <b>Stanislaw Ulam</b> et <b>John von Neumann</b> utilisent les premiers ordinateurs pour simuler des millions d'expériences aléatoires : c'est la « méthode de Monte-Carlo », du nom du célèbre casino, encore utilisée aujourd'hui pour les prévisions météo ou en physique.
 </div>
-
-${typeof NA_HISTOIRE_HTML !== 'undefined' ? NA_HISTOIRE_HTML : ''}
 `;
 
 // Évènements proposés dans la méthode 1 : [nom, test sur le numéro, nom du contraire].
@@ -179,11 +177,6 @@ document.getElementById('methode-demo-probabilites-4e').innerHTML = `
     <button class="btn secondary" onclick="pr4RoueReset()">Recommencer</button>
   </div>
 </div>
-
-<div class="sub-header" style="margin-top:28px;"><span class="letter">M</span><h4>Maths et nature : combien de poissons dans l'étang ?</h4></div>
-<div class="figure-wrap"><p class="hint interaction-hint" style="margin-top:6px;">Comment les biologistes comptent-ils les animaux sauvages sans les attraper tous ? Avec la proportionnalité et un peu de hasard.</p>
-  <div class="na-etang"></div></div>
-
 `;
 
 // Exercice avec correction repliable (même présentation que les autres chapitres de 4e).
@@ -354,7 +347,7 @@ DEMO_REGISTRY['4e|Probabilités'] = {
     pr4Evenement(); pr4CartesDemo.reset(); pr4SimReset(); pr4RoueReset();
     ['cours-demo-probabilites-4e', 'exos-demo-probabilites-4e'].forEach(id => renderStaticMath(document.getElementById(id)));
     injectCourseAddButtons(document.getElementById('cours-demo-probabilites-4e'));
-    injectCourseAddButtons(document.getElementById('methode-demo-probabilites-4e')); if(typeof naInitTout === 'function') naInitTout(document.getElementById('methode-demo-probabilites-4e'));
+    injectCourseAddButtons(document.getElementById('methode-demo-probabilites-4e'));
   }
 };
 

@@ -113,8 +113,6 @@ document.getElementById('histoire-demo-rotation-3e').innerHTML = `
   <div class="history-title"><span class=gicon>history_edu</span> Un peu d'histoire</div>
   Pourquoi un tour complet mesure-t-il <b>360 degrés</b> ? On le doit aux astronomes de <b>Babylone</b>, il y a plus de 3 000 ans. Ils comptaient en base 60 (c'est pour cela qu'une heure compte 60 minutes, et une minute 60 secondes) et observaient que le Soleil semble faire le tour du ciel en à peu près 360 jours. Le nombre 360 a aussi l'avantage d'avoir énormément de diviseurs (2, 3, 4, 5, 6, 8, 9, 10, 12, 15, 18, 20…) : on peut partager un tour en parts égales entières de bien des façons. Les rotations sont partout autour de nous : aiguilles d'une montre, roues, éoliennes, manèges… et dans l'art, avec les rosaces des cathédrales, qui restent identiques quand on les fait tourner d'un certain angle autour de leur centre.
 </div>
-
-${typeof NA_HISTOIRE_HTML !== 'undefined' ? NA_HISTOIRE_HTML : ''}
 `;
 
 document.getElementById('methode-demo-rotation-3e').innerHTML = `
@@ -155,11 +153,6 @@ document.getElementById('methode-demo-rotation-3e').innerHTML = `
     <button class="btn secondary" onclick="ro3HexDemo.reset()">Recommencer</button>
   </div>
 </div>
-
-<div class="sub-header" style="margin-top:28px;"><span class="letter">M</span><h4>Maths et nature : fabrique un flocon</h4></div>
-<div class="figure-wrap"><p class="hint interaction-hint" style="margin-top:6px;">Un flocon de neige revient sur lui-même par une rotation de 60° ; il a aussi 6 axes de symétrie. Compare avec un « moulin » qui n'a que des rotations.</p>
-  <div class="na-flocon" data-modes="flocon,moulin"></div></div>
-
 `;
 
 // Hexagone régulier ABCDEF (sens trigonométrique) de centre O, rayon 80.
@@ -319,7 +312,7 @@ DEMO_REGISTRY['3e|Rotation'] = {
     ro3TourneDessiner(); ro3ConstrReset(); ro3HexDemo.reset();
     ['cours-demo-rotation-3e', 'methode-demo-rotation-3e', 'exos-demo-rotation-3e'].forEach(id => renderStaticMath(document.getElementById(id)));
     injectCourseAddButtons(document.getElementById('cours-demo-rotation-3e'));
-    injectCourseAddButtons(document.getElementById('methode-demo-rotation-3e')); if(typeof naInitTout === 'function') naInitTout(document.getElementById('methode-demo-rotation-3e'));
+    injectCourseAddButtons(document.getElementById('methode-demo-rotation-3e'));
   }
 };
 

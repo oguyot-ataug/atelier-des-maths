@@ -132,7 +132,6 @@ document.getElementById('histoire-demo-thales-3e').innerHTML = `
   <div class="history-title"><span class=gicon>history_edu</span> Un peu d'histoire</div>
   <b>Thalès de Milet</b> (vers 625 – 547 av. J.-C.) est souvent présenté comme le premier mathématicien grec. D'après le philosophe Proclus, qui s'appuie sur un historien plus ancien, Thalès savait calculer <b>la distance d'un navire en mer</b> depuis le rivage, sans quitter la côte : avec deux triangles de même forme, l'un petit, tracé sur la terre ferme, l'autre immense, qui va jusqu'au bateau. C'est exactement l'idée de la configuration « papillon » ! Pendant des siècles, les arpenteurs et les géomètres ont utilisé ce principe pour mesurer des distances impossibles à parcourir : largeur d'une rivière, hauteur d'une tour, distance d'une île…
 </div>
-${typeof PA_HISTOIRE_HTML !== 'undefined' ? PA_HISTOIRE_HTML : ''}
 `;
 
 document.getElementById('methode-demo-thales-3e').innerHTML = `
@@ -173,11 +172,6 @@ document.getElementById('methode-demo-thales-3e').innerHTML = `
     <button class="btn secondary" onclick="th3ReciproqueDemo.reset()">Recommencer</button>
   </div>
 </div>
-
-<div class="sub-header" style="margin-top:28px;"><span class="letter">M</span><h4>Maths et arts : le pavement d’Alberti</h4></div>
-<div class="figure-wrap"><p class="hint interaction-hint" style="margin-top:6px;">En 1435, Leon Battista Alberti explique aux peintres comment dessiner un carrelage en perspective. Suis sa construction pas à pas : on y retrouve la proportionnalité et le théorème de Thalès.</p>
-  <div class="pa-alberti"></div></div>
-
 `;
 
 // Exercice avec correction repliable (même présentation que les autres chapitres).
@@ -305,7 +299,7 @@ DEMO_REGISTRY['3e|Théorème de Thalès'] = {
     th3ExDessiner(); th3CalculDemo.reset(); th3ReciproqueDemo.reset();
     ['cours-demo-thales-3e', 'methode-demo-thales-3e', 'exos-demo-thales-3e'].forEach(id => renderStaticMath(document.getElementById(id)));
     injectCourseAddButtons(document.getElementById('cours-demo-thales-3e'));
-    injectCourseAddButtons(document.getElementById('methode-demo-thales-3e')); if(typeof paInitTout === 'function') paInitTout(document.getElementById('methode-demo-thales-3e'));
+    injectCourseAddButtons(document.getElementById('methode-demo-thales-3e'));
   }
 };
 

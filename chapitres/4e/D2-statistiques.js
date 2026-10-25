@@ -97,8 +97,6 @@ document.getElementById('histoire-demo-statistiques-4e').innerHTML = `
   <div class="history-title"><span class=gicon>history_edu</span> Un peu d'histoire</div>
   Au 16e siècle, l'astronome danois <b>Tycho Brahe</b> mesurait plusieurs fois la position d'une même étoile : ses mesures n'étant jamais tout à fait identiques, il en faisait la moyenne pour réduire les erreurs. Au 19e siècle, le Belge <b>Adolphe Quetelet</b> applique ces calculs aux êtres humains (taille, poids…) et invente la notion d'« homme moyen ». La médiane, elle, a été nommée en 1843 par le mathématicien français <b>Antoine Augustin Cournot</b> (« valeur médiane »), puis popularisée par l'Anglais <b>Francis Galton</b>. Aujourd'hui, l'INSEE publie chaque année le <b>salaire médian</b> en France en plus du salaire moyen : quelques très hauts salaires suffisent à faire monter la moyenne, alors que la médiane indique le salaire qui partage les salariés en deux moitiés.
 </div>
-
-${typeof SP_HISTOIRE_HTML !== 'undefined' ? SP_HISTOIRE_HTML : ''}
 `;
 
 document.getElementById('methode-demo-statistiques-4e').innerHTML = `
@@ -137,11 +135,6 @@ document.getElementById('methode-demo-statistiques-4e').innerHTML = `
   </div>
   <div id="st4-extRes" class="step-note" style="text-align:center;min-height:2.4em;margin-top:6px;"></div>
 </div>
-
-<div class="sub-header" style="margin-top:28px;"><span class="letter">M</span><h4>Maths et sport : qui sélectionner ?</h4></div>
-<div class="figure-wrap"><p class="hint interaction-hint" style="margin-top:6px;">Trois sauteurs en longueur, six sauts chacun. Selon l'épreuve, quel athlète choisir ? Les indicateurs statistiques ne donnent pas tous la même réponse !</p>
-  <div class="sp-stats" data-crit="max,moyenne,mediane"></div></div>
-
 `;
 
 // Exercice avec correction repliable (même présentation que les autres chapitres de 4e).
@@ -317,7 +310,7 @@ DEMO_REGISTRY['4e|Statistiques'] = {
     st4MoyenneDemo.reset(); st4MedDemo.init(); st4Analyser(); st4Extreme();
     ['cours-demo-statistiques-4e', 'exos-demo-statistiques-4e'].forEach(id => renderStaticMath(document.getElementById(id)));
     injectCourseAddButtons(document.getElementById('cours-demo-statistiques-4e'));
-    injectCourseAddButtons(document.getElementById('methode-demo-statistiques-4e')); if(typeof spInitTout === 'function') spInitTout(document.getElementById('methode-demo-statistiques-4e'));
+    injectCourseAddButtons(document.getElementById('methode-demo-statistiques-4e'));
   }
 };
 

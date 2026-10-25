@@ -143,8 +143,6 @@ document.getElementById('histoire-demo-fonctions-affines-3e').innerHTML = `
   <div class="history-title"><span class=gicon>history_edu</span> Un peu d'histoire</div>
   Vers 1636, bien avant qu'on parle de « fonctions », le magistrat toulousain et mathématicien amateur <b>Pierre de Fermat</b> écrit un court traité, l'<i>Introduction aux lieux plans et solides</i>. Il y montre que lorsqu'une équation relie deux quantités inconnues au premier degré (ce que nous écririons aujourd'hui <i>y</i> = <i>ax</i> + <i>b</i>), les points correspondants forment une <b>ligne droite</b>. Au même moment, <b>René Descartes</b> publie sa <i>Géométrie</i> (1637). Ensemble, ils fondent la <b>géométrie analytique</b>, qui permet de traduire une figure en calculs et des calculs en figures : c'est exactement ce que l'on fait quand on trace la droite d'une fonction affine !
 </div>
-
-${typeof CU_HISTOIRE_HTML !== 'undefined' ? CU_HISTOIRE_HTML : ''}
 `;
 
 document.getElementById('methode-demo-fonctions-affines-3e').innerHTML = `
@@ -190,11 +188,6 @@ document.getElementById('methode-demo-fonctions-affines-3e').innerHTML = `
   </div>
   <div id="fa3-pourc" style="text-align:center;line-height:2.3;"></div>
 </div>
-
-<div class="sub-header" style="margin-top:28px;"><span class="letter">M</span><h4>Maths et cuisine : la recette américaine</h4></div>
-<div class="figure-wrap"><p class="hint interaction-hint" style="margin-top:6px;">Les recettes américaines donnent la température du four en degrés Fahrenheit : la conversion en degrés Celsius est une fonction affine.</p>
-  <div class="cu-four"></div></div>
-
 `;
 
 // Exercice avec correction repliable (même présentation que les autres chapitres).
@@ -305,7 +298,7 @@ DEMO_REGISTRY['3e|Fonctions linéaires et affines'] = {
     fa3DroiteMaj(); fa3TraceReset(); fa3RetrouverDemo.reset(); fa3PourcMaj();
     ['cours-demo-fonctions-affines-3e', 'methode-demo-fonctions-affines-3e', 'exos-demo-fonctions-affines-3e'].forEach(id => renderStaticMath(document.getElementById(id)));
     injectCourseAddButtons(document.getElementById('cours-demo-fonctions-affines-3e'));
-    injectCourseAddButtons(document.getElementById('methode-demo-fonctions-affines-3e')); if(typeof cuInitTout === 'function') cuInitTout(document.getElementById('methode-demo-fonctions-affines-3e'));
+    injectCourseAddButtons(document.getElementById('methode-demo-fonctions-affines-3e'));
   }
 };
 

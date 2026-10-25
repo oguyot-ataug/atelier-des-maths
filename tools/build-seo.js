@@ -103,7 +103,7 @@ async function extractChapters(page, base) {
         .filter(d => d.id && getComputedStyle(d).display !== 'none' && !/generic/.test(d.id))[0];
       const res = { lvl, n: c.n, t: c.t, cat: c.cat, code: c.code, sections: {}, headings: [] };
       // Chaque onglet doit être affiché pour que ses figures soient dessinées.
-      for (const tab of ['cours', 'methode', 'exercices', 'histoire']) {
+      for (const tab of ['cours', 'methode', 'exercices', 'vie', 'histoire']) {
         const btn = document.querySelector('.tab-btn[data-tab="' + tab + '"]');
         if (btn) btn.click();
         await new Promise(r => setTimeout(r, 700));
@@ -242,6 +242,7 @@ function chapterPage(ch, prev, next) {
 ${section('cours', 'menu_book', 'Le cours', '')}
 ${section('methode', 'draw', 'Méthode', 'Dans l\'application, cette méthode est animée étape par étape (règle, équerre, compas, rapporteur).')}
 ${section('exercices', 'edit', 'Exercices et rédaction', '')}
+${section('vie', 'public', 'Maths &amp; la vie', 'Dans l\'application, ces activités sont interactives : on dessine, on écoute, on joue.')}
 ${section('histoire', 'history_edu', 'Un peu d\'histoire', '')}
 <div class="seo-cta">
   <p>Pour s'entraîner : <b>quiz générés à chaque essai</b>, figures manipulables et constructions animées.</p>

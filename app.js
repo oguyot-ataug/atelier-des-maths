@@ -1139,7 +1139,10 @@ function openChapitre(c, tab, lvlOverride, opts){
 
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
   document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
-  const wantTab = tab||'cours';
+  // Onglet « Maths & la vie » (maths-vie.js) : seulement dans les chapitres qui en ont.
+  if(typeof vieMaj==='function') vieMaj(lvl, c.t);
+  let wantTab = tab||'cours';
+  if(wantTab==='vie' && !(typeof vieA==='function' && vieA(lvl, c.t))) wantTab = 'cours';
   document.querySelector(`.tab-btn[data-tab="${wantTab}"]`).classList.add('active');
   document.getElementById('panel-'+wantTab).classList.add('active');
   document.getElementById('view-chapitre').dataset.onglet = wantTab; // « Exporter en PDF » : onglet Cours seulement
@@ -3465,6 +3468,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1112', date:'2026-10-25', items:[
+    "Nouvel onglet « Maths & la vie » dans les chapitres : les activités maths et musique, arts, sport, cuisine et nature, rangées par thème avec leur page d'histoire. Il n'apparaît que dans les chapitres qui en ont (25 chapitres du CM2 à la 3e pour commencer) ; les onglets Méthode animée et Histoire retrouvent leur contenu d'origine."
+  ]},
   { version:'2026-08-19.1111', date:'2026-10-25', items:[
     "Maths et nature, « Fabrique un flocon » (CM2 et 6e Symétrie axiale, 3e Rotation) : on dessine à main levée, le tracé est recopié par symétrie (papillon), par 6 axes et rotations de 60° (flocon) ou par rotations seules (moulin, 3e).",
     "Maths et nature, « Le tournesol et l'angle d'or » (6e Angles et rapporteur) : les graines poussent une à une en tournant d'un même angle ; 90°, 120°, 144°, 137°… seul l'angle d'or (137,5°) remplit la fleur ; spirales de Fibonacci.",

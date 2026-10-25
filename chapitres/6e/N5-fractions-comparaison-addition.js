@@ -117,11 +117,6 @@ document.getElementById('methode-demo-fractions-comp-add').innerHTML = `
     <button class="btn secondary" onclick="fcaSubDemo.reset()">Recommencer</button>
   </div>
 </div>
-
-<div class="sub-header" style="margin-top:28px;"><span class="letter">M</span><h4>Maths et musique : remplis la mesure</h4></div>
-<div class="figure-wrap"><p class="hint interaction-hint" style="margin-top:6px;">En musique, la durée d'une note est une fraction de la mesure : une ronde vaut 1, une blanche la moitié, une noire le quart, une croche le huitième. Monte le son !</p>
-  <div class="mm-mesure" data-mm="mm-6e-mesure"></div></div>
-
 `;
 
 document.getElementById('exos-demo-fractions-comp-add').innerHTML = `
@@ -180,7 +175,6 @@ document.getElementById('histoire-demo-fractions-comp-add').innerHTML = `
   <div class="history-title"><span class=gicon>history_edu</span> Un peu d'histoire</div>
   Réduire deux fractions au même dénominateur pour les comparer ou les additionner n'a rien d'évident : c'est en Chine, dans <i>Les Neuf Chapitres sur l'art mathématique</i> (un ouvrage compilé autour du I<sup>er</sup> siècle), qu'on trouve la première méthode connue, écrite noir sur blanc, pour réduire deux fractions au même dénominateur avant de les additionner ou de les comparer. Les mathématiciens chinois avaient déjà compris qu'il suffisait de multiplier chaque fraction par le dénominateur de l'autre, exactement la méthode utilisée dans ce chapitre pour des dénominateurs quelconques. Les Babyloniens, environ mille ans plus tôt, utilisaient de leur côté un système de calcul en base 60 (et non en base 10), particulièrement pratique pour les fractions puisque 60 possède énormément de diviseurs : on en garde aujourd'hui la trace dans le découpage de l'heure en 60 minutes. Quant à la barre de fraction telle qu'on l'écrit aujourd'hui, séparant nettement numérateur et dénominateur, elle est attribuée au mathématicien arabe Al-Hassar au XIIe siècle ; c'est le mathématicien italien Fibonacci qui la fait connaître en Europe au siècle suivant, dans son <i>Liber Abaci</i>.
 </div>
-${typeof MM_HISTOIRE_HTML !== 'undefined' ? MM_HISTOIRE_HTML : ''}
 `;
 
 /* ================= Méthode animée : 3 démonstrations pas-à-pas (comparaison, addition, soustraction) ================= */
@@ -219,6 +213,5 @@ DEMO_REGISTRY['6e|Fractions : comparaison et addition'] = {
     injectCourseAddButtons(document.getElementById('cours-demo-fractions-comp-add'));
     injectCourseAddButtons(document.getElementById('methode-demo-fractions-comp-add'));
     fcaCompareDemo.reset(); fcaAddDemo.reset(); fcaSubDemo.reset();
-    if(typeof mmInitTout === 'function') mmInitTout(document.getElementById('methode-demo-fractions-comp-add'));
   }
 };

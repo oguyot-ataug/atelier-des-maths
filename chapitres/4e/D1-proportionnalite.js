@@ -83,8 +83,6 @@ document.getElementById('histoire-demo-proportionnalite-4e').innerHTML = `
   <div class="history-title"><span class=gicon>history_edu</span> Un peu d'histoire</div>
   La « <b>règle de trois</b> », qui permet de calculer une quatrième proportionnelle à partir de trois nombres, est très ancienne : les mathématiciens indiens, comme <b>Brahmagupta</b> au 7e siècle, l'appellent <i>trairāśika</i> (« les trois quantités ») et l'utilisent pour le commerce. Elle passe par les savants arabes et arrive en Europe grâce au <i>Liber abaci</i> de <b>Fibonacci</b> (1202), où les marchands italiens apprennent à convertir des monnaies et des poids. La masse volumique a sa propre légende : selon l'architecte romain Vitruve, <b>Archimède</b> aurait compris, en entrant dans son bain, comment mesurer le volume d'une couronne pour vérifier qu'elle était en or pur… et serait sorti dans la rue en criant « Eurêka ! » (« J'ai trouvé ! »). Enfin, en 1795, les révolutionnaires français définissent le <b>kilogramme</b> comme la masse d'un décimètre cube d'eau : c'est pour cela que la masse volumique de l'eau vaut exactement 1 kg/dm³.
 </div>
-
-${typeof SP_HISTOIRE_HTML !== 'undefined' ? SP_HISTOIRE_HTML : ''}
 `;
 
 document.getElementById('methode-demo-proportionnalite-4e').innerHTML = `
@@ -133,11 +131,6 @@ document.getElementById('methode-demo-proportionnalite-4e').innerHTML = `
     <button class="btn secondary" onclick="po4ConvDemo.reset()">Recommencer</button>
   </div>
 </div>
-
-<div class="sub-header" style="margin-top:28px;"><span class="letter">M</span><h4>Maths et sport : cours contre Usain Bolt</h4></div>
-<div class="figure-wrap"><p class="hint interaction-hint" style="margin-top:6px;">Une course de 100 m contre les plus grands sprinteurs (et un guépard) : la distance est proportionnelle à la durée, et la vitesse est le coefficient.</p>
-  <div class="sp-bolt"></div></div>
-
 `;
 
 // Exercice avec correction repliable (même présentation que les autres chapitres de 4e).
@@ -304,7 +297,7 @@ DEMO_REGISTRY['4e|Proportionnalité'] = {
     po4Quatrieme(); po4Trajet(); po4Cuve(); po4ConvDemo.reset();
     ['cours-demo-proportionnalite-4e', 'exos-demo-proportionnalite-4e'].forEach(id => renderStaticMath(document.getElementById(id)));
     injectCourseAddButtons(document.getElementById('cours-demo-proportionnalite-4e'));
-    injectCourseAddButtons(document.getElementById('methode-demo-proportionnalite-4e')); if(typeof spInitTout === 'function') spInitTout(document.getElementById('methode-demo-proportionnalite-4e'));
+    injectCourseAddButtons(document.getElementById('methode-demo-proportionnalite-4e'));
   }
 };
 

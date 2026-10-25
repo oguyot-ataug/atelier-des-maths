@@ -207,7 +207,6 @@ document.getElementById('histoire-demo-triangles-paralleles-4e').innerHTML = `
   <div class="history-title"><span class=gicon>history_edu</span> Un peu d'histoire</div>
   <b>Thalès de Milet</b> est un savant grec du 6e siècle avant J.-C. Selon la légende, rapportée plusieurs siècles plus tard, il aurait mesuré la hauteur de la grande pyramide de Khéops sans y monter : il aurait attendu le moment de la journée où l'ombre d'un bâton est égale à sa longueur, puis mesuré l'ombre de la pyramide… qui était alors égale à sa hauteur. Le théorème qui porte son nom est démontré dans les <i>Éléments</i> d'Euclide (vers 300 av. J.-C.), mais ce n'est qu'à la fin du 19e siècle que les manuels français lui ont donné le nom de Thalès ; dans d'autres pays, on l'appelle simplement le « théorème d'intersection » !
 </div>
-${typeof PA_HISTOIRE_HTML !== 'undefined' ? PA_HISTOIRE_HTML : ''}
 `;
 
 document.getElementById('methode-demo-triangles-paralleles-4e').innerHTML = `
@@ -258,11 +257,6 @@ document.getElementById('methode-demo-triangles-paralleles-4e').innerHTML = `
     <button class="btn secondary" onclick="g4IsoReset()">Recommencer</button>
   </div>
 </div>
-
-<div class="sub-header" style="margin-top:28px;"><span class="letter">M</span><h4>Maths et arts : le pavement d’Alberti</h4></div>
-<div class="figure-wrap"><p class="hint interaction-hint" style="margin-top:6px;">En 1435, Leon Battista Alberti explique aux peintres comment dessiner un carrelage en perspective. Suis sa construction pas à pas : on y retrouve la proportionnalité et le théorème de Thalès.</p>
-  <div class="pa-alberti"></div></div>
-
 `;
 
 // Exercice avec correction repliable (même présentation que N1 et N2).
@@ -393,7 +387,7 @@ DEMO_REGISTRY['4e|Triangles et parallèles'] = {
     g4ThDessiner(); g4CalculDemo.reset(); g4ReciproqueDemo.reset(); g4IsoReset();
     ['cours-demo-triangles-paralleles-4e', 'methode-demo-triangles-paralleles-4e', 'exos-demo-triangles-paralleles-4e'].forEach(id => renderStaticMath(document.getElementById(id)));
     injectCourseAddButtons(document.getElementById('cours-demo-triangles-paralleles-4e'));
-    injectCourseAddButtons(document.getElementById('methode-demo-triangles-paralleles-4e')); if(typeof paInitTout === 'function') paInitTout(document.getElementById('methode-demo-triangles-paralleles-4e'));
+    injectCourseAddButtons(document.getElementById('methode-demo-triangles-paralleles-4e'));
   }
 };
 

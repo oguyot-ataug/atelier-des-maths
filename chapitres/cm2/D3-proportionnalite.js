@@ -37,8 +37,6 @@ ${cm1Rem('On choisit le raisonnement le plus simple selon les nombres. On écrit
   methode: `
 ${cm1Demo('c2-pp-recette', 'Adapter une recette en plusieurs étapes', 'Pour 4 personnes : 300 g de farine et 3 œufs. Quelles quantités pour 10 personnes ?')}
 ${cm1Demo('c2-pp-vitesse', 'Distance et durée', 'Un train roule toujours à la même vitesse : il parcourt 150 km en 1 h. Quelle distance en 2 h 30 min ?')}
-${cm1Sous('M', 'Maths et cuisine : adapter une recette')}<div class="figure-wrap"><p class="hint interaction-hint" style="margin-top:6px;">Une recette est donnée pour un certain nombre de personnes. Pour en nourrir plus (ou moins), on calcule d'abord la quantité pour une seule personne.</p>
-  <div class="cu-recette" data-niv="cm2"></div></div>
 `,
   demos: [
     ['c2-pp-recette', [
@@ -77,7 +75,7 @@ ${cm1Sous('M', 'Maths et cuisine : adapter une recette')}<div class="figure-wrap
   histoire: cm1Histoire('Un peu d\'histoire : Thalès et la pyramide', [
     'On raconte que le savant grec <b>Thalès</b> a mesuré la hauteur de la grande pyramide d\'Égypte grâce à la proportionnalité : il a planté un bâton et attendu le moment où l\'ombre du bâton était aussi longue que le bâton. À cet instant, l\'ombre de la pyramide était aussi longue que sa hauteur !',
     'Les ombres sont proportionnelles aux hauteurs des objets, à un même moment de la journée.',
-  ]) + (typeof CU_HISTOIRE_HTML !== 'undefined' ? CU_HISTOIRE_HTML : ''),
+  ]),
   quiz: [
     { q: '4 billets coûtent 20 €. 12 billets coûtent…', opts: ['28 €', '60 €', '48 €'], correct: 1 },
     { q: '10 L en 2 min. En 1 min ?', opts: ['5 L', '8 L', '20 L'], correct: 0 },
