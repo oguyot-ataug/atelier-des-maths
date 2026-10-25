@@ -198,4 +198,6 @@ const md = [
 console.log('\n' + md);
 writeFileSync('resultats.json', JSON.stringify({ eleves: ELEVES, verdict, refus, lignes }, null, 2));
 if (process.env.GITHUB_STEP_SUMMARY) appendFileSync(process.env.GITHUB_STEP_SUMMARY, md + '\n');
+// Aussi en annotation de l'exécution (lisible par l'API GitHub, contrairement aux journaux).
+if (process.env.GITHUB_ACTIONS) console.log('::notice title=Test de charge::' + md.replace(/%/g, '%25').replace(/\r/g, '%0D').replace(/\n/g, '%0A'));
 process.exit(process.exitCode || 0);
