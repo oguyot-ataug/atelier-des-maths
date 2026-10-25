@@ -4,17 +4,19 @@
    rubrique bien à elle ? » ; nom choisi : « Maths & la vie ».
 
    Les activités « maths et… » (musique-maths.js, perspective-arts.js, sport-maths.js, cuisine-maths.js,
-   nature-maths.js) et leurs pages d'histoire thématiques ne sont plus dans les onglets Méthode et
+   nature-maths.js, argent-maths.js, jeux-maths.js) et leurs pages d'histoire thématiques ne sont plus dans les onglets Méthode et
    Histoire : elles sont rangées ici, par thème. L'onglet n'apparaît que dans les chapitres qui en ont
    (VIE_CHAPITRES) : inutile de remplir tous les chapitres.
    vieMaj(niveau, titre) : appelé par openChapitre (app.js) ; vieA(niveau, titre) : le chapitre en a-t-il ?
    ===================================================================== */
 const VIE_THEMES = {
-  musique: { titre: 'Maths et musique', icone: 'music_note', coul: '#7A4FC0', histoire: () => typeof MM_HISTOIRE_HTML !== 'undefined' ? MM_HISTOIRE_HTML : '' },
-  arts: { titre: 'Maths et arts', icone: 'palette', coul: '#B5651D', histoire: () => typeof PA_HISTOIRE_HTML !== 'undefined' ? PA_HISTOIRE_HTML : '' },
-  sport: { titre: 'Maths et sport', icone: 'sprint', coul: '#1E7B34', histoire: () => typeof SP_HISTOIRE_HTML !== 'undefined' ? SP_HISTOIRE_HTML : '' },
-  cuisine: { titre: 'Maths et cuisine', icone: 'skillet', coul: '#C0533E', histoire: () => typeof CU_HISTOIRE_HTML !== 'undefined' ? CU_HISTOIRE_HTML : '' },
-  nature: { titre: 'Maths et nature', icone: 'eco', coul: '#2E8B57', histoire: () => typeof NA_HISTOIRE_HTML !== 'undefined' ? NA_HISTOIRE_HTML : '' } };
+  musique: { ou: 'en musique', titre: 'Maths et musique', icone: 'music_note', coul: '#7A4FC0', histoire: () => typeof MM_HISTOIRE_HTML !== 'undefined' ? MM_HISTOIRE_HTML : '' },
+  arts: { ou: 'en peinture', titre: 'Maths et arts', icone: 'palette', coul: '#B5651D', histoire: () => typeof PA_HISTOIRE_HTML !== 'undefined' ? PA_HISTOIRE_HTML : '' },
+  sport: { ou: 'en sport', titre: 'Maths et sport', icone: 'sprint', coul: '#1E7B34', histoire: () => typeof SP_HISTOIRE_HTML !== 'undefined' ? SP_HISTOIRE_HTML : '' },
+  cuisine: { ou: 'en cuisine', titre: 'Maths et cuisine', icone: 'skillet', coul: '#C0533E', histoire: () => typeof CU_HISTOIRE_HTML !== 'undefined' ? CU_HISTOIRE_HTML : '' },
+  nature: { ou: 'dans la nature', titre: 'Maths et nature', icone: 'eco', coul: '#2E8B57', histoire: () => typeof NA_HISTOIRE_HTML !== 'undefined' ? NA_HISTOIRE_HTML : '' },
+  argent: { ou: 'avec l\'argent', titre: 'Maths et argent', icone: 'payments', coul: '#B7791F', histoire: () => typeof AR_HISTOIRE_HTML !== 'undefined' ? AR_HISTOIRE_HTML : '' },
+  jeux: { ou: 'dans les jeux', titre: 'Maths et jeux', icone: 'extension', coul: '#5B2F9E', histoire: () => typeof JX_HISTOIRE_HTML !== 'undefined' ? JX_HISTOIRE_HTML : '' } };
 const vieFr = (a, b) => `<span class="tex">\\dfrac{${a}}{${b}}</span>`;
 // Activités : titre, petite consigne, et la balise que le module du thème transforme en activité.
 const VIE_ACTIVITES = {
@@ -37,15 +39,40 @@ const VIE_ACTIVITES = {
   flocon: { theme: 'nature', titre: 'Fabrique un flocon', aide: 'Les ailes d\'un papillon, les branches d\'un flocon de neige : la nature est pleine de symétries. Dessine et regarde ton dessin se recopier.', html: '<div class="na-flocon" data-modes="axe,flocon"></div>' },
   floconRot: { theme: 'nature', titre: 'Fabrique un flocon', aide: 'Un flocon de neige revient sur lui-même par une rotation de 60° ; il a aussi 6 axes de symétrie. Compare avec un « moulin » qui n\'a que des rotations.', html: '<div class="na-flocon" data-modes="flocon,moulin"></div>' },
   tournesol: { theme: 'nature', titre: 'Le tournesol et l\'angle d\'or', aide: 'Les graines d\'un tournesol sont disposées en spirales grâce à un angle bien particulier. Lequel ?', html: '<div class="na-tournesol"></div>' },
+  monnaie: { theme: 'argent', titre: 'Rendre la monnaie', aide: 'À la caisse, le client paie avec un billet : à toi de lui rendre la monnaie avec les pièces et les billets. Le commerçant, lui, ne fait pas de soustraction : il complète !', html: '<div class="ar-monnaie"></div>' },
+  affaire: { theme: 'argent', titre: 'La meilleure affaire', aide: 'Deux offres pour le même produit : laquelle est la moins chère ? Pour comparer, on calcule le prix d\'un seul article.', html: '<div class="ar-affaire" data-niv="cm"></div>' },
+  affaire6: { theme: 'argent', titre: 'La meilleure affaire', aide: 'Deux offres pour le même produit : laquelle est la moins chère ? Pour comparer, on calcule le prix d\'un seul article, ou d\'un kilogramme.', html: '<div class="ar-affaire" data-niv="6e"></div>' },
+  soldes5: { theme: 'argent', titre: 'Les soldes', aide: 'Calculer un prix soldé, puis déjouer le piège des démarques successives.', html: '<div class="ar-soldes" data-niv="5e"></div>' },
+  soldes4: { theme: 'argent', titre: 'Les soldes', aide: 'Calculer un prix soldé avec un coefficient multiplicateur, puis déjouer le piège des démarques successives.', html: '<div class="ar-soldes" data-niv="4e"></div>' },
+  soldes3: { theme: 'argent', titre: 'Les soldes', aide: 'Un prix soldé est une fonction linéaire du prix de départ : déjoue le piège des démarques successives.', html: '<div class="ar-soldes" data-niv="3e"></div>' },
+  interets4: { theme: 'argent', titre: 'Faire grossir son épargne', aide: 'Avec les intérêts composés, on multiplie chaque année par le même nombre : c\'est une puissance.', html: '<div class="ar-interets" data-niv="4e"></div>' },
+  interets3: { theme: 'argent', titre: 'Faire grossir son épargne', aide: 'Intérêts simples ou composés : l\'un donne une fonction affine (une droite), l\'autre non.', html: '<div class="ar-interets" data-niv="3e"></div>' },
+  carre: { theme: 'jeux', titre: 'Le carré magique', aide: 'Le plus ancien jeu de nombres connu, venu de Chine : chaque ligne, chaque colonne et chaque diagonale doit avoir la même somme.', html: '<div class="jx-carre"></div>' },
+  carreRel: { theme: 'jeux', titre: 'Le carré magique des relatifs', aide: 'Le carré magique chinois, avec les nombres de −4 à 4 : chaque ligne, chaque colonne et chaque diagonale doit avoir la même somme.', html: '<div class="jx-carre" data-niv="relatifs"></div>' },
+  nim: { theme: 'jeux', titre: 'Le jeu des allumettes', aide: 'Le jeu de Fort Boyard : celui qui prend la dernière allumette a perdu. La division par 4 donne le secret pour gagner à tous les coups.', html: '<div class="jx-nim"></div>' },
+  nim5: { theme: 'jeux', titre: 'Le jeu des allumettes', aide: 'Le jeu de Fort Boyard : celui qui prend la dernière allumette a perdu. Les multiples de 4 donnent le secret pour gagner à tous les coups.', html: '<div class="jx-nim" data-niv="5e"></div>' },
+  hanoi: { theme: 'jeux', titre: 'Les tours de Hanoï', aide: 'Le casse-tête d\'Édouard Lucas (1883) : combien de déplacements faut-il au minimum ? La réponse est une puissance de 2.', html: '<div class="jx-hanoi"></div>' },
+  des: { theme: 'jeux', titre: 'Les trois dés de Galilée', aide: 'Avec trois dés, la somme 10 sort plus souvent que la somme 9 : l\'énigme qui a fait naître les probabilités.', html: '<div class="jx-des"></div>' },
   etang: { theme: 'nature', titre: 'Combien de poissons dans l\'étang ?', aide: 'Comment les biologistes comptent-ils les animaux sauvages sans les attraper tous ? Avec la proportionnalité et un peu de hasard.', html: '<div class="na-etang"></div>' } };
 // Chapitres (clé « niveau|titre ») -> activités, dans l'ordre d'affichage (les thèmes suivent cet ordre).
 const VIE_CHAPITRES = {
+  'cm1|Opérations sur les nombres décimaux': ['monnaie'],
+  'cm1|Procédures de calcul mental': ['carre'],
+  'cm1|Proportionnalité': ['affaire'],
+  'cm2|Addition et soustraction': ['monnaie'],
+  'cm2|Procédures de calcul mental': ['carre'],
+  'cm2|Division': ['affaire', 'nim'],
+  'cm2|Multiples et diviseurs': ['nim'],
   'cm2|Fractions : comparer et calculer': ['mesure', 'pizza'],
-  'cm2|Proportionnalité': ['recetteCm2'],
+  'cm2|Proportionnalité': ['recetteCm2', 'affaire'],
   'cm2|Symétrie axiale': ['flocon'],
   '6e|Fractions : comparaison et addition': ['mesure'],
   '6e|Fractions : multiplication': ['pizza'],
-  '6e|Proportionnalité': ['recette6'],
+  '6e|Proportionnalité': ['recette6', 'affaire6'],
+  '6e|Nombres décimaux': ['monnaie'],
+  '6e|Opérations et ordre de grandeur': ['carre'],
+  '6e|Multiplication et division': ['nim'],
+  '6e|Initiation à la pensée informatique': ['hanoi'],
   '6e|Aire et périmètre': ['piste'],
   '6e|Angles et rapporteur': ['tournesol'],
   '6e|Symétrie axiale': ['flocon'],
@@ -54,22 +81,29 @@ const VIE_CHAPITRES = {
   '5e|Représentation de l\'espace': ['fuite', 'cube'],
   '5e|Proportionnalité': ['recette5'],
   '5e|Statistiques': ['stats5'],
+  '5e|Pourcentages': ['soldes5'],
+  '5e|Divisibilité': ['nim5'],
+  '5e|Opérations sur les nombres relatifs': ['carreRel'],
+  '5e|Probabilités': ['des'],
   '4e|Translations': ['canonTr'],
   '4e|Triangles et parallèles': ['alberti'],
-  '4e|Proportionnalité': ['bolt'],
+  '4e|Proportionnalité': ['bolt', 'soldes4'],
+  '4e|Puissances': ['interets4', 'hanoi'],
   '4e|Statistiques': ['stats4'],
-  '4e|Probabilités': ['etang'],
+  '4e|Probabilités': ['etang', 'des'],
   '3e|Théorème de Thalès': ['alberti'],
   '3e|Grandeurs composées': ['bolt'],
   '3e|Statistiques': ['stats3'],
-  '3e|Fonctions linéaires et affines': ['four'],
+  '3e|Fonctions linéaires et affines': ['four', 'soldes3'],
+  '3e|Généralités sur les fonctions': ['interets3'],
+  '3e|Puissances': ['hanoi'],
   '3e|Rotation': ['floconRot'],
-  '3e|Probabilités': ['etang'] };
+  '3e|Probabilités': ['etang', 'des'] };
 function vieA(niv, titre){ return !!VIE_CHAPITRES[niv + '|' + titre]; }
 function vieHtml(liste){
   const themes = [];
   liste.forEach(k => { const a = VIE_ACTIVITES[k]; if(!a) return; let t = themes.find(x => x.k === a.theme); if(!t){ t = { k: a.theme, acts: [] }; themes.push(t); } t.acts.push(a); });
-  return `<div class="vie-intro"><span class="gicon">public</span><div><b>Maths &amp; la vie</b> : les maths de ce chapitre, on les croise en ${themes.map(t => VIE_THEMES[t.k].titre.replace('Maths et ', '')).join(', ').replace(/, ([^,]*)$/, ' et $1')}. Des activités à manipuler${themes.some(t => t.k === 'musique') ? ' (monte le son pour la musique !)' : ''} et un peu d'histoire.</div></div>`
+  return `<div class="vie-intro"><span class="gicon">public</span><div><b>Maths &amp; la vie</b> : les maths de ce chapitre, on les croise ${themes.map(t => VIE_THEMES[t.k].ou).join(', ').replace(/, ([^,]*)$/, ' et $1')}. Des activités à manipuler${themes.some(t => t.k === 'musique') ? ' (monte le son pour la musique !)' : ''} et un peu d'histoire.</div></div>`
     + themes.map(t => { const T = VIE_THEMES[t.k];
       return `<section class="vie-theme" style="--vie:${T.coul}"><h3 class="vie-theme-h"><span class="gicon">${T.icone}</span> ${T.titre}</h3>`
         + t.acts.map(a => `<div class="sub-header" style="margin-top:14px;"><span class="letter">${T.titre.split(' ').pop()[0].toUpperCase()}</span><h4>${a.titre}</h4></div>
@@ -87,7 +121,8 @@ function vieMaj(niv, titre){
   box.innerHTML = vieHtml(liste);
   if(typeof renderStaticMath === 'function') renderStaticMath(box);
   [typeof mmInitTout === 'function' && mmInitTout, typeof paInitTout === 'function' && paInitTout, typeof spInitTout === 'function' && spInitTout,
-   typeof cuInitTout === 'function' && cuInitTout, typeof naInitTout === 'function' && naInitTout].forEach(f => { if(f) f(box); });
+   typeof cuInitTout === 'function' && cuInitTout, typeof naInitTout === 'function' && naInitTout,
+   typeof arInitTout === 'function' && arInitTout, typeof jxInitTout === 'function' && jxInitTout].forEach(f => { if(f) f(box); });
 }
 
 (function vieStyles(){
