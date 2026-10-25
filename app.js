@@ -3468,6 +3468,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1115', date:'2026-10-25', items:[
+    "5e Divisibilité, tables sur le cercle : case « k décimal » (décochée par défaut). Décochée : tables entières, l'animation passe d'une table à la suivante. Cochée : k décimal au centième, la figure se transforme en continu d'une table à l'autre."
+  ]},
   { version:'2026-08-19.1114', date:'2026-10-25', items:[
     "5e Divisibilité, tables sur le cercle : uniquement des tables entières (curseur et saisie arrondis à l'entier) ; « Animer » passe d'une table à la suivante (2, 3, 4…), avec un réglage du nombre de tables par seconde."
   ]},

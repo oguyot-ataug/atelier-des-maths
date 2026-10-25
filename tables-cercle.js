@@ -18,6 +18,7 @@ function tcMonter(el){
       <div class="tc-grp"><label class="tc-lab">Nombre de points n (on divise par n)</label>
         <div class="tc-ligne"><input type="range" data-a="nR" min="2" max="300" step="1" value="10"><input type="number" data-a="nN" min="2" max="300" value="10" aria-label="n"></div></div>
       <div class="tc-grp"><div class="tc-tete"><label class="tc-lab">Table de k</label><span class="tc-formule"></span></div>
+        <label class="tc-dec"><input type="checkbox" data-a="dec"> k décimal (pour aller plus loin : la figure se transforme en continu)</label>
         <div class="tc-ligne"><input type="range" data-a="kR" min="0" max="10" step="1" value="2"><input type="number" data-a="kN" min="0" step="1" value="2" aria-label="k"></div>
         <div class="tc-ligne"><button type="button" data-a="kM">−1</button><button type="button" data-a="kP">+1</button><button type="button" class="tc-prim" data-a="jouer">Animer</button>
           <label class="tc-lab" style="margin-left:auto;">vitesse</label><input type="range" data-a="v" min="0.3" max="4" step="0.1" value="1" style="width:90px;" aria-label="Tables par seconde"></div></div>
@@ -30,7 +31,7 @@ function tcMonter(el){
       <div class="tc-grp"><span class="tc-lab">i → reste de k × i par n</span><div class="tc-paires"></div></div>
     </div></div>`;
   const $ = s => el.querySelector(s), canvas = $('canvas'), ctx = canvas.getContext('2d'), boite = $('.tc-canvas');
-  const st = { n: 10, k: 2, coul: 'arc', nb: true, pts: true, joue: false, survol: null, epingle: null };
+  const st = { n: 10, k: 2, coul: 'arc', nb: true, pts: true, joue: false, survol: null, epingle: null, dec: false };
   let taille = 500, R = 0, cx = 0, cy = 0, marge = 30;
   const mod = (a, n) => ((a % n) + n) % n, entier = x => Math.abs(x - Math.round(x)) < 1e-9;
   const ecr = x => (entier(x) ? String(Math.round(x)) : x.toFixed(2).replace('.', ','));
@@ -92,18 +93,24 @@ function tcMonter(el){
   }
   function synchro(){ $('[data-a="nR"]').value = st.n; $('[data-a="nN"]').value = st.n; $('[data-a="kR"]').max = st.n; $('[data-a="kR"]').value = st.k; $('[data-a="kN"]').value = ecr(st.k).replace(',', '.'); $('.tc-formule').textContent = `i → reste de ${ecr(st.k)} × i par ${st.n}`; }
   function setN(v){ v = Math.round(Number(v)); if(!isFinite(v)) return; st.n = Math.max(2, Math.min(300, v)); if(st.k > st.n) st.k = mod(st.k, st.n); if(st.epingle !== null && st.epingle >= st.n) st.epingle = null; synchro(); paires(); dessiner(); }
-  function setK(v){ v = Number(String(v).replace(',', '.')); if(!isFinite(v)) return; st.k = Math.round(Math.max(0, Math.min(st.n, v))); synchro(); paires(); dessiner(); } // tables entières seulement (programme)
+  function setK(v){ v = Number(String(v).replace(',', '.')); if(!isFinite(v)) return; v = Math.max(0, Math.min(st.n, v)); st.k = st.dec ? Math.round(v * 100) / 100 : Math.round(v); synchro(); paires(); dessiner(); } // entier par défaut (programme), décimal si la case est cochée
   $('[data-a="nR"]').oninput = e => setN(e.target.value); $('[data-a="nN"]').onchange = e => setN(e.target.value);
   $('[data-a="kR"]').oninput = e => setK(e.target.value); $('[data-a="kN"]').onchange = e => setK(e.target.value);
-  $('[data-a="kM"]').onclick = () => setK(Math.max(0, st.k - 1)); $('[data-a="kP"]').onclick = () => setK(Math.min(st.n, st.k + 1));
+  $('[data-a="kM"]').onclick = () => setK(Math.max(0, Math.ceil(st.k) - 1)); $('[data-a="kP"]').onclick = () => setK(Math.min(st.n, Math.floor(st.k) + 1));
   el.querySelectorAll('[data-c]').forEach(b => b.onclick = () => { st.coul = b.dataset.c; el.querySelectorAll('[data-c]').forEach(x => x.classList.toggle('on', x === b)); dessiner(); });
   $('[data-a="nb"]').onchange = e => { st.nb = e.target.checked; dessiner(); }; $('[data-a="pts"]').onchange = e => { st.pts = e.target.checked; dessiner(); };
   $('.tc-presets').onclick = e => { const b = e.target.closest('button'); if(!b) return; st.epingle = null; setN(b.dataset.n); setK(b.dataset.k); };
   // Animation : on passe d'une table à la suivante (2, 3, 4…), uniquement des nombres entiers -- demandé :
   // « Si on veut vraiment coller au programme, il ne faut prendre que des nombres entiers pour k ».
-  let minuteur = null;
-  const suivante = () => { if(!st.joue || !el.isConnected){ st.joue = false; return; } setK(st.k >= st.n ? 0 : st.k + 1); minuteur = setTimeout(suivante, 1000 / Number($('[data-a="v"]').value)); };
-  $('[data-a="jouer"]').onclick = e => { st.joue = !st.joue; e.target.textContent = st.joue ? 'Pause' : 'Animer'; clearTimeout(minuteur); if(st.joue) minuteur = setTimeout(suivante, 1000 / Number($('[data-a="v"]').value)); };
+  // k décimal (case cochée) : k avance en continu et la figure se déforme d'une table à l'autre.
+  let minuteur = null, avant = 0, boucle = 0;
+  const vitesse = () => Number($('[data-a="v"]').value);
+  const suivante = () => { if(!st.joue || !el.isConnected){ st.joue = false; return; } setK(st.k >= st.n ? 0 : Math.floor(st.k) + 1); minuteur = setTimeout(suivante, 1000 / vitesse()); };
+  const continu = (b, now) => { if(b !== boucle || !st.joue || !st.dec || !el.isConnected) return; const dt = Math.min(.1, (now - avant) / 1000); avant = now;
+    st.k = mod(st.k + vitesse() * .25 * dt, st.n); synchro(); dessiner(); requestAnimationFrame(t => continu(b, t)); };
+  const lancer = () => { clearTimeout(minuteur); if(!st.joue) return; if(st.dec){ avant = performance.now(); const b = ++boucle; requestAnimationFrame(t => continu(b, t)); } else minuteur = setTimeout(suivante, 1000 / vitesse()); };
+  $('[data-a="jouer"]').onclick = e => { st.joue = !st.joue; e.target.textContent = st.joue ? 'Pause' : 'Animer'; if(!st.joue) setK(st.k); lancer(); };
+  $('[data-a="dec"]').onchange = e => { st.dec = e.target.checked; ['kR', 'kN'].forEach(a => { $(`[data-a="${a}"]`).step = st.dec ? '0.01' : '1'; }); setK(st.k); lancer(); };
   const indice = e => { const r = canvas.getBoundingClientRect(), x = e.clientX - r.left - cx, y = e.clientY - r.top - cy, d = Math.hypot(x, y); if(d < R * .6 || d > R + marge) return null; const a = mod(Math.atan2(y, x) + Math.PI / 2, 2 * Math.PI); return mod(Math.round(a / (2 * Math.PI) * st.n), st.n); };
   canvas.addEventListener('pointermove', e => { if(e.pointerType === 'touch') return; const i = indice(e); if(i !== st.survol){ st.survol = i; if(!st.joue) dessiner(); } });
   canvas.addEventListener('pointerleave', () => { st.survol = null; if(!st.joue) dessiner(); });
@@ -126,6 +133,7 @@ function tcInitTout(racine){ if(racine) racine.querySelectorAll('.tc-cercle').fo
     .tc-grp{ display:grid; gap:7px; padding-bottom:12px; border-bottom:1px solid #E3E9F1; } .tc-grp:last-child{ border-bottom:0; }
     .tc-tete{ display:flex; justify-content:space-between; gap:8px; align-items:baseline; flex-wrap:wrap; }
     .tc-lab{ font:700 .72rem Inter,sans-serif; letter-spacing:.06em; text-transform:uppercase; color:#5B6472; }
+    .tc-dec{ display:flex; gap:6px; align-items:center; font-size:.82rem; color:#5B6472; } .tc-dec input{ accent-color:#2F6FB3; }
     .tc-formule{ font:500 .8rem 'JetBrains Mono',monospace; color:#1C1B2E; }
     .tc-ligne{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; } .tc-ligne input[type=range]{ flex:1; min-width:0; accent-color:#2F6FB3; }
     .tc-ligne input[type=number]{ width:76px; font:500 .9rem 'JetBrains Mono',monospace; border:1px solid #C9D6E6; border-radius:6px; padding:4px 6px; }
