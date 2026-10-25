@@ -390,3 +390,64 @@ function mmInitTout(racine){
   `;
   document.head.appendChild(s);
 })();
+
+/* =====================================================================
+   Onglet Histoire -- demandé : « fais aussi une page Histoire pour maths et musique ». La même page dans
+   les chapitres qui ont les méthodes musicales (CM2 Fractions : comparer et calculer, 6e Fractions :
+   comparaison et addition, 5e Symétrie centrale, 4e Translations). Fractions en LaTeX (rendues par le
+   chapitre) ; dans les dessins, fractions en étage.
+   ===================================================================== */
+const mmFr = (a, b) => `<span class="tex">\\dfrac{${a}}{${b}}</span>`;
+// Fraction en étage dans un dessin SVG.
+const mmFrSvg = (x, y, a, b, c) => `<text x="${x}" y="${y - 3}" text-anchor="middle" font-size="12" font-weight="700" fill="${c}" font-family="Inter,sans-serif">${a}</text><line x1="${x - 7}" y1="${y}" x2="${x + 7}" y2="${y}" stroke="${c}" stroke-width="1.4"/><text x="${x}" y="${y + 12}" text-anchor="middle" font-size="12" font-weight="700" fill="${c}" font-family="Inter,sans-serif">${b}</text>`;
+const MM_HISTOIRE_HTML = `
+<div class="history-box mm-hist">
+  <div class="history-title"><span class="gicon">music_note</span> Maths et musique : une très longue histoire</div>
+
+  <h4 class="mm-hist-h">Pythagore et la corde qui chante (6e siècle av. J.-C.)</h4>
+  <div class="mm-hist-fig"><svg viewBox="0 0 540 170" role="img" aria-label="Le monocorde : la corde entière donne un do ; la moitié de la corde donne le do plus aigu (l'octave) ; les deux tiers donnent un sol (la quinte) ; les trois quarts donnent un fa (la quarte).">
+    <rect width="540" height="170" fill="#F7F3EA"/>
+    <rect x="40" y="128" width="460" height="16" rx="4" fill="#C9A27A" stroke="#7A5530"/>
+    <path d="M40,128 l-8,-22 h10 Z M500,128 l8,-22 h-10 Z" fill="#7A5530"/>
+    <line x1="40" y1="108" x2="500" y2="108" stroke="#1C1B2E" stroke-width="2"/>
+    <text x="270" y="162" text-anchor="middle" font-size="11" font-family="Inter,sans-serif" fill="#5B6472">la corde entière : do</text>
+    ${[[270, 1, 2, 'do aigu : l\'octave', '#D3302F'], [347, 2, 3, 'sol : la quinte', '#2F6FB3'], [385, 3, 4, 'fa : la quarte', '#1E8A6E']].map(([x, a, b, n, c], i) => {
+      return `<path d="M${x},112 l-6,14 h12 Z" fill="${c}"/><line x1="40" y1="${96 - i * 26}" x2="${x}" y2="${96 - i * 26}" stroke="${c}" stroke-width="2.4"/><line x1="40" y1="${91 - i * 26}" x2="40" y2="${101 - i * 26}" stroke="${c}" stroke-width="2"/><line x1="${x}" y1="${91 - i * 26}" x2="${x}" y2="${101 - i * 26}" stroke="${c}" stroke-width="2"/>`
+        + mmFrSvg(x + 18, 94 - i * 26, a, b, c) + `<text x="${x + 32}" y="${100 - i * 26}" font-size="11.5" font-family="Inter,sans-serif" fill="${c}">${n}</text>`;
+    }).join('')}
+  </svg></div>
+  <p>Selon la légende, <b>Pythagore</b> passe devant une forge et remarque que certains marteaux sonnent bien ensemble. Il étudie alors une corde tendue sur une caisse, le <b>monocorde</b>. S'il ne fait vibrer que la moitié de la corde (${mmFr(1, 2)}), il entend la même note, en plus aigu : c'est l'<b>octave</b>. Avec les ${mmFr(2, 3)} de la corde, il obtient la <b>quinte</b> ; avec les ${mmFr(3, 4)}, la <b>quarte</b>. Les sons qui « vont bien ensemble » correspondent à des <b>fractions simples</b> ! Pour les pythagoriciens, « tout est nombre », même la musique.</p>
+
+  <h4 class="mm-hist-h">Au Moyen Âge, la musique est… une matière de maths</h4>
+  <p>Dans les universités du Moyen Âge, on apprend quatre sciences des nombres, le <b>quadrivium</b> : l'<b>arithmétique</b> (les nombres), la <b>géométrie</b> (les figures), l'<b>astronomie</b> (les nombres dans le ciel)… et la <b>musique</b> (les nombres dans les sons). Un étudiant en musique calculait des rapports de longueurs de cordes bien plus qu'il ne chantait.</p>
+
+  <h4 class="mm-hist-h">Écrire le rythme avec des fractions</h4>
+  <p>Au 13e siècle, les musiciens inventent une façon d'écrire la <b>durée</b> des notes. Notre système vient de là : une ronde vaut deux blanches, une blanche deux noires, une noire deux croches… Chaque note dure la <b>moitié</b> de la précédente. En haut d'une partition, le chiffrage de la mesure s'écrit d'ailleurs comme une fraction : ${mmFr(4, 4)}, ${mmFr(3, 4)}, ${mmFr(6, 8)}… Remplir une mesure, c'est faire une somme de fractions égale au chiffrage, comme dans la méthode « Remplis la mesure ».</p>
+
+  <h4 class="mm-hist-h">Bach, Mozart et les mélodies en miroir</h4>
+  <div class="mm-hist-fig"><svg viewBox="0 0 540 120" role="img" aria-label="Un canon à l'écrevisse : la même mélodie jouée en même temps à l'endroit et à l'envers, symétrique par rapport à un axe vertical.">
+    <rect width="540" height="120" fill="#F7F3EA"/>
+    <line x1="270" y1="8" x2="270" y2="104" stroke="#D3302F" stroke-width="2" stroke-dasharray="6 4"/>
+    ${[0, 1, 2, 0, 2, 3, 4].map((h, t) => `<rect x="${40 + t * 30}" y="${86 - h * 16}" width="24" height="12" rx="4" fill="#2F6FB3"/><rect x="${476 - t * 30}" y="${86 - h * 16}" width="24" height="12" rx="4" fill="#E67E22"/>`).join('')}
+    <text x="135" y="114" text-anchor="middle" font-size="11" font-family="Inter,sans-serif" fill="#2F6FB3">à l'endroit →</text><text x="405" y="114" text-anchor="middle" font-size="11" font-family="Inter,sans-serif" fill="#E67E22">← à l'envers</text>
+  </svg></div>
+  <p><b>Jean-Sébastien Bach</b> (1685-1750) adorait les jeux mathématiques. Dans son <i>Offrande musicale</i> (1747), un <b>canon à l'écrevisse</b> fait entendre la même mélodie jouée en même temps <b>à l'endroit et à l'envers</b> : c'est une <b>symétrie d'axe vertical</b>. Dans <i>L'Art de la fugue</i>, des fugues « en miroir » se jouent aussi <b>renversées</b>, quand la mélodie monte, son image descend : une <b>symétrie d'axe horizontal</b>. On attribue même à Mozart un duo « de table » : les deux musiciens, assis face à face, lisent <b>la même feuille</b>, l'un à l'endroit, l'autre à l'envers, tournée d'un demi-tour : une <b>symétrie centrale</b> ! Et quand une mélodie revient, identique ou plus aiguë, c'est une <b>translation</b>.</p>
+
+  <h4 class="mm-hist-h">Mersenne mesure les sons (1636)</h4>
+  <p>Le moine français <b>Marin Mersenne</b>, ami de Descartes, compte les vibrations d'une corde : plus une corde est courte, plus elle vibre vite et plus le son est aigu. Le nombre de vibrations par seconde s'appelle aujourd'hui la <b>fréquence</b>. Le la des musiciens vibre 440 fois par seconde (440 Hz) ; le la de l'octave au-dessus, 880 fois : <b>deux fois plus</b>. On retrouve la moitié de Pythagore : corde deux fois plus courte, fréquence deux fois plus grande.</p>
+
+  <h4 class="mm-hist-h">Fourier et le son numérique</h4>
+  <p>En 1822, <b>Joseph Fourier</b> montre que tout son, même celui d'un violon ou d'une voix, est une <b>somme de sons purs</b>. Aujourd'hui, un ordinateur fabrique de la musique avec des nombres : un CD enregistre 44 100 nombres par seconde. Les sons des méthodes animées de ce chapitre sont, eux aussi, calculés par l'ordinateur à partir des fréquences des notes.</p>
+
+  <div class="mm-hist-a-toi"><span class="gicon">science</span> <b>À toi !</b> Pose une règle sur le bord d'une table et fais-la dépasser. Tiens-la fermement sur la table et fais vibrer le bout qui dépasse. Recommence en la faisant dépasser deux fois moins : le son est plus aigu. Tu peux aussi tendre un élastique sur une boîte, le pincer, puis le pincer en bloquant son milieu : tu entends l'octave de Pythagore.</div>
+</div>`;
+(function mmHistStyles(){
+  const s = document.createElement('style');
+  s.textContent = `
+    .mm-hist p{ margin:6px 0 10px; line-height:1.6; }
+    .mm-hist-h{ font:700 1rem 'Space Grotesk',sans-serif; color:#3A2E6E; margin:16px 0 4px; }
+    .mm-hist-fig svg{ width:100%; max-width:560px; display:block; margin:6px auto; border-radius:10px; box-shadow:0 1px 4px rgba(28,27,46,.12); }
+    .mm-hist-a-toi{ margin-top:14px; background:#F1ECFA; border:1px solid #CDBDEB; border-radius:10px; padding:10px 14px; line-height:1.55; }
+    .mm-hist-a-toi .gicon{ color:#7A4FC0; vertical-align:-4px; }`;
+  document.head.appendChild(s);
+})();

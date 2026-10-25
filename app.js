@@ -3465,6 +3465,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1107', date:'2026-10-25', items:[
+    "Onglet Histoire « Maths et musique » (CM2 Fractions : comparer et calculer, 6e Fractions : comparaison et addition, 5e Symétrie centrale, 4e Translations) : le monocorde de Pythagore et ses fractions, la musique au quadrivium, le rythme écrit en fractions, les canons en miroir de Bach et le duo de table attribué à Mozart, Mersenne et les fréquences, Fourier et le son numérique ; deux schémas et une expérience à faire soi-même."
+  ]},
   { version:'2026-08-19.1106', date:'2026-10-25', items:[
     "Onglet Histoire « Maths et arts : la perspective » (6e Solides, 5e Espace, 4e Triangles et parallèles, 3e Thalès) : Giotto, l'expérience du miroir de Brunelleschi, Alberti et sa fenêtre, Piero della Francesca et La Cité idéale, le clou de La Cène, les machines à dessiner de Dürer, Desargues et la géométrie projective, jusqu'aux jeux vidéo ; deux schémas et une expérience à faire soi-même."
   ]},

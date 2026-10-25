@@ -115,6 +115,7 @@ document.getElementById('histoire-demo-translations-4e').innerHTML = `
   <div class="history-title"><span class=gicon>history_edu</span> Un peu d'histoire</div>
   Le mot « translation » vient du latin <i>translatio</i>, « action de transporter ». Bien avant les mathématiciens, les artisans utilisaient les translations : les <b>frises</b> des vases grecs, les carrelages romains ou les mosaïques de l'<b>Alhambra</b> de Grenade répètent un même motif en le faisant glisser. À la fin du 19e siècle, les mathématiciens ont démontré qu'il n'existe que <b>17 façons</b> de recouvrir un plan en répétant un motif (on les appelle les « groupes de papier peint »). Au 20e siècle, l'artiste néerlandais <b>Maurits Cornelis Escher</b>, inspiré par les mosaïques de l'Alhambra, a créé des pavages célèbres où des oiseaux, des poissons ou des lézards s'emboîtent parfaitement, image les uns des autres par des translations.
 </div>
+${typeof MM_HISTOIRE_HTML !== 'undefined' ? MM_HISTOIRE_HTML : ''}
 `;
 
 /* ---- Méthode 2 : construction au compas de l'image d'un point (animée, rejouable dans le cahier) ----
@@ -306,7 +307,7 @@ DEMO_REGISTRY['4e|Translations'] = {
     renderStaticMath(document.getElementById('cours-demo-translations-4e'));
     injectCourseAddButtons(document.getElementById('cours-demo-translations-4e'));
     injectCourseAddButtons(document.getElementById('methode-demo-translations-4e'));
-    if(typeof mmInitTout === 'function') mmInitTout(document.getElementById('methode-demo-translations-4e'));
+    if(typeof mmInitTout === 'function') mmInitTout(document.getElementById('methode-demo-translations-4e')); renderStaticMath(document.getElementById('histoire-demo-translations-4e'));
   }
 };
 

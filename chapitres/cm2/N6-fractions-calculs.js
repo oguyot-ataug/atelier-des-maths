@@ -86,7 +86,7 @@ ${cm1Sous('M', 'Maths et musique : remplis la mesure')}<div class="figure-wrap">
   histoire: cm1Histoire('Un peu d\'histoire : Fibonacci et les fractions', [
     'Dans son <i>Liber abaci</i> (1202), l\'Italien <b>Fibonacci</b> explique aux marchands européens comment calculer avec les chiffres indiens… et avec les fractions. C\'est lui qui popularise la <b>barre de fraction</b> en Europe.',
     'Il montre aussi comment additionner des fractions en cherchant un dénominateur commun, exactement comme dans ce chapitre.',
-  ]),
+  ]) + (typeof MM_HISTOIRE_HTML !== 'undefined' ? MM_HISTOIRE_HTML : ''),
   quiz: [
     { q: '1/3 + 1/6 = …', opts: ['2/9', '3/6', '2/6'], correct: 1 },
     { q: 'Quelle fraction est la plus grande ?', opts: ['3/5', '3/7', '3/10'], correct: 0 },
