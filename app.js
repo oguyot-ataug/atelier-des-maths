@@ -3468,6 +3468,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1113', date:'2026-10-25', items:[
+    "5e Divisibilité, nouvelle méthode animée « Les tables de multiplication sur le cercle » : les nombres de 0 à n − 1 sur un cercle, chaque i relié au reste de la division euclidienne de k × i par n ; au survol, le calcul (7 × 2 = 14 = 1 × 10 + 4) ; figures célèbres (cardioïde, néphroïde…), animation, couleurs, liste des restes."
+  ]},
   { version:'2026-08-19.1112', date:'2026-10-25', items:[
     "Nouvel onglet « Maths & la vie » dans les chapitres : les activités maths et musique, arts, sport, cuisine et nature, rangées par thème avec leur page d'histoire. Il n'apparaît que dans les chapitres qui en ont (25 chapitres du CM2 à la 3e pour commencer) ; les onglets Méthode animée et Histoire retrouvent leur contenu d'origine."
   ]},

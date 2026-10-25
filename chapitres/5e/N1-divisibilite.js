@@ -68,6 +68,9 @@ document.getElementById('methode-demo-divisibilite-5e').innerHTML = `
           <button class="btn secondary" onclick="dvDiviseursDemo.reset()">Recommencer</button>
         </div>
       </div>
+<div class="sub-header" style="margin-top:28px;"><span class="letter">M</span><h4>Les tables de multiplication sur le cercle</h4></div>
+<div class="figure-wrap"><p class="hint interaction-hint" style="margin-top:6px;">On place les nombres de 0 à n − 1 sur un cercle. Pour la table de k, on relie chaque nombre i au <b>reste de la division euclidienne</b> de k × i par n. Exemple avec 10 points et la table de 2 : 7 × 2 = 14 = 1 × 10 + 4, donc on relie 7 à 4. Avec beaucoup de points, des courbes étonnantes apparaissent : essaie les « figures célèbres » et le bouton « Animer » !</p>
+  <div class="tc-cercle"></div></div>
       `;
 
 document.getElementById('exos-demo-divisibilite-5e').innerHTML = `
@@ -109,7 +112,7 @@ DEMO_REGISTRY['5e|Divisibilité'] = {
   cours:'cours-demo-divisibilite-5e', methode:'methode-demo-divisibilite-5e', exos:'exos-demo-divisibilite-5e', histoire:'histoire-demo-divisibilite-5e',
   init:()=>{
     dvDiviseursDemo.reset();
-    injectCourseAddButtons(document.getElementById('cours-demo-divisibilite-5e')); injectCourseAddButtons(document.getElementById('methode-demo-divisibilite-5e'));
+    injectCourseAddButtons(document.getElementById('cours-demo-divisibilite-5e')); injectCourseAddButtons(document.getElementById('methode-demo-divisibilite-5e')); if(typeof tcInitTout === 'function') tcInitTout(document.getElementById('methode-demo-divisibilite-5e'));
   }
 };
 
