@@ -165,10 +165,14 @@ function applyCMBadges(){
 
 /* Records (perso / classe / établissement) affichés sous chaque vignette, chargés en un seul
    appel groupé plutôt qu'une requête par séquence. */
-let cmRecordsMap = {};
-async function refreshCMRecords(){
+let cmRecordsMap = {}, cmRecordsCle = '', cmRecordsT = 0;
+// Rechargés au plus une fois par minute (force : après un nouveau sans-faute).
+async function refreshCMRecords(force){
+  const cle = (currentUser ? currentUser.id : '') + '|' + (currentClassId || '');
+  if(!force && cle === cmRecordsCle && Date.now() - cmRecordsT < 60000){ applyCMChipRecords(); return; }
   const { data, error } = await sb.rpc('cm_get_all_records', {p_class_id: currentClassId||null});
   if(error || !data) return;
+  cmRecordsCle = cle; cmRecordsT = Date.now();
   cmRecordsMap = {};
   data.forEach(r=>{ cmRecordsMap[r.sequence_id] = r; });
   applyCMChipRecords();
@@ -441,7 +445,7 @@ async function checkCM(){
       if(currentCMSeq){ cmAttempted.add(currentCMSeq.id); if(perfect) cmPerfected.add(currentCMSeq.id); }
       applyCMBadges();
     }
-    if(!error && perfect && currentCMSeq){ await showCMRecords(currentCMSeq.id, durationMs); refreshCMRecords(); }
+    if(!error && perfect && currentCMSeq){ await showCMRecords(currentCMSeq.id, durationMs); refreshCMRecords(true); }
   } else if(status){
     status.textContent = "Score : "+score+"/"+total+(perfect ? " — en "+formatDuration(durationMs)+"." : ".");
   }

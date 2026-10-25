@@ -736,10 +736,11 @@ async function cdEleveRevenir(){
    Demandé : afficher dans « Mon travail » un bandeau « Ton professeur a ouvert une session COURS :
    Rejoindre » (entrée d'un clic, sans code ; retour facile après un rechargement). Vérifié toutes les
    15 s tant que la page est visible, comme celui des questions flash (questionnaires-direct.js). */
-async function cdVeille(){
+// pre : liste déjà chargée par veilleEleve (sinon, requête à part).
+async function cdVeille(pre){
   const dedans = cdE && document.getElementById('cdEleve') && document.getElementById('cdEleve').style.display !== 'none';
   if(typeof sb === 'undefined' || !sb || !currentUser || currentUserRole !== 'eleve' || document.hidden || dedans){ cdInvitation([]); return; }
-  const { data, error } = await sb.rpc('cours_direct_actives');
+  const { data, error } = Array.isArray(pre) ? { data: pre, error: null } : await sb.rpc('cours_direct_actives');
   cdInvitation(!error && Array.isArray(data) ? data : []);
 }
 function cdInvitation(liste){
@@ -759,9 +760,27 @@ async function cdRejoindreId(id){
   cdInvitation([]);
   cdEleveOuvrir(data);
 }
-setInterval(cdVeille, 15000);
-document.addEventListener('visibilitychange', () => { if(!document.hidden) cdVeille(); });
-document.addEventListener('DOMContentLoaded', () => setTimeout(cdVeille, 2500));
+/* Veille commune aux sessions COURS et aux questions flash -- demandé : « vendre un produit qui bloque, non
+   merci ! » (25/10/2026). Avant : deux requêtes toutes les 15 s par élève connecté, même sans aucune séance
+   (cours_direct_actives et qz_direct_actives, les deux fonctions les plus appelées de la base). Maintenant :
+   une seule (eleve_veille), toutes les 25 à 35 s, décalée au hasard d'un élève à l'autre pour qu'une classe
+   n'interroge pas le serveur à la même seconde ; tout de suite à la connexion et au retour sur l'onglet.
+   Tant que eleve_veille n'existe pas dans la base, on garde les deux requêtes. */
+let veilleT = null, veilleCombinee = true;
+async function veilleEleve(){
+  clearTimeout(veilleT); veilleT = setTimeout(veilleEleve, 25000 + Math.random() * 10000);
+  const actif = typeof sb !== 'undefined' && sb && currentUser && currentUserRole === 'eleve' && !document.hidden;
+  let d = null;
+  if(actif && veilleCombinee){
+    const { data, error } = await sb.rpc('eleve_veille');
+    if(error && (error.code === 'PGRST202' || /eleve_veille/.test(error.message || ''))) veilleCombinee = false;
+    else d = !error && data ? data : { cours: [], flash: [] };
+  }
+  cdVeille(d ? d.cours || [] : undefined);
+  if(typeof qzDirectVeille === 'function') qzDirectVeille(d ? d.flash || [] : undefined);
+}
+document.addEventListener('visibilitychange', () => { if(!document.hidden) veilleEleve(); });
+document.addEventListener('DOMContentLoaded', () => { clearTimeout(veilleT); veilleT = setTimeout(veilleEleve, 2500); });
 document.addEventListener('DOMContentLoaded', cdBoutonMaj);
 
 (function cdStyles(){

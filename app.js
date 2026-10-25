@@ -2823,9 +2823,24 @@ const SIMU = new URLSearchParams(location.search).get('simu');
 // visible, avec les seuls élèves fictifs de la simulation en cours.
 const SIMPROF = new URLSearchParams(location.search).get('simprof') || '';
 if(SIMU || SIMPROF) document.documentElement.classList.add('simu-frame');
+/* Serveur saturé : on réessaie au lieu d'afficher une erreur -- demandé : « vendre un produit qui bloque, non
+   merci ! » (25/10/2026). Jusqu'à 3 nouveaux essais, après 1, 2 puis 4 s environ, décalés au hasard pour que
+   toute une classe ne réessaie pas à la même seconde. Une requête refusée sans être traitée (429 trop de
+   requêtes, 503 serveur indisponible) est réessayée quelle qu'elle soit ; une lecture (GET) l'est aussi après
+   une erreur du serveur (délai dépassé…) ou une coupure du réseau. Sert aussi à la connexion (auth). */
+async function sbFetch(url, opts){
+  const lecture = String((opts && opts.method) || 'GET').toUpperCase() === 'GET';
+  for(let essai = 0; ; essai++){
+    try{
+      const r = await fetch(url, opts);
+      if(!(r.status === 429 || r.status === 503 || (lecture && (r.status === 500 || r.status === 502 || r.status === 504))) || essai >= 3) return r;
+    }catch(e){ if(!lecture || essai >= 3 || (e && e.name === 'AbortError')) throw e; }
+    await new Promise(ok => setTimeout(ok, (1000 << essai) * (0.6 + Math.random() * 0.8)));
+  }
+}
 try{
-  sb = SIMU ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { storageKey: 'sb-simu-' + SIMU, detectSessionInUrl: false } })
-    : supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  sb = SIMU ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { storageKey: 'sb-simu-' + SIMU, detectSessionInUrl: false }, global: { fetch: sbFetch } })
+    : supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { global: { fetch: sbFetch } });
 }catch(e){
   console.error("Supabase n'a pas pu s'initialiser (probablement un problème réseau) -- le site continue de fonctionner en mode dégradé (chapitres et outils accessibles, comptes/sauvegarde indisponibles) :", e);
   sb = makeOfflineSupabaseStub();
@@ -2964,7 +2979,12 @@ async function globalSignIn(){
   if(!identifiant || !password){ status.textContent = 'Entrez votre identifiant et votre mot de passe.'; return; }
   status.textContent = 'Connexion en cours…';
   const { error } = await sb.auth.signInWithPassword({ email: toAuthEmail(identifiant), password });
-  status.textContent = error ? "Erreur : "+(error.message.includes('Invalid login') ? 'identifiant ou mot de passe incorrect.' : error.message) : '';
+  // Messages clairs pour une classe qui se connecte en même temps (même adresse réseau) ou un réseau coupé.
+  status.textContent = !error ? ''
+    : error.message.includes('Invalid login') ? 'Erreur : identifiant ou mot de passe incorrect.'
+    : (error.status === 429 || /rate limit|too many/i.test(error.message)) ? 'Beaucoup de connexions en même temps depuis ton établissement : patiente une minute, puis réessaie.'
+    : /failed to fetch|network|load failed/i.test(error.message) ? 'Le serveur ne répond pas : vérifie la connexion Internet (Wi-Fi), puis réessaie.'
+    : 'Erreur : ' + error.message;
 }
 async function globalSignOut(){
   await sb.auth.signOut();
@@ -3226,6 +3246,7 @@ async function refreshAuthUI(){
     const chapSuggestRow = document.getElementById('chapSuggestRow');
     if(chapSuggestRow) chapSuggestRow.style.display = isStaff ? 'block' : 'none';
     if(typeof cpOnAuthChange==='function') cpOnAuthChange();
+    if(typeof veilleEleve==='function') veilleEleve(); // séance déjà ouverte : bandeau « Rejoindre » tout de suite
     // « Mon abonnement » (offres-prof.js) : pour les profs approuvés hors licence établissement --
     // offre, classes en libre-service, factures ; accessible aussi quand l'essai est terminé.
     const btnSubscribe = document.getElementById('btnSubscribe');
@@ -3478,6 +3499,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1118', date:'2026-10-25', items:['Charge du serveur -- demandé : « vendre un produit qui bloque, non merci ! ». Un élève connecté vérifiait toutes les 15 s, par deux requêtes, si une session COURS ou des questions flash étaient ouvertes, même sans séance : c\'étaient les appels les plus nombreux de la base. Une seule requête maintenant, toutes les 25 à 35 s, décalée d\'un élève à l\'autre, et tout de suite à la connexion ou au retour sur l\'onglet.','Serveur saturé : les requêtes refusées (trop de requêtes, serveur indisponible) et les lectures en échec sont réessayées automatiquement (jusqu\'à 3 fois, après 1, 2 puis 4 s environ) au lieu d\'afficher une erreur.','Connexion : message clair quand trop d\'élèves se connectent en même temps depuis le même établissement, ou quand le réseau est coupé (au lieu de « Failed to fetch »).','Automatismes : les records ne sont plus rechargés à chaque passage sur la page (au plus une fois par minute, et après un nouveau sans-faute).'] },
   { version:'2026-08-19.1117', date:'2026-10-25', items:['Phase de démonstration : tant que les offres ne sont pas en vente, un professeur validé a un accès complet et gratuit, sans date de fin (avant, son essai de 15 jours pouvait se terminer alors qu\'il ne pouvait rien acheter). Ses 15 jours d\'essai démarrent le jour de l\'ouverture des ventes.','Inscription, « Mon abonnement » et conditions générales annoncent la phase de démonstration ; « Mon abonnement » ne montre plus d\'offres à acheter pendant cette phase.','Administration : les professeurs concernés portent le badge « démonstration ».'] },
   { version:'2026-08-19.1116', date:'2026-10-25', items:['Référencement : les titres des pages de chapitres affichent les notions principales du cours (« Angles et parallélisme : paires d\'angles particuliers – Cours de maths 5ème ») et le niveau s\'écrit comme dans les recherches (6ème, 5ème…).','Description de la page d\'accueil plus parlante dans les résultats Google.','La page professeurs n\'annonce plus de prix ni d\'offre d\'abonnement.'] },
   { version:'2026-08-19.1115', date:'2026-10-25', items:[

@@ -725,10 +725,11 @@ async function qzDirectClore(id){
    ÉLÈVE
    ===================================================================== */
 // Bandeau « Séance en direct » : vérifié toutes les 15 s tant que la page est visible.
-async function qzDirectVeille(){
+// pre : liste déjà chargée par veilleEleve (cours-direct.js), sinon requête à part.
+async function qzDirectVeille(pre){
   if(!currentUser || currentUserRole !== 'eleve' || document.hidden){ qzDirectBandeau([]); return; }
   if(qzDE && qzDVueActive()){ qzDirectBandeau([]); return; }
-  const { data, error } = await sb.rpc('qz_direct_actives');
+  const { data, error } = Array.isArray(pre) ? { data: pre, error: null } : await sb.rpc('qz_direct_actives');
   qzDirectBandeau(!error && Array.isArray(data) ? data : []);
 }
 function qzDirectBandeau(liste){
@@ -766,8 +767,7 @@ function qzDirectCodePage(){
     </form></div>`;
   setTimeout(() => { const i = document.querySelector('.qzd-code-in'); if(i) i.focus(); }, 50);
 }
-setInterval(qzDirectVeille, 15000);
-document.addEventListener('visibilitychange', () => { if(!document.hidden) qzDirectVeille(); });
+// Vérification régulière : veilleEleve (cours-direct.js), commune avec les sessions COURS.
 
 async function qzDirectRejoindre(id){
   qzDirectEleveFermer();
