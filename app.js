@@ -3465,6 +3465,12 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1110', date:'2026-10-25', items:[
+    "Maths et cuisine, « Adapter une recette » (CM2, 6e, 5e Proportionnalité) : crêpes, cookies, quatre-quarts ; les quantités suivent le nombre de personnes ; « La méthode » (passage par l'unité au CM2, tableau et coefficient en 6e et 5e) et « Défi du chef ».",
+    "Maths et cuisine, « La pizza party » (CM2 Fractions : comparer et calculer, 6e Fractions : multiplication) : combien de pizzas commander ? Estimation, parts servies une à une, calcul n × a/b, partie entière et reste.",
+    "Maths et cuisine, « La recette américaine » (3e Fonctions linéaires et affines) : °C = (°F − 32) × 5 ÷ 9, graphique avec curseur, thermostat, quatre questions (jusqu'à −40 °F = −40 °C).",
+    "Onglet Histoire « Maths et cuisine » dans ces chapitres (et un onglet Histoire pour la 6e Proportionnalité) : les tablettes babyloniennes, le gramme et le litre de 1795, Fannie Farmer, Fahrenheit et Celsius, le quatre-quarts, les 256 pizzas."
+  ]},
   { version:'2026-08-19.1109', date:'2026-10-25', items:[
     "Histoire « Maths et sport » : l'activité « À toi ! » devient réaliste (mesurer son pas, compter ses pas sur un tour de piste, puis calculer sa vitesse) au lieu de mesurer la piste au mètre ruban."
   ]},

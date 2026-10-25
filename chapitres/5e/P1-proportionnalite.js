@@ -136,6 +136,8 @@ document.getElementById('histoire-demo-proportionnalite-5e').innerHTML = `
   <div class="history-title"><span class=gicon>history_edu</span> Un peu d'histoire</div>
   Selon une légende rapportée par plusieurs auteurs antiques, le savant grec Thalès (6e siècle av. J.-C.) aurait mesuré la hauteur de la grande pyramide d'Égypte sans même y monter, en utilisant un simple bâton planté dans le sol : il aurait attendu le moment où l'ombre du bâton était égale à sa propre hauteur, sachant qu'à cet instant précis, l'ombre de la pyramide serait elle aussi égale à sa hauteur. Les historiens doutent aujourd'hui que Thalès soit vraiment l'inventeur de cette idée (les Babyloniens et les Égyptiens connaissaient déjà ce principe de proportionnalité), mais l'anecdote reste un bel exemple de la puissance de ces méthodes : mesurer un objet immense sans y toucher.
 </div>
+
+${typeof CU_HISTOIRE_HTML !== 'undefined' ? CU_HISTOIRE_HTML : ''}
 `;
 
 /* ================= METHODE : jeu d'association grandeur / unité ================= */
@@ -358,6 +360,11 @@ document.getElementById('methode-demo-proportionnalite-5e').innerHTML = `
     <button class="btn secondary" onclick="ppLin2Reset()">Recommencer</button>
   </div>
 </div>
+
+<div class="sub-header" style="margin-top:28px;"><span class="letter">M</span><h4>Maths et cuisine : adapter une recette</h4></div>
+<div class="figure-wrap"><p class="hint interaction-hint" style="margin-top:6px;">Une recette est donnée pour un certain nombre de personnes. Pour en nourrir plus (ou moins), toutes les quantités changent de la même façon.</p>
+  <div class="cu-recette" data-niv="5e"></div></div>
+
 `;
 
 
@@ -412,7 +419,7 @@ DEMO_REGISTRY['5e|Proportionnalité'] = {
     renderStaticMath(document.getElementById('methode-demo-proportionnalite-5e'));
     renderStaticMath(document.getElementById('exos-demo-proportionnalite-5e'));
     injectCourseAddButtons(document.getElementById('cours-demo-proportionnalite-5e'));
-    injectCourseAddButtons(document.getElementById('methode-demo-proportionnalite-5e'));
+    injectCourseAddButtons(document.getElementById('methode-demo-proportionnalite-5e')); if(typeof cuInitTout === 'function') cuInitTout(document.getElementById('methode-demo-proportionnalite-5e'));
     ppGameReset();
     ppEvolDemo.reset();
     ppLin1Reset(); ppLin2Reset();

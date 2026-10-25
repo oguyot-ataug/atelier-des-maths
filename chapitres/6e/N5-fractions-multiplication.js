@@ -77,6 +77,8 @@ document.getElementById('histoire-demo-fractions-mult-6e').innerHTML = `
   <div class="history-title"><span class=gicon>history_edu</span> Un peu d'histoire</div>
   Le mot « fraction » vient du latin <i>frangere</i>, qui signifie « briser » : une fraction, c'est un morceau d'un tout. Les Égyptiens de l'Antiquité utilisaient surtout des fractions de numérateur 1 (comme un tiers ou un cinquième) : pour écrire deux cinquièmes, ils l'exprimaient comme une somme de fractions de ce type, un tiers plus un quinzième. Le <b>papyrus Rhind</b> (vers 1650 avant J.-C.) contient même une table qui donne ces décompositions pour de nombreuses fractions, un peu comme une table de multiplication. Notre écriture avec une barre horizontale entre deux nombres s'est répandue en Europe au Moyen Âge, venue des mathématiciens arabes.
 </div>
+
+${typeof CU_HISTOIRE_HTML !== 'undefined' ? CU_HISTOIRE_HTML : ''}
 `;
 
 document.getElementById('methode-demo-fractions-mult-6e').innerHTML = `
@@ -109,6 +111,11 @@ document.getElementById('methode-demo-fractions-mult-6e').innerHTML = `
   <div id="fm-pBarre"></div>
   <div id="fm-pCalc" style="text-align:center;line-height:2.1;"></div>
 </div>
+
+<div class="sub-header" style="margin-top:28px;"><span class="letter">M</span><h4>Maths et cuisine : la pizza party</h4></div>
+<div class="figure-wrap"><p class="hint interaction-hint" style="margin-top:6px;">Combien de pizzas commander quand chaque invité mange la même fraction de pizza ?</p>
+  <div class="cu-pizza"></div></div>
+
 `;
 
 function fmExo(n, enonce, lignes){
@@ -189,7 +196,7 @@ DEMO_REGISTRY['6e|Fractions : multiplication'] = {
     fmBarreMaj(); fmMethodeDemo.reset(); fmPourcent();
     ['cours-demo-fractions-mult-6e', 'methode-demo-fractions-mult-6e', 'exos-demo-fractions-mult-6e'].forEach(id => renderStaticMath(document.getElementById(id)));
     injectCourseAddButtons(document.getElementById('cours-demo-fractions-mult-6e'));
-    injectCourseAddButtons(document.getElementById('methode-demo-fractions-mult-6e'));
+    injectCourseAddButtons(document.getElementById('methode-demo-fractions-mult-6e')); if(typeof cuInitTout === 'function') cuInitTout(document.getElementById('methode-demo-fractions-mult-6e'));
   }
 };
 

@@ -1,6 +1,6 @@
 {
  "/": {
-  "hash": "37484985329bfad3e718c59cdf9e876ad34c52f4",
+  "hash": "42c5551992e35cfba8aaab12a596d93ad2e32113",
   "lastmod": "2026-10-25"
  },
  "/cm1/nombres-entiers-jusqu-a-9-999/": {
@@ -136,7 +136,7 @@
   "lastmod": "2026-10-03"
  },
  "/cm2/fractions-comparer-et-calculer/": {
-  "hash": "7e7fcab22c6ff2da89a805663ab9262955f2e9e3",
+  "hash": "48f22949388d96cfe154cdf150cfd1c6ba0efe67",
   "lastmod": "2026-10-25"
  },
  "/cm2/grands-nombres-jusqu-a-999-999-999/": {
@@ -168,8 +168,8 @@
   "lastmod": "2026-10-03"
  },
  "/cm2/proportionnalite/": {
-  "hash": "d687aada13182f1444b968f8895785fd54068383",
-  "lastmod": "2026-10-03"
+  "hash": "bccde9fa1b33ccddded74dfb3b3262aa3a042eb6",
+  "lastmod": "2026-10-25"
  },
  "/cm2/symetrie-axiale/": {
   "hash": "af3fd087f6dcd7e4fcb0baedfe89708b401973ba",
@@ -256,12 +256,12 @@
   "lastmod": "2026-10-14"
  },
  "/6e/fractions-multiplication/": {
-  "hash": "d4716dd4d5238ba06088625f9404dc61beada3c2",
-  "lastmod": "2026-10-02"
+  "hash": "ab69aca4d9a97869dab5733aa554fe20d7e6dcec",
+  "lastmod": "2026-10-25"
  },
  "/6e/proportionnalite/": {
-  "hash": "f9a7f564eeaacf7cd1e2f01c812187edd063e4ef",
-  "lastmod": "2026-10-14"
+  "hash": "40caacd803887c69711f02574c5419ac93e157ab",
+  "lastmod": "2026-10-25"
  },
  "/6e/aire-et-perimetre/": {
   "hash": "e28720927a37b20638efaf91e88b38509529cd1d",
@@ -316,8 +316,8 @@
   "lastmod": "2026-10-02"
  },
  "/5e/proportionnalite/": {
-  "hash": "9350135b8b111f2abd3a55c3a75cf07792487d0f",
-  "lastmod": "2026-10-02"
+  "hash": "24efdafa6f1f0b250716311cb02ea1bff0577b22",
+  "lastmod": "2026-10-25"
  },
  "/5e/nombres-relatifs/": {
   "hash": "a3375c602d16f8f68e0797e1135e5de5056bd37c",
@@ -492,8 +492,8 @@
   "lastmod": "2026-10-02"
  },
  "/3e/fonctions-lineaires-et-affines/": {
-  "hash": "80993cbe7374988c710cb11d21e9ae249fba38af",
-  "lastmod": "2026-10-02"
+  "hash": "241eed0252e6d6b57157192fcb5eabadea101e6d",
+  "lastmod": "2026-10-25"
  },
  "/3e/espace/": {
   "hash": "9f074fec71a7df762f56005d15af5d7df69e2c05",

@@ -217,6 +217,11 @@ document.getElementById('methode-demo-proportionnalite-6e').innerHTML = `
     <button class="btn secondary" onclick="pp6Lin2Reset()">Recommencer</button>
   </div>
 </div>
+
+<div class="sub-header" style="margin-top:28px;"><span class="letter">M</span><h4>Maths et cuisine : adapter une recette</h4></div>
+<div class="figure-wrap"><p class="hint interaction-hint" style="margin-top:6px;">Une recette est donnée pour un certain nombre de personnes. Pour en nourrir plus (ou moins), toutes les quantités changent de la même façon.</p>
+  <div class="cu-recette" data-niv="6e"></div></div>
+
 `;
 
 /* ================= MÉTHODE : mêmes démos que 5e P1-proportionnalite.js, identifiants pp6* pour
@@ -420,14 +425,19 @@ document.getElementById('exos-demo-proportionnalite-6e').innerHTML = `
 </div>
 `;
 
+// Onglet Histoire (ajouté avec « Maths et cuisine »).
+document.getElementById('histoire-demo-proportionnalite-6e').innerHTML = `
+${typeof CU_HISTOIRE_HTML !== 'undefined' ? CU_HISTOIRE_HTML : ''}
+`;
+
 DEMO_REGISTRY['6e|Proportionnalité'] = {
-  cours:'cours-demo-proportionnalite-6e', methode:'methode-demo-proportionnalite-6e', exos:'exos-demo-proportionnalite-6e',
+  cours:'cours-demo-proportionnalite-6e', methode:'methode-demo-proportionnalite-6e', exos:'exos-demo-proportionnalite-6e', histoire:'histoire-demo-proportionnalite-6e',
   init:()=>{
     renderStaticMath(document.getElementById('cours-demo-proportionnalite-6e'));
     renderStaticMath(document.getElementById('methode-demo-proportionnalite-6e'));
     renderStaticMath(document.getElementById('exos-demo-proportionnalite-6e'));
     injectCourseAddButtons(document.getElementById('cours-demo-proportionnalite-6e'));
-    injectCourseAddButtons(document.getElementById('methode-demo-proportionnalite-6e'));
+    injectCourseAddButtons(document.getElementById('methode-demo-proportionnalite-6e')); if(typeof cuInitTout === 'function') cuInitTout(document.getElementById('methode-demo-proportionnalite-6e'));
     pp6GameReset();
     pp6EvolDemo.reset();
     pp6Lin1Reset(); pp6Lin2Reset();
