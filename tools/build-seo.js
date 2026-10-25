@@ -209,13 +209,37 @@ ${body}
 const PUBLISHER = { '@type': 'Organization', name: "L'Atelier des Maths", url: SITE + '/', logo: SITE + '/assets/logo-icon.png' };
 const crumbsLd = items => ({ '@type': 'BreadcrumbList', itemListElement: items.map((it, i) => ({ '@type': 'ListItem', position: i + 1, name: it[0], item: SITE + it[1] })) });
 
+// ---------- titres : les notions du chapitre et les formes que tapent les internautes ----------
+// Search Console (octobre 2026) : « angles correspondants », « polyèdres cm2 », « cours maths 6ème »… Les notions
+// principales vont dans le titre (Google y donne beaucoup de poids), et le niveau s'écrit « 6ème », comme dans les
+// recherches (« 6e » reste dans la description et la page).
+const NIV_EME = { '6e': '6ème', '5e': '5ème', '4e': '4ème', '3e': '3ème', 'cm1': 'CM1', 'cm2': 'CM2' };
+const varNiv = lvl => ({ '6e': '6ème, sixième', '5e': '5ème, cinquième', '4e': '4ème, quatrième', '3e': '3ème, troisième', 'cm1': 'cours moyen 1re année', 'cm2': 'cours moyen 2e année' })[lvl] || lab(lvl);
+// 4e et 3e : le nouveau programme n'entre en vigueur qu'en 2027 et 2028, on garde l'ancien d'ici là.
+const PROG = lvl => (lvl === '4e' || lvl === '3e') ? 'programme en vigueur' : 'programme 2026';
+const GENERIQUES = /^(d[ée]finitions?|vocabulaire( de base)?|rappels?|m[ée]thodes?|exemples?|propri[ée]t[ée]s?|introduction|[àa] retenir|notations?|bilan|synth[èe]se|r[ée]sum[ée]|exercices?|probl[èe]mes?)$/i;
+function titreChapitre(ch){
+  const fin = ` – Cours de maths ${NIV_EME[ch.lvl] || lab(ch.lvl)}`, base = ch.t, mots = base.toLowerCase();
+  const notions = [];
+  for(const h of ch.headings){
+    let t = String(h).replace(/^[A-Z0-9]+[.)]\s*/, '').replace(/\s+/g, ' ').trim();
+    if(!t || GENERIQUES.test(t) || mots.includes(t.toLowerCase()) || t.length > 42) continue;
+    t = t.charAt(0).toLowerCase() + t.slice(1);
+    if(notions.some(x => x.includes(t) || t.includes(x))) continue;
+    if((base + ' : ' + notions.concat(t).join(', ') + fin).length > 88) break;
+    notions.push(t);
+    if(notions.length === 2) break;
+  }
+  return base + (notions.length ? (base.includes(':') ? ', ' : ' : ') + notions.join(', ') : '') + fin + " | L'Atelier des Maths";
+}
+
 // ---------- page d'un chapitre ----------
 function chapterPage(ch, prev, next) {
   const lvl = ch.lvl, info = LEVEL_INFO[lvl], L = lab(lvl);
   const url = '/' + lvl + '/' + slugify(ch.t) + '/';
   const topics = ch.headings.slice(0, 5);
-  const description = cut(`Cours de maths ${L} : ${ch.t}. ` + (topics.length ? topics.join(', ') + '. ' : '') + 'Définitions, figures interactives, méthode animée, exercices et un peu d\'histoire.', 158);
-  const title = `${ch.t} – Cours de maths ${L} | L'Atelier des Maths`;
+  const description = cut(`Cours de maths ${L} (${varNiv(lvl)}) : ${ch.t}. ` + (topics.length ? topics.join(', ') + '. ' : '') + 'Définitions, figures interactives, méthode animée, exercices et un peu d\'histoire.', 158);
+  const title = titreChapitre(ch);
   const [bg, fg] = CAT_COLOR[ch.cat] || ['#eee', '#333'];
   const S = ch.sections;
   const section = (key, icon, h2, intro) => S[key] ? `
@@ -262,8 +286,8 @@ function levelPage(lvl, all, published) {
   const url = '/' + lvl + '/';
   const chs = all.filter(c => c.lvl === lvl);
   const n = chs.filter(c => published.has(c)).length;
-  const title = `Cours de maths ${L} : les ${chs.length} chapitres du programme | L'Atelier des Maths`;
-  const description = cut(`Tous les cours de mathématiques de ${L} (${info.long}, ${info.cycle}) conformes au programme 2026 : ` + chs.slice(0, 6).map(c => c.t.toLowerCase()).join(', ') + '… Figures interactives, méthodes animées, exercices et quiz.', 158);
+  const title = `Cours de maths ${NIV_EME[lvl] || L}${NIV_EME[lvl] && NIV_EME[lvl] !== L ? ' (' + L + ')' : ''} : les ${chs.length} chapitres du ${PROG(lvl)} | L'Atelier des Maths`;
+  const description = cut(`Tous les cours de mathématiques de ${L} (${varNiv(lvl)}, ${info.cycle}) conformes au ${PROG(lvl)} : ` + chs.slice(0, 6).map(c => c.t.charAt(0).toLowerCase() + c.t.slice(1)).join(', ') + '… Figures interactives, méthodes animées, exercices et quiz.', 158);
   const jsonld = { '@context': 'https://schema.org', '@graph': [
     { '@type': 'Course', name: `Mathématiques ${L}`, description, url: SITE + url, inLanguage: 'fr', educationalLevel: `${L} (${info.cycle}, ${info.ecole})`, isAccessibleForFree: true, provider: PUBLISHER,
       hasPart: chs.filter(c => published.has(c)).map(c => ({ '@type': 'LearningResource', name: c.t, url: SITE + '/' + lvl + '/' + slugify(c.t) + '/' })) },
@@ -272,7 +296,7 @@ function levelPage(lvl, all, published) {
   const body = `
 <div class="seo-crumbs"><a href="/">Accueil</a> › Cours de maths ${L}</div>
 <h1>Cours de maths ${L}</h1>
-<p class="seo-sub">Les ${chs.length} chapitres de mathématiques de ${info.long} (${info.cycle}), dans l'ordre de la progression de l'année et conformes au programme 2026. Chaque cours comprend les définitions et propriétés à retenir, des figures, une méthode animée, des exercices de rédaction et un peu d'histoire des mathématiques.</p>
+<p class="seo-sub">Les ${chs.length} chapitres de mathématiques de ${info.long} (${info.cycle}), dans l'ordre de la progression de l'année et conformes au ${PROG(lvl)}. Chaque cours comprend les définitions et propriétés à retenir, des figures, une méthode animée, des exercices de rédaction et un peu d'histoire des mathématiques.</p>
 <div class="seo-cta">
   <p>Dans l'application : <b>figures manipulables, constructions animées, quiz</b> et, pour les professeurs, outils de correction et devoirs en ligne.</p>
   <a class="seo-btn" href="/#/niveau/${lvl}">Ouvrir les cours de ${L} dans l'application</a>
@@ -308,14 +332,13 @@ function teachersPage() {
   ];
   const jsonld = { '@context': 'https://schema.org', '@graph': [
     { '@type': 'WebApplication', name: "L'Atelier des Maths", url: SITE + '/', applicationCategory: 'EducationalApplication', operatingSystem: 'Navigateur web', inLanguage: 'fr',
-      description, audience: { '@type': 'EducationalAudience', educationalRole: 'teacher' },
-      offers: { '@type': 'Offer', price: '16.90', priceCurrency: 'EUR', description: "Abonnement annuel enseignant, après 15 jours d'essai gratuit" }, publisher: PUBLISHER },
+      description, audience: { '@type': 'EducationalAudience', educationalRole: 'teacher' }, publisher: PUBLISHER },
     crumbsLd([['Accueil', '/'], ['Pour les professeurs', url]]),
   ] };
   const body = `
 <div class="seo-crumbs"><a href="/">Accueil</a> › Pour les professeurs</div>
 <h1>Des outils pour enseigner les maths au collège</h1>
-<p class="seo-sub">L'Atelier des Maths accompagne les professeurs de mathématiques de 6e, de 5e, de 4e et de 3e : en classe (projection, géométrie au tableau), pour les devoirs, les évaluations et le suivi des élèves. Conçu par un professeur de mathématiques, conforme au programme 2026.</p>
+<p class="seo-sub">L'Atelier des Maths accompagne les professeurs de mathématiques du CM1 à la 3e : en classe (projection, géométrie au tableau), pour les devoirs, les évaluations et le suivi des élèves. Conçu par un professeur de mathématiques, conforme aux programmes en vigueur.</p>
 <div class="seo-feat">
 ${feats.map(f => `  <div><h3><span class="gicon">${f[0]}</span> ${esc(f[1])}</h3><p>${esc(f[2])}</p></div>`).join('\n')}
 </div>
@@ -325,7 +348,7 @@ ${feats.map(f => `  <div><h3><span class="gicon">${f[0]}</span> ${esc(f[1])}</h3
 </section>
 <section class="seo-section">
   <h2><span class="gicon">key</span> Accès</h2>
-  <p>L'inscription est réservée aux enseignants disposant d'une adresse académique. Après vérification, vous bénéficiez de <b>15 jours d'essai gratuit</b>, puis vous choisissez votre offre, comme pour un manuel numérique : <b>Professeur seul</b> (39 € par an pour un niveau et une classe de 30 élèves, 29 € par niveau en plus, 15 € par classe en plus) ou <b>Professeur particulier</b> pour les cours particuliers (39 € par an et 20 € par élève). Un établissement peut aussi prendre une <b>licence établissement</b> pour tous ses professeurs. Les fonctions d'IA utilisent votre propre clé, celle de l'établissement ou celle du site selon ce qui a été décidé : vous voyez toujours le détail de la consommation.</p>
+  <p>L'inscription est réservée aux enseignants disposant d'une adresse académique : chaque compte est vérifié avant d'être ouvert. Un professeur référent peut aussi gérer les comptes de tout son établissement. Les fonctions d'IA utilisent votre propre clé, celle de l'établissement ou celle du site selon ce qui a été décidé : vous voyez toujours le détail de la consommation.</p>
   <p style="margin-top:12px;"><a class="seo-btn" href="/">Découvrir l'application</a></p>
 </section>`;
   return { url, html: layout({ title, description, canonical: url, jsonld, body, ogType: 'website' }) };

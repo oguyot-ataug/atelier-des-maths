@@ -3468,6 +3468,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1116', date:'2026-10-25', items:['Référencement : les titres des pages de chapitres affichent les notions principales du cours (« Angles et parallélisme : paires d\'angles particuliers – Cours de maths 5ème ») et le niveau s\'écrit comme dans les recherches (6ème, 5ème…).','Description de la page d\'accueil plus parlante dans les résultats Google.','La page professeurs n\'annonce plus de prix ni d\'offre d\'abonnement.'] },
   { version:'2026-08-19.1115', date:'2026-10-25', items:[
     "5e Divisibilité, tables sur le cercle : case « k décimal » (décochée par défaut). Décochée : tables entières, l'animation passe d'une table à la suivante. Cochée : k décimal au centième, la figure se transforme en continu d'une table à l'autre."
   ]},
