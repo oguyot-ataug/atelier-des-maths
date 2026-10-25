@@ -215,6 +215,7 @@ document.getElementById('histoire-demo-espace-5e').innerHTML = `
   <div class="history-title"><span class=gicon>history_edu</span> Un peu d'histoire</div>
   Le savant grec <b>Archimède</b> (3e siècle av. J.-C.) était si fier d'avoir démontré que le volume d'une boule vaut exactement les deux tiers de celui du cylindre dans lequel elle s'emboîte qu'il avait demandé que ce dessin soit gravé sur sa tombe. Plus d'un siècle plus tard, l'orateur romain <b>Cicéron</b> raconte avoir retrouvé cette tombe, envahie par les ronces, grâce à la sphère et au cylindre sculptés dessus. Quant à la <b>perspective cavalière</b>, utilisée pour dessiner les solides au collège, elle doit son nom au « cavalier », une butte de terre des fortifications d'où l'on voyait le terrain de haut et de biais.
 </div>
+${typeof PA_HISTOIRE_HTML !== 'undefined' ? PA_HISTOIRE_HTML : ''}
 `;
 
 document.getElementById('methode-demo-espace-5e').innerHTML = `

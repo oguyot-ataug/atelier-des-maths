@@ -207,6 +207,7 @@ document.getElementById('histoire-demo-triangles-paralleles-4e').innerHTML = `
   <div class="history-title"><span class=gicon>history_edu</span> Un peu d'histoire</div>
   <b>Thalès de Milet</b> est un savant grec du 6e siècle avant J.-C. Selon la légende, rapportée plusieurs siècles plus tard, il aurait mesuré la hauteur de la grande pyramide de Khéops sans y monter : il aurait attendu le moment de la journée où l'ombre d'un bâton est égale à sa longueur, puis mesuré l'ombre de la pyramide… qui était alors égale à sa hauteur. Le théorème qui porte son nom est démontré dans les <i>Éléments</i> d'Euclide (vers 300 av. J.-C.), mais ce n'est qu'à la fin du 19e siècle que les manuels français lui ont donné le nom de Thalès ; dans d'autres pays, on l'appelle simplement le « théorème d'intersection » !
 </div>
+${typeof PA_HISTOIRE_HTML !== 'undefined' ? PA_HISTOIRE_HTML : ''}
 `;
 
 document.getElementById('methode-demo-triangles-paralleles-4e').innerHTML = `

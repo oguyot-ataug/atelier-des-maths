@@ -132,6 +132,7 @@ document.getElementById('histoire-demo-thales-3e').innerHTML = `
   <div class="history-title"><span class=gicon>history_edu</span> Un peu d'histoire</div>
   <b>Thalès de Milet</b> (vers 625 – 547 av. J.-C.) est souvent présenté comme le premier mathématicien grec. D'après le philosophe Proclus, qui s'appuie sur un historien plus ancien, Thalès savait calculer <b>la distance d'un navire en mer</b> depuis le rivage, sans quitter la côte : avec deux triangles de même forme, l'un petit, tracé sur la terre ferme, l'autre immense, qui va jusqu'au bateau. C'est exactement l'idée de la configuration « papillon » ! Pendant des siècles, les arpenteurs et les géomètres ont utilisé ce principe pour mesurer des distances impossibles à parcourir : largeur d'une rivière, hauteur d'une tour, distance d'une île…
 </div>
+${typeof PA_HISTOIRE_HTML !== 'undefined' ? PA_HISTOIRE_HTML : ''}
 `;
 
 document.getElementById('methode-demo-thales-3e').innerHTML = `

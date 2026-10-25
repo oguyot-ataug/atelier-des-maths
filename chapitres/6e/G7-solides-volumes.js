@@ -136,6 +136,7 @@ document.getElementById('histoire-demo-solides-6e').innerHTML = `
   <div class="history-title"><span class=gicon>history_edu</span> Un peu d'histoire</div>
   Dans l'Antiquité, le philosophe grec <b>Platon</b> s'émerveillait de cinq solides très réguliers, dont toutes les faces sont des polygones identiques : le tétraèdre, le cube, l'octaèdre, le dodécaèdre et l'icosaèdre. On les appelle encore les « solides de Platon », et on les retrouve dans les dés de jeux de rôle ! Au 18e siècle, le mathématicien suisse <b>Leonhard Euler</b> remarque une propriété étonnante : pour ces solides (sans trou), le nombre de faces moins le nombre d'arêtes plus le nombre de sommets vaut toujours 2. Vérifie avec le cube : 6 − 12 + 8 = 2 !
 </div>
+${typeof PA_HISTOIRE_HTML !== 'undefined' ? PA_HISTOIRE_HTML : ''}
 `;
 
 document.getElementById('methode-demo-solides-6e').innerHTML = `

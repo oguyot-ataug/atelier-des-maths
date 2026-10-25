@@ -3465,6 +3465,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1106', date:'2026-10-25', items:[
+    "Onglet Histoire « Maths et arts : la perspective » (6e Solides, 5e Espace, 4e Triangles et parallèles, 3e Thalès) : Giotto, l'expérience du miroir de Brunelleschi, Alberti et sa fenêtre, Piero della Francesca et La Cité idéale, le clou de La Cène, les machines à dessiner de Dürer, Desargues et la géométrie projective, jusqu'aux jeux vidéo ; deux schémas et une expérience à faire soi-même."
+  ]},
   { version:'2026-08-19.1105', date:'2026-10-25', items:[
     "Maths et arts, « Trouve le point de fuite » (5e Représentation de l'espace) : trois tableaux redessinés (une salle à la manière de La Cène, une place à la manière de La Cité idéale, un bâtiment vu de l'angle) ; on devine, puis on prolonge les fuyantes : elles se rejoignent au point de fuite, sur la ligne d'horizon (deux points de fuite pour le bâtiment).",
     "Maths et arts, « Dessiner en perspective » (6e Solides et volumes, 5e Représentation de l'espace) : des solides dont on fait glisser le point de fuite (faces vues, arêtes cachées), bascule en perspective cavalière, petits défis.",
