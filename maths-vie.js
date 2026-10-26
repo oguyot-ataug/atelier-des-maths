@@ -102,7 +102,18 @@ const VIE_CHAPITRES = {
 function vieA(niv, titre){ return !!VIE_CHAPITRES[niv + '|' + titre]; }
 // Pour « Ma progression » (progression-editeur.js) : titres des activités Maths & la vie d'un chapitre.
 function vieResume(niv, titre){ const l = VIE_CHAPITRES[niv + '|' + titre]; return l ? l.map(k => VIE_ACTIVITES[k] && VIE_ACTIVITES[k].titre).filter(Boolean) : []; }
-function vieHtml(liste){
+// Pages d'histoire des thèmes : une même page sert à plusieurs niveaux. Les passages marqués data-des="4e"
+// n'apparaissent qu'à partir de ce niveau, ceux marqués data-avant="4e" seulement avant (version adaptée) --
+// signalé : « En CM1, l'élève ne peut pas comprendre les puissances » (2 puissance 64 des tours de Hanoï).
+const VIE_ORDRE = ['ce2', 'cm1', 'cm2', '6e', '5e', '4e', '3e'];
+function vieNiveau(html, niv){
+  const r = VIE_ORDRE.indexOf(niv); if(r < 0 || !/data-(des|avant)=/.test(html)) return html;
+  const t = document.createElement('template'); t.innerHTML = html;
+  t.content.querySelectorAll('[data-des]').forEach(el => { if(r < VIE_ORDRE.indexOf(el.dataset.des)) el.remove(); });
+  t.content.querySelectorAll('[data-avant]').forEach(el => { if(r >= VIE_ORDRE.indexOf(el.dataset.avant)) el.remove(); });
+  return t.innerHTML;
+}
+function vieHtml(liste, niv){
   const themes = [];
   liste.forEach(k => { const a = VIE_ACTIVITES[k]; if(!a) return; let t = themes.find(x => x.k === a.theme); if(!t){ t = { k: a.theme, acts: [] }; themes.push(t); } t.acts.push(a); });
   return `<div class="vie-intro"><span class="gicon">public</span><div><b>Maths &amp; la vie</b> : les maths de ce chapitre, on les croise ${themes.map(t => VIE_THEMES[t.k].ou).join(', ').replace(/, ([^,]*)$/, ' et $1')}. Des activités à manipuler${themes.some(t => t.k === 'musique' || t.k === 'sciences') ? ' (monte le son !)' : ''} et un peu d'histoire.</div></div>`
@@ -110,7 +121,7 @@ function vieHtml(liste){
       return `<section class="vie-theme" style="--vie:${T.coul}"><h3 class="vie-theme-h"><span class="gicon">${T.icone}</span> ${T.titre}</h3>`
         + t.acts.map(a => `<div class="sub-header" style="margin-top:14px;"><span class="letter">${T.titre.split(' ').pop()[0].toUpperCase()}</span><h4>${a.titre}</h4></div>
           <div class="figure-wrap"><p class="hint interaction-hint" style="margin-top:6px;">${a.aide}</p>${a.html}</div>`).join('')
-        + T.histoire() + '</section>'; }).join('');
+        + vieNiveau(T.histoire(), niv) + '</section>'; }).join('');
 }
 // Onglet affiché ou non, et contenu construit à l'ouverture du chapitre.
 function vieMaj(niv, titre){
@@ -120,7 +131,7 @@ function vieMaj(niv, titre){
   if(!box) return;
   if(!liste){ box.innerHTML = ''; box.style.display = 'none'; return; }
   box.style.display = 'block';
-  box.innerHTML = vieHtml(liste);
+  box.innerHTML = vieHtml(liste, niv);
   if(typeof renderStaticMath === 'function') renderStaticMath(box);
   [typeof mmInitTout === 'function' && mmInitTout, typeof paInitTout === 'function' && paInitTout, typeof spInitTout === 'function' && spInitTout,
    typeof cuInitTout === 'function' && cuInitTout, typeof naInitTout === 'function' && naInitTout,

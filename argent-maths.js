@@ -252,8 +252,10 @@ const AR_HISTOIRE_HTML = `
   <h4 class="ar-hist-h">Les signes + et −, le symbole %</h4>
   <p>Les signes <b>+</b> et <b>−</b> apparaissent pour la première fois dans un livre imprimé en 1489, un manuel de calcul pour les marchands écrit par l'Allemand <b>Johannes Widmann</b> : ils y indiquent un surplus ou un manque dans une caisse de marchandises. Le symbole <b>%</b> vient des marchands italiens : ils écrivaient « per cento » (pour cent), abrégé en « p cento », puis en un petit signe qui est devenu notre %.</p>
 
+  <div data-des="5e">
   <h4 class="ar-hist-h">Les banquiers italiens et la règle de 72</h4>
   <p>Au 15e siècle, les grandes familles de banquiers de Florence et de Venise prêtent de l'argent dans toute l'Europe. En 1494, le moine mathématicien <b>Luca Pacioli</b> publie un énorme traité où il explique la comptabilité en « partie double » (encore utilisée aujourd'hui) et une astuce : pour savoir en combien d'années un placement double, on divise <b>72</b> par le taux d'intérêt. C'est la <b>règle de 72</b> !</p>
+  </div>
 
   <h4 class="ar-hist-h">Une monnaie décimale : le franc, puis l'euro</h4>
   <p>Sous l'Ancien Régime, une livre valait 20 sous et un sou 12 deniers : bon courage pour rendre la monnaie ! En 1795, en même temps que le mètre et le kilogramme, la Révolution crée le <b>franc</b> : 1 franc = 10 décimes = 100 centimes. C'est l'une des premières monnaies <b>décimales</b>, et c'est pourquoi on écrit les prix avec une virgule et deux chiffres après. Le Royaume-Uni n'a adopté la monnaie décimale qu'en <b>1971</b> ! Depuis 2002, nous payons en <b>euros</b> : 1 euro = 100 centimes.</p>

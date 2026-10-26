@@ -241,7 +241,7 @@ const CU_HISTOIRE_HTML = `
   <p>Le <b>quatre-quarts</b> breton porte son nom de sa recette : quatre ingrédients, chacun <b>un quart</b> de la pâte. Beurre, sucre, farine et œufs ont exactement la même masse. Pas besoin de livre de recettes : il suffit de peser les œufs !</p>
 
   <h4 class="cu-hist-h">Combien de pizzas différentes ?</h4>
-  <p>Une pizzeria propose 8 garnitures. Pour chacune, on a deux choix : on la met ou non. Il y a donc 2 × 2 × 2 × 2 × 2 × 2 × 2 × 2 = 2<sup>8</sup> = <b>256 pizzas différentes</b> (en comptant la pizza nature). Avec 20 garnitures, il y en aurait plus d'un million : c'est la force des puissances !</p>
+  <p>Une pizzeria propose 8 garnitures. Pour chacune, on a deux choix : on la met ou non. Il y a donc 2 × 2 × 2 × 2 × 2 × 2 × 2 × 2 = <span data-des="4e">2<sup>8</sup> = </span><b>256 pizzas différentes</b> (en comptant la pizza nature). Avec 20 garnitures, il y en aurait plus d'un million : <span data-des="4e">c'est la force des puissances !</span><span data-avant="4e">à chaque garniture en plus, le nombre de pizzas double !</span></p>
 
   <div class="cu-hist-a-toi"><span class="gicon">science</span> <b>À toi !</b> Fais un quatre-quarts. Pèse 3 œufs dans leur coquille (souvent entre 150 g et 180 g), puis prends <b>la même masse</b> de beurre fondu, de sucre et de farine. Pour un gâteau deux fois plus gros, combien d'œufs faudrait-il ? Et quelle masse de farine ?</div>
 </div>`;
