@@ -62,7 +62,7 @@ function olivPoseSvg(p){
     visage = `<path d="M40 54 L52 57 M80 54 L68 57" stroke="#2C3A1A" stroke-width="3" stroke-linecap="round"/>` + yeux(false) + joues + bouche;
     extra = `<path d="M44 92 h32 l-4 10 h-24 Z" fill="#F5C518" stroke="#C99A00" stroke-width="1.5"/><text x="60" y="101" font-size="9" font-weight="800" fill="#7A2E2E" font-family="Arial" text-anchor="middle">D</text>`;
     return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">${cape}${tete}${corps}${bras}${visage}${extra}</svg>`;
-  } else if(['globe', 'musique', 'arts', 'sport', 'cuisine', 'nature', 'argent', 'jeux', 'sciences', 'geo', 'savante'].includes(p)){
+  } else if(['globe', 'musique', 'arts', 'sport', 'cuisine', 'nature', 'argent', 'jeux', 'sciences', 'geo', 'savante', 'regle', 'equerre', 'tableau', 'blocs'].includes(p)){
     // Maths & la vie (la globe-trotteuse et une pose par thème) et page Histoire des maths (la savante grecque) --
     // demandé : « insérer des logos d'Oliv'IA dans les pages Maths & la vie et dans le menu histoire », choix :
     // « globe-trotteuse, vignettes par thème et savante grecque ». La main droite tient l'objet du thème.
@@ -99,6 +99,17 @@ function olivPoseSvg(p){
       extra = `<rect x="31" y="50" width="58" height="24" rx="11" fill="#CFEFFF" fill-opacity=".45" stroke="#1F6F8B" stroke-width="3"/><path d="M60 52 V72" stroke="#1F6F8B" stroke-width="2"/><path d="M101 22 h10 v10 l8 18 h-26 l8 -18 Z" fill="#fff" stroke="#1F6F8B" stroke-width="2"/><path d="M95 44 l3 -6 h16 l3 6 Z" fill="#4CC38A"/><circle cx="103" cy="16" r="2" fill="#4CC38A"/><circle cx="110" cy="10" r="2.5" fill="#4CC38A"/>`;
     } else if(p === 'geo'){
       extra = `<circle cx="106" cy="38" r="14" fill="#F6E7C1" stroke="#8A6D1F" stroke-width="2.5"/><path d="M106 26 L110 38 L106 50 L102 38 Z" fill="#fff" stroke="#8A6D1F" stroke-width="1"/><path d="M106 26 L110 38 H102 Z" fill="#D3302F"/><text x="106" y="22" font-size="7" font-weight="800" fill="#8A6D1F" font-family="Arial" text-anchor="middle">N</text>`;
+    } else if(p === 'regle'){ // menu L'Atelier : Convertisseur (une règle graduée)
+      extra = `<g transform="rotate(-62 105 56)"><rect x="101" y="50" width="40" height="11" rx="1.5" fill="#F5C518" stroke="#8A6D1F" stroke-width="1.8"/>`
+        + [0, 1, 2, 3, 4, 5, 6].map(k => `<path d="M${106 + k * 5} 50 v${k % 2 ? 3 : 5}" stroke="#8A6D1F" stroke-width="1.2"/>`).join('') + `</g><circle cx="105" cy="56" r="4.8" fill="${E}"/>`;
+    } else if(p === 'equerre'){ // menu L'Atelier : Géométrie interactive (une équerre)
+      extra = `<path d="M98 16 L98 54 L124 54 Z" fill="#CFEFFF" fill-opacity=".85" stroke="#1F6F8B" stroke-width="2.5" stroke-linejoin="round"/><path d="M102 32 L102 49 L117 49 Z" fill="#fff" stroke="#1F6F8B" stroke-width="1.5"/><path d="M98 47 h7 v7" fill="none" stroke="#E35D3A" stroke-width="1.8"/><circle cx="105" cy="56" r="4.8" fill="${E}"/>`;
+    } else if(p === 'tableau'){ // menu L'Atelier : Tableau interactif (un petit tableau et un feutre)
+      visage = yeux(false) + joues + bouche;
+      extra = `<rect x="90" y="8" width="34" height="28" rx="2" fill="#fff" stroke="#5B6472" stroke-width="2.5"/><path d="M96 30 L106 14 L118 30 Z" fill="none" stroke="#E35D3A" stroke-width="2"/><circle cx="106" cy="14" r="1.6" fill="#2F6FB3"/><path d="M105 56 L101 38" stroke="#2F6FB3" stroke-width="4" stroke-linecap="round"/><circle cx="105" cy="56" r="4.8" fill="${E}"/>`;
+    } else if(p === 'blocs'){ // menu L'Atelier : Programmation (deux blocs emboîtés)
+      const bloc = (y, c, b) => `<path d="M92 ${y} h8 l3 4 h6 l3 -4 h12 v14 h-12 l-3 4 h-6 l-3 -4 h-8 Z" fill="${c}" stroke="${b}" stroke-width="2" stroke-linejoin="round"/>`;
+      extra = bloc(14, '#4C97FF', '#2F6FB3') + bloc(32, '#FFAB19', '#C88A0A') + `<circle cx="105" cy="56" r="4.8" fill="${E}"/>`;
     } else { // savante grecque : couronne de laurier, compas tenu par sa tête
       tete = ''; // la couronne est dessinée par-dessus le corps (dans extra)
       const laurier = [-4, -3, -2, -1, 1, 2, 3, 4].map(k => `<ellipse cx="${60 + k * 8}" cy="${28 + Math.abs(k) * 2.2}" rx="5" ry="2.6" fill="#6DBB4A" stroke="#2E7D32" stroke-width="1" transform="rotate(${k * 14} ${60 + k * 8} ${28 + Math.abs(k) * 2.2})"/>`).join('');
@@ -114,6 +125,16 @@ function olivPoseSvg(p){
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${vb}">${tete}${corps}${bras}${visage}${extra}</svg>`;
 }
 const OLIV_POSES = ['savoir', 'methode', 'muscle', 'histoire', 'quiz', 'cm2', 'defi'];
+// Menu L'Atelier : une Oliv'IA par entrée à la place des icônes -- demandé : « On peut la décliner sur d'autres
+// entrées et remplacer les icônes Google par des Oliv'IA ».
+const OLIV_MENU = { cm: 'muscle', compte: 'jeux', convertisseur: 'regle', 'figure-sandbox': 'equerre', tableau: 'tableau', programmation: 'blocs', 'histoire-maths': 'savante' };
+function olivMenu(){
+  document.querySelectorAll('#navDropdownEntrainer .nav-dropdown-menu button[data-nav]').forEach(b => {
+    const pose = OLIV_MENU[b.dataset.nav], g = b.querySelector(':scope > .gicon'); if(!pose || !g) return;
+    const o = document.createElement('span'); o.className = 'oliv-menu'; o.setAttribute('aria-hidden', 'true'); o.style.backgroundImage = olivPoseUrl(pose); g.replaceWith(o);
+  });
+}
+if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', olivMenu); else olivMenu();
 function olivPoseUrl(p){ return `url("data:image/svg+xml,${encodeURIComponent(olivPoseSvg(p))}")`; }
 
 // Phrases des bulles (le premier encadré prend la première, puis on varie).
@@ -158,6 +179,8 @@ function olivDecorer(demo){
   const st = document.createElement('style');
   st.textContent = OLIV_POSES.map(p => `.oliv-deco .oliv-${p}{--oliv-img:${olivPoseUrl(p)};}`).join('\n') + `
     .oliv-deco .oliv-sh{--oliv-img:${olivPoseUrl('methode')};}
+    /* Menu L'Atelier : Oliv'IA à la place des icônes (olivMenu) */
+    .oliv-menu{display:inline-block;width:40px;height:40px;background:center/contain no-repeat;vertical-align:middle;margin:-10px 4px -8px -6px;flex:none;}
     .oliv-deco .oliv-sh.oliv-sh-plus{--oliv-img:${olivPoseUrl('cm2')};}
     /* Encadrés : Oliv'IA à droite du badge, debout sur l'encadré, et sa bulle */
     .oliv-deco .oliv-b{position:relative;margin-top:28px;}
