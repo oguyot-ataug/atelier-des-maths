@@ -107,7 +107,7 @@ function arAffaireMonter(el){
       st.offres = [{ q: m[0], prix: k1 * m[0] / 1000, unite: 'kg' }, { q: m[1], prix: k2 * m[1] / 1000, unite: 'kg' }].map(o => ({ ...o, nom: p[0], emoji: p[1], u: o.prix * 1000 / o.q }));
       if(Math.random() < .5) st.offres.reverse();
     } else {
-      const p = AR_PRODUITS[arHasard(0, AR_PRODUITS.length - 1)], n = [[2, 3], [3, 4], [4, 6], [2, 5], [3, 8], [4, 10], [6, 8]][arHasard(0, 6)];
+      const p = AR_PRODUITS[arHasard(0, AR_PRODUITS.length - 1)], n = [[2, 3], [3, 4], [4, 6], [2, 5], [3, 8], [5, 9], [6, 8]][arHasard(0, 6)];             // diviseurs à un chiffre (CM2)
       let u1 = arHasard(6, 40) * 5, u2 = u1 + arHasard(-3, 3) * 5; if(u2 === u1) u2 += 5;     // prix d'un seul, en centimes
       st.offres = [{ q: n[0], u: u1 }, { q: n[1], u: u2 }].map(o => ({ ...o, prix: o.u * o.q, nom: p[0], un: p[1], emoji: p[2] }));
       if(Math.random() < .5) st.offres.reverse();

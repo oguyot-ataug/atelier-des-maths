@@ -184,7 +184,7 @@ function geClimatMonter(el){
     const ok = q.t === 'chaud' ? c.t[r] === tmax : q.t === 'moyenne' ? Math.abs(r - q.rep) < .06 : r === q.rep;
     const expl = q.t === 'chaud' ? `Le point le plus haut de la courbe : <b>${GE_MOIS.filter((n, i) => c.t[i] === tmax).join(' et ')}</b> (${geS(tmax)} °C).`
       : q.t === 'pluie' ? `La barre de ${GE_MOIS[q.m]} monte jusqu'à <b>${c.p[q.m]} mm</b>.`
-      : q.t === 'ecart' ? `<div class="ge-etapes"><div>Mois le plus chaud : ${geS(tmax)} °C.</div><div>Mois le plus froid : ${geS(tmin)} °C.</div><div>Écart : ${geS(tmax)} − ${tmin < 0 ? '(' + geS(tmin) + ')' : geS(tmin)} = <b>${tmax - tmin} °C</b>.</div></div>${cinq ? 'C\'est l\'<b>étendue</b> des températures.' : ''}`
+      : q.t === 'ecart' ? `<div class="ge-etapes"><div>Mois le plus chaud : ${geS(tmax)} °C.</div><div>Mois le plus froid : ${geS(tmin)} °C.</div><div>Écart : ${geS(tmax)} − ${tmin < 0 ? '(' + geS(tmin) + ')' : geS(tmin)} = <b>${tmax - tmin} °C</b>.</div></div>`
       : `<div class="ge-etapes"><div>Somme des 12 températures : ${c.t.reduce((a, b) => a + b, 0)}.</div><div>Moyenne : ${c.t.reduce((a, b) => a + b, 0)} ÷ 12 ≈ <b>${geN(q.rep)} °C</b>.</div></div>`;
     geDire(el, (ok ? '<span class="gicon">celebration</span> Bien lu ! ' : '<span class="gicon">info</span> ') + expl, ok ? 'ok' : 'ko');
     setTimeout(quiz, 400);

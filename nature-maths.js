@@ -26,7 +26,7 @@ const NA_MODES = {
   axe: { nom: 'Papillon', sous: '1 axe de symétrie', tr: ['', 'scale(-1,1)'], axes: [90],
     expl: 'Ce que tu dessines d\'un côté est recopié de l\'autre côté par <b>symétrie axiale</b> : l\'axe (en pointillés) est comme un miroir, ou comme le pli d\'une feuille. Les ailes d\'un papillon sont symétriques.' },
   flocon: { nom: 'Flocon', sous: '6 branches', tr: [0, 1, 2, 3, 4, 5].flatMap(k => [`rotate(${60 * k})`, `rotate(${60 * k}) scale(-1,1)`]), axes: [90, 60, 30, 0, -30, -60],
-    expl: 'Ton tracé est recopié <b>12 fois</b> : un flocon de neige a <b>6 axes de symétrie</b> (en pointillés), et il revient sur lui-même quand on le fait tourner de 60° (un sixième de tour).' },
+    expl: 'Ton tracé est recopié par <b>symétrie</b> par rapport à chacun des <b>6 axes</b> (en pointillés), puis les copies sont recopiées à leur tour : un flocon de neige a <b>6 axes de symétrie</b>.' },
   moulin: { nom: 'Moulin', sous: 'rotations seules', tr: [0, 1, 2, 3, 4, 5].map(k => `rotate(${60 * k})`), axes: [],
     expl: 'Ici, ton tracé est recopié par <b>rotations</b> de 60°, 120°, 180°, 240° et 300° autour du centre, sans symétrie axiale : la figure « tourne » comme un moulin à vent ou une hélice, et n\'a en général <b>aucun axe de symétrie</b>.' } };
 const NA_COULEURS = ['#2F6FB3', '#7A4FC0', '#1E8A6E', '#D3302F'];
