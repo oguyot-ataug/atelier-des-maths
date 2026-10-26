@@ -30,11 +30,12 @@ document.body.insertAdjacentHTML('beforeend', `
     <div id="textBlockPanel" class="figure-wrap" style="display:none;">
       <p class="hint" style="margin:0 0 10px;">Texte libre avec la même mise en forme automatique que l'énoncé principal (fractions, exposants, racines, **gras**, {{couleur|texte}}...).</p>
       <div class="tool-row" style="margin:0 0 8px;">
-        <button type="button" class="btn secondary" onclick="openFormulaBuilder()"><span class=gicon>calculate</span> Éditeur de formule (Σ, lim, ∫, fraction, puissance, racine...)</button>
+        <button type="button" class="btn secondary" data-mx onclick="mxOuvrir('textBlockInput')"><span class=gicon>function</span> Écrire une formule (fraction, angle, arc, vecteur, racine…)</button>
+        <button type="button" class="btn secondary" data-mx onclick="mxBlanc('textBlockInput')" title="Pointillés à compléter">…… À compléter</button>
       </div>
       <textarea id="textBlockInput" oninput="previewTextBlock()" rows="4" style="width:100%;font-family:'JetBrains Mono',monospace;font-size:.9rem;padding:10px;border-radius:8px;border:1px solid rgba(28,43,57,.2);box-sizing:border-box;" placeholder="Ex. Calcule 3/4 + 1/2 et donne le résultat sous forme irréductible."></textarea>
       <div id="textBlockPreview" style="margin-top:8px;"></div>
-      <p class="hint" style="margin:8px 0 0;">Astuce : les fractions <code>a/b</code> et <code>sqrt(x)</code> se mettent en forme automatiquement. Pour une somme, une limite ou une intégrale (boutons Σ/lim/∫ ci-dessus), du LaTeX est inséré directement entre <code>$...$</code> -- modifie-le librement, y compris pour des expressions complexes (fractions imbriquées, plusieurs fonctions...), ça reste toujours fiable.</p>
+      <p class="hint" style="margin:8px 0 0;">Astuce : les fractions <code>a/b</code> et <code>sqrt(x)</code> se mettent aussi en forme automatiquement. Une formule écrite avec l'éditeur s'insère entre <code>$...$</code> : place le curseur dedans puis rouvre l'éditeur pour la modifier. Une suite de points (<code>..........</code>) s'affiche comme des pointillés à compléter.</p>
       <div class="figure-toolbar" style="margin-top:10px;">
         <button type="button" class="btn" onclick="insertTextBlock()">Insérer le texte</button>
         <button type="button" class="btn secondary" onclick="closeTextBlockTool()">Fermer sans insérer</button>
@@ -52,30 +53,6 @@ document.body.insertAdjacentHTML('beforeend', `
         <button type="button" class="btn" id="imageImportInsertBtn" onclick="insertImageBlock()" disabled>Insérer l'image</button>
         <button type="button" class="btn secondary" id="imageImportEditBtn" onclick="imageOuvrirEditeur()" disabled title="Recadrer, faire pivoter, écrire ou dessiner dessus, ajouter du texte, régler la luminosité, puis insérer"><span class=gicon>edit</span> Modifier avant d'insérer</button>
         <button type="button" class="btn secondary" onclick="closeImageTool()">Fermer sans insérer</button>
-      </div>
-    </div>
-    <div id="formulaBuilderOverlay" class="modal-overlay" style="display:none;" onclick="if(event.target===this) closeFormulaBuilder();">
-      <div class="modal-card" style="max-width:600px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
-          <strong style="font-family:'Space Grotesk',sans-serif;font-size:1.05rem;"><span class=gicon>calculate</span> Éditeur de formule</strong>
-          <button class="modal-close" onclick="closeFormulaBuilder()"><span class=gicon>close</span></button>
-        </div>
-        <p class="hint" style="margin:0 0 10px;">Clique dans une case puis choisis un symbole : il vient se placer à cet endroit précis. Chaque case peut à son tour contenir une nouvelle structure (imbrication libre).</p>
-        <div class="tool-row" style="margin-bottom:12px;">
-          <button type="button" class="btn secondary" onclick="fbInsertAtFocus('frac')" title="Fraction">▭/▭</button>
-          <button type="button" class="btn secondary" onclick="fbInsertAtFocus('pow')" title="Puissance">x²</button>
-          <button type="button" class="btn secondary" onclick="fbInsertAtFocus('sub')" title="Indice">x₂</button>
-          <button type="button" class="btn secondary" onclick="fbInsertAtFocus('sqrt')" title="Racine carrée">√</button>
-          <button type="button" class="btn secondary" onclick="fbInsertAtFocus('sum')" title="Somme">Σ</button>
-          <button type="button" class="btn secondary" onclick="fbInsertAtFocus('int')" title="Intégrale">∫</button>
-          <button type="button" class="btn secondary" onclick="fbInsertAtFocus('lim')" title="Limite">lim</button>
-        </div>
-        <div id="formulaBuilderCanvas" style="border:1px solid rgba(28,43,57,.2);border-radius:8px;padding:16px;min-height:60px;font-size:1.1rem;background:#fff;line-height:2.2;"></div>
-        <p class="hint" style="margin:8px 0 0;">Le <span class=gicon>close</span> à côté d'une structure la retire. Une case restée vide est simplement ignorée à l'insertion.</p>
-        <div class="figure-toolbar" style="margin-top:14px;">
-          <button type="button" class="btn" onclick="fbInsertFinal()">Insérer cette formule</button>
-          <button type="button" class="btn secondary" onclick="closeFormulaBuilder()">Annuler</button>
-        </div>
       </div>
     </div>
     <div id="tableauGroupWrap" style="display:none;">
@@ -665,181 +642,6 @@ document.body.insertAdjacentHTML('beforeend', `
 </div>`);
 
 /* ---- Texte libre (même mise en forme que l'énoncé principal) ---- */
-/* Insère un modèle (ex. "somme(n,1,10,n)") à l'endroit du curseur dans la zone de texte, pour
-   que le professeur n'ait plus qu'à remplacer les valeurs par défaut. */
-function insertMathTemplate(template){
-  const ta = document.getElementById('textBlockInput');
-  const start = ta.selectionStart, end = ta.selectionEnd;
-  ta.value = ta.value.slice(0,start) + template + ta.value.slice(end);
-  ta.focus();
-  ta.selectionStart = ta.selectionEnd = start + template.length;
-  previewTextBlock();
-}
-
-/* ---- Éditeur de formule pas à pas -------------------------------------------------------
-   Une formule est une structure ARBORESCENTE (pas du texte à analyser après coup). Les
-   emplacements "principaux" (racine de la formule, numérateur, dénominateur, expression d'une
-   somme/limite/intégrale, contenu d'une racine carrée) sont des SÉQUENCES : plusieurs cases
-   mises bout à bout (texte libre et/ou structures imbriquées), pour pouvoir écrire par exemple
-   "3x + [fraction]" dans une même case. Les emplacements "secondaires" (bornes d'une somme,
-   variable d'une limite, exposant) restent une case unique, cas d'usage bien plus rare pour un
-   mélange texte+structure. La conversion en LaTeX final parcourt cet arbre directement -- plus
-   besoin de deviner où sont les parenthèses dans du texte brut, la structure EST l'interface. */
-function fbNewLeaf(v){ return {type:'leaf', value:v||''}; }
-function fbNewSeq(v){ return {type:'seq', items:[fbNewLeaf(v||'')]}; }
-function fbNewStruct(kind){
-  if(kind==='frac') return {type:'frac', num:fbNewSeq(), den:fbNewSeq()};
-  if(kind==='pow') return {type:'pow', base:fbNewLeaf(), exp:fbNewLeaf()};
-  if(kind==='sub') return {type:'sub', base:fbNewLeaf(), sub:fbNewLeaf()};
-  if(kind==='sqrt') return {type:'sqrt', expr:fbNewSeq()};
-  if(kind==='sum') return {type:'sum', from:fbNewLeaf('1'), to:fbNewLeaf('n'), expr:fbNewSeq()};
-  if(kind==='int') return {type:'int', from:fbNewLeaf('0'), to:fbNewLeaf('1'), expr:fbNewSeq(), dvar:fbNewLeaf('x')};
-  if(kind==='lim') return {type:'lim', dvar:fbNewLeaf('x'), to:fbNewLeaf('0'), expr:fbNewSeq()};
-  return fbNewLeaf();
-}
-let fbRoot = null; // la racine est elle-même une séquence
-let fbFocusedPath = null; // chemin (tableau de clés) vers la dernière case texte cliquée
-function fbPathToStr(path){ return path.join('|'); }
-function fbStrToPath(str){ return str==='' ? [] : str.split('|').map(s=>/^\d+$/.test(s)?parseInt(s):s); }
-function openFormulaBuilder(){
-  fbRoot = fbNewSeq();
-  fbFocusedPath = null;
-  document.getElementById('formulaBuilderOverlay').style.display='flex';
-  fbRender();
-}
-function closeFormulaBuilder(){ document.getElementById('formulaBuilderOverlay').style.display='none'; }
-function fbGetNode(path){
-  let node = fbRoot;
-  for(const step of path) node = node[step];
-  return node;
-}
-function fbSetNode(path, value){
-  if(path.length===0){ fbRoot = value; return; }
-  let node = fbRoot;
-  for(let i=0;i<path.length-1;i++) node = node[path[i]];
-  node[path[path.length-1]] = value;
-}
-/* Transforme la case actuellement sélectionnée en la structure choisie (fraction, somme...).
-   Sans case sélectionnée au préalable, remplace la première case si elle est encore vide
-   (cas le plus fréquent), sinon s'ajoute à la fin de la formule. */
-function fbInsertAtFocus(kind){
-  if(!fbFocusedPath){
-    if(fbRoot.items.length===1 && fbRoot.items[0].type==='leaf' && fbRoot.items[0].value==='') fbRoot.items[0] = fbNewStruct(kind);
-    else fbRoot.items.push(fbNewStruct(kind));
-  } else {
-    fbSetNode(fbFocusedPath, fbNewStruct(kind));
-  }
-  fbFocusedPath = null;
-  fbRender();
-}
-function fbAddToSeq(seqPathStr){
-  fbGetNode(fbStrToPath(seqPathStr)).items.push(fbNewLeaf(''));
-  fbRender();
-}
-function fbRemoveSeqItem(seqPathStr, idx){
-  const seq = fbGetNode(fbStrToPath(seqPathStr));
-  if(seq.items.length<=1) seq.items[0] = fbNewLeaf('');
-  else seq.items.splice(idx,1);
-  fbRender();
-}
-/* Une structure dans un emplacement "case unique" (borne, variable, exposant) se retire en
-   redevenant simplement une case de texte libre vide, à son emplacement exact. */
-function fbClearNode(pathStr){
-  fbSetNode(fbStrToPath(pathStr), fbNewLeaf(''));
-  fbRender();
-}
-function fbUpdateLeaf(pathStr, value){
-  fbGetNode(fbStrToPath(pathStr)).value = value; // pas de re-rendu : on garde le focus/curseur
-}
-function fbRender(){
-  document.getElementById('formulaBuilderCanvas').innerHTML = fbRenderSeq(fbRoot, []);
-}
-function fbLeafInput(node, path){
-  const pathStr = fbPathToStr(path);
-  const w = Math.max(30, node.value.length*9+18);
-  return `<input type="text" value="${escapeHtml(node.value)}" oninput="fbUpdateLeaf(this.dataset.path, this.value); this.style.width=Math.max(30,this.value.length*9+18)+'px';" onfocus="fbFocusedPath = fbStrToPath(this.dataset.path)" data-path="${pathStr}" style="width:${w}px;border:1.5px solid rgba(28,43,57,.3);border-radius:6px;padding:5px 7px;font-family:'JetBrains Mono',monospace;font-size:1rem;text-align:center;vertical-align:middle;">`;
-}
-/* Une SÉQUENCE (racine, numérateur, dénominateur, expression...) : plusieurs cases bout à bout,
-   avec un petit "+" à la fin pour en ajouter une nouvelle (texte, qu'on peut ensuite transformer
-   en structure en cliquant dedans puis sur un symbole). */
-function fbRenderSeq(seq, path){
-  const inner = seq.items.map((item,i)=>fbRenderSeqItem(item,[...path,'items',i],path,i)).join('');
-  return `<span style="display:inline-flex;align-items:center;gap:2px;">${inner}<button type="button" onclick="fbAddToSeq('${fbPathToStr(path)}')" title="Ajouter une case ici" style="border:none;background:rgba(28,43,57,.08);border-radius:5px;width:20px;height:20px;font-size:.75rem;cursor:pointer;vertical-align:middle;">+</button></span>`;
-}
-function fbRenderSeqItem(node, path, seqPath, idx){
-  if(node.type==='leaf') return fbLeafInput(node, path);
-  const removeBtn = `<button type="button" onclick="fbRemoveSeqItem('${fbPathToStr(seqPath)}',${idx})" title="Retirer cette structure" style="border:none;background:#FDEAEA;color:#D93025;border-radius:5px;width:20px;height:20px;font-size:.7rem;cursor:pointer;vertical-align:middle;margin-left:2px;"><span class=gicon>close</span></button>`;
-  return `<span style="display:inline-flex;align-items:center;background:rgba(13,91,163,.05);border:1px solid rgba(13,91,163,.18);border-radius:8px;padding:6px 8px;margin:0 3px;vertical-align:middle;">${fbRenderStruct(node,path)}</span>${removeBtn}`;
-}
-/* Une case UNIQUE (borne, variable, exposant) : soit une simple entrée de texte, soit une
-   structure imbriquée -- rendue dans le même style de cadre que dans une séquence. */
-function fbRenderSlot(node, path){
-  if(node.type==='leaf') return fbLeafInput(node, path);
-  const removeBtn = `<button type="button" onclick="fbClearNode('${fbPathToStr(path)}')" title="Retirer cette structure" style="border:none;background:#FDEAEA;color:#D93025;border-radius:5px;width:20px;height:20px;font-size:.7rem;cursor:pointer;vertical-align:middle;margin-left:2px;"><span class=gicon>close</span></button>`;
-  return `<span style="display:inline-flex;align-items:center;background:rgba(13,91,163,.05);border:1px solid rgba(13,91,163,.18);border-radius:8px;padding:6px 8px;margin:0 3px;vertical-align:middle;">${fbRenderStruct(node,path)}</span>${removeBtn}`;
-}
-function fbRenderStruct(node, path){
-  if(node.type==='frac'){
-    return `<span style="display:inline-flex;flex-direction:column;align-items:center;">
-      <span>${fbRenderSeq(node.num,[...path,'num'])}</span>
-      <span style="border-top:2px solid #1C1B2E;width:100%;height:0;margin:3px 0;"></span>
-      <span>${fbRenderSeq(node.den,[...path,'den'])}</span>
-    </span>`;
-  }
-  if(node.type==='pow'){
-    return `<span style="position:relative;display:inline-block;padding-right:32px;">${fbRenderSlot(node.base,[...path,'base'])}<span style="position:absolute;top:-10px;right:0;font-size:.72rem;">${fbRenderSlot(node.exp,[...path,'exp'])}</span></span>`;
-  }
-  if(node.type==='sub'){
-    return `<span style="position:relative;display:inline-block;padding-right:32px;">${fbRenderSlot(node.base,[...path,'base'])}<span style="position:absolute;bottom:-10px;right:0;font-size:.72rem;">${fbRenderSlot(node.sub,[...path,'sub'])}</span></span>`;
-  }
-  if(node.type==='sqrt'){
-    return `<span style="display:inline-flex;align-items:center;">√<span style="border-top:2px solid #1C1B2E;padding:0 4px;margin-left:2px;">${fbRenderSeq(node.expr,[...path,'expr'])}</span></span>`;
-  }
-  if(node.type==='sum' || node.type==='int'){
-    const symbol = node.type==='sum' ? 'Σ' : '∫';
-    const labelHaut = node.type==='sum' ? '(jusqu\'à)' : '(borne haute)';
-    const labelBas = node.type==='sum' ? '(à partir de)' : '(borne basse)';
-    const bounds = `<span style="display:inline-flex;flex-direction:column;align-items:center;gap:2px;">
-        <span title="${labelHaut}">${fbRenderSlot(node.to,[...path,'to'])}</span>
-        <span style="font-size:1.7rem;line-height:1;">${symbol}</span>
-        <span title="${labelBas}">${fbRenderSlot(node.from,[...path,'from'])}</span>
-      </span>`;
-    const tail = node.type==='int' ? `<span style="margin-left:4px;">d${fbRenderSlot(node.dvar,[...path,'dvar'])}</span>` : '';
-    return `<span style="display:inline-flex;align-items:center;gap:5px;">${bounds}<span>${fbRenderSeq(node.expr,[...path,'expr'])}</span>${tail}</span>`;
-  }
-  if(node.type==='lim'){
-    return `<span style="display:inline-flex;align-items:center;gap:5px;">
-      <span style="display:inline-flex;flex-direction:column;align-items:center;">
-        <span>lim</span>
-        <span style="display:inline-flex;align-items:center;gap:2px;font-size:.8rem;">${fbRenderSlot(node.dvar,[...path,'dvar'])}→${fbRenderSlot(node.to,[...path,'to'])}</span>
-      </span>
-      <span>${fbRenderSeq(node.expr,[...path,'expr'])}</span>
-    </span>`;
-  }
-  return '';
-}
-/* Parcourt l'arbre pour produire le LaTeX final -- aucune analyse de texte, la structure
-   garantit un résultat correct quelle que soit la complexité ou l'imbrication. */
-function fbToLatex(node){
-  if(node.type==='seq') return node.items.map(fbToLatex).join('');
-  if(node.type==='leaf') return node.value;
-  if(node.type==='frac') return `\\dfrac{${fbToLatex(node.num)}}{${fbToLatex(node.den)}}`;
-  if(node.type==='pow') return `{${fbToLatex(node.base)}}^{${fbToLatex(node.exp)}}`;
-  if(node.type==='sub') return `{${fbToLatex(node.base)}}_{${fbToLatex(node.sub)}}`;
-  if(node.type==='sqrt') return `\\sqrt{${fbToLatex(node.expr)}}`;
-  if(node.type==='sum') return `\\displaystyle\\sum_{${fbToLatex(node.from)}}^{${fbToLatex(node.to)}} ${fbToLatex(node.expr)}`;
-  if(node.type==='int') return `\\displaystyle\\int_{${fbToLatex(node.from)}}^{${fbToLatex(node.to)}} ${fbToLatex(node.expr)} \\, d${fbToLatex(node.dvar)}`;
-  if(node.type==='lim') return `\\displaystyle\\lim_{${fbToLatex(node.dvar)} \\to ${fbToLatex(node.to)}} ${fbToLatex(node.expr)}`;
-  return '';
-}
-function fbInsertFinal(){
-  const latex = fbToLatex(fbRoot).trim();
-  if(latex) insertMathTemplate('$'+latex+'$');
-  closeFormulaBuilder();
-}
-
-
-
 function previewTextBlock(){
   const val = document.getElementById('textBlockInput').value;
   document.getElementById('textBlockPreview').innerHTML = val.trim() ? renderMathText(val) : '';

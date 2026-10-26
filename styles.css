@@ -2081,3 +2081,27 @@ select:not([multiple]):not([size]){
 .chap-card .chap-vie{display:inline-flex;align-items:center;gap:3px;margin:-4px 0 8px;font-size:.7rem;font-weight:600;color:#2F6FB3;background:#EEF5FB;border-radius:999px;padding:1px 8px 1px 5px;cursor:help;}
 .chap-card .chap-vie .gicon{font-size:14px;}
 .tl-item .chap-vie-ic{font-size:15px;color:#2F6FB3;vertical-align:-3px;cursor:help;}
+/* Éditeur de formules visuel (editeur-maths.js) et pointillés « à compléter » (mathBlancs, app.js). */
+#mxOverlay{z-index:650;}
+.mx-card{max-width:720px;max-height:92vh;}
+.mx-tete{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;font-family:'Space Grotesk',sans-serif;font-size:1.05rem;}
+.mx-tete .gicon{vertical-align:-4px;}
+.mx-zone{min-height:64px;}
+.mx-champ{display:block;width:100%;box-sizing:border-box;font-size:1.7rem;padding:10px 12px;border:2px solid #0C5BA0;border-radius:10px;background:#fff;--caret-color:#0C5BA0;--selection-background-color:rgba(12,91,160,.18);}
+.mx-champ::part(virtual-keyboard-toggle),.mx-champ::part(menu-toggle){display:none;}
+.mx-onglets{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0 8px;}
+.mx-onglet{border:1px solid rgba(28,43,57,.2);background:#fff;border-radius:999px;padding:5px 12px;font:600 .82rem Inter,sans-serif;cursor:pointer;color:var(--ink);}
+.mx-onglet.on{background:#0C5BA0;border-color:#0C5BA0;color:#fff;}
+.mx-palette{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:6px;}
+.mx-palette[hidden]{display:none;}
+.mx-touche{min-height:48px;border:1px solid rgba(28,43,57,.18);border-radius:10px;background:#F7F9FC;cursor:pointer;font-size:1rem;padding:4px;display:flex;align-items:center;justify-content:center;color:var(--ink);}
+.mx-touche:hover{background:#E8F0FA;border-color:#0C5BA0;}
+.mx-astuce{margin:12px 0 0;font-size:.8rem;line-height:1.5;}
+.mx-pied{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;}
+.mx-barre{display:flex;gap:6px;margin:2px 0 4px;}
+.mx-bt{display:inline-flex;align-items:center;gap:4px;border:1px solid rgba(28,43,57,.2);background:#fff;border-radius:6px;padding:3px 9px;font:600 .76rem Inter,sans-serif;cursor:pointer;color:var(--ink);}
+.mx-bt:hover{background:rgba(28,43,57,.06);}
+.mx-bt .gicon{font-size:16px;}
+.cp-tools .cp-t-blanc{font-weight:700;letter-spacing:-1px;}
+.a-completer{display:inline-block;height:1.05em;vertical-align:baseline;border-bottom:2px dotted currentColor;opacity:.7;margin:0 .15em;}
+@media (max-width:560px){ .mx-champ{font-size:1.35rem;} .mx-palette{grid-template-columns:repeat(auto-fill,minmax(54px,1fr));} }

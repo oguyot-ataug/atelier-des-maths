@@ -557,7 +557,7 @@ function cpInline(line){
   const parts = line.split(/(\$[^$\n]+\$)/g);
   return parts.map(part=>{
     if(/^\$[^$\n]+\$$/.test(part)) return cpMath(part.slice(1,-1));
-    return cpEsc(part).replace(/\*\*([^*]+?)\*\*/g, '<strong>$1</strong>');
+    return mathBlancs(cpEsc(part).replace(/\*\*([^*]+?)\*\*/g, '<strong>$1</strong>'));
   }).join('');
 }
 /* Paragraphes séparés par une ligne vide ; lignes « - … » regroupées en liste. */
@@ -925,16 +925,17 @@ function cpOpenForm(editW, anchor){
     <div class="cp-f-textwrap">
       <div class="cp-tools">
         <button type="button" data-t="b" title="Gras : **texte**"><span class="gicon">format_bold</span></button>
-        <button type="button" data-t="m" title="Formule : $\\frac{3}{4}$"><span class="gicon">function</span></button>
+        <button type="button" data-t="m" title="Écrire une formule sans code (fraction, angle, arc, vecteur, racine…) ; curseur dans une formule : la modifier"><span class="gicon">function</span></button>
+        <button type="button" data-t="z" title="Pointillés à compléter" class="cp-t-blanc">……</button>
         <button type="button" data-t="l" title="Liste : une ligne par élément, commençant par « - »"><span class="gicon">format_list_bulleted</span></button>
-        <span class="hint" style="margin:0;">**gras** · $formule$ (ex. $\\frac{3}{4}$, $3 \\times 5$) · « - » en début de ligne pour une liste · ligne vide = nouveau paragraphe</span>
+        <span class="hint" style="margin:0;">**gras** · formule (bouton <span class="gicon" style="font-size:14px;vertical-align:-2px;">function</span>, écrite entre $…$) · …… à compléter · « - » en début de ligne pour une liste · ligne vide = nouveau paragraphe</span>
       </div>
       <textarea rows="5" maxlength="${CP_MAX_TEXT}"></textarea>
     </div>
     <div class="cp-f-exowrap">
       <div class="cp-f-exos"></div>
       <button type="button" class="btn secondary cp-f-addexo"><span class="gicon">add</span> Ajouter un exercice</button>
-      <span class="hint" style="margin:0 0 0 8px;">**gras** et $formule$ fonctionnent aussi ici. La correction, facultative, se déplie sous l'exercice.</span>
+      <span class="hint" style="margin:0 0 0 8px;">**gras**, formules et pointillés à compléter fonctionnent aussi ici. La correction, facultative, se déplie sous l'exercice.</span>
     </div>
     <div class="cp-f-prevlabel">Aperçu (tel que le verront vos élèves)</div>
     <div class="cp-f-preview"></div>
@@ -954,8 +955,8 @@ function cpOpenForm(editW, anchor){
   const renderExos = ()=>{
     exoBox.innerHTML = exos.map((it, i)=>`<div class="cp-f-exo" data-i="${i}">
         <div class="cp-f-exo-head"><b>Exercice ${i+1}</b>${exos.length>1 ? `<button type="button" class="cp-f-exo-del" title="Retirer cet exercice"><span class="gicon">close</span></button>` : ''}</div>
-        <textarea class="cp-f-exo-e" rows="3" maxlength="${CP_MAX_TEXT}" placeholder="Énoncé de l'exercice"></textarea>
-        <textarea class="cp-f-exo-c" rows="2" maxlength="${CP_MAX_TEXT}" placeholder="Correction (facultatif)"></textarea>
+        ${mxBarreHtml()}<textarea class="cp-f-exo-e" rows="3" maxlength="${CP_MAX_TEXT}" placeholder="Énoncé de l'exercice"></textarea>
+        ${mxBarreHtml()}<textarea class="cp-f-exo-c" rows="2" maxlength="${CP_MAX_TEXT}" placeholder="Correction (facultatif)"></textarea>
       </div>`).join('');
     exoBox.querySelectorAll('.cp-f-exo').forEach(box=>{
       const i = +box.dataset.i, e = box.querySelector('.cp-f-exo-e'), c = box.querySelector('.cp-f-exo-c');
@@ -985,9 +986,9 @@ function cpOpenForm(editW, anchor){
     f.querySelector('.cp-f-textwrap').style.display = (K.titleOnly || K.exo) ? 'none' : '';
     f.querySelector('.cp-f-exowrap').style.display = K.exo ? '' : 'none';
     f.querySelector('.cp-tools [data-t="l"]').style.display = (kind==='steps' || kind==='redac') ? 'none' : '';
-    f.querySelector('.cp-tools .hint').textContent = kind==='steps' ? 'Une étape par ligne · **gras** · $formule$'
-      : kind==='redac' ? 'Une ligne par étape : calcul ou phrase | commentaire (ex. P = 2 × (5 + 3) | On applique la formule.) · une ligne sans « | » s\'affiche comme texte (énoncé) · $formule$'
-      : '**gras** · $formule$ (ex. $\\frac{3}{4}$, $3 \\times 5$) · « - » en début de ligne pour une liste · ligne vide = nouveau paragraphe';
+    f.querySelector('.cp-tools .hint').textContent = kind==='steps' ? 'Une étape par ligne · **gras** · formules (bouton f(x)) · …… à compléter'
+      : kind==='redac' ? 'Une ligne par étape : calcul ou phrase | commentaire (ex. P = 2 × (5 + 3) | On applique la formule.) · une ligne sans « | » s\'affiche comme texte (énoncé) · formules (bouton f(x))'
+      : '**gras** · formules (bouton f(x), écrites entre $…$) · …… à compléter · « - » en début de ligne pour une liste · ligne vide = nouveau paragraphe';
     f.querySelector('.cp-tools').style.display = (K.fig || K.geo) ? 'none' : '';
     f.querySelector('.cp-f-figrow').style.display = K.fig ? '' : 'none';
     f.querySelector('.cp-f-georow').style.display = K.geo ? '' : 'none';
@@ -1011,10 +1012,11 @@ function cpOpenForm(editW, anchor){
   f.querySelectorAll('.cp-kinds button').forEach(b=>b.onclick = ()=>{ kind = b.dataset.k; refresh(); });
   input.oninput = refresh; ta.oninput = refresh;
   f.querySelectorAll('.cp-tools button').forEach(b=>b.onclick = ()=>{
+    if(b.dataset.t==='m'){ mxOuvrir(ta); return; } // éditeur de formules visuel (editeur-maths.js)
+    if(b.dataset.t==='z'){ mxBlanc(ta); return; }
     const s = ta.selectionStart, e = ta.selectionEnd, sel = ta.value.slice(s, e);
     let ins, caret;
     if(b.dataset.t==='b'){ ins = '**' + (sel||'texte') + '**'; caret = s + 2; }
-    else if(b.dataset.t==='m'){ ins = '$' + (sel||'\\frac{3}{4}') + '$'; caret = s + 1; }
     else { const lines = (sel||'élément').split('\n'); ins = (s>0 && ta.value[s-1]!=='\n' ? '\n' : '') + lines.map(x=>'- '+x.replace(/^\s*-\s*/,'')).join('\n'); caret = s + ins.length; }
     ta.setRangeText(ins, s, e, 'end');
     if(!sel && b.dataset.t!=='l') ta.setSelectionRange(caret, caret + ins.length - (b.dataset.t==='b' ? 4 : 2));

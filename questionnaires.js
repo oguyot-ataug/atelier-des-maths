@@ -465,8 +465,8 @@ function qzEdCompSelect(q){
 function qzEdCorps(q){
   const id = q.id;
   const enonce = `
-    <label class="qz-lab">${q.type === 'texte' ? 'Texte ou document' : 'Énoncé'} <span class="hint" style="margin:0;">(formules : 3/4, x^2, sqrt(2) ou $\\LaTeX$ ; **gras**)</span></label>
-    <textarea rows="3" oninput="qzEdSet('${id}','enonce',this.value)" placeholder="${q.type === 'texte' ? 'Énoncé commun à plusieurs questions, données, document…' : 'Écrivez la question…'}">${qzEsc(q.enonce)}</textarea>
+    <label class="qz-lab">${q.type === 'texte' ? 'Texte ou document' : 'Énoncé'} <span class="hint" style="margin:0;">(bouton Formule pour fractions, angles, racines… ; 3/4, x^2 aussi ; **gras** ; …… à compléter)</span></label>
+    ${mxBarreHtml()}<textarea rows="3" oninput="qzEdSet('${id}','enonce',this.value)" placeholder="${q.type === 'texte' ? 'Énoncé commun à plusieurs questions, données, document…' : 'Écrivez la question…'}">${qzEsc(q.enonce)}</textarea>
     <div class="qz-apercu" id="qzEdApercu_${id}">${q.enonce ? qzMath(q.enonce) : '<span class="hint" style="margin:0;">Aperçu de l\'énoncé</span>'}</div>
     <div class="qz-img-row">
       ${q.image ? `<img src="${qzEsc(q.image)}" alt=""><button type="button" class="btn secondary qz-mini" onclick="qzEdSet('${id}','image',null,true)"><span class="gicon">delete</span> Retirer l'image</button>`
@@ -517,7 +517,7 @@ function qzEdCorps(q){
   if(q.type === 'ouverte'){
     specifique = `
       <label class="qz-lab">Attendus / corrigé <span class="hint" style="margin:0;">(jamais montrés à l'élève avant la publication ; serviront aussi à la correction par l'IA)</span></label>
-      <textarea rows="3" oninput="qzEdSet('${id}','attendus',this.value)" placeholder="Ce qu'une réponse complète doit contenir…">${qzEsc(q.attendus)}</textarea>
+      ${mxBarreHtml()}<textarea rows="3" oninput="qzEdSet('${id}','attendus',this.value)" placeholder="Ce qu'une réponse complète doit contenir…">${qzEsc(q.attendus)}</textarea>
       <span class="qz-lab">Barème détaillé <span class="hint" style="margin:0;">(facultatif : les points de la question sont alors la somme des critères)</span></span>
       ${(q.criteres || []).map(c => `<div class="qz-sub">
         <input type="text" value="${qzEsc(c.texte)}" oninput="qzEdSousSet('${id}','criteres','${c.id}','texte',this.value)" placeholder="Critère (ex. calcul juste)">
@@ -535,7 +535,7 @@ function qzEdCorps(q){
   if(qzX(q).corps) specifique = qzX(q).corps(q);
   const explication = q.type === 'texte' || qzX(q).sondage ? '' : `
     <label class="qz-lab">Explication montrée avec la correction <span class="hint" style="margin:0;">(facultatif)</span></label>
-    <textarea rows="2" oninput="qzEdSet('${id}','explication',this.value)" placeholder="Méthode, rappel de cours…">${qzEsc(q.explication)}</textarea>`;
+    ${mxBarreHtml()}<textarea rows="2" oninput="qzEdSet('${id}','explication',this.value)" placeholder="Méthode, rappel de cours…">${qzEsc(q.explication)}</textarea>`;
   return enonce + specifique + explication;
 }
 function qzEdRender(){

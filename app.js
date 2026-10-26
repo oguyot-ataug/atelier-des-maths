@@ -335,8 +335,8 @@ function showView(id){
   // (cebState est réaffectée à chaque nouvelle partie, mais les anciens intervalles
   // continuaient de la décompter/chronométrer).
   if(typeof cebState!=='undefined' && cebState){ clearInterval(cebState.timerId); clearInterval(cebState.stopwatchId); }
-  const fbOverlay = document.getElementById('formulaBuilderOverlay');
-  if(fbOverlay) fbOverlay.style.display='none';
+  const mxOverlay = document.getElementById('mxOverlay'); // éditeur de formules (editeur-maths.js)
+  if(mxOverlay) mxOverlay.style.display='none';
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
@@ -2127,6 +2127,15 @@ function niceConfirm(message){
 function nicePrompt(message, defaultValue){
   return niceModal({message, showInput:true, inputValue:defaultValue, buttons:[{label:'Annuler', value:null, secondary:true},{label:'OK', value:true}]});
 }
+/* Pointillés « à compléter » : une suite d'au moins 4 points (ou de 2 « … ») devient une ligne
+   pointillée, à peu près de la même longueur -- demandé : « permettre d'écrire des … pour des
+   choses à compléter » (bouton « À compléter » de l'éditeur de formules, editeur-maths.js). */
+function mathBlancs(html){
+  return html.replace(/\.{4,}|…{2,}/g, m => {
+    const n = m[0] === '…' ? m.length * 3 : m.length;
+    return `<span class="a-completer" style="width:${Math.max(2.5, n * .42).toFixed(1)}em"></span>`;
+  });
+}
 function renderMathText(raw){
   let text = raw.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   // Chaque bloc déjà rendu par KaTeX (fraction, racine, exposant, $...$) est mis de côté
@@ -2205,6 +2214,7 @@ function renderMathText(raw){
   // sont converties en espaces insécables pour être visuellement conservées.
   text = text.replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;');
   text = text.replace(/ {2,}/g, (m)=>'&nbsp;'.repeat(m.length));
+  text = mathBlancs(text);
   // on restitue les blocs protégés
   text = text.replace(/\u0000(\d+)\u0000/g, (m,i)=>protectedBlocks[+i]);
   return text.replace(/\u0001/g, '<div class="def-box lecon-box">').replace(/\u0002(<br>)?/g, '</div>');
@@ -3524,6 +3534,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1152', date:'2026-10-26', items:['Nouvel éditeur de formules, sans code LaTeX -- demandé : « améliorer l\'outil d\'écriture mathématique, avec des raccourcis type arc de cercle, angle… bref un éditeur complet pour que les profs n\'aient pas à saisir du code LaTeX. Permettre aussi d\'écrire des … pour des choses à compléter ». Bouton « Formule » : on écrit la formule telle qu\'elle s\'affichera, comme sur une calculatrice (/ fait une fraction, ^ une puissance, * un ×, les flèches font sortir d\'une case), ou en cliquant dans la palette : calculs (fraction, puissance, racine, ×, ÷, parenthèses, π, %), géométrie (segment, droite, demi-droite, angle, arc de cercle, vecteur, parallèle, perpendiculaire, degré, triangle, cercle, appartient, cm², cm³), comparaisons (≠, ≤, ≥, ≈, fonction, probabilité, événement contraire), lycée (Σ, ∫, lim, ln, exponentielle) et « à compléter » (pointillés, case vide). Raccourcis au clavier : angle, arc, vecteur, racine, pi, environ, degre, <=, >=, !=. Le curseur posé dans une formule déjà écrite : le bouton la rouvre pour la modifier. Bouton « À compléter » : des pointillés à compléter dans le texte (une suite de points s\'affiche comme une ligne pointillée). Disponible dans l\'outil Correction, le bloc Texte de l\'Atelier du prof (il remplace l\'ancien éditeur pas à pas), les cours personnalisés (texte et exercices) et les questionnaires (énoncé, attendus, explication). Éditeur MathLive (licence MIT), ajouté aux crédits des mentions légales.'] },
   { version:'2026-08-19.1151', date:'2026-10-26', items:['Numéro de TVA intracommunautaire -- fourni avec l\'extrait Kbis (100 460 781 R.C.S. Nancy, immatriculé le 21/10/2026) : « FR57100460781 ». Ajouté aux mentions légales et à l\'identité du vendeur dans les conditions de vente, à côté de la mention de franchise « TVA non applicable, art. 293 B du CGI », qui reste en place.'] },
   { version:'2026-08-19.1150', date:'2026-10-26', items:['Immatriculation de l\'entreprise -- signalé : « ma demande de modification d\'entreprise a été validée par l\'INSEE et le TCO Nancy » (attestation RNE du 26/10/2026 : activité libérale non réglementée et commerciale, code APE 5829C, édition de logiciels applicatifs). Mentions légales : « RCS Nancy 100 460 781 » et le code APE à côté du SIRET ; conditions de vente : RCS dans l\'identité du vendeur. Facturation (Administration) : nouveau champ « Immatriculation » dans Mes informations, imprimé sous le SIRET dans l\'en-tête et en pied de page des devis et factures (et sur la page de signature en ligne) ; le champ apparaît une fois la colonne ajoutée à la base.'] },
   { version:'2026-08-19.1149', date:'2026-10-26', items:['Thalès mesure la pyramide : le Soleil est à la bonne place et bouge avec le curseur -- signalé : « Le soleil n\'est pas au bon endroit et devrait bouger pour rendre l\'animation plus réaliste ». Les ombres partent vers la droite : le Soleil est maintenant à gauche, sur le rayon qui passe par le sommet de la pyramide ; il monte quand on lève le curseur et redescend vers l\'horizon quand les ombres s\'allongent. Les deux rayons (sommet de la pyramide, haut du bâton) sont prolongés en pointillés légers : on voit qu\'ils sont parallèles. L\'ombre de la pyramide est aussi dessinée au sol, comme celle du bâton.'] },
