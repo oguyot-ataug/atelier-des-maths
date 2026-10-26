@@ -35,7 +35,7 @@ async function api(params){
   for(let essai = 0; essai < 4; essai++){
     const r = await fetch(u, { headers: UA });
     if(r.ok) return r.json();
-    await pause(2000 * (essai + 1));
+    await pause(5000 * (essai + 1));
   }
   throw new Error('Commons injoignable : ' + u);
 }
@@ -54,6 +54,9 @@ const infos = p => {
 };
 
 fs.mkdirSync(TMP, { recursive: true });
+// Journal commité avec le résultat (les journaux des Actions ne sont pas toujours lisibles).
+const journal = [], note = m => { journal.push(m); console.log(m); };
+process.on('exit', () => { fs.mkdirSync(CAND, { recursive: true }); fs.writeFileSync(path.join(CAND, 'journal.txt'), journal.join('\n') + '\n'); });
 const aChercher = Object.keys(recherche).filter(t => !(t in choix));
 const choisis = Object.entries(choix).filter(([, f]) => f);
 
@@ -61,7 +64,7 @@ const choisis = Object.entries(choix).filter(([, f]) => f);
 if(aChercher.length){
   fs.mkdirSync(CAND, { recursive: true });
   const tous = {}, lignes = [];
-  for(const t of aChercher){
+  for(const t of aChercher) try{
     const d = await api({ generator: 'search', gsrnamespace: '6', gsrsearch: recherche[t] + ' filetype:bitmap', gsrlimit: '8',
       prop: 'imageinfo', iiprop: 'url|extmetadata|mime', iiurlwidth: '260' });
     const pages = ((d.query && d.query.pages) || []).sort((a, b) => a.index - b.index).map(infos).filter(c => c.vignette && LIBRE.test(c.licence)).slice(0, 5);
@@ -69,18 +72,23 @@ if(aChercher.length){
     const tuiles = [];
     for(const [k, c] of pages.entries()){
       const f = path.join(TMP, `${slug(t)}-${k + 1}.jpg`);
-      try{ await telecharger(c.vignette, f); tuiles.push(['-label', `${k + 1} · ${c.licence}`.slice(0, 30), f]); }catch(e){ console.warn(e.message); }
-      await pause(150);
+      try{
+        await telecharger(c.vignette, f);
+        execFileSync('convert', [f + '[0]', '-resize', '230x200>', '-background', '#ffffff', '-flatten', f + '.png']); // vérifie et normalise l'image
+        tuiles.push(['-label', `${k + 1} · ${c.licence}`.slice(0, 30).replace(/[%@\\]/g, ''), f + '.png']);
+      }catch(e){ note(`  ${t} #${k + 1} ignoré : ${e.message.split('\n')[0]}`); }
+      await pause(250);
     }
-    const ligne = path.join(TMP, `ligne-${lignes.length}.png`);
-    if(tuiles.length) execFileSync('montage', [...tuiles.flat(), '-tile', '5x1', '-geometry', '230x200+6+6', '-pointsize', '15', '-title', t, '-background', '#ffffff', ligne]);
-    else execFileSync('convert', ['-size', '1210x60', 'xc:#ffffff', '-pointsize', '20', '-annotate', '+10+35', t + ' : aucun candidat libre', ligne]);
+    const ligne = path.join(TMP, `ligne-${lignes.length}.png`), titre = t.replace(/[%@\\]/g, '');
+    if(tuiles.length) execFileSync('montage', [...tuiles.flat(), '-tile', '5x1', '-geometry', '230x200+6+6', '-pointsize', '15', '-title', titre, '-background', '#ffffff', ligne]);
+    else execFileSync('convert', ['-size', '1210x60', 'xc:#ffffff', '-pointsize', '20', '-annotate', '+10+35', titre + ' : aucun candidat libre', ligne]);
     lignes.push(ligne);
-    console.log(`${t} : ${pages.length} candidat(s)`);
-    await pause(300);
-  }
+    note(`${t} : ${pages.length} candidat(s)`);
+    await pause(500);
+  }catch(e){ note(`${t} : ERREUR ${e.message.split('\n')[0]}`); }
   for(let i = 0; i < lignes.length; i += 6){
-    execFileSync('convert', [...lignes.slice(i, i + 6), '-append', '-quality', '72', path.join(CAND, `planche-${i / 6 + 1}.jpg`)]);
+    try{ execFileSync('convert', [...lignes.slice(i, i + 6), '-background', '#ffffff', '-append', '-quality', '72', path.join(CAND, `planche-${i / 6 + 1}.jpg`)]); }
+    catch(e){ note(`Planche ${i / 6 + 1} : ERREUR ${e.message.split('\n')[0]}`); }
   }
   fs.writeFileSync(path.join(CAND, 'candidats.json'), JSON.stringify(tous, null, 1) + '\n');
 }
@@ -89,20 +97,20 @@ if(aChercher.length){
 if(choisis.length){
   fs.mkdirSync(SORTIE, { recursive: true });
   const credits = lire(path.join(SORTIE, 'credits.json'));
-  for(const [t, fichier] of choisis){
+  for(const [t, fichier] of choisis) try{
     const s = slug(t), f = path.join(SORTIE, s + '.jpg');
     if(credits[t] && credits[t].fichier === fichier && fs.existsSync(f)) continue;
     const d = await api({ titles: fichier, prop: 'imageinfo', iiprop: 'url|extmetadata|mime', iiurlwidth: '640' });
     const p = ((d.query && d.query.pages) || [])[0];
-    if(!p || p.missing){ console.warn('Fichier introuvable : ' + fichier); continue; }
+    if(!p || p.missing){ note('Fichier introuvable : ' + fichier); continue; }
     const c = infos(p);
-    if(!LIBRE.test(c.licence)){ console.warn(`Licence non libre (${c.licence}) : ${fichier}`); continue; }
+    if(!LIBRE.test(c.licence)){ note(`Licence non libre (${c.licence}) : ${fichier}`); continue; }
     const brut = path.join(TMP, s + '-brut');
     await telecharger(c.vignette, brut);
     execFileSync('convert', [brut + '[0]', '-auto-orient', '-resize', '480x400>', '-background', '#ffffff', '-flatten', '-strip', '-quality', '82', f]);
     credits[t] = { fichier: c.fichier, image: `img/histoire/${s}.jpg`, auteur: c.auteur, licence: c.licence, source: c.source };
-    console.log(`${t} : ${c.fichier} (${c.licence})`);
+    note(`${t} : ${c.fichier} (${c.licence})`);
     await pause(300);
-  }
+  }catch(e){ note(`${t} : ERREUR ${e.message.split('\n')[0]}`); }
   fs.writeFileSync(path.join(SORTIE, 'credits.json'), JSON.stringify(credits, null, 1) + '\n');
 }

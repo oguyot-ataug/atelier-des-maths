@@ -35,12 +35,13 @@ jobs:
       - name: ImageMagick
         run: command -v montage >/dev/null || (sudo apt-get update -qq && sudo apt-get install -y -qq imagemagick)
       - name: Recherche et téléchargement (Wikimedia Commons)
-        run: node tools/histoire-images/images.mjs
+        run: node tools/histoire-images/images.mjs 2>&1 | tee /tmp/sortie.txt; mkdir -p tools/histoire-images/candidats; cp /tmp/sortie.txt tools/histoire-images/candidats/sortie.txt
       - name: Commit du résultat sur la branche
+        if: always()
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A img/histoire tools/histoire-images/candidats 2>/dev/null || true
+          for d in img/histoire tools/histoire-images/candidats; do [ -e "$d" ] && git add -A "$d"; done
           if git diff --cached --quiet; then echo "Rien de nouveau."; exit 0; fi
           git commit -m "Images de l'histoire : résultat du workflow (Wikimedia Commons)"
           git push
