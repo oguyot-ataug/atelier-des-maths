@@ -98,9 +98,34 @@ function hmLieuTxt(e){ return `<div class="hm-lieu"><span class="gicon">location
 function hmChapitre(niv, titre){ return HM_NIV[niv].liste().find(c => c.t === titre) || null; }
 function hmVisible(niv){ return typeof niveauVisible !== 'function' || niveauVisible(niv); }
 const hmEsc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+const HM_LEGENDES = {};
+/* Illustrations -- demandé : « il manque des illustrations, les papyrus par exemple, pour savoir de quoi on parle,
+   pas seulement des points sur une carte. Ou des représentations des mathématiciens. » Images libres de Wikimedia
+   Commons copiées sur le site (img/histoire/, choisies par tools/histoire-images/), avec leurs crédits
+   (img/histoire/credits.json : auteur, licence, source) ; HM_LEGENDES dit ce que montre l'image. */
+let hmImgs = null;
+function hmChargerImgs(){
+  if(hmImgs) return Promise.resolve();
+  const v = ((document.querySelector('script[src*="frise-histoire.js"]') || {}).src || '').split('v=')[1] || '';
+  return fetch('img/histoire/credits.json?v=' + v).then(r => r.ok ? r.json() : {}).catch(() => ({})).then(j => { hmImgs = j || {}; });
+}
+function hmIllu(e, grand){
+  const c = hmImgs && hmImgs[e[3]]; if(!c) return '';
+  const leg = HM_LEGENDES[e[3]] || e[3];
+  return `<figure class="hm-illu${grand ? ' grand' : ''}"><button type="button" class="hm-illu-img" onclick="hmAgrandir('${hmEsc(e[3].replace(/'/g, '\\\''))}')" title="Agrandir"><img src="${c.image}" alt="${hmEsc(leg)}" loading="lazy"></button>
+    <figcaption>${grand ? hmEsc(leg) + '<br>' : ''}<span class="hm-credit">${c.auteur ? hmEsc(c.auteur) + ' · ' : ''}${hmEsc(c.licence)} · <a href="${hmEsc(c.source)}" target="_blank" rel="noopener">Wikimedia Commons</a></span></figcaption></figure>`;
+}
+function hmAgrandir(titre){
+  const c = hmImgs && hmImgs[titre]; if(!c) return;
+  const ov = document.createElement('div'); ov.className = 'hm-loupe'; ov.onclick = ev => { if(ev.target === ov || ev.target.closest('.hm-loupe-x')) ov.remove(); };
+  ov.innerHTML = `<figure><button type="button" class="hm-loupe-x" title="Fermer"><span class="gicon">close</span></button><img src="${c.image}" alt="${hmEsc(HM_LEGENDES[titre] || titre)}">
+    <figcaption><b>${hmEsc(HM_LEGENDES[titre] || titre)}</b><br><span class="hm-credit">${c.auteur ? hmEsc(c.auteur) + ' · ' : ''}${hmEsc(c.licence)} · <a href="${hmEsc(c.source)}" target="_blank" rel="noopener">voir la source</a></span></figcaption></figure>`;
+  document.body.appendChild(ov);
+}
 let hmFiltre = '';
 function hmRendre(){
   const root = document.getElementById('friseRoot'); if(!root) return;
+  if(!hmImgs){ hmChargerImgs().then(hmRendre); }
   const niveaux = Object.keys(HM_NIV).filter(hmVisible);
   let h = `<div class="hm-filtres"><span>Quand étudie-t-on ces notions ?</span><button type="button" class="hm-f${!hmFiltre ? ' on' : ''}" onclick="hmFiltrer('')">Tous les niveaux</button>${niveaux.map(n => `<button type="button" class="hm-f${hmFiltre === n ? ' on' : ''}" style="--c:${HM_NIV[n].coul}" onclick="hmFiltrer('${n}')">${HM_NIV[n].lib}</button>`).join('')}</div>`;
   h += `<p class="hint hm-aide">Les vignettes de couleur indiquent en quelle classe on étudie la notion : clique dessus pour ouvrir le chapitre.${hmFiltre ? ` Filtre : <b>${HM_NIV[hmFiltre].lib}</b>, les étapes qui ne concernent pas ce niveau sont estompées.` : ''}</p><div id="hmCarte" class="hm-carte-monde"></div><div class="hm-frise">`;
@@ -110,7 +135,7 @@ function hmRendre(){
     l.forEach(e => {
       const [, date, emo, titre, texte, nivs, lieu] = e, vis = nivs.filter(([n]) => hmVisible(n));
       h += `<div class="hm-evt${hmEstompe(e) ? ' estompe' : ''}" id="hm-e${HM_EVTS.indexOf(e)}"><div class="hm-date">${date}</div><div class="hm-point">${emo}</div>
-        <div class="hm-carte"><b class="hm-titre">${titre}</b><p>${texte}</p>${hmLieuTxt(e)}${vis.length ? `<div class="hm-vigs">${vis.map(hmVignette).join('')}</div>` : ''}</div></div>`;
+        <div class="hm-carte">${hmIllu(e)}<b class="hm-titre">${titre}</b><p>${texte}</p>${hmLieuTxt(e)}${vis.length ? `<div class="hm-vigs">${vis.map(hmVignette).join('')}</div>` : ''}</div></div>`;
     });
   });
   root.innerHTML = h + '</div>';
@@ -261,7 +286,7 @@ function hmMaj(){
   if(hmEvtSel >= 0){
     const e = HM_EVTS[hmEvtSel], vis = e[5].filter(([n]) => hmVisible(n));
     bas += `<div class="hm-fiche${hmEstompe(e) ? ' estompe' : ''}"><div class="hm-fiche-tete"><span class="hm-fiche-emo">${e[2]}</span><span class="hm-lieu-date">${e[1]}</span> <b>${e[3]}</b></div>
-      <p>${e[4]}</p>${hmLieuTxt(e)}<div class="hm-vigs">${vis.map(hmVignette).join('')}${hmParoleOk() ? `<button type="button" class="hm-lien" onclick="hmEcouter(${hmEvtSel})">🔊 Écouter</button>` : ''}<button type="button" class="hm-lien" onclick="hmVoirEtape(${hmEvtSel})">Voir dans la frise ↓</button></div></div>`;
+      ${hmIllu(e, true)}<p>${e[4]}</p>${hmLieuTxt(e)}<div class="hm-vigs">${vis.map(hmVignette).join('')}${hmParoleOk() ? `<button type="button" class="hm-lien" onclick="hmEcouter(${hmEvtSel})">🔊 Écouter</button>` : ''}<button type="button" class="hm-lien" onclick="hmVoirEtape(${hmEvtSel})">Voir dans la frise ↓</button></div></div>`;
   } else if(!bas) bas = `<p class="hint hm-carte-aide">${monde ? 'Clique sur un point pour lire l\'étape (le nombre indique combien d\'étapes sont nées à cet endroit), sur un cadre pour zoomer, ou sur « Animer » pour voir l\'histoire se dérouler.' : 'Clique sur un point pour lire l\'étape, ou sur « Animer » pour voir l\'histoire se dérouler.'}</p>`;
   document.getElementById('hmBas').innerHTML = bas;
 }
@@ -353,6 +378,16 @@ function hmVoirEtape(i){
     .hm-fiche-tete{ display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; } .hm-fiche-tete b{ font:700 1.02rem 'Space Grotesk',sans-serif; } .hm-fiche-emo{ font-size:1.2rem; }
     .hm-fiche p{ margin:5px 0 6px; line-height:1.5; font-size:.94rem; }
     .hm-lien{ border:0; background:none; color:#2F6FB3; font:600 .8rem Inter,sans-serif; cursor:pointer; padding:2px 4px; margin-left:auto; }
+    .hm-illu{ float:right; margin:2px 0 6px 12px; width:132px; } .hm-illu.grand{ width:200px; }
+    .hm-illu-img{ display:block; width:100%; padding:0; border:1px solid #E3E6EC; border-radius:8px; overflow:hidden; background:#F4F1EA; cursor:zoom-in; }
+    .hm-illu img{ display:block; width:100%; height:auto; max-height:150px; object-fit:cover; } .hm-illu.grand img{ max-height:220px; object-fit:contain; }
+    .hm-illu figcaption{ font-size:.68rem; line-height:1.3; color:#6B7280; margin-top:3px; } .hm-illu.grand figcaption{ font-size:.74rem; }
+    .hm-credit a{ color:inherit; } .hm-carte::after, .hm-fiche::after{ content:''; display:block; clear:both; }
+    .hm-loupe{ position:fixed; inset:0; z-index:660; background:rgba(20,20,30,.82); display:flex; align-items:center; justify-content:center; padding:16px; cursor:zoom-out; }
+    .hm-loupe figure{ position:relative; margin:0; background:#fff; border-radius:12px; padding:10px; max-width:min(920px, 96vw); cursor:default; }
+    .hm-loupe img{ display:block; max-width:100%; max-height:76vh; margin:0 auto; border-radius:6px; }
+    .hm-loupe figcaption{ font-size:.85rem; color:#4E5665; margin-top:6px; line-height:1.4; } .hm-loupe-x{ position:absolute; top:-14px; right:-14px; width:32px; height:32px; border-radius:50%; border:0; background:#fff; box-shadow:0 2px 8px rgba(0,0,0,.3); cursor:pointer; }
+    @media (max-width:640px){ .hm-illu{ width:96px; } .hm-illu.grand{ float:none; width:100%; margin:4px 0 8px; } .hm-illu.grand img{ max-height:240px; } }
     @keyframes hmApparait{ from{ opacity:0; transform:translateY(4px); } to{ opacity:1; transform:none; } }
     @media (max-width:640px){ .hm-frise::before{ left:17px; } .hm-epoque{ padding-left:44px; } .hm-evt{ grid-template-columns:36px 1fr; } .hm-date{ grid-column:2; text-align:left; padding:0; order:-1; } .hm-point{ grid-row:1 / span 2; } .hm-carte{ grid-column:2; } }
   `;
