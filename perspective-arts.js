@@ -122,7 +122,7 @@ function paSceneCite(){
   h += `<path d="M240,130 Q300,72 360,130 Z" fill="#C9AE86" stroke="#9A7E58"/><rect x="240" y="126" width="120" height="7" fill="#D8C29C"/>`;
   h += `<rect x="290" y="176" width="20" height="32" fill="#5A4632"/>`;
   return { titre: 'La place (à la manière de La Cité idéale, vers 1480)', vps: [V], decor: h, aretes: A, devine: true,
-    fin: 'Le dallage, les façades, les fenêtres : toutes les fuyantes se rejoignent au point de fuite, placé sur <b>la porte du temple</b>, au centre du tableau. Les rangées du dallage se resserrent au loin : c\'est la méthode d\'Alberti (voir le pavement d\'Alberti, en 4e).' };
+    fin: 'Le dallage, les façades, les fenêtres : toutes les fuyantes se rejoignent au point de fuite, placé sur <b>la porte du temple</b>, au centre du tableau. Les rangées du dallage se resserrent au loin : c\'est la méthode d\'Alberti, que tu retrouveras en 3e (« Le pavement d\'Alberti »).' };
 }
 function paSceneAngle(){
   const L = [40, 215], R = [560, 215], Ft = [300, 70], Fb = [300, 336], A = []; let h = '';

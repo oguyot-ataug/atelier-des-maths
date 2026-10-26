@@ -32,6 +32,8 @@ const CU_RECETTES = [
   { nom: 'Quatre-quarts', pour: 6, qui: 'parts', max: 24, ingr: [['Œufs', 3, ''], ['Beurre', 150, 'g'], ['Sucre', 150, 'g'], ['Farine', 150, 'g']] }];
 const CU_COUL = ['#E9A21C', '#E67E22', '#2F6FB3', '#C08A3A', '#7A4FC0'];
 const cuQte = (q, u) => cuN(q, 2) + (u ? ' ' + u : '');
+const cuExact = (v, d) => Math.abs(v * Math.pow(10, d) - Math.round(v * Math.pow(10, d))) < 1e-9; // v s'écrit avec au plus d décimales
+const cuEnv = (v, d) => cuExact(v, d) ? '' : '≈ '; // valeur arrondie : « ≈ », jamais « = »
 function cuRecetteMonter(el){
   const niv = el.dataset.niv || '6e', cm = niv === 'cm2';
   const st = { r: 0, n: 6, defi: null, score: 0 };
@@ -53,9 +55,10 @@ function cuRecetteMonter(el){
         <ul class="cu-liste"><li>${nom} pour 1 : ${q} ÷ ${r.pour} = ${cuN(q / r.pour, 3)}${u ? ' ' + u : ''}</li><li>${nom} pour ${n} : ${cuN(q / r.pour, 3)} × ${n} = ${cuQte(q * k, u)}</li></ul>
         On fait de même pour chaque ingrédient.${Number.isInteger(k) ? ` Ici, c'est plus rapide : ${n} = ${r.pour} × ${k}, donc on multiplie chaque quantité par ${k}.` : ''}`;
     }
-    const coef = Number.isInteger(k) ? String(k) : cuN(k, 3);
+    // Coefficient décimal (exact) ou, sinon, écrit comme une fraction (8 ÷ 6 n'est pas égal à 1,333).
+    const coef = cuExact(k, 3) ? cuN(k, 3) : `<span class="tex">\\dfrac{${n}}{${r.pour}}</span>`;
     return `<b>Tableau de proportionnalité</b> : on passe de la première colonne à la seconde en multipliant par le même nombre, le <b>coefficient</b> ${r.pour === n ? '1' : `${n} ÷ ${r.pour} = ${coef}`}.
-      <table class="cu-tab"><tr><th>${r.qui}</th><td>${r.pour}</td><td>${n}</td><td rowspan="${r.ingr.length + 1}" class="cu-coef">× ${coef}</td></tr>${r.ingr.map(([nm, q, u]) => `<tr><th>${nm}${u ? ' (' + u + ')' : ''}</th><td>${cuN(q)}</td><td><b>${cuN(q * k)}</b></td></tr>`).join('')}</table>`;
+      <table class="cu-tab"><tr><th>${r.qui}</th><td>${r.pour}</td><td>${n}</td><td rowspan="${r.ingr.length + 1}" class="cu-coef">× ${coef}</td></tr>${r.ingr.map(([nm, q, u]) => `<tr><th>${nm}${u ? ' (' + u + ')' : ''}</th><td>${cuN(q)}</td><td><b>${cuEnv(q * k, 2)}${cuN(q * k)}</b></td></tr>`).join('')}</table>${cuExact(k, 3) ? '' : '<p class="hint" style="margin:6px 0 0;">« ≈ » : la valeur est arrondie au centième.</p>'}`;
   }
   function rendre(){
     const r = R(), k = st.n / r.pour, mx = Math.max(...r.ingr.map(i => i[1])) * r.max / r.pour;
@@ -67,7 +70,7 @@ function cuRecetteMonter(el){
       const v = q * k, oeuf = !u && !Number.isInteger(Math.round(v * 100) / 100);
       return `<div class="cu-l"><span class="cu-nom">${nm}</span><span class="cu-base">${cuQte(q, u)} pour ${r.pour}</span>
         <span class="cu-barre"><i style="width:${Math.min(100, v / mx * 100).toFixed(1)}%;background:${CU_COUL[i % CU_COUL.length]}"></i></span>
-        ${st.defi ? `<span class="cu-saisie"><input type="text" inputmode="decimal" data-i="${i}" aria-label="${nm} pour ${st.n}"> ${u}</span>` : `<b class="cu-v">${cuQte(v, u)}${oeuf ? ' <small>(on arrondit !)</small>' : ''}</b>`}</div>`;
+        ${st.defi ? `<span class="cu-saisie"><input type="text" inputmode="decimal" data-i="${i}" aria-label="${nm} pour ${st.n}"> ${u}</span>` : `<b class="cu-v">${u ? cuEnv(v, 2) : ''}${cuQte(v, u)}${oeuf ? ' <small>(on arrondit !)</small>' : ''}</b>`}</div>`;
     }).join('');
     if(st.defi) $('.cu-actions [data-a="defi"]').innerHTML = '<span class="gicon">task_alt</span> Vérifier';
     else $('.cu-actions [data-a="defi"]').innerHTML = '<span class="gicon">skillet</span> Défi du chef';

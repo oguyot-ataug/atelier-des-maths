@@ -86,7 +86,7 @@ function scOrageMonter(el){
     const d = 340 * st.t, g = parseFloat($('[data-a="d"]').value), ok = isFinite(g) && Math.abs(g - d) <= Math.max(10, d * .02);
     const calc = niv === '3e'
       ? `<div>Le son va à v = 340 m/s, pendant t = ${tTxt(st.t)}.</div><div>d = v × t = 340 × ${scN(st.t, 1)} = <b>${scN(d, 0)} m</b>.</div><div>En km/h, le son va à 340 × 3 600 ÷ 1 000 = 1 224 km/h.</div>`
-      : `<div>En 1 seconde, le son parcourt 340 m.</div><div>En ${tTxt(st.t)} : 340 × ${scN(st.t, 1)} = <b>${scN(d, 0)} m</b>.</div><div>C'est environ <b>${scN(d / 1000, 1)} km</b>.</div>`;
+      : `<div>En 1 seconde, le son parcourt 340 m.</div><div>En ${tTxt(st.t)} : 340 × ${scN(st.t, 1)} = <b>${scN(d, 0)} m</b>.</div><div>C'est ${Math.abs(d / 100 - Math.round(d / 100)) < 1e-9 ? '' : 'environ '}<b>${scN(d / 1000, 1)} km</b>.</div>`;
     scDire(el, `${ok ? '<span class="gicon">celebration</span> Exact !' : '<span class="gicon">info</span> Voici le calcul :'}<div class="sc-etapes">${calc}</div>
       Astuce : le son parcourt à peu près 1 km en 3 secondes. Divise le nombre de secondes par 3 et tu as la distance en kilomètres. ${d < 2000 ? 'Ici, l\'orage est tout près : on rentre à l\'abri !' : ''}`, ok ? 'ok' : 'ko');
   }
