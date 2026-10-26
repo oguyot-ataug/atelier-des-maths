@@ -155,9 +155,13 @@ function hiBase60Monter(el){
   function main(cx, droite, n){
     const px = cx - 75, pt = 172, ph = (n - 1) % 12 + 1, leves = droite ? 0 : Math.floor(n / 12);
     const doigts = droite ? ['auriculaire', 'annulaire', 'majeur', 'index'] : ['index', 'majeur', 'annulaire', 'auriculaire'];
-    let h = '', cible = null;
+    let h = '', devant = '', cible = null;                 // devant : doigts repliés, dessinés PAR-DESSUS la paume
     doigts.forEach((f, i) => {
       const x = px + 8 + i * 35, rang = LEVE.indexOf(f), leve = droite || rang < leves, L = leve ? LONG[f] : 28, haut = pt - L;
+      if(!leve){ // doigt replié sur la paume : on voit le dessus des deux premières phalanges, le bout touche la paume
+        devant += `<rect x="${x}" y="${pt - 14}" width="31" height="58" rx="15.5" fill="#EDBF95" stroke="${TRAIT}" stroke-width="1.4"/><path d="M${x + 6},${pt + 8} q9.5,4 19,0" fill="none" stroke="${TRAIT}" opacity=".6"/><ellipse cx="${x + 15.5}" cy="${pt + 34}" rx="9" ry="6" fill="#F6D6B8" stroke="${TRAIT}" stroke-width=".8"/>`;
+        return;
+      }
       h += `<rect x="${x}" y="${haut}" width="31" height="${L + 34}" rx="15.5" fill="${!droite && leve ? '#9CCBF0' : PEAU}" stroke="${!droite && leve ? '#3F7FBF' : TRAIT}" stroke-width="1.4"/>`;
       if(leve) for(let k = 1; k <= 2; k++) h += `<path d="M${x + 7},${haut + L * k / 3} q8.5,3 17,0" fill="none" stroke="${droite ? TRAIT : '#3F7FBF'}" stroke-width="1" opacity=".7"/>`;
       if(droite) for(let p = 0; p < 3; p++){
@@ -170,8 +174,9 @@ function hiBase60Monter(el){
     });
     // pouce
     const pouceLeve = droite || leves >= 1, ax = droite ? px + 136 : px + 14, ay = pt + 62, ang = droite ? 38 : (pouceLeve ? -38 : 62), Lp = pouceLeve ? 80 : 46;
-    h += `<g transform="rotate(${ang} ${ax} ${ay})"><rect x="${ax - 16}" y="${ay - Lp}" width="32" height="${Lp + 18}" rx="16" fill="${!droite && pouceLeve ? '#9CCBF0' : PEAU}" stroke="${!droite && pouceLeve ? '#3F7FBF' : TRAIT}" stroke-width="1.4"/>${droite ? `<ellipse cx="${ax}" cy="${ay - Lp + 14}" rx="10" ry="12" fill="#F0A35E"/>` : ''}${!droite && pouceLeve ? `<text x="${ax}" y="${ay - Lp - 7}" font-size="12" font-weight="700" text-anchor="middle" fill="#2F6FB3" transform="rotate(${-ang} ${ax} ${ay - Lp - 11})">12</text>` : ''}</g>`;
-    h += `<rect x="${px}" y="${pt - 6}" width="150" height="116" rx="44" fill="${PEAU}" stroke="${TRAIT}" stroke-width="1.4"/><path d="M${px + 34},${pt + 40} q40,22 84,4" fill="none" stroke="${TRAIT}" opacity=".45"/>`;
+    const pouce = `<g transform="rotate(${ang} ${ax} ${ay})"><rect x="${ax - 16}" y="${ay - Lp}" width="32" height="${Lp + 18}" rx="16" fill="${!droite && pouceLeve ? '#9CCBF0' : PEAU}" stroke="${!droite && pouceLeve ? '#3F7FBF' : TRAIT}" stroke-width="1.4"/>${droite ? `<ellipse cx="${ax}" cy="${ay - Lp + 14}" rx="10" ry="12" fill="#F0A35E"/>` : ''}${!droite && pouceLeve ? `<text x="${ax}" y="${ay - Lp - 7}" font-size="12" font-weight="700" text-anchor="middle" fill="#2F6FB3" transform="rotate(${-ang} ${ax} ${ay - Lp - 11})">12</text>` : ''}</g>`;
+    if(pouceLeve) h += pouce; else devant += pouce;
+    h += `<rect x="${px}" y="${pt - 6}" width="150" height="116" rx="44" fill="${PEAU}" stroke="${TRAIT}" stroke-width="1.4"/><path d="M${px + 34},${pt + 40} q40,22 84,4" fill="none" stroke="${TRAIT}" opacity=".45"/>` + devant;
     if(droite && cible){ const r = 38 * Math.PI / 180, tx = ax + Math.sin(r) * (-1) * -(Lp - 14) , ty = ay - Math.cos(r) * (Lp - 14);
       h += `<path d="M${tx.toFixed(1)},${ty.toFixed(1)} Q${((tx + cible[0]) / 2).toFixed(1)},${(Math.min(ty, cible[1]) - 30).toFixed(1)} ${cible[0]},${cible[1] + 10}" fill="none" stroke="#E67E22" stroke-width="2" stroke-dasharray="4 3"/>`; }
     return h + `<text x="${cx}" y="300" font-size="13" text-anchor="middle" fill="#4E5665">${droite ? 'main droite : les phalanges' : 'main gauche : les douzaines'}</text>`;
