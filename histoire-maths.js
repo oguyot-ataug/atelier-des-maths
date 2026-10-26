@@ -383,12 +383,18 @@ function hiThalesMonter(el){
     const t = Math.tan(st.ang * Math.PI / 180), k = .62, sol = 225, cx = 170;
     const xA = cx, yA = sol - H * k, xO = cx + H / t * k;                               // sommet, bout de l'ombre
     let h = `<rect width="640" height="260" fill="#FFF4D6" rx="12"/><rect y="${sol}" width="640" height="35" fill="#E3C891"/>`;
-    h += `<path d="M${cx - DEMI * k},${sol} L${xO},${sol} L${cx + DEMI * k},${sol} Z" fill="#8E7A55" opacity=".55"/>`;
+    h += `<line x1="${cx + DEMI * k}" y1="${sol}" x2="${xO}" y2="${sol}" stroke="#4E3B22" stroke-width="5" opacity=".6"/>`; // ombre au sol (comme celle du bâton)
     h += `<path d="M${cx - DEMI * k},${sol} L${xA},${yA} L${cx + DEMI * k},${sol} Z" fill="#D9B77A" stroke="#B08A4A"/>`;
     h += `<line x1="${xA}" y1="${yA}" x2="${xO}" y2="${sol}" stroke="#E67E22" stroke-width="1.6" stroke-dasharray="6 4"/>`;
     const bx = 520, bh = BATON * 18, bo = BATON / t * 18;                                   // bâton dessiné plus grand (zoom)
     h += `<line x1="${bx}" y1="${sol}" x2="${bx}" y2="${sol - bh}" stroke="#6B4A22" stroke-width="4"/><line x1="${bx}" y1="${sol}" x2="${bx + bo}" y2="${sol}" stroke="#4E3B22" stroke-width="5" opacity=".6"/><line x1="${bx}" y1="${sol - bh}" x2="${bx + bo}" y2="${sol}" stroke="#E67E22" stroke-width="1.6" stroke-dasharray="6 4"/><text x="${bx - 6}" y="${sol - bh / 2}" font-size="11" text-anchor="end" fill="#6B4A22">${hiN(BATON, 1)} m</text>`;
-    h += `<circle cx="600" cy="38" r="16" fill="#F7C531"/><text x="${cx}" y="${sol + 16}" font-size="11" text-anchor="middle" fill="#4E3B22">centre de la base</text><line x1="${cx}" y1="${sol}" x2="${cx}" y2="${yA}" stroke="#C0392B" stroke-dasharray="3 3"/><text x="${cx - 6}" y="${(sol + yA) / 2}" font-size="12" text-anchor="end" fill="#C0392B">h ?</text>`;
+    // Soleil à gauche (les ombres partent vers la droite), sur le rayon qui passe par le sommet : il monte et se
+    // déplace avec le curseur. Rayons prolongés en pointillés légers jusqu'au Soleil et jusqu'au bord, parallèles.
+    const c = Math.cos(st.ang * Math.PI / 180), si = Math.sin(st.ang * Math.PI / 180), sx = xA - 140 * c, sy = yA - 140 * si;
+    const yb = sol - bh, lb = Math.min(yb / si, (bx - 20) / c);
+    h += `<line x1="${sx}" y1="${sy}" x2="${xA}" y2="${yA}" stroke="#E67E22" stroke-width="1.2" stroke-dasharray="2 5" opacity=".7"/><line x1="${bx - lb * c}" y1="${yb - lb * si}" x2="${bx}" y2="${yb}" stroke="#E67E22" stroke-width="1.2" stroke-dasharray="2 5" opacity=".7"/>`;
+    h += `<g transform="translate(${sx},${sy})">${[0, 45, 90, 135, 180, 225, 270, 315].map(a => `<line x1="0" y1="21" x2="0" y2="28" stroke="#F7C531" stroke-width="2.5" stroke-linecap="round" transform="rotate(${a})"/>`).join('')}<circle r="16" fill="#F7C531"/></g>`;
+    h += `<text x="${cx}" y="${sol + 16}" font-size="11" text-anchor="middle" fill="#4E3B22">centre de la base</text><line x1="${cx}" y1="${sol}" x2="${cx}" y2="${yA}" stroke="#C0392B" stroke-dasharray="3 3"/><text x="${cx - 6}" y="${(sol + yA) / 2}" font-size="12" text-anchor="end" fill="#C0392B">h ?</text>`;
     svg.innerHTML = h;
     const o = ombres();
     $('.hi-donnees').innerHTML = `<div>Ombre du bâton : <b>${hiN(o.b, 2)} m</b>.</div><div>Ombre de la pyramide, depuis le bord de la base : <b>${hiN(o.p, 1)} m</b> ; depuis le centre, il faut ajouter la moitié du côté de la base (115 m) : ${hiN(o.p, 1)} + 115 = <b>${hiN(o.p + DEMI, 1)} m</b>.</div>`;
