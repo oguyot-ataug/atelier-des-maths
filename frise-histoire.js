@@ -101,6 +101,12 @@ const hmEsc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;
 let hmFiltre = '';
 function hmRendre(){
   const root = document.getElementById('friseRoot'); if(!root) return;
+  // La savante grecque d'Oliv'IA (olivia-deco.js) dans le titre -- choix : « savante grecque » pour la page Histoire.
+  const h1 = document.querySelector('#view-frise h1');
+  if(h1 && !h1.querySelector('.hm-oliv') && typeof olivPoseUrl === 'function'){
+    const o = document.createElement('span'); o.className = 'hm-oliv'; o.setAttribute('aria-hidden', 'true'); o.style.backgroundImage = olivPoseUrl('savante');
+    const g = h1.querySelector('.gicon'); if(g) g.replaceWith(o); else h1.prepend(o);
+  }
   const niveaux = Object.keys(HM_NIV).filter(hmVisible);
   let h = `<div class="hm-filtres"><span>Quand étudie-t-on ces notions ?</span><button type="button" class="hm-f${!hmFiltre ? ' on' : ''}" onclick="hmFiltrer('')">Tous les niveaux</button>${niveaux.map(n => `<button type="button" class="hm-f${hmFiltre === n ? ' on' : ''}" style="--c:${HM_NIV[n].coul}" onclick="hmFiltrer('${n}')">${HM_NIV[n].lib}</button>`).join('')}</div>`;
   h += `<p class="hint hm-aide">Les vignettes de couleur indiquent en quelle classe on étudie la notion : clique dessus pour ouvrir le chapitre.${hmFiltre ? ` Filtre : <b>${HM_NIV[hmFiltre].lib}</b>, les étapes qui ne concernent pas ce niveau sont estompées.` : ''}</p><div id="hmCarte" class="hm-carte-monde"></div><div class="hm-frise">`;
@@ -310,6 +316,7 @@ function hmVoirEtape(i){
 (function hmStyles(){
   const s = document.createElement('style');
   s.textContent = `
+    .hm-oliv{ display:inline-block; width:88px; height:88px; background:center/contain no-repeat; vertical-align:middle; margin:-6px 6px -14px -8px; }
     .hm-filtres{ display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin:8px 0 4px; } .hm-filtres > span{ font-weight:600; margin-right:4px; }
     .hm-f{ border:1.5px solid var(--c,#8A8F98); color:var(--c,#4E5665); background:#fff; border-radius:999px; padding:3px 12px; font:700 .82rem Inter,sans-serif; cursor:pointer; }
     .hm-f.on{ background:var(--c,#1C1B2E); color:#fff; border-color:var(--c,#1C1B2E); }

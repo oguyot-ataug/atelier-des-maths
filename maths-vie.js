@@ -113,12 +113,16 @@ function vieNiveau(html, niv){
   t.content.querySelectorAll('[data-avant]').forEach(el => { if(r >= VIE_ORDRE.indexOf(el.dataset.avant)) el.remove(); });
   return t.innerHTML;
 }
+// Vignettes d'Oliv'IA (olivia-deco.js) : la globe-trotteuse en tête de l'onglet, une pose par thème dans son titre.
+// Dessin en arrière-plan d'un élément vide (aria-hidden) : rien de plus à lire pour la lecture à voix haute.
+const VIE_OLIV = { musique: 'musique', arts: 'arts', sport: 'sport', cuisine: 'cuisine', nature: 'nature', argent: 'argent', sciences: 'sciences', geo: 'geo', passe: 'histoire', jeux: 'jeux' };
+function vieOliv(pose){ return pose && typeof olivPoseUrl === 'function' ? `<span class="vie-oliv" aria-hidden="true" style='background-image:${olivPoseUrl(pose).replace(/'/g, '%27')}'></span>` : ''; }
 function vieHtml(liste, niv){
   const themes = [];
   liste.forEach(k => { const a = VIE_ACTIVITES[k]; if(!a) return; let t = themes.find(x => x.k === a.theme); if(!t){ t = { k: a.theme, acts: [] }; themes.push(t); } t.acts.push(a); });
-  return `<div class="vie-intro"><span class="gicon">public</span><div><b>Maths &amp; la vie</b> : les maths de ce chapitre, on les croise ${themes.map(t => VIE_THEMES[t.k].ou).join(', ').replace(/, ([^,]*)$/, ' et $1')}. Des activités à manipuler${themes.some(t => t.k === 'musique' || t.k === 'sciences') ? ' (monte le son !)' : ''} et un peu d'histoire.</div></div>`
+  return `<div class="vie-intro">${vieOliv('globe') || '<span class="gicon">public</span>'}<div><b>Maths &amp; la vie</b> : les maths de ce chapitre, on les croise ${themes.map(t => VIE_THEMES[t.k].ou).join(', ').replace(/, ([^,]*)$/, ' et $1')}. Des activités à manipuler${themes.some(t => t.k === 'musique' || t.k === 'sciences') ? ' (monte le son !)' : ''} et un peu d'histoire.</div></div>`
     + themes.map(t => { const T = VIE_THEMES[t.k];
-      return `<section class="vie-theme" style="--vie:${T.coul}"><h3 class="vie-theme-h"><span class="gicon">${T.icone}</span> ${T.titre}</h3>`
+      return `<section class="vie-theme" style="--vie:${T.coul}"><h3 class="vie-theme-h">${vieOliv(VIE_OLIV[t.k]) || `<span class="gicon">${T.icone}</span>`} ${T.titre}</h3>`
         + t.acts.map(a => `<div class="sub-header" style="margin-top:14px;"><span class="letter">${T.titre.split(' ').pop()[0].toUpperCase()}</span><h4>${a.titre}</h4></div>
           <div class="figure-wrap"><p class="hint interaction-hint" style="margin-top:6px;">${a.aide}</p>${a.html}</div>`).join('')
         + vieNiveau(T.histoire(), niv) + '</section>'; }).join('');
@@ -145,6 +149,8 @@ function vieMaj(niv, titre){
   s.textContent = `
     .vie-intro{ display:flex; gap:12px; align-items:flex-start; background:linear-gradient(135deg,#EEF6FF,#F4FBEF); border:1px solid #D5E5F2; border-radius:14px; padding:12px 16px; line-height:1.55; margin-bottom:8px; }
     .vie-intro > .gicon{ font-size:30px; color:#2F6FB3; }
+    .vie-oliv{ flex:none; display:inline-block; width:56px; height:56px; background:center/contain no-repeat; }
+    .vie-intro > .vie-oliv{ width:80px; height:80px; margin:-8px 0 -6px; } .vie-theme-h .vie-oliv{ width:58px; height:58px; margin:-6px 0; }
     .vie-theme{ border-top:3px solid var(--vie); margin-top:22px; padding-top:6px; }
     .vie-theme-h{ font:700 1.25rem 'Space Grotesk',sans-serif; color:var(--vie); display:flex; align-items:center; gap:8px; margin:6px 0 4px; }
     .vie-theme-h .gicon{ font-size:26px; }

@@ -62,6 +62,49 @@ function olivPoseSvg(p){
     visage = `<path d="M40 54 L52 57 M80 54 L68 57" stroke="#2C3A1A" stroke-width="3" stroke-linecap="round"/>` + yeux(false) + joues + bouche;
     extra = `<path d="M44 92 h32 l-4 10 h-24 Z" fill="#F5C518" stroke="#C99A00" stroke-width="1.5"/><text x="60" y="101" font-size="9" font-weight="800" fill="#7A2E2E" font-family="Arial" text-anchor="middle">D</text>`;
     return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">${cape}${tete}${corps}${bras}${visage}${extra}</svg>`;
+  } else if(['globe', 'musique', 'arts', 'sport', 'cuisine', 'nature', 'argent', 'jeux', 'sciences', 'geo', 'savante'].includes(p)){
+    // Maths & la vie (la globe-trotteuse et une pose par thème) et page Histoire des maths (la savante grecque) --
+    // demandé : « insérer des logos d'Oliv'IA dans les pages Maths & la vie et dans le menu histoire », choix :
+    // « globe-trotteuse, vignettes par thème et savante grecque ». La main droite tient l'objet du thème.
+    const main = `<path d="M93 70 q10 -4 12 -14" stroke="${E}" stroke-width="4" fill="none" stroke-linecap="round"/><circle cx="105" cy="56" r="4.8" fill="${E}"/>`;
+    const mainBas = `<path d="M93 76 q10 2 14 8" stroke="${E}" stroke-width="4" fill="none" stroke-linecap="round"/><circle cx="107" cy="85" r="4.8" fill="${E}"/>`;
+    bras = brasG + main; visage = yeux(true) + joues + sourire;
+    if(p === 'globe'){
+      visage = yeux(false) + joues + bouche;
+      extra = `<circle cx="106" cy="38" r="15" fill="#4FA3E0" stroke="#1F5C8A" stroke-width="2.5"/><path d="M96 32 q6 -6 12 -2 q2 6 -4 8 q-6 2 -8 -6 Z M108 44 q6 -2 8 4 q-4 6 -8 2 Z" fill="#6DBB4A" stroke="#2E7D32" stroke-width="1"/><path d="M91 38 H121 M106 23 Q98 38 106 53 M106 23 Q114 38 106 53" stroke="#fff" stroke-width="1" fill="none" opacity=".6"/><circle cx="105" cy="56" r="4.8" fill="${E}"/>`;
+    } else if(p === 'musique'){
+      tete = feuille + `<path d="M24 58 Q24 18 60 18 Q96 18 96 58" stroke="#3A3A5A" stroke-width="5" fill="none"/>`;
+      extra = `<rect x="18" y="52" width="12" height="20" rx="5" fill="#7A4FC0" stroke="#3A3A5A" stroke-width="2"/><rect x="90" y="52" width="12" height="20" rx="5" fill="#7A4FC0" stroke="#3A3A5A" stroke-width="2"/><text x="108" y="46" font-size="22" fill="#7A4FC0" font-family="Arial" text-anchor="middle">♪</text><text x="114" y="24" font-size="16" fill="#7A4FC0" font-family="Arial" text-anchor="middle">♫</text>`;
+    } else if(p === 'arts'){
+      tete = `<ellipse cx="56" cy="27" rx="28" ry="9" fill="#B03A3A" stroke="#6E1F1F" stroke-width="2"/><circle cx="58" cy="17" r="3.5" fill="#6E1F1F"/>`;
+      visage = yeux(false) + joues + sourire;
+      extra = `<path d="M104 58 L114 24" stroke="#8A5A1A" stroke-width="4" stroke-linecap="round"/><path d="M112 28 L116 16 L119 28 Z" fill="#2F6FB3"/><ellipse cx="14" cy="100" rx="12" ry="8" fill="#F3E2C0" stroke="#8A6D1F" stroke-width="1.5"/><circle cx="9" cy="98" r="2.3" fill="#E35D3A"/><circle cx="15" cy="96" r="2.3" fill="#2F6FB3"/><circle cx="20" cy="100" r="2.3" fill="#F5C518"/>`;
+    } else if(p === 'sport'){
+      extra = `<path d="M27 42 Q60 30 93 42" stroke="#E35D3A" stroke-width="7" fill="none"/><path d="M48 90 L56 100 M72 90 L64 100" stroke="#2F6FB3" stroke-width="4"/><circle cx="60" cy="104" r="7" fill="#F5C518" stroke="#C99A00" stroke-width="2"/><circle cx="108" cy="42" r="11" fill="#fff" stroke="#1C1B2E" stroke-width="2"/><path d="M108 36 l5 3.5 -2 6 h-6 l-2 -6 Z" fill="#1C1B2E"/>`;
+    } else if(p === 'cuisine'){
+      tete = `<path d="M40 30 Q30 10 46 10 Q50 -2 60 4 Q70 -2 74 10 Q90 10 80 30 Z" fill="#fff" stroke="#8A8F98" stroke-width="2"/><rect x="40" y="28" width="40" height="8" rx="2" fill="#fff" stroke="#8A8F98" stroke-width="2"/>`;
+      visage = yeux(false) + joues + sourire;
+      extra = `<path d="M105 56 L108 36" stroke="#8A8F98" stroke-width="3" stroke-linecap="round"/><path d="M108 36 Q100 22 106 14 Q112 22 108 36 Q116 22 112 14 Q104 22 108 36" fill="none" stroke="#8A8F98" stroke-width="1.8"/>`;
+    } else if(p === 'nature'){
+      extra = `<path d="M105 56 Q108 40 106 30" stroke="#2E7D32" stroke-width="3" fill="none"/><path d="M106 44 q8 -6 12 0 q-6 4 -12 0" fill="#6DBB4A"/>`
+        + [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(k => `<ellipse cx="106" cy="14" rx="4" ry="8" fill="#F5C518" stroke="#C99A00" stroke-width="1" transform="rotate(${k * 36} 106 22)"/>`).join('') + `<circle cx="106" cy="22" r="6" fill="#7A4A10"/>`;
+    } else if(p === 'argent'){
+      bras = brasG + mainBas; visage = yeux(false) + joues + sourire;
+      extra = `<ellipse cx="106" cy="98" rx="14" ry="11" fill="#F4A7B9" stroke="#B0607A" stroke-width="2"/><circle cx="118" cy="96" r="4" fill="#F4A7B9" stroke="#B0607A" stroke-width="1.5"/><path d="M100 108 v6 M112 108 v6" stroke="#B0607A" stroke-width="3"/><path d="M102 88 h8" stroke="#7A2E4A" stroke-width="2"/><circle cx="106" cy="72" r="7" fill="#F5C518" stroke="#C99A00" stroke-width="2"/><text x="106" y="76" font-size="9" font-weight="800" fill="#8A5A00" font-family="Arial" text-anchor="middle">€</text>`;
+    } else if(p === 'jeux'){
+      extra = `<g transform="rotate(-12 108 40)"><rect x="96" y="28" width="24" height="24" rx="5" fill="#fff" stroke="#5B2F9E" stroke-width="2.5"/><circle cx="102" cy="34" r="2.4" fill="#5B2F9E"/><circle cx="108" cy="40" r="2.4" fill="#5B2F9E"/><circle cx="114" cy="46" r="2.4" fill="#5B2F9E"/></g>`;
+    } else if(p === 'sciences'){
+      visage = yeux(false) + joues + bouche;
+      extra = `<rect x="31" y="50" width="58" height="24" rx="11" fill="#CFEFFF" fill-opacity=".45" stroke="#1F6F8B" stroke-width="3"/><path d="M60 52 V72" stroke="#1F6F8B" stroke-width="2"/><path d="M101 22 h10 v10 l8 18 h-26 l8 -18 Z" fill="#fff" stroke="#1F6F8B" stroke-width="2"/><path d="M95 44 l3 -6 h16 l3 6 Z" fill="#4CC38A"/><circle cx="103" cy="16" r="2" fill="#4CC38A"/><circle cx="110" cy="10" r="2.5" fill="#4CC38A"/>`;
+    } else if(p === 'geo'){
+      extra = `<circle cx="106" cy="38" r="14" fill="#F6E7C1" stroke="#8A6D1F" stroke-width="2.5"/><path d="M106 26 L110 38 L106 50 L102 38 Z" fill="#fff" stroke="#8A6D1F" stroke-width="1"/><path d="M106 26 L110 38 H102 Z" fill="#D3302F"/><text x="106" y="22" font-size="7" font-weight="800" fill="#8A6D1F" font-family="Arial" text-anchor="middle">N</text>`;
+    } else { // savante grecque : couronne de laurier, compas tenu par sa tête
+      tete = ''; // la couronne est dessinée par-dessus le corps (dans extra)
+      const laurier = [-4, -3, -2, -1, 1, 2, 3, 4].map(k => `<ellipse cx="${60 + k * 8}" cy="${28 + Math.abs(k) * 2.2}" rx="5" ry="2.6" fill="#6DBB4A" stroke="#2E7D32" stroke-width="1" transform="rotate(${k * 14} ${60 + k * 8} ${28 + Math.abs(k) * 2.2})"/>`).join('');
+      visage = yeux(false) + joues + sourire;
+      bras = brasG + `<path d="M93 66 q12 -8 13 -30" stroke="${E}" stroke-width="4" fill="none" stroke-linecap="round"/>`;
+      extra = laurier + `<path d="M106 30 L97 60 M106 30 L117 58" stroke="#5B6472" stroke-width="3" stroke-linecap="round"/><path d="M97 60 l-1 4" stroke="#1C1B2E" stroke-width="2"/><path d="M117 58 l1 4" stroke="#E35D3A" stroke-width="2.5"/><circle cx="106" cy="25" r="3.5" fill="#5B6472"/><circle cx="106" cy="33" r="4.8" fill="${E}"/>`;
+    }
   } else if(p === 'quiz'){ // point d'interrogation, main au menton
     bras += `<path d="M93 76 q4 10 -12 14" stroke="${E}" stroke-width="4" fill="none" stroke-linecap="round"/><circle cx="80" cy="90" r="4.5" fill="${E}"/>`;
     extra = `<text x="104" y="40" font-size="36" font-weight="800" fill="#E35D3A" font-family="Arial, sans-serif" text-anchor="middle">?</text>`;
