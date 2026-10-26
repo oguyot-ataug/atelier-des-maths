@@ -16,7 +16,7 @@ import { readFileSync, writeFileSync, appendFileSync } from 'node:fs';
 const app = readFileSync(new URL('../../app.js', import.meta.url), 'utf8');
 const URL_SB = app.match(/SUPABASE_URL = '([^']+)'/)[1], ANON = app.match(/SUPABASE_ANON_KEY = '([^']+)'/)[1];
 const CLE = process.env.ALERTE_CLE;
-const ELEVES = Math.max(1, Math.min(200, parseInt(process.argv[2] || process.env.ELEVES || '30', 10) || 30));
+const ELEVES = Math.max(1, Math.min(300, parseInt(process.argv[2] || process.env.ELEVES || '30', 10) || 30));
 const MIN_VEILLE = parseFloat(process.env.MINUTES_VEILLE || '3'), MIN_SEANCE = parseFloat(process.env.MINUTES_SEANCE || '5');
 const TEMPS_REEL = process.env.TEMPS_REEL !== '0';
 if (!CLE) { console.error('ALERTE_CLE manquant (secret GitHub).'); process.exit(1); }
@@ -85,7 +85,13 @@ try {
   phase = '1 connexion';
   await pourTous(eleves, async e => {
     await dormir(hasard(0, 30000));
-    const r = await mesure('connexion', () => e.sb.auth.signInWithPassword({ email: e.email, password: mdp }));
+    // Comme le site (globalSignIn, app.js) : file d'attente d'environ une minute si la limite anti-robots refuse.
+    const r = await mesure('connexion', async () => {
+      const fin = Date.now() + 60000; let r, essai = 0;
+      for(;;){ r = await e.sb.auth.signInWithPassword({ email: e.email, password: mdp });
+        if(!(r.error && (r.error.status === 429 || /rate limit|too many/i.test(r.error.message))) || Date.now() > fin) return r;
+        essai++; refus.attente = (refus.attente || 0) + 1; await dormir(Math.min(12000, 2500 + essai * 2000) * (0.7 + Math.random() * 0.6)); }
+    });
     e.ok = !r.error && r.data && r.data.user; if (!e.ok) return;
     e.id = r.data.user.id;
     await Promise.all([

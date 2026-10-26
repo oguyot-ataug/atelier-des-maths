@@ -1,10 +1,10 @@
 // supabase/functions/test-charge/index.ts
 //
 // Test de charge -- demandé : « vendre un produit qui bloque, non merci ! » puis « oui, prépare le test de
-// charge » (25/10/2026). Crée puis supprime un professeur fictif, ses classes cachées et jusqu'à 200 élèves
+// charge » (25/10/2026). Crée puis supprime un professeur fictif, ses classes cachées et jusqu'à 300 élèves
 // fictifs, joués par tools/charge/charge.mjs depuis GitHub (workflow « Test de charge »).
 //
-//  - preparer  : { eleves (1-200) } → professeur charge-prof@mathcollege.local, classes « Test de charge n »
+//  - preparer  : { eleves (1-300) } → professeur charge-prof@mathcollege.local, classes « Test de charge n »
 //                (30 élèves chacune, cachées : classes_test), élèves charge-001@… (eleves_test : exclus des
 //                bilans). Mot de passe aléatoire commun, renvoyé une seule fois au script (jamais affiché).
 //  - supprimer : efface tout ce que preparer a créé (et les résultats laissés par le test).
@@ -60,7 +60,7 @@ serve(async (req) => {
     if (body.action === "supprimer") return json({ ok: true, ...(await supprimer()) });
 
     if (body.action === "preparer") {
-      const nb = Math.max(1, Math.min(200, Number(body.eleves) || 30));
+      const nb = Math.max(1, Math.min(300, Number(body.eleves) || 30));
       await supprimer(); // reste d'un test interrompu
       const mdp = motDePasse();
       const { data: p, error: e0 } = await admin.auth.admin.createUser({ email: PROF, password: mdp, email_confirm: true });

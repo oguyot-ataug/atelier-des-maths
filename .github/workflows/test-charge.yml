@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
     inputs:
       eleves:
-        description: "Nombre d'élèves fictifs (30 par classe, 200 au plus)"
+        description: "Nombre d'élèves fictifs (30 par classe, 300 au plus)"
         default: '30'
       minutes_seance:
         description: "Durée de la séance COURS (minutes)"

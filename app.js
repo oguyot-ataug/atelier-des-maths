@@ -2978,7 +2978,21 @@ async function globalSignIn(){
   const status = document.getElementById('globalAuthStatus');
   if(!identifiant || !password){ status.textContent = 'Entrez votre identifiant et votre mot de passe.'; return; }
   status.textContent = 'Connexion en cours…';
-  const { error } = await sb.auth.signInWithPassword({ email: toAuthEmail(identifiant), password });
+  /* File d'attente -- test de charge du 26/10/2026 : 150 élèves qui se connectent dans la même demi-minute depuis
+     le même collège (une seule adresse Internet) dépassent la limite anti-robots de Supabase. Une connexion refusée
+     pour cette raison est réessayée en douceur pendant environ une minute (après les essais rapides de sbFetch),
+     avec un message rassurant, au lieu d'afficher une erreur. */
+  const fin = Date.now() + 60000, btn = document.querySelector('#authLoginForm button[type="submit"]');
+  if(btn) btn.disabled = true;
+  let error, essai = 0;
+  for(;;){
+    ({ error } = await sb.auth.signInWithPassword({ email: toAuthEmail(identifiant), password }));
+    if(!(error && (error.status === 429 || /rate limit|too many/i.test(error.message))) || Date.now() > fin) break;
+    essai++;
+    status.textContent = 'Beaucoup d\'élèves se connectent en même temps : ta connexion est en file d\'attente, patiente quelques secondes…';
+    await new Promise(ok => setTimeout(ok, Math.min(12000, 2500 + essai * 2000) * (0.7 + Math.random() * 0.6)));
+  }
+  if(btn) btn.disabled = false;
   // Messages clairs pour une classe qui se connecte en même temps (même adresse réseau) ou un réseau coupé.
   status.textContent = !error ? ''
     : error.message.includes('Invalid login') ? 'Erreur : identifiant ou mot de passe incorrect.'
@@ -3499,6 +3513,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1124', date:'2026-10-26', items:['Connexion : file d\'attente -- test de charge : 150 élèves qui se connectent dans la même demi-minute depuis le même collège dépassaient la limite anti-robots de Supabase. Une connexion refusée pour cette raison est maintenant réessayée en douceur pendant environ une minute, avec le message « ta connexion est en file d\'attente », au lieu d\'afficher une erreur ; le bouton est désactivé pendant l\'attente. Limite de connexions relevée à 1 800 par 5 minutes dans Supabase.'] },
   { version:'2026-08-19.1123', date:'2026-10-26', items:['Maths & la vie : nouveau thème « Maths et histoire » (une activité par niveau) -- demandé : « Fais le tout. Insiste aussi dans le piège des historiens sur les dates des changements de siècle et de millénaire ». CM1 : écrire en hiéroglyphes et lire des dates en chiffres romains ; CM2 : la multiplication des scribes égyptiens ; 6e : compter jusqu\'à 60 sur ses doigts comme les Babyloniens, calculs de durées ; 5e : la frise chronologique et le piège des historiens (pas d\'année 0, siècles de 1 à 100, 21e siècle et 3e millénaire commencés le 1er janvier 2001, quiz) ; 4e : le volume de la pyramide de Khéops, et Thalès qui mesure sa hauteur avec les ombres ; 3e : casser le code de Jules César par les fréquences des lettres.','Page d\'histoire : le papyrus Rhind, les tablettes de Babylone, les pyramides, des chiffres romains au zéro, Denys le Petit et l\'absence d\'année 0, de César à Enigma et Alan Turing.'] },
   { version:'2026-08-19.1122', date:'2026-10-26', items:['Maths & la vie : chaque activité n\'est plus proposée qu\'à un seul niveau -- signalé : « De nombreuses activités … se retrouvent sur plusieurs niveaux, ça fait moins sérieux » et « attention à ne pas faire du hors programme ». 30 activités réparties sur 28 chapitres, chacune au niveau dont elle respecte les attendus ; un chapitre sans activité n\'a pas l\'onglet.','Explications ajustées au programme : le flocon (6e) ne parle plus de rotation ; la mesure musicale (additions de fractions de dénominateurs différents) passe du CM2 à la 6e ; les soldes restent en 5e, sans coefficient multiplicateur ; l\'étendue n\'est plus citée en 5e ; les offres de la « meilleure affaire » (CM2) ne demandent que des divisions par un nombre à un chiffre ; la perspective rejoint le chapitre 5e « Représentation de l\'espace ».'] },
   { version:'2026-08-19.1121', date:'2026-10-25', items:['Maths & la vie : nouveau thème « Maths et géographie » -- demandé : « fais maintenant maths et géographie ». L\'échelle d\'une carte (carte de France à l\'échelle, une règle graduée se pose entre deux villes ; vraie distance à vol d\'oiseau), les fuseaux horaires (l\'heure dans 13 villes du monde ; décalages en nombres relatifs en 5e ; passage de minuit), le climat en graphique (climatogrammes de 7 villes ; moyenne et étendue en 5e), des sommets aux abysses (altitudes de l\'Everest à la fosse des Mariannes, différence de deux relatifs).','Page d\'histoire : Ptolémée, la carte de Mercator, la carte des Cassini, la montre de Harrison et la longitude, les fuseaux horaires de 1884.'] },
