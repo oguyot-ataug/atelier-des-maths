@@ -58,6 +58,15 @@ async function sbFetch(url, opts) {
     await dormir((1000 << essai) * (0.6 + Math.random() * 0.8));
   }
 }
+// Message d'un élève au professeur : route HTTP de Supabase vers le canal « -prof » (cdVersProf, cours-direct.js).
+async function versProf(e, id, event, payload){
+  try{
+    const { data } = await e.sb.auth.getSession();
+    await mesure('message au professeur', () => fetch(URL_SB + '/realtime/v1/api/broadcast', { method: 'POST',
+      headers: { 'Content-Type': 'application/json', apikey: ANON, Authorization: 'Bearer ' + (data.session ? data.session.access_token : ANON) },
+      body: JSON.stringify({ messages: [{ topic: 'cd-' + id + '-prof', event, payload }] }) }).then(r => ({ error: r.ok ? null : { message: 'HTTP ' + r.status } })));
+  }catch(x){}
+}
 const client = () => createClient(URL_SB, ANON, { auth: { persistSession: false, autoRefreshToken: false }, global: { fetch: sbFetch }, realtime: { transport: WebSocket } });
 async function fonction(action, extra) {
   const r = await fetch(URL_SB + '/functions/v1/test-charge', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-alerte-cle': CLE }, body: JSON.stringify({ action, ...extra }) });
@@ -127,7 +136,10 @@ try {
   const profs = [...seances.values()].map(id => (async () => {
     let ch = null;
     if (TEMPS_REEL) {
-      ch = prof.channel('cd-' + id, { config: { broadcast: { self: false } } })
+      // Comme cours-direct.js (build 1155) : le canal commun sert au professeur pour parler aux élèves ;
+      // les messages des élèves arrivent sur le canal « -prof », que lui seul écoute.
+      canaux.push([prof, prof.channel('cd-' + id, { config: { broadcast: { self: false } } }).subscribe()]);
+      ch = prof.channel('cd-' + id + '-prof', { config: { broadcast: { self: false } } })
         .on('broadcast', { event: 'trav' }, ({ payload }) => { mesure('prof : travail reçu', () => prof.from('cours_direct_travaux').select('student_id,reponses,updated_at').eq('direct_id', id).eq('item', payload.k).eq('student_id', payload.e)); })
         .subscribe();
       canaux.push([prof, ch]);
@@ -160,7 +172,7 @@ try {
       await dormir(hasard(3000, 8000));
       const k = Math.floor(Math.random() * 3);
       const rt = await mesure('enregistrer le travail', () => e.sb.rpc('cours_direct_travail', { p_id: id, p_item: k, p_reponses: { q1: 'réponse ' + Math.floor(Math.random() * 1000) } }));
-      if (!rt.error && ch) { try { ch.send({ type: 'broadcast', event: 'trav', payload: { e: e.id, k } }); } catch (x) {} }
+      if (!rt.error && ch) versProf(e, id, 'trav', { e: e.id, k });
       if (Date.now() - signal > 20000) { signal = Date.now(); await mesure('signal de présence', () => e.sb.rpc('cours_direct_signal', { p_id: id, p_dehors: false })); }
     }
   })());

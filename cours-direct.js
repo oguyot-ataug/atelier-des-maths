@@ -32,6 +32,22 @@ let cdP = null;  // professeur : { id, code, titre, items, etat, ch, eleves, mem
 let cdE = null;  // élève : { id, ch, d, vue, dehors, timer }
 const cdEsc = s => escapeHtml(String(s ?? ''));
 const cdCanal = id => 'cd-' + id;
+/* Remontée élèves → professeur (présence, élément affiché, sortie, travail, demande d'aide) sur un canal que SEUL
+   le professeur écoute -- test de charge du 26/10/2026 : sur le canal commun, chaque message d'élève était distribué
+   à toute la classe (environ 30 copies) ; à 300 élèves, cela dépassait le quota de messages temps réel et le
+   professeur ne recevait plus qu'un travail sur cinq. L'élève envoie par la route HTTP de Supabase (sans s'abonner
+   au canal, donc sans recevoir les messages des autres) ; le professeur écoute aussi l'ancien canal pour les élèves
+   dont la page n'a pas encore été rechargée. */
+const cdCanalProf = id => 'cd-' + id + '-prof';
+async function cdVersProf(event, payload){
+  if(!cdE) return;
+  try{
+    const { data } = await sb.auth.getSession(), jeton = data && data.session ? data.session.access_token : SUPABASE_ANON_KEY;
+    await fetch(SUPABASE_URL + '/realtime/v1/api/broadcast', { method: 'POST',
+      headers: { 'Content-Type': 'application/json', apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + jeton },
+      body: JSON.stringify({ messages: [{ topic: cdCanalProf(cdE.id), event, payload }] }) });
+  }catch(e){}
+}
 
 /* ---------- Éléments : une entrée du cahier → { titre, html, prog } ---------- */
 function cdTitreEntree(e){
@@ -172,13 +188,16 @@ async function cdProfOuvrir(row){
   if(!v){ v = document.createElement('div'); v.id = 'cdProf'; document.body.appendChild(v); }
   v.style.display = 'flex';
   document.body.classList.add('cd-prof-ouvert');
-  cdP.ch = sb.channel(cdCanal(row.id), { config: { broadcast: { self: false } } })
+  // Messages des élèves : canal réservé au professeur (cdCanalProf), et ancien canal commun pendant la transition.
+  const ecouter = ch => ch
     .on('broadcast', { event: 'sortie' }, ({ payload }) => cdProfSortie(payload))
     .on('broadcast', { event: 'ici' }, ({ payload }) => { cdProfVue(payload); cdProfMembres(); })
     .on('broadcast', { event: 'vue' }, ({ payload }) => cdProfVue(payload))
     .on('broadcast', { event: 'trav' }, ({ payload }) => { if(typeof cxProfRecu === 'function') cxProfRecu(payload); })
     .on('broadcast', { event: 'aide' }, ({ payload }) => { if(typeof cxProfAide === 'function') cxProfAide(payload); })
     .subscribe();
+  cdP.ch = ecouter(sb.channel(cdCanal(row.id), { config: { broadcast: { self: false } } }));
+  cdP.chProf = ecouter(sb.channel(cdCanalProf(row.id), { config: { broadcast: { self: false } } }));
   cdP.timer = setInterval(cdProfMembres, 5000);
   cdProfRendre(); cdProfMembres();
 }
@@ -187,6 +206,7 @@ function cdProfFermer(silencieux){
   if(typeof cxRelacher === 'function'){ cxRelacher(); cxQuitterProg(); cxVivantRestaurer(); }
   clearInterval(cdP.timer);
   try{ sb.removeChannel(cdP.ch); }catch(e){}
+  try{ if(cdP.chProf) sb.removeChannel(cdP.chProf); }catch(e){}
   cdQuitterTableau();
   const v = document.getElementById('cdProf'); if(v) v.style.display = 'none';
   document.body.classList.remove('cd-prof-ouvert');
@@ -555,7 +575,7 @@ async function cdEleveOuvrir(id){
     .on('broadcast', { event: 'pilote' }, ({ payload }) => { if(typeof cxElevePilote === 'function') cxElevePilote(payload); })
     .on('broadcast', { event: 'main' }, ({ payload }) => { if(typeof cxEleveMain === 'function') cxEleveMain(payload); })
     .on('broadcast', { event: 'mot' }, ({ payload }) => { if(typeof cxEleveMot === 'function') cxEleveMot(payload); })
-    .subscribe(s => { if(s === 'SUBSCRIBED'){ try{ cdE.ch.send({ type: 'broadcast', event: 'ici', payload: { e: currentUser.id, k: cdE.vue } }); }catch(e){} } });
+    .subscribe(s => { if(s === 'SUBSCRIBED') cdVersProf('ici', { e: currentUser.id, k: cdE.vue }); });
   // Toutes les 20 s : présence, et l'élément affiché (pour un professeur qui vient de rouvrir sa télécommande).
   cdE.timer = setInterval(() => { if(cdE){ cdSignal(cdE.dehors); cdEleveSignalerVue(); } }, 20000);
   document.addEventListener('visibilitychange', cdSurVisibilite);
@@ -687,7 +707,7 @@ function cdSignal(dehors){
 function cdEleveSignalerVue(){
   if(!cdE || !cdE.ch || !currentUser) return;
   cdE.vueSignalee = cdE.vue;
-  try{ cdE.ch.send({ type: 'broadcast', event: 'vue', payload: { e: currentUser.id, k: cdE.vue } }); }catch(e){}
+  cdVersProf('vue', { e: currentUser.id, k: cdE.vue });
 }
 function cdEleveVoir(k){ if(!cdE || !cdE.d) return; cdE.ouvrirProg = null; cdE.vue = Math.max(0, Math.min(cdE.d.max != null ? cdE.d.max : cdE.d.idx, k)); cdEleveRendre(); }
 function cdEleveFin(){
@@ -705,7 +725,7 @@ function cdSignaler(dehors, motif){
   if(!cdE || cdE.dehors === dehors) return;
   cdE.dehors = dehors;
   cdSignal(dehors);
-  try{ cdE.ch.send({ type: 'broadcast', event: 'sortie', payload: { e: currentUser.id, dehors, motif } }); }catch(e){}
+  cdVersProf('sortie', { e: currentUser.id, dehors, motif });
   if(dehors){ cdQuitterTableau(); if(typeof cxQuitterProg === 'function') cxQuitterProg(); cdEleveRendre(); }
 }
 function cdSurVisibilite(){ if(document.visibilityState === 'hidden') cdSignaler(true, 'autre onglet ou application'); }
@@ -717,7 +737,7 @@ async function cdEleveRevenir(){
   cdPleinEcran();
   cdE.dehors = false;
   cdSignal(false);
-  try{ cdE.ch.send({ type: 'broadcast', event: 'sortie', payload: { e: currentUser.id, dehors: false } }); }catch(e){}
+  cdVersProf('sortie', { e: currentUser.id, dehors: false });
   cdE.d = null; // recharge et retrouve le direct (construction comprise)
   await cdEleveCharger();
 }

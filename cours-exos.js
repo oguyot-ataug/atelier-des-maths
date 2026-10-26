@@ -770,7 +770,7 @@ async function cxEleveSauver(k){
   const s = document.getElementById('cxSave');
   if(error){ if(s) s.textContent = 'Non enregistré : ' + error.message; return; }
   if(s) s.textContent = 'Enregistré';
-  cxEnvoyer(cdE.ch, 'trav', { e: currentUser.id, k });
+  cdVersProf('trav', { e: currentUser.id, k });
 }
 function cxEleveFini(){
   if(!cdE || !cdE.d) return;
@@ -799,7 +799,7 @@ async function cxEleveAide(){
     rep._mains = (rep._mains || 0) + 1; cdE.trav.set(k, rep); if(qzP && qzP.cours && qzP.k === k) qzP.reponses._mains = rep._mains;
     cxEleveSauver(k);
   }
-  cxEnvoyer(cdE.ch, 'aide', { e: currentUser.id, on: cdE.aide });
+  cdVersProf('aide', { e: currentUser.id, on: cdE.aide });
   cxEleveRafraichir();
 }
 function cxEleveRafraichir(){
