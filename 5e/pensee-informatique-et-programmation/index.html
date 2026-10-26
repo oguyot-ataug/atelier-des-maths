@@ -93,7 +93,7 @@
 </div>
 <p class="example-title">Exemple : repère les entrées et la sortie de ce programme.</p>
 <div style="display:flex;gap:22px;flex-wrap:wrap;align-items:center;">
-  <div class="pi-pile"><span class="pi-bloc ev">quand le drapeau est cliqué</span><span class="pi-bloc se">demander « Quel est ton âge ? »</span><span class="pi-bloc lo">dire <span class="p5-op"><span class="p5-var">réponse</span> + <b class="pi-n">10</b></span></span></div>
+  <img src="/img/blocs/5e-age.svg?v=1" alt="Programme : quand le drapeau est cliqué ; demander « Quel est ton âge ? » et attendre ; dire réponse + 10." loading="lazy" style="display:block;max-width:100%;height:auto;margin:6px 0;">
   <ul class="example-list" style="flex:1;min-width:240px;">
     <li><b>Entrée</b> : l'âge tapé par l'utilisateur (rangé dans la variable réponse).</li>
     <li><b>Sortie</b> : le nombre dit par le lutin, l'âge dans 10 ans. Si on tape 12, il dit 22.</li>
@@ -105,7 +105,7 @@
 <div class="def-box">Une formule s'écrit en <b>emboîtant des blocs opérateurs</b> (verts). Un bloc placé à l'intérieur d'un autre est calculé <b>en premier</b> : il joue le rôle des <b>parenthèses</b>.</div>
 <p class="example-title">Exemple : le périmètre P d'un rectangle de longueur L et de largeur l est P = 2 × (L + l).</p>
 <div style="display:flex;gap:22px;flex-wrap:wrap;align-items:center;">
-  <div class="pi-pile"><span class="pi-bloc se">demander « Longueur ? »</span><span class="pi-bloc va">mettre <span class="p5-var">L</span> à <span class="p5-var">réponse</span></span><span class="pi-bloc se">demander « Largeur ? »</span><span class="pi-bloc va">mettre <span class="p5-var">l</span> à <span class="p5-var">réponse</span></span><span class="pi-bloc va">mettre <span class="p5-var">P</span> à <span class="p5-op"><b class="pi-n">2</b> × <span class="p5-op"><span class="p5-var">L</span> + <span class="p5-var">l</span></span></span></span><span class="pi-bloc lo">dire <span class="p5-var">P</span></span></div>
+  <img src="/img/blocs/5e-perimetre.svg?v=1" alt="Programme : demander « Longueur ? » ; mettre L à réponse ; demander « Largeur ? » ; mettre l à réponse ; mettre P à 2 × (L + l) ; dire P." loading="lazy" style="display:block;max-width:100%;height:auto;margin:6px 0;">
   <ul class="example-list" style="flex:1;min-width:240px;">
     <li>Le bloc « L + l » est à l'intérieur du bloc « 2 × … » : il est calculé d'abord.</li>
     <li><b>Prévoir</b> avant d'exécuter : avec L = 7 et l = 3, le programme dira 2 × (7 + 3) = <b>20</b>.</li>
@@ -117,7 +117,7 @@
 <div class="def-box">La boucle « <b>répéter n fois</b> » exécute la séquence d'instructions qu'elle contient exactement <b>n fois</b>, puis le programme continue après la boucle.</div>
 <p class="example-title">Exemple : que dit ce programme ?</p>
 <div style="display:flex;gap:22px;flex-wrap:wrap;align-items:flex-start;">
-  <div class="pi-pile"><span class="pi-bloc va">mettre <span class="p5-var">total</span> à <b class="pi-n">0</b></span><div class="pi-boucle"><span class="pi-bloc ct">répéter <b class="pi-n">4</b> fois</span><div class="pi-corps"><span class="pi-bloc va">ajouter <b class="pi-n">5</b> à <span class="p5-var">total</span></span></div></div><span class="pi-bloc lo">dire <span class="p5-var">total</span></span></div>
+  <img src="/img/blocs/5e-total.svg?v=1" alt="Programme : mettre total à 0 ; répéter 4 fois ajouter 5 à total ; dire total." loading="lazy" style="display:block;max-width:100%;height:auto;margin:6px 0;">
   <table class="pi-suivi"><tbody><tr><th>Étape</th><th>total</th></tr><tr><td>Départ</td><td>0</td></tr><tr><td>Tour 1</td><td>5</td></tr><tr><td>Tour 2</td><td>10</td></tr><tr><td>Tour 3</td><td>15</td></tr><tr><td>Tour 4</td><td>20</td></tr></tbody></table>
 </div>
 <p style="margin:8px 0 12px;">Le programme dit <b>20</b> : ajouter 5 quatre fois revient à calculer 4 × 5. Si on change le paramètre 4 en 10, il dit 50.</p>
@@ -157,21 +157,31 @@
 <div class="redaction-block">
   <h3>Exercices</h3>
   <div class="exo-card"><div class="num">Exercice 1</div>
-    <div class="pi-pile"><span class="pi-bloc se">demander « Choisis un nombre »</span><span class="pi-bloc va">mettre <span class="p5-var">x</span> à <span class="p5-var">réponse</span></span><span class="pi-bloc va">mettre <span class="p5-var">y</span> à <span class="p5-op"><span class="p5-op"><span class="p5-var">x</span> × <b class="pi-n">3</b></span> − <b class="pi-n">4</b></span></span><span class="pi-bloc lo">dire <span class="p5-var">y</span></span></div>
+    <img src="/img/blocs/5e-ex1.svg?v=1" alt="Programme : demander « Choisis un nombre » ; mettre x à réponse ; mettre y à x × 3 − 4 ; dire y." loading="lazy" style="display:block;max-width:100%;height:auto;margin:6px 0;">
     a) Quelles sont l'entrée et la sortie de ce programme ? b) Que dit-il si on tape 5 ? si on tape 0 ? c) Écris la formule qui donne y en fonction de x.
+    
+    
   </div>
   <div class="exo-card"><div class="num">Exercice 2</div>
     L'aire d'un triangle est A = (b × h) ÷ 2. Écris un programme par blocs qui demande b et h, puis dit l'aire. Quels blocs faut-il emboîter ? Que dit-il pour b = 6 et h = 5 ?
+    
+    
   </div>
   <div class="exo-card"><div class="num">Exercice 3</div>
-    <div class="pi-pile"><span class="pi-bloc va">mettre <span class="p5-var">n</span> à <b class="pi-n">3</b></span><div class="pi-boucle"><span class="pi-bloc ct">répéter <b class="pi-n">4</b> fois</span><div class="pi-corps"><span class="pi-bloc va">mettre <span class="p5-var">n</span> à <span class="p5-op"><span class="p5-var">n</span> × <b class="pi-n">2</b></span></span></div></div><span class="pi-bloc lo">dire <span class="p5-var">n</span></span></div>
+    <img src="/img/blocs/5e-ex3.svg?v=1" alt="Programme : mettre n à 3 ; répéter 4 fois mettre n à n × 2 ; dire n." loading="lazy" style="display:block;max-width:100%;height:auto;margin:6px 0;">
     Présente l'exécution dans un tableau de suivi. Que dit le programme ? Modifie un seul paramètre pour qu'il dise 96.
+    
+    
   </div>
   <div class="exo-card"><div class="num">Exercice 4</div>
     Léa veut afficher le carré d'un nombre saisi. Elle écrit « dire réponse × 2 ». Explique son erreur et corrige le bloc.
+    
+    
   </div>
   <div class="exo-card"><div class="num">Exercice 5</div>
-    Avec l'outil « Programmation par blocs » du site (menu S'entraîner), programme le lutin pour qu'il trace un carré de côté 100 avec une boucle « répéter ». Modifie ensuite un paramètre pour tracer un hexagone régulier.
+    Avec l'outil « Programmation par blocs » du site (menu L'Atelier), programme le lutin pour qu'il trace un carré de côté 100 avec une boucle « répéter ». Modifie ensuite les paramètres pour tracer un hexagone régulier de côté 100.
+    
+    
   </div>
 </div>
 </section>
