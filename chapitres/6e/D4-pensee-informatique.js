@@ -19,6 +19,9 @@
    ============================================================ */
 
 /* ---------- Blocs façon Scratch (HTML statique) ---------- */
+// Programmes dessinés par Blockly, comme dans l'éditeur de blocs du site (images de tools/blocs/gen.mjs) -- demandé :
+// « corrige les cours avec des images Blockly également ». Le texte de remplacement décrit le programme.
+function piImg(nom, alt){ return `<img src="/img/blocs/${nom}.svg?v=1" alt="${alt}" loading="lazy" style="display:block;max-width:100%;height:auto;margin:6px 0;">`; }
 function piBloc(txt, genre){ return `<span class="pi-bloc ${genre || 'mv'}">${txt}</span>`; }
 function piPile(lignes){ return `<div class="pi-pile">${lignes.join('')}</div>`; }
 function piBoucle(n, corps){ return `<div class="pi-boucle"><span class="pi-bloc ct">répéter <b class="pi-n">${n}</b> fois</span><div class="pi-corps">${corps.join('')}</div><span class="pi-bloc ct pi-fin"></span></div>`; }
@@ -32,7 +35,7 @@ document.getElementById('cours-demo-pensee-info-6e').innerHTML = `
 </div>
 <p class="example-title">Exemple : le robot part de la case D (flèche vers la droite). Où arrive-t-il ?</p>
 <div style="display:flex;gap:18px;flex-wrap:wrap;align-items:center;">
-  ${piPile([piBloc('quand le drapeau est cliqué', 'ev'), piBloc('avancer de <b class="pi-n">3</b>'), piBloc('tourner à gauche ↺'), piBloc('avancer de <b class="pi-n">2</b>')])}
+  ${piImg('6e-robot-sequence', 'Programme : quand le drapeau est cliqué ; avancer de 3 ; tourner à gauche ; avancer de 2.')}
   <div class="figure-wrap" style="max-width:260px;margin:0;">${piGrilleStatique(6, 4, [0, 3, 0], [[0,3],[3,3],[3,1]], [3, 1])}</div>
 </div>
 <ul class="example-list">
@@ -48,7 +51,7 @@ document.getElementById('cours-demo-pensee-info-6e').innerHTML = `
 <p class="example-title">Exemple : un programme de calcul. Choisis le nombre d'entrée et exécute-le.</p>
 <div class="figure-wrap">
   <div style="display:flex;gap:22px;flex-wrap:wrap;align-items:flex-start;">
-    ${piPile([piBloc('demander un nombre (entrée)', 'ev'), piBloc('ajouter <b class="pi-n">2</b>', 'op'), piBloc('multiplier par <b class="pi-n">4</b>', 'op'), piBloc('retirer <b class="pi-n">3</b>', 'op'), piBloc('afficher le résultat (sortie)', 'ev')])}
+    ${piImg('6e-calcul', 'Programme : demander un nombre (entrée) ; ajouter 2 ; multiplier par 4 ; retirer 3 ; afficher le résultat (sortie).')}
     <div style="flex:1;min-width:220px;">
       <label style="display:flex;gap:8px;align-items:center;font-weight:600;">Entrée : <input type="number" id="piCalcEntree" value="5" style="width:90px;padding:6px 8px;border-radius:8px;border:1.5px solid rgba(28,43,57,.2);font:600 1rem 'Space Grotesk',sans-serif;"></label>
       <div class="figure-toolbar" style="justify-content:flex-start;margin-top:8px;"><button class="btn" onclick="piCalcPas()">Instruction suivante →</button><button class="btn secondary" onclick="piCalcReset()">Recommencer</button></div>
@@ -63,9 +66,9 @@ document.getElementById('cours-demo-pensee-info-6e').innerHTML = `
 <div class="def-box">Quand une même séquence d'instructions revient plusieurs fois, on l'écrit <b>une seule fois</b> dans une <b>boucle</b> « répéter … fois ». Le programme est plus court, et on fait moins d'erreurs en l'écrivant.</div>
 <p class="example-title">Exemple : ces deux programmes tracent le même carré de 3 cases de côté.</p>
 <div style="display:flex;gap:20px;flex-wrap:wrap;align-items:center;">
-  ${piPile([piBloc('avancer de <b class="pi-n">3</b>'), piBloc('tourner à droite ↻'), piBloc('avancer de <b class="pi-n">3</b>'), piBloc('tourner à droite ↻'), piBloc('avancer de <b class="pi-n">3</b>'), piBloc('tourner à droite ↻'), piBloc('avancer de <b class="pi-n">3</b>'), piBloc('tourner à droite ↻')])}
+  ${piImg('6e-carre-sans-boucle', 'Programme sans boucle : quatre fois de suite, avancer de 3 puis tourner à droite.')}
   <span style="font:700 1.4rem 'Space Grotesk',sans-serif;color:#5B6472;">=</span>
-  ${piPile([piBoucle(4, [piBloc('avancer de <b class="pi-n">3</b>'), piBloc('tourner à droite ↻')])])}
+  ${piImg('6e-carre-boucle', 'Programme avec une boucle : répéter 4 fois avancer de 3, tourner à droite.')}
   <div class="figure-wrap" style="max-width:200px;margin:0;">${piGrilleStatique(5, 5, [1, 1, 0], [[1,1],[4,1],[4,4],[1,4],[1,1]], null)}</div>
 </div>
 <ul class="example-list">
@@ -78,7 +81,7 @@ document.getElementById('methode-demo-pensee-info-6e').innerHTML = `
 <div class="sub-header"><span class="letter">M</span><h4>Exécuter un programme à la main</h4></div>
 <p style="margin:6px 0;">On exécute les instructions une par une, dans l'ordre, en notant à chaque étape ce qui a changé dans un <b>tableau de suivi</b>. Pour une boucle, on note le numéro du tour.</p>
 <div style="display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start;">
-  ${piPile([piBloc('mettre <b>nombre</b> à <b class="pi-n">1</b>', 'va'), piBoucle(4, [piBloc('multiplier <b>nombre</b> par <b class="pi-n">3</b>', 'op')]), piBloc('afficher <b>nombre</b>', 'ev')])}
+  ${piImg('6e-suivi', 'Programme : mettre nombre à 1 ; répéter 4 fois multiplier nombre par 3 ; afficher nombre.')}
   <table class="pi-suivi" style="min-width:240px;"><tr><th>Étape</th><th>nombre</th></tr>
     <tr><td>Départ</td><td>1</td></tr><tr><td>Tour 1</td><td>3</td></tr><tr><td>Tour 2</td><td>9</td></tr><tr><td>Tour 3</td><td>27</td></tr><tr><td>Tour 4</td><td>81</td></tr><tr><td><b>Sortie</b></td><td><b>81</b></td></tr></table>
 </div>
@@ -134,7 +137,7 @@ document.getElementById('exos-demo-pensee-info-6e').innerHTML = `
     <div class="exo-correction" id="c6-d4-c2"><div><table style="border-collapse:collapse;margin:4px 0 8px;"><tr><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;font-weight:700;background:#EEF4FB;">Étape</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">Avec 7</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">Avec 0</td></tr><tr><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;font-weight:700;background:#EEF4FB;">Choisir un nombre</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">7</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">0</td></tr><tr><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;font-weight:700;background:#EEF4FB;">Ajouter 2</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">7 + 2 = 9</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">0 + 2 = 2</td></tr><tr><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;font-weight:700;background:#EEF4FB;">Multiplier par 4</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">9 × 4 = 36</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">2 × 4 = 8</td></tr><tr><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;font-weight:700;background:#EEF4FB;">Retirer 3</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">36 − 3 = 33</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">8 − 3 = 5</td></tr></table><p style="margin:0 0 6px;">Le programme affiche <b>33</b> avec 7 et <b>5</b> avec 0.</p></div></div>
   </div>
   <div class="exo-card"><div class="num">Exercice 3</div>
-    ${piPile([piBloc('mettre <b>nombre</b> à <b class="pi-n">2</b>', 'va'), piBoucle(3, [piBloc('ajouter <b class="pi-n">5</b> à <b>nombre</b>', 'op')]), piBloc('afficher <b>nombre</b>', 'ev')])}
+    ${piImg('6e-ex3', 'Programme : mettre nombre à 2 ; répéter 3 fois ajouter 5 à nombre ; afficher nombre.')}
     Quel nombre ce programme affiche-t-il ? Combien afficherait-il si on remplaçait « répéter 3 fois » par « répéter 10 fois » ?
     <button type="button" class="exo-correction-toggle" data-target="c6-d4-c3" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
     <div class="exo-correction" id="c6-d4-c3"><div><p style="margin:0 0 6px;">« nombre » vaut d'abord 2. La boucle ajoute 5 trois fois : 2 + 5 + 5 + 5 = 2 + 3 × 5 = 17.</p><p style="margin:0 0 6px;"><b>Le programme affiche 17.</b></p><p style="margin:0 0 6px;">Avec « répéter 10 fois » : 2 + 10 × 5 = 52 : il afficherait <b>52</b>.</p></div></div>
@@ -142,14 +145,14 @@ document.getElementById('exos-demo-pensee-info-6e').innerHTML = `
   <div class="exo-card"><div class="num">Exercice 4</div>
     Sur un quadrillage, un robot part d'une case, tourné vers la droite. Écris un programme qui lui fait tracer un rectangle de 4 cases de long et 2 cases de large, en revenant à son point de départ. Réécris-le ensuite avec une boucle « répéter ».
     <button type="button" class="exo-correction-toggle" data-target="c6-d4-c4" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
-    <div class="exo-correction" id="c6-d4-c4"><div><p style="margin:0 0 6px;">Sans boucle : avancer de 4 ; tourner à gauche ; avancer de 2 ; tourner à gauche ; avancer de 4 ; tourner à gauche ; avancer de 2 ; tourner à gauche.</p><p style="margin:0 0 6px;">Avec une boucle : <b>répéter 2 fois</b> ( avancer de 4 ; tourner à gauche ; avancer de 2 ; tourner à gauche ).</p><p style="margin:0 0 6px;">Le robot revient à son point de départ, tourné vers la droite comme au début.</p></div></div>
+    <div class="exo-correction" id="c6-d4-c4"><div><div style="display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start;"><div><p style="margin:0;">Sans boucle :</p>${piImg('6e-ex4-sans-boucle', 'Sans boucle : avancer de 4 ; tourner à gauche ; avancer de 2 ; tourner à gauche ; avancer de 4 ; tourner à gauche ; avancer de 2 ; tourner à gauche.')}</div><div><p style="margin:0;">Avec une boucle :</p>${piImg('6e-ex4-boucle', 'Avec une boucle : répéter 2 fois avancer de 4, tourner à gauche, avancer de 2, tourner à gauche.')}</div></div><p style="margin:0 0 6px;">Le robot revient à son point de départ, tourné vers la droite comme au début.</p></div></div>
   </div>
   <div class="exo-card"><div class="num">Exercice 5</div>
     Ce programme doit tracer un escalier de 3 marches, mais il contient une erreur :
-    ${piPile([piBoucle(3, [piBloc('avancer de <b class="pi-n">1</b>'), piBloc('tourner à gauche ↺'), piBloc('avancer de <b class="pi-n">1</b>'), piBloc('tourner à gauche ↺')])])}
+    ${piImg('6e-ex5', 'Programme : répéter 3 fois avancer de 1, tourner à gauche, avancer de 1, tourner à gauche.')}
     Exécute-le à la main sur un quadrillage : que trace-t-il ? Corrige-le.
     <button type="button" class="exo-correction-toggle" data-target="c6-d4-c5" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
-    <div class="exo-correction" id="c6-d4-c5"><div><p style="margin:0 0 6px;">Le robot part vers la droite. Dans la boucle, il tourne deux fois à gauche : après un passage, il regarde vers la gauche et revient sur ses pas. Il trace donc un petit carré de côté 1, qu'il parcourt encore, au lieu de monter.</p><p style="margin:0 0 6px;">Correction : le deuxième virage doit être à droite, pour regarder de nouveau vers la droite avant la marche suivante.</p><p style="margin:0 0 6px;"><b>répéter 3 fois</b> ( avancer de 1 ; tourner à gauche ; avancer de 1 ; tourner à droite ).</p></div></div>
+    <div class="exo-correction" id="c6-d4-c5"><div><p style="margin:0 0 6px;">Le robot part vers la droite. Dans la boucle, il tourne deux fois à gauche : après un passage, il regarde vers la gauche et revient sur ses pas. Il trace donc un petit carré de côté 1, qu'il parcourt encore, au lieu de monter.</p><p style="margin:0 0 6px;">Correction : le deuxième virage doit être à droite, pour regarder de nouveau vers la droite avant la marche suivante.</p>${piImg('6e-ex5-corrige', 'Programme corrigé : répéter 3 fois avancer de 1, tourner à gauche, avancer de 1, tourner à droite.')}</div></div>
   </div>
   <div class="exo-card"><div class="num">Exercice 6</div>
     Avec l'outil « Programmation par blocs » du site (menu S'entraîner), programme le lutin pour qu'il trace un triangle équilatéral : « répéter 3 fois : avancer de 100, tourner de 120° ». Pourquoi tourne-t-on de 120° et pas de 60° ?

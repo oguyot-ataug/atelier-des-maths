@@ -580,7 +580,7 @@ async function progBlocsSvg(json, echelle){
     });
     clone.removeAttribute('transform');
     const m = 3, k = echelle || 0.8, w = bb.width + 2 * m, h = bb.height + 2 * m;
-    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${(bb.x - m).toFixed(1)} ${(bb.y - m).toFixed(1)} ${w.toFixed(1)} ${h.toFixed(1)}" style="width:${(w * k).toFixed(0)}px;max-width:100%;height:auto;display:block;margin:6px 0;">${clone.outerHTML}</svg>`;
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${(bb.x - m).toFixed(1)} ${(bb.y - m).toFixed(1)} ${w.toFixed(1)} ${h.toFixed(1)}" style="width:${(w * k).toFixed(0)}px;max-width:100%;height:auto;display:block;margin:6px 0;">${new XMLSerializer().serializeToString(clone)}</svg>`; // XML (et non outerHTML : pas d'entité &nbsp;, invalide dans une image SVG)
   }catch(e){ console.warn('progBlocsSvg', e); return ''; }
   finally{ if(ws) ws.dispose(); div.remove(); }
 }

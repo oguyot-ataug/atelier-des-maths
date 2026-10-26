@@ -79,6 +79,7 @@ async function plProgProjeter(lvl, c, j){
     <div class="plp-pied"><span class="plp-equipes" id="plpEquipes"></span>
       <button class="btn secondary" id="plpProgPrec" onclick="plProjAller(-1)"><span class="gicon">arrow_back</span> Défi précédent</button>
       <button class="btn plp-corr" onclick="plProjCorr()" title="L'aide du défi"><span class="gicon">lightbulb</span> Aide</button>
+      <button class="btn plp-corr" onclick="plProgCorrection()" title="Montrer un programme corrigé dans l'éditeur" style="background:#1E8A6E;"><span class="gicon">task_alt</span> Correction</button>
       <button class="btn secondary" id="plpProgSuiv" onclick="plProjAller(1)">Défi suivant <span class="gicon">arrow_forward</span></button></div>`;
   try{
     if(!((typeof prog !== 'undefined' && prog) && prog.ws && document.getElementById('progBlocs'))){ await progChargerBlockly(); progConstruire(document.getElementById('progRoot')); }
@@ -102,6 +103,20 @@ function plProgMaj(){
   progDefi(id);
   progCharger(progDepartDefaut());
   plProgEquipe(plProj.equipe);
+}
+// Correction en blocs dans l'éditeur projeté -- demandé : « ajoute aussi la correction en blocs dans la projection des
+// défis ». Le programme corrigé (prog-defis.js, ou celui du professeur pour ses propres défis) remplace celui de
+// l'équipe ; on peut le lancer avec le drapeau. Rien n'est enregistré au tableau.
+async function plProgCorrection(){
+  if(!plProj || !plProj.prog || typeof prog === 'undefined' || !prog || !prog.defi) return;
+  const d = prog.defi;
+  let json = typeof progSolution === 'function' && progSolution(d.id) ? progSolutionJson(progSolution(d.id)) : null;
+  if(!json && d.perso && typeof csProgSolutions === 'function'){ try{ json = (await csProgSolutions([d.id]))[d.id] || null; }catch(e){} }
+  if(!json){ await niceAlert('Pas de correction en blocs pour ce défi.'); return; }
+  if(!(await niceConfirm('Afficher la correction ? Le programme de l\'équipe sera remplacé (au tableau, rien n\'est enregistré).'))) return;
+  if(typeof progArreter === 'function') progArreter();
+  progCharger(json);
+  if(prog.scene){ prog.scene.reset(); if(typeof progMajPos === 'function') progMajPos(); }
 }
 function plProgEquipe(n){
   if(!plProj || !plProj.prog || typeof prog === 'undefined' || !prog) return;

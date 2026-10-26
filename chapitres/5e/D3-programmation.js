@@ -18,6 +18,9 @@
    Blocs aux couleurs de Scratch (styles .pi-bloc du chapitre de 6e, chargés sur toutes les pages).
    ============================================================ */
 
+// Programmes dessinés par Blockly, comme dans l'éditeur de blocs du site (images de tools/blocs/gen.mjs) -- demandé :
+// « corrige les cours avec des images Blockly également ». Le texte de remplacement décrit le programme.
+function p5Img(nom, alt){ return `<img src="/img/blocs/${nom}.svg?v=1" alt="${alt}" loading="lazy" style="display:block;max-width:100%;height:auto;margin:6px 0;">`; }
 function p5B(txt, g){ return `<span class="pi-bloc ${g || 'mv'}">${txt}</span>`; }
 function p5Pile(l){ return `<div class="pi-pile">${l.join('')}</div>`; }
 function p5Boucle(n, corps){ return `<div class="pi-boucle"><span class="pi-bloc ct">répéter <b class="pi-n">${n}</b> fois</span><div class="pi-corps">${corps.join('')}</div><span class="pi-bloc ct pi-fin"></span></div>`; }
@@ -34,7 +37,7 @@ document.getElementById('cours-demo-programmation-5e').innerHTML = `
 </div>
 <p class="example-title">Exemple : repère les entrées et la sortie de ce programme.</p>
 <div style="display:flex;gap:22px;flex-wrap:wrap;align-items:center;">
-  ${p5Pile([p5B('quand le drapeau est cliqué', 'ev'), p5B('demander « Quel est ton âge ? »', 'se'), p5B(`dire ${p5Op(`${p5V('réponse')} + <b class="pi-n">10</b>`)}`, 'lo')])}
+  ${p5Img('5e-age', 'Programme : quand le drapeau est cliqué ; demander « Quel est ton âge ? » et attendre ; dire réponse + 10.')}
   <ul class="example-list" style="flex:1;min-width:240px;">
     <li><b>Entrée</b> : l'âge tapé par l'utilisateur (rangé dans la variable réponse).</li>
     <li><b>Sortie</b> : le nombre dit par le lutin, l'âge dans 10 ans. Si on tape 12, il dit 22.</li>
@@ -46,8 +49,7 @@ document.getElementById('cours-demo-programmation-5e').innerHTML = `
 <div class="def-box">Une formule s'écrit en <b>emboîtant des blocs opérateurs</b> (verts). Un bloc placé à l'intérieur d'un autre est calculé <b>en premier</b> : il joue le rôle des <b>parenthèses</b>.</div>
 <p class="example-title">Exemple : le périmètre P d'un rectangle de longueur L et de largeur l est P = 2 × (L + l).</p>
 <div style="display:flex;gap:22px;flex-wrap:wrap;align-items:center;">
-  ${p5Pile([p5B('demander « Longueur ? »', 'se'), p5B(`mettre ${p5V('L')} à ${p5V('réponse')}`, 'va'), p5B('demander « Largeur ? »', 'se'), p5B(`mettre ${p5V('l')} à ${p5V('réponse')}`, 'va'),
-    p5B(`mettre ${p5V('P')} à ${p5Op(`<b class="pi-n">2</b> × ${p5Op(`${p5V('L')} + ${p5V('l')}`)}`)}`, 'va'), p5B(`dire ${p5V('P')}`, 'lo')])}
+  ${p5Img('5e-perimetre', 'Programme : demander « Longueur ? » ; mettre L à réponse ; demander « Largeur ? » ; mettre l à réponse ; mettre P à 2 × (L + l) ; dire P.')}
   <ul class="example-list" style="flex:1;min-width:240px;">
     <li>Le bloc « L + l » est à l'intérieur du bloc « 2 × … » : il est calculé d'abord.</li>
     <li><b>Prévoir</b> avant d'exécuter : avec L = 7 et l = 3, le programme dira 2 × (7 + 3) = <b>20</b>.</li>
@@ -59,7 +61,7 @@ document.getElementById('cours-demo-programmation-5e').innerHTML = `
 <div class="def-box">La boucle « <b>répéter n fois</b> » exécute la séquence d'instructions qu'elle contient exactement <b>n fois</b>, puis le programme continue après la boucle.</div>
 <p class="example-title">Exemple : que dit ce programme ?</p>
 <div style="display:flex;gap:22px;flex-wrap:wrap;align-items:flex-start;">
-  ${p5Pile([p5B(`mettre ${p5V('total')} à <b class="pi-n">0</b>`, 'va'), p5Boucle(4, [p5B(`ajouter <b class="pi-n">5</b> à ${p5V('total')}`, 'va')]), p5B(`dire ${p5V('total')}`, 'lo')])}
+  ${p5Img('5e-total', 'Programme : mettre total à 0 ; répéter 4 fois ajouter 5 à total ; dire total.')}
   <table class="pi-suivi"><tr><th>Étape</th><th>total</th></tr><tr><td>Départ</td><td>0</td></tr><tr><td>Tour 1</td><td>5</td></tr><tr><td>Tour 2</td><td>10</td></tr><tr><td>Tour 3</td><td>15</td></tr><tr><td>Tour 4</td><td>20</td></tr></table>
 </div>
 <p style="margin:8px 0 12px;">Le programme dit <b>20</b> : ajouter 5 quatre fois revient à calculer 4 × 5. Si on change le paramètre 4 en 10, il dit 50.</p>
@@ -95,21 +97,31 @@ document.getElementById('exos-demo-programmation-5e').innerHTML = `
 <div class="redaction-block">
   <h3>Exercices</h3>
   <div class="exo-card"><div class="num">Exercice 1</div>
-    ${p5Pile([p5B('demander « Choisis un nombre »', 'se'), p5B(`mettre ${p5V('x')} à ${p5V('réponse')}`, 'va'), p5B(`mettre ${p5V('y')} à ${p5Op(`${p5Op(`${p5V('x')} × <b class="pi-n">3</b>`)} − <b class="pi-n">4</b>`)}`, 'va'), p5B(`dire ${p5V('y')}`, 'lo')])}
+    ${p5Img('5e-ex1', 'Programme : demander « Choisis un nombre » ; mettre x à réponse ; mettre y à x × 3 − 4 ; dire y.')}
     a) Quelles sont l'entrée et la sortie de ce programme ? b) Que dit-il si on tape 5 ? si on tape 0 ? c) Écris la formule qui donne y en fonction de x.
+    <button type="button" class="exo-correction-toggle" data-target="c5-d3-c1" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c5-d3-c1"><div><p style="margin:0 0 6px;">a) <b>Entrée</b> : le nombre tapé, rangé dans la variable x. <b>Sortie</b> : le nombre y que dit le programme.</p><p style="margin:0 0 6px;">b) Avec 5 : le bloc « x × 3 », à l'intérieur, est calculé en premier.</p><ul style="margin:0 0 6px;"><li>5 × 3 = 15</li><li>15 − 4 = 11</li></ul><p style="margin:0 0 6px;"><b>Le programme dit 11.</b> Avec 0 :</p><ul style="margin:0 0 6px;"><li>0 × 3 = 0</li><li>0 − 4 = −4</li></ul><p style="margin:0 0 6px;"><b>Le programme dit −4.</b></p><p style="margin:0 0 6px;">c) y = x × 3 − 4, que l'on écrit aussi <b>y = 3x − 4</b>.</p></div></div>
   </div>
   <div class="exo-card"><div class="num">Exercice 2</div>
     L'aire d'un triangle est A = (b × h) ÷ 2. Écris un programme par blocs qui demande b et h, puis dit l'aire. Quels blocs faut-il emboîter ? Que dit-il pour b = 6 et h = 5 ?
+    <button type="button" class="exo-correction-toggle" data-target="c5-d3-c2" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c5-d3-c2"><div><p style="margin:0 0 6px;">Un programme possible :</p>${p5Img('5e-ex2-corrige', 'Programme corrigé : quand le drapeau est cliqué ; demander « Base ? » ; mettre b à réponse ; demander « Hauteur ? » ; mettre h à réponse ; dire (b × h) ÷ 2.')}<p style="margin:0 0 6px;">Le bloc « b × h » est placé <b>à l'intérieur</b> du bloc « … ÷ 2 » : il est calculé en premier, comme s'il était entre parenthèses.</p><p style="margin:0 0 6px;">Pour b = 6 et h = 5 :</p><ul style="margin:0 0 6px;"><li>6 × 5 = 30</li><li>30 ÷ 2 = 15</li></ul><p style="margin:0 0 6px;"><b>Le programme dit 15.</b></p></div></div>
   </div>
   <div class="exo-card"><div class="num">Exercice 3</div>
-    ${p5Pile([p5B(`mettre ${p5V('n')} à <b class="pi-n">3</b>`, 'va'), p5Boucle(4, [p5B(`mettre ${p5V('n')} à ${p5Op(`${p5V('n')} × <b class="pi-n">2</b>`)}`, 'va')]), p5B(`dire ${p5V('n')}`, 'lo')])}
+    ${p5Img('5e-ex3', 'Programme : mettre n à 3 ; répéter 4 fois mettre n à n × 2 ; dire n.')}
     Présente l'exécution dans un tableau de suivi. Que dit le programme ? Modifie un seul paramètre pour qu'il dise 96.
+    <button type="button" class="exo-correction-toggle" data-target="c5-d3-c3" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c5-d3-c3"><div><table style="border-collapse:collapse;margin:4px 0 8px;"><tr><td style="border:1px solid #9AA6B2;padding:3px 10px;font-weight:700;background:#EEF4FB;">Étape</td><td style="border:1px solid #9AA6B2;padding:3px 10px;font-weight:700;background:#EEF4FB;">n</td></tr><tr><td style="border:1px solid #9AA6B2;padding:3px 10px;">Départ</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">3</td></tr><tr><td style="border:1px solid #9AA6B2;padding:3px 10px;">Tour 1</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">6</td></tr><tr><td style="border:1px solid #9AA6B2;padding:3px 10px;">Tour 2</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">12</td></tr><tr><td style="border:1px solid #9AA6B2;padding:3px 10px;">Tour 3</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">24</td></tr><tr><td style="border:1px solid #9AA6B2;padding:3px 10px;">Tour 4</td><td style="border:1px solid #9AA6B2;padding:3px 10px;text-align:center;">48</td></tr></table><p style="margin:0 0 6px;"><b>Le programme dit 48.</b></p><p style="margin:0 0 6px;">Pour qu'il dise 96, le double de 48, il suffit d'un tour de plus : <b>répéter 5 fois</b>. (Autre solution : mettre n à 6 au départ.)</p></div></div>
   </div>
   <div class="exo-card"><div class="num">Exercice 4</div>
     Léa veut afficher le carré d'un nombre saisi. Elle écrit « dire réponse × 2 ». Explique son erreur et corrige le bloc.
+    <button type="button" class="exo-correction-toggle" data-target="c5-d3-c4" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c5-d3-c4"><div>${p5Img('5e-ex4-erreur', 'Bloc de Léa : dire réponse × 2.')}<p style="margin:0 0 6px;">« réponse × 2 » calcule le <b>double</b> du nombre, pas son carré. Avec 5, il dit 10 au lieu de 25.</p><p style="margin:0 0 6px;">Le carré d'un nombre, c'est ce nombre multiplié par lui-même : on met <b>réponse</b> des deux côtés du bloc « × ».</p>${p5Img('5e-ex4-corrige', 'Bloc corrigé : dire réponse × réponse.')}<p style="margin:0 0 6px;">Avec 5 : 5 × 5 = 25. <b>Le programme dit 25.</b></p></div></div>
   </div>
   <div class="exo-card"><div class="num">Exercice 5</div>
-    Avec l'outil « Programmation par blocs » du site (menu S'entraîner), programme le lutin pour qu'il trace un carré de côté 100 avec une boucle « répéter ». Modifie ensuite un paramètre pour tracer un hexagone régulier.
+    Avec l'outil « Programmation par blocs » du site (menu L'Atelier), programme le lutin pour qu'il trace un carré de côté 100 avec une boucle « répéter ». Modifie ensuite les paramètres pour tracer un hexagone régulier de côté 100.
+    <button type="button" class="exo-correction-toggle" data-target="c5-d3-c5" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c5-d3-c5"><div><div style="display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start;"><div><p style="margin:0 0 6px;">Le carré : 4 côtés, et à chaque sommet le lutin tourne de 90°.</p>${p5Img('5e-ex5-carre', 'Carré : quand le drapeau est cliqué ; stylo en position d’écriture ; répéter 4 fois avancer de 100 pas, tourner de 90 degrés.')}</div><div><p style="margin:0 0 6px;">L'hexagone : 6 côtés. Pour faire un tour complet (360°) en 6 fois, le lutin tourne de 360 ÷ 6 = 60° à chaque sommet.</p>${p5Img('5e-ex5-hexagone', 'Hexagone : quand le drapeau est cliqué ; stylo en position d’écriture ; répéter 6 fois avancer de 100 pas, tourner de 60 degrés.')}</div></div><p style="margin:0 0 6px;">On a changé deux paramètres : le nombre de répétitions (4 → 6) et l'angle (90° → 60°).</p></div></div>
   </div>
 </div>
 `;
