@@ -324,7 +324,8 @@ function csProgCahierHtml(id, corr){
   const ex = d.attendu && d.tests ? d.tests.map(t => (t.length ? t.map(csProgN).join(' puis ') + ' → ' : '') + csProgN(d.attendu(t))) : [];
   return `<div class="cs-prog-cahier"><p><b>Défi de programmation (blocs) :</b> ${d.enonce}</p>`
     + (fig ? `<p style="margin:6px 0 0;">Figure attendue${d.trace && d.tests && d.tests[0] && d.tests[0].length ? `, avec la réponse ${d.tests[0].map(csProgN).join(', ')}` : ''}${d.trace ? ' (le point vert : le départ du lutin)' : ''} :</p>${fig}` : '')
-    + (corr ? `<p><b>Correction, la méthode :</b> ${d.aide}</p>` + (ex.length ? `<p><b>Résultats attendus :</b></p><ul>${ex.map(x => `<li>${x}</li>`).join('')}</ul>` : '') : '') + '</div>';
+    + (corr ? (typeof progSolution === 'function' && progSolution(d.id) ? `<p style="margin:8px 0 0;"><b>Correction, un programme possible :</b></p>${progSolutionHtml(progSolution(d.id))}` : '')
+      + `<p><b>La méthode :</b> ${d.aide}</p>` + (ex.length ? `<p><b>Résultats attendus :</b></p><ul>${ex.map(x => `<li>${x}</li>`).join('')}</ul>` : '') : '') + '</div>';
 }
 // Contenu HTML d'un élément (énoncé, et correction si demandée) ; null s'il ne s'écrit pas dans un cahier.
 function csCahierHtml(it, corr){
@@ -350,6 +351,61 @@ function csModChoix(pfx, defMod){
 function csModLire(o, pfx){
   const v = n => ((o.querySelector(`input[name="${pfx}${n}"]:checked`) || {}).value) || null;
   return { modalite: v('Mod'), support: v('Sup') };
+}
+/* Devoir de programmation -> cahier -- demandé : « fais pareil pour les devoirs de programmation ». Depuis la liste
+   des devoirs (bouton « Cahier »), chaque défi coché devient une entrée « Programmation » du cahier de la classe :
+   énoncé, figure attendue et, avec les corrections, le programme corrigé en blocs. */
+async function dvProgCahier(id){
+  const { data: d } = await sb.from('devoirs').select('id,titre,class_id,prog_defis,date_limite,classes(nom,niveau)').eq('id', id).maybeSingle();
+  if(!d){ await niceAlert('Devoir introuvable.'); return; }
+  if(typeof progPersoCharger === 'function'){ try{ await progPersoCharger(); }catch(e){} }
+  const defis = (d.prog_defis || []).map(x => typeof progDefiParId === 'function' ? progDefiParId(x) : null).filter(Boolean);
+  if(!defis.length){ await niceAlert('Ce devoir n\'a pas de défi à mettre dans le cahier.'); return; }
+  const niveau = (d.classes && (typeof niveauCle === 'function' ? niveauCle(d.classes.niveau) : '') || (d.classes && d.classes.niveau)) || '';
+  const chaps = (typeof CHAPITRES_BY_LEVEL !== 'undefined' && CHAPITRES_BY_LEVEL[niveau]) || [];
+  const jour = x => { const t = new Date(x); return `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, '0')}-${String(t.getDate()).padStart(2, '0')}`; };
+  const iso = jour(d.date_limite || Date.now());
+  let o = document.getElementById('dvProgCahier');
+  if(!o){ o = document.createElement('div'); o.id = 'dvProgCahier'; o.className = 'modal-overlay'; o.style.zIndex = '9455'; document.body.appendChild(o); }
+  o.innerHTML = `<div class="modal-card" style="max-width:640px;width:94vw;max-height:90vh;display:flex;flex-direction:column;">
+    <div style="display:flex;justify-content:space-between;align-items:center;"><b class="cd-h"><span class="gicon">menu_book</span> Ajouter au cahier</b><button class="modal-close" data-c="x"><span class="gicon">close</span></button></div>
+    <p class="hint" style="margin:6px 0 8px;"><b>${cdEsc(d.titre || 'Devoir')}</b> · cahier de ${cdEsc((d.classes && d.classes.nom) || 'la classe')}. Chaque défi coché devient une entrée du cahier (énoncé et figure attendue) ; les programmes des élèves n'y vont pas.</p>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px;"><button class="btn secondary td-mini" data-c="tout">Tout cocher</button><button class="btn secondary td-mini" data-c="rien">Tout décocher</button></div>
+    <div class="cs-n-liste">${defis.map((p, k) => `<label class="cs-n-it"><input type="checkbox" data-k="${k}" checked><span><b>${k + 1}. Programmation : ${cdEsc(p.titre)}</b><small>défi de programmation${p.niveau ? ' · ' + cdEsc(p.niveau) : ''}</small></span></label>`).join('')}</div>
+    <label class="qz-check" style="margin-top:10px;"><input type="checkbox" id="dvPCCorr" checked> Avec les corrections (programme corrigé en blocs, méthode, résultats attendus)</label>
+    ${csModChoix('dvp', 'maison')}
+    <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:8px;">
+      <label class="hint" style="display:flex;flex-direction:column;gap:4px;margin:0;font-weight:600;">Chapitre du cahier
+        <select id="dvPCChap"><option value="">« Devoirs »</option>${chaps.map(c => `<option value="${cdEsc(c.code + ' · ' + c.t)}">${cdEsc(c.code + ' · ' + c.t)}</option>`).join('')}</select></label>
+      <label class="hint" style="display:flex;flex-direction:column;gap:4px;margin:0;font-weight:600;">Date
+        <input type="date" id="dvPCDate" value="${iso}" style="padding:6px 8px;border-radius:8px;"></label></div>
+    <p class="hint" id="dvPCErr" style="margin:8px 0 0;color:#a83c1f;"></p>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px;"><button class="btn secondary" data-c="x">Annuler</button><button class="btn" data-c="ok"><span class="gicon">add</span> Ajouter au cahier</button></div></div>`;
+  o.style.display = 'flex';
+  o.onclick = async e => {
+    const b = e.target.closest('[data-c]'); if(!b && e.target !== o) return;
+    const c = b ? b.dataset.c : 'x';
+    if(c === 'x'){ o.style.display = 'none'; return; }
+    if(c === 'tout' || c === 'rien'){ o.querySelectorAll('input[data-k]').forEach(x => x.checked = c === 'tout'); return; }
+    const ks = [...o.querySelectorAll('input[data-k]:checked')].map(x => +x.dataset.k);
+    if(!ks.length){ o.querySelector('#dvPCErr').textContent = 'Cochez au moins un défi.'; return; }
+    const corr = o.querySelector('#dvPCCorr').checked, chap = o.querySelector('#dvPCChap').value || 'Devoirs', date = o.querySelector('#dvPCDate').value || iso;
+    const { modalite: mod, support: sup } = csModLire(o, 'dvp');
+    b.disabled = true; b.innerHTML = 'Ajout…';
+    const { data: cc } = await sb.rpc('cahier_classe', { p_class: d.class_id });
+    const cible = cc && cc.id ? cc : { id: d.class_id, nom: (d.classes && d.classes.nom) || '' };
+    const matiere = typeof cahierMatiere === 'function' ? cahierMatiere() : null;
+    const entrees = ks.map(k => { const p = defis[k]; return { niveau, chapitre: chap, exo: 'Programmation', titre: 'Programmation : ' + p.titre + (corr ? ' (avec correction)' : ''), date, raw: '',
+      html: csProgCahierHtml(p.id, corr), modalite: mod, support: sup }; }).filter(x => x.html);
+    const { data: ins, error } = await sb.from('cahier_entries').insert(entrees.map(x => Object.assign({ class_id: cible.id, matiere }, x))).select('id');
+    if(error){ o.querySelector('#dvPCErr').textContent = /row-level security/.test(error.message) ? 'Vous n\'êtes pas professeur de cette classe.' : error.message; b.disabled = false; b.innerHTML = '<span class="gicon">add</span> Ajouter au cahier'; return; }
+    if(typeof cahier !== 'undefined' && (typeof cahierClasseId === 'function' ? cahierClasseId() : currentClassId) === cible.id){
+      entrees.forEach((x, i) => cahier.push(Object.assign({ id: ins && ins[i] && ins[i].id, class_id: cible.id }, x)));
+      if(typeof sortCahierInPlace === 'function') sortCahierInPlace(); if(typeof saveCahier === 'function') saveCahier();
+    }
+    o.style.display = 'none';
+    await niceAlert(`${entrees.length} défi${entrees.length > 1 ? 's ajoutés' : ' ajouté'} au cahier de ${cible.nom || 'la classe'}, à la date du ${new Date(date + 'T12:00:00').toLocaleDateString('fr-FR')}${corr ? ', avec les corrections' : ''}.`);
+  };
 }
 async function csCahier(id){
   const { data: row } = await sb.from('cours_direct').select('id,titre,class_id,items,created_at,classes(nom,niveau)').eq('id', id).maybeSingle();

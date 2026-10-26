@@ -433,3 +433,107 @@ function progQuitterDevoir(){ if(prog){ if(prog.ds && typeof dsEnd === 'function
   `;
   document.head.appendChild(st);
 })();
+
+/* ---------------------------------------------------------------------
+   Corrections en blocs -- demandé : « il serait bien d'avoir la correction des blocs » (cahier : sessions et
+   devoirs de programmation). Un programme possible par défi, écrit dans une petite notation :
+   instructions ['av', n] ['td', n] ['tg', n] ['bas'] ['haut'] ['rep', n, [...]] ['demander', 'texte']
+   ['dire', e] ['set', 'variable', e] ['ajouter', e, 'variable'] ['si', condition, [...], [...]] ;
+   valeurs : nombre, texte, ['réponse'], ['var', 'nom'], [opérateur, a, b] avec + − × ÷ > < = reste.
+   progSolutionHtml : les blocs dessinés (styles en ligne : ils s'impriment dans le cahier) ;
+   progSolutionJson : le même programme pour Blockly (vérifié automatiquement : chaque correction réussit son défi).
+   --------------------------------------------------------------------- */
+const PROG_SOLUTIONS = {
+  'cm1-perp': [['tg', 90], ['bas'], ['av', 180]],
+  'cm1-perp-a': [['haut'], ['av', 240], ['tg', 90], ['bas'], ['av', 180]],
+  'cm1-perp-grad': [['haut'], ['av', 210], ['tg', 90], ['bas'], ['av', 150]],
+  'cm1-para': [['haut'], ['tg', 90], ['av', 140], ['td', 90], ['bas'], ['av', 320]],
+  'cm1-equerre': [['bas'], ['tg', 90], ['av', 120], ['td', 90], ['av', 200]],
+  'cm1-rectangle': [['bas'], ['rep', 2, [['av', 240], ['tg', 90], ['av', 120], ['tg', 90]]]],
+  segment: [['bas'], ['av', 150]],
+  carre: [['bas'], ['rep', 4, [['av', 100], ['td', 90]]]],
+  rectangle: [['bas'], ['rep', 2, [['av', 160], ['td', 90], ['av', 80], ['td', 90]]]],
+  triangle: [['bas'], ['rep', 3, [['av', 120], ['td', 120]]]],
+  escalier: [['bas'], ['rep', 4, [['tg', 90], ['av', 40], ['td', 90], ['av', 40]]]],
+  'deux-carres': [['bas'], ['rep', 4, [['av', 60], ['td', 90]]], ['haut'], ['av', 100], ['bas'], ['rep', 4, [['av', 60], ['td', 90]]]],
+  calcul: [['demander', 'Choisis un nombre'], ['dire', ['+', ['×', ['réponse'], 3], 5]]],
+  perimetre: [['demander', 'Longueur ?'], ['set', 'longueur', ['réponse']], ['demander', 'Largeur ?'], ['set', 'largeur', ['réponse']], ['dire', ['×', 2, ['+', ['var', 'longueur'], ['var', 'largeur']]]]],
+  hexagone: [['bas'], ['rep', 6, [['av', 60], ['td', ['÷', 360, 6]]]]],
+  etoile: [['bas'], ['rep', 5, [['av', 150], ['td', 144]]]],
+  frise: [['rep', 5, [['bas'], ['rep', 4, [['av', 30], ['td', 90]]], ['haut'], ['av', 45]]]],
+  polygone: [['demander', 'Combien de côtés ?'], ['bas'], ['rep', ['réponse'], [['av', 50], ['td', ['÷', 360, ['réponse']]]]]],
+  majeur: [['demander', 'Quel est ton âge ?'], ['si', ['>', ['réponse'], 17], [['dire', 'majeur']], [['dire', 'mineur']]]],
+  pair: [['demander', 'Donne un nombre entier'], ['si', ['=', ['reste', ['réponse'], 2], 0], [['dire', 'pair']], [['dire', 'impair']]]],
+  somme: [['set', 'nombre', 1], ['set', 'somme', 0], ['rep', 100, [['ajouter', ['var', 'nombre'], 'somme'], ['ajouter', 1, 'nombre']]], ['dire', ['var', 'somme']]],
+};
+function progSolution(id){ return PROG_SOLUTIONS[id] || null; }
+function progSolutionHtml(sol){
+  const C = k => PROG_COULEURS[k][0], B = k => PROG_COULEURS[k][2];
+  const box = k => `display:inline-block;background:${C(k)};color:#fff;border:1px solid ${B(k)};border-radius:5px;padding:4px 9px;font:600 12.5px Inter,Arial,sans-serif;line-height:1.5;`;
+  const pill = 'display:inline-block;background:#fff;color:#575E75;border-radius:10px;padding:0 7px;margin:0 2px;font-weight:700;';
+  const val = e => {
+    if(typeof e === 'number') return `<span style="${pill}">${String(e).replace('.', ',')}</span>`;
+    if(typeof e === 'string') return `<span style="${pill}">${progEsc(e)}</span>`;
+    if(e[0] === 'réponse') return `<span style="display:inline-block;background:${C('capteurs')};border:1px solid ${B('capteurs')};border-radius:10px;padding:0 7px;margin:0 2px;">réponse</span>`;
+    if(e[0] === 'var') return `<span style="display:inline-block;background:${C('variables')};border:1px solid ${B('variables')};border-radius:10px;padding:0 7px;margin:0 2px;">${progEsc(e[1])}</span>`;
+    const op = e[0] === 'reste' ? `reste de ${val(e[1])} ÷ ${val(e[2])}` : `${val(e[1])} ${e[0]} ${val(e[2])}`;
+    return `<span style="display:inline-block;background:${C('operateurs')};border:1px solid ${B('operateurs')};border-radius:${/[<>=]/.test(e[0]) ? '4px' : '10px'};padding:0 5px;margin:0 2px;">${op}</span>`;
+  };
+  const ligne = (k, h) => `<div style="margin:2px 0;"><span style="${box(k)}">${h}</span></div>`;
+  const corps = l => l.map(i => {
+    const [t, a, b, c] = i;
+    if(t === 'av') return ligne('mouvement', `avancer de ${val(a)} pas`);
+    if(t === 'td') return ligne('mouvement', `tourner ↻ de ${val(a)} degrés`);
+    if(t === 'tg') return ligne('mouvement', `tourner ↺ de ${val(a)} degrés`);
+    if(t === 'bas') return ligne('stylo', 'stylo en position d\'écriture');
+    if(t === 'haut') return ligne('stylo', 'relever le stylo');
+    if(t === 'demander') return ligne('capteurs', `demander ${val(a)} et attendre`);
+    if(t === 'dire') return ligne('apparence', `dire ${val(a)}`);
+    if(t === 'set') return ligne('variables', `mettre ${val(['var', a])} à ${val(b)}`);
+    if(t === 'ajouter') return ligne('variables', `ajouter ${val(a)} à ${val(['var', b])}`);
+    const bloc = (titre, dedans) => `<div style="margin:2px 0;"><span style="${box('controle')}border-bottom-left-radius:0;">${titre}</span>`
+      + `<div style="border-left:14px solid ${C('controle')};padding:2px 0 2px 6px;">${dedans}</div><span style="${box('controle')}border-top-left-radius:0;padding:2px 30px;"></span></div>`;
+    if(t === 'rep') return bloc(`répéter ${val(a)} fois`, corps(b));
+    if(t === 'si') return `<div style="margin:2px 0;"><span style="${box('controle')}border-bottom-left-radius:0;">si ${val(a)} alors</span><div style="border-left:14px solid ${C('controle')};padding:2px 0 2px 6px;">${corps(b)}</div>`
+      + `<span style="${box('controle')}border-radius:0;">sinon</span><div style="border-left:14px solid ${C('controle')};padding:2px 0 2px 6px;">${corps(c || [])}</div><span style="${box('controle')}border-top-left-radius:0;padding:2px 30px;"></span></div>`;
+    return '';
+  }).join('');
+  return `<div style="margin:6px 0;"><div style="margin:2px 0;"><span style="${box('evenements')}border-radius:14px 14px 5px 5px;">quand 🏁 est cliqué</span></div>${corps(sol)}</div>`;
+}
+// Le même programme au format Blockly (sérialisation JSON), pour le lancer et le vérifier.
+function progSolutionJson(sol){
+  const vars = {}, vid = n => (vars[n] = vars[n] || 'v_' + n);
+  const num = v => ({ shadow: { type: 'math_number', fields: { NUM: v } } }), txt = v => ({ shadow: { type: 'text', fields: { TEXT: v } } });
+  const OPS = { '+': 'sc_plus', '−': 'sc_moins', '×': 'sc_fois', '÷': 'sc_div', '>': 'sc_sup', '<': 'sc_inf', '=': 'sc_egal', reste: 'sc_modulo' };
+  const ex = e => {
+    if(typeof e === 'number') return num(e);
+    if(typeof e === 'string') return txt(e);
+    if(e[0] === 'réponse') return { block: { type: 'sc_reponse' } };
+    if(e[0] === 'var') return { block: { type: 'variables_get', fields: { VAR: { id: vid(e[1]) } } } };
+    return { block: { type: OPS[e[0]], inputs: { A: ex(e[1]), B: ex(e[2]) } } };
+  };
+  const chaine = l => {
+    let tete = null, cour = null;
+    l.forEach(([t, a, b, c]) => {
+      const T = { av: 'sc_avancer', td: 'sc_tourner_d', tg: 'sc_tourner_g' };
+      let k;
+      if(T[t]) k = { type: T[t], inputs: { N: ex(a) } };
+      else if(t === 'bas') k = { type: 'sc_stylo_bas' };
+      else if(t === 'haut') k = { type: 'sc_stylo_haut' };
+      else if(t === 'demander') k = { type: 'sc_demander', inputs: { T: ex(a) } };
+      else if(t === 'dire') k = { type: 'sc_dire', inputs: { T: ex(a) } };
+      else if(t === 'set') k = { type: 'sc_var_set', fields: { VAR: { id: vid(a) } }, inputs: { V: ex(b) } };
+      else if(t === 'ajouter') k = { type: 'sc_var_change', fields: { VAR: { id: vid(b) } }, inputs: { V: ex(a) } };
+      else if(t === 'rep'){ k = { type: 'sc_repeter', inputs: { N: ex(a) } }; const o = chaine(b); if(o) k.inputs.DO = { block: o }; }
+      else if(t === 'si'){ k = { type: 'sc_si_sinon', inputs: { C: ex(a) } }; const o = chaine(b), n = chaine(c || []); if(o) k.inputs.DO = { block: o }; if(n) k.inputs.ELSE = { block: n }; }
+      if(!k) return;
+      if(!tete) tete = cour = k; else { cour.next = { block: k }; cour = k; }
+    });
+    return tete;
+  };
+  const corps = chaine(sol), hat = { type: 'sc_drapeau', x: 30, y: 30 };
+  if(corps) hat.next = { block: corps };
+  const json = { blocks: { languageVersion: 0, blocks: [hat] } };
+  const v = Object.keys(vars); if(v.length) json.variables = v.map(n => ({ name: n, id: vars[n] }));
+  return json;
+}

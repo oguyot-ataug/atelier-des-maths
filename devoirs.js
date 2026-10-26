@@ -558,6 +558,7 @@ async function refreshDevoirsProfListing(){
         <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="editDevoirPrompt('${d.id}')"><span class=gicon>edit</span> Éditer</button>
         ${['automatismes','compte_est_bon','programmation'].includes(d.type) && typeof dvSuiviOuvrir==='function' ? `<button class="btn" style="font-size:.72rem;padding:4px 8px;background:#C0392B;" onclick="dvSuiviOuvrir('${d.id}')" title="Voir en direct qui travaille, sur quoi, et avec quels résultats"><span class=gicon>live_tv</span> Suivi en direct</button>` : ''}
         <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="openDevoirSubmissions('${d.id}')"><span class=gicon>visibility</span> Voir les rendus</button>
+        ${d.type==='programmation' && typeof dvProgCahier==='function' ? `<button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="dvProgCahier('${d.id}')" title="Mettre les défis (et leur correction en blocs) dans le cahier de la classe"><span class=gicon>menu_book</span> Cahier</button>` : ''}
         ${typeof dvlArchiveBtn==='function' ? dvlArchiveBtn(d) : ''}
         <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;color:#a83c1f;" onclick="deleteDevoirPrompt('${d.id}')"><span class=gicon>delete</span> Supprimer</button>
       </span>
