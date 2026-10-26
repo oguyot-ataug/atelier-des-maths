@@ -10,7 +10,8 @@ const W = 1000;
 const ZONES = {
   europe: { nom: 'Europe et Méditerranée', vue: [-11, 48, 24, 61], cadre: [-11, 48, 24, 61], lab: 'haut', simp: 0.0004 },
   afrique: { nom: 'Afrique', vue: [-20, 55, -36, 38], cadre: [-20, 48, -36, 24], lab: 'bas', simp: 0.0012 },
-  asie: { nom: 'Asie', vue: [40, 150, -10, 55], cadre: [48, 150, 0, 55], lab: 'bas', simp: 0.0015 }
+  asie: { nom: 'Asie', vue: [40, 150, -10, 55], cadre: [48, 150, 0, 55], lab: 'bas', simp: 0.0015 },
+  amerique: { nom: 'Amériques', vue: [-128, -62, 8, 52], cadre: [-128, -62, 8, 52], lab: 'bas', simp: 0.0012 }
 };
 const lire = f => JSON.parse(fs.readFileSync(new URL('node_modules/world-atlas/' + f, import.meta.url)));
 const proj = d3.geoEqualEarth().fitWidth(W, { type: 'Sphere' }), path = d3.geoPath(proj).digits(0);
@@ -36,7 +37,7 @@ const zones = {};
 for(const [k, z] of Object.entries(ZONES)){
   const r = rect(z.vue), pz = d3.geoEqualEarth().rotate([-(z.vue[0] + z.vue[1]) / 2, 0]).fitWidth(W, r);
   const hz = Math.round(d3.geoPath(pz).bounds(r)[1][1]), pathZ = d3.geoPath(pz.clipExtent([[0, 0], [W, hz]])).digits(0);
-  const b = path.bounds(rect(z.cadre)), lab = z.lab === 'haut' ? [Math.round(b[0][0]) + 4, Math.round(b[0][1]) - 8] : [Math.round(b[0][0]) + 4, Math.round(b[1][1]) + 18];
+  const b = path.bounds(rect(z.cadre)), lab = z.lab === 'haut' ? [Math.round(b[0][0]) + 4, Math.round(b[0][1]) - 8, 0] : [Math.round(b[0][0]) + 4, Math.round(b[1][1]) + 4, 1]; // [x, y, 1 si le nom est sous le cadre]
   zones[k] = { nom: z.nom, vue: z.vue, cadreLL: z.cadre, w: W, h: hz, p: param(pz), cadre: path(rect(z.cadre)), lab,
     grat: pathZ(d3.geoGraticule().step([10, 10])()), terre: pathZ(terres50(z.simp)) };
 }

@@ -56,15 +56,23 @@ const HM_EVTS = [
   ['renaissance', '1585', '🔟', 'Simon Stevin et les nombres décimaux', 'Dans « La Disme », le Flamand Simon Stevin explique comment calculer avec les nombres décimaux, et propose déjà des mesures en dixièmes, centièmes, millièmes.', [['cm1', 'Nombres décimaux'], ['cm2', 'Nombres décimaux jusqu\'aux millièmes'], ['6e', 'Nombres décimaux']], 'leyde'],
   ['renaissance', '1591', '🔤', 'Viète calcule avec des lettres', 'Le Français François Viète désigne les nombres inconnus et les nombres connus par des lettres : c\'est la naissance du calcul littéral.', [['5e', 'Calcul littéral'], ['4e', 'Calcul littéral'], ['3e', 'Calcul littéral']], 'tours'],
   ['modernes', '1637', '📍', 'Descartes : repère et puissances', 'René Descartes repère les points par deux nombres et note les puissances avec un petit nombre en exposant (x³) : la géométrie et l\'algèbre se rejoignent.', [['4e', 'Puissances'], ['3e', 'Généralités sur les fonctions']], 'leyde'],
+  ['modernes', 'vers 1637', '✍️', 'Le « dernier théorème » de Fermat', 'À Toulouse, Pierre de Fermat note dans la marge d\'un livre de Diophante : avec des carrés, on trouve des nombres entiers qui marchent (3² + 4² = 5²), mais jamais avec des cubes ou des puissances plus grandes. Il dit en avoir une « démonstration merveilleuse » que la marge est trop étroite pour contenir.', [['4e', 'Théorème de Pythagore'], ['4e', 'Puissances'], ['3e', 'Arithmétique']], 'toulouse'],
   ['modernes', '1654', '🎲', 'Pascal et Fermat : les probabilités', 'Le chevalier de Méré demande comment partager les mises d\'un jeu interrompu. Blaise Pascal et Pierre de Fermat en discutent par lettres : naissance du calcul des probabilités.', [['cm1', 'Probabilités'], ['cm2', 'Probabilités'], ['6e', 'Probabilités'], ['5e', 'Probabilités'], ['4e', 'Probabilités'], ['3e', 'Probabilités']], 'paris'],
   ['modernes', 'vers 1700', '⛩️', 'Les sangaku du Japon', 'Au Japon, on accroche dans les temples des tablettes de bois peintes : des problèmes de géométrie avec des cercles et des triangles, offerts comme des énigmes aux visiteurs.', [['6e', 'Distance et cercles'], ['4e', 'Théorème de Pythagore']], 'kyoto'],
   ['modernes', '1732', '🔲', 'Les carrés magiques d\'al-Kishnawi', 'Le savant Muhammad al-Kishnawi, né à Katsina (actuel Nigeria), écrit un livre sur les carrés magiques : des grilles de nombres où chaque ligne, chaque colonne et chaque diagonale ont la même somme.', [['cm1', 'Procédures de calcul mental']], 'katsina'],
   ['modernes', '1734', '𝑓', 'Euler et la notation f(x)', 'Le Suisse Leonhard Euler, l\'un des plus grands mathématiciens, popularise l\'écriture f(x) et la lettre π pour le nombre d\'Archimède.', [['5e', 'Fonctions'], ['3e', 'Généralités sur les fonctions'], ['3e', 'Fonctions linéaires et affines']], 'stpetersbourg'],
   ['modernes', '1795', '📏', 'Le système métrique', 'La Révolution crée le mètre, le litre et le gramme, avec leurs multiples et sous-multiples décimaux : des mesures communes à tous.', [['ce2', 'Les longueurs'], ['cm1', 'Longueurs, masses, contenances'], ['cm2', 'Longueurs, masses, contenances']], 'paris'],
+  ['modernes', '1796', '✳️', 'Gauss et le polygone à 17 côtés', 'À 19 ans, l\'Allemand Carl Friedrich Gauss découvre qu\'on peut tracer un polygone régulier à 17 côtés avec seulement une règle et un compas, ce que personne n\'avait trouvé depuis les Grecs.', [['6e', 'Distance et cercles']], 'gottingue'],
+  ['contemporain', '1816', '🎖️', 'Sophie Germain', 'Interdite d\'université parce qu\'elle est une femme, la Française Sophie Germain étudie seule, écrit aux savants sous un nom d\'homme, puis gagne le grand prix de l\'Académie des sciences. Elle fait aussi avancer la recherche sur le théorème de Fermat.', [['3e', 'Arithmétique']], 'paris'],
   ['contemporain', '1843', '⚙️', 'Ada Lovelace, première programmeuse', 'L\'Anglaise Ada Lovelace écrit pour la machine à calculer de Charles Babbage ce qu\'on considère comme le premier programme informatique.', [['cm2', 'Pensée informatique'], ['6e', 'Initiation à la pensée informatique'], ['5e', 'Pensée informatique et programmation']], 'londres'],
   ['contemporain', '1858', '📊', 'Florence Nightingale et les diagrammes', 'Infirmière et statisticienne, Florence Nightingale prouve par des diagrammes que les soldats meurent surtout des maladies de l\'hôpital : les statistiques sauvent des vies.', [['ce2', 'Tableaux et diagrammes en barres'], ['cm1', 'Organisation et gestion de données'], ['6e', 'Gestion de données'], ['5e', 'Statistiques'], ['4e', 'Statistiques'], ['3e', 'Statistiques']], 'londres'],
+  ['contemporain', '1904', '❄️', 'Le flocon de Koch', 'Le Suédois Helge von Koch dessine un flocon en ajoutant sans fin des triangles sur chaque côté : son périmètre augmente à chaque étape, alors que le flocon tient toujours dans un même cercle. C\'est l\'une des premières fractales.', [['6e', 'Aire et périmètre'], ['6e', 'Symétrie axiale']], 'stockholm'],
   ['contemporain', '1913', '✉️', 'Ramanujan, le génie autodidacte', 'Employé de bureau à Madras (Inde), Srinivasa Ramanujan, qui a appris seul les mathématiques, envoie ses découvertes au mathématicien anglais Hardy, qui l\'invite à Cambridge.', [], 'madras'],
   ['contemporain', '1936', '💻', 'Alan Turing et l\'ordinateur', 'Le mathématicien anglais Alan Turing décrit une machine capable d\'exécuter n\'importe quel algorithme : le modèle de nos ordinateurs. Pendant la guerre, il casse le code Enigma.', [['6e', 'Initiation à la pensée informatique'], ['5e', 'Pensée informatique et programmation']], 'cambridge'],
+  ['contemporain', '1948', '💡', 'Claude Shannon et les bits', 'L\'ingénieur américain Claude Shannon montre que toute information, texte, image ou son, peut s\'écrire avec des 0 et des 1, les « bits » : c\'est la base de l\'informatique et d\'Internet.', [['6e', 'Initiation à la pensée informatique'], ['5e', 'Pensée informatique et programmation']], 'murrayhill'],
+  ['contemporain', '1952', '👩‍💻', 'Grace Hopper et le compilateur', 'L\'Américaine Grace Hopper crée l\'un des premiers compilateurs, puis un langage de programmation qui utilise des mots anglais : on n\'a plus besoin d\'écrire les programmes en 0 et en 1.', [['6e', 'Initiation à la pensée informatique'], ['5e', 'Pensée informatique et programmation']], 'philadelphie'],
+  ['contemporain', '1962', '🚀', 'Katherine Johnson et la NASA', 'À la NASA, la mathématicienne afro-américaine Katherine Johnson vérifie à la main les calculs de trajectoire du vol de John Glenn, premier Américain à faire le tour de la Terre en fusée.', [], 'hampton'],
+  ['contemporain', '1994', '🏆', 'Andrew Wiles démontre le théorème de Fermat', 'Après sept ans de travail en secret, le Britannique Andrew Wiles démontre enfin le « dernier théorème » de Fermat, 357 ans après la note dans la marge.', [['4e', 'Puissances'], ['3e', 'Arithmétique']], 'princeton'],
   ['contemporain', '2014', '🏅', 'Maryam Mirzakhani, médaille Fields', 'L\'Iranienne Maryam Mirzakhani est la première femme à recevoir la médaille Fields, la plus haute récompense en mathématiques, pour ses travaux sur la géométrie des surfaces.', [], 'stanford']];
 
 // Où la notion est née : [nom, latitude, longitude]. Carte : planisphere.js (projection Equal Earth), chargé à la demande.
@@ -79,7 +87,8 @@ const HM_LIEUX = { ishango: ['Ishango (Congo)', 0.1, 29.6], uruk: ['Uruk (Mésop
   lebombo: ['Monts Lebombo (Afrique australe)', -27.0, 32.0], maghreb: ['Maghreb (actuel Maroc)', 34.0, -5.0], bejaia: ['Béjaïa (actuelle Algérie)', 36.75, 5.1],
   tombouctou: ['Tombouctou (actuel Mali)', 16.8, -3.0], katsina: ['Katsina (actuel Nigeria)', 13.0, 7.6], nankin: ['Nankin (Chine)', 32.1, 118.8], patna: ['Kusumapura (actuelle Patna, Inde)', 25.6, 85.1],
   ujjain: ['Ujjain (Inde)', 23.2, 75.8], bhinmal: ['Bhinmal (Inde)', 25.0, 72.3], samarcande: ['Samarcande (actuel Ouzbékistan)', 39.65, 67.0], kyoto: ['Kyoto (Japon)', 35.0, 135.8],
-  madras: ['Madras (actuelle Chennai, Inde)', 13.1, 80.3] };
+  madras: ['Madras (actuelle Chennai, Inde)', 13.1, 80.3], toulouse: ['Toulouse', 43.6, 1.44], gottingue: ['Göttingen (Allemagne)', 51.53, 9.93], stockholm: ['Stockholm (Suède)', 59.33, 18.07],
+  murrayhill: ['Murray Hill (États-Unis)', 40.68, -74.4], philadelphie: ['Philadelphie (États-Unis)', 39.95, -75.17], hampton: ['Hampton, NASA (États-Unis)', 37.03, -76.35], princeton: ['Princeton (États-Unis)', 40.35, -74.66] };
 // Lieux trop proches pour deux points : Cambridge avec Londres ; Uruk, Nippur et Bagdad avec Babylone (Mésopotamie) ;
 // Le Caire avec Gizeh ; Tyr et Gérase avec Damas (Proche-Orient : Liban, Syrie, Jordanie).
 const HM_POINT = { cambridge: 'londres', uruk: 'babylone', nippur: 'babylone', bagdad: 'babylone', caire: 'gizeh', tyr: 'damas', gerase: 'damas' };
@@ -117,8 +126,28 @@ function hmFiltrer(n){ hmFiltre = n; hmRendre(); }
    le texte associé à l'évènement » et « permettre une animation chronologique de la carte et/ou choisir la
    période » : curseur dans le temps, bouton Animer (la carte suit les étapes), choix de l'époque. ---- */
 let hmGr = []; // points affichés (groupes), calculés par hmMaj
-let hmVue = 'monde', hmLieuSel = '', hmEvtSel = -1, hmPer = '', hmPos = null, hmAnimT = null, hmSuivre = true;
-const HM_PAS_MS = 4500; // une étape toutes les 4,5 s : le temps de lire le texte
+let hmVue = 'monde', hmLieuSel = '', hmEvtSel = -1, hmPer = '', hmPos = null, hmAnim = false, hmTimer = null, hmRun = 0, hmSuivre = true;
+// Lecture à voix haute pendant l'animation -- demandé : « En mode animation (lecture), il serait bien d'entendre une
+// voix : "vers 110, Le géographe Marin de Tyr…" ». L'étape suivante vient quand la voix a fini : le rythme
+// s'adapte à la longueur du texte. Voix de l'appareil, réglée par le bouton de voix du site (speechUtterance, app.js).
+let hmVoix = true; try{ hmVoix = localStorage.getItem('hmVoix') !== '0'; }catch(e){}
+const hmParoleOk = () => typeof speechSynthesis !== 'undefined' && typeof speechUtterance === 'function';
+function hmTexteParle(e){
+  const date = e[1].replace(/−\s?([\d\s]+)/, (m, n) => n.replace(/\s/g, '') + ' avant Jésus-Christ');
+  return date + ', ' + e[4].replace(/≈/g, ' environ ').replace(/f\(x\)/g, 'f de x').replace(/x³/g, 'x au cube').replace(/(\d)²/g, '$1 au carré').replace(/[«»]/g, '');
+}
+let hmUtt = null; // référence gardée : sinon certains navigateurs perdent l'événement de fin
+function hmDire(texte, fin){
+  if(!hmParoleOk()){ if(fin) fin(); return; }
+  let fait = false; const finir = () => { if(!fait){ fait = true; if(fin) fin(); } };
+  speechSynthesis.cancel();
+  hmUtt = speechUtterance(texte); hmUtt.onend = finir; hmUtt.onerror = finir;
+  speechSynthesis.speak(hmUtt);
+  if(fin) setTimeout(finir, 8000 + texte.length * 110); // filet de sécurité si la fin n'est jamais signalée
+}
+function hmVoixReglage(v){ hmVoix = v; try{ localStorage.setItem('hmVoix', v ? '1' : '0'); }catch(e){} if(!v && hmParoleOk()) speechSynthesis.cancel(); }
+function hmEcouter(i){ hmStop(); hmMaj(); hmDire(hmTexteParle(HM_EVTS[i])); }
+const HM_PAS_MS = 4500; // sans la voix : au moins 4,5 s par étape, plus si le texte est long
 // Projection Equal Earth (mêmes formules que d3-geo) avec les réglages de planisphere.js.
 function hmProj(p, lat, lon){
   const A1 = 1.340264, A2 = -0.081106, A3 = 0.000893, A4 = 0.003796, M = Math.sqrt(3) / 2;
@@ -130,7 +159,11 @@ function hmProj(p, lat, lon){
 const hmDans = (k, [lon0, lon1, lat0, lat1]) => { const [, la, lo] = HM_LIEUX[k]; return lo >= lon0 && lo <= lon1 && la >= lat0 && la <= lat1; };
 // Zoom qui contient un lieu (son cadre sur le planisphère), sinon le planisphère lui-même.
 function hmZoneDe(k){ return Object.keys(HM_CARTE.zones).find(z => hmDans(k, HM_CARTE.zones[z].cadreLL)) || 'monde'; }
-const hmRayon = Z => 15 * Math.max(1, Z.h / 760); // rayon des points d'un zoom (plus grand si la carte est haute, donc affichée réduite)
+// Échelle d'affichage d'une carte (pixels à l'écran par unité du dessin). Sur téléphone, la carte est réduite : points
+// et noms grossissent pour rester lisibles (demandé : « Agrandis les noms des cadres sur téléphone »).
+function hmEchelle(C){ const W = (document.getElementById('hmSvg') || {}).clientWidth || C.w; return Math.min(W, 0.72 * (window.innerHeight || 800) * C.w / C.h) / C.w; }
+const hmRayon = Z => Math.max(15, 12 / hmEchelle(Z)); // rayon des points d'un zoom : au moins 12 pixels à l'écran
+const HM_NOM_COURT = { europe: 'Europe', afrique: 'Afrique', asie: 'Asie', amerique: 'Amériques' };
 // Le lieu est-il visible sur ce zoom ? Un point coupé par le bord appartient à la carte voisine : on ne le montre pas.
 function hmSurZoom(k, z){
   const Z = HM_CARTE.zones[z], r = hmRayon(Z); if(!hmDans(k, Z.vue)) return false;
@@ -176,7 +209,8 @@ function hmCarte(){
       <button type="button" class="hm-pas" onclick="hmPas(-1)" aria-label="Étape précédente">◀</button>
       <input type="range" id="hmCurseur" min="0" step="1" oninput="hmAller(+this.value)" aria-label="Étape de l'histoire">
       <button type="button" class="hm-pas" onclick="hmPas(1)" aria-label="Étape suivante">▶</button><span id="hmTempsLib" class="hm-temps-lib"></span>
-      <label class="hm-suivre"><input type="checkbox" ${hmSuivre ? 'checked' : ''} onchange="hmSuivre = this.checked"> la carte suit les étapes</label></div>
+      <label class="hm-suivre"><input type="checkbox" ${hmSuivre ? 'checked' : ''} onchange="hmSuivre = this.checked"> la carte suit les étapes</label>
+      ${hmParoleOk() ? `<label class="hm-suivre"><input type="checkbox" ${hmVoix ? 'checked' : ''} onchange="hmVoixReglage(this.checked)"> 🔊 lire à voix haute</label>` : ''}</div>
     <div class="hm-periodes" id="hmPeriodes"></div><div id="hmSvg"></div><div id="hmBas"></div>
     <details class="hm-proj"><summary>Pourquoi cette carte ?</summary>Planisphère en projection <b>Equal Earth</b>, que l'ONU recommande depuis septembre 2026 : chaque continent y garde sa vraie surface. Sur la carte de Mercator, l'Afrique paraît à peu près aussi grande que le Groenland ; en réalité, elle est 14 fois plus grande.</details>`;
   hmMaj();
@@ -184,15 +218,16 @@ function hmCarte(){
 function hmMaj(){
   const svgBox = document.getElementById('hmSvg'); if(!svgBox || typeof HM_CARTE === 'undefined') return;
   const monde = hmVue === 'monde', C = monde ? HM_CARTE.monde : HM_CARTE.zones[hmVue], pts = hmPoints(), liste = hmListePer();
-  const r = monde ? 11 : hmRayon(C), f = monde ? 12 : r, cour = hmPos === null ? -1 : liste[hmPos], courK = cour >= 0 ? hmCle(cour) : '';
+  const s = hmEchelle(C), u = Math.max(1, .9 / s), r = monde ? Math.max(11, 9 / s) : hmRayon(C), f = monde ? r * 1.1 : r, cour = hmPos === null ? -1 : liste[hmPos], courK = cour >= 0 ? hmCle(cour) : '';
   const pos = k => hmProj(C.p, HM_LIEUX[k][1], HM_LIEUX[k][2]), xy = v => v.map(n => n.toFixed(1)).join(',');
   let svg = `<svg viewBox="0 0 ${C.w} ${C.h}" class="hm-svg${monde ? '' : ' zoom'}" role="img" aria-label="${monde ? 'Planisphère' : 'Carte : ' + hmEsc(C.nom)} : lieux où les notions sont nées">`;
   svg += monde ? `<path d="${C.sphere}" class="hm-mer"/>` : `<rect width="${C.w}" height="${C.h}" class="hm-mer"/>`;
   svg += `<path d="${C.grat}" class="hm-grat"/><path d="${C.terre}" class="hm-terre"/>`;
+  const fz = Math.max(13, 12 / s); // noms des cadres : au moins 12 pixels à l'écran, en abrégé sur téléphone
   if(monde) Object.entries(HM_CARTE.zones).forEach(([z, Z]) => {
     const n = pts.filter(p => hmSurZoom(p.k, z)).reduce((a, p) => a + p.evts.length, 0); // étapes visibles sur ce zoom
     svg += `<g class="hm-zone${courK && hmZoneDe(courK) === z ? ' courant' : ''}" onclick="hmZoom('${z}')" tabindex="0" role="button" aria-label="Zoomer : ${Z.nom}"><path d="${Z.cadre}"/>
-      <text x="${Z.lab[0]}" y="${Z.lab[1]}" class="hm-zone-txt">${Z.nom} : ${n} étape${n > 1 ? 's' : ''} (zoom)</text></g>`;
+      <text x="${Z.lab[0]}" y="${Z.lab[1] + (Z.lab[2] ? fz : 0)}" class="hm-zone-txt" style="font-size:${fz.toFixed(1)}px;stroke-width:${(fz / 4).toFixed(1)}px">${s < .6 ? `${HM_NOM_COURT[z] || Z.nom} (${n})` : `${Z.nom} : ${n} étape${n > 1 ? 's' : ''} (zoom)`}</text></g>`;
   });
   // Trajets (lieu de départ → lieu de l'étape), sous les points : « flèche Samos → Crotone ».
   let fl = '';
@@ -202,8 +237,8 @@ function hmMaj(){
     const d0 = [a[0] + ux * (r + 6), a[1] + uy * (r + 6)], d1 = [b[0] - ux * (r + 5), b[1] - uy * (r + 5)];
     const sg = ux > 0 ? 1 : -1, c = [(d0[0] + d1[0]) / 2 - uy * L * .22 * sg, (d0[1] + d1[1]) / 2 + ux * L * .22 * sg]; // courbe bombée vers le sud
     fl += `<g class="hm-trajet${hmEstompe(e) ? ' estompe' : ''}"><title>${hmEsc(e[3])} : ${hmEsc(HM_LIEUX[e[7]][0])} → ${hmEsc(HM_LIEUX[e[6]][0])}</title>
-      <path d="M${xy(d0)} Q${xy(c)} ${xy(d1)}" marker-end="url(#hmFleche)"/><circle cx="${a[0].toFixed(1)}" cy="${a[1].toFixed(1)}" r="4"/>
-      <text x="${(d0[0] + 2).toFixed(1)}" y="${(d0[1] - 12).toFixed(1)}" text-anchor="${ux < 0 ? 'end' : 'start'}">${hmEsc(HM_LIEUX[e[7]][0].split(' (')[0])}</text></g>`;
+      <path d="M${xy(d0)} Q${xy(c)} ${xy(d1)}" marker-end="url(#hmFleche)" style="stroke-width:${3 * u}px"/><circle cx="${a[0].toFixed(1)}" cy="${a[1].toFixed(1)}" r="${4 * u}"/>
+      <text x="${(d0[0] + 2).toFixed(1)}" y="${(d0[1] - 12 * u).toFixed(1)}" text-anchor="${ux < 0 ? 'end' : 'start'}" style="font-size:${14 * u}px">${hmEsc(HM_LIEUX[e[7]][0].split(' (')[0])}</text></g>`;
   });
   if(fl) svg += '<defs><marker id="hmFleche" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#7B1FA2"/></marker></defs>' + fl;
   hmGr = hmGroupes(pts.filter(p => hmSurVue(p.k)), pos, r);
@@ -215,7 +250,7 @@ function hmMaj(){
   svgBox.innerHTML = svg + '</svg>';
   // Commandes : retour au monde, lecture, curseur, époques.
   document.getElementById('hmRetour').innerHTML = monde ? '' : `<button type="button" class="hm-f" onclick="hmZoom('monde')">← Monde entier</button>`;
-  document.getElementById('hmPlay').innerHTML = hmAnimT ? '⏸ Pause' : '▶ Animer';
+  document.getElementById('hmPlay').innerHTML = hmAnim ? '⏸ Pause' : '▶ Animer';
   const cur = document.getElementById('hmCurseur'); cur.max = Math.max(0, liste.length - 1); cur.value = hmPos === null ? liste.length - 1 : hmPos;
   document.getElementById('hmTempsLib').textContent = cour >= 0 ? `${HM_EVTS[cour][1]} · étape ${hmPos + 1} sur ${liste.length}` : `${liste.length} étapes`;
   document.getElementById('hmPeriodes').innerHTML = `<span>Époque :</span><button type="button" class="hm-f${!hmPer ? ' on' : ''}" onclick="hmPeriode('')">Toutes</button>` +
@@ -226,11 +261,11 @@ function hmMaj(){
   if(hmEvtSel >= 0){
     const e = HM_EVTS[hmEvtSel], vis = e[5].filter(([n]) => hmVisible(n));
     bas += `<div class="hm-fiche${hmEstompe(e) ? ' estompe' : ''}"><div class="hm-fiche-tete"><span class="hm-fiche-emo">${e[2]}</span><span class="hm-lieu-date">${e[1]}</span> <b>${e[3]}</b></div>
-      <p>${e[4]}</p>${hmLieuTxt(e)}<div class="hm-vigs">${vis.map(hmVignette).join('')}<button type="button" class="hm-lien" onclick="hmVoirEtape(${hmEvtSel})">Voir dans la frise ↓</button></div></div>`;
+      <p>${e[4]}</p>${hmLieuTxt(e)}<div class="hm-vigs">${vis.map(hmVignette).join('')}${hmParoleOk() ? `<button type="button" class="hm-lien" onclick="hmEcouter(${hmEvtSel})">🔊 Écouter</button>` : ''}<button type="button" class="hm-lien" onclick="hmVoirEtape(${hmEvtSel})">Voir dans la frise ↓</button></div></div>`;
   } else if(!bas) bas = `<p class="hint hm-carte-aide">${monde ? 'Clique sur un point pour lire l\'étape (le nombre indique combien d\'étapes sont nées à cet endroit), sur un cadre pour zoomer, ou sur « Animer » pour voir l\'histoire se dérouler.' : 'Clique sur un point pour lire l\'étape, ou sur « Animer » pour voir l\'histoire se dérouler.'}</p>`;
   document.getElementById('hmBas').innerHTML = bas;
 }
-function hmStop(){ if(hmAnimT){ clearTimeout(hmAnimT); hmAnimT = null; } }
+function hmStop(){ hmRun++; hmAnim = false; clearTimeout(hmTimer); if(hmParoleOk()) speechSynthesis.cancel(); }
 function hmZoom(v){ hmVue = v; hmLieuSel = ''; hmMaj(); }
 function hmLieu(k){
   hmStop(); hmLieuSel = hmLieuSel === k ? '' : k;
@@ -249,16 +284,21 @@ function hmAller(pos, auto){
 }
 function hmPas(d){ const n = hmListePer().length; hmAller(hmPos === null ? (d > 0 ? 0 : n - 1) : hmPos + d); }
 function hmAnimer(){
-  if(hmAnimT){ hmStop(); hmMaj(); return; }
-  const n = hmListePer().length; let p = hmPos === null || hmPos >= n - 1 ? 0 : hmPos + 1;
+  if(hmAnim){ hmStop(); hmMaj(); return; }
+  hmStop();
+  const n = hmListePer().length, run = hmRun; let p = hmPos === null || hmPos >= n - 1 ? 0 : hmPos + 1;
+  hmAnim = true;
+  const suite = () => { if(run !== hmRun) return; if(p >= n - 1){ hmAnim = false; hmMaj(); return; } p++; pas(); };
   const pas = () => {
+    if(run !== hmRun) return; // arrêtée entre-temps (pause, clic, autre époque…)
     const box = document.getElementById('hmSvg');
     if(!box || !box.offsetParent){ hmStop(); return; } // page quittée : on arrête
     hmAller(p, true);
-    if(p >= n - 1){ hmAnimT = null; hmMaj(); return; }
-    p++; hmAnimT = setTimeout(pas, HM_PAS_MS); hmMaj();
+    const e = HM_EVTS[hmEvtSel];
+    if(hmVoix && hmParoleOk()) hmDire(hmTexteParle(e), () => { if(run === hmRun) hmTimer = setTimeout(suite, 900); });
+    else hmTimer = setTimeout(suite, Math.max(HM_PAS_MS, e[4].length * 55));
   };
-  hmAnimT = setTimeout(pas, 0); hmMaj();
+  pas();
 }
 function hmVoirEtape(i){
   const el = document.getElementById('hm-e' + i); if(!el) return;
