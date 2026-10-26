@@ -14,6 +14,7 @@ const HM_NIV = { ce2: { lib: 'CE2', coul: '#7CB342', liste: () => typeof CHCE2 !
 const HM_EPOQUES = [['prehistoire', 'Préhistoire et premières civilisations'], ['antiquite', 'Antiquité'], ['moyenage', 'Du Moyen Âge à l\'Islam médiéval'], ['renaissance', 'Renaissance'], ['modernes', 'Temps modernes'], ['contemporain', 'Époque contemporaine']];
 // [époque, date affichée, emoji, titre, texte, [[niveau, titre du chapitre], …], lieu (HM_LIEUX), lieu de départ éventuel (flèche sur la carte)]
 const HM_EVTS = [
+  ['prehistoire', 'vers −40 000', '🌗', 'L\'os de Lebombo', 'Dans les monts Lebombo, entre l\'Afrique du Sud et l\'Eswatini, un os de babouin porte 29 encoches : l\'un des plus vieux objets de comptage connus, peut-être pour suivre les jours de la Lune.', [['ce2', 'Nombres jusqu\'à 10 000'], ['cm1', 'Nombres entiers jusqu\'à 9 999']], 'lebombo'],
   ['prehistoire', 'vers −20 000', '🦴', 'Le bâton d\'Ishango', 'Retrouvé au Congo, cet os porte des encoches groupées : l\'un des plus anciens objets qui semblent servir à compter.', [['ce2', 'Nombres jusqu\'à 10 000'], ['cm1', 'Nombres entiers jusqu\'à 9 999']], 'ishango'],
   ['prehistoire', 'vers −3300', '🏺', 'Les premiers nombres écrits', 'En Mésopotamie, des jetons d\'argile puis des signes sur des tablettes servent à tenir les comptes : l\'écriture des nombres naît avec la comptabilité.', [['cm1', 'Nombres entiers jusqu\'à 9 999'], ['cm2', 'Grands nombres jusqu\'à 999 999 999']], 'uruk'],
   ['prehistoire', 'vers −2560', '🧱', 'Les pyramides et la coudée royale', 'Pour bâtir la pyramide de Khéops, à Gizeh, les Égyptiens mesurent tous avec la même unité, la coudée royale (environ 52 cm) : chaque côté de la base mesure 440 coudées.', [['ce2', 'Les longueurs'], ['cm1', 'Longueurs, masses, contenances'], ['cm2', 'Longueurs, masses, contenances']], 'gizeh'],
@@ -34,26 +35,35 @@ const HM_EVTS = [
   ['antiquite', 'vers 250', '❓', 'Diophante, père de l\'algèbre', 'À Alexandrie, Diophante résout des problèmes où l\'on cherche un nombre inconnu, avec des abréviations : un premier pas vers les équations.', [['5e', 'Équations'], ['3e', 'Équations']], 'alexandrie'],
   ['antiquite', 'vers 350', '🐚', 'Le zéro des Mayas', 'En Amérique centrale, sans aucun contact avec l\'Europe ni avec l\'Asie, les Mayas comptent par vingtaines et ont un signe pour le zéro (un coquillage) dans leur calendrier.', [['cm1', 'Nombres entiers jusqu\'à 9 999'], ['6e', 'Nombres entiers']], 'maya'],
   ['antiquite', 'vers 400', '🌟', 'Hypatie d\'Alexandrie', 'Première mathématicienne dont on connaît la vie, Hypatie enseigne les mathématiques et l\'astronomie, et commente les livres de Diophante et de Ptolémée.', [], 'alexandrie'],
+  ['moyenage', 'vers 480', '🔵', 'Zu Chongzhi et le nombre π', 'En Chine, Zu Chongzhi trouve que π est compris entre 3,1415926 et 3,1415927 : un record de précision qui tiendra près de 1 000 ans.', [['cm2', 'Droites, segments et cercles'], ['6e', 'Aire et périmètre']], 'nankin'],
+  ['moyenage', '499', '〰️', 'Aryabhata et le sinus', 'En Inde, Aryabhata calcule π ≈ 3,1416 et dresse une table de « demi-cordes » : en passant par l\'arabe puis le latin, ce mot indien est devenu notre « sinus ».', [['3e', 'Trigonométrie']], 'patna'],
   ['moyenage', 'vers 500', '0️⃣', 'Le zéro et la numération de position (Inde)', 'Les savants indiens écrivent les nombres avec dix chiffres dont le zéro, chaque chiffre valant selon sa position. C\'est notre système actuel.', [['ce2', 'Nombres jusqu\'à 10 000'], ['cm1', 'Nombres entiers jusqu\'à 9 999'], ['6e', 'Nombres entiers']], 'inde'],
-  ['moyenage', '628', '➖', 'Brahmagupta et les nombres négatifs', 'L\'Indien Brahmagupta donne les règles de calcul avec le zéro et avec les « dettes » (nombres négatifs) : une dette retranchée de zéro devient un bien.', [['5e', 'Nombres relatifs'], ['5e', 'Opérations sur les nombres relatifs'], ['4e', 'Opérations sur les nombres relatifs']], 'inde'],
+  ['moyenage', '628', '➖', 'Brahmagupta et les nombres négatifs', 'L\'Indien Brahmagupta donne les règles de calcul avec le zéro et avec les « dettes » (nombres négatifs) : une dette retranchée de zéro devient un bien.', [['5e', 'Nombres relatifs'], ['5e', 'Opérations sur les nombres relatifs'], ['4e', 'Opérations sur les nombres relatifs']], 'bhinmal'],
   ['moyenage', 'vers 820', '📖', 'Al-Khwarizmi et l\'algèbre', 'À Bagdad, Al-Khwarizmi écrit un livre sur l\'« al-jabr » (qui a donné le mot algèbre) pour résoudre des équations. Son nom a donné le mot « algorithme ».', [['6e', 'Initiation à l\'algèbre'], ['6e', 'Initiation à la pensée informatique'], ['4e', 'Équations']], 'bagdad'],
   ['moyenage', '952', '✏️', 'Al-Uqlidisi et les fractions décimales', 'À Damas, Al-Uqlidisi apprend à calculer avec les chiffres indiens sur le papier, et non plus sur une planche couverte de sable. Il écrit déjà des fractions décimales, six siècles avant Stevin.', [['cm1', 'Nombres décimaux'], ['6e', 'Nombres décimaux']], 'damas'],
   ['moyenage', 'vers 980', '🔭', 'Abu al-Wafa et la tangente', 'À Bagdad, l\'astronome Abu al-Wafa calcule des tables très précises qui relient les angles et les longueurs, et étudie une nouvelle grandeur : la tangente.', [['3e', 'Trigonométrie']], 'bagdad'],
   ['moyenage', 'vers 1020', '👁️', 'Ibn al-Haytham et la lumière', 'Au Caire, Ibn al-Haytham montre que l\'on voit grâce à la lumière qui va en ligne droite des objets jusqu\'à l\'œil. Les peintres de la Renaissance s\'appuieront sur ses travaux pour dessiner en perspective.', [['5e', 'Représentation de l\'espace']], 'caire'],
   ['moyenage', 'vers 1075', '📅', 'Omar Khayyam : équations et calendrier', 'À Ispahan (actuel Iran), le poète et mathématicien Omar Khayyam résout des équations difficiles à l\'aide de figures, et calcule la durée de l\'année pour un calendrier plus précis que le nôtre.', [['4e', 'Équations'], ['3e', 'Équations']], 'ispahan'],
-  ['moyenage', '1202', '🐇', 'Fibonacci et les chiffres indo-arabes', 'Dans son « Livre du calcul », Fibonacci fait découvrir aux marchands européens les chiffres de 0 à 9, la barre de fraction et la règle de trois.', [['cm1', 'Opérations sur les nombres entiers'], ['cm1', 'Fractions'], ['6e', 'Proportionnalité']], 'pise'],
+  ['moyenage', 'vers 1150', '🌸', 'Bhaskara et le « Lilavati »', 'À Ujjain (Inde), Bhaskara écrit le « Lilavati », un livre de problèmes de calcul racontés comme de petites histoires, adressés à une jeune fille nommée Lilavati.', [['cm1', 'Résolution de problèmes']], 'ujjain'],
+  ['moyenage', 'vers 1175', '➗', 'Al-Hassar et la barre de fraction', 'Au Maghreb, le mathématicien Al-Hassar écrit les fractions avec une barre horizontale entre le numérateur et le dénominateur, comme nous le faisons encore.', [['cm1', 'Fractions'], ['6e', 'Fractions : nombres et partage']], 'maghreb'],
+  ['moyenage', '1202', '🐇', 'Fibonacci et les chiffres indo-arabes', 'Enfant, Fibonacci apprend le calcul à Béjaïa (actuelle Algérie), où son père est marchand. Rentré à Pise, il fait découvrir dans son « Livre du calcul » les chiffres de 0 à 9, la barre de fraction et la règle de trois.', [['cm1', 'Opérations sur les nombres entiers'], ['cm1', 'Fractions'], ['6e', 'Proportionnalité']], 'pise', 'bejaia'],
   ['moyenage', 'vers 1350', '📈', 'Nicole Oresme dessine la vitesse', 'L\'évêque normand Nicole Oresme représente une grandeur qui varie, comme la vitesse, par un dessin : un ancêtre des graphiques et des fonctions.', [['5e', 'Fonctions'], ['3e', 'Grandeurs composées']], 'paris'],
   ['moyenage', '14e siècle', '🕌', 'Les pavages de l\'Alhambra', 'À Grenade, les artistes musulmans couvrent les murs de l\'Alhambra de pavages faits de symétries, de translations et de rotations.', [['cm2', 'Symétrie axiale'], ['5e', 'Symétrie centrale'], ['4e', 'Translations'], ['3e', 'Rotation']], 'grenade'],
+  ['renaissance', '1424', '🧮', 'Al-Kashi et les décimales de π', 'À Samarcande (actuel Ouzbékistan), Al-Kashi calcule 16 décimales exactes de π et explique comment calculer avec les nombres décimaux, plus d\'un siècle et demi avant Stevin.', [['cm2', 'Nombres décimaux jusqu\'aux millièmes'], ['6e', 'Nombres décimaux']], 'samarcande'],
   ['renaissance', '1489', '➕', 'Les signes + et −', 'Ils apparaissent dans un livre imprimé de l\'Allemand Johannes Widmann, un manuel de calcul pour les marchands. Le symbole % vient lui aussi des marchands italiens (per cento).', [['ce2', 'Addition et soustraction posées'], ['cm2', 'Addition et soustraction'], ['5e', 'Pourcentages']], 'leipzig'],
+  ['renaissance', 'vers 1500', '📜', 'Les manuscrits de Tombouctou', 'À Tombouctou (actuel Mali), les savants recopient des milliers de manuscrits : astronomie, calendrier, arithmétique, et calculs de partage d\'héritages avec des fractions.', [['cm1', 'Fractions'], ['6e', 'Fractions : comparaison et addition']], 'tombouctou'],
   ['renaissance', '1557', '🟰', 'Le signe =', 'Le Gallois Robert Recorde invente le signe = : « rien ne peut être plus égal que deux droites parallèles de même longueur ».', [['6e', 'Initiation à l\'algèbre'], ['5e', 'Équations']], 'londres'],
   ['renaissance', '1585', '🔟', 'Simon Stevin et les nombres décimaux', 'Dans « La Disme », le Flamand Simon Stevin explique comment calculer avec les nombres décimaux, et propose déjà des mesures en dixièmes, centièmes, millièmes.', [['cm1', 'Nombres décimaux'], ['cm2', 'Nombres décimaux jusqu\'aux millièmes'], ['6e', 'Nombres décimaux']], 'leyde'],
   ['renaissance', '1591', '🔤', 'Viète calcule avec des lettres', 'Le Français François Viète désigne les nombres inconnus et les nombres connus par des lettres : c\'est la naissance du calcul littéral.', [['5e', 'Calcul littéral'], ['4e', 'Calcul littéral'], ['3e', 'Calcul littéral']], 'tours'],
   ['modernes', '1637', '📍', 'Descartes : repère et puissances', 'René Descartes repère les points par deux nombres et note les puissances avec un petit nombre en exposant (x³) : la géométrie et l\'algèbre se rejoignent.', [['4e', 'Puissances'], ['3e', 'Généralités sur les fonctions']], 'leyde'],
   ['modernes', '1654', '🎲', 'Pascal et Fermat : les probabilités', 'Le chevalier de Méré demande comment partager les mises d\'un jeu interrompu. Blaise Pascal et Pierre de Fermat en discutent par lettres : naissance du calcul des probabilités.', [['cm1', 'Probabilités'], ['cm2', 'Probabilités'], ['6e', 'Probabilités'], ['5e', 'Probabilités'], ['4e', 'Probabilités'], ['3e', 'Probabilités']], 'paris'],
+  ['modernes', 'vers 1700', '⛩️', 'Les sangaku du Japon', 'Au Japon, on accroche dans les temples des tablettes de bois peintes : des problèmes de géométrie avec des cercles et des triangles, offerts comme des énigmes aux visiteurs.', [['6e', 'Distance et cercles'], ['4e', 'Théorème de Pythagore']], 'kyoto'],
+  ['modernes', '1732', '🔲', 'Les carrés magiques d\'al-Kishnawi', 'Le savant Muhammad al-Kishnawi, né à Katsina (actuel Nigeria), écrit un livre sur les carrés magiques : des grilles de nombres où chaque ligne, chaque colonne et chaque diagonale ont la même somme.', [['cm1', 'Procédures de calcul mental']], 'katsina'],
   ['modernes', '1734', '𝑓', 'Euler et la notation f(x)', 'Le Suisse Leonhard Euler, l\'un des plus grands mathématiciens, popularise l\'écriture f(x) et la lettre π pour le nombre d\'Archimède.', [['5e', 'Fonctions'], ['3e', 'Généralités sur les fonctions'], ['3e', 'Fonctions linéaires et affines']], 'stpetersbourg'],
   ['modernes', '1795', '📏', 'Le système métrique', 'La Révolution crée le mètre, le litre et le gramme, avec leurs multiples et sous-multiples décimaux : des mesures communes à tous.', [['ce2', 'Les longueurs'], ['cm1', 'Longueurs, masses, contenances'], ['cm2', 'Longueurs, masses, contenances']], 'paris'],
   ['contemporain', '1843', '⚙️', 'Ada Lovelace, première programmeuse', 'L\'Anglaise Ada Lovelace écrit pour la machine à calculer de Charles Babbage ce qu\'on considère comme le premier programme informatique.', [['cm2', 'Pensée informatique'], ['6e', 'Initiation à la pensée informatique'], ['5e', 'Pensée informatique et programmation']], 'londres'],
   ['contemporain', '1858', '📊', 'Florence Nightingale et les diagrammes', 'Infirmière et statisticienne, Florence Nightingale prouve par des diagrammes que les soldats meurent surtout des maladies de l\'hôpital : les statistiques sauvent des vies.', [['ce2', 'Tableaux et diagrammes en barres'], ['cm1', 'Organisation et gestion de données'], ['6e', 'Gestion de données'], ['5e', 'Statistiques'], ['4e', 'Statistiques'], ['3e', 'Statistiques']], 'londres'],
+  ['contemporain', '1913', '✉️', 'Ramanujan, le génie autodidacte', 'Employé de bureau à Madras (Inde), Srinivasa Ramanujan, qui a appris seul les mathématiques, envoie ses découvertes au mathématicien anglais Hardy, qui l\'invite à Cambridge.', [], 'madras'],
   ['contemporain', '1936', '💻', 'Alan Turing et l\'ordinateur', 'Le mathématicien anglais Alan Turing décrit une machine capable d\'exécuter n\'importe quel algorithme : le modèle de nos ordinateurs. Pendant la guerre, il casse le code Enigma.', [['6e', 'Initiation à la pensée informatique'], ['5e', 'Pensée informatique et programmation']], 'cambridge'],
   ['contemporain', '2014', '🏅', 'Maryam Mirzakhani, médaille Fields', 'L\'Iranienne Maryam Mirzakhani est la première femme à recevoir la médaille Fields, la plus haute récompense en mathématiques, pour ses travaux sur la géométrie des surfaces.', [], 'stanford']];
 
@@ -61,15 +71,21 @@ const HM_EVTS = [
 const HM_LIEUX = { ishango: ['Ishango (Congo)', 0.1, 29.6], uruk: ['Uruk (Mésopotamie, actuel Irak)', 31.3, 45.6], babylone: ['Babylone (Mésopotamie, actuel Irak)', 32.5, 44.4],
   thebes: ['Thèbes (Égypte)', 25.7, 32.6], milet: ['Milet (cité grecque, actuelle Turquie)', 37.5, 27.3], crotone: ['Crotone (cité grecque d\'Italie du Sud)', 39.1, 17.1],
   alexandrie: ['Alexandrie (Égypte)', 31.2, 29.9], syracuse: ['Syracuse (Sicile)', 37.1, 15.3], chine: ['Chine', 34.3, 108.9], maya: ['Pays maya (actuel Guatemala)', 17.4, -89.6],
-  inde: ['Inde du Nord', 25, 78], bagdad: ['Bagdad (actuel Irak)', 33.3, 44.4], pise: ['Pise (Italie)', 43.7, 10.4], paris: ['Paris', 48.9, 2.35], grenade: ['Grenade (Espagne)', 37.2, -3.6],
+  inde: ['Inde du Nord', 26.2, 78.2], bagdad: ['Bagdad (actuel Irak)', 33.3, 44.4], pise: ['Pise (Italie)', 43.7, 10.4], paris: ['Paris', 48.9, 2.35], grenade: ['Grenade (Espagne)', 37.2, -3.6],
   leipzig: ['Leipzig (Allemagne)', 51.3, 12.4], londres: ['Londres', 51.5, -0.1], cambridge: ['Cambridge (Angleterre)', 52.2, 0.1], leyde: ['Leyde (Pays-Bas)', 52.2, 4.5],
   tours: ['Tours', 47.4, 0.7], stpetersbourg: ['Saint-Pétersbourg (Russie)', 59.9, 30.3], stanford: ['Stanford (États-Unis)', 37.4, -122.2],
   samos: ['Samos (île grecque)', 37.75, 26.98], gizeh: ['Gizeh (Égypte)', 30.0, 31.1], caire: ['Le Caire (Égypte)', 30.05, 31.25], nippur: ['Nippur (Mésopotamie, actuel Irak)', 32.1, 45.2],
-  gerase: ['Gérase (actuelle Jordanie)', 32.3, 35.9], tyr: ['Tyr (actuel Liban)', 33.3, 35.2], damas: ['Damas (actuelle Syrie)', 33.5, 36.3], ispahan: ['Ispahan (actuel Iran)', 32.65, 51.7] };
+  gerase: ['Gérase (actuelle Jordanie)', 32.3, 35.9], tyr: ['Tyr (actuel Liban)', 33.3, 35.2], damas: ['Damas (actuelle Syrie)', 33.5, 36.3], ispahan: ['Ispahan (actuel Iran)', 32.65, 51.7],
+  lebombo: ['Monts Lebombo (Afrique australe)', -27.0, 32.0], maghreb: ['Maghreb (actuel Maroc)', 34.0, -5.0], bejaia: ['Béjaïa (actuelle Algérie)', 36.75, 5.1],
+  tombouctou: ['Tombouctou (actuel Mali)', 16.8, -3.0], katsina: ['Katsina (actuel Nigeria)', 13.0, 7.6], nankin: ['Nankin (Chine)', 32.1, 118.8], patna: ['Kusumapura (actuelle Patna, Inde)', 25.6, 85.1],
+  ujjain: ['Ujjain (Inde)', 23.2, 75.8], bhinmal: ['Bhinmal (Inde)', 25.0, 72.3], samarcande: ['Samarcande (actuel Ouzbékistan)', 39.65, 67.0], kyoto: ['Kyoto (Japon)', 35.0, 135.8],
+  madras: ['Madras (actuelle Chennai, Inde)', 13.1, 80.3] };
 // Lieux trop proches pour deux points : Cambridge avec Londres ; Uruk, Nippur et Bagdad avec Babylone (Mésopotamie) ;
 // Le Caire avec Gizeh ; Tyr et Gérase avec Damas (Proche-Orient : Liban, Syrie, Jordanie).
 const HM_POINT = { cambridge: 'londres', uruk: 'babylone', nippur: 'babylone', bagdad: 'babylone', caire: 'gizeh', tyr: 'damas', gerase: 'damas' };
 
+function hmVignette([n, t]){ return !hmVisible(n) ? '' : `<button type="button" class="hm-vig${hmFiltre === n ? ' on' : ''}" style="--c:${HM_NIV[n].coul}" title="${hmEsc(HM_NIV[n].lib + ' : ' + t)} (ouvrir le chapitre)" onclick="hmOuvrir('${n}', '${hmEsc(t.replace(/'/g, '\\\''))}')">${HM_NIV[n].lib}</button>`; }
+function hmLieuTxt(e){ return `<div class="hm-lieu"><span class="gicon">location_on</span> ${e[7] ? hmEsc(HM_LIEUX[e[7]][0]) + ' → ' : ''}${hmEsc(HM_LIEUX[e[6]][0])}</div>`; }
 function hmChapitre(niv, titre){ return HM_NIV[niv].liste().find(c => c.t === titre) || null; }
 function hmVisible(niv){ return typeof niveauVisible !== 'function' || niveauVisible(niv); }
 const hmEsc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
@@ -77,7 +93,6 @@ let hmFiltre = '';
 function hmRendre(){
   const root = document.getElementById('friseRoot'); if(!root) return;
   const niveaux = Object.keys(HM_NIV).filter(hmVisible);
-  const vignette = ([n, t]) => !hmVisible(n) ? '' : `<button type="button" class="hm-vig${hmFiltre === n ? ' on' : ''}" style="--c:${HM_NIV[n].coul}" title="${hmEsc(HM_NIV[n].lib + ' : ' + t)} (ouvrir le chapitre)" onclick="hmOuvrir('${n}', '${hmEsc(t.replace(/'/g, '\\\''))}')">${HM_NIV[n].lib}</button>`;
   let h = `<div class="hm-filtres"><span>Quand étudie-t-on ces notions ?</span><button type="button" class="hm-f${!hmFiltre ? ' on' : ''}" onclick="hmFiltrer('')">Tous les niveaux</button>${niveaux.map(n => `<button type="button" class="hm-f${hmFiltre === n ? ' on' : ''}" style="--c:${HM_NIV[n].coul}" onclick="hmFiltrer('${n}')">${HM_NIV[n].lib}</button>`).join('')}</div>`;
   h += `<p class="hint hm-aide">Les vignettes de couleur indiquent en quelle classe on étudie la notion : clique dessus pour ouvrir le chapitre.${hmFiltre ? ` Filtre : <b>${HM_NIV[hmFiltre].lib}</b>, les étapes qui ne concernent pas ce niveau sont estompées.` : ''}</p><div id="hmCarte" class="hm-carte-monde"></div><div class="hm-frise">`;
   HM_EPOQUES.forEach(([k, lib]) => {
@@ -86,7 +101,7 @@ function hmRendre(){
     l.forEach(e => {
       const [, date, emo, titre, texte, nivs, lieu] = e, vis = nivs.filter(([n]) => hmVisible(n));
       h += `<div class="hm-evt${hmEstompe(e) ? ' estompe' : ''}" id="hm-e${HM_EVTS.indexOf(e)}"><div class="hm-date">${date}</div><div class="hm-point">${emo}</div>
-        <div class="hm-carte"><b class="hm-titre">${titre}</b><p>${texte}</p><div class="hm-lieu"><span class="gicon">location_on</span> ${e[7] ? hmEsc(HM_LIEUX[e[7]][0]) + ' → ' : ''}${hmEsc(HM_LIEUX[lieu][0])}</div>${vis.length ? `<div class="hm-vigs">${vis.map(vignette).join('')}</div>` : ''}</div></div>`;
+        <div class="hm-carte"><b class="hm-titre">${titre}</b><p>${texte}</p>${hmLieuTxt(e)}${vis.length ? `<div class="hm-vigs">${vis.map(hmVignette).join('')}</div>` : ''}</div></div>`;
     });
   });
   root.innerHTML = h + '</div>';
@@ -97,9 +112,13 @@ function hmFiltrer(n){ hmFiltre = n; hmRendre(); }
 
 /* ---- Carte du monde : où chaque notion est née. Demandé : « peut-on ajouter une carte du monde (nouveau
    planisphère adopté il y a environ un mois), en plaçant là où les différentes notions ont commencé ? » --
-   projection Equal Earth, recommandée par l'Assemblée générale de l'ONU en septembre 2026. Vue « Monde » ;
-   l'Europe et la Méditerranée, où les points se serrent, s'ouvrent dans un zoom. ---- */
-let hmVue = 'monde', hmLieuSel = '';
+   projection Equal Earth, recommandée par l'Assemblée générale de l'ONU en septembre 2026. Zooms Europe-
+   Méditerranée, Afrique et Asie (planisphere.js), où les points se serrent. Puis : « réécris juste en dessous
+   le texte associé à l'évènement » et « permettre une animation chronologique de la carte et/ou choisir la
+   période » : curseur dans le temps, bouton Animer (la carte suit les étapes), choix de l'époque. ---- */
+let hmGr = []; // points affichés (groupes), calculés par hmMaj
+let hmVue = 'monde', hmLieuSel = '', hmEvtSel = -1, hmPer = '', hmPos = null, hmAnimT = null, hmSuivre = true;
+const HM_PAS_MS = 4500; // une étape toutes les 4,5 s : le temps de lire le texte
 // Projection Equal Earth (mêmes formules que d3-geo) avec les réglages de planisphere.js.
 function hmProj(p, lat, lon){
   const A1 = 1.340264, A2 = -0.081106, A3 = 0.000893, A4 = 0.003796, M = Math.sqrt(3) / 2;
@@ -108,14 +127,37 @@ function hmProj(p, lat, lon){
   const x = lam * Math.cos(l) / (M * (A1 + 3 * A2 * l2 + l6 * (7 * A3 + 9 * A4 * l2))), y = l * (A1 + A2 * l2 + l6 * (A3 + A4 * l2));
   return [p.tx + p.k * x, p.ty - p.k * y];
 }
-// Lieux affichés : un point par lieu (HM_POINT regroupe les lieux trop proches), avec ses étapes.
+const hmDans = (k, [lon0, lon1, lat0, lat1]) => { const [, la, lo] = HM_LIEUX[k]; return lo >= lon0 && lo <= lon1 && la >= lat0 && la <= lat1; };
+// Zoom qui contient un lieu (son cadre sur le planisphère), sinon le planisphère lui-même.
+function hmZoneDe(k){ return Object.keys(HM_CARTE.zones).find(z => hmDans(k, HM_CARTE.zones[z].cadreLL)) || 'monde'; }
+const hmRayon = Z => 15 * Math.max(1, Z.h / 760); // rayon des points d'un zoom (plus grand si la carte est haute, donc affichée réduite)
+// Le lieu est-il visible sur ce zoom ? Un point coupé par le bord appartient à la carte voisine : on ne le montre pas.
+function hmSurZoom(k, z){
+  const Z = HM_CARTE.zones[z], r = hmRayon(Z); if(!hmDans(k, Z.vue)) return false;
+  const [x, y] = hmProj(Z.p, HM_LIEUX[k][1], HM_LIEUX[k][2]); return x > r && x < Z.w - r && y > r && y < Z.h - r;
+}
+function hmSurVue(k){ return hmVue === 'monde' ? hmZoneDe(k) === 'monde' : hmSurZoom(k, hmVue); }
+const hmCle = i => HM_POINT[HM_EVTS[i][6]] || HM_EVTS[i][6]; // point de la carte d'une étape
+// Étapes de l'époque choisie (HM_EVTS est dans l'ordre chronologique) ; sur la carte, jusqu'à l'étape du curseur.
+function hmListePer(){ return HM_EVTS.map((e, i) => i).filter(i => !hmPer || HM_EVTS[i][0] === hmPer); }
+function hmMontrees(){ const l = hmListePer(); return hmPos === null ? l : l.slice(0, hmPos + 1); }
+// Un point par lieu (HM_POINT regroupe les lieux trop proches), avec ses étapes.
 function hmPoints(){
   const pts = {};
-  HM_EVTS.forEach((e, i) => { const k = HM_POINT[e[6]] || e[6]; (pts[k] = pts[k] || { k, evts: [] }).evts.push(i); });
+  hmMontrees().forEach(i => { const k = hmCle(i); (pts[k] = pts[k] || { k, evts: [] }).evts.push(i); });
   return Object.values(pts);
 }
+// Points qui se toucheraient sur la carte affichée : un seul point (le plus chargé garde sa place).
+function hmGroupes(pts, pos, r){
+  const gr = [];
+  pts.slice().sort((a, b) => b.evts.length - a.evts.length).forEach(p => {
+    const xy = pos(p.k), g = gr.find(g => Math.hypot(g.xy[0] - xy[0], g.xy[1] - xy[1]) < 2 * r + 2);
+    if(g){ g.ks.push(p.k); g.evts.push(...p.evts); } else gr.push({ ks: [p.k], evts: p.evts.slice(), xy });
+  });
+  gr.forEach(g => g.evts.sort((a, b) => a - b));
+  return gr;
+}
 function hmNoms(p){ return p.evts.map(i => HM_LIEUX[HM_EVTS[i][6]][0]).filter((v, j, a) => a.indexOf(v) === j).join(' · '); }
-function hmDansEurope(k){ const [, la, lo] = HM_LIEUX[k]; return lo >= -11 && lo <= 48 && la >= 24 && la <= 61; }
 function hmCarte(){
   const box = document.getElementById('hmCarte'); if(!box) return;
   if(typeof HM_CARTE === 'undefined'){
@@ -128,54 +170,101 @@ function hmCarte(){
     }
     return;
   }
-  const C = HM_CARTE[hmVue], monde = hmVue === 'monde', pts = hmPoints();
-  const r = monde ? 11 : 15, f = monde ? 12 : 15;
-  let svg = `<svg viewBox="0 0 ${C.w} ${C.h}" class="hm-svg" role="img" aria-label="${monde ? 'Planisphère' : 'Carte de l\'Europe et de la Méditerranée'} : lieux où les notions sont nées">`;
+  // Squelette fixe (le curseur n'est jamais reconstruit : on peut le faire glisser), puis hmMaj() remplit le reste.
+  box.innerHTML = `<div class="hm-carte-tete"><b><span class="gicon">public</span> Où sont nées ces notions ?</b><span id="hmRetour"></span></div>
+    <div class="hm-temps"><button type="button" id="hmPlay" class="hm-play" onclick="hmAnimer()"></button>
+      <button type="button" class="hm-pas" onclick="hmPas(-1)" aria-label="Étape précédente">◀</button>
+      <input type="range" id="hmCurseur" min="0" step="1" oninput="hmAller(+this.value)" aria-label="Étape de l'histoire">
+      <button type="button" class="hm-pas" onclick="hmPas(1)" aria-label="Étape suivante">▶</button><span id="hmTempsLib" class="hm-temps-lib"></span>
+      <label class="hm-suivre"><input type="checkbox" ${hmSuivre ? 'checked' : ''} onchange="hmSuivre = this.checked"> la carte suit les étapes</label></div>
+    <div class="hm-periodes" id="hmPeriodes"></div><div id="hmSvg"></div><div id="hmBas"></div>
+    <details class="hm-proj"><summary>Pourquoi cette carte ?</summary>Planisphère en projection <b>Equal Earth</b>, que l'ONU recommande depuis septembre 2026 : chaque continent y garde sa vraie surface. Sur la carte de Mercator, l'Afrique paraît à peu près aussi grande que le Groenland ; en réalité, elle est 14 fois plus grande.</details>`;
+  hmMaj();
+}
+function hmMaj(){
+  const svgBox = document.getElementById('hmSvg'); if(!svgBox || typeof HM_CARTE === 'undefined') return;
+  const monde = hmVue === 'monde', C = monde ? HM_CARTE.monde : HM_CARTE.zones[hmVue], pts = hmPoints(), liste = hmListePer();
+  const r = monde ? 11 : hmRayon(C), f = monde ? 12 : r, cour = hmPos === null ? -1 : liste[hmPos], courK = cour >= 0 ? hmCle(cour) : '';
+  const pos = k => hmProj(C.p, HM_LIEUX[k][1], HM_LIEUX[k][2]), xy = v => v.map(n => n.toFixed(1)).join(',');
+  let svg = `<svg viewBox="0 0 ${C.w} ${C.h}" class="hm-svg${monde ? '' : ' zoom'}" role="img" aria-label="${monde ? 'Planisphère' : 'Carte : ' + hmEsc(C.nom)} : lieux où les notions sont nées">`;
   svg += monde ? `<path d="${C.sphere}" class="hm-mer"/>` : `<rect width="${C.w}" height="${C.h}" class="hm-mer"/>`;
   svg += `<path d="${C.grat}" class="hm-grat"/><path d="${C.terre}" class="hm-terre"/>`;
-  if(monde){
-    const nEu = pts.filter(p => hmDansEurope(p.k)).reduce((a, p) => a + p.evts.length, 0);
-    svg += `<g class="hm-zone" onclick="hmZoom('europe')" tabindex="0" role="button" aria-label="Zoomer sur l'Europe et la Méditerranée"><path d="${C.cadre}"/>`;
-    const b = [470, 34]; svg += `<text x="${b[0]}" y="${b[1] - 8}" class="hm-zone-txt">Europe et Méditerranée : ${nEu} étapes (zoom)</text></g>`;
-  }
-  pts.filter(p => monde !== hmDansEurope(p.k)).forEach(p => {
-    const [x, y] = hmProj(C.p, HM_LIEUX[p.k][1], HM_LIEUX[p.k][2]), n = p.evts.filter(i => !hmEstompe(HM_EVTS[i])).length;
-    svg += `<g class="hm-pt${n ? '' : ' estompe'}${hmLieuSel === p.k ? ' sel' : ''}" onclick="hmLieu('${p.k}')" tabindex="0" role="button"><title>${hmEsc(hmNoms(p))}</title>
-      <circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r}"/><text x="${x.toFixed(1)}" y="${(y + f * .36).toFixed(1)}" style="font-size:${f}px">${p.evts.length}</text></g>`;
+  if(monde) Object.entries(HM_CARTE.zones).forEach(([z, Z]) => {
+    const n = pts.filter(p => hmSurZoom(p.k, z)).reduce((a, p) => a + p.evts.length, 0); // étapes visibles sur ce zoom
+    svg += `<g class="hm-zone${courK && hmZoneDe(courK) === z ? ' courant' : ''}" onclick="hmZoom('${z}')" tabindex="0" role="button" aria-label="Zoomer : ${Z.nom}"><path d="${Z.cadre}"/>
+      <text x="${Z.lab[0]}" y="${Z.lab[1]}" class="hm-zone-txt">${Z.nom} : ${n} étape${n > 1 ? 's' : ''} (zoom)</text></g>`;
   });
-  // Trajets (lieu de départ → lieu de l'étape), sous les points : « flèche Samos → Crotone » (demandé).
+  // Trajets (lieu de départ → lieu de l'étape), sous les points : « flèche Samos → Crotone ».
   let fl = '';
-  HM_EVTS.forEach(e => {
-    if(!e[7] || monde === hmDansEurope(e[6]) || monde === hmDansEurope(e[7])) return; // seulement si les deux lieux sont sur cette carte
-    const a = hmProj(C.p, HM_LIEUX[e[7]][1], HM_LIEUX[e[7]][2]), b = hmProj(C.p, HM_LIEUX[e[6]][1], HM_LIEUX[e[6]][2]);
-    const dx = b[0] - a[0], dy = b[1] - a[1], L = Math.hypot(dx, dy), ux = dx / L, uy = dy / L;
+  hmMontrees().forEach(i => {
+    const e = HM_EVTS[i]; if(!e[7] || !hmSurVue(hmCle(i)) || !hmSurVue(e[7])) return;
+    const a = pos(e[7]), b = pos(hmCle(i)), dx = b[0] - a[0], dy = b[1] - a[1], L = Math.hypot(dx, dy), ux = dx / L, uy = dy / L;
     const d0 = [a[0] + ux * (r + 6), a[1] + uy * (r + 6)], d1 = [b[0] - ux * (r + 5), b[1] - uy * (r + 5)];
     const sg = ux > 0 ? 1 : -1, c = [(d0[0] + d1[0]) / 2 - uy * L * .22 * sg, (d0[1] + d1[1]) / 2 + ux * L * .22 * sg]; // courbe bombée vers le sud
     fl += `<g class="hm-trajet${hmEstompe(e) ? ' estompe' : ''}"><title>${hmEsc(e[3])} : ${hmEsc(HM_LIEUX[e[7]][0])} → ${hmEsc(HM_LIEUX[e[6]][0])}</title>
-      <path d="M${d0.map(v => v.toFixed(1)).join(',')} Q${c.map(v => v.toFixed(1)).join(',')} ${d1.map(v => v.toFixed(1)).join(',')}" marker-end="url(#hmFleche)"/>
-      <circle cx="${a[0].toFixed(1)}" cy="${a[1].toFixed(1)}" r="4"/><text x="${(d0[0] + 2).toFixed(1)}" y="${(d0[1] - 12).toFixed(1)}" text-anchor="end">${hmEsc(HM_LIEUX[e[7]][0].split(' (')[0])}</text></g>`;
+      <path d="M${xy(d0)} Q${xy(c)} ${xy(d1)}" marker-end="url(#hmFleche)"/><circle cx="${a[0].toFixed(1)}" cy="${a[1].toFixed(1)}" r="4"/>
+      <text x="${(d0[0] + 2).toFixed(1)}" y="${(d0[1] - 12).toFixed(1)}" text-anchor="${ux < 0 ? 'end' : 'start'}">${hmEsc(HM_LIEUX[e[7]][0].split(' (')[0])}</text></g>`;
   });
-  if(fl) svg = svg.replace('<path d="' + C.terre + '" class="hm-terre"/>', m => m + '<defs><marker id="hmFleche" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#7B1FA2"/></marker></defs>' + fl);
-  svg += '</svg>';
-  const sel = hmLieuSel && pts.find(p => p.k === hmLieuSel);
-  const liste = sel ? `<div class="hm-lieu-liste"><b><span class="gicon">location_on</span> ${hmEsc(hmNoms(sel))}</b>${sel.evts.map(i => { const e = HM_EVTS[i]; return `<button type="button" class="hm-lieu-evt${hmEstompe(e) ? ' estompe' : ''}" onclick="hmVoirEtape(${i})"><span>${e[2]}</span> <span class="hm-lieu-date">${e[1]}</span> ${e[3]}</button>`; }).join('')}</div>`
-    : `<p class="hint hm-carte-aide">${monde ? 'Clique sur un point pour voir les étapes nées à cet endroit (le nombre indique combien) ; clique sur le cadre pour zoomer sur l\'Europe et la Méditerranée.' : 'Clique sur un point pour voir les étapes nées à cet endroit.'}</p>`;
-  box.innerHTML = `<div class="hm-carte-tete"><b><span class="gicon">public</span> Où sont nées ces notions ?</b>${monde ? '' : '<button type="button" class="hm-f" onclick="hmZoom(\'monde\')">← Monde entier</button>'}</div>
-    ${svg}${liste}
-    <p class="hm-proj">Planisphère en projection <b>Equal Earth</b>, que l'ONU recommande depuis septembre 2026 : chaque continent y garde sa vraie surface. Sur la carte de Mercator, l'Afrique paraît à peu près aussi grande que le Groenland ; en réalité, elle est 14 fois plus grande.</p>`;
+  if(fl) svg += '<defs><marker id="hmFleche" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#7B1FA2"/></marker></defs>' + fl;
+  hmGr = hmGroupes(pts.filter(p => hmSurVue(p.k)), pos, r);
+  hmGr.forEach(g => {
+    const [x, y] = g.xy, n = g.evts.filter(i => !hmEstompe(HM_EVTS[i])).length, X = x.toFixed(1), Y = y.toFixed(1), ici = k => g.ks.includes(k);
+    svg += `<g class="hm-pt${n ? '' : ' estompe'}${ici(hmLieuSel) ? ' sel' : ''}${ici(courK) ? ' courant' : ''}" onclick="hmLieu('${g.ks[0]}')" tabindex="0" role="button"><title>${hmEsc(hmNoms(g))}</title>
+      ${ici(courK) ? `<circle class="hm-pulse" cx="${X}" cy="${Y}" r="${r}"/>` : ''}<circle cx="${X}" cy="${Y}" r="${r}"/><text x="${X}" y="${(y + f * .36).toFixed(1)}" style="font-size:${f}px">${g.evts.length}</text></g>`;
+  });
+  svgBox.innerHTML = svg + '</svg>';
+  // Commandes : retour au monde, lecture, curseur, époques.
+  document.getElementById('hmRetour').innerHTML = monde ? '' : `<button type="button" class="hm-f" onclick="hmZoom('monde')">← Monde entier</button>`;
+  document.getElementById('hmPlay').innerHTML = hmAnimT ? '⏸ Pause' : '▶ Animer';
+  const cur = document.getElementById('hmCurseur'); cur.max = Math.max(0, liste.length - 1); cur.value = hmPos === null ? liste.length - 1 : hmPos;
+  document.getElementById('hmTempsLib').textContent = cour >= 0 ? `${HM_EVTS[cour][1]} · étape ${hmPos + 1} sur ${liste.length}` : `${liste.length} étapes`;
+  document.getElementById('hmPeriodes').innerHTML = `<span>Époque :</span><button type="button" class="hm-f${!hmPer ? ' on' : ''}" onclick="hmPeriode('')">Toutes</button>` +
+    HM_EPOQUES.map(([k, lib]) => `<button type="button" class="hm-f${hmPer === k ? ' on' : ''}" onclick="hmPeriode('${k}')">${lib}</button>`).join('');
+  // Sous la carte : les étapes du lieu choisi, puis le texte de l'étape choisie.
+  const sel = hmLieuSel && hmGr.find(g => g.ks.includes(hmLieuSel));
+  let bas = sel && sel.evts.length > 1 ? `<div class="hm-lieu-liste"><b><span class="gicon">location_on</span> ${hmEsc(hmNoms(sel))}</b>${sel.evts.map(i => { const e = HM_EVTS[i]; return `<button type="button" class="hm-lieu-evt${hmEstompe(e) ? ' estompe' : ''}${hmEvtSel === i ? ' on' : ''}" onclick="hmChoisir(${i})"><span>${e[2]}</span> <span class="hm-lieu-date">${e[1]}</span> ${e[3]}</button>`; }).join('')}</div>` : '';
+  if(hmEvtSel >= 0){
+    const e = HM_EVTS[hmEvtSel], vis = e[5].filter(([n]) => hmVisible(n));
+    bas += `<div class="hm-fiche${hmEstompe(e) ? ' estompe' : ''}"><div class="hm-fiche-tete"><span class="hm-fiche-emo">${e[2]}</span><span class="hm-lieu-date">${e[1]}</span> <b>${e[3]}</b></div>
+      <p>${e[4]}</p>${hmLieuTxt(e)}<div class="hm-vigs">${vis.map(hmVignette).join('')}<button type="button" class="hm-lien" onclick="hmVoirEtape(${hmEvtSel})">Voir dans la frise ↓</button></div></div>`;
+  } else if(!bas) bas = `<p class="hint hm-carte-aide">${monde ? 'Clique sur un point pour lire l\'étape (le nombre indique combien d\'étapes sont nées à cet endroit), sur un cadre pour zoomer, ou sur « Animer » pour voir l\'histoire se dérouler.' : 'Clique sur un point pour lire l\'étape, ou sur « Animer » pour voir l\'histoire se dérouler.'}</p>`;
+  document.getElementById('hmBas').innerHTML = bas;
 }
-function hmZoom(v){ hmVue = v; hmLieuSel = ''; hmCarte(); }
-function hmLieu(k){ hmLieuSel = hmLieuSel === k ? '' : k; hmCarte(); }
+function hmStop(){ if(hmAnimT){ clearTimeout(hmAnimT); hmAnimT = null; } }
+function hmZoom(v){ hmVue = v; hmLieuSel = ''; hmMaj(); }
+function hmLieu(k){
+  hmStop(); hmLieuSel = hmLieuSel === k ? '' : k;
+  const g = hmGr.find(g => g.ks.includes(k)); hmEvtSel = hmLieuSel && g ? g.evts[0] : -1; // première étape du point
+  hmMaj();
+}
+function hmChoisir(i){ hmEvtSel = i; hmMaj(); }
+function hmPeriode(k){ hmStop(); hmPer = k; hmPos = null; hmEvtSel = -1; hmLieuSel = ''; hmMaj(); }
+// Aller à une étape du curseur : la carte montre les étapes jusqu'à celle-ci, et son texte dessous.
+function hmAller(pos, auto){
+  if(!auto) hmStop();
+  const l = hmListePer(); if(!l.length) return;
+  hmPos = Math.max(0, Math.min(l.length - 1, pos)); hmEvtSel = l[hmPos]; hmLieuSel = '';
+  if(hmSuivre) hmVue = hmZoneDe(hmCle(hmEvtSel));
+  hmMaj();
+}
+function hmPas(d){ const n = hmListePer().length; hmAller(hmPos === null ? (d > 0 ? 0 : n - 1) : hmPos + d); }
+function hmAnimer(){
+  if(hmAnimT){ hmStop(); hmMaj(); return; }
+  const n = hmListePer().length; let p = hmPos === null || hmPos >= n - 1 ? 0 : hmPos + 1;
+  const pas = () => {
+    const box = document.getElementById('hmSvg');
+    if(!box || !box.offsetParent){ hmStop(); return; } // page quittée : on arrête
+    hmAller(p, true);
+    if(p >= n - 1){ hmAnimT = null; hmMaj(); return; }
+    p++; hmAnimT = setTimeout(pas, HM_PAS_MS); hmMaj();
+  };
+  hmAnimT = setTimeout(pas, 0); hmMaj();
+}
 function hmVoirEtape(i){
   const el = document.getElementById('hm-e' + i); if(!el) return;
+  hmStop(); hmMaj();
   el.scrollIntoView({ behavior: 'smooth', block: 'center' });
   el.classList.remove('hm-flash'); void el.offsetWidth; el.classList.add('hm-flash');
-}
-function hmOuvrir(niv, titre){
-  const c = hmChapitre(niv, titre);
-  if(!c || typeof openChapitre !== 'function') return;
-  if(typeof currentLevel !== 'undefined') currentLevel = niv;
-  openChapitre(c, 'cours', niv);
 }
 
 (function hmStyles(){
@@ -201,17 +290,30 @@ function hmOuvrir(niv, titre){
     .hm-evt.hm-flash .hm-carte{ animation:hmFlash 1.6s ease; } @keyframes hmFlash{ 0%,40%{ box-shadow:0 0 0 3px #F59E0B; } 100%{ box-shadow:0 1px 4px rgba(28,27,46,.06); } }
     .hm-carte-monde{ background:var(--card,#fff); border:1px solid #E3E6EC; border-radius:14px; padding:10px 12px; margin:0 0 14px; }
     .hm-carte-tete{ display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:6px; font-family:'Space Grotesk',sans-serif; } .hm-carte-tete .gicon{ vertical-align:-4px; color:#2F6FB3; }
-    .hm-svg{ width:100%; height:auto; display:block; }
+    .hm-temps{ display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin:4px 0 6px; } .hm-temps input[type=range]{ flex:1 1 180px; accent-color:#C2410C; }
+    .hm-play{ border:0; background:#C2410C; color:#fff; border-radius:999px; padding:5px 14px; font:700 .85rem Inter,sans-serif; cursor:pointer; min-width:96px; }
+    .hm-pas{ border:1px solid #D7DBE2; background:#fff; border-radius:8px; padding:3px 8px; cursor:pointer; font-size:.8rem; }
+    .hm-temps-lib{ font:700 .8rem 'JetBrains Mono',monospace; color:#4E5665; min-width:150px; } .hm-suivre{ font-size:.8rem; color:#4E5665; display:flex; align-items:center; gap:4px; }
+    .hm-periodes{ display:flex; flex-wrap:wrap; gap:5px; align-items:center; margin-bottom:8px; } .hm-periodes > span{ font-size:.85rem; font-weight:600; } .hm-periodes .hm-f{ font-size:.75rem; padding:2px 10px; }
+    .hm-svg{ width:100%; height:auto; display:block; max-height:72vh; } .hm-svg.zoom{ border-radius:8px; }
     .hm-mer{ fill:#E3F0FA; stroke:#9CC6E8; stroke-width:1.2; } .hm-grat{ fill:none; stroke:#fff; stroke-width:.8; } .hm-terre{ fill:#E8DFC9; stroke:#B9A882; stroke-width:.6; stroke-linejoin:round; }
     .hm-zone{ cursor:pointer; } .hm-zone path{ fill:rgba(194,65,12,.06); stroke:#C2410C; stroke-width:1.6; stroke-dasharray:6 4; } .hm-zone:hover path{ fill:rgba(194,65,12,.14); }
+    .hm-zone.courant path{ fill:rgba(245,158,11,.22); stroke:#F59E0B; stroke-width:2.5; }
     .hm-zone-txt{ font:700 13px Inter,sans-serif; fill:#C2410C; paint-order:stroke; stroke:#fff; stroke-width:3px; }
-    .hm-pt{ cursor:pointer; } .hm-pt circle{ fill:#C2410C; stroke:#fff; stroke-width:2; } .hm-pt text{ fill:#fff; font-family:Inter,sans-serif; font-weight:800; text-anchor:middle; pointer-events:none; }
     .hm-trajet path{ fill:none; stroke:#7B1FA2; stroke-width:3; stroke-dasharray:8 5; } .hm-trajet circle{ fill:#7B1FA2; stroke:#fff; stroke-width:1.5; } .hm-trajet text{ font:700 14px Inter,sans-serif; fill:#7B1FA2; paint-order:stroke; stroke:#fff; stroke-width:3px; } .hm-trajet.estompe{ opacity:.3; }
-    .hm-pt:hover circle, .hm-pt.sel circle{ fill:#7B1FA2; } .hm-pt.estompe{ opacity:.3; }
-    .hm-carte-aide{ margin:6px 0 0; } .hm-proj{ font-size:.78rem; color:#6B7280; margin:6px 0 0; line-height:1.45; }
+    .hm-pt{ cursor:pointer; } .hm-pt circle{ fill:#C2410C; stroke:#fff; stroke-width:2; } .hm-pt text{ fill:#fff; font-family:Inter,sans-serif; font-weight:800; text-anchor:middle; pointer-events:none; }
+    .hm-pt:hover circle, .hm-pt.sel circle{ fill:#7B1FA2; } .hm-pt.courant circle{ fill:#F59E0B; } .hm-pt.estompe{ opacity:.3; }
+    .hm-pt circle.hm-pulse{ fill:none; stroke:#F59E0B; stroke-width:3; transform-box:fill-box; transform-origin:center; animation:hmPulse 1.4s ease-out infinite; }
+    @keyframes hmPulse{ from{ transform:scale(1); opacity:1; } to{ transform:scale(2.4); opacity:0; } }
+    .hm-carte-aide{ margin:6px 0 0; } .hm-proj{ font-size:.78rem; color:#6B7280; margin:8px 0 0; line-height:1.45; } .hm-proj summary{ cursor:pointer; font-weight:600; }
     .hm-lieu-liste{ margin-top:8px; display:flex; flex-wrap:wrap; gap:6px; align-items:center; } .hm-lieu-liste > b{ width:100%; font-size:.9rem; } .hm-lieu-liste > b .gicon{ font-size:17px; vertical-align:-3px; color:#C2410C; }
-    .hm-lieu-evt{ border:1px solid #E3E6EC; background:#FAFAFB; border-radius:10px; padding:4px 10px; font:600 .84rem Inter,sans-serif; cursor:pointer; text-align:left; } .hm-lieu-evt:hover{ border-color:#C2410C; } .hm-lieu-evt.estompe{ opacity:.4; }
+    .hm-lieu-evt{ border:1px solid #E3E6EC; background:#FAFAFB; border-radius:10px; padding:4px 10px; font:600 .84rem Inter,sans-serif; cursor:pointer; text-align:left; } .hm-lieu-evt:hover{ border-color:#C2410C; } .hm-lieu-evt.on{ border-color:#7B1FA2; background:#F5EEFB; } .hm-lieu-evt.estompe{ opacity:.4; }
     .hm-lieu-date{ font:700 .76rem 'JetBrains Mono',monospace; color:#6B7280; }
+    .hm-fiche{ margin-top:8px; border-left:4px solid #F59E0B; background:#FFFBF2; border-radius:10px; padding:9px 13px; animation:hmApparait .35s ease; } .hm-fiche.estompe{ opacity:.55; }
+    .hm-fiche-tete{ display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; } .hm-fiche-tete b{ font:700 1.02rem 'Space Grotesk',sans-serif; } .hm-fiche-emo{ font-size:1.2rem; }
+    .hm-fiche p{ margin:5px 0 6px; line-height:1.5; font-size:.94rem; }
+    .hm-lien{ border:0; background:none; color:#2F6FB3; font:600 .8rem Inter,sans-serif; cursor:pointer; padding:2px 4px; margin-left:auto; }
+    @keyframes hmApparait{ from{ opacity:0; transform:translateY(4px); } to{ opacity:1; transform:none; } }
     @media (max-width:640px){ .hm-frise::before{ left:17px; } .hm-epoque{ padding-left:44px; } .hm-evt{ grid-template-columns:36px 1fr; } .hm-date{ grid-column:2; text-align:left; padding:0; order:-1; } .hm-point{ grid-row:1 / span 2; } .hm-carte{ grid-column:2; } }
   `;
   document.head.appendChild(s);
