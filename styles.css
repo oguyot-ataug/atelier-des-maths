@@ -2077,3 +2077,7 @@ select:not([multiple]):not([size]){
 /* Exercices des planches déjà mis au cahier avec « énoncé + correction » : on n'affiche que la consigne et la
    correction (l'énoncé à remplir faisait doublon). */
 .nb-body:has(.pl-ex-corr-titre) .pl-ex-enonce .pl-corps, .nb-body .pl-ex-corr-titre{display:none;}
+/* Progression d'un niveau : pastille « Maths & la vie » (chapVieBadge, app.js) */
+.chap-card .chap-vie{display:inline-flex;align-items:center;gap:3px;margin:-4px 0 8px;font-size:.7rem;font-weight:600;color:#2F6FB3;background:#EEF5FB;border-radius:999px;padding:1px 8px 1px 5px;cursor:help;}
+.chap-card .chap-vie .gicon{font-size:14px;}
+.tl-item .chap-vie-ic{font-size:15px;color:#2F6FB3;vertical-align:-3px;cursor:help;}

@@ -907,6 +907,15 @@ async function resetProgression(){
   status.textContent = error ? 'Erreur : '+error.message : '✓ Progression réinitialisée.';
   await renderProgressionEditor();
 }
+// Pastille « Maths & la vie » sur les cartes de la progression (Par thème, Frise de l'année) -- demandé : « C'est
+// aussi sur cette vue que j'aimerais voir si maths&vie existe ». Activités au survol (vieResume, maths-vie.js).
+function chapVieBadge(lvl, c, court){
+  const l = typeof vieResume === 'function' && !c.evt ? vieResume(lvl, c.t) : [];
+  if(!l.length) return '';
+  const t = 'Maths & la vie : ' + l.join(' · ');
+  return court ? ` <span class="gicon chap-vie-ic" title="${escapeHtml(t)}">public</span>`
+    : `<div class="chap-vie" title="${escapeHtml(t)}"><span class="gicon">public</span> Maths &amp; la vie</div>`;
+}
 function renderTheme(data, lvl){
   const order=['N','G','D','P','M'];
   let html='';
@@ -925,6 +934,7 @@ function renderTheme(data, lvl){
         ${locked?'<span class="status lock-status"><span class=gicon>lock</span> '+lockedChapterLabel()+'</span>':(ready?'':'<span class="status">à venir</span>')}
         <div class="code">${c.code} · ch. ${c.n}</div>
         <div class="titre">${c.dispT||c.t}</div>
+        ${chapVieBadge(lvl, c)}
         <div class="meta">${c.p ? `<span>p. ${c.p}</span>` : ''}<span>${c.s} sem.</span></div>
       </div>`;
     });
@@ -1057,7 +1067,7 @@ function renderFrise(data, lvl){
     const locked = isChapterLocked(lvl, c.t);
     html += `<div class="tl-item${done?' tl-done':''}${locked?' locked':''}" data-code="${c.code}" data-cat="${c.cat}" data-t="${c.t}" data-p="${c.p}" data-s="${c.s}" data-d="${c.d}">
       <span class="dot" style="background:${CATS[c.cat].text}"></span>
-      <span class="titre">${c.dispT||c.t}</span>
+      <span class="titre">${c.dispT||c.t}${chapVieBadge(lvl, c, true)}</span>
       ${locked?'<span class="tl-content-badge missing lock-status"><span class=gicon>lock</span> '+lockedChapterLabel()+'</span>':`<span class="tl-content-badge ${hasContent?'ready':'missing'}" title="${hasContent?'Contenu du site déjà créé':'Contenu du site pas encore créé'}">${hasContent?'<span class=gicon>public</span> En ligne':'<span class=gicon>edit</span> À créer'}</span>`}
       <span class="dates">${c.code} · ${c.d}</span>
       ${done?'<span class="tl-check" title="Chapitre déjà traité (date passée)">✓</span>':''}
@@ -3514,6 +3524,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1131', date:'2026-10-26', items:['Progression de chaque niveau (vues « Par thème » et « Frise de l\'année ») : pastille « Maths & la vie » sur les chapitres qui ont cet onglet, avec le nom des activités au survol -- demandé : « C\'est aussi sur cette vue que j\'aimerais voir si maths&vie existe ».', 'Histoire des maths : carte du monde des lieux où les notions sont nées -- demandé : « peut-on ajouter une carte du monde (nouveau planisphère adopté il y a environ un mois), en plaçant là où les différentes notions ont commencé ? ». Planisphère en projection Equal Earth (recommandée par l\'ONU en septembre 2026 : chaque continent garde sa vraie surface). Un point par lieu avec le nombre d\'étapes ; un clic donne la liste des étapes, et un clic sur une étape la montre dans la frise. L\'Europe et la Méditerranée, où les points se serrent, s\'ouvrent dans un zoom. Le filtre par niveau estompe aussi les points. Chaque étape de la frise indique son lieu. Nouvelle étape : le zéro des Mayas (vers 350), inventé sans contact avec l\'Inde ; l\'époque « Antiquité grecque » devient « Antiquité ».'] },
   { version:'2026-08-19.1130', date:'2026-10-26', items:['Ma progression : un petit logo « Maths & la vie » (globe) sur chaque chapitre qui a déjà un onglet Maths & la vie, avec le nom des activités au survol, et le compte en haut (« Maths & la vie : 7 chapitres sur 21 ») -- demandé : « indiquer par un petit logo si on a un onglet Maths et vie (histoire de voir ce qu\'il reste à faire) ».', 'Nouvelle page « Histoire des maths » dans le menu L\'Atelier -- demandé : « un sous-menu Histoire qui montre une frise chronologique avec les différentes avancées mathématiques […] des petites vignettes CE2, …, 3e ». Frise verticale en 6 époques et 32 étapes, de l\'os d\'Ishango à Maryam Mirzakhani ; sous chaque étape, des vignettes de couleur indiquent en quelle classe on étudie la notion, et un clic ouvre le chapitre. Filtre par niveau (les étapes qui ne concernent pas ce niveau sont estompées). Vignettes CE2 visibles seulement pour l\'administrateur ; mise en page adaptée au téléphone.'] },
   { version:'2026-08-19.1129', date:'2026-10-26', items:['Base 60 (6e), « Voir sur les mains » plus lent -- signalé : « ça va un peu vite ». Une minute toutes les 0,35 s (au lieu de 0,11 s), arrêt à chaque douzaine (« un doigt de plus se lève »), pauses plus longues pour les heures et pour les mains pleines ; bouton Pause / Reprendre pour expliquer au tableau.'] },
   { version:'2026-08-19.1128', date:'2026-10-26', items:['Base 60 (6e) : les mains deviennent le compteur de minutes de la question -- demandé : « Qu\'est-ce qui permet à partir des mains de répondre à la question posée sur la durée ? », puis « oui, fais cette version ». Le curseur compte de 0 à 60 minutes sur les mains (12 × doigts levés + phalanges). « Voir sur les mains » déroule la question : départ, heures ajoutées (perles), puis les minutes une à une ; à 60, les mains sont pleines, c\'est 1 heure : on les referme et on retient 1 heure (perle orange). L\'élève répond d\'abord, puis vérifie ; correction rédigée, un calcul par ligne.'] },
