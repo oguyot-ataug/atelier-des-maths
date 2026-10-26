@@ -151,7 +151,8 @@ const OLIV_POSES = ['savoir', 'methode', 'muscle', 'histoire', 'quiz', 'cm2', 'd
 // entrées et remplacer les icônes Google par des Oliv'IA ».
 // Menu « L'Atelier du prof » : mêmes Oliv'IA sans lunettes, en olives de couleurs variées ; le sous-menu
 // « Évaluations » reste sans vignette (choix : « sans icône pour les sous-menus »).
-const OLIV_MENU = { cm: 'muscle', compte: 'jeux', convertisseur: 'regle', 'figure-sandbox': 'equerre', tableau: 'tableau', programmation: 'blocs', 'histoire-maths': 'savante',
+// Couleurs variées aussi dans le menu L'Atelier -- demandé : « varie aussi les couleurs dans le menu L'Atelier ».
+const OLIV_MENU = { cm: ['muscle', 'verte'], compte: ['jeux', 'noire'], convertisseur: ['regle', 'doree'], 'figure-sandbox': ['equerre', 'cuivree'], tableau: ['tableau', 'verte'], programmation: ['blocs', 'noire'], 'histoire-maths': ['savante', 'doree'],
   correction: ['correction', 'verte'], evaluation: ['evaluation', 'noire'], devoirsprof: ['devoirs', 'doree'], questionnaires: ['interro', 'cuivree'], supervision: ['classe', 'verte'],
   sessions: ['session', 'noire'], progression: ['calendrier', 'doree'], classe: ['outils', 'cuivree'], simulateur: ['simulateur', 'verte'] };
 function olivMenu(){
@@ -162,6 +163,23 @@ function olivMenu(){
   });
 }
 if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', olivMenu); else olivMenu();
+// La même Oliv'IA dans le titre de la page ouverte par le menu -- demandé : « Reprends aussi les Oliv'IA des menus
+// sur les pages correspondantes ».
+const OLIV_PAGES = { 'view-cm': 'cm', 'view-compte': 'compte', 'view-convertisseur': 'convertisseur', 'view-tableau': 'tableau', 'view-programmation': 'programmation',
+  'view-frise': 'histoire-maths', 'view-correction': 'correction', 'view-evaluation': 'evaluation', 'view-devoirs-prof': 'devoirsprof', 'view-qz-banque': 'questionnaires',
+  'view-supervision': 'supervision', 'view-sessions': 'sessions', 'view-progression': 'progression', 'view-classe': 'classe', 'view-simulateur': 'simulateur' };
+function olivTitre(id){
+  const m = OLIV_MENU[OLIV_PAGES[id]], v = document.getElementById(id); if(!m || !v) return;
+  const h = v.querySelector('h1, h2'); if(!h || h.querySelector('.oliv-titre')) return;
+  const [pose, teinte] = Array.isArray(m) ? m : [m];
+  const o = document.createElement('span'); o.className = 'oliv-titre'; o.setAttribute('aria-hidden', 'true'); o.style.backgroundImage = olivPoseUrl(pose, teinte);
+  const g = h.querySelector(':scope > .gicon'); if(g) g.replaceWith(o); else h.prepend(o);
+}
+// Un observateur par page : la vignette se pose dès que le titre apparaît (même construit après chargement des données).
+function olivTitresObserver(){
+  Object.keys(OLIV_PAGES).forEach(id => { const v = document.getElementById(id); if(!v) return; olivTitre(id); new MutationObserver(() => olivTitre(id)).observe(v, { childList: true, subtree: true }); });
+}
+if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', olivTitresObserver); else olivTitresObserver();
 function olivPoseUrl(p, teinte){ return `url("data:image/svg+xml,${encodeURIComponent(olivPoseSvg(p, teinte))}")`; }
 
 // Phrases des bulles (le premier encadré prend la première, puis on varie).
@@ -208,6 +226,7 @@ function olivDecorer(demo){
     .oliv-deco .oliv-sh{--oliv-img:${olivPoseUrl('methode')};}
     /* Menu L'Atelier : Oliv'IA à la place des icônes (olivMenu) */
     .oliv-menu{display:inline-block;width:40px;height:40px;background:center/contain no-repeat;vertical-align:middle;margin:-10px 4px -8px -6px;flex:none;}
+    .oliv-titre{display:inline-block;width:80px;height:80px;background:center/contain no-repeat;vertical-align:middle;margin:-10px 8px -14px -8px;flex:none;}
     .oliv-deco .oliv-sh.oliv-sh-plus{--oliv-img:${olivPoseUrl('cm2')};}
     /* Encadrés : Oliv'IA à droite du badge, debout sur l'encadré, et sa bulle */
     .oliv-deco .oliv-b{position:relative;margin-top:28px;}
