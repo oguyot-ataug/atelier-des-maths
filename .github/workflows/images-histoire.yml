@@ -1,0 +1,46 @@
+# Images de la frise historique, depuis Wikimedia Commons -- demandé : « il manque des illustrations,
+# les papyrus par exemple, pour savoir de quoi on parle, pas seulement des points sur une carte. Ou des
+# représentations des mathématiciens. »
+# Se lance tout seul quand tools/histoire-images/recherche.json ou choix.json change sur une branche de
+# travail (jamais sur main) : planches de candidats à choisir, puis images choisies copiées dans
+# img/histoire/ avec leurs crédits (tools/histoire-images/images.mjs). Le résultat est commité sur la
+# même branche.
+name: Images de l'histoire
+
+on:
+  push:
+    branches-ignore: [main]
+    paths:
+      - 'tools/histoire-images/recherche.json'
+      - 'tools/histoire-images/choix.json'
+      - 'tools/histoire-images/images.mjs'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: images-histoire-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  images:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: ImageMagick
+        run: command -v montage >/dev/null || (sudo apt-get update -qq && sudo apt-get install -y -qq imagemagick)
+      - name: Recherche et téléchargement (Wikimedia Commons)
+        run: node tools/histoire-images/images.mjs
+      - name: Commit du résultat sur la branche
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A img/histoire tools/histoire-images/candidats 2>/dev/null || true
+          if git diff --cached --quiet; then echo "Rien de nouveau."; exit 0; fi
+          git commit -m "Images de l'histoire : résultat du workflow (Wikimedia Commons)"
+          git push
