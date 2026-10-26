@@ -138,7 +138,7 @@ function hiEgypteMonter(el){
 function hiBase60Monter(el){
   const st = { n: 1, q: null };
   el.innerHTML = `<div class="hi-box">
-    <div class="hi-consigne">Il y a 4 000 ans, les <b>Babyloniens</b> comptaient par soixantaines. On pense qu'ils comptaient sur leurs doigts : avec le pouce de la main droite, on touche les <b>12 phalanges</b> des quatre autres doigts ; chaque fois qu'on arrive à 12, on lève un doigt de la main gauche. Avec <b>5 doigts</b> levés : 5 fois 12, c'est 60 !</div>
+    <div class="hi-consigne">Il y a 4 000 ans, les <b>Babyloniens</b> comptaient par soixantaines. On pense qu'ils comptaient sur leurs doigts : en regardant la paume de sa main droite, on touche avec le pouce les <b>12 phalanges</b> des quatre autres doigts ; chaque fois qu'on arrive à 12, on lève un doigt de la main gauche. Avec <b>5 doigts</b> levés : 5 fois 12, c'est 60 !</div>
     <div class="hi-curseur"><label>Compter jusqu'à <b class="hi-nb"></b> <input type="range" min="1" max="60" value="1" data-r="n"></label></div>
     <svg class="hi-svg hi-mains" viewBox="0 0 560 310"></svg>
     <div class="hi-explic"></div>
@@ -146,14 +146,15 @@ function hiBase60Monter(el){
       <div class="hi-actions"><input type="number" min="0" max="23" data-a="h" style="width:60px;"> h <input type="number" min="0" max="59" data-a="m" style="width:60px;"> min <button type="button" class="btn" data-a="verif">Vérifier</button></div></div>
     <div class="hi-msg" aria-live="polite"></div></div>`;
   const $ = s => el.querySelector(s), svg = $('.hi-mains');
-  // Les mains de l'élève, paumes tournées vers lui : main gauche à gauche (pouce vers le centre), main droite à droite.
+  // Les mains de l'élève, vues côté paume (on compte sur les phalanges) : main gauche à gauche avec le pouce à gauche,
+  // main droite à droite avec le pouce à droite -- signalé : « A-t-on une vue de la paume ou du dos de la main ? ».
   // Main droite : le pouce touche les 12 phalanges (index 1 à 3, majeur 4 à 6, annulaire 7 à 9, auriculaire 10 à 12).
   // Main gauche : un doigt levé par douzaine terminée (pouce, index, majeur, annulaire, auriculaire : 12, 24… 60).
   const PEAU = '#F5CDA7', TRAIT = '#C08A5A', LONG = { index: 100, majeur: 112, annulaire: 104, auriculaire: 84 }, NUM = { index: 0, majeur: 1, annulaire: 2, auriculaire: 3 };
   const LEVE = ['pouce', 'index', 'majeur', 'annulaire', 'auriculaire'];
   function main(cx, droite, n){
     const px = cx - 75, pt = 172, ph = (n - 1) % 12 + 1, leves = droite ? 0 : Math.floor(n / 12);
-    const doigts = droite ? ['index', 'majeur', 'annulaire', 'auriculaire'] : ['auriculaire', 'annulaire', 'majeur', 'index'];
+    const doigts = droite ? ['auriculaire', 'annulaire', 'majeur', 'index'] : ['index', 'majeur', 'annulaire', 'auriculaire'];
     let h = '', cible = null;
     doigts.forEach((f, i) => {
       const x = px + 8 + i * 35, rang = LEVE.indexOf(f), leve = droite || rang < leves, L = leve ? LONG[f] : 28, haut = pt - L;
@@ -168,10 +169,10 @@ function hiBase60Monter(el){
       if(!droite && leve) h += `<text x="${x + 15.5}" y="${haut - 8}" font-size="12" font-weight="700" text-anchor="middle" fill="#2F6FB3">${12 * (rang + 1)}</text>`;
     });
     // pouce
-    const pouceLeve = droite || leves >= 1, ax = droite ? px + 14 : px + 136, ay = pt + 62, ang = droite ? -38 : (pouceLeve ? 38 : -62), Lp = pouceLeve ? 80 : 46;
+    const pouceLeve = droite || leves >= 1, ax = droite ? px + 136 : px + 14, ay = pt + 62, ang = droite ? 38 : (pouceLeve ? -38 : 62), Lp = pouceLeve ? 80 : 46;
     h += `<g transform="rotate(${ang} ${ax} ${ay})"><rect x="${ax - 16}" y="${ay - Lp}" width="32" height="${Lp + 18}" rx="16" fill="${!droite && pouceLeve ? '#9CCBF0' : PEAU}" stroke="${!droite && pouceLeve ? '#3F7FBF' : TRAIT}" stroke-width="1.4"/>${droite ? `<ellipse cx="${ax}" cy="${ay - Lp + 14}" rx="10" ry="12" fill="#F0A35E"/>` : ''}${!droite && pouceLeve ? `<text x="${ax}" y="${ay - Lp - 7}" font-size="12" font-weight="700" text-anchor="middle" fill="#2F6FB3" transform="rotate(${-ang} ${ax} ${ay - Lp - 11})">12</text>` : ''}</g>`;
     h += `<rect x="${px}" y="${pt - 6}" width="150" height="116" rx="44" fill="${PEAU}" stroke="${TRAIT}" stroke-width="1.4"/><path d="M${px + 34},${pt + 40} q40,22 84,4" fill="none" stroke="${TRAIT}" opacity=".45"/>`;
-    if(droite && cible){ const r = -38 * Math.PI / 180, tx = ax + Math.sin(r) * (-1) * -(Lp - 14) , ty = ay - Math.cos(r) * (Lp - 14);
+    if(droite && cible){ const r = 38 * Math.PI / 180, tx = ax + Math.sin(r) * (-1) * -(Lp - 14) , ty = ay - Math.cos(r) * (Lp - 14);
       h += `<path d="M${tx.toFixed(1)},${ty.toFixed(1)} Q${((tx + cible[0]) / 2).toFixed(1)},${(Math.min(ty, cible[1]) - 30).toFixed(1)} ${cible[0]},${cible[1] + 10}" fill="none" stroke="#E67E22" stroke-width="2" stroke-dasharray="4 3"/>`; }
     return h + `<text x="${cx}" y="300" font-size="13" text-anchor="middle" fill="#4E5665">${droite ? 'main droite : les phalanges' : 'main gauche : les douzaines'}</text>`;
   }
