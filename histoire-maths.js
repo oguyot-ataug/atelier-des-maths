@@ -136,14 +136,19 @@ function hiEgypteMonter(el){
    3. Pourquoi 60 minutes dans une heure ? (6e)
    ===================================================================== */
 function hiBase60Monter(el){
-  const st = { n: 1, q: null };
+  // Les mains servent de compteur de minutes : 60 minutes = mains pleines (5 doigts levés) = 1 heure, on referme et on
+  // retient 1 heure -- demandé : « Qu'est-ce qui permet à partir des mains de répondre à la question posée sur la
+  // durée ? », puis « oui, fais cette version » (les mains comptent les minutes de la question, animation).
+  const st = { n: 0, h: null, q: null, anim: 0, joue: false };
   el.innerHTML = `<div class="hi-box">
-    <div class="hi-consigne">Il y a 4 000 ans, les <b>Babyloniens</b> comptaient par soixantaines. On pense qu'ils comptaient sur leurs doigts : en regardant la paume de sa main droite, on touche avec le pouce les <b>12 phalanges</b> des quatre autres doigts ; chaque fois qu'on arrive à 12, on lève un doigt de la main gauche. Avec <b>5 doigts</b> levés : 5 fois 12, c'est 60 !</div>
-    <div class="hi-curseur"><label>Compter jusqu'à <b class="hi-nb"></b> <input type="range" min="1" max="60" value="1" data-r="n"></label></div>
+    <div class="hi-consigne">Il y a 4 000 ans, les <b>Babyloniens</b> comptaient par soixantaines. On pense qu'ils comptaient sur leurs doigts : en regardant la paume de sa main droite, on touche avec le pouce les <b>12 phalanges</b> des quatre autres doigts ; chaque fois qu'on arrive à 12, on lève un doigt de la main gauche. Avec <b>5 doigts</b> levés : 5 fois 12, c'est 60. Nos <b>minutes</b> fonctionnent ainsi : à 60, les mains sont pleines, c'est <b>une heure</b>.</div>
+    <div class="hi-curseur"><label>Minutes comptées sur les mains : <b class="hi-nb"></b> <input type="range" min="0" max="60" value="0" data-r="n"></label></div>
+    <div class="hi-horloge"><span class="hi-depart"></span><span class="hi-hh-l">heures ajoutées :</span><span class="hi-perles"></span><span class="hi-hh"></span></div>
     <svg class="hi-svg hi-mains" viewBox="0 0 560 310"></svg>
     <div class="hi-explic"></div>
     <div class="hi-quiz"><b><span class="gicon">schedule</span> À toi :</b> <span class="hi-qq"></span>
-      <div class="hi-actions"><input type="number" min="0" max="23" data-a="h" style="width:60px;"> h <input type="number" min="0" max="59" data-a="m" style="width:60px;"> min <button type="button" class="btn" data-a="verif">Vérifier</button></div></div>
+      <div class="hi-actions"><input type="number" min="0" max="23" data-a="h" style="width:60px;"> h <input type="number" min="0" max="59" data-a="m" style="width:60px;"> min <button type="button" class="btn" data-a="verif">Vérifier</button>
+        <button type="button" class="btn secondary" data-a="voir"><span class="gicon">front_hand</span> Voir sur les mains</button><button type="button" class="btn secondary" data-a="autre"><span class="gicon">refresh</span> Une autre question</button></div></div>
     <div class="hi-msg" aria-live="polite"></div></div>`;
   const $ = s => el.querySelector(s), svg = $('.hi-mains');
   // Les mains de l'élève, vues côté paume (on compte sur les phalanges) : main gauche à gauche avec le pouce à gauche,
@@ -153,7 +158,7 @@ function hiBase60Monter(el){
   const PEAU = '#F5CDA7', TRAIT = '#C08A5A', LONG = { index: 100, majeur: 112, annulaire: 104, auriculaire: 84 }, NUM = { index: 0, majeur: 1, annulaire: 2, auriculaire: 3 };
   const LEVE = ['pouce', 'index', 'majeur', 'annulaire', 'auriculaire'];
   function main(cx, droite, n){
-    const px = cx - 75, pt = 172, ph = (n - 1) % 12 + 1, leves = droite ? 0 : Math.floor(n / 12);
+    const px = cx - 75, pt = 172, ph = n % 12, leves = droite ? 0 : Math.floor(n / 12);   // n = 12 × doigts levés + phalanges
     const doigts = droite ? ['auriculaire', 'annulaire', 'majeur', 'index'] : ['index', 'majeur', 'annulaire', 'auriculaire'];
     let h = '', devant = '', cible = null;                 // devant : doigts repliés, dessinés PAR-DESSUS la paume
     doigts.forEach((f, i) => {
@@ -183,24 +188,58 @@ function hiBase60Monter(el){
   }
   function rendre(){
     const n = st.n, lev = Math.floor(n / 12), r = n % 12, pl = (k, m) => k + ' ' + m + (k > 1 ? 's' : '');
-    $('.hi-nb').textContent = n;
+    $('.hi-nb').textContent = n + ' min';
+    $('[data-r="n"]').value = n;
     svg.innerHTML = '<rect width="560" height="310" fill="#FBF6EC" rx="12"/>' + main(150, false, n) + main(410, true, n);
-    $('.hi-explic').innerHTML = !lev ? `${n} : le pouce droit a touché ${pl(n, 'phalange')}.`
-      : `${n} = ${pl(lev, 'douzaine')} (${pl(lev, 'doigt')} gauche${lev > 1 ? 's' : ''} levé${lev > 1 ? 's' : ''})${r ? ' + ' + pl(r, 'phalange') : ''}${n === 60 ? ' : les 5 doigts sont levés, c\'est 60 !' : '.'}`;
+    $('.hi-horloge').style.display = st.h === null ? 'none' : '';
+    if(st.h !== null){ // perles : seulement les heures ajoutées (brunes : durée du cours ; orange : heure retenue grâce aux mains pleines)
+      const plus = st.h - st.q.h;
+      $('.hi-depart').innerHTML = `départ <b>${st.q.h} h ${String(st.q.m).padStart(2, '0')}</b>`;
+      $('.hi-perles').innerHTML = plus ? Array.from({ length: plus }, (_, i) => `<span class="hi-perle${i >= st.q.dh ? ' neuve' : ''}">+1 h</span>`).join('') : '<span class="hi-vide">aucune</span>';
+      $('.hi-hh').innerHTML = n === 60 ? `${st.h} h + 60 min` : `${st.h} h ${String(n).padStart(2, '0')}`; }
+    $('.hi-explic').innerHTML = !n ? 'Les mains sont fermées : 0 minute.' : !lev ? `${n} min : le pouce droit a touché ${pl(n, 'phalange')}.`
+      : `${n} min = ${pl(lev, 'douzaine')} (${pl(lev, 'doigt')} levé${lev > 1 ? 's' : ''} à gauche)${r ? ' + ' + pl(r, 'phalange') : ''}${n === 60 ? ' : les mains sont pleines, c\'est <b>1 heure</b> !' : '.'}`;
   }
+  const deux = m => String(m).padStart(2, '0');
   function question(){
-    const h = hiAlea(7, 15), m = hiAlea(15, 55), dh = hiAlea(0, 2), dm = hiAlea(20, 55);
-    st.q = { h, m, dh, dm }; $('.hi-qq').innerHTML = `Un cours commence à <b>${h} h ${String(m).padStart(2, '0')}</b> et dure <b>${dh ? dh + ' h ' : ''}${dm} min</b>. À quelle heure se termine-t-il ?`;
-    $('[data-a="h"]').value = ''; $('[data-a="m"]').value = '';
+    clearTimeout(st.anim); st.joue = false; $('[data-r="n"]').disabled = false;
+    const h = hiAlea(7, 15), m = hiAlea(15, 55), dh = hiAlea(0, 2), dm = Math.random() < .75 ? hiAlea(Math.max(20, 61 - m), 55) : hiAlea(10, Math.max(10, 59 - m));
+    st.q = { h, m, dh, dm }; st.h = null; st.n = 0;
+    $('.hi-qq').innerHTML = `Un cours commence à <b>${h} h ${deux(m)}</b> et dure <b>${dh ? dh + ' h ' : ''}${dm} min</b>. À quelle heure se termine-t-il ?`;
+    $('[data-a="h"]').value = ''; $('[data-a="m"]').value = ''; hiDire(el, ''); rendre();
+  }
+  function correction(){
+    const { h, m, dh, dm } = st.q, tm = m + dm, rh = h + dh + Math.floor(tm / 60), rm = tm % 60;
+    return { rh, rm, txt: `<div class="hi-etapes"><div>Minutes : ${m} + ${dm} = ${tm} min.</div>${tm >= 60 ? `<div>${tm} min = 60 min + ${tm - 60} min : les mains se sont remplies une fois, on retient 1 heure.</div>` : ''}<div>Heures : ${h}${dh ? ' + ' + dh : ''}${tm >= 60 ? ' + 1' : ''} = ${rh} h.</div><div>Le cours finit à <b>${rh} h ${deux(rm)}</b>.</div></div>` };
+  }
+  // Animation : départ, ajout des heures (perles), puis les minutes une à une sur les mains ; à 60, on referme et on retient 1 h.
+  function voir(){
+    clearTimeout(st.anim); st.joue = true; $('[data-r="n"]').disabled = true;
+    const { h, m, dh, dm } = st.q, c = correction();
+    st.h = h; st.n = m; rendre();
+    hiDire(el, `Départ : <b>${h} h ${deux(m)}</b>. Les perles comptent les heures, les mains comptent les minutes.`);
+    let etapeH = 0, restant = dm;
+    const pas = () => {
+      if(etapeH < dh){ etapeH++; st.h++; rendre(); hiDire(el, `On ajoute les heures : ${h} h + ${etapeH} h = <b>${st.h} h ${deux(st.n)}</b>.`); st.anim = setTimeout(pas, 900); return; }
+      if(restant > 0){
+        restant--; st.n++;
+        if(st.n === 60){ rendre(); hiDire(el, '<b>60 minutes : les mains sont pleines, c\'est 1 heure !</b> On les referme et on ajoute une perle.');
+          st.anim = setTimeout(() => { st.n = 0; st.h++; rendre(); hiDire(el, `On retient 1 heure : <b>${st.h} h 00</b>, et on continue à compter les minutes.`); st.anim = setTimeout(pas, 1100); }, 1700); return; }
+        rendre(); hiDire(el, `On ajoute les minutes : encore ${restant} min à compter.`); st.anim = setTimeout(pas, dm > 40 ? 110 : 160); return;
+      }
+      st.joue = false; $('[data-r="n"]').disabled = false;
+      hiDire(el, `<span class="gicon">flag</span> Arrivée : le cours finit à <b>${st.h} h ${deux(st.n)}</b>.` + c.txt, 'ok');
+    };
+    st.anim = setTimeout(pas, 1100);
   }
   $('[data-a="verif"]').onclick = () => {
-    const { h, m, dh, dm } = st.q, tm = m + dm, rh = h + dh + Math.floor(tm / 60), rm = tm % 60;
-    const ok = parseInt($('[data-a="h"]').value, 10) === rh && parseInt($('[data-a="m"]').value, 10) === rm;
-    hiDire(el, `${ok ? '<span class="gicon">celebration</span> Exact !' : '<span class="gicon">info</span> Voici le calcul :'}<div class="hi-etapes"><div>Minutes : ${m} + ${dm} = ${tm} min.</div>${tm >= 60 ? `<div>${tm} min = 1 h ${tm - 60} min : on retient 1 heure, car 60 min = 1 h.</div>` : ''}<div>Heures : ${h}${dh ? ' + ' + dh : ''}${tm >= 60 ? ' + 1' : ''} = ${rh} h.</div><div>Le cours finit à <b>${rh} h ${String(rm).padStart(2, '0')}</b>.</div></div>Les heures et les minutes sont un héritage de Babylone : on y retient par paquets de 60, pas de 10. Et 60 se partage en 2, 3, 4, 5, 6, 10, 12, 15, 20 et 30 parts égales : bien pratique !`, ok ? 'ok' : 'ko');
-    setTimeout(question, 400);
+    const c = correction(), ok = parseInt($('[data-a="h"]').value, 10) === c.rh && parseInt($('[data-a="m"]').value, 10) === c.rm;
+    hiDire(el, `${ok ? '<span class="gicon">celebration</span> Exact !' : '<span class="gicon">info</span> Pas tout à fait. Clique sur « Voir sur les mains », ou lis le calcul :'}${c.txt}${ok ? 'Clique sur « Voir sur les mains » pour regarder les minutes se compter… et l\'heure se retenir.' : ''}`, ok ? 'ok' : 'ko');
   };
-  $('[data-r="n"]').oninput = e => { st.n = +e.target.value; rendre(); };
-  rendre(); question();
+  $('[data-a="voir"]').onclick = voir;
+  $('[data-a="autre"]').onclick = question;
+  $('[data-r="n"]').oninput = e => { if(st.joue) return; st.n = +e.target.value; st.h = null; rendre(); };
+  question();
 }
 
 /* =====================================================================
@@ -446,7 +485,13 @@ const HI_HISTOIRE_HTML = `
     .hi-consigne{ font-size:.95rem; line-height:1.55; }
     .hi-cible{ text-align:center; font-size:1.05rem; }
     .hi-svg{ width:100%; max-width:640px; display:block; margin:0 auto; border-radius:12px; box-shadow:0 1px 6px rgba(28,27,46,.15); }
-    .hi-mains{ max-width:560px; } .hi-pyr{ max-width:560px; }
+    .hi-mains{ max-width:560px; }
+    .hi-depart{ color:#4E5665; } .hi-hh-l{ color:#4E5665; }
+    .hi-horloge{ display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap; font-size:.95rem; }
+    .hi-perles{ display:flex; flex-wrap:wrap; gap:3px; max-width:min(420px,70vw); }
+    .hi-perle{ height:24px; padding:0 8px; border-radius:12px; background:#8E3B2E; color:#fff; font:700 .72rem Inter,sans-serif; display:inline-flex; align-items:center; justify-content:center; }
+    .hi-perle.neuve{ background:#E67E22; box-shadow:0 0 0 2px #F7C77E; }
+    .hi-hh{ font:700 1.3rem 'JetBrains Mono',monospace; color:#8E3B2E; min-width:7ch; } .hi-pyr{ max-width:560px; }
     .hi-msg, .hi-msg2{ min-height:1.4em; text-align:center; font-size:.95rem; line-height:1.6; } .hi-msg .gicon, .hi-msg2 .gicon{ font-size:18px; vertical-align:-3px; }
     .hi-msg.ok, .hi-msg2.ok{ color:#1E5E30; } .hi-msg.ko, .hi-msg2.ko{ color:#9A3A12; }
     .hi-actions{ display:flex; gap:8px; flex-wrap:wrap; justify-content:center; align-items:center; font-size:.93rem; }
