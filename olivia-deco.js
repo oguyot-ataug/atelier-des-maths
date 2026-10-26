@@ -33,7 +33,7 @@ function olivPoseSvg(p){
   const bouche = `<path d="M51 83 Q60 95 69 83 Z" fill="#7A2E2E" stroke="#2C3A1A" stroke-width="2.5" stroke-linejoin="round"/>`;
   const brasG = `<path d="M27 72 q-14 4 -16 16" stroke="${E}" stroke-width="4" fill="none" stroke-linecap="round"/><circle cx="11" cy="89" r="4.5" fill="${E}"/>`;
   const sourcils = `<path d="M37 47 L55 52 M83 47 L65 52" stroke="#2C3A1A" stroke-width="3" stroke-linecap="round"/>`;
-  let tete = feuille, bras = brasG, visage = yeux(false) + joues + sourire, extra = '';
+  let tete = feuille, bras = brasG, visage = yeux(false) + joues + sourire, extra = '', vb = '0 0 120 120';
   if(p === 'savoir'){ // doigt levé
     bras += `<path d="M93 66 q12 -10 11 -32" stroke="${E}" stroke-width="4" fill="none" stroke-linecap="round"/><circle cx="104" cy="33" r="5" fill="${E}"/><path d="M104 29 V18" stroke="${E}" stroke-width="4" stroke-linecap="round"/>`;
     visage = yeux(false) + joues + bouche;
@@ -68,6 +68,7 @@ function olivPoseSvg(p){
     // « globe-trotteuse, vignettes par thème et savante grecque ». La main droite tient l'objet du thème.
     const main = `<path d="M93 70 q10 -4 12 -14" stroke="${E}" stroke-width="4" fill="none" stroke-linecap="round"/><circle cx="105" cy="56" r="4.8" fill="${E}"/>`;
     const mainBas = `<path d="M93 76 q10 2 14 8" stroke="${E}" stroke-width="4" fill="none" stroke-linecap="round"/><circle cx="107" cy="85" r="4.8" fill="${E}"/>`;
+    vb = '-4 -4 130 128'; // l'objet tenu à droite dépasse du carré 120 × 120 : cadre élargi (signalé : « le logo est coupé à droite »)
     bras = brasG + main; visage = yeux(true) + joues + sourire;
     if(p === 'globe'){
       visage = yeux(false) + joues + bouche;
@@ -110,7 +111,7 @@ function olivPoseSvg(p){
     extra = `<text x="104" y="40" font-size="36" font-weight="800" fill="#E35D3A" font-family="Arial, sans-serif" text-anchor="middle">?</text>`;
     visage = yeux(true) + joues + sourire;
   }
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">${tete}${corps}${bras}${visage}${extra}</svg>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${vb}">${tete}${corps}${bras}${visage}${extra}</svg>`;
 }
 const OLIV_POSES = ['savoir', 'methode', 'muscle', 'histoire', 'quiz', 'cm2', 'defi'];
 function olivPoseUrl(p){ return `url("data:image/svg+xml,${encodeURIComponent(olivPoseSvg(p))}")`; }

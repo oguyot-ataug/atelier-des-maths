@@ -313,9 +313,18 @@ function hmVoirEtape(i){
   el.classList.remove('hm-flash'); void el.offsetWidth; el.classList.add('hm-flash');
 }
 
+// La savante grecque aussi dans le menu L'Atelier -- demandé : « met aussi Oliv'IA dans le menu L'Atelier ».
+function hmOlivMenu(){
+  if(typeof olivPoseUrl !== 'function') return;
+  document.querySelectorAll('button[data-nav="histoire-maths"] > .gicon').forEach(g => {
+    const o = document.createElement('span'); o.className = 'hm-oliv-menu'; o.setAttribute('aria-hidden', 'true'); o.style.backgroundImage = olivPoseUrl('savante'); g.replaceWith(o);
+  });
+}
+if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', hmOlivMenu); else hmOlivMenu();
 (function hmStyles(){
   const s = document.createElement('style');
   s.textContent = `
+    .hm-oliv-menu{ display:inline-block; width:26px; height:26px; background:center/contain no-repeat; vertical-align:middle; margin:-6px 2px -4px -3px; }
     .hm-oliv{ display:inline-block; width:88px; height:88px; background:center/contain no-repeat; vertical-align:middle; margin:-6px 6px -14px -8px; }
     .hm-filtres{ display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin:8px 0 4px; } .hm-filtres > span{ font-weight:600; margin-right:4px; }
     .hm-f{ border:1.5px solid var(--c,#8A8F98); color:var(--c,#4E5665); background:#fff; border-radius:999px; padding:3px 12px; font:700 .82rem Inter,sans-serif; cursor:pointer; }
