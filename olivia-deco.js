@@ -19,12 +19,14 @@
    Dépend d'app.js (openChapitre appelle olivDecorer) et de flash-prets.js (fenêtre des questions flash).
    ===================================================================== */
 
+// Teintes d'olive -- demandé : « On peut aussi varier les couleurs d'Oliv'IA » : f = corps, e = contour et bras.
+const OLIV_TEINTES = { verte: { f: '#8DB84A', e: '#4F6B2A' }, noire: { f: '#7E5A8E', e: '#43304F' }, doree: { f: '#CDB64E', e: '#7A6A1F' }, cuivree: { f: '#C98A4A', e: '#7A4A1F' } };
 // Corps commun : l'olive, ses yeux, ses joues ; « bras » et « tete » varient selon la pose.
-function olivPoseSvg(p){
-  const E = '#4F6B2A';
+function olivPoseSvg(p, teinte){
+  const T = OLIV_TEINTES[teinte] || OLIV_TEINTES.verte, E = T.e;
   const feuille = `<path d="M60 20 q-2 -9 4 -14" stroke="${E}" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M64 8 C 74 -1, 88 3, 92 10 C 82 16, 72 15, 64 8 Z" fill="#7BAE4F" stroke="${E}" stroke-width="1.5"/>`;
   const chapeau = `<ellipse cx="60" cy="25" rx="38" ry="7" fill="#A0743B" stroke="#6B4A22" stroke-width="2"/><path d="M38 24 Q40 4 60 4 Q80 4 82 24 Z" fill="#C49A5C" stroke="#6B4A22" stroke-width="2"/><path d="M39 19 H81" stroke="#6B4A22" stroke-width="4"/>`;
-  const corps = `<ellipse cx="60" cy="66" rx="34" ry="42" fill="#8DB84A" stroke="${E}" stroke-width="3.5"/><ellipse cx="47" cy="46" rx="8" ry="13" fill="#fff" opacity=".35" transform="rotate(-20 47 46)"/>`;
+  const corps = `<ellipse cx="60" cy="66" rx="34" ry="42" fill="${T.f}" stroke="${E}" stroke-width="3.5"/><ellipse cx="47" cy="46" rx="8" ry="13" fill="#fff" opacity=".35" transform="rotate(-20 47 46)"/>`;
   const yeux = (clin) => `<circle cx="47" cy="62" r="11" fill="#fff" stroke="#2C3A1A" stroke-width="2.5"/><circle cx="49" cy="64" r="5.5" fill="#1C2B39"/><circle cx="51" cy="61.5" r="1.8" fill="#fff"/>`
     + (clin ? `<path d="M64 63 Q73 57 82 63" stroke="#2C3A1A" stroke-width="3" fill="none" stroke-linecap="round"/>`
       : `<circle cx="73" cy="62" r="11" fill="#fff" stroke="#2C3A1A" stroke-width="2.5"/><circle cx="75" cy="64" r="5.5" fill="#1C2B39"/><circle cx="77" cy="61.5" r="1.8" fill="#fff"/>`);
@@ -62,7 +64,7 @@ function olivPoseSvg(p){
     visage = `<path d="M40 54 L52 57 M80 54 L68 57" stroke="#2C3A1A" stroke-width="3" stroke-linecap="round"/>` + yeux(false) + joues + bouche;
     extra = `<path d="M44 92 h32 l-4 10 h-24 Z" fill="#F5C518" stroke="#C99A00" stroke-width="1.5"/><text x="60" y="101" font-size="9" font-weight="800" fill="#7A2E2E" font-family="Arial" text-anchor="middle">D</text>`;
     return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">${cape}${tete}${corps}${bras}${visage}${extra}</svg>`;
-  } else if(['globe', 'musique', 'arts', 'sport', 'cuisine', 'nature', 'argent', 'jeux', 'sciences', 'geo', 'savante', 'regle', 'equerre', 'tableau', 'blocs'].includes(p)){
+  } else if(['globe', 'musique', 'arts', 'sport', 'cuisine', 'nature', 'argent', 'jeux', 'sciences', 'geo', 'savante', 'regle', 'equerre', 'tableau', 'blocs', 'correction', 'evaluation', 'devoirs', 'interro', 'classe', 'session', 'calendrier', 'outils', 'simulateur'].includes(p)){
     // Maths & la vie (la globe-trotteuse et une pose par thème) et page Histoire des maths (la savante grecque) --
     // demandé : « insérer des logos d'Oliv'IA dans les pages Maths & la vie et dans le menu histoire », choix :
     // « globe-trotteuse, vignettes par thème et savante grecque ». La main droite tient l'objet du thème.
@@ -110,6 +112,26 @@ function olivPoseSvg(p){
     } else if(p === 'blocs'){ // menu L'Atelier : Programmation (deux blocs emboîtés)
       const bloc = (y, c, b) => `<path d="M92 ${y} h8 l3 4 h6 l3 -4 h12 v14 h-12 l-3 4 h-6 l-3 -4 h-8 Z" fill="${c}" stroke="${b}" stroke-width="2" stroke-linejoin="round"/>`;
       extra = bloc(14, '#4C97FF', '#2F6FB3') + bloc(32, '#FFAB19', '#C88A0A') + `<circle cx="105" cy="56" r="4.8" fill="${E}"/>`;
+    // ---- Menu « L'Atelier du prof » -- demandé : « décline aussi sur le menu du professeur », choix : sans lunettes.
+    } else if(p === 'correction'){ // copie cochée et stylo rouge
+      extra = `<rect x="94" y="12" width="26" height="34" rx="2" fill="#fff" stroke="#5B6472" stroke-width="2"/><path d="M99 20 h16 M99 26 h16 M99 32 h10" stroke="#B8BEC8" stroke-width="2"/><path d="M100 38 l4 4 l8 -10" stroke="#D3302F" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M105 56 L116 36" stroke="#D3302F" stroke-width="4" stroke-linecap="round"/><path d="M116 36 l2 -4" stroke="#7A2E2E" stroke-width="3"/><circle cx="105" cy="56" r="4.8" fill="${E}"/>`;
+    } else if(p === 'evaluation'){ // feuille « ÉVAL » et crayon
+      extra = `<rect x="92" y="10" width="28" height="36" rx="2" fill="#FFF8E1" stroke="#8A6D1F" stroke-width="2"/><text x="106" y="22" font-size="8" font-weight="800" fill="#8A6D1F" font-family="Arial" text-anchor="middle">ÉVAL</text><path d="M97 28 h18 M97 34 h18 M97 40 h12" stroke="#C9B37A" stroke-width="2"/><g transform="rotate(35 108 44)"><rect x="104" y="30" width="7" height="26" rx="1.5" fill="#F5C518" stroke="#8A6D1F" stroke-width="1.5"/><path d="M104 56 l3.5 7 l3.5 -7 Z" fill="#F3D9A0" stroke="#8A6D1F" stroke-width="1.2"/></g><circle cx="105" cy="56" r="4.8" fill="${E}"/>`;
+    } else if(p === 'devoirs'){ // copie qu'on envoie
+      extra = `<rect x="94" y="16" width="24" height="30" rx="2" fill="#fff" stroke="#2F6FB3" stroke-width="2"/><path d="M99 24 h14 M99 30 h14" stroke="#B8BEC8" stroke-width="2"/><circle cx="114" cy="42" r="9" fill="#2F6FB3"/><path d="M114 47 V37 M110 41 l4 -4 l4 4" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round"/><circle cx="105" cy="56" r="4.8" fill="${E}"/>`;
+    } else if(p === 'interro'){ // tablette avec un QCM
+      extra = `<rect x="92" y="10" width="30" height="40" rx="4" fill="#1C1B2E"/><rect x="95" y="14" width="24" height="31" rx="1.5" fill="#fff"/><rect x="98" y="18" width="5" height="5" rx="1" fill="none" stroke="#5B6472" stroke-width="1.2"/><path d="M99 20.5 l1.5 1.5 l3 -3.5" stroke="#1E8A6E" stroke-width="1.6" fill="none"/><rect x="98" y="27" width="5" height="5" rx="1" fill="none" stroke="#5B6472" stroke-width="1.2"/><rect x="98" y="36" width="5" height="5" rx="1" fill="none" stroke="#5B6472" stroke-width="1.2"/><path d="M106 20.5 h10 M106 29.5 h10 M106 38.5 h10" stroke="#B8BEC8" stroke-width="2"/><circle cx="105" cy="56" r="4.8" fill="${E}"/>`;
+    } else if(p === 'classe'){ // deux petites olives élèves
+      extra = `<ellipse cx="104" cy="96" rx="9" ry="11" fill="#A9CF63" stroke="#4F6B2A" stroke-width="2"/><circle cx="101" cy="94" r="2" fill="#1C2B39"/><circle cx="107" cy="94" r="2" fill="#1C2B39"/><path d="M101 100 q3 2 6 0" stroke="#2C3A1A" stroke-width="1.5" fill="none"/><ellipse cx="118" cy="100" rx="8" ry="10" fill="#B28FC0" stroke="#43304F" stroke-width="2"/><circle cx="116" cy="98" r="1.8" fill="#1C2B39"/><circle cx="121" cy="98" r="1.8" fill="#1C2B39"/><path d="M116 103 q2 1.5 5 0" stroke="#2C3A1A" stroke-width="1.5" fill="none"/><path d="M104 85 q-1 -4 2 -6" stroke="#4F6B2A" stroke-width="1.6" fill="none"/><circle cx="105" cy="56" r="4.8" fill="${E}"/>`;
+    } else if(p === 'session'){ // la télécommande des sessions en direct
+      extra = `<rect x="99" y="22" width="13" height="32" rx="5" fill="#2F2A26" stroke="#1C1B2E" stroke-width="1.5"/><circle cx="105.5" cy="30" r="3" fill="#E35D3A"/><rect x="102" y="37" width="7" height="3" rx="1" fill="#8A8F98"/><rect x="102" y="43" width="7" height="3" rx="1" fill="#8A8F98"/><path d="M98 18 q7 -6 15 0 M101 13 q4.5 -4 9 0" stroke="#2F6FB3" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="105" cy="56" r="4.8" fill="${E}"/>`;
+    } else if(p === 'calendrier'){ // Ma progression
+      extra = `<rect x="92" y="14" width="30" height="30" rx="3" fill="#fff" stroke="#5B6472" stroke-width="2"/><rect x="92" y="14" width="30" height="9" rx="3" fill="#D3302F"/><path d="M99 10 v8 M115 10 v8" stroke="#5B6472" stroke-width="2.5" stroke-linecap="round"/>`
+        + [0, 1, 2].flatMap(r => [0, 1, 2, 3].map(c => `<rect x="${96 + c * 6.5}" y="${27 + r * 5.5}" width="4" height="3.5" fill="${r === 1 && c === 2 ? '#1E8A6E' : '#D7DBE2'}"/>`)).join('') + `<circle cx="105" cy="56" r="4.8" fill="${E}"/>`;
+    } else if(p === 'outils'){ // le feu de consigne
+      extra = `<rect x="98" y="8" width="16" height="40" rx="5" fill="#2F2A26"/><circle cx="106" cy="16" r="4.5" fill="#D3302F"/><circle cx="106" cy="28" r="4.5" fill="#F5C518" opacity=".45"/><circle cx="106" cy="40" r="4.5" fill="#4CC38A" opacity=".45"/><circle cx="105" cy="56" r="4.8" fill="${E}"/>`;
+    } else if(p === 'simulateur'){ // écran du professeur et téléphone d'élève
+      extra = `<rect x="88" y="14" width="30" height="20" rx="2" fill="#1C1B2E"/><rect x="90.5" y="16.5" width="25" height="15" fill="#CFEFFF"/><path d="M84 36 h38 l-3 4 h-32 Z" fill="#8A8F98"/><rect x="112" y="30" width="11" height="19" rx="2" fill="#1C1B2E"/><rect x="113.5" y="32.5" width="8" height="13" fill="#FFE9B0"/><circle cx="105" cy="56" r="4.8" fill="${E}"/>`;
     } else { // savante grecque : couronne de laurier, compas tenu par sa tête
       tete = ''; // la couronne est dessinée par-dessus le corps (dans extra)
       const laurier = [-4, -3, -2, -1, 1, 2, 3, 4].map(k => `<ellipse cx="${60 + k * 8}" cy="${28 + Math.abs(k) * 2.2}" rx="5" ry="2.6" fill="#6DBB4A" stroke="#2E7D32" stroke-width="1" transform="rotate(${k * 14} ${60 + k * 8} ${28 + Math.abs(k) * 2.2})"/>`).join('');
@@ -127,15 +149,20 @@ function olivPoseSvg(p){
 const OLIV_POSES = ['savoir', 'methode', 'muscle', 'histoire', 'quiz', 'cm2', 'defi'];
 // Menu L'Atelier : une Oliv'IA par entrée à la place des icônes -- demandé : « On peut la décliner sur d'autres
 // entrées et remplacer les icônes Google par des Oliv'IA ».
-const OLIV_MENU = { cm: 'muscle', compte: 'jeux', convertisseur: 'regle', 'figure-sandbox': 'equerre', tableau: 'tableau', programmation: 'blocs', 'histoire-maths': 'savante' };
+// Menu « L'Atelier du prof » : mêmes Oliv'IA sans lunettes, en olives de couleurs variées ; le sous-menu
+// « Évaluations » reste sans vignette (choix : « sans icône pour les sous-menus »).
+const OLIV_MENU = { cm: 'muscle', compte: 'jeux', convertisseur: 'regle', 'figure-sandbox': 'equerre', tableau: 'tableau', programmation: 'blocs', 'histoire-maths': 'savante',
+  correction: ['correction', 'verte'], evaluation: ['evaluation', 'noire'], devoirsprof: ['devoirs', 'doree'], questionnaires: ['interro', 'cuivree'], supervision: ['classe', 'verte'],
+  sessions: ['session', 'noire'], progression: ['calendrier', 'doree'], classe: ['outils', 'cuivree'], simulateur: ['simulateur', 'verte'] };
 function olivMenu(){
-  document.querySelectorAll('#navDropdownEntrainer .nav-dropdown-menu button[data-nav]').forEach(b => {
-    const pose = OLIV_MENU[b.dataset.nav], g = b.querySelector(':scope > .gicon'); if(!pose || !g) return;
-    const o = document.createElement('span'); o.className = 'oliv-menu'; o.setAttribute('aria-hidden', 'true'); o.style.backgroundImage = olivPoseUrl(pose); g.replaceWith(o);
+  document.querySelectorAll('#navDropdownEntrainer .nav-dropdown-menu button[data-nav], #navCorrection .nav-dropdown-menu button[data-nav]').forEach(b => {
+    const m = OLIV_MENU[b.dataset.nav], g = b.querySelector(':scope > .gicon'); if(!m || !g) return;
+    const [pose, teinte] = Array.isArray(m) ? m : [m];
+    const o = document.createElement('span'); o.className = 'oliv-menu'; o.setAttribute('aria-hidden', 'true'); o.style.backgroundImage = olivPoseUrl(pose, teinte); g.replaceWith(o);
   });
 }
 if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', olivMenu); else olivMenu();
-function olivPoseUrl(p){ return `url("data:image/svg+xml,${encodeURIComponent(olivPoseSvg(p))}")`; }
+function olivPoseUrl(p, teinte){ return `url("data:image/svg+xml,${encodeURIComponent(olivPoseSvg(p, teinte))}")`; }
 
 // Phrases des bulles (le premier encadré prend la première, puis on varie).
 const OLIV_PHRASES = {
