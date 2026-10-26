@@ -556,3 +556,31 @@ function progSolutionJson(sol){
   const v = Object.keys(vars); if(v.length) json.variables = v.map(n => ({ name: n, id: vars[n] }));
   return json;
 }
+// Correction dessinée par Blockly lui-même (rendu « zelos » de l'éditeur), figée en image SVG -- signalé : « la correction
+// ne ressemble pas à codablock ». Les styles calculés sont recopiés sur chaque élément : l'image s'affiche et
+// s'imprime seule dans le cahier, sans Blockly. Repli sur progBlocsHtml si Blockly ne se charge pas.
+async function progBlocsSvg(json, echelle){
+  if(!json || !json.blocks) return '';
+  try{ await progChargerBlockly(); }catch(e){ return ''; }
+  const div = document.createElement('div'); div.style.cssText = 'position:fixed;left:-12000px;top:0;width:1400px;height:1000px;';
+  document.body.appendChild(div);
+  let ws = null;
+  try{
+    ws = Blockly.inject(div, { renderer: 'zelos', theme: window.__progTheme, readOnly: true, sounds: false, media: PROG_BLOCKLY + 'media/' });
+    Blockly.serialization.workspaces.load(json, ws);
+    const canvas = ws.getCanvas(), bb = canvas.getBBox();
+    if(!bb.width) return '';
+    const clone = canvas.cloneNode(true), src = [canvas, ...canvas.querySelectorAll('*')], dst = [clone, ...clone.querySelectorAll('*')];
+    const props = ['fill', 'fill-opacity', 'stroke', 'stroke-width', 'stroke-opacity', 'font-family', 'font-size', 'font-weight', 'dominant-baseline', 'text-anchor'];
+    src.forEach((el, i) => {
+      const cs = getComputedStyle(el), d = dst[i];
+      if(cs.display === 'none' || cs.visibility === 'hidden'){ d.setAttribute('display', 'none'); return; }
+      d.setAttribute('style', props.map(p => { const v = cs.getPropertyValue(p); return v ? `${p}:${v}` : ''; }).filter(Boolean).join(';'));
+      d.removeAttribute('class');
+    });
+    clone.removeAttribute('transform');
+    const m = 3, k = echelle || 0.8, w = bb.width + 2 * m, h = bb.height + 2 * m;
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${(bb.x - m).toFixed(1)} ${(bb.y - m).toFixed(1)} ${w.toFixed(1)} ${h.toFixed(1)}" style="width:${(w * k).toFixed(0)}px;max-width:100%;height:auto;display:block;margin:6px 0;">${clone.outerHTML}</svg>`;
+  }catch(e){ console.warn('progBlocsSvg', e); return ''; }
+  finally{ if(ws) ws.dispose(); div.remove(); }
+}

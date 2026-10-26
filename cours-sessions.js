@@ -324,7 +324,16 @@ async function csProgSolutions(ids){
   (data || []).forEach(r => { const d = perso.find(x => x.rowId === r.defi_id); if(d && r.programme) out[d.id] = r.programme; });
   return out;
 }
-function csProgCahierHtml(id, corr, solPerso){
+// Images des corrections en blocs, dessinées par Blockly (progBlocsSvg) : { id du défi : SVG }.
+async function csProgImages(ids, sols){
+  const out = {};
+  for(const id of [...new Set(ids)]){
+    const json = typeof progSolution === 'function' && progSolution(id) ? progSolutionJson(progSolution(id)) : sols && sols[id];
+    if(json && typeof progBlocsSvg === 'function'){ const svg = await progBlocsSvg(json); if(svg) out[id] = svg; }
+  }
+  return out;
+}
+function csProgCahierHtml(id, corr, solPerso, img){
   const d = typeof progDefiParId === 'function' ? progDefiParId(id) : null; if(!d) return null;
   let fig = '';
   if(d.decor && typeof plProgApercu === 'function') fig = plProgApercu(d);
@@ -332,7 +341,7 @@ function csProgCahierHtml(id, corr, solPerso){
   const ex = d.attendu && d.tests ? d.tests.map(t => (t.length ? t.map(csProgN).join(' puis ') + ' → ' : '') + csProgN(d.attendu(t))) : [];
   // Correction en blocs : celle du site, ou le programme du professeur pour ses propres défis. Défi perso sans aide :
   // pas de « La méthode : Pas d'aide pour ce défi : demande à ton professeur. » dans le cahier (signalé).
-  const blocs = !corr ? '' : typeof progSolution === 'function' && progSolution(d.id) ? progSolutionHtml(progSolution(d.id)) : solPerso && typeof progBlocsHtml === 'function' ? progBlocsHtml(solPerso) : '';
+  const blocs = !corr ? '' : img ? img : typeof progSolution === 'function' && progSolution(d.id) ? progSolutionHtml(progSolution(d.id)) : solPerso && typeof progBlocsHtml === 'function' ? progBlocsHtml(solPerso) : '';
   const aide = d.perso ? (d.src && d.src.aide && typeof progPersoTexte === 'function' ? progPersoTexte(d.src.aide) : '') : d.aide;
   return `<div class="cs-prog-cahier"><p><b>Défi de programmation (blocs) :</b> ${d.enonce}</p>`
     + (fig ? `<p style="margin:6px 0 0;">Figure attendue${d.trace && d.tests && d.tests[0] && d.tests[0].length ? `, avec la réponse ${d.tests[0].map(csProgN).join(', ')}` : ''}${d.trace ? ' (le point vert : le départ du lutin)' : ''} :</p>${fig}` : '')
@@ -340,10 +349,10 @@ function csProgCahierHtml(id, corr, solPerso){
       + (aide ? `<p><b>La méthode :</b> ${aide}</p>` : '') + (ex.length ? `<p><b>Résultats attendus :</b></p><ul>${ex.map(x => `<li>${x}</li>`).join('')}</ul>` : '') : '') + '</div>';
 }
 // Contenu HTML d'un élément (énoncé, et correction si demandée) ; null s'il ne s'écrit pas dans un cahier.
-function csCahierHtml(it, corr, sols){
+function csCahierHtml(it, corr, sols, imgs){
   const e = it.exo || {}, titre = String(it.titre || '').replace(/^(Exercice|Interrogation|Figure)\s*:\s*/, '');
   if(e.type === 'qz' && (e.questions || []).length) return typeof qzcHtml === 'function' ? qzcHtml(titre, '', e.questions, corr) : null;
-  if(e.type === 'prog') return csProgCahierHtml(e.defi, corr, sols && sols[e.defi]);
+  if(e.type === 'prog') return csProgCahierHtml(e.defi, corr, sols && sols[e.defi], imgs && imgs[e.defi]);
   if(!it.html) return null;
   // Avec la correction : la correction seule (elle reprend la consigne) ; l'énoncé ferait doublon.
   if(corr && it.corr) return it.corr;
@@ -407,9 +416,9 @@ async function dvProgCahier(id){
     const { data: cc } = await sb.rpc('cahier_classe', { p_class: d.class_id });
     const cible = cc && cc.id ? cc : { id: d.class_id, nom: (d.classes && d.classes.nom) || '' };
     const matiere = typeof cahierMatiere === 'function' ? cahierMatiere() : null;
-    const sols = corr ? await csProgSolutions(ks.map(k => defis[k].id)) : {};
+    const sols = corr ? await csProgSolutions(ks.map(k => defis[k].id)) : {}, imgs = corr ? await csProgImages(ks.map(k => defis[k].id), sols) : {};
     const entrees = ks.map(k => { const p = defis[k]; return { niveau, chapitre: chap, exo: 'Programmation', titre: 'Programmation : ' + p.titre + (corr ? ' (avec correction)' : ''), date, raw: '',
-      html: csProgCahierHtml(p.id, corr, sols[p.id]), modalite: mod, support: sup }; }).filter(x => x.html);
+      html: csProgCahierHtml(p.id, corr, sols[p.id], imgs[p.id]), modalite: mod, support: sup }; }).filter(x => x.html);
     const { data: ins, error } = await sb.from('cahier_entries').insert(entrees.map(x => Object.assign({ class_id: cible.id, matiere }, x))).select('id');
     if(error){ o.querySelector('#dvPCErr').textContent = /row-level security/.test(error.message) ? 'Vous n\'êtes pas professeur de cette classe.' : error.message; b.disabled = false; b.innerHTML = '<span class="gicon">add</span> Ajouter au cahier'; return; }
     if(typeof cahier !== 'undefined' && (typeof cahierClasseId === 'function' ? cahierClasseId() : currentClassId) === cible.id){
@@ -461,9 +470,10 @@ async function csCahier(id){
     const { data: cc } = await sb.rpc('cahier_classe', { p_class: row.class_id });
     const cible = cc && cc.id ? cc : { id: row.class_id, nom: (row.classes && row.classes.nom) || '' };
     const matiere = typeof cahierMatiere === 'function' ? cahierMatiere() : null;
-    const sols = corr ? await csProgSolutions(ks.map(k => row.items[k]).filter(it => it.exo && it.exo.type === 'prog').map(it => it.exo.defi)) : {};
+    const progIds = ks.map(k => row.items[k]).filter(it => it.exo && it.exo.type === 'prog').map(it => it.exo.defi);
+    const sols = corr ? await csProgSolutions(progIds) : {}, imgs = corr ? await csProgImages(progIds, sols) : {};
     const entrees = ks.map(k => { const it = row.items[k]; return { niveau, chapitre: chap || it.chapitre || 'Sessions', exo: csCahierNature(it),
-      titre: String(it.titre || 'Élément') + (corr && (it.corr || (it.exo && (it.exo.type === 'qz' || it.exo.type === 'prog'))) ? ' (avec correction)' : ''), date, raw: '', html: csCahierHtml(it, corr, sols),
+      titre: String(it.titre || 'Élément') + (corr && (it.corr || (it.exo && (it.exo.type === 'qz' || it.exo.type === 'prog'))) ? ' (avec correction)' : ''), date, raw: '', html: csCahierHtml(it, corr, sols, imgs),
       modalite: csCahierNature(it) !== 'Cours' ? mod : null, support: csCahierNature(it) !== 'Cours' ? sup : null }; }).filter(x => x.html);
     const { data: ins, error } = await sb.from('cahier_entries').insert(entrees.map(x => Object.assign({ class_id: cible.id, matiere }, x))).select('id');
     if(error){ o.querySelector('#csCErr').textContent = /row-level security/.test(error.message) ? 'Vous n\'êtes pas professeur de cette classe.' : error.message; b.disabled = false; b.innerHTML = '<span class="gicon">add</span> Ajouter au cahier'; return; }
