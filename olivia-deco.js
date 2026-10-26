@@ -64,7 +64,7 @@ function olivPoseSvg(p, teinte){
     visage = `<path d="M40 54 L52 57 M80 54 L68 57" stroke="#2C3A1A" stroke-width="3" stroke-linecap="round"/>` + yeux(false) + joues + bouche;
     extra = `<path d="M44 92 h32 l-4 10 h-24 Z" fill="#F5C518" stroke="#C99A00" stroke-width="1.5"/><text x="60" y="101" font-size="9" font-weight="800" fill="#7A2E2E" font-family="Arial" text-anchor="middle">D</text>`;
     return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">${cape}${tete}${corps}${bras}${visage}${extra}</svg>`;
-  } else if(['globe', 'musique', 'arts', 'sport', 'cuisine', 'nature', 'argent', 'jeux', 'sciences', 'geo', 'savante', 'regle', 'equerre', 'tableau', 'blocs', 'correction', 'evaluation', 'devoirs', 'interro', 'classe', 'session', 'calendrier', 'outils', 'simulateur'].includes(p)){
+  } else if(['globe', 'musique', 'arts', 'sport', 'cuisine', 'nature', 'argent', 'jeux', 'sciences', 'geo', 'savante', 'regle', 'equerre', 'tableau', 'blocs', 'correction', 'evaluation', 'devoirs', 'interro', 'classe', 'session', 'calendrier', 'outils', 'simulateur', 'couronne', 'ia', 'cle', 'bug', 'aurevoir'].includes(p)){
     // Maths & la vie (la globe-trotteuse et une pose par thème) et page Histoire des maths (la savante grecque) --
     // demandé : « insérer des logos d'Oliv'IA dans les pages Maths & la vie et dans le menu histoire », choix :
     // « globe-trotteuse, vignettes par thème et savante grecque ». La main droite tient l'objet du thème.
@@ -132,6 +132,21 @@ function olivPoseSvg(p, teinte){
       extra = `<rect x="98" y="8" width="16" height="40" rx="5" fill="#2F2A26"/><circle cx="106" cy="16" r="4.5" fill="#D3302F"/><circle cx="106" cy="28" r="4.5" fill="#F5C518" opacity=".45"/><circle cx="106" cy="40" r="4.5" fill="#4CC38A" opacity=".45"/><circle cx="105" cy="56" r="4.8" fill="${E}"/>`;
     } else if(p === 'simulateur'){ // écran du professeur et téléphone d'élève
       extra = `<rect x="88" y="14" width="30" height="20" rx="2" fill="#1C1B2E"/><rect x="90.5" y="16.5" width="25" height="15" fill="#CFEFFF"/><path d="M84 36 h38 l-3 4 h-32 Z" fill="#8A8F98"/><rect x="112" y="30" width="11" height="19" rx="2" fill="#1C1B2E"/><rect x="113.5" y="32.5" width="8" height="13" fill="#FFE9B0"/><circle cx="105" cy="56" r="4.8" fill="${E}"/>`;
+    // ---- Menu « Mon compte » -- demandé : « décline aussi Oliv'IA sur le menu Mon compte ».
+    } else if(p === 'couronne'){ // Mon abonnement
+      tete = ''; visage = yeux(false) + joues + bouche;
+      extra = `<path d="M38 32 L42 10 L51 22 L60 5 L69 22 L78 10 L82 32 Z" fill="#F5C518" stroke="#C99A00" stroke-width="2" stroke-linejoin="round"/><circle cx="60" cy="6" r="3" fill="#E35D3A"/><circle cx="42" cy="10" r="2.5" fill="#2F6FB3"/><circle cx="78" cy="10" r="2.5" fill="#2F6FB3"/><text x="110" y="44" font-size="18" font-family="Arial" text-anchor="middle">⭐</text><circle cx="105" cy="56" r="4.8" fill="${E}"/>`;
+    } else if(p === 'ia'){ // Intelligence artificielle : la petite robote et son antenne
+      tete = ''; visage = yeux(false) + joues + bouche;
+      extra = `<path d="M60 26 V10" stroke="#5B6472" stroke-width="3"/><circle cx="60" cy="8" r="5.5" fill="#E35D3A" stroke="#9E2F1C" stroke-width="1.5"/><path d="M50 8 q-4 0 -6 -4 M70 8 q4 0 6 -4" stroke="#F5C518" stroke-width="2" fill="none" stroke-linecap="round"/><text x="110" y="42" font-size="18" font-family="Arial" text-anchor="middle">✨</text><circle cx="105" cy="56" r="4.8" fill="${E}"/>`;
+    } else if(p === 'cle'){ // Changer mon mot de passe
+      extra = `<circle cx="108" cy="28" r="8" fill="none" stroke="#C99A00" stroke-width="4.5"/><path d="M106 36 L104 56 M104.5 46 h7 M104 51.5 h6" stroke="#C99A00" stroke-width="4" stroke-linecap="round"/><circle cx="105" cy="56" r="4.8" fill="${E}"/>`;
+    } else if(p === 'bug'){ // Signaler un bug : la loupe sur une petite coccinelle
+      bras = brasG + `<path d="M93 72 q10 -2 14 -10" stroke="${E}" stroke-width="4" fill="none" stroke-linecap="round"/>`;
+      extra = `<path d="M108 62 L114 74" stroke="#5B3A1A" stroke-width="5" stroke-linecap="round"/><circle cx="104" cy="48" r="13" fill="#CFEFFF" fill-opacity=".7" stroke="#1F3A5C" stroke-width="3.5"/><ellipse cx="104" cy="49" rx="6" ry="5" fill="#D3302F"/><path d="M104 44 V54" stroke="#1C1B2E" stroke-width="1.2"/><circle cx="101.5" cy="48" r="1.2" fill="#1C1B2E"/><circle cx="106.5" cy="50" r="1.2" fill="#1C1B2E"/><circle cx="104" cy="43.5" r="2" fill="#1C1B2E"/><circle cx="108" cy="63" r="4.5" fill="${E}"/>`;
+    } else if(p === 'aurevoir'){ // Se déconnecter : elle fait au revoir
+      bras = brasG + `<path d="M93 66 q14 -10 14 -32" stroke="${E}" stroke-width="4" fill="none" stroke-linecap="round"/>`;
+      extra = `<circle cx="107" cy="31" r="5.5" fill="${E}"/><path d="M114 22 q4 4 3 9 M118 18 q6 6 4 14" stroke="#8A8F98" stroke-width="2" fill="none" stroke-linecap="round"/>`;
     } else { // savante grecque : couronne de laurier, compas tenu par sa tête
       tete = ''; // la couronne est dessinée par-dessus le corps (dans extra)
       const laurier = [-4, -3, -2, -1, 1, 2, 3, 4].map(k => `<ellipse cx="${60 + k * 8}" cy="${28 + Math.abs(k) * 2.2}" rx="5" ry="2.6" fill="#6DBB4A" stroke="#2E7D32" stroke-width="1" transform="rotate(${k * 14} ${60 + k * 8} ${28 + Math.abs(k) * 2.2})"/>`).join('');
@@ -162,7 +177,17 @@ function olivMenu(){
     const o = document.createElement('span'); o.className = 'oliv-menu'; o.setAttribute('aria-hidden', 'true'); o.style.backgroundImage = olivPoseUrl(pose, teinte); g.replaceWith(o);
   });
 }
-if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', olivMenu); else olivMenu();
+// Menu « Mon compte » (personne connectée) : on reconnaît chaque bouton à l'action qu'il lance.
+const OLIV_COMPTE = [['openAbonnement', 'couronne', 'doree'], ['openIaPage', 'ia', 'verte'], ['openChangePasswordModal', 'cle', 'noire'], ['openBugReportModal', 'bug', 'cuivree'], ['globalSignOut', 'aurevoir', 'verte']];
+function olivCompte(){
+  document.querySelectorAll('#accountLoggedIn button[onclick]').forEach(b => {
+    if(b.querySelector('.oliv-compte')) return;
+    const m = OLIV_COMPTE.find(([f]) => b.getAttribute('onclick').includes(f)); if(!m) return;
+    const o = document.createElement('span'); o.className = 'oliv-compte'; o.setAttribute('aria-hidden', 'true'); o.style.backgroundImage = olivPoseUrl(m[1], m[2]);
+    const g = b.querySelector(':scope > .gicon'); if(g) g.replaceWith(o); else b.prepend(o);
+  });
+}
+if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => { olivMenu(); olivCompte(); }); else { olivMenu(); olivCompte(); }
 // La même Oliv'IA dans le titre de la page ouverte par le menu -- demandé : « Reprends aussi les Oliv'IA des menus
 // sur les pages correspondantes ».
 const OLIV_PAGES = { 'view-cm': 'cm', 'view-compte': 'compte', 'view-convertisseur': 'convertisseur', 'view-tableau': 'tableau', 'view-programmation': 'programmation',
@@ -226,6 +251,7 @@ function olivDecorer(demo){
     .oliv-deco .oliv-sh{--oliv-img:${olivPoseUrl('methode')};}
     /* Menu L'Atelier : Oliv'IA à la place des icônes (olivMenu) */
     .oliv-menu{display:inline-block;width:40px;height:40px;background:center/contain no-repeat;vertical-align:middle;margin:-10px 4px -8px -6px;flex:none;}
+    .oliv-compte{display:inline-block;width:34px;height:34px;background:center/contain no-repeat;vertical-align:middle;margin:-9px 4px -8px -4px;flex:none;}
     .oliv-titre{display:inline-block;width:80px;height:80px;background:center/contain no-repeat;vertical-align:middle;margin:-10px 8px -14px -8px;flex:none;}
     .oliv-deco .oliv-sh.oliv-sh-plus{--oliv-img:${olivPoseUrl('cm2')};}
     /* Encadrés : Oliv'IA à droite du badge, debout sur l'encadré, et sa bulle */
