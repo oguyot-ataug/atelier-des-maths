@@ -440,7 +440,7 @@ function progQuitterDevoir(){ if(prog){ if(prog.ds && typeof dsEnd === 'function
    instructions ['av', n] ['td', n] ['tg', n] ['bas'] ['haut'] ['rep', n, [...]] ['demander', 'texte']
    ['dire', e] ['set', 'variable', e] ['ajouter', e, 'variable'] ['si', condition, [...], [...]] ;
    valeurs : nombre, texte, ['réponse'], ['var', 'nom'], [opérateur, a, b] avec + − × ÷ > < = reste.
-   progSolutionHtml : les blocs dessinés (styles en ligne : ils s'impriment dans le cahier) ;
+   progSolutionHtml : les blocs dessinés (progBlocsHtml, styles en ligne : ils s'impriment dans le cahier) ;
    progSolutionJson : le même programme pour Blockly (vérifié automatiquement : chaque correction réussit son défi).
    --------------------------------------------------------------------- */
 const PROG_SOLUTIONS = {
@@ -467,39 +467,58 @@ const PROG_SOLUTIONS = {
   somme: [['set', 'nombre', 1], ['set', 'somme', 0], ['rep', 100, [['ajouter', ['var', 'nombre'], 'somme'], ['ajouter', 1, 'nombre']]], ['dire', ['var', 'somme']]],
 };
 function progSolution(id){ return PROG_SOLUTIONS[id] || null; }
-function progSolutionHtml(sol){
-  const C = k => PROG_COULEURS[k][0], B = k => PROG_COULEURS[k][2];
-  const box = k => `display:inline-block;background:${C(k)};color:#fff;border:1px solid ${B(k)};border-radius:5px;padding:4px 9px;font:600 12.5px Inter,Arial,sans-serif;line-height:1.5;`;
+// Blocs dessinés à partir d'un programme Blockly (sérialisation JSON) : corrections du site (progSolutionJson) et
+// programmes des défis créés par les professeurs (prog_defis_solution). Styles en ligne : ils s'impriment dans le cahier.
+const PROG_BLOCS_LIB = {
+  sc_drapeau: ['evenements', 'quand 🏁 est cliqué'], sc_avancer: ['mouvement', 'avancer de {N} pas'], sc_tourner_d: ['mouvement', 'tourner ↻ de {N} degrés'],
+  sc_tourner_g: ['mouvement', 'tourner ↺ de {N} degrés'], sc_aller: ['mouvement', 'aller à x : {X} y : {Y}'], sc_orienter: ['mouvement', 's\'orienter à {N} degrés'],
+  sc_x: ['mouvement', 'abscisse x'], sc_y: ['mouvement', 'ordonnée y'], sc_direction: ['mouvement', 'direction'],
+  sc_stylo_bas: ['stylo', 'stylo en position d\'écriture'], sc_stylo_haut: ['stylo', 'relever le stylo'], sc_stylo_couleur: ['stylo', 'mettre la couleur du stylo à {COULEUR}'],
+  sc_stylo_taille: ['stylo', 'mettre la taille du stylo à {N}'], sc_effacer: ['stylo', 'effacer tout'], sc_dire: ['apparence', 'dire {T}'], sc_dire_sec: ['apparence', 'dire {T} pendant {N} secondes'],
+  sc_attendre: ['controle', 'attendre {N} secondes'], sc_repeter: ['controle', 'répéter {N} fois'], sc_toujours: ['controle', 'répéter indéfiniment'], sc_si: ['controle', 'si {C} alors'],
+  sc_si_sinon: ['controle', 'si {C} alors'], sc_jusqua: ['controle', 'répéter jusqu\'à ce que {C}'], sc_demander: ['capteurs', 'demander {T} et attendre'], sc_reponse: ['capteurs', 'réponse'],
+  sc_plus: ['operateurs', '{A} + {B}'], sc_moins: ['operateurs', '{A} − {B}'], sc_fois: ['operateurs', '{A} × {B}'], sc_div: ['operateurs', '{A} ÷ {B}'],
+  sc_hasard: ['operateurs', 'nombre aléatoire entre {A} et {B}'], sc_inf: ['operateurs', '{A} < {B}'], sc_egal: ['operateurs', '{A} = {B}'], sc_sup: ['operateurs', '{A} > {B}'],
+  sc_et: ['operateurs', '{A} et {B}'], sc_ou: ['operateurs', '{A} ou {B}'], sc_non: ['operateurs', 'non {A}'], sc_modulo: ['operateurs', 'reste de {A} ÷ {B}'],
+  sc_arrondi: ['operateurs', 'arrondi de {A}'], sc_regrouper: ['operateurs', 'regrouper {A} et {B}'], sc_var_set: ['variables', 'mettre {VAR} à {V}'], sc_var_change: ['variables', 'ajouter {V} à {VAR}'] };
+function progBlocsHtml(json){
+  if(!json || !json.blocks) return '';
+  const C = k => PROG_COULEURS[k][0], B = k => PROG_COULEURS[k][2], vars = {};
+  (json.variables || []).forEach(v => { vars[v.id] = v.name; });
+  const police = 'font:600 12.5px Inter,Arial,sans-serif;line-height:1.5;color:#fff;';
   const pill = 'display:inline-block;background:#fff;color:#575E75;border-radius:10px;padding:0 7px;margin:0 2px;font-weight:700;';
-  const val = e => {
-    if(typeof e === 'number') return `<span style="${pill}">${String(e).replace('.', ',')}</span>`;
-    if(typeof e === 'string') return `<span style="${pill}">${progEsc(e)}</span>`;
-    if(e[0] === 'réponse') return `<span style="display:inline-block;background:${C('capteurs')};border:1px solid ${B('capteurs')};border-radius:10px;padding:0 7px;margin:0 2px;">réponse</span>`;
-    if(e[0] === 'var') return `<span style="display:inline-block;background:${C('variables')};border:1px solid ${B('variables')};border-radius:10px;padding:0 7px;margin:0 2px;">${progEsc(e[1])}</span>`;
-    const op = e[0] === 'reste' ? `reste de ${val(e[1])} ÷ ${val(e[2])}` : `${val(e[1])} ${e[0]} ${val(e[2])}`;
-    return `<span style="display:inline-block;background:${C('operateurs')};border:1px solid ${B('operateurs')};border-radius:${/[<>=]/.test(e[0]) ? '4px' : '10px'};padding:0 5px;margin:0 2px;">${op}</span>`;
-  };
-  const ligne = (k, h) => `<div style="margin:2px 0;"><span style="${box(k)}">${h}</span></div>`;
-  const corps = l => l.map(i => {
-    const [t, a, b, c] = i;
-    if(t === 'av') return ligne('mouvement', `avancer de ${val(a)} pas`);
-    if(t === 'td') return ligne('mouvement', `tourner ↻ de ${val(a)} degrés`);
-    if(t === 'tg') return ligne('mouvement', `tourner ↺ de ${val(a)} degrés`);
-    if(t === 'bas') return ligne('stylo', 'stylo en position d\'écriture');
-    if(t === 'haut') return ligne('stylo', 'relever le stylo');
-    if(t === 'demander') return ligne('capteurs', `demander ${val(a)} et attendre`);
-    if(t === 'dire') return ligne('apparence', `dire ${val(a)}`);
-    if(t === 'set') return ligne('variables', `mettre ${val(['var', a])} à ${val(b)}`);
-    if(t === 'ajouter') return ligne('variables', `ajouter ${val(a)} à ${val(['var', b])}`);
-    const bloc = (titre, dedans) => `<div style="margin:2px 0;"><span style="${box('controle')}border-bottom-left-radius:0;">${titre}</span>`
-      + `<div style="border-left:14px solid ${C('controle')};padding:2px 0 2px 6px;">${dedans}</div><span style="${box('controle')}border-top-left-radius:0;padding:2px 30px;"></span></div>`;
-    if(t === 'rep') return bloc(`répéter ${val(a)} fois`, corps(b));
-    if(t === 'si') return `<div style="margin:2px 0;"><span style="${box('controle')}border-bottom-left-radius:0;">si ${val(a)} alors</span><div style="border-left:14px solid ${C('controle')};padding:2px 0 2px 6px;">${corps(b)}</div>`
-      + `<span style="${box('controle')}border-radius:0;">sinon</span><div style="border-left:14px solid ${C('controle')};padding:2px 0 2px 6px;">${corps(c || [])}</div><span style="${box('controle')}border-top-left-radius:0;padding:2px 30px;"></span></div>`;
-    return '';
-  }).join('');
-  return `<div style="margin:6px 0;"><div style="margin:2px 0;"><span style="${box('evenements')}border-radius:14px 14px 5px 5px;">quand 🏁 est cliqué</span></div>${corps(sol)}</div>`;
+  const ovale = (k, h, angle) => `<span style="display:inline-block;background:${C(k)};border:1px solid ${B(k)};border-radius:${angle ? '4px' : '10px'};padding:0 6px;margin:0 2px;">${h}</span>`;
+  const varNom = f => f ? (f.name || vars[f.id] || f.id || '') : '';
+  const remplir = (b, modele) => modele.replace(/\{(\w+)\}/g, (m, n) => {
+    if(n === 'VAR') return ovale('variables', progEsc(varNom(b.fields && b.fields.VAR)));
+    if(n === 'COULEUR'){ const v = b.fields && b.fields.COULEUR, c = (PROG_STYLO.find(x => x[1] === v) || [v])[0]; return `<span style="${pill}">${progEsc(c)}</span>`; }
+    const inp = b.inputs && b.inputs[n]; return inp ? valeur(inp.block || inp.shadow) : `<span style="${pill}">&nbsp;</span>`;
+  });
+  function valeur(b){
+    if(!b) return `<span style="${pill}">&nbsp;</span>`;
+    if(b.type === 'math_number') return `<span style="${pill}">${progEsc(String(b.fields ? b.fields.NUM : '').replace('.', ','))}</span>`;
+    if(b.type === 'text') return `<span style="${pill}">${progEsc(b.fields ? b.fields.TEXT : '')}</span>`;
+    if(b.type === 'variables_get') return ovale('variables', progEsc(varNom(b.fields && b.fields.VAR)));
+    const L = PROG_BLOCS_LIB[b.type]; if(!L) return ovale('operateurs', progEsc(b.type));
+    return ovale(L[0], remplir(b, L[1]), /^sc_(inf|egal|sup|et|ou|non)$/.test(b.type));
+  }
+  const chaine = b => { let h = ''; while(b){ h += instr(b); b = b.next && b.next.block; } return h; };
+  function instr(b){
+    const L = PROG_BLOCS_LIB[b.type] || ['controle', progEsc(b.type)], k = L[0];
+    const dedans = nom => { const x = b.inputs && b.inputs[nom] && b.inputs[nom].block; return `<div style="margin:0 0 0 16px;background:#fff;border-radius:4px 0 0 4px;padding:3px 0 3px 5px;min-height:16px;">${x ? chaine(x) : ''}</div>`; };
+    if(/^sc_(repeter|toujours|si|jusqua)$/.test(b.type) || b.type === 'sc_si_sinon'){
+      // Bloc en C : la couleur entoure les blocs du dedans (en haut, à gauche et en bas).
+      return `<div style="margin:3px 0;"><div style="display:inline-block;background:${C(k)};border:1px solid ${B(k)};border-radius:6px;padding:0 0 10px;${police}">`
+        + `<div style="padding:4px 10px;">${remplir(b, L[1])}</div>${dedans('DO')}`
+        + (b.type === 'sc_si_sinon' ? `<div style="padding:4px 10px;">sinon</div>${dedans('ELSE')}` : '') + '</div></div>';
+    }
+    const chapeau = b.type === 'sc_drapeau' ? 'border-radius:14px 14px 5px 5px;' : 'border-radius:5px;';
+    return `<div style="margin:3px 0;"><span style="display:inline-block;background:${C(k)};border:1px solid ${B(k)};${chapeau}padding:4px 10px;${police}">${remplir(b, L[1])}</span></div>`;
+  }
+  const tops = (json.blocks.blocks || []), hats = tops.filter(b => b.type === 'sc_drapeau');
+  return `<div style="margin:6px 0;">${(hats.length ? hats : tops).map(chaine).join('<div style="height:8px;"></div>')}</div>`;
 }
+function progSolutionHtml(sol){ return progBlocsHtml(progSolutionJson(sol)); }
 // Le même programme au format Blockly (sérialisation JSON), pour le lancer et le vérifier.
 function progSolutionJson(sol){
   const vars = {}, vid = n => (vars[n] = vars[n] || 'v_' + n);

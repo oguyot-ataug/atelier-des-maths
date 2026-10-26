@@ -3524,6 +3524,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1146', date:'2026-10-26', items:['Programmation dans le cahier : 3 corrections -- signalé : « 3 problèmes ». 1) Résumé de la séance : « Programmation : Programmation : Le carré » devient « Programmation : Le carré » (plus de nature en double quand le titre la contient déjà). 2) Les blocs « répéter » et « si … sinon » de la correction sont dessinés comme dans l\'éditeur : la couleur entoure les blocs du dedans, en un C fermé. 3) Défis créés par le professeur : la correction montre maintenant son propre programme, dessiné en blocs, et la phrase destinée aux élèves « Pas d\'aide pour ce défi : demande à ton professeur » n\'apparaît plus dans le cahier.'] },
   { version:'2026-08-19.1145', date:'2026-10-26', items:['Devoirs de programmation dans le cahier, et correction en blocs -- demandé : « fais pareil pour les devoirs de programmation. Mais il serait bien d\'avoir la correction des blocs ». Dans la liste des devoirs, bouton « Cahier » sur un devoir de programmation : chaque défi coché devient une entrée « Programmation » du cahier (énoncé, figure attendue), avec le travail (à la maison par défaut), le support, le chapitre et la date. Avec les corrections, l\'entrée montre maintenant un programme corrigé dessiné en blocs, aux couleurs de l\'éditeur (quand 🏁 est cliqué, répéter 4 fois, avancer de 100 pas…), puis la méthode et les résultats attendus ; aussi pour les défis ajoutés depuis une session. Les 21 programmes corrigés ont été vérifiés : chacun réussit son défi.'] },
   { version:'2026-08-19.1144', date:'2026-10-26', items:['Sessions COURS, « Ajouter au cahier » : les défis de programmation s\'écrivent maintenant dans le cahier -- demandé : « Pourquoi on ne peut pas mettre les exercices de codage dans le cahier ? », puis « oui, fais-le ». L\'entrée reprend l\'énoncé du défi et la figure attendue (le décor et les pointillés pour les défis du CM1, le modèle tracé avec le point de départ du lutin sinon) ; avec « Avec les corrections » : la méthode du défi et, pour les programmes de calcul, les résultats attendus (2 → 11, 7 → 26…). Les programmes des élèves n\'y vont pas, comme pour les autres éléments.'] },
   { version:'2026-08-19.1143', date:'2026-10-26', items:['Menu « Mon compte » : une Oliv\'IA par bouton -- demandé : « décline aussi Oliv\'IA sur le menu Mon compte ». Mon abonnement : la couronne (olive dorée) ; Intelligence artificielle : la petite robote et son antenne ; Changer mon mot de passe : une clé (olive noire) ; Signaler un bug : la loupe sur une coccinelle (olive cuivrée) ; Se déconnecter : elle fait au revoir.'] },
@@ -8645,7 +8646,9 @@ function resumeSeanceContenu(date){
     }
     else {
       const num = String(e.exo||'').trim(), n = num && num!=='-' ? (/^[A-Za-zÀ-ÿ]/.test(num) ? num : 'Exercice '+num) : 'Exercice'; // « Exercice », « Document » (sessions) : le mot seul
-      rubrique().items.push(n + (titre ? ' : '+court(sansCorr(titre)) : ''));
+      // Titre qui commence déjà par la nature (« Programmation : Le carré ») : pas de « Programmation : » en double -- signalé.
+      const tt = titre ? court(sansCorr(titre)) : '';
+      rubrique().items.push(tt && tt.toLowerCase().startsWith(n.toLowerCase() + ' :') ? tt : n + (tt ? ' : ' + tt : ''));
     }
   });
   // Cours (bleu), Exercices (orange), Interrogation (violet, 📝), Questions flash (rouge, ⚡).
