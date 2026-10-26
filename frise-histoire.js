@@ -168,17 +168,27 @@ function hmChargerImgs(){
   const v = ((document.querySelector('script[src*="frise-histoire.js"]') || {}).src || '').split('v=')[1] || '';
   return fetch('img/histoire/credits.json?v=' + v).then(r => r.ok ? r.json() : {}).catch(() => ({})).then(j => { hmImgs = j || {}; });
 }
+// Crédit d'une image : l'auteur n'est obligatoire que pour les licences CC BY / CC BY-SA ; nom nettoyé et
+// raccourci sous la vignette, complet dans la loupe.
+function hmCredit(c, complet){
+  const pd = /public domain|cc0|^pd/i.test(c.licence), lic = pd ? 'Domaine public' : c.licence;
+  let a = String(c.auteur || '').replace(/&amp;/g, '&').replace(/The original uploader was (.+?) at .*$/i, '$1').replace(/https?:\/\/\S+/g, '').replace(/\s*derivative work.*$/i, '').replace(/(Unknown (author|photographer|illustrator))+/gi, '').replace(/\s+/g, ' ').replace(/^[\s,;·-]+|[\s,;·-]+$/g, '');
+  if(/^unknown|^unidentified|^anonymous/i.test(a)) a = '';
+  if(!complet && pd) a = '';
+  if(!complet && a.length > 42) a = a.slice(0, 40).replace(/[\s,;]+\S*$/, '') + '…';
+  return `${a ? hmEsc(a) + ' · ' : ''}${hmEsc(lic)} · <a href="${hmEsc(c.source)}" target="_blank" rel="noopener">${complet ? 'voir la source (Wikimedia Commons)' : 'Wikimedia Commons'}</a>`;
+}
 function hmIllu(e, grand){
   const c = hmImgs && hmImgs[e[3]]; if(!c) return '';
   const leg = HM_LEGENDES[e[3]] || e[3];
   return `<figure class="hm-illu${grand ? ' grand' : ''}"><button type="button" class="hm-illu-img" onclick="hmAgrandir('${hmEsc(e[3].replace(/'/g, '\\\''))}')" title="Agrandir"><img src="${c.image}" alt="${hmEsc(leg)}" loading="lazy"></button>
-    <figcaption>${grand ? hmEsc(leg) + '<br>' : ''}<span class="hm-credit">${c.auteur ? hmEsc(c.auteur) + ' · ' : ''}${hmEsc(c.licence)} · <a href="${hmEsc(c.source)}" target="_blank" rel="noopener">Wikimedia Commons</a></span></figcaption></figure>`;
+    <figcaption>${grand ? hmEsc(leg) + '<br>' : ''}<span class="hm-credit">${hmCredit(c)}</span></figcaption></figure>`;
 }
 function hmAgrandir(titre){
   const c = hmImgs && hmImgs[titre]; if(!c) return;
   const ov = document.createElement('div'); ov.className = 'hm-loupe'; ov.onclick = ev => { if(ev.target === ov || ev.target.closest('.hm-loupe-x')) ov.remove(); };
   ov.innerHTML = `<figure><button type="button" class="hm-loupe-x" title="Fermer"><span class="gicon">close</span></button><img src="${c.image}" alt="${hmEsc(HM_LEGENDES[titre] || titre)}">
-    <figcaption><b>${hmEsc(HM_LEGENDES[titre] || titre)}</b><br><span class="hm-credit">${c.auteur ? hmEsc(c.auteur) + ' · ' : ''}${hmEsc(c.licence)} · <a href="${hmEsc(c.source)}" target="_blank" rel="noopener">voir la source</a></span></figcaption></figure>`;
+    <figcaption><b>${hmEsc(HM_LEGENDES[titre] || titre)}</b><br><span class="hm-credit">${hmCredit(c, true)}</span></figcaption></figure>`;
   document.body.appendChild(ov);
 }
 let hmFiltre = '';
