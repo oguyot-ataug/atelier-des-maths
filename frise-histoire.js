@@ -154,6 +154,9 @@ const HM_LEGENDES = {
   "Katherine Johnson et la NASA": "Katherine Johnson à la NASA en 1966",
   "Andrew Wiles démontre le théorème de Fermat": "Andrew Wiles en 1995",
   "Maryam Mirzakhani, médaille Fields": "Maryam Mirzakhani à Séoul, en 2014, l'année de sa médaille Fields",
+  "Nicomaque et la « table de Pythagore »": "Une page de l'« Introduction à l'arithmétique » de Nicomaque, copie manuscrite (bibliothèque du Vatican)",
+  "Hypatie d'Alexandrie": "Hypatie imaginée par le peintre Julius Kronberg en 1889 (aucun portrait d'époque n'existe)",
+  "Brahmagupta et les nombres négatifs": "Un commentaire du 10e siècle sur le livre de Brahmagupta, copie manuscrite",
 };
 /* Illustrations -- demandé : « il manque des illustrations, les papyrus par exemple, pour savoir de quoi on parle,
    pas seulement des points sur une carte. Ou des représentations des mathématiciens. » Images libres de Wikimedia
