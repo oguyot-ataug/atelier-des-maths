@@ -4,7 +4,7 @@
    rubrique bien à elle ? » ; nom choisi : « Maths & la vie ».
 
    Les activités « maths et… » (musique-maths.js, perspective-arts.js, sport-maths.js, cuisine-maths.js,
-   nature-maths.js, argent-maths.js, jeux-maths.js, sciences-maths.js, geographie-maths.js) et leurs pages d'histoire thématiques ne sont plus dans les onglets Méthode et
+   nature-maths.js, argent-maths.js, jeux-maths.js, sciences-maths.js, geographie-maths.js, histoire-maths.js) et leurs pages d'histoire thématiques ne sont plus dans les onglets Méthode et
    Histoire : elles sont rangées ici, par thème. L'onglet n'apparaît que dans les chapitres qui en ont
    (VIE_CHAPITRES) : inutile de remplir tous les chapitres.
    vieMaj(niveau, titre) : appelé par openChapitre (app.js) ; vieA(niveau, titre) : le chapitre en a-t-il ?
@@ -18,6 +18,7 @@ const VIE_THEMES = {
   argent: { ou: 'avec l\'argent', titre: 'Maths et argent', icone: 'payments', coul: '#B7791F', histoire: () => typeof AR_HISTOIRE_HTML !== 'undefined' ? AR_HISTOIRE_HTML : '' },
   sciences: { ou: 'en sciences', titre: 'Maths et sciences', icone: 'science', coul: '#1F6F8B', histoire: () => typeof SC_HISTOIRE_HTML !== 'undefined' ? SC_HISTOIRE_HTML : '' },
   geo: { ou: 'en géographie', titre: 'Maths et géographie', icone: 'travel_explore', coul: '#2E7D4F', histoire: () => typeof GE_HISTOIRE_HTML !== 'undefined' ? GE_HISTOIRE_HTML : '' },
+  passe: { ou: 'en histoire', titre: 'Maths et histoire', icone: 'account_balance', coul: '#8E3B2E', histoire: () => typeof HI_HISTOIRE_HTML !== 'undefined' ? HI_HISTOIRE_HTML : '' },
   jeux: { ou: 'dans les jeux', titre: 'Maths et jeux', icone: 'extension', coul: '#5B2F9E', histoire: () => typeof JX_HISTOIRE_HTML !== 'undefined' ? JX_HISTOIRE_HTML : '' } };
 const vieFr = (a, b) => `<span class="tex">\\dfrac{${a}}{${b}}</span>`;
 // Activités : titre, petite consigne, et la balise que le module du thème transforme en activité.
@@ -51,6 +52,13 @@ const VIE_ACTIVITES = {
   fuseaux: { theme: 'geo', titre: 'Les fuseaux horaires', aide: 'Quand il est midi à Paris, il est la nuit à Tokyo et le matin à New York : on ajoute ou on retranche des heures.', html: '<div class="ge-fuseaux"></div>' },
   climat5: { theme: 'geo', titre: 'Le climat en graphique', aide: 'Lire un climatogramme, calculer une moyenne et une étendue de températures (parfois négatives).', html: '<div class="ge-climat" data-niv="5e"></div>' },
   altitudes: { theme: 'geo', titre: 'Des sommets aux abysses', aide: 'Les altitudes sont des nombres relatifs : positives au-dessus du niveau de la mer, négatives en dessous.', html: '<div class="ge-altitudes"></div>' },
+  numeration: { theme: 'passe', titre: 'Compter comme les Égyptiens et les Romains', aide: 'Hiéroglyphes égyptiens, chiffres romains : des façons d\'écrire les nombres sans zéro ni valeur de position. Essaie-les !', html: '<div class="hi-numeration"></div>' },
+  egypte: { theme: 'passe', titre: 'La multiplication des scribes égyptiens', aide: 'Il y a 3 600 ans, les scribes multipliaient sans connaître les tables : en doublant et en additionnant.', html: '<div class="hi-egypte"></div>' },
+  base60: { theme: 'passe', titre: 'Pourquoi 60 minutes dans une heure ?', aide: 'Nos heures et nos minutes viennent des Babyloniens, qui comptaient par soixantaines… sur leurs doigts.', html: '<div class="hi-base60"></div>' },
+  frise: { theme: 'passe', titre: 'La frise chronologique', aide: 'Les dates avant J.-C. sont des nombres négatifs sur la frise… mais attention au piège des historiens : il n\'y a pas d\'année 0 !', html: '<div class="hi-frise"></div>' },
+  kheops: { theme: 'passe', titre: 'La pyramide de Khéops', aide: 'Volume, nombre de blocs, rythme du chantier : les maths d\'un chantier vieux de 4 500 ans.', html: '<div class="hi-kheops"></div>' },
+  thales: { theme: 'passe', titre: 'Thalès mesure la pyramide', aide: 'Mesurer la hauteur d\'une pyramide sans y grimper : un bâton, des ombres et des droites parallèles.', html: '<div class="hi-thales"></div>' },
+  cesar: { theme: 'passe', titre: 'Casser le code de Jules César', aide: 'Un message secret intercepté : les fréquences des lettres permettent de le déchiffrer sans la clé.', html: '<div class="hi-cesar"></div>' },
   etang: { theme: 'nature', titre: 'Combien de poissons dans l\'étang ?', aide: 'Comment les biologistes comptent-ils les animaux sauvages sans les attraper tous ? Avec la proportionnalité et un peu de hasard.', html: '<div class="na-etang"></div>' } };
 // Chapitres (clé « niveau|titre ») -> activités, dans l'ordre d'affichage (les thèmes suivent cet ordre).
 const VIE_CHAPITRES = {
@@ -59,6 +67,8 @@ const VIE_CHAPITRES = {
   // programme dans les explications » (26/10/2026). Un chapitre sans activité n'a pas l'onglet.
   'cm1|Opérations sur les nombres décimaux': ['monnaie'],
   'cm1|Procédures de calcul mental': ['carre'],
+  'cm1|Nombres entiers jusqu\'à 9 999': ['numeration'],
+  'cm2|Multiplication': ['egypte'],
   'cm2|Proportionnalité': ['affaire'],
   'cm2|Division': ['nim'],
   'cm2|Heures et durées': ['fuseaux'],
@@ -68,6 +78,7 @@ const VIE_CHAPITRES = {
   '6e|Aire et périmètre': ['piste'],
   '6e|Angles et rapporteur': ['tournesol'],
   '6e|Symétrie axiale': ['flocon'],
+  '6e|Heures et durée': ['base60'],
   '5e|Symétrie centrale': ['canonSym'],
   '5e|Représentation de l\'espace': ['fuite', 'cube'],
   '5e|Pourcentages': ['soldes5'],
@@ -75,15 +86,19 @@ const VIE_CHAPITRES = {
   '5e|Statistiques': ['climat5'],
   '5e|Opérations sur les nombres relatifs': ['altitudes'],
   '5e|Fonctions': ['chute5'],
+  '5e|Nombres relatifs': ['frise'],
   '4e|Proportionnalité': ['bolt'],
   '4e|Statistiques': ['stats4'],
   '4e|Puissances': ['univers'],
+  '4e|Espace': ['kheops'],
+  '4e|Triangles et parallèles': ['thales'],
   '3e|Théorème de Thalès': ['alberti'],
   '3e|Grandeurs composées': ['eprouvette3'],
   '3e|Puissances': ['hanoi'],
   '3e|Généralités sur les fonctions': ['interets3'],
   '3e|Fonctions linéaires et affines': ['four'],
-  '3e|Probabilités': ['etang', 'des'] };
+  '3e|Probabilités': ['etang', 'des'],
+  '3e|Statistiques': ['cesar'] };
 function vieA(niv, titre){ return !!VIE_CHAPITRES[niv + '|' + titre]; }
 function vieHtml(liste){
   const themes = [];
@@ -108,7 +123,8 @@ function vieMaj(niv, titre){
   [typeof mmInitTout === 'function' && mmInitTout, typeof paInitTout === 'function' && paInitTout, typeof spInitTout === 'function' && spInitTout,
    typeof cuInitTout === 'function' && cuInitTout, typeof naInitTout === 'function' && naInitTout,
    typeof arInitTout === 'function' && arInitTout, typeof jxInitTout === 'function' && jxInitTout,
-   typeof scInitTout === 'function' && scInitTout, typeof geInitTout === 'function' && geInitTout].forEach(f => { if(f) f(box); });
+   typeof scInitTout === 'function' && scInitTout, typeof geInitTout === 'function' && geInitTout,
+   typeof hiInitTout === 'function' && hiInitTout].forEach(f => { if(f) f(box); });
 }
 
 (function vieStyles(){
