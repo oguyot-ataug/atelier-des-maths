@@ -1,0 +1,112 @@
+L'os de Lebombo : 0 candidat(s)
+Le bâton d'Ishango : 5 candidat(s)
+Les premiers nombres écrits : 5 candidat(s)
+Les pyramides et la coudée royale : 5 candidat(s)
+Babylone compte par soixantaines : 1 candidat(s)
+Le papyrus de Moscou : 5 candidat(s)
+La diagonale du carré : 5 candidat(s)
+Les tables de multiplication des scribes : 1 candidat(s)
+Le papyrus Rhind : 5 candidat(s)
+Thalès : 5 candidat(s)
+Pythagore et son école : 3 candidat(s)
+Les Éléments d'Euclide : 3 candidat(s)
+Archimède et le nombre π : 5 candidat(s)
+Le crible d'Ératosthène : 3 candidat(s)
+convert-im6.q16: profile 'icc': 'RGB ': RGB color space not permitted on grayscale PNG `/tmp/histoire-images/les-neuf-chapitres-chine-2.jpg.png' @ warning/png.c/MagickPNGWarningHandler/1669.
+Les Neuf Chapitres (Chine) : 5 candidat(s)
+Nicomaque et la « table de Pythagore » : 0 candidat(s)
+Marin de Tyr : latitude et longitude : 5 candidat(s)
+convert-im6.q16: profile 'icc': 'desc': ICC profile tag start not a multiple of 4 `/tmp/histoire-images/les-tables-de-cordes-de-ptolemee-1.jpg.png' @ warning/png.c/MagickPNGWarningHandler/1669.
+convert-im6.q16: profile 'icc': 'rXYZ': ICC profile tag start not a multiple of 4 `/tmp/histoire-images/les-tables-de-cordes-de-ptolemee-1.jpg.png' @ warning/png.c/MagickPNGWarningHandler/1669.
+convert-im6.q16: profile 'icc': 'gXYZ': ICC profile tag start not a multiple of 4 `/tmp/histoire-images/les-tables-de-cordes-de-ptolemee-1.jpg.png' @ warning/png.c/MagickPNGWarningHandler/1669.
+convert-im6.q16: profile 'icc': 'bXYZ': ICC profile tag start not a multiple of 4 `/tmp/histoire-images/les-tables-de-cordes-de-ptolemee-1.jpg.png' @ warning/png.c/MagickPNGWarningHandler/1669.
+convert-im6.q16: profile 'icc': 'wtpt': ICC profile tag start not a multiple of 4 `/tmp/histoire-images/les-tables-de-cordes-de-ptolemee-1.jpg.png' @ warning/png.c/MagickPNGWarningHandler/1669.
+convert-im6.q16: profile 'icc': 'bkpt': ICC profile tag start not a multiple of 4 `/tmp/histoire-images/les-tables-de-cordes-de-ptolemee-1.jpg.png' @ warning/png.c/MagickPNGWarningHandler/1669.
+convert-im6.q16: profile 'icc': 'rTRC': ICC profile tag start not a multiple of 4 `/tmp/histoire-images/les-tables-de-cordes-de-ptolemee-1.jpg.png' @ warning/png.c/MagickPNGWarningHandler/1669.
+convert-im6.q16: profile 'icc': 'gTRC': ICC profile tag start not a multiple of 4 `/tmp/histoire-images/les-tables-de-cordes-de-ptolemee-1.jpg.png' @ warning/png.c/MagickPNGWarningHandler/1669.
+convert-im6.q16: profile 'icc': 'bTRC': ICC profile tag start not a multiple of 4 `/tmp/histoire-images/les-tables-de-cordes-de-ptolemee-1.jpg.png' @ warning/png.c/MagickPNGWarningHandler/1669.
+convert-im6.q16: profile 'icc': 'A2B0': ICC profile tag start not a multiple of 4 `/tmp/histoire-images/les-tables-de-cordes-de-ptolemee-1.jpg.png' @ warning/png.c/MagickPNGWarningHandler/1669.
+convert-im6.q16: profile 'icc': 'A2B2': ICC profile tag start not a multiple of 4 `/tmp/histoire-images/les-tables-de-cordes-de-ptolemee-1.jpg.png' @ warning/png.c/MagickPNGWarningHandler/1669.
+convert-im6.q16: profile 'icc': 'A2B1': ICC profile tag start not a multiple of 4 `/tmp/histoire-images/les-tables-de-cordes-de-ptolemee-1.jpg.png' @ warning/png.c/MagickPNGWarningHandler/1669.
+convert-im6.q16: profile 'icc': 'desc': ICC profile tag start not a multiple of 4 `/tmp/histoire-images/les-tables-de-cordes-de-ptolemee-2.jpg.png' @ warning/png.c/MagickPNGWarningHandler/1669.
+convert-im6.q16: profile 'icc': 'rXYZ': ICC profile tag start not a multiple of 4 `/tmp/histoire-images/les-tables-de-cordes-de-ptolemee-2.jpg.png' @ warning/png.c/MagickPNGWarningHandler/1669.
+convert-im6.q16: profile 'icc': 'gXYZ': ICC profile tag start not a multiple of 4 `/tmp/histoire-images/les-tables-de-cordes-de-ptolemee-2.jpg.png' @ warning/png.c/MagickPNGWarningHandler/1669.
+convert-im6.q16: profile 'icc': 'bXYZ': ICC profile tag start not a multiple of 4 `/tmp/histoire-images/les-tables-de-cordes-de-ptolemee-2.jpg.png' @ warning/png.c/MagickPNGWarningHandler/1669.
+convert-im6.q16: profile 'icc': 'wtpt': ICC profile tag start not a multiple of 4 `/tmp/histoire-images/les-tables-de-cordes-de-ptolemee-2.jpg.png' @ warning/png.c/MagickPNGWarningHandler/1669.
+convert-im6.q16: profile 'icc': 'bkpt': ICC profile tag start not a multiple of 4 `/tmp/histoire-images/les-tables-de-cordes-de-ptolemee-2.jpg.png' @ warning/png.c/MagickPNGWarningHandler/1669.
+convert-im6.q16: profile 'icc': 'rTRC': ICC profile tag start not a multiple of 4 `/tmp/histoire-images/les-tables-de-cordes-de-ptolemee-2.jpg.png' @ warning/png.c/MagickPNGWarningHandler/1669.
+convert-im6.q16: profile 'icc': 'gTRC': ICC profile tag start not a multiple of 4 `/tmp/histoire-images/les-tables-de-cordes-de-ptolemee-2.jpg.png' @ warning/png.c/MagickPNGWarningHandler/1669.
+convert-im6.q16: profile 'icc': 'bTRC': ICC profile tag start not a multiple of 4 `/tmp/histoire-images/les-tables-de-cordes-de-ptolemee-2.jpg.png' @ warning/png.c/MagickPNGWarningHandler/1669.
+convert-im6.q16: profile 'icc': 'A2B0': ICC profile tag start not a multiple of 4 `/tmp/histoire-images/les-tables-de-cordes-de-ptolemee-2.jpg.png' @ warning/png.c/MagickPNGWarningHandler/1669.
+convert-im6.q16: profile 'icc': 'A2B2': ICC profile tag start not a multiple of 4 `/tmp/histoire-images/les-tables-de-cordes-de-ptolemee-2.jpg.png' @ warning/png.c/MagickPNGWarningHandler/1669.
+convert-im6.q16: profile 'icc': 'A2B1': ICC profile tag start not a multiple of 4 `/tmp/histoire-images/les-tables-de-cordes-de-ptolemee-2.jpg.png' @ warning/png.c/MagickPNGWarningHandler/1669.
+convert-im6.q16: profile 'icc': 'desc': ICC profile tag start not a multiple of 4 `/tmp/histoire-images/les-tables-de-cordes-de-ptolemee-3.jpg.png' @ warning/png.c/MagickPNGWarningHandler/1669.
+convert-im6.q16: profile 'icc': 'rXYZ': ICC profile tag start not a multiple of 4 `/tmp/histoire-images/les-tables-de-cordes-de-ptolemee-3.jpg.png' @ warning/png.c/MagickPNGWarningHandler/1669.
+convert-im6.q16: profile 'icc': 'gXYZ': ICC profile tag start not a multiple of 4 `/tmp/histoire-images/les-tables-de-cordes-de-ptolemee-3.jpg.png' @ warning/png.c/MagickPNGWarningHandler/1669.
+convert-im6.q16: profile 'icc': 'bXYZ': ICC profile tag start not a multiple of 4 `/tmp/histoire-images/les-tables-de-cordes-de-ptolemee-3.jpg.png' @ warning/png.c/MagickPNGWarningHandler/1669.
+convert-im6.q16: profile 'icc': 'wtpt': ICC profile tag start not a multiple of 4 `/tmp/histoire-images/les-tables-de-cordes-de-ptolemee-3.jpg.png' @ warning/png.c/MagickPNGWarningHandler/1669.
+convert-im6.q16: profile 'icc': 'bkpt': ICC profile tag start not a multiple of 4 `/tmp/histoire-images/les-tables-de-cordes-de-ptolemee-3.jpg.png' @ warning/png.c/MagickPNGWarningHandler/1669.
+convert-im6.q16: profile 'icc': 'rTRC': ICC profile tag start not a multiple of 4 `/tmp/histoire-images/les-tables-de-cordes-de-ptolemee-3.jpg.png' @ warning/png.c/MagickPNGWarningHandler/1669.
+convert-im6.q16: profile 'icc': 'gTRC': ICC profile tag start not a multiple of 4 `/tmp/histoire-images/les-tables-de-cordes-de-ptolemee-3.jpg.png' @ warning/png.c/MagickPNGWarningHandler/1669.
+convert-im6.q16: profile 'icc': 'bTRC': ICC profile tag start not a multiple of 4 `/tmp/histoire-images/les-tables-de-cordes-de-ptolemee-3.jpg.png' @ warning/png.c/MagickPNGWarningHandler/1669.
+convert-im6.q16: profile 'icc': 'A2B0': ICC profile tag start not a multiple of 4 `/tmp/histoire-images/les-tables-de-cordes-de-ptolemee-3.jpg.png' @ warning/png.c/MagickPNGWarningHandler/1669.
+convert-im6.q16: profile 'icc': 'A2B2': ICC profile tag start not a multiple of 4 `/tmp/histoire-images/les-tables-de-cordes-de-ptolemee-3.jpg.png' @ warning/png.c/MagickPNGWarningHandler/1669.
+convert-im6.q16: profile 'icc': 'A2B1': ICC profile tag start not a multiple of 4 `/tmp/histoire-images/les-tables-de-cordes-de-ptolemee-3.jpg.png' @ warning/png.c/MagickPNGWarningHandler/1669.
+montage-im6.q16: iCCP: profile 'icc': 'desc': ICC profile tag start not a multiple of 4 `/tmp/histoire-images/les-tables-de-cordes-de-ptolemee-1.jpg.png' @ warning/png.c/MagickPNGWarningHandler/1669.
+montage-im6.q16: iCCP: profile 'icc': 'rXYZ': ICC profile tag start not a multiple of 4 `/tmp/histoire-images/les-tables-de-cordes-de-ptolemee-1.jpg.png' @ warning/png.c/MagickPNGWarningHandler/1669.
+montage-im6.q16: iCCP: profile 'icc': 'gXYZ': ICC profile tag start not a multiple of 4 `/tmp/histoire-images/les-tables-de-cordes-de-ptolemee-1.jpg.png' @ warning/png.c/MagickPNGWarningHandler/1669.
+montage-im6.q16: iCCP: profile 'icc': 'bXYZ': ICC profile tag start not a multiple of 4 `/tmp/histoire-images/les-tables-de-cordes-de-ptolemee-1.jpg.png' @ warning/png.c/MagickPNGWarningHandler/1669.
+montage-im6.q16: iCCP: profile 'icc': 'wtpt': ICC profile tag start not a multiple of 4 `/tmp/histoire-images/les-tables-de-cordes-de-ptolemee-1.jpg.png' @ warning/png.c/MagickPNGWarningHandler/1669.
+montage-im6.q16: iCCP: profile 'icc': 'bkpt': ICC profile tag start not a multiple of 4 `/tmp/histoire-images/les-tables-de-cordes-de-ptolemee-1.jpg.png' @ warning/png.c/MagickPNGWarningHandler/1669.
+montage-im6.q16: iCCP: profile 'icc': 'rTRC': ICC profile tag start not a multiple of 4 `/tmp/histoire-images/les-tables-de-cordes-de-ptolemee-1.jpg.png' @ warning/png.c/MagickPNGWarningHandler/1669.
+montage-im6.q16: iCCP: profile 'icc': 'gTRC': ICC profile tag start not a multiple of 4 `/tmp/histoire-images/les-tables-de-cordes-de-ptolemee-1.jpg.png' @ warning/png.c/MagickPNGWarningHandler/1669.
+montage-im6.q16: iCCP: profile 'icc': 'bTRC': ICC profile tag start not a multiple of 4 `/tmp/histoire-images/les-tables-de-cordes-de-ptolemee-1.jpg.png' @ warning/png.c/MagickPNGWarningHandler/1669.
+montage-im6.q16: iCCP: profile 'icc': 'A2B0': ICC profile tag start not a multiple of 4 `/tmp/histoire-images/les-tables-de-cordes-de-ptolemee-1.jpg.png' @ warning/png.c/MagickPNGWarningHandler/1669.
+montage-im6.q16: iCCP: profile 'icc': 'A2B2': ICC profile tag start not a multiple of 4 `/tmp/histoire-images/les-tables-de-cordes-de-ptolemee-1.jpg.png' @ warning/png.c/MagickPNGWarningHandler/1669.
+montage-im6.q16: iCCP: profile 'icc': 'A2B1': ICC profile tag start not a multiple of 4 `/tmp/histoire-images/les-tables-de-cordes-de-ptolemee-1.jpg.png' @ warning/png.c/MagickPNGWarningHandler/1669.
+Les tables de cordes de Ptolémée : 5 candidat(s)
+Diophante, père de l'algèbre : 5 candidat(s)
+Le zéro des Mayas : 1 candidat(s)
+Hypatie d'Alexandrie : 0 candidat(s)
+Zu Chongzhi et le nombre π : 5 candidat(s)
+Aryabhata et le sinus : 5 candidat(s)
+Le zéro et la numération de position (Inde) : 5 candidat(s)
+Brahmagupta et les nombres négatifs : 5 candidat(s)
+Al-Khwarizmi et l'algèbre : 1 candidat(s)
+Al-Uqlidisi et les fractions décimales : 5 candidat(s)
+Abu al-Wafa et la tangente : 5 candidat(s)
+Ibn al-Haytham et la lumière : 5 candidat(s)
+Omar Khayyam : équations et calendrier : 5 candidat(s)
+Bhaskara et le « Lilavati » : 3 candidat(s)
+Al-Hassar et la barre de fraction : 1 candidat(s)
+Fibonacci et les chiffres indo-arabes : 4 candidat(s)
+Nicole Oresme dessine la vitesse : 5 candidat(s)
+Les pavages de l'Alhambra : 5 candidat(s)
+Al-Kashi et les décimales de π : 5 candidat(s)
+Les signes + et − : 5 candidat(s)
+Les manuscrits de Tombouctou : 5 candidat(s)
+Le signe = : 2 candidat(s)
+Simon Stevin et les nombres décimaux : 2 candidat(s)
+Viète calcule avec des lettres : 5 candidat(s)
+Descartes : repère et puissances : 5 candidat(s)
+Le « dernier théorème » de Fermat : 5 candidat(s)
+Pascal et Fermat : les probabilités : 5 candidat(s)
+Les sangaku du Japon : 5 candidat(s)
+Les carrés magiques d'al-Kishnawi : 5 candidat(s)
+Euler et la notation f(x) : 5 candidat(s)
+Le système métrique : 5 candidat(s)
+Gauss et le polygone à 17 côtés : 5 candidat(s)
+Sophie Germain : 5 candidat(s)
+Ada Lovelace, première programmeuse : 5 candidat(s)
+Florence Nightingale et les diagrammes : 5 candidat(s)
+Le flocon de Koch : 5 candidat(s)
+convert-im6.q16: profile 'icc': 'RGB ': RGB color space not permitted on grayscale PNG `/tmp/histoire-images/ramanujan-le-genie-autodidacte-2.jpg.png' @ warning/png.c/MagickPNGWarningHandler/1669.
+convert-im6.q16: profile 'icc': 'RGB ': RGB color space not permitted on grayscale PNG `/tmp/histoire-images/ramanujan-le-genie-autodidacte-3.jpg.png' @ warning/png.c/MagickPNGWarningHandler/1669.
+convert-im6.q16: profile 'icc': 'RGB ': RGB color space not permitted on grayscale PNG `/tmp/histoire-images/ramanujan-le-genie-autodidacte-4.jpg.png' @ warning/png.c/MagickPNGWarningHandler/1669.
+Ramanujan, le génie autodidacte : 5 candidat(s)
+Alan Turing et l'ordinateur : 5 candidat(s)
+Claude Shannon et les bits : 5 candidat(s)
+Grace Hopper et le compilateur : 5 candidat(s)
+Katherine Johnson et la NASA : 5 candidat(s)
+Andrew Wiles démontre le théorème de Fermat : 5 candidat(s)
+Maryam Mirzakhani, médaille Fields : 5 candidat(s)
