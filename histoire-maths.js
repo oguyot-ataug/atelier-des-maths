@@ -202,7 +202,7 @@ function hiBase60Monter(el){
   }
   const deux = m => String(m).padStart(2, '0');
   function question(){
-    clearTimeout(st.anim); st.joue = false; $('[data-r="n"]').disabled = false;
+    clearTimeout(st.anim); st.joue = false; st.pause = false; st.suite = st.suiteP = null; $('[data-r="n"]').disabled = false; boutonVoir();
     const h = hiAlea(7, 15), m = hiAlea(15, 55), dh = hiAlea(0, 2), dm = Math.random() < .75 ? hiAlea(Math.max(20, 61 - m), 55) : hiAlea(10, Math.max(10, 59 - m));
     st.q = { h, m, dh, dm }; st.h = null; st.n = 0;
     $('.hi-qq').innerHTML = `Un cours commence à <b>${h} h ${deux(m)}</b> et dure <b>${dh ? dh + ' h ' : ''}${dm} min</b>. À quelle heure se termine-t-il ?`;
@@ -212,25 +212,37 @@ function hiBase60Monter(el){
     const { h, m, dh, dm } = st.q, tm = m + dm, rh = h + dh + Math.floor(tm / 60), rm = tm % 60;
     return { rh, rm, txt: `<div class="hi-etapes"><div>Minutes : ${m} + ${dm} = ${tm} min.</div>${tm >= 60 ? `<div>${tm} min = 60 min + ${tm - 60} min : les mains se sont remplies une fois, on retient 1 heure.</div>` : ''}<div>Heures : ${h}${dh ? ' + ' + dh : ''}${tm >= 60 ? ' + 1' : ''} = ${rh} h.</div><div>Le cours finit à <b>${rh} h ${deux(rm)}</b>.</div></div>` };
   }
-  // Animation : départ, ajout des heures (perles), puis les minutes une à une sur les mains ; à 60, on referme et on retient 1 h.
+  // Animation : départ, ajout des heures (perles), puis les minutes une à une sur les mains ; à 60, on referme et on
+  // retient 1 h. Rythme lent (signalé : « ça va un peu vite pour "voir sur les mains" ») : arrêt à chaque douzaine,
+  // longues pauses pour les heures, bouton Pause / Reprendre pour expliquer au tableau.
+  const LENT = { depart: 2200, heure: 1700, minute: 350, douzaine: 1300, plein: 3200, retenue: 2000 };
+  function boutonVoir(){ const b = $('[data-a="voir"]'); b.innerHTML = !st.joue ? '<span class="gicon">front_hand</span> Voir sur les mains' : st.pause ? '<span class="gicon">play_arrow</span> Reprendre' : '<span class="gicon">pause</span> Pause'; }
+  function plusTard(f, ms){ st.suite = f; st.anim = setTimeout(() => { st.suite = null; f(); }, ms); }
   function voir(){
-    clearTimeout(st.anim); st.joue = true; $('[data-r="n"]').disabled = true;
+    if(st.joue){ // pause / reprise
+      if(st.pause){ st.pause = false; const f = st.suiteP; st.suiteP = null; if(f) f(); }
+      else { st.pause = true; clearTimeout(st.anim); st.suiteP = st.suite; }
+      boutonVoir(); return;
+    }
+    clearTimeout(st.anim); st.joue = true; st.pause = false; $('[data-r="n"]').disabled = true; boutonVoir();
     const { h, m, dh, dm } = st.q, c = correction();
     st.h = h; st.n = m; rendre();
-    hiDire(el, `Départ : <b>${h} h ${deux(m)}</b>. Les perles comptent les heures, les mains comptent les minutes.`);
+    hiDire(el, `Départ : <b>${h} h ${deux(m)}</b>. Les mains montrent les ${m} minutes ; les perles compteront les heures ajoutées.`);
     let etapeH = 0, restant = dm;
     const pas = () => {
-      if(etapeH < dh){ etapeH++; st.h++; rendre(); hiDire(el, `On ajoute les heures : ${h} h + ${etapeH} h = <b>${st.h} h ${deux(st.n)}</b>.`); st.anim = setTimeout(pas, 900); return; }
+      if(etapeH < dh){ etapeH++; st.h++; rendre(); hiDire(el, `On ajoute ${etapeH === 1 ? 'une heure' : 'encore une heure'} : <b>${st.h} h ${deux(st.n)}</b>.`); plusTard(pas, LENT.heure); return; }
       if(restant > 0){
         restant--; st.n++;
         if(st.n === 60){ rendre(); hiDire(el, '<b>60 minutes : les mains sont pleines, c\'est 1 heure !</b> On les referme et on ajoute une perle.');
-          st.anim = setTimeout(() => { st.n = 0; st.h++; rendre(); hiDire(el, `On retient 1 heure : <b>${st.h} h 00</b>, et on continue à compter les minutes.`); st.anim = setTimeout(pas, 1100); }, 1700); return; }
-        rendre(); hiDire(el, `On ajoute les minutes : encore ${restant} min à compter.`); st.anim = setTimeout(pas, dm > 40 ? 110 : 160); return;
+          plusTard(() => { st.n = 0; st.h++; rendre(); hiDire(el, `On retient 1 heure : <b>${st.h} h 00</b>. On continue à compter les minutes : encore ${restant} min.`); plusTard(pas, LENT.retenue); }, LENT.plein); return; }
+        rendre();
+        if(st.n % 12 === 0){ hiDire(el, `${st.n} minutes : un doigt de plus se lève à gauche (12 minutes de plus). Encore ${restant} min à compter.`); plusTard(pas, LENT.douzaine); return; }
+        hiDire(el, `On ajoute les minutes une à une : encore ${restant} min à compter.`); plusTard(pas, LENT.minute); return;
       }
-      st.joue = false; $('[data-r="n"]').disabled = false;
+      st.joue = false; st.pause = false; $('[data-r="n"]').disabled = false; boutonVoir();
       hiDire(el, `<span class="gicon">flag</span> Arrivée : le cours finit à <b>${st.h} h ${deux(st.n)}</b>.` + c.txt, 'ok');
     };
-    st.anim = setTimeout(pas, 1100);
+    plusTard(pas, LENT.depart);
   }
   $('[data-a="verif"]').onclick = () => {
     const c = correction(), ok = parseInt($('[data-a="h"]').value, 10) === c.rh && parseInt($('[data-a="m"]').value, 10) === c.rm;
