@@ -19,14 +19,14 @@ const ROUTE_SIMPLE = {
   'view-cm':'cm', 'view-compte':'compte', 'view-correction':'correction',
   'view-evaluation':'evaluation', 'view-tableau':'tableau', 'view-cahier-eleve':'cahier',
   'view-admin':'admin', 'view-supervision':'supervision', 'view-sessions':'sessions', 'view-mesresultats':'mesresultats',
-  'view-ia':'ia', 'view-classe':'classe', 'view-convertisseur':'convertisseur', 'view-famille':'famille', 'view-abonnement':'abonnement', 'view-cgv':'cgv',
+  'view-ia':'ia', 'view-classe':'classe', 'view-convertisseur':'convertisseur', 'view-frise':'histoire-maths', 'view-famille':'famille', 'view-abonnement':'abonnement', 'view-cgv':'cgv',
   'view-confidentialite':'confidentialite', 'view-mentions-legales':'mentions-legales',
   'view-programmation':'programmation', 'view-qz-carnet':'carnet', 'view-qz-banque':'questionnaires', 'view-qz-form':'questionnaires', 'view-devoirs-prof':'devoirs', 'view-simulateur':'simulateur',
 };
 const ROUTE_LABELS = {
   cm:'Suivi', compte:'Objectif Nombre', correction:'Correction', evaluation:'Évaluation',
   tableau:'Tableau interactif', cahier:'Cahier élève', admin:'Administration',
-  supervision:'Mes classes', sessions:'Sessions COURS', mesresultats:'Mes résultats', ia:'Intelligence artificielle', classe:'Outils de classe', convertisseur:'Convertisseur',
+  supervision:'Mes classes', sessions:'Sessions COURS', mesresultats:'Mes résultats', ia:'Intelligence artificielle', classe:'Outils de classe', convertisseur:'Convertisseur', 'histoire-maths':'Histoire des maths',
   famille:'Espace famille', abonnement:'Mon abonnement', cgv:'Conditions générales de vente', confidentialite:'Confidentialité',
   'mentions-legales':'Mentions légales', programmation:'Programmation', carnet:'Carnet de notes', simulateur:'Simulateur de classe', questionnaires:'Interrogations en ligne', devoirs:'Devoirs en ligne', groupes:'Groupes de remédiation',
 };
@@ -175,6 +175,8 @@ function routerRestoreFromHash(){
         if(typeof csOuvrir==='function') csOuvrir();
       } else if(key==='supervision'){
         showView('view-supervision'); setActiveTopnav('supervision'); renderSupervision(); renderSupervisionCeb();
+      } else if(key==='histoire-maths'){
+        showView('view-frise'); setActiveTopnav(null); if(typeof hmRendre==='function') hmRendre();
       } else if(key==='convertisseur'){
         showView('view-convertisseur'); setActiveTopnav(null); if(typeof renderConvertisseur==='function') renderConvertisseur();
       } else if(key==='classe'){

@@ -100,6 +100,8 @@ const VIE_CHAPITRES = {
   '3e|Probabilités': ['etang', 'des'],
   '3e|Statistiques': ['cesar'] };
 function vieA(niv, titre){ return !!VIE_CHAPITRES[niv + '|' + titre]; }
+// Pour « Ma progression » (progression-editeur.js) : titres des activités Maths & la vie d'un chapitre.
+function vieResume(niv, titre){ const l = VIE_CHAPITRES[niv + '|' + titre]; return l ? l.map(k => VIE_ACTIVITES[k] && VIE_ACTIVITES[k].titre).filter(Boolean) : []; }
 function vieHtml(liste){
   const themes = [];
   liste.forEach(k => { const a = VIE_ACTIVITES[k]; if(!a) return; let t = themes.find(x => x.k === a.theme); if(!t){ t = { k: a.theme, acts: [] }; themes.push(t); } t.acts.push(a); });

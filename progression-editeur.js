@@ -90,6 +90,10 @@ function peRender(){
   const box = document.getElementById('progressionList'); if(!box) return;
   peCalendrier(); peInitDurees();
   const fin = peRecalculer(), dispo = pe.weeks.length;
+  // Logo « Maths & la vie » sur les chapitres qui ont l'onglet -- demandé : « dans la page des progressions, indiquer
+  // par un petit logo si on a un onglet Maths et vie (histoire de voir ce qu'il reste à faire) ».
+  const niv = (document.getElementById('progNiveauSelect') || {}).value, vie = it => !it.evt && typeof vieResume === 'function' ? vieResume(niv, it.titre) : [];
+  const chap = progEditorItems.filter(it => !it.evt), avecVie = chap.filter(it => vie(it).length).length;
   const H = pe.weekY[Math.min(pe.weekY.length - 1, Math.max(dispo, Math.ceil(fin)) + 1)] + 10;
   const mois = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
   let axe = '';
@@ -104,7 +108,7 @@ function peRender(){
     const c = it.evt ? PE_EVT_COUL : (CATS[it.cat] || {}).text || '#999', h = peYFin(it._off + it._d) - peY(it._off) - 3, nom = it.nomPerso || it.affiche || it.titre;
     return `<div class="pe-bloc${it.evt ? ' evt' : ''}${pe.sel === i ? ' sel' : ''}${h < 30 ? ' mini' : ''}" data-i="${i}" style="top:${peY(it._off) + 1}px;height:${h}px;--c:${c};" onclick="peSelect(${i})" tabindex="0" onkeydown="peClavier(event,${i})">
       <span class="pe-poignee" title="Glisser pour déplacer le chapitre" onpointerdown="peDebutDeplacer(event,${i})">⠿</span>
-      <div class="pe-txt">${it.evt ? '<span class="gicon pe-evt-ic">event</span>' : ''}<b class="${it.nomPerso && !it.evt ? 'perso' : ''}">${escapeHtml(nom)}</b> <span class="pe-code">${escapeHtml(it.evt ? 'événement' : (it.code || ''))}</span>
+      <div class="pe-txt">${it.evt ? '<span class="gicon pe-evt-ic">event</span>' : ''}<b class="${it.nomPerso && !it.evt ? 'perso' : ''}">${escapeHtml(nom)}</b>${vie(it).length ? ` <span class="gicon pe-vie" title="Maths &amp; la vie : ${escapeHtml(vie(it).join(' · '))}">public</span>` : ''} <span class="pe-code">${escapeHtml(it.evt ? 'événement' : (it.code || ''))}</span>
         <div class="pe-dates">${formatDateRangeFr(it.dateDebut, it.dateFin)} · ${String(it._d).replace('.', ',')} sem.</div></div>
       <span class="pe-etirer" title="Tirer pour allonger ou raccourcir" onpointerdown="peDebutEtirer(event,${i})"></span>
     </div>`;
@@ -115,6 +119,7 @@ function peRender(){
     <div class="pe-barre">
       <span class="pe-total ${fin > dispo ? 'trop' : ''}"><span class="gicon">${fin > dispo ? 'warning' : 'event_available'}</span>
         ${String(Math.round((fin - pe.start) * 2) / 2).replace('.', ',')} semaines de cours sur ${String(dispo - pe.start).replace('.', ',')} disponibles · fin le <b>${peTxt(peDateFin(fin))}</b>${fin > dispo ? ' : raccourcissez des chapitres' : fin < dispo ? ' · ' + String(dispo - fin).replace('.', ',') + ' sem. libre(s)' : ''}</span>
+      ${typeof vieResume === 'function' ? `<span class="pe-vie-total" title="Chapitres qui ont l'onglet Maths &amp; la vie"><span class="gicon pe-vie">public</span> Maths &amp; la vie : <b>${avecVie}</b> chapitre${avecVie > 1 ? 's' : ''} sur ${chap.length}</span>` : ''}
       <button class="btn secondary" onclick="peAjouterEvt()" title="Voyage scolaire, semaine des maths, évaluations communes…"><span class="gicon">add</span> Ajouter un événement</button>
       <label class="hint" style="margin:0;display:flex;align-items:center;gap:6px;">Premier chapitre le <select onchange="pe.start=parseFloat(this.value);peRender()">${debutOpts}</select></label>
     </div>

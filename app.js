@@ -467,6 +467,7 @@ document.querySelectorAll('[data-nav]').forEach(el=>{
       showView('view-supervision'); setActiveTopnav('supervision');
       loadMyClasses();
     }
+    if(nav==='histoire-maths'){ showView('view-frise'); setActiveTopnav(null); if(typeof hmRendre==='function') hmRendre(); }
     if(nav==='convertisseur'){
       showView('view-convertisseur'); setActiveTopnav(null); if(typeof renderConvertisseur==='function') renderConvertisseur();
     }
@@ -3513,6 +3514,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1130', date:'2026-10-26', items:['Ma progression : un petit logo « Maths & la vie » (globe) sur chaque chapitre qui a déjà un onglet Maths & la vie, avec le nom des activités au survol, et le compte en haut (« Maths & la vie : 7 chapitres sur 21 ») -- demandé : « indiquer par un petit logo si on a un onglet Maths et vie (histoire de voir ce qu\'il reste à faire) ».', 'Nouvelle page « Histoire des maths » dans le menu L\'Atelier -- demandé : « un sous-menu Histoire qui montre une frise chronologique avec les différentes avancées mathématiques […] des petites vignettes CE2, …, 3e ». Frise verticale en 6 époques et 32 étapes, de l\'os d\'Ishango à Maryam Mirzakhani ; sous chaque étape, des vignettes de couleur indiquent en quelle classe on étudie la notion, et un clic ouvre le chapitre. Filtre par niveau (les étapes qui ne concernent pas ce niveau sont estompées). Vignettes CE2 visibles seulement pour l\'administrateur ; mise en page adaptée au téléphone.'] },
   { version:'2026-08-19.1129', date:'2026-10-26', items:['Base 60 (6e), « Voir sur les mains » plus lent -- signalé : « ça va un peu vite ». Une minute toutes les 0,35 s (au lieu de 0,11 s), arrêt à chaque douzaine (« un doigt de plus se lève »), pauses plus longues pour les heures et pour les mains pleines ; bouton Pause / Reprendre pour expliquer au tableau.'] },
   { version:'2026-08-19.1128', date:'2026-10-26', items:['Base 60 (6e) : les mains deviennent le compteur de minutes de la question -- demandé : « Qu\'est-ce qui permet à partir des mains de répondre à la question posée sur la durée ? », puis « oui, fais cette version ». Le curseur compte de 0 à 60 minutes sur les mains (12 × doigts levés + phalanges). « Voir sur les mains » déroule la question : départ, heures ajoutées (perles), puis les minutes une à une ; à 60, les mains sont pleines, c\'est 1 heure : on les referme et on retient 1 heure (perle orange). L\'élève répond d\'abord, puis vérifie ; correction rédigée, un calcul par ligne.'] },
   { version:'2026-08-19.1127', date:'2026-10-26', items:['Base 60 (6e) : les doigts repliés de la main gauche passent devant la paume -- signalé : « les doigts doivent être repliés sur la paume et pas derrière, à moins qu\'il soit hyperlaxe ». Ils sont recourbés jusqu\'à toucher la paume, le pouce replié en travers : un vrai poing qui s\'ouvre doigt après doigt.'] },
