@@ -304,11 +304,33 @@ function csCahierNature(it){
   if(/^(Cours|Méthode)\b/i.test(it.titre || '')) return 'Cours';
   return 'Document';
 }
+// Défi de programmation dans le cahier -- demandé : « Pourquoi on ne peut pas mettre les exercices de codage dans le
+// cahier ? », puis « oui, fais-le pour les défis de programmation ». L'énoncé, la figure attendue (le décor et les
+// pointillés pour les défis du CM1, le modèle tracé sinon) et, avec la correction, la méthode du défi et les
+// résultats attendus des programmes de calcul. Les programmes des élèves n'y vont pas.
+const csProgN = v => typeof v === 'number' ? String(v).replace('.', ',').replace('-', '−') : String(v);
+function csProgSvg(seg, dep){
+  const x0 = dep ? dep.x : 0, y0 = dep ? dep.y : 0, xs = seg.flatMap(g => [g.x1, g.x2]).concat(x0), ys = seg.flatMap(g => [g.y1, g.y2]).concat(y0);
+  const m = 24, xa = Math.min(...xs) - m, xb = Math.max(...xs) + m, ya = Math.min(...ys) - m, yb = Math.max(...ys) + m, f = v => Math.round(v * 10) / 10;
+  return `<svg viewBox="${f(xa)} ${f(-yb)} ${f(xb - xa)} ${f(yb - ya)}" style="width:100%;max-width:260px;display:block;margin:4px auto;background:#fff;border:1px solid #DCE3EA;border-radius:8px;">`
+    + seg.map(g => `<line x1="${f(g.x1)}" y1="${f(-g.y1)}" x2="${f(g.x2)}" y2="${f(-g.y2)}" stroke="#1F3A5C" stroke-width="2.5" stroke-linecap="round" vector-effect="non-scaling-stroke"/>`).join('')
+    + `<circle cx="${f(x0)}" cy="${f(-y0)}" r="${f(Math.max(xb - xa, yb - ya) / 60)}" fill="#3E7D1E"/></svg>`;
+}
+function csProgCahierHtml(id, corr){
+  const d = typeof progDefiParId === 'function' ? progDefiParId(id) : null; if(!d) return null;
+  let fig = '';
+  if(d.decor && typeof plProgApercu === 'function') fig = plProgApercu(d);
+  else if(d.trace && typeof progModeleSegments === 'function'){ const seg = progModeleSegments(d) || []; if(seg.length) fig = csProgSvg(seg, d.depart); }
+  const ex = d.attendu && d.tests ? d.tests.map(t => (t.length ? t.map(csProgN).join(' puis ') + ' → ' : '') + csProgN(d.attendu(t))) : [];
+  return `<div class="cs-prog-cahier"><p><b>Défi de programmation (blocs) :</b> ${d.enonce}</p>`
+    + (fig ? `<p style="margin:6px 0 0;">Figure attendue${d.trace && d.tests && d.tests[0] && d.tests[0].length ? `, avec la réponse ${d.tests[0].map(csProgN).join(', ')}` : ''}${d.trace ? ' (le point vert : le départ du lutin)' : ''} :</p>${fig}` : '')
+    + (corr ? `<p><b>Correction, la méthode :</b> ${d.aide}</p>` + (ex.length ? `<p><b>Résultats attendus :</b></p><ul>${ex.map(x => `<li>${x}</li>`).join('')}</ul>` : '') : '') + '</div>';
+}
 // Contenu HTML d'un élément (énoncé, et correction si demandée) ; null s'il ne s'écrit pas dans un cahier.
 function csCahierHtml(it, corr){
   const e = it.exo || {}, titre = String(it.titre || '').replace(/^(Exercice|Interrogation|Figure)\s*:\s*/, '');
   if(e.type === 'qz' && (e.questions || []).length) return typeof qzcHtml === 'function' ? qzcHtml(titre, '', e.questions, corr) : null;
-  if(e.type === 'prog') return null;
+  if(e.type === 'prog') return csProgCahierHtml(e.defi, corr);
   if(!it.html) return null;
   // Avec la correction : la correction seule (elle reprend la consigne) ; l'énoncé ferait doublon.
   if(corr && it.corr) return it.corr;
@@ -344,7 +366,7 @@ async function csCahier(id){
     <p class="hint" style="margin:6px 0 8px;"><b>${cdEsc(row.titre || 'Session')}</b> · cahier de ${cdEsc((row.classes && row.classes.nom) || 'la classe')}. Chaque élément coché devient une entrée du cahier ; les réponses des élèves n'y vont pas.</p>
     <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px;"><button class="btn secondary td-mini" data-c="tout">Tout cocher</button><button class="btn secondary td-mini" data-c="rien">Tout décocher</button></div>
     <div class="cs-n-liste">${lignes.map(({ it, k, html }) => `<label class="cs-n-it${html ? '' : ' off'}"><input type="checkbox" data-k="${k}" ${html ? 'checked' : 'disabled'}>
-      <span><b>${k + 1}. ${cdEsc(it.titre || 'Élément')}</b><small>${html ? cdEsc(csCahierNature(it)) + (it.chapitre ? ' · ' + cdEsc(it.chapitre) : '') : 'défi de programmation : ne s\'écrit pas dans le cahier'}</small></span></label>`).join('')}</div>
+      <span><b>${k + 1}. ${cdEsc(it.titre || 'Élément')}</b><small>${html ? cdEsc(csCahierNature(it)) + (it.chapitre ? ' · ' + cdEsc(it.chapitre) : '') : 'pas de contenu à écrire dans le cahier'}</small></span></label>`).join('')}</div>
     <label class="qz-check" style="margin-top:10px;"><input type="checkbox" id="csCCorr" checked> Avec les corrections (bonnes réponses, corrigés du manuel)</label>
     ${csModChoix('cs')}
     <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:8px;">
@@ -370,7 +392,7 @@ async function csCahier(id){
     const cible = cc && cc.id ? cc : { id: row.class_id, nom: (row.classes && row.classes.nom) || '' };
     const matiere = typeof cahierMatiere === 'function' ? cahierMatiere() : null;
     const entrees = ks.map(k => { const it = row.items[k]; return { niveau, chapitre: chap || it.chapitre || 'Sessions', exo: csCahierNature(it),
-      titre: String(it.titre || 'Élément') + (corr && (it.corr || (it.exo && it.exo.type === 'qz')) ? ' (avec correction)' : ''), date, raw: '', html: csCahierHtml(it, corr),
+      titre: String(it.titre || 'Élément') + (corr && (it.corr || (it.exo && (it.exo.type === 'qz' || it.exo.type === 'prog'))) ? ' (avec correction)' : ''), date, raw: '', html: csCahierHtml(it, corr),
       modalite: csCahierNature(it) !== 'Cours' ? mod : null, support: csCahierNature(it) !== 'Cours' ? sup : null }; }).filter(x => x.html);
     const { data: ins, error } = await sb.from('cahier_entries').insert(entrees.map(x => Object.assign({ class_id: cible.id, matiere }, x))).select('id');
     if(error){ o.querySelector('#csCErr').textContent = /row-level security/.test(error.message) ? 'Vous n\'êtes pas professeur de cette classe.' : error.message; b.disabled = false; b.innerHTML = '<span class="gicon">add</span> Ajouter au cahier'; return; }
