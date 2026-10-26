@@ -112,7 +112,7 @@ function devisHtml(d){
   const periode = d.periode_debut && d.periode_fin ? `, du ${frDate(d.periode_debut)} au ${frDate(d.periode_fin)}` : '';
   return `<div class="card" id="devis">
     <div class="dv-top">
-      <div class="dv-em"><img src="/assets/logo-atelier-augmente.png" alt="L'Atelier Augmenté" style="height:64px;display:block;margin-bottom:6px;"><b>${esc(em.nom)}</b>${em.enseigne ? '<br>' + esc(em.enseigne) : ''}<br>${nl(em.adresse)}<br>SIRET ${esc(em.siret)}${em.email ? '<br>' + esc(em.email) : ''}</div>
+      <div class="dv-em"><img src="/assets/logo-atelier-augmente.png" alt="L'Atelier Augmenté" style="height:64px;display:block;margin-bottom:6px;"><b>${esc(em.nom)}</b>${em.enseigne ? '<br>' + esc(em.enseigne) : ''}<br>${nl(em.adresse)}<br>SIRET ${esc(em.siret)}${em.rcs ? '<br>' + esc(em.rcs) : ''}${em.email ? '<br>' + esc(em.email) : ''}</div>
       <div class="dv-ttl"><h2>DEVIS</h2><div>N° <b>${esc(d.numero)}</b><br>Date : ${frDate(d.date_emission)}${d.date_validite ? '<br>Valable jusqu\'au ' + frDate(d.date_validite) : ''}</div></div>
     </div>
     <div class="dv-dest"><div class="lbl">Établissement</div><b>${esc(prive && cl.organisme ? cl.organisme : cl.nom)}</b>${prive && cl.organisme ? '<br>pour ' + esc(cl.nom) : ''}<br>${nl(cl.adresse)}${cl.uai ? '<br>UAI ' + esc(cl.uai) : ''}${cl.siret ? '<br>SIRET ' + esc(cl.siret) : ''}</div>

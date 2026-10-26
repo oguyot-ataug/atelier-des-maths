@@ -60,6 +60,7 @@ function facPanelHtml(){
           <label>Nom de l'entreprise individuelle<input type="text" id="facEmNom" placeholder="Prénom Nom EI"><small>La mention « EI » (entrepreneur individuel) est obligatoire.</small></label>
           <label>Nom commercial<input type="text" id="facEmEnseigne"></label>
           <label>SIRET<input type="text" id="facEmSiret" placeholder="14 chiffres"></label>
+          <label>Immatriculation<input type="text" id="facEmRcs" placeholder="RCS Nancy 100 460 781"><small>Commerçant : « RCS » + ville du greffe + SIREN.</small></label>
           <label>E-mail<input type="email" id="facEmEmail"></label>
           <label>Téléphone<input type="text" id="facEmTel"></label>
           <label class="wide">Adresse<textarea id="facEmAdresse" rows="2"></textarea></label>
@@ -221,6 +222,7 @@ function facFillEmetteur(){
   set('facEmNom', e.nom); set('facEmEnseigne', e.enseigne); set('facEmSiret', e.siret); set('facEmEmail', e.email);
   set('facEmTel', e.telephone); set('facEmAdresse', e.adresse); set('facEmIban', e.iban); set('facEmBic', e.bic);
   set('facEmTva', e.mention_tva); set('facEmP1', p['1']); set('facEmP2', p['2']); set('facEmP3', p['3']); set('facEmP4', p['4']); set('facEmP5', p.ecole != null ? p.ecole : 2.5);
+  set('facEmRcs', e.rcs); const rcs = document.getElementById('facEmRcs'); if(rcs) rcs.closest('label').style.display = 'rcs' in e ? '' : 'none'; // colonne ajoutée le 26/10/2026
   set('facEmValid', e.validite_devis_jours); set('facEmDelai', e.delai_paiement_jours);
   const missing = ['nom','siret','adresse'].filter(k=>!(e[k]||'').trim());
   document.getElementById('facEmetteurWarn').textContent = missing.length ? 'à compléter avant le premier devis' : '';
@@ -236,6 +238,7 @@ async function facSaveEmetteur(){
     validite_devis_jours: parseInt(v('facEmValid'),10) || 30, delai_paiement_jours: parseInt(v('facEmDelai'),10) || 30,
     updated_at: new Date().toISOString(),
   };
+  if(facState.emetteur && 'rcs' in facState.emetteur) row.rcs = v('facEmRcs').replace(/\s+/g, ' ');
   const msg = document.getElementById('facEmMsg');
   if(row.siret && !/^\d{14}$/.test(row.siret)){ msg.textContent = 'Le SIRET doit compter 14 chiffres.'; return; }
   const { error } = await sb.from('facturation_emetteur').update(row).eq('id', 1);
@@ -657,7 +660,7 @@ function facDocHtml(d){
     ${d.test ? '<div class="test">DOCUMENT DE TEST – SANS VALEUR (paiement simulé, aucun encaissement)</div>' : ''}
     <div class="top">
       <div class="em"><img class="logo-aa" src="${facLogo('logo-atelier-augmente.png')}" alt="L'Atelier Augmenté"><br><b>${facEsc(em.nom || '(nom à compléter)')}</b>${em.enseigne ? '<br>' + facEsc(em.enseigne) : ''}<br>${nl(em.adresse || '(adresse à compléter)')}<br>
-        SIRET ${facEsc(em.siret || '(à compléter)')}${em.email ? '<br>' + facEsc(em.email) : ''}${em.telephone ? ' · ' + facEsc(em.telephone) : ''}</div>
+        SIRET ${facEsc(em.siret || '(à compléter)')}${em.rcs ? '<br>' + facEsc(em.rcs) : ''}${em.email ? '<br>' + facEsc(em.email) : ''}${em.telephone ? ' · ' + facEsc(em.telephone) : ''}</div>
       <div class="ttl"><h1>${titre}</h1><div>N° <b>${facEsc(d.numero)}</b><br>Date : ${facDate(d.date_emission)}${particulier && d.type === 'facture' ? '<br><b style="color:#1F7A4D;">Acquittée</b>' : ''}${d.type === 'devis' && d.date_validite ? '<br>Valable jusqu\'au ' + facDate(d.date_validite) : ''}${d.type === 'facture' && d.date_echeance ? '<br>Échéance : ' + facDate(d.date_echeance) : ''}</div></div>
     </div>
     <div class="dest"><div class="lbl">${d.type === 'devis' ? 'Établissement' : 'Facturé à'}</div>${destinataire}${cli.adresse ? '<br>' + nl(cli.adresse) : ''}${contactClient}${ids ? '<br>' + ids : ''}</div>
@@ -667,7 +670,7 @@ function facDocHtml(d){
     ${em.mention_tva ? `<div class="tva">${facEsc(em.mention_tva)}</div>` : ''}
     ${d.notes ? `<div class="notes">${nl(d.notes)}</div>` : ''}
     <div style="margin-top:16px;">${bloc}</div>
-    <div class="foot">${facEsc(em.nom)}${em.enseigne ? ' – ' + facEsc(em.enseigne) : ''} · SIRET ${facEsc(em.siret)} · ${facEsc(em.email)}</div>
+    <div class="foot">${facEsc(em.nom)}${em.enseigne ? ' – ' + facEsc(em.enseigne) : ''} · SIRET ${facEsc(em.siret)}${em.rcs ? ' · ' + facEsc(em.rcs) : ''} · ${facEsc(em.email)}</div>
   </body></html>`;
 }
 function facLogo(f){ return location.origin + '/assets/' + f; }
