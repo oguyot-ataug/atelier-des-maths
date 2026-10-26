@@ -12,6 +12,7 @@
    - Étape choisie (choix.json : titre -> « File:… ») : téléchargement de l'image, réduite, dans
      img/histoire/<slug>.jpg, et ses crédits dans img/histoire/credits.json (auteur, licence, source).
    Seules les licences libres sont retenues (domaine public, CC0, CC BY, CC BY-SA).
+   Chaque erreur (image illisible, limite de débit…) est notée dans candidats/journal.txt sans tout arrêter.
    ===================================================================== */
 import fs from 'fs';
 import path from 'path';
