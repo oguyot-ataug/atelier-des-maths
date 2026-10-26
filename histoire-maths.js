@@ -140,33 +140,47 @@ function hiBase60Monter(el){
   el.innerHTML = `<div class="hi-box">
     <div class="hi-consigne">Il y a 4 000 ans, les <b>Babyloniens</b> comptaient par soixantaines. On pense qu'ils comptaient sur leurs doigts : avec le pouce de la main droite, on touche les <b>12 phalanges</b> des quatre autres doigts ; chaque fois qu'on arrive à 12, on lève un doigt de la main gauche. Avec <b>5 doigts</b> levés : 5 fois 12, c'est 60 !</div>
     <div class="hi-curseur"><label>Compter jusqu'à <b class="hi-nb"></b> <input type="range" min="1" max="60" value="1" data-r="n"></label></div>
-    <svg class="hi-svg hi-mains" viewBox="0 0 520 230"></svg>
+    <svg class="hi-svg hi-mains" viewBox="0 0 560 310"></svg>
     <div class="hi-explic"></div>
     <div class="hi-quiz"><b><span class="gicon">schedule</span> À toi :</b> <span class="hi-qq"></span>
       <div class="hi-actions"><input type="number" min="0" max="23" data-a="h" style="width:60px;"> h <input type="number" min="0" max="59" data-a="m" style="width:60px;"> min <button type="button" class="btn" data-a="verif">Vérifier</button></div></div>
     <div class="hi-msg" aria-live="polite"></div></div>`;
   const $ = s => el.querySelector(s), svg = $('.hi-mains');
-  function main(x, gauche, actifs, phal){
-    // quatre doigts de trois phalanges et un pouce ; la main gauche lève des doigts (pouce compris)
-    let h = `<g transform="translate(${x},0)"><rect x="20" y="130" width="150" height="90" rx="40" fill="#F2C9A0" stroke="#B5814B"/>`;
-    [0, 1, 2, 3].forEach(d => {
-      const dx = 30 + d * 36, haut = gauche ? (actifs > d + 1 ? 20 : 95) : 20;
-      for(let p = 0; p < 3; p++){
-        const y = haut + p * 37, k = d * 3 + (2 - p) + 1, on = !gauche && phal >= k, cur = !gauche && phal === k;
-        h += `<rect x="${dx}" y="${y}" width="30" height="34" rx="11" fill="${cur ? '#E67E22' : on ? '#F7C77E' : '#F2C9A0'}" stroke="#B5814B"/>${!gauche ? `<text x="${dx + 15}" y="${y + 22}" font-size="11" text-anchor="middle" fill="#6B4A22">${k}</text>` : ''}`;
+  // Les mains de l'élève, paumes tournées vers lui : main gauche à gauche (pouce vers le centre), main droite à droite.
+  // Main droite : le pouce touche les 12 phalanges (index 1 à 3, majeur 4 à 6, annulaire 7 à 9, auriculaire 10 à 12).
+  // Main gauche : un doigt levé par douzaine terminée (pouce, index, majeur, annulaire, auriculaire : 12, 24… 60).
+  const PEAU = '#F5CDA7', TRAIT = '#C08A5A', LONG = { index: 100, majeur: 112, annulaire: 104, auriculaire: 84 }, NUM = { index: 0, majeur: 1, annulaire: 2, auriculaire: 3 };
+  const LEVE = ['pouce', 'index', 'majeur', 'annulaire', 'auriculaire'];
+  function main(cx, droite, n){
+    const px = cx - 75, pt = 172, ph = (n - 1) % 12 + 1, leves = droite ? 0 : Math.floor(n / 12);
+    const doigts = droite ? ['index', 'majeur', 'annulaire', 'auriculaire'] : ['auriculaire', 'annulaire', 'majeur', 'index'];
+    let h = '', cible = null;
+    doigts.forEach((f, i) => {
+      const x = px + 8 + i * 35, rang = LEVE.indexOf(f), leve = droite || rang < leves, L = leve ? LONG[f] : 28, haut = pt - L;
+      h += `<rect x="${x}" y="${haut}" width="31" height="${L + 34}" rx="15.5" fill="${!droite && leve ? '#9CCBF0' : PEAU}" stroke="${!droite && leve ? '#3F7FBF' : TRAIT}" stroke-width="1.4"/>`;
+      if(leve) for(let k = 1; k <= 2; k++) h += `<path d="M${x + 7},${haut + L * k / 3} q8.5,3 17,0" fill="none" stroke="${droite ? TRAIT : '#3F7FBF'}" stroke-width="1" opacity=".7"/>`;
+      if(droite) for(let p = 0; p < 3; p++){
+        const k = NUM[f] * 3 + p + 1, y = pt - L * (p + .5) / 3, cur = k === ph, fait = k < ph;
+        if(cur) cible = [x + 15.5, y];
+        h += cur ? `<circle cx="${x + 15.5}" cy="${y}" r="12" fill="#E67E22"/><text x="${x + 15.5}" y="${y + 4.5}" font-size="12" font-weight="700" text-anchor="middle" fill="#fff">${k}</text>`
+          : `${fait ? `<circle cx="${x + 15.5}" cy="${y}" r="10.5" fill="#F7C77E"/>` : ''}<text x="${x + 15.5}" y="${y + 4}" font-size="11" text-anchor="middle" fill="#7A4E26">${k}</text>`;
       }
+      if(!droite && leve) h += `<text x="${x + 15.5}" y="${haut - 8}" font-size="12" font-weight="700" text-anchor="middle" fill="#2F6FB3">${12 * (rang + 1)}</text>`;
     });
-    const pouceLeve = gauche ? actifs >= 1 : true;
-    h += `<rect x="${gauche ? 166 : -6}" y="${pouceLeve ? 100 : 140}" width="30" height="${pouceLeve ? 70 : 40}" rx="13" fill="${gauche && actifs >= 1 ? '#7FB3E0' : '#F2C9A0'}" stroke="#B5814B" transform="rotate(${gauche ? 25 : -25} ${gauche ? 181 : 9} 160)"/>`;
-    if(gauche) for(let d = 0; d < 4; d++) if(actifs > d + 1) h += `<rect x="${30 + d * 36}" y="20" width="30" height="108" rx="11" fill="#7FB3E0" fill-opacity=".45"/>`;
-    return h + `<text x="95" y="226" font-size="12" text-anchor="middle" fill="#4E5665">${gauche ? 'main gauche : douzaines' : 'main droite : phalanges'}</text></g>`;
+    // pouce
+    const pouceLeve = droite || leves >= 1, ax = droite ? px + 14 : px + 136, ay = pt + 62, ang = droite ? -38 : (pouceLeve ? 38 : -62), Lp = pouceLeve ? 80 : 46;
+    h += `<g transform="rotate(${ang} ${ax} ${ay})"><rect x="${ax - 16}" y="${ay - Lp}" width="32" height="${Lp + 18}" rx="16" fill="${!droite && pouceLeve ? '#9CCBF0' : PEAU}" stroke="${!droite && pouceLeve ? '#3F7FBF' : TRAIT}" stroke-width="1.4"/>${droite ? `<ellipse cx="${ax}" cy="${ay - Lp + 14}" rx="10" ry="12" fill="#F0A35E"/>` : ''}${!droite && pouceLeve ? `<text x="${ax}" y="${ay - Lp - 7}" font-size="12" font-weight="700" text-anchor="middle" fill="#2F6FB3" transform="rotate(${-ang} ${ax} ${ay - Lp - 11})">12</text>` : ''}</g>`;
+    h += `<rect x="${px}" y="${pt - 6}" width="150" height="116" rx="44" fill="${PEAU}" stroke="${TRAIT}" stroke-width="1.4"/><path d="M${px + 34},${pt + 40} q40,22 84,4" fill="none" stroke="${TRAIT}" opacity=".45"/>`;
+    if(droite && cible){ const r = -38 * Math.PI / 180, tx = ax + Math.sin(r) * (-1) * -(Lp - 14) , ty = ay - Math.cos(r) * (Lp - 14);
+      h += `<path d="M${tx.toFixed(1)},${ty.toFixed(1)} Q${((tx + cible[0]) / 2).toFixed(1)},${(Math.min(ty, cible[1]) - 30).toFixed(1)} ${cible[0]},${cible[1] + 10}" fill="none" stroke="#E67E22" stroke-width="2" stroke-dasharray="4 3"/>`; }
+    return h + `<text x="${cx}" y="300" font-size="13" text-anchor="middle" fill="#4E5665">${droite ? 'main droite : les phalanges' : 'main gauche : les douzaines'}</text>`;
   }
   function rendre(){
-    const n = st.n, ph = (n - 1) % 12 + 1;
+    const n = st.n, lev = Math.floor(n / 12), r = n % 12, pl = (k, m) => k + ' ' + m + (k > 1 ? 's' : '');
     $('.hi-nb').textContent = n;
-    svg.innerHTML = '<rect width="520" height="230" fill="#FBF6EC" rx="12"/>' + main(30, false, 0, ph) + main(300, true, Math.floor(n / 12), 0);
-    const lev = Math.floor(n / 12);
-    $('.hi-explic').innerHTML = `${n} = ${lev} douzaine${lev > 1 ? 's' : ''}${n % 12 ? ' et ' + (n % 12) + ' phalange' + (n % 12 > 1 ? 's' : '') : ''}${n === 60 ? ' : les 5 doigts de la main gauche sont levés.' : ''}`;
+    svg.innerHTML = '<rect width="560" height="310" fill="#FBF6EC" rx="12"/>' + main(150, false, n) + main(410, true, n);
+    $('.hi-explic').innerHTML = !lev ? `${n} : le pouce droit a touché ${pl(n, 'phalange')}.`
+      : `${n} = ${pl(lev, 'douzaine')} (${pl(lev, 'doigt')} gauche${lev > 1 ? 's' : ''} levé${lev > 1 ? 's' : ''})${r ? ' + ' + pl(r, 'phalange') : ''}${n === 60 ? ' : les 5 doigts sont levés, c\'est 60 !' : '.'}`;
   }
   function question(){
     const h = hiAlea(7, 15), m = hiAlea(15, 55), dh = hiAlea(0, 2), dm = hiAlea(20, 55);
@@ -426,7 +440,7 @@ const HI_HISTOIRE_HTML = `
     .hi-consigne{ font-size:.95rem; line-height:1.55; }
     .hi-cible{ text-align:center; font-size:1.05rem; }
     .hi-svg{ width:100%; max-width:640px; display:block; margin:0 auto; border-radius:12px; box-shadow:0 1px 6px rgba(28,27,46,.15); }
-    .hi-mains{ max-width:520px; } .hi-pyr{ max-width:560px; }
+    .hi-mains{ max-width:560px; } .hi-pyr{ max-width:560px; }
     .hi-msg, .hi-msg2{ min-height:1.4em; text-align:center; font-size:.95rem; line-height:1.6; } .hi-msg .gicon, .hi-msg2 .gicon{ font-size:18px; vertical-align:-3px; }
     .hi-msg.ok, .hi-msg2.ok{ color:#1E5E30; } .hi-msg.ko, .hi-msg2.ko{ color:#9A3A12; }
     .hi-actions{ display:flex; gap:8px; flex-wrap:wrap; justify-content:center; align-items:center; font-size:.93rem; }
