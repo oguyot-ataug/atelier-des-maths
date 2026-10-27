@@ -22,6 +22,8 @@ PLANCHES['ce2|Comparer et additionner des fractions'] = [
         ...chx([[`${F(7, 12)} … ${F(5, 6)}`, `${F(7, 12)} < ${F(5, 6)}`, `${F(7, 12)} < ${F(5, 6)} · ${F(7, 12)} > ${F(5, 6)}`]]) },
       { etoiles: 3, cahier: true, consigne: `Marc a mangé ${F(3, 8)} d'un gâteau, Léa ${F(1, 4)} du même gâteau. Qui en a mangé le plus ?`,
         corr: cm1Redac('Comparer', `${F(1, 4)} = ${F(2, 8)}`, `${F(2, 8)} < ${F(3, 8)} : Marc a mangé le plus de gâteau.`, bande(8, 3) + '<br>' + bande(4, 1, '#2EA8C9')) },
+      { etoiles: 1, col: 1, consigne: 'Complète avec <, > ou =.', ...P3.rmp([[`${cm1Frac(2, 5)} @ ${cm1Frac(4, 5)}`, '<'], [`${cm1Frac(1, 3)} @ ${cm1Frac(1, 6)}`, '>'], [`${cm1Frac(3, 3)} @ 1`, '=']], 1) },
+      { etoiles: 2, col: 1, consigne: 'Entoure la plus grande fraction.', ...P3.chx([['', cm1Frac(5, 8), `${cm1Frac(3, 8)} · ${cm1Frac(5, 8)}`], ['', cm1Frac(1, 2), `${cm1Frac(1, 2)} · ${cm1Frac(1, 5)}`]]) },
     ] },
   { titre: 'Additionner et soustraire des fractions', duree: '30 min',
     attendus: ['Additionner des fractions de même dénominateur', 'Soustraire des fractions de même dénominateur', 'Utiliser une fraction égale pour calculer'],
@@ -35,6 +37,8 @@ PLANCHES['ce2|Comparer et additionner des fractions'] = [
         corr: `<div style="text-align:center;">${cm1Bande(4, 1, { largeur: 220, coul: '#E35D3A' }).replace(/<\/svg>$/, '') + `<rect x="58" y="3" width="55" height="34" fill="#2EA8C9" fill-opacity=".75" stroke="#1C1B2E" stroke-width="1.5"/><rect x="113" y="3" width="55" height="34" fill="#2EA8C9" fill-opacity=".75" stroke="#1C1B2E" stroke-width="1.5"/></svg>`}</div>` + plListe([`${F(1, 4)} + ${F(2, 4)} = ${P3.R(F(3, 4))}`]) },
       { etoiles: 3, cahier: true, consigne: `Calcule ${F(1, 2)} + ${F(1, 4)} en remplaçant ${F(1, 2)} par une fraction égale.`,
         corr: cm1Redac('Fraction égale', `${F(1, 2)} = ${F(2, 4)}`, '') + cm1Redac('Addition', `${F(2, 4)} + ${F(1, 4)} = ${F(3, 4)}`, `${F(1, 2)} + ${F(1, 4)} = ${F(3, 4)}.`) },
+      { etoiles: 1, col: 1, consigne: 'Calcule.', ...P3.rmp([[`${cm1Frac(2, 7)} + ${cm1Frac(3, 7)} = @`, cm1Frac(5, 7)], [`${cm1Frac(6, 8)} − ${cm1Frac(1, 8)} = @`, cm1Frac(5, 8)]], 2) },
+      { etoiles: 2, col: 1, consigne: 'Calcule.', ...P3.rmp([[`${cm1Frac(1, 4)} + ${cm1Frac(3, 4)} = @`, 1], [`1 − ${cm1Frac(1, 3)} = @`, cm1Frac(2, 3)]], 2) },
     ] },
 ];
 })();

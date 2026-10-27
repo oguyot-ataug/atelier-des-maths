@@ -25,6 +25,8 @@ PLANCHES['ce2|Fractions égales'] = [
         corr: plGrille([bande(5, 2) + '<br>' + F(2, 5), bande(3, 3) + '<br>' + F(3, 3), bande(10, 7) + '<br>' + F(7, 10)], 3) },
       { etoiles: 2, col: 1, consigne: 'Complète.',
         ...rmp([[`Dans ${F(3, 8)}, l'unité est partagée en @ parts égales.`, 8], [`Dans ${F(3, 8)}, on prend @ parts.`, 3], [`${F(4, 4)} est égal à @ unité.`, 1]], 3) },
+      { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['Une pizza en 8 parts égales : une part, c\'est @ de la pizza.', cm1Frac(1, 8)], ['Les 8 parts font @ pizza.', 1]], 3) },
+      { etoiles: 2, col: 1, consigne: 'Entoure la plus grande part.', ...P3.chx([['', cm1Frac(1, 3), `${cm1Frac(1, 3)} · ${cm1Frac(1, 6)}`], ['', cm1Frac(1, 2), `${cm1Frac(1, 2)} · ${cm1Frac(1, 8)}`]]) },
     ] },
   { titre: 'Des fractions égales', duree: '30 min',
     attendus: ['Trouver des fractions égales avec des bandes', 'Expliquer : des parts deux fois plus petites, deux fois plus de parts'],
@@ -38,6 +40,7 @@ PLANCHES['ce2|Fractions égales'] = [
         ...chx([[`${F(2, 4)} = ${F(1, 2)}`, 'vraie', 'vraie · fausse'], [`${F(2, 3)} = ${F(3, 4)}`, 'fausse', 'vraie · fausse'], [`${F(6, 8)} = ${F(3, 4)}`, 'vraie', 'vraie · fausse']]) },
       { etoiles: 3, cahier: true, consigne: `Léo a mangé ${F(2, 6)} d'une tarte, Inès ${F(1, 3)} d'une tarte pareille. Qui a mangé le plus ? Explique avec un dessin.`,
         corr: cm1Redac('Comparer', `${F(1, 3)} = ${F(2, 6)}`, 'Si on coupe chaque tiers en deux, on obtient 2 sixièmes : Léo et Inès ont mangé autant de tarte.', bande(3, 1) + '<br>' + bande(6, 2)) },
+      { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['Un demi = @ quarts', 2], ['Un tiers = @ sixièmes', 2], ['Deux quarts = @ huitièmes', 4]], 2) },
     ] },
   { titre: 'Les fractions égales à un demi', duree: '25 min',
     attendus: ['Reconnaître une fraction égale à un demi', 'Trouver la moitié d\'une unité partagée en un nombre pair de parts'],
@@ -52,6 +55,8 @@ PLANCHES['ce2|Fractions égales'] = [
         ...egal([[1, 2, false, 8, 4], [1, 2, true, 6, 12], [1, 2, false, 6, 3]]) },
       { etoiles: 3, col: 1, cahier: true, consigne: `Une fraction égale à ${F(1, 2)} peut-elle avoir 7 comme dénominateur ? Explique.`,
         corr: cm1Redac('Moitié de 7 parts', '7 parts : on ne peut pas faire deux paquets égaux', `Non : 7 est impair, on ne peut pas prendre la moitié des 7 parts. Une fraction égale à ${F(1, 2)} a un dénominateur pair.`) },
+      { etoiles: 1, col: 1, consigne: 'Complète.', ...P3.rmp([['Sur 10 parts, la moitié, c\'est @ parts.', 5], ['Sur 12 parts, la moitié, c\'est @ parts.', 6]], 2) },
+      { etoiles: 2, col: 1, consigne: `Est-ce égal à ${cm1Frac(1, 2)} ? Entoure.`, ...P3.chx([[cm1Frac(3, 6), 'oui', 'oui · non'], [cm1Frac(2, 5), 'non', 'oui · non'], [cm1Frac(5, 10), 'oui', 'oui · non']]) },
     ] },
 ];
 })();

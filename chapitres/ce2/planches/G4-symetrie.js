@@ -25,6 +25,11 @@ PLANCHES['ce2|La symétrie'] = [
         ...chx([['un carré', 'oui', 'oui · non'], ['un cœur', 'oui', 'oui · non'], ['la lettre S', 'non', 'oui · non'], ['un cercle', 'oui', 'oui · non']]) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Combien d\'axes de symétrie a un rectangle (qui n\'est pas un carré) ? Et un carré ? Dessine-les.',
         corr: cm1Redac('Rectangle', 'un axe vertical et un axe horizontal', 'Un rectangle a 2 axes de symétrie (ses diagonales n\'en sont pas).') + cm1Redac('Carré', '2 axes au milieu des côtés et 2 diagonales', 'Un carré a 4 axes de symétrie.') },
+      { etoiles: 1, col: 1, consigne: 'Combien d\'axes de symétrie ?', ...P3.rmp([['la lettre A : @', 1], ['la lettre H : @', 2], ['la lettre F : @', 0], ['le carré : @', 4]], 2) },
+      { etoiles: 2, col: 1, consigne: 'A-t-il un axe de symétrie ? Entoure.', ...P3.chx([['un cœur', 'oui', 'oui · non'], ['la lettre S', 'non', 'oui · non'], ['un papillon', 'oui', 'oui · non']]) },
+      { etoiles: 2, consigne: 'Trace en rouge l\'axe de symétrie de chaque figure.',
+        eleve: plGrille([cpQuadFig(6, 6, [[[[1, 5], [1, 2], [3, 0], [5, 2], [5, 5]], '#2E9C6A']], { px: 120 }), cpQuadFig(6, 6, [[[[0, 2], [3, 2], [3, 1], [5, 3], [3, 5], [3, 4], [0, 4]], '#2EA8C9']], { px: 120 }), cpQuadFig(6, 6, [[[[1, 1], [5, 1], [4, 5], [2, 5]], '#E9C46A']], { px: 120 })], 3),
+        corr: plGrille([cpQuadFig(6, 6, [[[[1, 5], [1, 2], [3, 0], [5, 2], [5, 5]], '#2E9C6A'], [[[3, 0], [3, 6]], CE2C.rouge, false]], { px: 120 }), cpQuadFig(6, 6, [[[[0, 2], [3, 2], [3, 1], [5, 3], [3, 5], [3, 4], [0, 4]], '#2EA8C9'], [[[0, 3], [6, 3]], CE2C.rouge, false]], { px: 120 }), cpQuadFig(6, 6, [[[[1, 1], [5, 1], [4, 5], [2, 5]], '#E9C46A'], [[[3, 0], [3, 6]], CE2C.rouge, false]], { px: 120 })], 3) },
     ] },
   { titre: 'Compléter une figure symétrique', duree: '30 min',
     attendus: ['Compléter une figure sur quadrillage par symétrie', 'Compter les carreaux de chaque côté de l\'axe'],
@@ -35,6 +40,7 @@ PLANCHES['ce2|La symétrie'] = [
         eleve: motifH(false), corr: motifH(true) },
       { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.',
         ...chx([['Un point et son symétrique sont à la même distance de l\'axe.', 'vrai', 'vrai · faux'], ['Quand on plie sur l\'axe, les deux moitiés se superposent.', 'vrai', 'vrai · faux']]) },
+      { etoiles: 1, col: 1, consigne: 'Vrai ou faux ? Entoure.', ...P3.chx([['Un point et son image sont à la même distance de l\'axe.', 'vrai', 'vrai · faux'], ['La figure symétrique est plus grande.', 'faux', 'vrai · faux']]) },
     ] },
 ];
 })();

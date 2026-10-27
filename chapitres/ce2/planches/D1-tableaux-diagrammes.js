@@ -26,6 +26,8 @@ PLANCHES['ce2|Tableaux et diagrammes en barres'] = [
       { etoiles: 2, col: 1, consigne: 'Ce tableau donne les points marqués. Entoure.',
         eleve: tab([['Équipe', 'Rouge', 'Bleue', 'Verte'], ['Points', '1 250', '980', '1 520']], { coul: '#558B2F' }) + plListe(['L\'équipe gagnante : Rouge · Bleue · Verte', 'L\'équipe dernière : Rouge · Bleue · Verte']),
         corr: tab([['Équipe', 'Rouge', 'Bleue', 'Verte'], ['Points', '1 250', '980', '1 520']], { coul: '#558B2F' }) + plListe(['L\'équipe gagnante : ' + plEntoure('Verte'), 'L\'équipe dernière : ' + plEntoure('Bleue')]) },
+      { etoiles: 1, col: 1, consigne: 'Voici les livres prêtés par la bibliothèque. Complète.', eleve: cm1Tableau(['lundi', 'mardi', 'jeudi', 'vendredi'], [['12', '8', '15', '10']]) + plListe(['Le jour où on a prêté le plus de livres : ' + P3.B(4), 'Livres prêtés en tout : ' + P3.B(2)]), corr: cm1Tableau(['lundi', 'mardi', 'jeudi', 'vendredi'], [['12', '8', '15', '10']]) + plListe(['Le jour où on a prêté le plus de livres : ' + P3.R('jeudi'), 'Livres prêtés en tout : ' + P3.R(45)]) },
+      { etoiles: 2, col: 1, consigne: 'Avec le tableau des livres, complète.', ...P3.rmp([['De lundi à mardi, il y a @ livres de moins.', 4], ['Jeudi et vendredi ensemble : @ livres', 25]], 2) },
     ] },
   { titre: 'Le diagramme en barres', duree: '30 min',
     attendus: ['Lire un diagramme en barres', 'Compléter un diagramme en barres avec la bonne échelle'],
@@ -46,6 +48,7 @@ PLANCHES['ce2|Tableaux et diagrammes en barres'] = [
       { etoiles: 2, consigne: 'Complète les cases vides du tableau.',
         eleve: tab([['', 'Matin', 'Après-midi', 'Total'], ['Lundi', 120, P3.B(3), 200], ['Mardi', P3.B(3), 95, 160], ['Total', P3.B(3), P3.B(3), P3.B(3)]], { coul: '#558B2F' }),
         corr: tab([['', 'Matin', 'Après-midi', 'Total'], ['Lundi', 120, P3.R(80), 200], ['Mardi', P3.R(65), 95, 160], ['Total', P3.R(185), P3.R(175), P3.R(360)]], { coul: '#558B2F' }) },
+      { etoiles: 2, col: 1, consigne: 'Les animaux des élèves. Complète.', eleve: cm1Tableau(['', 'Chats', 'Chiens'], [['CE2 A', '5', '8'], ['CE2 B', '7', '4']]) + plListe(['Chats du CE2 B : ' + P3.B(2), 'Animaux du CE2 A : ' + P3.B(2), 'Chiens en tout : ' + P3.B(2)]), corr: cm1Tableau(['', 'Chats', 'Chiens'], [['CE2 A', '5', '8'], ['CE2 B', '7', '4']]) + plListe(['Chats du CE2 B : ' + P3.R(7), 'Animaux du CE2 A : ' + P3.R(13), 'Chiens en tout : ' + P3.R(12)]) },
     ] },
 ];
 })();

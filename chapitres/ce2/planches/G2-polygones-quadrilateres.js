@@ -18,6 +18,8 @@ PLANCHES['ce2|Polygones et quadrilatères'] = [
         corr: plGrille(formes.map((f, i) => f + '<br>' + P3.R(['triangle', 'pentagone', 'hexagone', 'quadrilatère', 'pas un polygone (pas de côtés droits)', 'pas un polygone (pas fermée)'][i])), 3) },
       { etoiles: 1, col: 1, consigne: 'Complète.',
         ...rmp([['Un triangle a @ côtés et @ sommets.', 3, 3], ['Un quadrilatère a @ côtés.', 4], ['Un hexagone a @ côtés.', 6], ['Un polygone de 5 côtés est un @.', 'pentagone']], 4) },
+      { etoiles: 1, col: 1, consigne: 'Combien de côtés ?', ...P3.rmp([['un hexagone : @', 6], ['un pentagone : @', 5], ['un triangle : @', 3], ['un quadrilatère : @', 4]], 2) },
+      { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.', ...P3.chx([['Un cercle est un polygone.', 'faux', 'vrai · faux'], ['Un carré est un quadrilatère.', 'vrai', 'vrai · faux'], ['Un polygone a des côtés droits.', 'vrai', 'vrai · faux']]) },
     ] },
   { titre: 'Carré, rectangle, losange', duree: '30 min',
     attendus: ['Reconnaître carré, rectangle, losange par leurs côtés et leurs angles droits', 'Lire les codages', 'Justifier : « ce n\'est pas un carré car… »'],
@@ -29,6 +31,8 @@ PLANCHES['ce2|Polygones et quadrilatères'] = [
         ...chx([['Un carré a 4 angles droits.', 'vrai', 'vrai · faux'], ['Un rectangle a 4 côtés de même longueur.', 'faux', 'vrai · faux'], ['Un losange a 4 côtés de même longueur.', 'vrai', 'vrai · faux'], ['Un carré est aussi un rectangle.', 'vrai', 'vrai · faux']]) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Un quadrilatère a 4 côtés de 5 cm, mais aucun angle droit. Est-ce un carré ? Qu\'est-ce que c\'est ?',
         corr: cm1Redac('Nature de la figure', '4 côtés égaux, pas d\'angle droit', 'Ce n\'est pas un carré, car un carré a 4 angles droits. C\'est un losange.') },
+      { etoiles: 1, col: 1, consigne: 'Complète.', ...P3.rmp([['Le losange a 4 côtés de même @.', 'longueur'], ['Le rectangle a 4 angles @.', 'droits'], ['Le carré est à la fois un rectangle et un @.', 'losange']], 4) },
+      { etoiles: 2, col: 1, consigne: 'Qui suis-je ? Entoure.', ...P3.chx([['4 angles droits, 4 côtés égaux :', 'carré', 'carré · rectangle · losange'], ['4 côtés égaux, pas d\'angle droit :', 'losange', 'carré · rectangle · losange'], ['4 angles droits, côtés pas tous égaux :', 'rectangle', 'carré · rectangle · losange']]) },
     ] },
   { titre: 'Rectangle et triangle rectangle', duree: '25 min',
     attendus: ['Utiliser les mots longueur, largeur, diagonale', 'Reconnaître un triangle rectangle', 'Tracer un rectangle sur quadrillage'],
@@ -42,6 +46,9 @@ PLANCHES['ce2|Polygones et quadrilatères'] = [
       { etoiles: 2, col: 1, consigne: 'Entoure les triangles rectangles.',
         eleve: Q(14, 5, 16, g => ligne(g, [[1, 1], [1, 4], [4, 4]]) + ligne(g, [[6, 4], [8, 1], [10, 4]]) + ligne(g, [[11, 1], [13, 1], [13, 4]]), 220),
         corr: Q(14, 5, 16, g => ligne(g, [[1, 1], [1, 4], [4, 4]], '#E35D3A') + droit(g(1, 1), g(1, 4), g(4, 4)) + ligne(g, [[6, 4], [8, 1], [10, 4]]) + ligne(g, [[11, 1], [13, 1], [13, 4]], '#E35D3A') + droit(g(11, 1), g(13, 1), g(13, 4)), 220) + '<br>Le premier et le troisième (angle droit codé).' },
+      { etoiles: 2, col: 1, consigne: 'Termine le rectangle de 5 carreaux sur 2.', eleve: PCP.lig(cpQuadFig(7, 4, [[[[1, 1], [6, 1], [6, 3]], CPC.bord, false]], { px: 170 })), corr: PCP.lig(cpQuadFig(7, 4, [[[[1, 1], [6, 1], [6, 3], [1, 3]], '#2E9C6A']], { px: 170 })) },
+      { etoiles: 2, col: 1, consigne: 'Termine le triangle rectangle.', eleve: PCP.lig(cpQuadFig(7, 4, [[[[1, 3], [1, 0]], CPC.bord, false]], { px: 170 })), corr: PCP.lig(cpQuadFig(7, 4, [[[[1, 3], [1, 0], [5, 3]], '#E9C46A']], { px: 170 })) + '<p style="text-align:center;">D\'autres triangles rectangles sont justes.</p>' },
+      { etoiles: 1, col: 1, consigne: 'Entoure.', ...P3.chx([['Un triangle rectangle a…', '1 angle droit', '1 angle droit · 2 angles droits'], ['Un rectangle a…', '4 angles droits', '2 angles droits · 4 angles droits']]) },
     ] },
 ];
 })();

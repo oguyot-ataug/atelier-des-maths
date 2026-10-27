@@ -1,5 +1,5 @@
 /* ============================================================
-   CP et CE1 · Outils communs aux planches (manuels du CP et du CE1)
+   CP, CE1 et CE2 · Outils communs aux planches (manuels du CP, du CE1 et du CE2)
    Demandé : « Avant de publier, il faut créer les manuels ». Au CP, l'élève lit peu : consignes
    courtes (l'enseignant les lit), beaucoup de dessins à compter, entourer, colorier, compléter ;
    une seule réponse par case. Les dessins viennent de chapitres/cp/_anims.js (dé, boîte de dix,

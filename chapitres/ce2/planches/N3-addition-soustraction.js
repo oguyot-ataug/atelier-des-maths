@@ -19,6 +19,7 @@ PLANCHES['ce2|Addition et soustraction posées'] = [
         corr: plGrille([cm1Posee([['', '4586'], ['+', '2738'], ['', '7324']], '111 '), cm1Posee([['', '3095'], ['+', '907'], ['', '4002']], '111 ')], 2) },
       { etoiles: 3, cahier: true, consigne: 'Une école a commandé 1 250 cahiers en septembre, 875 en janvier et 1 380 en avril. Combien de cahiers en tout ?',
         corr: cm1Redac('Nombre de cahiers', { suite: ['1 250 + 875 = 2 125', '2 125 + 1 380 = 3 505'] }, 'L\'école a commandé 3 505 cahiers.') },
+      { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['La somme de 250 et 150 : @', 400], ['La différence entre 800 et 300 : @', 500], ['La somme de 1 000 et 99 : @', '1 099']], 4) },
     ] },
   { titre: 'Poser une soustraction', duree: '35 min',
     attendus: ['Poser une soustraction en alignant les chiffres de même rang', 'Calculer par compensation (+10 en haut, 1+ en bas)', 'Vérifier une soustraction par une addition'],
@@ -31,6 +32,8 @@ PLANCHES['ce2|Addition et soustraction posées'] = [
         ...chx([['835 − 267 = 568 (car 568 + 267 = …)', 'juste', 'juste · fausse'], ['4 000 − 1 250 = 3 850', 'fausse', 'juste · fausse']]) },
       { etoiles: 3, cahier: true, consigne: 'Le mont Blanc mesure 4 806 m. Le puy de Dôme mesure 1 465 m. Quelle est la différence de hauteur entre ces deux sommets ?',
         corr: cm1Redac('Différence de hauteur', { pose: cm1Posee([['', '4806'], ['−', '1465'], ['', '3341']]) }, 'Le mont Blanc mesure 3 341 m de plus que le puy de Dôme.') },
+      { etoiles: 1, col: 1, consigne: 'Calcule de tête.', ...P3.rmp([['500 − 200 = @', 300], ['1 000 − 400 = @', 600], ['850 − 50 = @', 800], ['3 400 − 1 000 = @', '2 400']], 3) },
+      { etoiles: 2, col: 1, consigne: 'Trouve le nombre manquant.', ...P3.rmp([['@ − 125 = 300', 425], ['1 000 − @ = 650', 350], ['@ + 480 = 1 000', 520]], 3) },
     ] },
   { titre: 'Calculer de tête quand c\'est possible', duree: '25 min',
     attendus: ['Choisir entre calcul mental et calcul posé', 'Ajouter ou soustraire des dizaines, des centaines, des milliers'],
@@ -43,6 +46,8 @@ PLANCHES['ce2|Addition et soustraction posées'] = [
         ...rmp([['999 + @ = 1 000', 1], ['@ + 600 = 1 000', 400], ['7 500 + @ = 8 000', 500], ['@ − 1 000 = 4 500', '5 500']], 4) },
       { etoiles: 3, cahier: true, consigne: 'Mia a 1 000 points au jeu. Elle en perd 250, puis en gagne 600. Combien de points a-t-elle ?',
         corr: cm1Redac('Après la perte', '1 000 − 250 = 750', 'Mia a 750 points.') + cm1Redac('Après le gain', '750 + 600 = 1 350', 'Mia a 1 350 points.') },
+      { etoiles: 1, col: 1, consigne: 'Calcule de tête.', ...P3.rmp([['999 + 1 = @', '1 000'], ['2 500 + 500 = @', '3 000'], ['4 000 − 1 = @', '3 999'], ['1 200 + 800 = @', '2 000']], 3) },
+      { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['380 + 20 = @', 400], ['@ + 70 = 1 000', 930], ['5 000 − 250 = @', '4 750']], 3) },
     ] },
 ];
 })();

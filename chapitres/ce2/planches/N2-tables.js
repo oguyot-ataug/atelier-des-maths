@@ -20,6 +20,9 @@ PLANCHES['ce2|Tables d\'addition et de multiplication'] = [
         ...rmp([['6 + 7 = @', 13], ['8 + 9 = @', 17], ['7 + 8 = @', 15], ['5 + 6 = @', 11]], 2) },
       { etoiles: 2, col: 1, consigne: 'Complète la soustraction avec la table d\'addition.',
         ...rmp([['15 − 7 = @', 8], ['13 − 9 = @', 4], ['16 − 8 = @', 8], ['12 − 5 = @', 7]], 2) },
+      { etoiles: 1, col: 1, consigne: 'Calcule.', ...P3.rmp([['8 + 7 = @', 15], ['9 + 6 = @', 15], ['7 + 5 = @', 12], ['6 + 8 = @', 14]], 2) },
+      { etoiles: 1, col: 1, consigne: 'Calcule.', ...P3.rmp([['13 − 6 = @', 7], ['15 − 8 = @', 7], ['12 − 9 = @', 3], ['17 − 8 = @', 9]], 2) },
+      { etoiles: 2, col: 1, consigne: 'Trouve le nombre manquant.', ...P3.rmp([['@ + 9 = 16', 7], ['8 + @ = 13', 5], ['@ + 7 = 14', 7]], 2) },
     ] },
   { titre: 'Les tables de multiplication', duree: '30 min',
     attendus: ['Connaître les tables de multiplication dans les deux sens', 'Savoir que l\'ordre des facteurs ne change pas le produit', 'Retrouver un résultat oublié'],
@@ -33,6 +36,8 @@ PLANCHES['ce2|Tables d\'addition et de multiplication'] = [
         ...rmp([['8 × @ = 56', 7], ['@ × 6 = 54', 9], ['35 = 7 × @', 5], ['72 = @ × 9', 8], ['6 × @ = 36', 6], ['@ × 4 = 28', 7]], 2) },
       { etoiles: 3, cahier: true, consigne: 'Lina a oublié 7 × 8. Explique deux façons de le retrouver à partir de résultats qu\'elle connaît.',
         corr: cm1Redac('Avec 7 × 4', { suite: ['7 × 4 = 28', '7 × 8 = 28 + 28', '7 × 8 = 56'] }, '8, c\'est le double de 4 : on double 28.') + cm1Redac('Avec 7 × 10', { suite: ['7 × 10 = 70', '7 × 2 = 14', '70 − 14 = 56'] }, '8 fois 7, c\'est 10 fois 7 moins 2 fois 7 : 7 × 8 = 56.') },
+      { etoiles: 1, col: 1, consigne: 'Calcule.', ...P3.rmp([['6 × 7 = @', 42], ['8 × 9 = @', 72], ['7 × 7 = @', 49], ['9 × 6 = @', 54]], 2) },
+      { etoiles: 2, col: 1, consigne: 'Trouve le nombre manquant.', ...P3.rmp([['@ × 8 = 48', 6], ['7 × @ = 63', 9], ['@ × 6 = 36', 6]], 2) },
     ] },
   { titre: 'Doubles, moitiés et nombres à connaître', duree: '25 min',
     attendus: ['Connaître les doubles et les moitiés usuels', 'Connaître les multiples de 25 jusqu\'à 100', 'Trouver toutes les façons d\'écrire 60 comme un produit'],
@@ -47,6 +52,8 @@ PLANCHES['ce2|Tables d\'addition et de multiplication'] = [
         ...chx([['4 × 15', 'oui', 'oui · non'], ['5 × 11', 'non', 'oui · non'], ['3 × 20', 'oui', 'oui · non'], ['6 × 12', 'non', 'oui · non'], ['5 × 12', 'oui', 'oui · non']]) },
       { etoiles: 3, cahier: true, consigne: 'Un billet de cinéma coûte 25 €. Paul achète des billets pour lui et ses trois amis. Il paie avec deux billets de 50 €. Combien lui rend-on ?',
         corr: cm1Redac('Prix des billets', '25 × 4 = 100', 'Les 4 billets coûtent 100 €.') + cm1Redac('Somme donnée', '50 + 50 = 100', 'Paul donne 100 € : on ne lui rend rien.') },
+      { etoiles: 2, col: 1, consigne: 'Calcule.', ...P3.rmp([['25 × 4 = @', 100], ['50 × 2 = @', 100], ['20 × 5 = @', 100], ['250 × 4 = @', '1 000']], 3) },
+      { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['le double de 45 : @', 90], ['la moitié de 70 : @', 35], ['le double de 150 : @', 300], ['la moitié de 500 : @', 250]], 2) },
     ] },
 ];
 })();
