@@ -98,3 +98,56 @@ function ce1CDU(n, o){
   o = o || {}; const c = Math.floor(n / 100), d = Math.floor(n % 100 / 10), u = n % 10;
   return cm1Tableau(['centaines', 'dizaines', 'unités'], [[`<b style="color:#8A6D1F;font-size:1.3rem;">${c}</b>`, `<b style="color:#2E9C6A;font-size:1.3rem;">${d}</b>`, `<b style="color:#2EA8C9;font-size:1.3rem;">${u}</b>`]]);
 }
+
+/* ---- L'angle droit : on pose le gabarit (un coin de feuille pliée en quatre) dans chaque coin ---- */
+function ce1AnimGabarit(id, o){
+  const P = (o && o.presets) || [
+    { nom: 'Le rectangle', pts: [[90, 50], [330, 50], [330, 180], [90, 180]] },
+    { nom: 'Un quadrilatère', pts: [[80, 60], [300, 40], [350, 190], [100, 180]] },
+    { nom: 'Un triangle', pts: [[90, 190], [90, 50], [320, 190]] }];
+  return cmAnim(id, {
+    etat: { p: 0 }, duree: a => 2000 + P[a.etat.p].pts.length * 1600,
+    legende: (o && o.legende) || 'Le gabarit d\'angle droit (un coin de feuille pliée en quatre) se pose dans chaque coin : s\'il s\'ajuste exactement, l\'angle est droit.',
+    controles: a => ce2Choix(id, P, a),
+    dessin: (t, a) => {
+      const p = P[a.etat.p], n = p.pts.length, f = cmPhase(t, .1, .95) * n, i = Math.min(n - 1, Math.floor(f)), k = cmDoux(Math.min(1, (f - i) * 2));
+      const ang = q => { const A = p.pts[(q + n - 1) % n], S = p.pts[q], B = p.pts[(q + 1) % n];
+        const u = [A[0] - S[0], A[1] - S[1]], v = [B[0] - S[0], B[1] - S[1]], c = (u[0] * v[0] + u[1] * v[1]) / Math.hypot(...u) / Math.hypot(...v); return Math.abs(c) < .02; };
+      let s = `<polygon points="${p.pts.map(q => q.join(',')).join(' ')}" fill="#2EA8C9" fill-opacity=".15" stroke="${CPC.bord}" stroke-width="2.5"/>`;
+      // Les angles déjà vérifiés : un petit carré rouge (droit) ou une croix grise (pas droit).
+      for(let q = 0; q < (t >= .95 ? n : i); q++){ const S = p.pts[q], A = p.pts[(q + n - 1) % n], B = p.pts[(q + 1) % n], ua = [(A[0] - S[0]), (A[1] - S[1])], ub = [(B[0] - S[0]), (B[1] - S[1])], la = Math.hypot(...ua), lb = Math.hypot(...ub), e = 16;
+        const P1 = [S[0] + ua[0] / la * e, S[1] + ua[1] / la * e], P2 = [S[0] + ub[0] / lb * e, S[1] + ub[1] / lb * e], P3 = [P1[0] + ub[0] / lb * e, P1[1] + ub[1] / lb * e];
+        s += ang(q) ? `<path d="M${P1[0]} ${P1[1]} L${P3[0]} ${P3[1]} L${P2[0]} ${P2[1]}" fill="none" stroke="${CE2C.rouge}" stroke-width="2.4"/>` : `<circle cx="${S[0]}" cy="${S[1]}" r="6" fill="#8A8F98"/>`; }
+      if(t >= .1 && t < .95){ // le gabarit, aligné sur un côté de l'angle
+        const S = p.pts[i], B = p.pts[(i + 1) % n], A = p.pts[(i + n - 1) % n], ub = [B[0] - S[0], B[1] - S[1]], lb = Math.hypot(...ub), u = [ub[0] / lb, ub[1] / lb];
+        // perpendiculaire du côté de A
+        let v = [-u[1], u[0]]; if(v[0] * (A[0] - S[0]) + v[1] * (A[1] - S[1]) < 0) v = [-v[0], -v[1]];
+        const g = 60, X = S[0] + 80 * (1 - k), Y = S[1] - 60 * (1 - k);
+        s += `<polygon points="${X},${Y} ${X + u[0] * g},${Y + u[1] * g} ${X + (u[0] + v[0]) * g},${Y + (u[1] + v[1]) * g} ${X + v[0] * g},${Y + v[1] * g}" fill="#F7E7A9" fill-opacity=".85" stroke="#B8962E" stroke-width="1.6"/>`; }
+      const nb = p.pts.filter((_, q) => ang(q)).length;
+      const texte = t < .1 ? `${p.nom} : combien d'<b>angles droits</b> ?` : t < .95 ? (ang(i) ? `Coin ${i + 1} : le gabarit s'ajuste exactement, c'est un <b>angle droit</b>.` : `Coin ${i + 1} : le gabarit ne s'ajuste pas, l'angle <b>n'est pas droit</b>.`)
+        : `${p.nom} a <b>${nb} angle${nb > 1 ? 's' : ''} droit${nb > 1 ? 's' : ''}</b>. On les code par un petit carré.`;
+      return { scene: `<svg viewBox="0 0 420 240" class="cma-svg" style="max-width:460px;">${s}</svg>`, texte };
+    } });
+}
+
+/* ---- Comparer deux nombres de trois chiffres : centaines, puis dizaines, puis unités ---- */
+function ce1AnimComparer(id, o){
+  const P = o.presets;
+  return cmAnim(id, {
+    etat: { p: 0 }, duree: 9000, legende: o.legende || 'On compare rang par rang, en commençant par les centaines : dès qu\'un rang est différent, on a la réponse.',
+    controles: a => ce2Choix(id, P.map(([x, y]) => ({ nom: `${x} et ${y}` })), a),
+    dessin: (t, a) => {
+      const [A, B] = P[a.etat.p], ca = String(A).padStart(3, '0'), cb = String(B).padStart(3, '0'), q = 6;
+      let rang = 0; while(rang < 2 && ca[rang] === cb[rang]) rang++;
+      const etape = Math.min(rang, Math.floor(cmPhase(t, .15, .6) * 3)), fin = t > .65, NOMS = ['centaines', 'dizaines', 'unités'], COUL = ['#8A6D1F', CE2C.vert, CPC.jeton2];
+      let s = ce1PlaquesSvg(20, 14, A, q) + ce1PlaquesSvg(20, 104, B, q);
+      [ca, cb].forEach((ch, l) => { ch.split('').forEach((c, i) => { const on = i <= etape && t > .15;
+        s += `<rect x="${330 + i * 40}" y="${24 + l * 90}" width="34" height="46" rx="6" fill="${on && i === etape ? '#FFF3D6' : '#fff'}" stroke="${on ? COUL[i] : '#C7D2DE'}" stroke-width="${on ? 3 : 1.5}"/>` + ce2T(347 + i * 40, 57 + l * 90, c, { t: 26, g: 700, c: COUL[i] }); }); });
+      if(fin) s += ce2T(487, 102, A < B ? '&lt;' : A > B ? '&gt;' : '=', { t: 44, g: 700, c: CE2C.vert }) + ce2T(487, 132, A < B ? 'plus petit' : A > B ? 'plus grand' : 'égal', { t: 11, c: CE2C.gris });
+      const texte = t < .15 ? `Qui est le plus grand : <b>${A}</b> ou <b>${B}</b> ?`
+        : !fin ? `On compare les <b>${NOMS[etape]}</b> : ${ca[etape]} et ${cb[etape]}${ca[etape] === cb[etape] ? ' : pareil, on passe au rang suivant.' : '.'}`
+        : A === B ? `Les deux nombres sont égaux : <b>${A} = ${B}</b>.` : `<b>${A} ${A < B ? '&lt;' : '&gt;'} ${B}</b> : ${Math.max(A, B)} a plus de ${NOMS[rang]}.`;
+      return { scene: `<svg viewBox="0 0 540 200" class="cma-svg" style="max-width:560px;">${s}</svg>`, texte };
+    } });
+}
