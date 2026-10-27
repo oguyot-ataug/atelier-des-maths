@@ -323,14 +323,19 @@ const PLX = {
   // ou l'enlever. { n : nombre de jetons attendu, k : côté d'une case, ox, oy : coin de la boîte, c : couleur }.
   // plein : la case se colorie en entier (relecture CP-N1-P1-E5 : « il faut les colorier entièrement ») ;
   // deja : les premières cases ont déjà un jeton (on ne les touche pas), on complète la boîte.
+  // deux : [rouges, bleus] attendus, chaque toucher fait passer la case de vide à rouge, puis bleu, puis vide (relecture
+  // CP-N2-P2-E4 : « c'est un défi, l'élève doit remplir toutes les cases lui-même »).
   boite: {
     tap(C, st, x, y){ const i = Math.floor((x - C.ox) / C.k), j = Math.floor((y - C.oy) / C.k); if(i < 0 || j < 0 || i >= 5 || j >= 2) return;
       const q = j * 5 + i; if(q < (C.deja || 0)) return;
+      if(C.deux){ st.d = st.d || {}; st.d[q] = ((st.d[q] || 0) + 1) % 3; return; }
       st.c = st.c || []; const n = st.c.indexOf(q); if(n >= 0) st.c.splice(n, 1); else st.c.push(q); },
-    dessin: (C, st) => (st.c || []).map(q => { const x = C.ox + (q % 5) * C.k, y = C.oy + Math.floor(q / 5) * C.k;
-      return C.plein ? `<rect x="${x + 1.5}" y="${y + 1.5}" width="${C.k - 3}" height="${C.k - 3}" fill="${C.c || '#E35D3A'}"/>`
-        : `<circle cx="${x + C.k / 2}" cy="${y + C.k / 2}" r="${C.k * .34}" fill="${C.c || '#E35D3A'}" stroke="#1F3A5C" stroke-width="1.2"/>`; }).join(''),
-    juste: (C, st) => (st.c || []).length === C.n
+    dessin: (C, st) => (C.deux ? Object.entries(st.d || {}).filter(([, v]) => v).map(([q, v]) => [+q, v === 1 ? '#E35D3A' : '#2EA8C9']) : (st.c || []).map(q => [q, C.c || '#E35D3A'])).map(([q, f]) => {
+      const x = C.ox + (q % 5) * C.k, y = C.oy + Math.floor(q / 5) * C.k;
+      return C.plein ? `<rect x="${x + 1.5}" y="${y + 1.5}" width="${C.k - 3}" height="${C.k - 3}" fill="${f}"/>`
+        : `<circle cx="${x + C.k / 2}" cy="${y + C.k / 2}" r="${C.k * .34}" fill="${f}" stroke="#1F3A5C" stroke-width="1.2"/>`; }).join(''),
+    barre: (C, st, id) => C.deux ? `<span class="pn-xaide">Touche une case : rouge, puis bleu, puis vide.</span>` : '',
+    juste: (C, st) => { if(!C.deux) return (st.c || []).length === C.n; const v = Object.values(st.d || {}); return v.filter(x => x === 1).length === C.deux[0] && v.filter(x => x === 2).length === C.deux[1]; }
   },
   // Jetons à colorier en rouge et en bleu (relecture CP-N2-P1-E6 : « on ne peut pas colorier les jetons ») : chaque
   // toucher fait passer un jeton de blanc à rouge, puis bleu, puis blanc. { n, k, ox, oy, r : rouges attendus, b : bleus }.
@@ -345,10 +350,13 @@ const PLX = {
   // Mains dont on lève ou replie les doigts (relecture CP-N2-P3-E3 : « deux mains sur lesquelles on peut déplier ou
   // replier les doigts »). { mains : [[x, y, droite ?], …] comme cpMainDoigtsSvg, att : doigts levés attendus par main }.
   mains: {
-    bouts: (x, y, dr) => [[dr ? x + 64 : x - 6, y + 40]].concat([0, 1, 2, 3].map(d => [(dr ? x + 44 - d * 13.5 : x + 3 + d * 13.5) + 5.5, y + 22])),
-    tap(C, st, x, y){ let best = null, dm = 20;
-      C.mains.forEach(([mx, my, dr], h) => PLX.mains.bouts(mx, my, dr).forEach(([bx, by], f) => { const e = Math.hypot(bx - x, by - y); if(e < dm){ dm = e; best = h + ',' + f; } }));
-      if(!best) return; st.d = st.d || {}; st.d[best] = !st.d[best]; },
+    // Zones à toucher (relecture : « le clic sur le doigt ne fait rien ») : chaque doigt, levé ou replié, sur toute sa hauteur ;
+    // le pouce, levé (à côté de la main) ou couché sur la paume. [x1, y1, x2, y2] ; les quatre doigts d'abord.
+    zones: (x, y, dr) => [0, 1, 2, 3].map(d => { const cx = dr ? x + 44 - d * 13.5 : x + 3 + d * 13.5; return [[cx - 1.5, y - 4, cx + 12.5, y + 50]]; })
+      .concat([[dr ? [x + 26, y + 54, x + 58, y + 74] : [x, y + 54, x + 32, y + 74], dr ? [x + 54, y + 16, x + 86, y + 74] : [x - 28, y + 16, x + 4, y + 74]]]),
+    tap(C, st, x, y){ let best = null;
+      C.mains.forEach(([mx, my, dr], h) => PLX.mains.zones(mx, my, dr).forEach((Z, k) => { if(best == null && Z.some(([a, b, c, d]) => x >= a && x <= c && y >= b && y <= d)) best = h + ',' + (k === 4 ? 0 : k + 1); }));
+      if(best == null) return; st.d = st.d || {}; st.d[best] = !st.d[best]; },
     dessin: (C, st) => C.mains.map(([mx, my, dr], h) => cpMainDoigtsSvg(mx, my, [0, 1, 2, 3, 4].map(f => !!(st.d || {})[h + ',' + f]), { droite: dr })).join(''),
     barre: () => `<span class="pn-xaide">Touche un doigt pour le lever ou le replier.</span>`,
     juste: (C, st) => C.att.every((n, h) => [0, 1, 2, 3, 4].filter(f => (st.d || {})[h + ',' + f]).length === n)

@@ -2,6 +2,8 @@
 (() => {
 const { lig, compte, suite } = PCP, B = P3.B, R = P3.R;
 const deux = (a, b) => cpJetons(a + b, 0, cpBleus(a, b));
+// Un calcul sur sa propre ligne, sous un dessin (dans une case de grille, les morceaux restent alignés).
+const ligne = t => `<span style="flex-basis:100%;text-align:center;white-space:nowrap;">${t}</span>`;
 PLANCHES['cp|Décomposer les nombres jusqu\'à 10'] = [
   { titre: 'Les maisons des nombres', duree: '25 min',
     attendus: ['Décomposer un nombre jusqu\'à 10 en deux nombres', 'Écrire une décomposition avec + et ='],
@@ -25,14 +27,14 @@ PLANCHES['cp|Décomposer les nombres jusqu\'à 10'] = [
     attendus: ['Connaître les compléments à 10', 'Trouver ce qui manque pour remplir la boîte de dix'],
     exos: [
       { etoiles: 1, consigne: 'Colorie en bleu les jetons qui manquent pour remplir la boîte. Complète l\'addition.',
-        eleve: plGrille([PCP.boite(4, { deja: 6, coul: CPC.jeton2 }) + '<br>6 + ' + B(1) + ' = 10', PCP.boite(8, { deja: 2, coul: CPC.jeton2 }) + '<br>2 + ' + B(1) + ' = 10'], 2),
-        corr: plGrille([cpBoiteDix(10, { c: 22, couleurs: [...Array(6).fill(CPC.jeton), ...Array(4).fill(CPC.jeton2)] }) + '<br>6 + ' + R(4) + ' = 10', cpBoiteDix(10, { c: 22, couleurs: [...Array(2).fill(CPC.jeton), ...Array(8).fill(CPC.jeton2)] }) + '<br>2 + ' + R(8) + ' = 10'], 2) },
+        eleve: plGrille([PCP.boite(4, { deja: 6, coul: CPC.jeton2 }) + ligne('6 + ' + B(1) + ' = 10'), PCP.boite(8, { deja: 2, coul: CPC.jeton2 }) + ligne('2 + ' + B(1) + ' = 10')], 2),
+        corr: plGrille([cpBoiteDix(10, { c: 22, couleurs: [...Array(6).fill(CPC.jeton), ...Array(4).fill(CPC.jeton2)] }) + ligne('6 + ' + R(4) + ' = 10'), cpBoiteDix(10, { c: 22, couleurs: [...Array(2).fill(CPC.jeton), ...Array(8).fill(CPC.jeton2)] }) + ligne('2 + ' + R(8) + ' = 10')], 2) },
       { etoiles: 1, consigne: 'Combien de jetons manque-t-il pour remplir la boîte ?',
         ...compte([[cpBoiteDix(7, { c: 20 }), 3], [cpBoiteDix(4, { c: 20 }), 6], [cpBoiteDix(9, { c: 20 }), 1]], 3) },
       { etoiles: 2, col: 1, consigne: 'Complète pour faire 10.',
         ...P3.rmp([['8 + @ = 10', 2], ['5 + @ = 10', 5], ['3 + @ = 10', 7], ['@ + 4 = 10', 6]], 2) },
-      { etoiles: 3, consigne: 'J\'ai déjà 6 images. Il me faut 10 images pour remplir la page. Dessine les images qui manquent dans la boîte, puis complète.',
-        eleve: PCP.lig(PCP.boite(4, { deja: 6, coul: CPC.jeton2 })) + PCP.lig('Il me manque ' + B(1) + ' images.'),
+      { etoiles: 3, consigne: 'J\'ai déjà 6 images. Il me faut 10 images pour remplir la page. Dans la boîte de dix, dessine en rouge les 6 images que j\'ai, puis en bleu celles qui manquent. Complète.',
+        eleve: PCP.lig(PCP.boite(0, { deux: [6, 4] })) + PCP.lig('Il me manque ' + B(1) + ' images.'),
         corr: PCP.lig(cpBoiteDix(10, { c: 22, couleurs: [...Array(6).fill(CPC.jeton), ...Array(4).fill(CPC.jeton2)] })) + plListe(['6 + 4 = 10']) + PCP.lig('Il me manque ' + R(4) + ' images.') },
       { etoiles: 2, col: 1, consigne: 'Complète.',
         ...P3.rmp([['10 = 9 + @', 1], ['10 = 2 + @', 8], ['10 = @ + 3', 7], ['10 = @ + 6', 4]], 2) },

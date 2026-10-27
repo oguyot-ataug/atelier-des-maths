@@ -52,9 +52,9 @@ const RELECTURE_CHGT = {
   '6e-G2-P1-E1': { date: '2026-10-27T18:33:51Z', note: "Retour bêta « les choix se superposent » : à l'écran, sous chaque figure, les mots passent à la ligne au lieu de se chevaucher (vaut pour tous les choix à l'écran)" },
   // Build 1183 : CP-N2, outils à l'écran (jetons bicolores, boîte à compléter, mains aux doigts mobiles).
   'CP-N2-P1-E6': { date: '2026-10-27T19:10:49Z', note: "À l'écran, on touche un jeton : rouge, puis bleu, puis blanc. Pour que la réponse puisse être vérifiée, les deux façons sont imposées : 4 rouges et 3 bleus, puis 6 rouges et 1 bleu" },
-  'CP-N2-P2-E1': { date: '2026-10-27T19:10:49Z', note: "Exercice placé en premier (c'était l'exercice 4) ; à l'écran, on touche les cases vides pour y mettre les jetons bleus ; l'addition « 6 + … = 10 » est ajoutée sous chaque boîte. Les anciens exercices 1, 2 et 3 deviennent 2, 3 et 4" },
-  'CP-N2-P2-E4': { date: '2026-10-27T19:10:49Z', note: "(c'était l'exercice 3) Les 6 images sont dessinées dans une boîte de dix : on touche les cases vides pour dessiner celles qui manquent, puis on écrit combien il en manque" },
-  'CP-N2-P3-E3': { date: '2026-10-27T19:10:49Z', note: "Deux mains aux doigts repliés : à l'écran, on touche un doigt pour le lever ou le replier ; c'est juste avec 3 doigts levés sur chaque main ; puis on écrit le nombre de doigts" },
+  'CP-N2-P2-E1': { date: '2026-10-27T19:51:50Z', note: "Addition « 6 + … = 10 » sur sa propre ligne, sous la boîte : les termes sont alignés (sur papier et à l'écran). Exercice placé en premier ; à l'écran, on touche les cases vides pour mettre les jetons bleus" },
+  'CP-N2-P2-E4': { date: '2026-10-27T19:51:50Z', note: "C'est un défi : la boîte de dix est vide, l'élève dessine tout lui-même, en rouge les 6 images qu'il a, puis en bleu celles qui manquent (à l'écran, chaque toucher : rouge, puis bleu, puis vide) ; puis il écrit combien il en manque" },
+  'CP-N2-P3-E3': { date: '2026-10-27T19:51:50Z', note: "On touche maintenant directement le doigt (levé ou replié, sur toute sa hauteur) ou le pouce (couché sur la paume ou levé) pour le lever ou le replier ; c'est juste avec 3 doigts levés sur chaque main" },
 };
 
 const RL_REMARQUES = [
