@@ -278,7 +278,8 @@ main{max-width:1080px;margin:0 auto;padding:40px 24px 100px;}
    qui venait après était coupé. Plus de plafond : le jour ouvert prend toute sa hauteur. */
 .nb-accordion-body.open{max-height:none;padding:14px 20px 18px;}
 @media (max-width:720px){ .nb-accordion-body{padding-left:10px;padding-right:10px;} .nb-accordion-body.open{padding:12px 10px 14px;} }
-.nb-ref{text-decoration:underline;text-decoration-color:var(--accent);text-decoration-thickness:1.5px;font-weight:700;font-family:'Space Grotesk',sans-serif;font-size:1rem;margin-bottom:6px;}
+.nb-sou{text-decoration:underline;text-decoration-color:var(--accent);text-decoration-thickness:1.5px;}
+.nb-ref{font-weight:700;font-family:'Space Grotesk',sans-serif;font-size:1rem;margin-bottom:6px;}
 .nb-ref-row{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
 .nb-remove-btn{
   flex:none;border:1px solid rgba(211,90,60,.35);background:rgba(211,90,60,.06);color:#a83c1f;

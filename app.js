@@ -3659,6 +3659,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1187', date:'2026-10-27', items:['Titres soulignés sans les deux-points, vérifié aussi de la 6e à la 3e : les réponses rédigées des collèges utilisent le même outil que le primaire, déjà corrigé. Corrigé en plus : les titres du cahier de textes (« Exercice 12 : Le cercle ») : seuls les mots sont soulignés, ni les deux-points ni les vignettes.'] },
   { version:'2026-08-19.1186', date:'2026-10-27', items:['Réponses rédigées (tous niveaux du primaire, cours, exercices et corrigés des planches) : le titre est souligné jusqu\'à sa dernière lettre, les deux-points ne sont plus soulignés (« <u>Âge de la grand-mère</u> : »). Demandé : « on ne souligne jamais les \":\" ».'] },
   { version:'2026-08-19.1185', date:'2026-10-27', items:['Exercice projeté à l\'écran (tous niveaux) : il ne change plus de taille quand on touche une case pour la remplir. La place du clavier, à droite, est réservée dès l\'ouverture de l\'exercice, au lieu d\'être prise au moment où le clavier apparaît (demandé : « quand on clique sur une case pour la remplir, le format change »).'] },
   { version:'2026-08-19.1184', date:'2026-10-27', items:['Relecture, CP « Faire 10 » et « Les doubles ». L\'addition sous chaque boîte de dix est sur sa propre ligne (les termes sont alignés). Le défi des images : la boîte est vide, l\'élève dessine tout lui-même (en rouge les images qu\'il a, en bleu celles qui manquent). Les mains : on touche directement un doigt, levé ou replié, ou le pouce, pour le lever ou le replier.'] },
@@ -8022,7 +8023,8 @@ function entryRowsHTML(e, idx, editable, showRemoveBtn){
   // Vignettes de modalité cliquables (professeur, exercices seulement) -- demandé : « changer le type de
   // correction sans les rééditer, juste par des vignettes cliquables dans le bilan en dessous ».
   const modEditable = editable && !['', 'Cours', 'Interrogation', 'Questions flash', 'Séance en direct'].includes(e.exo);
-  let html = `<div class="cahier-print-entry"><div class="nb-ref-row"><div class="nb-ref">${refLabel}${e.titre?' : '+escapeHtml(e.titre):''}${!modEditable ? [entreeModalite(e), entreeSupport(e)].filter(Boolean).map(m=>' '+modaliteBadge(m)).join('') : ''}</div>`;
+  // Seuls les mots sont soulignés, jamais les deux-points ni les vignettes (demandé : « on ne souligne jamais les ":" »).
+  let html = `<div class="cahier-print-entry"><div class="nb-ref-row"><div class="nb-ref">${refLabel?`<span class="nb-sou">${refLabel}</span>`:''}${e.titre?(refLabel?' : ':'')+`<span class="nb-sou">${escapeHtml(e.titre)}</span>`:''}${!modEditable ? [entreeModalite(e), entreeSupport(e)].filter(Boolean).map(m=>' '+modaliteBadge(m)).join('') : ''}</div>`;
   if(editable){
     // Le déplacement ne peut se faire QU'À L'INTÉRIEUR du même groupe (même date + même
     // chapitre) -- au-delà, ça mélangerait des exercices de jours différents et casserait le
@@ -8655,7 +8657,7 @@ async function exportCahierAsPDF(){
       .katex{ font-size:1.18em; }
       * { -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; color-adjust:exact !important; }
       .nb-date{ font-weight:700; }
-      .nb-ref{ text-decoration:underline; text-underline-offset:3px; }
+      .nb-sou{ text-decoration:underline; text-underline-offset:3px; }
       .nb-page-footer{ text-align:right; font-style:italic; color:#666; font-size:.92em; margin:8px 0 16px; }
       .cahier-print-entry{ page-break-inside:avoid; break-inside:avoid; }
       .nb-accordion-body{ max-height:none !important; overflow:visible !important; padding:14px 20px 18px !important; }
@@ -8927,7 +8929,7 @@ async function exportCahierDayAsPDF(date){
       .katex{ font-size:1.18em; }
       * { -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; color-adjust:exact !important; }
       .nb-date{ font-weight:700; }
-      .nb-ref{ text-decoration:underline; text-underline-offset:3px; }
+      .nb-sou{ text-decoration:underline; text-underline-offset:3px; }
       .cahier-print-entry{ page-break-inside:avoid; break-inside:avoid; }
       .print-trigger-btn{
         position:static; display:block; margin:0 auto 16px; padding:10px 18px;
