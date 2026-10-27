@@ -18,14 +18,18 @@ const P3 = {
   // Réponses à écrire : [['texte avec @', réponse], …] (@ = pointillés dans l'énoncé, réponse dans le corrigé).
   rmp: (l, n) => ({ eleve: plListe(l.map(([t]) => t.split('@').join(P3.B(n || 3)))), corr: plListe(l.map(([t, ...r]) => { let i = 0; return t.replace(/@/g, () => P3.R(r[i++])); })) }),
   // Choix à entourer : [['question', 'bonne réponse'], …], m = les choix proposés (« a · b · c »).
-  ch: (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) + '</div>' }),
+  ch: (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${P3.entoureParmi(m, r)}`)) + '</div>' }),
   // Choix différents pour chaque question : [['question', 'bonne réponse', 'a · b · c'], …].
-  chx: it => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t, , m]) => `${t} <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) + '</div>' }),
+  chx: it => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t, , m]) => `${t} <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r, m]) => `${t} ${P3.entoureParmi(m, r)}`)) + '</div>' }),
+  // Corrigé d'un choix : tous les mots proposés restent visibles, le bon est entouré (relecture CP-N1-P3-E3 : « dans la
+  // correction, on ne voit plus que le plus grand nombre, il faut continuer à voir les deux »). Réponse absente des choix : entourée seule.
+  entoureParmi: (m, r) => { const L = String(m).split(' · '), i = L.findIndex(w => w.trim() === String(r).trim());
+    return i < 0 ? plEntoure(r) : '<b>' + L.map((w, k) => k === i ? plEntoure(w.trim()) : w.trim()).join(' · ') + '</b>'; },
   // Automatismes du brevet : questions courtes, réponse à écrire ou à entourer parmi des choix.
   // [['question', réponse, ['choix1', 'choix2', …]?], …]
   auto: it => ({
     eleve: plListe(it.map(([q, , c]) => c ? `${q} <b>${c.join(' · ')}</b>` : `${q} ${P3.B(4)}`)),
-    corr: plListe(it.map(([q, r, c]) => c ? `${q} ${plEntoure(r)}` : `${q} ${P3.R(r)}`)) }),
+    corr: plListe(it.map(([q, r, c]) => c ? `${q} ${P3.entoureParmi(c.join(' · '), r)}` : `${q} ${P3.R(r)}`)) }),
   // Questions enchaînées d'un problème de brevet (numérotées comme au brevet) ; une question peut
   // avoir des sous-questions : ['texte', ['a)…', 'b)…']].
   qs: items => `<ol class="pl-bq">${items.map(x => Array.isArray(x) ? `<li>${x[0]}<ol>${x[1].map(y => `<li>${y}</li>`).join('')}</ol></li>` : `<li>${x}</li>`).join('')}</ol>`,

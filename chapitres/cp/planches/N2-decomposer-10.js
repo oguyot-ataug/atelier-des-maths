@@ -54,7 +54,7 @@ PLANCHES['cp|Décomposer les nombres jusqu\'à 10'] = [
       { etoiles: 2, col: 1, consigne: 'Est-ce un double ? Entoure.',
         ...P3.chx([['3 + 3', 'oui', 'oui · non'], ['4 + 2', 'non', 'oui · non'], ['5 + 5', 'oui', 'oui · non'], ['1 + 2', 'non', 'oui · non']]) },
       { etoiles: 2, consigne: 'Dessine le double : autant de jetons dans la 2e boîte.',
-        eleve: plGrille([lig(cpBoiteDix(3, { c: 18 }), cpBoiteDix(0, { c: 18 })) + '3 + 3 = ' + B(1), lig(cpBoiteDix(4, { c: 18 }), cpBoiteDix(0, { c: 18 })) + '4 + 4 = ' + B(1)], 2),
+        eleve: plGrille([lig(cpBoiteDix(3, { c: 18 }), PCP.boite(3, { c: 18, coul: CPC.jeton2 })) + '3 + 3 = ' + B(1), lig(cpBoiteDix(4, { c: 18 }), PCP.boite(4, { c: 18, coul: CPC.jeton2 })) + '4 + 4 = ' + B(1)], 2),
         corr: plGrille([lig(cpBoiteDix(3, { c: 18 }), cpBoiteDix(3, { c: 18, couleurs: Array(10).fill(CPC.jeton2) })) + '3 + 3 = ' + R(6), lig(cpBoiteDix(4, { c: 18 }), cpBoiteDix(4, { c: 18, couleurs: Array(10).fill(CPC.jeton2) })) + '4 + 4 = ' + R(8)], 2) },
     ] },
 ];

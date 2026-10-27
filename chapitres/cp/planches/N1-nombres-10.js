@@ -1,6 +1,6 @@
 /* CP · Planches : Les nombres jusqu'à 10 (N1) -- compter, reconnaître sans compter, écrire, comparer. */
 (() => {
-const { lig, compte, entoure, suite, cadre } = PCP, B = P3.B, R = P3.R;
+const { lig, compte, entoure, suite } = PCP, B = P3.B, R = P3.R;
 PLANCHES['cp|Les nombres jusqu\'à 10'] = [
   { titre: 'Compter jusqu\'à 10', duree: '20 min',
     attendus: ['Dénombrer une collection jusqu\'à 10', 'Reconnaître sans compter les constellations du dé', 'Associer une quantité et son écriture en chiffres'],
@@ -12,9 +12,9 @@ PLANCHES['cp|Les nombres jusqu\'à 10'] = [
       { etoiles: 2, consigne: 'Combien de doigts sont levés ?',
         ...compte([[cpDoigts(4, { px: 70 }), 4], [cpDoigts(7, { px: 130 }), 7], [cpDoigts(10, { px: 130 }), 10]], 3) },
       { etoiles: 2, consigne: 'Dessine 6 ronds dans le cadre.',
-        eleve: cadre(60), corr: lig(cpJetons(6)) },
+        eleve: lig(PCP.zone(6)), corr: lig(cpJetons(6)) },
       { etoiles: 2, consigne: 'Colorie le bon nombre de cases dans chaque boîte de dix.',
-        eleve: plGrille([cpBoiteDix(0, { c: 22 }) + '<br><b>8</b>', cpBoiteDix(0, { c: 22 }) + '<br><b>3</b>', cpBoiteDix(0, { c: 22 }) + '<br><b>10</b>'], 3),
+        eleve: plGrille([PCP.boite(8) + '<br><b>8</b>', PCP.boite(3) + '<br><b>3</b>', PCP.boite(10) + '<br><b>10</b>'], 3),
         corr: plGrille([cpBoiteDix(8, { c: 22 }) + '<br><b>8</b>', cpBoiteDix(3, { c: 22 }) + '<br><b>3</b>', cpBoiteDix(10, { c: 22 }) + '<br><b>10</b>'], 3) },
     ] },
   { titre: 'Écrire et lire les nombres', duree: '20 min',
@@ -44,13 +44,13 @@ PLANCHES['cp|Les nombres jusqu\'à 10'] = [
         ...entoure([[cpDe(5, { c: 40 }), false], [cpDe(2, { c: 40 }), true], [cpDe(4, { c: 40 }), false]], 3) },
       { etoiles: 2, col: 1, consigne: 'Entoure le plus grand nombre.',
         ...P3.chx([['', '7', '7 · 4'], ['', '9', '6 · 9'], ['', '10', '10 · 8']]) },
-      { etoiles: 3, consigne: 'Léo a 6 billes. Zoé a 8 billes. Qui a le plus de billes ? Dessine les billes pour le montrer.',
-        eleve: cadre(70, 'Léo :') + cadre(70, 'Zoé :'),
-        corr: lig(cpJetons(6), ' Léo') + lig(cpJetons(8, 0, Array(8).fill(CPC.jeton2)), ' Zoé') + cm1Redac('Qui a le plus', '', 'Zoé a 2 billes de plus : c\'est Zoé qui a le plus de billes.') },
+      { etoiles: 3, consigne: 'Léo a 6 billes. Zoé a 8 billes. Dessine les billes de chacun, puis entoure qui en a le plus.',
+        eleve: lig('Léo : ', PCP.zone(6)) + lig('Zoé : ', PCP.zone(8, { c: CPC.jeton2 })) + plListe(['Qui a le plus de billes ? <b>Léo · Zoé</b>']),
+        corr: lig(cpJetons(6), ' Léo') + lig(cpJetons(8, 0, Array(8).fill(CPC.jeton2)), ' Zoé') + plListe(['Qui a le plus de billes ? <b>Léo · ' + plEntoure('Zoé') + '</b>']) + '<p style="text-align:center;">Zoé a 2 billes de plus que Léo.</p>' },
       { etoiles: 2, col: 1, consigne: 'Entoure le plus petit nombre.',
         ...P3.chx([['', '3', '3 · 8'], ['', '5', '7 · 5'], ['', '0', '2 · 0']]) },
       { etoiles: 2, col: 1, consigne: 'Dessine autant de ronds que de points sur le dé.',
-        eleve: lig(cpDe(5, { c: 40 })) + cadre(50), corr: lig(cpDe(5, { c: 40 })) + lig(cpJetons(5)) },
+        eleve: lig(cpDe(5, { c: 40 })) + lig(PCP.zone(5)), corr: lig(cpDe(5, { c: 40 })) + lig(cpJetons(5)) },
     ] },
 ];
 })();

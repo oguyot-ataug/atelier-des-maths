@@ -25,6 +25,11 @@ const PCP = {
   // Une collection de pommes en vrac, toutes visibles (pour compter).
   pommes: (n, graine, px) => { const W = 40 + Math.ceil(Math.sqrt(n * 1.6)) * 34, H = 30 + Math.ceil(n / Math.ceil(Math.sqrt(n * 1.6))) * 34 + 20;
     return cpSvg(W, H, cpVrac(n, graine || n * 5 + 1, W, H, 30).map(([x, y]) => cpPomme(x, y + 6, { r: 12 })).join(''), px || Math.min(150, W)); },
+  // À l'écran, on y dessine en touchant (outils « ronds » et « boite » de planches-num.js) -- relecture CP-N1 :
+  // « permettre de dessiner les ronds », « case non cliquable ». Sur papier : un cadre en pointillés, une boîte de dix vide.
+  zone: (n, o) => { o = o || {}; const k = 28, w = o.w || 10, h = o.h || 2, W = w * k + 8, H = h * k + 8;
+    return plX(cpSvg(W, H, `<rect x="2" y="2" width="${W - 4}" height="${H - 4}" rx="10" fill="#fff" stroke="#9FB0C4" stroke-width="2" stroke-dasharray="7 5"/>`, o.px || W), { t: 'ronds', n, k, ox: 4, oy: 4, w, h, c: o.c }); },
+  boite: (n, o) => { o = o || {}; const c = o.c || 22; return plX(cpBoiteDix(0, { c }), { t: 'boite', n, k: c, ox: 3, oy: 3, c: o.coul }); },
   // Cadre vide où l'élève dessine.
   cadre: (h, txt) => `<div style="flex:1 1 100%;min-width:100px;box-sizing:border-box;border:2px dashed #9FB0C4;border-radius:10px;min-height:${h || 70}px;margin:4px 0;padding:4px 8px;color:#9AA3AE;font-size:.85rem;">${txt || ''}</div>`,
 };

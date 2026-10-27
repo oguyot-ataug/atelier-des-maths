@@ -308,6 +308,25 @@ const plxBarreFleches = (id, st) => `<span class="pn-x-prog">${st.p ? plxFleches
   + ['g', 'h', 'b', 'd'].map(f => plxBtn(id, 'f' + f, PLX_FL[f][0], false, 'pn-xfl')).join('') + plxBtn(id, 'del', '⌫') + plxBtn(id, 'vide', 'Effacer');
 const plxActionFleches = (st, a) => { st.p = st.p || ''; if(a[0] === 'f' && st.p.length < 30) st.p += a[1]; else if(a === 'del') st.p = st.p.slice(0, -1); else if(a === 'vide') st.p = ''; };
 const PLX = {
+  // Dessiner des ronds dans un cadre (CP ; relecture CP-N1 : « permettre de dessiner les ronds ») : on touche le cadre
+  // pour poser un rond, on touche un rond pour l'effacer. { n : nombre attendu, k : côté d'une place, ox, oy, w × h places, c : couleur }.
+  ronds: {
+    tap(C, st, x, y){ const i = Math.floor((x - C.ox) / C.k), j = Math.floor((y - C.oy) / C.k); if(i < 0 || j < 0 || i >= C.w || j >= C.h) return;
+      st.r = st.r || []; const q = i + ',' + j, n = st.r.indexOf(q); if(n >= 0) st.r.splice(n, 1); else st.r.push(q); },
+    action(C, st, a){ if(a === 'vide') st.r = []; },
+    dessin: (C, st) => (st.r || []).map(q => { const [i, j] = q.split(',').map(Number);
+      return `<circle cx="${C.ox + i * C.k + C.k / 2}" cy="${C.oy + j * C.k + C.k / 2}" r="${C.k * .36}" fill="${C.c || '#E35D3A'}" stroke="#1F3A5C" stroke-width="1.2"/>`; }).join(''),
+    barre: (C, st, id) => `<span class="pn-xaide">Touche le cadre pour dessiner un rond ; touche un rond pour l'effacer.</span>` + plxBtn(id, 'vide', 'Tout effacer'),
+    juste: (C, st) => (st.r || []).length === C.n
+  },
+  // Boîte de dix à remplir (relecture CP-N1-P1-E5 : « case non cliquable ») : on touche une case pour y mettre un jeton,
+  // ou l'enlever. { n : nombre de jetons attendu, k : côté d'une case, ox, oy : coin de la boîte, c : couleur }.
+  boite: {
+    tap(C, st, x, y){ const i = Math.floor((x - C.ox) / C.k), j = Math.floor((y - C.oy) / C.k); if(i < 0 || j < 0 || i >= 5 || j >= 2) return;
+      st.c = st.c || []; const q = j * 5 + i, n = st.c.indexOf(q); if(n >= 0) st.c.splice(n, 1); else st.c.push(q); },
+    dessin: (C, st) => (st.c || []).map(q => `<circle cx="${C.ox + (q % 5) * C.k + C.k / 2}" cy="${C.oy + Math.floor(q / 5) * C.k + C.k / 2}" r="${C.k * .34}" fill="${C.c || '#E35D3A'}" stroke="#1F3A5C" stroke-width="1.2"/>`).join(''),
+    juste: (C, st) => (st.c || []).length === C.n
+  },
   barres: {
     tap(C, st, x, y){ const i = C.xs.findIndex((x0, i) => C.att[i] != null && x >= x0 - 8 && x <= x0 + C.larg + 8); if(i < 0) return; st.v = st.v || {};
       st.v[i] = Math.max(0, Math.min(C.max, Math.round((C.y0 - y) / C.u))); },
@@ -519,7 +538,7 @@ function plClavierPhysique(e){
     .pn-ex .pn-bascule{ border:2px dashed rgba(58,110,165,.3); background:none; border-radius:999px; padding:2px 8px; cursor:pointer; font:inherit; color:inherit; position:relative; }
     .pn-ex .pn-bascule.pn-entoure.on{ border:2.5px solid #1F3A5C; } .pn-lecture .pn-bascule, .pn-lecture .pn-mot{ border-color:transparent; }
     .pn-ex .pn-bascule.pn-barre.on::after{ content:''; position:absolute; left:2px; right:2px; top:50%; border-top:3px solid #C0392B; transform:rotate(-20deg); }
-    .pn-ex .pn-choix{ display:inline-flex; gap:2px; align-items:center; } .pn-ex .pn-sep{ color:#8A93A3; margin:0 2px; }
+    .pn-ex .pn-choix{ display:inline-flex; flex-wrap:wrap; justify-content:center; max-width:100%; gap:4px 2px; align-items:center; } /* relecture bêta 6e-G2-P1-E1 : choix sous une petite figure, à la ligne au lieu de se superposer */ .pn-ex .pn-sep{ color:#8A93A3; margin:0 2px; }
     .pn-ex .pn-mot{ border:2px dashed rgba(58,110,165,.3); background:none; border-radius:999px; padding:1px 8px; font:700 1em inherit; color:#1F3A5C; cursor:pointer; }
     .pn-ex .pn-mot.on{ border:2.5px solid #1F3A5C; background:#EEF3F9; }
     .pn-ex .pn-bascule.pn-b-ok{ border:2.5px solid #1F7A4D !important; background:#EAF7EF; }
@@ -540,6 +559,7 @@ function plClavierPhysique(e){
     .pn-ex .pl-papier{ display:none; } /* ce qui ne sert que sur la feuille (ligne pour écrire…) */
     .pn-ex svg.pn-x{ width:min(100%, 520px) !important; height:auto !important; max-height:none !important; touch-action:manipulation; cursor:pointer; }
     .pn-ex svg.pn-x-horloge{ width:min(100%, 230px) !important; }
+    .pn-ex svg.pn-x-boite{ width:min(100%, 200px) !important; } .pn-ex svg.pn-x-ronds{ width:min(100%, 420px) !important; }
     .pn-xbar{ display:flex; gap:6px; align-items:center; justify-content:center; flex-wrap:wrap; margin:4px 0 8px; font-size:.88rem; color:#4E5665; } .pn-xbar:empty{ display:none; } .pn-lecture .pn-xbar button{ display:none; }
     .pn-xbtn{ border:2px solid #3A6EA5; background:#fff; color:#1F3A5C; border-radius:10px; padding:3px 10px; font:700 .95rem 'Space Grotesk',Arial,sans-serif; cursor:pointer; min-width:40px; }
     .pn-xbtn.on{ background:#3A6EA5; color:#fff; } .pn-xbtn.pn-xfl{ font-size:1.25rem; min-width:46px; } .pn-xbtn.pn-xh.on{ background:#E35D3A; border-color:#E35D3A; } .pn-xbtn.pn-xm.on{ background:#2EA8C9; border-color:#2EA8C9; }
