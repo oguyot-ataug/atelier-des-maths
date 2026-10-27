@@ -498,19 +498,26 @@ function plNumBilan(res){
 /* ---------- Clavier virtuel (chiffres, signes, lettres) ---------- */
 const plClavier = {
   el: null, cb: null, mode: '123', maj: false,
-  ouvrir(cb){ this.cb = cb; if(!this.el){ this.el = document.createElement('div'); this.el.id = 'plClavier'; document.body.appendChild(this.el);
+  ouvrir(cb){ this.cb = cb; this.creer();
+    const h = document.fullscreenElement && document.fullscreenElement !== document.documentElement ? document.fullscreenElement : document.body;
+    if(this.el.parentNode !== h) h.appendChild(this.el);
+    this.rendre(); this.el.style.display = 'block'; document.addEventListener('keydown', plClavierPhysique, true);
+    let pos = null; try{ pos = JSON.parse(localStorage.getItem('plClavierPos') || 'null'); }catch(_){} this.placer(pos);
+    document.body.classList.add('pn-clavier-ouvert'); window.dispatchEvent(new Event('resize')); },
+  // Largeur du clavier dans un mode ('123' ou 'abc'), mesurée sans l'afficher : la projection lui réserve sa place à
+  // l'avance, pour que l'exercice ne change pas de taille quand on touche une case.
+  largeur(mode){ this.creer(); const el = this.el;
+    if(el.style.display === 'block' && this.mode === mode) return el.getBoundingClientRect().width;
+    const m = this.mode, d = el.style.display; this.mode = mode; this.rendre(); el.style.visibility = 'hidden'; el.style.display = 'block';
+    const w = el.getBoundingClientRect().width; el.style.display = d; el.style.visibility = ''; this.mode = m; this.rendre(); return w; },
+  creer(){ if(!this.el){ this.el = document.createElement('div'); this.el.id = 'plClavier'; document.body.appendChild(this.el);
       // Double-clic sur la poignée : le clavier revient à sa place (en bas, au milieu).
       this.el.addEventListener('dblclick', e => { if(e.target.closest('.pn-cl-poignee')){ try{ localStorage.removeItem('plClavierPos'); }catch(_){} this.placer(null); } });
       this.el.addEventListener('pointerdown', e => { if(e.target.closest('.pn-cl-poignee')){ this.glisser(e); return; } const b = e.target.closest('button'); if(!b) return; e.preventDefault();
         if(b.dataset.m){ this.mode = b.dataset.m; this.rendre(); return; }
         if(b.dataset.maj){ this.maj = !this.maj; this.rendre(); return; }
         if(b.dataset.k === 'fermer'){ if(this.cb) this.cb('ok-fin'); this.fermer(); return; }
-        if(this.cb) this.cb(b.dataset.k); }); }
-    const h = document.fullscreenElement && document.fullscreenElement !== document.documentElement ? document.fullscreenElement : document.body;
-    if(this.el.parentNode !== h) h.appendChild(this.el);
-    this.rendre(); this.el.style.display = 'block'; document.addEventListener('keydown', plClavierPhysique, true);
-    let pos = null; try{ pos = JSON.parse(localStorage.getItem('plClavierPos') || 'null'); }catch(_){} this.placer(pos);
-    document.body.classList.add('pn-clavier-ouvert'); window.dispatchEvent(new Event('resize')); },
+        if(this.cb) this.cb(b.dataset.k); }); } },
   fermer(){ if(this.el) this.el.style.display = 'none'; this.cb = null; document.removeEventListener('keydown', plClavierPhysique, true);
     document.body.classList.remove('pn-clavier-ouvert'); window.dispatchEvent(new Event('resize')); },
   /* Clavier déplaçable -- signalé : « on a le pavé numérique qui peut gêner la vision. Il faudrait qu'il

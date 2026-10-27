@@ -729,8 +729,13 @@ function plProjRendre(){
 function plProjAjuster(){
   const corps = document.getElementById('plpCorps'), boite = document.getElementById('plpBoite'); if(!corps || !boite) return;
   // Clavier de l'écran : à droite sur grand écran ; sur téléphone il occupe toute la largeur, en bas.
+  // Sur grand écran, sa place à droite est réservée dès qu'il y a une case à remplir, qu'il soit ouvert ou non : l'exercice
+  // garde la même taille quand on touche une case (demandé : « quand on clique sur une case pour la remplir, le format change »).
   const cl = document.getElementById('plClavier'), clr = cl && cl.style.display === 'block' ? cl.getBoundingClientRect() : null;
-  const cote = clr && clr.width < corps.clientWidth * .6, droite = cote ? clr.width + 24 : 0;
+  // Largeur réservée : celle du clavier des chiffres, ou des lettres si une réponse s'écrit avec des lettres (cases larges).
+  const cases = !!boite.querySelector('[data-pnv]') && typeof plClavier !== 'undefined', lettres = !!boite.querySelector('.pn-large');
+  const wr = cases ? Math.max(plClavier.largeur('123'), lettres ? plClavier.largeur('abc') : 0) : 0, large = cases && wr < corps.clientWidth * .6;
+  const cote = (clr && clr.width < corps.clientWidth * .6) || large, droite = cote ? Math.max(large ? wr : 0, clr && clr.width < corps.clientWidth * .6 ? clr.width : 0) + 24 : 0;
   const bas = clr && !cote ? Math.max(0, corps.getBoundingClientRect().bottom - clr.top + 12) : 0;
   corps.style.paddingRight = droite ? droite + 24 + 'px' : ''; corps.style.paddingBottom = bas ? bas + 'px' : '';
   const etroit = corps.clientWidth < 700, cs = getComputedStyle(corps);
