@@ -1,7 +1,12 @@
 qonto-llms.txt : HTTP 200, 75125 caractères
-qonto-llms-full.txt : HTTP 200, 958603 caractères
 qonto-einvoicing.md : HTTP 200, 4311 caractères
 qonto-create-client-invoice.md : HTTP 200, 71048 caractères
 qonto-factur-x.md : HTTP 200, 14336 caractères
 qonto-api-key.md : HTTP 200, 2075 caractères
-qonto-sandbox.md : HTTP 404, 786 caractères
+qonto-create-client.md : HTTP 200, 52961 caractères
+qonto-list-clients.md : HTTP 200, 35750 caractères
+qonto-retrieve-client-invoice.md : HTTP 200, 44806 caractères
+qonto-send-einvoice.md : HTTP 200, 27145 caractères
+qonto-einvoicing-settings.md : HTTP 200, 10684 caractères
+qonto-pa-as-a-service.md : HTTP 200, 3758 caractères
+qonto-create-credit-note.md : HTTP 200, 41757 caractères
