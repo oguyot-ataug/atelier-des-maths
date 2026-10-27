@@ -73,6 +73,9 @@ préparer ces mises à jour, sans les publier avant la date d'effet.
 - **Jamais plusieurs calculs sur une même ligne** (une liste `cm1Liste`, ou `{ suite: [...] }`).
 - **Pas de numérotation « 1. », « 2. »** devant les questions, surtout si elles commencent par un nombre
   ou un calcul (listes à puces ; le quiz affiche « Question 1 » au-dessus de l'énoncé).
+- **Nombres en lettres en orthographe rectifiée** (tous niveaux) : des traits d'union entre tous les mots du
+  nombre, « deux-mille-quatre-cent-six », « vingt-et-un », « deux-cents » ; « million » et « milliard » sont des
+  noms, sans trait d'union (« trois millions deux-cent-mille »).
 - **Fractions toujours en LaTeX**, jamais « a/b » : `cm1Frac(a, b)` dans les cours, quiz, corrections ;
   dans les dessins SVG, fraction en étage ; les questions flash « 3/4 » sont converties à l'affichage.
 - **Tous les exercices de l'onglet Exercices ont une réponse rédigée** avec `cm1Redac(titre, calcul,

@@ -24,9 +24,9 @@ PLANCHES['cp|Les nombres jusqu\'à 59'] = [
     attendus: ['Écrire les nombres en chiffres et en lettres', 'Dizaines entières : vingt, trente, quarante, cinquante'],
     exos: [
       { etoiles: 1, col: 1, consigne: 'Écris en chiffres.',
-        ...P3.rmp([['trente-deux : @', 32], ['quarante et un : @', 41], ['cinquante-six : @', 56], ['vingt-neuf : @', 29]], 2) },
+        ...P3.rmp([['trente-deux : @', 32], ['quarante-et-un : @', 41], ['cinquante-six : @', 56], ['vingt-neuf : @', 29]], 2) },
       { etoiles: 2, col: 1, consigne: 'Écris en lettres.',
-        ...P3.rmp([['24 : @', 'vingt-quatre'], ['30 : @', 'trente'], ['51 : @', 'cinquante et un']], 10) },
+        ...P3.rmp([['24 : @', 'vingt-quatre'], ['30 : @', 'trente'], ['51 : @', 'cinquante-et-un']], 10) },
       { etoiles: 3, consigne: 'Dessine 34 avec des barres de dix et des cubes.',
         eleve: cadre(90), corr: lig(cpBarres(34, { q: 8 })) },
       { etoiles: 1, consigne: 'Combien de cubes ? Écris le nombre.',

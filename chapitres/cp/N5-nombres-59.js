@@ -32,8 +32,8 @@ ${cm1Regle(`Dans un nombre à deux chiffres :${cm1Liste(['le chiffre de <b>gauch
 ${cm1Rem('Au tableau : on peut aussi utiliser des bûchettes et des élastiques, ou des boîtes de dix. 43 et 34, ce n\'est pas pareil : dans 43, il y a 4 dizaines !')}
 
 ${cm1Lecon(3, 'Lire et écrire les nombres')}
-${cm1Def(`${cm1Liste(['<b>21</b> : vingt et un', '<b>22</b> : vingt-deux', '<b>35</b> : trente-cinq', '<b>41</b> : quarante et un', '<b>58</b> : cinquante-huit'])}`, 'En lettres')}
-${cm1Regle('On dit d\'abord le nombre de dizaines (vingt, trente, quarante, cinquante), puis les unités. Pour 21, 31, 41 et 51, on dit « et un ».')}
+${cm1Def(`${cm1Liste(['<b>21</b> : vingt-et-un', '<b>22</b> : vingt-deux', '<b>35</b> : trente-cinq', '<b>41</b> : quarante-et-un', '<b>58</b> : cinquante-huit'])}`, 'En lettres')}
+${cm1Regle('On dit d\'abord le nombre de dizaines (vingt, trente, quarante, cinquante), puis les unités. Pour 21, 31, 41 et 51, on dit « et un », et on l\'écrit avec des traits d\'union : <b>vingt-et-un</b>.')}
 <div class="cpn-fiches">${[23, 31, 46, 57].map(n => `<div class="cpn-fiche"><div class="cpn-fiche-n">${n}</div><div class="cpn-fiche-mot">${cpMot(n)}</div>${cpBarres(n, { q: 9 })}<div style="font-size:.9rem;">${n - n % 10} + ${n % 10}</div></div>`).join('')}</div>
 
 ${cm1Lecon(4, 'La suite des nombres jusqu\'à 59')}
@@ -70,7 +70,7 @@ ${cm1Demo('cp-n5-m-ecrire', 'Écrire un nombre dicté', 'La maîtresse dit : « 
     [`Complète ce morceau du tableau des nombres.${lig(cpTableau(20, 39, { trous: [24, 27, 31, 35, 38], c: 30 }))}`,
       cm1Redac('Les nombres qui manquent', { suite: ['24, 27', '31, 35, 38'] }, 'Les nombres qui manquent sont 24, 27, 31, 35 et 38.', cpTableau(20, 39, { on: [24, 27, 31, 35, 38], c: 22 }))],
     ['Écris en lettres : 31.',
-      cm1Redac('31 en lettres', '31 = 30 + 1', '31 s\'écrit trente et un.')],
+      cm1Redac('31 en lettres', '31 = 30 + 1', '31 s\'écrit trente-et-un.')],
     ['Le fermier range ses œufs par boîtes de 10. Il a rempli 4 boîtes et il lui reste 5 œufs. Combien a-t-il d\'œufs ?',
       cm1Redac('Œufs du fermier', '40 + 5 = 45', 'Le fermier a 45 œufs.', cpBarres(45, { q: 9 }))],
   ]),
@@ -89,7 +89,7 @@ ${cm1Demo('cp-n5-m-ecrire', 'Écrire un nombre dicté', 'La maîtresse dit : « 
     { l: 2, q: `Combien de cubes ?${lig(cpBarres(23, { q: 8 }))}`, r: ['32', '23', '5', '203'], ok: 1 },
     { l: 2, q: '50 + 4 = …', r: ['504', '54', '45', '9'], ok: 1 },
     { l: 2, q: 'Dans 47, le chiffre des dizaines est…', r: ['7', '4', '47', '11'], ok: 1 },
-    { l: 3, q: 'Vingt et un s\'écrit…', r: ['201', '21', '12', '31'], ok: 1 },
+    { l: 3, q: 'Vingt-et-un s\'écrit…', r: ['201', '21', '12', '31'], ok: 1 },
     { l: 3, q: 'Cinquante-six s\'écrit…', r: ['56', '65', '506', '11'], ok: 0 },
     { l: 4, q: 'Juste après 29, il y a…', r: ['20', '30', '210', '28'], ok: 1 },
     { l: 4, q: 'Juste avant 40, il y a…', r: ['41', '39', '30', '49'], ok: 1 },

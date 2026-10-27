@@ -85,13 +85,13 @@ function ce1AnimTable(id, o){
     } });
 }
 
-// Le nom d'un nombre jusqu'à 1 000 (orthographe traditionnelle : deux cents, deux cent trois, mille).
+// Le nom d'un nombre jusqu'à 1 000, en orthographe rectifiée (deux-cents, deux-cent-trois, mille).
 function ce1Mot(n){
   if(n === 1000) return 'mille';
   const c = Math.floor(n / 100), r = n % 100;
   if(!c) return cpMot(r);
-  const tete = c === 1 ? 'cent' : cpMot(c) + ' cent' + (r === 0 ? 's' : '');
-  return r === 0 ? tete : tete + ' ' + cpMot(r);
+  const tete = c === 1 ? 'cent' : cpMot(c) + '-cent' + (r === 0 ? 's' : '');
+  return r === 0 ? tete : tete + '-' + cpMot(r);
 }
 // Tableau de numération (centaines, dizaines, unités) d'un nombre.
 function ce1CDU(n, o){

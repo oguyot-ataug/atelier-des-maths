@@ -201,7 +201,7 @@ document.getElementById('histoire-demo-cm1-grands-nombres').innerHTML = `
 const CM1NE_LIRE_STEPS = [
   {expr:'517328', note:"On sépare le nombre en tranches de 3 chiffres, en partant de la droite."},
   {expr:'517 328', note:'On obtient deux tranches : 517 et 328.'},
-  {expr:'<span class="hl">517</span> 328', note:'La tranche de gauche, c\'est la classe des mille : on dit « cinq-cent-dix-sept mille ».'},
+  {expr:'<span class="hl">517</span> 328', note:'La tranche de gauche, c\'est la classe des mille : on dit « cinq-cent-dix-sept-mille ».'},
   {expr:'517 <span class="hl">328</span>', note:'La tranche de droite, c\'est la classe des unités : on dit « trois-cent-vingt-huit ».'},
   {expr:'517 328', note:'On lit le nombre en entier : cinq-cent-dix-sept-mille-trois-cent-vingt-huit.'},
 ];

@@ -15,7 +15,7 @@ const F = {
   "cm1|Nombres entiers jusqu'à 9 999": [
     { l: 1, q: "1 millier = …", r: ["10 centaines", "100 centaines", "10 dizaines", "1 000 centaines"], ok: 0 },
     { l: 1, q: "Combien de chiffres faut-il pour écrire 3 058 ?", r: ["3", "4", "5", "58"], ok: 1 },
-    { l: 1, q: "« Deux mille six » s'écrit…", r: ["2 600", "2 006", "2 060", "206"], ok: 1 },
+    { l: 1, q: "« Deux-mille-six » s'écrit…", r: ["2 600", "2 006", "2 060", "206"], ok: 1 },
     { l: 2, q: "5 000 + 300 + 7 = …", r: ["5 307", "5 370", "537", "53 007"], ok: 0 },
     { l: 2, q: "4 m + 2 c + 9 u = …", r: ["429", "4 209", "4 290", "4 029"], ok: 1 },
     { l: 2, q: "6 803 = 6 000 + 800 + …", r: ["30", "3", "300", "0"], ok: 1 },
@@ -153,9 +153,9 @@ const F = {
     { l: 4, q: "Sur un graphique, quand la courbe descend, la valeur…", r: ["diminue", "augmente", "reste pareille", "double"], ok: 0 },
   ],
   "cm1|Grands nombres jusqu'à 999 999": [
-    { l: 1, q: "« Trente mille quatre cents » s'écrit…", r: ["3 400", "30 400", "300 400", "30 040"], ok: 1 },
+    { l: 1, q: "« Trente-mille-quatre-cents » s'écrit…", r: ["3 400", "30 400", "300 400", "30 040"], ok: 1 },
     { l: 1, q: "Le nombre qui suit 99 999 est…", r: ["100 000", "999 999", "99 990", "10 000"], ok: 0 },
-    { l: 1, q: "205 300 se lit…", r: ["deux cent cinq mille trois cents", "vingt mille cinq cent trois", "deux mille cinquante-trois", "deux cent cinquante trois mille"], ok: 0 },
+    { l: 1, q: "205 300 se lit…", r: ["deux-cent-cinq-mille-trois-cents", "vingt-mille-cinq-cent-trois", "deux-mille-cinquante-trois", "deux cent cinquante trois mille"], ok: 0 },
     { l: 2, q: "400 000 + 6 000 + 20 = …", r: ["46 020", "406 020", "400 620", "460 020"], ok: 1 },
     { l: 2, q: "352 000 = 300 000 + 50 000 + …", r: ["200", "2 000", "20 000", "2"], ok: 1 },
     { l: 3, q: "Dans 452 318, le chiffre des milliers est…", r: ["4", "5", "2", "3"], ok: 2 },
@@ -336,9 +336,9 @@ const F = {
   ],
   // ------------------------------------------------------------- CM2
   "cm2|Nombres entiers (révisions jusqu'à 999 999)": [
-    { l: 1, q: "« Six cent mille huit » s'écrit…", r: ["600 008", "600 800", "6 008", "608 000"], ok: 0 },
+    { l: 1, q: "« Six-cent-mille-huit » s'écrit…", r: ["600 008", "600 800", "6 008", "608 000"], ok: 0 },
     { l: 1, q: "Dans 425 318, la classe des mille contient…", r: ["425", "318", "42", "5 318"], ok: 0 },
-    { l: 1, q: "307 040 se lit…", r: ["trois cent sept mille quarante", "trente mille sept cent quarante", "trois cent soixante-dix mille quatre", "trois mille sept cent quatre"], ok: 0 },
+    { l: 1, q: "307 040 se lit…", r: ["trois-cent-sept-mille-quarante", "trente-mille-sept-cent-quarante", "trois-cent-soixante-dix-mille-quatre", "trois-mille-sept-cent-quatre"], ok: 0 },
     { l: 2, q: "Dans 708 215, le chiffre des dizaines de mille est…", r: ["7", "0", "8", "2"], ok: 1 },
     { l: 2, q: "Combien de centaines dans 52 300 ?", r: ["3", "523", "52", "5 230"], ok: 1 },
     { l: 2, q: "Combien de milliers dans 640 000 ?", r: ["64", "640", "6 400", "6"], ok: 1 },
@@ -464,7 +464,7 @@ const F = {
     { l: 6, q: "0,25 = …", r: ["1/4", "1/25", "2/5", "25/10"], ok: 0 },
   ],
   "cm2|Grands nombres jusqu'à 999 999 999": [
-    { l: 1, q: "« Trois millions deux cent mille » s'écrit…", r: ["3 200 000", "3 000 200", "320 000", "3 002 000"], ok: 0 },
+    { l: 1, q: "« Trois millions deux-cent-mille » s'écrit…", r: ["3 200 000", "3 000 200", "320 000", "3 002 000"], ok: 0 },
     { l: 1, q: "1 million = … milliers", r: ["10", "100", "1 000", "10 000"], ok: 2 },
     { l: 1, q: "Le nombre qui suit 9 999 999 est…", r: ["10 000 000", "1 000 000", "99 999 999", "10 000 001"], ok: 0 },
     { l: 2, q: "Dans 247 815 360, le chiffre des millions est…", r: ["2", "4", "7", "8"], ok: 2 },

@@ -19,7 +19,7 @@ ${cm1Regle('Dans un nombre à deux chiffres, le chiffre de gauche est le chiffre
 
 ${cm1Lecon(2, 'Écrire les nombres en lettres')}
 ${cpAnimMot('ce1-n1-mot')}
-${cm1Regle(`${cm1Liste(['de 70 à 79 : soixante-dix, soixante et onze, soixante-douze… (60 + 10, 60 + 11…) ;', 'de 80 à 89 : quatre-vingts, quatre-vingt-un… (4 fois 20, puis + 1…) ;', 'de 90 à 99 : quatre-vingt-dix, quatre-vingt-onze… (80 + 10, 80 + 11…).'])}`, 'Les nombres difficiles')}
+${cm1Regle(`${cm1Liste(['de 70 à 79 : soixante-dix, soixante-et-onze, soixante-douze… (60 + 10, 60 + 11…) ;', 'de 80 à 89 : quatre-vingts, quatre-vingt-un… (4 fois 20, puis + 1…) ;', 'de 90 à 99 : quatre-vingt-dix, quatre-vingt-onze… (80 + 10, 80 + 11…).'])}`, 'Les nombres difficiles')}
 ${cm1Astuce('Quatre-vingts prend un <b>s</b>, mais quatre-vingt-un n\'en prend pas : le s disparaît quand un autre nombre suit.')}
 
 ${cm1Lecon(3, 'La droite graduée')}

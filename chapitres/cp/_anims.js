@@ -400,7 +400,8 @@ function cpJetons(n, barres, coul){
 const cpBleus = (a, b) => Array(a).fill(CPC.jeton).concat(Array(b).fill(CPC.jeton2));
 
 /* ================= Période 2 et suivantes ================= */
-// Le nom d'un nombre de 0 à 100 (orthographe traditionnelle : vingt et un, quatre-vingts…).
+// Le nom d'un nombre de 0 à 100, en orthographe rectifiée (traits d'union partout : vingt-et-un, quatre-vingts…) --
+// demandé : « deux mille quatre cent six s'écrit deux-mille-quatre-cent-six ».
 function cpMot(n){
   const U = ['zéro', 'un', 'deux', 'trois', 'quatre', 'cinq', 'six', 'sept', 'huit', 'neuf', 'dix', 'onze', 'douze', 'treize', 'quatorze', 'quinze', 'seize'];
   if(n <= 16) return U[n];
@@ -408,8 +409,8 @@ function cpMot(n){
   if(n === 100) return 'cent';
   const D = { 2: 'vingt', 3: 'trente', 4: 'quarante', 5: 'cinquante', 6: 'soixante' };
   const d = Math.floor(n / 10), u = n % 10;
-  if(d <= 6) return D[d] + (u === 0 ? '' : u === 1 ? ' et un' : '-' + U[u]);
-  if(d === 7) return 'soixante' + (n === 71 ? ' et onze' : '-' + cpMot(n - 60));
+  if(d <= 6) return D[d] + (u === 0 ? '' : u === 1 ? '-et-un' : '-' + U[u]);
+  if(d === 7) return 'soixante' + (n === 71 ? '-et-onze' : '-' + cpMot(n - 60));
   if(n === 80) return 'quatre-vingts';
   return 'quatre-vingt-' + cpMot(n - 80);
 }

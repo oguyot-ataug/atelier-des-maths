@@ -25,7 +25,7 @@ ${cm1Astuce('Attention au zéro ! Dans 305, il y a 3 centaines, <b>0 dizaine</b>
 
 ${cm1Lecon(3, 'Lire et écrire les nombres')}
 <div class="cpn-fiches">${[100, 200, 243, 305, 480, 999].map(n => `<div class="cpn-fiche"><div class="cpn-fiche-n">${n}</div><div class="cpn-fiche-mot">${ce1Mot(n)}</div></div>`).join('')}</div>
-${cm1Regle(`${cm1Liste(['On dit d\'abord les centaines (cent, deux cents…), puis le reste comme les nombres jusqu\'à 99.', '<b>Cents</b> prend un s quand rien ne le suit : deux cents, mais deux cent trois.', 'Après 999 vient <b>1 000</b> (mille) : 10 centaines.'])}`, 'En lettres')}
+${cm1Regle(`${cm1Liste(['On dit d\'abord les centaines (cent, deux-cents…), puis le reste comme les nombres jusqu\'à 99.', '<b>Cents</b> prend un s quand rien ne le suit : deux-cents, mais deux-cent-trois.', 'Après 999 vient <b>1 000</b> (mille) : 10 centaines.'])}`, 'En lettres')}
 
 ${cm1Lecon(4, 'La droite graduée jusqu\'à 1 000')}
 ${cm1Axe(0, 1000, 100, 100, [[300, 'A'], [700, 'B']])}
@@ -34,17 +34,17 @@ ${cm1Axe(200, 300, 10, 50, [[230, 'C'], [280, 'D']])}
 ${cm1Regle('Ici, entre 200 et 300, chaque petit trait vaut 10 : C est en face de <b>230</b>, D en face de <b>280</b>.')}
 `,
   methode: `
-${cm1Demo('ce1-n3-m-ecrire', 'Écrire « quatre cent sept » en chiffres', 'Écris ce nombre en chiffres.')}
+${cm1Demo('ce1-n3-m-ecrire', 'Écrire « quatre-cent-sept » en chiffres', 'Écris ce nombre en chiffres.')}
 ${cm1Demo('ce1-n3-m-compter', 'Compter des plaques, barres et cubes', 'Combien de cubes en tout ?')}
 `,
   demos: [
     ['ce1-n3-m-ecrire', [
-      { expr: '« quatre cent » : 4 centaines', note: 'J\'écris 4 au rang des centaines.' },
+      { expr: '« quatre-cent » : 4 centaines', note: 'J\'écris 4 au rang des centaines.' },
       { expr: '« sept » : 7 unités', note: 'Il n\'y a pas de dizaines : j\'écris 0 aux dizaines.' },
       { expr: '407', note: '407 = 400 + 7.', fig: ce1CDU(407) },
     ]],
     ['ce1-n3-m-compter', [
-      { expr: '3 plaques : 300', note: 'Je compte les centaines : cent, deux cents, trois cents.', fig: ce1Plaques(352, { q: 6 }) },
+      { expr: '3 plaques : 300', note: 'Je compte les centaines : cent, deux-cents, trois-cents.', fig: ce1Plaques(352, { q: 6 }) },
       { expr: '5 barres : 50', note: 'Puis les dizaines.' },
       { expr: '2 cubes : 2', note: 'Puis les unités.' },
       { expr: '300 + 50 + 2 = 352', note: 'Il y a <b>352</b> cubes.' },
@@ -53,10 +53,10 @@ ${cm1Demo('ce1-n3-m-compter', 'Compter des plaques, barres et cubes', 'Combien d
   exos: cm1Exos('ce1-n3', [
     [`Combien y a-t-il de cubes ?${lig(ce1Plaques(234, { q: 7 }))}`,
       cm1Redac('Nombre de cubes', '200 + 30 + 4 = 234', 'Il y a 234 cubes.')],
-    ['Écris en chiffres : six cent cinquante-deux.',
-      cm1Redac('Six cent cinquante-deux', '600 + 50 + 2 = 652', 'Six cent cinquante-deux s\'écrit 652.')],
+    ['Écris en chiffres : six-cent-cinquante-deux.',
+      cm1Redac('Six-cent-cinquante-deux', '600 + 50 + 2 = 652', 'Six-cent-cinquante-deux s\'écrit 652.')],
     ['Écris en lettres : 508.',
-      cm1Redac('508 en lettres', '508 = 500 + 8', '508 s\'écrit cinq cent huit.')],
+      cm1Redac('508 en lettres', '508 = 500 + 8', '508 s\'écrit cinq-cent-huit.')],
     ['Dans 739, quel est le chiffre des centaines ? des dizaines ? des unités ?',
       cm1Redac('Les chiffres de 739', '739 = 700 + 30 + 9', 'Le chiffre des centaines est 7, celui des dizaines 3, celui des unités 9.', ce1CDU(739))],
     ['Décompose 860.',
@@ -71,7 +71,7 @@ ${cm1Demo('ce1-n3-m-compter', 'Compter des plaques, barres et cubes', 'Combien d
     'Les Romains appelaient aussi « mille » une distance de mille pas doubles (environ 1 480 mètres) : c\'est l\'ancêtre du « mile » des Anglais et des Américains.',
   ]),
   quiz: [
-    { q: 'Deux cent quarante s\'écrit…', opts: ['20040', '240', '204'], correct: 1 },
+    { q: 'Deux-cent-quarante s\'écrit…', opts: ['20040', '240', '204'], correct: 1 },
     { q: '1 centaine, c\'est…', opts: ['10 dizaines', '100 dizaines', '10 unités'], correct: 0 },
     { q: 'Dans 506, le chiffre des dizaines est…', opts: ['5', '0', '6'], correct: 1 },
   ],
@@ -80,7 +80,7 @@ ${cm1Demo('ce1-n3-m-compter', 'Compter des plaques, barres et cubes', 'Combien d
     { l: 2, q: '300 + 40 + 5 = …', r: ['345', '3405', '543', '354'], ok: 0 },
     { l: 2, q: 'Dans 618, le chiffre des centaines est…', r: ['6', '1', '8', '61'], ok: 0 },
     { l: 2, q: '700 + 9 = …', r: ['709', '790', '7009', '79'], ok: 0 },
-    { l: 3, q: 'Trois cents s\'écrit…', r: ['300', '3100', '103', '30'], ok: 0 },
+    { l: 3, q: 'Trois-cents s\'écrit…', r: ['300', '3100', '103', '30'], ok: 0 },
     { l: 3, q: 'Après 999, il y a…', r: ['1 000', '9910', '998', '100'], ok: 0 },
     { l: 4, q: 'De 100 en 100 : 300, 400, …', r: ['500', '401', '410', '600'], ok: 0 },
   ],

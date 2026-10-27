@@ -26,7 +26,7 @@ PLANCHES['cp|Les nombres jusqu\'à 100'] = [
       { etoiles: 2, col: 1, consigne: 'Écris en lettres.',
         ...P3.rmp([['76 : @', 'soixante-seize'], ['81 : @', 'quatre-vingt-un'], ['93 : @', 'quatre-vingt-treize']], 10) },
       { etoiles: 3, col: 1, consigne: 'Relie le mot au nombre : écris le nombre.',
-        ...P3.rmp([['soixante et onze : @', 71], ['quatre-vingt-onze : @', 91], ['soixante-dix-sept : @', 77]], 2) },
+        ...P3.rmp([['soixante-et-onze : @', 71], ['quatre-vingt-onze : @', 91], ['soixante-dix-sept : @', 77]], 2) },
       { etoiles: 1, col: 1, consigne: 'Écris en chiffres.',
         ...P3.rmp([['soixante : @', 60], ['quatre-vingt-quatre : @', 84], ['soixante-dix-huit : @', 78], ['cent : @', 100]], 2) },
       { etoiles: 2, col: 1, consigne: 'Écris en lettres.',

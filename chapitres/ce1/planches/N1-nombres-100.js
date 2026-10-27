@@ -17,9 +17,9 @@ PLANCHES['ce1|Les nombres jusqu\'à 100'] = [
   { titre: 'Écrire les nombres en lettres', duree: '25 min',
     attendus: ['Écrire en chiffres et en lettres les nombres jusqu\'à 100'],
     exos: [
-      { etoiles: 1, col: 1, consigne: 'Écris en chiffres.', ...P3.rmp([['soixante-treize : @', 73], ['quatre-vingt-six : @', 86], ['quatre-vingt-quinze : @', 95], ['soixante et onze : @', 71]], 2) },
+      { etoiles: 1, col: 1, consigne: 'Écris en chiffres.', ...P3.rmp([['soixante-treize : @', 73], ['quatre-vingt-six : @', 86], ['quatre-vingt-quinze : @', 95], ['soixante-et-onze : @', 71]], 2) },
       { etoiles: 2, col: 1, consigne: 'Écris en lettres.', ...P3.rmp([['78 : @', 'soixante-dix-huit'], ['80 : @', 'quatre-vingts'], ['92 : @', 'quatre-vingt-douze']], 11) },
-      { etoiles: 1, col: 1, consigne: 'Écris en chiffres.', ...P3.rmp([['quarante-quatre : @', 44], ['soixante : @', 60], ['quatre-vingt-dix-neuf : @', 99], ['trente et un : @', 31]], 2) },
+      { etoiles: 1, col: 1, consigne: 'Écris en chiffres.', ...P3.rmp([['quarante-quatre : @', 44], ['soixante : @', 60], ['quatre-vingt-dix-neuf : @', 99], ['trente-et-un : @', 31]], 2) },
       { etoiles: 2, col: 1, consigne: 'Écris en lettres.', ...P3.rmp([['65 : @', 'soixante-cinq'], ['77 : @', 'soixante-dix-sept'], ['100 : @', 'cent']], 11) },
       { etoiles: 2, col: 1, consigne: 'Entoure le bon nombre.', ...P3.chx([['soixante-quinze', '75', '65 · 75 · 615'], ['quatre-vingt-deux', '82', '82 · 422 · 92'], ['soixante-dix-neuf', '79', '79 · 6019 · 69']]) },
       { etoiles: 2, col: 1, consigne: 'Écris le nombre d\'avant et le nombre d\'après.', ...P3.rmp([['@ < 70 < @', 69, 71], ['@ < 80 < @', 79, 81], ['@ < 59 < @', 58, 60]], 2) },
