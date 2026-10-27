@@ -3659,6 +3659,14 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1189', date:'2026-10-27', items:[
+    "Exercices à l'écran (relecture CP-N2, CP-N3) : les cases ont dès le départ la taille de la réponse attendue, elles ne grandissent plus et ne passent plus à la ligne quand on écrit ; la place du message « Bravo… » est réservée, « Vérifier ma réponse » ne fait plus remonter l'exercice en projection.",
+    "« Compte les pommes » (CP) : à l'écran, on fait glisser les pommes dans un cadre « paquet de 10 » pour les compter (aide non notée).",
+    "Réponses ouvertes (« Écris un nombre qui convient », « Intercale ») : à l'écran, tout nombre qui convient est accepté ; le corrigé montre un exemple « (ou un autre nombre qui convient) », sans « par exemple » (CP-N6, CE1-N5, CE2-N1, CM2-N3).",
+    "« Range ces nombres » (CP, CE1, CE2) : une case par nombre, les signes < ou > déjà écrits.",
+    "Écriture des nombres à l'écran : dès 4 chiffres, l'espace tous les trois chiffres est demandé quand la réponse attendue est écrite ainsi (9 999 comme 10 000), et le message le dit.",
+    "CE2-N1 : réponses alignées (exercice du matériel), choix en tableau, encadrements plus clairs, points D, E, F à placer à l'écran sur la demi-droite, un seul nombre à entourer.",
+  ] },
   { version:'2026-08-19.1188', date:'2026-10-27', items:['Nombres écrits en lettres : orthographe rectifiée partout, avec des traits d\'union entre tous les mots (« deux-mille-quatre-cent-six », « vingt-et-un », « deux-cents », « soixante-et-onze ») -- demandé : « deux mille quatre cent six s\'écrit deux-mille-quatre-cent-six ». Le CM1 l\'appliquait déjà ; 87 nombres corrigés dans les cours, exercices, questions flash et planches du CP au CM2 et de la 6e, et les animations qui écrivent les nombres (CP, CE1). « Million » et « milliard » restent sans trait d\'union (ce sont des noms).'] },
   { version:'2026-08-19.1187', date:'2026-10-27', items:['Titres soulignés sans les deux-points, vérifié aussi de la 6e à la 3e : les réponses rédigées des collèges utilisent le même outil que le primaire, déjà corrigé. Corrigé en plus : les titres du cahier de textes (« Exercice 12 : Le cercle ») : seuls les mots sont soulignés, ni les deux-points ni les vignettes.'] },
   { version:'2026-08-19.1186', date:'2026-10-27', items:['Réponses rédigées (tous niveaux du primaire, cours, exercices et corrigés des planches) : le titre est souligné jusqu\'à sa dernière lettre, les deux-points ne sont plus soulignés (« <u>Âge de la grand-mère</u> : »). Demandé : « on ne souligne jamais les \":\" ».'] },

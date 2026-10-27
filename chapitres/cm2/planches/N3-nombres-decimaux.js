@@ -56,7 +56,7 @@ PLANCHES['cm2|Nombres décimaux jusqu\'aux millièmes'] = [
         ...P3.chx([['Entre 2,4 et 2,5 :', '2,45', '2,54 · 2,45 · 2,05'], ['Entre 7,1 et 7,11 :', '7,105', '7,15 · 7,011 · 7,105']]) },
       { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.',
         ...ch([['2,5 = 2,50', 'vrai'], ['3,12 est plus grand que 3,2.', 'faux'], ['Il n\'y a aucun nombre entre 1,3 et 1,4.', 'faux']], 'vrai · faux') },
-      { etoiles: 2, col: 1, consigne: 'Intercale un nombre.', ...P3.rmp([['3,4 < @ < 3,5', 'par exemple 3,45'], ['0,9 < @ < 1', 'par exemple 0,95']], 4) },
+      { etoiles: 2, col: 1, consigne: 'Intercale un nombre.', ...P3.rmp([['3,4 < @ < 3,5', { ex: '3,45', entre: [3.4, 3.5] }], ['0,9 < @ < 1', { ex: '0,95', entre: [0.9, 1] }]], 4) },
       { etoiles: 1, col: 1, consigne: 'Encadre entre deux entiers qui se suivent.', ...P3.rmp([['@ < 7,08 < @', 7, 8], ['@ < 12,9 < @', 12, 13]], 2) },
       { etoiles: 2, col: 1, consigne: 'Entoure le plus grand nombre.', ...P3.chx([['', '2,5', '2,5 · 2,45 · 2,409'], ['', '0,7', '0,7 · 0,69 · 0,099']]) },
     ] },

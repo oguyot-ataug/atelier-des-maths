@@ -10,17 +10,25 @@
    ============================================================ */
 const P3 = {
   B: n => plPointilles(n || 3),
-  R: v => plRep(String(v)),
+  // Réponse ouverte { ex, entre: [a, b] } : le corrigé montre un exemple ; à l'écran, tout nombre strictement entre a et b
+  // est accepté (relecture CE2-N1-P3-E7 : « 2350 est une bonne réponse, on ne doit pas écrire \"par exemple 2350\" »).
+  // La remarque « (ou un autre nombre qui convient) » va en fin de ligne (rmp).
+  R: v => v && v.entre ? `<span class="pl-rep" data-entre="${v.entre.join('|')}">${v.ex}</span>` : plRep(String(v)),
   F: cm1Frac,
   T: (a, b) => cm1Tex(`\\dfrac{${a}}{${b}}`),
   // Une ligne de calcul qui ne se coupe pas.
   ligne: (...h) => `<span style="display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap;">${h.join(' ')}</span>`,
   // Réponses à écrire : [['texte avec @', réponse], …] (@ = pointillés dans l'énoncé, réponse dans le corrigé).
-  rmp: (l, n) => ({ eleve: plListe(l.map(([t]) => t.split('@').join(P3.B(n || 3)))), corr: plListe(l.map(([t, ...r]) => { let i = 0; return t.replace(/@/g, () => P3.R(r[i++])); })) }),
+  rmp: (l, n) => ({ eleve: plListe(l.map(([t]) => t.split('@').join(P3.B(n || 3)))), corr: plListe(l.map(([t, ...r]) => { let i = 0; return t.replace(/@/g, () => P3.R(r[i++])) + (r.some(v => v && v.entre) ? ' <small>(ou un autre nombre qui convient)</small>' : ''); })) }),
   // Choix à entourer : [['question', 'bonne réponse'], …], m = les choix proposés (« a · b · c »).
   ch: (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${P3.entoureParmi(m, r)}`)) + '</div>' }),
   // Choix différents pour chaque question : [['question', 'bonne réponse', 'a · b · c'], …].
   chx: it => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t, , m]) => `${t} <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r, m]) => `${t} ${P3.entoureParmi(m, r)}`)) + '</div>' }),
+  // Choix présentés en tableau (relecture CE2-N1-P2-E8 : « tabulation ou tableau ») : une ligne par question, la
+  // question dans la 1re colonne, les choix alignés dans la 2e. Mêmes données que chx.
+  chxTab: it => { const t = c => `<table class="pl-chxtab" style="border-collapse:collapse;margin:2px 0;">${it.map(c).join('')}</table>`;
+    return { eleve: t(([q, , m]) => `<tr class="pl-item"><td style="padding:3px 14px 3px 0;white-space:nowrap;">${q}</td><td><b>${m}</b></td></tr>`),
+      corr: t(([q, r, m]) => `<tr class="pl-item"><td style="padding:3px 14px 3px 0;white-space:nowrap;">${q}</td><td>${P3.entoureParmi(m, r)}</td></tr>`) }; },
   // Corrigé d'un choix : tous les mots proposés restent visibles, le bon est entouré (relecture CP-N1-P3-E3 : « dans la
   // correction, on ne voit plus que le plus grand nombre, il faut continuer à voir les deux »). Réponse absente des choix : entourée seule.
   entoureParmi: (m, r) => { const L = String(m).split(' · '), i = L.findIndex(w => w.trim() === String(r).trim());

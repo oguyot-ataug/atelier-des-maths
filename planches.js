@@ -962,7 +962,7 @@ const PL_CSS_LIVRE = `
     .plp-fermer{ border:0; background:rgba(255,255,255,.15); color:#fff; border-radius:8px; cursor:pointer; display:flex; padding:4px; }
     .plp-corps{ flex:1; overflow:auto; padding:16px 24px; display:flex; align-items:center; justify-content:center; min-height:0; }
     .plp-boite{ width:max-content; max-width:760px; font-size:13px; line-height:1.45; color:#1C2B39; margin:auto; }
-    .plp-pied .pn-bilan{ flex-basis:100%; margin:0; font-size:1.15rem; } .plp-pied .pn-bilan:empty{ display:none; }
+    /* place du bilan réservée dès le départ : « Vérifier » ne fait plus remonter l'exercice (relecture CP-N3-P2-E7, « décalage en projection ») */ .plp-pied .pn-bilan{ flex-basis:100%; margin:0; font-size:1.15rem; min-height:1.45em; line-height:1.45; }
     body.plp-ouvert #plClavier{ left:auto; right:16px; transform:none; bottom:84px; }
     @media (max-width:700px){ body.plp-ouvert #plClavier{ left:8px; right:8px; bottom:8px; width:auto; } .plp-corps{ padding:10px 12px; } .plp-tete{ padding:6px 12px; gap:8px; } .plp-tete b{ font-size:1rem; flex-basis:100%; order:5; } .plp-pied{ gap:6px !important; padding:8px !important; } .plp-pied .btn{ padding:8px 12px; font-size:.95rem; } }
     .plp-verif{ background:#F08A3C !important; border-color:#F08A3C !important; }

@@ -35,7 +35,7 @@ PLANCHES['ce1|Les nombres jusqu\'à 100'] = [
       { etoiles: 2, consigne: 'Place les points D (70), E (85) et F (95).', eleve: cm1Axe(60, 100, 5, 10, []), corr: cm1Axe(60, 100, 5, 10, [[70, 'D'], [85, 'E'], [95, 'F']]) },
       { etoiles: 2, col: 1, consigne: 'Écris <, > ou =.',
         eleve: plListe(['67 ' + plCase() + ' 76', '89 ' + plCase() + ' 98', '50 ' + plCase() + ' 49']), corr: plListe(['67 ' + R('<') + ' 76', '89 ' + R('<') + ' 98', '50 ' + R('>') + ' 49']) },
-      { etoiles: 3, col: 1, consigne: 'Range du plus petit au plus grand : 81, 18, 80, 69.', ...P3.rmp([['@', '18 < 69 < 80 < 81']], 12) },
+      { etoiles: 3, col: 1, consigne: 'Range du plus petit au plus grand : 81, 18, 80, 69.', ...P3.rmp([['@ < @ < @ < @', '18', '69', '80', '81']], 3) },
       { etoiles: 2, col: 1, consigne: 'Écris les dizaines qui entourent le nombre.', ...P3.rmp([['@ < 47 < @', 40, 50], ['@ < 82 < @', 80, 90], ['@ < 95 < @', 90, 100]], 2) },
       { etoiles: 3, col: 1, consigne: 'Écris le nombre de chaque point.',
         eleve: cm1Axe(70, 90, 1, 5, [[72, 'G'], [78, 'H'], [86, 'I']]) + plListe(['G : ' + B(2), 'H : ' + B(2), 'I : ' + B(2)]),

@@ -24,7 +24,9 @@ const PCP = {
     corr: `<div class="cpn-cartes" style="margin:4px 0;">${L.map(v => String(v).startsWith('@') ? `<span>${P3.R(String(v).slice(1))}</span>` : `<span>${v}</span>`).join('')}</div>` }),
   // Une collection de pommes en vrac, toutes visibles (pour compter).
   pommes: (n, graine, px) => { const W = 40 + Math.ceil(Math.sqrt(n * 1.6)) * 34, H = 30 + Math.ceil(n / Math.ceil(Math.sqrt(n * 1.6))) * 34 + 20;
-    return cpSvg(W, H, cpVrac(n, graine || n * 5 + 1, W, H, 30).map(([x, y]) => cpPomme(x, y + 6, { r: 12 })).join(''), px || Math.min(150, W)); },
+    // À l'écran, on peut faire glisser les pommes pour les ranger par paquets (outil « bouger », une aide non notée) --
+    // relecture CP-N3-P1-E6 : « pouvoir bouger les pommes pour les compter ».
+    return plX(cpSvg(W, H, cpVrac(n, graine || n * 5 + 1, W, H, 30).map(([x, y], i) => `<g data-bg="${i}" style="cursor:grab">${cpPomme(x, y + 6, { r: 12 })}</g>`).join(''), px || Math.min(150, W)), { t: 'bouger', aide: true }); },
   // À l'écran, on y dessine en touchant (outils « ronds » et « boite » de planches-num.js) -- relecture CP-N1 :
   // « permettre de dessiner les ronds », « case non cliquable ». Sur papier : un cadre en pointillés, une boîte de dix vide.
   zone: (n, o) => { o = o || {}; const k = 28, w = o.w || 10, h = o.h || 2, W = w * k + 8, H = h * k + 8;

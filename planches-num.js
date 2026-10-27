@@ -30,18 +30,21 @@ const plNumCache = new Map();
 // (« 05 » minutes = « 5 ») et ses espaces (« 1 200 » = « 1200 »).
 const plNumNorm = s => { const t = String(s ?? '').replace(/[\u00a0\u202f]/g, ' ').replace(/\s+/g, ' ').trim().toLowerCase().replace(/[.!]$/, '').replace(/’/g, '\''), n = t.replace(/(\d) (?=\d)/g, '$1').replace(/[−–]/g, '-'); if(/^\d+$/.test(n)) return String(+n); return /[a-zà-ÿ]/i.test(n) ? (/[a-zà-ÿ]{3,}/i.test(t) ? t.replace(/[−–]/g, '-') : n.replace(/\s+/g, '')) : n.replace(/\s+/g, ''); }; // calcul littéral (« 5x + 3 », « 12 h 30 ») : sans espaces non plus // calcul (« 5 000 000 + 8 ») : sans espaces
 // Grands nombres écrits par classes -- relecture 6e-N1-P1 : « En version numérique, respecter l'écriture avec
-// espace des grands nombres ». Un entier de 5 chiffres ou plus doit être écrit par classes de trois chiffres
-// séparées par un espace (2 300 000) ; « 2300000 » ou « 2 30 0000 » sont faux. Jusqu'à 4 chiffres, les deux
-// écritures restent acceptées (1 200 ou 1200). La partie décimale n'est pas concernée.
+// espace des grands nombres ». Un entier de 4 chiffres ou plus doit être écrit par classes de trois chiffres
+// séparées par un espace (2 300 000) ; « 2300000 » ou « 2 30 0000 » sont faux. La partie décimale n'est pas concernée.
+// Relecture CE2-N1-P4-E3 (« 10000 refusé, mais 9999 accepté au lieu de 9 999 ? ») : la règle vaut maintenant dès
+// 4 chiffres quand la réponse attendue est écrite par classes (1 000, 9 999) ; une année (2026) reste sans espace.
 function plNumClassesOk(s){
   const t = String(s ?? '').replace(/[\u00a0\u202f]/g, ' ').replace(/\s+/g, ' ');
   const re = /\d+(?: \d+)*/g; let m;
   while((m = re.exec(t))){
     if(m.index > 0 && /[,.]/.test(t[m.index - 1])) continue;
-    if(m[0].replace(/ /g, '').length >= 5 && !/^\d{1,3}(?: \d{3})+$/.test(m[0])) return false;
+    if(m[0].replace(/ /g, '').length >= 4 && !/^\d{1,3}(?: \d{3})+$/.test(m[0])) return false;
   }
   return true;
 }
+// Valeur d'un nombre écrit par l'élève (espaces, virgule) ; null si ce n'est pas un nombre.
+function plNumVal(s){ const t = String(s ?? '').replace(/[\u00a0\u202f\s]/g, '').replace(',', '.').replace(/[−–]/g, '-'); return /^-?\d+(\.\d+)?$/.test(t) ? +t : null; }
 // Fraction écrite en LaTeX dans un bout de corrigé : [numérateur, dénominateur] ou null.
 function plNumFracDe(el){
   const t = el.querySelector('.tex'), m = t && /\\[dt]?frac\{([^}]*)\}\{([^}]*)\}/.exec(t.textContent);
@@ -112,12 +115,17 @@ function plNumAnalyser(x){
       cibles.push({ type: 'frac', id, rep: f, equiv: r.hasAttribute('data-equiv') }); // data-equiv : une fraction égale est acceptée (lire une figure)
     } else {
       if(plNumFracDe(r)) return null;
+      if(r.dataset.entre){ const [a, b] = r.dataset.entre.split('|').map(plNumVal); // réponse ouverte : un nombre entre a et b
+        tr.outerHTML = `<button type="button" class="pn-case" data-pn="${id}" data-pnv="${id}" style="min-width:${Math.min(320, r.textContent.trim().length * 12 + 26)}px"></button>`;
+        cibles.push({ type: 'entre', id, rep: [a, b] }); continue; }
       const rep = plNumNorm(r.textContent); if(!rep) return null;
       const large = tr.classList.contains('pl-pts') && /[a-z]/i.test(rep);
       const lg = r.textContent.replace(/\s+/g, ' ').trim().length; // case à la taille de la réponse attendue
-      tr.outerHTML = `<button type="button" class="pn-case${large ? ' pn-large' : ''}${tr.classList.contains('pl-case-seule') ? ' pn-signe' : ''}" data-pn="${id}" data-pnv="${id}"${!tr.classList.contains('pl-case-seule') && lg > 4 ? ` style="min-width:${Math.min(320, lg * 11 + 16)}px"` : ''}></button>`;
+      // Case à la taille de la réponse attendue, avec de la marge, dès le départ : elle ne grandit pas quand on écrit
+      // (relecture CP-N2-P3-E1, CP-N3-P1 : « quand on écrit 10, la case se décale », « les cases réponses bougent »).
+      tr.outerHTML = `<button type="button" class="pn-case${large ? ' pn-large' : ''}${tr.classList.contains('pl-case-seule') ? ' pn-signe' : ''}" data-pn="${id}" data-pnv="${id}"${!tr.classList.contains('pl-case-seule') && !large ? ` style="min-width:${Math.min(320, Math.max(46, lg * 12 + 26))}px"` : ''}></button>`;
       // classes : la réponse attendue contient un grand nombre écrit par classes, l'élève doit l'écrire ainsi.
-      const brut = r.textContent.replace(/[\u00a0\u202f]/g, ' '), classes = /\d{1,3}(?: \d{3})+/.test(brut) && /\d{5}/.test(brut.replace(/(\d) (?=\d)/g, '$1')) && plNumClassesOk(brut);
+      const brut = r.textContent.replace(/[\u00a0\u202f]/g, ' '), classes = /\d{1,3}(?: \d{3})+/.test(brut) && plNumClassesOk(brut);
       cibles.push({ type: 'txt', id, rep, classes, maj: /^[(\[]?[A-ZÉÈ]/.test(r.textContent.trim()) }); // réponse en majuscule (nom de point…) : clavier en majuscules
     }
   }
@@ -238,8 +246,12 @@ function plNum(root, x, o){
     else return;
     effacerMarques(); afficher(); change();
   };
+  // Bon nombre, mais pas écrit par classes de trois chiffres.
+  const malEcrit = c => (c.type === 'txt' && c.classes && plNumNorm(etat.v[c.id]) === c.rep && !plNumClassesOk(etat.v[c.id]))
+    || (c.type === 'entre' && plNumVal(etat.v[c.id]) != null && !plNumClassesOk(etat.v[c.id]));
   const juste = c => {
     if(c.type === 'txt') return plNumNorm(etat.v[c.id]) === c.rep && (!c.classes || plNumClassesOk(etat.v[c.id]));
+    if(c.type === 'entre'){ const t = etat.v[c.id], v = plNumVal(t); return v != null && v > c.rep[0] && v < c.rep[1] && plNumClassesOk(t); }
     if(c.type === 'frac'){
       if(c.equiv){ const a = +plNumNorm(etat.v[c.id + 'n']), b = +plNumNorm(etat.v[c.id + 'd']); return b > 0 && Number.isInteger(a) && Number.isInteger(b) && a * +c.rep[1] === b * +c.rep[0]; }
       return plNumNorm(etat.v[c.id + 'n']) === plNumNorm(c.rep[0]) && plNumNorm(etat.v[c.id + 'd']) === plNumNorm(c.rep[1]);
@@ -258,7 +270,7 @@ function plNum(root, x, o){
     M.cibles.forEach((c, i) => { const el = root.querySelector(`[data-pn="${c.id}"]`) || (c.type === 'bascule' ? root.querySelector(`[data-pnt^="${c.id}:"]`)?.closest('.pl-grille, .pl-liste, ul') : null);
       if(el && res.d[i] !== null) el.classList.add(res.d[i] ? 'pn-ok' : 'pn-ko');
       // Bon nombre mais mal écrit : on dit pourquoi.
-      if(el && res.d[i] === false && c.type === 'txt' && c.classes && plNumNorm(etat.v[c.id]) === c.rep) el.title = 'Écris le nombre par classes de trois chiffres, séparées par un espace (comme 2 300 000).';
+      if(el && res.d[i] === false && malEcrit(c)) el.title = 'Écris le nombre par classes de trois chiffres, séparées par un espace (comme 9 999 ou 2 300 000).';
       // Nombres à entourer / barrer : le cadre rouge autour de la grille ne disait pas LEQUEL était faux (signalé :
       // « Entoure les multiples de 6 », 40 entouré en trop, resté vert comme les autres). Chaque choix est marqué :
       // vert s'il est juste, rouge s'il est en trop ; les oubliés (orange) ne sont montrés qu'au professeur.
@@ -272,7 +284,7 @@ function plNum(root, x, o){
     total: M.cibles.filter(c => !(c.type === 'x' && c.rep.aide)).length,
     etat: () => plNumCopie(etat),
     // Résultat sans rien montrer (session où seul le professeur voit les erreurs).
-    evaluer(){ const d = M.cibles.map(c => c.type === 'x' && c.rep.aide ? null : juste(c)), n = d.filter(v => v !== null); return { juste: n.filter(Boolean).length, total: n.length, d }; },
+    evaluer(){ const d = M.cibles.map(c => c.type === 'x' && c.rep.aide ? null : juste(c)), n = d.filter(v => v !== null); return { juste: n.filter(Boolean).length, total: n.length, d, classes: M.cibles.some((c, i) => d[i] === false && malEcrit(c)) }; },
     verifier(){ choisir(null); const res = this.evaluer(); marquer(res); return res; },
     effacer(){ etat = plNumEtatVide(); choisir(null); effacerMarques(); afficher(); change(); },
     poser(e, res){ etat = plNumEtatVide(e); afficher(); marquer(res); },
@@ -308,6 +320,27 @@ const plxBarreFleches = (id, st) => `<span class="pn-x-prog">${st.p ? plxFleches
   + ['g', 'h', 'b', 'd'].map(f => plxBtn(id, 'f' + f, PLX_FL[f][0], false, 'pn-xfl')).join('') + plxBtn(id, 'del', '⌫') + plxBtn(id, 'vide', 'Effacer');
 const plxActionFleches = (st, a) => { st.p = st.p || ''; if(a[0] === 'f' && st.p.length < 30) st.p += a[1]; else if(a === 'del') st.p = st.p.slice(0, -1); else if(a === 'vide') st.p = ''; };
 const PLX = {
+  // Objets à faire glisser pour compter (relecture CP-N3-P1-E6 : « pouvoir bouger les pommes pour les compter ») :
+  // une aide, non notée ({ aide: true }) ; les objets sont les groupes [data-bg] de la figure.
+  bouger: {
+    monter(C, svg, lire, ecrire){
+      const placer = st => svg.querySelectorAll('[data-bg]').forEach(g => { const d = (st.p || {})[g.dataset.bg]; g.setAttribute('transform', d ? `translate(${d[0].toFixed(1)} ${d[1].toFixed(1)})` : ''); });
+      // À droite, un cadre en pointillés pour y faire le paquet de dix (agrandit la figure à l'écran seulement).
+      const vb = svg.viewBox.baseVal, W = vb.width, H = vb.height, w = Math.max(110, H * .9);
+      svg.setAttribute('viewBox', `${vb.x} ${vb.y} ${W + w + 10} ${H}`); svg.style.width = (parseFloat(svg.style.width) || W) * (W + w + 10) / W + 'px';
+      svg.insertAdjacentHTML('afterbegin', `<rect x="${W + 4}" y="4" width="${w}" height="${H - 8}" rx="12" fill="#FFF8E7" stroke="#C9A24A" stroke-width="2" stroke-dasharray="7 5"/><text x="${W + 4 + w / 2}" y="${H - 12}" text-anchor="middle" font-size="12" fill="#8A6A1F" font-family="Space Grotesk">paquet de 10</text>`);
+      placer(lire()); svg.style.touchAction = 'none';
+      const pt = e => { const P = svg.createSVGPoint(); P.x = e.clientX; P.y = e.clientY; const m = svg.getScreenCTM(); return m ? P.matrixTransform(m.inverse()) : { x: 0, y: 0 }; };
+      let geste = null;
+      svg.addEventListener('pointerdown', e => { const g = e.target.closest('[data-bg]'); if(!g) return; const st = lire(); st.p = st.p || {};
+        geste = { i: g.dataset.bg, st, q: pt(e), d: st.p[g.dataset.bg] || [0, 0], bb: g.getBBox(), vb: svg.viewBox.baseVal }; g.parentNode.appendChild(g); svg.setPointerCapture && svg.setPointerCapture(e.pointerId); e.preventDefault(); e.stopPropagation(); });
+      svg.addEventListener('pointermove', e => { if(!geste) return; const q = pt(e), { bb, vb } = geste, borne = (v, a, b) => Math.max(a, Math.min(b, v)); // la pomme reste dans le cadre
+        geste.st.p[geste.i] = [borne(geste.d[0] + q.x - geste.q.x, vb.x - bb.x, vb.x + vb.width - bb.x - bb.width), borne(geste.d[1] + q.y - geste.q.y, vb.y - bb.y, vb.y + vb.height - bb.y - bb.height)]; placer(geste.st); e.preventDefault(); });
+      const fin = () => { if(geste){ const st = geste.st; geste = null; ecrire(st); placer(st); } }; svg.addEventListener('pointerup', fin); svg.addEventListener('pointercancel', fin);
+    },
+    barre: () => `<span class="pn-xaide">Fais glisser dix pommes dans le cadre « paquet de 10 », puis compte toutes les pommes.</span>`,
+    juste: () => true
+  },
   // Dessiner des ronds dans un cadre (CP ; relecture CP-N1 : « permettre de dessiner les ronds ») : on touche le cadre
   // pour poser un rond, on touche un rond pour l'effacer. { n : nombre attendu, k : côté d'une place, ox, oy, w × h places, c : couleur }.
   ronds: {
@@ -492,7 +525,7 @@ function plNumCopie(e){ return JSON.parse(JSON.stringify(e)); }
 // Phrase de bilan d'une vérification.
 function plNumBilan(res){
   if(!res) return '';
-  return res.juste === res.total ? `<b>Bravo, tout est juste !</b>` : `<b>${res.juste} réponse${res.juste > 1 ? 's' : ''} juste${res.juste > 1 ? 's' : ''} sur ${res.total}.</b> Corrige ce qui est en rouge, puis vérifie à nouveau.`;
+  return res.juste === res.total ? `<b>Bravo, tout est juste !</b>` : `<b>${res.juste} réponse${res.juste > 1 ? 's' : ''} juste${res.juste > 1 ? 's' : ''} sur ${res.total}.</b> ${res.classes ? 'Écris les nombres avec un espace tous les trois chiffres (9 999, 10 000), puis vérifie à nouveau.' : 'Corrige ce qui est en rouge, puis vérifie à nouveau.'}`;
 }
 
 /* ---------- Clavier virtuel (chiffres, signes, lettres) ---------- */
@@ -600,7 +633,7 @@ function plClavierPhysique(e){
     .pn-ex .pl-papier{ display:none; } /* ce qui ne sert que sur la feuille (ligne pour écrire…) */
     .pn-ex svg.pn-x{ width:min(100%, 520px) !important; height:auto !important; max-height:none !important; touch-action:manipulation; cursor:pointer; }
     .pn-ex svg.pn-x-horloge{ width:min(100%, 230px) !important; }
-    .pn-ex svg.pn-x-boite{ width:min(100%, 200px) !important; } .pn-ex svg.pn-x-mains{ width:min(100%, 320px) !important; } .pn-ex svg.pn-x-bicolore{ width:min(100%, 300px) !important; } .pn-ex svg.pn-x-ronds{ width:min(100%, 420px) !important; }
+    .pn-ex svg.pn-x-boite{ width:min(100%, 200px) !important; } .pn-ex svg.pn-x-bouger{ width:min(100%, 360px) !important; cursor:grab; } .pn-ex svg.pn-x-mains{ width:min(100%, 320px) !important; } .pn-ex svg.pn-x-bicolore{ width:min(100%, 300px) !important; } .pn-ex svg.pn-x-ronds{ width:min(100%, 420px) !important; }
     .pn-xbar{ display:flex; gap:6px; align-items:center; justify-content:center; flex-wrap:wrap; margin:4px 0 8px; font-size:.88rem; color:#4E5665; } .pn-xbar:empty{ display:none; } .pn-lecture .pn-xbar button{ display:none; }
     .pn-xbtn{ border:2px solid #3A6EA5; background:#fff; color:#1F3A5C; border-radius:10px; padding:3px 10px; font:700 .95rem 'Space Grotesk',Arial,sans-serif; cursor:pointer; min-width:40px; }
     .pn-xbtn.on{ background:#3A6EA5; color:#fff; } .pn-xbtn.pn-xfl{ font-size:1.25rem; min-width:46px; } .pn-xbtn.pn-xh.on{ background:#E35D3A; border-color:#E35D3A; } .pn-xbtn.pn-xm.on{ background:#2EA8C9; border-color:#2EA8C9; }

@@ -15,6 +15,9 @@ const multibase = (m, c, d, u) => { let g = '', x = 4;
   x += 3; for(let i = 0; i < u; i++){ g += `<rect x="${x + Math.floor(i / 2) * 9}" y="${i % 2 ? 24 : 33}" width="6" height="6" fill="#E35D3A" stroke="#1F3A5C" stroke-width=".8"/>`; }
   x += Math.ceil(u / 2) * 9 + 4;
   return svg(x, 46, g, Math.min(300, x * 1.1)); };
+// Une case de la grille : le dessin en haut, la réponse en bas, à la même hauteur dans toutes les cases
+// (relecture CE2-N1-P1-E1 : « aligner les réponses »).
+const cel = (fig, rep) => `<div style="display:flex;flex-direction:column;justify-content:space-between;align-items:center;min-height:92px;height:100%;gap:6px;"><div>${fig}</div><div>${rep}</div></div>`;
 // Demi-droite graduée de a à b (pas, étiquettes tous les etiq), points nommés [[valeur, nom]].
 const droite = (a, b, pas, etiq, pts, px) => { const W = 440, X = v => 20 + (v - a) * (W - 50) / (b - a); let g = L([10, 30], [W - 6, 30], '#1F3A5C', 1.6);
   for(let v = a; v <= b + 1e-9; v += pas){ const e = Math.abs((v - a) / etiq - Math.round((v - a) / etiq)) < 1e-6; g += L([X(v), e ? 23 : 26], [X(v), e ? 37 : 34], '#1F3A5C', e ? 1.4 : 1) + (e ? T([X(v), 52], String(v).replace(/\B(?=(\d{3})+(?!\d))/g, ' '), { fs: 10 }) : ''); }
@@ -25,8 +28,8 @@ PLANCHES['ce2|Nombres jusqu\'à 10 000'] = [
     attendus: ['Dénombrer avec des groupes de dix, cent, mille', 'Connaître les relations entre unités de numération', 'Écrire le nombre représenté par du matériel'],
     exos: [
       { etoiles: 1, consigne: 'Écris le nombre représenté.',
-        eleve: plGrille([multibase(2, 3, 4, 5) + '<br>' + P3.B(4), multibase(1, 0, 6, 2) + '<br>' + P3.B(4), multibase(3, 2, 0, 0) + '<br>' + P3.B(4)], 3),
-        corr: plGrille([multibase(2, 3, 4, 5) + '<br>' + P3.R('2 345'), multibase(1, 0, 6, 2) + '<br>' + P3.R('1 062'), multibase(3, 2, 0, 0) + '<br>' + P3.R('3 200')], 3) },
+        eleve: plGrille([cel(multibase(2, 3, 4, 5), P3.B(4)), cel(multibase(1, 0, 6, 2), P3.B(4)), cel(multibase(3, 2, 0, 0), P3.B(4))], 3),
+        corr: plGrille([cel(multibase(2, 3, 4, 5), P3.R('2 345')), cel(multibase(1, 0, 6, 2), P3.R('1 062')), cel(multibase(3, 2, 0, 0), P3.R('3 200'))], 3) },
       { etoiles: 1, col: 1, consigne: 'Complète.',
         ...rmp([['1 dizaine = @ unités', 10], ['1 centaine = @ dizaines', 10], ['1 millier = @ centaines', 10], ['1 millier = @ unités', '1 000']]) },
       { etoiles: 2, col: 1, consigne: 'Complète.',
@@ -50,7 +53,7 @@ PLANCHES['ce2|Nombres jusqu\'à 10 000'] = [
       { etoiles: 1, col: 1, consigne: 'Écris en chiffres.', ...P3.rmp([['neuf-mille-neuf : @', '9 009'], ['quatre-mille-trois-cent-vingt : @', '4 320'], ['huit-mille-soixante-dix : @', '8 070']], 4) },
       { etoiles: 2, col: 1, consigne: 'Écris en lettres.', ...P3.rmp([['1 200 : @', 'mille-deux-cents'], ['5 080 : @', 'cinq-mille-quatre-vingts']], 12) },
       { etoiles: 2, col: 1, consigne: 'Décompose.', ...P3.rmp([['6 305 = 6 000 + @ + 5', 300], ['9 060 = @ + 60', '9 000'], ['2 718 = @ + @ + @ + @', '2 000', 700, 10, 8]], 3) },
-      { etoiles: 2, col: 1, consigne: 'Entoure l\'écriture juste.', ...P3.chx([['3 040', 'trois-mille-quarante', 'trois-mille-quarante · trois-cent-quarante'], ['7 700', 'sept-mille-sept-cents', 'sept-mille-sept-cents · sept-mille-soixante-dix']]) },
+      { etoiles: 2, col: 1, consigne: 'Entoure l\'écriture juste.', ...P3.chxTab([['3 040', 'trois-mille-quarante', 'trois-mille-quarante · trois-cent-quarante'], ['7 700', 'sept-mille-sept-cents', 'sept-mille-sept-cents · sept-mille-soixante-dix']]) },
       { etoiles: 2, col: 1, consigne: 'Quel nombre est-ce ?', ...P3.rmp([['5 milliers et 12 unités : @', '5 012'], ['40 centaines : @', '4 000'], ['2 milliers et 30 dizaines : @', '2 300']], 4) },
       { etoiles: 3, col: 1, consigne: 'Complète.', ...P3.rmp([['le plus grand nombre de 4 chiffres : @', '9 999'], ['le plus petit nombre de 4 chiffres : @', '1 000'], ['le plus grand nombre de 4 chiffres tous différents : @', '9 876']], 4) },
     ] },
@@ -60,15 +63,17 @@ PLANCHES['ce2|Nombres jusqu\'à 10 000'] = [
       { etoiles: 1, col: 1, consigne: 'Complète avec <, > ou =.',
         eleve: plListe(['3 457 ' + plCase() + ' 3 475', '8 090 ' + plCase() + ' 8 009', '5 000 ' + plCase() + ' 4 999', '2 dizaines ' + plCase() + ' 20']),
         corr: plListe(['3 457 ' + P3.R('<') + ' 3 475', '8 090 ' + P3.R('>') + ' 8 009', '5 000 ' + P3.R('>') + ' 4 999', '2 dizaines ' + P3.R('=') + ' 20']) },
-      { etoiles: 2, col: 1, consigne: 'Encadre entre deux centaines qui se suivent, puis entre deux milliers.',
-        ...rmp([['@ < 4 563 < @', '4 500', '4 600'], ['@ < 4 563 < @', '4 000', '5 000'], ['@ < 7 091 < @', '7 000', '7 100']], 4) },
-      { etoiles: 2, consigne: 'Range ces nombres du plus petit au plus grand.',
-        ...rmp([['6 102 · 6 210 · 6 012 · 6 120 : @', '6 012 < 6 102 < 6 120 < 6 210'], ['9 999 · 10 000 · 9 909 · 9 990 : @', '9 909 < 9 990 < 9 999 < 10 000']], 16) },
+      // Relecture : « consigne pas claire » -- chaque ligne dit maintenant entre quoi encadrer.
+      { etoiles: 2, col: 1, consigne: 'Encadre chaque nombre.',
+        ...rmp([['entre deux centaines qui se suivent : @ < 4 563 < @', '4 500', '4 600'], ['entre deux milliers qui se suivent : @ < 4 563 < @', '4 000', '5 000'], ['entre deux centaines qui se suivent : @ < 7 091 < @', '7 000', '7 100'], ['entre deux milliers qui se suivent : @ < 7 091 < @', '7 000', '8 000']], 4) },
+      // Relecture : « on doit pouvoir écrire une inégalité : 6012 < … » -- une case par nombre, les signes < écrits.
+      { etoiles: 2, col: 1, consigne: 'Range ces nombres du plus petit au plus grand.',
+        ...rmp([['6 102 · 6 210 · 6 012 · 6 120 : @ < @ < @ < @', '6 012', '6 102', '6 120', '6 210'], ['9 999 · 10 000 · 9 909 · 9 990 : @ < @ < @ < @', '9 909', '9 990', '9 999', '10 000']], 4) },
       { etoiles: 3, cahier: true, consigne: 'Trouve tous les nombres de quatre chiffres qu\'on peut écrire avec les chiffres 3, 0, 5 et 1 (chacun une seule fois) et qui sont compris entre 3 000 et 5 000.',
         corr: cm1Redac('Nombres qui commencent par 3', { suite: ['3 015 ; 3 051 ; 3 105', '3 150 ; 3 501 ; 3 510'] }, 'Le chiffre des milliers doit être 3 (5 000 est trop grand) : il y a 6 nombres, de 3 015 à 3 510.') },
       { etoiles: 1, col: 1, consigne: 'Complète avec <, > ou =.', ...P3.rmp([['6 543 @ 6 534', '>'], ['1 099 @ 1 100', '<'], ['7 000 @ 7 milliers', '=']], 1) },
       { etoiles: 2, col: 1, consigne: 'Encadre entre deux dizaines qui se suivent.', ...P3.rmp([['@ < 3 456 < @', '3 450', '3 460'], ['@ < 9 995 < @', '9 990', '10 000']], 4) },
-      { etoiles: 2, col: 1, consigne: 'Écris un nombre qui convient.', ...P3.rmp([['4 999 < @ < 5 001', '5 000'], ['2 300 < @ < 2 400', 'par exemple 2 350']], 4) },
+      { etoiles: 2, col: 1, consigne: 'Écris un nombre qui convient.', ...P3.rmp([['4 999 < @ < 5 001', '5 000'], ['2 300 < @ < 2 400', { ex: '2 350', entre: [2300, 2400] }]], 4) },
       { etoiles: 2, col: 1, consigne: 'Entoure le plus petit nombre.', ...P3.chx([['', '4 099', '4 099 · 4 909 · 4 990'], ['', '6 008', '6 080 · 6 800 · 6 008']]) },
     ] },
   { titre: 'La demi-droite graduée', duree: '25 min',
@@ -78,13 +83,15 @@ PLANCHES['ce2|Nombres jusqu\'à 10 000'] = [
         eleve: droite(2000, 3000, 100, 500, [[2300, 'A'], [2800, 'B'], [2600, 'C']]) + plListe(['A : ' + P3.B(4) + '   B : ' + P3.B(4) + '   C : ' + P3.B(4)]),
         corr: droite(2000, 3000, 100, 500, [[2300, 'A'], [2800, 'B'], [2600, 'C']]) + plListe(['A : ' + P3.R('2 300') + '   B : ' + P3.R('2 800') + '   C : ' + P3.R('2 600')]) },
       { etoiles: 2, consigne: 'Place les nombres 7 400 (point D), 7 650 (point E) et 7 950 (point F).',
-        eleve: droite(7000, 8000, 50, 500, []),
+        // À l'écran, on place les points en touchant la graduation (relecture CE2-N1-P4-E2).
+        eleve: plX(droite(7000, 8000, 50, 500, []), { t: 'pts', tol: 9, noms: ['D', 'E', 'F'], cands: Array.from({ length: 21 }, (_, i) => [20 + i * 19.5, 30]), att: { D: [20 + 8 * 19.5, 30], E: [20 + 13 * 19.5, 30], F: [20 + 19 * 19.5, 30] } }),
         corr: droite(7000, 8000, 50, 500, [[7400, 'D'], [7650, 'E'], [7950, 'F']]) },
       { etoiles: 2, col: 1, consigne: 'Complète la suite.',
         ...rmp([['4 980 ; 4 990 ; @ ; @', '5 000', '5 010'], ['3 700 ; 3 800 ; @ ; @', '3 900', '4 000'], ['9 997 ; 9 998 ; @ ; @', '9 999', '10 000']], 4) },
       { etoiles: 3, col: 1, consigne: 'Entoure le nombre le plus proche de 5 000.',
-        eleve: plListe(['4 890 · 5 120 · 4 950 · 5 080']),
-        corr: plListe(['4 890 · 5 120 · ' + plEntoure('4 950') + ' · 5 080 (il est à 50 de 5 000)']) },
+        // Un seul nombre à entourer (relecture : « on entoure tous les nombres, ils ne sont pas indépendants »).
+        eleve: plListe(['<b>4 890 · 5 120 · 4 950 · 5 080</b>']),
+        corr: plListe([P3.entoureParmi('4 890 · 5 120 · 4 950 · 5 080', '4 950') + ' (il est à 50 de 5 000)']) },
       { etoiles: 1, consigne: 'Écris le nombre de chaque point.',
         eleve: droite(5000, 6000, 100, 500, [[5200, 'G'], [5500, 'H'], [5900, 'K']]) + plListe(['G : ' + P3.B(4) + '   H : ' + P3.B(4) + '   K : ' + P3.B(4)]),
         corr: droite(5000, 6000, 100, 500, [[5200, 'G'], [5500, 'H'], [5900, 'K']]) + plListe(['G : ' + P3.R('5 200') + '   H : ' + P3.R('5 500') + '   K : ' + P3.R('5 900')]) },
