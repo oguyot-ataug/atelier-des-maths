@@ -421,11 +421,6 @@ document.body.insertAdjacentHTML('beforeend', `
     <div id="editProfBetaBox" style="display:none;background:rgba(122,79,192,.07);border-radius:10px;padding:12px 14px;margin-bottom:14px;">
       <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;"><input type="checkbox" id="editProfBeta" style="margin-top:3px;">
         <span><b><span class=gicon>science</span> Bêta-testeur</b><br><span class="hint">Il peut faire des retours sur les exercices des manuels (onglet Manuel : Validé, Non examiné, Commenté). Ses retours apparaissent sous chaque exercice et dans « Toutes les remarques ».</span></span></label>
-      <div id="editProfNivBetaBox" style="display:none;margin-top:10px;">
-        <b style="font-size:.9rem;">Niveaux en préparation ouverts</b>
-        <div id="editProfNivBetaList" style="display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 4px;"></div>
-        <span class="hint">Il voit ces niveaux comme l'administrateur (menu, chapitres, planches). Ses élèves d'une classe de ce niveau le voient aussi : créez la classe (ex. CE2) et rattachez-la-lui.</span>
-      </div>
     </div>
     <div style="display:flex;justify-content:flex-end;gap:8px;">
       <span class="hint" id="editProfStatus" style="margin:auto 8px auto 0;"></span>
@@ -541,7 +536,7 @@ let editProfTargetId = null, editProfTargetName = '', editProfTargetRole = 'prof
    un élève, dont la classe se gère depuis la section "Affecter" du panneau admin. */
 let editProfHasBeta = false, editProfHasNivBeta = false;
 async function openEditProfModal(id){
-  editProfTargetId = id;
+  editProfTargetId = id; editProfHasNivBeta = false;
   document.getElementById('editProfModalOverlay').style.display='flex';
   document.getElementById('editProfStatus').textContent = '';
   document.getElementById('editProfClassesList').innerHTML = 'Chargement…';
@@ -567,25 +562,27 @@ async function openEditProfModal(id){
   nivBox.style.display = prof.role==='prof' ? '' : 'none';
   if(prof.role==='prof'){
     const extra = new Set(prof.niveaux_extra || []);
-    document.getElementById('editProfNiveauxList').innerHTML = OP_ORDRE.map(n=>`<label style="display:inline-flex;align-items:center;gap:5px;background:#fff;padding:5px 10px;border-radius:20px;font-size:.85rem;cursor:pointer;border:1px solid rgba(28,43,57,.12);"><input type="checkbox" class="editProfNivCheck" value="${n}" ${extra.has(n)?'checked':''}> ${niveauLabel(n)}</label>`).join('');
+    // Niveaux en préparation (NIVEAUX_ADMIN, app.js : CP, CE2) -- demandé : « permettre à l'admin d'attribuer le
+    // niveau ce2 à des enseignants (béta testeurs) », puis « On ne voit pas CE2 dans les niveaux accessibles » :
+    // cases en tête de la liste, administrateur général seulement, enregistrées dans profiles.niveaux_beta
+    // (modifiable par l'administrateur seul, déclencheur prevent_profile_privilege_escalation).
+    editProfHasNivBeta = !adminScopeUai() && ('niveaux_beta' in prof);
+    const beta = new Set(prof.niveaux_beta || []);
+    const puce = 'display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:20px;font-size:.85rem;cursor:pointer;';
+    const casesBeta = adminScopeUai() ? '' : NIVEAUX_ADMIN.map(n=>`<label style="${puce}background:rgba(122,79,192,.08);border:1px solid rgba(122,79,192,.35);" title="${editProfHasNivBeta ? 'Niveau en préparation : bêta-test' : 'Disponible après la mise à jour de la base (colonne niveaux_beta)'}"><input type="checkbox" class="editProfNivBetaCheck" value="${n}" ${beta.has(n)?'checked':''} ${editProfHasNivBeta?'':'disabled'}> ${niveauLabel(n)} <span style="font-size:.72rem;color:#6A4FB3;">bêta</span></label>`).join('');
+    document.getElementById('editProfNiveauxList').innerHTML = casesBeta + OP_ORDRE.map(n=>`<label style="${puce}background:#fff;border:1px solid rgba(28,43,57,.12);"><input type="checkbox" class="editProfNivCheck" value="${n}" ${extra.has(n)?'checked':''}> ${niveauLabel(n)}</label>`).join('');
     const { data: liens } = await sb.from('class_teachers').select('classes(niveau)').eq('teacher_id', id);
-    const niv = [...new Set((liens||[]).map(r=>r.classes && String(r.classes.niveau||'').toLowerCase()).filter(n=>OP_ORDRE.includes(n)))];
-    document.getElementById('editProfNiveauxAuto').textContent = niv.length
+    const tous = [...new Set((liens||[]).map(r=>r.classes && String(r.classes.niveau||'').toLowerCase()))];
+    const niv = tous.filter(n=>OP_ORDRE.includes(n)), prep = tous.filter(n=>NIVEAUX_ADMIN.includes(n));
+    document.getElementById('editProfNiveauxAuto').textContent = (niv.length
       ? 'Par ses classes : ' + opRevisionEtab(niv).map(niveauLabel).join(', ') + '.'
-      : 'Aucune classe de CM1 à 3e : il voit seulement les niveaux cochés ci-dessus' + (extra.size ? '.' : ' (aucun pour l\'instant).');
+      : 'Aucune classe de CM1 à 3e : il voit seulement les niveaux cochés ci-dessus' + (extra.size || beta.size ? '.' : ' (aucun pour l\'instant).'))
+      + (prep.length ? ' Classe de ' + prep.map(niveauLabel).join(', ') + ' : niveau en préparation, visible s\'il est coché (bêta).' : '');
   }
   // Bêta-testeur (relecture.js) : administrateur général seulement, colonne profiles.beta_testeur.
   editProfHasBeta = prof.role==='prof' && !adminScopeUai() && ('beta_testeur' in prof);
   document.getElementById('editProfBetaBox').style.display = editProfHasBeta ? '' : 'none';
   document.getElementById('editProfBeta').checked = !!prof.beta_testeur;
-  // Niveaux en préparation (NIVEAUX_ADMIN, app.js) ouverts à ce professeur : profiles.niveaux_beta,
-  // modifiable par l'administrateur général seulement (déclencheur prevent_profile_privilege_escalation).
-  editProfHasNivBeta = prof.role==='prof' && !adminScopeUai() && ('niveaux_beta' in prof);
-  document.getElementById('editProfNivBetaBox').style.display = editProfHasNivBeta ? '' : 'none';
-  if(editProfHasNivBeta){
-    const beta = new Set(prof.niveaux_beta || []);
-    document.getElementById('editProfNivBetaList').innerHTML = NIVEAUX_ADMIN.map(n=>`<label style="display:inline-flex;align-items:center;gap:5px;background:#fff;padding:5px 10px;border-radius:20px;font-size:.85rem;cursor:pointer;border:1px solid rgba(28,43,57,.12);"><input type="checkbox" class="editProfNivBetaCheck" value="${n}" ${beta.has(n)?'checked':''}> ${niveauLabel(n)}</label>`).join('');
-  }
   // Clé IA (professeurs seulement : l'administrateur utilise toujours la clé du site).
   const aiBox = document.getElementById('editProfAiBox');
   const aiBoxShown = prof.role==='prof' && !adminScopeUai(); // choix de clé : administrateur général
