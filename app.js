@@ -312,7 +312,24 @@ async function venteCharger(){
 function venteOuverte(test){ return currentUserRole === 'admin' || VENTES_OUVERTES || !!test; }
 const VENTE_MSG = 'Les offres ne sont pas encore en vente. D\'ici là, le site est en démonstration : essayez-le gratuitement.';
 const VENTE_BOUTON = 'Bientôt en vente';
-function niveauVisible(lvl){ return !NIVEAUX_ADMIN.includes(lvl) || currentUserRole === 'admin'; }
+/* Bêta-testeurs d'un niveau en préparation -- demandé : « permettre à l'admin d'attribuer le niveau ce2 à des
+   enseignants (béta testeurs) ». Professeur : profiles.niveaux_beta (coché par l'administrateur général dans sa
+   fiche) ; élève : niveaux en préparation de ses classes (seul l'administrateur crée ces classes). */
+let NIVEAUX_BETA = [];
+async function niveauxBetaCharger(role){
+  NIVEAUX_BETA = [];
+  if(!currentUser) return;
+  try{
+    if(role === 'prof'){
+      const { data, error } = await sb.from('profiles').select('niveaux_beta').eq('id', currentUser.id).maybeSingle();
+      if(!error && data) NIVEAUX_BETA = (data.niveaux_beta || []).filter(n => NIVEAUX_ADMIN.includes(n));
+    } else if(role === 'eleve'){
+      const { data } = await sb.from('class_students').select('classes(niveau)').eq('student_id', currentUser.id);
+      NIVEAUX_BETA = [...new Set((data || []).map(r => r.classes && String(r.classes.niveau || '').toLowerCase()).filter(n => NIVEAUX_ADMIN.includes(n)))];
+    }
+  }catch(e){ NIVEAUX_BETA = []; }
+}
+function niveauVisible(lvl){ return !NIVEAUX_ADMIN.includes(lvl) || currentUserRole === 'admin' || NIVEAUX_BETA.includes(lvl); }
 
 const VACANCES = {
   '6e':[{after:3,label:'Vacances de Toussaint · 17 oct → 2 nov'},{after:7,label:'Vacances de Noël · 19 déc → 4 jan'},{after:11,label:'Vacances d\'hiver · 20 fév → 8 mars'},{after:15,label:'Vacances de printemps · 17 avr → 3 mai'}],
@@ -623,11 +640,11 @@ function isChapterFree(lvl, titre){ return (FREE_CHAPTERS[lvl]||[]).includes(tit
 function niveauxMenusMaj(){
   const lim = currentUserRole==='eleve' && typeof offreNiveaux!=='undefined' && Array.isArray(offreNiveaux) ? offreNiveaux : null;
   document.querySelectorAll('[data-nav="niveau"][data-lvl]').forEach(el=>{
-    const cache = (!!lim && !lim.includes(el.dataset.lvl)) || !niveauVisible(el.dataset.lvl); // + niveaux en préparation (administrateurs)
+    const cache = (!!lim && !lim.includes(el.dataset.lvl) && !NIVEAUX_BETA.includes(el.dataset.lvl)) || !niveauVisible(el.dataset.lvl); // + niveaux en préparation (administrateurs, bêta-testeurs)
     el.classList.toggle('niveau-masque', cache);
   });
 }
-function offreHorsNiveau(lvl){ return typeof offreNiveaux!=='undefined' && Array.isArray(offreNiveaux) && !offreNiveaux.includes(lvl); }
+function offreHorsNiveau(lvl){ return typeof offreNiveaux!=='undefined' && Array.isArray(offreNiveaux) && !offreNiveaux.includes(lvl) && !NIVEAUX_BETA.includes(lvl); }
 function isChapterLocked(lvl, titre){
   // Élève hors du niveau de sa classe : verrouillé même si le chapitre est gratuit pour les visiteurs
   // (signalé : « Certains chapitres des classes supérieures sont visibles »).
@@ -3089,7 +3106,7 @@ async function globalSignIn(){
 }
 async function globalSignOut(){
   await sb.auth.signOut();
-  currentUser = null; currentUserRole = null; currentClassId = null; currentReferentEtab = null; currentEtabLicence = null;
+  currentUser = null; currentUserRole = null; NIVEAUX_BETA = []; currentClassId = null; currentReferentEtab = null; currentEtabLicence = null;
   if(typeof offreClear==='function') offreClear();
   niveauxMenusMaj();
   refreshAuthUI();
@@ -3279,6 +3296,7 @@ async function refreshAuthUI(){
     const prevOffreNiveaux = JSON.stringify(typeof offreNiveaux!=='undefined' ? offreNiveaux : null);
     if(typeof offreLoad==='function') await offreLoad(currentUserRole, !!currentEtabLicence);
     const offreChanged = prevOffreNiveaux !== JSON.stringify(typeof offreNiveaux!=='undefined' ? offreNiveaux : null);
+    await niveauxBetaCharger(currentUserRole);
     niveauxMenusMaj();
 
     loggedOutEl.style.display='none'; loggedInEl.style.display='block';
@@ -3386,7 +3404,7 @@ async function refreshAuthUI(){
     restrictedVisitor = accessBlocked || !(currentUserRole==='eleve' || currentUserRole==='parent' || isStaff);
     if((wasRestricted !== restrictedVisitor || familleChanged || offreChanged) && currentLevel) renderNiveau(currentLevel);
   } else {
-    currentUser = null; currentUserRole = null; currentClassId = null; currentReferentEtab = null; currentEtabLicence = null; currentReferentEtab = null; currentEtabLicence = null;
+    currentUser = null; currentUserRole = null; NIVEAUX_BETA = []; currentClassId = null; currentReferentEtab = null; currentEtabLicence = null; currentReferentEtab = null; currentEtabLicence = null;
     loggedOutEl.style.display='block'; loggedInEl.style.display='none';
     isStaffGlobal = false;
     const avatarBtnOut = document.getElementById('accountAvatar');
@@ -3600,6 +3618,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1160', date:'2026-10-27', items:['Bêta-test des niveaux en préparation -- demandé : « permettre à l\'admin d\'attribuer le niveau ce2 à des enseignants (béta testeurs) ». Administration › fiche d\'un professeur › encadré Bêta-testeur : nouvelles cases « Niveaux en préparation ouverts » (CP, CE2), réservées à l\'administrateur général. Le professeur coché voit ce niveau comme l\'administrateur : menu, carte de l\'accueil, chapitres, planches, questions flash. Ses élèves le voient aussi s\'ils sont dans une classe de ce niveau (classe créée par l\'administrateur et rattachée au professeur). Les autres comptes ne voient toujours rien.'] },
   { version:'2026-08-19.1159', date:'2026-10-27', items:['CP (en préparation) : les mains qui comptent sur les doigts sont corrigées -- signalé : « Les pouces ne sont pas du bon côté ! ». Ce sont les mains de l\'enseignant, paumes tournées vers la classe : les pouces sont à l\'extérieur, l\'index se lève à côté du pouce, et le pouce replié se couche sur la paume au lieu de flotter entre les deux mains.'] },
   { version:'2026-08-19.1158', date:'2026-10-27', items:['CP en préparation (visible des administrateurs seulement) -- demandé : « On se demande quel sens ça a de ne pas avoir CP et CE1 », « le site est aussi très utile pour l\'enseignant, surtout avec un maximum d\'animations visuelles », puis « oui, rédige N1 et N2 ». Progression de 26 chapitres construite sur le programme du cycle 2 (BO n° 41 du 31 octobre 2024, partie CP), du 1er septembre 2026 au 2 juillet 2027, couleur framboise. Deux premiers chapitres, pensés pour être projetés au tableau : « Les nombres jusqu\'à 10 » (voir d\'un coup d\'œil avec le dé, les doigts et la boîte de dix ; compter une collection en touchant chaque objet une fois ; écrire les nombres de 0 à 10 ; le nombre d\'après et d\'avant ; plus, moins, autant) et « Décomposer les nombres jusqu\'à 10 » (la maison du nombre, 5 et encore…, faire 10, les doubles). Nouvelles animations : quantité montrée un instant puis cachée (« Combien ? »), comptage d\'une collection de pommes, boîte de dix qui se remplit avec ce qu\'il manque pour faire 10, maison du nombre qui se remplit. Méthodes pas à pas dessinées, 7 exercices corrigés et rédigés par chapitre, quiz, questions flash prêtes. Au quiz du CP, un bouton « Écouter » lit la question et les réponses à voix haute (synthèse vocale du navigateur).'] },
   { version:'2026-08-19.1157', date:'2026-10-27', items:['Facturation : factures des établissements privés émises et transmises par Qonto (facturation électronique) -- demandé : « je suis chez Qonto, je prends Qonto », puis « d\'accord pour A et B ». Nouveau bouton « Envoyer par Qonto » sur les factures d\'un établissement privé : l\'organisme de gestion est retrouvé (par son SIRET) ou créé dans Qonto, la facture y est créée avec le même numéro, les mêmes dates, les mêmes lignes et le même total (vérifié avant émission), en TVA non applicable (art. 293 B), puis finalisée (Factur-X) et envoyée par le réseau de facturation électronique quand l\'établissement y est joignable ; sinon elle est à envoyer par e-mail depuis Qonto. La facture Qonto est la pièce officielle, le PDF du site en est la copie. « Suivi Qonto » affiche le cycle de vie (déposée, émise, reçue, refusée…) et le lien vers la facture officielle. « Tester la connexion Qonto » dans Mes informations. Les établissements publics restent sur Chorus Pro ; les factures de test ne partent jamais.'] },

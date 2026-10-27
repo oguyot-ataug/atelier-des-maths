@@ -421,6 +421,11 @@ document.body.insertAdjacentHTML('beforeend', `
     <div id="editProfBetaBox" style="display:none;background:rgba(122,79,192,.07);border-radius:10px;padding:12px 14px;margin-bottom:14px;">
       <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;"><input type="checkbox" id="editProfBeta" style="margin-top:3px;">
         <span><b><span class=gicon>science</span> Bêta-testeur</b><br><span class="hint">Il peut faire des retours sur les exercices des manuels (onglet Manuel : Validé, Non examiné, Commenté). Ses retours apparaissent sous chaque exercice et dans « Toutes les remarques ».</span></span></label>
+      <div id="editProfNivBetaBox" style="display:none;margin-top:10px;">
+        <b style="font-size:.9rem;">Niveaux en préparation ouverts</b>
+        <div id="editProfNivBetaList" style="display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 4px;"></div>
+        <span class="hint">Il voit ces niveaux comme l'administrateur (menu, chapitres, planches). Ses élèves d'une classe de ce niveau le voient aussi : créez la classe (ex. CE2) et rattachez-la-lui.</span>
+      </div>
     </div>
     <div style="display:flex;justify-content:flex-end;gap:8px;">
       <span class="hint" id="editProfStatus" style="margin:auto 8px auto 0;"></span>
@@ -534,7 +539,7 @@ let editProfTargetId = null, editProfTargetName = '', editProfTargetRole = 'prof
    le bouton n'existait jusqu'ici que pour les comptes prof/admin. L'UAI et les classes
    rattachées (établissement) n'ont de sens que pour un prof (class_teachers) -- masqués pour
    un élève, dont la classe se gère depuis la section "Affecter" du panneau admin. */
-let editProfHasBeta = false;
+let editProfHasBeta = false, editProfHasNivBeta = false;
 async function openEditProfModal(id){
   editProfTargetId = id;
   document.getElementById('editProfModalOverlay').style.display='flex';
@@ -573,6 +578,14 @@ async function openEditProfModal(id){
   editProfHasBeta = prof.role==='prof' && !adminScopeUai() && ('beta_testeur' in prof);
   document.getElementById('editProfBetaBox').style.display = editProfHasBeta ? '' : 'none';
   document.getElementById('editProfBeta').checked = !!prof.beta_testeur;
+  // Niveaux en préparation (NIVEAUX_ADMIN, app.js) ouverts à ce professeur : profiles.niveaux_beta,
+  // modifiable par l'administrateur général seulement (déclencheur prevent_profile_privilege_escalation).
+  editProfHasNivBeta = prof.role==='prof' && !adminScopeUai() && ('niveaux_beta' in prof);
+  document.getElementById('editProfNivBetaBox').style.display = editProfHasNivBeta ? '' : 'none';
+  if(editProfHasNivBeta){
+    const beta = new Set(prof.niveaux_beta || []);
+    document.getElementById('editProfNivBetaList').innerHTML = NIVEAUX_ADMIN.map(n=>`<label style="display:inline-flex;align-items:center;gap:5px;background:#fff;padding:5px 10px;border-radius:20px;font-size:.85rem;cursor:pointer;border:1px solid rgba(28,43,57,.12);"><input type="checkbox" class="editProfNivBetaCheck" value="${n}" ${beta.has(n)?'checked':''}> ${niveauLabel(n)}</label>`).join('');
+  }
   // Clé IA (professeurs seulement : l'administrateur utilise toujours la clé du site).
   const aiBox = document.getElementById('editProfAiBox');
   const aiBoxShown = prof.role==='prof' && !adminScopeUai(); // choix de clé : administrateur général
@@ -631,6 +644,10 @@ async function saveEditProfModal(){
     patch.niveaux_extra = extra.length ? extra : null;
   }
   if(editProfHasBeta) patch.beta_testeur = document.getElementById('editProfBeta').checked;
+  if(editProfHasNivBeta){
+    const nb = Array.from(document.querySelectorAll('.editProfNivBetaCheck:checked')).map(el=>el.value);
+    patch.niveaux_beta = nb.length ? nb : null;
+  }
   const { error } = await sb.from('profiles').update(patch).eq('id', editProfTargetId);
   if(error){ status.textContent = 'Erreur : '+error.message; return; }
   if(editProfTargetRole!=='eleve'){
