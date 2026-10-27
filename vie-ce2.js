@@ -102,7 +102,11 @@ function vcOiseauxMonter(el){
     const pos = []; let g = 1;
     const alea = () => { g = (g * 9301 + 49297) % 233280; return g / 233280; };
     g = st.graine;
-    st.n.forEach((k, t) => { for(let i = 0; i < k; i++){ let p, essai = 0; do { p = [30 + alea() * 440, 40 + alea() * 120]; essai++; } while(essai < 300 && pos.some(q => Math.hypot(q[0] - p[0], q[1] - p[1]) < 36)); pos.push(p); p.push(t); } });
+    // Une case par oiseau sur une grille invisible de 10 × 4 (au plus 36 oiseaux), petit décalage dans la case :
+    // deux oiseaux ne se recouvrent jamais -- signalé : un merle était caché derrière un rouge-gorge.
+    const cases = []; for(let r = 0; r < 4; r++) for(let c = 0; c < 10; c++) cases.push([28 + c * 48, 36 + r * 34]);
+    for(let i = cases.length - 1; i > 0; i--){ const j = Math.floor(alea() * (i + 1)); [cases[i], cases[j]] = [cases[j], cases[i]]; }
+    st.n.forEach((k, t) => { for(let i = 0; i < k; i++){ const [x, y] = cases[pos.length]; pos.push([x + (alea() - .5) * 4, y + (alea() - .5) * 4, t]); } });
     return `<svg viewBox="0 0 500 190" class="vc-svg" style="max-width:560px;"><rect width="500" height="190" rx="10" fill="#E8F5E1"/><path d="M0 150 Q120 135 250 150 T500 145 V190 H0 Z" fill="#B9DFA4"/>
       <rect x="400" y="20" width="10" height="150" fill="#8B5E3C"/><circle cx="405" cy="30" r="40" fill="#7CBF6A" opacity=".55"/>${pos.map(([x, y, t]) => vcOiseau(x, y, VC_OISEAUX[t], .95)).join('')}</svg>`;
   }
