@@ -1911,7 +1911,7 @@ body.fig-proj #tbSvg{display:block;width:100vw !important;height:100vh !importan
    ou « A = » en colonne avec le résultat encadré), puis phrase de conclusion. */
 .cm-redac{margin:4px 0 14px;line-height:1.5;}
 .cm-redac:last-child{margin-bottom:2px;}
-.cm-redac-titre{text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1.5px;font-weight:600;margin-bottom:4px;}
+.cm-redac-titre{font-weight:600;margin-bottom:4px;} .cm-redac-sou{text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1.5px;}
 .cm-redac-ligne{margin:3px 0 3px 18px;}
 .cm-redac-fig{margin:4px 0 6px 18px;max-width:100%;overflow-x:auto;}
 .cm-redac-fig svg{max-width:100%;height:auto;}

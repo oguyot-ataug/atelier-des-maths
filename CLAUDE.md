@@ -76,6 +76,7 @@ préparer ces mises à jour, sans les publier avant la date d'effet.
 - **Fractions toujours en LaTeX**, jamais « a/b » : `cm1Frac(a, b)` dans les cours, quiz, corrections ;
   dans les dessins SVG, fraction en étage ; les questions flash « 3/4 » sont converties à l'affichage.
 - **Tous les exercices de l'onglet Exercices ont une réponse rédigée** avec `cm1Redac(titre, calcul,
-  phrase)` : un titre souligné qui reprend la question (« Âge de mamie : ») ; le calcul sur une ligne
+  phrase)` : un titre souligné qui reprend la question (« Âge de mamie : », souligné jusqu'à la dernière
+  lettre du titre, jamais les deux-points) ; le calcul sur une ligne
   s'il tient, sinon « A = … » développé en colonne avec le résultat encadré ; puis une phrase de
   conclusion, systématiquement.

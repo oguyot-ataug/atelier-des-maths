@@ -57,6 +57,7 @@ function cm1Exos(slug, liste, redaction){
    un tableau de ces objets. */
 // fig (facultatif) : un dessin qui montre la correction (frise, schéma en barres, figure…), placé
 // sous le titre, avant les calculs -- demandé : « mieux représenter la correction par des dessins ».
+// Le titre est souligné jusqu'à sa dernière lettre, jamais les deux-points (demandé : « on ne souligne jamais les ":" »).
 function cm1Redac(titre, calc, phrase, fig){
   const un = x => {
     if(x == null || x === '') return '';
@@ -67,7 +68,7 @@ function cm1Redac(titre, calc, phrase, fig){
       + (lignes.length ? `<table class="cm-redac-col">${lignes.map((l, i) => `<tr><td>${nom}</td><td>=</td><td>${i === lignes.length - 1 ? `<span class="cm-encadre">${l}</span>` : l}</td></tr>`).join('')}</table>` : '');
   };
   const calcs = Array.isArray(calc) && calc.some(x => typeof x === 'object' && x !== null) ? calc : [calc];
-  return `<div class="cm-redac"><div class="cm-redac-titre">${titre} :</div>${fig ? `<div class="cm-redac-fig">${fig}</div>` : ''}${calcs.map(un).join('')}${phrase ? `<p class="cm-redac-phrase">${phrase}</p>` : ''}</div>`;
+  return `<div class="cm-redac"><div class="cm-redac-titre"><span class="cm-redac-sou">${titre}</span> :</div>${fig ? `<div class="cm-redac-fig">${fig}</div>` : ''}${calcs.map(un).join('')}${phrase ? `<p class="cm-redac-phrase">${phrase}</p>` : ''}</div>`;
 }
 // Liste sans numéro (une question ou un calcul par ligne) -- demandé : pas de « 1. », « 2. » devant
 // une question, surtout s'il est suivi d'un nombre ou d'un calcul.
