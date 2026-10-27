@@ -80,6 +80,10 @@ function facPanelHtml(){
           <button class="btn secondary" onclick="facTestMail()"><span class="gicon">mail</span> Envoyer un e-mail de test</button>
           <span class="hint" id="facMailMsg" style="margin:0;">Envoyé depuis devis@latelieraugmente.fr vers votre adresse ci-dessus.</span>
         </div>
+        <div class="tool-row" style="margin-top:8px;">
+          <button class="btn secondary" onclick="facQontoTest()"><span class="gicon">account_balance</span> Tester la connexion Qonto</button>
+          <span class="hint" id="facQontoMsg" style="margin:0;">Factures des établissements privés : émises et transmises par Qonto (facturation électronique).</span>
+        </div>
       </div>
     </div>
 
@@ -395,6 +399,7 @@ function facRenderDocs(){
       if(d.licence_until) suivi.push('licence jusqu\'au ' + facDate(d.licence_until));
       if(d.type === 'facture' && d.statut !== 'payee' && d.statut !== 'annule' && d.date_echeance) suivi.push('échéance ' + facDate(d.date_echeance));
       if(d.paye_le) suivi.push('payée le ' + facDate(d.paye_le));
+      const qs = facQontoSuivi(d); if(qs) suivi.push(qs);
       if(d.type === 'devis'){
         const sg = (facState.sigs||[]).find(x=>x.document_id === d.id && (x.signed_at || !x.revoked));
         if(sg && sg.signed_at) suivi.push(`<span style="color:#1F7A4D;font-weight:600;"><span class="gicon">verified</span> signé en ligne le ${facDate(sg.signed_at.slice(0,10))} par ${facEsc(sg.signataire_nom)} (${facEsc(sg.signataire_qualite)})</span>`);
@@ -415,6 +420,9 @@ function facRenderDocs(){
       if(d.type === 'devis' && d.statut === 'accepte' && !fact) act.push(`<button class="btn" onclick="facFacturer('${d.id}')">Facturer</button>`);
       if(d.type === 'devis' && d.statut !== 'refuse' && d.statut !== 'annule')
         act.push(`<button class="btn secondary" onclick="facJoindre('${d.id}')" title="Devis signé ou bon de commande (PDF ou image)"><span class="gicon">attach_file</span> ${d.piece_jointe ? 'Remplacer' : 'Joindre'}</button>`);
+      if(facQontoPossible(d) && !facQontoTransmise(d))
+        act.push(`<button class="btn" onclick="facQontoEnvoyer('${d.id}')" title="Créer la facture dans Qonto (pièce officielle, Factur-X) et l'envoyer par la facturation électronique"><span class="gicon">send</span> ${d.qonto_id ? 'Reprendre l\'envoi Qonto' : 'Envoyer par Qonto'}</button>`);
+      if(d.qonto_id) act.push(`<button class="btn secondary" onclick="facQontoSuivre('${d.id}')"><span class="gicon">track_changes</span> Suivi Qonto</button>`);
       if(d.type === 'facture' && d.statut === 'emis'){
         act.push(`<button class="btn" onclick="facPayee('${d.id}')">Payée</button>`);
         act.push(`<button class="btn secondary" onclick="facAvoir('${d.id}')">Annuler par un avoir</button>`);
@@ -568,7 +576,9 @@ async function facPayeeOk(id){
 }
 async function facAvoir(id){
   const d = facState.docs.find(x=>x.id === id); if(!d) return;
-  if(!(await niceConfirm(`Annuler la facture ${d.numero} en émettant un avoir de ${facMoney(-d.total)} ? L'avoir est définitif ; vous pourrez ensuite émettre une nouvelle facture corrigée.`))) return;
+  // Facture déjà émise dans Qonto : l'avoir officiel se fait aussi dans Qonto (pas encore automatique).
+  const qonto = d.qonto_id && d.qonto_statut !== 'brouillon' ? ' Cette facture a été émise dans Qonto : établissez aussi l\'avoir dans Qonto (Factures clients › la facture › Créer un avoir).' : '';
+  if(!(await niceConfirm(`Annuler la facture ${d.numero} en émettant un avoir de ${facMoney(-d.total)} ? L'avoir est définitif ; vous pourrez ensuite émettre une nouvelle facture corrigée.${qonto}`))) return;
   const lignes = d.lignes.map(l=>Object.assign({}, l, { pu: -Number(l.pu) }));
   const { data, error } = await sb.rpc('facturation_emettre', { p_type:'avoir', p_doc: {
     client_id: d.client_id, lignes, niveaux: d.niveaux, effectifs: d.effectifs, periode_debut: d.periode_debut, periode_fin: d.periode_fin,
@@ -577,6 +587,68 @@ async function facAvoir(id){
   await sb.from('facturation_documents').update({ statut:'annule' }).eq('id', d.id);
   await facRefresh();
   facOpenPdf(data.id);
+}
+
+/* ---------- Qonto : facturation électronique (fonction qonto, demandé le 27/10/2026) ----------
+   La facture créée dans Qonto (Factur-X) est la pièce officielle, le PDF du site en est la copie à
+   l'identique (même numéro). Établissements privés seulement : les publics passent par Chorus Pro. */
+const FAC_QONTO = { brouillon:'brouillon créé dans Qonto', finalisee:'émise dans Qonto, à envoyer par e-mail depuis Qonto (client non joignable par facturation électronique)',
+  envoyee:'transmise par Qonto', 200:'déposée', 201:'émise par la plateforme', 202:'reçue par la plateforme du client', 203:'mise à disposition du client',
+  204:'prise en charge', 205:'approuvée', 206:'approuvée partiellement', 207:'en litige', 208:'suspendue', 209:'complétée', 210:'refusée',
+  211:'paiement transmis', 212:'encaissée', 213:'rejetée', 214:'visée' };
+function facQontoPossible(d){
+  return 'qonto_id' in d && d.type === 'facture' && !d.test && (d.client||{}).statut === 'prive' && d.statut !== 'annule'; // colonnes ajoutées le 27/10/2026
+}
+function facQontoTransmise(d){ return d.qonto_statut === 'envoyee' || /^\d{3}$/.test(d.qonto_statut || ''); }
+function facQontoSuivi(d){
+  if(!('qonto_id' in d)) return '';
+  const lib = d.qonto_statut ? (FAC_QONTO[d.qonto_statut] || d.qonto_statut) : '';
+  const alerte = ['210','213','207','208'].includes(d.qonto_statut);
+  let h = lib ? `<span style="color:${alerte ? '#a83c1f' : '#6A4FB3'};font-weight:600;"><span class="gicon">account_balance</span> Qonto : ${facEsc(lib)}${d.qonto_envoye_at && facQontoTransmise(d) ? ' (envoi du ' + facDate(d.qonto_envoye_at.slice(0,10)) + ')' : ''}</span>` : '';
+  if(d.qonto_erreur && !facQontoTransmise(d)) h += (h ? '<br>' : '') + `<span style="color:#a83c1f;">${facEsc(facQontoMsg(d.qonto_erreur))}</span>`;
+  return h;
+}
+const facQontoMsg = m => /^Qonto\b/.test(m) ? m : 'Qonto : ' + m;
+async function facQontoAppel(body){
+  const { data, error } = await sb.functions.invoke('qonto', { body });
+  let err = error ? error.message : (data && data.error);
+  if(error && error.context && typeof error.context.json === 'function'){ try{ const j = await error.context.json(); if(j && j.error) err = j.error; }catch(e){} }
+  return { data, err };
+}
+async function facQontoTest(){
+  const msg = document.getElementById('facQontoMsg');
+  msg.textContent = 'Connexion à Qonto…';
+  const { data, err } = await facQontoAppel({ action:'etat' });
+  if(err){ msg.innerHTML = '<span style="color:#a83c1f;">Échec : ' + facEsc(err) + '</span>'; return; }
+  const ok = s => s === 'enabled' ? '<b style="color:#1F7A4D;">activé</b>' : '<b style="color:#a83c1f;">' + facEsc(s || 'inconnu') + '</b>';
+  msg.innerHTML = `<span style="color:#1F7A4D;">✓ Connecté à <b>${facEsc(data.organisation)}</b></span> · envoi électronique ${ok(data.envoi)} · réception ${ok(data.reception)}`
+    + (data.iban_site_qonto ? ' · IBAN des factures : compte Qonto ✓'
+      : `<br><span style="color:#a83c1f;">L'IBAN de vos informations n'est pas un compte Qonto. Comptes Qonto : ${(data.comptes||[]).map(c=>facEsc(c.iban)).join(', ') || 'aucun'}.</span>`)
+    + (data.reglages_erreur ? '<br><span style="color:#a83c1f;">' + facEsc(data.reglages_erreur) + '</span>' : '');
+}
+async function facQontoEnvoyer(id){
+  const d = facState.docs.find(x=>x.id === id); if(!d) return;
+  if(!(await niceConfirm(`Émettre la facture ${d.numero} (${facMoney(d.total)}) dans Qonto et l'envoyer à ${(d.client||{}).organisme || (d.client||{}).nom} par la facturation électronique ? La facture Qonto devient la pièce officielle.`))) return;
+  const { data, err } = await facQontoAppel({ action:'envoyer', document_id: id });
+  await facRefresh();
+  if(err){ niceAlert(facQontoMsg(err)); return; }
+  niceAlert(data.statut === 'envoyee'
+    ? `Facture ${d.numero} transmise par Qonto. Le suivi (déposée, reçue…) se met à jour avec « Suivi Qonto ».`
+    : `Facture ${d.numero} émise dans Qonto, mais l'établissement n'est pas joignable par la facturation électronique : envoyez-la par e-mail depuis Qonto.`);
+}
+async function facQontoSuivre(id){
+  const d = facState.docs.find(x=>x.id === id); if(!d) return;
+  facModal(`<strong style="font-family:'Space Grotesk',sans-serif;font-size:1.05rem;">Suivi Qonto · ${facEsc(d.numero)}</strong><p class="hint" id="facQontoSuiviBox">Lecture dans Qonto…</p>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px;"><button class="btn secondary" onclick="facCloseModal()">Fermer</button></div>`);
+  const { data, err } = await facQontoAppel({ action:'suivre', document_id: id });
+  const box = document.getElementById('facQontoSuiviBox'); if(!box) return;
+  if(err){ box.innerHTML = '<span style="color:#a83c1f;">' + facEsc(err) + '</span>'; return; }
+  const st = { draft:'brouillon', unpaid:'à payer', paid:'payée', canceled:'annulée' }[data.qonto] || data.qonto;
+  box.innerHTML = `Statut dans Qonto : <b>${facEsc(st)}</b>`
+    + (data.evenements.length ? '<ul style="margin:8px 0;padding-left:18px;">' + data.evenements.map(e=>`<li>${new Date(e.date).toLocaleString('fr-FR', {dateStyle:'short', timeStyle:'short'})} · <b>${facEsc(e.libelle)}</b>${e.motif ? ' – ' + facEsc(e.motif) : ''}</li>`).join('') + '</ul>'
+      : '<br>Aucun événement de facturation électronique pour l\'instant.')
+    + (data.invoice_url ? `<br><a href="${facEsc(data.invoice_url)}" target="_blank" rel="noopener" style="color:#0C5BA0;font-weight:600;"><span class="gicon">open_in_new</span> Facture officielle dans Qonto (PDF)</a>` : '');
+  facRefresh();
 }
 
 /* ---------- PDF (fenêtre d'impression) ---------- */
@@ -670,6 +742,7 @@ function facDocHtml(d){
     ${em.mention_tva ? `<div class="tva">${facEsc(em.mention_tva)}</div>` : ''}
     ${d.notes ? `<div class="notes">${nl(d.notes)}</div>` : ''}
     <div style="margin-top:16px;">${bloc}</div>
+    ${d.qonto_id && d.qonto_statut !== 'brouillon' ? `<p class="small">Facture électronique émise par l'intermédiaire de Qonto (plateforme agréée, format Factur-X) : ce document en est la copie.</p>` : ''}
     <div class="foot">${facEsc(em.nom)}${em.enseigne ? ' – ' + facEsc(em.enseigne) : ''} · SIRET ${facEsc(em.siret)}${em.rcs ? ' · ' + facEsc(em.rcs) : ''} · ${facEsc(em.email)}</div>
   </body></html>`;
 }
