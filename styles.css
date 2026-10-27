@@ -13,6 +13,7 @@
   --accent-cm2:#1B5E20;
   --accent-ce2:#558B2F; /* vert tilleul : couleur du CE2 */ /* vert émeraude foncé : couleur du CM2 */
   --accent-cp:#C2185B; /* framboise : couleur du CP */
+  --accent-ce1:#00838F; /* sarcelle : couleur du CE1 */
   --accent-3e:#7A3E9D; /* violet prune, lisible en texte blanc : couleur de la 3e */
   --accent-yellow:#F8AF23;
   --white:#FFFFFF;
@@ -1731,6 +1732,20 @@ body.fig-proj #tbSvg{display:block;width:100vw !important;height:100vh !importan
 #view-chapitre.lvl-cp .cp-form{border-color:var(--accent-cp);}
 #view-chapitre.lvl-cp .cp-fig-handle{fill:rgba(194,24,91,.12);stroke:rgba(194,24,91,.45);}
 .level-card.niv-cp{border-top-color:var(--accent-cp);}
+#view-chapitre.lvl-ce1 .tab-btn.active{border-bottom-color:var(--accent-ce1);}
+#view-chapitre.lvl-ce1 button.btn:not(.secondary):not(.orange){background:var(--accent-ce1);}
+#view-chapitre.lvl-ce1 .lesson-header{background:var(--accent-ce1);}
+#view-chapitre.lvl-ce1 .lesson-header .num{color:var(--accent-ce1);}
+#view-chapitre.lvl-ce1 .sub-header .letter{background:var(--accent-ce1);}
+#view-chapitre.lvl-ce1 .cp-chip-edit{background:var(--accent-ce1);}
+#view-chapitre.lvl-ce1 .cp-eb:hover{border-color:var(--accent-ce1);}
+#view-chapitre.lvl-ce1 .cp-form{border-color:var(--accent-ce1);}
+#view-chapitre.lvl-ce1 .cp-fig-handle{fill:rgba(0,131,143,.12);stroke:rgba(0,131,143,.45);}
+#view-chapitre.lvl-ce1 .cpn-fiche-n{color:var(--accent-ce1);}
+#view-chapitre.lvl-ce1 .quiz-ecouter{border-color:var(--accent-ce1);color:var(--accent-ce1);}
+.level-card.niv-ce1{border-top-color:var(--accent-ce1);}
+.level-card.niv-ce1::before{background:radial-gradient(circle, rgba(0,131,143,.14), transparent 70%);}
+.level-card.niv-ce1 .lvl-new{background:var(--accent-ce1);}
 .level-card.niv-cp::before{background:radial-gradient(circle, rgba(194,24,91,.14), transparent 70%);}
 .level-card.niv-cp .lvl-new{background:var(--accent-cp);}
 /* Dessins du CP : rangée de dessins centrés, fiches des nombres, maison du nombre. */

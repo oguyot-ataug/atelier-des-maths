@@ -202,6 +202,43 @@ const CHCP = [
  {n:26,code:'N15',cat:'N',t:'Problèmes : bilan de l\'année',s:3,p:'',d:'14 juin-2 juil'},
 ];
 
+/* Progression CE1 -- demandé : « Suite du CP puis CE1 ». Notre propre manuel, construit sur le
+   programme du cycle 2 (BO n° 41 du 31 octobre 2024, partie CE1) : nombres jusqu'à 1 000 (centaines),
+   addition posée puis soustraction posée, le signe × et les tables de 2, 3, 4, 5 et 10, premières
+   fractions (un demi, un tiers, un quart) par le partage de figures et de longueurs, centimètre et
+   mètre, gramme et kilogramme, euros et centimes (sans virgule), heures et demi-heures, angle droit,
+   symétrie sur quadrillage, solides (faces, arêtes, sommets), programmation de déplacements.
+   Comme au CP : pensé pour être projeté (animations au tableau), un calcul par ligne.
+   Calendrier de l'école : du mardi 1er septembre 2026 au vendredi 2 juillet 2027. */
+const CHCE1 = [
+ {n:1,code:'N1',cat:'N',t:'Les nombres jusqu\'à 100',s:2,p:'',d:'1-11 sept'},
+ {n:2,code:'N2',cat:'N',t:'Calcul mental : ajouter et soustraire',s:1,p:'',d:'14-18 sept'},
+ {n:3,code:'G1',cat:'G',t:'Se repérer sur un quadrillage',s:1,p:'',d:'21-25 sept'},
+ {n:4,code:'N3',cat:'N',t:'Les nombres jusqu\'à 1 000',s:2,p:'',d:'28 sept-9 oct'},
+ {n:5,code:'N4',cat:'N',t:'Problèmes : ajouter, retirer, comparer',s:1,p:'',d:'12-16 oct'},
+ {n:6,code:'N5',cat:'N',t:'Comparer, ranger, encadrer',s:1,p:'',d:'2-6 nov'},
+ {n:7,code:'N6',cat:'N',t:'L\'addition posée',s:2,p:'',d:'9-20 nov'},
+ {n:8,code:'M1',cat:'M',t:'Longueurs : le centimètre et le mètre',s:1,p:'',d:'23-27 nov'},
+ {n:9,code:'G2',cat:'G',t:'Polygones et angle droit',s:1,p:'',d:'30 nov-4 déc'},
+ {n:10,code:'N7',cat:'N',t:'La multiplication : le signe ×',s:1,p:'',d:'7-11 déc'},
+ {n:11,code:'M2',cat:'M',t:'La monnaie : euros et centimes',s:1,p:'',d:'14-18 déc'},
+ {n:12,code:'N8',cat:'N',t:'Tables de multiplication de 2, 5 et 10',s:2,p:'',d:'4-15 jan'},
+ {n:13,code:'N9',cat:'N',t:'Les fractions : un demi, un tiers, un quart',s:1,p:'',d:'18-22 jan'},
+ {n:14,code:'M3',cat:'M',t:'Lire l\'heure : heures et demi-heures',s:1,p:'',d:'25-29 jan'},
+ {n:15,code:'N10',cat:'N',t:'Partager et faire des groupes',s:1,p:'',d:'1-5 fév'},
+ {n:16,code:'D1',cat:'D',t:'Tableaux et diagrammes',s:1,p:'',d:'8-12 fév'},
+ {n:17,code:'G3',cat:'G',t:'La symétrie',s:1,p:'',d:'15-19 fév'},
+ {n:18,code:'N11',cat:'N',t:'La soustraction posée',s:2,p:'',d:'8-19 mars'},
+ {n:19,code:'N12',cat:'N',t:'Tables de multiplication de 3 et 4',s:1,p:'',d:'22-26 mars'},
+ {n:20,code:'M4',cat:'M',t:'Les masses : le gramme et le kilogramme',s:1,p:'',d:'29 mars-2 avr'},
+ {n:21,code:'G4',cat:'G',t:'Les solides : faces, arêtes, sommets',s:1,p:'',d:'5-9 avr'},
+ {n:22,code:'N13',cat:'N',t:'Fractions et longueurs',s:1,p:'',d:'12-16 avr'},
+ {n:23,code:'M5',cat:'M',t:'Le calendrier et les durées',s:1,p:'',d:'3-7 mai'},
+ {n:24,code:'G5',cat:'G',t:'Programmer des déplacements',s:2,p:'',d:'10-21 mai'},
+ {n:25,code:'N14',cat:'N',t:'Calcul mental : stratégies jusqu\'à 100',s:2,p:'',d:'24 mai-4 juin'},
+ {n:26,code:'N15',cat:'N',t:'Problèmes : bilan de l\'année',s:4,p:'',d:'7 juin-2 juil'},
+];
+
 /* Progression CE2 -- demandé : « Voici le programme du cycle 2. On essaie de construire le CE2 ? »
    Notre propre manuel, construit sur l'annexe 4 (programme de mathématiques du cycle 2, partie CE2) :
    entiers jusqu'à 10 000 (au plus tard en période 2), fractions inférieures ou égales à 1 de
@@ -273,9 +310,9 @@ const CHCM2 = [
 // Correspondance niveau -> programme -- remplace la ternaire "lvl==='6e'?CH6:CH5" codée en
 // dur, pour rester extensible à mesure que de nouveaux niveaux sont ajoutés (cm1 aujourd'hui,
 // cm2/4e/3e plus tard).
-const CHAPITRES_BY_LEVEL = { '6e': CH6, '5e': CH5, '4e': CH4, '3e': CH3, 'cp': CHCP, 'ce2': CHCE2, 'cm1': CHCM1, 'cm2': CHCM2 };
+const CHAPITRES_BY_LEVEL = { '6e': CH6, '5e': CH5, '4e': CH4, '3e': CH3, 'cp': CHCP, 'ce1': CHCE1, 'ce2': CHCE2, 'cm1': CHCM1, 'cm2': CHCM2 };
 // Tous les niveaux ayant des chapitres, dans l'ordre de la scolarité (école puis collège).
-const NIVEAUX_ORDRE = ['cp', 'ce2', 'cm1', 'cm2', '6e', '5e', '4e', '3e'];
+const NIVEAUX_ORDRE = ['cp', 'ce1', 'ce2', 'cm1', 'cm2', '6e', '5e', '4e', '3e'];
 // Niveaux de l'école : CP, CE1, CE2, CM1, CM2 (clés en minuscules, libellés en majuscules).
 const RE_PRIMAIRE = /^(cp(?![a-z])|c[em]\d)/i;
 // Libellé affiché d'un niveau de chapitres : 'cm1' → « CM1 » (les clés de chapitres sont en minuscules).
@@ -290,13 +327,14 @@ function iaContexteNiveau(n){
   const k = niveauCle(n) || String(n || '').toLowerCase();
   const commun = ' Phrases courtes et vocabulaire simple, adaptés à des enfants ; pas de calculatrice ; pas de tableau de conversion ni de tableau de proportionnalité (on raisonne par des phrases : « 3 fois plus… ») ; pas de lettre pour une inconnue (utiliser ■ ou …) sauf en CM2 dans les formules simples ; les notations de géométrie sont toujours expliquées (« le segment [AB] »).';
   if(k === 'cp') return 'Élèves de CP (école élémentaire, cycle 2, 6-7 ans), qui apprennent à lire : énoncés très courts (une phrase), mots simples. Nombres entiers jusqu\'à 100 seulement (jusqu\'à 10 puis 20 en début d\'année, 59 avant Noël) ; additions, soustractions par le sens (ajouter, retirer, ce qu\'il manque), compléments à 10, doubles ; pas de fractions ; pas de signe × (seulement des problèmes de groupes égaux) ; pas de division ; heures entières seulement ; longueurs en m et cm ; euros entiers.' + commun;
+  if(k === 'ce1') return 'Élèves de CE1 (école élémentaire, cycle 2, 7-8 ans), qui lisent encore lentement : énoncés courts, mots simples. Nombres entiers jusqu\'à 1 000 seulement ; tables de multiplication de 2, 3, 4, 5 et 10 (signe × autorisé, pas de division écrite) ; fractions seulement un demi, un tiers, un quart (et deux quarts, trois quarts) par le partage ; euros et centimes sans virgule ; heures et demi-heures ; centimètre, mètre, gramme, kilogramme.' + commun;
   if(k === 'ce2') return 'Élèves de CE2 (école élémentaire, cycle 2, 8-9 ans). Nombres entiers jusqu\'à 10 000 seulement ; fractions inférieures ou égales à 1, de dénominateur au plus 12 (égalités, comparaison, addition et soustraction de même dénominateur) ; nombres à virgule seulement pour les prix en euros ; multiplication posée d\'un nombre de 2 ou 3 chiffres par un nombre de 1 ou 2 chiffres ; division seulement par son sens (partage, « combien de fois »), sans division posée ; durées en heures et minutes ; unités m, dm, cm, mm, km, g, kg, t, L, dL, cL, conversions par les relations entre unités.' + commun;
   if(k === 'cm1') return 'Élèves de CM1 (école élémentaire, cycle 3, 9-10 ans). Nombres entiers jusqu\'à 999 999 (au plus 4 chiffres en début d\'année), nombres décimaux jusqu\'aux centièmes seulement, fractions de dénominateur au plus 20 (ou 100 pour les fractions décimales), angles comparés sans mesure en degrés.' + commun;
   if(k === 'cm2') return 'Élèves de CM2 (école élémentaire, cycle 3, 10-11 ans). Nombres entiers jusqu\'à 999 999 999, nombres décimaux jusqu\'aux millièmes, fractions de dénominateur au plus 60 (ou 100 et 1 000 pour les fractions décimales), multiplication d\'un décimal par un entier uniquement, division par un diviseur à un chiffre, degrés à partir de l\'angle droit (90°) mais pas de rapporteur, probabilités sous la forme « a chances sur b ».' + commun;
   return '';
 }
 // Niveaux en préparation, réservés aux administrateurs (menu masqué, routes refusées aux autres).
-const NIVEAUX_ADMIN = ['cp', 'ce2']; // CP et CE2 en préparation (administrateurs) ; la 4e est publiée depuis le build 786, la 3e depuis le build 817
+const NIVEAUX_ADMIN = ['cp', 'ce1', 'ce2']; // CP, CE1 et CE2 en préparation (administrateurs) ; la 4e est publiée depuis le build 786, la 3e depuis le build 817
 /* Ouverture des ventes -- demandé : « pour l'instant je ne vends rien tant que ce n'est pas nickel. On peut ajouter
    une date, genre dispo à la vente à partir de... décembre 2026. Et mettre en démo pour le moment ». Puis (12/10/2026) :
    « bloque l'ouverture des ventes » : plus d'ouverture automatique à une date. Les ventes s'ouvrent seulement à la main,
@@ -337,6 +375,7 @@ const VACANCES = {
   '4e':[{after:4,label:'Vacances de Toussaint · 17 oct → 2 nov'},{after:7,label:'Vacances de Noël · 19 déc → 4 jan'},{after:10,label:'Vacances d\'hiver · 20 fév → 8 mars'},{after:12,label:'Vacances de printemps · 17 avr → 3 mai'}],
   '3e':[{after:4,label:'Vacances de Toussaint · 17 oct → 2 nov'},{after:8,label:'Vacances de Noël · 19 déc → 4 jan'},{after:11,label:'Vacances d\'hiver · 20 fév → 8 mars'},{after:13,label:'Vacances de printemps · 17 avr → 3 mai'}],
   'cp':[{after:5,label:'Vacances de Toussaint · 17 oct → 2 nov'},{after:11,label:'Vacances de Noël · 19 déc → 4 jan'},{after:17,label:'Vacances d\'hiver · 20 fév → 8 mars'},{after:22,label:'Vacances de printemps · 17 avr → 3 mai'}],
+  'ce1':[{after:5,label:'Vacances de Toussaint · 17 oct → 2 nov'},{after:11,label:'Vacances de Noël · 19 déc → 4 jan'},{after:17,label:'Vacances d\'hiver · 20 fév → 8 mars'},{after:22,label:'Vacances de printemps · 17 avr → 3 mai'}],
   'ce2':[{after:5,label:'Vacances de Toussaint · 17 oct → 2 nov'},{after:9,label:'Vacances de Noël · 19 déc → 4 jan'},{after:14,label:'Vacances d\'hiver · 20 fév → 8 mars'},{after:19,label:'Vacances de printemps · 17 avr → 3 mai'}],
   'cm1':[{after:5,label:'Vacances de Toussaint · 17 oct → 2 nov'},{after:9,label:'Vacances de Noël · 19 déc → 4 jan'},{after:15,label:'Vacances d\'hiver · 20 fév → 8 mars'},{after:19,label:'Vacances de printemps · 17 avr → 3 mai'}],
   'cm2':[{after:5,label:'Vacances de Toussaint · 17 oct → 2 nov'},{after:10,label:'Vacances de Noël · 19 déc → 4 jan'},{after:15,label:'Vacances d\'hiver · 20 fév → 8 mars'},{after:20,label:'Vacances de printemps · 17 avr → 3 mai'}],
@@ -578,7 +617,7 @@ function setActiveTopnav(key){
   else if(key==='5e') document.querySelector('.nav-links button[data-lvl="5e"]').classList.add('active');
   else if(key==='4e') document.querySelector('.nav-links button[data-lvl="4e"]')?.classList.add('active');
   else if(key==='3e') document.querySelector('.nav-links button[data-lvl="3e"]')?.classList.add('active');
-  else if(key==='cp' || key==='ce2' || key==='cm1' || key==='cm2') document.querySelector(`.nav-links button[data-lvl="${key}"]`)?.classList.add('active');
+  else if(key==='cp' || key==='ce1' || key==='ce2' || key==='cm1' || key==='cm2') document.querySelector(`.nav-links button[data-lvl="${key}"]`)?.classList.add('active');
   else if(key==='cm') document.querySelector('.nav-links button[data-nav="cm"]').classList.add('active');
   else if(key==='compte') document.querySelector('.nav-links button[data-nav="compte"]').classList.add('active');
   else if(key==='correction') document.querySelector('.nav-links button[data-nav="correction"]').classList.add('active');
@@ -621,6 +660,7 @@ const FREE_CHAPTERS = {
   '4e': ['Opérations sur les nombres relatifs', 'Théorème de Pythagore', 'Statistiques', 'Translations'],
   '3e': ['Nombres et calculs', 'Théorème de Thalès', 'Statistiques', 'Rotation'],
   'cp': ['Les nombres jusqu\'à 10', 'Se repérer dans l\'espace', 'Tableaux et diagrammes en barres', 'La monnaie : les euros'],
+  'ce1': ['Les nombres jusqu\'à 100', 'Se repérer sur un quadrillage', 'Tableaux et diagrammes', 'La monnaie : euros et centimes'],
   'ce2': ['Nombres jusqu\'à 10 000', 'Points, droites, segments', 'Tableaux et diagrammes en barres', 'La monnaie'],
   'cm1': ['Nombres entiers jusqu\'à 9 999', 'Droites parallèles et perpendiculaires', 'Organisation et gestion de données', 'Longueurs, masses, contenances'],
   'cm2': ['Nombres entiers (révisions jusqu\'à 999 999)', 'Droites, segments et cercles', 'Probabilités', 'Longueurs, masses, contenances'],
@@ -1172,7 +1212,8 @@ function openChapitre(c, tab, lvlOverride, opts){
   chapView.classList.toggle('lvl-cm', lvl==='cm1');  // CM1 : vert
   chapView.classList.toggle('lvl-cm2', lvl==='cm2'); // CM2 : vert émeraude foncé
   chapView.classList.toggle('lvl-ce2', lvl==='ce2'); // CE2 : vert tilleul
-  chapView.classList.toggle('lvl-cp', lvl==='cp');   // CP : framboise
+  chapView.classList.toggle('lvl-cp', lvl==='cp');
+  chapView.classList.toggle('lvl-ce1', lvl==='ce1'); // CE1 : sarcelle   // CP : framboise
   chapView.classList.toggle('lvl-5e', lvl==='5e');
   chapView.classList.toggle('lvl-4e', lvl==='4e'); // 4e : sa propre couleur (bleu-vert), pour distinguer le niveau d'un coup d'œil
   chapView.classList.toggle('lvl-3e', lvl==='3e'); // 3e : violet prune
@@ -1671,7 +1712,7 @@ function renderQuizHTML(bank, prefixHtml){
     // « Question 1 » au-dessus de l'énoncé, et non « 1. » devant -- demandé : ne pas numéroter « 1. »,
     // « 2. » devant une question, surtout si elle commence par un nombre ou un calcul.
     // CP : l'élève apprend à lire, la question peut être lue à voix haute.
-    const ecouter = currentChapterLevel==='cp' ? ` <button type="button" class="quiz-ecouter" onclick="lireQuestionQuiz(${qi})" title="Écouter la question"><span class="gicon">volume_up</span> Écouter</button>` : '';
+    const ecouter = (currentChapterLevel==='cp' || currentChapterLevel==='ce1') ? ` <button type="button" class="quiz-ecouter" onclick="lireQuestionQuiz(${qi})" title="Écouter la question"><span class="gicon">volume_up</span> Écouter</button>` : '';
     html+=`<div class="quiz-q"><div class="quiz-num">Question ${qi+1}${ecouter}</div><div style="font-weight:600;margin-bottom:8px;">${item.q}</div>`;
     item.opts.forEach((o,oi)=>{
       html+=`<button class="quiz-opt" onclick="answerQuiz(this,${qi},${oi})">${o}</button>`;
@@ -3618,6 +3659,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1173', date:'2026-10-27', items:['Nouveau niveau CE1 (en préparation, réservé admin et enseignants bêta) -- demandé : « Suite du CP puis CE1 ». Progression en 26 chapitres sur le programme du cycle 2 (BO n° 41 du 31 octobre 2024, partie CE1) : nombres jusqu\'à 1 000, additions et soustractions posées, signe × et tables de 2, 3, 4, 5 et 10, premières fractions (un demi, un tiers, un quart), centimètre et mètre, gramme et kilogramme, euros et centimes, heures et demi-heures, angle droit, symétrie, solides, programmation. Couleur sarcelle, bouton « Écouter » au quiz comme au CP, bêta-test possible depuis la fiche enseignant de l\'admin. Période 1 écrite : Les nombres jusqu\'à 100 (droite graduée, mots de 70 à 99), Calcul mental (passer la dizaine, + 9, décomposer), Se repérer sur un quadrillage (case B3 au croisement colonne-ligne, robot, plan de la classe), Les nombres jusqu\'à 1 000 (dix barres de dix deviennent une plaque de cent ; centaines, dizaines, unités ; cents et cent), Problèmes (le tout et les parties, avant-après, de plus et de moins).'] },
   { version:'2026-08-19.1172', date:'2026-10-27', items:['CP (en préparation, réservé admin) : les périodes 4 et 5, le CP est complet (26 chapitres). L\'addition posée : l\'addition se déroule colonne par colonne (avec ses propres nombres), la retenue montrée avec les cubes. Des groupes égaux : les paquets apparaissent un à un (3 + 3 + 3 + 3), la distribution « un pour toi, un pour moi ». Alignements et tracés sur quadrillage : la règle se pose sur deux points, la figure se reproduit côté par côté. Tableaux et diagrammes : bâtons groupés par 5, tableau, diagramme en images et en barres. Comparer des masses : la balance qui penche, gros mais léger. Les solides : ce qui roule et ce qui glisse sur une pente, le cube qui se plie à partir de son patron. Coder un déplacement : le robot suit un programme de flèches, se cogne si le programme est faux (déboguer). Ajouter 9, aller à la dizaine : les jetons complètent la boîte de dix puis passent dans la suivante, + 10 − 1 dans le tableau des nombres. Problèmes, bilan de l\'année : comparer (combien de plus), ce qui manque, choisir le bon calcul.'] },
   { version:'2026-08-19.1171', date:'2026-10-27', items:['CP (en préparation, réservé admin) : la période 3. Les nombres jusqu\'à 100 : les cubes se rangent en barres de dix jusqu\'à 99, et une animation découpe les mots qui jouent des tours (soixante-quatorze = 60 + 14, quatre-vingt-dix-sept = 80 + 17) avant de ranger les barres ; tableau des nombres jusqu\'à 99, cent = 10 dizaines. Ajouter et soustraire des dizaines : un chemin animé dans le tableau des nombres (descendre d\'une ligne = + 10). Soustraire en cassant une dizaine : une barre de dix se casse en dix cubes, puis on enlève ; ou on recule en passant par la dizaine. Lire l\'heure (heures entières) : la grande aiguille fait un tour, la petite avance d\'un nombre ; moments de la journée, jours de la semaine. Problèmes en deux étapes : le bus d\'arrêt en arrêt, le schéma en barres, un calcul par étape. Mesurer avec la règle : la règle se pose sous le trait, avec le piège du 0 oublié ; tracer un trait, le mètre.'] },
   { version:'2026-08-19.1170', date:'2026-10-27', items:['CP (en préparation, réservé admin) : la période 2 au complet -- demandé : « Suite du CP ». Six chapitres, avec de nouvelles animations à projeter. Les nombres jusqu\'à 59 : des cubes en vrac se rangent en barres de dix (3 dizaines et 4 unités), tableau des nombres, nombres en lettres (vingt et un, trente-cinq…), les nombres des Égyptiens. Comparer et ranger : le crocodile ouvre la bouche vers le plus grand nombre (signes < et >), ranger des étiquettes, encadrer entre deux dizaines. Doubles, moitiés et compléments à 10 : le miroir du double, le partage en deux parts égales, la boîte de dix, les presque-doubles. Comparer des longueurs : crayons qu\'on aligne, bande de papier qu\'on reporte, trombones bout à bout. Carré, rectangle, triangle, disque : le doigt fait le tour de la forme et compte côtés et sommets, une maison faite de formes, reproduire sur quadrillage. La monnaie : pièces de 1 € et 2 €, billets de 5 à 50 €, échanges, payer un objet en posant l\'argent dans la coupelle. Chaque chapitre : méthodes pas à pas, 7 exercices rédigés, histoire, quiz et questions flash.'] },

@@ -133,7 +133,7 @@ const VIE_OLIV = { musique: 'musique', arts: 'arts', sport: 'sport', cuisine: 'c
 function vieOliv(pose){ return pose && typeof olivPoseUrl === 'function' ? `<span class="vie-oliv" aria-hidden="true" style='background-image:${olivPoseUrl(pose).replace(/'/g, '%27')}'></span>` : ''; }
 // Pages d'histoire des thèmes écrites pour le CM et le collège : pas au CP ni au CE2 (chaque activité du CE2 a son
 // encadré « Le savais-tu ? », vie-ce2.js).
-const VIE_SANS_HISTOIRE = ['cp', 'ce2'];
+const VIE_SANS_HISTOIRE = ['cp', 'ce1', 'ce2'];
 function vieHtml(liste, niv){
   const themes = [];
   liste.forEach(k => { const a = VIE_ACTIVITES[k]; if(!a) return; let t = themes.find(x => x.k === a.theme); if(!t){ t = { k: a.theme, acts: [] }; themes.push(t); } t.acts.push(a); });
