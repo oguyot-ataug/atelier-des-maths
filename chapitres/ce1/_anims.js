@@ -151,3 +151,41 @@ function ce1AnimComparer(id, o){
       return { scene: `<svg viewBox="0 0 540 200" class="cma-svg" style="max-width:560px;">${s}</svg>`, texte };
     } });
 }
+
+/* ---- Un demi, un tiers, un quart : on partage l'unité en parts ÉGALES, puis on colorie ---- */
+const CE1_FRAC_MOTS = { 2: ['un demi', 'deux demis'], 3: ['un tiers', 'deux tiers', 'trois tiers'], 4: ['un quart', 'deux quarts', 'trois quarts', 'quatre quarts'] };
+// Dessin d'une unité (bande, disque ou carré) partagée en n parts, k coloriées ; coupes : nombre de traits déjà tracés.
+function ce1FracSvg(forme, n, k, o){
+  o = o || {}; const c = o.c || '#E35D3A', coupes = o.coupes == null ? n - 1 : o.coupes; let s = '';
+  if(forme === 'disque'){ const cx = 70, cy = 70, r = 60;
+    for(let i = 0; i < n; i++){ const a0 = -Math.PI / 2 + i * 2 * Math.PI / n, a1 = a0 + 2 * Math.PI / n;
+      s += `<path d="M${cx} ${cy} L${cx + r * Math.cos(a0)} ${cy + r * Math.sin(a0)} A${r} ${r} 0 ${n === 1 ? 1 : 0} 1 ${cx + r * Math.cos(a1)} ${cy + r * Math.sin(a1)} Z" fill="${i < k ? c : '#fff'}" fill-opacity="${i < k ? .8 : 1}" stroke="none"/>`; }
+    for(let i = 0; i < Math.min(coupes + 1, n); i++){ const a = -Math.PI / 2 + i * 2 * Math.PI / n; if(n > 1 && (i > 0 || coupes > 0)) s += `<line x1="${cx}" y1="${cy}" x2="${cx + r * Math.cos(a)}" y2="${cy + r * Math.sin(a)}" stroke="${CPC.bord}" stroke-width="2"/>`; }
+    s += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${CPC.bord}" stroke-width="2.5"/>`;
+    return { s, w: 140, h: 140 }; }
+  if(forme === 'carre'){ const L = 120, x0 = 10, y0 = 10, sous = n === 4 && o.quadrants;
+    for(let i = 0; i < n; i++){ const [x, y, w, h] = sous ? [x0 + (i % 2) * L / 2, y0 + Math.floor(i / 2) * L / 2, L / 2, L / 2] : [x0 + i * L / n, y0, L / n, L];
+      s += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${i < k ? c : '#fff'}" fill-opacity="${i < k ? .8 : 1}" stroke="${i < coupes + 1 ? CPC.bord : 'none'}" stroke-width="2"/>`; }
+    s += `<rect x="${x0}" y="${y0}" width="${L}" height="${L}" fill="none" stroke="${CPC.bord}" stroke-width="2.5"/>`;
+    return { s, w: 140, h: 140 }; }
+  const L = o.L || 240, H = 46;
+  for(let i = 0; i < n; i++) s += `<rect x="${6 + i * L / n}" y="6" width="${L / n}" height="${H}" fill="${i < k ? c : '#fff'}" fill-opacity="${i < k ? .8 : 1}"/>`;
+  for(let i = 1; i <= Math.min(coupes, n - 1); i++) s += `<line x1="${6 + i * L / n}" y1="6" x2="${6 + i * L / n}" y2="${6 + H}" stroke="${CPC.bord}" stroke-width="2"/>`;
+  s += `<rect x="6" y="6" width="${L}" height="${H}" fill="none" stroke="${CPC.bord}" stroke-width="2.5"/>`;
+  return { s, w: L + 12, h: H + 12 };
+}
+function ce1Frac(forme, n, k, o){ o = o || {}; const f = ce1FracSvg(forme, n, k, o); return cpSvg(f.w, f.h, f.s, o.px || (forme === 'bande' ? 200 : 100)); }
+function ce1AnimFraction(id, o){
+  o = o || {};
+  return cmAnim(id, {
+    etat: { n: o.n || 3, forme: o.forme || 'disque' }, duree: 7500,
+    legende: o.legende || 'On partage l\'unité en parts égales, puis on colorie une part.',
+    controles: a => `<div class="cmp-modeles">${[['bande', 'Bande'], ['disque', 'Disque'], ['carre', 'Carré']].map(([f, l]) => cmBtn(id, 'forme', f, l, a.etat.forme === f)).join('')}${[2, 3, 4].map(v => cmBtn(id, 'n', v, ['', '', 'En 2', 'En 3', 'En 4'][v], a.etat.n === v)).join('')}</div>`,
+    dessin: (t, a) => {
+      const { n, forme } = a.etat, coupes = Math.floor(cmPhase(t, .12, .5) * (n - 1) + 1e-6) + (t >= .5 ? 0 : 0), k = t > .6 ? 1 : 0;
+      const f = ce1FracSvg(forme, n, k, { coupes: t < .12 ? -1 : coupes });
+      const nom = CE1_FRAC_MOTS[n][0];
+      const texte = t < .12 ? 'Voici l\'unité, entière.' : t < .55 ? `On la partage en <b>${n} parts égales</b>.` : `Une part sur ${n}, c'est <b>${nom}</b> de l'unité. On écrit ${cm1Frac(1, n)}.`;
+      return { scene: `<svg viewBox="0 0 ${f.w} ${f.h}" class="cma-svg" style="max-width:${forme === 'bande' ? 420 : 240}px;">${f.s}</svg>`, texte };
+    } });
+}
