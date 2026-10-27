@@ -189,3 +189,80 @@ function ce1AnimFraction(id, o){
       return { scene: `<svg viewBox="0 0 ${f.w} ${f.h}" class="cma-svg" style="max-width:${forme === 'bande' ? 420 : 240}px;">${f.s}</svg>`, texte };
     } });
 }
+
+/* ---- La soustraction posée en cassant une dizaine (ou une centaine) : colonne par colonne ----
+   Technique « par cassage » (échange 1 dizaine = 10 unités), dans la continuité du CP. Les presets
+   évitent les zéros à casser en cascade (ex. 302 − 7), traités au CE2. */
+// Dessin de la soustraction posée par cassage, après k étapes (toutes si k est omis).
+function ce1SoustEtat(A, B, k, cadre){
+  const n = String(A).length, ha = String(A).split('').map(Number), hb = String(B).padStart(n, ' ').split('').map(c => c === ' ' ? null : +c);
+      // Calcul des étapes, de droite à gauche.
+      const haut = ha.slice(), casse = Array(n).fill(false), plus10 = Array(n).fill(false), res = Array(n).fill(null), et = [];
+      for(let j = n - 1; j >= 0; j--){ const y = hb[j] || 0;
+        if(haut[j] < y){ haut[j - 1]--; casse[j - 1] = true; haut[j] += 10; plus10[j] = true; et.push({ j, type: 'casse', h: haut.slice(), c: casse.slice(), p: plus10.slice(), r: res.slice() }); }
+        res[j] = haut[j] - y; et.push({ j, type: 'calc', h: haut.slice(), c: casse.slice(), p: plus10.slice(), r: res.slice() }); }
+  if(k == null || k > et.length) k = et.length;
+  const E = k ? et[k - 1] : { h: ha, c: Array(n).fill(false), p: Array(n).fill(false), r: Array(n).fill(null) };
+      const X = j => 110 + j * 48, RANG = ['centaines', 'dizaines', 'unités'].slice(3 - n);
+      let s = '';
+      RANG.forEach((r, j) => { s += ce2T(X(j), 18, r[0], { t: 12, c: CE2C.gris }); });
+      for(let j = 0; j < n; j++){
+        const mod = E.c[j] || E.p[j];
+        s += ce2T(X(j), 80, ha[j], { t: 30, g: 700, c: E.c[j] ? '#9AA3AE' : CPC.bord });
+        if(E.c[j]) s += `<line x1="${X(j) - 12}" y1="88" x2="${X(j) + 12}" y2="58" stroke="${CE2C.rouge}" stroke-width="2.5"/>` + ce2T(E.p[j] ? X(j) + 3 : X(j), 46, E.h[j] + (E.p[j] ? -10 : 0), { t: 17, g: 700, c: CE2C.rouge });
+        if(E.p[j]) s += E.c[j] ? ce2T(X(j) - 12, 46, '1', { t: 17, g: 700, c: CE2C.rouge }) : ce2T(X(j) - 19, 74, '1', { t: 20, g: 700, c: CE2C.rouge });
+        if(hb[j] != null) s += ce2T(X(j), 122, hb[j], { t: 30, g: 700 });
+        if(E.r[j] != null) s += ce2T(X(j), 168, E.r[j], { t: 30, g: 700, c: CE2C.vert });
+        if(cadre && k && et[k - 1].j === j) s += `<rect x="${X(j) - 22}" y="30" width="44" height="150" rx="8" fill="none" stroke="${CE2C.violet}" stroke-width="2" stroke-dasharray="5 4"/>`; }
+      s += ce2T(X(0) - 40, 122, '−', { t: 30, g: 700 }) + `<line x1="${X(0) - 50}" y1="134" x2="${X(n - 1) + 24}" y2="134" stroke="${CPC.bord}" stroke-width="2.5"/>`;
+  return { s, et, k, n, hb, RANG, X };
+}
+function ce1Sous(A, B, px){ const r = ce1SoustEtat(A, B); return cpSvg(r.X(r.n - 1) + 90, 190, r.s, px || 170); }
+function ce1AnimSoustraction(id, o){
+  const P = o.presets;
+  return cmAnim(id, {
+    etat: { p: 0 }, duree: a => 2000 + String(P[a.etat.p][0]).length * 2600,
+    legende: o.legende || 'On commence par les unités. S\'il n\'y en a pas assez en haut, on casse une dizaine : 1 dizaine = 10 unités.',
+    controles: a => ce2Choix(id, P.map(([x, y]) => ({ nom: `${x} − ${y}` })), a),
+    dessin: (t, a) => {
+      const [A, B] = P[a.etat.p], nE = ce1SoustEtat(A, B).et.length, kk = Math.min(nE, Math.floor(cmPhase(t, .1, .95) * nE + 1e-6));
+      const { s, et, k, n, hb, RANG, X } = ce1SoustEtat(A, B, kk, true);
+      const cur = k ? et[k - 1] : null, y = cur ? (hb[cur.j] || 0) : 0, nom = cur ? RANG[cur.j] : '';
+      const texte = !cur ? `On pose <b>${A} − ${B}</b> : les unités sous les unités.`
+        : cur.type === 'casse' ? `Colonne des ${nom} : pas assez en haut pour enlever ${y}. On <b>casse</b> 1 ${RANG[cur.j - 1].slice(0, -1)} : il en reste ${cur.h[cur.j - 1]}, et il y a maintenant ${cur.h[cur.j]} ${nom}.`
+        : k === et.length ? `${cur.h[cur.j]} − ${y} = ${cur.r[cur.j]}. Résultat : <b>${A} − ${B} = ${A - B}</b>.` : `Colonne des ${nom} : ${cur.h[cur.j]} − ${y} = <b>${cur.r[cur.j]}</b>.`;
+      return { scene: `<svg viewBox="0 0 ${X(n - 1) + 90} 190" class="cma-svg" style="max-width:340px;">${s}</svg>`, texte };
+    } });
+}
+
+/* ---- Cube ou pavé en perspective : on compte les arêtes, puis les sommets ---- */
+function ce1SolidePts(type){
+  const [w, h, dx, dy] = type === 'pave' ? [170, 80, 70, 50] : [110, 110, 60, 45], x = 60, y = 80;
+  // sommets : 0-3 face avant (haut-gauche, haut-droit, bas-droit, bas-gauche), 4-7 face arrière
+  const S = [[x, y], [x + w, y], [x + w, y + h], [x, y + h]], T = S.map(([a, b]) => [a + dx, b - dy]);
+  return S.concat(T);
+}
+const CE1_ARETES = [[0, 1], [1, 2], [2, 3], [3, 0], [4, 5], [5, 6], [6, 7], [7, 4], [0, 4], [1, 5], [2, 6], [3, 7]];
+const CE1_CACHEES = [[6, 7], [7, 4], [3, 7]]; // arêtes cachées (sommet 7 en arrière-bas-gauche)
+function ce1SolideSvg(type, o){
+  o = o || {}; const p = ce1SolidePts(type), c = type === 'pave' ? '#2E9C6A' : '#2EA8C9';
+  const cachee = ([a, b]) => CE1_CACHEES.some(([u, v]) => (u === a && v === b) || (u === b && v === a));
+  let s = `<polygon points="${[0, 1, 2, 3].map(i => p[i].join(',')).join(' ')}" fill="${c}" fill-opacity=".18"/><polygon points="${[0, 1, 5, 4].map(i => p[i].join(',')).join(' ')}" fill="${c}" fill-opacity=".3"/><polygon points="${[1, 2, 6, 5].map(i => p[i].join(',')).join(' ')}" fill="${c}" fill-opacity=".42"/>`;
+  CE1_ARETES.forEach((e, i) => { const [a, b] = e, on = o.aretes != null && i < o.aretes;
+    s += `<line x1="${p[a][0]}" y1="${p[a][1]}" x2="${p[b][0]}" y2="${p[b][1]}" stroke="${on ? CE2C.rouge : CPC.bord}" stroke-width="${on ? 4 : 2}"${cachee(e) ? ' stroke-dasharray="6 5"' : ''}/>`; });
+  if(o.sommets) p.slice(0, o.sommets).forEach(([x, y], i) => { s += `<circle cx="${x}" cy="${y}" r="7" fill="${CE2C.violet}"/>` + ce2T(x + (i % 4 === 0 || i % 4 === 3 ? -14 : 14), y + 5, i + 1, { t: 12, g: 700, c: CE2C.violet }); });
+  return s;
+}
+function ce1AnimSolide(id){
+  const PR = [{ nom: 'Le cube', type: 'cube' }, { nom: 'Le pavé', type: 'pave' }];
+  return cmAnim(id, {
+    etat: { p: 0 }, duree: 12000, legende: 'Les arêtes cachées sont en pointillés. On compte les arêtes une par une, puis les sommets.',
+    controles: a => ce2Choix(id, PR, a),
+    dessin: (t, a) => {
+      const P = PR[a.etat.p], na = Math.min(12, Math.floor(cmPhase(t, .08, .55) * 12 + 1e-6) + (t >= .08 ? 1 : 0)), ns = t < .6 ? 0 : Math.min(8, Math.floor(cmPhase(t, .6, .92) * 8 + 1e-6) + 1);
+      const s = ce1SolideSvg(P.type, { aretes: t >= .08 ? na : null, sommets: ns });
+      const texte = t < .08 ? `${P.nom} : combien d'arêtes ? combien de sommets ?` : t < .58 ? `Arête ${na}…` : t < .94 ? `${na} arêtes. Sommet ${ns}…`
+        : `${P.nom} a <b>6 faces</b>, <b>12 arêtes</b> et <b>8 sommets</b>${P.type === 'cube' ? ' ; ses faces sont des carrés' : ' ; ses faces sont des rectangles'}.`;
+      return { scene: `<svg viewBox="0 0 320 210" class="cma-svg" style="max-width:380px;">${s}</svg>`, texte };
+    } });
+}
