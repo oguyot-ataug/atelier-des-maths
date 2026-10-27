@@ -32,7 +32,7 @@ ${cm1Rem('Au tableau : avec des bûchettes, on enlève l\'élastique d\'un paque
 
 ${cm1Lecon(3, 'Passer par la dizaine')}
 ${cm1Regle(`On peut aussi reculer en deux fois : d'abord jusqu'à la dizaine, puis le reste.${lig(cpSautsBande(42, -7, { de: 33, a: 43 }))}${cm1Liste(['42 − 2 = 40', '40 − 5 = 35'])}${P('7, c\'est 2 et 5. Donc <b>42 − 7 = 35</b>.')}`, 'Autre façon')}
-${cm1Astuce('Pour reculer jusqu\'à la dizaine, on enlève le chiffre des unités : 42 − 2 = 40, 53 − 3 = 50.')}
+${cm1Astuce('Pour reculer jusqu\'à la dizaine, on enlève le chiffre des unités : 42 − 2 = 40.')}
 
 ${cm1Lecon(4, 'Problèmes')}
 ${cm1Exemple('Exemple', [`<b>Problème :</b> Zoé a 31 perles. Elle en perd 6. Combien lui en reste-t-il ?${cm1Redac('Perles qui restent', { suite: ['31 − 1 = 30', '30 − 5 = 25'] }, 'Il reste 25 perles à Zoé.')}`])}

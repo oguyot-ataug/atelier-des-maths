@@ -734,3 +734,137 @@ function cpAnimMesurer(id, o){
       return { scene: `<svg viewBox="0 0 ${X * 2 + 12 * K} 110" class="cma-svg" style="max-width:560px;">${s}</svg>`, texte };
     } });
 }
+
+/* ================= Périodes 4 et 5 ================= */
+/* ---- Des groupes égaux : les paquets apparaissent un à un, on ajoute à mesure (pas de signe × au CP) ---- */
+function cpAnimGroupes(id, o){
+  o = o || {};
+  const OBJ = { pommes: (x, y) => cpPomme(x, y, { r: 9 }), jetons: (x, y) => `<circle cx="${x}" cy="${y}" r="9" fill="${CPC.jeton}" stroke="${CPC.bord}"/>` };
+  return cmAnim(id, {
+    etat: { g: o.g || 4, n: o.n || 3 }, duree: a => 2000 + a.etat.g * 1200,
+    legende: o.legende || 'Des paquets qui ont tous le même nombre d\'objets : on compte de 3 en 3 (ou de 2 en 2, de 5 en 5…).',
+    controles: a => `<div class="cmp-modeles">${cmPlusMoins(id, 'g', a.etat.g, 2, 5, 'Paquets')}${cmPlusMoins(id, 'n', a.etat.n, 2, 5, 'Dans chaque paquet')}</div>`,
+    dessin: (t, a) => {
+      const { g, n } = a.etat, k = Math.min(g, Math.floor(cmPhase(t, .1, .85) * g + 1e-6) + (t >= .1 ? 1 : 0)), W = 500, bw = 88, gap = (W - g * bw) / (g + 1);
+      let s = '';
+      for(let i = 0; i < g; i++){ const x0 = gap + i * (bw + gap), vu = i < k;
+        s += `<rect x="${x0}" y="20" width="${bw}" height="90" rx="12" fill="${vu ? '#FFF7E8' : '#F4F6F9'}" stroke="${vu ? CPC.bord : '#C7D2DE'}" stroke-width="2" ${vu ? '' : 'stroke-dasharray="6 4"'}/>`;
+        if(vu){ for(let j = 0; j < n; j++){ const col = j % 3, row = Math.floor(j / 3); s += (OBJ[o.objet] || OBJ.jetons)(x0 + 20 + col * 24, 46 + row * 32); }
+          s += ce2T(x0 + bw / 2, 132, (i + 1) * n, { t: 18, g: 700, c: CE2C.vert }); } }
+      const somme = Array(k).fill(n).join(' + ');
+      const texte = t < .1 ? `<b>${g}</b> paquets de <b>${n}</b>. Combien en tout ?` : t < .88 ? `On compte de ${n} en ${n} : ${Array.from({ length: k }, (_, i) => (i + 1) * n).join(', ')}…`
+        : `${somme} = <b>${g * n}</b>. Il y a <b>${g * n}</b> objets en tout.`;
+      return { scene: `<svg viewBox="0 0 ${W} 145" class="cma-svg" style="max-width:520px;">${s}</svg>`, texte };
+    } });
+}
+
+/* ---- Des points alignés ? On pose la règle sur deux points et on regarde le troisième ---- */
+function cpAnimAligne(id, o){
+  const P = o.presets;
+  return cmAnim(id, {
+    etat: { p: 0 }, duree: 7000, legende: o.legende || 'On pose le bord de la règle sur deux points : le troisième touche-t-il aussi le bord ?',
+    controles: a => ce2Choix(id, P, a),
+    dessin: (t, a) => {
+      const p = P[a.etat.p], [A, B, C] = p.pts, k = cmDoux(cmPhase(t, .15, .5));
+      const ang = Math.atan2(B[1] - A[1], B[0] - A[0]) * 180 / Math.PI, n = Math.hypot(B[0] - A[0], B[1] - A[1]), ux = (B[0] - A[0]) / n, uy = (B[1] - A[1]) / n;
+      // La règle est posée le long de (AB) et assez longue pour aller jusqu'en face de C.
+      const pc = (C[0] - A[0]) * ux + (C[1] - A[1]) * uy, L = pc + 80, cx = A[0] + ux * pc / 2, cy = A[1] + uy * pc / 2;
+      let s = '';
+      s += `<g transform="translate(${cx} ${cy}) rotate(${ang}) translate(0 ${(1 - k) * 80})" opacity="${Math.min(1, k * 2)}"><rect x="${-L / 2}" y="0" width="${L}" height="34" rx="3" fill="#FFF3D6" fill-opacity=".85" stroke="#C9A24A"/></g>`;
+      const ok = p.aligne;
+      [[A, 'A'], [B, 'B'], [C, 'C']].forEach(([[x, y], nom], i) => { const hl = i === 2 && t > .6;
+        s += `<path d="M${x - 6} ${y - 6} L${x + 6} ${y + 6} M${x - 6} ${y + 6} L${x + 6} ${y - 6}" stroke="${hl ? (ok ? CE2C.vert : CE2C.rouge) : CE2C.encre}" stroke-width="2.6"/>` + ce2T(x, y - 12, nom, { t: 15, g: 700 }); });
+      if(t > .75 && ok) s += `<line x1="${A[0]}" y1="${A[1]}" x2="${C[0]}" y2="${C[1]}" stroke="${CE2C.vert}" stroke-width="2.5"/>`;
+      const texte = t < .15 ? 'Les points A, B et C sont-ils <b>alignés</b> (sur une même ligne droite) ?' : t < .6 ? 'Je pose le bord de la règle sur A et B…'
+        : ok ? 'C touche aussi le bord de la règle : <b>A, B et C sont alignés</b>. On peut tracer un trait droit qui passe par les trois.' : 'C ne touche pas le bord de la règle : <b>A, B et C ne sont pas alignés</b>.';
+      return { scene: `<svg viewBox="0 0 480 220" class="cma-svg" style="max-width:500px;">${s}</svg>`, texte };
+    } });
+}
+
+/* ---- Aller à la dizaine : 8 + 5, on complète la boîte de dix (8 + 2), puis le reste (3) ---- */
+function cpAnimDixPlus(id, o){
+  o = o || {};
+  return cmAnim(id, {
+    etat: { a: o.a || 8, b: o.b || 5 }, duree: 9000,
+    legende: o.legende || 'On remplit d\'abord la boîte de dix, puis on met le reste dans la deuxième boîte : 10 et encore…',
+    corriger: a => { a.etat.b = Math.max(10 - a.etat.a + 1, Math.min(a.etat.b, 9)); },
+    controles: a => `<div class="cmp-modeles">${cmPlusMoins(id, 'a', a.etat.a, 6, 9, 'Premier nombre')}${cmPlusMoins(id, 'b', a.etat.b, 11 - a.etat.a, 9, 'On ajoute')}</div>`,
+    dessin: (t, a) => {
+      const { a: A, b: B } = a.etat, c1 = 10 - A, c2 = B - c1, c = 38;
+      const k1 = cmDoux(cmPhase(t, .2, .45)), k2 = cmDoux(cmPhase(t, .55, .8));
+      let s = cpBoiteDixSvg(30, 30, A, { c }) + cpBoiteDixSvg(260, 30, 0, { c });
+      for(let j = 0; j < B; j++){ const premier = j < c1, q = premier ? A + j : j - c1, bx = premier ? 30 : 260, kk = premier ? k1 : k2;
+        const xd = bx + (q % 5) * c + c / 2, yd = 30 + Math.floor(q / 5) * c + c / 2, xs = 150 + j * 30, ys = 150;
+        s += `<circle cx="${xs + (xd - xs) * kk}" cy="${ys + (yd - ys) * kk}" r="${c * .34}" fill="${premier ? CE2C.vert : CPC.jeton2}" stroke="${CPC.bord}" stroke-width="1.2"/>`; }
+      const texte = t < .2 ? `<b>${A} + ${B}</b> : la boîte a ${A} jetons. On en ajoute ${B}.`
+        : t < .5 ? `D'abord, on complète la boîte : ${A} + <b>${c1}</b> = 10.`
+        : t < .85 ? `${B}, c'est ${c1} et ${c2} : il reste <b>${c2}</b> jeton${c2 > 1 ? 's' : ''} à placer.`
+        : `10 + ${c2} = <b>${10 + c2}</b>. Donc <b>${A} + ${B} = ${A + B}</b>.`;
+      return { scene: `<svg viewBox="0 0 480 175" class="cma-svg" style="max-width:500px;">${s}</svg>`, texte };
+    } });
+}
+
+/* ---- Le robot suit un programme de flèches sur un quadrillage, avec des obstacles ---- */
+function cpAnimRobot(id, o){
+  const P = o.presets;
+  return cmAnim(id, {
+    etat: { p: 0 }, duree: a => 2500 + P[a.etat.p].code.length * 1000,
+    legende: o.legende || 'Avant de lancer : la classe lit le programme et prévoit où le robot s\'arrête.',
+    controles: a => ce2Choix(id, P, a),
+    dessin: (t, a) => {
+      const p = P[a.etat.p], nc = p.nc || 7, nr = p.nr || 5, C = 40, L = cpSuivre(p.dep, p.code), n = p.code.length;
+      const mur = (c, r) => (p.murs || []).some(([x, y]) => x === c && y === r);
+      let bloque = n; for(let i = 1; i <= n; i++){ const [c, r] = L[i]; if(c < 0 || r < 0 || c >= nc || r >= nr || mur(c, r)){ bloque = i - 1; break; } }
+      const f = cmPhase(t, .12, .9) * n, i = Math.min(n - 1, Math.floor(f)), kk = cmDoux(Math.min(1, (f - i) * 1.5));
+      let x, y, choc = false;
+      if(t < .12){ [x, y] = L[0]; } else if(i < bloque){ const A = L[i], B = L[i + 1]; x = A[0] + (B[0] - A[0]) * kk; y = A[1] + (B[1] - A[1]) * kk; }
+      else { [x, y] = L[bloque]; choc = true; }
+      let s = `<rect x="3" y="3" width="${nc * C}" height="${nr * C}" fill="#fff" stroke="${CPC.bord}" stroke-width="2"/>`;
+      for(let c = 1; c < nc; c++) s += `<line x1="${3 + c * C}" y1="3" x2="${3 + c * C}" y2="${3 + nr * C}" stroke="#9FB0C4"/>`;
+      for(let r = 1; r < nr; r++) s += `<line x1="3" y1="${3 + r * C}" x2="${3 + nc * C}" y2="${3 + r * C}" stroke="#9FB0C4"/>`;
+      (p.murs || []).forEach(([c, r]) => { s += `<rect x="${5 + c * C}" y="${5 + r * C}" width="${C - 4}" height="${C - 4}" fill="#8A8F98"/><path d="M${5 + c * C} ${5 + r * C + 12} H${3 + (c + 1) * C} M${5 + c * C} ${5 + r * C + 26} H${3 + (c + 1) * C}" stroke="#5B6472"/>`; });
+      if(p.but) s += CP_ICO.etoile(3 + p.but[0] * C + C / 2, 3 + p.but[1] * C + C / 2);
+      const vu = t < .12 ? [] : L.slice(0, Math.min(i, bloque) + 1).concat([[x, y]]);
+      if(vu.length > 1) s += `<polyline points="${vu.map(([c, r]) => `${3 + c * C + C / 2},${3 + r * C + C / 2}`).join(' ')}" fill="none" stroke="${CE2C.violet}" stroke-width="3" stroke-dasharray="6 4"/>`;
+      const rx = 3 + x * C + C / 2, ry = 3 + y * C + C / 2;
+      s += `<rect x="${rx - 13}" y="${ry - 12}" width="26" height="22" rx="5" fill="${choc && t > .9 ? CE2C.rouge : '#2EA8C9'}" stroke="${CPC.bord}" stroke-width="1.5"/><circle cx="${rx - 5}" cy="${ry - 3}" r="3" fill="#fff"/><circle cx="${rx + 5}" cy="${ry - 3}" r="3" fill="#fff"/><line x1="${rx}" y1="${ry - 12}" x2="${rx}" y2="${ry - 18}" stroke="${CPC.bord}" stroke-width="2"/><circle cx="${rx}" cy="${ry - 19}" r="2.5" fill="${CE2C.rouge}"/>`;
+      const fl = p.code.split('').map((d, q) => `<g transform="translate(${nc * C + 16 + (q % 4) * 34} ${6 + Math.floor(q / 4) * 36})">${cpFleche(d, t >= .12 && t < .9 && q === i).replace(/<svg[^>]*>|<\/svg>/g, '')}</g>`).join('');
+      const fin = t >= .9, arrive = p.but && L[n][0] === p.but[0] && L[n][1] === p.but[1] && bloque === n;
+      const texte = t < .12 ? 'Le robot va suivre le programme, flèche après flèche.'
+        : !fin ? (i >= bloque ? 'Bing ! Le robot ne peut pas avancer.' : `Flèche ${i + 1}…`)
+        : bloque < n ? `<b>Bing !</b> À la flèche ${bloque + 1}, le robot se cogne : il faut corriger le programme.` : arrive ? 'Le robot est arrivé sur l\'étoile : le programme est juste !' : 'Le programme est fini.';
+      return { scene: `<svg viewBox="0 0 ${nc * C + 160} ${nr * C + 8}" class="cma-svg" style="max-width:600px;">${s}${fl}</svg>`, texte };
+    } });
+}
+// Figures tracées sur un quadrillage : traits = [[points, couleur, fermé ?], …] (les points sont des nœuds).
+function cpQuadFig(nc, nr, traits, o){
+  o = o || {}; const c = o.c || 26; let s = '';
+  for(let i = 0; i <= nc; i++) s += `<line x1="${4 + i * c}" y1="4" x2="${4 + i * c}" y2="${4 + nr * c}" stroke="#C7D2DE"/>`;
+  for(let j = 0; j <= nr; j++) s += `<line x1="4" y1="${4 + j * c}" x2="${4 + nc * c}" y2="${4 + j * c}" stroke="#C7D2DE"/>`;
+  traits.forEach(([pts, col, ferme]) => { const p = pts.map(([x, y]) => `${4 + x * c},${4 + y * c}`).join(' ');
+    s += ferme === false ? `<polyline points="${p}" fill="none" stroke="${col || CPC.bord}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>` : `<polygon points="${p}" fill="${col}" fill-opacity=".3" stroke="${CPC.bord}" stroke-width="2.5"/>`; });
+  (o.points || []).forEach(([x, y, nom]) => { s += `<circle cx="${4 + x * c}" cy="${4 + y * c}" r="4" fill="${CE2C.rouge}"/>` + (nom ? ce2T(4 + x * c + 9, 4 + y * c - 6, nom, { t: 13, g: 700 }) : ''); });
+  return cpSvg(nc * c + 8, nr * c + 8, s, o.px);
+}
+/* ---- Reproduire une figure sur quadrillage : le trait se dessine côté par côté, en comptant les carreaux ---- */
+function cpAnimReproduire(id, o){
+  const P = o.presets;
+  return cmAnim(id, {
+    etat: { p: 0 }, duree: a => 2000 + P[a.etat.p].pts.length * 1200,
+    legende: o.legende || 'Pour chaque côté, on compte les carreaux sur le modèle, puis on trace sur la feuille.',
+    controles: a => ce2Choix(id, P, a),
+    dessin: (t, a) => {
+      const p = P[a.etat.p], c = 26, nc = 8, nr = 6, off = 9 * c + 10, pts = p.pts, n = pts.length - 1, f = cmPhase(t, .12, .9) * n;
+      const grille = x0 => { let s = ''; for(let i = 0; i <= nc; i++) s += `<line x1="${x0 + i * c}" y1="4" x2="${x0 + i * c}" y2="${4 + nr * c}" stroke="#C7D2DE"/>`; for(let j = 0; j <= nr; j++) s += `<line x1="${x0}" y1="${4 + j * c}" x2="${x0 + nc * c}" y2="${4 + j * c}" stroke="#C7D2DE"/>`; return s; };
+      let s = grille(4) + grille(4 + off) + ce2T(4 + nc * c / 2, nr * c + 26, 'le modèle', { t: 13, c: CE2C.gris }) + ce2T(4 + off + nc * c / 2, nr * c + 26, 'ma reproduction', { t: 13, c: CE2C.gris });
+      s += `<polyline points="${pts.map(([x, y]) => `${4 + x * c},${4 + y * c}`).join(' ')}" fill="none" stroke="${CPC.bord}" stroke-width="3" stroke-linejoin="round"/>`;
+      const i = Math.min(n - 1, Math.floor(f)), k = Math.min(1, f - i);
+      if(t >= .12){ const fait = pts.slice(0, i + 1).map(([x, y]) => [x, y]); const [x0, y0] = pts[i], [x1, y1] = pts[i + 1]; fait.push([x0 + (x1 - x0) * k, y0 + (y1 - y0) * k]);
+        s += `<polyline points="${fait.map(([x, y]) => `${4 + off + x * c},${4 + y * c}`).join(' ')}" fill="none" stroke="${CE2C.violet}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>`;
+        if(t < .9) s += `<line x1="${4 + x0 * c}" y1="${4 + y0 * c}" x2="${4 + x1 * c}" y2="${4 + y1 * c}" stroke="${CE2C.rouge}" stroke-width="5" opacity=".6"/>`; }
+      const [x0, y0] = pts[Math.min(i, n - 1)], [x1, y1] = pts[Math.min(i + 1, n)], dx = x1 - x0, dy = y1 - y0;
+      const dir = dx && dy ? `en biais : ${Math.abs(dx)} carreau${Math.abs(dx) > 1 ? 'x' : ''} ${dx > 0 ? 'à droite' : 'à gauche'} et ${Math.abs(dy)} ${dy > 0 ? 'en bas' : 'en haut'}` : `${Math.abs(dx || dy)} carreau${Math.abs(dx || dy) > 1 ? 'x' : ''} ${dx > 0 ? 'à droite' : dx < 0 ? 'à gauche' : dy > 0 ? 'en bas' : 'en haut'}`;
+      const texte = t < .12 ? 'On repère le point de départ sur le modèle, puis le même point sur sa feuille.' : t < .9 ? `Côté ${i + 1} : ${dir}.` : 'La figure est reproduite : on compare avec le modèle.';
+      return { scene: `<svg viewBox="0 0 ${off + nc * c + 10} ${nr * c + 34}" class="cma-svg" style="max-width:560px;">${s}</svg>`, texte };
+    } });
+}

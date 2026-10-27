@@ -32,7 +32,7 @@ ${cm1Astuce('On recule de dix en dix : 67… 57, 47, 37.')}
 
 ${cm1Lecon(4, 'Calculer avec des dizaines entières')}
 ${cm1Regle(`${ajout(40, 30)}${P('4 dizaines + 3 dizaines = 7 dizaines : <b>40 + 30 = 70</b>.')}`, 'Comme 4 + 3')}
-${cm1Exemple('Comme avec les petits nombres :', ['5 + 2 = 7, donc 50 + 20 = 70.', '9 − 4 = 5, donc 90 − 40 = 50.', '6 + 4 = 10, donc 60 + 40 = 100.'])}
+${cm1Exemple('Comme avec les petits nombres :', ['5 + 2 = 7', 'donc 50 + 20 = 70 ;', '9 − 4 = 5', 'donc 90 − 40 = 50.'])}
 `,
   methode: `
 ${cm1Demo('cp-n9-m-ajout', 'Calculer 52 + 30', 'Ajoute 30 à 52.')}

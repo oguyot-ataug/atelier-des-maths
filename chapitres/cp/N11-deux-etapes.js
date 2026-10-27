@@ -29,7 +29,7 @@ ${cm1Astuce('Avant de calculer, on raconte l\'histoire dans l\'ordre et on se de
 
 ${cm1Lecon(2, 'Réunir trois quantités')}
 ${ce2AnimBarres('cp-n11-barres', { unite: 16, legende: 'Les trois barres se mettent bout à bout ; l\'accolade montre le tout.', lignes: [['Fruits', [[8, '8 pommes', '#E35D3A', 'Dans le panier, il y a 8 pommes…'], [6, '6 poires', '#9BC53D', '… 6 poires…'], [5, '5 kiwis', '#8A6D1F', '… et 5 kiwis.']]]], total: '? fruits', totalTexte: 'Première étape : 8 + 6 = 14. Deuxième étape : 14 + 5 = <b>19</b>. Il y a 19 fruits.' })}
-${cm1Regle(`${cm1Liste(['8 + 6 = 14', '14 + 5 = 19'])}${P('On peut aussi commencer par ce qui est facile : 6 + 5 = 11, puis 11 + 8 = 19.')}`, 'Calculer')}
+${cm1Regle(`${cm1Liste(['8 + 6 = 14', '14 + 5 = 19'])}${P('On peut aussi commencer par ce qui est facile :')}${cm1Liste(['6 + 5 = 11', '11 + 8 = 19'])}`, 'Calculer')}
 
 ${cm1Lecon(3, 'Chercher ce qu\'on ne connaît pas')}
 ${cm1Def(`<b>Problème :</b> Léa a 20 €. Elle achète un livre à 8 € et un stylo à 3 €. Combien lui reste-t-il ?${lig(cpSchema([[8, 'livre 8', '#2EA8C9'], [3, '3', '#E9C46A'], [9, '?', '#fff']], '20 €', { u: 16 }))}`, 'Un schéma')}
