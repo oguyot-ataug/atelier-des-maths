@@ -1,6 +1,6 @@
 /* CP · Planches : Ajouter et soustraire des dizaines (N9). */
 (() => {
-const { lig, cadre } = PCP, B = P3.B, R = P3.R;
+const { lig, cadre, suite } = PCP, B = P3.B, R = P3.R;
 PLANCHES['cp|Ajouter et soustraire des dizaines'] = [
   { titre: 'Ajouter 10, enlever 10', duree: '20 min',
     attendus: ['Ajouter ou enlever 10 à un nombre de deux chiffres'],
@@ -11,6 +11,13 @@ PLANCHES['cp|Ajouter et soustraire des dizaines'] = [
         ...P3.rmp([['45 − 10 = @', 35], ['71 − 10 = @', 61], ['30 − 10 = @', 20], ['92 − 10 = @', 82]], 2) },
       { etoiles: 2, consigne: 'Dans le tableau, colorie 23, puis la case juste en dessous (+ 10), puis encore en dessous.',
         eleve: lig(cpTableau(20, 49, { c: 24 })), corr: lig(cpTableau(20, 49, { on: [23, 33, 43], c: 24 })) },
+      { etoiles: 2, col: 1, consigne: 'Ajoute 10.',
+        ...P3.rmp([['16 + 10 = @', 26], ['63 + 10 = @', 73], ['90 + 10 = @', 100]], 2) },
+      { etoiles: 2, col: 1, consigne: 'Enlève 10.',
+        ...P3.rmp([['58 − 10 = @', 48], ['12 − 10 = @', 2], ['100 − 10 = @', 90]], 2) },
+      { etoiles: 1, consigne: 'On ajoute une barre de dix. Combien de cubes ?',
+        eleve: plGrille([cpBarres(34, { q: 6 }) + '<br>34 + 10 = ' + B(2), cpBarres(52, { q: 6 }) + '<br>52 + 10 = ' + B(2)], 2),
+        corr: plGrille([cpBarres(34, { q: 6 }) + '<br>34 + 10 = ' + R(44), cpBarres(52, { q: 6 }) + '<br>52 + 10 = ' + R(62)], 2) },
     ] },
   { titre: 'Ajouter et enlever des dizaines', duree: '20 min',
     attendus: ['Ajouter ou soustraire des dizaines entières'],
@@ -19,6 +26,17 @@ PLANCHES['cp|Ajouter et soustraire des dizaines'] = [
         ...P3.rmp([['30 + 40 = @', 70], ['50 + 20 = @', 70], ['60 − 30 = @', 30], ['90 − 50 = @', 40]], 2) },
       { etoiles: 2, col: 1, consigne: 'Calcule.',
         ...P3.rmp([['34 + 20 = @', 54], ['46 + 30 = @', 76], ['78 − 40 = @', 38], ['65 − 20 = @', 45]], 2) },
+      { etoiles: 1, consigne: 'Complète : on avance de 10 en 10.',
+        ...suite([12, 22, '@32', '@42', 52, '@62', '@72', 82]) },
+      { etoiles: 2, consigne: 'Complète : on recule de 10 en 10.',
+        ...suite([95, 85, '@75', 65, '@55', '@45', 35]) },
+      { etoiles: 2, col: 1, consigne: 'Calcule.',
+        ...P3.rmp([['25 + 40 = @', 65], ['53 + 30 = @', 83], ['87 − 50 = @', 37], ['99 − 60 = @', 39]], 2) },
+      { etoiles: 3, col: 1, consigne: 'Complète.',
+        ...P3.rmp([['20 + @ = 50', 30], ['40 + @ = 100', 60], ['70 − @ = 30', 40]], 2) },
+      { etoiles: 1, consigne: 'Combien de cubes ? Écris l\'addition.',
+        eleve: plGrille([cpBarres(30, { q: 6 }) + ' ' + cpBarres(20, { q: 6 }) + '<br>30 + 20 = ' + B(2)], 1),
+        corr: plGrille([cpBarres(30, { q: 6 }) + ' ' + cpBarres(20, { q: 6 }) + '<br>30 + 20 = ' + R(50)], 1) },
     ] },
   { titre: 'Problèmes avec des dizaines', duree: '20 min',
     attendus: ['Résoudre des problèmes en ajoutant ou en enlevant des dizaines'],
@@ -29,6 +47,12 @@ PLANCHES['cp|Ajouter et soustraire des dizaines'] = [
         corr: cm1Redac('Pommes qui restent', '68 − 40 = 28', 'Il reste 28 pommes.') },
       { etoiles: 3, cahier: true, consigne: 'Un livre a 90 pages. Tom en lit 20 lundi et 30 mardi. Combien de pages lui reste-t-il à lire ?',
         corr: cm1Redac('Pages à lire', { suite: ['20 + 30 = 50', '90 − 50 = 40'] }, 'Il reste 40 pages à lire.') },
+      { etoiles: 2, consigne: 'Malo a 3 barres de dix et 4 cubes. On lui donne 2 barres de dix. Dessine, puis écris le calcul.',
+        eleve: cadre(70) + lig('Calcul : ' + B(5)), corr: lig(cpBarres(54, { q: 6 })) + lig('34 + 20 = ' + R(54)) },
+      { etoiles: 1, col: 1, consigne: 'Faut-il ajouter ou enlever des dizaines ? Entoure.',
+        ...P3.chx([['J\'ai 40 €, je dépense 10 €.', 'enlever', 'ajouter · enlever'], ['J\'ai 52 billes, j\'en gagne 20.', 'ajouter', 'ajouter · enlever']]) },
+      { etoiles: 2, col: 1, consigne: 'Complète.',
+        ...P3.rmp([['J\'ai 40 €, je dépense 10 €. Il me reste @ €.', 30], ['J\'ai 52 billes, j\'en gagne 20. J\'en ai @.', 72]], 2) },
     ] },
 ];
 })();
