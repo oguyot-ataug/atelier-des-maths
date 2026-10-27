@@ -165,6 +165,43 @@ const CHCM1 = [
  {n:23,code:'D4',cat:'D',t:'Initiation à la pensée informatique',s:3,p:'',d:'14 juin-2 juil'},
 ];
 
+/* Progression CP -- demandé : « On se demande quel sens ça a de ne pas avoir CP et CE1 », puis « le site est
+   aussi très utile pour l'enseignant, surtout avec un maximum d'animations visuelles » et « oui, propose la
+   liste des chapitres du CP ». Notre propre manuel, construit sur le programme du cycle 2 (BO n° 41 du
+   31 octobre 2024, partie CP) et sa répartition par période : nombres jusqu'à 59 en période 2, jusqu'à 100
+   en période 3, soustraction en cassant une dizaine en période 3, addition posée en périodes 4-5 ; pas de
+   fractions (elles commencent au CE1), multiplication seulement par des problèmes de groupes égaux, heures
+   entières, mètre et centimètre. Pensé pour être projeté par l'enseignant (animations au tableau).
+   Calendrier de l'école : du mardi 1er septembre 2026 au vendredi 2 juillet 2027 (comme le CE2 et le CM). */
+const CHCP = [
+ {n:1,code:'N1',cat:'N',t:'Les nombres jusqu\'à 10',s:2,p:'',d:'1-11 sept'},
+ {n:2,code:'N2',cat:'N',t:'Décomposer les nombres jusqu\'à 10',s:1,p:'',d:'14-18 sept'},
+ {n:3,code:'G1',cat:'G',t:'Se repérer dans l\'espace',s:1,p:'',d:'21-25 sept'},
+ {n:4,code:'N3',cat:'N',t:'Les nombres jusqu\'à 20',s:2,p:'',d:'28 sept-9 oct'},
+ {n:5,code:'N4',cat:'N',t:'Ajouter, retirer : premiers problèmes',s:1,p:'',d:'12-16 oct'},
+ {n:6,code:'N5',cat:'N',t:'Les nombres jusqu\'à 59',s:2,p:'',d:'2-13 nov'},
+ {n:7,code:'N6',cat:'N',t:'Comparer et ranger les nombres',s:1,p:'',d:'16-20 nov'},
+ {n:8,code:'N7',cat:'N',t:'Doubles, moitiés et compléments à 10',s:1,p:'',d:'23-27 nov'},
+ {n:9,code:'M1',cat:'M',t:'Comparer des longueurs',s:1,p:'',d:'30 nov-4 déc'},
+ {n:10,code:'G2',cat:'G',t:'Carré, rectangle, triangle, disque',s:1,p:'',d:'7-11 déc'},
+ {n:11,code:'M2',cat:'M',t:'La monnaie : les euros',s:1,p:'',d:'14-18 déc'},
+ {n:12,code:'N8',cat:'N',t:'Les nombres jusqu\'à 100',s:2,p:'',d:'4-15 jan'},
+ {n:13,code:'N9',cat:'N',t:'Ajouter et soustraire des dizaines',s:1,p:'',d:'18-22 jan'},
+ {n:14,code:'N10',cat:'N',t:'Soustraire en cassant une dizaine',s:1,p:'',d:'25-29 jan'},
+ {n:15,code:'M3',cat:'M',t:'Lire l\'heure : les heures entières',s:1,p:'',d:'1-5 fév'},
+ {n:16,code:'N11',cat:'N',t:'Problèmes en deux étapes',s:1,p:'',d:'8-12 fév'},
+ {n:17,code:'M4',cat:'M',t:'Mesurer avec la règle',s:1,p:'',d:'15-19 fév'},
+ {n:18,code:'N12',cat:'N',t:'L\'addition posée',s:2,p:'',d:'8-19 mars'},
+ {n:19,code:'N13',cat:'N',t:'Des groupes égaux',s:1,p:'',d:'22-26 mars'},
+ {n:20,code:'G3',cat:'G',t:'Alignements et tracés sur quadrillage',s:1,p:'',d:'29 mars-2 avr'},
+ {n:21,code:'D1',cat:'D',t:'Tableaux et diagrammes en barres',s:1,p:'',d:'5-9 avr'},
+ {n:22,code:'M5',cat:'M',t:'Comparer des masses',s:1,p:'',d:'12-16 avr'},
+ {n:23,code:'G4',cat:'G',t:'Les solides',s:2,p:'',d:'3-14 mai'},
+ {n:24,code:'G5',cat:'G',t:'Coder un déplacement',s:2,p:'',d:'17-28 mai'},
+ {n:25,code:'N14',cat:'N',t:'Ajouter 9, aller à la dizaine',s:2,p:'',d:'31 mai-11 juin'},
+ {n:26,code:'N15',cat:'N',t:'Problèmes : bilan de l\'année',s:3,p:'',d:'14 juin-2 juil'},
+];
+
 /* Progression CE2 -- demandé : « Voici le programme du cycle 2. On essaie de construire le CE2 ? »
    Notre propre manuel, construit sur l'annexe 4 (programme de mathématiques du cycle 2, partie CE2) :
    entiers jusqu'à 10 000 (au plus tard en période 2), fractions inférieures ou égales à 1 de
@@ -236,27 +273,30 @@ const CHCM2 = [
 // Correspondance niveau -> programme -- remplace la ternaire "lvl==='6e'?CH6:CH5" codée en
 // dur, pour rester extensible à mesure que de nouveaux niveaux sont ajoutés (cm1 aujourd'hui,
 // cm2/4e/3e plus tard).
-const CHAPITRES_BY_LEVEL = { '6e': CH6, '5e': CH5, '4e': CH4, '3e': CH3, 'ce2': CHCE2, 'cm1': CHCM1, 'cm2': CHCM2 };
+const CHAPITRES_BY_LEVEL = { '6e': CH6, '5e': CH5, '4e': CH4, '3e': CH3, 'cp': CHCP, 'ce2': CHCE2, 'cm1': CHCM1, 'cm2': CHCM2 };
 // Tous les niveaux ayant des chapitres, dans l'ordre de la scolarité (école puis collège).
-const NIVEAUX_ORDRE = ['ce2', 'cm1', 'cm2', '6e', '5e', '4e', '3e'];
+const NIVEAUX_ORDRE = ['cp', 'ce2', 'cm1', 'cm2', '6e', '5e', '4e', '3e'];
+// Niveaux de l'école : CP, CE1, CE2, CM1, CM2 (clés en minuscules, libellés en majuscules).
+const RE_PRIMAIRE = /^(cp(?![a-z])|c[em]\d)/i;
 // Libellé affiché d'un niveau de chapitres : 'cm1' → « CM1 » (les clés de chapitres sont en minuscules).
-function niveauLabel(l){ return /^c[em]\d/i.test(l || '') ? String(l).toUpperCase() : (l || ''); }
+function niveauLabel(l){ return RE_PRIMAIRE.test(l || '') ? String(l).toUpperCase() : (l || ''); }
 // Niveau d'une classe (« CM1 », « 6e »…) → clé des chapitres (« cm1 », « 6e ») ; null si le niveau n'a pas de chapitres.
-function niveauCle(n){ const k = /^c[em]\d/i.test(n || '') ? String(n).toLowerCase() : n; return CHAPITRES_BY_LEVEL[k] ? k : null; }
-function niveauPrimaire(l){ return /^c[em]\d/i.test(l || ''); }
+function niveauCle(n){ const k = RE_PRIMAIRE.test(n || '') ? String(n).toLowerCase() : n; return CHAPITRES_BY_LEVEL[k] ? k : null; }
+function niveauPrimaire(l){ return RE_PRIMAIRE.test(l || ''); }
 /* Consignes données à l'IA (quiz, évaluations, interrogations) : pour l'école, rappel des limites du
    programme du cycle 3 à ce niveau, pour que les énoncés restent faisables par des enfants. */
 function iaEnseignant(n){ return niveauPrimaire(niveauCle(n) || n) ? 'professeur des écoles en France (classe de ' + niveauLabel(niveauCle(n) || n) + ')' : 'professeur de mathématiques dans un collège français'; }
 function iaContexteNiveau(n){
   const k = niveauCle(n) || String(n || '').toLowerCase();
   const commun = ' Phrases courtes et vocabulaire simple, adaptés à des enfants ; pas de calculatrice ; pas de tableau de conversion ni de tableau de proportionnalité (on raisonne par des phrases : « 3 fois plus… ») ; pas de lettre pour une inconnue (utiliser ■ ou …) sauf en CM2 dans les formules simples ; les notations de géométrie sont toujours expliquées (« le segment [AB] »).';
+  if(k === 'cp') return 'Élèves de CP (école élémentaire, cycle 2, 6-7 ans), qui apprennent à lire : énoncés très courts (une phrase), mots simples. Nombres entiers jusqu\'à 100 seulement (jusqu\'à 10 puis 20 en début d\'année, 59 avant Noël) ; additions, soustractions par le sens (ajouter, retirer, ce qu\'il manque), compléments à 10, doubles ; pas de fractions ; pas de signe × (seulement des problèmes de groupes égaux) ; pas de division ; heures entières seulement ; longueurs en m et cm ; euros entiers.' + commun;
   if(k === 'ce2') return 'Élèves de CE2 (école élémentaire, cycle 2, 8-9 ans). Nombres entiers jusqu\'à 10 000 seulement ; fractions inférieures ou égales à 1, de dénominateur au plus 12 (égalités, comparaison, addition et soustraction de même dénominateur) ; nombres à virgule seulement pour les prix en euros ; multiplication posée d\'un nombre de 2 ou 3 chiffres par un nombre de 1 ou 2 chiffres ; division seulement par son sens (partage, « combien de fois »), sans division posée ; durées en heures et minutes ; unités m, dm, cm, mm, km, g, kg, t, L, dL, cL, conversions par les relations entre unités.' + commun;
   if(k === 'cm1') return 'Élèves de CM1 (école élémentaire, cycle 3, 9-10 ans). Nombres entiers jusqu\'à 999 999 (au plus 4 chiffres en début d\'année), nombres décimaux jusqu\'aux centièmes seulement, fractions de dénominateur au plus 20 (ou 100 pour les fractions décimales), angles comparés sans mesure en degrés.' + commun;
   if(k === 'cm2') return 'Élèves de CM2 (école élémentaire, cycle 3, 10-11 ans). Nombres entiers jusqu\'à 999 999 999, nombres décimaux jusqu\'aux millièmes, fractions de dénominateur au plus 60 (ou 100 et 1 000 pour les fractions décimales), multiplication d\'un décimal par un entier uniquement, division par un diviseur à un chiffre, degrés à partir de l\'angle droit (90°) mais pas de rapporteur, probabilités sous la forme « a chances sur b ».' + commun;
   return '';
 }
 // Niveaux en préparation, réservés aux administrateurs (menu masqué, routes refusées aux autres).
-const NIVEAUX_ADMIN = ['ce2']; // CE2 en préparation (administrateurs) ; la 4e est publiée depuis le build 786, la 3e depuis le build 817
+const NIVEAUX_ADMIN = ['cp', 'ce2']; // CP et CE2 en préparation (administrateurs) ; la 4e est publiée depuis le build 786, la 3e depuis le build 817
 /* Ouverture des ventes -- demandé : « pour l'instant je ne vends rien tant que ce n'est pas nickel. On peut ajouter
    une date, genre dispo à la vente à partir de... décembre 2026. Et mettre en démo pour le moment ». Puis (12/10/2026) :
    « bloque l'ouverture des ventes » : plus d'ouverture automatique à une date. Les ventes s'ouvrent seulement à la main,
@@ -279,6 +319,7 @@ const VACANCES = {
   '5e':[{after:3,label:'Vacances de Toussaint · 17 oct → 2 nov'},{after:6,label:'Vacances de Noël · 19 déc → 4 jan'},{after:10,label:'Vacances d\'hiver · 20 fév → 8 mars'},{after:14,label:'Vacances de printemps · 17 avr → 3 mai'}],
   '4e':[{after:4,label:'Vacances de Toussaint · 17 oct → 2 nov'},{after:7,label:'Vacances de Noël · 19 déc → 4 jan'},{after:10,label:'Vacances d\'hiver · 20 fév → 8 mars'},{after:12,label:'Vacances de printemps · 17 avr → 3 mai'}],
   '3e':[{after:4,label:'Vacances de Toussaint · 17 oct → 2 nov'},{after:8,label:'Vacances de Noël · 19 déc → 4 jan'},{after:11,label:'Vacances d\'hiver · 20 fév → 8 mars'},{after:13,label:'Vacances de printemps · 17 avr → 3 mai'}],
+  'cp':[{after:5,label:'Vacances de Toussaint · 17 oct → 2 nov'},{after:11,label:'Vacances de Noël · 19 déc → 4 jan'},{after:17,label:'Vacances d\'hiver · 20 fév → 8 mars'},{after:22,label:'Vacances de printemps · 17 avr → 3 mai'}],
   'ce2':[{after:5,label:'Vacances de Toussaint · 17 oct → 2 nov'},{after:9,label:'Vacances de Noël · 19 déc → 4 jan'},{after:14,label:'Vacances d\'hiver · 20 fév → 8 mars'},{after:19,label:'Vacances de printemps · 17 avr → 3 mai'}],
   'cm1':[{after:5,label:'Vacances de Toussaint · 17 oct → 2 nov'},{after:9,label:'Vacances de Noël · 19 déc → 4 jan'},{after:15,label:'Vacances d\'hiver · 20 fév → 8 mars'},{after:19,label:'Vacances de printemps · 17 avr → 3 mai'}],
   'cm2':[{after:5,label:'Vacances de Toussaint · 17 oct → 2 nov'},{after:10,label:'Vacances de Noël · 19 déc → 4 jan'},{after:15,label:'Vacances d\'hiver · 20 fév → 8 mars'},{after:20,label:'Vacances de printemps · 17 avr → 3 mai'}],
@@ -520,7 +561,7 @@ function setActiveTopnav(key){
   else if(key==='5e') document.querySelector('.nav-links button[data-lvl="5e"]').classList.add('active');
   else if(key==='4e') document.querySelector('.nav-links button[data-lvl="4e"]')?.classList.add('active');
   else if(key==='3e') document.querySelector('.nav-links button[data-lvl="3e"]')?.classList.add('active');
-  else if(key==='ce2' || key==='cm1' || key==='cm2') document.querySelector(`.nav-links button[data-lvl="${key}"]`)?.classList.add('active');
+  else if(key==='cp' || key==='ce2' || key==='cm1' || key==='cm2') document.querySelector(`.nav-links button[data-lvl="${key}"]`)?.classList.add('active');
   else if(key==='cm') document.querySelector('.nav-links button[data-nav="cm"]').classList.add('active');
   else if(key==='compte') document.querySelector('.nav-links button[data-nav="compte"]').classList.add('active');
   else if(key==='correction') document.querySelector('.nav-links button[data-nav="correction"]').classList.add('active');
@@ -562,6 +603,7 @@ const FREE_CHAPTERS = {
   '5e': ['Opérations sur les nombres décimaux', 'Symétrie centrale', 'Proportionnalité', 'Statistiques'],
   '4e': ['Opérations sur les nombres relatifs', 'Théorème de Pythagore', 'Statistiques', 'Translations'],
   '3e': ['Nombres et calculs', 'Théorème de Thalès', 'Statistiques', 'Rotation'],
+  'cp': ['Les nombres jusqu\'à 10', 'Se repérer dans l\'espace', 'Tableaux et diagrammes en barres', 'La monnaie : les euros'],
   'ce2': ['Nombres jusqu\'à 10 000', 'Points, droites, segments', 'Tableaux et diagrammes en barres', 'La monnaie'],
   'cm1': ['Nombres entiers jusqu\'à 9 999', 'Droites parallèles et perpendiculaires', 'Organisation et gestion de données', 'Longueurs, masses, contenances'],
   'cm2': ['Nombres entiers (révisions jusqu\'à 999 999)', 'Droites, segments et cercles', 'Probabilités', 'Longueurs, masses, contenances'],
@@ -1113,6 +1155,7 @@ function openChapitre(c, tab, lvlOverride, opts){
   chapView.classList.toggle('lvl-cm', lvl==='cm1');  // CM1 : vert
   chapView.classList.toggle('lvl-cm2', lvl==='cm2'); // CM2 : vert émeraude foncé
   chapView.classList.toggle('lvl-ce2', lvl==='ce2'); // CE2 : vert tilleul
+  chapView.classList.toggle('lvl-cp', lvl==='cp');   // CP : framboise
   chapView.classList.toggle('lvl-5e', lvl==='5e');
   chapView.classList.toggle('lvl-4e', lvl==='4e'); // 4e : sa propre couleur (bleu-vert), pour distinguer le niveau d'un coup d'œil
   chapView.classList.toggle('lvl-3e', lvl==='3e'); // 3e : violet prune
@@ -1610,7 +1653,9 @@ function renderQuizHTML(bank, prefixHtml){
   bank.forEach((item,qi)=>{
     // « Question 1 » au-dessus de l'énoncé, et non « 1. » devant -- demandé : ne pas numéroter « 1. »,
     // « 2. » devant une question, surtout si elle commence par un nombre ou un calcul.
-    html+=`<div class="quiz-q"><div class="quiz-num">Question ${qi+1}</div><div style="font-weight:600;margin-bottom:8px;">${item.q}</div>`;
+    // CP : l'élève apprend à lire, la question peut être lue à voix haute.
+    const ecouter = currentChapterLevel==='cp' ? ` <button type="button" class="quiz-ecouter" onclick="lireQuestionQuiz(${qi})" title="Écouter la question"><span class="gicon">volume_up</span> Écouter</button>` : '';
+    html+=`<div class="quiz-q"><div class="quiz-num">Question ${qi+1}${ecouter}</div><div style="font-weight:600;margin-bottom:8px;">${item.q}</div>`;
     item.opts.forEach((o,oi)=>{
       html+=`<button class="quiz-opt" onclick="answerQuiz(this,${qi},${oi})">${o}</button>`;
     });
@@ -1618,6 +1663,27 @@ function renderQuizHTML(bank, prefixHtml){
   });
   area.innerHTML=html;
   renderStaticMath(area); // fractions en LaTeX (cm1Frac) dans les questions et les réponses
+}
+/* Lecture à voix haute (synthèse vocale du navigateur, en français) -- demandé pour le CP : « côté élève, un
+   bouton écouter la consigne ». Le texte est lu sans ses dessins ; les réponses proposées sont lues ensuite. */
+function lireAVoixHaute(texte){
+  if(!('speechSynthesis' in window) || !texte) return false;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(texte);
+  u.lang = 'fr-FR'; u.rate = .85;
+  const voix = speechSynthesis.getVoices().find(v => /^fr(-|_)FR/i.test(v.lang)) || speechSynthesis.getVoices().find(v => /^fr/i.test(v.lang));
+  if(voix) u.voice = voix;
+  speechSynthesis.speak(u);
+  return true;
+}
+function texteALire(html){
+  const d = document.createElement('div'); d.innerHTML = String(html || '').replace(/<svg[\s\S]*?<\/svg>/g, ' ');
+  return (d.textContent || '').replace(/…/g, ' combien ? ').replace(/\s+/g, ' ').trim();
+}
+function lireQuestionQuiz(qi){
+  const item = currentQuizBank && currentQuizBank[qi]; if(!item) return;
+  const ok = lireAVoixHaute(texteALire(item.q) + '. ' + item.opts.map(texteALire).join(' ; ou ; ') + '.');
+  if(!ok) niceAlert('La lecture à voix haute n\'est pas disponible dans ce navigateur.');
 }
 function generateDemoQuiz(){
   const chpSrc0 = (()=>{ const d = DEMO_REGISTRY[currentChapterLevel+'|'+currentChapterTitle]; return d && d.chp && (d.chp.sources||[])[0]; })(); // chapitre personnalisé : quiz de son premier chapitre source
@@ -3534,6 +3600,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1158', date:'2026-10-27', items:['CP en préparation (visible des administrateurs seulement) -- demandé : « On se demande quel sens ça a de ne pas avoir CP et CE1 », « le site est aussi très utile pour l\'enseignant, surtout avec un maximum d\'animations visuelles », puis « oui, rédige N1 et N2 ». Progression de 26 chapitres construite sur le programme du cycle 2 (BO n° 41 du 31 octobre 2024, partie CP), du 1er septembre 2026 au 2 juillet 2027, couleur framboise. Deux premiers chapitres, pensés pour être projetés au tableau : « Les nombres jusqu\'à 10 » (voir d\'un coup d\'œil avec le dé, les doigts et la boîte de dix ; compter une collection en touchant chaque objet une fois ; écrire les nombres de 0 à 10 ; le nombre d\'après et d\'avant ; plus, moins, autant) et « Décomposer les nombres jusqu\'à 10 » (la maison du nombre, 5 et encore…, faire 10, les doubles). Nouvelles animations : quantité montrée un instant puis cachée (« Combien ? »), comptage d\'une collection de pommes, boîte de dix qui se remplit avec ce qu\'il manque pour faire 10, maison du nombre qui se remplit. Méthodes pas à pas dessinées, 7 exercices corrigés et rédigés par chapitre, quiz, questions flash prêtes. Au quiz du CP, un bouton « Écouter » lit la question et les réponses à voix haute (synthèse vocale du navigateur).'] },
   { version:'2026-08-19.1157', date:'2026-10-27', items:['Facturation : factures des établissements privés émises et transmises par Qonto (facturation électronique) -- demandé : « je suis chez Qonto, je prends Qonto », puis « d\'accord pour A et B ». Nouveau bouton « Envoyer par Qonto » sur les factures d\'un établissement privé : l\'organisme de gestion est retrouvé (par son SIRET) ou créé dans Qonto, la facture y est créée avec le même numéro, les mêmes dates, les mêmes lignes et le même total (vérifié avant émission), en TVA non applicable (art. 293 B), puis finalisée (Factur-X) et envoyée par le réseau de facturation électronique quand l\'établissement y est joignable ; sinon elle est à envoyer par e-mail depuis Qonto. La facture Qonto est la pièce officielle, le PDF du site en est la copie. « Suivi Qonto » affiche le cycle de vie (déposée, émise, reçue, refusée…) et le lien vers la facture officielle. « Tester la connexion Qonto » dans Mes informations. Les établissements publics restent sur Chorus Pro ; les factures de test ne partent jamais.'] },
   { version:'2026-08-19.1156', date:'2026-10-27', items:['Mentions légales et conditions de vente : le numéro de TVA intracommunautaire est retiré -- vérifié : il n\'apparaît pas dans l\'espace professionnel des impôts et la base européenne VIES le donne non valide (numéro calculé à partir du SIREN, jamais attribué : en franchise en base, il ne l\'est que sur demande). La mention « TVA non applicable, art. 293 B du CGI » reste ; le numéro sera remis quand le service des impôts l\'aura attribué et activé.'] },
   { version:'2026-08-19.1155', date:'2026-10-26', items:['Séances COURS : le professeur reçoit tous les travaux en direct, même avec 10 classes en même temps -- test de charge du 26/10 : à 300 élèves, le professeur ne recevait plus qu\'un travail sur cinq, car chaque message d\'élève (travail, présence, élément affiché, sortie de la page, demande d\'aide) était distribué à toute la classe et dépassait le quota de messages temps réel. Les messages des élèves passent maintenant par un canal que seul le professeur écoute (les élèves les envoient sans recevoir ceux de leurs camarades) : nouveau test à 300 élèves, 15 230 travaux envoyés, 15 230 reçus par le professeur. La télécommande écoute aussi l\'ancien canal, pour les élèves dont la page n\'a pas encore été rechargée.'] },

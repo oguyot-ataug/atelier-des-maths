@@ -1,6 +1,0 @@
-bo41-sommaire.html : HTTP 403, 5491 octets (https://www.education.gouv.fr/bo/2024/Hebdo41/)
-eduscol-maths-cycle2.html : HTTP 403, 5499 octets (https://eduscol.education.gouv.fr/4746/ressources-d-accompagnement-du-programme-de-mathematiques-au-cycle-2)
-eduscol-enseigner-cycle2.html : HTTP 403, 5499 octets (https://eduscol.education.gouv.fr/4347/enseigner-au-cycle-2)
-toulouse-synthese-c2.pdf : HTTP 200, 361861 octets (https://pedagogie.ac-toulouse.fr/prim46/system/files/2025-01/Synth%C3%A8se%20Programmes%20math%C3%A9matiques%20cycle%202.pdf)
-publimath-men24001.html : HTTP 200, 81810 octets (https://publimath.fr/men24001/)
-dpernoux-c1c2.html : ERREUR fetch failed

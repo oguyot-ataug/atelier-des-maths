@@ -18,7 +18,7 @@
    de chapitres/cm1/_commun.js (CM_FLASH) et de questionnaires-direct.js.
    ===================================================================== */
 
-const FP_NIVEAUX = ['ce2', 'cm1', 'cm2'];
+const FP_NIVEAUX = ['cp', 'ce2', 'cm1', 'cm2'];
 const FP_LETTRES = ['A', 'B', 'C', 'D'];
 
 // Questions prêtes du chapitre, au format { q, r, ok } (le quiz du chapitre à défaut).
@@ -148,10 +148,11 @@ function fpRanger(liste, lecons){
 const fpCleIa = (lvl, titre) => 'fpIa:' + ((typeof currentUser !== 'undefined' && currentUser && currentUser.id) || 'anon') + ':' + lvl + '|' + titre;
 function fpIaLire(lvl, titre){ try{ return JSON.parse(localStorage.getItem(fpCleIa(lvl, titre)) || '[]'); }catch(e){ return []; } }
 function fpIaEcrire(lvl, titre, l){ try{ localStorage.setItem(fpCleIa(lvl, titre), JSON.stringify(l.slice(-200))); }catch(e){} }
-const FP_NIV_TXT = { ce2: 'CE2', cm1: 'CM1', cm2: 'CM2' };
+const FP_NIV_TXT = { cp: 'CP', ce2: 'CE2', cm1: 'CM1', cm2: 'CM2' };
 async function fpGenererIa(lvl, titre, lecon, nb){
   const niv = FP_NIV_TXT[lvl] || lvl;
-  const consignes = ['ce2', 'cm1', 'cm2'].includes(lvl) ? 'Programme du cycle 3 (nouveaux programmes) : pas de tableau de conversion, pas de rapporteur, pas de produit en croix ; nombres adaptés au niveau.' : '';
+  const consignes = lvl === 'cp' ? 'Programme du CP (cycle 2) : nombres jusqu\'à 100 au plus, pas de fractions, pas de signe ×. Les élèves apprennent à lire : questions très courtes, réponses d\'un nombre ou d\'un mot.'
+    : ['ce2', 'cm1', 'cm2'].includes(lvl) ? 'Programme du cycle 3 (nouveaux programmes) : pas de tableau de conversion, pas de rapporteur, pas de produit en croix ; nombres adaptés au niveau.' : '';
   const prompt = `Tu es professeur des écoles. Écris ${nb} questions flash de mathématiques, niveau ${niv}, sur le chapitre « ${titre} »${lecon ? `, partie « ${lecon.titre} »` : ''}.
 ${lecon && lecon.texte ? `Voici le cours de cette partie (n'interroge que sur ce qui y est) :\n"""${lecon.texte.slice(0, 2000)}"""\n` : ''}${consignes}
 Chaque question se résout de tête en moins de 30 secondes et se pose avec des cartes A, B, C, D : un QCM à 4 réponses courtes, une seule juste, les 3 autres étant des erreurs fréquentes d'élèves. Phrases courtes, vocabulaire du niveau. Écris une fraction « 3/4 ». Varie les questions (calcul, vocabulaire, raisonnement), sans en répéter.
