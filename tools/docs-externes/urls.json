@@ -1,0 +1,10 @@
+{
+  "_": "Documentations externes à lire (non joignables depuis l'environnement de travail) : téléchargées par le workflow « Docs externes » sur une branche de travail, dans tools/docs-externes/out/ (à supprimer avant main).",
+  "qonto-llms.txt": "https://docs.qonto.com/llms.txt",
+  "qonto-llms-full.txt": "https://docs.qonto.com/llms-full.txt",
+  "qonto-einvoicing.md": "https://docs.qonto.com/get-started/business-api/e-invoicing-standards.md",
+  "qonto-create-client-invoice.md": "https://docs.qonto.com/api-reference/business-api/expense-management/client-quotes-notes/client-invoices/create-a-client-invoice.md",
+  "qonto-factur-x.md": "https://docs.qonto.com/get-started/business-api/use-cases/generate-factur-x-invoice.md",
+  "qonto-api-key.md": "https://docs.qonto.com/get-started/business-api/authentication/api-key.md",
+  "qonto-sandbox.md": "https://docs.qonto.com/get-started/business-api/sandbox.md"
+}
