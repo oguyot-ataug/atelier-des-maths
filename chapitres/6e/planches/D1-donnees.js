@@ -110,6 +110,8 @@ PLANCHES['6e|Gestion de données'] = [
         ...ch([['Pour montrer l\'évolution du poids d\'un bébé mois par mois :', 'une courbe'], ['Pour comparer le nombre d\'élèves de chaque club :', 'des barres'], ['Pour montrer la part de chaque dépense dans un budget :', 'un disque']], 'une courbe · des barres · un disque') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Prépare une petite enquête dans ta classe : choisis une question, recueille les réponses, puis présente-les dans un tableau et un diagramme en barres.',
         corr: cm1Redac('Étapes', { suite: ['Choisir une question à réponses courtes (sport, animal, fruit préféré…).', 'Compter les réponses (effectifs) et vérifier le total.', 'Tracer le diagramme : un axe gradué régulièrement, une barre par réponse.'] }, 'On termine par une ou deux phrases qui interprètent les résultats.') },
+      { etoiles: 1, col: 1, consigne: 'Complète.', ...P3.rmp([['Pour comparer les parts d\'un tout : un diagramme @', 'circulaire'], ['Pour suivre une évolution dans le temps : un @', 'graphique (une courbe)']], 5) },
+      { etoiles: 2, col: 1, consigne: 'Sur 20 élèves, 5 préfèrent le vert. Complète.', ...P3.rmp([['C\'est @ des élèves.', cm1Frac(1, 4)], ['Dans un diagramme circulaire, l\'angle du secteur : @°', 90]], 2) },
     ] },
 ];
 })();

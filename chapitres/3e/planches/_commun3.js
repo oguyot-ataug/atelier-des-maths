@@ -1,5 +1,5 @@
 /* ============================================================
-   3e · Outils communs aux planches (Manuel 3e et Objectif Brevet)
+   Outils communs aux planches (P3 : écrit pour le Manuel 3e et Objectif Brevet, utilisé par tous les niveaux)
    Demandé : « On peut attaquer les planches de 3e ? Avec des exercices type Objectif Brevet en plus !
    En se basant sur les derniers sujets du brevet. »
    Brevet depuis la session 2026 : partie 1 « automatismes » (20 min, sans calculatrice, 6 points, seule

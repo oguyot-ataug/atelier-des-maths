@@ -26,6 +26,8 @@ PLANCHES['4e|Statistiques'] = [
         ...ch([['La moyenne est toujours une des valeurs de la série.', 'faux'], ['Si on ajoute 2 à toutes les valeurs, la moyenne augmente de 2.', 'vrai'], ['La moyenne de 0 et 20 est 10.', 'vrai']], 'vrai · faux') },
       { etoiles: 3, cahier: true, consigne: 'Après 4 contrôles, Tom a 11 de moyenne. Quelle note doit-il avoir au 5e contrôle pour avoir 12 de moyenne ?',
         corr: cm1Redac('Total des points', { suite: ['Après 4 contrôles : 4 × 11 = 44 points', 'Pour 12 de moyenne sur 5 contrôles : 5 × 12 = 60 points'] }, 'Il lui faut 60 points au total.') + cm1Redac('Note nécessaire', '60 − 44 = 16', 'Tom doit avoir 16 au 5e contrôle.') },
+      { etoiles: 1, col: 1, consigne: 'Calcule la moyenne.', ...P3.rmp([['12 ; 15 ; 9 : @', 12], ['10 ; 14 ; 16 ; 8 : @', 12]], 2) },
+      { etoiles: 2, col: 1, consigne: 'Calcule la moyenne pondérée.', ...P3.rmp([['10 (coef. 1) et 16 (coef. 2) : @', 14], ['8 (coef. 3) et 12 (coef. 1) : @', 9]], 2) },
     ] },
   { titre: 'La médiane', duree: '35 min',
     attendus: ['Ranger une série dans l\'ordre croissant', 'Déterminer la médiane (effectif impair ou pair)', 'Interpréter la médiane'],
@@ -53,6 +55,9 @@ PLANCHES['4e|Statistiques'] = [
         ...chx([['La valeur qui représente le mieux le salaire « habituel » :', 'la médiane', 'la moyenne · la médiane'], ['La valeur la plus influencée par le salaire de 6 800 € :', 'la moyenne', 'la moyenne · la médiane']]) },
       { etoiles: 3, cahier: true, consigne: 'Deux élèves ont eu ces notes. Hugo : 9 ; 11 ; 10 ; 12 ; 8. Lina : 4 ; 18 ; 6 ; 16 ; 6. Compare leurs moyennes, leurs médianes et leurs étendues. Qui est le plus régulier ?',
         corr: cm1Redac('Hugo', { suite: ['Moyenne : 50 : 5 = 10', 'Médiane : 10 (8 ; 9 ; 10 ; 11 ; 12)', 'Étendue : 12 − 8 = 4'] }, 'Hugo : moyenne 10, médiane 10, étendue 4.') + cm1Redac('Lina', { suite: ['Moyenne : 50 : 5 = 10', 'Médiane : 6 (4 ; 6 ; 6 ; 16 ; 18)', 'Étendue : 18 − 4 = 14'] }, 'Même moyenne, mais l\'étendue de Lina est bien plus grande : Hugo est le plus régulier.') },
+      { etoiles: 1, col: 1, consigne: 'Calcule l\'étendue.', ...P3.rmp([['5 ; 12 ; 9 ; 20 : @', 15], ['−3 ; 4 ; 1 : @', 7]], 2) },
+      { etoiles: 2, col: 1, consigne: 'Donne la médiane.', ...P3.rmp([['3 ; 7 ; 8 ; 10 ; 15 : @', 8], ['2 ; 4 ; 6 ; 9 : @', 5]], 2) },
+      { etoiles: 2, col: 1, consigne: 'Quel indicateur est sensible aux valeurs extrêmes ? Entoure.', ...P3.chx([['', 'la moyenne', 'la moyenne · la médiane']]) },
     ] },
   { titre: 'Problèmes de statistiques', duree: '40 min',
     attendus: ['Lire et exploiter des données', 'Choisir l\'indicateur adapté', 'Rédiger une réponse argumentée'],
@@ -65,6 +70,9 @@ PLANCHES['4e|Statistiques'] = [
         corr: cm1Redac('Nouvelle moyenne', { suite: ['Somme des âges des joueurs : 12 × 15 = 180 ans', '180 + 41 = 221 ; 221 : 13 = 17'] }, 'La nouvelle moyenne d\'âge est de 17 ans.') + cm1Redac('Médiane', 'Une seule valeur, même très grande, ajoutée en haut de la série ne décale la médiane que d\'une demi-place.', 'La médiane change très peu : elle est peu sensible aux valeurs extrêmes.') },
       { etoiles: 3, cahier: true, consigne: 'Une classe de 4e a fait une collecte : 6 élèves ont apporté 2 kg, 9 élèves 3 kg, 7 élèves 4 kg et 3 élèves 6 kg. Calcule la masse moyenne apportée par élève et la médiane.',
         corr: cm1Redac('Moyenne', { suite: ['Effectif : 6 + 9 + 7 + 3 = 25', 'Masse totale : 6 × 2 + 9 × 3 + 7 × 4 + 3 × 6 = 12 + 27 + 28 + 18 = 85 kg', '85 : 25 = 3,4'] }, 'Chaque élève a apporté en moyenne 3,4 kg.') + cm1Redac('Médiane', '25 valeurs : la médiane est la 13e ; les 6 premières valent 2, les 9 suivantes (7e à 15e) valent 3.', 'La médiane est 3 kg.') },
+      { etoiles: 1, col: 1, consigne: 'Série : 4 ; 8 ; 6 ; 10 ; 12. Complète.', ...P3.rmp([['moyenne : @', 8], ['médiane : @', 8], ['étendue : @', 8]], 2) },
+      { etoiles: 2, col: 1, consigne: 'Série : 2 ; 2 ; 5 ; 7 ; 9 ; 11. Complète.', ...P3.rmp([['moyenne : @', 6], ['médiane : @', 6], ['étendue : @', 9]], 2) },
+      { etoiles: 2, col: 1, consigne: 'On ajoute la valeur 50 à la série 4 ; 8 ; 6 ; 10 ; 12. Entoure.', ...P3.chx([['La moyenne…', 'augmente beaucoup', 'augmente beaucoup · ne change pas'], ['La médiane…', 'change peu', 'change peu · augmente beaucoup']]) },
     ] },
 ];
 })();

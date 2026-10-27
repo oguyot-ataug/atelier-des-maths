@@ -80,6 +80,10 @@ PLANCHES['4e|Translations'] = [
         corr: cm1Redac('Frise', 'Chaque motif est l\'image du précédent par la translation de 4 carreaux vers la droite.', 'Les motifs sont identiques, alignés et régulièrement espacés de 4 carreaux.') },
       { etoiles: 3, cahier: true, consigne: 'Un ascenseur monte de 12 m en ligne droite. Explique pourquoi le déplacement d\'une personne dans la cabine est une translation. De combien se déplace le haut de sa tête ?',
         corr: cm1Redac('Translation', 'Tous les points de la cabine se déplacent de 12 m, verticalement, vers le haut.', 'C\'est une translation : le haut de la tête de la personne monte lui aussi de 12 m.') },
+      { etoiles: 1, col: 1, consigne: 'Complète.', ...P3.rmp([['Par une translation, les longueurs sont @.', 'conservées'], ['Les angles sont @.', 'conservés'], ['Une droite a pour image une droite @.', 'parallèle']], 4) },
+      { etoiles: 2, col: 1, consigne: 'Entoure la bonne réponse.', ...P3.chx([['L\'image d\'un cercle de rayon 3 cm est…', 'un cercle de rayon 3 cm', 'un cercle de rayon 3 cm · un cercle de rayon 6 cm']]) },
+      { etoiles: 2, col: 1, consigne: 'Dans un repère, on translate de 3 unités vers la droite et 1 vers le haut.', ...P3.rmp([['A(1 ; 2) a pour image A′(@ ; @)', 4, 3], ['B(−2 ; 0) a pour image B′(@ ; @)', 1, 1]], 1) },
+      { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['Un triangle a une aire de 12 cm². Son image par une translation a une aire de @ cm².', 12]], 2) },
     ] },
 ];
 })();

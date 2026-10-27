@@ -58,6 +58,10 @@ PLANCHES['6e|Initiation à l\'algèbre'] = [
         ...ch([['multiplier par 3, puis ajouter 5 :', '3 × x + 5'], ['ajouter 5, puis multiplier par 3 :', '(x + 5) × 3'], ['multiplier par 2, puis retirer 1 :', '2 × x − 1']], '3 × x + 5 · (x + 5) × 3 · 2 × x − 1') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Programme : « choisis un nombre ; ajoute 3 ; multiplie par 2 ; retire le double du nombre de départ ». Teste avec 4, 10 et 0. Que remarques-tu ? Explique.',
         corr: cm1Redac('Tests', { suite: ['4 : (4 + 3) × 2 − 8 = 6', '10 : (10 + 3) × 2 − 20 = 6', '0 : (0 + 3) × 2 − 0 = 6'] }, 'On trouve toujours 6 : (n + 3) × 2 = 2 × n + 6, et on retire 2 × n.') },
+      { etoiles: 1, col: 1, consigne: 'Programme : multiplie par 3, puis ajoute 5. Complète.', ...P3.rmp([['avec 2 : @', 11], ['avec 0,5 : @', '6,5'], ['avec 10 : @', 35]], 2) },
+      { etoiles: 2, col: 1, consigne: 'Calcule.', ...P3.rmp([['n × 4 − 7 pour n = 10 : @', 33], ['2 × (x + 3) pour x = 5 : @', 16]], 2) },
+      { etoiles: 2, col: 1, consigne: 'Entoure l\'expression qui convient.', ...P3.chx([['« ajoute 4, puis multiplie par 3 »', '(x + 4) × 3', 'x + 4 × 3 · (x + 4) × 3']]) },
+      { etoiles: 3, col: 1, consigne: 'Résous.', ...P3.rmp([['3 × n + 5 = 20 : n = @', 5], ['2 × n − 1 = 13 : n = @', 7]], 2) },
     ] },
 ];
 })();

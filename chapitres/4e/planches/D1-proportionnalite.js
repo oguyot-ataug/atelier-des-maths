@@ -37,6 +37,8 @@ PLANCHES['4e|Proportionnalité'] = [
         ...ch([['Augmenter de 10 %, c\'est multiplier par 1,1.', 'vrai'], ['Baisser de 20 % puis augmenter de 20 % ramène au prix de départ.', 'faux'], ['50 % d\'une quantité, c\'est sa moitié.', 'vrai']], 'vrai · faux') },
       { etoiles: 3, cahier: true, consigne: 'Un collège compte 500 élèves. 36 % sont en 6e ou en 5e, et parmi les autres, 40 % sont en 4e. Combien d\'élèves sont en 4e ?',
         corr: cm1Redac('Élèves de 4e et de 3e', { suite: ['100 % − 36 % = 64 %', '500 × 64 : 100 = 320'] }, '320 élèves sont en 4e ou en 3e.') + cm1Redac('Élèves de 4e', '320 × 40 : 100 = 128', 'Il y a 128 élèves de 4e.') },
+      { etoiles: 1, col: 1, consigne: 'Calcule.', ...P3.rmp([['10 % de 250 : @', 25], ['25 % de 80 : @', 20], ['50 % de 46 : @', 23]], 2) },
+      { etoiles: 2, col: 1, consigne: 'Calcule le nouveau prix.', ...P3.rmp([['40 € augmentés de 10 % : @ €', 44], ['60 € réduits de 20 % : @ €', 48]], 2) },
     ] },
   { titre: 'Vitesse moyenne', duree: '35 min',
     attendus: ['Calculer une vitesse moyenne, une distance ou une durée', 'Convertir une durée (heures et minutes)', 'Convertir une vitesse (km/h et m/s)'],
@@ -63,6 +65,8 @@ PLANCHES['4e|Proportionnalité'] = [
         corr: cm1Redac('Durée', { suite: ['1 200 : 16 = 75 min', '75 min = 1 h 15 min'] }, 'Il faut 1 h 15 min pour remplir la cuve.') },
       { etoiles: 3, cahier: true, consigne: 'Le kWh coûte 0,25 €. Un radiateur de 1 500 W fonctionne 6 h par jour pendant 30 jours. Combien coûte son utilisation ?',
         corr: cm1Redac('Énergie consommée', { suite: ['1 500 W = 1,5 kW', '1,5 × 6 × 30 = 270 kWh'] }, 'Le radiateur consomme 270 kWh.') + cm1Redac('Coût', '270 × 0,25 = 67,5', 'Son utilisation coûte 67,50 €.') },
+      { etoiles: 1, col: 1, consigne: 'Complète.', ...P3.rmp([['1 kWh = @ Wh', '1 000'], ['un appareil de 2 000 W pendant 3 h : @ kWh', 6]], 3) },
+      { etoiles: 2, col: 1, consigne: 'Entoure l\'unité qui convient.', ...P3.chx([['une vitesse', 'km/h', 'km/h · km · h'], ['une énergie consommée', 'kWh', 'kW · kWh']]) },
     ] },
 ];
 })();

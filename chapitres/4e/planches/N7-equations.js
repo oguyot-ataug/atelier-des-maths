@@ -30,6 +30,8 @@ PLANCHES['4e|Équations'] = [
         ...chx([['Équation :', '2x − 5 = 7', '2x − 5 = 7 · x + 6 = 0 · 3x = 2'], ['Équation :', 'x : 3 = 2', 'x : 3 = 2 · 6x = 1 · x − 6 = 6']]) },
       { etoiles: 2, cahier: true, consigne: 'Résous l\'équation 4x = 18, puis vérifie ta solution.',
         corr: cm1Redac('Résolution', { suite: ['4x = 18', 'x = 18 : 4', 'x = 4,5'] }, 'La solution est 4,5.') + cm1Redac('Vérification', '4 × 4,5 = 18', 'L\'égalité est vraie : 4,5 est bien la solution.') },
+      { etoiles: 1, col: 1, consigne: 'Résous.', ...P3.rmp([['x + 7 = 15 : x = @', 8], ['x − 4 = 9 : x = @', 13], ['5x = 35 : x = @', 7]], 2) },
+      { etoiles: 2, col: 1, consigne: '−3 est-il solution de 2x + 9 = 3 ? Entoure.', ...P3.chx([['', 'oui', 'oui · non']]) },
     ] },
   { titre: 'Résoudre une équation en plusieurs étapes', duree: '35 min',
     attendus: ['Isoler l\'inconnue en plusieurs étapes', 'Regrouper les termes en x d\'un même côté', 'Rédiger la résolution'],

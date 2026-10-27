@@ -56,6 +56,8 @@ PLANCHES['4e|Probabilités'] = [
         ...chx([['Quand on répète une expérience un grand nombre de fois, la fréquence d\'une issue…', 'se rapproche de sa probabilité', 'est toujours égale à sa probabilité · se rapproche de sa probabilité · n\'a aucun lien avec sa probabilité']]) },
       { etoiles: 3, cahier: true, consigne: 'Une urne contient 40 billes, rouges ou noires. On fait 500 tirages avec remise et on obtient 150 fois une bille rouge. Estime le nombre de billes rouges dans l\'urne.',
         corr: cm1Redac('Fréquence', '150 : 500 = 0,3', 'La fréquence de « rouge » est 0,3 : la probabilité de tirer une rouge est proche de 0,3.') + cm1Redac('Nombre de billes rouges', '40 × 0,3 = 12', 'Il y a probablement environ 12 billes rouges dans l\'urne.') },
+      { etoiles: 1, col: 1, consigne: 'Calcule la fréquence (en écriture décimale).', ...P3.rmp([['30 « pile » sur 50 lancers : @', '0,6'], ['12 fois le 6 sur 60 lancers : @', '0,2']], 2) },
+      { etoiles: 2, col: 1, consigne: 'Quand on fait beaucoup de lancers, la fréquence se rapproche… Entoure.', ...P3.chx([['', 'de la probabilité', 'de la probabilité · de 0 · de 1']]) },
     ] },
   { titre: 'Problèmes de probabilités', duree: '35 min',
     attendus: ['Comparer des probabilités pour choisir', 'Rédiger un calcul de probabilité', 'Justifier une réponse'],

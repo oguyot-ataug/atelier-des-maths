@@ -30,6 +30,8 @@ PLANCHES['4e|Espace'] = [
         ...rmp([['Base triangulaire : @ faces, @ arêtes, @ sommets', 4, 6, 4], ['Base hexagonale : @ faces, @ arêtes, @ sommets', 7, 12, 7]]) },
       { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.',
         ...ch([['Toutes les faces latérales d\'une pyramide sont des triangles.', 'vrai'], ['Le patron d\'un cône contient un disque et une portion de disque.', 'vrai'], ['Une pyramide a toujours une base carrée.', 'faux']], 'vrai · faux') },
+      { etoiles: 1, col: 1, consigne: 'Complète.', ...P3.rmp([['Une pyramide à base triangulaire a @ faces.', 4], ['Une pyramide à base hexagonale a @ sommets.', 7], ['Un cône a @ face plane.', 1]], 2) },
+      { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.', ...P3.chx([['Les faces latérales d\'une pyramide sont des triangles.', 'vrai', 'vrai · faux'], ['Un cône a des arêtes.', 'faux', 'vrai · faux']]) },
     ] },
   { titre: 'Volume d\'une pyramide et d\'un cône', duree: '35 min',
     attendus: ['Calculer le volume d\'une pyramide : aire de la base × hauteur : 3', 'Calculer le volume d\'un cône', 'Donner une valeur exacte puis arrondie'],
@@ -69,6 +71,8 @@ PLANCHES['4e|Espace'] = [
         corr: cm1Redac('Volume', { suite: ['V = π × 6² × 9 : 3 = 108π', '108π ≈ 339,3 cm³'] }, 'Un demi-litre vaut 500 cm³ : l\'entonnoir, d\'environ 339 cm³, ne peut pas le contenir.') },
       { etoiles: 3, cahier: true, consigne: 'Une maison a la forme d\'un pavé de 10 m sur 8 m et de 6 m de haut, surmonté d\'un toit en pyramide de 3 m de haut. Calcule le volume total.',
         corr: cm1Redac('Pavé', '10 × 8 × 6 = 480', 'Le pavé a un volume de 480 m³.') + cm1Redac('Toit', '10 × 8 × 3 : 3 = 80', 'Le toit a un volume de 80 m³.') + cm1Redac('Total', '480 + 80 = 560', 'La maison a un volume de 560 m³.') },
+      { etoiles: 1, col: 1, consigne: 'Convertis.', ...P3.rmp([['1 m³ = @ dm³', '1 000'], ['1 dm³ = @ L', 1], ['2 500 cm³ = @ L', '2,5']], 3) },
+      { etoiles: 2, col: 1, consigne: 'Volume d\'une pyramide : (aire de la base × hauteur) ÷ 3.', ...P3.rmp([['base 9 m², hauteur 4 m : @ m³', 12], ['base 30 cm², hauteur 10 cm : @ cm³', 100]], 2) },
     ] },
 ];
 })();

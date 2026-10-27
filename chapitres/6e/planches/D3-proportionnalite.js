@@ -52,6 +52,8 @@ PLANCHES['6e|Proportionnalité'] = [
         corr: cm1Redac('Prix de 250 g', { suite: ['Grand paquet : 3,60 ÷ 3 = 1,20 € les 250 g.', 'Petit paquet : 2,50 ÷ 2 = 1,25 € les 250 g.'] }, 'Le paquet de 750 g est le plus avantageux.') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Un enfant de 1 an mesure 75 cm. Peut-on prévoir sa taille à 10 ans en multipliant par 10 ? Explique.',
         corr: cm1Redac('Réponse', '75 × 10 = 750 cm = 7,5 m : c\'est impossible.', 'La taille n\'est pas proportionnelle à l\'âge : on ne peut pas utiliser la proportionnalité.') },
+      { etoiles: 2, col: 1, consigne: '5 kg de pommes coûtent 9,50 €. Complète.', ...P3.rmp([['1 kg : @ €', '1,90'], ['8 kg : @ €', '15,20']], 2) },
+      { etoiles: 2, col: 1, consigne: 'Une voiture roule à 60 km/h. Complète.', ...P3.rmp([['en 2 h 30 min : @ km', 150], ['en 20 min : @ km', 20]], 2) },
     ] },
   { titre: 'Échelles', duree: '40 min',
     attendus: ['Comprendre une échelle : 1 cm sur le plan représente … dans la réalité', 'Calculer une distance réelle à partir d\'un plan', 'Calculer une distance sur le plan'],

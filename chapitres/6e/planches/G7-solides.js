@@ -89,6 +89,8 @@ PLANCHES['6e|Solides et volumes'] = [
         ...ch([['Un cube a 11 patrons différents.', 'vrai'], ['Six carrés alignés forment un patron de cube.', 'faux'], ['Le patron d\'un cylindre contient deux disques.', 'vrai']], 'vrai · faux') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Dessine sur ton cahier un patron de cube de 3 cm d\'arête différent du patron en croix, découpe-le et vérifie qu\'il se replie.',
         corr: cm1Redac('Exemple', 'Une rangée de 4 carrés, avec un carré au-dessus du premier et un carré en dessous du dernier.', 'Lors du pliage, chaque face doit trouver sa place sans se superposer à une autre.') },
+      { etoiles: 1, col: 1, consigne: 'Complète.', ...P3.rmp([['Un patron de cube a @ faces carrées.', 6], ['Un patron de pavé droit a @ faces rectangulaires.', 6]], 2) },
+      { etoiles: 3, col: 1, consigne: 'Pavé droit de 5 cm × 3 cm × 2 cm. Complète.', ...P3.rmp([['aire totale de son patron : @ cm²', 62]], 2) },
     ] },
 ];
 })();

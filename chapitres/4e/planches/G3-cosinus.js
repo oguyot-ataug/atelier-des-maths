@@ -58,6 +58,8 @@ PLANCHES['4e|Cosinus'] = [
         ...chx([['Si cos Â = 1, alors…', 'ce n\'est pas possible dans un triangle rectangle', 'Â = 90° · Â = 0° · ce n\'est pas possible dans un triangle rectangle'], ['Dans un triangle rectangle, si Â = 30°, l\'autre angle aigu mesure :', '60°', '30° · 60° · 150°']]) },
       { etoiles: 3, cahier: true, consigne: 'KLM est rectangle en L, avec KL = 5,6 cm et KM = 8 cm. Calcule l\'angle K̂, au degré près. Rédige.',
         corr: cm1Redac('Cosinus', { suite: [`KLM est rectangle en L, donc cos K̂ = ${F('KL', 'KM')}`, `cos K̂ = ${F('5{,}6', 8)} = 0,7`, 'K̂ ≈ 46°'] }, 'L\'angle K̂ mesure environ 46°.') },
+      { etoiles: 2, col: 1, consigne: 'ABC est rectangle en B. Calcule Â (au degré près).', ...P3.rmp([['AB = 4 cm et AC = 8 cm : Â = @°', 60], ['AB = 7 cm et AC = 10 cm : Â ≈ @°', 46]], 2) },
+      { etoiles: 2, col: 1, consigne: 'Le cosinus d\'un angle aigu est toujours… Entoure.', ...P3.chx([['', 'compris entre 0 et 1', 'compris entre 0 et 1 · plus grand que 1']]) },
     ] },
   { titre: 'Problèmes avec le cosinus', duree: '40 min',
     attendus: ['Repérer le triangle rectangle et l\'angle utile', 'Choisir entre Pythagore et le cosinus', 'Rédiger la solution d\'un problème'],

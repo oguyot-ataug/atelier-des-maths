@@ -30,6 +30,8 @@ PLANCHES['4e|Théorème de Pythagore'] = [
         ...rmp([['@ < √30 < @', 5, 6], ['@ < √80 < @', 8, 9], ['@ < √150 < @', 12, 13]]) },
       { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.',
         ...ch([['√(9 + 16) = √9 + √16', 'faux'], ['(√7)² = 7', 'vrai'], ['Le carré d\'un nombre négatif est négatif.', 'faux']], 'vrai · faux') },
+      { etoiles: 1, col: 1, consigne: 'Calcule.', ...P3.rmp([['7² = @', 49], ['12² = @', 144], ['0,5² = @', '0,25']], 2) },
+      { etoiles: 2, col: 1, consigne: 'Donne la racine carrée.', ...P3.rmp([['√81 = @', 9], ['√121 = @', 11], ['√0,09 = @', '0,3']], 2) },
     ] },
   { titre: 'Calculer une longueur avec le théorème de Pythagore', duree: '35 min',
     attendus: ['Repérer l\'hypoténuse', 'Calculer la longueur de l\'hypoténuse', 'Calculer la longueur d\'un côté de l\'angle droit'],
