@@ -1,0 +1,492 @@
+# Qonto
+
+- [Welcome to Qonto Developers](https://docs.qonto.com/introduction/welcome.md)
+- [Qonto Embed](https://docs.qonto.com/qonto-embed/qonto-embed.md)
+- [Qonto Embed sample app](https://docs.qonto.com/qonto-embed/embed-sample-app.md): Learn how to leverage Qonto Embed to supercharge your platform with embedded financial services.
+- [PA as a Service](https://docs.qonto.com/qonto-embed/plateforme-agreee-as-a-service.md)
+- [Partnering with Qonto](https://docs.qonto.com/qonto-embed/partnering-with-qonto.md)
+- [January](https://docs.qonto.com/qonto-embed/product-updates/2026/january.md)
+- [November](https://docs.qonto.com/qonto-embed/product-updates/2025/november.md)
+- [October](https://docs.qonto.com/qonto-embed/product-updates/2025/october.md)
+- [September](https://docs.qonto.com/qonto-embed/product-updates/2025/september.md)
+- [July](https://docs.qonto.com/qonto-embed/product-updates/2025/july.md)
+- [June](https://docs.qonto.com/qonto-embed/product-updates/2025/june.md)
+- [May](https://docs.qonto.com/qonto-embed/product-updates/2025/may.md)
+- [April](https://docs.qonto.com/qonto-embed/product-updates/2025/april.md)
+- [March](https://docs.qonto.com/qonto-embed/product-updates/2025/march.md)
+- [February](https://docs.qonto.com/qonto-embed/product-updates/2025/february.md)
+- [January](https://docs.qonto.com/qonto-embed/product-updates/2025/january.md)
+- [Adding payments](https://docs.qonto.com/qonto-embed/use-cases/payments.md)
+- [Card management](https://docs.qonto.com/qonto-embed/use-cases/card-management.md)
+- [Overview](https://docs.qonto.com/mcp/overview.md): Connect your AI assistant to your Qonto account
+- [What you can do](https://docs.qonto.com/mcp/capabilities.md): Concrete capabilities the Qonto MCP server gives your assistant
+- [Authentication](https://docs.qonto.com/mcp/authentication.md): How the Qonto MCP server authenticates clients and acts on your behalf
+- [Multi-organization](https://docs.qonto.com/mcp/multi-organization.md): Read across several Qonto organizations with a single connection
+- [Security and limits](https://docs.qonto.com/mcp/security.md)
+- [Terms and Disclosures](https://docs.qonto.com/mcp/terms-and-disclosures.md): Terms and disclosures for the Qonto MCP server — read carefully before connecting a third-party AI tool
+- [Quickstart](https://docs.qonto.com/mcp/install/quickstart.md): Connect any MCP client to mcp.qonto.com in under a minute
+- [Claude Desktop](https://docs.qonto.com/mcp/install/claude-desktop.md): Find Qonto in Connectors in Claude Desktop and Claude.ai
+- [Claude Web](https://docs.qonto.com/mcp/install/claude-web.md): Add Qonto from the Connectors directory in Claude.ai
+- [Claude Code](https://docs.qonto.com/mcp/install/claude-code.md): Add Qonto as an MCP server in Anthropic's Claude Code CLI
+- [Cursor](https://docs.qonto.com/mcp/install/cursor.md): Add Qonto to Cursor with a one-click deeplink
+- [VS Code](https://docs.qonto.com/mcp/install/vscode.md): Add Qonto to GitHub Copilot Chat in VS Code
+- [ChatGPT](https://docs.qonto.com/mcp/install/chatgpt.md): Add Qonto as a Custom Connector in ChatGPT
+- [Mistral Le Chat](https://docs.qonto.com/mcp/install/mistral.md): Add Qonto as a Custom MCP Connector in Mistral's Le Chat
+- [Notion](https://docs.qonto.com/mcp/install/notion.md): Add Qonto as a Custom Connector in Notion AI
+- [Tool reference](https://docs.qonto.com/mcp/tools/overview.md): All tools exposed by the Qonto MCP server, grouped by domain
+- [Accounts and organizations](https://docs.qonto.com/mcp/tools/accounts-and-organizations.md): Organization, memberships, teams, and labels
+- [Cards](https://docs.qonto.com/mcp/tools/cards.md): List, create, update, and transition Qonto cards
+- [Transactions and statements](https://docs.qonto.com/mcp/tools/transactions-and-statements.md): Read transactions, pull statements, and manage attachments
+- [Uploading attachments](https://docs.qonto.com/mcp/tools/attachments.md): Attach invoices and receipts to transactions, supplier invoices, and client invoices
+- [Cash flow categories](https://docs.qonto.com/mcp/tools/cash-flow-categories.md): Browse the cash flow category catalog, grow it, and tag transactions
+- [Clients](https://docs.qonto.com/mcp/tools/clients.md): Manage the customers you bill from Qonto
+- [Invoices and billing](https://docs.qonto.com/mcp/tools/invoices.md): Client invoices, payment reminders, supplier invoices, quotes, credit notes, and products
+- [Payment links](https://docs.qonto.com/mcp/tools/payment-links.md): Create shareable checkout pages and track the payments made against them
+- [Requests](https://docs.qonto.com/mcp/tools/requests.md): Card requests, multi-transfer requests, and approval workflows
+- [Plans and pricing](https://docs.qonto.com/mcp/tools/plans-and-pricing.md): The organization's own plan, plus Qonto's public price list
+- [Troubleshooting](https://docs.qonto.com/mcp/troubleshooting.md): Fixes for the most common MCP installation and runtime issues
+- [Overview](https://docs.qonto.com/cli/overview.md): The Qonto Business API from your terminal, for you and your AI agents
+- [Install](https://docs.qonto.com/cli/install.md): Install the Qonto CLI on macOS, Linux, or Windows
+- [Authentication](https://docs.qonto.com/cli/authentication.md): Sign in to Qonto from the CLI, and where the session is kept
+- [Using the CLI](https://docs.qonto.com/cli/usage.md): Commands, output formats, filters, pagination, and write operations
+- [Using the CLI with AI agents](https://docs.qonto.com/cli/ai-agents.md): Let Claude Code, Codex, Cursor, and other coding agents work with your Qonto account
+- [Configuration](https://docs.qonto.com/cli/configuration.md): Defaults you can set once: output format, SCA method, scopes
+- [Security and limits](https://docs.qonto.com/cli/security.md)
+- [Command reference](https://docs.qonto.com/cli/commands/overview.md): Every Qonto CLI command, grouped by domain
+- [Accounts and organizations](https://docs.qonto.com/cli/commands/accounts-and-organizations.md): Organization, business accounts, memberships, teams, labels, and plan
+- [Transactions and statements](https://docs.qonto.com/cli/commands/transactions-and-statements.md): Transactions, attachments, statements, and cash flow categories
+- [Cards](https://docs.qonto.com/cli/commands/cards.md): List, create, and manage Qonto cards
+- [Invoicing](https://docs.qonto.com/cli/commands/invoicing.md): Client invoices, quotes, credit notes, payment reminders, and e-invoicing
+- [Clients and products](https://docs.qonto.com/cli/commands/clients-and-products.md): Your client address book and product catalog
+- [Supplier invoices](https://docs.qonto.com/cli/commands/supplier-invoices.md): Import supplier invoices, then pay, reject, or review them
+- [Payment links](https://docs.qonto.com/cli/commands/payment-links.md): Shareable checkout pages and the payments made through them
+- [Requests and transfers](https://docs.qonto.com/cli/commands/requests-and-transfers.md): Transfer and card requests, and read-only SEPA transfer listings
+- [Troubleshooting](https://docs.qonto.com/cli/troubleshooting.md): Fixes for the most common installation, sign-in, and command errors
+- [Introduction](https://docs.qonto.com/get-started/general/introduction.md)
+- [Developer guidelines](https://docs.qonto.com/get-started/general/developer-guidelines.md): Step-by-step guide to build, test and release your integration.
+- [Accessing the Sandbox environment](https://docs.qonto.com/get-started/general/sandbox-access.md): Why your Sandbox requests get blocked by OneLogin, and the two ways to bypass it depending on whether you're calling the API programmatically or opening a URL in a browser.
+- [Errors](https://docs.qonto.com/get-started/general/errors.md)
+- [Idempotent requests](https://docs.qonto.com/get-started/general/idempotent-requests.md)
+- [Pagination](https://docs.qonto.com/get-started/general/pagination.md)
+- [Rate limitations](https://docs.qonto.com/get-started/general/rate-limitations.md)
+- [Versioning](https://docs.qonto.com/get-started/general/versioning.md): Learn how Qonto manages API versioning to ensure seamless integrations for your business.
+- [Troubleshooting](https://docs.qonto.com/get-started/general/troubleshooting.md): This guide will help you diagnose and resolve common authentication and connection issues with the Qonto API.
+- [Overview](https://docs.qonto.com/get-started/business-api/overview.md): Access Qonto banking, invoicing, bookkeeping & more remotely
+- [URLs](https://docs.qonto.com/get-started/business-api/urls.md)
+- [Introduction](https://docs.qonto.com/get-started/business-api/authentication/introduction.md): Authentication to the API is performed via HTTP, using the `Authorization` header. API requests without authentication will fail.
+- [API key](https://docs.qonto.com/get-started/business-api/authentication/api-key.md)
+- [TPP identification through PSD2 QSeal certificate](https://docs.qonto.com/get-started/business-api/authentication/qsealc.md)
+- [The OAuth flow](https://docs.qonto.com/get-started/business-api/authentication/oauth/oauth-flow.md): OAuth 2.0 is a protocol that lets your app request access to a Qonto user account without getting their password. Your app can ask for [specific permissions](/get-started/business-api/authentication/oauth/available-scopes) that the user will be able to review and validate.
+- [The User OAuth flow](https://docs.qonto.com/get-started/business-api/authentication/oauth/user-oauth-flow.md): The User OAuth flow lets you build an integration that can access multiple Qonto organizations belonging to the same user.
+- [Available scopes](https://docs.qonto.com/get-started/business-api/authentication/oauth/available-scopes.md)
+- [Testing in the Sandbox](https://docs.qonto.com/get-started/business-api/authentication/oauth/sandbox.md): Important differences when using the OAuth flow in the Qonto sandbox environment.
+- [E-invoicing via API](https://docs.qonto.com/get-started/business-api/e-invoicing-standards.md): How to send and receive electronic invoices through Qonto's API
+- [Overview](https://docs.qonto.com/get-started/business-api/use-cases.md): Learn how to build common use cases using our Business API
+- [How to send a SEPA transfer to a trusted beneficiary](https://docs.qonto.com/get-started/business-api/use-cases/send-sepa-transfer.md)
+- [How to sync client invoices and attachments](https://docs.qonto.com/get-started/business-api/use-cases/sync-client-invoices.md)
+- [How to sync supplier invoices and attachments](https://docs.qonto.com/get-started/business-api/use-cases/sync-supplier-invoices.md)
+- [How to bulk upload supplier invoices](https://docs.qonto.com/get-started/business-api/use-cases/bulk-upload-supplier-invoices.md)
+- [How to generate and download a Factur-X invoice](https://docs.qonto.com/get-started/business-api/use-cases/generate-factur-x-invoice.md)
+- [How to sync transactions and attachments](https://docs.qonto.com/get-started/business-api/use-cases/sync-transactions.md)
+- [How to enable SDD Collections in the Sandbox](https://docs.qonto.com/get-started/business-api/use-cases/enable-sdd-collections.md): Set up SEPA Direct Debit Collections eligibility and complete the activation flow in the Sandbox environment using the QA tool.
+- [Overview](https://docs.qonto.com/get-started/onboarding-api/overview.md): Fast track your customers' onboarding to Qonto.
+- [URLs](https://docs.qonto.com/get-started/onboarding-api/urls.md)
+- [Authentication](https://docs.qonto.com/get-started/onboarding-api/authentication.md)
+- [Company creation](https://docs.qonto.com/get-started/onboarding-api/flows/company-creation.md): Open an account for a company which needs to be created (with capital deposit)
+- [Existing company](https://docs.qonto.com/get-started/onboarding-api/flows/existing-company.md): Open an account for an existing company
+- [Overview](https://docs.qonto.com/get-started/sdk-libraries/overview.md): Welcome to the documentation for **Qonto Embed SDKs & Libraries**
+- [Introduction](https://docs.qonto.com/api-reference/introduction.md): This section provides everything you need to understand, explore, and use Qonto’s APIs. Whether you’re building a new integration or enhancing an existing one, you’ll find detailed information about each endpoint, request, and response here.
+- [Retrieve an authorization code](https://docs.qonto.com/api-reference/business-api/authentication/oauth2/retrieve_authorization.md): <Warning>   **This URL must be opened by the end user's own browser — never called with Postman, `curl`, or any other HTTP client.** Your server only builds the URL string, then either redirects the user to it using an HTTP `302` status code or opens a pop-up with that URL. Calling this endpoint you…
+- [Create or refresh tokens](https://docs.qonto.com/api-reference/business-api/authentication/oauth2/create_tokens.md): <Warning>This call must be performed on your backend as you should never expose your client secret.</Warning>
+- [Revoke consents](https://docs.qonto.com/api-reference/business-api/authentication/oauth2/revoke-oauth-consents.md): OAuth scope: `organization.read`
+- [Strong Customer Authentication](https://docs.qonto.com/api-reference/business-api/authentication/sca/sca-flows.md)
+- [Retrieve SCA session](https://docs.qonto.com/api-reference/business-api/authentication/sca/retrieve-session.md): Retrieves the SCA session identified by the `sca_session_token` path parameter.
+- [Retrieve mocked SCA session](https://docs.qonto.com/api-reference/business-api/authentication/sca/retrieve-mocked-session.md): Retrieves the **mocked** SCA session identified by the `sca_session_token` path parameter.
+- [Simulate user decision](https://docs.qonto.com/api-reference/business-api/authentication/sca/simulate-user-decision.md): Simulates user decision for the **mocked** SCA session identified by the `sca_session_token` path parameter.
+- [List business accounts](https://docs.qonto.com/api-reference/business-api/accounts-organizations/business-accounts/list.md): OAuth scope: `organization.read`
+- [Create a business account](https://docs.qonto.com/api-reference/business-api/accounts-organizations/business-accounts/create.md): OAuth scope: `bank_account.write`
+- [Get a business account](https://docs.qonto.com/api-reference/business-api/accounts-organizations/business-accounts/show.md): OAuth scope: `organization.read`
+- [Update a business account](https://docs.qonto.com/api-reference/business-api/accounts-organizations/business-accounts/update.md): OAuth scope: `bank_account.write`
+- [Close a business account](https://docs.qonto.com/api-reference/business-api/accounts-organizations/business-accounts/close.md): OAuth scope: `bank_account.write`
+- [Download the IBAN certificate](https://docs.qonto.com/api-reference/business-api/accounts-organizations/business-accounts/download-iban-certificate.md): OAuth scope: `organization.read`
+- [List labels](https://docs.qonto.com/api-reference/business-api/accounts-organizations/labels/list-labels.md): OAuth scope: `organization.read`
+- [Retrieve a label](https://docs.qonto.com/api-reference/business-api/accounts-organizations/labels/retrieve-a-label.md): OAuth scope: `organization.read`
+- [List memberships](https://docs.qonto.com/api-reference/business-api/accounts-organizations/memberships/list-memberships.md): OAuth scope: `organization.read`
+- [Create a membership](https://docs.qonto.com/api-reference/business-api/accounts-organizations/memberships/create-a-membership.md): OAuth scope: `membership.write`
+- [Retrieve the authenticated membership](https://docs.qonto.com/api-reference/business-api/accounts-organizations/memberships/retrieve-the-authenticated-membership.md): OAuth scope: `membership.read`
+- [Migrate to GET /v2/organization](https://docs.qonto.com/api-reference/business-api/accounts-organizations/organizations/migrate-from-deprecated-organization-endpoints.md): Move off the deprecated /v1/organizations/{slug} and /v2/organizations/{slug} endpoints before their sunset on November 15, 2026.
+- [Retrieve the authenticated organization and list bank accounts](https://docs.qonto.com/api-reference/business-api/accounts-organizations/organizations/retrieve-the-authenticated-organization-and-list-bank-accounts.md): OAuth scope: `organization.read`
+- [Show organization (v2 · deprecated)](https://docs.qonto.com/api-reference/business-api/accounts-organizations/organizations/show-organization.md): Deprecated: GET /v2/organizations/{slug}. Sunset on November 15, 2026.
+- [Show organization (v1 · deprecated)](https://docs.qonto.com/api-reference/business-api/accounts-organizations/organizations/show-organization-v1.md): Deprecated: GET /v1/organizations/{slug}. Sunset on November 15, 2026.
+- [Get user organizations](https://docs.qonto.com/api-reference/business-api/accounts-organizations/organizations/get-user-organizations.md): OAuth scope: `user_organization.read`
+- [Retrieve the organization's current subscription plan](https://docs.qonto.com/api-reference/business-api/accounts-organizations/subscriptions/get-subscription.md): OAuth scope: `subscription.read`
+- [List teams](https://docs.qonto.com/api-reference/business-api/accounts-organizations/teams/list-teams.md): OAuth scope: `team.read`
+- [Create a team](https://docs.qonto.com/api-reference/business-api/accounts-organizations/teams/create-a-team.md): OAuth scope: `team.write`
+- [Update a team](https://docs.qonto.com/api-reference/business-api/accounts-organizations/teams/update-a-team.md): OAuth scope: `team.write`
+- [List cards](https://docs.qonto.com/api-reference/business-api/cards/list-cards.md): OAuth scope: `card.read`
+- [List card appearances](https://docs.qonto.com/api-reference/business-api/cards/list-appearances.md): OAuth scope: `card.read`
+- [Create a card](https://docs.qonto.com/api-reference/business-api/cards/create-a-card.md): OAuth scope: `card.write`
+- [Bulk create cards](https://docs.qonto.com/api-reference/business-api/cards/bulk-create-cards.md): OAuth scope: `card.write`
+- [Retrieve a card iframe url](https://docs.qonto.com/api-reference/business-api/cards/retrieve-a-card-iframe-url.md): OAuth scope: `card.read`
+- [Report a physical card as lost](https://docs.qonto.com/api-reference/business-api/cards/report-a-physical-card-as-lost.md): OAuth scope: `card.write`
+- [Report a physical card as stolen](https://docs.qonto.com/api-reference/business-api/cards/report-a-physical-card-as-stolen.md): OAuth scope: `card.write`
+- [Discard a card](https://docs.qonto.com/api-reference/business-api/cards/discard-a-card.md): OAuth scope: `card.write`
+- [Lock a card](https://docs.qonto.com/api-reference/business-api/cards/lock-a-card.md): OAuth scope: `card.write`
+- [Unlock a card](https://docs.qonto.com/api-reference/business-api/cards/unlock-a-card.md): OAuth scope: `card.write`
+- [Update a card's limits](https://docs.qonto.com/api-reference/business-api/cards/update-a-cards-limits.md): OAuth scope: `card.write`
+- [Update a card's nickname](https://docs.qonto.com/api-reference/business-api/cards/update-a-cards-nickname.md): OAuth scope: `card.write`
+- [Update a card's options](https://docs.qonto.com/api-reference/business-api/cards/update-a-cards-options.md): OAuth scope: `card.write`
+- [Update a card's restrictions](https://docs.qonto.com/api-reference/business-api/cards/update-a-cards-restrictions.md): OAuth scope: `card.write`
+- [List clients](https://docs.qonto.com/api-reference/business-api/clients/list-clients.md): OAuth scope: `client.read`
+- [Create a client](https://docs.qonto.com/api-reference/business-api/clients/create-a-client.md): OAuth scope: `client.write`
+- [Retrieve a client](https://docs.qonto.com/api-reference/business-api/clients/retrieve-a-client.md): OAuth scope: `client.read`
+- [Update a client](https://docs.qonto.com/api-reference/business-api/clients/update-a-client.md): OAuth scope: `client.write`
+- [Delete a client](https://docs.qonto.com/api-reference/business-api/clients/delete-a-client.md): OAuth scope: `client.write`
+- [Upload an attachment](https://docs.qonto.com/api-reference/business-api/expense-management/attachments/upload-an-attachment.md): OAuth scope: `attachment.write`
+- [Retrieve an attachment](https://docs.qonto.com/api-reference/business-api/expense-management/attachments/retrieve-an-attachment.md): OAuth scope: `attachment.read`
+- [List attachments for a transaction](https://docs.qonto.com/api-reference/business-api/expense-management/attachments-in-transactions/list-attachments-for-a-transaction.md): OAuth scope: `attachment.read`
+- [Upload an attachment to a transaction](https://docs.qonto.com/api-reference/business-api/expense-management/attachments-in-transactions/upload-an-attachment-to-a-transaction.md): OAuth scope: `attachment.write`
+- [Remove all attachments from a transaction](https://docs.qonto.com/api-reference/business-api/expense-management/attachments-in-transactions/remove-all-attachments-from-a-transaction.md): OAuth scope: `attachment.write`
+- [Remove an attachment from a transaction](https://docs.qonto.com/api-reference/business-api/expense-management/attachments-in-transactions/remove-an-attachment-from-a-transaction.md): OAuth scope: `attachment.write`
+- [List products](https://docs.qonto.com/api-reference/business-api/expense-management/products/list-products.md): OAuth scope: `product.read`
+- [Create a product](https://docs.qonto.com/api-reference/business-api/expense-management/products/create-a-product.md): OAuth scope: `product.write`
+- [Retrieve a product](https://docs.qonto.com/api-reference/business-api/expense-management/products/retrieve-a-product.md): OAuth scope: `product.read`
+- [Delete a product](https://docs.qonto.com/api-reference/business-api/expense-management/products/delete-a-product.md): OAuth scope: `product.write`
+- [Factur-X Invoices](https://docs.qonto.com/api-reference/business-api/expense-management/client-quotes-notes/introduction-factur-x.md): Download successfully Factur-X invoices format
+- [List client invoices](https://docs.qonto.com/api-reference/business-api/expense-management/client-quotes-notes/client-invoices/list-client-invoices.md): OAuth scope: `client_invoices.read`
+- [Create a client invoice](https://docs.qonto.com/api-reference/business-api/expense-management/client-quotes-notes/client-invoices/create-a-client-invoice.md): OAuth scope: `client_invoice.write`
+- [Import client invoices in bulk](https://docs.qonto.com/api-reference/business-api/expense-management/client-quotes-notes/client-invoices/bulk-import-client-invoices.md): OAuth scope: `client_invoice.write`
+- [Create a client invoice upload](https://docs.qonto.com/api-reference/business-api/expense-management/client-quotes-notes/client-invoices/create-a-client-invoice-upload.md): OAuth scope: `client_invoice.write`
+- [Retrieve a client invoice upload](https://docs.qonto.com/api-reference/business-api/expense-management/client-quotes-notes/client-invoices/retrieve-a-client-invoice-upload.md): OAuth scope: `client_invoices.read`
+- [Retrieve a client invoice](https://docs.qonto.com/api-reference/business-api/expense-management/client-quotes-notes/client-invoices/retrieve-a-client-invoice.md): OAuth scope: `client_invoices.read`
+- [Update a draft client invoice](https://docs.qonto.com/api-reference/business-api/expense-management/client-quotes-notes/client-invoices/update-a-client-invoice.md): OAuth scope: `client_invoice.write`
+- [Finalize a client invoice](https://docs.qonto.com/api-reference/business-api/expense-management/client-quotes-notes/client-invoices/finalize-a-client-invoice.md): OAuth scope: `client_invoice.write`
+- [Mark a client invoice as paid](https://docs.qonto.com/api-reference/business-api/expense-management/client-quotes-notes/client-invoices/mark-a-client-invoice-as-paid.md): OAuth scope: `client_invoice.write`
+- [Cancel a client invoice](https://docs.qonto.com/api-reference/business-api/expense-management/client-quotes-notes/client-invoices/mark-a-client-invoice-as-canceled.md): OAuth scope: `client_invoice.write`
+- [Unmark a client invoice as paid](https://docs.qonto.com/api-reference/business-api/expense-management/client-quotes-notes/client-invoices/unmark-a-client-invoice-as-paid.md): OAuth scope: `client_invoice.write`
+- [Delete a client invoice](https://docs.qonto.com/api-reference/business-api/expense-management/client-quotes-notes/client-invoices/delete-a-client-invoice.md): OAuth scope: `client_invoice.write`
+- [Send a client invoice via email](https://docs.qonto.com/api-reference/business-api/expense-management/client-quotes-notes/client-invoices/send-a-client-invoice.md): OAuth scope: `client_invoice.write`
+- [Send a client invoice via e-invoice](https://docs.qonto.com/api-reference/business-api/expense-management/client-quotes-notes/client-invoices/send-a-client-invoice-by-e-invoice.md): OAuth scope: `client_invoice.write`
+- [List credit notes](https://docs.qonto.com/api-reference/business-api/expense-management/client-quotes-notes/credit-notes/list-credit-notes.md): OAuth scope: `client_invoices.read`
+- [Create a credit note](https://docs.qonto.com/api-reference/business-api/expense-management/client-quotes-notes/credit-notes/create-a-credit-note.md): OAuth scope: `client_invoice.write`
+- [Retrieve a credit note](https://docs.qonto.com/api-reference/business-api/expense-management/client-quotes-notes/credit-notes/retrieve-a-credit-note.md): OAuth scope: `client_invoices.read`
+- [Download a credit note](https://docs.qonto.com/api-reference/business-api/expense-management/client-quotes-notes/credit-notes/download-a-credit-note.md): OAuth scope: `client_invoices.read`
+- [List quotes](https://docs.qonto.com/api-reference/business-api/expense-management/client-quotes-notes/quotes/list-quotes.md): OAuth scope: `client_invoices.read`
+- [Create a quote](https://docs.qonto.com/api-reference/business-api/expense-management/client-quotes-notes/quotes/create-a-quote.md): OAuth scope: `client_invoice.write`
+- [Retrieve a quote](https://docs.qonto.com/api-reference/business-api/expense-management/client-quotes-notes/quotes/retrieve-a-quote.md): OAuth scope: `client_invoices.read`
+- [Update a quote](https://docs.qonto.com/api-reference/business-api/expense-management/client-quotes-notes/quotes/patch-a-quote.md): OAuth scope: `client_invoice.write`
+- [Delete a quote](https://docs.qonto.com/api-reference/business-api/expense-management/client-quotes-notes/quotes/delete-a-quote.md): OAuth scope: `client_invoice.write`
+- [Send a quote via email](https://docs.qonto.com/api-reference/business-api/expense-management/client-quotes-notes/quotes/send-a-quote.md): OAuth scope: `client_invoice.write`
+- [List recurring invoices](https://docs.qonto.com/api-reference/business-api/expense-management/client-quotes-notes/recurring-invoices/list-recurring-invoices.md): OAuth scope: `client_invoices.read`
+- [Create a recurring invoice](https://docs.qonto.com/api-reference/business-api/expense-management/client-quotes-notes/recurring-invoices/create-a-recurring-invoice.md): OAuth scope: `client_invoice.write`
+- [Validate a recurring invoice](https://docs.qonto.com/api-reference/business-api/expense-management/client-quotes-notes/recurring-invoices/validate-a-recurring-invoice.md): OAuth scope: `client_invoice.write`
+- [Retrieve a recurring invoice](https://docs.qonto.com/api-reference/business-api/expense-management/client-quotes-notes/recurring-invoices/retrieve-a-recurring-invoice.md): OAuth scope: `client_invoices.read`
+- [Update a recurring invoice](https://docs.qonto.com/api-reference/business-api/expense-management/client-quotes-notes/recurring-invoices/update-a-recurring-invoice.md): OAuth scope: `client_invoice.write`
+- [Suspend a recurring invoice](https://docs.qonto.com/api-reference/business-api/expense-management/client-quotes-notes/recurring-invoices/suspend-a-recurring-invoice.md): OAuth scope: `client_invoice.write`
+- [Reactivate a recurring invoice](https://docs.qonto.com/api-reference/business-api/expense-management/client-quotes-notes/recurring-invoices/reactivate-a-recurring-invoice.md): OAuth scope: `client_invoice.write`
+- [Cancel a recurring invoice](https://docs.qonto.com/api-reference/business-api/expense-management/client-quotes-notes/recurring-invoices/cancel-a-recurring-invoice.md): OAuth scope: `client_invoice.write`
+- [Get invoicing settings](https://docs.qonto.com/api-reference/business-api/expense-management/client-quotes-notes/settings/retrieve-settings.md): OAuth scope: `client_invoices.read`
+- [Update invoicing settings](https://docs.qonto.com/api-reference/business-api/expense-management/client-quotes-notes/settings/update-settings.md): OAuth scope: `client_invoice.write`
+- [Payment Reminders](https://docs.qonto.com/api-reference/business-api/expense-management/client-quotes-notes/reminders/introduction-reminders.md): What every partner needs to know before automating payment reminders
+- [List payment reminder configurations](https://docs.qonto.com/api-reference/business-api/expense-management/client-quotes-notes/reminders/list-reminders.md): OAuth scope: `client_invoices.read`
+- [Configure payment reminders for a client](https://docs.qonto.com/api-reference/business-api/expense-management/client-quotes-notes/reminders/create-a-reminder.md): OAuth scope: `client_invoice.write`
+- [Get a payment reminder configuration](https://docs.qonto.com/api-reference/business-api/expense-management/client-quotes-notes/reminders/retrieve-a-reminder.md): OAuth scope: `client_invoices.read`
+- [Replace a payment reminder configuration](https://docs.qonto.com/api-reference/business-api/expense-management/client-quotes-notes/reminders/update-a-reminder.md): OAuth scope: `client_invoice.write`
+- [Delete a payment reminder configuration](https://docs.qonto.com/api-reference/business-api/expense-management/client-quotes-notes/reminders/delete-a-reminder.md): OAuth scope: `client_invoice.write`
+- [Create an insurance contract](https://docs.qonto.com/api-reference/business-api/expense-management/insurance-contracts/create-an-insurance-contract.md): OAuth scope: `insurance_contract.write`
+- [Retrieve an insurance contract](https://docs.qonto.com/api-reference/business-api/expense-management/insurance-contracts/retrieve-an-insurance-contract.md): OAuth scope: `insurance_contract.read`
+- [Update an insurance contract](https://docs.qonto.com/api-reference/business-api/expense-management/insurance-contracts/update-an-insurance-contract.md): OAuth scope: `insurance_contract.write`
+- [Upload a document to an insurance contract](https://docs.qonto.com/api-reference/business-api/expense-management/insurance-contracts/upload-a-document-to-an-insurance-contract.md): OAuth scope: `insurance_contract.write`
+- [Remove a document from an insurance contract](https://docs.qonto.com/api-reference/business-api/expense-management/insurance-contracts/remove-a-document-from-an-insurance-contract.md): OAuth scope: `insurance_contract.write`
+- [List requests](https://docs.qonto.com/api-reference/business-api/expense-management/requests/list-requests.md): OAuth scope: `organization.read`
+- [Create a flash card request](https://docs.qonto.com/api-reference/business-api/expense-management/requests/create-a-flash-card-request.md): OAuth scope: `request_cards.write`
+- [Create a virtual card request](https://docs.qonto.com/api-reference/business-api/expense-management/requests/create-a-virtual-card-request.md): OAuth scope: `request_cards.write`
+- [Create transfer request](https://docs.qonto.com/api-reference/business-api/expense-management/requests/create-transfer-request.md): OAuth scope: `request_transfers.write`
+- [Create multi transfer request](https://docs.qonto.com/api-reference/business-api/expense-management/requests/create-multi-transfer-request.md): OAuth scope: `request_transfers.write`
+- [Approve a request](https://docs.qonto.com/api-reference/business-api/expense-management/requests/approve-a-request.md): OAuth scope: `request_review.write`
+- [Decline a request](https://docs.qonto.com/api-reference/business-api/expense-management/requests/decline-a-request.md): OAuth scope: `request_review.write`
+- [List supplier invoices](https://docs.qonto.com/api-reference/business-api/expense-management/supplier-invoices/list-supplier-invoices.md): OAuth scope: `supplier_invoice.read`
+- [Create supplier invoices](https://docs.qonto.com/api-reference/business-api/expense-management/supplier-invoices/create-supplier-invoices.md): OAuth scope: `supplier_invoice.write`
+- [Retrieve a supplier invoice](https://docs.qonto.com/api-reference/business-api/expense-management/supplier-invoices/retrieve-a-supplier-invoice.md): OAuth scope: `supplier_invoices.read`
+- [Reject a supplier invoice](https://docs.qonto.com/api-reference/business-api/expense-management/supplier-invoices/reject-supplier-invoice.md): OAuth scope: `supplier_invoice.write`
+- [Mark a supplier invoice as paid](https://docs.qonto.com/api-reference/business-api/expense-management/supplier-invoices/mark-supplier-invoice-as-paid.md): OAuth scope: `supplier_invoice.write`
+- [Unmark a supplier invoice as paid](https://docs.qonto.com/api-reference/business-api/expense-management/supplier-invoices/unmark-supplier-invoice-as-paid.md): OAuth scope: `supplier_invoice.write`
+- [Create a supplier](https://docs.qonto.com/api-reference/business-api/expense-management/suppliers/create-supplier.md): OAuth scope: `supplier_invoice.write`
+- [Update a supplier](https://docs.qonto.com/api-reference/business-api/expense-management/suppliers/update-supplier.md): OAuth scope: `supplier_invoice.write`
+- [Search suppliers](https://docs.qonto.com/api-reference/business-api/expense-management/supplier-invoices/search-suppliers.md): OAuth scope: `supplier_invoice.read`
+- [Retrieve a supplier](https://docs.qonto.com/api-reference/business-api/expense-management/supplier-invoices/retrieve-a-supplier.md): OAuth scope: `supplier_invoice.read`
+- [Get e-invoicing settings](https://docs.qonto.com/api-reference/business-api/expense-management/e-invoicing/retrieve-settings.md): OAuth scope: `einvoicing.read`
+- [List cash flow categories](https://docs.qonto.com/api-reference/business-api/expense-management/cash-flow-categories/list.md): OAuth scope: `cash_flow_category.read`
+- [Create a cash flow category](https://docs.qonto.com/api-reference/business-api/expense-management/cash-flow-categories/create.md): OAuth scope: `cash_flow_category.write`
+- [Create a cash flow subcategory](https://docs.qonto.com/api-reference/business-api/expense-management/cash-flow-categories/create-subcategory.md): OAuth scope: `cash_flow_category.write`
+- [Update a cash flow category](https://docs.qonto.com/api-reference/business-api/expense-management/cash-flow-categories/update.md): OAuth scope: `cash_flow_category.write`
+- [Delete a cash flow category](https://docs.qonto.com/api-reference/business-api/expense-management/cash-flow-categories/delete.md): OAuth scope: `cash_flow_category.write`
+- [Assign a cash flow category to transactions](https://docs.qonto.com/api-reference/business-api/expense-management/cash-flow-categories/assign.md): OAuth scope: `cash_flow_category.write`
+- [Unassign a cash flow category from transactions](https://docs.qonto.com/api-reference/business-api/expense-management/cash-flow-categories/unassign.md): OAuth scope: `cash_flow_category.write`
+- [List cash flow scenarios](https://docs.qonto.com/api-reference/business-api/expense-management/cash-flow-scenarios/list.md): OAuth scope: `cash_flow_category.read`
+- [Create a cash flow scenario](https://docs.qonto.com/api-reference/business-api/expense-management/cash-flow-scenarios/create.md): OAuth scope: `cash_flow_category.write`
+- [Update a cash flow scenario](https://docs.qonto.com/api-reference/business-api/expense-management/cash-flow-scenarios/update.md): OAuth scope: `cash_flow_category.write`
+- [Delete a cash flow scenario](https://docs.qonto.com/api-reference/business-api/expense-management/cash-flow-scenarios/delete.md): OAuth scope: `cash_flow_category.write`
+- [List cash flow targets](https://docs.qonto.com/api-reference/business-api/expense-management/cash-flow-targets/list.md): OAuth scope: `cash_flow_category.read`
+- [Create or update cash flow targets](https://docs.qonto.com/api-reference/business-api/expense-management/cash-flow-targets/upsert.md): OAuth scope: `cash_flow_category.write`
+- [Delete a cash flow target](https://docs.qonto.com/api-reference/business-api/expense-management/cash-flow-targets/delete.md): OAuth scope: `cash_flow_category.write`
+- [Create an internal transfer](https://docs.qonto.com/api-reference/business-api/payments-transfers/internal-transfers/create-an-internal-transfer.md): OAuth scope: `internal_transfer.write`
+- [Introduction](https://docs.qonto.com/api-reference/business-api/payments-transfers/international-transfers/introduction.md)
+- [List international beneficiaries](https://docs.qonto.com/api-reference/business-api/payments-transfers/international-transfers/list-beneficiaries-by-currency.md): OAuth scope: `organization.read`
+- [List requirements for an international beneficiary](https://docs.qonto.com/api-reference/business-api/payments-transfers/international-transfers/list-beneficiary-requirements.md): OAuth scope: `international_transfer.write`
+- [Update an international beneficiary](https://docs.qonto.com/api-reference/business-api/payments-transfers/international-transfers/update-beneficiary.md): OAuth scope: `international_transfer.write`
+- [Create an international beneficiary](https://docs.qonto.com/api-reference/business-api/payments-transfers/international-transfers/create-beneficiary.md): OAuth scope: `international_transfer.write`
+- [Delete an international beneficiary](https://docs.qonto.com/api-reference/business-api/payments-transfers/international-transfers/delete-beneficiary.md): OAuth scope: `international_transfer.write`
+- [Get available currencies for international transfers](https://docs.qonto.com/api-reference/business-api/payments-transfers/international-transfers/list-available-currencies.md): OAuth scope: `organization.read`
+- [Check if the organization is eligible for international transfers](https://docs.qonto.com/api-reference/business-api/payments-transfers/international-transfers/check-eligibility.md): OAuth scope: `organization.read`
+- [Create a new international transfer quote](https://docs.qonto.com/api-reference/business-api/payments-transfers/international-transfers/create-international-quote.md): OAuth scope: `international_transfer.write`
+- [List international transfer requirements](https://docs.qonto.com/api-reference/business-api/payments-transfers/international-transfers/list-transfer-requirements.md): OAuth scope: `international_transfer.write`
+- [Create an international transfer](https://docs.qonto.com/api-reference/business-api/payments-transfers/international-transfers/create-international-transfer.md): OAuth scope: `international_transfer.write`
+- [Accepting in-person payments with terminals](https://docs.qonto.com/api-reference/business-api/terminals/introduction.md): Integrate your POS system with Qonto to push payments directly to physical payment terminals.
+- [List terminals](https://docs.qonto.com/api-reference/business-api/terminals/list-terminals.md): OAuth scope: `terminal.read`
+- [Create a terminal payment](https://docs.qonto.com/api-reference/business-api/terminals/create-terminal-payment.md): OAuth scope: `terminal.write`
+- [Get a terminal payment](https://docs.qonto.com/api-reference/business-api/terminals/get-terminal-payment.md): OAuth scope: `terminal.read`
+- [Getting paid with payment links](https://docs.qonto.com/api-reference/business-api/payments-transfers/payment-links/introduction.md): Accept payments from your customers with secure, customizable payment links that integrate seamlessly with your business workflow.
+- [Connect to the payment links provider](https://docs.qonto.com/api-reference/business-api/payments-transfers/payment-links/connect.md): OAuth scope: `payment_link.write`
+- [Get the connection status](https://docs.qonto.com/api-reference/business-api/payments-transfers/payment-links/get-connection.md): OAuth scope: `payment_link.read`
+- [Create a payment link](https://docs.qonto.com/api-reference/business-api/payments-transfers/payment-links/create.md): OAuth scope: `payment_link.write`
+- [List payment links](https://docs.qonto.com/api-reference/business-api/payments-transfers/payment-links/index.md): OAuth scope: `payment_link.read`
+- [Get a payment link](https://docs.qonto.com/api-reference/business-api/payments-transfers/payment-links/show.md): OAuth scope: `payment_link.read`
+- [Deactivate a payment link](https://docs.qonto.com/api-reference/business-api/payments-transfers/payment-links/deactivate.md): OAuth scope: `payment_link.write`
+- [List payments for a payment link](https://docs.qonto.com/api-reference/business-api/payments-transfers/payment-links/index-payments.md): OAuth scope: `payment_link.read`
+- [List available payment methods](https://docs.qonto.com/api-reference/business-api/payments-transfers/payment-links/index-payment-methods.md): OAuth scope: `payment_link.read`
+- [Verification of Payee](https://docs.qonto.com/api-reference/business-api/payments-transfers/sepa-transfers/introduction.md): Verify beneficiary details before initiating SEPA Transfers to reduce fraud and payment errors.
+- [List SEPA beneficiaries](https://docs.qonto.com/api-reference/business-api/payments-transfers/sepa-transfers/beneficiaries/sepa-beneficiaries/index.md): OAuth scope: `organization.read`
+- [Add a SEPA beneficiary](https://docs.qonto.com/api-reference/business-api/payments-transfers/sepa-transfers/beneficiaries/sepa-beneficiaries/create.md): OAuth scope: `payment.write`
+- [Retrieve a SEPA beneficiary](https://docs.qonto.com/api-reference/business-api/payments-transfers/sepa-transfers/beneficiaries/sepa-beneficiaries/show.md): OAuth scope: `organization.read`
+- [Update a SEPA beneficiary](https://docs.qonto.com/api-reference/business-api/payments-transfers/sepa-transfers/beneficiaries/sepa-beneficiaries/update.md): OAuth scope: `payment.write`
+- [Trust SEPA beneficiaries](https://docs.qonto.com/api-reference/business-api/payments-transfers/sepa-transfers/beneficiaries/sepa-beneficiaries/trust.md): OAuth scope: `beneficiary.trust`
+- [Untrust SEPA beneficiaries](https://docs.qonto.com/api-reference/business-api/payments-transfers/sepa-transfers/beneficiaries/sepa-beneficiaries/untrust.md): OAuth scope: `payment.write`
+- [Delete a SEPA beneficiary](https://docs.qonto.com/api-reference/business-api/payments-transfers/sepa-transfers/beneficiaries/sepa-beneficiaries/delete.md): OAuth scope: `payment.write`
+- [Verify a SEPA payee](https://docs.qonto.com/api-reference/business-api/payments-transfers/sepa-transfers/verify-payee/index.md): OAuth scope: `payment.write`
+- [Bulk verify SEPA payees](https://docs.qonto.com/api-reference/business-api/payments-transfers/sepa-transfers/verify-payee/bulk-verify-payee.md): OAuth scope: `payment.write`
+- [List Bulk Transfers](https://docs.qonto.com/api-reference/business-api/payments-transfers/sepa-transfers/sepa-bulk-transfers/index.md): OAuth scope: `organization.read`
+- [Get Bulk Transfer](https://docs.qonto.com/api-reference/business-api/payments-transfers/sepa-transfers/sepa-bulk-transfers/show.md): OAuth scope: `organization.read`
+- [Create a Bulk Transfer](https://docs.qonto.com/api-reference/business-api/payments-transfers/sepa-transfers/sepa-bulk-transfers/create.md): OAuth scope: `payment.write`
+- [List SEPA recurring transfers](https://docs.qonto.com/api-reference/business-api/payments-transfers/sepa-transfers/sepa-recurring-transfers/index.md): OAuth scope: `organization.read`
+- [Get SEPA recurring transfer](https://docs.qonto.com/api-reference/business-api/payments-transfers/sepa-transfers/sepa-recurring-transfers/show.md): OAuth scope: `organization.read`
+- [Create a SEPA recurring transfer](https://docs.qonto.com/api-reference/business-api/payments-transfers/sepa-transfers/sepa-recurring-transfers/create.md): OAuth scope: `payment.write`
+- [Cancel SEPA recurring transfer](https://docs.qonto.com/api-reference/business-api/payments-transfers/sepa-transfers/sepa-recurring-transfers/cancel.md): OAuth scope: `payment.write`
+- [List SEPA transfers](https://docs.qonto.com/api-reference/business-api/payments-transfers/sepa-transfers/sepa-transfers/index.md): OAuth scope: `organization.read`
+- [Get SEPA transfer](https://docs.qonto.com/api-reference/business-api/payments-transfers/sepa-transfers/sepa-transfers/show.md): OAuth scope: `organization.read`
+- [Create a SEPA transfer](https://docs.qonto.com/api-reference/business-api/payments-transfers/sepa-transfers/sepa-transfers/create.md): OAuth scope: `payment.write`
+- [Cancel SEPA transfer](https://docs.qonto.com/api-reference/business-api/payments-transfers/sepa-transfers/sepa-transfers/cancel.md): OAuth scope: `payment.write`
+- [Download proof of a SEPA transfer](https://docs.qonto.com/api-reference/business-api/payments-transfers/sepa-transfers/sepa-transfers/download-proof.md): OAuth scope: `payment.write`
+- [Collect payments with SEPA Direct Debit](https://docs.qonto.com/api-reference/business-api/payments-transfers/sepa-direct-debit/introduction.md): Collect payments with SEPA Direct Debit from your customers
+- [List SEPA Direct Debit mandates](https://docs.qonto.com/api-reference/business-api/payments-transfers/sepa-direct-debit/mandates/index.md): OAuth scope: `sepa_direct_debit.read`
+- [Get a SEPA Direct Debit mandate](https://docs.qonto.com/api-reference/business-api/payments-transfers/sepa-direct-debit/mandates/show.md): OAuth scope: `sepa_direct_debit.read`
+- [Create a SEPA Direct Debit mandate](https://docs.qonto.com/api-reference/business-api/payments-transfers/sepa-direct-debit/mandates/create.md): OAuth scope: `sepa_direct_debit.write`
+- [Cancel a SEPA Direct Debit mandate](https://docs.qonto.com/api-reference/business-api/payments-transfers/sepa-direct-debit/mandates/cancel.md): OAuth scope: `sepa_direct_debit.write`
+- [List SEPA Direct Debit subscriptions](https://docs.qonto.com/api-reference/business-api/payments-transfers/sepa-direct-debit/subscriptions/index.md): OAuth scope: `sepa_direct_debit.read`
+- [Get a SEPA Direct Debit subscription](https://docs.qonto.com/api-reference/business-api/payments-transfers/sepa-direct-debit/subscriptions/show.md): OAuth scope: `sepa_direct_debit.read`
+- [Create a SEPA Direct Debit subscription](https://docs.qonto.com/api-reference/business-api/payments-transfers/sepa-direct-debit/subscriptions/create.md): OAuth scope: `sepa_direct_debit.write`
+- [List SEPA Direct Debit collections](https://docs.qonto.com/api-reference/business-api/payments-transfers/sepa-direct-debit/collections/index.md): OAuth scope: `sepa_direct_debit.read`
+- [Get a SEPA Direct Debit collection](https://docs.qonto.com/api-reference/business-api/payments-transfers/sepa-direct-debit/collections/show.md): OAuth scope: `sepa_direct_debit.read`
+- [List transactions](https://docs.qonto.com/api-reference/business-api/transactions-statements/transactions/list-transactions.md): OAuth scope: `organization.read`
+- [Retrieve a transaction](https://docs.qonto.com/api-reference/business-api/transactions-statements/transactions/retrieve-a-transaction.md): OAuth scope: `organization.read`
+- [List child transaction links](https://docs.qonto.com/api-reference/business-api/transactions-statements/transactions/list-child-transaction-links.md): OAuth scope: `organization.read`
+- [Retrieve a statement](https://docs.qonto.com/api-reference/business-api/transactions-statements/statements/retrieve-a-statement.md): OAuth scope: `organization.read`
+- [List statements](https://docs.qonto.com/api-reference/business-api/transactions-statements/statements/list-statements.md): OAuth scope: `organization.read`
+- [Overview](https://docs.qonto.com/api-reference/business-api/webhooks/overview.md): Webhooks let Qonto notify your application in real time when events occur on an account.
+- [Setup](https://docs.qonto.com/api-reference/business-api/webhooks/setup.md): Register your callback URL, verify the signature, and handle retries.
+- [Test with webhook.site](https://docs.qonto.com/api-reference/business-api/webhooks/testing.md): Verify that your webhook subscription is correctly registered and receiving events before plugging in your own endpoint.
+- [Troubleshooting](https://docs.qonto.com/api-reference/business-api/webhooks/troubleshooting.md): Diagnose common webhook delivery, signature and retry issues.
+- [v1/transactions](https://docs.qonto.com/api-reference/business-api/webhooks/supported-webhooks/v1-transactions.md): OAuth scope: `organization.read`
+- [v1/accounts](https://docs.qonto.com/api-reference/business-api/webhooks/supported-webhooks/v1-accounts.md): OAuth scope: `organization.read`
+- [v1/organizations](https://docs.qonto.com/api-reference/business-api/webhooks/supported-webhooks/v1-organizations.md): OAuth scope: `organization.read`
+- [v1/memberships](https://docs.qonto.com/api-reference/business-api/webhooks/supported-webhooks/v1-memberships.md): OAuth scope: `organization.read`
+- [v1/cards](https://docs.qonto.com/api-reference/business-api/webhooks/supported-webhooks/v1-cards.md): OAuth scope: `card.read`
+- [v1/consent-revocations](https://docs.qonto.com/api-reference/business-api/webhooks/supported-webhooks/v1-consent-revocations.md): Webhook that delivers events related to OAuth 2 consent revocations.
+- [v1/payment-links](https://docs.qonto.com/api-reference/business-api/webhooks/supported-webhooks/v1-payment-links.md): OAuth scope: `payment_link.read`
+- [v1/payment-links-connections](https://docs.qonto.com/api-reference/business-api/webhooks/supported-webhooks/v1-payment-links-connections.md): OAuth scope: `payment_link.read`
+- [v1/beneficiaries](https://docs.qonto.com/api-reference/business-api/webhooks/supported-webhooks/v1-beneficiaries.md): OAuth scope: `organization.read`
+- [v1/client-invoices](https://docs.qonto.com/api-reference/business-api/webhooks/supported-webhooks/v1-client-invoices.md): OAuth scope: `client_invoices.read`
+- [v1/sepa-direct-debit-mandates](https://docs.qonto.com/api-reference/business-api/webhooks/supported-webhooks/v1-sepa-direct-debit-mandates.md): OAuth scope: `sepa_direct_debit.read`
+- [v1/sepa-direct-debit-collections](https://docs.qonto.com/api-reference/business-api/webhooks/supported-webhooks/v1-sepa-direct-debit-collections.md): OAuth scope: `sepa_direct_debit.read`
+- [v1/terminal-payments](https://docs.qonto.com/api-reference/business-api/webhooks/supported-webhooks/v1-terminal-payments.md): OAuth scope: `terminal.read`
+- [v1/clients](https://docs.qonto.com/api-reference/business-api/webhooks/supported-webhooks/v1-clients.md): OAuth scope: `organization.read`
+- [v1/products](https://docs.qonto.com/api-reference/business-api/webhooks/supported-webhooks/v1-products.md): OAuth scope: `organization.read`
+- [v1/transfers](https://docs.qonto.com/api-reference/business-api/webhooks/supported-webhooks/v1-transfers.md): OAuth scope: `organization.read`
+- [v1/recurring-transfers](https://docs.qonto.com/api-reference/business-api/webhooks/supported-webhooks/v1-recurring-transfers.md): OAuth scope: `organization.read`
+- [Create a new webhook subscription](https://docs.qonto.com/api-reference/business-api/webhooks/create-a-webhook-subscription.md): OAuth scopes: `webhook` + the scope(s) required for the webhook(s) you want to receive (cf. [Supported webhooks](/api-reference/business-api/webhooks/supported-webhooks)). > Example: if you want to receive a webhook every time a transaction is created or updated, you need the `organization.read` sco…
+- [Delete a webhook subscription](https://docs.qonto.com/api-reference/business-api/webhooks/delete-a-webhook-subscription.md): OAuth scope: `webhook`
+- [Get a webhook subscription](https://docs.qonto.com/api-reference/business-api/webhooks/get-a-webhook-subscription.md): OAuth scope: `webhook`
+- [List webhook subscriptions](https://docs.qonto.com/api-reference/business-api/webhooks/list-webhook-subscriptions.md): OAuth scope: `webhook`
+- [Update a webhook subscription](https://docs.qonto.com/api-reference/business-api/webhooks/update-a-webhook-subscription.md): OAuth scope: `webhook`
+- [Proxy API requests from the Embed SDK](https://docs.qonto.com/api-reference/business-api/endpoints/encoded-requests/introduction.md): Learn how to proxy API requests sent by our Embed SDK.
+- [Dispatch an encoded request](https://docs.qonto.com/api-reference/business-api/endpoints/encoded-requests/dispatch.md): Allows you to dispatch an encoded request.
+- [Authenticate your end customers to Hosted Pages](https://docs.qonto.com/api-reference/business-api/endpoints/embed-auth-links/introduction.md): Learn how to authenticate your end customers to Hosted Pages.
+- [Create an Embed Auth Link](https://docs.qonto.com/api-reference/business-api/endpoints/embed-auth-links/create.md): OAuth scope: `embed_auth_link.write`
+- [List company creation registrations](https://docs.qonto.com/api-reference/onboarding-api/endpoints/registrations/list-company-creation-registrations.md): Retrieves all the company creation registrations for the authenticated partner.
+- [Create a registration](https://docs.qonto.com/api-reference/onboarding-api/endpoints/registrations/create-a-registration.md): Creates a single registration for the authenticated partner i.e. triggers a workflow to guide the user through the necessary steps to register its organization with Qonto. The response provides a registration ID for tracking the registration progress.
+- [Retrieve a registration](https://docs.qonto.com/api-reference/onboarding-api/endpoints/registrations/retrieve-a-registration.md): Retrieves the registration identified by the `id` path parameter.
+- [Send the redirection link to the owner](https://docs.qonto.com/api-reference/onboarding-api/endpoints/registrations/send-the-redirection-link-to-the-owner.md): Sends the unique redirection link to the owner associated to the registration identified by the `id` path parameter.
+- [File uploads](https://docs.qonto.com/api-reference/onboarding-api/endpoints/files/file-uploads.md)
+- [List files](https://docs.qonto.com/api-reference/onboarding-api/endpoints/files/list-files.md): Returns all the files for the authenticated partner. <Warning>   Supported only for registrations in company creation flow (`legal_flow` = `company_creation`). </Warning>
+- [Create a file](https://docs.qonto.com/api-reference/onboarding-api/endpoints/files/create-a-file.md): Creates a single file for the authenticated partner. For details on file upload restrictions and limitations, please refer to the [File Uploads documentation](https://docs.qonto.com/api-reference/onboarding-api/endpoints/files/file-uploads#file-uploads). <Warning>   Supported only for registrations…
+- [Retrieve a file](https://docs.qonto.com/api-reference/onboarding-api/endpoints/files/retrieve-a-file.md): Retrieves the file identified by the `id` path parameter for the registration identified by the `registrationId` path parameter.
+- [Delete a file](https://docs.qonto.com/api-reference/onboarding-api/endpoints/files/delete-a-file.md): Deletes the file identified by the `id` path parameter for the registration identified by the `registrationId` path parameter.
+- [Download a file](https://docs.qonto.com/api-reference/onboarding-api/endpoints/files/download-a-file.md): Downloads the file identified by the `id` path parameter for the registration identified by the `registrationId` path parameter.
+- [Record a partner event](https://docs.qonto.com/api-reference/onboarding-api/endpoints/partner-events/record-a-partner-event.md): Records an incorporation milestone reported by an authorized partner. This endpoint is currently available to ITAdvisors only. The `event` value must be one of the events listed below for ITAdvisors. Provide `organization_id`, `registration_id`, or both. When both are provided, they must identify th…
+- [Setup and supported events](https://docs.qonto.com/api-reference/onboarding-api/webhooks/webhooks.md): To be notified of events happening during the onboarding flow, you can subscribe to webhooks.
+- [List events](https://docs.qonto.com/api-reference/onboarding-api/webhooks/list-events.md): Retrieves all the events.
+- [List webhook endpoints](https://docs.qonto.com/api-reference/onboarding-api/webhooks/list-webhook-endpoints.md): Retrieves all the webhook endpoints registered for the authenticated partner.
+- [Register a webhook endpoint](https://docs.qonto.com/api-reference/onboarding-api/webhooks/register-a-webhook-endpoint.md): Registers a single webhook endpoint on which you'll receive [all supported events](/api-reference/onboarding-api/webhooks#supported-events) (you cannot choose the events you are subscribing to).
+- [Retrieve a webhook endpoint](https://docs.qonto.com/api-reference/onboarding-api/webhooks/retrieve-a-webhook-endpoint.md): Retrieves the webhook endpoint identified by the `id` path parameter.
+- [Update a webhook endpoint](https://docs.qonto.com/api-reference/onboarding-api/webhooks/update-a-webhook-endpoint.md): Updates the webhook endpoint identified by the `id` path parameter.
+- [Trigger a webhook event](https://docs.qonto.com/api-reference/onboarding-api/webhooks/trigger-a-webhook-event.md): Triggers a single webhook event.
+- [Overview](https://docs.qonto.com/api-reference/sdk-libraries/doc-pages/overview.md): Integrate Qonto banking features into your web application with less effort
+- [Getting started](https://docs.qonto.com/api-reference/sdk-libraries/doc-pages/getting-started.md)
+- [Common Namespace Overview](https://docs.qonto.com/api-reference/sdk-libraries/doc-pages/overview-common.md): A namespace that exposes common  SDK lifecycle methods and helpful constants.
+- [Initialize](https://docs.qonto.com/api-reference/sdk-libraries/variables/initialize.md)
+- [Constants](https://docs.qonto.com/api-reference/sdk-libraries/doc-pages/constants.md)
+- [Cards](https://docs.qonto.com/api-reference/sdk-libraries/variables/cards.md)
+- [Beneficiaries](https://docs.qonto.com/api-reference/sdk-libraries/variables/beneficiaries.md)
+- [SepaTransfers](https://docs.qonto.com/api-reference/sdk-libraries/variables/sepaTransfers.md)
+- [Transactions](https://docs.qonto.com/api-reference/sdk-libraries/variables/transactions.md)
+- [PaymentLinks](https://docs.qonto.com/api-reference/sdk-libraries/variables/paymentLinks.md)
+- [Organizations](https://docs.qonto.com/api-reference/sdk-libraries/variables/organizations.md)
+- [Ui](https://docs.qonto.com/api-reference/sdk-libraries/variables/ui.md)
+- [UI Elements Overview](https://docs.qonto.com/api-reference/sdk-libraries/doc-pages/overview-customizable-components.md)
+- [Display Card](https://docs.qonto.com/api-reference/sdk-libraries/doc-pages/ui-elements/display-card.md)
+- [Transaction List](https://docs.qonto.com/api-reference/sdk-libraries/doc-pages/ui-elements/transaction-list.md)
+- [Transfer List](https://docs.qonto.com/api-reference/sdk-libraries/doc-pages/ui-elements/transfer-list.md)
+- [SEPA Transfer Creation](https://docs.qonto.com/api-reference/sdk-libraries/doc-pages/ui-elements/sepa-transfer-creation.md)
+- [Brand Customization Overview](https://docs.qonto.com/api-reference/sdk-libraries/doc-pages/customizable-components/customizable-components-overview.md)
+- [Global Customizations](https://docs.qonto.com/api-reference/sdk-libraries/doc-pages/customizable-components/global-customizations.md)
+- [Amount Field](https://docs.qonto.com/api-reference/sdk-libraries/doc-pages/customizable-components/amount-field.md)
+- [Status Badge](https://docs.qonto.com/api-reference/sdk-libraries/doc-pages/customizable-components/badge-status.md)
+- [Beneficiary Card](https://docs.qonto.com/api-reference/sdk-libraries/doc-pages/customizable-components/beneficiary-card.md)
+- [Button](https://docs.qonto.com/api-reference/sdk-libraries/doc-pages/customizable-components/button.md)
+- [Lottie Player](https://docs.qonto.com/api-reference/sdk-libraries/doc-pages/customizable-components/lottie-player.md)
+- [Select Field](https://docs.qonto.com/api-reference/sdk-libraries/doc-pages/customizable-components/select-field.md)
+- [Skeleton Loader](https://docs.qonto.com/api-reference/sdk-libraries/doc-pages/customizable-components/skeleton-loader.md)
+- [Table](https://docs.qonto.com/api-reference/sdk-libraries/doc-pages/customizable-components/table.md)
+- [Text - Headings](https://docs.qonto.com/api-reference/sdk-libraries/doc-pages/customizable-components/text-headings.md)
+- [Text Body](https://docs.qonto.com/api-reference/sdk-libraries/doc-pages/customizable-components/text-body.md)
+- [Text Field](https://docs.qonto.com/api-reference/sdk-libraries/doc-pages/customizable-components/text-field.md)
+- [Address](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/interfaces/Address.md)
+- [Amount](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/interfaces/Amount.md)
+- [BankAccount](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/interfaces/BankAccount.md)
+- [BulkTransfer](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/interfaces/BulkTransfer.md)
+- [BulkTransferResult](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/interfaces/BulkTransferResult.md)
+- [BulkTransferResultError](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/interfaces/BulkTransferResultError.md)
+- [BulkTransferResultErrorDetail](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/interfaces/BulkTransferResultErrorDetail.md)
+- [BulkTransferSettings](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/interfaces/BulkTransferSettings.md)
+- [Card](https://docs.qonto.com/api-reference/sdk-libraries/interfaces/Card.md)
+- [CancelSepaTransferParams](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/interfaces/CancelSepaTransferParams.md)
+- [CreatePaymentLinkSettings](https://docs.qonto.com/api-reference/sdk-libraries/interfaces/CreatePaymentLinkSettings.md)
+- [DisplayCardReturnObject](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/interfaces/DisplayCardReturnObject.md)
+- [DisplayCardSettings](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/interfaces/DisplayCardSettings.md)
+- [GetBeneficiariesResponse](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/interfaces/GetBeneficiariesResponse.md)
+- [GetBulkTransfer](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/interfaces/GetBulkTransfer.md)
+- [GetBulkTransfersResponse](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/interfaces/GetBulkTransfersResponse.md)
+- [GetSepaTransfer](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/interfaces/GetSepaTransfer.md)
+- [GetSepaTransfersResponse](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/interfaces/GetSepaTransfersResponse.md)
+- [InitializeParams](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/interfaces/InitializeParams.md)
+- [NewBulkTransfer](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/interfaces/NewBulkTransfer.md)
+- [NewSepaTransfer](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/interfaces/NewSepaTransfer.md)
+- [OperationSettings](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/interfaces/OperationSettings.md)
+- [PaginationSettings](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/interfaces/PaginationSettings.md)
+- [PaginationState](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/interfaces/PaginationState.md)
+- [PaymentLinkParams](https://docs.qonto.com/api-reference/sdk-libraries/interfaces/PaymentLinkParams.md)
+- [PhysicalCardOrderSettings](https://docs.qonto.com/api-reference/sdk-libraries/interfaces/PhysicalCardOrderSettings.md)
+- [UnlockCardSettings](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/interfaces/UnlockCardSettings.md)
+- [Transaction](https://docs.qonto.com/api-reference/sdk-libraries/interfaces/Transaction.md)
+- [VirtualCardOrderSettings](https://docs.qonto.com/api-reference/sdk-libraries/interfaces/VirtualCardOrderSettings.md)
+- [Proxy endpoint implementation](https://docs.qonto.com/api-reference/sdk-libraries/doc-pages/proxy-endpoint-implementation.md)
+- [Customizing ui elements](https://docs.qonto.com/api-reference/sdk-libraries/doc-pages/customizing-ui-elements.md)
+- [Help Center](https://docs.qonto.com/faq-articles/faq-home.md): Welcome to the Qonto Developer Help Center!  Here you’ll find answers to common questions about our API and Developer Portal, along with practical guides and troubleshooting tips to support your integration journey.
+- [Support portal](https://docs.qonto.com/faq-articles/support-portal.md)
+- [Security measures](https://docs.qonto.com/security-and-compliance/security-measures.md): Qonto SA operates the Qonto application along with its supporting infrastructure which allows professional clients to open a payment account and execute payment transactions.
+- [API performance](https://docs.qonto.com/security-and-compliance/api-performance.md)
+- [API License Agreement](https://docs.qonto.com/security-and-compliance/api-license-agreement.md)
+- [AGENTS](https://docs.qonto.com/AGENTS.md)
+- [Context for AI Assistant](https://docs.qonto.com/ai-instructions.md): This page is context for AI tools responding to questions
+- [CardStatus](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/enumerations/CardStatus.md)
+- [AuthLinkClientParams](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/interfaces/AuthLinkClientParams.md)
+- [BeneficiaryClientParams](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/interfaces/BeneficiaryClientParams.md)
+- [BeneficiaryClientParamsWithUI](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/interfaces/BeneficiaryClientParamsWithUI.md)
+- [BulkTransferClientParams](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/interfaces/BulkTransferClientParams.md)
+- [CardClientParams](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/interfaces/CardClientParams.md)
+- [CardClientParamsWithUI](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/interfaces/CardClientParamsWithUI.md)
+- [ClientOperationSettings](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/interfaces/ClientOperationSettings.md)
+- [CreateBulkTransferClientParams](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/interfaces/CreateBulkTransferClientParams.md)
+- [CreateBulkTransferResponse](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/interfaces/CreateBulkTransferResponse.md)
+- [CreateSepaTransferResponse](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/interfaces/CreateSepaTransferResponse.md)
+- [GetTransactionSettings](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/interfaces/GetTransactionSettings.md)
+- [GetTransactionsResponse](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/interfaces/GetTransactionsResponse.md)
+- [GetTransactionsSettings](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/interfaces/GetTransactionsSettings.md)
+- [Membership](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/interfaces/Membership.md)
+- [Organization](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/interfaces/Organization.md)
+- [ProxyEndpointDescriptor](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/interfaces/ProxyEndpointDescriptor.md)
+- [SepaTransferClientParams](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/interfaces/SepaTransferClientParams.md)
+- [SingleBulkVopVerificationResult](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/interfaces/SingleBulkVopVerificationResult.md)
+- [TransactionParams](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/interfaces/TransactionParams.md)
+- [UIElementEvent](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/interfaces/UIElementEvent.md)
+- [UIElementParams](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/interfaces/UIElementParams.md)
+- [UIElementSettings](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/interfaces/UIElementSettings.md)
+- [VopVerificationResult](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/interfaces/VopVerificationResult.md)
+- [README](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/namespaces/src/common/constants/README.md)
+- [ACTIONS](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/namespaces/src/common/constants/variables/ACTIONS.md)
+- [ACTIVITY TAGS](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/namespaces/src/common/constants/variables/ACTIVITY_TAGS.md)
+- [AMOUNT REQUIRING ATTACHMENTS](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/namespaces/src/common/constants/variables/AMOUNT_REQUIRING_ATTACHMENTS.md)
+- [AUTH LINK ACTIONS](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/namespaces/src/common/constants/variables/AUTH_LINK_ACTIONS.md)
+- [BENEFICIARY STATUSES](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/namespaces/src/common/constants/variables/BENEFICIARY_STATUSES.md)
+- [BRANCHES](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/namespaces/src/common/constants/variables/BRANCHES.md)
+- [ENVIRONMENTS](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/namespaces/src/common/constants/variables/ENVIRONMENTS.md)
+- [HTTP CODES](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/namespaces/src/common/constants/variables/HTTP_CODES.md)
+- [IFRAME EVENTS](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/namespaces/src/common/constants/variables/IFRAME_EVENTS.md)
+- [LOCALES](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/namespaces/src/common/constants/variables/LOCALES.md)
+- [MFA METHODS](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/namespaces/src/common/constants/variables/MFA_METHODS.md)
+- [TRANSACTION STATUSES](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/namespaces/src/common/constants/variables/TRANSACTION_STATUSES.md)
+- [TRANSFER DECLINE REASONS](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/namespaces/src/common/constants/variables/TRANSFER_DECLINE_REASONS.md)
+- [TRANSFER STATUSES](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/namespaces/src/common/constants/variables/TRANSFER_STATUSES.md)
+- [VOP CHECK RESULTS](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/namespaces/src/common/constants/variables/VOP_CHECK_RESULTS.md)
+- [VOP DECISIONS](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/namespaces/src/common/constants/variables/VOP_DECISIONS.md)
+- [README](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/README.md)
+- [BeneficiaryInformationForVop](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/type-aliases/BeneficiaryInformationForVop.md)
+- [CardDesign](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/type-aliases/CardDesign.md)
+- [CardType](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/type-aliases/CardType.md)
+- [ClientOperationSettingsWithUI](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/type-aliases/ClientOperationSettingsWithUI.md)
+- [EditableBeneficiaryProperties](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/type-aliases/EditableBeneficiaryProperties.md)
+- [NewBeneficiary](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/type-aliases/NewBeneficiary.md)
+- [NewBulkTransferWithBeneficiary](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/type-aliases/NewBulkTransferWithBeneficiary.md)
+- [SepaTransferCreationFlowRequest](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/type-aliases/SepaTransferCreationFlowRequest.md)
+- [TypeOfPrint](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/type-aliases/TypeOfPrint.md)
+- [UIParentElementId](https://docs.qonto.com/api-reference/sdk-libraries/-internal-/type-aliases/UIParentElementId.md)
+- [AuthLinkRequestParams](https://docs.qonto.com/api-reference/sdk-libraries/interfaces/AuthLinkRequestParams.md)
+- [AuthLinkRequestResult](https://docs.qonto.com/api-reference/sdk-libraries/interfaces/AuthLinkRequestResult.md)
+- [AuthLinkRequestSettings](https://docs.qonto.com/api-reference/sdk-libraries/interfaces/AuthLinkRequestSettings.md)
+- [Beneficiary](https://docs.qonto.com/api-reference/sdk-libraries/interfaces/Beneficiary.md)
+- [Item](https://docs.qonto.com/api-reference/sdk-libraries/interfaces/Item.md)
+- [SepaTransfer](https://docs.qonto.com/api-reference/sdk-libraries/interfaces/SepaTransfer.md)
+- [README](https://docs.qonto.com/api-reference/sdk-libraries/README.md)
+- [CardOrderSettings](https://docs.qonto.com/api-reference/sdk-libraries/type-aliases/CardOrderSettings.md)
+- [PostAuthAction](https://docs.qonto.com/api-reference/sdk-libraries/type-aliases/PostAuthAction.md)
+- [AuthLinks](https://docs.qonto.com/api-reference/sdk-libraries/variables/authLinks.md)
+- [Constants](https://docs.qonto.com/api-reference/sdk-libraries/variables/constants.md)
+- [Logout](https://docs.qonto.com/api-reference/sdk-libraries/variables/logout.md)
+- [API Usage & Best Practices](https://docs.qonto.com/faq-articles/api-questions/api-questions-api-usage.md)
+- [API Keys & Authentication](https://docs.qonto.com/faq-articles/api-questions/api-questions-keys.md)
+- [PSD2 License](https://docs.qonto.com/faq-articles/api-questions/api-questions-psd2.md)
+- [API Endpoints & Reference](https://docs.qonto.com/faq-articles/api-questions/api-questions-reference.md)
+- [Troubleshooting & Error Codes](https://docs.qonto.com/faq-articles/api-questions/api-questions-troubleshooting.md)
+- [API Questions](https://docs.qonto.com/faq-articles/api-questions/api-questionsHome.md): Quick answers and tips for using Qonto’s API.
+- [Account & APIs Access Management](https://docs.qonto.com/faq-articles/dev-portal-questions/dev-portal-account.md)
+- [ API credentials Management](https://docs.qonto.com/faq-articles/dev-portal-questions/dev-portal-credentials.md)
+- [Migration & Updates](https://docs.qonto.com/faq-articles/dev-portal-questions/dev-portal-migration.md)
+- [Portal Navigation & Usage](https://docs.qonto.com/faq-articles/dev-portal-questions/dev-portal-navigation.md)
+- [Developer Portal Questions](https://docs.qonto.com/faq-articles/dev-portal-questions/dev-portal-questionsHome.md): Quick answers and tips for using Qonto’s Developer Portal Questions.
+- [Guidelines](https://docs.qonto.com/faq-articles/guidelines.md)
+- [Business automation](https://docs.qonto.com/qonto-embed/use-cases/business-automation.md): Description of your new file.
+
+## OpenAPI Specs
+
+- [openapi](/api-reference/business-api/openapi.yml)
+- [onboarding_api](/api-reference/onboarding-api/onboarding_api.yml)
