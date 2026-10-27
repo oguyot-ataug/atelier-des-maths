@@ -1,15 +1,9 @@
 {
  "_": "Documentations externes à lire (non joignables depuis l'environnement de travail) : téléchargées par le workflow « Docs externes » sur une branche de travail, dans tools/docs-externes/out/ (à supprimer avant main).",
- "qonto-llms.txt": "https://docs.qonto.com/llms.txt",
- "qonto-einvoicing.md": "https://docs.qonto.com/get-started/business-api/e-invoicing-standards.md",
- "qonto-create-client-invoice.md": "https://docs.qonto.com/api-reference/business-api/expense-management/client-quotes-notes/client-invoices/create-a-client-invoice.md",
- "qonto-factur-x.md": "https://docs.qonto.com/get-started/business-api/use-cases/generate-factur-x-invoice.md",
- "qonto-api-key.md": "https://docs.qonto.com/get-started/business-api/authentication/api-key.md",
- "qonto-create-client.md": "https://docs.qonto.com/api-reference/business-api/clients/create-a-client.md",
- "qonto-list-clients.md": "https://docs.qonto.com/api-reference/business-api/clients/list-clients.md",
- "qonto-retrieve-client-invoice.md": "https://docs.qonto.com/api-reference/business-api/expense-management/client-quotes-notes/client-invoices/retrieve-a-client-invoice.md",
- "qonto-send-einvoice.md": "https://docs.qonto.com/api-reference/business-api/expense-management/client-quotes-notes/client-invoices/send-a-client-invoice-by-e-invoice.md",
- "qonto-einvoicing-settings.md": "https://docs.qonto.com/api-reference/business-api/expense-management/e-invoicing/retrieve-settings.md",
- "qonto-pa-as-a-service.md": "https://docs.qonto.com/qonto-embed/plateforme-agreee-as-a-service.md",
- "qonto-create-credit-note.md": "https://docs.qonto.com/api-reference/business-api/expense-management/client-quotes-notes/credit-notes/create-a-credit-note.md"
+ "bo41-sommaire.html": "https://www.education.gouv.fr/bo/2024/Hebdo41/",
+ "eduscol-maths-cycle2.html": "https://eduscol.education.fr/177/mathematiques-cycle-2",
+ "eduscol-enseigner-cycle2.html": "https://eduscol.education.gouv.fr/4347/enseigner-au-cycle-2",
+ "toulouse-synthese-c2.pdf": "https://pedagogie.ac-toulouse.fr/prim46/system/files/2025-01/Synth%C3%A8se%20Programmes%20math%C3%A9matiques%20cycle%202.pdf",
+ "publimath-men24001.html": "https://publimath.fr/men24001/",
+ "dpernoux-c1c2.html": "https://www.dpernoux.net/2024/10/nouveaux-programmes-de-francais-et-mathematiques-pour-les-cycles-1-et-2-applicables-a-la-rentree-2015-bo-du-31-octobre-2024.html"
 }
