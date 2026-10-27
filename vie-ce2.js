@@ -300,7 +300,12 @@ function vcPliageMonter(el){
 /* =====================================================================
    6. Les courses avec 20 € : choisir, additionner, ce qui reste
    ===================================================================== */
-const VC_RAYON = [['une baguette', '🥖', 95], ['des pommes', '🍎', 245], ['un jus de fruits', '🧃', 180], ['un paquet de gâteaux', '🍪', 215], ['du fromage', '🧀', 360], ['des yaourts', '🥛', 160], ['une bande dessinée', '📖', 1150], ['un ballon', '⚽', 790], ['des crayons', '🖍️', 425], ['un cahier', '📓', 230], ['du chocolat', '🍫', 185], ['des bananes', '🍌', 210]];
+// [nom, dessin, prix en centimes, rayon : 'manger' | 'boire' | 'autre'] -- signalé : « Il n'y a rien à boire » pour le
+// goûter ; chaque article a maintenant son rayon, et il y a toujours des boissons.
+const VC_RAYON = [['une baguette', '🥖', 95, 'manger'], ['des pommes', '🍎', 245, 'manger'], ['un paquet de gâteaux', '🍪', 215, 'manger'], ['du fromage', '🧀', 360, 'manger'],
+  ['des yaourts', '🍶', 160, 'manger'], ['du chocolat', '🍫', 185, 'manger'], ['des bananes', '🍌', 210, 'manger'],
+  ['un jus de fruits', '🧃', 180, 'boire'], ['une bouteille de lait', '🥛', 125, 'boire'], ['une bouteille d\'eau', '💧', 70, 'boire'], ['du sirop de grenadine', '🍹', 265, 'boire'],
+  ['une bande dessinée', '📖', 1150, 'autre'], ['un ballon', '⚽', 790, 'autre'], ['des crayons', '🖍️', 425, 'autre'], ['un cahier', '📓', 230, 'autre']];
 const vcEu = c => `${Math.floor(c / 100)},${String(c % 100).padStart(2, '0')} €`;
 const vcLireEu = s => { const v = String(s || '').replace(/\s|€/g, '').replace('.', ','); const m = v.match(/^(\d+)(?:,(\d{1,2}))?$/); return m ? +m[1] * 100 + (m[2] ? +(m[2].padEnd(2, '0')) : 0) : NaN; };
 function vcCoursesMonter(el){
@@ -329,7 +334,9 @@ function vcCoursesMonter(el){
       else vcDire(el, vcBravo(`Mission réussie ! Tu dépenses ${vcEu(tot)} et il te reste ${vcEu(2000 - tot)}.`), 'ok'); };
   }
   const MISSIONS = [
-    { texte: 'achète de quoi faire un <b>goûter pour 4 amis</b> : au moins 3 articles à manger ou à boire.', ok: l => l.filter(a => !['📖', '⚽', '🖍️', '📓'].includes(a[1])).length >= 3 || 'Il faut au moins 3 articles à manger ou à boire pour le goûter.' },
+    { texte: 'achète de quoi faire un <b>goûter pour 4 amis</b> : au moins 2 choses à manger et 1 chose à boire.', ok: l => {
+      const m = l.filter(a => a[3] === 'manger').length, b = l.filter(a => a[3] === 'boire').length;
+      return m >= 2 && b >= 1 ? true : m < 2 ? 'Il faut au moins 2 choses à manger pour le goûter.' : 'Il manque quelque chose à boire pour le goûter !'; } },
     { texte: 'achète <b>exactement 4 articles différents</b>.', ok: l => l.length === 4 || `Ton panier a ${l.length} article${l.length > 1 ? 's' : ''} : il en faut exactement 4.` },
     { texte: 'achète <b>une bande dessinée</b> et d\'autres choses, sans dépasser 20 €.', ok: l => l.some(a => a[1] === '📖') || 'N\'oublie pas la bande dessinée !' },
     { texte: 'remplis ton panier pour qu\'il te reste <b>moins de 5 €</b>.', ok: l => 2000 - l.reduce((s, a) => s + a[2], 0) < 500 || 'Il te reste trop d\'argent : il doit rester moins de 5 €.' },
@@ -337,8 +344,11 @@ function vcCoursesMonter(el){
   // La mission doit être possible avec les 8 articles du rayon : on essaie tous les paniers (256 au plus).
   const possible = (rayon, m) => { for(let k = 1; k < 1 << rayon.length; k++){ const l = rayon.filter((a, i) => k & (1 << i)); if(l.reduce((s, a) => s + a[2], 0) <= 2000 && m.ok(l) === true) return true; } return false; };
   function nouveau(){
-    do { st.rayon = vcMelange(VC_RAYON).slice(0, 8); st.mission = MISSIONS[vcHasard(0, MISSIONS.length - 1)];
-      if(st.mission.texte.includes('bande dessinée') && !st.rayon.some(a => a[1] === '📖')) st.rayon[0] = VC_RAYON.find(a => a[1] === '📖');
+    // Rayon de 8 articles : au moins 2 boissons, 3 choses à manger et 1 autre article.
+    const tire = (r, n) => vcMelange(VC_RAYON.filter(a => a[3] === r)).slice(0, n);
+    do { const base = [...tire('boire', 2), ...tire('manger', 3), ...tire('autre', 1)], reste = vcMelange(VC_RAYON.filter(a => !base.includes(a))).slice(0, 2);
+      st.rayon = vcMelange(base.concat(reste)); st.mission = MISSIONS[vcHasard(0, MISSIONS.length - 1)];
+      if(st.mission.texte.includes('bande dessinée') && !st.rayon.some(a => a[1] === '📖')) st.rayon[st.rayon.findIndex(a => a[3] === 'autre')] = VC_RAYON.find(a => a[1] === '📖');
     } while(!possible(st.rayon, st.mission));
     st.panier = []; rendre(); vcDire(el, ''); }
   el.querySelector('[data-a="nouveau"]').onclick = nouveau;
