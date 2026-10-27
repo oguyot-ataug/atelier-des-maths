@@ -1,0 +1,27 @@
+/* CE1 · Planches : Tables de multiplication de 3 et 4 (N12). */
+(() => {
+const B = P3.B, R = P3.R;
+const table = (t, trous) => ({ eleve: cm1Tableau(['×', ...Array.from({ length: 10 }, (_, i) => String(i + 1))], [[`<b>${t}</b>`, ...Array.from({ length: 10 }, (_, i) => trous.includes(i + 1) ? '' : String((i + 1) * t))]]),
+  corr: cm1Tableau(['×', ...Array.from({ length: 10 }, (_, i) => String(i + 1))], [[`<b>${t}</b>`, ...Array.from({ length: 10 }, (_, i) => trous.includes(i + 1) ? `<b style="color:#2E9C6A;">${(i + 1) * t}</b>` : String((i + 1) * t))]]) });
+PLANCHES['ce1|Tables de multiplication de 3 et 4'] = [
+  { titre: 'La table de 3', duree: '20 min',
+    attendus: ['Construire et connaître la table de 3'],
+    exos: [
+      { etoiles: 1, consigne: 'Complète la table de 3.', ...table(3, [3, 4, 6, 7, 9]) },
+      { etoiles: 2, col: 1, consigne: 'Calcule.', ...P3.rmp([['3 × 7 = @', 21], ['3 × 9 = @', 27], ['6 × 3 = @', 18], ['3 × @ = 24', 8]], 2) },
+    ] },
+  { titre: 'La table de 4', duree: '20 min',
+    attendus: ['Construire et connaître la table de 4 (le double du double)'],
+    exos: [
+      { etoiles: 1, consigne: 'Complète la table de 4.', ...table(4, [3, 6, 7, 8, 9]) },
+      { etoiles: 2, col: 1, consigne: 'Calcule.', ...P3.rmp([['4 × 6 = @', 24], ['4 × 9 = @', 36], ['7 × 4 = @', 28], ['4 × @ = 32', 8]], 2) },
+    ] },
+  { titre: 'Problèmes', duree: '20 min',
+    attendus: ['Résoudre des problèmes avec les tables de 3 et 4'],
+    exos: [
+      { etoiles: 1, cahier: true, consigne: 'Un trèfle a 3 feuilles. Combien de feuilles ont 8 trèfles ?', corr: cm1Redac('Feuilles', '8 × 3 = 24', '8 trèfles ont 24 feuilles.') },
+      { etoiles: 2, cahier: true, consigne: 'Une place de cinéma coûte 4 €. Combien coûtent 7 places ?', corr: cm1Redac('Prix des places', '7 × 4 = 28', '7 places coûtent 28 €.') },
+      { etoiles: 3, cahier: true, consigne: 'On range 36 œufs dans des boîtes de 4. Combien de boîtes ?', corr: cm1Redac('Boîtes', '9 × 4 = 36', 'Il faut 9 boîtes.') },
+    ] },
+];
+})();
