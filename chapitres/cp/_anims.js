@@ -601,3 +601,136 @@ function cpAnimPayer(id, o){
       return { scene: `<svg viewBox="0 0 500 195" class="cma-svg" style="max-width:520px;">${s}</svg>`, texte };
     } });
 }
+
+/* ================= Période 3 ================= */
+/* ---- Les nombres de 60 à 99 : le mot ne dit pas toujours les dizaines ! (soixante-quatorze = 60 + 14) ---- */
+function cpAnimMot(id, o){
+  const P = (o && o.presets) || [70, 74, 80, 85, 90, 97].map(n => ({ nom: String(n), n }));
+  return cmAnim(id, {
+    etat: { p: 0 }, duree: 8000, legende: (o && o.legende) || 'On écoute le mot, on le découpe, puis on range les cubes en barres de dix.',
+    controles: a => ce2Choix(id, P, a),
+    dessin: (t, a) => {
+      const n = P[a.etat.p].n, mot = cpMot(n), q = 11;
+      // Le découpage du mot : ce que l'on entend.
+      const parts = n < 80 ? [60, n - 60] : [80, n - 80], mots = parts.map(v => v ? cpMot(v) : '');
+      let s = ce2T(250, 34, mot, { t: 26, g: 700, c: CE2C.violet });
+      const k1 = t > .15, k2 = cmDoux(cmPhase(t, .5, .75));
+      if(k1){ s += ce2T(150, 72, mots[0], { t: 17, g: 700, c: CE2C.vert }) + (parts[1] ? ce2T(350, 72, mots[1], { t: 17, g: 700, c: CPC.jeton2 }) + ce2T(250, 72, '+', { t: 20, g: 700 }) : '');
+        s += ce2T(150, 96, parts[0], { t: 15, c: CE2C.vert }) + (parts[1] ? ce2T(350, 96, parts[1], { t: 15, c: CPC.jeton2 }) : ''); }
+      if(t > .3){ // les cubes : les dizaines de la première partie, puis la deuxième partie (barres et cubes seuls)
+        const d0 = parts[0] / 10, d1 = Math.floor(parts[1] / 10), u = parts[1] % 10, X = 250 - cpBarresL(n, q) / 2;
+        for(let b = 0; b < d0 + d1; b++){ const xa = b < d0 ? 150 - d0 * (q + 6) / 2 + b * (q + 6) : 330 + (b - d0) * (q + 6), xb = X + b * (q + 6), x = xa + (xb - xa) * k2;
+          for(let i = 0; i < 10; i++) s += `<rect x="${x}" y="${110 + i * q}" width="${q}" height="${q}" fill="${b < d0 ? CE2C.vert : '#7FCBA6'}" stroke="#14583A" stroke-width="1"/>`; }
+        for(let j = 0; j < u; j++){ const xa = 330 + d1 * (q + 6) + 8 + Math.floor(j / 5) * (q + 3), xb = X + (d0 + d1) * (q + 6) + 8 + Math.floor(j / 5) * (q + 3), x = xa + (xb - xa) * k2;
+          s += `<rect x="${x}" y="${110 + 10 * q - (j % 5 + 1) * (q + 2)}" width="${q}" height="${q}" fill="${CPC.jeton2}" stroke="${CPC.bord}" stroke-width="1"/>`; }
+      }
+      const d = Math.floor(n / 10), u = n % 10;
+      const texte = t < .15 ? `Écoutez : « <b>${mot}</b> ».`
+        : t < .5 ? `On entend <b>${mots[0]}</b>${parts[1] ? ` et <b>${mots[1]}</b> : ${parts[0]} + ${parts[1]}` : ''}.`
+        : t < .8 ? 'On met toutes les barres de dix ensemble…'
+        : `<b>${n}</b>, c'est <b>${d} dizaines</b>${u ? ` et <b>${u} unité${u > 1 ? 's' : ''}</b>` : ''} : ${d * 10}${u ? ' + ' + u : ''}.`;
+      return { scene: `<svg viewBox="0 0 500 236" class="cma-svg" style="max-width:520px;">${s}</svg>`, texte };
+    } });
+}
+
+/* ---- Le tableau des nombres : avancer de 1 (vers la droite) ou de 10 (vers le bas) ---- */
+function cpAnimTableau(id, o){
+  const P = o.presets;
+  return cmAnim(id, {
+    etat: { p: 0 }, duree: a => 2500 + P[a.etat.p].sauts.length * 1300,
+    legende: o.legende || 'Dans le tableau, descendre d\'une ligne, c\'est ajouter 10 ; monter d\'une ligne, c\'est enlever 10.',
+    controles: a => ce2Choix(id, P, a),
+    dessin: (t, a) => {
+      const p = P[a.etat.p], c = 34, pos = v => [3 + (v % 10) * c + c / 2, 3 + Math.floor(v / 10) * c + c / 2];
+      const L = [p.de]; p.sauts.forEach(d => L.push(L[L.length - 1] + d));
+      const n = p.sauts.length, f = cmPhase(t, .15, .85) * n, i = Math.min(n, Math.floor(f));
+      let s = '';
+      for(let v = 0; v < 100; v++){ const [x, y] = pos(v), on = L.slice(0, i + 1).includes(v), fin = t > .86 && v === L[n];
+        s += `<rect x="${x - c / 2}" y="${y - c / 2}" width="${c}" height="${c}" fill="${fin ? '#FDE3D2' : v === p.de ? '#E3F3FA' : on ? '#F3EEFB' : '#fff'}" stroke="${CPC.bord}" stroke-width="1"/>` + ce2T(x, y + 5, v, { t: 13, g: on || fin ? 700 : 500, c: fin ? CPC.jeton : CPC.bord }); }
+      for(let q = 0; q < Math.min(n, Math.ceil(f)); q++){ const [x0, y0] = pos(L[q]), [x1, y1] = pos(L[q + 1]), k = Math.min(1, f - q);
+        s += `<line x1="${x0}" y1="${y0}" x2="${x0 + (x1 - x0) * k}" y2="${y0 + (y1 - y0) * k}" stroke="${p.sauts[q] > 0 ? CE2C.vert : CE2C.rouge}" stroke-width="4" stroke-linecap="round" opacity=".8"/>`; }
+      const tot = L[n] - p.de;
+      const texte = t < .15 ? `On part de <b>${p.de}</b>.` : t < .86 ? `${p.sauts.slice(0, Math.max(1, Math.ceil(f))).map(d => (d > 0 ? '+ ' : '− ') + Math.abs(d)).join(', ')}…`
+        : p.fin || `<b>${p.de} ${tot >= 0 ? '+' : '−'} ${Math.abs(tot)} = ${L[n]}</b>`;
+      return { scene: `<svg viewBox="0 0 346 346" class="cma-svg" style="max-width:420px;">${s}</svg>`, texte };
+    } });
+}
+
+/* ---- Soustraire en cassant une dizaine : on échange une barre contre dix cubes ---- */
+function cpAnimCasser(id, o){
+  const P = o.presets;
+  return cmAnim(id, {
+    etat: { p: 0 }, duree: 10000, legende: o.legende || 'Il n\'y a pas assez de cubes seuls : on casse une barre de dix en dix cubes.',
+    controles: a => ce2Choix(id, P.map(([x, y]) => ({ nom: `${x} − ${y}` })), a),
+    dessin: (t, a) => {
+      const [A, B] = P[a.etat.p], q = 13, d = Math.floor(A / 10), u = A % 10, casse = u < B % 10 || (B < 10 && u < B);
+      const bD = Math.floor(B / 10), bU = B % 10;
+      const k1 = cmDoux(cmPhase(t, .2, .4)), k2 = cmPhase(t, .5, .85);
+      let s = '';
+      // Barres de dix (la dernière se casse si besoin).
+      for(let b = 0; b < d; b++){ const brise = casse && b === d - 1, retireD = b >= d - (casse ? 1 : 0) - bD && b < d - (casse ? 1 : 0), xb = 30 + b * (q + 8);
+        if(brise && t > .2) continue;
+        s += `<g opacity="${retireD && k2 > 0 ? Math.max(.15, 1 - k2 * 2) : 1}">`;
+        for(let i = 0; i < 10; i++) s += `<rect x="${xb}" y="${30 + i * q}" width="${q}" height="${q}" fill="${CE2C.vert}" stroke="#14583A" stroke-width="1"/>`;
+        s += `</g>`; }
+      // Cubes seuls (plus les dix de la barre cassée).
+      const nu = u + (casse && t > .2 ? 10 : 0), x0 = 30 + d * (q + 8) + 20;
+      for(let j = 0; j < nu; j++){ const neuf = j >= u, xd = x0 + Math.floor(j / 5) * (q + 4), yd = 30 + 10 * q - (j % 5 + 1) * (q + 3);
+        const xs = 30 + (d - 1) * (q + 8), ys = 30 + (j - u) * q, x = neuf ? xs + (xd - xs) * k1 : xd, y = neuf ? ys + (yd - ys) * k1 : yd;
+        const retire = j >= nu - bU && k2 > 0;
+        s += `<rect x="${x}" y="${y}" width="${q}" height="${q}" fill="${neuf ? '#7FD0E6' : CPC.jeton2}" stroke="${CPC.bord}" stroke-width="1" opacity="${retire ? Math.max(.15, 1 - k2 * 2) : 1}"/>` + (retire && k2 > .5 ? `<path d="M${x} ${y + q} L${x + q} ${y}" stroke="${CE2C.rouge}" stroke-width="2"/>` : ''); }
+      const R = A - B;
+      const texte = t < .2 ? `<b>${A} − ${B}</b> : ${A}, c'est ${d} barres et ${u} cube${u > 1 ? 's' : ''} seul${u > 1 ? 's' : ''}. ${casse ? `On ne peut pas enlever ${bU} cubes seuls !` : ''}`
+        : t < .45 ? (casse ? `On casse une barre : ${d - 1} barres et ${u + 10} cubes seuls. C'est toujours ${A}.` : 'Il y a assez de cubes seuls.')
+        : t < .88 ? `On enlève ${bD ? `${bD} barre${bD > 1 ? 's' : ''} et ` : ''}${bU} cube${bU > 1 ? 's' : ''}…`
+        : `Il reste ${Math.floor(R / 10)} barre${Math.floor(R / 10) > 1 ? 's' : ''} et ${R % 10} cube${R % 10 > 1 ? 's' : ''} : <b>${A} − ${B} = ${R}</b>.`;
+      return { scene: `<svg viewBox="0 0 470 180" class="cma-svg" style="max-width:500px;">${s}</svg>`, texte };
+    } });
+}
+
+/* ---- L'horloge des heures entières : la grande aiguille fait un tour, la petite avance d'un nombre ---- */
+function cpAnimHeure(id, o){
+  o = o || {};
+  return cmAnim(id, {
+    etat: { h: o.h || 8 }, duree: 7000,
+    legende: o.legende || 'Quand la grande aiguille fait un tour complet, la petite aiguille avance d\'un nombre : une heure a passé.',
+    controles: a => `<div class="cmp-modeles">${cmPlusMoins(id, 'h', a.etat.h, 1, 12, 'Heure')}</div>`,
+    dessin: (t, a) => {
+      const h = a.etat.h, k = cmDoux(cmPhase(t, .2, .85)), mt = h * 60 + 60 * k, h2 = h % 12 + 1;
+      const s = ce2Horloge(130, 125, 105, mt) + ce2T(330, 90, t < .86 ? `${h} h` : `${h2} h`, { t: 34, g: 700, c: CE2C.rouge })
+        + ce2T(330, 125, t < .86 ? cpHeureMots(h) : cpHeureMots(h2), { t: 15, c: CE2C.gris });
+      const texte = t < .2 ? `La petite aiguille montre le <b>${h}</b>, la grande aiguille est sur le <b>12</b> : il est <b>${h} heure${h > 1 ? 's' : ''}</b>.`
+        : t < .86 ? 'La grande aiguille fait le tour du cadran…'
+        : `La petite aiguille est sur le <b>${h2}</b>, la grande est revenue sur le 12 : il est <b>${h2} heure${h2 > 1 ? 's' : ''}</b>. Une heure a passé.`;
+      return { scene: `<svg viewBox="0 0 440 250" class="cma-svg" style="max-width:440px;">${s}</svg>`, texte };
+    } });
+}
+const cpHeureMots = h => h === 12 ? 'midi ou minuit' : h === 1 ? 'une heure' : cpMot(h) + ' heures';
+// Une horloge fixe à h heures (heures entières), en SVG prêt à poser.
+const cpHorloge = (h, px) => cpSvg(160, 160, ce2Horloge(80, 80, 74, h * 60), px || 130);
+
+/* ---- La règle graduée en centimètres : on place le 0 au début ---- */
+function cpRegleSvg(x0, y, n, K){
+  let s = `<rect x="${x0 - 14}" y="${y}" width="${n * K + 28}" height="40" rx="4" fill="#FFF3D6" stroke="#C9A24A"/>`;
+  for(let i = 0; i <= n; i++){ const x = x0 + i * K; s += `<line x1="${x}" y1="${y}" x2="${x}" y2="${y + 16}" stroke="#8A6D1F" stroke-width="1.6"/>` + ce2T(x, y + 33, i, { t: 13, c: '#8A6D1F', g: 700 }); }
+  return s;
+}
+function cpRegle(n, o){ o = o || {}; const K = o.K || 36; let s = cpRegleSvg(18, o.seg ? 34 : 4, n, K);
+  if(o.seg) s += `<line x1="${18 + (o.de || 0) * K}" y1="22" x2="${18 + ((o.de || 0) + o.seg) * K}" y2="22" stroke="${CE2C.encre}" stroke-width="4" stroke-linecap="round"/>`;
+  return cpSvg(n * K + 36, o.seg ? 78 : 48, s, o.px); }
+function cpAnimMesurer(id, o){
+  const P = o.presets;
+  return cmAnim(id, {
+    etat: { p: 0 }, duree: 7500, legende: o.legende || 'On place le 0 de la règle au début du trait, et on lit le nombre au bout.',
+    controles: a => ce2Choix(id, P, a),
+    dessin: (t, a) => {
+      const p = P[a.etat.p], K = 36, X = 40, de = p.de || 0, k = cmDoux(cmPhase(t, .15, .5));
+      let s = `<line x1="${X}" y1="40" x2="${X + p.cm * K}" y2="40" stroke="${CE2C.encre}" stroke-width="5" stroke-linecap="round"/>`;
+      s += `<g transform="translate(${-de * K} ${(1 - k) * 60})" opacity="${Math.min(1, k * 2)}">${cpRegleSvg(X, 52, 12, K)}</g>`;
+      if(t > .55){ const xr = X + p.cm * K; s += `<line x1="${xr}" y1="30" x2="${xr}" y2="70" stroke="${CE2C.rouge}" stroke-width="2.5" stroke-dasharray="4 3"/>` + ce2T(xr, 22, p.cm + de, { t: 18, g: 700, c: CE2C.rouge }); }
+      const texte = t < .15 ? 'Combien mesure ce trait ?' : t < .55 ? (de ? `Attention : on place la règle… mais le trait commence en face du <b>${de}</b>, pas du 0 !` : 'On place le <b>0</b> de la règle juste au début du trait.')
+        : de ? `Au bout, on lit ${p.cm + de}. Mais on est parti de ${de} : le trait mesure ${p.cm + de} − ${de} = <b>${p.cm} cm</b>. Il vaut mieux partir du 0 !`
+        : `Au bout du trait, on lit <b>${p.cm}</b> : le trait mesure <b>${p.cm} cm</b> (${cpMot(p.cm)} centimètres).`;
+      return { scene: `<svg viewBox="0 0 ${X * 2 + 12 * K} 110" class="cma-svg" style="max-width:560px;">${s}</svg>`, texte };
+    } });
+}
