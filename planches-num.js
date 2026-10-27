@@ -321,11 +321,37 @@ const PLX = {
   },
   // Boîte de dix à remplir (relecture CP-N1-P1-E5 : « case non cliquable ») : on touche une case pour y mettre un jeton,
   // ou l'enlever. { n : nombre de jetons attendu, k : côté d'une case, ox, oy : coin de la boîte, c : couleur }.
+  // plein : la case se colorie en entier (relecture CP-N1-P1-E5 : « il faut les colorier entièrement ») ;
+  // deja : les premières cases ont déjà un jeton (on ne les touche pas), on complète la boîte.
   boite: {
     tap(C, st, x, y){ const i = Math.floor((x - C.ox) / C.k), j = Math.floor((y - C.oy) / C.k); if(i < 0 || j < 0 || i >= 5 || j >= 2) return;
-      st.c = st.c || []; const q = j * 5 + i, n = st.c.indexOf(q); if(n >= 0) st.c.splice(n, 1); else st.c.push(q); },
-    dessin: (C, st) => (st.c || []).map(q => `<circle cx="${C.ox + (q % 5) * C.k + C.k / 2}" cy="${C.oy + Math.floor(q / 5) * C.k + C.k / 2}" r="${C.k * .34}" fill="${C.c || '#E35D3A'}" stroke="#1F3A5C" stroke-width="1.2"/>`).join(''),
+      const q = j * 5 + i; if(q < (C.deja || 0)) return;
+      st.c = st.c || []; const n = st.c.indexOf(q); if(n >= 0) st.c.splice(n, 1); else st.c.push(q); },
+    dessin: (C, st) => (st.c || []).map(q => { const x = C.ox + (q % 5) * C.k, y = C.oy + Math.floor(q / 5) * C.k;
+      return C.plein ? `<rect x="${x + 1.5}" y="${y + 1.5}" width="${C.k - 3}" height="${C.k - 3}" fill="${C.c || '#E35D3A'}"/>`
+        : `<circle cx="${x + C.k / 2}" cy="${y + C.k / 2}" r="${C.k * .34}" fill="${C.c || '#E35D3A'}" stroke="#1F3A5C" stroke-width="1.2"/>`; }).join(''),
     juste: (C, st) => (st.c || []).length === C.n
+  },
+  // Jetons à colorier en rouge et en bleu (relecture CP-N2-P1-E6 : « on ne peut pas colorier les jetons ») : chaque
+  // toucher fait passer un jeton de blanc à rouge, puis bleu, puis blanc. { n, k, ox, oy, r : rouges attendus, b : bleus }.
+  bicolore: {
+    tap(C, st, x, y){ const i = Math.floor((x - C.ox) / C.k); if(i < 0 || i >= C.n || y < C.oy || y > C.oy + C.k) return;
+      st.c = st.c || {}; st.c[i] = ((st.c[i] || 0) + 1) % 3; },
+    action(C, st, a){ if(a === 'vide') st.c = {}; },
+    dessin: (C, st) => Object.entries(st.c || {}).filter(([, v]) => v).map(([i, v]) => `<circle cx="${C.ox + i * C.k + C.k / 2}" cy="${C.oy + C.k / 2}" r="${C.k * .37}" fill="${v === 1 ? '#E35D3A' : '#2EA8C9'}" stroke="#1F3A5C"/>`).join(''),
+    barre: (C, st, id) => `<span class="pn-xaide">Touche un jeton : rouge, puis bleu, puis blanc.</span>` + plxBtn(id, 'vide', 'Tout effacer'),
+    juste: (C, st) => { const v = Object.values(st.c || {}); return v.filter(x => x === 1).length === C.r && v.filter(x => x === 2).length === C.b; }
+  },
+  // Mains dont on lève ou replie les doigts (relecture CP-N2-P3-E3 : « deux mains sur lesquelles on peut déplier ou
+  // replier les doigts »). { mains : [[x, y, droite ?], …] comme cpMainDoigtsSvg, att : doigts levés attendus par main }.
+  mains: {
+    bouts: (x, y, dr) => [[dr ? x + 64 : x - 6, y + 40]].concat([0, 1, 2, 3].map(d => [(dr ? x + 44 - d * 13.5 : x + 3 + d * 13.5) + 5.5, y + 22])),
+    tap(C, st, x, y){ let best = null, dm = 20;
+      C.mains.forEach(([mx, my, dr], h) => PLX.mains.bouts(mx, my, dr).forEach(([bx, by], f) => { const e = Math.hypot(bx - x, by - y); if(e < dm){ dm = e; best = h + ',' + f; } }));
+      if(!best) return; st.d = st.d || {}; st.d[best] = !st.d[best]; },
+    dessin: (C, st) => C.mains.map(([mx, my, dr], h) => cpMainDoigtsSvg(mx, my, [0, 1, 2, 3, 4].map(f => !!(st.d || {})[h + ',' + f]), { droite: dr })).join(''),
+    barre: () => `<span class="pn-xaide">Touche un doigt pour le lever ou le replier.</span>`,
+    juste: (C, st) => C.att.every((n, h) => [0, 1, 2, 3, 4].filter(f => (st.d || {})[h + ',' + f]).length === n)
   },
   barres: {
     tap(C, st, x, y){ const i = C.xs.findIndex((x0, i) => C.att[i] != null && x >= x0 - 8 && x <= x0 + C.larg + 8); if(i < 0) return; st.v = st.v || {};
@@ -559,7 +585,7 @@ function plClavierPhysique(e){
     .pn-ex .pl-papier{ display:none; } /* ce qui ne sert que sur la feuille (ligne pour écrire…) */
     .pn-ex svg.pn-x{ width:min(100%, 520px) !important; height:auto !important; max-height:none !important; touch-action:manipulation; cursor:pointer; }
     .pn-ex svg.pn-x-horloge{ width:min(100%, 230px) !important; }
-    .pn-ex svg.pn-x-boite{ width:min(100%, 200px) !important; } .pn-ex svg.pn-x-ronds{ width:min(100%, 420px) !important; }
+    .pn-ex svg.pn-x-boite{ width:min(100%, 200px) !important; } .pn-ex svg.pn-x-mains{ width:min(100%, 320px) !important; } .pn-ex svg.pn-x-bicolore{ width:min(100%, 300px) !important; } .pn-ex svg.pn-x-ronds{ width:min(100%, 420px) !important; }
     .pn-xbar{ display:flex; gap:6px; align-items:center; justify-content:center; flex-wrap:wrap; margin:4px 0 8px; font-size:.88rem; color:#4E5665; } .pn-xbar:empty{ display:none; } .pn-lecture .pn-xbar button{ display:none; }
     .pn-xbtn{ border:2px solid #3A6EA5; background:#fff; color:#1F3A5C; border-radius:10px; padding:3px 10px; font:700 .95rem 'Space Grotesk',Arial,sans-serif; cursor:pointer; min-width:40px; }
     .pn-xbtn.on{ background:#3A6EA5; color:#fff; } .pn-xbtn.pn-xfl{ font-size:1.25rem; min-width:46px; } .pn-xbtn.pn-xh.on{ background:#E35D3A; border-color:#E35D3A; } .pn-xbtn.pn-xm.on{ background:#2EA8C9; border-color:#2EA8C9; }

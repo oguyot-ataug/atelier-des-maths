@@ -29,7 +29,11 @@ const PCP = {
   // « permettre de dessiner les ronds », « case non cliquable ». Sur papier : un cadre en pointillés, une boîte de dix vide.
   zone: (n, o) => { o = o || {}; const k = 28, w = o.w || 10, h = o.h || 2, W = w * k + 8, H = h * k + 8;
     return plX(cpSvg(W, H, `<rect x="2" y="2" width="${W - 4}" height="${H - 4}" rx="10" fill="#fff" stroke="#9FB0C4" stroke-width="2" stroke-dasharray="7 5"/>`, o.px || W), { t: 'ronds', n, k, ox: 4, oy: 4, w, h, c: o.c }); },
-  boite: (n, o) => { o = o || {}; const c = o.c || 22; return plX(cpBoiteDix(0, { c }), { t: 'boite', n, k: c, ox: 3, oy: 3, c: o.coul }); },
+  boite: (n, o) => { o = o || {}; const c = o.c || 22, d = o.deja || 0; return plX(cpBoiteDix(d, { c }), { t: 'boite', n, k: c, ox: 3, oy: 3, c: o.coul, plein: o.plein, deja: d }); },
+  // Jetons blancs à colorier : r en rouge, b en bleu.
+  bicolore: (r, b) => { const n = r + b, k = 30; return plX(cpSvg(n * k + 8, k + 8, Array.from({ length: n }, (_, i) => `<circle cx="${4 + i * k + k / 2}" cy="${4 + k / 2}" r="${k * .37}" fill="#fff" stroke="${CPC.bord}"/>`).join(''), n * k + 8), { t: 'bicolore', n, k, ox: 4, oy: 4, r, b }); },
+  // Deux mains aux doigts repliés ; att : doigts levés attendus sur chaque main.
+  mains: (att, px) => plX(cpSvg(214, 96, cpMainSvg(30, 6, 0) + cpMainSvg(126, 6, 0, { droite: true }), px || 200), { t: 'mains', mains: [[30, 6, false], [126, 6, true]], att }),
   // Cadre vide où l'élève dessine.
   cadre: (h, txt) => `<div style="flex:1 1 100%;min-width:100px;box-sizing:border-box;border:2px dashed #9FB0C4;border-radius:10px;min-height:${h || 70}px;margin:4px 0;padding:4px 8px;color:#9AA3AE;font-size:.85rem;">${txt || ''}</div>`,
 };

@@ -41,17 +41,19 @@ function cpDe(n, o){
    Signalé : « Les pouces ne sont pas du bon côté ! » Paumes vers la classe, les pouces sont à
    l'extérieur. On lève le pouce, puis l'index (à côté du pouce), le majeur, l'annulaire,
    l'auriculaire. o.droite : main dessinée à droite (son pouce est à droite). */
-function cpMainSvg(x, y, n, o){
+function cpMainSvg(x, y, n, o){ return cpMainDoigtsSvg(x, y, [0, 1, 2, 3, 4].map(d => n >= d + 1), o); }
+// Une main dont on choisit les doigts levés : leves = [pouce, index, majeur, annulaire, auriculaire] (vrai : levé).
+function cpMainDoigtsSvg(x, y, leves, o){
   o = o || {}; const peau = '#F6C9A0', trait = '#9A5B34', dr = !!o.droite, st = `fill="${peau}" stroke="${trait}" stroke-width="1.8"`;
   // Pouce levé : dessiné avant la paume, qui recouvre sa base (il reste attaché à la main).
   const px = dr ? x + 52 : x + 6, py = y + 68;
-  let s = n >= 1 ? `<rect x="${px - 6.5}" y="${py - 42}" width="13" height="44" rx="6.5" ${st} transform="rotate(${dr ? 30 : -30} ${px} ${py})"/>` : '';
+  let s = leves[0] ? `<rect x="${px - 6.5}" y="${py - 42}" width="13" height="44" rx="6.5" ${st} transform="rotate(${dr ? 30 : -30} ${px} ${py})"/>` : '';
   s += `<rect x="${x}" y="${y + 40}" width="58" height="46" rx="14" ${st}/>`;
   // Pouce replié : couché sur la paume.
-  if(n < 1) s += `<rect x="${dr ? x + 30 : x + 4}" y="${y + 58}" width="24" height="12" rx="6" ${st}/>`;
+  if(!leves[0]) s += `<rect x="${dr ? x + 30 : x + 4}" y="${y + 58}" width="24" height="12" rx="6" ${st}/>`;
   // Quatre doigts, de l'index (à côté du pouce) à l'auriculaire.
   const L = [44, 48, 44, 36];
-  for(let d = 0; d < 4; d++){ const leve = n >= d + 2, h = leve ? L[d] : 10, cx = dr ? x + 44 - d * 13.5 : x + 3 + d * 13.5;
+  for(let d = 0; d < 4; d++){ const h = leves[d + 1] ? L[d] : 10, cx = dr ? x + 44 - d * 13.5 : x + 3 + d * 13.5;
     s += `<rect x="${cx}" y="${y + 44 - h}" width="11" height="${h + 6}" rx="5.5" ${st}/>`; }
   return s;
 }
@@ -67,8 +69,10 @@ function cpBoiteDixSvg(x, y, n, o){
   let s = `<rect x="${x}" y="${y}" width="${5 * c}" height="${2 * c}" fill="${CPC.case}" stroke="${CPC.bord}" stroke-width="2.5"/>`;
   for(let i = 1; i < 5; i++) s += `<line x1="${x + i * c}" y1="${y}" x2="${x + i * c}" y2="${y + 2 * c}" stroke="${CPC.bord}" stroke-width="1.5"/>`;
   s += `<line x1="${x}" y1="${y + c}" x2="${x + 5 * c}" y2="${y + c}" stroke="${CPC.bord}" stroke-width="1.5"/>`;
-  for(let q = 0; q < Math.min(10, k); q++){ const i = q % 5, j = Math.floor(q / 5);
-    s += `<circle cx="${x + c * i + c / 2}" cy="${y + c * j + c / 2}" r="${c * .34}" fill="${(o.couleurs && o.couleurs[q]) || CPC.jeton}" stroke="${CPC.bord}" stroke-width="1.2"/>`; }
+  // o.plein : cases coloriées en entier (« colorie les cases ») au lieu de jetons.
+  for(let q = 0; q < Math.min(10, k); q++){ const i = q % 5, j = Math.floor(q / 5), f = (o.couleurs && o.couleurs[q]) || CPC.jeton;
+    s += o.plein ? `<rect x="${x + c * i + 1.5}" y="${y + c * j + 1.5}" width="${c - 3}" height="${c - 3}" fill="${f}"/>`
+      : `<circle cx="${x + c * i + c / 2}" cy="${y + c * j + c / 2}" r="${c * .34}" fill="${f}" stroke="${CPC.bord}" stroke-width="1.2"/>`; }
   (o.vides || []).forEach(q => { const i = q % 5, j = Math.floor(q / 5);
     s += `<circle cx="${x + c * i + c / 2}" cy="${y + c * j + c / 2}" r="${c * .34}" fill="none" stroke="${CE2C.vert}" stroke-width="2.4" stroke-dasharray="5 4"/>`; });
   return s;

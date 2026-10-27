@@ -44,12 +44,17 @@ const RELECTURE_CHGT = {
   '6e-N1-P1-E3': { date: '2026-10-09T14:24:20Z', note: "Tableau aligné à gauche, la colonne Décomposition va jusqu'à la marge droite ; à l'écran, nombres écrits par classes comme ci-dessus" },
   // Build 1182 : CP-N1, exercices faits à l'écran ; corrigés des choix à entourer ; choix sous les petites figures (bêta).
   'CP-N1-P1-E4': { date: '2026-10-27T18:33:51Z', note: "À l'écran : on touche le cadre pour dessiner un rond, on touche un rond pour l'effacer (bouton « Tout effacer ») ; c'est juste quand il y a le bon nombre de ronds" },
-  'CP-N1-P1-E5': { date: '2026-10-27T18:33:51Z', note: "À l'écran : on touche une case de la boîte de dix pour y mettre un jeton (ou l'enlever) ; c'est juste quand chaque boîte a le bon nombre de jetons. Même outil pour les autres boîtes de dix à remplir du CP (N2, N3)" },
+  'CP-N1-P1-E5': { date: '2026-10-27T19:10:49Z', note: "À l'écran, la case touchée se colorie en entier (plus de disque) ; le corrigé montre aussi des cases coloriées. Les boîtes « Dessine des jetons » (N2, N3) gardent des jetons" },
   'CP-N1-P3-E3': { date: '2026-10-27T18:33:51Z', note: "Corrigé : les deux nombres restent visibles, le bon est entouré. Corrigé pour tous les exercices « Entoure » des manuels (tous niveaux)" },
   'CP-N1-P3-E4': { date: '2026-10-27T18:33:51Z', note: "À l'écran : un cadre pour les billes de Léo, un pour celles de Zoé (on touche pour dessiner), puis on touche Léo ou Zoé. Consigne : « Dessine les billes de chacun, puis entoure qui en a le plus »" },
   'CP-N1-P3-E5': { date: '2026-10-27T18:33:51Z', note: "Corrigé : les deux nombres restent visibles, le bon est entouré (comme l'exercice 3)" },
   'CP-N1-P3-E6': { date: '2026-10-27T18:33:51Z', note: "À l'écran : on touche le cadre pour dessiner un rond, on touche un rond pour l'effacer (bouton « Tout effacer ») ; c'est juste quand il y a le bon nombre de ronds" },
   '6e-G2-P1-E1': { date: '2026-10-27T18:33:51Z', note: "Retour bêta « les choix se superposent » : à l'écran, sous chaque figure, les mots passent à la ligne au lieu de se chevaucher (vaut pour tous les choix à l'écran)" },
+  // Build 1183 : CP-N2, outils à l'écran (jetons bicolores, boîte à compléter, mains aux doigts mobiles).
+  'CP-N2-P1-E6': { date: '2026-10-27T19:10:49Z', note: "À l'écran, on touche un jeton : rouge, puis bleu, puis blanc. Pour que la réponse puisse être vérifiée, les deux façons sont imposées : 4 rouges et 3 bleus, puis 6 rouges et 1 bleu" },
+  'CP-N2-P2-E1': { date: '2026-10-27T19:10:49Z', note: "Exercice placé en premier (c'était l'exercice 4) ; à l'écran, on touche les cases vides pour y mettre les jetons bleus ; l'addition « 6 + … = 10 » est ajoutée sous chaque boîte. Les anciens exercices 1, 2 et 3 deviennent 2, 3 et 4" },
+  'CP-N2-P2-E4': { date: '2026-10-27T19:10:49Z', note: "(c'était l'exercice 3) Les 6 images sont dessinées dans une boîte de dix : on touche les cases vides pour dessiner celles qui manquent, puis on écrit combien il en manque" },
+  'CP-N2-P3-E3': { date: '2026-10-27T19:10:49Z', note: "Deux mains aux doigts repliés : à l'écran, on touche un doigt pour le lever ou le replier ; c'est juste avec 3 doigts levés sur chaque main ; puis on écrit le nombre de doigts" },
 };
 
 const RL_REMARQUES = [
