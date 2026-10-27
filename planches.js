@@ -540,7 +540,8 @@ async function plImprimer(lvl, blocs, mode, opts){
    Juste avant d'imprimer, chaque planche est mesurée dans la fenêtre d'impression : un exercice
    demi-largeur resté seul sur sa ligne prend toute la largeur ; s'il reste de la place sur une planche
    de l'élève, le bloc « Je fais le point » (auto-évaluation sur les attendus de la planche) s'affiche ;
-   enfin les exercices s'étirent jusqu'en bas de la feuille A4 (plus de place pour écrire, aucun blanc).
+   enfin les exercices s'étirent jusqu'en bas de la feuille A4, contenu collé en haut du cadre (la place libre en
+   bas sert à écrire ; demandé : « colle le contenu en haut des cadres »).
    Une planche qui dépasse déjà une page (gros caractères, interligne aéré) n'est pas touchée. */
 function plVisage(k){
   const c = ['#2E9E5B', '#E9A21C', '#E35D3A'][k], bouche = ['M7 13 Q11 17 15 13', 'M7 14 L15 14', 'M7 15.5 Q11 11.5 15 15.5'][k];
@@ -802,7 +803,7 @@ const PL_CSS = `
   .pl-plein{ display:flex; flex-direction:column; box-sizing:border-box; }
   .pl-plein .pl-exos{ flex:1; align-content:stretch; }
   .pl-plein .pl-exo{ display:flex; flex-direction:column; }
-  .pl-plein .pl-corps{ flex:1; display:flex; flex-direction:column; justify-content:space-evenly; }
+  .pl-plein .pl-corps{ flex:1; display:flex; flex-direction:column; justify-content:flex-start; }
   .pl-plein .pl-pied{ margin-top:auto; }
   .pl-point{ border:1.5px solid #8DB84A; background:#F6FAEF; border-radius:10px; padding:4px 11px 5px; margin:0 0 4px; break-inside:avoid; }
   .pl-point[hidden]{ display:none; }
