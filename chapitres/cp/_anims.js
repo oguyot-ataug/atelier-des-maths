@@ -37,25 +37,28 @@ function cpDe(n, o){
   return cpSvg(2 * c + 18, c + 6, cpDeSvg(3, 3, c, 5) + cpDeSvg(c + 15, 3, c, n - 5, { coul: CPC.jeton }), o.px);
 }
 
-/* ---- Les doigts : deux mains vues de face, pouces au milieu ; n doigts levés ----
-   On lève le pouce, puis l'index, le majeur, l'annulaire, l'auriculaire. o.droite : main de droite
-   (son pouce est à gauche). */
+/* ---- Les doigts : les deux mains de l'enseignant, paumes tournées vers la classe ; n doigts levés ----
+   Signalé : « Les pouces ne sont pas du bon côté ! » Paumes vers la classe, les pouces sont à
+   l'extérieur. On lève le pouce, puis l'index (à côté du pouce), le majeur, l'annulaire,
+   l'auriculaire. o.droite : main dessinée à droite (son pouce est à droite). */
 function cpMainSvg(x, y, n, o){
-  o = o || {}; const peau = '#F6C9A0', trait = '#9A5B34', dr = !!o.droite;
-  let s = `<rect x="${x}" y="${y + 40}" width="58" height="46" rx="14" fill="${peau}" stroke="${trait}" stroke-width="1.8"/>`;
-  // Pouce, sur le côté de la paume tourné vers l'autre main.
-  const px = dr ? x - 8 : x + 54, ang = dr ? -32 : 32;
-  s += `<rect x="${px - 6}" y="${y + (n >= 1 ? 22 : 44)}" width="13" height="${n >= 1 ? 40 : 18}" rx="6" fill="${peau}" stroke="${trait}" stroke-width="1.8" transform="rotate(${ang} ${px} ${y + 62})"/>`;
+  o = o || {}; const peau = '#F6C9A0', trait = '#9A5B34', dr = !!o.droite, st = `fill="${peau}" stroke="${trait}" stroke-width="1.8"`;
+  // Pouce levé : dessiné avant la paume, qui recouvre sa base (il reste attaché à la main).
+  const px = dr ? x + 52 : x + 6, py = y + 68;
+  let s = n >= 1 ? `<rect x="${px - 6.5}" y="${py - 42}" width="13" height="44" rx="6.5" ${st} transform="rotate(${dr ? 30 : -30} ${px} ${py})"/>` : '';
+  s += `<rect x="${x}" y="${y + 40}" width="58" height="46" rx="14" ${st}/>`;
+  // Pouce replié : couché sur la paume.
+  if(n < 1) s += `<rect x="${dr ? x + 30 : x + 4}" y="${y + 58}" width="24" height="12" rx="6" ${st}/>`;
   // Quatre doigts, de l'index (à côté du pouce) à l'auriculaire.
   const L = [44, 48, 44, 36];
-  for(let d = 0; d < 4; d++){ const leve = n >= d + 2, h = leve ? L[d] : 10, cx = dr ? x + 3 + d * 13.5 : x + 44 - d * 13.5;
-    s += `<rect x="${cx}" y="${y + 44 - h}" width="11" height="${h + 6}" rx="5.5" fill="${peau}" stroke="${trait}" stroke-width="1.8"/>`; }
+  for(let d = 0; d < 4; d++){ const leve = n >= d + 2, h = leve ? L[d] : 10, cx = dr ? x + 44 - d * 13.5 : x + 3 + d * 13.5;
+    s += `<rect x="${cx}" y="${y + 44 - h}" width="11" height="${h + 6}" rx="5.5" ${st}/>`; }
   return s;
 }
 function cpDoigts(n, o){
   o = o || {};
   const g = Math.min(5, n), d = Math.max(0, n - 5), deux = n > 5 || o.deux;
-  return cpSvg(deux ? 176 : 86, 96, cpMainSvg(10, 6, g) + (deux ? cpMainSvg(108, 6, d, { droite: true }) : ''), o.px);
+  return cpSvg(deux ? 214 : 104, 96, cpMainSvg(30, 6, g) + (deux ? cpMainSvg(126, 6, d, { droite: true }) : ''), o.px);
 }
 
 /* ---- Boîte de dix : 2 rangées de 5 cases ; n jetons (rangée du haut d'abord) ---- */
@@ -114,7 +117,7 @@ function cpAnimFlash(id, o){
         const k = vu ? n : Math.max(compte, fin ? n : 0);
         if(mode === 'de'){ s = n <= 6 ? cpDeSvg(130, 35, 100, n, { k: vu ? n : k }) : cpDeSvg(60, 35, 100, 5, { k: vu ? 5 : Math.min(5, k) }) + cpDeSvg(200, 35, 100, n - 5, { k: vu ? n - 5 : Math.max(0, k - 5), coul: CPC.jeton }); }
         else if(mode === 'boite') s = cpBoiteDixSvg(80, 45, n, { c: 40, k: vu ? n : k });
-        else if(mode === 'doigts') s = `<g transform="translate(66 18) scale(1.3)">${cpMainSvg(10, 6, Math.min(5, vu ? n : k))}${cpMainSvg(108, 6, Math.max(0, (vu ? n : k) - 5), { droite: true })}</g>`;
+        else if(mode === 'doigts') s = `<g transform="translate(41 18) scale(1.3)">${cpMainSvg(30, 6, Math.min(5, vu ? n : k))}${cpMainSvg(126, 6, Math.max(0, (vu ? n : k) - 5), { droite: true })}</g>`;
         else s = cpPositions(n, n * 3 + 1, W, H).map(([x, y], i) => cpPomme(x, y, { op: vu || i < k ? 1 : .18 })).join('');
         if(!vu && compte && !fin){ // le nombre qu'on dit en comptant
           s += ce2T(W - 30, 30, compte, { t: 26, c: CE2C.vert, g: 700 }); }
