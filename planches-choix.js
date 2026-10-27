@@ -31,7 +31,7 @@ function plChoisirExos(o){
   o = o || {};
   return new Promise(resolve => {
     const avecPl = l => ((typeof CHAPITRES_BY_LEVEL !== 'undefined' && CHAPITRES_BY_LEVEL[l]) || []).filter(c => plDe(l, c.t).length);
-    const nivs = ['ce2', 'cm1', 'cm2', '6e', '5e', '4e', '3e'].filter(l => (typeof niveauVisible !== 'function' || niveauVisible(l)) && avecPl(l).length);
+    const nivs = ['cp', 'ce1', 'ce2', 'cm1', 'cm2', '6e', '5e', '4e', '3e'].filter(l => (typeof niveauVisible !== 'function' || niveauVisible(l)) && avecPl(l).length);
     if(!nivs.length){ resolve(null); return; }
     let ov = document.getElementById('plChoix');
     if(!ov){ ov = document.createElement('div'); ov.id = 'plChoix'; ov.className = 'modal-overlay'; document.body.appendChild(ov); }

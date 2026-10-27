@@ -176,7 +176,7 @@ async function plLogo(){
 function plOliv(pose){ return typeof olivPoseSvg === 'function' ? olivPoseSvg(pose) : ''; }
 
 /* ---------- Bouton et fenêtre du chapitre ---------- */
-const PL_NIVEAUX_TXT = { ce2: 'CE2', cm1: 'CM1', cm2: 'CM2', '6e': '6e', '5e': '5e', '4e': '4e', '3e': '3e' };
+const PL_NIVEAUX_TXT = { cp: 'CP', ce1: 'CE1', ce2: 'CE2', cm1: 'CM1', cm2: 'CM2', '6e': '6e', '5e': '5e', '4e': '4e', '3e': '3e' };
 function plDe(lvl, titre){ return (typeof PLANCHES !== 'undefined' && PLANCHES[lvl + '|' + titre]) || []; }
 function plRef(lvl, code, i){ return `${PL_NIVEAUX_TXT[lvl] || lvl}-${code}-P${i + 1}`; }
 // Code de chapitre unique dans le niveau (en 6e, deux chapitres N4 et deux N5 : N4a, N4b…).
@@ -450,7 +450,7 @@ function plOuvrir(lvl, c){
 const plEtoiles = k => '★'.repeat(k) + '<span class="pl-et-off">' + '★'.repeat(3 - k) + '</span>';
 // Exercice « Pour aller plus loin » (x.plus) : la randonneuse, en route vers l'année suivante ; exercice ★★★
 // (un défi) : la petite super-héroïne. Petite vignette dans la ligne du titre (ne change pas la hauteur).
-const PL_SUIVANTE = { ce2: 'En route vers le CM1 !', cm1: 'En route vers le CM2 !', cm2: 'En route vers la 6e !', '6e': 'En route vers la 5e !' };
+const PL_SUIVANTE = { cp: 'En route vers le CE1 !', ce1: 'En route vers le CE2 !', ce2: 'En route vers le CM1 !', cm1: 'En route vers le CM2 !', cm2: 'En route vers la 6e !', '6e': 'En route vers la 5e !' };
 function plMarque(lvl, x){
   const b = (x.auto ? '<span class="pl-auto" title="Partie 1 du brevet : sans calculatrice, sans justification">Sans calculatrice</span>' : '') + (x.pts ? `<span class="pl-bareme">${x.pts} point${x.pts > 1 ? 's' : ''}</span>` : '');
   if(b) return `<span class="pl-marque-b">${b}</span>`;
@@ -777,6 +777,13 @@ const PL_CSS = `
   .pl-et{ color:#E9A21C; letter-spacing:2px; font-size:11pt; } .pl-et-off{ color:#D8DCE3; }
   .pl-consigne{ font-weight:600; margin-bottom:4px; }
   .pl-grille{ display:grid; gap:4px 18px; align-items:center; }
+  /* CP et CE1 : rangées de dessins, étiquettes de nombres, codes de flèches (mêmes classes que dans le cours) */
+  .cpn-rang{ display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:center; margin:4px 0; }
+  .cpn-cartes{ display:inline-flex; gap:6px; flex-wrap:wrap; justify-content:center; }
+  .cpn-cartes span{ display:inline-block; min-width:34px; padding:4px 5px; border:1.6px solid #1F3A5C; border-radius:6px; text-align:center; font-weight:700; }
+  .cpn-code{ display:inline-flex; gap:3px; vertical-align:middle; flex-wrap:wrap; }
+  .cpn-prix{ display:inline-block; padding:4px 10px; border:2px dashed #E35D3A; border-radius:8px; }
+  .cpn-prix b{ display:block; font-weight:600; font-size:.85em; color:#5B6472; }
   .pl-item{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; min-height:26px; }
   .pl-liste{ margin:0; padding-left:20px; columns:2; } .pl-liste li{ margin:2px 0; break-inside:avoid; }
   .pl-frac{ display:inline-flex; flex-direction:column; align-items:center; vertical-align:middle; gap:2px; margin:0 3px; }

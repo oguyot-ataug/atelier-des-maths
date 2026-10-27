@@ -1,0 +1,43 @@
+/* CP · Planches : Les nombres jusqu'à 10 (N1) -- compter, reconnaître sans compter, écrire, comparer. */
+(() => {
+const { lig, compte, entoure, suite, cadre } = PCP, B = P3.B, R = P3.R;
+PLANCHES['cp|Les nombres jusqu\'à 10'] = [
+  { titre: 'Compter jusqu\'à 10', duree: '20 min',
+    attendus: ['Dénombrer une collection jusqu\'à 10', 'Reconnaître sans compter les constellations du dé', 'Associer une quantité et son écriture en chiffres'],
+    exos: [
+      { etoiles: 1, consigne: 'Compte les pommes. Écris le nombre dans la case.',
+        ...compte([[PCP.pommes(4, 3), 4], [PCP.pommes(7, 8), 7], [PCP.pommes(9, 5), 9]], 3) },
+      { etoiles: 1, consigne: 'Combien de points ? Écris le nombre.',
+        ...compte([[cpDe(3, { c: 40 }), 3], [cpDe(5, { c: 40 }), 5], [cpDe(6, { c: 40 }), 6], [cpDe(8, { c: 34, cinq: true }), 8]], 4) },
+      { etoiles: 2, consigne: 'Combien de doigts sont levés ?',
+        ...compte([[cpDoigts(4, { px: 70 }), 4], [cpDoigts(7, { px: 130 }), 7], [cpDoigts(10, { px: 130 }), 10]], 3) },
+      { etoiles: 2, consigne: 'Dessine 6 ronds dans le cadre.',
+        eleve: cadre(60), corr: lig(cpJetons(6)) },
+    ] },
+  { titre: 'Écrire et lire les nombres', duree: '20 min',
+    attendus: ['Écrire les nombres de 0 à 10 en chiffres', 'Lire les nombres écrits en lettres', 'Connaître la suite des nombres'],
+    exos: [
+      { etoiles: 1, consigne: 'Complète la file des nombres.',
+        ...suite([0, 1, '@2', 3, '@4', 5, 6, '@7', 8, '@9', 10]) },
+      { etoiles: 1, col: 1, consigne: 'Écris en chiffres.',
+        ...P3.rmp([['trois : @', 3], ['huit : @', 8], ['cinq : @', 5], ['dix : @', 10]], 2) },
+      { etoiles: 2, col: 1, consigne: 'Écris le nombre d\'après.',
+        ...P3.rmp([['4 → @', 5], ['6 → @', 7], ['9 → @', 10], ['0 → @', 1]], 2) },
+      { etoiles: 2, col: 1, consigne: 'Écris le nombre d\'avant.',
+        ...P3.rmp([['@ ← 3', 2], ['@ ← 8', 7], ['@ ← 10', 9], ['@ ← 1', 0]], 2) },
+    ] },
+  { titre: 'Comparer des collections', duree: '20 min',
+    attendus: ['Comparer deux collections (plus, moins, autant)', 'Comparer deux nombres jusqu\'à 10'],
+    exos: [
+      { etoiles: 1, consigne: 'Entoure la boîte qui a le plus de jetons.',
+        ...entoure([[cpBoiteDix(6, { c: 22 }), false], [cpBoiteDix(8, { c: 22 }), true]], 2) },
+      { etoiles: 1, consigne: 'Entoure le dé qui a le moins de points.',
+        ...entoure([[cpDe(5, { c: 40 }), false], [cpDe(2, { c: 40 }), true], [cpDe(4, { c: 40 }), false]], 3) },
+      { etoiles: 2, col: 1, consigne: 'Entoure le plus grand nombre.',
+        ...P3.chx([['', '7', '7 · 4'], ['', '9', '6 · 9'], ['', '10', '10 · 8']]) },
+      { etoiles: 3, consigne: 'Léo a 6 billes. Zoé a 8 billes. Qui a le plus de billes ? Dessine les billes pour le montrer.',
+        eleve: cadre(70, 'Léo :') + cadre(70, 'Zoé :'),
+        corr: lig(cpJetons(6), ' Léo') + lig(cpJetons(8, 0, Array(8).fill(CPC.jeton2)), ' Zoé') + cm1Redac('Qui a le plus', '', 'Zoé a 2 billes de plus : c\'est Zoé qui a le plus de billes.') },
+    ] },
+];
+})();

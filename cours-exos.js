@@ -47,7 +47,7 @@ function cxChoisir(){
     o.style.zIndex = '9400';
     // Manuel (exercices des planches, planches.js) : niveaux et chapitres qui en ont.
     const avecPl = l => ((typeof CHAPITRES_BY_LEVEL !== 'undefined' && CHAPITRES_BY_LEVEL[l]) || []).filter(c => typeof plDe === 'function' && plDe(l, c.t).length);
-    const nivMan = ['ce2', 'cm1', 'cm2', '6e', '5e', '4e', '3e'].filter(l => (typeof niveauVisible !== 'function' || niveauVisible(l)) && avecPl(l).length);
+    const nivMan = ['cp', 'ce1', 'ce2', 'cm1', 'cm2', '6e', '5e', '4e', '3e'].filter(l => (typeof niveauVisible !== 'function' || niveauVisible(l)) && avecPl(l).length);
     const lvl0 = typeof currentChapterLevel !== 'undefined' && nivMan.includes(currentChapterLevel) ? currentChapterLevel : nivMan[0];
     const code0 = lvl0 && typeof currentChapterCode !== 'undefined' && avecPl(lvl0).some(c => c.code === currentChapterCode) ? currentChapterCode : lvl0 ? (avecPl(lvl0)[0] || {}).code : null;
     const st = { onglet: lvl0 && code0 === (typeof currentChapterCode !== 'undefined' ? currentChapterCode : null) ? 'man' : 'qz', qzs: null, filtre: '', qzSel: [], progSel: [], fig: { enonce: 'Construis…', figure: null }, man: { lvl: lvl0, code: code0, sel: [] } };
@@ -60,7 +60,7 @@ function cxChoisir(){
     };
     const rendre = () => {
       const f = st.filtre.trim().toLowerCase();
-      const nomNiv = l => ({ ce2: 'CE2', cm1: 'CM1', cm2: 'CM2' })[l] || l;
+      const nomNiv = l => ({ cp: 'CP', ce1: 'CE1', ce2: 'CE2', cm1: 'CM1', cm2: 'CM2' })[l] || l;
       const manC = st.man.lvl ? avecPl(st.man.lvl).find(c => c.code === st.man.code) : null;
       // Plusieurs exercices d'un coup -- demandé : « Permettre de cocher plusieurs exercices en même temps
       // (session) » : questionnaires et défis de programmation se cochent comme les exercices du manuel ;
@@ -175,13 +175,13 @@ function cxChoisirCours(){
     if(!o){ o = document.createElement('div'); o.id = 'cxCours'; o.className = 'modal-overlay'; document.body.appendChild(o); }
     o.style.zIndex = '9400';
     const vue = document.querySelector('.view.active'), vueAvant = vue ? vue.id : null;
-    const niveaux = ['ce2', 'cm1', 'cm2', '6e', '5e', '4e', '3e'].filter(l => typeof niveauVisible !== 'function' || niveauVisible(l));
+    const niveaux = ['cp', 'ce1', 'ce2', 'cm1', 'cm2', '6e', '5e', '4e', '3e'].filter(l => typeof niveauVisible !== 'function' || niveauVisible(l));
     const chapitres = l => (CHAPITRES_BY_LEVEL[l] || []).filter(c => DEMO_REGISTRY[l + '|' + c.t]);
     const st = { lvl: niveaux.includes(currentChapterLevel) ? currentChapterLevel : (niveaux.includes('6e') ? '6e' : niveaux[0]), code: null, parties: [], choisies: new Set(), occupe: false };
     if(niveaux.includes(currentChapterLevel) && chapitres(currentChapterLevel).some(c => c.code === currentChapterCode)) st.code = currentChapterCode;
     let fini = false;
     const fin = v => { if(fini) return; fini = true; o.style.display = 'none'; if(vueAvant && typeof showView === 'function') showView(vueAvant); resolve(v || []); };
-    const nomNiv = l => ({ ce2: 'CE2', cm1: 'CM1', cm2: 'CM2' })[l] || l;
+    const nomNiv = l => ({ cp: 'CP', ce1: 'CE1', ce2: 'CE2', cm1: 'CM1', cm2: 'CM2' })[l] || l;
     const charger = () => {
       st.parties = []; st.choisies = new Set();
       const c = chapitres(st.lvl).find(x => x.code === st.code); if(!c){ rendre(); return; }
