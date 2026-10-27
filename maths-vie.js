@@ -59,9 +59,23 @@ const VIE_ACTIVITES = {
   kheops: { theme: 'passe', titre: 'La pyramide de Khéops', aide: 'Volume, nombre de blocs, rythme du chantier : les maths d\'un chantier vieux de 4 500 ans.', html: '<div class="hi-kheops"></div>' },
   thales: { theme: 'passe', titre: 'Thalès mesure la pyramide', aide: 'Mesurer la hauteur d\'une pyramide sans y grimper : un bâton, des ombres et des droites parallèles.', html: '<div class="hi-thales"></div>' },
   cesar: { theme: 'passe', titre: 'Casser le code de Jules César', aide: 'Un message secret intercepté : les fréquences des lettres permettent de le déchiffrer sans la clé.', html: '<div class="hi-cesar"></div>' },
-  etang: { theme: 'nature', titre: 'Combien de poissons dans l\'étang ?', aide: 'Comment les biologistes comptent-ils les animaux sauvages sans les attraper tous ? Avec la proportionnalité et un peu de hasard.', html: '<div class="na-etang"></div>' } };
+  etang: { theme: 'nature', titre: 'Combien de poissons dans l\'étang ?', aide: 'Comment les biologistes comptent-ils les animaux sauvages sans les attraper tous ? Avec la proportionnalité et un peu de hasard.', html: '<div class="na-etang"></div>' },
+  // CE2 (vie-ce2.js) -- demandé : « Fais ceux du CE2 ».
+  crepes: { theme: 'cuisine', titre: 'La pâte à crêpes', aide: 'Pour réussir une recette, il faut peser et mesurer : la farine en grammes sur la balance, le lait en centilitres dans le verre doseur.', html: '<div class="vc-crepes"></div>' },
+  oiseaux: { theme: 'nature', titre: 'Le comptage des oiseaux du jardin', aide: 'Des scientifiques demandent aux familles de compter les oiseaux de leur jardin. Compte, range tes résultats dans un tableau, puis trace le diagramme en barres.', html: '<div class="vc-oiseaux"></div>' },
+  saut: { theme: 'sport', titre: 'Le concours de saut en longueur', aide: 'Les sauts ont été notés de différentes façons. Pour faire le podium, écris-les tous dans la même unité : en centimètres.', html: '<div class="vc-saut"></div>' },
+  train: { theme: 'geo', titre: 'Le voyage en train', aide: 'Une fiche horaire indique l\'heure de passage du train dans chaque gare. Lis-la pour trouver des heures et calculer des durées.', html: '<div class="vc-train"></div>' },
+  pliage: { theme: 'arts', titre: 'Le découpage plié', aide: 'Plie une feuille, découpe, déplie : le dessin est symétrique, et le pli est l\'axe de symétrie.', html: '<div class="vc-pliage-act"></div>' },
+  courses: { theme: 'argent', titre: 'Les courses avec 20 €', aide: 'Choisis tes articles sans dépasser ton budget, calcule le total de ton panier et ce qu\'il te reste.', html: '<div class="vc-courses"></div>' },
+};
 // Chapitres (clé « niveau|titre ») -> activités, dans l'ordre d'affichage (les thèmes suivent cet ordre).
 const VIE_CHAPITRES = {
+  'ce2|Masses et contenances': ['crepes'],
+  'ce2|Tableaux et diagrammes en barres': ['oiseaux'],
+  'ce2|Les longueurs': ['saut'],
+  'ce2|L\'heure et les durées': ['train'],
+  'ce2|La symétrie': ['pliage'],
+  'ce2|La monnaie': ['courses'],
   // Une activité = un seul niveau, celui dont elle respecte exactement les attendus -- demandé : « De nombreuses
   // activités … se retrouvent sur plusieurs niveaux, ça fait moins sérieux » et « attention à ne pas faire du hors
   // programme dans les explications » (26/10/2026). Un chapitre sans activité n'a pas l'onglet.
@@ -117,15 +131,18 @@ function vieNiveau(html, niv){
 // Dessin en arrière-plan d'un élément vide (aria-hidden) : rien de plus à lire pour la lecture à voix haute.
 const VIE_OLIV = { musique: 'musique', arts: 'arts', sport: 'sport', cuisine: 'cuisine', nature: 'nature', argent: 'argent', sciences: 'sciences', geo: 'geo', passe: 'histoire', jeux: 'jeux' };
 function vieOliv(pose){ return pose && typeof olivPoseUrl === 'function' ? `<span class="vie-oliv" aria-hidden="true" style='background-image:${olivPoseUrl(pose).replace(/'/g, '%27')}'></span>` : ''; }
+// Pages d'histoire des thèmes écrites pour le CM et le collège : pas au CP ni au CE2 (chaque activité du CE2 a son
+// encadré « Le savais-tu ? », vie-ce2.js).
+const VIE_SANS_HISTOIRE = ['cp', 'ce2'];
 function vieHtml(liste, niv){
   const themes = [];
   liste.forEach(k => { const a = VIE_ACTIVITES[k]; if(!a) return; let t = themes.find(x => x.k === a.theme); if(!t){ t = { k: a.theme, acts: [] }; themes.push(t); } t.acts.push(a); });
-  return `<div class="vie-intro">${vieOliv('globe') || '<span class="gicon">public</span>'}<div><b>Maths &amp; la vie</b> : les maths de ce chapitre, on les croise ${themes.map(t => VIE_THEMES[t.k].ou).join(', ').replace(/, ([^,]*)$/, ' et $1')}. Des activités à manipuler${themes.some(t => t.k === 'musique' || t.k === 'sciences') ? ' (monte le son !)' : ''} et un peu d'histoire.</div></div>`
+  return `<div class="vie-intro">${vieOliv('globe') || '<span class="gicon">public</span>'}<div><b>Maths &amp; la vie</b> : les maths de ce chapitre, on les croise ${themes.map(t => VIE_THEMES[t.k].ou).join(', ').replace(/, ([^,]*)$/, ' et $1')}. Des activités à manipuler${themes.some(t => t.k === 'musique' || t.k === 'sciences') ? ' (monte le son !)' : ''}${VIE_SANS_HISTOIRE.includes(niv) ? '' : ' et un peu d\'histoire'}.</div></div>`
     + themes.map(t => { const T = VIE_THEMES[t.k];
       return `<section class="vie-theme" style="--vie:${T.coul}"><h3 class="vie-theme-h">${vieOliv(VIE_OLIV[t.k]) || `<span class="gicon">${T.icone}</span>`} ${T.titre}</h3>`
         + t.acts.map(a => `<div class="sub-header" style="margin-top:14px;"><span class="letter">${T.titre.split(' ').pop()[0].toUpperCase()}</span><h4>${a.titre}</h4></div>
           <div class="figure-wrap"><p class="hint interaction-hint" style="margin-top:6px;">${a.aide}</p>${a.html}</div>`).join('')
-        + vieNiveau(T.histoire(), niv) + '</section>'; }).join('');
+        + (VIE_SANS_HISTOIRE.includes(niv) ? '' : vieNiveau(T.histoire(), niv)) + '</section>'; }).join('');
 }
 // Onglet affiché ou non, et contenu construit à l'ouverture du chapitre.
 function vieMaj(niv, titre){
@@ -141,7 +158,7 @@ function vieMaj(niv, titre){
    typeof cuInitTout === 'function' && cuInitTout, typeof naInitTout === 'function' && naInitTout,
    typeof arInitTout === 'function' && arInitTout, typeof jxInitTout === 'function' && jxInitTout,
    typeof scInitTout === 'function' && scInitTout, typeof geInitTout === 'function' && geInitTout,
-   typeof hiInitTout === 'function' && hiInitTout].forEach(f => { if(f) f(box); });
+   typeof hiInitTout === 'function' && hiInitTout, typeof vcInitTout === 'function' && vcInitTout].forEach(f => { if(f) f(box); });
 }
 
 (function vieStyles(){
