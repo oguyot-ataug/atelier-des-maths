@@ -8,33 +8,7 @@
    ============================================================ */
 (() => {
 const lig = (...l) => `<div class="cpn-rang">${l.join('')}</div>`;
-// Schéma en barres : parts = [[valeur, texte, couleur], …] sur une ligne, total écrit sous l'accolade.
-function barre(parts, total, o){
-  o = o || {}; const U = o.u || 26, W = parts.reduce((s, p) => s + p[0], 0) * U;
-  let s = '', x = 4;
-  parts.forEach(([v, tx, c]) => { s += `<rect x="${x}" y="4" width="${v * U}" height="34" fill="${c === '#fff' ? '#fff' : c}" fill-opacity="${c === '#fff' ? 1 : .45}" stroke="${CE2C.encre}" stroke-width="1.6"${c === '#fff' ? ' stroke-dasharray="5 4"' : ''}/>` + ce2T(x + v * U / 2, 27, tx, { t: 16, g: 700 }); x += v * U; });
-  s += `<path d="M4 44 q0 10 10 10 H${4 + W / 2 - 8} q8 0 8 8 q0 -8 8 -8 H${W - 6} q10 0 10 -10" fill="none" stroke="${CE2C.rouge}" stroke-width="2"/>` + ce2T(4 + W / 2, 82, total, { t: 16, g: 700, c: CE2C.rouge });
-  return cpSvg(W + 8, 88, s, o.px);
-}
-// Sauts sur la bande des nombres : de a, n sauts de +1 (ou −1 si n < 0).
-function sauts(a, n, o){
-  o = o || {}; const de = o.de != null ? o.de : 0, fin = o.a || 12, c = 30, X = v => 4 + (v - de) * c + c / 2;
-  let s = '';
-  for(let v = de; v <= fin; v++){ const on = v === a || v === a + n;
-    s += `<rect x="${4 + (v - de) * c}" y="40" width="${c}" height="${c}" fill="${v === a + n ? '#FDE3D2' : v === a ? '#E3F3FA' : '#fff'}" stroke="${CPC.bord}" stroke-width="1.4"/>` + ce2T(X(v), 60, v, { t: 14, g: on ? 700 : 600, c: v === a + n ? CPC.jeton : CPC.bord }); }
-  const sg = n < 0 ? -1 : 1, col = n < 0 ? CE2C.rouge : CE2C.vert;
-  for(let q = 0; q < Math.abs(n); q++){ const x0 = X(a + q * sg), x1 = X(a + (q + 1) * sg);
-    s += `<path d="M${x0} 38 Q${(x0 + x1) / 2} 8 ${x1} 36" fill="none" stroke="${col}" stroke-width="2.2"/><polygon points="${x1},38 ${x1 - 5 * sg},30 ${x1 + 3 * sg},30" fill="${col}"/>` + ce2T((x0 + x1) / 2, 16, sg > 0 ? '+1' : '−1', { t: 11, c: col, g: 700 }); }
-  return cpSvg((fin - de + 1) * c + 8, 76, s, o.px);
-}
-// Une rangée de jetons ; les k derniers sont barrés (retirés).
-function jetons(n, barres, coul){
-  let s = '';
-  for(let i = 0; i < n; i++){ const x = 18 + i * 30, b = i >= n - (barres || 0);
-    s += `<circle cx="${x}" cy="20" r="11" fill="${(coul && coul[i]) || CPC.jeton}" stroke="${CPC.bord}" opacity="${b ? .45 : 1}"/>` + (b ? `<path d="M${x - 11} 31 L${x + 11} 9" stroke="${CE2C.encre}" stroke-width="2.6" stroke-linecap="round"/>` : ''); }
-  return cpSvg(n * 30 + 8, 40, s);
-}
-const bleus = (a, b) => Array(a).fill(CPC.jeton).concat(Array(b).fill(CPC.jeton2));
+const barre = cpSchema, sauts = cpSautsBande, jetons = cpJetons, bleus = cpBleus;
 
 cm1Chapitre({
   niveau: 'cp', titre: 'Ajouter, retirer : premiers problèmes', slug: 'ajouter-retirer',

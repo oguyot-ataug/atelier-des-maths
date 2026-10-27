@@ -11,25 +11,7 @@ const lig = (...l) => `<div class="cpn-rang">${l.join('')}</div>`;
 const MOTS = CP_MOTS.concat(['onze', 'douze', 'treize', 'quatorze', 'quinze', 'seize', 'dix-sept', 'dix-huit', 'dix-neuf', 'vingt']);
 // Deux boîtes de dix : la première pleine, la seconde avec n − 10 jetons.
 const boites = (n, c) => lig(cpBoiteDix(Math.min(10, n), { c: c || 26 }), cpBoiteDix(Math.max(0, n - 10), { c: c || 26, couleurs: Array(10).fill(CPC.jeton2) }));
-// Barres de dix cubes et cubes seuls (matériel de numération).
-function cubes(n, o){
-  o = o || {}; const q = o.q || 16, d = Math.floor(n / 10), u = n % 10;
-  let s = '';
-  for(let b = 0; b < d; b++) for(let i = 0; i < 10; i++) s += `<rect x="${4 + i * q}" y="${4 + b * (q + 8)}" width="${q}" height="${q}" fill="${CE2C.vert}" stroke="#14583A" stroke-width="1.2"/>`;
-  const x0 = d ? 10 * q + 22 : 4;
-  for(let i = 0; i < u; i++) s += `<rect x="${x0 + (i % 5) * (q + 4)}" y="${4 + Math.floor(i / 5) * (q + 8)}" width="${q}" height="${q}" fill="${CPC.jeton2}" stroke="${CPC.bord}" stroke-width="1.2"/>`;
-  const W = x0 + Math.min(u, 5) * (q + 4) + 6, H = Math.max(d, u > 5 ? 2 : u ? 1 : 0) * (q + 8) + 4;
-  return cpSvg(Math.max(W, 10 * q + 8), H, s, o.px);
-}
-// La bande des nombres de a à b, avec des cases éventuellement vides (trous) ou colorées.
-function bande(a, b, o){
-  o = o || {}; const c = o.c || 30, n = b - a + 1;
-  let s = '';
-  for(let i = 0; i < n; i++){ const v = a + i, trou = (o.trous || []).includes(v), on = (o.on || []).includes(v);
-    s += `<rect x="${3 + i * c}" y="3" width="${c}" height="${c}" fill="${on ? '#FDE3D2' : v === 10 || v === 20 ? '#E7F5EE' : '#fff'}" stroke="${CPC.bord}" stroke-width="1.5"/>`
-      + (trou ? '' : ce2T(3 + i * c + c / 2, 3 + c * .68, v, { t: c * .45, g: 700, c: on ? CPC.jeton : CPC.bord })); }
-  return cpSvg(n * c + 6, c + 6, s, o.px);
-}
+const cubes = cpCubes, bande = cpBande;
 // Une fiche par nombre : chiffres, mot, « 10 et … », deux boîtes de dix.
 const fiche = n => `<div class="cpn-fiche"><div class="cpn-fiche-n">${n}</div><div class="cpn-fiche-mot">${MOTS[n]}</div>
   <div style="font-size:.9rem;margin-bottom:4px;">${n === 20 ? '10 et 10' : `10 et ${n - 10}`}</div>${cubes(n, { q: 11 })}</div>`;

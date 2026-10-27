@@ -8,33 +8,7 @@
    ============================================================ */
 (() => {
 const lig = (...l) => `<div class="cpn-rang">${l.join('')}</div>`;
-const C = 44; // côté d'une case du quadrillage
-// Petits dessins posés dans une case (centre x, y).
-const ICO = {
-  souris: (x, y) => `<path d="M${x + 10} ${y + 4} q12 2 10 12" fill="none" stroke="#8A8F98" stroke-width="2"/><ellipse cx="${x}" cy="${y + 3}" rx="12" ry="8" fill="#B8BDC6" stroke="#5B6472" stroke-width="1.2"/><circle cx="${x - 9}" cy="${y - 6}" r="5" fill="#D9A3B0" stroke="#5B6472"/><circle cx="${x - 12}" cy="${y + 1}" r="1.5" fill="#1F3A5C"/>`,
-  fromage: (x, y) => `<polygon points="${x - 14},${y + 10} ${x + 14},${y + 10} ${x + 14},${y - 10}" fill="#F5C842" stroke="#B8860B" stroke-width="1.5" stroke-linejoin="round"/><circle cx="${x + 6}" cy="${y + 3}" r="2.6" fill="#D9A520"/><circle cx="${x + 10}" cy="${y - 3}" r="1.8" fill="#D9A520"/>`,
-  etoile: (x, y) => `<polygon points="${[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(i => { const r = i % 2 ? 6 : 15, a = -Math.PI / 2 + i * Math.PI / 5; return `${(x + r * Math.cos(a)).toFixed(1)},${(y + r * Math.sin(a)).toFixed(1)}`; }).join(' ')}" fill="#F5B700" stroke="#A67C00" stroke-width="1.2"/>`,
-  coeur: (x, y) => `<path d="M${x} ${y + 12} C${x - 20} ${y - 2} ${x - 10} ${y - 16} ${x} ${y - 6} C${x + 10} ${y - 16} ${x + 20} ${y - 2} ${x} ${y + 12} z" fill="#E35D3A" stroke="#9E2F18" stroke-width="1.2"/>`,
-  rond: (x, y) => `<circle cx="${x}" cy="${y}" r="12" fill="#2EA8C9" stroke="#1F3A5C" stroke-width="1.2"/>`,
-  carre: (x, y) => `<rect x="${x - 11}" y="${y - 11}" width="22" height="22" fill="#2E9C6A" stroke="#1F3A5C" stroke-width="1.2"/>`,
-  arbre: (x, y) => `<rect x="${x - 3}" y="${y + 2}" width="6" height="12" fill="#6B4423"/><circle cx="${x}" cy="${y - 4}" r="12" fill="#3E9B4F"/>`,
-};
-// Quadrillage de nc × nr cases ; objets : [[type, colonne, ligne], …] (ligne 0 en haut).
-function quad(nc, nr, objets, o){
-  o = o || {}; const W = nc * C + 6, H = nr * C + 6;
-  let s = `<rect x="3" y="3" width="${nc * C}" height="${nr * C}" fill="#fff" stroke="${CPC.bord}" stroke-width="2"/>`;
-  for(let i = 1; i < nc; i++) s += `<line x1="${3 + i * C}" y1="3" x2="${3 + i * C}" y2="${3 + nr * C}" stroke="#9FB0C4" stroke-width="1.2"/>`;
-  for(let j = 1; j < nr; j++) s += `<line x1="3" y1="${3 + j * C}" x2="${3 + nc * C}" y2="${3 + j * C}" stroke="#9FB0C4" stroke-width="1.2"/>`;
-  (o.colorie || []).forEach(([c, r, coul]) => { s += `<rect x="${3 + c * C + 2}" y="${3 + r * C + 2}" width="${C - 4}" height="${C - 4}" fill="${coul || '#FDE3D2'}"/>`; });
-  if(o.chemin) s += `<polyline points="${o.chemin.map(([c, r]) => `${3 + c * C + C / 2},${3 + r * C + C / 2}`).join(' ')}" fill="none" stroke="${CE2C.violet}" stroke-width="3" stroke-dasharray="6 4" stroke-linecap="round"/>`;
-  objets.forEach(([t, c, r]) => { s += ICO[t](3 + c * C + C / 2, 3 + r * C + C / 2); });
-  return cpSvg(W, H, s, o.px);
-}
-// Les flèches : d (droite), g (gauche), h (en haut), b (en bas).
-const ANG = { d: 0, b: 90, g: 180, h: 270 }, PAS = { d: [1, 0], g: [-1, 0], h: [0, -1], b: [0, 1] };
-const fleche = (d, on) => cpSvg(34, 34, `<rect x="1" y="1" width="32" height="32" rx="7" fill="${on ? '#EDE4FA' : '#fff'}" stroke="${on ? CE2C.violet : '#9FB0C4'}" stroke-width="${on ? 2.4 : 1.4}"/><g transform="rotate(${ANG[d]} 17 17)"><path d="M7 17 H24 M18 10 L25 17 L18 24" fill="none" stroke="${CPC.bord}" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></g>`, 30);
-const code = (txt, on) => `<span class="cpn-code">${txt.split('').map((d, i) => fleche(d, i === on)).join('')}</span>`;
-const suivre = (dep, txt) => { const L = [dep.slice()]; txt.split('').forEach(d => { const p = L[L.length - 1]; L.push([p[0] + PAS[d][0], p[1] + PAS[d][1]]); }); return L; };
+const C = CP_Q, ICO = CP_ICO, quad = cpQuad, PAS = CP_PAS, fleche = cpFleche, code = cpCode, suivre = cpSuivre;
 
 /* ---- La souris suit les flèches, une case par flèche ---- */
 function animChemin(id, o){

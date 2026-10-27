@@ -315,3 +315,289 @@ function cpAnimAjouter(id, o){
       return { scene: `<svg viewBox="0 0 460 180" class="cma-svg" style="max-width:520px;"><defs><marker id="cpfl-${id}" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="${CE2C.violet}"/></marker></defs>${s}</svg>`, texte };
     } });
 }
+
+/* ---------------- Quadrillage, petits dessins et flèches (G1, G5) ---------------- */
+const CP_Q = 44; // côté d'une case du quadrillage
+// Petits dessins posés dans une case (centre x, y).
+const CP_ICO = {
+  souris: (x, y) => `<path d="M${x + 10} ${y + 4} q12 2 10 12" fill="none" stroke="#8A8F98" stroke-width="2"/><ellipse cx="${x}" cy="${y + 3}" rx="12" ry="8" fill="#B8BDC6" stroke="#5B6472" stroke-width="1.2"/><circle cx="${x - 9}" cy="${y - 6}" r="5" fill="#D9A3B0" stroke="#5B6472"/><circle cx="${x - 12}" cy="${y + 1}" r="1.5" fill="#1F3A5C"/>`,
+  fromage: (x, y) => `<polygon points="${x - 14},${y + 10} ${x + 14},${y + 10} ${x + 14},${y - 10}" fill="#F5C842" stroke="#B8860B" stroke-width="1.5" stroke-linejoin="round"/><circle cx="${x + 6}" cy="${y + 3}" r="2.6" fill="#D9A520"/><circle cx="${x + 10}" cy="${y - 3}" r="1.8" fill="#D9A520"/>`,
+  etoile: (x, y) => `<polygon points="${[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(i => { const r = i % 2 ? 6 : 15, a = -Math.PI / 2 + i * Math.PI / 5; return `${(x + r * Math.cos(a)).toFixed(1)},${(y + r * Math.sin(a)).toFixed(1)}`; }).join(' ')}" fill="#F5B700" stroke="#A67C00" stroke-width="1.2"/>`,
+  coeur: (x, y) => `<path d="M${x} ${y + 12} C${x - 20} ${y - 2} ${x - 10} ${y - 16} ${x} ${y - 6} C${x + 10} ${y - 16} ${x + 20} ${y - 2} ${x} ${y + 12} z" fill="#E35D3A" stroke="#9E2F18" stroke-width="1.2"/>`,
+  rond: (x, y) => `<circle cx="${x}" cy="${y}" r="12" fill="#2EA8C9" stroke="#1F3A5C" stroke-width="1.2"/>`,
+  carre: (x, y) => `<rect x="${x - 11}" y="${y - 11}" width="22" height="22" fill="#2E9C6A" stroke="#1F3A5C" stroke-width="1.2"/>`,
+  arbre: (x, y) => `<rect x="${x - 3}" y="${y + 2}" width="6" height="12" fill="#6B4423"/><circle cx="${x}" cy="${y - 4}" r="12" fill="#3E9B4F"/>`,
+};
+// Quadrillage de nc × nr cases ; objets : [[type, colonne, ligne], …] (ligne 0 en haut).
+function cpQuad(nc, nr, objets, o){
+  o = o || {}; const W = nc * CP_Q + 6, H = nr * CP_Q + 6;
+  let s = `<rect x="3" y="3" width="${nc * CP_Q}" height="${nr * CP_Q}" fill="#fff" stroke="${CPC.bord}" stroke-width="2"/>`;
+  for(let i = 1; i < nc; i++) s += `<line x1="${3 + i * CP_Q}" y1="3" x2="${3 + i * CP_Q}" y2="${3 + nr * CP_Q}" stroke="#9FB0C4" stroke-width="1.2"/>`;
+  for(let j = 1; j < nr; j++) s += `<line x1="3" y1="${3 + j * CP_Q}" x2="${3 + nc * CP_Q}" y2="${3 + j * CP_Q}" stroke="#9FB0C4" stroke-width="1.2"/>`;
+  (o.colorie || []).forEach(([c, r, coul]) => { s += `<rect x="${3 + c * CP_Q + 2}" y="${3 + r * CP_Q + 2}" width="${CP_Q - 4}" height="${CP_Q - 4}" fill="${coul || '#FDE3D2'}"/>`; });
+  if(o.chemin) s += `<polyline points="${o.chemin.map(([c, r]) => `${3 + c * CP_Q + CP_Q / 2},${3 + r * CP_Q + CP_Q / 2}`).join(' ')}" fill="none" stroke="${CE2C.violet}" stroke-width="3" stroke-dasharray="6 4" stroke-linecap="round"/>`;
+  objets.forEach(([t, c, r]) => { s += CP_ICO[t](3 + c * CP_Q + CP_Q / 2, 3 + r * CP_Q + CP_Q / 2); });
+  return cpSvg(W, H, s, o.px);
+}
+// Les flèches : d (droite), g (gauche), h (en haut), b (en bas).
+const CP_ANG = { d: 0, b: 90, g: 180, h: 270 }, CP_PAS = { d: [1, 0], g: [-1, 0], h: [0, -1], b: [0, 1] };
+const cpFleche = (d, on) => cpSvg(34, 34, `<rect x="1" y="1" width="32" height="32" rx="7" fill="${on ? '#EDE4FA' : '#fff'}" stroke="${on ? CE2C.violet : '#9FB0C4'}" stroke-width="${on ? 2.4 : 1.4}"/><g transform="rotate(${CP_ANG[d]} 17 17)"><path d="M7 17 H24 M18 10 L25 17 L18 24" fill="none" stroke="${CPC.bord}" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></g>`, 30);
+const cpCode = (txt, on) => `<span class="cpn-code">${txt.split('').map((d, i) => cpFleche(d, i === on)).join('')}</span>`;
+const cpSuivre = (dep, txt) => { const L = [dep.slice()]; txt.split('').forEach(d => { const p = L[L.length - 1]; L.push([p[0] + CP_PAS[d][0], p[1] + CP_PAS[d][1]]); }); return L; };
+
+/* ---------------- Barres de dix cubes et bande des nombres (N3…) ---------------- */
+// Barres de dix cubes et cubes seuls (matériel de numération).
+function cpCubes(n, o){
+  o = o || {}; const q = o.q || 16, d = Math.floor(n / 10), u = n % 10;
+  let s = '';
+  for(let b = 0; b < d; b++) for(let i = 0; i < 10; i++) s += `<rect x="${4 + i * q}" y="${4 + b * (q + 8)}" width="${q}" height="${q}" fill="${CE2C.vert}" stroke="#14583A" stroke-width="1.2"/>`;
+  const x0 = d ? 10 * q + 22 : 4;
+  for(let i = 0; i < u; i++) s += `<rect x="${x0 + (i % 5) * (q + 4)}" y="${4 + Math.floor(i / 5) * (q + 8)}" width="${q}" height="${q}" fill="${CPC.jeton2}" stroke="${CPC.bord}" stroke-width="1.2"/>`;
+  const W = x0 + Math.min(u, 5) * (q + 4) + 6, H = Math.max(d, u > 5 ? 2 : u ? 1 : 0) * (q + 8) + 4;
+  return cpSvg(Math.max(W, 10 * q + 8), H, s, o.px);
+}
+// La bande des nombres de a à b, avec des cases éventuellement vides (trous) ou colorées.
+function cpBande(a, b, o){
+  o = o || {}; const c = o.c || 30, n = b - a + 1;
+  let s = '';
+  for(let i = 0; i < n; i++){ const v = a + i, trou = (o.trous || []).includes(v), on = (o.on || []).includes(v);
+    s += `<rect x="${3 + i * c}" y="3" width="${c}" height="${c}" fill="${on ? '#FDE3D2' : v === 10 || v === 20 ? '#E7F5EE' : '#fff'}" stroke="${CPC.bord}" stroke-width="1.5"/>`
+      + (trou ? '' : ce2T(3 + i * c + c / 2, 3 + c * .68, v, { t: c * .45, g: 700, c: on ? CPC.jeton : CPC.bord })); }
+  return cpSvg(n * c + 6, c + 6, s, o.px);
+}
+
+/* ---------------- Schéma en barres, sauts sur la bande, jetons barrés (N4…) ---------------- */
+// Schéma en barres : parts = [[valeur, texte, couleur], …] sur une ligne, total écrit sous l'accolade.
+function cpSchema(parts, total, o){
+  o = o || {}; const U = o.u || 26, W = parts.reduce((s, p) => s + p[0], 0) * U;
+  let s = '', x = 4;
+  parts.forEach(([v, tx, c]) => { s += `<rect x="${x}" y="4" width="${v * U}" height="34" fill="${c === '#fff' ? '#fff' : c}" fill-opacity="${c === '#fff' ? 1 : .45}" stroke="${CE2C.encre}" stroke-width="1.6"${c === '#fff' ? ' stroke-dasharray="5 4"' : ''}/>` + ce2T(x + v * U / 2, 27, tx, { t: 16, g: 700 }); x += v * U; });
+  s += `<path d="M4 44 q0 10 10 10 H${4 + W / 2 - 8} q8 0 8 8 q0 -8 8 -8 H${W - 6} q10 0 10 -10" fill="none" stroke="${CE2C.rouge}" stroke-width="2"/>` + ce2T(4 + W / 2, 82, total, { t: 16, g: 700, c: CE2C.rouge });
+  return cpSvg(W + 8, 88, s, o.px);
+}
+// Sauts sur la bande des nombres : de a, n sauts de +1 (ou −1 si n < 0).
+function cpSautsBande(a, n, o){
+  o = o || {}; const de = o.de != null ? o.de : 0, fin = o.a || 12, c = 30, X = v => 4 + (v - de) * c + c / 2;
+  let s = '';
+  for(let v = de; v <= fin; v++){ const on = v === a || v === a + n;
+    s += `<rect x="${4 + (v - de) * c}" y="40" width="${c}" height="${c}" fill="${v === a + n ? '#FDE3D2' : v === a ? '#E3F3FA' : '#fff'}" stroke="${CPC.bord}" stroke-width="1.4"/>` + ce2T(X(v), 60, v, { t: 14, g: on ? 700 : 600, c: v === a + n ? CPC.jeton : CPC.bord }); }
+  const sg = n < 0 ? -1 : 1, col = n < 0 ? CE2C.rouge : CE2C.vert;
+  for(let q = 0; q < Math.abs(n); q++){ const x0 = X(a + q * sg), x1 = X(a + (q + 1) * sg);
+    s += `<path d="M${x0} 38 Q${(x0 + x1) / 2} 8 ${x1} 36" fill="none" stroke="${col}" stroke-width="2.2"/><polygon points="${x1},38 ${x1 - 5 * sg},30 ${x1 + 3 * sg},30" fill="${col}"/>` + ce2T((x0 + x1) / 2, 16, sg > 0 ? '+1' : '−1', { t: 11, c: col, g: 700 }); }
+  return cpSvg((fin - de + 1) * c + 8, 76, s, o.px);
+}
+// Une rangée de jetons ; les k derniers sont barrés (retirés).
+function cpJetons(n, barres, coul){
+  let s = '';
+  for(let i = 0; i < n; i++){ const x = 18 + i * 30, b = i >= n - (barres || 0);
+    s += `<circle cx="${x}" cy="20" r="11" fill="${(coul && coul[i]) || CPC.jeton}" stroke="${CPC.bord}" opacity="${b ? .45 : 1}"/>` + (b ? `<path d="M${x - 11} 31 L${x + 11} 9" stroke="${CE2C.encre}" stroke-width="2.6" stroke-linecap="round"/>` : ''); }
+  return cpSvg(n * 30 + 8, 40, s);
+}
+const cpBleus = (a, b) => Array(a).fill(CPC.jeton).concat(Array(b).fill(CPC.jeton2));
+
+/* ================= Période 2 et suivantes ================= */
+// Le nom d'un nombre de 0 à 100 (orthographe traditionnelle : vingt et un, quatre-vingts…).
+function cpMot(n){
+  const U = ['zéro', 'un', 'deux', 'trois', 'quatre', 'cinq', 'six', 'sept', 'huit', 'neuf', 'dix', 'onze', 'douze', 'treize', 'quatorze', 'quinze', 'seize'];
+  if(n <= 16) return U[n];
+  if(n < 20) return 'dix-' + U[n - 10];
+  if(n === 100) return 'cent';
+  const D = { 2: 'vingt', 3: 'trente', 4: 'quarante', 5: 'cinquante', 6: 'soixante' };
+  const d = Math.floor(n / 10), u = n % 10;
+  if(d <= 6) return D[d] + (u === 0 ? '' : u === 1 ? ' et un' : '-' + U[u]);
+  if(d === 7) return 'soixante' + (n === 71 ? ' et onze' : '-' + cpMot(n - 60));
+  if(n === 80) return 'quatre-vingts';
+  return 'quatre-vingt-' + cpMot(n - 80);
+}
+// Barres de dix cubes debout (une barre = une dizaine) et cubes seuls, rangés par 5 (dessin SVG brut).
+function cpBarresSvg(x, y, n, q, o){
+  o = o || {}; const d = Math.floor(n / 10), u = n % 10;
+  let s = '';
+  for(let b = 0; b < d; b++) for(let i = 0; i < 10; i++) s += `<rect x="${x + b * (q + 6)}" y="${y + i * q}" width="${q}" height="${q}" fill="${o.cd || CE2C.vert}" stroke="#14583A" stroke-width="1"/>`;
+  const x0 = x + d * (q + 6) + (d ? 8 : 0);
+  for(let j = 0; j < u; j++) s += `<rect x="${x0 + Math.floor(j / 5) * (q + 3)}" y="${y + 10 * q - (j % 5 + 1) * (q + 2)}" width="${q}" height="${q}" fill="${o.cu || CPC.jeton2}" stroke="${CPC.bord}" stroke-width="1"/>`;
+  return s;
+}
+const cpBarresL = (n, q) => { const d = Math.floor(n / 10), u = n % 10; return d * (q + 6) + (d ? 8 : 0) + (u ? (u > 5 ? 2 : 1) * (q + 3) : 0) + 2; };
+function cpBarres(n, o){ o = o || {}; const q = o.q || 12; return cpSvg(cpBarresL(n, q) + 6, 10 * q + 6, cpBarresSvg(3, 3, n, q, o), o.px); }
+
+/* ---- Grouper par dix : des cubes en vrac se rangent en barres de dix ---- */
+function cpAnimGrouper(id, o){
+  o = o || {};
+  return cmAnim(id, {
+    etat: { n: o.n || 34 }, duree: a => 4000 + Math.floor(a.etat.n / 10) * 900,
+    legende: o.legende || 'Faites pause au début : « Combien de cubes ? » Trop long à compter un par un… On les range par dix.',
+    controles: a => `<div class="cmp-modeles">${cmPlusMoins(id, 'n', a.etat.n, 11, o.max || 59, 'Cubes')}<button type="button" class="cmp-mod" onclick="cmAnimRegler('${id}','n',${11 + Math.floor(Math.random() * ((o.max || 59) - 10))})">Au hasard</button></div>`,
+    dessin: (t, a) => {
+      const n = a.etat.n, d = Math.floor(n / 10), u = n % 10, q = 12, W = 500, H = 200;
+      const vrac = cpVrac(n, n * 11 + 5, W, H, 15);
+      const L = cpBarresL(n, q), X0 = (W - L) / 2, Y0 = 30;
+      const dest = i => { const b = Math.floor(i / 10); if(b < d) return [X0 + b * (q + 6), Y0 + (i % 10) * q];
+        const j = i - d * 10; return [X0 + d * (q + 6) + (d ? 8 : 0) + Math.floor(j / 5) * (q + 3), Y0 + 10 * q - (j % 5 + 1) * (q + 2)]; };
+      // Chaque paquet de dix part à son tour, puis les unités.
+      const nb = d + (u ? 1 : 0), part = i => Math.min(Math.floor(i / 10), d);
+      let s = '';
+      vrac.forEach(([x0, y0], i) => { const g = part(i), k = cmDoux(cmPhase(t, .12 + g * .6 / nb, .12 + (g + 1) * .6 / nb)), [x1, y1] = dest(i);
+        s += `<rect x="${x0 - q / 2 + (x1 - x0 + q / 2) * k}" y="${y0 - q / 2 + (y1 - y0 + q / 2) * k}" width="${q}" height="${q}" fill="${g < d && k > .99 ? CE2C.vert : CPC.jeton2}" stroke="${CPC.bord}" stroke-width="1"/>`; });
+      const fin = t > .74, cpt = Math.min(d, Math.floor(cmPhase(t, .74, .9) * (d + 1)));
+      if(fin){ for(let b = 0; b < cpt; b++) s += ce2T(X0 + b * (q + 6) + q / 2, Y0 + 10 * q + 20, (b + 1) * 10, { t: 13, c: CE2C.vert, g: 700 });
+        if(t > .9 && u) s += ce2T(X0 + d * (q + 6) + (d ? 8 : 0) + (u > 5 ? q + 2 : q / 2), Y0 + 10 * q + 20, `+ ${u}`, { t: 13, c: CPC.jeton2, g: 700 }); }
+      const texte = t < .12 ? 'Des cubes en vrac. <b>Combien</b> y en a-t-il ?'
+        : !fin ? 'On fait des barres de <b>dix</b> cubes…'
+        : t < .9 ? `On compte les barres de dix : ${Array.from({ length: Math.max(cpt, 1) }, (_, i) => (i + 1) * 10).join(', ')}…`
+        : `<b>${d} dizaine${d > 1 ? 's' : ''}</b>${u ? ` et <b>${u} unité${u > 1 ? 's' : ''}</b>` : ''} : il y a <b>${n}</b> cubes (${cpMot(n)}).`;
+      return { scene: `<svg viewBox="0 0 ${W} ${H}" class="cma-svg" style="max-width:${W + 40}px;">${s}</svg>`, texte };
+    } });
+}
+
+/* ---- Le tableau des nombres : 10 cases par ligne ---- */
+function cpTableau(de, a, o){
+  o = o || {}; const c = o.c || 30, n = a - de + 1, L = Math.ceil(n / 10);
+  let s = '';
+  for(let i = 0; i < n; i++){ const v = de + i, x = 3 + (i % 10) * c, y = 3 + Math.floor(i / 10) * c, trou = (o.trous || []).includes(v), on = (o.on || []).includes(v), col = o.colonne != null && v % 10 === o.colonne;
+    s += `<rect x="${x}" y="${y}" width="${c}" height="${c}" fill="${on ? '#FDE3D2' : col ? '#E3F3FA' : '#fff'}" stroke="${CPC.bord}" stroke-width="1.2"/>` + (trou ? '' : ce2T(x + c / 2, y + c * .66, v, { t: c * .42, g: on ? 700 : 600, c: on ? CPC.jeton : CPC.bord })); }
+  return cpSvg(10 * c + 6, L * c + 6, s, o.px);
+}
+
+/* ---- Comparer : le crocodile ouvre la bouche vers le plus grand nombre ---- */
+function cpCrocoSvg(x, y, dir, k){ // dir = 1 : bouche ouverte vers la droite (« < ») ; k : ouverture (0 à 1)
+  const o = 30 * (k == null ? 1 : k), L = 54, ex = x + dir * L;
+  let s = `<path d="M${x} ${y} L${ex} ${y - o} L${ex} ${y - o - 12} L${x - dir * 8} ${y - 8} Z" fill="#3E9B4F" stroke="#1F5C2E" stroke-width="2" stroke-linejoin="round"/>`
+    + `<path d="M${x} ${y} L${ex} ${y + o} L${ex} ${y + o + 10} L${x - dir * 8} ${y + 7} Z" fill="#3E9B4F" stroke="#1F5C2E" stroke-width="2" stroke-linejoin="round"/>`;
+  for(let i = 1; i <= 4; i++){ const f = i / 5, xx = x + dir * L * f; s += `<path d="M${xx} ${y - o * f} l${dir * 4} 7 l${dir * 4} -7" fill="#fff" stroke="#fff"/><path d="M${xx} ${y + o * f} l${dir * 4} -7 l${dir * 4} 7" fill="#fff" stroke="#fff"/>`; }
+  return s + `<circle cx="${x + dir * 6}" cy="${y - 16}" r="6" fill="#fff" stroke="#1F5C2E"/><circle cx="${x + dir * 7}" cy="${y - 16}" r="2.6" fill="#1F3A5C"/>`;
+}
+function cpAnimCroco(id, o){
+  const P = o.presets;
+  return cmAnim(id, {
+    etat: { p: 0 }, duree: 8000, legende: o.legende || 'Le crocodile est gourmand : il ouvre toujours la bouche du côté du plus grand nombre.',
+    controles: a => ce2Choix(id, P.map(([x, y]) => ({ nom: `${x} et ${y}` })), a),
+    dessin: (t, a) => {
+      const [A, B] = P[a.etat.p], q = 11, dA = Math.floor(A / 10), dB = Math.floor(B / 10);
+      let s = cpBarresSvg(60, 20, A, q) + cpBarresSvg(340, 20, B, q) + ce2T(60 + cpBarresL(A, q) / 2, 160, A, { t: 30, g: 700 }) + ce2T(340 + cpBarresL(B, q) / 2, 160, B, { t: 30, g: 700 });
+      const k = cmDoux(cmPhase(t, .55, .8)), dir = A < B ? 1 : -1;
+      if(t > .55 && A !== B) s += `<g opacity="${k}">${cpCrocoSvg(dir > 0 ? 226 : 280, 92, dir, k)}</g>` + (t > .82 ? ce2T(250, 160, A < B ? '&lt;' : '&gt;', { t: 40, g: 700, c: CE2C.vert }) : '');
+      if(t > .55 && A === B) s += ce2T(250, 160, '=', { t: 40, g: 700, c: CE2C.vert });
+      const texte = t < .2 ? `Qui est le plus grand : <b>${A}</b> ou <b>${B}</b> ?`
+        : t < .55 ? (dA !== dB ? `On regarde d'abord les <b>dizaines</b> : ${dA} dizaine${dA > 1 ? 's' : ''} et ${dB} dizaine${dB > 1 ? 's' : ''}.` : `Même nombre de dizaines (${dA}) : on regarde les <b>unités</b>, ${A % 10} et ${B % 10}.`)
+        : A === B ? 'Les deux nombres sont égaux.'
+        : t < .82 ? `Le crocodile ouvre la bouche vers <b>${Math.max(A, B)}</b>.`
+        : `<b>${A} ${A < B ? '&lt;' : '&gt;'} ${B}</b> : on lit « ${A} est ${A < B ? 'plus petit' : 'plus grand'} que ${B} ».`;
+      return { scene: `<svg viewBox="0 0 500 175" class="cma-svg" style="max-width:520px;">${s}</svg>`, texte };
+    } });
+}
+
+/* ---- Le double (on ajoute la même quantité, comme dans un miroir) et la moitié (on partage en deux parts égales) ---- */
+function cpAnimDouble(id, o){
+  o = o || {};
+  return cmAnim(id, {
+    etat: { mode: o.mode || 'double', n: o.n || 4 }, duree: 7000,
+    legende: o.legende || 'Double : la même quantité apparaît en face, comme dans un miroir. Moitié : on partage en deux parts égales.',
+    controles: a => `<div class="cmp-modeles">${cmBtn(id, 'mode', 'double', 'Le double', a.etat.mode === 'double')}${cmBtn(id, 'mode', 'moitie', 'La moitié', a.etat.mode === 'moitie')}${cmPlusMoins(id, 'n', a.etat.n, 1, 10, a.etat.mode === 'double' ? 'Nombre' : 'Moitié de 2 ×')}</div>`,
+    dessin: (t, a) => {
+      const { mode, n } = a.etat, k = cmDoux(cmPhase(t, .2, .65)), P = 30;
+      const pos = (i, cote) => [cote < 0 ? 230 - 22 - (i % 5) * P : 270 + 22 + (i % 5) * P, 50 + Math.floor(i / 5) * P];
+      let s = `<line x1="250" y1="20" x2="250" y2="130" stroke="${CE2C.violet}" stroke-width="3" stroke-dasharray="6 5"/>`;
+      if(mode === 'double'){
+        for(let i = 0; i < n; i++){ const [x, y] = pos(i, -1), [x2] = pos(i, 1); s += `<circle cx="${x}" cy="${y}" r="11" fill="${CPC.jeton}" stroke="${CPC.bord}"/>`;
+          if(t > .2) s += `<circle cx="${x + (x2 - x) * k}" cy="${y}" r="11" fill="${CPC.jeton2}" stroke="${CPC.bord}" opacity="${.3 + .7 * k}"/>`; }
+      } else {
+        for(let i = 0; i < 2 * n; i++){ const x0 = 250 - (2 * n - 1) * 13 + i * 26, y0 = 160, cote = i % 2 ? 1 : -1, [x1, y1] = pos(Math.floor(i / 2), cote);
+          s += `<circle cx="${x0 + (x1 - x0) * k}" cy="${y0 + (y1 - y0) * k}" r="11" fill="${cote < 0 ? CPC.jeton : CPC.jeton2}" stroke="${CPC.bord}"/>`; }
+      }
+      const fin = t > .7;
+      if(fin) s += ce2T(150, 120 + (n > 5 ? 10 : 0), n, { t: 24, g: 700, c: CPC.jeton }) + ce2T(350, 120 + (n > 5 ? 10 : 0), n, { t: 24, g: 700, c: CPC.jeton2 });
+      const texte = mode === 'double'
+        ? (t < .2 ? `Voici <b>${n}</b> jeton${n > 1 ? 's' : ''}.` : !fin ? 'On en met autant de l\'autre côté…' : `Le double de ${n}, c'est <b>${n} + ${n} = ${2 * n}</b>.`)
+        : (t < .2 ? `Voici <b>${2 * n}</b> jetons. On les partage en deux parts égales.` : !fin ? 'Un pour toi, un pour moi…' : `Chaque part a <b>${n}</b> jeton${n > 1 ? 's' : ''} : la moitié de ${2 * n}, c'est <b>${n}</b>, car ${n} + ${n} = ${2 * n}.`);
+      return { scene: `<svg viewBox="0 0 500 190" class="cma-svg" style="max-width:520px;">${s}</svg>`, texte };
+    } });
+}
+
+/* ---- Comparer des longueurs : côte à côte, avec une bande, avec des trombones ---- */
+const cpCrayon = (x, y, L, c) => `<rect x="${x}" y="${y - 9}" width="${L - 26}" height="18" rx="3" fill="${c}" stroke="${CPC.bord}" stroke-width="1.4"/><polygon points="${x + L - 26},${y - 9} ${x + L},${y} ${x + L - 26},${y + 9}" fill="#F3D7A8" stroke="${CPC.bord}" stroke-width="1.4"/><polygon points="${x + L - 8},${y - 3} ${x + L},${y} ${x + L - 8},${y + 3}" fill="${CPC.bord}"/>`;
+const cpTrombone = (x, y) => `<path d="M${x + 2} ${y} H${x + 30} a5 5 0 0 1 0 10 H${x + 6} a3.5 3.5 0 0 1 0 -7 H${x + 26}" fill="none" stroke="#7F8A98" stroke-width="2.2"/>`;
+function cpAnimLongueurs(id){
+  const P = [{ nom: 'Côte à côte' }, { nom: 'Avec une bande de papier' }, { nom: 'Avec des trombones' }];
+  return cmAnim(id, {
+    etat: { p: 0 }, duree: 8000, legende: 'Pour comparer des longueurs, on part toujours <b>du même point</b>.',
+    controles: a => ce2Choix(id, P, a),
+    dessin: (t, a) => {
+      const p = a.etat.p; let s = '', texte = '';
+      if(p === 0){ const k = cmDoux(cmPhase(t, .25, .6));
+        s = `<line x1="60" y1="20" x2="60" y2="150" stroke="${CE2C.vert}" stroke-width="2" stroke-dasharray="5 4" opacity="${t > .25 ? 1 : 0}"/>` + cpCrayon(60, 50, 250, '#E35D3A') + cpCrayon(160 - 100 * k, 110, 220, '#2EA8C9');
+        texte = t < .25 ? 'Quel crayon est le plus long ? On ne peut pas le dire : ils ne partent pas du même endroit.' : t < .65 ? 'On aligne les deux crayons au même point de départ…' : 'Le crayon <b>rouge</b> dépasse : il est <b>plus long</b> que le crayon bleu.'; }
+      else if(p === 1){ const k1 = cmDoux(cmPhase(t, .15, .4)), k2 = cmDoux(cmPhase(t, .5, .8));
+        s = `<rect x="40" y="40" width="180" height="16" fill="#9BC53D" stroke="${CPC.bord}"/>` + ce2T(130, 30, 'le ruban vert', { t: 13 }) + `<rect x="260" y="140" width="200" height="16" fill="#F2A93B" stroke="${CPC.bord}"/>` + ce2T(360, 176, 'le ruban orange', { t: 13 })
+          + `<rect x="${40 + 220 * k2}" y="${70 + 70 * k2 - 30 * k2}" width="${180 * k1}" height="10" fill="#fff" stroke="${CE2C.violet}" stroke-width="2"/>`;
+        texte = t < .15 ? 'Les deux rubans sont collés au mur, on ne peut pas les rapprocher.' : t < .45 ? 'On coupe une bande de papier aussi longue que le ruban vert.' : t < .82 ? 'On porte la bande jusqu\'au ruban orange, en partant du même bout.' : 'Le ruban orange dépasse de la bande : il est <b>plus long</b> que le ruban vert.'; }
+      else { const n = Math.min(7, Math.floor(cmPhase(t, .15, .8) * 7.99));
+        s = `<rect x="40" y="60" width="252" height="16" fill="#9BC53D" stroke="${CPC.bord}"/>`;
+        for(let i = 0; i < n; i++) s += cpTrombone(40 + i * 36, 100) + ce2T(58 + i * 36, 136, i + 1, { t: 13, c: CE2C.violet, g: 700 });
+        texte = t < .15 ? 'Combien de trombones faut-il pour faire la longueur du ruban ?' : t < .85 ? 'On pose les trombones bout à bout, sans laisser d\'espace…' : 'Le ruban est long comme <b>7 trombones</b>.'; }
+      return { scene: `<svg viewBox="0 0 500 190" class="cma-svg" style="max-width:520px;">${s}</svg>`, texte };
+    } });
+}
+
+/* ---- Les formes : on suit le bord, on compte les côtés et les sommets ---- */
+const CP_FORMES = {
+  carre: { nom: 'Le carré', pts: [[170, 30], [300, 30], [300, 160], [170, 160]], c: '#2EA8C9', fin: '<b>4 côtés</b> de la même longueur et <b>4 sommets</b>.' },
+  rectangle: { nom: 'Le rectangle', pts: [[120, 50], [360, 50], [360, 150], [120, 150]], c: '#2E9C6A', fin: '<b>4 côtés</b> et <b>4 sommets</b> : deux grands côtés, deux petits côtés.' },
+  triangle: { nom: 'Le triangle', pts: [[240, 25], [350, 165], [130, 165]], c: '#E9C46A', fin: '<b>3 côtés</b> et <b>3 sommets</b>.' },
+  disque: { nom: 'Le disque', rond: true, c: '#E35D3A', fin: 'Le bord est tout rond : <b>pas de côté droit</b>, <b>pas de sommet</b>. Le bord du disque s\'appelle un <b>cercle</b>.' },
+};
+function cpAnimFormes(id){
+  const K = Object.keys(CP_FORMES), P = K.map(k => ({ nom: CP_FORMES[k].nom }));
+  return cmAnim(id, {
+    etat: { p: 0 }, duree: 8000, legende: 'Le doigt fait le tour de la forme : on compte les côtés (les traits droits) et les sommets (les « pointes »).',
+    controles: a => ce2Choix(id, P, a),
+    dessin: (t, a) => {
+      const F = CP_FORMES[K[a.etat.p]]; let s = '';
+      if(F.rond){ const k = cmPhase(t, .1, .7), r = 75, a1 = k * 2 * Math.PI;
+        s = `<circle cx="240" cy="95" r="${r}" fill="${F.c}" fill-opacity=".35"/>` + (k > 0 ? `<path d="M240 20 A${r} ${r} 0 ${a1 > Math.PI ? 1 : 0} 1 ${240 + r * Math.sin(a1)} ${95 - r * Math.cos(a1)}" fill="none" stroke="${CE2C.violet}" stroke-width="4"/>` : '');
+        return { scene: `<svg viewBox="0 0 480 190" class="cma-svg" style="max-width:480px;">${s}</svg>`, texte: t < .72 ? 'On suit le bord avec le doigt…' : F.fin }; }
+      const pts = F.pts, n = pts.length, k = cmPhase(t, .1, .75) * n, cote = Math.min(n, Math.floor(k));
+      s = `<polygon points="${pts.map(p => p.join(',')).join(' ')}" fill="${F.c}" fill-opacity=".3" stroke="${CPC.bord}" stroke-width="2"/>`;
+      for(let i = 0; i < n; i++){ const A = pts[i], B = pts[(i + 1) % n], f = Math.max(0, Math.min(1, k - i));
+        if(f > 0) s += `<line x1="${A[0]}" y1="${A[1]}" x2="${A[0] + (B[0] - A[0]) * f}" y2="${A[1] + (B[1] - A[1]) * f}" stroke="${CE2C.violet}" stroke-width="5" stroke-linecap="round"/>`;
+        if(f >= 1){ const mx = (A[0] + B[0]) / 2, my = (A[1] + B[1]) / 2, cx = pts.reduce((s, p) => s + p[0], 0) / n, cy = pts.reduce((s, p) => s + p[1], 0) / n, d = Math.hypot(mx - cx, my - cy);
+          s += `<circle cx="${mx + (mx - cx) / d * 22}" cy="${my + (my - cy) / d * 22}" r="11" fill="${CE2C.violet}"/>` + ce2T(mx + (mx - cx) / d * 22, my + (my - cy) / d * 22 + 5, i + 1, { t: 13, c: '#fff', g: 700 }); } }
+      if(t > .78) pts.forEach(([x, y]) => { s += `<circle cx="${x}" cy="${y}" r="7" fill="${CE2C.rouge}" stroke="#fff" stroke-width="2"/>`; });
+      const texte = t < .1 ? `${F.nom} : on fait le tour avec le doigt.` : t < .78 ? `Côté ${Math.max(1, Math.min(n, cote + 1))}…` : `${F.nom} a ${F.fin}`;
+      return { scene: `<svg viewBox="0 0 480 190" class="cma-svg" style="max-width:480px;">${s}</svg>`, texte };
+    } });
+}
+
+/* ---- La monnaie : pièces de 1 € et 2 €, billets de 5, 10, 20 et 50 € ---- */
+function cpArgentSvg(x, y, v){
+  if(v <= 2){ const r = v === 2 ? 22 : 20, ext = v === 2 ? '#C9CBCF' : '#E2C36B', int = v === 2 ? '#E2C36B' : '#C9CBCF';
+    return `<circle cx="${x + r}" cy="${y + r}" r="${r}" fill="${ext}" stroke="#7A6A3A" stroke-width="1.2"/><circle cx="${x + r}" cy="${y + r}" r="${r * .68}" fill="${int}" stroke="#7A6A3A" stroke-width=".8"/>` + ce2T(x + r, y + r + 5, v + ' €', { t: 12, g: 700, c: '#3B2B05' }); }
+  const C = { 5: '#9AA3AE', 10: '#D9776A', 20: '#5B8FD0', 50: '#E39A3B' }[v] || '#999';
+  return `<rect x="${x}" y="${y}" width="84" height="46" rx="4" fill="${C}" stroke="rgba(0,0,0,.3)" stroke-width="1.2"/><rect x="${x + 5}" y="${y + 5}" width="74" height="36" rx="3" fill="none" stroke="#fff" stroke-opacity=".6"/>` + ce2T(x + 42, y + 30, v + ' €', { t: 17, g: 700, c: '#fff' });
+}
+const cpArgentL = v => v <= 2 ? (v === 2 ? 44 : 40) : 84;
+function cpArgent(liste, o){
+  o = o || {}; let x = 3, s = '';
+  liste.forEach(v => { s += cpArgentSvg(x, v <= 2 ? 6 : 3, v); x += cpArgentL(v) + 6; });
+  return cpSvg(x, 54, s, o.px);
+}
+function cpAnimPayer(id, o){
+  const P = o.presets;
+  return cmAnim(id, {
+    etat: { p: 0 }, duree: a => 2500 + P[a.etat.p].paye.length * 1100,
+    legende: o.legende || 'On pose l\'argent un à un dans la coupelle et on compte à mesure : le plus gros d\'abord.',
+    controles: a => ce2Choix(id, P, a),
+    dessin: (t, a) => {
+      const p = P[a.etat.p], L = p.paye, n = L.length, k = cmPhase(t, .15, .85) * n, pose = Math.min(n, Math.floor(k));
+      let s = `<ellipse cx="250" cy="160" rx="190" ry="26" fill="#EFE6D6" stroke="#C9B48A" stroke-width="2"/>` + `<g transform="translate(18 14)"><rect width="110" height="52" rx="8" fill="#FFF7E8" stroke="${CPC.bord}" stroke-width="2"/>${ce2T(55, 22, p.objet || 'Prix', { t: 13 })}${ce2T(55, 44, p.prix + ' €', { t: 20, g: 700, c: CE2C.rouge })}</g>`;
+      let x = 70, total = 0;
+      L.forEach((v, i) => { const f = cmDoux(Math.max(0, Math.min(1, k - i))), y1 = v <= 2 ? 136 : 132, x0 = 160 + i * 6, y0 = 30;
+        if(i < pose + 1 && f > 0) s += `<g transform="translate(${x0 + (x - x0) * f - x} ${(y0 - y1) * (1 - f)})">${cpArgentSvg(x, y1 - (v <= 2 ? 0 : 6), v)}</g>`;
+        if(i < pose) total += v; x += cpArgentL(v) + 6; });
+      s += ce2T(440, 60, total + ' €', { t: 28, g: 700, c: total === p.prix ? CE2C.vert : CPC.bord });
+      const texte = t < .15 ? `${p.objet ? p.objet + ' coûte' : 'Il faut payer'} <b>${p.prix} €</b>. Comment payer ?`
+        : t < .86 ? `On compte : ${L.slice(0, Math.max(1, pose)).reduce((acc, v) => (acc.push((acc.length ? acc[acc.length - 1] : 0) + v), acc), []).join(', ')}…`
+        : p.fin || `On a posé <b>${p.prix} €</b> : ${L.join(' + ')} = ${p.prix}.`;
+      return { scene: `<svg viewBox="0 0 500 195" class="cma-svg" style="max-width:520px;">${s}</svg>`, texte };
+    } });
+}

@@ -1746,6 +1746,10 @@ body.fig-proj #tbSvg{display:block;width:100vw !important;height:100vh !importan
 .cpn-maison td{width:50%;padding:3px 0;font:700 1.05rem 'Space Grotesk',sans-serif;border-left:1.5px solid #1F3A5C;}
 .cpn-maison td:first-child{border-left:none;}
 .cpn-code{display:inline-flex;gap:3px;vertical-align:middle;flex-wrap:wrap;}
+.cpn-cartes{display:inline-flex;gap:8px;flex-wrap:wrap;justify-content:center;}
+.cpn-cartes span{display:inline-block;min-width:46px;padding:8px 6px;border:2px solid #1F3A5C;border-radius:8px;background:#FFF7E8;font:700 1.25rem "Space Grotesk",sans-serif;text-align:center;color:#1F3A5C;}
+.cpn-prix{display:inline-block;padding:6px 12px;border:2px dashed #E35D3A;border-radius:10px;background:#FFF7E8;font:600 1rem "Space Grotesk",sans-serif;color:#1F3A5C;}
+.cpn-prix b{display:block;font-weight:600;font-size:.85rem;color:#5B6472;}
 .quiz-ecouter{margin-left:10px;border:1.5px solid var(--accent-cp);color:var(--accent-cp);background:#fff;border-radius:999px;padding:2px 10px;font:600 .8rem Inter,sans-serif;cursor:pointer;vertical-align:middle;}
 .quiz-ecouter .gicon{font-size:1rem;vertical-align:-3px;}
 
