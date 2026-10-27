@@ -266,3 +266,44 @@ function ce1AnimSolide(id){
       return { scene: `<svg viewBox="0 0 320 210" class="cma-svg" style="max-width:380px;">${s}</svg>`, texte };
     } });
 }
+
+/* ---- Le robot-tortue : « avance », « tourne à gauche », « tourne à droite » (déplacements relatifs) ----
+   Programme : chaîne de A (avance d'une case), G (quart de tour à gauche), D (quart de tour à droite). */
+const CE1_DIR = [[0, -1], [1, 0], [0, 1], [-1, 0]]; // 0 : vers le haut, 1 : droite, 2 : bas, 3 : gauche
+function ce1CarteInstr(c, on){
+  // « avance » : des traces de pas (pour ne pas confondre avec la flèche « vers le haut » du CP).
+  const ic = c === 'A' ? `<ellipse cx="12" cy="21" rx="4" ry="6.5" fill="${CPC.bord}"/><circle cx="12" cy="11.5" r="2" fill="${CPC.bord}"/><ellipse cx="22" cy="15" rx="4" ry="6.5" fill="${CPC.bord}"/><circle cx="22" cy="5.8" r="2" fill="${CPC.bord}"/>`
+    : `<path d="M${c === 'G' ? 24 : 10} 24 V16 A8 8 0 0 ${c === 'G' ? 0 : 1} ${c === 'G' ? 16 : 18} 8 H${c === 'G' ? 10 : 24} M${c === 'G' ? 14 : 20} 4 L${c === 'G' ? 10 : 24} 8 L${c === 'G' ? 14 : 20} 12" fill="none" stroke="${c === 'G' ? CE2C.violet : CE2C.vert}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`;
+  return `<rect x="1" y="1" width="32" height="32" rx="7" fill="${on ? '#EDE4FA' : '#fff'}" stroke="${on ? CE2C.violet : '#9FB0C4'}" stroke-width="${on ? 2.4 : 1.4}"/>${ic}`;
+}
+const ce1Instr = (prog, on) => `<span class="cpn-code">${prog.split('').map((c, i) => cpSvg(34, 34, ce1CarteInstr(c, i === on), 30)).join('')}</span>`;
+function ce1AnimTortue(id, o){
+  const P = o.presets;
+  return cmAnim(id, {
+    etat: { p: 0 }, duree: a => 2500 + P[a.etat.p].prog.length * 900,
+    legende: o.legende || '« Avance » : une case devant soi. « Tourne » : un quart de tour sur place, sans changer de case.',
+    controles: a => ce2Choix(id, P, a),
+    dessin: (t, a) => {
+      const p = P[a.etat.p], nc = p.nc || 6, nr = p.nr || 5, C = 40;
+      // États successifs : position et direction.
+      const E = [{ x: p.dep[0], y: p.dep[1], d: p.dir || 1 }];
+      p.prog.split('').forEach(c => { const e = Object.assign({}, E[E.length - 1]); if(c === 'A'){ e.x += CE1_DIR[e.d][0]; e.y += CE1_DIR[e.d][1]; } else e.d = (e.d + (c === 'D' ? 1 : 3)) % 4; E.push(e); });
+      const n = p.prog.length, f = cmPhase(t, .1, .9) * n, i = Math.min(n - 1, Math.floor(f)), k = cmDoux(Math.min(1, (f - i) * 1.6));
+      const A = t < .1 ? E[0] : E[i], B = t < .1 ? E[0] : E[i + 1];
+      const x = A.x + (B.x - A.x) * k, y = A.y + (B.y - A.y) * k;
+      let da = B.d - A.d; if(da > 2) da -= 4; if(da < -2) da += 4; const ang = (A.d + da * k) * 90;
+      let s = `<rect x="3" y="3" width="${nc * C}" height="${nr * C}" fill="#fff" stroke="${CPC.bord}" stroke-width="2"/>`;
+      for(let c = 1; c < nc; c++) s += `<line x1="${3 + c * C}" y1="3" x2="${3 + c * C}" y2="${3 + nr * C}" stroke="#9FB0C4"/>`;
+      for(let r = 1; r < nr; r++) s += `<line x1="3" y1="${3 + r * C}" x2="${3 + nc * C}" y2="${3 + r * C}" stroke="#9FB0C4"/>`;
+      if(p.but) s += CP_ICO.etoile(3 + p.but[0] * C + C / 2, 3 + p.but[1] * C + C / 2);
+      const vu = E.slice(0, (t < .1 ? 0 : i) + 1).map(e => [e.x, e.y]).concat([[x, y]]);
+      s += `<polyline points="${vu.map(([c, r]) => `${3 + c * C + C / 2},${3 + r * C + C / 2}`).join(' ')}" fill="none" stroke="${CE2C.violet}" stroke-width="3" stroke-dasharray="6 4"/>`;
+      const cx = 3 + x * C + C / 2, cy = 3 + y * C + C / 2;
+      s += `<g transform="translate(${cx} ${cy}) rotate(${ang})"><circle r="14" fill="#3E9B4F" stroke="#1F5C2E" stroke-width="2"/><polygon points="0,-20 -7,-10 7,-10" fill="#1F5C2E"/><circle cx="-5" cy="-6" r="2.4" fill="#fff"/><circle cx="5" cy="-6" r="2.4" fill="#fff"/></g>`;
+      const cartes = p.prog.split('').map((c, q) => `<g transform="translate(${nc * C + 16 + (q % 5) * 36} ${6 + Math.floor(q / 5) * 38})">${ce1CarteInstr(c, t >= .1 && t < .9 && q === i)}</g>`).join('');
+      const fin = t >= .9, ok = p.but && E[n].x === p.but[0] && E[n].y === p.but[1];
+      const NOM = { A: 'avance d\'une case', G: 'tourne d\'un quart de tour à gauche', D: 'tourne d\'un quart de tour à droite' };
+      const texte = t < .1 ? 'La tortue regarde dans la direction de sa pointe. Elle va suivre le programme.' : !fin ? `Instruction ${i + 1} : elle <b>${NOM[p.prog[i]]}</b>.` : ok ? 'La tortue est arrivée sur l\'étoile !' : (p.fin || 'Le programme est terminé.');
+      return { scene: `<svg viewBox="0 0 ${nc * C + 200} ${nr * C + 8}" class="cma-svg" style="max-width:600px;">${s}${cartes}</svg>`, texte };
+    } });
+}
