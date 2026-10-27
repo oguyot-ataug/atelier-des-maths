@@ -34,6 +34,10 @@ PLANCHES['cm2|Grands nombres jusqu\'à 999 999 999'] = [
         corr: plListe([`${R('6 000 000')} ${lt} 6 708 000 ${lt} ${R('7 000 000')}`, `${R('45 000 000')} ${lt} 45 100 900 ${lt} ${R('46 000 000')}`]) },
       { etoiles: 3, cahier: true, consigne: 'Distances moyennes au Soleil : Mars 227 900 000 km ; Vénus 108 200 000 km ; Terre 149 600 000 km. Range ces planètes de la plus proche à la plus éloignée du Soleil.',
         corr: cm1Redac('Comparaison', '108 200 000 < 149 600 000 < 227 900 000', 'De la plus proche à la plus éloignée : Vénus, la Terre, puis Mars.') },
+      { etoiles: 1, col: 1, consigne: 'Complète avec <, > ou =.', ...P3.rmp([['1 000 000 @ 999 999', '>'], ['45 600 000 @ 4 560 000', '>'], ['12 300 450 @ 12 304 500', '<']], 1) },
+      { etoiles: 2, col: 1, consigne: 'Arrondis au million le plus proche.', ...P3.rmp([['3 478 000 : @', '3 000 000'], ['15 501 000 : @', '16 000 000']], 5) },
+      { etoiles: 2, col: 1, consigne: 'Encadre au million.', ...P3.rmp([['@ < 7 250 000 < @', '7 000 000', '8 000 000']], 5) },
+      { etoiles: 2, col: 1, consigne: 'Entoure le plus grand.', ...P3.chx([['', '2 milliards', '2 milliards · 900 millions'], ['', '1 million', '1 million · 99 999']]) },
     ] },
   { titre: 'Demi-droite graduée et problèmes', duree: '30 min',
     attendus: ['Lire des grands nombres sur une demi-droite graduée', 'Ajouter ou retirer un million, cent mille…', 'Utiliser les grands nombres dans un problème'],
@@ -47,6 +51,8 @@ PLANCHES['cm2|Grands nombres jusqu\'à 999 999 999'] = [
         ...ch([['1 milliard s\'écrit 1 000 000 000.', 'vrai'], ['Dans 45 000 000, il y a 45 millions.', 'vrai'], ['10 millions = 1 000 000.', 'faux']], 'vrai · faux') },
       { etoiles: 3, cahier: true, consigne: 'Un stade a accueilli 1 250 000 spectateurs en 2025 et 1 410 000 en 2026. De combien le nombre de spectateurs a-t-il augmenté ?',
         corr: cm1Redac('Augmentation', '1 410 000 − 1 250 000 = 160 000', 'Le nombre de spectateurs a augmenté de 160 000.') },
+      { etoiles: 1, col: 1, consigne: 'Calcule.', ...P3.rmp([['999 999 + 1 = @', '1 000 000'], ['10 000 000 − 1 = @', '9 999 999']], 5) },
+      { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['1 410 000 − 1 250 000 = @', '160 000'], ['1 million = @ milliers', '1 000']], 4) },
     ] },
 ];
 })();

@@ -22,6 +22,7 @@ PLANCHES['cm2|Fractions : comparer et calculer'] = [
         corr: plListe([`${F(1, 2)} ${R(lt)} ${F(3, 4)}`, `${F(5, 6)} ${R(gt)} ${F(2, 3)}`, `${F(7, 10)} ${R(gt)} ${F(1, 2)}`]) },
       { etoiles: 3, cahier: true, consigne: `Lina a lu ${F(3, 5)} de son livre et Max ${F(7, 10)} du même livre. Qui en a lu le plus ?`,
         corr: cm1Redac('Même dénominateur', `${F(3, 5)} = ${F(6, 10)}`, `Lina a lu ${F(6, 10)} du livre.`) + cm1Redac('Comparaison', `${F(7, 10)} est plus grand que ${F(6, 10)}.`, 'Max en a lu le plus.') },
+      { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['un demi = @ dixièmes', 5], ['trois quarts = @ centièmes', 75]], 2) },
     ] },
   { titre: 'Additionner, soustraire, multiplier par un entier', duree: '35 min',
     attendus: ['Additionner et soustraire des fractions de même dénominateur', 'Additionner quand un dénominateur est multiple de l\'autre', 'Multiplier une fraction par un entier'],
@@ -49,6 +50,8 @@ PLANCHES['cm2|Fractions : comparer et calculer'] = [
         ...chx([[`${F(1, 5)} :`, '0,2', '0,5 · 0,2 · 1,5'], [`${F(5, 2)} :`, '2,5', '5,2 · 0,52 · 2,5']]) },
       { etoiles: 3, cahier: true, consigne: `Un sac de riz de 2 kg est entamé : il en reste ${F(3, 4)}. Combien de grammes de riz reste-t-il ? (1 kg = 1 000 g)`,
         corr: cm1Redac('Masse en grammes', '2 kg = 2 000 g', 'Le sac contenait 2 000 g.') + cm1Redac('Masse restante', { suite: ['2 000 : 4 = 500', '500 × 3 = 1 500'] }, 'Il reste 1 500 g de riz, soit 1,5 kg.') },
+      { etoiles: 1, col: 1, consigne: 'Écris en nombre décimal.', ...P3.rmp([[`${cm1Frac(1, 4)} = @`, '0,25'], [`${cm1Frac(3, 10)} = @`, '0,3'], [`${cm1Frac(7, 100)} = @`, '0,07']], 3) },
+      { etoiles: 2, col: 1, consigne: 'Écris avec une fraction.', ...P3.rmp([['0,5 = @', cm1Frac(1, 2)], ['0,75 = @', cm1Frac(3, 4)]], 3) },
     ] },
 ];
 })();

@@ -57,6 +57,7 @@ PLANCHES['cm2|Pensée informatique'] = [
       { etoiles: 2, consigne: `Dans un tableur, on écrit 3 dans la cellule A1, puis la formule <b>=A1+4</b> dans la cellule A2, et on recopie la formule vers le bas.`,
         eleve: tab([['', 'A'], ['1', 3], ['2', '@'], ['3', '@'], ['4', '@'], ['5', '@'], ['6', '@']], false) + rmp([['Dans la cellule A3, la formule est @', '=A2+4']], 4).eleve,
         corr: tab([['', 'A'], ['1', 3], ['2', '@'], ['3', '@'], ['4', '@'], ['5', '@'], ['6', '@']], true, [7, 11, 15, 19, 23]) + rmp([['Dans la cellule A3, la formule est @', '=A2+4']], 4).corr },
+      { etoiles: 2, col: 1, consigne: 'Programme : ajouter 3, puis multiplier par 2. Complète.', ...P3.rmp([['on choisit 5 : @', 16], ['on choisit 0 : @', 6]], 2) },
     ] },
 ];
 })();

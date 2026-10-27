@@ -34,6 +34,8 @@ PLANCHES['cm2|Résolution de problèmes'] = [
         corr: cm1Redac('Nombre de parts', '1 + 3 = 4', 'Le total est partagé en 4 parts égales.') + cm1Redac('Une part', '48 : 4 = 12', 'Max a 12 €.') + cm1Redac('Argent de Zoé', '12 × 3 = 36', 'Zoé a 36 €.') },
       { etoiles: 3, cahier: true, consigne: 'Dans une classe de 28 élèves, il y a 3 fois plus de filles que de garçons. Combien y a-t-il de garçons ? de filles ?',
         corr: cm1Redac('Une part', { suite: ['1 + 3 = 4', '28 : 4 = 7'] }, 'Il y a 7 garçons.') + cm1Redac('Nombre de filles', '7 × 3 = 21', 'Il y a 21 filles.') },
+      { etoiles: 1, col: 1, consigne: 'Complète.', ...P3.rmp([['3 fois plus que 45 : @', 135], ['4 fois moins que 60 : @', 15], ['le triple de 2,5 : @', '7,5']], 2) },
+      { etoiles: 3, col: 1, consigne: '28 élèves, 3 fois plus de filles que de garçons. Complète.', ...P3.rmp([['28 ÷ 4 = @ garçons', 7], ['3 × 7 = @ filles', 21]], 2) },
     ] },
   { titre: 'Problèmes à étapes', duree: '35 min',
     attendus: ['Organiser la résolution d\'un problème en plusieurs étapes', 'Trouver les questions intermédiaires', 'Rédiger une solution complète'],
@@ -44,6 +46,10 @@ PLANCHES['cm2|Résolution de problèmes'] = [
         corr: cm1Redac('Places adultes', '9,50 × 3 = 28,50', 'Les places adultes coûtent 28,50 €.') + cm1Redac('Places enfants', '6 × 2 = 12', 'Les places enfants coûtent 12 €.') + cm1Redac('Total', '28,50 + 12 = 40,50', 'La famille dépense 40,50 €.') + cm1Redac('Monnaie rendue', '50 − 40,50 = 9,50', 'On lui rend 9,50 €.') },
       { etoiles: 3, cahier: true, consigne: 'Un fermier vend ses œufs par boîtes de 6. Ses poules pondent 85 œufs par jour. Combien de boîtes remplit-il en une semaine ?',
         corr: cm1Redac('Œufs en une semaine', '85 × 7 = 595', 'Les poules pondent 595 œufs en une semaine.') + cm1Redac('Nombre de boîtes', '595 = 6 × 99 + 1', 'Il remplit 99 boîtes (il reste 1 œuf).') },
+      { etoiles: 1, col: 1, consigne: 'Calcule les étapes du problème des livres.', ...P3.rmp([['12 × 25 = @', 300], ['300 − 180 = @', 120]], 2) },
+      { etoiles: 2, col: 1, consigne: 'Calcule les étapes du problème du cinéma.', ...P3.rmp([['3 × 9,50 = @', '28,50'], ['2 × 6 = @', 12], ['28,50 + 12 = @', '40,50'], ['50 − 40,50 = @', '9,50']], 3) },
+      { etoiles: 3, col: 1, consigne: 'Calcule les étapes du problème des œufs.', ...P3.rmp([['85 × 7 = @', 595], ['595 = 6 × @ + @', 99, 1]], 2) },
+      { etoiles: 2, col: 1, consigne: 'Quelle question se poser d\'abord pour les livres ? Entoure.', ...P3.chx([['', 'Combien de livres en tout ?', 'Combien de livres en tout ? · Combien de cartons ?']]) },
     ] },
   { titre: 'Dénombrer et optimiser', duree: '35 min',
     attendus: ['Dénombrer toutes les possibilités de façon organisée', 'Comparer plusieurs solutions pour choisir la meilleure', 'Repérer une régularité'],
@@ -56,6 +62,8 @@ PLANCHES['cm2|Résolution de problèmes'] = [
         corr: cm1Redac('Comparaison des prix', { suite: ['Cinq boîtes de 6 : 2 × 5 = 10 €', 'Une boîte de 12 et trois de 6 : 3,50 + 6 = 9,50 €', 'Deux boîtes de 12 et une de 6 : 7 + 2 = 9 €'] }, 'La façon la moins chère : deux boîtes de 12 et une boîte de 6, pour 9 €.') },
       { etoiles: 3, cahier: true, consigne: illu(motifs, 'Avec des allumettes, on forme des carrés alignés. Combien faut-il d\'allumettes pour 10 carrés ?'),
         corr: cm1Redac('Régularité', { suite: ['1 carré : 4 allumettes', '2 carrés : 7 allumettes', '3 carrés : 10 allumettes'] }, 'Chaque nouveau carré demande 3 allumettes de plus.') + cm1Redac('Pour 10 carrés', '4 + 3 × 9 = 31', 'Il faut 31 allumettes.') },
+      { etoiles: 1, col: 1, consigne: 'Complète.', ...P3.rmp([['3 entrées et 4 plats : @ menus', 12], ['avec un dessert parmi 3 en plus : @ menus', 36]], 2) },
+      { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['codes de 3 chiffres avec 1, 2 et 3 : @ codes', 6], ['30 œufs avec 2 boîtes de 12 et 1 boîte de 6 : @ €', 9]], 2) },
     ] },
 ];
 })();

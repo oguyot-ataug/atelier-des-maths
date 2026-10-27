@@ -56,6 +56,8 @@ PLANCHES['cm2|Figures planes'] = [
         corr: cm1Redac('Longueur d\'un côté', '27 : 3 = 9', 'Les trois côtés ont la même longueur : chaque côté mesure 9 cm.') },
       { etoiles: 3, cahier: true, consigne: 'Construis un triangle ABC isocèle en A, avec BC = 4 cm et AB = AC = 5 cm. Utilise ta règle et ton compas.',
         corr: cm1Redac('Construction', { suite: ['Je trace le segment [BC] de 4 cm.', 'Je trace un arc de cercle de centre B et de rayon 5 cm.', 'Je trace un arc de cercle de centre C et de rayon 5 cm.', 'Les deux arcs se coupent en A ; je trace [AB] et [AC].'] }, 'Je code les côtés [AB] et [AC] avec le même petit trait.') },
+      { etoiles: 1, col: 1, consigne: 'Complète.', ...P3.rmp([['Un triangle équilatéral a @ côtés égaux.', 3], ['Un triangle isocèle a @ côtés égaux.', 2], ['Un triangle rectangle a un angle @.', 'droit']], 3) },
+      { etoiles: 2, col: 1, consigne: 'Quel triangle ? Entoure.', ...P3.chx([['côtés 5 cm, 5 cm, 5 cm', 'équilatéral', 'équilatéral · isocèle · quelconque'], ['côtés 4 cm, 6 cm, 4 cm', 'isocèle', 'équilatéral · isocèle · quelconque'], ['côtés 3 cm, 5 cm, 6 cm', 'quelconque', 'équilatéral · isocèle · quelconque']]) },
     ] },
   { titre: 'Quadrilatères particuliers', duree: '35 min',
     attendus: ['Reconnaître carré, rectangle, losange', 'Connaître leurs propriétés', 'Utiliser les propriétés dans un problème'],
@@ -68,6 +70,8 @@ PLANCHES['cm2|Figures planes'] = [
         ...chx([['Quatre angles droits et quatre côtés égaux :', 'carré', 'rectangle · losange · carré'], ['Quatre angles droits, côtés pas tous égaux :', 'rectangle', 'rectangle · losange · carré'], ['Quatre côtés égaux, pas d\'angle droit :', 'losange', 'rectangle · losange · carré']]) },
       { etoiles: 3, cahier: true, consigne: 'Un rectangle a un périmètre de 30 cm. Sa longueur mesure 9 cm. Quelle est sa largeur ?',
         corr: cm1Redac('Longueur + largeur', '30 : 2 = 15', 'Une longueur et une largeur mesurent ensemble 15 cm.') + cm1Redac('Largeur', '15 − 9 = 6', 'La largeur du rectangle mesure 6 cm.') },
+      { etoiles: 1, col: 1, consigne: 'Complète.', ...P3.rmp([['Le losange a 4 côtés @.', 'égaux'], ['Le carré a 4 côtés égaux et 4 angles @.', 'droits'], ['Les diagonales du rectangle ont la même @.', 'longueur']], 4) },
+      { etoiles: 2, col: 1, consigne: 'Qui suis-je ? Entoure.', ...P3.chx([['4 côtés égaux et 4 angles droits', 'carré', 'carré · losange · rectangle'], ['4 côtés égaux, sans angle droit', 'losange', 'carré · losange · rectangle']]) },
     ] },
 ];
 })();

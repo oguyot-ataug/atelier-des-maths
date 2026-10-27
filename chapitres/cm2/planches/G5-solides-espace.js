@@ -63,6 +63,8 @@ PLANCHES['cm2|Solides et repérage dans l\'espace'] = [
         ...rmp([['La face opposée à la face 1 est la face @.', 3], ['La face opposée à la face 2 est la face @.', 4], ['La face opposée à la face 5 est la face @.', 6]], 2) },
       { etoiles: 3, col: 1, consigne: `Observe ce pavé droit.<div style="text-align:center;">${pave}</div>`,
         ...rmp([['@ faces mesurent 4 cm sur 3 cm.', 2], ['@ faces mesurent 4 cm sur 2 cm.', 2], ['@ faces mesurent 3 cm sur 2 cm.', 2]], 2) },
+      { etoiles: 1, col: 1, consigne: 'Complète.', ...P3.rmp([['Un patron de cube a @ faces carrées.', 6], ['Un patron de pavé a @ faces rectangulaires.', 6]], 2) },
+      { etoiles: 2, col: 1, consigne: 'Est-ce un patron de cube ? Entoure.', ...P3.chx([['6 carrés en croix', 'oui', 'oui · non'], ['6 carrés en ligne', 'non', 'oui · non']]) },
     ] },
   { titre: 'Assemblages de cubes et chemins', duree: '35 min',
     attendus: ['Compter les cubes d\'un assemblage', 'Suivre un chemin codé', 'Coder un chemin avec des flèches'],
@@ -72,6 +74,8 @@ PLANCHES['cm2|Solides et repérage dans l\'espace'] = [
       { etoiles: 2, col: 1, consigne: `Pars de D et suis le chemin : ${CODE.join(' ')}. Trace-le et marque l\'arrivée A.`, eleve: chemin(CODE, false, [2, 6]), corr: chemin(CODE, true, [2, 6]) },
       { etoiles: 3, col: 1, consigne: 'Écris avec des flèches le chemin vert qui va de D à A.',
         eleve: chemin(CODE2, true, [1, 5]) + `<div>${B(14)}</div>`, corr: chemin(CODE2, true, [1, 5]) + `<div>${R(CODE2.join(' '))}</div>` },
+      { etoiles: 1, col: 1, consigne: 'Combien de petits cubes ?', ...P3.rmp([['un mur de 3 rangées de 4 cubes : @', 12], ['un pavé de 2 sur 3 sur 4 cubes : @', 24]], 2) },
+      { etoiles: 2, col: 1, consigne: 'Combien de petits cubes ?', ...P3.rmp([['un cube de 3 cubes de côté : @', 27], ['le même, sans les cubes de la couche du haut : @', 18]], 2) },
     ] },
 ];
 })();

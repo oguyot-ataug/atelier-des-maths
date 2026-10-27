@@ -20,6 +20,9 @@ PLANCHES['cm2|Multiplication'] = [
         ...ch([['Multiplier par 10, c\'est ajouter un zéro, toujours.', 'faux'], ['2,5 × 100 = 250', 'vrai'], ['Quand on multiplie par 100, chaque chiffre prend une valeur 100 fois plus grande.', 'vrai']], 'vrai · faux') },
       { etoiles: 3, cahier: true, consigne: 'Un paquet de feuilles pèse 2,45 kg. Combien pèsent 10 paquets ? et 100 paquets ?',
         corr: cm1Redac('10 paquets', '2,45 × 10 = 24,5', '10 paquets pèsent 24,5 kg.') + cm1Redac('100 paquets', '2,45 × 100 = 245', '100 paquets pèsent 245 kg.') },
+      { etoiles: 1, col: 1, consigne: 'Calcule.', ...P3.rmp([['3,45 × 10 = @', '34,5'], ['0,7 × 100 = @', 70], ['2,5 × 1 000 = @', '2 500']], 3) },
+      { etoiles: 2, col: 1, consigne: 'Trouve le nombre manquant.', ...P3.rmp([['@ × 100 = 4 500', 45], ['0,08 × @ = 8', 100]], 3) },
+      { etoiles: 2, col: 1, consigne: 'Calcule.', ...P3.rmp([['45 × 20 = @', 900], ['12 × 300 = @', '3 600'], ['25 × 40 = @', '1 000']], 3) },
     ] },
   { titre: 'Poser une multiplication', duree: '35 min',
     attendus: ['Poser une multiplication par un nombre à deux ou trois chiffres', 'Multiplier un nombre décimal par un entier', 'Contrôler avec un ordre de grandeur'],
@@ -34,6 +37,8 @@ PLANCHES['cm2|Multiplication'] = [
         corr: cm1Redac('Nombre de places', '18 × 26 = 468', 'Le cinéma peut accueillir 468 spectateurs.') },
       { etoiles: 3, cahier: true, consigne: 'Une bouteille de jus coûte 1,85 €. La cantine en achète 24. Combien paie-t-elle ?',
         corr: cm1Redac('Prix total', '1,85 × 24 = 44,40', 'La cantine paie 44,40 €.') },
+      { etoiles: 2, col: 1, consigne: 'Pose dans ton cahier, puis écris le résultat.', ...P3.rmp([['347 × 26 = @', '9 022'], ['2,4 × 13 = @', '31,2']], 4) },
+      { etoiles: 2, col: 1, consigne: 'Entoure l\'ordre de grandeur.', ...P3.chx([['498 × 21 : environ', '10 000', '1 000 · 10 000 · 100 000']]) },
     ] },
   { titre: 'Calculer mentalement et résoudre des problèmes', duree: '35 min',
     attendus: ['Décomposer un nombre pour multiplier mentalement', 'Utiliser les doubles et les moitiés', 'Résoudre un problème à étapes'],
@@ -46,6 +51,9 @@ PLANCHES['cm2|Multiplication'] = [
         ...ch([['15 × 4 = 30 × 2', 'vrai'], ['6 × 0,5 = 12', 'faux'], ['8 × 125 = 1 000', 'vrai']], 'vrai · faux') },
       { etoiles: 3, cahier: true, consigne: 'Pour la sortie de fin d\'année, 3 classes de 26 élèves partent avec 9 adultes. L\'entrée au parc coûte 12 € par élève et 15 € par adulte. Quel est le prix total des entrées ?',
         corr: cm1Redac('Nombre d\'élèves', '3 × 26 = 78', 'Il y a 78 élèves.') + cm1Redac('Prix des entrées', { suite: ['78 × 12 = 936', '9 × 15 = 135', '936 + 135 = 1 071'] }, 'Les entrées coûtent 1 071 € en tout.') },
+      { etoiles: 1, col: 1, consigne: 'Calcule mentalement.', ...P3.rmp([['25 × 12 = @', 300], ['99 × 7 = @', 693], ['15 × 6 = @', 90]], 3) },
+      { etoiles: 2, col: 1, consigne: 'Calcule les étapes de la sortie.', ...P3.rmp([['3 × 26 = @', 78], ['78 + 9 = @', 87], ['87 × 12 = @', '1 044']], 3) },
+      { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.', ...P3.chx([['4 × 25 = 100', 'vrai', 'vrai · faux'], ['50 × 50 = 250', 'faux', 'vrai · faux']]) },
     ] },
 ];
 })();

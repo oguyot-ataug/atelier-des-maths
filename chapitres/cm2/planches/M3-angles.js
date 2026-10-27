@@ -29,6 +29,8 @@ PLANCHES['cm2|Angles'] = [
         ...rmp([['Son sommet est le point @.', 'B'], ['Ses côtés sont les demi-droites [BA) et @.', '[BC)'], ['On le nomme aussi l\'angle @.', 'CBA']], 3) },
       { etoiles: 2, col: 1, consigne: 'Un angle droit mesure 90°. Entoure la bonne réponse.',
         ...ch([['Un angle de 35° est…', 'aigu'], ['Un angle de 90° est…', 'droit'], ['Un angle de 120° est…', 'obtus'], ['Un angle de 89° est…', 'aigu'], ['Un angle de 150° est…', 'obtus']], 'aigu · droit · obtus') },
+      { etoiles: 1, col: 1, consigne: 'Aigu, droit ou obtus ? Entoure.', ...P3.chx([['45°', 'aigu', 'aigu · droit · obtus'], ['90°', 'droit', 'aigu · droit · obtus'], ['120°', 'obtus', 'aigu · droit · obtus'], ['89°', 'aigu', 'aigu · droit · obtus']]) },
+      { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['Un angle droit mesure @°.', 90], ['Un angle plat mesure @°.', 180]], 2) },
     ] },
   { titre: 'Le degré : additionner et partager', duree: '30 min',
     attendus: ['Connaître 90°, 45°, 30° et 180°', 'Additionner des angles placés côte à côte', 'Partager un angle droit en deux ou en trois'],
@@ -41,6 +43,8 @@ PLANCHES['cm2|Angles'] = [
         corr: cm1Redac('Mesure de l\'angle AOC', '30 + 45 = 75', 'L\'angle AOC mesure 75° ; il est aigu, car 75 est plus petit que 90.') },
       { etoiles: 3, cahier: true, consigne: 'Dans un triangle équilatéral, chaque angle mesure 60°. Combien mesurent ses trois angles ensemble ? Compare avec deux angles droits.',
         corr: cm1Redac('Somme des trois angles', '60 + 60 + 60 = 180', 'Les trois angles mesurent ensemble 180°, comme deux angles droits côte à côte.') },
+      { etoiles: 1, col: 1, consigne: 'Calcule.', ...P3.rmp([['90° + 45° = @°', 135], ['180° − 60° = @°', 120], ['la moitié d\'un angle droit : @°', 45]], 2) },
+      { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['un tiers d\'angle droit : @°', 30], ['un tour complet : @°', 360]], 2) },
     ] },
   { titre: 'Angles et horloge', duree: '30 min',
     attendus: ['Utiliser l\'horloge pour se représenter des angles', 'Savoir qu\'entre deux nombres voisins du cadran l\'angle mesure 30°', 'Raisonner sur les angles sans rapporteur'],
@@ -51,6 +55,10 @@ PLANCHES['cm2|Angles'] = [
         ...ch([['Un angle de 100° est obtus.', 'vrai'], ['Si on allonge les côtés d\'un angle, il devient plus grand.', 'faux'], ['La moitié d\'un angle obtus est toujours un angle aigu.', 'vrai']], 'vrai · faux') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Comment obtenir un angle de 45° avec une feuille de papier, sans instrument ?',
         corr: cm1Redac('Par pliage', { suite: ['Je plie la feuille en deux, puis encore en deux : j\'obtiens un angle droit (90°).', 'Je plie cet angle droit en deux, bord contre bord.'] }, 'J\'obtiens un angle de 45°, la moitié d\'un angle droit.') },
+      { etoiles: 1, col: 1, consigne: 'Quel angle forment les aiguilles ?', ...P3.rmp([['à 3 h : @°', 90], ['à 6 h : @°', 180], ['à 2 h : @°', 60], ['à 4 h : @°', 120]], 2) },
+      { etoiles: 2, col: 1, consigne: 'De combien de degrés tourne la grande aiguille ?', ...P3.rmp([['en 15 min : @°', 90], ['en 5 min : @°', 30], ['en 1 h : @°', 360]], 2) },
+      { etoiles: 2, col: 1, consigne: 'À 9 h, les aiguilles forment un angle… Entoure.', ...P3.chx([['', 'droit', 'aigu · droit · obtus']]) },
+      { etoiles: 3, col: 1, consigne: 'Quel angle forment les aiguilles ?', ...P3.rmp([['à 1 h : @°', 30], ['à 5 h : @°', 150]], 2) },
     ] },
 ];
 })();

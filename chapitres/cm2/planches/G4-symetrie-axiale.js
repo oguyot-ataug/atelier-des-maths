@@ -64,6 +64,8 @@ PLANCHES['cm2|Symétrie axiale'] = [
         ...ch([['Un cercle a une infinité d\'axes de symétrie.', 'vrai'], ['Un rectangle a quatre axes de symétrie.', 'faux'], ['Un triangle équilatéral a trois axes de symétrie.', 'vrai']], 'vrai · faux') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Écris trois lettres majuscules qui ont un axe de symétrie vertical et deux lettres qui ont un axe horizontal.',
         corr: cm1Redac('Des lettres possibles', { suite: ['axe vertical : A, M, T (ou H, O, U, V, W, X, Y)', 'axe horizontal : B, E (ou C, D, H, K, O, X)'] }, 'Si on plie la lettre le long de l\'axe, les deux moitiés se superposent.') },
+      { etoiles: 1, col: 1, consigne: 'Combien d\'axes de symétrie ?', ...P3.rmp([['le carré : @', 4], ['le rectangle : @', 2], ['le triangle équilatéral : @', 3], ['le cercle : @', 'une infinité']], 4) },
+      { etoiles: 2, col: 1, consigne: 'La lettre a-t-elle un axe de symétrie ? Entoure.', ...P3.chx([['B', 'oui', 'oui · non'], ['Z', 'non', 'oui · non'], ['M', 'oui', 'oui · non']]) },
     ] },
 ];
 })();

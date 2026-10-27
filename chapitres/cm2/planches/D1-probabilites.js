@@ -46,6 +46,9 @@ PLANCHES['cm2|Probabilités'] = [
         ...chx([['Sac A : 2 rouges et 2 bleues. Sac B : 3 rouges et 1 bleue.', 'sac B', 'sac A · sac B · c\'est pareil'], ['Sac C : 1 rouge et 1 bleue. Sac D : 3 rouges et 3 bleues.', 'c\'est pareil', 'sac C · sac D · c\'est pareil']]) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Léo a lancé une pièce et obtenu trois fois « pile ». Il pense avoir plus de chances d\'obtenir « face » au prochain lancer. A-t-il raison ?',
         corr: cm1Redac('Prochain lancer', 'pile ou face : 2 issues', 'Léo a tort : la pièce ne se souvient pas des lancers précédents. Il a toujours 1 chance sur 2 d\'obtenir face.') },
+      { etoiles: 1, col: 1, consigne: 'On lance un dé à 6 faces. Complète.', ...P3.rmp([['obtenir 6 : @ chance sur @', 1, 6], ['obtenir un nombre pair : @ chances sur @', 3, 6], ['obtenir 7 : @ chance sur 6', 0]], 1) },
+      { etoiles: 2, col: 1, consigne: 'Un sac contient 4 billes rouges et 6 bleues. Complète.', ...P3.rmp([['tirer une rouge : @ chances sur @', 4, 10], ['tirer une bleue : @ chances sur @', 6, 10]], 1) },
+      { etoiles: 2, col: 1, consigne: 'On lance une pièce. Entoure.', ...P3.chx([['obtenir pile :', '1 chance sur 2', '1 chance sur 2 · 1 chance sur 6']]) },
     ] },
   { titre: 'Expériences en deux étapes', duree: '35 min',
     attendus: ['Lister les issues avec un tableau ou un arbre', 'Compter les issues', 'Exprimer des chances dans une expérience en deux étapes'],
@@ -57,6 +60,8 @@ PLANCHES['cm2|Probabilités'] = [
         corr: cm1Redac('Nombre de menus', '2 × 3 = 6', 'Il y a 6 menus possibles.') + `<div style="text-align:center;">${arbre}</div>` + cm1Redac('Soupe et gâteau', 'un seul menu sur 6', 'On a 1 chance sur 6 d\'avoir soupe et gâteau.') },
       { etoiles: 3, cahier: true, consigne: 'On lance deux dés à 6 faces et on additionne les deux nombres. Fais un tableau des sommes. Combien y a-t-il d\'issues ? Combien de chances a-t-on d\'obtenir 12 ? et 7 ?',
         corr: cm1Redac('Nombre d\'issues', '6 × 6 = 36', 'Le tableau a 36 cases : il y a 36 issues.') + cm1Redac('Somme 12', 'dés (6 ; 6)', 'Une seule case : 1 chance sur 36.') + cm1Redac('Somme 7', 'dés (1 ; 6), (2 ; 5), (3 ; 4), (4 ; 3), (5 ; 2), (6 ; 1)', 'Six cases : 6 chances sur 36. C\'est la somme qui a le plus de chances de sortir.') },
+      { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['Deux pièces : @ issues (PP, PF, FP, FF)', 4], ['2 entrées et 3 desserts : @ menus', 6]], 1) },
+      { etoiles: 3, col: 1, consigne: 'Deux dés : obtenir une somme de 2, c\'est… Entoure.', ...P3.chx([['', '1 seule façon', '1 seule façon · 2 façons · 6 façons']]) },
     ] },
 ];
 })();

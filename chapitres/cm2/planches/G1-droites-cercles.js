@@ -32,6 +32,7 @@ PLANCHES['cm2|Droites, segments et cercles'] = [
         ...ch([['Un segment a deux extrémités.', 'vrai'], ['On peut mesurer la longueur d\'une droite.', 'faux'], ['La demi-droite [AB) a pour origine le point A.', 'vrai']], 'vrai · faux') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Les points A, B et C sont alignés dans cet ordre. AB = 4 cm et BC = 3,5 cm. Fais un schéma, puis calcule la longueur AC.',
         corr: cm1Redac('Longueur AC', '4 + 3,5 = 7,5', 'B est entre A et C : AC = 7,5 cm.') },
+      { etoiles: 1, col: 1, consigne: 'Écris avec la bonne notation.', ...P3.rmp([['le segment d\'extrémités A et B : @', '[AB]'], ['la droite qui passe par C et D : @', '(CD)'], ['la demi-droite d\'origine E qui passe par F : @', '[EF)']], 2) },
     ] },
   { titre: 'Droites perpendiculaires et parallèles', duree: '35 min',
     attendus: ['Reconnaître des droites perpendiculaires et parallèles', 'Tracer une perpendiculaire et une parallèle sur quadrillage', 'Utiliser l\'équerre'],
@@ -54,6 +55,8 @@ PLANCHES['cm2|Droites, segments et cercles'] = [
         ...ch([['Tous les points du cercle sont à la même distance du centre.', 'vrai'], ['Le disque est seulement le contour.', 'faux'], ['Le diamètre est le double du rayon.', 'vrai']], 'vrai · faux') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Trace un cercle de centre O et de rayon 3 cm. Trace un diamètre [AB]. Quelle est la longueur AB ?',
         corr: cm1Redac('Longueur AB', '3 × 2 = 6', 'Le diamètre est le double du rayon : AB = 6 cm.') },
+      { etoiles: 1, col: 1, consigne: 'Complète.', ...P3.rmp([['rayon 4 cm : diamètre @ cm', 8], ['diamètre 9 cm : rayon @ cm', '4,5'], ['Pour un rayon de 5 cm, j\'écarte le compas de @ cm.', 5]], 2) },
+      { etoiles: 2, col: 1, consigne: 'Cercle de centre O et de rayon 3 cm. Où est le point ? Entoure.', ...P3.chx([['OM = 3 cm', 'sur le cercle', 'sur le cercle · dans le disque · à l\'extérieur'], ['ON = 2 cm', 'dans le disque', 'sur le cercle · dans le disque · à l\'extérieur'], ['OP = 4 cm', 'à l\'extérieur', 'sur le cercle · dans le disque · à l\'extérieur']]) },
     ] },
 ];
 })();
