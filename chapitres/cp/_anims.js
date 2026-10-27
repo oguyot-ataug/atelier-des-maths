@@ -208,3 +208,110 @@ function cpAnimMaison(id, o){
       return { scene: `<svg viewBox="0 0 ${W} ${Math.max(H, 120)}" class="cma-svg" style="max-width:${W}px;">${s}</svg>`, texte };
     } });
 }
+
+/* ---------------- Où est le chat ? Positions autour d'une table (G1) ----------------
+   Le chat s'arrête à chaque position (sur, sous, devant, derrière la table, à gauche, à droite,
+   près, loin), puis va à la suivante. Le sol est vu en perspective : ce qui est derrière est plus
+   haut et plus petit ; « derrière », le plateau de la table cache une partie du chat. */
+const CP_POS = [
+  { x: 210, y: 84, s: 1, phrase: 'Le chat est <b>sur</b> la table.' },
+  { x: 210, y: 178, s: .9, phrase: 'Le chat est <b>sous</b> la table.' },
+  { x: 225, y: 204, s: 1.25, phrase: 'Le chat est <b>devant</b> la table : il est plus près de nous.' },
+  { x: 205, y: 106, s: .95, derriere: true, phrase: 'Le chat est <b>derrière</b> la table : on ne voit que sa tête, la table cache le reste.' },
+  { x: 75, y: 178, s: 1, phrase: 'Le chat est <b>à gauche</b> de la table.' },
+  { x: 345, y: 178, s: 1, phrase: 'Le chat est <b>à droite</b> de la table.' },
+  { x: 296, y: 178, s: 1, phrase: 'Le chat est <b>près</b> de la table.' },
+  { x: 405, y: 140, s: .55, phrase: 'Le chat est <b>loin</b> de la table.' },
+];
+const cpChat = (x, y, s) => `<g transform="translate(${x} ${y}) scale(${s})"><path d="M14 4 q22 -8 20 -26" fill="none" stroke="#F2A93B" stroke-width="5" stroke-linecap="round"/>
+  <ellipse cx="0" cy="0" rx="20" ry="13" fill="#F2A93B" stroke="#8A5A10" stroke-width="1.5"/><circle cx="-18" cy="-14" r="11" fill="#F2A93B" stroke="#8A5A10" stroke-width="1.5"/>
+  <polygon points="-27,-21 -25,-33 -18,-24" fill="#F2A93B" stroke="#8A5A10"/><polygon points="-15,-24 -9,-33 -9,-20" fill="#F2A93B" stroke="#8A5A10"/>
+  <circle cx="-22" cy="-15" r="1.8" fill="#1F3A5C"/><circle cx="-14" cy="-15" r="1.8" fill="#1F3A5C"/><path d="M-21 -9 q3 2 6 0" fill="none" stroke="#1F3A5C" stroke-width="1.2"/>
+  <rect x="-16" y="9" width="5" height="9" rx="2" fill="#F2A93B"/><rect x="8" y="9" width="5" height="9" rx="2" fill="#F2A93B"/></g>`;
+// La table, avec une nappe qui tombe devant : « derrière », seule la tête du chat dépasse.
+const cpTable = `<rect x="152" y="116" width="10" height="80" fill="#B07A45" stroke="#6B4423"/><rect x="258" y="116" width="10" height="80" fill="#B07A45" stroke="#6B4423"/><rect x="140" y="104" width="140" height="12" rx="3" fill="#B07A45" stroke="#6B4423" stroke-width="2"/>`
+  + `<path d="M136 102 H284 V136 ${Array.from({ length: 8 }, () => 'q-9.25 9 -18.5 0').join(' ')} Z" fill="#F7D6D0" stroke="#C0645A" stroke-width="1.6"/>`
+  + Array.from({ length: 7 }, (_, i) => `<circle cx="${148 + i * 20.7}" cy="120" r="3" fill="#E58A7E"/>`).join('');
+function cpAnimPositions(id, o){
+  o = o || {};
+  return cmAnim(id, {
+    etat: {}, duree: CP_POS.length * 2600,
+    legende: o.legende || 'Au tableau : mettez sur pause à chaque arrêt et demandez « Où est le chat ? » avant de lire la réponse.',
+    dessin: (t) => {
+      const n = CP_POS.length, f = Math.min(n - .001, t * n), i = Math.floor(f), loc = f - i;
+      const A = CP_POS[i], B = CP_POS[Math.min(n - 1, i + 1)], bouge = i < n - 1 && loc > .6, k = cmDoux(cmPhase(loc, .6, 1));
+      const P = !bouge ? A : { x: A.x + (B.x - A.x) * k, y: A.y + (B.y - A.y) * k, s: A.s + (B.s - A.s) * k, derriere: k < .5 ? A.derriere : B.derriere };
+      const decor = `<rect x="0" y="0" width="440" height="120" fill="#F7F3EC"/><rect x="0" y="120" width="440" height="110" fill="#EFE6D6"/><line x1="0" y1="120" x2="440" y2="120" stroke="#C9B48A"/>`;
+      const s = decor + (P.derriere ? cpChat(P.x, P.y, P.s) + cpTable : cpTable + cpChat(P.x, P.y, P.s));
+      return { scene: `<svg viewBox="0 0 440 230" class="cma-svg" style="max-width:520px;">${s}</svg>`, texte: bouge ? '…' : A.phrase.replace('<b>', '<b style="font-size:1.15em;">') };
+    } });
+}
+// Un enfant vu de dos, la main gauche levée : vu de dos, sa gauche est aussi notre gauche.
+function cpGaucheDroite(o){
+  o = o || {};
+  return cpSvg(220, 170, `<circle cx="110" cy="42" r="22" fill="#6B4423"/><rect x="84" y="64" width="52" height="58" rx="14" fill="#2EA8C9"/>
+    <path d="M86 76 L52 30" stroke="#F6C9A0" stroke-width="10" stroke-linecap="round"/><circle cx="50" cy="26" r="9" fill="#F6C9A0"/>
+    <path d="M134 76 L160 108" stroke="#F6C9A0" stroke-width="10" stroke-linecap="round"/><rect x="90" y="120" width="14" height="40" rx="5" fill="#1F3A5C"/><rect x="116" y="120" width="14" height="40" rx="5" fill="#1F3A5C"/>`
+    + ce2T(40, 12, 'gauche', { c: CPC.jeton, t: 15, g: 700 }) + ce2T(184, 130, 'droite', { c: CPC.jeton2, t: 15, g: 700 }), o.px || 200);
+}
+
+/* ---------------- Le paquet de dix : une dizaine et des unités (N3) ----------------
+   Les jetons en vrac se rangent : dix font un paquet (une dizaine), les autres sont les unités. */
+function cpVrac(n, graine, W, H, d){
+  let g = graine; const alea = () => { g = (g * 9301 + 49297) % 233280; return g / 233280; };
+  const pts = [];
+  for(let essai = 0; pts.length < n && essai < 5000; essai++){ const p = [20 + alea() * (W - 40), 20 + alea() * (H - 40)];
+    if(pts.every(q => Math.hypot(q[0] - p[0], q[1] - p[1]) > (essai < 3000 ? d : d * .8))) pts.push(p); }
+  return pts;
+}
+function cpAnimDizaine(id, o){
+  o = o || {};
+  return cmAnim(id, {
+    etat: { n: o.n || 14 }, duree: 8000,
+    legende: o.legende || 'Mettez sur pause au début : « Combien y a-t-il de jetons ? » C\'est long à compter… Rangés en un paquet de dix, on le voit tout de suite.',
+    controles: a => `<div class="cmp-modeles">${cmPlusMoins(id, 'n', a.etat.n, 10, 19, 'Jetons')}</div>`,
+    dessin: (t, a) => {
+      const n = a.etat.n, u = n - 10, W = 460, vrac = cpVrac(n, n * 7 + 3, W, 130, 30);
+      const k = cmDoux(cmPhase(t, .2, .6)), ferme = t > .62;
+      let s = '';
+      vrac.forEach(([x0, y0], i) => { const j = i - 10;
+        const [dx, dy] = i < 10 ? [40 + i * 26, 160] : [330 + (j % 5) * 24, j < 5 ? 160 : 186];
+        s += `<circle cx="${x0 + (dx - x0) * k}" cy="${y0 + (dy - y0) * k}" r="10" fill="${i < 10 || k < .5 ? CPC.jeton : CPC.jeton2}" stroke="${CPC.bord}" stroke-width="1.2"/>`; });
+      if(ferme) s += `<rect x="24" y="145" width="266" height="30" rx="15" fill="none" stroke="${CE2C.vert}" stroke-width="3"/>` + ce2T(157, 200, '1 dizaine', { c: CE2C.vert, t: 15, g: 700 })
+        + (u ? ce2T(330 + (Math.min(u, 5) - 1) * 12, u > 5 ? 214 : 192, `${u} unité${u > 1 ? 's' : ''}`, { c: CPC.jeton2, t: 15, g: 700 }) : '');
+      const texte = t < .2 ? `Voici des jetons en vrac. <b>Combien</b> y en a-t-il ? Difficile de le voir d'un coup d'œil…`
+        : !ferme ? 'On range les jetons : on fait un paquet de <b>dix</b>.'
+        : `<b>${n}</b>, c'est <b>1 dizaine</b>${u ? ` et <b>${u} unité${u > 1 ? 's' : ''}</b> : ${n} = 10 + ${u}` : ' : dix jetons, un paquet de dix'}.`;
+      return { scene: `<svg viewBox="0 0 ${W} 220" class="cma-svg" style="max-width:${W + 60}px;">${s}</svg>`, texte };
+    } });
+}
+
+/* ---------------- Ajouter, retirer : des jetons entrent dans la boîte ou en sortent (N4) ---------------- */
+function cpAnimAjouter(id, o){
+  o = o || {};
+  return cmAnim(id, {
+    etat: { mode: o.mode || 'ajouter', a: o.a || 5, b: o.b || 3 }, duree: 8000,
+    legende: o.legende || 'Choisissez « ajouter » ou « retirer » et les nombres. Mettez sur pause avant la fin : « Combien y en a-t-il maintenant ? »',
+    corriger: a => { const e = a.etat; if(e.mode === 'ajouter') e.a = Math.min(e.a, 9); e.b = Math.max(1, Math.min(e.b, e.mode === 'ajouter' ? 10 - e.a : e.a)); },
+    controles: a => { const e = a.etat, aj = e.mode === 'ajouter';
+      return `<div class="cmp-modeles">${cmBtn(id, 'mode', 'ajouter', 'Ajouter', aj)}${cmBtn(id, 'mode', 'retirer', 'Retirer', !aj)}
+      ${cmPlusMoins(id, 'a', e.a, 1, aj ? 9 : 10, 'Au début')}${cmPlusMoins(id, 'b', e.b, 1, aj ? 10 - e.a : e.a, aj ? 'On en ajoute' : 'On en retire')}</div>`; },
+    dessin: (t, a) => {
+      const { mode, a: A, b: B } = a.etat, aj = mode === 'ajouter', fin = aj ? A + B : A - B;
+      const place = i => [70 + (i % 5) * 34, 92 + Math.floor(i / 5) * 34], dehors = j => [304 + (j % 5) * 30, 92 + Math.floor(j / 5) * 34];
+      const k = cmDoux(cmPhase(t, .3, .7));
+      let s = `<rect x="45" y="70" width="195" height="88" rx="10" fill="#FFF7E8" stroke="${CPC.bord}" stroke-width="2.5"/>` + ce2T(142, 60, 'la boîte', { t: 13, c: CE2C.gris });
+      const jeton = (x, y, c) => `<circle cx="${x}" cy="${y}" r="12" fill="${c}" stroke="${CPC.bord}" stroke-width="1.2"/>`;
+      for(let i = 0; i < A; i++){ const [x, y] = place(i), part = !aj && i >= A - B;
+        if(!part){ s += jeton(x, y, CPC.jeton); continue; }
+        const [X, Y] = dehors(i - (A - B)); s += jeton(x + (X - x) * k, y + (Y - y) * k, CPC.jeton2); }
+      if(aj) for(let j = 0; j < B; j++){ const [x, y] = place(A + j), [X, Y] = dehors(j);
+        if(t > .12) s += jeton(X + (x - X) * k, Y + (y - Y) * k, CPC.jeton2); }
+      if(t > .2 && t < .75) s += `<path d="${aj ? 'M290 50 L252 50' : 'M246 50 L284 50'}" stroke="${CE2C.violet}" stroke-width="3" marker-end="url(#cpfl-${id})"/>`
+        + ce2T(268, 38, aj ? '+' + B : '−' + B, { t: 16, c: CE2C.violet, g: 700 });
+      const texte = t < .25 ? `Dans la boîte, il y a <b>${A}</b> jeton${A > 1 ? 's' : ''}.`
+        : t < .75 ? (aj ? `On en <b>ajoute ${B}</b>…` : `On en <b>retire ${B}</b>…`)
+        : `Il y a maintenant <b>${fin}</b> jeton${fin > 1 ? 's' : ''} dans la boîte : <b>${A} ${aj ? '+' : '−'} ${B} = ${fin}</b>.`;
+      return { scene: `<svg viewBox="0 0 460 180" class="cma-svg" style="max-width:520px;"><defs><marker id="cpfl-${id}" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="${CE2C.violet}"/></marker></defs>${s}</svg>`, texte };
+    } });
+}

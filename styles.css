@@ -1745,6 +1745,7 @@ body.fig-proj #tbSvg{display:block;width:100vw !important;height:100vh !importan
 .cpn-maison table{border-collapse:collapse;width:124px;margin:0 auto;background:#fff;border:2px solid #1F3A5C;}
 .cpn-maison td{width:50%;padding:3px 0;font:700 1.05rem 'Space Grotesk',sans-serif;border-left:1.5px solid #1F3A5C;}
 .cpn-maison td:first-child{border-left:none;}
+.cpn-code{display:inline-flex;gap:3px;vertical-align:middle;flex-wrap:wrap;}
 .quiz-ecouter{margin-left:10px;border:1.5px solid var(--accent-cp);color:var(--accent-cp);background:#fff;border-radius:999px;padding:2px 10px;font:600 .8rem Inter,sans-serif;cursor:pointer;vertical-align:middle;}
 .quiz-ecouter .gicon{font-size:1rem;vertical-align:-3px;}
 
