@@ -9,12 +9,20 @@ PLANCHES['ce1|La monnaie : euros et centimes'] = [
     exos: [
       { etoiles: 1, consigne: 'Combien d\'argent ?', ...compte([[argent([[20, 'e'], [10, 'e'], [2, 'e']], 200), '32 €'], [argent([[5, 'e'], [1, 'e'], [50, 'c'], [20, 'c']], 210), '6 € 70 c']], 2, 4) },
       { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['1 € = @ c', 100], ['2 pièces de 50 c = @ €', 1], ['5 pièces de 20 c = @ €', 1]], 3) },
+      { etoiles: 1, consigne: 'Combien d\'argent ?', ...compte([[argent([[10, 'e'], [5, 'e'], [5, 'e']], 200), '20 €'], [argent([[2, 'e'], [50, 'c'], [50, 'c'], [10, 'c']], 190), '3 € 10 c']], 2, 4) },
+      { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['3 € = @ c', 300], ['50 c + 50 c = @ €', 1], ['1 € et 20 c = @ c', 120]], 3) },
+      { etoiles: 2, col: 1, consigne: 'Entoure la somme la plus grande.', ...P3.chx([['', '5 €', '5 € · 90 c'], ['', '2 € 10 c', '2 € 10 c · 1 € 90 c'], ['', '1 €', '1 € · 99 c']]) },
+      { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['10 pièces de 10 c = @ €', 1], ['4 pièces de 50 c = @ €', 2], ['2 € 50 c = @ c', 250]], 3) },
     ] },
   { titre: 'Payer', duree: '20 min',
     attendus: ['Constituer une somme de plusieurs façons'],
     exos: [
       { etoiles: 1, consigne: 'Entoure l\'argent qu\'il faut pour payer 17 €.', ...PCP.entoure([[cpArgent([10, 5, 2], { px: 190 }), true], [cpArgent([10, 5], { px: 150 }), false], [cpArgent([5, 5, 5, 1], { px: 220 }), false]], 3) },
       { etoiles: 2, consigne: 'Écris deux façons de payer 25 € avec des billets et des pièces.', eleve: PCP.cadre(60), corr: plListe(['20 + 5 = 25', '10 + 10 + 2 + 2 + 1 = 25']) },
+      { etoiles: 1, consigne: 'Entoure l\'argent qu\'il faut pour payer 12 €.', ...PCP.entoure([[cpArgent([5, 5], { px: 140 }), false], [cpArgent([10, 2], { px: 150 }), true], [cpArgent([10, 1], { px: 150 }), false]], 3) },
+      { etoiles: 2, col: 1, consigne: 'Combien de pièces de 2 € faut-il pour payer… ?', ...P3.rmp([['10 € : @ pièces', 5], ['16 € : @ pièces', 8], ['20 € : @ pièces', 10]], 2) },
+      { etoiles: 3, col: 1, consigne: 'Dessine l\'argent pour payer 38 € avec le moins de billets et de pièces possible.', eleve: PCP.cadre(70), corr: lig(cpArgent([20, 10, 5, 2, 1], { px: 260 })) },
+      { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['20 € = 10 € + 5 € + @ €', 5], ['50 € = 20 € + 20 € + @ €', 10], ['15 € = 5 € + 5 € + @ €', 5]], 2) },
     ] },
   { titre: 'Problèmes de prix', duree: '25 min',
     attendus: ['Calculer un prix total et ce qui reste', 'Rendre la monnaie'],
@@ -22,6 +30,10 @@ PLANCHES['ce1|La monnaie : euros et centimes'] = [
       { etoiles: 1, cahier: true, consigne: 'Un cahier coûte 3 € et un stylo 2 €. Combien coûtent-ils ensemble ?', corr: cm1Redac('Prix total', '3 + 2 = 5', 'Ils coûtent 5 €.') },
       { etoiles: 2, cahier: true, consigne: 'J\'achète un livre à 13 €. Je paie avec un billet de 20 €. Combien me rend-on ?', corr: cm1Redac('Monnaie rendue', '13 + 7 = 20', 'On me rend 7 €.') },
       { etoiles: 3, cahier: true, consigne: 'Mia a 3 billets de 5 € et 4 pièces de 2 €. Peut-elle acheter un jeu à 25 € ?', corr: cm1Redac('Argent de Mia', { suite: ['5 + 5 + 5 = 15', '2 + 2 + 2 + 2 = 8', '15 + 8 = 23'] }, 'Mia a 23 € : il lui manque 2 €, elle ne peut pas acheter le jeu.') },
+      { etoiles: 1, col: 1, consigne: 'Combien coûtent-ils ensemble ?', ...P3.rmp([['un cahier à 3 € et une règle à 2 € : @', '5 €'], ['un livre à 12 € et un stylo à 4 € : @', '16 €']], 3) },
+      { etoiles: 2, col: 1, consigne: 'Combien me rend-on ?', ...P3.rmp([['Je paie 10 € pour 7 € : @', '3 €'], ['Je paie 20 € pour 15 € : @', '5 €'], ['Je paie 50 € pour 42 € : @', '8 €']], 3) },
+      { etoiles: 2, consigne: 'J\'ai 10 €. Entoure ce que je peux acheter.', ...PCP.entoure([['<span class="cpn-prix">ballon : 12 €</span>', false], ['<span class="cpn-prix">livre : 9 €</span>', true], ['<span class="cpn-prix">puzzle : 15 €</span>', false], ['<span class="cpn-prix">bille : 1 €</span>', true]], 4) },
+      { etoiles: 3, col: 1, consigne: 'Combien me manque-t-il ?', ...P3.rmp([['J\'ai 12 €, le jeu coûte 20 € : @', '8 €'], ['J\'ai 35 €, le vélo coûte 50 € : @', '15 €']], 3) },
     ] },
 ];
 })();

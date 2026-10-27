@@ -18,12 +18,19 @@ PLANCHES['ce1|Le calendrier et les durées'] = [
     exos: [
       { etoiles: 1, col: 1, consigne: 'Complète la suite des jours.', ...P3.rmp([['lundi, mardi, @, jeudi', 'mercredi'], ['vendredi, @, dimanche', 'samedi'], ['dimanche, @, mardi', 'lundi']], 5) },
       { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['Le mois après mars : @', 'avril'], ['Le mois avant janvier : @', 'décembre'], ['Le mois entre juillet et septembre : @', 'août'], ['Une année a @ mois.', 12]], 5) },
+      { etoiles: 1, col: 1, consigne: 'Complète la suite des mois.', ...P3.rmp([['janvier, février, @, avril', 'mars'], ['juin, @, août', 'juillet'], ['octobre, novembre, @', 'décembre']], 5) },
+      { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['Une semaine a @ jours.', 7], ['Le premier jour de la semaine : @', 'lundi'], ['Le premier mois de l\'année : @', 'janvier']], 5) },
+      { etoiles: 3, col: 1, consigne: 'Aujourd\'hui, c\'est jeudi. Quel jour sera-t-on… ?', ...P3.rmp([['demain : @', 'vendredi'], ['après-demain : @', 'samedi'], ['dans une semaine : @', 'jeudi']], 5) },
+      { etoiles: 2, col: 1, consigne: 'Quel jour était-ce ? Aujourd\'hui, c\'est mardi.', ...P3.rmp([['hier : @', 'lundi'], ['avant-hier : @', 'dimanche']], 5) },
+      { etoiles: 3, col: 1, consigne: 'Écris les mois qui ont 31 jours.', eleve: plLignes(2), corr: plListe(['janvier, mars, mai, juillet, août, octobre, décembre']) },
     ] },
   { titre: 'Lire un calendrier', duree: '20 min',
     attendus: ['Trouver le jour d\'une date', 'Compter des jours sur un calendrier'],
     exos: [
       { etoiles: 1, col: 1, consigne: 'Regarde le calendrier et complète.', ...avecCal([17, 25], P3.rmp([['Le 17 mars 2027 est un @.', 'mercredi'], ['Le 25 mars 2027 est un @.', 'jeudi'], ['Mars a @ jours.', 31]], 4)) },
       { etoiles: 2, col: 1, consigne: 'Regarde le calendrier et complète.', ...avecCal([3, 10, 17, 24, 31], P3.rmp([['En mars 2027, il y a @ mercredis.', 5], ['Le mercredi après le 10 mars, c\'est le @ mars.', 17]], 2)) },
+      { etoiles: 2, col: 1, consigne: 'Regarde le calendrier de mars 2027. Complète.', ...avecCal([1, 8, 21], P3.rmp([['Le 1er mars est un @.', 'lundi'], ['Le lundi après le 1er mars : le @ mars', 8], ['Le 21 mars est un @.', 'dimanche']], 4)) },
+      { etoiles: 3, col: 1, consigne: 'Regarde le calendrier de mars 2027. Combien de jours… ?', ...avecCal([10, 11, 12, 13, 14, 15, 16, 17], P3.rmp([['du 10 au 17 mars : @ jours', 7], ['de samedis en mars 2027 : @', 4]], 2)) },
     ] },
   { titre: 'Les durées', duree: '25 min',
     attendus: ['Connaître les relations entre les unités de durée', 'Calculer une durée en jours'],
@@ -31,6 +38,9 @@ PLANCHES['ce1|Le calendrier et les durées'] = [
       { etoiles: 1, col: 1, consigne: 'Complète.', ...P3.rmp([['1 semaine = @ jours', 7], ['1 jour = @ heures', 24], ['1 heure = @ minutes', 60]], 2) },
       { etoiles: 2, cahier: true, consigne: 'Léa part en colonie pour 2 semaines. Combien de jours dure la colonie ?', corr: cm1Redac('Durée de la colonie', '7 + 7 = 14', 'La colonie dure 14 jours.') },
       { etoiles: 3, cahier: true, consigne: 'Nous sommes le 25 mars. L\'anniversaire de Tom est le 2 avril. Dans combien de jours est-ce ? (Mars a 31 jours.)', corr: cm1Redac('Jours avant l\'anniversaire', { suite: ['31 − 25 = 6', '6 + 2 = 8'] }, 'L\'anniversaire de Tom est dans 8 jours.') },
+      { etoiles: 1, col: 1, consigne: 'Complète.', ...P3.rmp([['1 an = @ mois', 12], ['2 semaines = @ jours', 14], ['1 demi-heure = @ minutes', 30]], 2) },
+      { etoiles: 2, col: 1, consigne: 'Entoure la durée qui convient.', ...P3.chx([['Une nuit de sommeil :', '10 heures', '10 minutes · 10 heures'], ['Se brosser les dents :', '3 minutes', '3 minutes · 3 heures'], ['Les grandes vacances :', '8 semaines', '8 jours · 8 semaines']]) },
+      { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['Du lundi au vendredi : @ jours d\'école', 5], ['Du samedi au dimanche : @ jours', 2]], 2) },
     ] },
 ];
 })();

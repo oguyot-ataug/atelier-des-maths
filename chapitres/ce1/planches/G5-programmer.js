@@ -25,6 +25,8 @@ PLANCHES['ce1|Programmer des déplacements'] = [
     exos: [
       { etoiles: 1, consigne: 'Écris avec des flèches le chemin du point rouge jusqu\'à l\'étoile.', eleve: lig(grille({ point: [0, 3], but: [3, 1] })) + lig(cadre(50)), corr: lig(grille({ point: [0, 3], but: [3, 1], chemin: cpSuivre([0, 3], 'dddhh') })) + lig(cpCode('dddhh')) },
       { etoiles: 2, consigne: 'Suis le code depuis le point rouge et dessine une étoile à l\'arrivée.', eleve: lig(grille({ point: [1, 0] })) + lig(cpCode('bbddhg')), corr: lig(grille({ point: [1, 0], chemin: cpSuivre([1, 0], 'bbddhg'), but: [2, 1] })) + lig(cpCode('bbddhg')) },
+      { etoiles: 2, col: 1, consigne: 'Suis le code depuis le point rouge et dessine une étoile à l\'arrivée.', eleve: lig(grille({ point: [0, 0] })) + lig(cpCode('ddbbbg')), corr: lig(grille({ point: [0, 0], chemin: cpSuivre([0, 0], 'ddbbbg'), but: [1, 3] })) + lig(cpCode('ddbbbg')) },
+      { etoiles: 3, col: 1, consigne: 'Écris avec des flèches le chemin le plus court du point rouge jusqu\'à l\'étoile.', eleve: lig(grille({ point: [4, 3], but: [1, 0] })) + lig(cadre(50)), corr: lig(grille({ point: [4, 3], but: [1, 0], chemin: cpSuivre([4, 3], 'ggghhh') })) + lig(cpCode('ggghhh')) + lig('<i>On peut aussi monter d\'abord : 6 flèches dans tous les cas.</i>') },
     ] },
   { titre: 'Avancer et tourner', duree: '25 min',
     attendus: ['Exécuter un programme avec « avance », « tourne à gauche », « tourne à droite »'],
@@ -40,6 +42,8 @@ PLANCHES['ce1|Programmer des déplacements'] = [
         corr: lig(grille({ dep: [0, 3, 0], but: [2, 1], chemin: executer(0, 3, 0, 'AADAA').map(([x, y]) => [x, y]), fin: [2, 1, 1] })) + lig(ce1Instr('AADAA')) + lig('<i>D\'autres programmes sont possibles.</i>') },
       { etoiles: 3, consigne: 'Ce programme devait amener la tortue sur l\'étoile. Entoure l\'instruction fausse.', eleve: lig(grille({ dep: [0, 3, 1], but: [3, 1] })) + lig(ce1Instr('AAADAA')),
         corr: lig(grille({ dep: [0, 3, 1], but: [3, 1], chemin: executer(0, 3, 1, 'AAAGAA').map(([x, y]) => [x, y]), fin: [3, 1, 0] })) + lig(ce1Instr('AAADAA', 3)) + lig('Il faut <b>tourner à gauche</b> pour monter vers l\'étoile.') },
+      { etoiles: 2, consigne: 'Écris un programme pour amener la tortue sur l\'étoile.', eleve: lig(grille({ dep: [4, 0, 2], but: [2, 3] })) + lig(cadre(50)),
+        corr: lig(grille({ dep: [4, 0, 2], but: [2, 3], chemin: executer(4, 0, 2, 'AAADAA').map(([x, y]) => [x, y]), fin: [2, 3, 3] })) + lig(ce1Instr('AAADAA')) + lig('<i>D\'autres programmes sont possibles.</i>') },
     ] },
 ];
 })();
