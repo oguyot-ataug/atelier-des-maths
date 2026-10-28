@@ -3659,6 +3659,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1192', date:'2026-10-28', items:[
+    "Nouvelle page publique « Les notions de maths du CP à la 3e » (latelierdesmaths.fr/programmes/) : ce que les programmes officiels attendent à chaque niveau, notion par notion, avec le vocabulaire qu'ils nomment ; filtres par domaine, cycle ou niveau, recherche, vocabulaire seul, et le nouveau programme de 4e et 3e en regard de celui en vigueur.",
+    "Liens vers cette page : « Ma progression », la page « Pour les professeurs » et le pied de page des pages de cours.",
+  ] },
   { version:'2026-08-19.1191', date:'2026-10-28', items:[
     "Planches (relecture CE2-N1) : plus de point central « · » entre les choix à entourer ni entre les nombres d'une liste : un grand espace les sépare, sur papier, en projection et à l'écran ; les choix en tableau gardent leurs colonnes et ne se coupent plus.",
     "Inégalités et encadrements des exercices à compléter : « … < 4 563 < … » ne se coupe plus en fin de ligne.",

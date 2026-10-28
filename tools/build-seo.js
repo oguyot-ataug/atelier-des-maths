@@ -12,6 +12,8 @@
      6e/index.html, 5e/index.html, 4e/..., 3e/... -- sommaire de chaque niveau
      6e/<chapitre>/index.html, 5e/..., 4e/..., 3e/... -- une page par chapitre ayant un vrai cours
      professeurs/index.html                  -- présentation des outils enseignants
+     programmes/index.html                   -- notions du CP à la 3e d'après les programmes officiels
+                                                (données : assets/programmes/notions.js)
      sitemap.xml, robots.txt
      assets/og-image.png                     -- image d'aperçu (créée seulement si absente)
      tools/seo-manifest.json                 -- empreinte de chaque page, pour une date de
@@ -120,7 +122,7 @@ async function extractChapters(page, base) {
 }
 
 // ---------- gabarit commun ----------
-function layout({ title, description, canonical, jsonld, body, ogType }) {
+function layout({ title, description, canonical, jsonld, body, ogType, head, mainClass }) {
   return `<!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -143,6 +145,7 @@ function layout({ title, description, canonical, jsonld, body, ogType }) {
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Caveat:wght@600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
 <link rel="stylesheet" href="/styles.css">
+${head || ''}
 <style>
   .seo-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 20px;background:rgba(253,249,246,.95);border-bottom:1px solid rgba(28,43,57,.08);position:sticky;top:0;z-index:5;}
   .seo-top img{height:40px;display:block;}
@@ -190,16 +193,17 @@ ${jsonld ? `<script type="application/ld+json">${JSON.stringify(jsonld)}</script
     <a href="/5e/">Cours 5e</a>
     <a href="/4e/">Cours 4e</a>
     <a href="/3e/">Cours 3e</a>
+    <a href="/programmes/">Programmes</a>
     <a href="/professeurs/">Professeurs</a>
     <a class="cta" href="/">Ouvrir l'application</a>
   </nav>
 </header>
-<main class="seo-wrap">
+<main class="seo-wrap${mainClass ? ' ' + mainClass : ''}">
 ${body}
 </main>
 <footer class="seo-foot">
   <a href="/">L'Atelier des Maths</a> · cours de mathématiques interactifs pour l'école et le collège ·
-  <a href="/cm1/">Cours de maths CM1</a> · <a href="/cm2/">Cours de maths CM2</a> · <a href="/6e/">Cours de maths 6e</a> · <a href="/5e/">Cours de maths 5e</a> · <a href="/4e/">Cours de maths 4e</a> · <a href="/3e/">Cours de maths 3e</a> · <a href="/professeurs/">Pour les professeurs</a><br>
+  <a href="/cm1/">Cours de maths CM1</a> · <a href="/cm2/">Cours de maths CM2</a> · <a href="/6e/">Cours de maths 6e</a> · <a href="/5e/">Cours de maths 5e</a> · <a href="/4e/">Cours de maths 4e</a> · <a href="/3e/">Cours de maths 3e</a> · <a href="/programmes/">Les notions du CP à la 3e</a> · <a href="/professeurs/">Pour les professeurs</a><br>
   Une production de <a href="https://www.latelieraugmente.fr" rel="noopener">L'Atelier Augmenté</a> · Programme de mathématiques B.O. 2026.
 </footer>
 </body>
@@ -347,11 +351,81 @@ ${feats.map(f => `  <div><h3><span class="gicon">${f[0]}</span> ${esc(f[1])}</h3
   <p>Chaque chapitre de <a href="/6e/" style="color:var(--accent);font-weight:600;">6e</a>, de <a href="/5e/" style="color:var(--accent);font-weight:600;">5e</a>, de <a href="/4e/" style="color:var(--accent);font-weight:600;">4e</a> et de <a href="/3e/" style="color:var(--accent);font-weight:600;">3e</a> propose un cours avec des figures manipulables, une méthode animée, des exercices de rédaction, un quiz différent à chaque essai et un peu d'histoire des mathématiques. Vous décidez, classe par classe et même élève par élève, quels outils d'intelligence artificielle leur sont ouverts.</p>
 </section>
 <section class="seo-section">
+  <h2><span class="gicon">table_view</span> Les programmes du CP à la 3e</h2>
+  <p>Toutes les notions de mathématiques du CP à la 3e dans un seul tableau : ce que les programmes officiels attendent à chaque niveau, et le vocabulaire qu'ils nomment. Filtres par domaine, par cycle ou par niveau, et le nouveau programme de 4e et de 3e en regard de celui en vigueur.</p>
+  <p style="margin-top:12px;"><a class="seo-btn" href="/programmes/">Voir les notions du CP à la 3e</a></p>
+</section>
+<section class="seo-section">
   <h2><span class="gicon">key</span> Accès</h2>
   <p>L'inscription est réservée aux enseignants disposant d'une adresse académique : chaque compte est vérifié avant d'être ouvert. Un professeur référent peut aussi gérer les comptes de tout son établissement. Les fonctions d'IA utilisent votre propre clé, celle de l'établissement ou celle du site selon ce qui a été décidé : vous voyez toujours le détail de la consommation.</p>
   <p style="margin-top:12px;"><a class="seo-btn" href="/">Découvrir l'application</a></p>
 </section>`;
   return { url, html: layout({ title, description, canonical: url, jsonld, body, ogType: 'website' }) };
+}
+
+// ---------- page programmes : notions du CP à la 3e ----------
+function programmesPage() {
+  const url = '/programmes/';
+  const src = path.join(ROOT, 'assets', 'programmes', 'notions.js');
+  delete require.cache[src];
+  const NT = require(src);
+  const ver = f => crypto.createHash('sha1').update(fs.readFileSync(path.join(ROOT, 'assets', 'programmes', f))).digest('hex').slice(0, 8);
+  const r = NT.notionsTable({ dom: 'all', vue: 'all', q: '', nouveau: false, vonly: false });
+  const title = "Programme de maths du CP à la 3e : notions, compétences et vocabulaire | L'Atelier des Maths";
+  const description = "Tableau des notions de mathématiques du CP à la 3e : compétences attendues et vocabulaire à chaque niveau, d'après les programmes officiels (cycles 2, 3 et 4).";
+  const jsonld = { '@context': 'https://schema.org', '@graph': [
+    { '@type': 'WebPage', name: 'Notions de mathématiques du CP à la 3e', url: SITE + url, inLanguage: 'fr', description, publisher: PUBLISHER,
+      audience: { '@type': 'EducationalAudience', educationalRole: 'teacher' } },
+    crumbsLd([['Accueil', '/'], ['Notions du CP à la 3e', url]]),
+  ] };
+  const vues = [['all', 'Du CP à la 3e'], ['c2', 'Cycle 2 (CP, CE1, CE2)'], ['c3', 'Cycle 3 (CM1, CM2, 6e)'], ['c4', 'Cycle 4 (5e, 4e, 3e)'], ['ec', 'École → collège (CM2, 6e, 5e)'],
+    ...NT.LV.map(l => [l.k, l.n + (l.k === 's6' || l.k === 's5' || l.k === 's4' || l.k === 's3' ? ' seule' : ' seul')])];
+  const body = `
+<div class="seo-crumbs"><a href="/">Accueil</a> › Notions du CP à la 3e</div>
+<h1>Les notions de maths du CP à la 3e</h1>
+<p class="seo-sub">Ce que les programmes officiels attendent, notion par notion et niveau par niveau, avec le vocabulaire qu'ils nomment. Chaque cellule reprend uniquement les textes officiels cités en bas de page.</p>
+<div class="nt-cycles">
+  <span><i style="background:var(--c2)"></i>Cycle 2 · CP, CE1, CE2 (BO 2024)</span>
+  <span><i style="background:var(--c3)"></i>Cycle 3 · CM1, CM2, 6e (BO 2025)</span>
+  <span><i style="background:var(--c4)"></i>Cycle 4 · 5e (BO 2026), 4e et 3e (programme 2020 en vigueur)</span>
+</div>
+<div class="nt-tools" role="region" aria-label="Filtres">
+  <div class="nt-field"><span class="nt-lab" id="nt-lab-dom">Domaine</span><div class="nt-chips" id="nt-doms" role="group" aria-labelledby="nt-lab-dom"></div></div>
+  <div class="nt-field"><label for="nt-vue">Niveaux affichés</label>
+    <select id="nt-vue">${vues.map(v => `<option value="${v[0]}">${esc(v[1])}</option>`).join('')}</select></div>
+  <div class="nt-field"><label for="nt-q">Rechercher</label><input type="search" id="nt-q" placeholder="fraction, médiane, aire…" autocomplete="off"></div>
+  <div class="nt-field"><span class="nt-lab" id="nt-lab-prog">4e et 3e</span>
+    <div class="nt-seg" role="group" aria-labelledby="nt-lab-prog">
+      <button type="button" id="nt-old" aria-pressed="true" title="Programme 2020 et attendus de fin d'année 2019">En vigueur (2020)</button>
+      <button type="button" id="nt-new" aria-pressed="false" title="Programme du cycle 4, BO n° 10 du 5 mars 2026">Nouveau (BO 2026)</button>
+    </div></div>
+  <label class="nt-switch" for="nt-vonly"><input type="checkbox" id="nt-vonly"> Vocabulaire seul</label>
+  <span class="nt-count" id="nt-count" aria-live="polite">${NT.countText(r)}</span>
+</div>
+<div class="nt-scroll"><table id="nt-table">${r.html}</table></div>
+<div class="nt-foot">
+  <section>
+    <h2>Comment lire le tableau</h2>
+    <ul>
+      <li>Une cellule dit ce que le texte officiel <strong>ajoute ou précise</strong> à ce niveau. Une cellule vide (—) signifie que le texte n'en dit rien de nouveau : la notion est entretenue, pas abandonnée.</li>
+      <li>Les mots <span class="nt-w">surlignés</span> sont ceux que le texte nomme explicitement pour ce niveau (lexique, termes, symboles, unités).</li>
+      <li>Les nombres cités (« 8 égalités en 1 minute », « dénominateur ≤ 20 ») sont ceux des programmes.</li>
+      <li>Le bouton <strong>4e et 3e</strong> bascule entre le programme en vigueur (2020) et le nouveau programme du cycle 4, applicable en 4e à la rentrée 2027 et en 3e à la rentrée 2028.</li>
+    </ul>
+  </section>
+  <section>
+    <h2>Sources (textes officiels)</h2>
+    <ul>
+      <li><strong>CP, CE1, CE2</strong> : programme de mathématiques du cycle 2, BO n° 41 du 31 octobre 2024 (<a href="https://bibnum.publimath.fr/MEN/MEN24001.pdf" target="_blank" rel="noopener">PDF</a>).</li>
+      <li><strong>CM1, CM2, 6e</strong> : programme de mathématiques du cycle 3, BO n° 16 du 17 avril 2025 (<a href="https://bibnum.publimath.fr/MEN/MEN25001.pdf" target="_blank" rel="noopener">PDF</a>). Seul le texte du BO est utilisé, pas les « exemples de réussite » publiés à part.</li>
+      <li><strong>5e</strong>, et 4e et 3e en « Nouveau » : programme de mathématiques du cycle 4, BO n° 10 du 5 mars 2026, annexe 2 (<a href="https://bibnum.publimath.fr/MEN/MEN26001.pdf" target="_blank" rel="noopener">PDF</a>).</li>
+      <li><strong>4e et 3e en vigueur</strong> : programme du cycle 4, BO n° 31 du 30 juillet 2020 (<a href="https://bibnum.publimath.fr/MEN/MEN20003.pdf" target="_blank" rel="noopener">PDF</a>). Il ne fixe que des attendus de fin de cycle ; la répartition entre 4e et 3e vient des attendus de fin d'année d'Éduscol, 2019 (<a href="https://eduscol.education.gouv.fr/sites/default/files/document/16-maths-4e-attendus-eduscol1114746pdf-74682.pdf" target="_blank" rel="noopener">4e</a>, <a href="https://eduscol.education.gouv.fr/sites/default/files/document/18-maths-3e-attendus-eduscol1114748pdf-74688.pdf" target="_blank" rel="noopener">3e</a>) et des repères annuels de progression du cycle 4 (<a href="https://eduscol.education.gouv.fr/sites/default/files/document/26-maths-c4-reperes-eduscol1114756pdf-74694.pdf" target="_blank" rel="noopener">PDF</a>).</li>
+    </ul>
+  </section>
+</div>
+<script src="/assets/programmes/notions.js?v=${ver('notions.js')}"></script>`;
+  const head = `<link rel="stylesheet" href="/assets/programmes/notions.css?v=${ver('notions.css')}">`;
+  return { url, html: layout({ title, description, canonical: url, jsonld, body, ogType: 'website', head, mainClass: 'nt' }) };
 }
 
 // ---------- image d'aperçu (partages, réseaux sociaux) ----------
@@ -396,6 +470,7 @@ async function ogImage(page, base) {
     pages.push(levelPage(lvl, chapters, published));
   }
   pages.push(teachersPage());
+  pages.push(programmesPage());
   const madeOg = await ogImage(page, base);
   await browser.close();
   server.close();
@@ -428,7 +503,7 @@ async function ogImage(page, base) {
     newManifest[e.url] = { hash: e.hash, lastmod: old && old.hash === e.hash ? old.lastmod : today };
   }
   fs.writeFileSync(manifestPath, JSON.stringify(newManifest, null, 1) + '\n');
-  const prio = u => u === '/' ? '1.0' : /^\/(cm1|cm2|6e|5e|4e|3e)\/$/.test(u) || u === '/professeurs/' ? '0.9' : '0.8';
+  const prio = u => u === '/' ? '1.0' : /^\/(cm1|cm2|6e|5e|4e|3e)\/$/.test(u) || u === '/professeurs/' || u === '/programmes/' ? '0.9' : '0.8';
   fs.writeFileSync(path.join(ROOT, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${entries.map(e => `  <url><loc>${SITE}${e.url}</loc><lastmod>${newManifest[e.url].lastmod}</lastmod><priority>${prio(e.url)}</priority></url>`).join('\n')}
