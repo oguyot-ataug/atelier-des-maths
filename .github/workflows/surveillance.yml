@@ -2,7 +2,7 @@
 #
 # Demandé : « go pour 1 + 3 + 4 + 5 » (nouveaux comptes et demandes, erreurs, surveillance du site,
 # résumé quotidien). Toutes les 15 minutes :
-#  1. vérifie que maths.latelieraugmente.fr, adp.latelieraugmente.fr, www.latelieraugmente.fr et
+#  1. vérifie que latelierdesmaths.fr, adp.latelieraugmente.fr, www.latelieraugmente.fr et
 #     Supabase répondent ; SMS quand l'un tombe (après une seconde tentative) et quand il revient.
 #     Le SMS part directement d'ici (secrets GitHub), pour fonctionner même si Supabase est en panne.
 #  2. appelle la fonction Supabase alerte-sms (action « veille ») : nouveaux comptes, signalements,
@@ -79,7 +79,7 @@ jobs:
                 -H "x-alerte-cle: $ALERTE_CLE" -d '{"action":"test"}'; echo "  ← réponse de Supabase (ok:true attendu)"
             else echo "ALERTE_CLE absent dans les secrets GitHub"; fi
           fi
-          verifier "maths.latelieraugmente.fr" "https://maths.latelieraugmente.fr/"
+          verifier "latelierdesmaths.fr" "https://latelierdesmaths.fr/"
           verifier "adp.latelieraugmente.fr" "https://adp.latelieraugmente.fr/"
           verifier "www.latelieraugmente.fr" "https://www.latelieraugmente.fr/"
           verifier "Supabase (base et comptes)" "$SUPA/auth/v1/health" "$ANON"

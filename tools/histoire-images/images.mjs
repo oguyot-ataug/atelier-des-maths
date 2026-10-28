@@ -21,7 +21,7 @@ import { fileURLToPath } from 'url';
 
 const ICI = path.dirname(fileURLToPath(import.meta.url)), RACINE = path.resolve(ICI, '../..');
 const SORTIE = path.join(RACINE, 'img/histoire'), CAND = path.join(ICI, 'candidats'), TMP = '/tmp/histoire-images';
-const UA = { 'User-Agent': 'AtelierDesMathsImages/1.0 (https://maths.latelieraugmente.fr)' };
+const UA = { 'User-Agent': 'AtelierDesMathsImages/1.0 (https://latelierdesmaths.fr)' };
 const API = 'https://commons.wikimedia.org/w/api.php';
 const lire = f => fs.existsSync(f) ? JSON.parse(fs.readFileSync(f, 'utf8')) : {};
 const recherche = lire(path.join(ICI, 'recherche.json')), choix = lire(path.join(ICI, 'choix.json'));

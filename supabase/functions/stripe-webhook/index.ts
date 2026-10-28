@@ -42,12 +42,12 @@ function euros(n: number): string { return Number(n).toFixed(2).replace(".", ","
 async function envoyerFacture(f: any, prof = false): Promise<void> {
   const key = Deno.env.get("RESEND_API_KEY");
   if (!key || !f?.email) return;
-  const lien = prof ? "https://maths.latelieraugmente.fr/#/abonnement" : "https://maths.latelieraugmente.fr/#/famille";
+  const lien = prof ? "https://latelierdesmaths.fr/#/abonnement" : "https://latelierdesmaths.fr/#/famille";
   const ouvert = prof ? "votre offre est active" : "l'accès de votre famille est ouvert";
   const ou = prof ? "dans « Mon abonnement »" : "dans votre Espace famille, rubrique « Mes factures »";
   const html = `<div style="background:#f6f4f0;padding:24px 12px;font-family:Arial,Helvetica,sans-serif;color:#1c2b39;">
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;border:1px solid #e6e2da;">
-    <tr><td style="background:#0c5ba0;padding:20px 24px;color:#fff;"><div style="font-size:22px;font-weight:bold;">L'Atelier des Maths</div><div style="font-size:13px;opacity:.85;margin-top:2px;">L'Atelier Augmenté · maths.latelieraugmente.fr</div></td></tr>
+    <tr><td style="background:#0c5ba0;padding:20px 24px;color:#fff;"><div style="font-size:22px;font-weight:bold;">L'Atelier des Maths</div><div style="font-size:13px;opacity:.85;margin-top:2px;">L'Atelier Augmenté · latelierdesmaths.fr</div></td></tr>
     <tr><td style="padding:24px;">
       ${f.test ? '<p style="background:#efe9fb;color:#4b2c91;border-radius:8px;padding:8px 12px;font-size:13px;margin:0 0 14px;"><b>Paiement de test</b> : facture sans valeur, aucun argent n\'a été prélevé.</p>' : ""}
       <p style="font-size:17px;font-weight:bold;margin:0 0 12px;">Merci${f.prenom ? " " + esc(f.prenom) : ""} !</p>

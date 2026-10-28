@@ -126,7 +126,7 @@ serve(async (req) => {
       if (!stripeKey) return json({ error: test ? "Mode test : STRIPE_TEST_SECRET_KEY n'est pas enregistré." : "Paiement indisponible pour le moment." }, 500);
       if (test && !stripeKey.startsWith("sk_test_")) return json({ error: "Mode test : STRIPE_TEST_SECRET_KEY doit être une clé de test (sk_test_…)." }, 500);
       const origin = /^https:\/\/[a-z0-9.-]+$/i.test(String(body.origin || "")) || /^http:\/\/localhost(:\d+)?$/.test(String(body.origin || ""))
-        ? String(body.origin) : "https://maths.latelieraugmente.fr";
+        ? String(body.origin) : "https://latelierdesmaths.fr";
       const nbClasses = classesComprises(niveaux, classesSup);
       const nomOffre = type === "seul" ? "Professeur seul " + niveaux.map(lib).join(", ") + (classesSup ? " (" + nbClasses + " classes)" : "") : "Professeur particulier, " + places + " élève" + (places > 1 ? "s" : "");
       const libelleFacture = "L'Atelier des Maths – " + nomOffre + " – " + annee + (deja ? " (complément)" : "");

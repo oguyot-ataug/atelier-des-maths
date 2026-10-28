@@ -6,7 +6,7 @@ const out = new URL('out/', import.meta.url); fs.mkdirSync(out, { recursive: tru
 const journal = [];
 for(const [nom, url] of Object.entries(urls)){
   try{
-    const r = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0 (compatible; AtelierDesMathsDocs/1.0; +https://maths.latelieraugmente.fr)', Accept: 'text/markdown,text/html,application/pdf,text/plain,*/*' } });
+    const r = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0 (compatible; AtelierDesMathsDocs/1.0; +https://latelierdesmaths.fr)', Accept: 'text/markdown,text/html,application/pdf,text/plain,*/*' } });
     const b = Buffer.from(await r.arrayBuffer());
     fs.writeFileSync(new URL(nom, out), b);
     journal.push(`${nom} : HTTP ${r.status}, ${b.length} octets (${r.url})`);

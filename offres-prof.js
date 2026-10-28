@@ -381,7 +381,7 @@ function opImprimerIdents(){
   const l = (opEtat && opEtat.identsNeufs) || []; if(!l.length) return;
   const w = window.open('', '_blank'); if(!w) return;
   w.document.write(`<!doctype html><meta charset="utf-8"><title>Identifiants</title><style>body{font-family:Arial,sans-serif;margin:16px;} .f{display:inline-block;width:46%;margin:1%;border:1px dashed #999;border-radius:8px;padding:10px;box-sizing:border-box;vertical-align:top;} b{font-size:15px;} code{font-size:15px;}</style>
-    ${l.map(x => `<div class="f"><b>${opEsc(x.nom)}</b><br>Site : maths.latelieraugmente.fr<br>Identifiant : <code>${opEsc(x.ident)}</code><br>Mot de passe : <code>${opEsc(x.mdp)}</code></div>`).join('')}
+    ${l.map(x => `<div class="f"><b>${opEsc(x.nom)}</b><br>Site : latelierdesmaths.fr<br>Identifiant : <code>${opEsc(x.ident)}</code><br>Mot de passe : <code>${opEsc(x.mdp)}</code></div>`).join('')}
     <script>window.print()<\/script>`);
   w.document.close();
 }

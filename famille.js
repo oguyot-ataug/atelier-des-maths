@@ -692,7 +692,7 @@ async function famAdminRefresh(){
     </div>
     <div class="tool-shell fam-card">
       <strong class="fam-h"><span class="gicon">sell</span> Tarifs Famille</strong>
-      <label class="fam-check" style="margin:6px 0 10px;"><input type="checkbox" id="famPublique" ${param && param.publique ? 'checked' : ''} onchange="famAdminPublique(this)"> <span><b>Offre Famille visible sur le site</b> : bandeau « Vous êtes parent ? » sur l'accueil et bouton « Je suis parent » dans le menu de connexion. Décoché, l'offre reste accessible par l'adresse directe maths.latelieraugmente.fr/#/famille.</span></label>
+      <label class="fam-check" style="margin:6px 0 10px;"><input type="checkbox" id="famPublique" ${param && param.publique ? 'checked' : ''} onchange="famAdminPublique(this)"> <span><b>Offre Famille visible sur le site</b> : bandeau « Vous êtes parent ? » sur l'accueil et bouton « Je suis parent » dans le menu de connexion. Décoché, l'offre reste accessible par l'adresse directe latelierdesmaths.fr/#/famille.</span></label>
       <p class="hint" style="margin:4px 0 8px;">Prix TTC par année scolaire, appliqués à tous les nouveaux paiements (et affichés sur la page de présentation).</p>
       <div class="fam-row">
         <label class="hint">1 niveau <input type="number" id="famTarif1" min="1" step="0.01" value="${eur(grille['1'])}" style="width:80px;"> €</label>

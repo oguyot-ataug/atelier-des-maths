@@ -1146,7 +1146,7 @@ function progressionPdf(){
 <h1>${esc(titre)}</h1>
 <p class="sous">Année scolaire ${y}-${y + 1} · ${data.filter(c => !c.evt).length} chapitres · ${semaines} semaines${perso ? ' · progression personnalisée' : ''}</p>
 <table><thead><tr><th>N°</th><th>Domaine</th><th>Chapitre</th><th style="text-align:center;">Durée</th><th style="text-align:center;">Dates</th></tr></thead><tbody>${lignes}</tbody></table>
-<div class="pied"><span>L'Atelier des Maths · maths.latelieraugmente.fr</span><span>Programme B.O. 2026</span></div>
+<div class="pied"><span>L'Atelier des Maths · latelierdesmaths.fr</span><span>Programme B.O. 2026</span></div>
 <script>window.onload=function(){setTimeout(function(){window.print();},250);};<\/script>
 </body></html>`);
   w.document.close();
@@ -3659,6 +3659,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1190', date:'2026-10-28', items:[
+    "Nouvelle adresse du site : latelierdesmaths.fr (l'ancienne adresse maths.latelieraugmente.fr redirige vers elle, ainsi que latelierdesmaths.com). Pages de référencement, sitemap, liens des mails (devis, paiements, familles, professeurs), factures, lettres aux parents et fiches identifiants à la nouvelle adresse.",
+  ] },
   { version:'2026-08-19.1189', date:'2026-10-27', items:[
     "Exercices à l'écran (relecture CP-N2, CP-N3) : les cases ont dès le départ la taille de la réponse attendue, elles ne grandissent plus et ne passent plus à la ligne quand on écrit ; la place du message « Bravo… » est réservée, « Vérifier ma réponse » ne fait plus remonter l'exercice en projection.",
     "« Compte les pommes » (CP) : à l'écran, on fait glisser les pommes dans un cadre « paquet de 10 » pour les compter (aide non notée).",

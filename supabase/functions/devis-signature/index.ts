@@ -24,7 +24,7 @@ const cors = {
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { ...cors, "Content-Type": "application/json" } });
 
-const SITE = "https://maths.latelieraugmente.fr";
+const SITE = "https://latelierdesmaths.fr";
 const FROM = "L'Atelier des Maths <devis@latelieraugmente.fr>";
 const CODE_TTL_MIN = 15, MAX_CODE_SENDS = 5, MAX_ATTEMPTS = 5;
 
@@ -72,7 +72,7 @@ function mailHtml(title: string, paragraphs: string[], button?: { href: string; 
     <h2 style="font-size:18px;margin:0 0 12px;">${title}</h2>
     ${paragraphs.map((p) => `<p style="margin:0 0 12px;">${p}</p>`).join("")}
     ${button ? `<p style="margin:20px 0;"><a href="${button.href}" style="background:#0C5BA0;color:#fff;text-decoration:none;padding:12px 20px;border-radius:8px;font-weight:bold;display:inline-block;">${button.label}</a></p>` : ""}
-    <p style="font-size:12px;color:#6b7482;margin-top:24px;border-top:1px solid #e3e7ec;padding-top:10px;">L'Atelier des Maths · maths.latelieraugmente.fr · une production de L'Atelier Augmenté</p>
+    <p style="font-size:12px;color:#6b7482;margin-top:24px;border-top:1px solid #e3e7ec;padding-top:10px;">L'Atelier des Maths · latelierdesmaths.fr · une production de L'Atelier Augmenté</p>
   </div>`;
 }
 

@@ -175,7 +175,7 @@ Deno.serve(async (req) => {
           if (!compte) throw new QontoErreur(`L'IBAN imprimé sur la facture (${em.iban || "vide"}) n'est pas un compte Qonto. Comptes Qonto : ${comptes.map((b: any) => b.iban).join(", ") || "aucun"}.`);
           const { items, remise, remisesTxt } = lignesQonto(d.lignes);
           if (!items.length) throw new QontoErreur("Aucune ligne facturable.");
-          const objet = `L'Atelier des Maths (maths.latelieraugmente.fr) – licence établissement`
+          const objet = `L'Atelier des Maths (latelierdesmaths.fr) – licence établissement`
             + (d.periode_debut && d.periode_fin ? `, du ${fr(d.periode_debut)} au ${fr(d.periode_fin)}` : "")
             + (cli.organisme && cli.nom ? ` – pour ${cli.nom}` : "") + (cli.uai ? ` (UAI ${cli.uai})` : "");
           const conditions = [

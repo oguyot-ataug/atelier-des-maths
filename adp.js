@@ -13,7 +13,7 @@
    - un accueil à lui : présentation pour un visiteur, accès direct aux outils une fois connecté.
    Ce qui se masque simplement (menus, outils de maths de la correction et du cahier, types de
    devoirs, onglets des sessions) l'est en CSS (styles.css, « L'Atelier du Prof »).
-   Sur maths.latelieraugmente.fr, ce fichier ne fait rien.
+   Sur latelierdesmaths.fr, ce fichier ne fait rien.
    ===================================================================== */
 (function(){
   if(!window.ADP) return;
@@ -34,7 +34,7 @@
   const pied = document.querySelector('body > footer');
   if(pied) pied.innerHTML = `L'Atelier du Prof, une production de <a href="https://www.latelieraugmente.fr" target="_blank" rel="noopener">L'Atelier Augmenté</a>
     · <a href="${DECOUVRIR}">Découvrir L'Atelier du Prof</a> · <a href="#" data-nav="mentions-legales">Mentions légales</a> · <a href="#" data-nav="confidentialite">Confidentialité</a>
-    · Professeur de maths ? <a href="https://maths.latelieraugmente.fr" target="_blank" rel="noopener">L'Atelier des Maths</a>`;
+    · Professeur de maths ? <a href="https://latelierdesmaths.fr" target="_blank" rel="noopener">L'Atelier des Maths</a>`;
 
   /* ---------- Matière du professeur (étape 2) ----------
      Enregistrée dans son compte de connexion (métadonnées, modifiables par lui-même : aucune table à
@@ -181,7 +181,7 @@
     };
   }
   const cgv = document.querySelector('#view-cgv > div');
-  if(cgv) cgv.innerHTML = MSG_TEST + '<p class="hint" style="margin-top:14px;">Les conditions générales de vente de L\'Atelier du Prof seront publiées à l\'ouverture des offres. Celles de L\'Atelier des Maths restent consultables sur <a href="https://maths.latelieraugmente.fr/#/cgv" target="_blank" rel="noopener">maths.latelieraugmente.fr</a>.</p>';
+  if(cgv) cgv.innerHTML = MSG_TEST + '<p class="hint" style="margin-top:14px;">Les conditions générales de vente de L\'Atelier du Prof seront publiées à l\'ouverture des offres. Celles de L\'Atelier des Maths restent consultables sur <a href="https://latelierdesmaths.fr/#/cgv" target="_blank" rel="noopener">latelierdesmaths.fr</a>.</p>';
   // Mentions légales et confidentialité : même éditeur, même hébergement ; le nom et l'adresse du site changent.
   ['view-mentions-legales', 'view-confidentialite'].forEach(id => {
     const v = document.getElementById(id); if(!v) return;
@@ -277,7 +277,7 @@
         ${tuile('classe', 'casino', 'Outils de classe', 'Tirage au sort des élèves, feu de consigne, jauge de bruit.')}
         ${tuile('simulateur', 'devices', 'Simulateur de classe', 'Votre écran et ceux d\'élèves fictifs, pour préparer une séance.')}
       </div>
-      <p class="adp-maths">Vous enseignez les mathématiques ? <a href="https://maths.latelieraugmente.fr" target="_blank" rel="noopener">L'Atelier des Maths</a> : les mêmes outils, avec les cours du CM1 à la 3e (même compte).</p>`;
+      <p class="adp-maths">Vous enseignez les mathématiques ? <a href="https://latelierdesmaths.fr" target="_blank" rel="noopener">L'Atelier des Maths</a> : les mêmes outils, avec les cours du CM1 à la 3e (même compte).</p>`;
   };
   // Une tuile = le même bouton que dans le menu (mêmes vérifications d'accès).
   window.adpAller = function(nav){

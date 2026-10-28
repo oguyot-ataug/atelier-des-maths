@@ -30,7 +30,7 @@ const crypto = require('crypto');
 const { chromium } = require('playwright');
 
 const ROOT = path.resolve(__dirname, '..');
-const SITE = 'https://maths.latelieraugmente.fr';
+const SITE = 'https://latelierdesmaths.fr';
 const LEVELS = ['cm1', 'cm2', '6e', '5e', '4e', '3e']; // la 3e est publiée depuis le build 817, le CM1 depuis le build 868, le CM2 depuis le build 873
 const LEVEL_INFO = {
   'cm1': { cycle: 'cycle 3', long: 'cours moyen 1re année', label: 'CM1', ecole: 'école élémentaire', other: ['cm2', '6e', '5e', '4e', '3e'] },

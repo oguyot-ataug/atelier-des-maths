@@ -756,7 +756,7 @@ function oliviaLettreFamilles(){
   <p>Aux familles des élèves de ${champ(classes || '[classe]')}</p>
   <h1>Objet : Oliv'IA, une aide par intelligence artificielle sur les leçons de mathématiques</h1>
   <p>Madame, Monsieur,</p>
-  <p>En mathématiques, votre enfant utilise le site <b>L'Atelier des Maths</b> (maths.latelieraugmente.fr), avec un compte créé par son professeur. Ce site propose <b>Oliv'IA</b>, une « petite robote » qui utilise l'intelligence artificielle pour <b>réexpliquer les leçons autrement</b>, donner d'autres exemples et <b>des indices sur les exercices, sans jamais donner les réponses</b>. Son utilisation est <b>facultative</b> : elle n'est proposée qu'aux élèves pour lesquels le professeur l'a activée, et seulement sur les pages de cours.</p>
+  <p>En mathématiques, votre enfant utilise le site <b>L'Atelier des Maths</b> (latelierdesmaths.fr), avec un compte créé par son professeur. Ce site propose <b>Oliv'IA</b>, une « petite robote » qui utilise l'intelligence artificielle pour <b>réexpliquer les leçons autrement</b>, donner d'autres exemples et <b>des indices sur les exercices, sans jamais donner les réponses</b>. Son utilisation est <b>facultative</b> : elle n'est proposée qu'aux élèves pour lesquels le professeur l'a activée, et seulement sur les pages de cours.</p>
   <h2>Quelles informations sont utilisées ?</h2>
   <ul>
     <li>Pour produire une réponse, le <b>texte de la leçon affichée</b> et la <b>question écrite par l'élève</b> sont envoyés à la société <b>Anthropic</b> (intelligence artificielle Claude), aux États-Unis. <b>Ni le nom, ni l'identifiant, ni la classe de l'élève ne sont transmis.</b></li>
