@@ -3659,6 +3659,11 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1191', date:'2026-10-28', items:[
+    "Planches (relecture CE2-N1) : plus de point central « · » entre les choix à entourer ni entre les nombres d'une liste : un grand espace les sépare, sur papier, en projection et à l'écran ; les choix en tableau gardent leurs colonnes et ne se coupent plus.",
+    "Inégalités et encadrements des exercices à compléter : « … < 4 563 < … » ne se coupe plus en fin de ligne.",
+    "Exercices à l'écran : un nombre écrit sans espace (2350) est signalé au bout de la ligne (« Un espace tous les trois chiffres : 2 350 ») ; points à placer : toucher un point placé le sélectionne pour le déplacer, bouton « Effacer ».",
+  ] },
   { version:'2026-08-19.1190', date:'2026-10-28', items:[
     "Nouvelle adresse du site : latelierdesmaths.fr (l'ancienne adresse maths.latelieraugmente.fr redirige vers elle, ainsi que latelierdesmaths.com). Pages de référencement, sitemap, liens des mails (devis, paiements, familles, professeurs), factures, lettres aux parents et fiches identifiants à la nouvelle adresse.",
   ] },

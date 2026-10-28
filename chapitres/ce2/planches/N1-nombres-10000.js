@@ -53,7 +53,7 @@ PLANCHES['ce2|Nombres jusqu\'à 10 000'] = [
       { etoiles: 1, col: 1, consigne: 'Écris en chiffres.', ...P3.rmp([['neuf-mille-neuf : @', '9 009'], ['quatre-mille-trois-cent-vingt : @', '4 320'], ['huit-mille-soixante-dix : @', '8 070']], 4) },
       { etoiles: 2, col: 1, consigne: 'Écris en lettres.', ...P3.rmp([['1 200 : @', 'mille-deux-cents'], ['5 080 : @', 'cinq-mille-quatre-vingts']], 12) },
       { etoiles: 2, col: 1, consigne: 'Décompose.', ...P3.rmp([['6 305 = 6 000 + @ + 5', 300], ['9 060 = @ + 60', '9 000'], ['2 718 = @ + @ + @ + @', '2 000', 700, 10, 8]], 3) },
-      { etoiles: 2, col: 1, consigne: 'Entoure l\'écriture juste.', ...P3.chxTab([['3 040', 'trois-mille-quarante', 'trois-mille-quarante · trois-cent-quarante'], ['7 700', 'sept-mille-sept-cents', 'sept-mille-sept-cents · sept-mille-soixante-dix']]) },
+      { etoiles: 2, consigne: 'Entoure l\'écriture juste.', ...P3.chxTab([['3 040', 'trois-mille-quarante', 'trois-mille-quarante · trois-cent-quarante'], ['7 700', 'sept-mille-sept-cents', 'sept-mille-sept-cents · sept-mille-soixante-dix']]) },
       { etoiles: 2, col: 1, consigne: 'Quel nombre est-ce ?', ...P3.rmp([['5 milliers et 12 unités : @', '5 012'], ['40 centaines : @', '4 000'], ['2 milliers et 30 dizaines : @', '2 300']], 4) },
       { etoiles: 3, col: 1, consigne: 'Complète.', ...P3.rmp([['le plus grand nombre de 4 chiffres : @', '9 999'], ['le plus petit nombre de 4 chiffres : @', '1 000'], ['le plus grand nombre de 4 chiffres tous différents : @', '9 876']], 4) },
     ] },

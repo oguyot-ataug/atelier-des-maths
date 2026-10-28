@@ -459,7 +459,27 @@ function plMarque(lvl, x){
   return '';
 }
 function plCahierHtml(){ return `<div class="pl-cahier"><span class="pl-oliv">${plOliv('savoir')}</span><span class="pl-bulle">Dans ton cahier !</span></div>`; }
-function plExoCorps(x, corr){ return corr ? (x.corr || x.eleve || '') : (plTrousAjustes(x) + (x.cahier ? plCahierHtml() : '')); }
+function plExoCorps(x, corr){ return plSepAeres(corr ? (x.corr || x.eleve || '') : (plTrousAjustes(x) + (x.cahier ? plCahierHtml() : ''))); }
+// Les choix « a · b · c » et les listes de nombres « 6 102 · 6 210 » s'affichent sans le point central, avec un
+// grand espace -- relecture CE2-N1-P2-E8 (« le point central entre les deux propositions amène de la confusion ») et
+// CE2-N1-P4-E4 (« les points centraux entre les nombres sont à éviter, il est préférable de les espacer davantage »).
+// Les données gardent « · » (la version écran s'en sert pour reconnaître les choix) ; seul l'affichage change.
+const PL_SEP = '<span class="pl-chsep" style="display:inline-block;width:1.5em;"></span>';
+const plSepCache = new Map();
+function plSepAeres(h){
+  if(!h || h.indexOf(' · ') < 0) return h;
+  if(plSepCache.has(h)) return plSepCache.get(h);
+  let out = h;
+  try{ const d = document.createElement('div'); d.innerHTML = h; plSepNoeuds(d); out = d.innerHTML; }catch(e){}
+  if(plSepCache.size > 3000) plSepCache.clear();
+  plSepCache.set(h, out); return out;
+}
+// Même chose sur un élément déjà affiché (version écran) ; les dessins SVG ne sont pas touchés.
+function plSepNoeuds(el){
+  const w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, { acceptNode: n => n.nodeValue.indexOf(' · ') >= 0 && !(n.parentNode && n.parentNode.closest && n.parentNode.closest('svg, .katex, script, style')) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT });
+  const L = []; while(w.nextNode()) L.push(w.currentNode);
+  L.forEach(n => { const f = document.createDocumentFragment(); n.nodeValue.split(' · ').forEach((t, i) => { if(i){ const s = document.createElement('span'); s.className = 'pl-chsep'; s.style.cssText = 'display:inline-block;width:1.5em;'; f.appendChild(s); } f.appendChild(document.createTextNode(t)); }); n.parentNode.replaceChild(f, n); });
+}
 // Les pointillés sont élargis d'après la réponse du corrigé (demandé : « les cases sont trop petites pour
 // répondre ») : un pointillé tient au moins la réponse attendue, avec un peu de marge pour l'écriture
 // d'un élève. Correspondance dans l'ordre, comme la version écran (planches-num.js).

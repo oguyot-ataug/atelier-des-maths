@@ -87,7 +87,7 @@ function plNumAnalyser(x){
       if(b){
         if(mk.length !== 1) return; vues++;
         const mots = b.textContent.split('·').map(s => s.trim()), id = 'ch' + cibles.length;
-        b.outerHTML = `<span class="pn-choix" data-pn="${id}">${mots.map(w => `<button type="button" class="pn-mot" data-pnmot="${escapeHtml(w)}">${escapeHtml(w)}</button>`).join('<span class="pn-sep">·</span>')}</span>`;
+        b.outerHTML = `<span class="pn-choix" data-pn="${id}">${mots.map(w => `<button type="button" class="pn-mot" data-pnmot="${escapeHtml(w)}">${escapeHtml(w)}</button>`).join('<span class="pn-sep"></span>')}</span>`;
         cibles.push({ type: 'choix', id, rep: plNumNorm(mk[0].textContent) });
         return;
       }
@@ -169,6 +169,7 @@ function plNum(root, x, o){
   let etat = plNumEtatVide(o.etat), sel = null;
   root.classList.add('pn-ex'); root.classList.toggle('pn-lecture', !!o.lecture);
   root.innerHTML = M.html;
+  if(typeof plSepNoeuds === 'function') plSepNoeuds(root); // « 6 102 · 6 210 » : grand espace au lieu du point central
   const NS = 'http://www.w3.org/2000/svg';
   M.cibles.filter(c => c.type === 'trace').forEach(c => {
     const svg = root.querySelector(`[data-pn="${c.id}"]`), P = c.rep; if(!svg) return;
@@ -203,7 +204,7 @@ function plNum(root, x, o){
       if(g) g.innerHTML = K.dessin ? K.dessin(c.rep, st) : ''; else if(K.texte) el.innerHTML = K.texte(c.rep, st);
       if(bar) bar.innerHTML = K.barre ? K.barre(c.rep, st, c.id) : ''; });
   };
-  const effacerMarques = () => root.querySelectorAll('.pn-ok, .pn-ko, .pn-b-ok, .pn-b-ko, .pn-b-oubli').forEach(e => { e.classList.remove('pn-ok', 'pn-ko', 'pn-b-ok', 'pn-b-ko', 'pn-b-oubli'); if(e.dataset.pnt) e.removeAttribute('title'); });
+  const effacerMarques = () => (root.querySelectorAll('.pn-note-classes').forEach(n => n.remove()), root.querySelectorAll('.pn-ok, .pn-ko, .pn-b-ok, .pn-b-ko, .pn-b-oubli').forEach(e => { e.classList.remove('pn-ok', 'pn-ko', 'pn-b-ok', 'pn-b-ko', 'pn-b-oubli'); if(e.dataset.pnt) e.removeAttribute('title'); }));
   const choisir = id => {
     sel = id; afficher();
     if(!id){ plClavier.fermer(); return; }
@@ -270,6 +271,9 @@ function plNum(root, x, o){
     M.cibles.forEach((c, i) => { const el = root.querySelector(`[data-pn="${c.id}"]`) || (c.type === 'bascule' ? root.querySelector(`[data-pnt^="${c.id}:"]`)?.closest('.pl-grille, .pl-liste, ul') : null);
       if(el && res.d[i] !== null) el.classList.add(res.d[i] ? 'pn-ok' : 'pn-ko');
       // Bon nombre mais mal écrit : on dit pourquoi.
+      if(el && res.d[i] === false && malEcrit(c)){ const v = String(etat.v[c.id] || '').replace(/\s+/g, '').replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1 ');
+        const note = `<span class="pn-note-classes">Un espace tous les trois chiffres : ${escapeHtml(v)}</span>`, li = el.closest('li');
+        if(li) li.insertAdjacentHTML('beforeend', note); else el.insertAdjacentHTML('afterend', note); } // en fin de ligne : l'inégalité reste lisible
       if(el && res.d[i] === false && malEcrit(c)) el.title = 'Écris le nombre par classes de trois chiffres, séparées par un espace (comme 9 999 ou 2 300 000).';
       // Nombres à entourer / barrer : le cadre rouge autour de la grille ne disait pas LEQUEL était faux (signalé :
       // « Entoure les multiples de 6 », 40 entouré en trop, resté vert comme les autres). Chaque choix est marqué :
@@ -426,12 +430,17 @@ const PLX = {
   },
   pts: {
     cands: C => C.cands || (() => { const G = C.grille, l = []; for(let i = 0; i <= G.w; i++) for(let j = 0; j <= G.h; j++) l.push([G.ox + i * G.k, G.oy + j * G.k]); return l; })(),
-    tap(C, st, x, y){ const cur = st.cur || C.noms[0]; let best = null, d = C.tol || (C.grille ? C.grille.k * .5 : 12);
+    // Relecture CE2-N1-P4-E2 : « rendre possible le fait de supprimer ou déplacer un point mal placé ». Toucher un point
+    // déjà placé le sélectionne (la touche suivante le déplace) ; « Effacer » retire le point sélectionné.
+    tap(C, st, x, y){ st.p = st.p || {}; let cur = st.cur || C.noms[0], best = null, d = C.tol || (C.grille ? C.grille.k * .5 : 12);
+      const pris = C.noms.find(n => n !== cur && st.p[n] && Math.hypot(st.p[n][0] - x, st.p[n][1] - y) < Math.min(d, 8));
+      if(pris){ st.cur = pris; return; }
       PLX.pts.cands(C).forEach(p => { const e = Math.hypot(p[0] - x, p[1] - y); if(e < d){ d = e; best = p; } }); if(!best) return;
-      st.p = st.p || {}; st.p[cur] = best; st.cur = C.noms.find(n => !st.p[n]) || cur; },
-    action(C, st, a){ st.cur = a; },
-    dessin: (C, st) => Object.entries(st.p || {}).map(([n, [x, y]]) => `<circle cx="${x}" cy="${y}" r="4" fill="#E35D3A"/><text x="${x + 6}" y="${y - 7}" font-size="13" font-weight="700" fill="#E35D3A" font-family="Space Grotesk">${n}</text>`).join(''),
-    barre: (C, st, id) => `<span class="pn-xaide">Choisis un point, puis touche sa place :</span>` + C.noms.map(n => plxBtn(id, n, n, (st.cur || C.noms[0]) === n)).join(''),
+      st.p[cur] = best; st.cur = C.noms.find(n => !st.p[n]) || cur; },
+    action(C, st, a){ if(a === 'effacer'){ const cur = st.cur || C.noms[0]; if(st.p) delete st.p[cur]; return; } st.cur = a; },
+    dessin: (C, st) => Object.entries(st.p || {}).map(([n, [x, y]]) => (n === (st.cur || C.noms[0]) ? `<circle cx="${x}" cy="${y}" r="8" fill="none" stroke="#3A6EA5" stroke-width="1.6" stroke-dasharray="3 2"/>` : '') + `<circle cx="${x}" cy="${y}" r="4" fill="#E35D3A"/><text x="${x + 6}" y="${y - 7}" font-size="13" font-weight="700" fill="#E35D3A" font-family="Space Grotesk">${n}</text>`).join(''),
+    barre: (C, st, id) => `<span class="pn-xaide">Touche un point (ou son bouton), puis sa place :</span>` + C.noms.map(n => plxBtn(id, n, n, (st.cur || C.noms[0]) === n)).join('')
+      + ((st.p || {})[st.cur || C.noms[0]] ? plxBtn(id, 'effacer', 'Effacer ' + (st.cur || C.noms[0])) : ''),
     juste: (C, st) => C.noms.every(n => { const p = (st.p || {})[n], q = C.att[n]; return p && Math.abs(p[0] - q[0]) < 1 && Math.abs(p[1] - q[1]) < 1; })
   },
   horloge: {
@@ -612,8 +621,9 @@ function plClavierPhysique(e){
     .pn-ex .pn-bascule{ border:2px dashed rgba(58,110,165,.3); background:none; border-radius:999px; padding:2px 8px; cursor:pointer; font:inherit; color:inherit; position:relative; }
     .pn-ex .pn-bascule.pn-entoure.on{ border:2.5px solid #1F3A5C; } .pn-lecture .pn-bascule, .pn-lecture .pn-mot{ border-color:transparent; }
     .pn-ex .pn-bascule.pn-barre.on::after{ content:''; position:absolute; left:2px; right:2px; top:50%; border-top:3px solid #C0392B; transform:rotate(-20deg); }
-    .pn-ex .pn-choix{ display:inline-flex; flex-wrap:wrap; justify-content:center; max-width:100%; gap:4px 2px; align-items:center; } /* relecture bêta 6e-G2-P1-E1 : choix sous une petite figure, à la ligne au lieu de se superposer */ .pn-ex .pn-sep{ color:#8A93A3; margin:0 2px; }
+    .pn-ex .pn-choix{ display:inline-flex; flex-wrap:wrap; justify-content:center; max-width:100%; gap:4px 18px; align-items:center; } /* relecture bêta 6e-G2-P1-E1 : choix sous une petite figure, à la ligne au lieu de se superposer */ .pn-ex .pn-sep{ color:#8A93A3; margin:0 2px; }
     .pn-ex .pn-mot{ border:2px dashed rgba(58,110,165,.3); background:none; border-radius:999px; padding:1px 8px; font:700 1em inherit; color:#1F3A5C; cursor:pointer; }
+    .pn-ex .pn-note-classes{ display:inline-block; margin:0 6px; padding:1px 8px; border-radius:8px; background:#FDECEF; color:#9E1F5E; font-size:.8em; font-weight:700; white-space:nowrap; } .pn-lecture .pn-note-classes{ display:none; }
     .pn-ex .pn-mot.on{ border:2.5px solid #1F3A5C; background:#EEF3F9; }
     .pn-ex .pn-bascule.pn-b-ok{ border:2.5px solid #1F7A4D !important; background:#EAF7EF; }
     .pn-ex .pn-bascule.pn-b-ko{ border:2.5px solid #C0392B !important; background:#FDECEA; }
