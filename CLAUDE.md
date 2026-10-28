@@ -43,6 +43,15 @@ Ne JAMAIS retirer de `index.html` la balise `<meta name="google-site-verificatio
 prouve à Google Search Console que le site nous appartient (validée le 26/09/2026) ; sans elle,
 l'accès au suivi de l'indexation est perdu.
 
+## Adresse du site : latelierdesmaths.fr (depuis le 28/10/2026)
+
+Le site est servi par GitHub Pages sur **https://latelierdesmaths.fr** (fichier `CNAME`, réglage Custom domain
+du dépôt). Les anciennes adresses redirigent en 301 avec le chemin (règles « Redirection de domaine » chez
+Squarespace, où sont les DNS) : maths.latelieraugmente.fr et latelierdesmaths.com. Changement d'adresse déclaré
+dans Google Search Console. Ne jamais supprimer ces redirections. Toute nouvelle URL absolue du site (code,
+fonctions Supabase, mails, `tools/build-seo.js`) utilise latelierdesmaths.fr ; les adresses e-mail restent en
+@latelieraugmente.fr. L'Atelier du Prof reste sur adp.latelieraugmente.fr.
+
 ## Programmes officiels : quel texte pour quel niveau
 
 Nouveaux programmes (cycle 3 : CM1, CM2, 6e ; cycle 4 : 5e, 4e, 3e), avec une entrée en vigueur échelonnée :
