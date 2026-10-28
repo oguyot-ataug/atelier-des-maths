@@ -57,6 +57,11 @@ ${cm1Astuce('Il existe <b>11 patrons différents</b> du cube : ils sont tous ci-
 ${cm1Rem(`<b>Attention :</b> 6 carrés en un seul morceau ne forment pas toujours un patron. Avec la figure ci-dessous, deux faces se retrouvent au même endroit et il manque une face au cube. Plie-la pour le voir.
 <div style="text-align:center;margin:8px 0 4px;">${patron([[0, 0], [1, 0], [2, 0], [3, 0], [0, 1], [1, 1]], '#E35D3A', 110)}</div>
 ${cm1Pliage('cm1-cube-faux', { modeles: [{ nom: 'Pas un patron', faces: cmCube([[0, 0], [1, 0], [2, 0], [3, 0], [0, 1], [1, 1]]) }], legende: 'Les deux faces qui se superposent deviennent rouges.' })}`)}
+
+${cm1Lecon(4, 'Assemblages de cubes')}
+${cm1Def(`<div style="display:flex;gap:28px;justify-content:center;flex-wrap:wrap;align-items:flex-end;">${cmCubes([[0, 0, 0], [1, 0, 0], [2, 0, 0], [0, 1, 0], [1, 1, 0], [0, 2, 0], [0, 0, 1], [1, 0, 1], [0, 1, 1]], 170)}${cmCubes([[0, 0, 0], [1, 0, 0], [2, 0, 0], [0, 0, 1], [1, 0, 1], [2, 0, 1], [0, 1, 1]], 150)}</div><p style="text-align:center;margin:4px 0;">Pour compter les cubes d'un assemblage, on compte <b>étage par étage</b> (ou rangée par rangée), sans oublier les cubes cachés derrière ou dessous.</p>`, 'Compter les cubes')}
+${cm1Exemple('Le premier assemblage :', ['étage du bas : 3 cubes devant et 2 derrière, soit 5 cubes ;', 'étage du milieu : 2 cubes devant et 1 derrière, soit 3 cubes ;', 'étage du haut : 1 cube ;', 'en tout : 5 + 3 + 1 = 9 cubes.'])}
+${cm1Regle('On peut aussi dessiner les <b>vues</b> d\'un assemblage : vu de face, vu de dessus, vu de côté. Avec les vues, on retrouve l\'assemblage.', 'Les vues')}
 `,
   methode: `
 ${cm1Demo('so-compter', 'Compter les faces, arêtes et sommets d\'un pavé droit', 'Prends une boîte (un pavé droit) et compte ses faces, ses arêtes et ses sommets.')}
@@ -77,6 +82,8 @@ ${cm1Demo('so-patron', 'Vérifier qu\'une figure est un patron de cube', 'La fig
     ]],
   ],
   exos: cm1Exos('so', [
+    [`Combien de cubes faut-il pour construire cet assemblage ?${'<div style="text-align:center;">' + cmCubes([[0, 0, 0], [1, 0, 0], [2, 0, 0], [0, 0, 1], [1, 0, 1], [2, 0, 1], [0, 1, 1]], 150) + '</div>'}`,
+      cm1Redac('Nombre de cubes', { suite: ['étage du bas : 3 + 3 = 6', 'étage du haut : 1'] }, 'Il faut 6 + 1 = 7 cubes.')],
     [`Nomme le solide qui a la forme de chacun de ces objets.${cm1Liste(['une brique', 'un rouleau d\'essuie-tout', 'une balle de tennis', 'un chapeau pointu d\'anniversaire'])}`,
       cm1Redac('Noms des solides', { suite: ['une brique : un pavé droit', 'un rouleau d\'essuie-tout : un cylindre', 'une balle de tennis : une boule', 'un chapeau pointu : un cône'] }, 'Seul le pavé droit n\'a que des faces planes : les trois autres peuvent rouler.')],
     ['Combien de faces, d\'arêtes et de sommets a un cube ?',

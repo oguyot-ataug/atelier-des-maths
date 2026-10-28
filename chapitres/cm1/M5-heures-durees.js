@@ -2,7 +2,7 @@
    CHAPITRE : Heures et durées (CM1, M5, période 5)
    Programme du cycle 3 (CM1) : lire l'heure sur une horloge à aiguilles et sur un affichage
    numérique ; distinguer instant (heure) et durée ; unités (s, min, h, jour, semaine, mois,
-   année, siècle) et relations (1 h = 60 min, 1 min = 60 s, 1 jour = 24 h…) ; calculer une durée,
+   année, siècle) et relations (1 h = 60 min, 1 jour = 24 h… ; la seconde est vue au CM2) ; calculer une durée,
    une heure de fin ou de début, en s'aidant d'une frise (bond jusqu'à l'heure pile). Pas de
    tableau de conversion. Atelier : lire l'heure sur une horloge tirée au hasard.
    ============================================================ */
@@ -117,9 +117,10 @@ ${cm1Astuce('Une horloge à aiguilles ne dit pas si c\'est le matin ou l\'après
 ${cm1Rem('Une journée dure 24 heures, mais la petite aiguille ne fait que 12 heures : elle fait <b>deux tours</b> par jour. L\'après-midi, on ajoute 12 : 3 h de l\'après-midi = 15 h. On dit aussi « 4 h moins 20 » pour 3 h 40.')}
 
 ${cm1Lecon(2, 'Unités de durée')}
-${cm1Regle(cm1Liste(['1 minute (min) = 60 secondes (s)', '1 heure (h) = 60 min', '1 jour = 24 h', '1 semaine = 7 jours', '1 année = 12 mois = 365 jours (366 les années bissextiles)', '1 siècle = 100 ans']), 'À retenir')}
+${cm1Regle(cm1Liste(['1 heure (h) = 60 min', '1 jour = 24 h', '1 semaine = 7 jours', '1 année = 12 mois = 365 jours (366 les années bissextiles)', '1 siècle = 100 ans']), 'À retenir')}
 ${ce2AnimHorloge('cm1-hd-horloge', { presets: [{ nom: 'Un quart d\'heure', de: [9, 0], a: [9, 15] }, { nom: 'Une heure', de: [9, 0], a: [10, 0], fin: 'Un tour complet de la grande aiguille : <b>1 h = 60 min</b>.' }] })}
-${cm1Exemple('Convertir en raisonnant :', ['2 h = 2 × 60 min = <b>120 min</b>.', '1 h 15 min = 60 min + 15 min = <b>75 min</b>.', '90 min = 60 min + 30 min = <b>1 h 30 min</b>.', '3 min = 3 × 60 s = <b>180 s</b>.'])}
+${cm1Exemple('Convertir en raisonnant :', ['2 h = 2 × 60 min = <b>120 min</b>.', '1 h 15 min = 60 min + 15 min = <b>75 min</b>.', '90 min = 60 min + 30 min = <b>1 h 30 min</b>.'])}
+${cm1Rem('Au CM2, on ajoutera une unité plus petite : la seconde (1 min = 60 s).')}
 ${cm1Astuce('Attention : 1 h 30 min n\'est pas 1,30 h ! Une heure a 60 minutes, pas 100.')}
 
 ${cm1Lecon(3, 'Instant et durée')}
@@ -159,8 +160,8 @@ ${cm1Sous('A', 'Atelier : lis l\'heure')}
       cm1Redac('Lecture des horloges', { suite: ['A : 7 h 15 (le matin)', 'B : 10 h 45, onze heures moins le quart (le matin)', 'C : 2 h 05 l\'après-midi, donc 14 h 05', 'D : 6 h 30 le soir, donc 18 h 30'] }, 'La petite aiguille donne l\'heure, la grande les minutes ; l\'après-midi et le soir, on ajoute 12.', journee([[7, 15, 'A'], [10, 45, 'B'], [14, 5, 'C'], [18, 30, 'D']], { lien: true }))],
     [`Écris ces heures de l'après-midi sur 24 heures.${cm1Liste(['3 h 20', '6 h 45', '11 h 10'])}`,
       cm1Redac('Heures de l\'après-midi', { suite: ['12 h + 3 h 20 = 15 h 20', '12 h + 6 h 45 = 18 h 45', '12 h + 11 h 10 = 23 h 10'] }, 'L\'après-midi, on ajoute 12 h : 15 h 20, 18 h 45 et 23 h 10.', journee([[15, 20], [18, 45], [23, 10]], { lien: true }))],
-    [`Convertis.${cm1Liste(['3 h en min', '2 min en s', '2 jours en h', '3 semaines en jours'])}`,
-      cm1Redac('Conversions', { suite: ['3 h = 3 × 60 min = 180 min', '2 min = 2 × 60 s = 120 s', '2 jours = 2 × 24 h = 48 h', '3 semaines = 3 × 7 jours = 21 jours'] }, 'On part chaque fois d\'une relation connue, puis on multiplie.', paquets([[60, '1 h', '60 min'], [60, '1 h', '60 min'], [60, '1 h', '60 min']], { titre: '3 h', uni: true }) + paquets([[24, '1 jour', '24 h'], [24, '1 jour', '24 h']], { titre: '2 jours', uni: true }))],
+    [`Convertis.${cm1Liste(['3 h en min', '4 h en min', '2 jours en h', '3 semaines en jours'])}`,
+      cm1Redac('Conversions', { suite: ['3 h = 3 × 60 min = 180 min', '4 h = 4 × 60 min = 240 min', '2 jours = 2 × 24 h = 48 h', '3 semaines = 3 × 7 jours = 21 jours'] }, 'On part chaque fois d\'une relation connue, puis on multiplie.', paquets([[60, '1 h', '60 min'], [60, '1 h', '60 min'], [60, '1 h', '60 min']], { titre: '3 h', uni: true }) + paquets([[24, '1 jour', '24 h'], [24, '1 jour', '24 h']], { titre: '2 jours', uni: true }))],
     [`Convertis en heures et minutes.${cm1Liste(['80 min', '150 min', '65 min'])}`,
       cm1Redac('Conversions', { suite: ['80 min = 60 min + 20 min = 1 h 20 min', '150 min = 120 min + 30 min = 2 h 30 min', '65 min = 60 min + 5 min = 1 h 05 min'] }, 'On enlève des paquets de 60 minutes : chacun fait une heure.', paquets([[60, '60 min', '1 h'], [20, '20', '20 min']], { titre: '80 min', L: 240 }) + paquets([[60, '60 min', '1 h'], [60, '60 min', '1 h'], [30, '30', '30 min']], { titre: '150 min', L: 450 }) + paquets([[60, '60 min', '1 h'], [5, '', '5']], { titre: '65 min', L: 195 }))],
     [`Instant ou durée ?${cm1Liste(['« La cantine ouvre à 11 h 45. »', '« Le match dure 90 minutes. »', '« Je dors 10 heures. »'])}`,

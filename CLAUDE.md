@@ -111,4 +111,5 @@ fichier) ; la page est écrite par `tools/build-seo.js`.
 pas supprimée mais placée en fin de chapitre sous un en-tête « Pour aller plus loin » (`ce1PlusLoin(titre, vers)`
 dans `chapitres/ce1/_anims.js`, ou le même `sub-header` avec `data-oliv-plus`), ses planches titrées « Pour aller
 plus loin : … », ses exercices préfixés « Pour aller plus loin : ». Ce qui manque au programme est ajouté au
-chapitre concerné. CE1 contrôlé en entier (build 1194).
+chapitre concerné. CE1 contrôlé en entier, CP, 5e, 4e et 3e complétés (build 1194), CM1 et 6e (build 1195).
+À la 4e et à la 3e, le contrôle suit l'ancien programme (2020) et ses attendus de fin d'année tant qu'il est en vigueur.

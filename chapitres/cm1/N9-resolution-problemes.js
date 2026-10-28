@@ -58,6 +58,15 @@ ${cm1Exemple('Groupement : 150 œufs à ranger dans des boîtes de 6. Combien de
 ${cm1Lecon(5, 'Problèmes à plusieurs étapes')}
 ${cm1Regle('Certains problèmes demandent <b>plusieurs calculs</b>. On cherche d\'abord une <b>question intermédiaire</b> utile, puis on répond à la question posée.')}
 ${cm1Exemple('Tom achète 3 cahiers à 2 € et un stylo à 4 €. Il paie avec un billet de 20 €. Combien lui rend-on ?', ['Question intermédiaire : combien coûtent les cahiers ? 3 × 2 = 6 €.', 'Combien dépense-t-il en tout ? 6 + 4 = 10 €.', 'Combien lui rend-on ? 20 − 10 = 10 €. On lui rend 10 €.'])}
+
+${cm1Lecon(6, 'Problèmes de dénombrement')}
+${cm1Regle('Pour <b>compter toutes les possibilités</b> sans en oublier ni en compter deux fois, on les range avec méthode : une liste ordonnée, un tableau ou un arbre.', 'Dénombrer')}
+${cm1Exemple('À la cantine, on choisit une entrée (salade ou carottes) et un plat (poisson, poulet ou pâtes). Combien de menus différents ?', [`${cm1Tableau(['', 'poisson', 'poulet', 'pâtes'], [['<b>salade</b>', 'S-Po', 'S-Pl', 'S-Pâ'], ['<b>carottes</b>', 'C-Po', 'C-Pl', 'C-Pâ']])}`, 'Pour chacune des 2 entrées, il y a 3 plats : 2 × 3 = 6 menus.'])}
+${cm1Astuce('Dans un tableau, chaque case est une possibilité : on compte les cases.')}
+
+${cm1Lecon(7, 'Problèmes d\'optimisation')}
+${cm1Regle('Un problème d\'<b>optimisation</b> demande la <b>meilleure</b> solution : la moins chère, la plus rapide, avec le moins d\'objets… On cherche plusieurs solutions, puis on les compare.', 'Optimiser')}
+${cm1Exemple('Des stylos sont vendus à l\'unité (1 €) ou par paquets de 5 (4 €). Comment acheter 12 stylos le moins cher possible ?', ['12 stylos à l\'unité : 12 €.', '1 paquet et 7 stylos : 4 + 7 = 11 €.', '2 paquets et 2 stylos : 8 + 2 = 10 €.', 'La solution la moins chère : 2 paquets et 2 stylos, 10 €.'])}
 `,
   methode: `
 ${cm1Demo('rp-etapes', 'Résoudre un problème en suivant les étapes', 'Un club de sport a 1 250 adhérents. 480 font du foot, 325 du basket, les autres du tennis. Combien font du tennis ?')}
@@ -96,6 +105,10 @@ ${cm1Demo('rp-division', 'Division avec reste : interpréter le résultat', '100
       cm1Redac('Prix total', ['2 × 9 + 3 × 6', '18 + 18', '36'], 'La famille paie 36 €.')],
     ['On a 75 photos à coller dans un album, 6 par page. Combien de pages faut-il ?',
       cm1Redac('Pages pleines', '75 = 6 × 12 + 3', 'On remplit 12 pages et il reste 3 photos.') + cm1Redac('Nombre de pages', '12 + 1 = 13', 'Il faut une page de plus pour les 3 dernières photos : il faut 13 pages.')],
+    ['On lance une pièce (pile ou face) et un dé à quatre faces (1, 2, 3 ou 4). Combien de résultats différents ?',
+      cm1Redac('Nombre de résultats', '2 × 4 = 8', 'Il y a 8 résultats : P1, P2, P3, P4, F1, F2, F3, F4.')],
+    ['Un car peut transporter 50 élèves, un minibus 15. Comment transporter 80 élèves avec le moins de véhicules possible ?',
+      cm1Redac('Les véhicules', { suite: ['1 car et 2 minibus : 50 + 15 + 15 = 80 places, 3 véhicules', '2 cars : 50 + 50 = 100 places, 2 véhicules', '1 véhicule ne suffit pas : 50 places au plus'] }, 'Le moins de véhicules possible : 2 cars.')],
   ], { titre: 'Rédaction type d\'un problème', lignes: [['Je cherche…', 'J\'écris ce que je cherche.'], ['Calcul : 6 × 24 = 144', 'J\'écris l\'opération et son résultat.'], ['Il y a 144 crayons.', 'Je réponds par une phrase, avec l\'unité.']] }),
   histoire: cm1Histoire('Un peu d\'histoire : Polya et l\'art de résoudre', [
     'Les plus anciens problèmes de mathématiques connus ont près de 4 000 ans : ils sont écrits sur des tablettes d\'argile en Mésopotamie et sur des papyrus en Égypte. On y partage du pain, on calcule des récoltes, on mesure des champs.',

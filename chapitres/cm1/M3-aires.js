@@ -144,7 +144,7 @@ ${cm1Demo('ai-cm2', 'Trouver l\'aire d\'un rectangle en cm²', 'Un rectangle mes
         { etoiles: 3, col: 1, cahier: true, consigne: 'Une tablette de chocolat a 4 rangées de 6 carrés. Combien a-t-elle de carrés ? Léa mange une rangée : combien en reste-t-il ?',
           corr: cm1Redac('Carrés de la tablette', '4 × 6 = 24', '') + cm1Redac('Carrés restants', '24 − 6 = 18', 'La tablette a 24 carrés ; il en reste 18.', cm1Quad(6, 4, cm1Rect(0, 1, 6, 3), { k: 18, c: '#8B5A2B' })) },
         { etoiles: 3, col: 1, cahier: true, consigne: 'Le sol d\'une salle de bain est un rectangle de 5 m sur 3 m. On le couvre de dalles carrées de 1 m de côté. Combien faut-il de dalles ?',
-          corr: cm1Redac('Nombre de dalles', '3 × 5 = 15', 'Il faut 15 dalles : l\'aire du sol est 15 m².', cm1Quad(5, 3, cm1Rect(0, 0, 5, 3), { k: 22, c: '#2EA8C9' })) },
+          corr: cm1Redac('Nombre de dalles', '3 × 5 = 15', 'Il faut 15 dalles : l\'aire du sol est de 15 dalles.', cm1Quad(5, 3, cm1Rect(0, 0, 5, 3), { k: 22, c: '#2EA8C9' })) },
       ] },
   ],
   quiz: [

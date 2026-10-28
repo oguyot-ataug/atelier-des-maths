@@ -43,9 +43,9 @@ ${cm1Regle(cm1Liste(['1 cm = 10 mm', '1 dm = 10 cm', '1 m = 100 cm', '1 km = 1 0
 ${cm1Exemple('Ordres de grandeur :', ['l\'épaisseur d\'une pièce de monnaie : environ 2 mm ;', 'la largeur d\'un doigt : environ 1 cm ;', 'la hauteur d\'une porte : environ 2 m ;', 'la distance parcourue en 15 minutes de marche : environ 1 km.'])}
 
 ${cm1Lecon(3, 'Les unités de masse')}
-${cm1Def(`L'unité principale est le <b>gramme (g)</b>. On utilise aussi le <b>kilogramme (kg)</b> et la <b>tonne (t)</b>.${cm1Liste(['1 kg = 1 000 g', '1 t = 1 000 kg'])}`, 'Unités')}
+${cm1Def(`L'unité principale est le <b>gramme (g)</b>. On utilise aussi le <b>milligramme (mg)</b>, le <b>kilogramme (kg)</b> et la <b>tonne (t)</b>.${cm1Liste(['1 g = 1 000 mg', '1 kg = 1 000 g', '1 t = 1 000 kg'])}`, 'Unités')}
 ${ce2AnimBalance('cm1-lmc-balance', { presets: [{ nom: '2 kg 500 g et 2 050 g', g: ['sac A', 2500, '#C9A24A', '2 kg 500 g'], d: ['sac B', 2050, '#8E9AA8', '2 050 g'], montrer: true, fin: '2 kg 500 g = 2 500 g, et 2 500 g &gt; 2 050 g.' }, { nom: '1 kg et 1 000 g', g: ['farine', 1000, '#C9A24A', '1 kg'], d: ['sucre', 1000, '#8E9AA8', '1 000 g'], montrer: true }] })}
-${cm1Exemple('Ordres de grandeur :', ['un trombone : environ 1 g ;', 'une tablette de chocolat : 100 g ;', 'un paquet de sucre : 1 kg ;', 'une voiture : environ 1 t.'])}
+${cm1Exemple('Ordres de grandeur :', ['un grain de riz : environ 20 mg ; un comprimé de vitamine : 500 mg ;', 'un trombone : environ 1 g ;', 'une tablette de chocolat : 100 g ;', 'un paquet de sucre : 1 kg ;', 'une voiture : environ 1 t.'])}
 ${cm1Rem('On mesure une masse avec une <b>balance</b>. Dans la vie courante, on dit souvent « poids », mais en mathématiques on parle de <b>masse</b>.')}
 
 ${cm1Lecon(4, 'Les unités de contenance')}

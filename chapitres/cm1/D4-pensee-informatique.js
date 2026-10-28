@@ -3,8 +3,8 @@
    Programme du cycle 3 (CM1) : coder et décoder des déplacements sur quadrillage (flèches
    absolues ↑ ↓ ← →, puis « avancer / tourner » en CM2-6e) ; lire un programme et prévoir le
    résultat ; écrire un programme pour atteindre une cible en évitant des obstacles ; repérer et
-   corriger une erreur (« bug ») ; découvrir la boucle « répéter n fois » ; suivre un programme
-   de calcul et un programme de construction. Activités débranchées possibles (quadrillage au
+   corriger une erreur (« bug ») ; suivre un programme
+   de calcul et un programme de construction. Pour aller plus loin (6e) : la boucle « répéter n fois ». Activités débranchées possibles (quadrillage au
    sol). Atelier : robot à programmer avec des flèches, 4 défis.
    ============================================================ */
 (() => {
@@ -77,17 +77,17 @@ ${cm1Regle(`Sur un quadrillage, on code un déplacement d'une case avec une flè
 ${cm1Exemple('Lecture :', ['le robot avance de 2 cases vers la droite, monte de 2 cases, puis va d\'une case à droite : il arrive sur l\'étoile.'])}
 ${cm1Astuce(`L'<b>ordre</b> des instructions est très important : ${P('↑')}${P('→')} et ${P('→')}${P('↑')} n'arrivent au même endroit que s'il n'y a pas d'obstacle sur le chemin !`)}
 
-${cm1Lecon(2, 'Répéter : la boucle')}
-${cm1Regle(`Quand une instruction se répète, on peut l'écrire plus court avec une <b>boucle</b> : « répéter 4 fois ${P('→')} » remplace ${P('→')}${P('→')}${P('→')}${P('→')}.`)}
-${cm1Exemple('On peut aussi répéter un groupe d\'instructions :', [`« répéter 3 fois : ${P('→')}${P('↑')} » donne ${P('→')}${P('↑')}${P('→')}${P('↑')}${P('→')}${P('↑')} : le robot monte un escalier.`])}
-
-${cm1Lecon(3, 'Trouver et corriger un bug')}
+${cm1Lecon(2, 'Trouver et corriger un bug')}
 ${cm1Def('Un <b>bug</b> est une erreur dans un programme : le robot ne fait pas ce qu\'on voulait. <b>Déboguer</b>, c\'est trouver l\'instruction fausse et la corriger.')}
 ${cm1Regle('Pour trouver un bug, on exécute le programme <b>pas à pas</b>, avec le doigt sur le quadrillage, en vérifiant la position après chaque instruction.', 'Méthode')}
 
-${cm1Lecon(4, 'D\'autres programmes')}
+${cm1Lecon(3, 'D\'autres programmes')}
 ${cm1Exemple('Un programme de calcul est aussi une suite d\'instructions :', ['« Choisis un nombre → ajoute 5 → multiplie par 2 ». Avec 3 : 3 + 5 = 8, puis 8 × 2 = 16.'])}
 ${cm1Exemple('Un programme de construction aussi :', ['« Trace un segment [AB] de 5 cm. Trace la droite perpendiculaire au segment [AB] passant par A… » : chaque étape doit être claire et dans le bon ordre.'])}
+
+<div class="sub-header" data-oliv-plus="En route vers la 6e !"><span class="letter">+</span><h4>Pour aller plus loin : répéter avec une boucle</h4></div>
+${cm1Regle(`Quand une instruction se répète, on peut l'écrire plus court avec une <b>boucle</b> : « répéter 4 fois ${P('→')} » remplace ${P('→')}${P('→')}${P('→')}${P('→')}.`)}
+${cm1Exemple('On peut aussi répéter un groupe d\'instructions :', [`« répéter 3 fois : ${P('→')}${P('↑')} » donne ${P('→')}${P('↑')}${P('→')}${P('↑')}${P('→')}${P('↑')} : le robot monte un escalier.`])}
 `,
   methode: `
 ${cm1Demo('pi-lire', 'Lire un programme et prévoir l\'arrivée', 'Le robot part de la case en bas à gauche. Programme : répéter 3 fois → puis ↑ ↑ puis ←. Où arrive-t-il ?')}

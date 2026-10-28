@@ -2,6 +2,23 @@
    CHAPITRE : Fractions : nombres et partage (6e, N2)
    Fichier autonome -- voir la note dans chapitres/5e/G1-symetrie-centrale.js.
    ============================================================ */
+// Guide-âne : un segment de 3 cm posé en biais sur 8 lignes parallèles équidistantes est partagé en 7 parts égales.
+function fpGuideAne(id){
+  return cmAnim(id, { duree: 8000, legende: 'Les lignes parallèles, également espacées, découpent le segment en parts égales.',
+    dessin: t => {
+      const n = 7, ec = 26, x0 = 60, y0 = 24, L = 300, k = cmPhase(t, .1, .35), m = Math.floor(cmPhase(t, .4, .9) * (n - 1) + 1e-6);
+      let s = '';
+      for(let i = 0; i <= n; i++) s += `<line x1="20" y1="${y0 + i * ec}" x2="440" y2="${y0 + i * ec}" stroke="#9FB0C4" stroke-width="1.3"/>`;
+      const H = n * ec, dx = Math.sqrt(L * L - H * H), A = [x0, y0], B = [x0 + dx * k, y0 + H * k];
+      s += `<line x1="${A[0]}" y1="${A[1]}" x2="${B[0].toFixed(1)}" y2="${B[1].toFixed(1)}" stroke="#0C5BA0" stroke-width="3"/>`;
+      s += `<text x="${A[0] - 14}" y="${A[1] + 5}" font-size="14" font-weight="700">A</text>`;
+      if(k >= 1) s += `<text x="${B[0] + 8}" y="${B[1] + 5}" font-size="14" font-weight="700">B</text>`;
+      for(let i = 1; i <= m; i++){ const P = [x0 + dx * i / n, y0 + ec * i]; s += `<circle cx="${P[0].toFixed(1)}" cy="${P[1]}" r="5" fill="#E07B00"/>`; }
+      const texte = t < .1 ? 'Le guide-âne : des droites parallèles, toutes à la même distance les unes des autres.' : t < .4 ? 'On pose le segment [AB] de 3 cm : A sur la 1<sup>re</sup> ligne, B sur la 8<sup>e</sup>.' : t < .92 ? `Chaque ligne coupe le segment : ${m} point${m > 1 ? 's' : ''} de partage…` : `Le segment est partagé en <b>7 parts égales</b> : chacune mesure <span class="tex">\\dfrac{3}{7}</span> cm.`;
+      return { scene: `<svg viewBox="0 0 460 230" class="cma-svg" style="max-width:460px;font-family:'Space Grotesk',sans-serif;">${s}</svg>`, texte };
+    } });
+}
+
 document.getElementById('cours-demo-fractions-partage').innerHTML = `
 <div class="lesson-header"><span class="num">1</span><h3>Écriture fractionnaire</h3></div>
 <div class="sub-header"><span class="letter">A</span><h4>Quotient</h4></div>
@@ -53,6 +70,11 @@ document.getElementById('cours-demo-fractions-partage').innerHTML = `
 <div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">
   Attention : on compte les <b>sauts</b> (les intervalles), pas les traits. Quand 0 n'est pas sur l'axe, on part du nombre entier écrit juste avant le point et on utilise l'écriture en nombre mixte (voir les méthodes animées).
 </div>
+
+<div class="sub-header"><span class="letter">D</span><h4>Partager un segment avec un guide-âne</h4></div>
+<p style="margin:6px 0;">Pour partager un segment en 5, 7 ou 11 parts égales, la règle ne suffit pas toujours : on utilise un <b>guide-âne</b>, un réseau de droites parallèles également espacées (comme les lignes d'un cahier).</p>
+${fpGuideAne('fp-guide')}
+<div class="redaction-note" style="background:rgba(227,93,58,.07);border-color:rgba(227,93,58,.25);color:#8A2E1C;">Méthode : on pose une extrémité du segment sur la première ligne et l'autre sur la 8<sup>e</sup> ligne (7 intervalles plus loin) ; les lignes coupent le segment en 7 parts égales. Chaque part mesure <span class="tex">\\dfrac{3}{7}</span> cm : c'est ainsi qu'on <b>gradue un segment</b> de longueur donnée.</div>
 
 <div class="lesson-header"><span class="num">2</span><h3>Égalité de fractions</h3></div>
 <span class="prop-badge">Propriété</span>
@@ -288,7 +310,7 @@ const FP_METHODE_STEPS = [
 const fpMethodeDemo = makeStepDemo(FP_METHODE_STEPS, 'fp-methodeDisplay');
 
 DEMO_REGISTRY['6e|Fractions : nombres et partage'] = { cours:'cours-demo-fractions-partage', methode:'methode-demo-fractions-partage', exos:'exos-demo-fractions-partage', histoire:'histoire-demo-fractions-partage',
-  init:()=>{ fpAxPlacer0Demo.reset(); fpAxPlacerSans0Demo.reset(); fpAxLire0Demo.reset(); fpAxLireSans0Demo.reset(); fpMethodeDemo.reset(); fpEquivReset(); renderStaticMath(document.getElementById('cours-demo-fractions-partage')); renderStaticMath(document.getElementById('exos-demo-fractions-partage')); renderStaticMath(document.getElementById('histoire-demo-fractions-partage')); injectCourseAddButtons(document.getElementById('cours-demo-fractions-partage')); injectCourseAddButtons(document.getElementById('methode-demo-fractions-partage')); } };
+  init:()=>{ if(typeof cmAnimDessiner === 'function') cmAnimDessiner('fp-guide'); fpAxPlacer0Demo.reset(); fpAxPlacerSans0Demo.reset(); fpAxLire0Demo.reset(); fpAxLireSans0Demo.reset(); fpMethodeDemo.reset(); fpEquivReset(); renderStaticMath(document.getElementById('cours-demo-fractions-partage')); renderStaticMath(document.getElementById('exos-demo-fractions-partage')); renderStaticMath(document.getElementById('histoire-demo-fractions-partage')); injectCourseAddButtons(document.getElementById('cours-demo-fractions-partage')); injectCourseAddButtons(document.getElementById('methode-demo-fractions-partage')); } };
 
 DEMO_QUIZZES['6e|Fractions : nombres et partage'] = [
   {q:"Comment se lit la fraction 5/8 ?",
