@@ -49,7 +49,7 @@ PLANCHES['5e|Probabilités'] = [
       { etoiles: 3, col: 1, cahier: true, consigne: `Dans un sac, il y a 4 jetons verts, 6 rouges et des jetons bleus. La probabilité de tirer un bleu est ${T(1, 3)}. Combien y a-t-il de jetons bleus ?`,
         corr: cm1Redac('Raisonnement', { suite: [`Les verts et les rouges (10 jetons) représentent 1 − ${F(1, 3)} = ${F(2, 3)} des jetons.`, `Il y a donc 15 jetons en tout (${F(10, 15)} = ${F(2, 3)}).`] }, 'Il y a 15 − 10 = 5 jetons bleus.') },
     ] },
-  { titre: 'Événement contraire', duree: '35 min',
+  { titre: 'Pour aller plus loin : événement contraire (4e)', duree: '35 min',
     attendus: ['Décrire l\'événement contraire d\'un événement', 'Utiliser P(non A) = 1 − P(A)', 'Vérifier que la somme des probabilités de toutes les issues vaut 1'],
     exos: [
       { etoiles: 1, col: 1, consigne: 'Entoure l\'événement contraire.',

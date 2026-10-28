@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Algorithmique et programmation : répéter une séquence : la boucle – Cours de maths 4ème | L'Atelier des Maths</title>
+<meta name="description" content="Cours de maths 4e (4ème, quatrième) : Algorithmique et programmation. Répéter une séquence : la boucle, Choisir : « si … alors … sinon », Utiliser une…">
+<link rel="canonical" href="https://latelierdesmaths.fr/4e/algorithmique-et-programmation/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="L'Atelier des Maths">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="Algorithmique et programmation : répéter une séquence : la boucle – Cours de maths 4ème | L'Atelier des Maths">
+<meta property="og:description" content="Cours de maths 4e (4ème, quatrième) : Algorithmique et programmation. Répéter une séquence : la boucle, Choisir : « si … alors … sinon », Utiliser une…">
+<meta property="og:url" content="https://latelierdesmaths.fr/4e/algorithmique-et-programmation/">
+<meta property="og:image" content="https://latelierdesmaths.fr/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0C5BA0">
+<link rel="icon" type="image/png" href="/assets/logo-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Caveat:wght@600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<link rel="stylesheet" href="/styles.css">
+
+<style>
+  .seo-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 20px;background:rgba(253,249,246,.95);border-bottom:1px solid rgba(28,43,57,.08);position:sticky;top:0;z-index:5;}
+  .seo-top img{height:40px;display:block;}
+  .seo-top nav{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+  .seo-top nav a{padding:7px 12px;border-radius:8px;font-weight:600;font-size:.92rem;color:var(--ink);}
+  .seo-top nav a:hover{background:rgba(12,91,160,.07);}
+  .seo-top nav a.cta{background:var(--accent);color:#fff;}
+  .seo-wrap{max-width:920px;margin:0 auto;padding:18px 16px 40px;}
+  .seo-crumbs{font-size:.85rem;color:var(--ink-soft);margin:4px 0 14px;}
+  .seo-crumbs a{text-decoration:underline;text-underline-offset:2px;}
+  .seo-wrap h1{font-size:2rem;margin:0 0 6px;line-height:1.15;}
+  .seo-sub{color:var(--ink-soft);margin:0 0 16px;font-size:1.02rem;}
+  .seo-badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.78rem;font-weight:700;margin-right:6px;vertical-align:middle;}
+  .seo-cta{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:space-between;background:rgba(12,91,160,.06);border:1px solid rgba(12,91,160,.18);border-radius:12px;padding:14px 16px;margin:14px 0 24px;}
+  .seo-cta p{margin:0;flex:1;min-width:220px;}
+  .seo-btn{display:inline-block;background:var(--accent);color:#fff !important;font-weight:700;padding:10px 16px;border-radius:9px;white-space:nowrap;}
+  .seo-btn.alt{background:#fff;color:var(--accent) !important;border:1px solid rgba(12,91,160,.35);}
+  .seo-section{background:var(--white);border-radius:14px;box-shadow:var(--shadow);padding:18px 20px;margin:0 0 22px;overflow-x:auto;}
+  .seo-section > h2{margin:0 0 12px;font-size:1.35rem;display:flex;align-items:center;gap:8px;}
+  .seo-section svg{max-width:100%;height:auto;}
+  .seo-list{list-style:none;padding:0;margin:0;display:grid;gap:10px;}
+  .seo-list li a, .seo-list li > span{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:10px;background:var(--white);box-shadow:var(--shadow);}
+  .seo-list li a:hover{outline:2px solid rgba(12,91,160,.25);}
+  .seo-list .num{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.2rem;min-width:2ch;color:var(--accent);}
+  .seo-list .soon{opacity:.6;}
+  .seo-nav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:8px;}
+  .seo-nav a{font-weight:600;color:var(--accent);}
+  .seo-feat{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin:0 0 22px;}
+  .seo-feat div{background:var(--white);border-radius:12px;box-shadow:var(--shadow);padding:14px 16px;}
+  .seo-feat h3{margin:0 0 6px;font-size:1.05rem;display:flex;gap:8px;align-items:center;}
+  .seo-feat p{margin:0;font-size:.93rem;color:var(--ink-soft);line-height:1.5;}
+  .seo-foot{max-width:920px;margin:0 auto;padding:18px 16px 30px;font-size:.85rem;color:var(--ink-soft);border-top:1px solid rgba(28,43,57,.08);}
+  .seo-foot a{text-decoration:underline;text-underline-offset:2px;}
+  @media (max-width:600px){ .seo-wrap h1{font-size:1.55rem;} .seo-section{padding:14px 12px;} .seo-top{padding:10px 12px;} }
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"LearningResource","name":"Algorithmique et programmation (4e)","headline":"Algorithmique et programmation – cours de mathématiques de 4e","description":"Cours de maths 4e (4ème, quatrième) : Algorithmique et programmation. Répéter une séquence : la boucle, Choisir : « si … alors … sinon », Utiliser une…","url":"https://latelierdesmaths.fr/4e/algorithmique-et-programmation/","inLanguage":"fr","learningResourceType":["Cours","Exercices"],"educationalLevel":"4e (cycle 4, collège)","about":"Données et probabilités","teaches":["Répéter une séquence : la boucle","Choisir : « si … alors … sinon »","Utiliser une variable","Événements et lutins"],"isAccessibleForFree":true,"audience":{"@type":"EducationalAudience","educationalRole":"student"},"publisher":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://latelierdesmaths.fr/","logo":"https://latelierdesmaths.fr/assets/logo-icon.png"},"isPartOf":{"@type":"Course","name":"Mathématiques 4e","url":"https://latelierdesmaths.fr/4e/","provider":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://latelierdesmaths.fr/","logo":"https://latelierdesmaths.fr/assets/logo-icon.png"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://latelierdesmaths.fr/"},{"@type":"ListItem","position":2,"name":"Cours de maths 4e","item":"https://latelierdesmaths.fr/4e/"},{"@type":"ListItem","position":3,"name":"Algorithmique et programmation","item":"https://latelierdesmaths.fr/4e/algorithmique-et-programmation/"}]}]}</script>
+</head>
+<body>
+<header class="seo-top">
+  <a href="/" aria-label="L'Atelier des Maths, accueil"><img src="/assets/logo-horizontal.png" alt="L'Atelier des Maths" width="115" height="40"></a>
+  <nav>
+    <a href="/cp/">Cours CP</a>
+    <a href="/ce1/">Cours CE1</a>
+    <a href="/ce2/">Cours CE2</a>
+    <a href="/cm1/">Cours CM1</a>
+    <a href="/cm2/">Cours CM2</a>
+    <a href="/6e/">Cours 6e</a>
+    <a href="/5e/">Cours 5e</a>
+    <a href="/4e/">Cours 4e</a>
+    <a href="/3e/">Cours 3e</a>
+    <a href="/programmes/">Programmes</a>
+    <a href="/professeurs/">Professeurs</a>
+    <a class="cta" href="/">Ouvrir l'application</a>
+  </nav>
+</header>
+<main class="seo-wrap">
+
+<div class="seo-crumbs"><a href="/">Accueil</a> › <a href="/4e/">Cours de maths 4e</a> › Algorithmique et programmation</div>
+<h1>Algorithmique et programmation</h1>
+<p class="seo-sub"><span class="seo-badge" style="background:#BFDCFB;color:#1A4E9E;">Données et probabilités</span> Cours de mathématiques de 4e (quatrième) · chapitre 17 · Répéter une séquence : la boucle · Choisir : « si … alors … sinon » · Utiliser une variable · Événements et lutins</p>
+<div class="seo-cta">
+  <p><b>Version interactive :</b> dans l'application, les points des figures se déplacent, les figures se construisent pas à pas à la règle et au compas et un quiz s'invente à chaque essai.</p>
+  <a class="seo-btn" href="/#/chapitre/4e/17-algorithmique-et-programmation/cours">Ouvrir le chapitre interactif</a>
+</div>
+
+<section class="seo-section" id="cours">
+  <h2><span class="gicon">menu_book</span> Le cours</h2>
+  
+  <div class="lesson-header"><span class="num">1</span><h3>Répéter une séquence : la boucle</h3></div>
+<div class="figure-wrap cm-anim" data-anim="pr4-carre"><div class="cma-scene"><svg viewBox="0 0 400 320" class="cma-svg" style="max-width:420px;"><polyline points="150.0,210.0" fill="none" stroke="#4C97FF" stroke-width="3" stroke-linejoin="round"></polyline><polygon points="164.0,210.0 142.0,217.0 142.0,203.0" fill="#FFAB19" stroke="#1C1B2E" stroke-width="1.5"></polygon></svg></div><div class="cma-texte">Le lutin est prêt, stylo en position d'écriture.</div>
+    
+    <p class="hint" style="margin:4px 0 0;">Le lutin exécute les instructions une à une : il avance en traçant, ou il tourne sur place.</p></div>
+<span class="def-badge oliv-b oliv-savoir" data-oliv="À savoir !">La boucle « répéter … fois »</span><div class="def-box"><div class="pi-pile"><span class="pi-bloc ev">quand le drapeau vert est cliqué</span><span class="pi-bloc pe">stylo en position d'écriture</span><div class="pi-boucle"><span class="pi-bloc ct">répéter <b class="pi-n">4</b> fois</span><div class="pi-corps"><span class="pi-bloc mv">avancer de <b class="pi-n">100</b> pas</span><span class="pi-bloc mv">tourner ↺ de <b class="pi-n">90</b> degrés</span></div></div></div><p style="text-align:center;margin:2px 0;">La boucle « <b>répéter 4 fois</b> » exécute 4 fois les deux instructions qu'elle contient : le lutin trace un carré de côté 100.</p></div>
+<span class="prop-badge oliv-b oliv-savoir" data-oliv="Retiens bien !">Polygones réguliers</span><div class="def-box">Pour tracer un polygone régulier à <span class="tex" data-tex-source="n" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord mathnormal">n</span></span></span></span></span> côtés, on répète <span class="tex" data-tex-source="n" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord mathnormal">n</span></span></span></span></span> fois « avancer, tourner de <span class="tex" data-tex-source="360 \div n" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>360</mn><mo>÷</mo><mi>n</mi></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord">360</span><span class="mbin">÷</span></span><span class="base"><span class="mord mathnormal">n</span></span></span></span></span> degrés ». Pour le triangle équilatéral : 360 : 3 = 120°.<div class="pi-pile"><span class="pi-bloc ev">quand le drapeau vert est cliqué</span><span class="pi-bloc pe">stylo en position d'écriture</span><div class="pi-boucle"><span class="pi-bloc ct">répéter <b class="pi-n">3</b> fois</span><div class="pi-corps"><span class="pi-bloc mv">avancer de <b class="pi-n">120</b> pas</span><span class="pi-bloc mv">tourner ↺ de <b class="pi-n">120</b> degrés</span></div></div></div></div>
+<div class="redaction-note" style="background:rgba(227,93,58,.07);border-color:rgba(227,93,58,.25);color:#8A2E1C;">Avant de programmer, on peut « jouer » l'algorithme sans ordinateur : un élève fait le lutin dans la cour, un autre lit les instructions. C'est l'algorithmique débranchée.</div>
+
+<div class="lesson-header"><span class="num">2</span><h3>Choisir : « si … alors … sinon »</h3></div>
+<span class="def-badge oliv-b oliv-savoir" data-oliv="Le mot juste !">L'instruction conditionnelle</span><div class="def-box"><div class="pi-pile"><span class="pi-bloc ev">quand le drapeau vert est cliqué</span><span class="pi-bloc se">demander « Ta note ? » et attendre</span><div class="pr-si"><span class="pi-bloc ct">si <span class="pr-cond">réponse &gt; 10</span> alors</span><div class="pi-corps"><span class="pi-bloc lo">dire « Bravo ! »</span></div><span class="pi-bloc ct">sinon</span><div class="pi-corps"><span class="pi-bloc lo">dire « Courage ! »</span></div></div></div><p style="text-align:center;margin:2px 0;">Le programme teste la condition <b>réponse &gt; 10</b> : si elle est vraie, il exécute le premier bloc ; sinon, le second.</p></div>
+<p class="example-title">Ce que dit le programme :</p><ul class="example-list"><li>pour une note de 14 : « Bravo ! » ;</li><li>pour une note de 8 : « Courage ! » ;</li><li>pour une note de 10 : « Courage ! », car 10 &gt; 10 est faux.</li></ul>
+
+<div class="lesson-header"><span class="num">3</span><h3>Utiliser une variable</h3></div>
+<span class="def-badge oliv-b oliv-savoir" data-oliv="À retenir !">Une variable dans un programme</span><div class="def-box"><div class="pi-pile"><span class="pi-bloc ev">quand le drapeau vert est cliqué</span><span class="pi-bloc se">demander « Longueur du côté ? » et attendre</span><span class="pi-bloc va">mettre <b class="pi-n">côté</b> à <span class="pr-cond">réponse</span></span><span class="pi-bloc pe">stylo en position d'écriture</span><div class="pi-boucle"><span class="pi-bloc ct">répéter <b class="pi-n">4</b> fois</span><div class="pi-corps"><span class="pi-bloc mv">avancer de <span class="pr-cond">côté</span> pas</span><span class="pi-bloc mv">tourner ↺ de <b class="pi-n">90</b> degrés</span></div></div></div><p style="text-align:center;margin:2px 0;">La <b>variable</b> « côté » contient la longueur tapée par l'utilisateur : le même programme trace un carré de n'importe quelle taille.</p></div>
+<div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">Une variable est une « boîte » qui porte un nom et contient une valeur ; on peut la lire, la changer (« mettre … à … ») ou l'augmenter (« ajouter … à … »).</div>
+
+<div class="lesson-header"><span class="num">4</span><h3>Événements et lutins</h3></div>
+<span class="def-badge oliv-b oliv-savoir" data-oliv="À savoir !">Déclencher un script</span><div class="def-box"><div style="display:flex;gap:26px;flex-wrap:wrap;"><div class="pi-pile"><span class="pi-bloc ev">Lutin 1 : quand le drapeau vert est cliqué</span><div class="pi-boucle"><span class="pi-bloc ct">répéter indéfiniment</span><div class="pi-corps"><span class="pi-bloc mv">avancer de <b class="pi-n">5</b> pas</span><span class="pi-bloc mv">rebondir si le bord est atteint</span></div></div></div><div class="pi-pile"><span class="pi-bloc ev">Lutin 2 : quand le drapeau vert est cliqué</span><div class="pi-boucle"><span class="pi-bloc ct">répéter indéfiniment</span><div class="pi-corps"><div class="pr-si"><span class="pi-bloc ct">si <span class="pr-cond">touche le Lutin 1 ?</span> alors</span><div class="pi-corps"><span class="pi-bloc lo">dire « Aïe ! » pendant 1 secondes</span></div></div></div></div></div></div><p style="text-align:center;margin:2px 0;">Chaque lutin a ses propres scripts, déclenchés par un <b>événement</b> (le drapeau vert, une touche du clavier, un clic…). Ils s'exécutent <b>en même temps</b> : quand le lutin 1 touche le lutin 2, le lutin 2 dit « Aïe ! ».</p></div>
+
+<div class="sub-header oliv-sh oliv-sh-plus" data-oliv-plus="En route vers la 3e !" data-oliv="En route vers la 3e !"><span class="letter">+</span><h4>Pour aller plus loin : créer son propre bloc</h4></div>
+<div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">En 3e (niveau 3), on crée des <b>blocs personnalisés</b> : par exemple un bloc « carré (côté) » qu'on réutilise pour dessiner une frise.</div>
+</section>
+
+<section class="seo-section" id="methode">
+  <h2><span class="gicon">draw</span> Méthode</h2>
+  <p class="hint" style="margin:-4px 0 12px;">Dans l'application, cette méthode est animée étape par étape (règle, équerre, compas, rapporteur).</p>
+  <div class="sub-header oliv-sh" data-oliv="Suis la méthode !"><span class="letter">M</span><h4>Exécuter un programme à la main</h4></div><div class="figure-wrap">
+    <div class="step-display" id="cm1d-pr4-m-executer"><div class="step-column"><div class="">total = 0</div></div><div class="step-note">Avant la boucle.</div></div></div>
+<div class="sub-header oliv-sh" data-oliv="Pas à pas !"><span class="letter">M</span><h4>Écrire le programme d'un rectangle</h4></div><div class="figure-wrap">
+    <div class="step-display" id="cm1d-pr4-m-ecrire"><div class="step-column"><div class="">Un rectangle : deux longueurs et deux largeurs.</div></div><div class="step-note">Le motif « longueur, tourner, largeur, tourner » se répète 2 fois.</div></div></div>
+</section>
+
+<section class="seo-section" id="exercices">
+  <h2><span class="gicon">edit</span> Exercices et rédaction</h2>
+  
+  <div class="redaction-block"><h3>Exercices</h3><div class="exo-card"><div class="num">Exercice 1</div>Quel polygone trace le programme : répéter 5 fois [avancer de 80 ; tourner de 72 degrés] ?
+      
+      </div><div class="exo-card"><div class="num">Exercice 2</div>Quel angle faut-il pour tracer un octogone régulier (8 côtés) ?
+      
+      </div><div class="exo-card"><div class="num">Exercice 3</div>Un programme demande un nombre, puis : si le nombre est pair, il dit « pair », sinon il dit « impair ». Que dit-il pour 17 ?
+      
+      </div><div class="exo-card"><div class="num">Exercice 4</div>mettre x à 2 ; répéter 4 fois : mettre x à x × 3 ; dire x. Que dit le programme ?
+      
+      </div><div class="exo-card"><div class="num">Exercice 5</div>Écris un programme qui demande la longueur du côté et trace un triangle équilatéral.
+      
+      </div><div class="exo-card"><div class="num">Exercice 6</div>Dans un jeu, le chat doit dire « Gagné ! » quand il touche la balle. Quelle instruction utiliser ?
+      
+      </div><div class="exo-card"><div class="num">Exercice 7</div>Écris sans ordinateur un algorithme pour aller de ta place au tableau.
+      
+      </div></div>
+</section>
+
+
+<section class="seo-section" id="histoire">
+  <h2><span class="gicon">history_edu</span> Un peu d'histoire</h2>
+  
+  <div class="history-box"><div class="history-title"><span class="gicon">history_edu</span> Un peu d'histoire : Ada Lovelace</div><p style="margin:0 0 12px;">En 1843, l'Anglaise <b>Ada Lovelace</b> écrit le premier programme destiné à une machine : une suite d'instructions pour calculer des nombres avec la « machine analytique » de Charles Babbage, qui ne sera jamais construite.</p><p style="margin:0 0 12px;">Elle avait déjà compris l'idée de la <b>boucle</b> : répéter une série d'opérations. Un langage de programmation porte son nom : Ada.</p></div>
+</section>
+<div class="seo-cta">
+  <p>Pour s'entraîner : <b>quiz générés à chaque essai</b>, figures manipulables et constructions animées.</p>
+  <a class="seo-btn" href="/#/chapitre/4e/17-algorithmique-et-programmation/quiz">Faire le quiz</a>
+</div>
+<nav class="seo-nav">
+  <span>← <a href="/4e/formules-et-graphiques/">Formules et graphiques</a></span>
+  <a href="/4e/">Tous les chapitres de 4e</a>
+  <span></span>
+</nav>
+</main>
+<footer class="seo-foot">
+  <a href="/">L'Atelier des Maths</a> · cours de mathématiques interactifs pour l'école et le collège ·
+  <a href="/cp/">Cours de maths CP</a> · <a href="/ce1/">Cours de maths CE1</a> · <a href="/ce2/">Cours de maths CE2</a> · <a href="/cm1/">Cours de maths CM1</a> · <a href="/cm2/">Cours de maths CM2</a> · <a href="/6e/">Cours de maths 6e</a> · <a href="/5e/">Cours de maths 5e</a> · <a href="/4e/">Cours de maths 4e</a> · <a href="/3e/">Cours de maths 3e</a> · <a href="/programmes/">Les notions du CP à la 3e</a> · <a href="/professeurs/">Pour les professeurs</a><br>
+  Une production de <a href="https://www.latelieraugmente.fr" rel="noopener">L'Atelier Augmenté</a> · Programme de mathématiques B.O. 2026.
+</footer>
+</body>
+</html>

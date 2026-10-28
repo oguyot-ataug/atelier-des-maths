@@ -52,6 +52,10 @@ ${cm1Regle('Dans un <b>diagramme en barres</b>, plus la barre est haute, plus le
 
 ${cm1Lecon(4, 'Lire et comparer')}
 ${cm1Exemple('Avec le diagramme des fruits :', ['le fruit préféré est la fraise (9 élèves) ;', 'le fruit le moins choisi est le kiwi (3 élèves) ;', 'la pomme a 3 élèves de plus que la banane : 4 + 3 = 7 ;', 'en tout, 7 + 4 + 9 + 3 = 23 élèves ont répondu.'])}
+
+${cm1Lecon(5, 'Le tableau à double entrée')}
+${cm1Def(`${cm1Tableau(['', 'rouge', 'bleu', 'jaune'], [['<b>carré</b>', cpSvg(40, 40, `<rect x="6" y="6" width="28" height="28" fill="#E35D3A"/>`, 34), cpSvg(40, 40, `<rect x="6" y="6" width="28" height="28" fill="#2EA8C9"/>`, 34), cpSvg(40, 40, `<rect x="6" y="6" width="28" height="28" fill="#E9C46A"/>`, 34)], ['<b>disque</b>', cpSvg(40, 40, `<circle cx="20" cy="20" r="14" fill="#E35D3A"/>`, 34), cpSvg(40, 40, `<circle cx="20" cy="20" r="14" fill="#2EA8C9"/>`, 34), cpSvg(40, 40, `<circle cx="20" cy="20" r="14" fill="#E9C46A"/>`, 34)], ['<b>triangle</b>', cpSvg(40, 40, `<polygon points="20,5 36,34 4,34" fill="#E35D3A"/>`, 34), cpSvg(40, 40, `<polygon points="20,5 36,34 4,34" fill="#2EA8C9"/>`, 34), cpSvg(40, 40, `<polygon points="20,5 36,34 4,34" fill="#E9C46A"/>`, 34)]])}${P('Chaque <b>ligne</b> est une forme, chaque <b>colonne</b> une couleur. Dans la case où la ligne « triangle » croise la colonne « bleu », on trouve le triangle bleu. Le tableau montre toutes les formes de toutes les couleurs.')}`, 'Lignes et colonnes')}
+${cm1Astuce('Pour trouver une case : un doigt sur la ligne, un doigt sur la colonne, et on les fait glisser jusqu\'à ce qu\'ils se rencontrent.')}
 `,
   methode: `
 ${cm1Demo('cp-d1-m-lire', 'Lire un diagramme en barres', 'Combien d\'élèves préfèrent la banane ?')}
@@ -84,6 +88,8 @@ ${cm1Demo('cp-d1-m-construire', 'Construire un diagramme', 'Transforme le tablea
       cm1Redac('Nombre d\'élèves', { suite: ['6 + 4 = 10', '10 + 8 = 18'] }, '18 élèves ont répondu.')],
     ['Dessine le diagramme : rouge 5 élèves, bleu 7 élèves, vert 2 élèves.',
       cm1Redac('Le diagramme des couleurs', '', 'Trois barres : rouge jusqu\'à 5, bleu jusqu\'à 7, vert jusqu\'à 2.', barres([['rouge', 5, '#E35D3A'], ['bleu', 7, '#2EA8C9'], ['vert', 2, '#2E9C6A']], 8))],
+    [`Dans ce tableau, que trouve-t-on dans la case de la ligne « disque » et de la colonne « jaune » ?${cm1Tableau(['', 'rouge', 'bleu', 'jaune'], [['<b>carré</b>', cpSvg(40, 40, `<rect x="6" y="6" width="28" height="28" fill="#E35D3A"/>`, 34), cpSvg(40, 40, `<rect x="6" y="6" width="28" height="28" fill="#2EA8C9"/>`, 34), cpSvg(40, 40, `<rect x="6" y="6" width="28" height="28" fill="#E9C46A"/>`, 34)], ['<b>disque</b>', cpSvg(40, 40, `<circle cx="20" cy="20" r="14" fill="#E35D3A"/>`, 34), cpSvg(40, 40, `<circle cx="20" cy="20" r="14" fill="#2EA8C9"/>`, 34), cpSvg(40, 40, `<circle cx="20" cy="20" r="14" fill="#E9C46A"/>`, 34)], ['<b>triangle</b>', cpSvg(40, 40, `<polygon points="20,5 36,34 4,34" fill="#E35D3A"/>`, 34), cpSvg(40, 40, `<polygon points="20,5 36,34 4,34" fill="#2EA8C9"/>`, 34), cpSvg(40, 40, `<polygon points="20,5 36,34 4,34" fill="#E9C46A"/>`, 34)]])}`,
+      cm1Redac('La case', '', 'On trouve le disque jaune.')],
   ]),
   histoire: cm1Histoire('Un peu d\'histoire : le premier diagramme en barres', [
     'Le diagramme en barres a été inventé il y a environ 240 ans, en 1786, par un Écossais, <b>William Playfair</b>. Il voulait montrer d\'un coup d\'œil ce que son pays achetait et vendait aux autres pays.',
@@ -95,6 +101,7 @@ ${cm1Demo('cp-d1-m-construire', 'Construire un diagramme', 'Transforme le tablea
     { q: 'Pommes 7, bananes 4 : combien de pommes de plus ?', opts: ['3', '11', '4'], correct: 0 },
   ],
   flash: [
+    { l: 5, q: 'Dans un tableau à double entrée, une case est au croisement…', r: ['d\'une ligne et d\'une colonne', 'de deux lignes', 'de deux colonnes', 'du titre'], ok: 0 },
     { l: 1, q: `Combien ?${lig(batons(5))}`, r: ['4', '5', '6', '1'], ok: 1 },
     { l: 1, q: `Combien ?${lig(batons(11))}`, r: ['10', '11', '12', '6'], ok: 1 },
     { l: 2, q: 'Dans un tableau, on lit le nombre…', r: ['en face du nom', 'au hasard', 'en haut à gauche', 'nulle part'], ok: 0 },

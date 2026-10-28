@@ -2,7 +2,7 @@
    CHAPITRE : Les masses : le gramme et le kilogramme (CE1, M4, période 4)
    Programme du cycle 2 (BO n° 41 du 31 octobre 2024), partie CE1, grandeurs et mesures : comparer
    des masses (balance à plateaux), mesurer avec des masses marquées, connaître le gramme (g) et le
-   kilogramme (kg), 1 kg = 1 000 g, ordres de grandeur (un trombone pèse environ 1 g, un litre d'eau
+   kilogramme (kg), 1 kg = 1 000 g, ordres de grandeur (un trombone pèse environ 1 g, un paquet de sucre
    environ 1 kg) ; ajouter des masses ; problèmes.
    Pensé pour être projeté : la balance qui penche, puis qui s'équilibre.
    ============================================================ */
@@ -30,7 +30,7 @@ ${cm1Regle('Le plateau qui descend porte l\'objet le plus <b>lourd</b>. Quand la
 
 ${cm1Lecon(2, 'Le gramme et le kilogramme')}
 ${cm1Def(`${lig(masses([1, 2, 5, 10, 20, 50, 100, 200, 500, 1000]))}${P('Les masses marquées. <b>1 kg = 1 000 g</b>.')}`, 'Les unités')}
-${cm1Regle(`${cm1Liste(['Un trombone pèse environ <b>1 g</b>.', 'Une pomme pèse environ <b>150 g</b>.', 'Un paquet de sucre, un litre d\'eau pèsent environ <b>1 kg</b>.', 'Un enfant de CE1 pèse environ <b>25 kg</b>.'])}`, 'Ordres de grandeur')}
+${cm1Regle(`${cm1Liste(['Un trombone pèse environ <b>1 g</b>.', 'Une pomme pèse environ <b>150 g</b>.', 'Un paquet de sucre pèse <b>1 kg</b> ; un sachet de levure, environ <b>10 g</b>.', 'Un enfant de CE1 pèse environ <b>25 kg</b>.'])}`, 'Ordres de grandeur')}
 
 ${cm1Lecon(3, 'Mesurer avec des masses marquées')}
 ${cm1Def(`Pour peser un objet, on le pose sur un plateau et on ajoute des masses marquées de l'autre côté jusqu'à l'équilibre.${lig(masses([200, 100, 50, 20]))}${P('200 g + 100 g + 50 g + 20 g : l\'objet pèse <b>370 g</b>.')}`, 'Peser')}
@@ -83,7 +83,7 @@ ${cm1Demo('ce1-m4-m-comparer', 'Comparer 1 kg et 800 g', 'Le paquet de 1 kg est-
   flash: [
     { l: 1, q: 'Le plateau qui descend porte…', r: ['le plus lourd', 'le plus léger', 'le plus gros', 'rien'], ok: 0 },
     { l: 2, q: 'Un trombone pèse environ…', r: ['1 g', '1 kg', '100 g', '10 kg'], ok: 0 },
-    { l: 2, q: 'Un litre d\'eau pèse environ…', r: ['1 kg', '1 g', '10 kg', '100 g'], ok: 0 },
+    { l: 2, q: 'Un paquet de sucre pèse…', r: ['1 kg', '1 g', '10 kg', '100 g'], ok: 0 },
     { l: 3, q: '200 g + 50 g + 5 g = …', r: ['255 g', '2505 g', '205 g', '250 g'], ok: 0 },
     { l: 4, q: 'Le plus lourd : 1 kg ou 900 g ?', r: ['1 kg', '900 g', 'Pareil', 'On ne sait pas'], ok: 0 },
   ],

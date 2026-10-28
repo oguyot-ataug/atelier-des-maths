@@ -1,6 +1,6 @@
 {
  "/": {
-  "hash": "972710a001a984b53d4353bc3a1084069a8d1575",
+  "hash": "851ce483f5fff84154d877e7605f43648233f34e",
   "lastmod": "2026-10-28"
  },
  "/cp/les-nombres-jusqu-a-10/": {
@@ -12,7 +12,7 @@
   "lastmod": "2026-10-28"
  },
  "/cp/se-reperer-dans-l-espace/": {
-  "hash": "c19df97888859bf2f4fbc779725390626cfa2ba1",
+  "hash": "d01dccf27f8eb6d95c13bb235db7515da55b8585",
   "lastmod": "2026-10-28"
  },
  "/cp/les-nombres-jusqu-a-20/": {
@@ -28,11 +28,11 @@
   "lastmod": "2026-10-28"
  },
  "/cp/comparer-et-ranger-les-nombres/": {
-  "hash": "74abcbc4a387d93fbb0172941ee32e5714d5eab1",
+  "hash": "2cbd5e18baf8200281eccd35df72224823c48536",
   "lastmod": "2026-10-28"
  },
  "/cp/doubles-moities-et-complements-a-10/": {
-  "hash": "353a10b3c4cd81a3de2b6bf959c37cb2ad96d9d9",
+  "hash": "0db642ffd5a8027cc507100c9486097605e646fb",
   "lastmod": "2026-10-28"
  },
  "/cp/comparer-des-longueurs/": {
@@ -52,7 +52,7 @@
   "lastmod": "2026-10-28"
  },
  "/cp/ajouter-et-soustraire-des-dizaines/": {
-  "hash": "a22e3d1b0f84bafae05fc6b9574ea5414dc856be",
+  "hash": "5c58918126f4ece66513f745573d09ead8f84320",
   "lastmod": "2026-10-28"
  },
  "/cp/soustraire-en-cassant-une-dizaine/": {
@@ -60,7 +60,7 @@
   "lastmod": "2026-10-28"
  },
  "/cp/lire-l-heure-les-heures-entieres/": {
-  "hash": "07ddd943332c8d328083973d54b55b128af0f4bb",
+  "hash": "3b3cab71393a4d07b613415af8e584aed2454cd3",
   "lastmod": "2026-10-28"
  },
  "/cp/problemes-en-deux-etapes/": {
@@ -76,7 +76,7 @@
   "lastmod": "2026-10-28"
  },
  "/cp/des-groupes-egaux/": {
-  "hash": "27b72f1cefb5dc6c7d4b7ceee3bb003ff70e25bf",
+  "hash": "ac1dca0241dc87fa44cc7cbf9422ca64e2e88abf",
   "lastmod": "2026-10-28"
  },
  "/cp/alignements-et-traces-sur-quadrillage/": {
@@ -84,7 +84,7 @@
   "lastmod": "2026-10-28"
  },
  "/cp/tableaux-et-diagrammes-en-barres/": {
-  "hash": "c3a4a0084bc8cea968bf763f954d4a2684d42861",
+  "hash": "d71b67beda8e92d23456a588379dea917e47da03",
   "lastmod": "2026-10-28"
  },
  "/cp/comparer-des-masses/": {
@@ -92,7 +92,7 @@
   "lastmod": "2026-10-28"
  },
  "/cp/les-solides/": {
-  "hash": "e118dd1d06861517a8821337ef853254a869bbdf",
+  "hash": "815f38f56be95b37c1462d932b72f5089e22893c",
   "lastmod": "2026-10-28"
  },
  "/cp/coder-un-deplacement/": {
@@ -108,11 +108,11 @@
   "lastmod": "2026-10-28"
  },
  "/cp/": {
-  "hash": "a9bb8bd535adc5fd44216b2dd2c31514cbd17755",
+  "hash": "a9da561a174f5865f5e165debab8b61b07256eed",
   "lastmod": "2026-10-28"
  },
  "/ce1/les-nombres-jusqu-a-100/": {
-  "hash": "f60a6a616a3c09339e50a35e6c3bd88d5b98d6aa",
+  "hash": "940d64834230afb14e279daa7f5614c4ec074a3d",
   "lastmod": "2026-10-28"
  },
  "/ce1/calcul-mental-ajouter-et-soustraire/": {
@@ -120,11 +120,11 @@
   "lastmod": "2026-10-28"
  },
  "/ce1/se-reperer-sur-un-quadrillage/": {
-  "hash": "cb54636c3023a63cb4601fcaea6b4dee90fc0a93",
+  "hash": "9e5b90663bb5d8c8912a9f685eb22611147e6b8d",
   "lastmod": "2026-10-28"
  },
  "/ce1/les-nombres-jusqu-a-1-000/": {
-  "hash": "2cd0f0d6938c8d82e48d62536edf36230fbf07a8",
+  "hash": "f57ff79be57ad556afdf1b13ce51cd5ae8d4c9c0",
   "lastmod": "2026-10-28"
  },
  "/ce1/problemes-ajouter-retirer-comparer/": {
@@ -132,19 +132,19 @@
   "lastmod": "2026-10-28"
  },
  "/ce1/comparer-ranger-encadrer/": {
-  "hash": "ff70fe5d47993deacb303fb7ac0421b3077ac54f",
+  "hash": "a78164b6c93c02f75b0155c3e6be8cbab49a720e",
   "lastmod": "2026-10-28"
  },
  "/ce1/l-addition-posee/": {
-  "hash": "3afd87b98855cf5c4f892243a8c0c06443cd3ff9",
+  "hash": "7e9818ac5347358b21d0ee891f2fa76b41d0eb6f",
   "lastmod": "2026-10-28"
  },
- "/ce1/longueurs-le-centimetre-et-le-metre/": {
-  "hash": "40cedd712a7ed336e920e9100699dbd668d79549",
+ "/ce1/longueurs-centimetre-metre-kilometre/": {
+  "hash": "e8cb2002699edb7fc261973321b1630bd2081ada",
   "lastmod": "2026-10-28"
  },
  "/ce1/polygones-et-angle-droit/": {
-  "hash": "eeccf3ca39ba9f31c2c97599755e6668224e097b",
+  "hash": "7b8b46bb2c9a18339914e7ecbf8de6d973c51f26",
   "lastmod": "2026-10-28"
  },
  "/ce1/la-multiplication-le-signe/": {
@@ -152,35 +152,35 @@
   "lastmod": "2026-10-28"
  },
  "/ce1/la-monnaie-euros-et-centimes/": {
-  "hash": "7bc89082dbbff95a96d87c1d5c287a86e2427c10",
+  "hash": "a126e5b3b1db655c18e294e775b5f990d9c15703",
   "lastmod": "2026-10-28"
  },
  "/ce1/tables-de-multiplication-de-2-5-et-10/": {
-  "hash": "bfc3321638f1efdf39b27da6dd42013b819fbbe5",
+  "hash": "5c5ae57a0d1602bd9533a99a8910af74eec923dd",
   "lastmod": "2026-10-28"
  },
- "/ce1/les-fractions-un-demi-un-tiers-un-quart/": {
-  "hash": "2937605a4c499fcc0657952885ed684159162814",
+ "/ce1/les-fractions-partager-en-parts-egales/": {
+  "hash": "6db8da712cd0904dac099bd7e95d3fcb7877c54c",
   "lastmod": "2026-10-28"
  },
- "/ce1/lire-l-heure-heures-et-demi-heures/": {
-  "hash": "c9191132dfabe54bd574eda5267291bcd2bee88c",
+ "/ce1/lire-l-heure-demi-heures-et-quarts-d-heure/": {
+  "hash": "ed64b2b177c621696f55a28d9ac81c586094e367",
   "lastmod": "2026-10-28"
  },
  "/ce1/partager-et-faire-des-groupes/": {
-  "hash": "55823a9e45af9cb889f4f096f222bfd110e40ff3",
+  "hash": "b3784d9d259c9588f0f9467c09e74bd9a7810e9b",
   "lastmod": "2026-10-28"
  },
  "/ce1/tableaux-et-diagrammes/": {
-  "hash": "09ec731d8513c4546af2fe9dad8a7e180ffe409d",
+  "hash": "3fb3b0e51b871028e0f9bd99992c1fa4a0148ac1",
   "lastmod": "2026-10-28"
  },
- "/ce1/la-symetrie/": {
-  "hash": "43771f7f0e358936e757a0dc448403e54d97afa2",
+ "/ce1/cercle-milieu-et-points-alignes/": {
+  "hash": "37358d30caf73cae8bd9b47ef8ee0fe74724f11e",
   "lastmod": "2026-10-28"
  },
  "/ce1/la-soustraction-posee/": {
-  "hash": "313c6731c6761d57f4245e54edadea4a976f43dd",
+  "hash": "c87149d3d48485da1dc74d81d55fcfd47d65a027",
   "lastmod": "2026-10-28"
  },
  "/ce1/tables-de-multiplication-de-3-et-4/": {
@@ -188,35 +188,39 @@
   "lastmod": "2026-10-28"
  },
  "/ce1/les-masses-le-gramme-et-le-kilogramme/": {
-  "hash": "0f490a2c5e91ea12a84392adae9c70047af342d9",
+  "hash": "3fdc2e3951c222e6e6e2c6af1e3eefa063780484",
   "lastmod": "2026-10-28"
  },
  "/ce1/les-solides-faces-aretes-sommets/": {
-  "hash": "300455aef5c2f33fd3c6897416d5513bfdffffea",
+  "hash": "8b7cdae9690b5e0e5847beab1e18fb60cacd410b",
   "lastmod": "2026-10-28"
  },
- "/ce1/moitie-tiers-quart-d-une-quantite/": {
-  "hash": "46e71716e4fdeed6cd72de2e1219b0a3f26ce766",
+ "/ce1/comparer-ajouter-retirer-des-fractions/": {
+  "hash": "c2304a2103780da741de7b6bbbda189027cf775d",
   "lastmod": "2026-10-28"
  },
- "/ce1/le-calendrier-et-les-durees/": {
-  "hash": "812b80b4384d82575d8a47da78c97a3d6a81156d",
+ "/ce1/les-durees-heures-et-minutes/": {
+  "hash": "19121d47129618d82be757a0d3ec8a5a03ad8478",
   "lastmod": "2026-10-28"
  },
  "/ce1/programmer-des-deplacements/": {
-  "hash": "7466b17899857f041da3d0877f5b1b5cb6aab26a",
+  "hash": "84097e387686e77ea12ef4830d24f6e3c7c3e93e",
   "lastmod": "2026-10-28"
  },
- "/ce1/calcul-mental-strategies-jusqu-a-100/": {
-  "hash": "3fa1b79b2becbad01d801093b0016ff55b70f33b",
+ "/ce1/calcul-mental-strategies-jusqu-a-1-000/": {
+  "hash": "13797fba82cf84702d57b0b142891b584f41288e",
+  "lastmod": "2026-10-28"
+ },
+ "/ce1/tables-de-multiplication-de-6-7-8-et-9/": {
+  "hash": "722dff7f63d115a95d8f5ef6264d18a1d758220c",
   "lastmod": "2026-10-28"
  },
  "/ce1/problemes-bilan-de-l-annee/": {
-  "hash": "961d64eb2c14eb98e4980622230e69cc733767ad",
+  "hash": "bcd85d3ca69be8104ec5b3b0aa0505706c191e8a",
   "lastmod": "2026-10-28"
  },
  "/ce1/": {
-  "hash": "2261f4bd8bb6816083bed167a0961d1ba6fc4d4d",
+  "hash": "11297971e4ddc8f4a659a17ff94296d3e42f9a0a",
   "lastmod": "2026-10-28"
  },
  "/ce2/nombres-jusqu-a-10-000/": {
@@ -296,7 +300,7 @@
   "lastmod": "2026-10-28"
  },
  "/ce2/comparer-et-additionner-des-fractions/": {
-  "hash": "1fd3e7434a70510722019c5952de638f88965146",
+  "hash": "b6e9cc8d0adb2b9c62c01fc7f311c48881f6a617",
   "lastmod": "2026-10-28"
  },
  "/ce2/les-solides/": {
@@ -348,7 +352,7 @@
   "lastmod": "2026-10-28"
  },
  "/cm1/fractions-comparaison-et-operations/": {
-  "hash": "4f1a95e878b8c5aa9ccfac5dca762edd2b5b38ed",
+  "hash": "26bcc8b8add1e14e17d9db6177af59e89c917193",
   "lastmod": "2026-10-28"
  },
  "/cm1/organisation-et-gestion-de-donnees/": {
@@ -360,7 +364,7 @@
   "lastmod": "2026-10-28"
  },
  "/cm1/operations-sur-les-nombres-decimaux/": {
-  "hash": "f8149fb124262e9615f8a1e037ef1a710149686f",
+  "hash": "fd32722e7ac3a5de140c196fd06ec01d3206d9d0",
   "lastmod": "2026-10-28"
  },
  "/cm1/symetrie-axiale/": {
@@ -452,7 +456,7 @@
   "lastmod": "2026-10-28"
  },
  "/cm2/fractions-comparer-et-calculer/": {
-  "hash": "32a0f61b002e27fd1a49daf044a0c8a7c434d8e7",
+  "hash": "c3e581278f826cd7c322a26395a3f959da0a4749",
   "lastmod": "2026-10-28"
  },
  "/cm2/grands-nombres-jusqu-a-999-999-999/": {
@@ -588,7 +592,7 @@
   "lastmod": "2026-10-28"
  },
  "/6e/initiation-a-l-algebre/": {
-  "hash": "612da0e492116e2342938170ce0a75b8b9fde752",
+  "hash": "defffd7a76a577ac45d7b7b8e823810bcc587db9",
   "lastmod": "2026-10-28"
  },
  "/6e/solides-et-volumes/": {
@@ -660,35 +664,39 @@
   "lastmod": "2026-10-28"
  },
  "/5e/aires/": {
-  "hash": "3909428b65461d503bbc7d2151a021f930095367",
+  "hash": "435132ce2ac1d3d816299b0d2af0fc97437296f4",
+  "lastmod": "2026-10-28"
+ },
+ "/5e/puissances/": {
+  "hash": "3df63523a9e7db4dd2ac37a1bff1c4f1e3a2ff13",
   "lastmod": "2026-10-28"
  },
  "/5e/calcul-litteral/": {
-  "hash": "355c16ef41aff76d7c6579b0f3d456b7b4feb0dc",
+  "hash": "f268e8e1c2748cab3077ebe6c7adf25aaa3752c0",
   "lastmod": "2026-10-28"
  },
  "/5e/probabilites/": {
-  "hash": "d176a1499e8c59e53f49d024ae0888e026dac310",
+  "hash": "5163dbbfcf38eb876314165ee0f00dbc041494a4",
   "lastmod": "2026-10-28"
  },
  "/5e/representation-de-l-espace/": {
-  "hash": "df48a955a585febc589fb5e09523a67229072fbf",
+  "hash": "6a31f5adadbdf3f23a5f280486aa718e09867e18",
   "lastmod": "2026-10-28"
  },
  "/5e/equations/": {
-  "hash": "581977eeca5ece9265dba5e5b0c912a6a39fba87",
+  "hash": "efc068d0a3b7f7441cf291adb15dbff06e750aa2",
   "lastmod": "2026-10-28"
  },
  "/5e/fonctions/": {
-  "hash": "3474f9673435ad0ead88cb9e4441290eb79811ba",
+  "hash": "4031c112dd266296ab31bf04239f7db8b393a2b8",
   "lastmod": "2026-10-28"
  },
  "/5e/pensee-informatique-et-programmation/": {
-  "hash": "6bd8bde5ac48881b0550c4e8ee0a4479deb30a32",
+  "hash": "f28ce1e4f2126144e60e98ba369b499ef4397958",
   "lastmod": "2026-10-28"
  },
  "/5e/": {
-  "hash": "7596df9ac06728205726873060570ac15b8f4b4d",
+  "hash": "3d9306594bf0e06f61ddbe9ca16e0b42e5a96195",
   "lastmod": "2026-10-28"
  },
  "/4e/operations-sur-les-nombres-relatifs/": {
@@ -712,7 +720,7 @@
   "lastmod": "2026-10-28"
  },
  "/4e/statistiques/": {
-  "hash": "817d767044832f614c76b31a067fec0168846358",
+  "hash": "46c63cda98339fda1f09e93643a9affd521156ba",
   "lastmod": "2026-10-28"
  },
  "/4e/fractions-multiplication-et-division/": {
@@ -744,15 +752,23 @@
   "lastmod": "2026-10-28"
  },
  "/4e/equations/": {
-  "hash": "0c217d9dc4a719cc1abd50472650871b03d8c884",
+  "hash": "e09f9a1d4dbea31d5c799c356443d53a62ba3adb",
   "lastmod": "2026-10-28"
  },
  "/4e/espace/": {
-  "hash": "1d528d29215fffd97073134a75738a99b388a04c",
+  "hash": "31291741b846f18c2af30c0228cf48bb1d91b051",
+  "lastmod": "2026-10-28"
+ },
+ "/4e/formules-et-graphiques/": {
+  "hash": "09193ed7f00f1945d9709abafb9be2133b85c8c4",
+  "lastmod": "2026-10-28"
+ },
+ "/4e/algorithmique-et-programmation/": {
+  "hash": "96b00476594be8d1555f4f1b9c91e4bc8eba6143",
   "lastmod": "2026-10-28"
  },
  "/4e/": {
-  "hash": "126a8c2a4abaa41ebefa74dd8750a4e36bda2ad8",
+  "hash": "97ea70dc3160b1ecb5728ab3e7ae515673187197",
   "lastmod": "2026-10-28"
  },
  "/3e/nombres-et-calculs/": {
@@ -780,7 +796,7 @@
   "lastmod": "2026-10-28"
  },
  "/3e/statistiques/": {
-  "hash": "a8fe5cd4bac5eb5036916f83b1a11c5c8b28a975",
+  "hash": "3488b0e5e36ed9988368ca54d1d2a89162931944",
   "lastmod": "2026-10-28"
  },
  "/3e/calcul-litteral/": {
@@ -788,7 +804,7 @@
   "lastmod": "2026-10-28"
  },
  "/3e/homothetie/": {
-  "hash": "df2780b5ac1b9e6a6483d0a6733ec6068e66026a",
+  "hash": "869851b63fb99e47f2815832a3959cc19da26bf4",
   "lastmod": "2026-10-28"
  },
  "/3e/probabilites/": {
@@ -812,11 +828,15 @@
   "lastmod": "2026-10-28"
  },
  "/3e/espace/": {
-  "hash": "7d6a2b8087769185fdc9224665a663dcf4d65e24",
+  "hash": "4859bdcdfc1e2ac786126b5807093b1d47d47dce",
+  "lastmod": "2026-10-28"
+ },
+ "/3e/algorithmique-et-programmation/": {
+  "hash": "0114e9d38f6d71f860b8212d57b7faf462ceac7f",
   "lastmod": "2026-10-28"
  },
  "/3e/": {
-  "hash": "5e631b9d1136165cda814243b587a7d0811dfd1c",
+  "hash": "df0a9c7e272f15fb91c76c73ba2fa3ee6614e11b",
   "lastmod": "2026-10-28"
  },
  "/professeurs/": {

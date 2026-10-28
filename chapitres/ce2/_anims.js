@@ -269,7 +269,8 @@ function ce2AnimCompas(id, o){
         if(k >= 1) s += `<circle cx="${cx}" cy="${cy}" r="${R}" fill="${CE2C.bleu}" fill-opacity=".08" stroke="${CE2C.bleu}" stroke-width="3"/>`;
         if(t < .9) s += compas(cx, cy, cx + R * Math.cos(ang), cy + R * Math.sin(ang));
         texte = t < .36 ? 'Je pique la pointe sur le centre O.' : t < .9 ? 'Je tourne le compas en le tenant par le haut, sans changer l\'écartement.' : '';
-        if(t >= .9){ const k2 = cmPhase(t, .9, 1); s += `<line x1="${cx}" y1="${cy}" x2="${cx + R * Math.cos(-.8)}" y2="${cy + R * Math.sin(-.8)}" stroke="${CE2C.rouge}" stroke-width="2.4" opacity="${k2}"/>` + ce2T(cx + R * .55 * Math.cos(-.8) + 22, cy + R * .55 * Math.sin(-.8), 'rayon', { c: CE2C.rouge, op: k2, t: 13 })
+        if(t >= .9 && o.sansRayon) texte = `Voici le <b>cercle de centre O</b> : tous ses points sont à ${r} cm du centre. L'intérieur du cercle s'appelle un <b>disque</b>.`;
+        else if(t >= .9){ const k2 = cmPhase(t, .9, 1); s += `<line x1="${cx}" y1="${cy}" x2="${cx + R * Math.cos(-.8)}" y2="${cy + R * Math.sin(-.8)}" stroke="${CE2C.rouge}" stroke-width="2.4" opacity="${k2}"/>` + ce2T(cx + R * .55 * Math.cos(-.8) + 22, cy + R * .55 * Math.sin(-.8), 'rayon', { c: CE2C.rouge, op: k2, t: 13 })
           + `<line x1="${cx - R}" y1="${cy}" x2="${cx + R}" y2="${cy}" stroke="${CE2C.vert}" stroke-width="2.4" opacity="${k2}"/>` + ce2T(cx - R / 2, cy + 18, 'diamètre', { c: CE2C.vert, op: k2, t: 13 });
           texte = `Le cercle a un <b>rayon de ${r} cm</b> : son <b>diamètre</b> mesure 2 rayons, <b>${2 * r} cm</b>.`; }
       }
@@ -365,7 +366,7 @@ function ce2AnimFracAdd(id, o){
       let s = bande(20, 'bande 1') + bande(110, 'bande 2');
       for(let i = 0; i < x; i++) s += `<rect x="${X + i * w}" y="20" width="${w}" height="${H}" fill="${CE2C.bleu}" fill-opacity=".75" stroke="${CE2C.encre}" stroke-width="1.6"/>`;
       for(let i = 0; i < y; i++) s += `<rect x="${X + ce2Mix(i, x + i, k) * w}" y="${ce2Mix(110, 20, k)}" width="${w}" height="${H}" fill="${CE2C.rouge}" fill-opacity=".75" stroke="${CE2C.encre}" stroke-width="1.6"/>`;
-      const texte = t < .3 ? `${cm1Frac(x, n)} en bleu, ${cm1Frac(y, n)} en rouge : des ${n === 2 ? 'demis' : n === 3 ? 'tiers' : n === 4 ? 'quarts' : n + '<sup>es</sup>'} dans les deux cas.`
+      const texte = t < .3 ? `${cm1Frac(x, n)} en bleu, ${cm1Frac(y, n)} en rouge : des ${n === 2 ? 'demis' : n === 3 ? 'tiers' : n === 4 ? 'quarts' : typeof CE1_DENOM !== 'undefined' && CE1_DENOM[n] ? CE1_DENOM[n][1] : n + '<sup>es</sup>'} dans les deux cas.`
         : t < .8 ? `On met les parts ensemble : ${x} part${x > 1 ? 's' : ''} et encore ${y}.` : `${cm1Frac(x, n)} + ${cm1Frac(y, n)} = ${cm1Frac(x + y, n)} : on ajoute les parts, le dénominateur ne change pas.`;
       return { scene: `<svg viewBox="0 0 490 170" class="cma-svg" style="max-width:490px;">${s}</svg>`, texte };
     } });

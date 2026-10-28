@@ -32,6 +32,11 @@ ${cm1Rem('Au tableau : faire ranger des élèves qui portent chacun une étiquet
 ${cm1Lecon(4, 'Entre deux dizaines')}
 ${cm1Regle(`${lig(cpBande(30, 40, { on: [34], c: 34 }))}${P('34 est <b>entre 30 et 40</b> : il a 3 dizaines, comme 30, mais moins que 40.')}${P('30 &lt; 34 &lt; 40')}`, 'Encadrer')}
 ${cm1Astuce('Sur la bande des nombres, plus on va vers la droite, plus les nombres sont grands.')}
+
+${cm1Lecon(5, 'Premier, deuxième… vingtième')}
+${cm1Def(`${lig(cpSvg(420, 90, ['#E35D3A', '#2EA8C9', '#E9C46A', '#2E9C6A', '#7A4FC0', '#B07A45'].map((c, i) => `<rect x="${14 + i * 68}" y="16" width="52" height="34" rx="8" fill="${c}" fill-opacity=".8" stroke="${CPC.bord}" stroke-width="2"/>` + ce2T(40 + i * 68, 76, ['1er', '2e', '3e', '4e', '5e', '6e'][i], { t: 15, g: 700 })).join(''), 380))}${P('Les voitures font la queue : la rouge est la <b>première</b> (1<sup>re</sup>), la bleue la <b>deuxième</b> (2<sup>e</sup>), la jaune la <b>troisième</b>… jusqu\'à la <b>vingtième</b>.')}`, 'Les nombres ordinaux')}
+${cm1Regle('Je suis le <b>troisième</b> de la file : il y a <b>2</b> personnes devant moi.', 'Le rang')}
+${cm1Regle(`Dans la suite <b>A B A B A B…</b>, on répète le motif « A B ».${cm1Liste(['les lettres de rang 2, 4, 6, 8… sont des B ;', 'les lettres de rang 1, 3, 5, 7… sont des A.'])}${P('La dix-neuvième lettre est donc un <b>A</b>.')}`, 'Les suites répétitives')}
 `,
   methode: `
 ${cm1Demo('cp-n6-m-comparer', 'Comparer 45 et 48', 'Écris le bon signe : 45 … 48.')}
@@ -65,6 +70,8 @@ ${cm1Demo('cp-n6-m-ranger', 'Ranger du plus petit au plus grand', 'Range : 41, 1
       cm1Redac('Encadrer 47', '40 &lt; 47 &lt; 50', '47 est entre 40 et 50.', cpBande(40, 50, { on: [47], c: 24 }))],
     ['Léa a 34 images. Malo en a 43. Qui en a le plus ?',
       cm1Redac('Qui a le plus d\'images', '43 &gt; 34', '43 a 4 dizaines, 34 en a 3 : c\'est Malo qui a le plus d\'images.', lig(cpBarres(34, { q: 8 }), cpBarres(43, { q: 8 })))],
+    ['Dans la suite répétitive △ ▢ ○ △ ▢ ○…, quel est le septième symbole ?',
+      cm1Redac('Le septième symbole', '', 'Le motif △ ▢ ○ a 3 symboles : le 6<sup>e</sup> est ○, le 7<sup>e</sup> recommence le motif : c\'est un △.')],
   ]),
   histoire: cm1Histoire('Un peu d\'histoire : d\'où viennent les signes &lt; et &gt; ?', [
     'Les signes <b>&lt;</b> et <b>&gt;</b> ont été inventés par un savant anglais, <b>Thomas Harriot</b>. Ils ont été imprimés pour la première fois dans un livre en 1631, après sa mort.',
@@ -76,6 +83,8 @@ ${cm1Demo('cp-n6-m-ranger', 'Ranger du plus petit au plus grand', 'Range : 41, 1
     { q: 'Entre quelles dizaines est 26 ?', opts: ['10 et 20', '20 et 30', '30 et 40'], correct: 1 },
   ],
   flash: [
+    { l: 5, q: 'Je suis le 4<sup>e</sup> de la file. Devant moi, il y a…', r: ['3 personnes', '4 personnes', '5 personnes', 'personne'], ok: 0 },
+    { l: 5, q: 'ABABAB… La 10<sup>e</sup> lettre est…', r: ['B', 'A', 'C', 'D'], ok: 0 },
     { l: 1, q: 'Le plus grand : 19 ou 31 ?', r: ['19', '31', 'Pareil', 'On ne sait pas'], ok: 1 },
     { l: 1, q: 'Le plus petit : 42 ou 47 ?', r: ['42', '47', 'Pareil', 'On ne sait pas'], ok: 0 },
     { l: 2, q: '23 … 32', r: ['&lt;', '&gt;', '=', '+'], ok: 0 },

@@ -3,7 +3,7 @@
    Programme du cycle 2 (BO n° 41 du 31 octobre 2024), partie CP, grandeurs et mesures : se repérer
    dans la journée (matin, midi, après-midi, soir, nuit), lire l'heure en heures entières sur une
    horloge à aiguilles (la petite aiguille montre l'heure, la grande est sur le 12), placer les
-   aiguilles, une heure qui passe ; la semaine et ses jours.
+   aiguilles, une heure qui passe. Pour aller plus loin (Questionner le monde) : les jours de la semaine.
    Pensé pour être projeté : l'horloge dont la grande aiguille fait un tour.
    ============================================================ */
 (() => {
@@ -30,7 +30,7 @@ ${cm1Def(`${lig(H(7, '7 h'), H(10, '10 h'), H(12, 'midi'), H(4, '4 h'))}`, 'Exem
 ${cm1Regle('Pour dessiner une heure entière : je mets la <b>grande aiguille sur le 12</b>, puis la <b>petite aiguille sur le nombre de l\'heure</b>.')}
 ${cm1Rem('L\'après-midi, 2 heures s\'appelle aussi 14 heures : la petite aiguille fait deux fois le tour dans une journée. Au CP, on lit surtout les heures de 1 h à 12 h.')}
 
-${cm1Lecon(4, 'Les jours de la semaine')}
+${cpPlusLoin('les jours de la semaine (Questionner le monde)')}
 ${cm1Def(`Une semaine a <b>7 jours</b> :${lig(`<span class="cpn-cartes">${JOURS.map(j => `<span style="font-size:.95rem;">${j}</span>`).join('')}</span>`)}`, 'La semaine')}
 ${cm1Regle('Après dimanche, une nouvelle semaine commence : lundi. Hier, aujourd\'hui, demain : si aujourd\'hui c\'est mardi, hier c\'était lundi et demain ce sera mercredi.')}
 `,
@@ -61,7 +61,7 @@ ${cm1Demo('cp-m3-m-placer', 'Dessiner 9 heures', 'Dessine les aiguilles pour qu\
       cm1Redac('Une heure plus tard', '8 + 1 = 9', 'Dans une heure, il sera 9 heures.', lig(cpHorloge(8, 80), cpHorloge(9, 80)))],
     ['La récréation commence à 10 heures. Le film commence 2 heures plus tard. À quelle heure commence le film ?',
       cm1Redac('Heure du film', '10 + 2 = 12', 'Le film commence à 12 heures, à midi.', cpHorloge(12, 90))],
-    ['Aujourd\'hui, c\'est jeudi. Quel jour serons-nous demain ? Et quel jour était-ce hier ?',
+    ['Pour aller plus loin : aujourd\'hui, c\'est jeudi. Quel jour serons-nous demain ? Et quel jour était-ce hier ?',
       cm1Redac('Les jours', '', 'Demain, ce sera vendredi. Hier, c\'était mercredi.')],
     ['Range ces moments dans l\'ordre de la journée : le goûter, le petit-déjeuner, le dîner, le déjeuner.',
       cm1Redac('L\'ordre de la journée', '', 'Le petit-déjeuner (le matin), le déjeuner (à midi), le goûter (l\'après-midi), le dîner (le soir).')],
@@ -73,7 +73,7 @@ ${cm1Demo('cp-m3-m-placer', 'Dessiner 9 heures', 'Dessine les aiguilles pour qu\
   quiz: [
     { q: `Quelle heure est-il ?${lig(cpHorloge(4, 100))}`, opts: ['12 heures', '4 heures', '5 heures'], correct: 1 },
     { q: 'La petite aiguille montre…', opts: ['les heures', 'les minutes', 'les jours'], correct: 0 },
-    { q: 'Combien y a-t-il de jours dans une semaine ?', opts: ['5', '7', '12'], correct: 1 },
+    { q: 'Il est 3 h. Dans une heure, il sera…', opts: ['2 h', '4 h', '13 h'], correct: 1 },
   ],
   flash: [
     { l: 1, q: 'On déjeune à…', r: ['minuit', 'midi', 'matin', 'soir'], ok: 1 },
@@ -81,8 +81,6 @@ ${cm1Demo('cp-m3-m-placer', 'Dessiner 9 heures', 'Dessine les aiguilles pour qu\
     { l: 2, q: `Quelle heure ?${lig(cpHorloge(1, 90))}`, r: ['12 h', '1 h', '2 h', '11 h'], ok: 1 },
     { l: 3, q: 'Pour une heure entière, la grande aiguille est sur…', r: ['le 6', 'le 12', 'le 1', 'l\'heure'], ok: 1 },
     { l: 3, q: 'Il est 3 h. Dans une heure, il sera…', r: ['2 h', '4 h', '13 h', '3 h'], ok: 1 },
-    { l: 4, q: 'Après mardi, c\'est…', r: ['lundi', 'mercredi', 'jeudi', 'dimanche'], ok: 1 },
-    { l: 4, q: 'Avant samedi, c\'est…', r: ['dimanche', 'vendredi', 'jeudi', 'lundi'], ok: 1 },
   ],
 });
 })();

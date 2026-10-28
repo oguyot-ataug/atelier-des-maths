@@ -54,5 +54,14 @@ PLANCHES['cp|Ajouter et soustraire des dizaines'] = [
       { etoiles: 2, col: 1, consigne: 'Complète.',
         ...P3.rmp([['J\'ai 40 €, je dépense 10 €. Il me reste @ €.', 30], ['J\'ai 52 billes, j\'en gagne 20. J\'en ai @.', 72]], 2) },
     ] },
+  { titre: 'Doubles et moitiés des dizaines', duree: '20 min',
+    attendus: ['Connaître les doubles de 20, 30, 40, 50 et les moitiés de 40, 60, 80, 100', 'Trouver la moitié d\'un nombre pair en décomposant'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'Complète.', ...P3.rmp([['Le double de 20 : @', 40], ['Le double de 30 : @', 60], ['Le double de 50 : @', 100]], 2) },
+      { etoiles: 1, col: 1, consigne: 'Complète.', ...P3.rmp([['La moitié de 40 : @', 20], ['La moitié de 80 : @', 40], ['La moitié de 100 : @', 50]], 2) },
+      { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['Le double de @ = 12', 6], ['La moitié de @ = 8', 16], ['Le double de 40 = @', 80]], 2) },
+      { etoiles: 3, cahier: true, consigne: 'Trouve la moitié de 46 : la moitié de 40, puis la moitié de 6.', corr: cm1Redac('Moitié de 46', { suite: ['la moitié de 40 : 20', 'la moitié de 6 : 3', '20 + 3 = 23'] }, 'La moitié de 46, c\'est 23.') },
+      { etoiles: 3, col: 1, consigne: 'Complète.', ...P3.rmp([['La moitié de 64 : @', 32], ['La moitié de 28 : @', 14]], 2) },
+    ] },
 ];
 })();

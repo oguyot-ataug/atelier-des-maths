@@ -1,7 +1,7 @@
-/* CE1 · Planches : Longueurs : le centimètre et le mètre (M1). */
+/* CE1 · Planches : Longueurs : centimètre, mètre, kilomètre (M1). */
 (() => {
 const { lig, compte, cadre } = PCP, B = P3.B, R = P3.R;
-PLANCHES['ce1|Longueurs : le centimètre et le mètre'] = [
+PLANCHES['ce1|Longueurs : centimètre, mètre, kilomètre'] = [
   { titre: 'Mesurer en centimètres', duree: '20 min',
     attendus: ['Mesurer un segment en centimètres avec une règle'],
     exos: [
@@ -30,6 +30,15 @@ PLANCHES['ce1|Longueurs : le centimètre et le mètre'] = [
       { etoiles: 2, consigne: 'Mesure les deux segments. Combien le plus long mesure-t-il de plus ?',
         eleve: plGrille([cpRegle(10, { seg: 5, K: 20 }), cpRegle(10, { seg: 9, K: 20 })], 2) + lig('Le plus long mesure ' + B(2) + ' cm de plus.'),
         corr: plGrille([cpRegle(10, { seg: 5, K: 20 }) + '<br>' + R('5 cm'), cpRegle(10, { seg: 9, K: 20 }) + '<br>' + R('9 cm')], 2) + lig('Le plus long mesure ' + R(4) + ' cm de plus.') },
+    ] },
+  { titre: 'Le kilomètre', duree: '20 min',
+    attendus: ['Connaître 1 km = 1 000 m et 1 m = 100 cm', 'Choisir l\'unité adaptée (cm, m, km)'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'Complète.', ...P3.rmp([['1 km = @ m', '1 000'], ['1 m = @ cm', 100], ['2 km = @ m', '2 000']], 3) },
+      { etoiles: 1, col: 1, consigne: 'Entoure l\'unité qui convient.', ...P3.chx([['Une trousse mesure 20 …', 'cm', 'cm · m · km'], ['La cour de l\'école mesure 40 …', 'm', 'cm · m · km'], ['De Paris à Lyon : 470 …', 'km', 'cm · m · km']]) },
+      { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['1 m + 46 cm = @ cm', 146], ['2 m + 5 cm = @ cm', 205], ['300 cm = @ m', 3]], 3) },
+      { etoiles: 2, col: 1, consigne: 'Entoure la longueur qui convient.', ...P3.chx([['La longueur d\'une trousse :', '20 cm', '2 cm · 20 cm · 2 m'], ['La hauteur d\'une porte :', '2 m', '2 cm · 2 m · 2 km'], ['Une heure de marche :', '4 km', '4 m · 40 m · 4 km']]) },
+      { etoiles: 3, cahier: true, consigne: 'Pour aller à la piscine, Zoé marche 600 m, puis prend le bus sur 2 km. Combien de mètres parcourt-elle en tout ?', corr: cm1Redac('Trajet de Zoé', { suite: ['2 km = 2 000 m', '2 000 + 600 = 2 600'] }, 'Zoé parcourt 2 600 m.') },
     ] },
 ];
 })();

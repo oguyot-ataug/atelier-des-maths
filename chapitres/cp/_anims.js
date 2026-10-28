@@ -19,6 +19,8 @@
 const CP_MOTS = ['zéro', 'un', 'deux', 'trois', 'quatre', 'cinq', 'six', 'sept', 'huit', 'neuf', 'dix'];
 const CPC = { jeton: '#E35D3A', jeton2: '#2EA8C9', case: '#FFF7E8', bord: '#1F3A5C', pomme: '#D93A2B', feuille: '#3E9B4F' };
 const cpSvg = (w, h, s, px) => `<svg class="pl-libre" viewBox="0 0 ${w} ${h}" style="width:${px || w}px;max-width:100%;display:inline-block;vertical-align:middle;">${s}</svg>`;
+// « Pour aller plus loin » : notion du CE1 (ou d'après : vers = 'CE2'), en fin de chapitre, hors programme du CP.
+const cpPlusLoin = (titre, vers) => `<div class="sub-header" data-oliv-plus="En route vers le ${vers || 'CE1'} !"><span class="letter">+</span><h4>Pour aller plus loin : ${titre}</h4></div>`;
 
 /* ---- Points du dé (grille 3 × 3) ---- */
 const CP_DE = { 1: [[1, 1]], 2: [[0, 0], [2, 2]], 3: [[0, 0], [1, 1], [2, 2]], 4: [[0, 0], [2, 0], [0, 2], [2, 2]],
@@ -498,7 +500,7 @@ function cpAnimDouble(id, o){
   return cmAnim(id, {
     etat: { mode: o.mode || 'double', n: o.n || 4 }, duree: 7000,
     legende: o.legende || 'Double : la même quantité apparaît en face, comme dans un miroir. Moitié : on partage en deux parts égales.',
-    controles: a => `<div class="cmp-modeles">${cmBtn(id, 'mode', 'double', 'Le double', a.etat.mode === 'double')}${cmBtn(id, 'mode', 'moitie', 'La moitié', a.etat.mode === 'moitie')}${cmPlusMoins(id, 'n', a.etat.n, 1, 10, a.etat.mode === 'double' ? 'Nombre' : 'Moitié de 2 ×')}</div>`,
+    controles: a => `<div class="cmp-modeles">${cmBtn(id, 'mode', 'double', 'Le double', a.etat.mode === 'double')}${cmBtn(id, 'mode', 'moitie', 'La moitié', a.etat.mode === 'moitie')}${cmPlusMoins(id, 'n', a.etat.n, 1, 10, a.etat.mode === 'double' ? 'Nombre' : 'Dans chaque part')}</div>`,
     dessin: (t, a) => {
       const { mode, n } = a.etat, k = cmDoux(cmPhase(t, .2, .65)), P = 30;
       const pos = (i, cote) => [cote < 0 ? 230 - 22 - (i % 5) * P : 270 + 22 + (i % 5) * P, 50 + Math.floor(i / 5) * P];

@@ -3,7 +3,9 @@
    Programme du cycle 2 (BO n° 41 du 31 octobre 2024), partie CE1 : comparer deux nombres jusqu'à
    1 000 (d'abord les centaines, puis les dizaines, puis les unités) avec les signes < et > ; ranger
    dans l'ordre croissant ou décroissant ; encadrer un nombre entre deux dizaines ou deux centaines
-   consécutives ; situer un nombre sur une droite graduée.
+   consécutives ; situer un nombre sur une droite graduée ; les expressions « égal à », « supérieur
+   à », « inférieur à », « compris entre … et … » ; ordonner jusqu'à cinq nombres (234, 243, 239, 300,
+   229) ; intercaler les nombres manquants d'une bande numérique.
    Pensé pour être projeté : les plaques, barres et cubes côte à côte, le crocodile des signes.
    ============================================================ */
 (() => {
@@ -32,6 +34,8 @@ ${cm1Rem('Encadrer, c\'est dire « entre quels nombres » se trouve un nombre. S
 
 ${cm1Lecon(4, 'Le nombre d\'avant, le nombre d\'après')}
 ${cm1Regle(`${cm1Liste(['Juste avant 400 : 399.', 'Juste après 499 : 500.', '10 de plus que 295 : 305.', '100 de moins que 620 : 520.'])}`, 'À savoir')}
+${cm1Def(`${cm1Tableau(['On écrit', 'On lit'], [['325 &gt; 289', '325 est <b>supérieur à</b> 289'], ['289 &lt; 325', '289 est <b>inférieur à</b> 325'], ['400 = 400', '400 est <b>égal à</b> 400'], ['390 &lt; 394 &lt; 400', '394 est <b>compris entre</b> 390 et 400']])}`, 'Les mots pour comparer')}
+${cm1Exemple('Les nombres manquants de la bande :', ['391, 392, 393, <b>394</b>, <b>395</b>, 396, 397, 398'])}
 `,
   methode: `
 ${cm1Demo('ce1-n5-m-comparer', 'Comparer 528 et 582', 'Écris le bon signe : 528 … 582.')}
@@ -62,6 +66,10 @@ ${cm1Demo('ce1-n5-m-encadrer', 'Encadrer 763', 'Encadre 763 entre deux dizaines,
       cm1Redac('Encadrer 586', '580 &lt; 586 &lt; 590', '586 est entre 580 et 590.')],
     ['Encadre 349 entre deux centaines.',
       cm1Redac('Encadrer 349', '300 &lt; 349 &lt; 400', '349 est entre 300 et 400.')],
+    ['Range dans l\'ordre croissant : 234, 243, 239, 300, 229.',
+      cm1Redac('Ordre croissant', '229 &lt; 234 &lt; 239 &lt; 243 &lt; 300', 'Du plus petit au plus grand : 229, 234, 239, 243, 300.')],
+    ['Écris trois nombres compris entre 590 et 600.',
+      cm1Redac('Nombres compris entre 590 et 600', '591 ; 595 ; 598', 'Par exemple 591, 595 et 598 : ils sont supérieurs à 590 et inférieurs à 600.')],
     ['Le château A a 385 marches, le château B en a 358. Lequel en a le plus ?',
       cm1Redac('Les marches', '385 &gt; 358', 'C\'est le château A qui a le plus de marches.')],
   ]),
@@ -81,6 +89,8 @@ ${cm1Demo('ce1-n5-m-encadrer', 'Encadrer 763', 'Encadre 763 entre deux dizaines,
     { l: 3, q: '475 est entre…', r: ['470 et 480', '400 et 450', '480 et 490', '47 et 48'], ok: 0 },
     { l: 4, q: 'Juste après 599 :', r: ['600', '5910', '598', '601'], ok: 0 },
     { l: 4, q: '100 de plus que 350 :', r: ['450', '360', '351', '250'], ok: 0 },
+    { l: 4, q: '« 512 est supérieur à 498 » s\'écrit…', r: ['512 &gt; 498', '512 &lt; 498', '512 = 498', '498 &gt; 512'], ok: 0 },
+    { l: 4, q: 'Un nombre compris entre 340 et 350 :', r: ['347', '354', '304', '330'], ok: 0 },
   ],
 });
 })();

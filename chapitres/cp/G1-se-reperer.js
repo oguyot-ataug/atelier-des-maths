@@ -86,6 +86,11 @@ ${cm1Def(`Un <b>quadrillage</b> est fait de cases. Une flèche dit d'avancer d'<
 ${animChemin('cp-g1-chemin')}
 ${cm1Regle(`Pour suivre un code, je lis les flèches <b>une par une</b>, dans l'ordre, et j'avance d'une case à chaque flèche.${lig(quad(5, 3, [['souris', 0, 2], ['fromage', 3, 0]], { chemin: suivre([0, 2], 'dddhh') }))}<p style="text-align:center;margin:2px 0;">Code : ${code('dddhh')}</p>`)}
 ${cm1Astuce('On peut jouer en vrai : un élève est le « robot » sur le carrelage de la cour ou un grand quadrillage au sol, un autre lui montre les flèches. Le robot n\'avance que d\'une case par flèche !')}
+
+${cm1Lecon(5, 'Le plan de la classe')}
+${cm1Def(`${lig(cpSvg(320, 200, `<rect x="4" y="4" width="312" height="192" fill="#FFF7E8" stroke="${CPC.bord}" stroke-width="3"/><rect x="120" y="10" width="80" height="14" fill="#2E9C6A"/>${ce2T(160, 40, 'tableau', { t: 12 })}${[0, 1, 2].map(r => [0, 1].map(c => `<rect x="${50 + c * 140}" y="${70 + r * 42}" width="80" height="24" fill="#B07A45" stroke="#6B4423"/>`).join('')).join('')}<circle cx="90" cy="82" r="8" fill="#E35D3A"/><rect x="250" y="190" width="50" height="8" fill="#fff"/>${ce2T(275, 186, 'porte', { t: 11 })}<rect x="10" y="60" width="14" height="100" fill="#9FD3F0"/>${ce2T(17, 176, 'fenêtres', { t: 10 })}`, 280))}<p style="text-align:center;margin:2px 0;">Un <b>plan</b>, c'est la classe vue <b>de dessus</b>, en tout petit. Les tables sont des rectangles. Le point rouge montre la place de Léo : au premier rang, du côté des fenêtres.</p>`, 'Le plan')}
+${cm1Regle(`Pour se déplacer dans la classe, on donne des instructions :${cm1Liste(['avancer, reculer ;', 'tourner à droite, tourner à gauche ;', 'monter, descendre (un escalier).'])}<p style="text-align:center;margin:2px 0;">« Avance de deux pas, tourne à droite, recule de trois pas. »</p>`, 'Se déplacer')}
+${cm1Rem('Au tableau : cacher un objet dans la classe et marquer sa place sur le plan ; un élève le retrouve. Puis tracer sur le plan le chemin qu\'on vient de faire.')}
 `,
   methode: `
 ${cm1Demo('cp-g1-m-ou', 'Dire où se trouve un objet', 'Où est le cœur ? Dis-le avec une phrase.')}
@@ -119,6 +124,8 @@ ${cm1Demo('cp-g1-m-code', 'Suivre un code de flèches', 'La souris part de sa ca
       cm1Redac('Le chemin de la souris', '', 'Trois cases à droite, puis une en haut : la souris arrive au fromage.', quad(5, 3, [['souris', 3, 1]], { chemin: suivre([0, 2], 'dddh'), px: 170 }))],
     [`Écris un code de flèches pour amener la souris au fromage.${lig(quad(5, 3, [['souris', 0, 0], ['fromage', 4, 2]]))}`,
       cm1Redac('Un code pour la souris', `${code('ddddbb')}`, 'Quatre cases à droite, puis deux en bas : la souris arrive au fromage. (D\'autres codes marchent aussi, par exemple deux en bas puis quatre à droite.)', quad(5, 3, [['souris', 0, 0], ['fromage', 4, 2]], { chemin: suivre([0, 0], 'ddddbb'), px: 170 }))],
+    [`Sur le plan, où est assis Léo (le point rouge) ?${lig(cpSvg(320, 200, `<rect x="4" y="4" width="312" height="192" fill="#FFF7E8" stroke="${CPC.bord}" stroke-width="3"/><rect x="120" y="10" width="80" height="14" fill="#2E9C6A"/>${ce2T(160, 40, 'tableau', { t: 12 })}${[0, 1, 2].map(r => [0, 1].map(c => `<rect x="${50 + c * 140}" y="${70 + r * 42}" width="80" height="24" fill="#B07A45" stroke="#6B4423"/>`).join('')).join('')}<circle cx="90" cy="82" r="8" fill="#E35D3A"/><rect x="250" y="190" width="50" height="8" fill="#fff"/>${ce2T(275, 186, 'porte', { t: 11 })}<rect x="10" y="60" width="14" height="100" fill="#9FD3F0"/>${ce2T(17, 176, 'fenêtres', { t: 10 })}`, 280))}`,
+      cm1Redac('La place de Léo', '', 'Léo est assis au premier rang, près des fenêtres, à gauche du tableau.')],
   ]),
   histoire: cm1Histoire('Un peu d\'histoire : une tortue qui suit des ordres', [
     'Il y a environ 2 500 ans, à <b>Babylone</b> (dans l\'actuel Irak), quelqu\'un a dessiné une carte du monde sur une petite tablette d\'argile. Les cartes servent à dire <b>où</b> sont les choses et comment y aller.',
@@ -130,6 +137,8 @@ ${cm1Demo('cp-g1-m-code', 'Suivre un code de flèches', 'La souris part de sa ca
     { q: `La souris suit ${code('ddb')}. Où arrive-t-elle ?${lig(quad(3, 2, [['souris', 0, 0], ['etoile', 2, 1], ['coeur', 2, 0]]))}`, opts: ['Sur le cœur', 'Sur l\'étoile', 'Elle ne bouge pas'], correct: 1 },
   ],
   flash: [
+    { l: 5, q: 'Un plan, c\'est la classe vue…', r: ['de dessus', 'de côté', 'de dessous', 'de loin'], ok: 0 },
+    { l: 5, q: 'Le contraire d\'« avancer » :', r: ['reculer', 'monter', 'tourner', 'sauter'], ok: 0 },
     { l: 1, q: `Où est le chat ?${lig(scene(1, 170))}`, r: ['Sur la table', 'Sous la table', 'Devant la table', 'Loin'], ok: 1 },
     { l: 1, q: `Où est le chat ?${lig(scene(2, 170))}`, r: ['Derrière la table', 'Devant la table', 'Sur la table', 'Sous la table'], ok: 1 },
     { l: 2, q: `Qui est entre Lou et Noé ?${lig(file(['Lou', 'Sam', 'Noé'], ['#E35D3A', '#2E9C6A', '#2EA8C9']))}`, r: ['Lou', 'Sam', 'Noé', 'Personne'], ok: 1 },

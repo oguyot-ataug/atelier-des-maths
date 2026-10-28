@@ -1,6 +1,6 @@
-/* CE1 · Planches : Calcul mental : stratégies jusqu'à 100 (N14). */
+/* CE1 · Planches : Calcul mental : stratégies jusqu'à 1 000 (N14). */
 (() => {
-PLANCHES['ce1|Calcul mental : stratégies jusqu\'à 100'] = [
+PLANCHES['ce1|Calcul mental : stratégies jusqu\'à 1 000'] = [
   { titre: 'Ajouter 9, 11, 19', duree: '20 min',
     attendus: ['Ajouter 9 (ou 19) en ajoutant 10 (ou 20) puis en enlevant 1', 'Ajouter 11 en ajoutant 10 puis 1'],
     exos: [
@@ -30,6 +30,27 @@ PLANCHES['ce1|Calcul mental : stratégies jusqu\'à 100'] = [
       { etoiles: 3, col: 1, consigne: 'Complète pour aller à 100 en deux sauts.', ...P3.rmp([['47 + @ = 50', 3], ['50 + @ = 100', 50], ['Donc 47 + @ = 100', 53]], 2) },
       { etoiles: 1, col: 1, consigne: 'Complète pour faire 100.', ...P3.rmp([['90 + @ = 100', 10], ['55 + @ = 100', 45], ['25 + @ = 100', 75], ['99 + @ = 100', 1]], 2) },
       { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['100 − 30 = @', 70], ['100 − 45 = @', 55], ['100 − 8 = @', 92]], 2) },
+    ] },
+  { titre: 'Dizaines, centaines, passer par la dizaine', duree: '20 min',
+    attendus: ['Ajouter ou soustraire des dizaines ou des centaines entières', 'Soustraire un petit nombre en passant par la dizaine inférieure'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'Calcule.', ...P3.rmp([['234 + 60 = @', 294], ['541 − 20 = @', 521], ['354 + 500 = @', 854], ['765 − 200 = @', 565]], 2) },
+      { etoiles: 2, col: 1, consigne: 'Calcule.', ...P3.rmp([['746 + 80 = @', 826], ['385 + 40 = @', 425], ['612 − 30 = @', 582]], 2) },
+      { etoiles: 1, col: 1, consigne: 'Calcule.', ...P3.rmp([['157 − 5 = @', 152], ['248 − 6 = @', 242], ['389 − 4 = @', 385]], 2) },
+      { etoiles: 2, cahier: true, consigne: 'Calcule 523 − 7 en passant par 520.', corr: cm1Redac('523 − 7', { suite: ['523 − 3 = 520', '520 − 4 = 516'] }, 'Donc 523 − 7 = 516.') },
+      { etoiles: 3, col: 1, consigne: 'Calcule.', ...P3.rmp([['432 − 5 = @', 427], ['301 − 4 = @', 297], ['654 − 8 = @', 646]], 2) },
+      { etoiles: 2, col: 1, consigne: 'Calcule.', ...P3.rmp([['358 + 29 = @', 387], ['470 + 19 = @', 489], ['126 − 9 = @', 117]], 2) },
+    ] },
+  { titre: 'Doubles, moitiés et multiplications', duree: '20 min',
+    attendus: ['Connaître des doubles et des moitiés', 'Connaître les multiples de 25', 'Multiplier par 10', 'Calculer 13 × 7 en décomposant'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'Complète.', ...P3.rmp([['Le double de 150 : @', 300], ['Le double de 45 : @', 90], ['La moitié de 80 : @', 40], ['La moitié de 600 : @', 300]], 2) },
+      { etoiles: 1, consigne: 'Colorie la moitié des jetons. Combien en as-tu colorié ?', eleve: PCP.lig(cpJetons(14, 0, Array(14).fill('#fff'))) + PCP.lig(P3.B(2)), corr: PCP.lig(cpJetons(14, 0, cpBleus(7, 7))) + PCP.lig('La moitié de 14 : ' + P3.R(7)) },
+      { etoiles: 2, cahier: true, consigne: 'Trouve la moitié de 470 en décomposant 470.', corr: cm1Redac('Moitié de 470', { suite: ['470 = 400 + 70', '200 + 35 = 235'] }, 'La moitié de 470, c\'est 235.') },
+      { etoiles: 1, col: 1, consigne: 'Complète.', ...P3.rmp([['2 × 25 = @', 50], ['3 × 25 = @', 75], ['100 = 4 × @', 25], ['1 000 = 2 × @', 500]], 2) },
+      { etoiles: 2, col: 1, consigne: 'Multiplie par 10.', ...P3.rmp([['10 × 72 = @', 720], ['10 × 45 = @', 450], ['10 × 9 = @', 90], ['10 × 60 = @', 600]], 2) },
+      { etoiles: 3, cahier: true, consigne: 'Calcule 13 × 7 : 10 fois 7 plus 3 fois 7.', corr: cm1Redac('13 × 7', { lignes: ['10 × 7 + 3 × 7', '70 + 21', '91'] }, '13 × 7 = 91.') },
+      { etoiles: 3, col: 1, consigne: 'Calcule en décomposant.', ...P3.rmp([['12 × 5 = @', 60], ['15 × 4 = @', 60], ['6 × 14 = @', 84]], 2) },
     ] },
 ];
 })();

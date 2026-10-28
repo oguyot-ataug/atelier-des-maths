@@ -355,3 +355,19 @@ function cm1AnimPerimetre(id, o){
       return { scene: `<svg viewBox="0 -6 ${W} ${(yL + 1.4) * K + 10}" class="cma-svg" style="max-width:${W}px;">${s}</svg>`, texte };
     } });
 }
+
+/* ---- Assemblage de cubes en perspective cavalière (CE1 G4, CM1 G4, 5e Puissances, 4e Espace) ---- */
+// Assemblage de cubes en perspective cavalière : liste de [x, y, z] (x vers la droite, y vers le haut, z vers le fond).
+function cmCubes(L, px){
+  const c = 30, d = 14, X = (x, z) => 10 + x * c + z * d, Y = (y, z) => 10 + 4 * c - y * c - z * d;
+  const tri = L.slice().sort((a, b) => b[2] - a[2] || a[1] - b[1] || a[0] - b[0]);
+  let s = '';
+  tri.forEach(([x, y, z]) => {
+    const fx = X(x, z), fy = Y(y, z) - c;
+    s += `<polygon points="${fx},${fy} ${fx + d},${fy - d} ${fx + c + d},${fy - d} ${fx + c},${fy}" fill="#BFE3EE" stroke="#1F3A5C" stroke-width="1.5"/>`
+      + `<polygon points="${fx + c},${fy} ${fx + c + d},${fy - d} ${fx + c + d},${fy + c - d} ${fx + c},${fy + c}" fill="#5FB7D0" stroke="#1F3A5C" stroke-width="1.5"/>`
+      + `<rect x="${fx}" y="${fy}" width="${c}" height="${c}" fill="#8ACFE2" stroke="#1F3A5C" stroke-width="1.5"/>`;
+  });
+  const mx = Math.max(...L.map(([x, , z]) => X(x + 1, z))) + d + 10, my = Y(0, 0) + 10;
+  return `<svg class="pl-libre" viewBox="0 0 ${mx} ${my}" style="width:${px || 150}px;max-width:100%;display:inline-block;vertical-align:middle;">${s}</svg>`;
+}

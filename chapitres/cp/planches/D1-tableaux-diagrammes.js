@@ -48,5 +48,11 @@ PLANCHES['cp|Tableaux et diagrammes en barres'] = [
       { etoiles: 2, consigne: 'Colorie les barres : chat 5, chien 3, lapin 6.',
         eleve: lig(barres([['chat', 5, '#E9C46A'], ['chien', 3, '#B07A45'], ['lapin', 6, '#C7D2DE']], 8, true)), corr: lig(barres([['chat', 5, '#E9C46A'], ['chien', 3, '#B07A45'], ['lapin', 6, '#C7D2DE']], 8)) },
     ] },
+  { titre: 'Le tableau à double entrée', duree: '20 min',
+    attendus: ['Compléter un tableau à double entrée', 'Trouver le contenu d\'une case au croisement d\'une ligne et d\'une colonne'],
+    exos: [
+      { etoiles: 1, consigne: 'Dessine dans chaque case la forme de la ligne, avec la couleur de la colonne.', eleve: cm1Tableau(['', 'rouge', 'bleu'], [['<b>carré</b>', '', ''], ['<b>disque</b>', '', ''], ['<b>triangle</b>', '', '']]), corr: cm1Tableau(['', 'rouge', 'bleu'], [['<b>carré</b>', cpSvg(40, 40, `<rect x="6" y="6" width="28" height="28" fill="#E35D3A"/>`, 30), cpSvg(40, 40, `<rect x="6" y="6" width="28" height="28" fill="#2EA8C9"/>`, 30)], ['<b>disque</b>', cpSvg(40, 40, `<circle cx="20" cy="20" r="14" fill="#E35D3A"/>`, 30), cpSvg(40, 40, `<circle cx="20" cy="20" r="14" fill="#2EA8C9"/>`, 30)], ['<b>triangle</b>', cpSvg(40, 40, `<polygon points="20,5 36,34 4,34" fill="#E35D3A"/>`, 30), cpSvg(40, 40, `<polygon points="20,5 36,34 4,34" fill="#2EA8C9"/>`, 30)]]) },
+      { etoiles: 2, col: 1, consigne: 'Regarde le tableau des goûters et complète.', eleve: cm1Tableau(['', 'filles', 'garçons'], [['<b>pomme</b>', '4', '3'], ['<b>gâteau</b>', '6', '7']]) + plListe(['Les garçons qui ont pris un gâteau : ' + B(2), 'Les filles qui ont pris une pomme : ' + B(2)]), corr: cm1Tableau(['', 'filles', 'garçons'], [['<b>pomme</b>', '4', '3'], ['<b>gâteau</b>', '6', '7']]) + plListe(['Les garçons qui ont pris un gâteau : ' + R(7), 'Les filles qui ont pris une pomme : ' + R(4)]) },
+    ] },
 ];
 })();

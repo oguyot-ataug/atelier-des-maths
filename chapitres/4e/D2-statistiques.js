@@ -34,6 +34,24 @@ const ST4_LIVRES_TAB = [[0, 2], [1, 4], [2, 6], [3, 4], [4, 4], [5, 3], [6, 1]];
 const ST4_TEMPS = [38, 41, 35, 44, 39, 36, 47, 40, 42];
 const ST4_MED_VB = '0 0 560 204'; // figure de la méthode 2 (médiane animée)
 
+// Diagramme circulaire qui se construit secteur par secteur (âges des adhérents du club d'échecs, attendus de fin de 4e).
+function st4Camembert(id){
+  const D = [['11 ans', 5, '#2EA8C9'], ['13 ans', 20, '#E35D3A'], ['14 ans', 9, '#E9C46A'], ['15 ans', 2, '#2E9C6A']], tot = 36;
+  return cmAnim(id, { duree: 8000, legende: 'Chaque secteur a un angle proportionnel à l\'effectif : 10° par adhérent.',
+    dessin: t => {
+      const cx = 150, cy = 140, r = 110; let a0 = -90, s = '', vus = 0, txt = 'Le disque entier : les 36 adhérents, 360°.';
+      D.forEach(([nom, n, c], i) => {
+        const k = cmPhase(t, .1 + i * .2, .28 + i * .2); if(k <= 0) return;
+        const ang = n * 360 / tot * k, a1 = a0 + ang, rad = x => x * Math.PI / 180;
+        s += `<path d="M${cx} ${cy} L${(cx + r * Math.cos(rad(a0))).toFixed(1)} ${(cy + r * Math.sin(rad(a0))).toFixed(1)} A${r} ${r} 0 ${ang > 180 ? 1 : 0} 1 ${(cx + r * Math.cos(rad(a1))).toFixed(1)} ${(cy + r * Math.sin(rad(a1))).toFixed(1)} Z" fill="${c}" fill-opacity=".8" stroke="#fff" stroke-width="2"/>`;
+        if(k >= 1){ const am = rad(a0 + ang / 2); s += `<text x="${(cx + r * .62 * Math.cos(am)).toFixed(1)}" y="${(cy + r * .62 * Math.sin(am) + 5).toFixed(1)}" text-anchor="middle" font-size="13" font-weight="700" fill="#1C1B2E" font-family="Space Grotesk">${n * 10}°</text>`; vus = i + 1; txt = `${nom} : ${n} adhérents, donc ${n} × 10 = <b>${n * 10}°</b>.`; }
+        a0 = a1; });
+      s += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#1C1B2E" stroke-width="2"/>`;
+      D.forEach(([nom, , c], i) => { s += `<rect x="290" y="${70 + i * 30}" width="16" height="16" fill="${c}" opacity="${i < vus ? 1 : .25}"/><text x="314" y="${83 + i * 30}" font-size="14" fill="#1C1B2E" font-family="Space Grotesk">${nom}</text>`; });
+      return { scene: `<svg viewBox="0 0 400 280" class="cma-svg" style="max-width:420px;">${s}</svg>`, texte: t >= .92 ? 'Les quatre secteurs remplissent le disque : 50 + 200 + 90 + 20 = 360°.' : txt };
+    } });
+}
+
 document.getElementById('cours-demo-statistiques-4e').innerHTML = `
 <div class="lesson-header"><span class="num">1</span><h3>La moyenne pondérée</h3></div>
 <span class="def-badge">Définition</span>
@@ -90,6 +108,17 @@ ${r4Ex('', [
   ['La médiane de la série est 2,5 livres : la moitié des élèves ont lu 2 livres ou moins, l\'autre moitié 3 livres ou plus.', 'On conclut par une phrase.'],
 ])}
 <div class="redaction-note" ${R4_REM}>Remarques : la médiane n'est pas toujours une valeur de la série (ici 2,5). Elle est <b>peu sensible aux valeurs extrêmes</b> : si le nageur le plus lent avait mis 80 s au lieu de 47 s, la médiane serait toujours 40 s, alors que la moyenne passerait d'environ 40,2 s à environ 43,9 s.</div>
+
+<div class="lesson-header"><span class="num">3</span><h3>Le diagramme circulaire</h3></div>
+<span class="def-badge">Définition</span>
+<div class="def-box">Dans un <b>diagramme circulaire</b>, le disque représente l'effectif total. Chaque valeur est représentée par un <b>secteur</b> dont l'angle est <b>proportionnel</b> à son effectif : l'effectif total correspond à 360°.</div>
+${st4Camembert('st4-cam')}
+<span class="prop-badge">Méthode</span>
+<div class="def-box">Pour construire le diagramme, on calcule l'angle de chaque secteur avec un tableau de proportionnalité :
+${st4Tab([['Âge (ans)', '11', '13', '14', '15', 'Total'], ['Effectif', '5', '20', '9', '2', '36'], ['Angle (°)', '50', '200', '90', '20', '360']], 2)}
+Ici, 36 adhérents correspondent à 360° : un adhérent correspond à <span class="tex">360 \\div 36 = 10</span>°. Puis on trace chaque angle au rapporteur, à la suite les uns des autres.</div>
+<p class="example-title">Lire un diagramme circulaire :</p>
+<ul class="example-list"><li>Le secteur des 13 ans occupe plus de la moitié du disque (200° &gt; 180°) : plus de la moitié des adhérents ont 13 ans.</li><li>Un quart de disque (90°) représente un quart de l'effectif : les 14 ans sont 9 sur 36.</li></ul>
 `;
 
 document.getElementById('histoire-demo-statistiques-4e').innerHTML = `
@@ -310,6 +339,7 @@ DEMO_REGISTRY['4e|Statistiques'] = {
     st4MoyenneDemo.reset(); st4MedDemo.init(); st4Analyser(); st4Extreme();
     ['cours-demo-statistiques-4e', 'exos-demo-statistiques-4e'].forEach(id => renderStaticMath(document.getElementById(id)));
     injectCourseAddButtons(document.getElementById('cours-demo-statistiques-4e'));
+    if(typeof cmAnimDessiner === 'function') cmAnimDessiner('st4-cam');
     injectCourseAddButtons(document.getElementById('methode-demo-statistiques-4e'));
   }
 };

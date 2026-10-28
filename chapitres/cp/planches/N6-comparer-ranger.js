@@ -59,5 +59,14 @@ PLANCHES['cp|Comparer et ranger les nombres'] = [
         eleve: lig(cpBande(10, 20, { c: 26 })) + lig(B(2) + ' < 14 < ' + B(2)),
         corr: lig(cpBande(10, 20, { c: 26, on: [14] })) + lig(R(10) + ' < 14 < ' + R(20)) },
     ] },
+  { titre: 'Premier, deuxième… et les suites', duree: '20 min',
+    attendus: ['Utiliser les nombres ordinaux jusqu\'à vingtième', 'Continuer une suite répétitive'],
+    exos: [
+      { etoiles: 1, consigne: 'Colorie en rouge la troisième voiture et en bleu la cinquième (en partant de la gauche).', eleve: lig(cpSvg(420, 60, [0, 1, 2, 3, 4, 5].map(i => `<rect x="${14 + i * 68}" y="12" width="52" height="34" rx="8" fill="#fff" stroke="${CPC.bord}" stroke-width="2"/>`).join(''), 360)), corr: lig(cpSvg(420, 60, [0, 1, 2, 3, 4, 5].map(i => `<rect x="${14 + i * 68}" y="12" width="52" height="34" rx="8" fill="${i === 2 ? '#E35D3A' : i === 4 ? '#2EA8C9' : '#fff'}" stroke="${CPC.bord}" stroke-width="2"/>`).join(''), 360)) },
+      { etoiles: 1, col: 1, consigne: 'Complète.', ...P3.rmp([['Je suis le troisième de la file : devant moi, il y a @ personnes.', 2], ['Je suis le dixième : devant moi, il y a @ personnes.', 9]], 2) },
+      { etoiles: 2, col: 1, consigne: 'Dans la liste 2, 6, 10, 14, 18, complète.', ...P3.rmp([['Le quatrième nombre est @.', 14], ['10 est en @ position.', 'troisième']], 4) },
+      { etoiles: 2, consigne: 'Continue la suite.', ...PCP.suite(['△', '▢', '○', '△', '▢', '○', '@△', '@▢', '@○']) },
+      { etoiles: 3, col: 1, consigne: 'Complète.', ...P3.rmp([['ABABAB… La 12<sup>e</sup> lettre est @.', 'B'], ['ABABAB… La 19<sup>e</sup> lettre est @.', 'A'], ['1, 3, 5, 7, 9… Le septième nombre est @.', 13]], 2) },
+    ] },
 ];
 })();

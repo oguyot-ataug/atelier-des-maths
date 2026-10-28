@@ -104,3 +104,11 @@ fichier) ; la page est écrite par `tools/build-seo.js`.
   lettre du titre, jamais les deux-points) ; le calcul sur une ligne
   s'il tient, sinon « A = … » développé en colonne avec le résultat encadré ; puis une phrase de
   conclusion, systématiquement.
+
+## Conformité aux programmes : « Pour aller plus loin » (demandé le 28/10/2026)
+
+« Ce qui est hors programme peut être mis en "pour aller plus loin" » : une notion d'un niveau supérieur n'est
+pas supprimée mais placée en fin de chapitre sous un en-tête « Pour aller plus loin » (`ce1PlusLoin(titre, vers)`
+dans `chapitres/ce1/_anims.js`, ou le même `sub-header` avec `data-oliv-plus`), ses planches titrées « Pour aller
+plus loin : … », ses exercices préfixés « Pour aller plus loin : ». Ce qui manque au programme est ajouté au
+chapitre concerné. CE1 contrôlé en entier (build 1194).

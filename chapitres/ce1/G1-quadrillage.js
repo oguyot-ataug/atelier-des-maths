@@ -2,7 +2,9 @@
    CHAPITRE : Se repérer sur un quadrillage (CE1, G1, période 1)
    Programme du cycle 2 (BO n° 41 du 31 octobre 2024), partie CE1, espace et géométrie : repérer une
    case d'un quadrillage par une lettre (sa colonne) et un nombre (sa ligne), placer un objet dans
-   une case donnée, coder et décoder un déplacement avec des flèches, lire un plan simple (la classe).
+   une case donnée, coder et décoder un déplacement avec des flèches, lire un plan simple (la classe,
+   l'école), le vocabulaire des positions relatives (à gauche, à droite, sur, sous, entre, devant,
+   derrière, au-dessus, en dessous, près, loin). Pour aller plus loin : repérer un nœud.
    Pensé pour être projeté : la case trouvée au croisement de sa colonne et de sa ligne, le robot.
    ============================================================ */
 (() => {
@@ -57,8 +59,10 @@ ${cm1Regle('Chaque flèche fait avancer d\'une case. On lit le code dans l\'ordr
 ${cm1Lecon(3, 'Lire un plan')}
 ${cm1Def(`${lig(cpSvg(320, 200, `<rect x="4" y="4" width="312" height="192" fill="#FFF7E8" stroke="${CPC.bord}" stroke-width="3"/><rect x="120" y="10" width="80" height="14" fill="#2E9C6A"/>${ce2T(160, 40, 'tableau', { t: 12 })}${[0, 1, 2].map(r => [0, 1].map(c => `<rect x="${50 + c * 140}" y="${70 + r * 42}" width="80" height="24" fill="#B07A45" stroke="#6B4423"/>`).join('')).join('')}<rect x="250" y="190" width="50" height="8" fill="#fff"/>${ce2T(275, 186, 'porte', { t: 11 })}<rect x="10" y="60" width="14" height="100" fill="#9FD3F0"/>${ce2T(17, 176, 'fenêtres', { t: 10 })}`, 280))}${P('Un <b>plan</b>, c\'est la classe vue <b>de dessus</b>, en tout petit. Les tables sont des rectangles.')}`, 'Le plan de la classe')}
 ${cm1Rem('Faire dessiner le plan de la classe, puis y placer sa propre table. Où est la porte par rapport au tableau ?')}
+${cm1Regle(`Pour dire où se trouve un objet, on utilise des mots précis :${cm1Liste(['à gauche de, à droite de ;', 'sur, sous, entre, devant, derrière, au-dessus de, en dessous de ;', 'près de, loin de.'])}${P('« Sur le plan, la porte est <b>à droite</b> du tableau, <b>loin</b> des fenêtres. »')}`, 'Les mots pour se situer')}
+${cm1Rem('Plus tard dans l\'année : dessiner ensemble le plan de l\'école (la classe, la cantine, le bureau de la directrice ou du directeur), puis y tracer le chemin de la classe à la cour.')}
 
-${cm1Lecon(4, 'Repérer un nœud')}
+${ce1PlusLoin('repérer un nœud du quadrillage')}
 ${cm1Regle('Sur un quadrillage, on peut aussi se placer sur les <b>nœuds</b> (les croisements des lignes). Pour tracer une figure, on relie des nœuds à la règle.')}
 ${lig(cpQuadFig(6, 4, [[[[1, 3], [5, 3], [3, 1]], '#E9C46A']], { points: [[1, 3, 'A'], [5, 3, 'B'], [3, 1, 'C']] }))}
 `,
@@ -91,6 +95,8 @@ ${cm1Demo('ce1-g1-m-nommer', 'Nommer la case du cœur', 'Dans quelle case est le
       cm1Redac('Arrivée du robot', '', 'Deux cases à droite : C1 ; deux cases en bas : C3. Le robot arrive en C3.', grille(4, 3, [], { on: [[0, 0, '#C7E6F5'], [2, 2]], px: 160 }))],
     ['Écris le code pour aller de A3 à D1.',
       cm1Redac('Le code', cpCode('dddhh'), 'Trois cases à droite, puis deux vers le haut (les lignes 1 sont en haut).')],
+    ['Sur le plan de la classe, où est la porte par rapport au tableau ? Et par rapport aux fenêtres ?',
+      cm1Redac('La porte', '', 'La porte est à droite du tableau, en face ; elle est loin des fenêtres.')],
     ['Sur le plan d\'une classe, une table mesure 2 carreaux. Dans la vraie classe, est-elle plus grande ou plus petite que sur le plan ?',
       cm1Redac('Le plan', '', 'Dans la vraie classe, la table est bien plus grande : sur un plan, tout est dessiné en tout petit.')],
   ]),
@@ -107,6 +113,7 @@ ${cm1Demo('ce1-g1-m-nommer', 'Nommer la case du cœur', 'Dans quelle case est le
     { l: 1, q: `Quelle case ?${lig(grille(3, 3, [['coeur', 0, 2]], { px: 120 }))}`, r: ['A3', 'C1', '3A', 'A1'], ok: 0 },
     { l: 1, q: `Quelle case ?${lig(grille(3, 3, [['rond', 2, 0]], { px: 120 }))}`, r: ['C1', 'A3', 'B1', '1C'], ok: 0 },
     { l: 2, q: `Que fait ${cpCode('h')} ?`, r: ['Une case vers le haut', 'Une case vers le bas', 'Une case à droite', 'Rien'], ok: 0 },
+    { l: 3, q: 'Le contraire de « devant » :', r: ['derrière', 'dessus', 'loin', 'à gauche'], ok: 0 },
     { l: 3, q: 'Sur un plan, les objets sont…', r: ['plus petits qu\'en vrai', 'plus grands qu\'en vrai', 'de la même taille', 'invisibles'], ok: 0 },
   ],
 });

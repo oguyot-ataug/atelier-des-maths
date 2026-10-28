@@ -3,7 +3,8 @@
    Programme du cycle 2 (BO n° 41 du 31 octobre 2024), partie CE1, espace et géométrie et initiation à
    la pensée informatique : coder un déplacement avec des flèches (rappel du CP), puis programmer un
    robot qui avance et tourne sur place (quart de tour à gauche, à droite : déplacements relatifs) ;
-   lire, écrire, exécuter et corriger un programme ; repérer une suite d'instructions qui se répète.
+   lire, écrire, exécuter et corriger un programme (au plus quinze instructions, dont quatre virages).
+   Pour aller plus loin (cycle 3) : répéter une suite d'instructions.
    Pensé pour être projeté : la tortue qui avance et tourne, instruction après instruction.
    ============================================================ */
 (() => {
@@ -26,12 +27,13 @@ ${ce1AnimTortue('ce1-g5-tortue', { presets: [
   { nom: 'Un carré', nc: 6, nr: 5, dep: [1, 3], dir: 0, prog: 'AADAADAADAAD', fin: 'La tortue est revenue à son point de départ : elle a tracé un carré !' }] })}
 ${cm1Astuce('Pour savoir de quel côté tourner, on se met à la place du robot (on peut tourner la feuille, ou se lever et faire le robot !).')}
 
-${cm1Lecon(3, 'Des instructions qui se répètent')}
+${cm1Lecon(3, 'Trouver et corriger l\'erreur')}
+${cm1Regle('Quand le robot n\'arrive pas au bon endroit, on exécute le programme pas à pas, avec le doigt, pour trouver l\'instruction fautive : c\'est <b>déboguer</b>.')}
+${cm1Regle('Au CE1, un programme compte au plus une quinzaine d\'instructions, dont quatre virages au maximum.', 'Pour l\'enseignant')}
+
+${ce1PlusLoin('répéter des instructions', 'CM1')}
 ${cm1Regle(`Pour tracer un carré, la tortue répète 4 fois : ${ce1Instr('AAD')}${P('On peut l\'écrire plus court : <b>répéter 4 fois</b> [avance, avance, tourne à droite].')}`, 'Répéter')}
 ${cm1Rem('Sur ordinateur ou tablette (logiciels de programmation par blocs), on assemble ces instructions comme des pièces de puzzle. Les petits robots de sol fonctionnent de la même façon.')}
-
-${cm1Lecon(4, 'Trouver et corriger l\'erreur')}
-${cm1Regle('Quand le robot n\'arrive pas au bon endroit, on exécute le programme pas à pas, avec le doigt, pour trouver l\'instruction fautive : c\'est <b>déboguer</b>.')}
 `,
   methode: `
 ${cm1Demo('ce1-g5-m-executer', 'Exécuter un programme', 'La tortue regarde vers la droite. Où arrive-t-elle avec : avance, avance, tourne à gauche, avance ?')}
@@ -58,7 +60,7 @@ ${cm1Demo('ce1-g5-m-ecrire', 'Écrire un programme', 'La tortue regarde vers le 
       cm1Redac('Deux quarts de tour', '', 'Après deux quarts de tour, elle a fait un demi-tour : elle regarde vers le bas.')],
     ['Écris un programme pour que la tortue, qui regarde vers la droite, avance de 2 cases puis monte d\'une case.',
       cm1Redac('Le programme', ce1Instr('AAGA'), 'Avance, avance, tourne à gauche, avance.')],
-    ['Combien de fois faut-il répéter [avance, tourne à droite] pour revenir au départ ?',
+    ['Pour aller plus loin : combien de fois faut-il répéter [avance, tourne à droite] pour revenir au départ ?',
       cm1Redac('Répéter', '', 'Il faut le répéter 4 fois : la tortue fait le tour d\'un carré d\'une case de côté.')],
     ['Ce programme devait tracer un carré : avance, tourne à droite, avance, tourne à droite, avance, tourne à gauche, avance. Trouve l\'erreur.',
       cm1Redac('L\'erreur', '', 'La troisième rotation doit être « tourne à droite », pas « tourne à gauche » : pour un carré, on tourne toujours du même côté.')],
@@ -71,7 +73,7 @@ ${cm1Demo('ce1-g5-m-ecrire', 'Écrire un programme', 'La tortue regarde vers le 
   ]),
   quiz: [
     { q: '« Tourne à droite » : le robot…', opts: ['fait un quart de tour sur place', 'avance d\'une case à droite', 'recule'], correct: 0 },
-    { q: 'Pour tracer un carré, on répète…', opts: ['4 fois', '2 fois', '3 fois'], correct: 0 },
+    { q: 'Le robot regarde vers le haut et tourne à droite. Il regarde…', opts: ['vers la droite', 'vers la gauche', 'vers le bas'], correct: 0 },
     { q: 'Corriger un programme, c\'est…', opts: ['déboguer', 'dessiner', 'compter'], correct: 0 },
   ],
   flash: [

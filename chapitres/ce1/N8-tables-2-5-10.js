@@ -3,7 +3,7 @@
    Programme du cycle 2 (BO n° 41 du 31 octobre 2024), partie CE1, calcul : construire et mémoriser
    les tables de 2, 5 et 10 (compter de 2 en 2, de 5 en 5, de 10 en 10), les liens entre elles
    (la table de 2 donne les doubles, 5 × n est la moitié de 10 × n), les utiliser pour résoudre des
-   problèmes ; commencer à les savoir par cœur.
+   problèmes ; commencer à les savoir par cœur ; la parité (nombres pairs et impairs, jusqu'à 1 000).
    Pensé pour être projeté : la table qui se construit rangée par rangée.
    ============================================================ */
 (() => {
@@ -31,6 +31,11 @@ ${cm1Astuce('5 × 6, c\'est la moitié de 10 × 6 : la moitié de 60, c\'est 30.
 ${cm1Lecon(4, 'Utiliser les tables')}
 ${cm1Exemple('Exemple', [`Un billet de 5 €. Combien valent 7 billets de 5 € ?${cm1Redac('Valeur des billets', '7 × 5 = 35', '7 billets de 5 € valent 35 €.')}`])}
 ${cm1Rem('Pour apprendre une table : la réciter dans l\'ordre, puis dans le désordre, avec des cartes ou des jeux (le furet, la bataille des multiplications).')}
+
+${cm1Lecon(5, 'Nombres pairs, nombres impairs')}
+${cm1Def(`${lig(ce1Rangees(2, 4, { p: 24 }), ce1Rangees(2, 4, { p: 24 }) + cpSvg(30, 30, `<circle cx="15" cy="15" r="8.6" fill="${CPC.jeton}" stroke="${CPC.bord}"/>`, 30))}${P('8 jetons se rangent par 2 sans qu\'il en reste : 8 est <b>pair</b>. Avec 9 jetons, il en reste 1 : 9 est <b>impair</b>.')}`, 'Pair ou impair')}
+${cm1Regle(`Un nombre est <b>pair</b> quand il est dans la table de 2 : on peut le partager en deux parts égales. On le voit au chiffre des unités :${cm1Liste(['pair : le chiffre des unités est 0, 2, 4, 6 ou 8 (36, 450, 772) ;', 'impair : le chiffre des unités est 1, 3, 5, 7 ou 9 (25, 341, 769).'])}`, 'Le chiffre des unités')}
+${cm1Exemple('Les nombres pairs compris entre 767 et 778 :', ['768, 770, 772, 774, 776'])}
 `,
   methode: `
 ${cm1Demo('ce1-n8-m-retrouver', 'Retrouver 6 × 5 qu\'on a oublié', 'Retrouve le résultat de 6 × 5.')}
@@ -61,6 +66,10 @@ ${cm1Demo('ce1-n8-m-pb', 'Résoudre un problème', 'Un mille-pattes de dessin an
       cm1Redac('Chaussettes', '9 × 2 = 18', 'Il y a 18 chaussettes.')],
     ['Une boîte contient 10 crayons. Combien de crayons dans 6 boîtes ?',
       cm1Redac('Crayons', '6 × 10 = 60', 'Il y a 60 crayons dans 6 boîtes.')],
+    ['Le nombre 347 est-il pair ou impair ?',
+      cm1Redac('347', '', 'Le chiffre des unités est 7 : 347 est impair.')],
+    ['Écris tous les nombres pairs compris entre 767 et 778.',
+      cm1Redac('Nombres pairs', '768 ; 770 ; 772 ; 774 ; 776', 'Ce sont les nombres dont le chiffre des unités est 0, 2, 4, 6 ou 8.')],
     ['Lina a 4 billets de 5 € et 3 pièces de 2 €. Combien d\'argent a-t-elle ?',
       cm1Redac('Argent de Lina', { suite: ['4 × 5 = 20', '3 × 2 = 6', '20 + 6 = 26'] }, 'Lina a 26 €.')],
   ]),
@@ -72,6 +81,7 @@ ${cm1Demo('ce1-n8-m-pb', 'Résoudre un problème', 'Un mille-pattes de dessin an
     { q: '2 × 9 = …', opts: ['18', '11', '29'], correct: 0 },
     { q: '5 × 6 = …', opts: ['30', '11', '56'], correct: 0 },
     { q: '10 × 8 = …', opts: ['80', '18', '108'], correct: 0 },
+    { q: 'Un nombre pair :', opts: ['476', '475', '477'], correct: 0 },
   ],
   flash: [
     { l: 1, q: '2 × 6 = …', r: ['12', '8', '26', '10'], ok: 0 },
@@ -81,6 +91,8 @@ ${cm1Demo('ce1-n8-m-pb', 'Résoudre un problème', 'Un mille-pattes de dessin an
     { l: 3, q: '10 × 4 = …', r: ['40', '14', '104', '4'], ok: 0 },
     { l: 3, q: '7 × 10 = …', r: ['70', '17', '710', '7'], ok: 0 },
     { l: 4, q: '6 billets de 10 €, c\'est…', r: ['60 €', '16 €', '106 €', '6 €'], ok: 0 },
+    { l: 5, q: 'Quel nombre est pair ?', r: ['354', '345', '533', '781'], ok: 0 },
+    { l: 5, q: 'Quel nombre est impair ?', r: ['629', '630', '842', '916'], ok: 0 },
   ],
 });
 })();

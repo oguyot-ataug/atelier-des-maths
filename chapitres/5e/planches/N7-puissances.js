@@ -1,0 +1,42 @@
+/* ============================================================
+   5e · Planches : Puissances (N7)
+   Carré et cube, carrés de 0 à 12 et cube de 10, écrire un nombre comme une puissance, priorités,
+   expressions littérales avec une puissance simple, problèmes d'aire et de volume.
+   ============================================================ */
+(() => {
+const T = cm1Tex, R = P3.R, B = P3.B;
+PLANCHES['5e|Puissances'] = [
+  { titre: 'Carré et cube d\'un nombre', duree: '30 min',
+    attendus: ['Comprendre les notations a² et a³', 'Connaître les carrés de 0 à 12 et le cube de 10'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'Écris sous la forme d\'un produit, puis calcule.', ...P3.rmp([[`${T('6^2')} = @ = @`, T('6 \\times 6'), 36], [`${T('4^3')} = @ = @`, T('4 \\times 4 \\times 4'), 64], [`${T('0{,}3^2')} = @ = @`, T('0{,}3 \\times 0{,}3'), '0,09']], 5) },
+      { etoiles: 1, col: 1, consigne: 'Complète sans calculatrice.', ...P3.rmp([[`${T('7^2')} = @`, 49], [`${T('11^2')} = @`, 121], [`${T('12^2')} = @`, 144], [`${T('10^3')} = @`, '1 000']], 3) },
+      { etoiles: 2, col: 1, consigne: 'Écris avec une puissance.', ...P3.rmp([[`${T('5 \\times 5')} = @`, T('5^2')], [`${T('2 \\times 2 \\times 2')} = @`, T('2^3')], [`${T('9 \\times 9')} = @`, T('9^2')]], 3) },
+      { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.', ...P3.chx([[`${T('3^2 = 6')}`, 'faux', 'vrai · faux'], [`${T('10^2 = 100')}`, 'vrai', 'vrai · faux'], [`${T('2^3 = 3^2')}`, 'faux', 'vrai · faux']]) },
+      { etoiles: 3, cahier: true, consigne: 'Léa dit : « 5² = 10 ». Explique son erreur.', corr: cm1Redac('L\'erreur de Léa', T('5^2 = 5 \\times 5 = 25'), 'Léa a calculé 5 × 2. Le carré de 5, c\'est 5 multiplié par lui-même : 25.') },
+    ] },
+  { titre: 'Écrire un nombre comme une puissance', duree: '25 min',
+    attendus: ['Écrire un nombre sous la forme d\'un carré ou d\'un cube'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'Écris sous la forme d\'un carré.', ...P3.rmp([['36 = @', T('6^2')], ['81 = @', T('9^2')], ['100 = @', T('10^2')], ['144 = @', T('12^2')]], 3) },
+      { etoiles: 2, col: 1, consigne: 'Écris sous la forme d\'un cube.', ...P3.rmp([['27 = @', T('3^3')], ['125 = @', T('5^3')], ['1 000 = @', T('10^3')]], 3) },
+      { etoiles: 2, col: 1, consigne: 'Écris 64 de deux façons.', ...P3.rmp([['64 = @ = @', T('8^2'), T('4^3')]], 3) },
+      { etoiles: 3, col: 1, consigne: 'Entre quels carrés consécutifs se trouve chaque nombre ?', ...P3.rmp([['@ &lt; 50 &lt; @', T('7^2'), T('8^2')], ['@ &lt; 130 &lt; @', T('11^2'), T('12^2')]], 3) },
+    ] },
+  { titre: 'Calculer avec des puissances', duree: '35 min',
+    attendus: ['Respecter les priorités : puissances, puis multiplications, puis additions', 'Calculer une expression littérale avec une puissance'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'Calcule.', ...P3.rmp([[`${T('3 + 2^2')} = @`, 7], [`${T('2 \\times 5^2')} = @`, 50], [`${T('(2 \\times 5)^2')} = @`, 100], [`${T('6^2 - 2^3')} = @`, 28]], 3) },
+      { etoiles: 2, cahier: true, consigne: 'Calcule B = 4 + 3 × 2³ en écrivant les étapes.', corr: cm1Redac('B', { nom: 'B', lignes: [T('4 + 3 \\times 8'), T('4 + 24'), T('28')] }, 'B = 28.') },
+      { etoiles: 2, col: 1, consigne: 'Calcule pour x = 3.', ...P3.rmp([[`${T('x^2')} = @`, 9], [`${T('2x^2')} = @`, 18], [`${T('x^2 + x')} = @`, 12], [`${T('x^3 - 1')} = @`, 26]], 3) },
+      { etoiles: 3, cahier: true, consigne: 'Calcule C = (5 + 4)² et D = 5² + 4². Les résultats sont-ils égaux ?', corr: cm1Redac('C et D', [{ nom: 'C', lignes: [T('9^2'), T('81')] }, { nom: 'D', lignes: [T('25 + 16'), T('41')] }], 'Non : C = 81 et D = 41. Le carré d\'une somme n\'est pas la somme des carrés.') },
+    ] },
+  { titre: 'Problèmes : aires et volumes', duree: '30 min',
+    attendus: ['Utiliser le carré pour l\'aire d\'un carré et le cube pour le volume d\'un cube'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'Complète.', ...P3.rmp([['Aire d\'un carré de côté 8 cm : @ cm²', 64], ['Volume d\'un cube d\'arête 4 cm : @ cm³', 64], ['Volume d\'un cube d\'arête 10 cm : @ cm³', '1 000']], 3) },
+      { etoiles: 2, cahier: true, consigne: 'Un carré a une aire de 81 m². Quelle est la longueur de son côté ?', corr: cm1Redac('Côté du carré', T('9^2 = 81'), 'Le côté mesure 9 m.') },
+      { etoiles: 3, cahier: true, consigne: 'Un aquarium a la forme d\'un cube de 30 cm d\'arête. Combien de litres d\'eau peut-il contenir ? (1 L = 1 000 cm³)', corr: cm1Redac('Contenance de l\'aquarium', { suite: [T('30^3 = 30 \\times 30 \\times 30 = 27\\,000'), '27 000 cm³ = 27 L'] }, 'L\'aquarium peut contenir 27 L d\'eau.') },
+    ] },
+];
+})();

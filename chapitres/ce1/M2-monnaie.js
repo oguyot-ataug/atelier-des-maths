@@ -2,8 +2,10 @@
    CHAPITRE : La monnaie : euros et centimes (CE1, M2, période 2)
    Programme du cycle 2 (BO n° 41 du 31 octobre 2024), partie CE1, grandeurs et mesures : connaître
    les pièces et les billets (de 1 centime à 50 euros), 1 € = 100 c, écrire un prix en euros et
-   centimes sans virgule (3 € 50 c), constituer une somme de plusieurs façons, comparer des sommes,
-   calculer un prix total et ce qu'il reste ; rendre la monnaie sur de petites sommes.
+   centimes (3 € 50 c), constituer une somme de plusieurs façons, comparer des sommes (12 €, c'est plus
+   que 60 c), calculer un prix total et ce qu'il reste ; rendre la monnaie. À partir de la période 3 :
+   l'écriture à virgule (2 € et 17 c s'écrit 2,17 € ; 2,05 € n'est pas 2,50 € ; 85 c = 0,85 € ;
+   17 € = 17,00 €), la virgule repère le chiffre des unités d'euros, sans parler de dixièmes.
    Pensé pour être projeté : l'argent posé dans la coupelle et compté à mesure.
    ============================================================ */
 (() => {
@@ -30,7 +32,8 @@ ${cm1Regle('<b>1 € = 100 c</b> : un euro, c\'est cent centimes. Deux pièces d
 
 ${cm1Lecon(2, 'Écrire une somme')}
 ${cm1Def(`${lig(argent([[2, 'e'], [1, 'e'], [50, 'c'], [20, 'c']]))}${P('2 € + 1 € = 3 € et 50 c + 20 c = 70 c : on écrit <b>3 € 70 c</b>.')}`, 'Euros et centimes')}
-${cm1Rem('On compte d\'abord les euros, puis les centimes. Au CE2, on écrira aussi 3,70 € avec une virgule.')}
+${cm1Rem('On compte d\'abord les euros, puis les centimes. Attention : 12 €, c\'est plus que 60 c, même si 12 est plus petit que 60 !')}
+${cm1Regle('345 c = 300 c + 45 c = 3 € 45 c, car 100 c = 1 €.', 'Des centimes aux euros')}
 
 ${cm1Lecon(3, 'Payer une somme')}
 ${cpAnimPayer('ce1-m2-payer', { presets: [
@@ -41,6 +44,13 @@ ${cm1Regle('Pour payer, on commence par le plus gros billet qui ne dépasse pas 
 
 ${cm1Lecon(4, 'Rendre la monnaie')}
 ${cm1Regle(`Un livre coûte 7 €. Je paie avec un billet de 10 €. Le marchand compte en avançant : « 7… 8, 9, 10 ».${cm1Liste(['7 + 3 = 10'])}${P('Il me rend <b>3 €</b>.')}`, 'Compter en avançant')}
+
+${cm1Lecon(5, 'L\'écriture à virgule')}
+${cm1Rem('À travailler à partir de janvier (période 3), puis tout au long de l\'année.')}
+${cm1Def(`${lig(argent([[2, 'e'], [10, 'c'], [5, 'c'], [2, 'c']]))}${P('2 € et 17 c s\'écrit aussi <b>2,17 €</b>. La virgule se place juste après le chiffre des unités d\'euros : à gauche les euros, à droite les centimes.')}`, 'La virgule')}
+${cm1Regle(`Les centimes s'écrivent toujours avec deux chiffres après la virgule :${cm1Liste(['2 € et 5 c s\'écrit 2,05 €', '2 € et 50 c s\'écrit 2,50 €'])}${P('2,05 € et 2,50 €, ce n\'est pas la même somme !')}`, 'Attention')}
+${cm1Tableau(['En euros et centimes', '3 € 45 c', '85 c', '17 €', '1 € et 120 c'], [['Avec une virgule', '3,45 €', '0,85 €', '17,00 €', '2,20 €']])}
+${cm1Astuce('1 € et 120 c, c\'est 1 € + 1 € + 20 c, donc 2 € et 20 c : 2,20 €.')}
 `,
   methode: `
 ${cm1Demo('ce1-m2-m-compter', 'Compter une somme', 'Combien y a-t-il dans le porte-monnaie ?')}
@@ -71,6 +81,12 @@ ${cm1Demo('ce1-m2-m-rendre', 'Rendre la monnaie', 'Une glace coûte 4 €. Je pa
       cm1Redac('Prix total', '3 + 2 = 5', 'Ensemble, ils coûtent 5 €.')],
     ['Hugo a 20 €. Il achète un livre à 14 €. Combien lui reste-t-il ?',
       cm1Redac('Argent de Hugo', { suite: ['14 + 6 = 20', '20 − 14 = 6'] }, 'Il reste 6 € à Hugo.')],
+    ['Écris avec une virgule : 4 € et 8 c.',
+      cm1Redac('4 € et 8 c', '4 € et 8 c = 4,08 €', 'Les centimes s\'écrivent avec deux chiffres : 4,08 €.')],
+    ['Range ces prix du moins cher au plus cher : 1,50 € ; 95 c ; 1,05 € ; 2 €.',
+      cm1Redac('Du moins cher au plus cher', '0,95 € &lt; 1,05 € &lt; 1,50 € &lt; 2 €', '95 c est moins d\'un euro ; 1,05 €, c\'est 1 € et 5 c ; 1,50 €, c\'est 1 € et 50 c.')],
+    ['Lucie achète un pain à 1,20 € et un croissant à 90 c. Combien dépense-t-elle ?',
+      cm1Redac('Dépense de Lucie', { suite: ['1,20 € = 120 c', '120 + 90 = 210', '210 c = 2,10 €'] }, 'Lucie dépense 2,10 €.')],
     ['Qui a le plus d\'argent : Zoé a 3 billets de 5 €, Lucas a 1 billet de 10 € et 3 pièces de 2 € ?',
       cm1Redac('Qui a le plus', { suite: ['Zoé : 5 + 5 + 5 = 15', 'Lucas : 10 + 2 + 2 + 2 = 16'] }, 'Lucas a 16 € et Zoé 15 € : c\'est Lucas qui a le plus d\'argent.')],
   ]),
@@ -82,6 +98,7 @@ ${cm1Demo('ce1-m2-m-rendre', 'Rendre la monnaie', 'Une glace coûte 4 €. Je pa
     { q: '1 € = …', opts: ['10 c', '100 c', '1 000 c'], correct: 1 },
     { q: `Combien ?${lig(argent([[10, 'e'], [5, 'e'], [1, 'e']], 220))}`, opts: ['16 €', '15 €', '1 051 €'], correct: 0 },
     { q: 'Je paie 8 € avec un billet de 10 €. On me rend…', opts: ['2 €', '18 €', '8 €'], correct: 0 },
+    { q: '3 € et 45 c s\'écrit…', opts: ['3,45 €', '345 €', '3,045 €'], correct: 0 },
   ],
   flash: [
     { l: 1, q: 'Deux pièces de 50 c, c\'est…', r: ['1 €', '100 €', '50 c', '2 €'], ok: 0 },
@@ -89,6 +106,9 @@ ${cm1Demo('ce1-m2-m-rendre', 'Rendre la monnaie', 'Une glace coûte 4 €. Je pa
     { l: 3, q: '20 + 10 + 5 = … €', r: ['35', '30', '25', '2105'], ok: 0 },
     { l: 3, q: 'Pour payer 12 € : billet de 10 € et…', r: ['une pièce de 2 €', 'un billet de 5 €', 'une pièce de 1 €', 'rien'], ok: 0 },
     { l: 4, q: 'Prix 6 €, je donne 10 €. On me rend…', r: ['4 €', '16 €', '6 €', '3 €'], ok: 0 },
+    { l: 5, q: '2 € et 5 c s\'écrit…', r: ['2,05 €', '2,50 €', '2,5 €', '25 €'], ok: 0 },
+    { l: 5, q: '85 c = …', r: ['0,85 €', '85 €', '8,5 €', '0,085 €'], ok: 0 },
+    { l: 5, q: 'Le plus cher :', r: ['12 €', '60 c', '0,60 €', '99 c'], ok: 0 },
   ],
 });
 })();

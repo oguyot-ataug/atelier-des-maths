@@ -1,9 +1,11 @@
 /* ============================================================
    CHAPITRE : Les solides (CP, G4, période 5)
    Programme du cycle 2 (BO n° 41 du 31 octobre 2024), partie CP, espace et géométrie : reconnaître,
-   trier et nommer quelques solides (cube, pavé, boule, cylindre, cône, pyramide) ; les décrire
-   (surfaces planes ou arrondies, il roule ou il ne roule pas) ; les faces du cube sont des carrés ;
-   l'empreinte d'une face ; assembler des cubes ; voir le cube se replier à partir de son patron.
+   trier et nommer les solides usuels (cube, pavé, boule, cylindre, cône ; au CP, le cube n'est pas
+   rangé avec les pavés) ; les décrire (surfaces planes ou arrondies, il roule ou il ne roule pas) ;
+   le nombre et la nature des faces du cube (6 carrés) et du pavé (6 rectangles) ; l'empreinte d'une
+   face ; construire un cube ou un pavé en assemblant ses faces ; assembler des cubes.
+   Pour aller plus loin : la pyramide (CE1), le patron du cube (CE2).
    Pensé pour être projeté : les solides qui roulent (ou glissent) sur une pente, le cube qui se plie.
    ============================================================ */
 (() => {
@@ -27,7 +29,7 @@ const sol = (k, px, nom) => `<span style="display:inline-block;text-align:center
 
 /* ---- Sur la pente : ce qui roule, ce qui glisse ---- */
 function animPente(id){
-  const K = ['boule', 'cylindre', 'cube', 'pyramide', 'cone', 'pave'], PR = K.map(k => ({ nom: SOL[k].nom.replace(/^l[ea] |^l'/, '') }));
+  const K = ['boule', 'cylindre', 'cube', 'cone', 'pave'], PR = K.map(k => ({ nom: SOL[k].nom.replace(/^l[ea] |^l'/, '') }));
   return cmAnim(id, {
     etat: { p: 0 }, duree: 6000, legende: 'On pose le solide en haut de la pente et on le lâche. Faites deviner avant : va-t-il rouler ?',
     controles: a => ce2Choix(id, PR, a),
@@ -51,22 +53,26 @@ const empreinte = (forme, c) => cpSvg(80, 80, forme === 'carre' ? `<rect x="14" 
 cm1Chapitre({
   niveau: 'cp', titre: 'Les solides', slug: 'solides',
   cours: `
-${cm1Lecon(1, 'Six solides à connaître')}
-${cm1Def(`${lig(sol('cube'), sol('pave'), sol('pyramide'))}${lig(sol('boule'), sol('cylindre'), sol('cone'))}`, 'Les solides')}
+${cm1Lecon(1, 'Cinq solides à connaître')}
+${cm1Def(`${lig(sol('cube'), sol('pave'))}${lig(sol('boule'), sol('cylindre'), sol('cone'))}`, 'Les solides')}
 ${cm1Rem('Un solide, on peut le tenir dans sa main et tourner autour : ce n\'est pas un dessin plat. Au tableau : un sac à solides, un élève en touche un sans le voir et le décrit.')}
 
 ${cm1Lecon(2, 'Il roule ou il ne roule pas')}
 ${animPente('cp-g4-pente')}
-${cm1Regle(`${cm1Liste(['La <b>boule</b>, le <b>cylindre</b> et le <b>cône</b> ont une surface arrondie : ils peuvent <b>rouler</b>.', 'Le <b>cube</b>, le <b>pavé</b> et la <b>pyramide</b> n\'ont que des faces plates : ils <b>ne roulent pas</b>.'])}`, 'Trier')}
+${cm1Regle(`${cm1Liste(['La <b>boule</b>, le <b>cylindre</b> et le <b>cône</b> ont une surface arrondie : ils peuvent <b>rouler</b>.', 'Le <b>cube</b> et le <b>pavé</b> n\'ont que des faces plates : ils <b>ne roulent pas</b>.'])}`, 'Trier')}
 
 ${cm1Lecon(3, 'Les faces et les empreintes')}
 ${cm1Def(`Les surfaces plates d'un solide s'appellent ses <b>faces</b>. Le <b>cube</b> a <b>6 faces</b>, toutes des <b>carrés</b> pareils.${lig(sol('cube', 90, false), '<b style="font-size:1.4rem;">→</b>', empreinte('carre', '#2EA8C9'))}${P('Si on trace le contour d\'une face du cube, on obtient un carré.')}`, 'Les faces')}
-${cm1Liste(['une face du pavé laisse un rectangle (ou un carré) ;', 'une face de la pyramide laisse un triangle (ou un carré, pour sa base) ;', 'le cylindre et le cône posés debout laissent un disque.'])}
-${cm1Pliage('cp-g4-cube', { modeles: [{ nom: 'Le patron du cube', faces: cmCube([[1, 0], [0, 1], [1, 1], [2, 1], [3, 1], [1, 2]]) }], legende: 'Six carrés pareils se replient pour former un cube : cliquez sur « Plier ». Faites glisser le dessin pour tourner autour.' })}
+${cm1Regle(`Le <b>pavé</b> a aussi <b>6 faces</b> : ce sont des <b>rectangles</b>.${cm1Liste(['une face du pavé laisse un rectangle ;', 'le cylindre et le cône posés debout laissent un disque.'])}`, 'Le pavé')}
+${cm1Regle('Pour fabriquer un cube ou un pavé comme le modèle, on assemble ses 6 faces en carton avec du ruban adhésif.', 'Construire')}
 
 ${cm1Lecon(4, 'Assembler des cubes')}
 ${cm1Def(`${lig(cpSvg(170, 100, boite(10, 52, 40, 40, 18, 15, '#2EA8C9') + boite(50, 52, 40, 40, 18, 15, '#2EA8C9') + boite(90, 52, 40, 40, 18, 15, '#2EA8C9'), 150))}${P('Trois cubes collés en ligne forment un <b>pavé</b>.')}`, 'Construire')}
 ${cm1Astuce('Avec des cubes emboîtables, on peut construire une tour, un escalier, un mur… et compter les cubes utilisés, même ceux qu\'on ne voit pas.')}
+
+${cpPlusLoin('la pyramide et le patron du cube')}
+${cm1Def(`${lig(sol('pyramide'))}${P('La <b>pyramide</b> n\'a que des faces plates : des triangles qui se rejoignent à son sommet. On l\'étudiera au CE1.')}`, 'La pyramide')}
+${cm1Pliage('cp-g4-cube', { modeles: [{ nom: 'Le patron du cube', faces: cmCube([[1, 0], [0, 1], [1, 1], [2, 1], [3, 1], [1, 2]]) }], legende: 'Six carrés pareils se replient pour former un cube : cliquez sur « Plier ». Faites glisser le dessin pour tourner autour.' })}
 `,
   methode: `
 ${cm1Demo('cp-g4-m-reconnaitre', 'Reconnaître un solide', 'Quel est ce solide ?')}
@@ -87,7 +93,7 @@ ${cm1Demo('cp-g4-m-trier', 'Trier des objets', 'Trie : une balle, une boîte de 
   exos: cm1Exos('cp-g4', [
     [`Nomme ces solides.${lig(sol('cone', 80, false), sol('cube', 80, false), sol('boule', 80, false))}`,
       cm1Redac('Les solides', '', 'Un cône, un cube, une boule.')],
-    ['Quels solides peuvent rouler : le cube, la boule, le cylindre, la pyramide ?',
+    ['Quels solides peuvent rouler : le cube, la boule, le cylindre, le pavé ?',
       cm1Redac('Ceux qui roulent', '', 'La boule et le cylindre peuvent rouler : ils ont une surface arrondie.')],
     ['Combien de faces a un cube ? Quelle est leur forme ?',
       cm1Redac('Les faces du cube', '', 'Un cube a 6 faces : ce sont des carrés, tous pareils.')],
@@ -105,16 +111,17 @@ ${cm1Demo('cp-g4-m-trier', 'Trier des objets', 'Trie : une balle, une boîte de 
     'Ces blocs ont presque la forme de <b>pavés</b>. Pour les déplacer, les ouvriers les posaient peut-être sur des rondins de bois… qui sont des <b>cylindres</b>, et qui roulent !',
   ]),
   quiz: [
-    { q: 'Quel solide roule ?', opts: ['Le cube', 'La boule', 'La pyramide'], correct: 1 },
+    { q: 'Quel solide roule ?', opts: ['Le cube', 'La boule', 'Le pavé'], correct: 1 },
+    { q: 'Les faces d\'un pavé sont des…', opts: ['rectangles', 'disques', 'triangles'], correct: 0 },
     { q: 'Combien de faces a un cube ?', opts: ['4', '6', '8'], correct: 1 },
     { q: 'Une boîte de conserve a la forme…', opts: ['d\'un cylindre', 'd\'un cône', 'd\'un cube'], correct: 0 },
   ],
   flash: [
-    { l: 1, q: `Quel solide ?${lig(sol('pyramide', 70, false))}`, r: ['Une pyramide', 'Un cône', 'Un cube', 'Une boule'], ok: 0 },
+    { l: 1, q: `Quel solide ?${lig(sol('cone', 70, false))}`, r: ['Un cône', 'Un cylindre', 'Un cube', 'Une boule'], ok: 0 },
     { l: 1, q: `Quel solide ?${lig(sol('cylindre', 70, false))}`, r: ['Un cône', 'Un cylindre', 'Un pavé', 'Une boule'], ok: 1 },
     { l: 2, q: 'Le pavé roule-t-il ?', r: ['Oui', 'Non', 'Seulement debout', 'Seulement dans l\'eau'], ok: 1 },
     { l: 3, q: 'Les faces d\'un cube sont des…', r: ['carrés', 'triangles', 'disques', 'rectangles longs'], ok: 0 },
-    { l: 3, q: 'Un dé à jouer a la forme…', r: ['d\'un cube', 'd\'une boule', 'd\'un cône', 'd\'une pyramide'], ok: 0 },
+    { l: 3, q: 'Un dé à jouer a la forme…', r: ['d\'un cube', 'd\'une boule', 'd\'un cône', 'd\'un cylindre'], ok: 0 },
     { l: 4, q: 'Trois cubes en ligne forment…', r: ['un pavé', 'une boule', 'un cône', 'un cylindre'], ok: 0 },
   ],
 });

@@ -33,6 +33,11 @@ ${cm1Astuce('On recule de dix en dix : 67… 57, 47, 37.')}
 ${cm1Lecon(4, 'Calculer avec des dizaines entières')}
 ${cm1Regle(`${ajout(40, 30)}${P('4 dizaines + 3 dizaines = 7 dizaines : <b>40 + 30 = 70</b>.')}`, 'Comme 4 + 3')}
 ${cm1Exemple('Comme avec les petits nombres :', ['5 + 2 = 7', 'donc 50 + 20 = 70 ;', '9 − 4 = 5', 'donc 90 − 40 = 50.'])}
+
+${cm1Lecon(5, 'Doubles et moitiés des dizaines')}
+${cm1Tableau(['Nombre', '20', '30', '40', '50'], [['Double', '40', '60', '80', '100']])}
+${cm1Tableau(['Nombre', '40', '60', '80', '100'], [['Moitié', '20', '30', '40', '50']])}
+${cm1Regle(`La moitié de 46 : je cherche la moitié des dizaines, puis celle des unités.${cm1Liste(['la moitié de 40 : 20', 'la moitié de 6 : 3', '20 + 3 = 23'])}${P('La moitié de 46, c\'est <b>23</b>.')}`, 'La moitié d\'un nombre pair')}
 `,
   methode: `
 ${cm1Demo('cp-n9-m-ajout', 'Calculer 52 + 30', 'Ajoute 30 à 52.')}
@@ -65,6 +70,8 @@ ${cm1Demo('cp-n9-m-retrait', 'Calculer 85 − 40', 'Enlève 40 à 85.')}
       cm1Redac('Images de Hugo', '35 + 20 = 55', 'Hugo a 55 images.', ajout(35, 20))],
     ['Dans un bus, il y a 72 passagers. À l\'arrêt, 30 passagers descendent. Combien en reste-t-il ?',
       cm1Redac('Passagers qui restent', '72 − 30 = 42', 'Il reste 42 passagers dans le bus.')],
+    ['Quelle est la moitié de 46 ?',
+      cm1Redac('Moitié de 46', { suite: ['la moitié de 40 : 20', 'la moitié de 6 : 3', '20 + 3 = 23'] }, 'La moitié de 46, c\'est 23.')],
   ]),
   histoire: cm1Histoire('Un peu d\'histoire : le boulier', [
     'Le <b>boulier</b> est un outil à calculer très ancien, utilisé en Chine, au Japon et en Russie. Chaque tringle a ses boules : une tringle pour les unités, une pour les dizaines…',
@@ -76,6 +83,8 @@ ${cm1Demo('cp-n9-m-retrait', 'Calculer 85 − 40', 'Enlève 40 à 85.')}
     { q: '23 + 30 = …', opts: ['26', '53', '50'], correct: 1 },
   ],
   flash: [
+    { l: 5, q: 'Le double de 30 :', r: ['60', '33', '15', '300'], ok: 0 },
+    { l: 5, q: 'La moitié de 80 :', r: ['40', '160', '8', '30'], ok: 0 },
     { l: 1, q: '18 + 10 = …', r: ['19', '28', '118', '81'], ok: 1 },
     { l: 1, q: '50 + 10 = …', r: ['60', '51', '510', '40'], ok: 0 },
     { l: 2, q: '41 + 20 = …', r: ['43', '61', '62', '21'], ok: 1 },

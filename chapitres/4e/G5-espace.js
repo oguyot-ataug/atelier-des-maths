@@ -71,6 +71,21 @@ function es4PatronCone(r, g, k, opts){
   return opts.brut ? s : `<svg viewBox="0 0 ${W} ${ay + R + 2 * rr + 8}" style="width:100%;max-width:${opts.max || 260}px;display:block;margin:6px auto;">${s}</svg>`;
 }
 
+// Agrandissement d'un cube unité : longueurs × k, aires × k², volumes × k³ (attendus de fin de 4e).
+function es4AnimAgr(id){
+  const P = [{ nom: 'k = 2', k: 2 }, { nom: 'k = 3', k: 3 }];
+  return cmAnim(id, { etat: { p: 0 }, duree: 8000, legende: 'Le petit cube a une arête de 1 cm. On l\'agrandit : combien de petits cubes faut-il ?',
+    controles: a => `<div class="cmp-modeles">${P.map((p, i) => cmBtn(id, 'p', i, p.nom, a.etat.p === i)).join('')}</div>`,
+    dessin: (t, a) => {
+      const k = P[a.etat.p].k, n = Math.round(cmPhase(t, .15, .85) * k * k * k), L = [];
+      for(let y = 0; y < k; y++) for(let z = k - 1; z >= 0; z--) for(let x = 0; x < k; x++) if(L.length < n) L.push([x, y, z]);
+      const petit = typeof ce1Cubes === 'function' ? ce1Cubes([[0, 0, 0]], 60) : '', grand = L.length && typeof ce1Cubes === 'function' ? ce1Cubes(L, 70 * k) : '';
+      const texte = t < .15 ? `Le grand cube a des arêtes ${k} fois plus longues : ${k} cm.` : t < .88 ? `${n} petit${n > 1 ? 's' : ''} cube${n > 1 ? 's' : ''}…`
+        : `Arêtes × ${k}, chaque face contient ${k * k} carrés (aire × ${k}² = ${k * k}), le cube contient ${k * k * k} petits cubes (volume × ${k}³ = ${k * k * k}).`;
+      return { scene: `<div style="display:flex;gap:30px;align-items:flex-end;justify-content:center;flex-wrap:wrap;">${petit}${grand}</div>`.replace(/class="pl-libre"/g, 'class="pl-libre cma-svg"'), texte };
+    } });
+}
+
 document.getElementById('cours-demo-espace-4e').innerHTML = `
 <div class="lesson-header"><span class="num">1</span><h3>La pyramide</h3></div>
 
@@ -144,6 +159,23 @@ ${r4Ex('Exemple 2 : volume d\'un cône de révolution de hauteur 10 cm, dont la 
     <li>la troisième, lue sur l'axe (Oz), est la <b>cote</b> (ou <b>altitude</b>).</li>
   </ul></div>
 ${es4Deux(`<ul class="example-list"><li>On construit le pavé droit de sommets O et M dont les arêtes sont parallèles aux axes. On lit : abscisse 3, ordonnée 4, cote 2.</li><li>Le point M a pour coordonnées <b>(3 ; 4 ; 2)</b>.</li></ul>`, `<svg viewBox="0 0 300 220" style="width:100%;max-width:300px;display:block;margin:6px auto;">${es4Repere(3, 4, 2, -1.95, 0.35, 30, 110, 150)}</svg>`)}
+
+<div class="lesson-header"><span class="num">5</span><h3>Agrandissement et réduction</h3></div>
+<span class="def-badge">Définition</span>
+<div class="def-box">Quand on <b>agrandit</b> ou qu'on <b>réduit</b> une figure ou un solide, toutes les longueurs sont multipliées par un même nombre <span class="tex">k</span>, le <b>rapport</b> (ou l'échelle). Si <span class="tex">k &gt; 1</span>, c'est un agrandissement ; si <span class="tex">0 &lt; k &lt; 1</span>, une réduction. Les angles ne changent pas.</div>
+${es4AnimAgr('es4-agr')}
+<span class="prop-badge">Propriété</span>
+<div class="def-box">Dans un agrandissement ou une réduction de rapport <span class="tex">k</span> :
+  <ul style="margin:4px 0 0;padding-left:20px;line-height:1.8;">
+    <li>les <b>longueurs</b> sont multipliées par <span class="tex">k</span> ;</li>
+    <li>les <b>aires</b> sont multipliées par <span class="tex">k^2</span> ;</li>
+    <li>les <b>volumes</b> sont multipliés par <span class="tex">k^3</span>.</li>
+  </ul></div>
+${r4Ex('Exemple : un pavé droit mesure 12 cm × 6 cm × 4 cm. On le réduit au tiers.', [
+  [es4Tex('k = \\dfrac{1}{3}') + ' : les arêtes deviennent 4 cm, 2 cm et ' + es4Tex('\\dfrac{4}{3}') + ' cm.', 'Chaque longueur est divisée par 3.'],
+  ['La face de 12 cm × 6 cm, d\'aire 72 cm², devient une face d\'aire ' + es4Tex('72 \\times \\left(\\dfrac{1}{3}\\right)^2 = \\dfrac{72}{9} = 8') + ' cm².', 'Vérification : 4 × 2 = 8 cm².'],
+  ['Le volume, 12 × 6 × 4 = 288 cm³, devient ' + es4Tex('288 \\times \\left(\\dfrac{1}{3}\\right)^3 = \\dfrac{288}{27} \\approx 10{,}7') + ' cm³.', 'Le volume est divisé par 27.'],
+])}
 `;
 // Repère de l'espace et pavé de O à M(x ; y ; z) : axes x (vers l'avant), y (vers la droite), z (vers le haut).
 function es4Repere(x, y, z, yaw, pitch, e, cx, cy){
@@ -367,6 +399,7 @@ DEMO_REGISTRY['4e|Espace'] = {
   cours: 'cours-demo-espace-4e', methode: 'methode-demo-espace-4e', exos: 'exos-demo-espace-4e', histoire: 'histoire-demo-espace-4e',
   init: () => {
     es4Vue(); es4Plier(); es4Cube(); es4ConePatron(); es4Reperage();
+    if(typeof cmAnimDessiner === 'function') cmAnimDessiner('es4-agr');
     ['cours-demo-espace-4e', 'exos-demo-espace-4e'].forEach(id => renderStaticMath(document.getElementById(id)));
     injectCourseAddButtons(document.getElementById('cours-demo-espace-4e'));
     injectCourseAddButtons(document.getElementById('methode-demo-espace-4e'));

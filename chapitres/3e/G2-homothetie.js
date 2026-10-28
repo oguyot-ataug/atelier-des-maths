@@ -74,6 +74,22 @@ function ho3FigProprietes(){
     [O, A2, B2, C2, D2], 440);
 }
 
+// Deux triangles semblables : ABC (4, 5, 6) et DEF, agrandissement de rapport 1,5, avec les angles égaux codés de la même couleur.
+function ho3Semblables(){
+  const tri = (ox, oy, k, noms) => {
+    const a = 4 * k * 22, b = 5 * k * 22, c = 6 * k * 22; // AB = a, BC = b, AC = c ; A en bas à gauche, C en bas à droite.
+    const xB = (a * a + c * c - b * b) / (2 * c), yB = Math.sqrt(a * a - xB * xB);
+    const A = [ox, oy], C = [ox + c, oy], B = [ox + xB, oy - yB];
+    const arc = (S, P, Q, r, col) => { const u = [P[0] - S[0], P[1] - S[1]], v = [Q[0] - S[0], Q[1] - S[1]], lu = Math.hypot(...u), lv = Math.hypot(...v);
+      const p1 = [S[0] + u[0] / lu * r, S[1] + u[1] / lu * r], p2 = [S[0] + v[0] / lv * r, S[1] + v[1] / lv * r];
+      return `<path d="M${p1[0].toFixed(1)} ${p1[1].toFixed(1)} A${r} ${r} 0 0 ${(u[0] * v[1] - u[1] * v[0]) > 0 ? 1 : 0} ${p2[0].toFixed(1)} ${p2[1].toFixed(1)}" fill="none" stroke="${col}" stroke-width="3"/>`; };
+    return `<polygon points="${[A, B, C].map(p => p.map(v => v.toFixed(1)).join(',')).join(' ')}" fill="#0C5BA0" fill-opacity=".08" stroke="#1C1B2E" stroke-width="2"/>`
+      + arc(A, C, B, 18, '#E07B00') + arc(B, A, C, 16, '#1E7B34') + arc(C, B, A, 18, '#C2185B')
+      + `<text x="${A[0] - 14}" y="${A[1] + 16}" font-size="15" font-weight="700">${noms[0]}</text><text x="${B[0] - 5}" y="${B[1] - 8}" font-size="15" font-weight="700">${noms[1]}</text><text x="${C[0] + 5}" y="${C[1] + 16}" font-size="15" font-weight="700">${noms[2]}</text>`;
+  };
+  return `<div style="overflow-x:auto;"><svg viewBox="0 0 560 230" style="display:block;margin:6px auto;max-width:560px;width:100%;font-family:'Space Grotesk',sans-serif;">${tri(20, 200, 1, ['A', 'B', 'C'])}${tri(200, 200, 1.5, ['D', 'E', 'F'])}</svg></div>`;
+}
+
 document.getElementById('cours-demo-homothetie-3e').innerHTML = `
 <div class="lesson-header"><span class="num">1</span><h3>L'homothétie</h3></div>
 
@@ -121,6 +137,24 @@ ${ho3FigProprietes()}
   <li>Les longueurs sont multipliées par 2,5 : par exemple, C′D′ = 2,5 × CD.</li>
   <li>Les aires sont multipliées par ${ho3Tex('2{,}5^2 = 6{,}25')} : l'aire de A′B′C′D′ est 6,25 fois celle de ABCD.</li>
 </ul>
+
+<div class="lesson-header"><span class="num">2</span><h3>Les triangles semblables</h3></div>
+<span class="def-badge">Définition</span>
+<div class="def-box">Deux triangles sont <b>semblables</b> lorsque leurs angles sont, deux à deux, de même mesure.</div>
+${ho3Semblables()}
+<span class="prop-badge">Propriétés</span>
+<div class="def-box">
+  <ul style="margin:0;padding-left:20px;line-height:1.8;">
+    <li>Si deux triangles ont <b>deux angles</b> deux à deux de même mesure, alors ils sont semblables (le troisième angle est égal aussi, car la somme des angles vaut 180°).</li>
+    <li><b>Propriété caractéristique</b> : deux triangles sont semblables si et seulement si les longueurs de leurs côtés sont <b>proportionnelles</b>. Le coefficient de proportionnalité <i>k</i> est le rapport d'agrandissement ou de réduction.</li>
+  </ul></div>
+<p class="example-title">Exemple : ABC a pour côtés AB = 4 cm, BC = 5 cm, AC = 6 cm ; DEF a pour côtés DE = 6 cm, EF = 7,5 cm, DF = 9 cm.</p>
+<ul class="example-list">
+  <li>On range les côtés dans l'ordre croissant et on compare : ${ho3Tex('\\dfrac{DE}{AB} = \\dfrac{6}{4} = 1{,}5')} ; ${ho3Tex('\\dfrac{EF}{BC} = \\dfrac{7{,}5}{5} = 1{,}5')} ; ${ho3Tex('\\dfrac{DF}{AC} = \\dfrac{9}{6} = 1{,}5')}.</li>
+  <li>Les longueurs sont proportionnelles : les triangles ABC et DEF sont semblables, DEF est un agrandissement de rapport 1,5 de ABC.</li>
+  <li>Les angles « homologues » sont égaux : ${ho3Tex('\\widehat{A} = \\widehat{D}')}, ${ho3Tex('\\widehat{B} = \\widehat{E}')}, ${ho3Tex('\\widehat{C} = \\widehat{F}')}.</li>
+</ul>
+<div class="redaction-note" ${R4_REM}>Remarque : un triangle et son image par une homothétie sont toujours semblables. Dans la configuration de Thalès, les triangles AMN et ABC sont semblables.</div>
 `;
 
 document.getElementById('histoire-demo-homothetie-3e').innerHTML = `
@@ -301,6 +335,7 @@ DEMO_REGISTRY['3e|Homothétie'] = {
 };
 
 DEMO_QUIZZES['3e|Homothétie'] = [
+  { q: 'Deux triangles de côtés 3, 4, 5 cm et 6, 8, 10 cm sont-ils semblables ?', opts: ['Oui : les longueurs sont proportionnelles (× 2)', 'Non : les côtés sont différents', 'On ne peut pas savoir sans les angles'], correct: 0 },
   { q: 'M′ est l\'image de M par l\'homothétie de centre O et de rapport 3. Alors...', opts: ['OM′ = 3 × OM et M′ ∈ [OM)', 'MM′ = 3', 'OM = 3 × OM′'], correct: 0 },
   { q: 'Une homothétie de rapport 0,4 est...', opts: ['un agrandissement', 'une réduction', 'une symétrie'], correct: 1 },
   { q: 'Par une homothétie de rapport 2, les aires sont multipliées par...', opts: ['2', '4', '8'], correct: 1 },

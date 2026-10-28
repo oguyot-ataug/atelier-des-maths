@@ -37,5 +37,14 @@ PLANCHES['ce1|Tables de multiplication de 2, 5 et 10'] = [
         eleve: lig(cm1Tableau(['×', '3', '6', '8'], [['<b>2</b>', '', '', ''], ['<b>5</b>', '', '', ''], ['<b>10</b>', '', '', '']])),
         corr: lig(cm1Tableau(['×', '3', '6', '8'], [['<b>2</b>', R(6), R(12), R(16)], ['<b>5</b>', R(15), R(30), R(40)], ['<b>10</b>', R(30), R(60), R(80)]])) },
     ] },
+  { titre: 'Pair ou impair ?', duree: '20 min',
+    attendus: ['Dire si un nombre est pair ou impair'],
+    exos: [
+      { etoiles: 1, consigne: 'Range les jetons par 2. Le nombre est-il pair ou impair ?', ...PCP.compte([[ce1Rangees(2, 3, { p: 22 }), 'pair'], [cpJetons(7, 0, Array(7).fill(CPC.jeton)), 'impair'], [ce1Rangees(2, 5, { p: 22 }), 'pair']], 3, 4) },
+      { etoiles: 1, col: 1, consigne: 'Entoure les nombres pairs.', eleve: '<b>34 · 57 · 120 · 89 · 466 · 703 · 958</b>', corr: '<b>' + [34, 57, 120, 89, 466, 703, 958].map(v => v % 2 ? String(v) : plEntoure(String(v))).join(' · ') + '</b>' },
+      { etoiles: 2, col: 1, consigne: 'Écris pair ou impair.', ...P3.rmp([['248 : @', 'pair'], ['365 : @', 'impair'], ['500 : @', 'pair'], ['871 : @', 'impair']], 4) },
+      { etoiles: 2, col: 1, consigne: 'Écris tous les nombres pairs compris entre 767 et 778.', eleve: P3.B(30), corr: P3.R('768, 770, 772, 774, 776') },
+      { etoiles: 3, col: 1, consigne: 'Complète.', ...P3.rmp([['Le nombre pair qui suit 459 : @', 460], ['Le nombre impair qui suit 459 : @', 461], ['Le plus grand nombre pair à trois chiffres : @', 998]], 3) },
+    ] },
 ];
 })();

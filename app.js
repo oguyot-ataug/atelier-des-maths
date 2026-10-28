@@ -46,12 +46,13 @@ const CH5 = [
  {n:12,code:'G5',cat:'G',t:'Parallélogrammes particuliers',s:1,p:'99-107',d:'22-28 mars'},
  {n:13,code:'P1',cat:'P',t:'Pourcentages',s:1,p:'140-149',d:'29 mars-4 avr'},
  {n:14,code:'G6',cat:'G',t:'Aires',s:1,p:'108-113',d:'5-11 avr'},
- {n:15,code:'N5',cat:'N',t:'Calcul littéral',s:2,p:'42-51',d:'3-16 mai'},
- {n:16,code:'D2',cat:'D',t:'Probabilités',s:1,p:'134-139',d:'17-23 mai'},
- {n:17,code:'G7',cat:'G',t:'Représentation de l\'espace',s:1,p:'114-123',d:'24-30 mai'},
- {n:18,code:'N6',cat:'N',t:'Équations',s:1,p:'52-57',d:'31 mai-6 juin'},
- {n:19,code:'P2',cat:'P',t:'Fonctions',s:1,p:'150-155',d:'7-13 juin'},
- {n:20,code:'D3',cat:'D',t:'Pensée informatique et programmation',s:1,p:'',d:'14-20 juin'},
+ {n:15,code:'N7',cat:'N',t:'Puissances',s:1,p:'',d:'3-9 mai'},
+ {n:16,code:'N5',cat:'N',t:'Calcul littéral',s:2,p:'42-51',d:'10-23 mai'},
+ {n:17,code:'D2',cat:'D',t:'Probabilités',s:1,p:'134-139',d:'24-30 mai'},
+ {n:18,code:'G7',cat:'G',t:'Représentation de l\'espace',s:1,p:'114-123',d:'31 mai-6 juin'},
+ {n:19,code:'N6',cat:'N',t:'Équations',s:1,p:'52-57',d:'7-13 juin'},
+ {n:20,code:'P2',cat:'P',t:'Fonctions',s:1,p:'150-155',d:'14-20 juin'},
+ {n:21,code:'D3',cat:'D',t:'Pensée informatique et programmation',s:1,p:'',d:'21-27 juin'},
 ];
 
 /* Progression 4e -- demandé : "établir la progression de 4e. On peut s'inspirer de 6e/5e.
@@ -94,6 +95,8 @@ const CH4 = [
  {n:13,code:'D1',cat:'D',t:'Proportionnalité',s:2,p:'125-137',d:'3-16 mai'},
  {n:14,code:'N7',cat:'N',t:'Équations',s:2,p:'63-71',d:'17-30 mai'},
  {n:15,code:'G5',cat:'G',t:'Espace',s:2,p:'112-124',d:'31 mai-13 juin'},
+ {n:16,code:'D4',cat:'D',t:'Formules et graphiques',s:1,p:'',d:'14-20 juin'},
+ {n:17,code:'D5',cat:'D',t:'Algorithmique et programmation',s:1,p:'',d:'21-27 juin'},
 ];
 
 /* Progression 3e -- demandé : « voici les chapitres de 3e » (sommaire du manuel iParcours Maths 3e
@@ -121,7 +124,8 @@ const CH3 = [
  {n:12,code:'D1',cat:'D',t:'Généralités sur les fonctions',s:3,p:'90-104',d:'8-28 mars'},
  {n:13,code:'G4',cat:'G',t:'Trigonométrie',s:2,p:'67-75',d:'29 mars-11 avr'},
  {n:14,code:'D2',cat:'D',t:'Fonctions linéaires et affines',s:3,p:'105-119',d:'3-23 mai'},
- {n:15,code:'G5',cat:'G',t:'Espace',s:3,p:'76-89',d:'24 mai-13 juin'},
+ {n:15,code:'G5',cat:'G',t:'Espace',s:2,p:'76-89',d:'24 mai-6 juin'},
+ {n:16,code:'D6',cat:'D',t:'Algorithmique et programmation',s:1,p:'',d:'7-13 juin'},
 ];
 
 /* Progression CM1, construite à partir du sommaire iParcours Maths CM1 fourni par l'utilisateur
@@ -172,6 +176,10 @@ const CHCM1 = [
    en période 3, soustraction en cassant une dizaine en période 3, addition posée en périodes 4-5 ; pas de
    fractions (elles commencent au CE1), multiplication seulement par des problèmes de groupes égaux, heures
    entières, mètre et centimètre. Pensé pour être projeté par l'enseignant (animations au tableau).
+   Contrôle de conformité du 28/10/2026 : ajouts (ordinaux jusqu'à vingtième et suites répétitives, doubles
+   et moitiés des dizaines, le mot « fois », plan de la classe, tableau à double entrée, faces du pavé) ;
+   en « Pour aller plus loin » (cpPlusLoin, chapitres/cp/_anims.js) : la pyramide, le patron du cube, les
+   jours de la semaine (Questionner le monde).
    Calendrier de l'école : du mardi 1er septembre 2026 au vendredi 2 juillet 2027 (comme le CE2 et le CM). */
 const CHCP = [
  {n:1,code:'N1',cat:'N',t:'Les nombres jusqu\'à 10',s:2,p:'',d:'1-11 sept'},
@@ -203,11 +211,17 @@ const CHCP = [
 ];
 
 /* Progression CE1 -- demandé : « Suite du CP puis CE1 ». Notre propre manuel, construit sur le
-   programme du cycle 2 (BO n° 41 du 31 octobre 2024, partie CE1) : nombres jusqu'à 1 000 (centaines),
-   addition posée puis soustraction posée, le signe × et les tables de 2, 3, 4, 5 et 10, premières
-   fractions (un demi, un tiers, un quart) par le partage de figures et de longueurs, centimètre et
-   mètre, gramme et kilogramme, euros et centimes (sans virgule), heures et demi-heures, angle droit,
-   symétrie sur quadrillage, solides (faces, arêtes, sommets), programmation de déplacements.
+   programme du cycle 2 (BO n° 41 du 31 octobre 2024, partie CE1) : nombres jusqu'à 1 000 (centaines,
+   ordinaux, suites), addition posée puis soustraction posée, le signe ×, toutes les tables (2, 5, 10,
+   puis 3, 4, puis 6, 7, 8, 9), parité, calcul mental jusqu'à 1 000, fractions d'un tout (dénominateurs
+   2, 3, 4, 5, 6, 8, 10 : écrire, comparer, ajouter, retirer), centimètre, mètre et kilomètre, gramme et
+   kilogramme, euros et centimes (écriture à virgule dès la période 3), heures, demi-heures et quarts
+   d'heure, durées en heures et minutes, angles droit, aigu, obtus, cercle au compas, milieu, points
+   alignés, solides et assemblages de cubes, programmation de déplacements.
+   Contrôle de conformité du 28/10/2026 -- demandé : « Ce qui est hors programme peut être mis en
+   "pour aller plus loin". Commence par CE1 » : symétrie, patron du cube, noms des polygones, fraction
+   d'une quantité, calendrier (Questionner le monde), boucles, nœuds du quadrillage passent en
+   « Pour aller plus loin » (ce1PlusLoin, chapitres/ce1/_anims.js) ; titres de chapitres mis à jour.
    Comme au CP : pensé pour être projeté (animations au tableau), un calcul par ligne.
    Calendrier de l'école : du mardi 1er septembre 2026 au vendredi 2 juillet 2027. */
 const CHCE1 = [
@@ -218,25 +232,26 @@ const CHCE1 = [
  {n:5,code:'N4',cat:'N',t:'Problèmes : ajouter, retirer, comparer',s:1,p:'',d:'12-16 oct'},
  {n:6,code:'N5',cat:'N',t:'Comparer, ranger, encadrer',s:1,p:'',d:'2-6 nov'},
  {n:7,code:'N6',cat:'N',t:'L\'addition posée',s:2,p:'',d:'9-20 nov'},
- {n:8,code:'M1',cat:'M',t:'Longueurs : le centimètre et le mètre',s:1,p:'',d:'23-27 nov'},
+ {n:8,code:'M1',cat:'M',t:'Longueurs : centimètre, mètre, kilomètre',s:1,p:'',d:'23-27 nov'},
  {n:9,code:'G2',cat:'G',t:'Polygones et angle droit',s:1,p:'',d:'30 nov-4 déc'},
  {n:10,code:'N7',cat:'N',t:'La multiplication : le signe ×',s:1,p:'',d:'7-11 déc'},
  {n:11,code:'M2',cat:'M',t:'La monnaie : euros et centimes',s:1,p:'',d:'14-18 déc'},
  {n:12,code:'N8',cat:'N',t:'Tables de multiplication de 2, 5 et 10',s:2,p:'',d:'4-15 jan'},
- {n:13,code:'N9',cat:'N',t:'Les fractions : un demi, un tiers, un quart',s:1,p:'',d:'18-22 jan'},
- {n:14,code:'M3',cat:'M',t:'Lire l\'heure : heures et demi-heures',s:1,p:'',d:'25-29 jan'},
+ {n:13,code:'N9',cat:'N',t:'Les fractions : partager en parts égales',s:1,p:'',d:'18-22 jan'},
+ {n:14,code:'M3',cat:'M',t:'Lire l\'heure : demi-heures et quarts d\'heure',s:1,p:'',d:'25-29 jan'},
  {n:15,code:'N10',cat:'N',t:'Partager et faire des groupes',s:1,p:'',d:'1-5 fév'},
  {n:16,code:'D1',cat:'D',t:'Tableaux et diagrammes',s:1,p:'',d:'8-12 fév'},
- {n:17,code:'G3',cat:'G',t:'La symétrie',s:1,p:'',d:'15-19 fév'},
+ {n:17,code:'G3',cat:'G',t:'Cercle, milieu et points alignés',s:1,p:'',d:'15-19 fév'},
  {n:18,code:'N11',cat:'N',t:'La soustraction posée',s:2,p:'',d:'8-19 mars'},
  {n:19,code:'N12',cat:'N',t:'Tables de multiplication de 3 et 4',s:1,p:'',d:'22-26 mars'},
  {n:20,code:'M4',cat:'M',t:'Les masses : le gramme et le kilogramme',s:1,p:'',d:'29 mars-2 avr'},
  {n:21,code:'G4',cat:'G',t:'Les solides : faces, arêtes, sommets',s:1,p:'',d:'5-9 avr'},
- {n:22,code:'N13',cat:'N',t:'Moitié, tiers, quart d\'une quantité',s:1,p:'',d:'12-16 avr'},
- {n:23,code:'M5',cat:'M',t:'Le calendrier et les durées',s:1,p:'',d:'3-7 mai'},
+ {n:22,code:'N13',cat:'N',t:'Comparer, ajouter, retirer des fractions',s:1,p:'',d:'12-16 avr'},
+ {n:23,code:'M5',cat:'M',t:'Les durées : heures et minutes',s:1,p:'',d:'3-7 mai'},
  {n:24,code:'G5',cat:'G',t:'Programmer des déplacements',s:2,p:'',d:'10-21 mai'},
- {n:25,code:'N14',cat:'N',t:'Calcul mental : stratégies jusqu\'à 100',s:2,p:'',d:'24 mai-4 juin'},
- {n:26,code:'N15',cat:'N',t:'Problèmes : bilan de l\'année',s:4,p:'',d:'7 juin-2 juil'},
+ {n:25,code:'N14',cat:'N',t:'Calcul mental : stratégies jusqu\'à 1 000',s:2,p:'',d:'24 mai-4 juin'},
+ {n:26,code:'N15',cat:'N',t:'Tables de multiplication de 6, 7, 8 et 9',s:1,p:'',d:'7-11 juin'},
+ {n:27,code:'N16',cat:'N',t:'Problèmes : bilan de l\'année',s:3,p:'',d:'14 juin-2 juil'},
 ];
 
 /* Progression CE2 -- demandé : « Voici le programme du cycle 2. On essaie de construire le CE2 ? »
@@ -326,8 +341,8 @@ function iaEnseignant(n){ return niveauPrimaire(niveauCle(n) || n) ? 'professeur
 function iaContexteNiveau(n){
   const k = niveauCle(n) || String(n || '').toLowerCase();
   const commun = ' Phrases courtes et vocabulaire simple, adaptés à des enfants ; pas de calculatrice ; pas de tableau de conversion ni de tableau de proportionnalité (on raisonne par des phrases : « 3 fois plus… ») ; pas de lettre pour une inconnue (utiliser ■ ou …) sauf en CM2 dans les formules simples ; les notations de géométrie sont toujours expliquées (« le segment [AB] »).';
-  if(k === 'cp') return 'Élèves de CP (école élémentaire, cycle 2, 6-7 ans), qui apprennent à lire : énoncés très courts (une phrase), mots simples. Nombres entiers jusqu\'à 100 seulement (jusqu\'à 10 puis 20 en début d\'année, 59 avant Noël) ; additions, soustractions par le sens (ajouter, retirer, ce qu\'il manque), compléments à 10, doubles ; pas de fractions ; pas de signe × (seulement des problèmes de groupes égaux) ; pas de division ; heures entières seulement ; longueurs en m et cm ; euros entiers.' + commun;
-  if(k === 'ce1') return 'Élèves de CE1 (école élémentaire, cycle 2, 7-8 ans), qui lisent encore lentement : énoncés courts, mots simples. Nombres entiers jusqu\'à 1 000 seulement ; tables de multiplication de 2, 3, 4, 5 et 10 (signe × autorisé, pas de division écrite) ; fractions seulement un demi, un tiers, un quart (et deux quarts, trois quarts) par le partage ; euros et centimes sans virgule ; heures et demi-heures ; centimètre, mètre, gramme, kilogramme.' + commun;
+  if(k === 'cp') return 'Élèves de CP (école élémentaire, cycle 2, 6-7 ans), qui apprennent à lire : énoncés très courts (une phrase), mots simples. Nombres entiers jusqu\'à 100 seulement (jusqu\'à 10 puis 20 en début d\'année, 59 avant Noël) ; additions, soustractions par le sens (ajouter, retirer, ce qu\'il manque), compléments à 10, doubles ; pas de fractions ; pas de signe × (le mot « fois » avec l\'addition répétée : trois fois vingt = 20 + 20 + 20) ; pas de division ; doubles jusqu\'à 10 et de 20, 30, 40, 50, moitiés jusqu\'à 20 et de 40, 60, 80, 100 ; nombres ordinaux jusqu\'à vingtième ; heures entières seulement (pas les jours ni le calendrier) ; longueurs en m et cm ; euros entiers (jusqu\'à 100 €) ; solides : cube, pavé, boule, cylindre, cône (pas de pyramide ni de patron).' + commun;
+  if(k === 'ce1') return 'Élèves de CE1 (école élémentaire, cycle 2, 7-8 ans), qui lisent encore lentement : énoncés courts, mots simples. Nombres entiers jusqu\'à 1 000 seulement (nombres ordinaux jusqu\'à cent) ; toutes les tables de multiplication (signe × autorisé, pas de signe ÷ ni de division écrite : partages et groupements par le sens) ; fractions d\'un tout seulement, inférieures ou égales à 1, de dénominateur 2, 3, 4, 5, 6, 8 ou 10 (lire, écrire, colorier, comparer à même dénominateur ou à numérateur 1, ajouter et retirer à même dénominateur, compléter à 1), jamais la fraction d\'une quantité ; écriture à virgule seulement pour les prix (2,05 €), pas pour les longueurs ni les masses ; heures, demi-heures et quarts d\'heure, durées en heures et minutes dans une même journée ; centimètre, mètre, kilomètre, gramme, kilogramme (pas de litre) ; géométrie : carré, rectangle, triangle, triangle rectangle, cercle, angle droit, aigu, obtus, milieu, points alignés (pas de symétrie ni de patron).' + commun;
   if(k === 'ce2') return 'Élèves de CE2 (école élémentaire, cycle 2, 8-9 ans). Nombres entiers jusqu\'à 10 000 seulement ; fractions inférieures ou égales à 1, de dénominateur au plus 12 (égalités, comparaison, addition et soustraction de même dénominateur) ; nombres à virgule seulement pour les prix en euros ; multiplication posée d\'un nombre de 2 ou 3 chiffres par un nombre de 1 ou 2 chiffres ; division seulement par son sens (partage, « combien de fois »), sans division posée ; durées en heures et minutes ; unités m, dm, cm, mm, km, g, kg, t, L, dL, cL, conversions par les relations entre unités.' + commun;
   if(k === 'cm1') return 'Élèves de CM1 (école élémentaire, cycle 3, 9-10 ans). Nombres entiers jusqu\'à 999 999 (au plus 4 chiffres en début d\'année), nombres décimaux jusqu\'aux centièmes seulement, fractions de dénominateur au plus 20 (ou 100 pour les fractions décimales), angles comparés sans mesure en degrés.' + commun;
   if(k === 'cm2') return 'Élèves de CM2 (école élémentaire, cycle 3, 10-11 ans). Nombres entiers jusqu\'à 999 999 999, nombres décimaux jusqu\'aux millièmes, fractions de dénominateur au plus 60 (ou 100 et 1 000 pour les fractions décimales), multiplication d\'un décimal par un entier uniquement, division par un diviseur à un chiffre, degrés à partir de l\'angle droit (90°) mais pas de rapporteur, probabilités sous la forme « a chances sur b ».' + commun;
@@ -3665,6 +3680,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1194', date:'2026-10-28', items:['CE1 : contrôle de conformité avec le programme du cycle 2 (BO n° 41 du 31 octobre 2024) -- demandé : « Ce qui est hors programme peut être mis en \"pour aller plus loin\". Commence par CE1 ». Ajouts : fractions d\'un tout de dénominateur 2, 3, 4, 5, 6, 8, 10 (numérateur, dénominateur, 3/8 = 1/8 + 1/8 + 1/8, comparer, ajouter, retirer, compléter à 1 ; animations des parts coloriées une à une) ; nouveau chapitre « Tables de multiplication de 6, 7, 8 et 9 » ; calcul mental jusqu\'à 1 000 (746 + 80, 523 − 7, moitié de 470, multiples de 25, × 10 au glisse-nombre, 13 × 7 = 10 × 7 + 3 × 7) ; parité ; nombres ordinaux et suites ; (6 × 100) + (3 × 10) + (5 × 1) ; « supérieur à, inférieur à, compris entre » ; écriture à virgule des prix (2,05 € et 2,50 €) ; quarts d\'heure et durées en heures et minutes ; kilomètre ; angles aigus et obtus ; cercle au compas, milieu par pliage, points alignés ; assemblages de cubes ; vocabulaire des positions et plan de l\'école. Passent en « Pour aller plus loin » : la symétrie, le patron du cube, les noms quadrilatère, pentagone, hexagone, le tiers et le quart d\'une quantité, le calendrier (Questionner le monde), répéter des instructions, les nœuds du quadrillage. Titres de chapitres, planches, questions flash, quiz et consignes de l\'IA mis à jour.', 'CP : même contrôle. Ajouts : nombres ordinaux jusqu\'à vingtième et suites répétitives, doubles de 20 à 50 et moitiés de 40 à 100 (la moitié de 46), le mot « fois » (trois fois vingt = 20 + 20 + 20), plan de la classe et instructions de déplacement, tableau à double entrée, faces du pavé. Passent en « Pour aller plus loin » : la pyramide, le patron du cube, les jours de la semaine (Questionner le monde) ; la légende « Moitié de 2 × » de l\'animation des doubles devient « Dans chaque part ».', '5e : nouveau chapitre « Puissances » (programme 2026 : carré et cube, notation et exposant, carrés de 0 à 12, cube de 10, écrire un nombre comme une puissance, priorités, expressions littérales avec une puissance, aires et volumes ; animation du carré qui se remplit et du cube qui s\'empile ; 4 planches), placé avant le calcul littéral ; calcul littéral : « Conjecturer avec un tableur, démontrer par le calcul » ; la planche « événement contraire » (programme de 4e) passe en « Pour aller plus loin ».', '4e et 3e (programme de 2020, en vigueur jusqu\'en 2027 et 2028, attendus de fin d\'année) : 4e, nouveaux chapitres « Formules et graphiques » (produire une formule, tableau de valeurs, graphique, lecture graphique ; animation des carrés découpés dans un rectangle) et « Algorithmique et programmation » (niveaux 1 et 2 : boucle, si… alors… sinon, variable, événements, deux lutins ; la tortue qui trace les polygones réguliers) ; statistiques : le diagramme circulaire (animation secteur par secteur) ; espace : agrandissement et réduction (longueurs × k, aires × k², volumes × k³). 3e : les triangles semblables (définition, propriété caractéristique) dans le chapitre Homothétie ; nouveau chapitre « Algorithmique et programmation » (niveau 3 : blocs personnalisés et frise, répéter jusqu\'à, simulation de 400 lancers de pièce, jeu à plusieurs scripts, exercice type brevet). Progressions de 4e et de 3e mises à jour.'] },
   { version:'2026-08-19.1193', date:'2026-10-28', items:[
     "CP, CE1 et CE2 publiés pour tous -- demandé : « On peut tout publier. La relecture se fera progressivement ». Menus, cartes de l'accueil, chapitres, planches, questions flash et outils du professeur (correction, TD, Ma progression) proposent maintenant les neuf niveaux. Ces trois niveaux ne sont pas encore dans les offres ; les bêta-testeurs gardent leur accès.",
     "Référencement Google : sommaires /cp/, /ce1/, /ce2/ et une page par chapitre ; liens dans l'en-tête et le pied des pages publiques ; titre et description de l'accueil : « du CP à la 3e ».",

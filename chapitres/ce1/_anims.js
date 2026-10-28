@@ -152,19 +152,26 @@ function ce1AnimComparer(id, o){
     } });
 }
 
-/* ---- Un demi, un tiers, un quart : on partage l'unité en parts ÉGALES, puis on colorie ---- */
-const CE1_FRAC_MOTS = { 2: ['un demi', 'deux demis'], 3: ['un tiers', 'deux tiers', 'trois tiers'], 4: ['un quart', 'deux quarts', 'trois quarts', 'quatre quarts'] };
+/* ---- Les fractions d'un tout : on partage l'unité en parts ÉGALES, puis on colorie ----
+   Programme 2024, CE1 : dénominateurs 2, 3, 4, 5, 6, 8 et 10, fractions inférieures ou égales à 1. */
+const CE1_NB = ['zéro', 'un', 'deux', 'trois', 'quatre', 'cinq', 'six', 'sept', 'huit', 'neuf', 'dix'];
+const CE1_DENOM = { 2: ['demi', 'demis'], 3: ['tiers', 'tiers'], 4: ['quart', 'quarts'], 5: ['cinquième', 'cinquièmes'], 6: ['sixième', 'sixièmes'], 8: ['huitième', 'huitièmes'], 10: ['dixième', 'dixièmes'] };
+// Nom d'une fraction en lettres : ce1FracMot(3, 8) = « trois huitièmes ».
+const ce1FracMot = (k, n) => `${CE1_NB[k]} ${CE1_DENOM[n][k > 1 ? 1 : 0]}`;
+// « Pour aller plus loin » : notion du CE2 (ou d'après : vers = 'CM1'), présentée en fin de chapitre, hors programme du CE1.
+const ce1PlusLoin = (titre, vers) => `<div class="sub-header" data-oliv-plus="En route vers le ${vers || 'CE2'} !"><span class="letter">+</span><h4>Pour aller plus loin : ${titre}</h4></div>`;
 // Dessin d'une unité (bande, disque ou carré) partagée en n parts, k coloriées ; coupes : nombre de traits déjà tracés.
+// Carré : o.quadrants partage en deux rangées (4 = 2 × 2, 6 = 3 × 2, 8 = 4 × 2, 10 = 5 × 2) au lieu de bandes verticales.
 function ce1FracSvg(forme, n, k, o){
   o = o || {}; const c = o.c || '#E35D3A', coupes = o.coupes == null ? n - 1 : o.coupes; let s = '';
   if(forme === 'disque'){ const cx = 70, cy = 70, r = 60;
     for(let i = 0; i < n; i++){ const a0 = -Math.PI / 2 + i * 2 * Math.PI / n, a1 = a0 + 2 * Math.PI / n;
-      s += `<path d="M${cx} ${cy} L${cx + r * Math.cos(a0)} ${cy + r * Math.sin(a0)} A${r} ${r} 0 ${n === 1 ? 1 : 0} 1 ${cx + r * Math.cos(a1)} ${cy + r * Math.sin(a1)} Z" fill="${i < k ? c : '#fff'}" fill-opacity="${i < k ? .8 : 1}" stroke="none"/>`; }
-    for(let i = 0; i < Math.min(coupes + 1, n); i++){ const a = -Math.PI / 2 + i * 2 * Math.PI / n; if(n > 1 && (i > 0 || coupes > 0)) s += `<line x1="${cx}" y1="${cy}" x2="${cx + r * Math.cos(a)}" y2="${cy + r * Math.sin(a)}" stroke="${CPC.bord}" stroke-width="2"/>`; }
+      s += `<path d="M${cx} ${cy} L${(cx + r * Math.cos(a0)).toFixed(2)} ${(cy + r * Math.sin(a0)).toFixed(2)} A${r} ${r} 0 ${n === 1 ? 1 : 0} 1 ${(cx + r * Math.cos(a1)).toFixed(2)} ${(cy + r * Math.sin(a1)).toFixed(2)} Z" fill="${i < k ? c : '#fff'}" fill-opacity="${i < k ? .8 : 1}" stroke="none"/>`; }
+    for(let i = 0; i < Math.min(coupes + 1, n); i++){ const a = -Math.PI / 2 + i * 2 * Math.PI / n; if(n > 1 && (i > 0 || coupes > 0)) s += `<line x1="${cx}" y1="${cy}" x2="${(cx + r * Math.cos(a)).toFixed(2)}" y2="${(cy + r * Math.sin(a)).toFixed(2)}" stroke="${CPC.bord}" stroke-width="2"/>`; }
     s += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${CPC.bord}" stroke-width="2.5"/>`;
     return { s, w: 140, h: 140 }; }
-  if(forme === 'carre'){ const L = 120, x0 = 10, y0 = 10, sous = n === 4 && o.quadrants;
-    for(let i = 0; i < n; i++){ const [x, y, w, h] = sous ? [x0 + (i % 2) * L / 2, y0 + Math.floor(i / 2) * L / 2, L / 2, L / 2] : [x0 + i * L / n, y0, L / n, L];
+  if(forme === 'carre'){ const L = 120, x0 = 10, y0 = 10, sous = o.quadrants && n % 2 === 0 && n >= 4, nc = sous ? n / 2 : n;
+    for(let i = 0; i < n; i++){ const [x, y, w, h] = sous ? [x0 + (i % nc) * L / nc, y0 + Math.floor(i / nc) * L / 2, L / nc, L / 2] : [x0 + i * L / n, y0, L / n, L];
       s += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${i < k ? c : '#fff'}" fill-opacity="${i < k ? .8 : 1}" stroke="${i < coupes + 1 ? CPC.bord : 'none'}" stroke-width="2"/>`; }
     s += `<rect x="${x0}" y="${y0}" width="${L}" height="${L}" fill="none" stroke="${CPC.bord}" stroke-width="2.5"/>`;
     return { s, w: 140, h: 140 }; }
@@ -175,17 +182,24 @@ function ce1FracSvg(forme, n, k, o){
   return { s, w: L + 12, h: H + 12 };
 }
 function ce1Frac(forme, n, k, o){ o = o || {}; const f = ce1FracSvg(forme, n, k, o); return cpSvg(f.w, f.h, f.s, o.px || (forme === 'bande' ? 200 : 100)); }
+// k parts de 1/n : « 1/8 + 1/8 + 1/8 ».
+const ce1SommeUnit = (k, n) => Array(k).fill(cm1Frac(1, n)).join(' + ');
+// Animation : l'unité, le partage en n parts égales, puis les k parts coloriées une à une.
 function ce1AnimFraction(id, o){
   o = o || {};
+  const N = o.denoms || [2, 3, 4, 5, 6, 8, 10];
   return cmAnim(id, {
-    etat: { n: o.n || 3, forme: o.forme || 'disque' }, duree: 7500,
-    legende: o.legende || 'On partage l\'unité en parts égales, puis on colorie une part.',
-    controles: a => `<div class="cmp-modeles">${[['bande', 'Bande'], ['disque', 'Disque'], ['carre', 'Carré']].map(([f, l]) => cmBtn(id, 'forme', f, l, a.etat.forme === f)).join('')}${[2, 3, 4].map(v => cmBtn(id, 'n', v, ['', '', 'En 2', 'En 3', 'En 4'][v], a.etat.n === v)).join('')}</div>`,
+    etat: { n: o.n || 3, k: o.k || 1, forme: o.forme || 'disque' }, duree: a => 6000 + 500 * a.etat.k,
+    legende: o.legende || 'Choisis la forme, le nombre de parts égales et le nombre de parts coloriées.',
+    corriger: a => { a.etat.k = Math.max(1, Math.min(a.etat.k, a.etat.n)); },
+    controles: a => `<div class="cmp-modeles">${[['bande', 'Bande'], ['disque', 'Disque'], ['carre', 'Carré']].map(([f, l]) => cmBtn(id, 'forme', f, l, a.etat.forme === f)).join('')}</div>
+      <div class="cmp-modeles">${N.map(v => cmBtn(id, 'n', v, 'En ' + v, a.etat.n === v)).join('')}${cmPlusMoins(id, 'k', a.etat.k, 1, a.etat.n, 'Parts coloriées')}</div>`,
     dessin: (t, a) => {
-      const { n, forme } = a.etat, coupes = Math.floor(cmPhase(t, .12, .5) * (n - 1) + 1e-6) + (t >= .5 ? 0 : 0), k = t > .6 ? 1 : 0;
-      const f = ce1FracSvg(forme, n, k, { coupes: t < .12 ? -1 : coupes });
-      const nom = CE1_FRAC_MOTS[n][0];
-      const texte = t < .12 ? 'Voici l\'unité, entière.' : t < .55 ? `On la partage en <b>${n} parts égales</b>.` : `Une part sur ${n}, c'est <b>${nom}</b> de l'unité. On écrit ${cm1Frac(1, n)}.`;
+      const { n, k, forme } = a.etat, coupes = Math.floor(cmPhase(t, .12, .5) * (n - 1) + 1e-6), vu = Math.floor(cmPhase(t, .55, .92) * k + 1e-6);
+      const f = ce1FracSvg(forme, n, Math.min(k, t >= .92 ? k : vu), { coupes: t < .12 ? -1 : coupes, quadrants: true });
+      const fin = `${k === 1 ? 'Une part' : CE1_NB[k][0].toUpperCase() + CE1_NB[k].slice(1) + ' parts'} sur ${n}, c'est <b>${ce1FracMot(k, n)}</b> de l'unité. On écrit ${cm1Frac(k, n)}`
+        + (k === n ? ` = 1 : c'est l'unité entière.` : k > 1 && k <= 5 ? ` = ${ce1SommeUnit(k, n)}.` : '.');
+      const texte = t < .12 ? 'Voici l\'unité, entière.' : t < .55 ? `On la partage en <b>${n} parts égales</b>.` : t < .92 ? `On colorie ${Math.max(vu, 0)} part${vu > 1 ? 's' : ''} sur ${n}…` : fin;
       return { scene: `<svg viewBox="0 0 ${f.w} ${f.h}" class="cma-svg" style="max-width:${forme === 'bande' ? 420 : 240}px;">${f.s}</svg>`, texte };
     } });
 }
@@ -307,3 +321,6 @@ function ce1AnimTortue(id, o){
       return { scene: `<svg viewBox="0 0 ${nc * C + 200} ${nr * C + 8}" class="cma-svg" style="max-width:600px;">${s}${cartes}</svg>`, texte };
     } });
 }
+
+/* ---- Solides : assemblage de cubes (dessin commun cmCubes, chapitres/cm1/_anims.js) ---- */
+const ce1Cubes = cmCubes;

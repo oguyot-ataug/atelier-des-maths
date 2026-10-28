@@ -96,7 +96,7 @@ PLANCHES['5e|Statistiques'] = [
       { etoiles: 1, col: 1, consigne: 'Durée de sommeil (en heures) de 6 élèves : 9 ; 8 ; 10 ; 7 ; 9 ; 11.',
         ...rmp([['Durée moyenne : @ h', 9], ['Nombre d\'élèves qui dorment plus que la moyenne : @', 2], ['Étendue : @ h', 4]], 2) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Deux élèves ont eu ces notes. Hugo : 10 ; 10 ; 10 ; 10. Inès : 4 ; 16 ; 6 ; 14. Calcule leurs moyennes. Que remarques-tu ? Qui est le plus régulier ?',
-        corr: cm1Redac('Moyennes', { suite: ['Hugo : 40 : 4 = 10', 'Inès : 40 : 4 = 10'] }, 'Ils ont la même moyenne, mais Hugo est plus régulier (étendue 0 contre 12 pour Inès).') },
+        corr: cm1Redac('Moyennes', { suite: ['Hugo : 40 : 4 = 10', 'Inès : 40 : 4 = 10'] }, 'Ils ont la même moyenne, mais Hugo est plus régulier : ses notes sont toutes égales, celles d\'Inès sont très dispersées.') },
     ] },
 ];
 })();

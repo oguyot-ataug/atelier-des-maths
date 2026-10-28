@@ -36,5 +36,14 @@ PLANCHES['ce1|Comparer, ranger, encadrer'] = [
       { etoiles: 2, col: 1, consigne: 'Encadre entre deux centaines.', ...P3.rmp([['@ < 456 < @', 400, 500], ['@ < 98 < @', 0, 100], ['@ < 901 < @', 900, '1 000']], 3) },
       { etoiles: 3, col: 1, consigne: 'Quel nombre est le plus près de 400 ? Entoure.', ...P3.chx([['', '398', '350 · 398 · 420'], ['', '405', '405 · 380 · 430']]) },
     ] },
+  { titre: 'Supérieur, inférieur, compris entre', duree: '20 min',
+    attendus: ['Comprendre et utiliser égal à, supérieur à, inférieur à, compris entre', 'Ranger jusqu\'à cinq nombres'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'Écris avec un signe &lt;, &gt; ou =.', ...P3.rmp([['325 est supérieur à 289 : @', '325 &gt; 289'], ['418 est inférieur à 481 : @', '418 &lt; 481'], ['600 est égal à 600 : @', '600 = 600']], 6) },
+      { etoiles: 1, col: 1, consigne: 'Complète avec supérieur, inférieur ou égal.', ...P3.rmp([['706 est @ à 670.', 'supérieur'], ['399 est @ à 400.', 'inférieur']], 5) },
+      { etoiles: 2, col: 1, consigne: 'Écris un nombre qui convient.', ...P3.rmp([['un nombre compris entre 390 et 400 : @', { ex: '395', entre: [390, 400] }], ['un nombre compris entre 750 et 760 : @', { ex: '754', entre: [750, 760] }]], 3) },
+      { etoiles: 2, col: 1, consigne: 'Range dans l\'ordre croissant : 234, 243, 239, 300, 229.', eleve: P3.B(30), corr: P3.R('229 &lt; 234 &lt; 239 &lt; 243 &lt; 300') },
+      { etoiles: 3, consigne: 'Complète la bande numérique.', ...PCP.suite([391, 392, 393, '@394', '@395', 396, 397, 398]) },
+    ] },
 ];
 })();

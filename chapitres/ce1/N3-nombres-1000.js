@@ -3,7 +3,9 @@
    Programme du cycle 2 (BO n° 41 du 31 octobre 2024), partie CE1 : la centaine (dix dizaines, cent
    unités), dénombrer en groupant par cent, par dix ; lire et écrire les nombres jusqu'à 1 000 en
    chiffres et en lettres ; valeur des chiffres selon leur place (centaines, dizaines, unités) ;
-   décompositions (243 = 200 + 40 + 3) ; la droite graduée de 100 en 100 ; mille.
+   décompositions (243 = 200 + 40 + 3 ; (6 × 100) + (3 × 10) + (5 × 1) ; 63 dizaines et 5 unités ;
+   5 unités, 5 centaines et 13 dizaines) ; dénombrer des collections où une unité de numération
+   dépasse dix (17 unités, 8 dizaines et 2 centaines) ; la droite graduée de 100 en 100 ; mille.
    Pensé pour être projeté : dix barres de dix qui se rassemblent en une plaque de cent.
    ============================================================ */
 (() => {
@@ -32,6 +34,11 @@ ${cm1Axe(0, 1000, 100, 100, [[300, 'A'], [700, 'B']])}
 ${P('Graduée de 100 en 100 : A est en face de <b>300</b>, B en face de <b>700</b>.')}
 ${cm1Axe(200, 300, 10, 50, [[230, 'C'], [280, 'D']])}
 ${cm1Regle('Ici, entre 200 et 300, chaque petit trait vaut 10 : C est en face de <b>230</b>, D en face de <b>280</b>.')}
+
+${cm1Lecon(5, 'Un nombre, plusieurs écritures')}
+${cm1Tableau(['Écriture', '635'], [['en lettres', 'six-cent-trente-cinq'], ['en unités de numération', '6 centaines, 3 dizaines et 5 unités'], ['autrement', '63 dizaines et 5 unités ; ou 635 unités'], ['décomposition additive', '600 + 30 + 5'], ['avec des multiplications', '(6 × 100) + (3 × 10) + (5 × 1)']])}
+${cm1Regle(`L'ordre ne compte pas, et on peut avoir plus de dix unités d'un même rang :${cm1Liste(['3 dizaines et 6 centaines et 5 unités = 635', '5 unités et 5 centaines et 13 dizaines = 500 + 130 + 5 = 635'])}`, 'Attention aux rangs')}
+${cm1Exemple('Dénombrer : 17 unités, 8 dizaines et 2 centaines.', ['2 centaines : 200', '8 dizaines : 80', '17 unités : 17', '200 + 80 + 17 = 297'])}
 `,
   methode: `
 ${cm1Demo('ce1-n3-m-ecrire', 'Écrire « quatre-cent-sept » en chiffres', 'Écris ce nombre en chiffres.')}
@@ -61,6 +68,10 @@ ${cm1Demo('ce1-n3-m-compter', 'Compter des plaques, barres et cubes', 'Combien d
       cm1Redac('Les chiffres de 739', '739 = 700 + 30 + 9', 'Le chiffre des centaines est 7, celui des dizaines 3, celui des unités 9.', ce1CDU(739))],
     ['Décompose 860.',
       cm1Redac('Décomposer 860', '860 = 800 + 60', '860, c\'est 8 centaines, 6 dizaines et 0 unité.')],
+    ['Écris 472 avec des multiplications par 100, par 10 et par 1.',
+      cm1Redac('472', '472 = (4 × 100) + (7 × 10) + (2 × 1)', '472, c\'est 4 centaines, 7 dizaines et 2 unités.')],
+    ['Quel nombre font 2 centaines, 27 dizaines et 14 unités ?',
+      cm1Redac('Le nombre', { suite: ['2 centaines : 200', '27 dizaines : 270', '200 + 270 + 14 = 484'] }, 'Cela fait 484.')],
     [`Quels nombres sont en face des points A et B ?${cm1Axe(400, 500, 10, 50, [[420, 'A'], [470, 'B']])}`,
       cm1Redac('Les points A et B', { suite: ['A : 420', 'B : 470'] }, 'Chaque petit trait vaut 10 : A est en face de 420, B en face de 470.')],
     ['Un fleuriste range ses roses par bouquets de 10. Il a 4 caisses de 100 roses et 6 bouquets de 10. Combien a-t-il de roses ?',

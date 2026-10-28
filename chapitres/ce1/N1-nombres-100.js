@@ -2,7 +2,9 @@
    CHAPITRE : Les nombres jusqu'à 100 (CE1, N1, période 1)
    Programme du cycle 2 (BO n° 41 du 31 octobre 2024), partie CE1 : consolider les nombres jusqu'à
    100 vus au CP (dizaines et unités, écritures en chiffres et en lettres, en particulier de 60 à 99),
-   le tableau des nombres, la droite graduée (nouveau : placer et repérer un nombre), comparer.
+   le tableau des nombres, la droite graduée (nouveau : placer et repérer un nombre), comparer ; les
+   nombres ordinaux jusqu'à cent (premier, deuxième… centième ; le rang et le nombre d'éléments qui
+   précèdent) et les suites répétitives ou évolutives de symboles, de lettres ou de nombres.
    Pensé pour être projeté : les cubes qui se rangent en barres de dix, le mot découpé.
    ============================================================ */
 (() => {
@@ -30,6 +32,12 @@ ${cm1Regle('Pour lire un nombre, je regarde les nombres écrits avant et après,
 ${cm1Lecon(4, 'Comparer et ranger')}
 ${cm1Regle(`On compare d'abord les dizaines, puis les unités.${cm1Liste(['68 &lt; 86 (6 dizaines &lt; 8 dizaines)', '53 &gt; 51 (même nombre de dizaines, 3 &gt; 1)'])}`, 'Comparer')}
 ${lig(cpTableau(0, 99, { c: 26, colonne: 0 }))}
+
+${cm1Lecon(5, 'Premier, deuxième… centième')}
+${cm1Def(`${lig(cpSvg(420, 90, ['#E35D3A', '#2EA8C9', '#E9C46A', '#2E9C6A', '#7A4FC0', '#E35D3A'].map((c, i) => `<circle cx="${40 + i * 68}" cy="34" r="22" fill="${c}" fill-opacity=".8" stroke="${CPC.bord}" stroke-width="2"/>` + ce2T(40 + i * 68, 80, ['1<sup>er</sup>', '2<sup>e</sup>', '3<sup>e</sup>', '4<sup>e</sup>', '5<sup>e</sup>', '6<sup>e</sup>'][i].replace(/<\/?sup>/g, ''), { t: 15, g: 700 })).join(''), 380))}${P('Dans une file, on dit le <b>rang</b> de chacun : <b>premier</b> (1<sup>er</sup>), <b>deuxième</b> (2<sup>e</sup>), troisième, quatrième… vingtième, trente-et-unième… <b>centième</b>.')}`, 'Les nombres ordinaux')}
+${cm1Regle('Devant le quarante-huitième coureur, il y a <b>47</b> coureurs : le rang moins un.', 'Le rang et ceux qui sont avant')}
+${cm1Regle(`Dans la suite répétitive <b>A B A B A B…</b>, le motif « A B » a 2 lettres :${cm1Liste(['les lettres de rang pair (2<sup>e</sup>, 4<sup>e</sup>, 6<sup>e</sup>…) sont des B ;', 'les lettres de rang impair (1<sup>re</sup>, 3<sup>e</sup>, 5<sup>e</sup>…) sont des A.'])}${P('La quatre-vingt-neuvième lettre est donc un <b>A</b>.')}`, 'Les suites répétitives')}
+${cm1Exemple('Une suite évolutive :', ['1, 2, 4, 7, 11, 16… : on ajoute 1, puis 2, puis 3, puis 4, puis 5…', 'le nombre suivant est 16 + 6 = 22.'])}
 `,
   methode: `
 ${cm1Demo('ce1-n1-m-lettres', 'Écrire 97 en lettres', 'Écris le nombre 97 en lettres.')}
@@ -61,6 +69,10 @@ ${cm1Demo('ce1-n1-m-droite', 'Lire un nombre sur une droite graduée', 'Quel nom
       cm1Redac('Les points A et B', { suite: ['A : 23', 'B : 36'] }, 'A est en face de 23 et B en face de 36.')],
     ['Range du plus petit au plus grand : 67, 76, 59, 70.',
       cm1Redac('Ranger', '59 &lt; 67 &lt; 70 &lt; 76', 'Dans l\'ordre croissant : 59, 67, 70, 76.')],
+    ['Dans une course, Léa arrive vingt-troisième. Combien de coureurs sont arrivés avant elle ?',
+      cm1Redac('Coureurs avant Léa', '23 − 1 = 22', '22 coureurs sont arrivés avant Léa.')],
+    ['Dans la suite répétitive △ ▢ ○ △ ▢ ○ △…, quel est le dixième symbole ?',
+      cm1Redac('Le dixième symbole', { suite: ['3 × 3 = 9', 'le 9<sup>e</sup> symbole est ○, le 10<sup>e</sup> est △'] }, 'Le motif a 3 symboles : le dixième symbole est un △.')],
     ['Écris le nombre qui vient juste avant et juste après 80.',
       cm1Redac('Avant et après 80', { suite: ['80 − 1 = 79', '80 + 1 = 81'] }, 'Juste avant 80, il y a 79 ; juste après, 81.')],
   ]),
@@ -72,6 +84,7 @@ ${cm1Demo('ce1-n1-m-droite', 'Lire un nombre sur une droite graduée', 'Quel nom
     { q: 'Quatre-vingt-douze s\'écrit…', opts: ['4 20 12', '92', '82'], correct: 1 },
     { q: 'Dans 63, le chiffre des dizaines est…', opts: ['3', '6', '63'], correct: 1 },
     { q: 'Quel est le plus grand ?', opts: ['79', '81', '78'], correct: 1 },
+    { q: 'Le coureur qui arrive juste après le premier est…', opts: ['le deuxième', 'le troisième', 'le dernier'], correct: 0 },
   ],
   flash: [
     { l: 1, q: '7 dizaines et 2 unités, c\'est…', r: ['72', '27', '702', '9'], ok: 0 },
@@ -81,6 +94,9 @@ ${cm1Demo('ce1-n1-m-droite', 'Lire un nombre sur une droite graduée', 'Quel nom
     { l: 3, q: 'Sur une droite graduée de 10 en 10, après 40 vient…', r: ['41', '50', '60', '400'], ok: 1 },
     { l: 4, q: '58 … 85', r: ['&lt;', '&gt;', '=', '+'], ok: 0 },
     { l: 4, q: 'Juste après 99, il y a…', r: ['100', '910', '98', '1000'], ok: 0 },
+    { l: 5, q: 'Avant le 10<sup>e</sup> de la file, il y a…', r: ['9 enfants', '10 enfants', '11 enfants', '1 enfant'], ok: 0 },
+    { l: 5, q: 'ABABAB… La 20<sup>e</sup> lettre est…', r: ['B', 'A', 'C', 'on ne sait pas'], ok: 0 },
+    { l: 5, q: '5, 10, 15, 20… Le nombre suivant :', r: ['25', '21', '30', '40'], ok: 0 },
   ],
 });
 })();

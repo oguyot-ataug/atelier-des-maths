@@ -41,5 +41,14 @@ PLANCHES['ce1|Les nombres jusqu\'à 100'] = [
         eleve: cm1Axe(70, 90, 1, 5, [[72, 'G'], [78, 'H'], [86, 'I']]) + plListe(['G : ' + B(2), 'H : ' + B(2), 'I : ' + B(2)]),
         corr: cm1Axe(70, 90, 1, 5, [[72, 'G'], [78, 'H'], [86, 'I']]) + plListe(['G : ' + R(72), 'H : ' + R(78), 'I : ' + R(86)]) },
     ] },
+  { titre: 'Premier, deuxième… et les suites', duree: '20 min',
+    attendus: ['Utiliser les nombres ordinaux', 'Relier le rang au nombre d\'éléments qui précèdent', 'Continuer une suite répétitive ou évolutive'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'Écris en chiffres le rang.', ...P3.rmp([['premier : @', '1<sup>er</sup>'], ['quinzième : @', '15<sup>e</sup>'], ['vingt-et-unième : @', '21<sup>e</sup>'], ['centième : @', '100<sup>e</sup>']], 3) },
+      { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['Avant le 12<sup>e</sup> de la file, il y a @ enfants.', 11], ['Le coureur qui arrive après le 48<sup>e</sup> est le @.', '49<sup>e</sup>'], ['Avant le 48<sup>e</sup> coureur, il y a @ coureurs.', 47]], 3) },
+      { etoiles: 1, consigne: 'Continue la suite répétitive.', ...PCP.suite(['△', '▢', '○', '△', '▢', '○', '@△', '@▢', '@○']) },
+      { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['ABABAB… La 10<sup>e</sup> lettre est @.', 'B'], ['ABABAB… La 17<sup>e</sup> lettre est @.', 'A'], ['1, 3, 5, 7, 9… Le nombre suivant est @.', 11]], 2) },
+      { etoiles: 3, col: 1, consigne: 'Suite évolutive : on ajoute 1, puis 2, puis 3… Complète.', ...PCP.suite([1, 2, 4, 7, 11, '@16', '@22', '@29']) },
+    ] },
 ];
 })();

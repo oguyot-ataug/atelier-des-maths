@@ -35,5 +35,15 @@ PLANCHES['ce1|La monnaie : euros et centimes'] = [
       { etoiles: 2, consigne: 'J\'ai 10 €. Entoure ce que je peux acheter.', ...PCP.entoure([['<span class="cpn-prix">ballon : 12 €</span>', false], ['<span class="cpn-prix">livre : 9 €</span>', true], ['<span class="cpn-prix">puzzle : 15 €</span>', false], ['<span class="cpn-prix">bille : 1 €</span>', true]], 4) },
       { etoiles: 3, col: 1, consigne: 'Combien me manque-t-il ?', ...P3.rmp([['J\'ai 12 €, le jeu coûte 20 € : @', '8 €'], ['J\'ai 35 €, le vélo coûte 50 € : @', '15 €']], 3) },
     ] },
+  { titre: 'L\'écriture à virgule', duree: '20 min',
+    attendus: ['Écrire une somme avec une virgule (période 3)', 'Distinguer 2,05 € et 2,50 €', 'Ranger des prix'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'Écris avec une virgule.', ...P3.rmp([['2 € et 17 c : @', '2,17 €'], ['3 € et 45 c : @', '3,45 €'], ['85 c : @', '0,85 €'], ['17 € : @', '17,00 €']], 4) },
+      { etoiles: 2, col: 1, consigne: 'Écris avec une virgule. Attention aux centimes !', ...P3.rmp([['2 € et 5 c : @', '2,05 €'], ['2 € et 50 c : @', '2,50 €'], ['6 € et 8 c : @', '6,08 €']], 4) },
+      { etoiles: 1, col: 1, consigne: 'Écris en euros et centimes.', ...P3.rmp([['4,30 € = @ € et @ c', 4, 30], ['0,75 € = @ c', 75], ['345 c = @ € et @ c', 3, 45]], 2) },
+      { etoiles: 2, col: 1, consigne: 'Entoure la plus grande somme.', ...P3.chx([['', '12 €', '12 € · 60 c'], ['', '2,50 €', '2,05 € · 2,50 €'], ['', '1,10 €', '99 c · 1,10 €']]) },
+      { etoiles: 3, col: 1, consigne: 'Range du moins cher au plus cher : 1,50 € ; 95 c ; 1,05 € ; 2 €.', eleve: P3.B(30), corr: P3.R('95 c &lt; 1,05 € &lt; 1,50 € &lt; 2 €') },
+      { etoiles: 3, cahier: true, consigne: 'Monsieur Milack achète une baguette à 1,15 € et un pain aux raisins à 95 centimes. Il donne un billet de 5 €. Combien le vendeur lui rend-il ?', corr: cm1Redac('Monnaie rendue', { suite: ['115 c + 95 c = 210 c', '210 c = 2,10 €', '2,10 € + 2,90 € = 5 €'] }, 'Le vendeur lui rend 2,90 €.') },
+    ] },
 ];
 })();

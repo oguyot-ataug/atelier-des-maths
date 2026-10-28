@@ -35,7 +35,8 @@ ${cm1Def(`Partager <b>équitablement</b>, c'est donner <b>la même quantité</b>
 
 ${cm1Lecon(4, 'Résoudre des problèmes')}
 ${cm1Exemple('Exemple', [`Une boîte contient 5 gâteaux. Combien de gâteaux dans 3 boîtes ?${cm1Redac('Gâteaux dans 3 boîtes', '5 + 5 + 5 = 15', 'Il y a 15 gâteaux dans 3 boîtes.', paquets(3, 5, '#B07A45'))}`])}
-${cm1Rem('Au CE1, on écrira 3 × 5 = 15 (« 3 fois 5 »). Au CP, l\'addition répétée et le dessin suffisent.')}
+${cm1Regle('Jan a 3 paquets de 20 biscuits : il a <b>trois fois vingt</b> biscuits. On écrit 20 + 20 + 20 = 60.', 'Le mot « fois »')}
+${cm1Rem('Au CP, on dit « fois » et on écrit l\'addition répétée ; le signe de la multiplication viendra au CE1.')}
 `,
   methode: `
 ${cm1Demo('cp-n13-m-groupes', 'Combien en tout ?', 'Il y a 5 vases. Dans chaque vase, il y a 2 fleurs. Combien de fleurs en tout ?')}
@@ -85,6 +86,7 @@ ${cm1Demo('cp-n13-m-partage', 'Partager équitablement', 'On partage 8 crêpes e
     { l: 2, q: '5, 10, 15, …', r: ['16', '20', '25', '30'], ok: 1 },
     { l: 2, q: '10, 20, 30, …', r: ['31', '40', '50', '300'], ok: 1 },
     { l: 3, q: '8 bonbons pour 2 enfants : chacun en a…', r: ['4', '6', '10', '16'], ok: 0 },
+    { l: 4, q: 'Trois fois dix, c\'est…', r: ['10 + 10 + 10', '3 + 10', '10 + 3', '3 + 3'], ok: 0 },
     { l: 4, q: 'Une paire de chaussettes, c\'est…', r: ['1 chaussette', '2 chaussettes', '10 chaussettes', '12 chaussettes'], ok: 1 },
   ],
 });

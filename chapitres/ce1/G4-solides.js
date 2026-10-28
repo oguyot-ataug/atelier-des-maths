@@ -1,15 +1,19 @@
 /* ============================================================
    CHAPITRE : Les solides : faces, arêtes, sommets (CE1, G4, période 4)
    Programme du cycle 2 (BO n° 41 du 31 octobre 2024), partie CE1, espace et géométrie : reconnaître
-   et nommer cube, pavé, boule, cylindre, cône, pyramide ; décrire le cube et le pavé avec le
-   vocabulaire face, arête, sommet ; les faces du cube sont des carrés, celles du pavé des rectangles ;
-   le patron du cube (six carrés qui se replient) ; construire avec des cubes.
+   et nommer cube, pavé, boule, cylindre, cône, pyramide ; décrire le cube, le pavé et la pyramide
+   avec le vocabulaire face, arête, sommet ; les faces du cube sont des carrés, celles du pavé des
+   rectangles ; construire un polyèdre à partir d'un modèle ; construire des assemblages de cubes à
+   partir d'un modèle ou d'une représentation en perspective. Les élèves ne dessinent pas eux-mêmes
+   les solides. Pour aller plus loin (CE2) : le patron du cube.
    Pensé pour être projeté : les arêtes comptées une à une, le patron qui se plie.
    ============================================================ */
 (() => {
 const lig = (...l) => `<div class="cpn-rang">${l.join('')}</div>`;
 const P = t => `<p style="text-align:center;margin:2px 0;">${t}</p>`;
 const solide = (type, o) => cpSvg(320, 210, ce1SolideSvg(type, o), (o && o.px) || 200);
+const cubes = ce1Cubes;
+const ESCALIER = [[0, 0, 0], [1, 0, 0], [2, 0, 0], [1, 1, 0], [2, 1, 0], [2, 2, 0]], TOUR = [[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1]];
 
 cm1Chapitre({
   niveau: 'ce1', titre: 'Les solides : faces, arêtes, sommets', slug: 'solides',
@@ -22,12 +26,17 @@ ${cm1Lecon(2, 'Le cube et le pavé')}
 ${cm1Regle(`${lig(solide('cube', { px: 170 }), solide('pave', { px: 200 }))}${cm1Liste(['Le <b>cube</b> : 6 faces carrées toutes pareilles, 12 arêtes de même longueur, 8 sommets.', 'Le <b>pavé</b> : 6 faces rectangulaires (les faces opposées sont pareilles), 12 arêtes, 8 sommets.'])}`, 'À savoir')}
 ${cm1Astuce('Une boîte à chaussures, une brique de lait, une boîte de mouchoirs sont des pavés. Un dé à jouer est un cube.')}
 
-${cm1Lecon(3, 'Le patron du cube')}
-${cm1Pliage('ce1-g4-cube', { modeles: CM_CUBE_PATRONS.slice(0, 4).map(m => ({ nom: m.nom, faces: cmCube(m.cases) })), legende: 'Six carrés bien placés se replient pour former un cube : c\'est un <b>patron</b>. Cliquez sur « Plier » ; faites glisser pour tourner autour.' })}
-${cm1Rem('Au tableau : déplier une boîte en carton, puis faire construire un cube avec six carrés et du ruban adhésif.')}
+${cm1Lecon(3, 'Les autres solides')}
+${cm1Regle(`${cm1Liste(['La <b>boule</b> n\'a ni face plane, ni arête, ni sommet.', 'Le <b>cylindre</b> a 2 faces planes (des disques) et une surface arrondie.', 'Le <b>cône</b> a 1 face plane (un disque) et une pointe, son sommet.', 'La <b>pyramide à base carrée</b> a 5 faces (un carré et 4 triangles), 8 arêtes et 5 sommets.'])}`, 'Les décrire')}
+${cm1Astuce('Une boîte de conserve a la forme d\'un cylindre ; une balle de tennis, celle d\'une boule ; un cornet de glace, celle d\'un cône.')}
 
-${cm1Lecon(4, 'Les autres solides')}
-${cm1Regle(`${cm1Liste(['La <b>boule</b> n\'a ni face plane, ni arête, ni sommet.', 'Le <b>cylindre</b> a 2 faces planes (des disques) et une surface arrondie.', 'Le <b>cône</b> a 1 face plane (un disque) et une pointe, son sommet.', 'La <b>pyramide</b> a des faces triangulaires qui se rejoignent à son sommet.'])}`, 'Les décrire')}
+${cm1Lecon(4, 'Construire des solides')}
+${cm1Def(`${lig(cubes(ESCALIER), cubes(TOUR))}${P('On reproduit un <b>assemblage de cubes</b> en regardant le modèle (ou sa photo) : combien de cubes en bas, combien au-dessus, combien derrière ? Cet escalier a 6 cubes.')}`, 'Assembler des cubes')}
+${cm1Regle('Pour construire un cube, un pavé ou une pyramide à partir d\'un modèle, on assemble ses faces (en carton) ou ses arêtes (des pailles) et ses sommets (de la pâte à modeler).', 'Construire un polyèdre')}
+${cm1Rem('Au tableau : montrer un modèle en cubes emboîtables, puis seulement sa photo ; les élèves le reproduisent.')}
+
+${ce1PlusLoin('le patron du cube')}
+${cm1Pliage('ce1-g4-cube', { modeles: CM_CUBE_PATRONS.slice(0, 4).map(m => ({ nom: m.nom, faces: cmCube(m.cases) })), legende: 'Six carrés bien placés se replient pour former un cube : c\'est un <b>patron</b>, que l\'on étudiera au CE2. Cliquez sur « Plier » ; faites glisser pour tourner autour.' })}
 `,
   methode: `
 ${cm1Demo('ce1-g4-m-compter', 'Compter les arêtes d\'un pavé', 'Combien d\'arêtes a ce pavé ?')}
@@ -56,6 +65,8 @@ ${cm1Demo('ce1-g4-m-decrire', 'Décrire un solide pour le faire deviner', 'Décr
       cm1Redac('Les objets', '', 'La boîte à chaussures : un pavé. Le dé : un cube. La balle : une boule.')],
     ['Combien de carrés faut-il pour fabriquer un cube ?',
       cm1Redac('Fabriquer un cube', '', 'Il faut 6 carrés pareils, un pour chaque face.')],
+    [`Combien de cubes faut-il pour construire cet assemblage ?${lig(cubes(ESCALIER))}`,
+      cm1Redac('Les cubes', '3 + 2 + 1 = 6', 'En bas, 3 cubes ; au milieu, 2 ; en haut, 1 : il faut 6 cubes.')],
     ['Paul a construit un pavé avec 2 rangées de 3 cubes. Combien de cubes a-t-il utilisés ?',
       cm1Redac('Les cubes', '2 × 3 = 6', 'Paul a utilisé 6 cubes.')],
     ['Une pyramide a une base carrée. Combien a-t-elle de faces ?',
@@ -74,8 +85,10 @@ ${cm1Demo('ce1-g4-m-decrire', 'Décrire un solide pour le faire deviner', 'Décr
     { l: 1, q: 'Un « coin » d\'un cube, c\'est…', r: ['un sommet', 'une face', 'une arête', 'un côté'], ok: 0 },
     { l: 2, q: 'Le cube a … arêtes.', r: ['12', '8', '6', '4'], ok: 0 },
     { l: 2, q: 'Le pavé a … faces.', r: ['6', '4', '8', '12'], ok: 0 },
-    { l: 3, q: 'Un patron de cube a … carrés.', r: ['6', '4', '8', '12'], ok: 0 },
-    { l: 4, q: 'La boule a … sommet(s).', r: ['0', '1', '2', '8'], ok: 0 },
+    { l: 3, q: 'La boule a … sommet(s).', r: ['0', '1', '2', '8'], ok: 0 },
+    { l: 3, q: 'Une boîte de conserve a la forme…', r: ['d\'un cylindre', 'd\'un cube', 'd\'une boule', 'd\'une pyramide'], ok: 0 },
+    { l: 3, q: 'Les faces d\'une pyramide à base carrée : un carré et…', r: ['4 triangles', '4 carrés', '2 disques', '6 rectangles'], ok: 0 },
+    { l: 4, q: `Combien de cubes ?${lig(cubes(TOUR, 110))}`, r: ['4', '3', '5', '6'], ok: 0 },
   ],
 });
 })();
