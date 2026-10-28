@@ -1,0 +1,4 @@
+cdx-bo19-hebdo22.json : HTTP 503, 11832 octets (https://web.archive.org/cdx/search/cdx?url=education.gouv.fr/bo/19/Hebdo22/*&output=json&fl=original,timestamp,statuscode&collapse=urlkey&limit=300)
+cdx-eduscol-reperes.json : HTTP 503, 11832 octets (https://web.archive.org/cdx/search/cdx?url=cache.media.eduscol.education.fr/file/Mathematiques/*&output=json&fl=original,timestamp&collapse=urlkey&filter=original:.*(epere|ttendu).*&limit=300)
+cdx-eduscol-annuels.json : HTTP 200, 21191 octets (https://web.archive.org/cdx/search/cdx?url=cache.media.eduscol.education.fr/file/*&output=json&fl=original,timestamp&collapse=urlkey&filter=original:.*(Reperes_annuels|reperes_annuels|Attendus|attendus).*&limit=500)
+bo19-hebdo22.html : HTTP 403, 5491 octets (https://www.education.gouv.fr/bo/19/Hebdo22/MENE1915456N.htm)
