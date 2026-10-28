@@ -25,8 +25,8 @@ Project ID Supabase de ce dépôt : `rngzubhnypmistjsumpz`.
 
 ## Référencement : régénérer les pages statiques après toute modification d'un chapitre
 
-Les pages indexables par Google (`cm1/<chapitre>/`, `cm2/<chapitre>/`, `6e/<chapitre>/`, `5e/<chapitre>/`, `4e/<chapitre>/`, `3e/<chapitre>/`, `cm1/`, `cm2/`, `6e/`, `5e/`, `4e/`, `3e/`,
-`professeurs/`),
+Les pages indexables par Google (`cp/<chapitre>/`, `ce1/<chapitre>/`, `ce2/<chapitre>/`, `cm1/<chapitre>/`, `cm2/<chapitre>/`, `6e/<chapitre>/`, `5e/<chapitre>/`, `4e/<chapitre>/`, `3e/<chapitre>/`, `cp/`, `ce1/`, `ce2/`, `cm1/`, `cm2/`, `6e/`, `5e/`, `4e/`, `3e/`,
+`professeurs/`, `programmes/`),
 `sitemap.xml` et `robots.txt` sont GÉNÉRÉES à partir du vrai contenu des chapitres par
 `tools/build-seo.js` (ne pas les modifier à la main). Après toute modification d'un fichier de
 `chapitres/`, d'un titre de chapitre (CHCM1/CHCM2/CH6/CH5/CH4/CH3 dans app.js) ou de la page professeurs, relancer :
@@ -71,6 +71,18 @@ Nouveaux programmes (cycle 3 : CM1, CM2, 6e ; cycle 4 : 5e, 4e, 3e), avec une en
 
 Le texte du nouveau programme du cycle 4 (annexe 2) couvre déjà 4e et 3e : on peut s'en servir pour
 préparer ces mises à jour, sans les publier avant la date d'effet.
+
+## CP, CE1, CE2 : publiés, pas vendus (depuis le 28/10/2026, build 1193)
+
+Les trois niveaux sont visibles de tous (menus, accueil, pages publiques `cp/`, `ce1/`, `ce2/`) ; la relecture
+continue au fil de l'eau. Ils ne sont dans aucune offre (Professeur seul, Famille, licence établissement) : ne pas
+les ajouter aux offres ni aux fonctions de paiement sans demande. `NIVEAUX_ADMIN` (app.js) liste ces niveaux non
+vendus pour le bêta-test ; `NIVEAUX_MASQUES` (vide) masquerait un niveau en préparation.
+
+## Page « Notions du CP à la 3e » (/programmes/)
+
+Données dans `assets/programmes/notions.js`, uniquement d'après les programmes officiels (sources en tête du
+fichier) ; la page est écrite par `tools/build-seo.js`.
 
 ## Rédaction pédagogique (chapitres du primaire, demandé le 01/10/2026)
 

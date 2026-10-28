@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alignements et tracés sur quadrillage : tracer un trait droit – Cours de maths CP | L'Atelier des Maths</title>
+<meta name="description" content="Cours de maths CP (cours préparatoire) : Alignements et tracés sur quadrillage. Tracer un trait droit, Des points alignés, Le quadrillage, Reproduire une…">
+<link rel="canonical" href="https://latelierdesmaths.fr/cp/alignements-et-traces-sur-quadrillage/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="L'Atelier des Maths">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="Alignements et tracés sur quadrillage : tracer un trait droit – Cours de maths CP | L'Atelier des Maths">
+<meta property="og:description" content="Cours de maths CP (cours préparatoire) : Alignements et tracés sur quadrillage. Tracer un trait droit, Des points alignés, Le quadrillage, Reproduire une…">
+<meta property="og:url" content="https://latelierdesmaths.fr/cp/alignements-et-traces-sur-quadrillage/">
+<meta property="og:image" content="https://latelierdesmaths.fr/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0C5BA0">
+<link rel="icon" type="image/png" href="/assets/logo-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Caveat:wght@600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<link rel="stylesheet" href="/styles.css">
+
+<style>
+  .seo-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 20px;background:rgba(253,249,246,.95);border-bottom:1px solid rgba(28,43,57,.08);position:sticky;top:0;z-index:5;}
+  .seo-top img{height:40px;display:block;}
+  .seo-top nav{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+  .seo-top nav a{padding:7px 12px;border-radius:8px;font-weight:600;font-size:.92rem;color:var(--ink);}
+  .seo-top nav a:hover{background:rgba(12,91,160,.07);}
+  .seo-top nav a.cta{background:var(--accent);color:#fff;}
+  .seo-wrap{max-width:920px;margin:0 auto;padding:18px 16px 40px;}
+  .seo-crumbs{font-size:.85rem;color:var(--ink-soft);margin:4px 0 14px;}
+  .seo-crumbs a{text-decoration:underline;text-underline-offset:2px;}
+  .seo-wrap h1{font-size:2rem;margin:0 0 6px;line-height:1.15;}
+  .seo-sub{color:var(--ink-soft);margin:0 0 16px;font-size:1.02rem;}
+  .seo-badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.78rem;font-weight:700;margin-right:6px;vertical-align:middle;}
+  .seo-cta{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:space-between;background:rgba(12,91,160,.06);border:1px solid rgba(12,91,160,.18);border-radius:12px;padding:14px 16px;margin:14px 0 24px;}
+  .seo-cta p{margin:0;flex:1;min-width:220px;}
+  .seo-btn{display:inline-block;background:var(--accent);color:#fff !important;font-weight:700;padding:10px 16px;border-radius:9px;white-space:nowrap;}
+  .seo-btn.alt{background:#fff;color:var(--accent) !important;border:1px solid rgba(12,91,160,.35);}
+  .seo-section{background:var(--white);border-radius:14px;box-shadow:var(--shadow);padding:18px 20px;margin:0 0 22px;overflow-x:auto;}
+  .seo-section > h2{margin:0 0 12px;font-size:1.35rem;display:flex;align-items:center;gap:8px;}
+  .seo-section svg{max-width:100%;height:auto;}
+  .seo-list{list-style:none;padding:0;margin:0;display:grid;gap:10px;}
+  .seo-list li a, .seo-list li > span{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:10px;background:var(--white);box-shadow:var(--shadow);}
+  .seo-list li a:hover{outline:2px solid rgba(12,91,160,.25);}
+  .seo-list .num{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.2rem;min-width:2ch;color:var(--accent);}
+  .seo-list .soon{opacity:.6;}
+  .seo-nav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:8px;}
+  .seo-nav a{font-weight:600;color:var(--accent);}
+  .seo-feat{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin:0 0 22px;}
+  .seo-feat div{background:var(--white);border-radius:12px;box-shadow:var(--shadow);padding:14px 16px;}
+  .seo-feat h3{margin:0 0 6px;font-size:1.05rem;display:flex;gap:8px;align-items:center;}
+  .seo-feat p{margin:0;font-size:.93rem;color:var(--ink-soft);line-height:1.5;}
+  .seo-foot{max-width:920px;margin:0 auto;padding:18px 16px 30px;font-size:.85rem;color:var(--ink-soft);border-top:1px solid rgba(28,43,57,.08);}
+  .seo-foot a{text-decoration:underline;text-underline-offset:2px;}
+  @media (max-width:600px){ .seo-wrap h1{font-size:1.55rem;} .seo-section{padding:14px 12px;} .seo-top{padding:10px 12px;} }
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"LearningResource","name":"Alignements et tracés sur quadrillage (CP)","headline":"Alignements et tracés sur quadrillage – cours de mathématiques de CP","description":"Cours de maths CP (cours préparatoire) : Alignements et tracés sur quadrillage. Tracer un trait droit, Des points alignés, Le quadrillage, Reproduire une…","url":"https://latelierdesmaths.fr/cp/alignements-et-traces-sur-quadrillage/","inLanguage":"fr","learningResourceType":["Cours","Exercices"],"educationalLevel":"CP (cycle 2, école élémentaire)","about":"Géométrie","teaches":["Tracer un trait droit","Des points alignés","Le quadrillage","Reproduire une figure"],"isAccessibleForFree":true,"audience":{"@type":"EducationalAudience","educationalRole":"student"},"publisher":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://latelierdesmaths.fr/","logo":"https://latelierdesmaths.fr/assets/logo-icon.png"},"isPartOf":{"@type":"Course","name":"Mathématiques CP","url":"https://latelierdesmaths.fr/cp/","provider":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://latelierdesmaths.fr/","logo":"https://latelierdesmaths.fr/assets/logo-icon.png"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://latelierdesmaths.fr/"},{"@type":"ListItem","position":2,"name":"Cours de maths CP","item":"https://latelierdesmaths.fr/cp/"},{"@type":"ListItem","position":3,"name":"Alignements et tracés sur quadrillage","item":"https://latelierdesmaths.fr/cp/alignements-et-traces-sur-quadrillage/"}]}]}</script>
+</head>
+<body>
+<header class="seo-top">
+  <a href="/" aria-label="L'Atelier des Maths, accueil"><img src="/assets/logo-horizontal.png" alt="L'Atelier des Maths" width="115" height="40"></a>
+  <nav>
+    <a href="/cp/">Cours CP</a>
+    <a href="/ce1/">Cours CE1</a>
+    <a href="/ce2/">Cours CE2</a>
+    <a href="/cm1/">Cours CM1</a>
+    <a href="/cm2/">Cours CM2</a>
+    <a href="/6e/">Cours 6e</a>
+    <a href="/5e/">Cours 5e</a>
+    <a href="/4e/">Cours 4e</a>
+    <a href="/3e/">Cours 3e</a>
+    <a href="/programmes/">Programmes</a>
+    <a href="/professeurs/">Professeurs</a>
+    <a class="cta" href="/">Ouvrir l'application</a>
+  </nav>
+</header>
+<main class="seo-wrap">
+
+<div class="seo-crumbs"><a href="/">Accueil</a> › <a href="/cp/">Cours de maths CP</a> › Alignements et tracés sur quadrillage</div>
+<h1>Alignements et tracés sur quadrillage</h1>
+<p class="seo-sub"><span class="seo-badge" style="background:#B9E8C4;color:#1F6B3A;">Géométrie</span> Cours de mathématiques de CP (cours préparatoire) · chapitre 20 · Tracer un trait droit · Des points alignés · Le quadrillage · Reproduire une figure</p>
+<div class="seo-cta">
+  <p><b>Version interactive :</b> dans l'application, les points des figures se déplacent, les figures se construisent pas à pas à la règle et au compas et un quiz s'invente à chaque essai.</p>
+  <a class="seo-btn" href="/#/chapitre/cp/20-alignements-et-traces-sur-quadrillage/cours">Ouvrir le chapitre interactif</a>
+</div>
+
+<section class="seo-section" id="cours">
+  <h2><span class="gicon">menu_book</span> Le cours</h2>
+  
+  <div class="lesson-header"><span class="num">1</span><h3>Tracer un trait droit</h3></div>
+<span class="prop-badge oliv-b oliv-savoir" data-oliv="Retiens bien !">Tracer à la règle</span><div class="def-box">Pour tracer un trait droit entre deux points :<ul class="cm-liste"><li>je pose la règle juste à côté des deux points ;</li><li>je tiens bien la règle avec l'autre main, les doigts écartés ;</li><li>je trace le long de la règle, d'un point à l'autre.</li></ul></div>
+<div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">Au tableau : montrer la position des doigts sur la règle. Une erreur fréquente : poser la règle sur les points et les cacher.</div>
+
+<div class="lesson-header"><span class="num">2</span><h3>Des points alignés</h3></div>
+<div class="figure-wrap cm-anim" data-anim="cp-g3-aligne"><div class="cma-scene"><svg viewBox="0 0 480 220" class="cma-svg" style="max-width:500px;"><g transform="translate(235.04297994269342 114.15472779369628) rotate(-15.524110996754256) translate(0 80)" opacity="0"><rect x="-211.29207282310057" y="0" width="422.58414564620114" height="34" rx="3" fill="#FFF3D6" fill-opacity=".85" stroke="#C9A24A"></rect></g><path d="M64 154 L76 166 M64 166 L76 154" stroke="#1F3A5C" stroke-width="2.6"></path><text x="70" y="148" font-size="15" text-anchor="middle" fill="#1F3A5C" font-weight="700" font-family="Space Grotesk, sans-serif">A</text><path d="M244 104 L256 116 M244 116 L256 104" stroke="#1F3A5C" stroke-width="2.6"></path><text x="250" y="98" font-size="15" text-anchor="middle" fill="#1F3A5C" font-weight="700" font-family="Space Grotesk, sans-serif">B</text><path d="M394 62 L406 74 M394 74 L406 62" stroke="#1F3A5C" stroke-width="2.6"></path><text x="400" y="56" font-size="15" text-anchor="middle" fill="#1F3A5C" font-weight="700" font-family="Space Grotesk, sans-serif">C</text></svg></div><div class="cma-texte">Les points A, B et C sont-ils <b>alignés</b> (sur une même ligne droite) ?</div>
+    
+    <p class="hint" style="margin:4px 0 0;">On pose le bord de la règle sur deux points : le troisième touche-t-il aussi le bord ?</p></div>
+<span class="def-badge oliv-b oliv-savoir" data-oliv="À savoir !">Alignés</span><div class="def-box">Des points sont <b>alignés</b> quand on peut tracer <b>un seul trait droit</b> qui passe par tous ces points. Pour le vérifier, on utilise la règle.</div>
+
+<div class="lesson-header"><span class="num">3</span><h3>Le quadrillage</h3></div>
+<span class="def-badge oliv-b oliv-savoir" data-oliv="Le mot juste !">Lignes et nœuds</span><div class="def-box"><div class="cpn-rang"><svg class="pl-libre" viewBox="0 0 164 112" style="width:164px;max-width:100%;display:inline-block;vertical-align:middle;"><line x1="4" y1="4" x2="4" y2="108" stroke="#C7D2DE"></line><line x1="30" y1="4" x2="30" y2="108" stroke="#C7D2DE"></line><line x1="56" y1="4" x2="56" y2="108" stroke="#C7D2DE"></line><line x1="82" y1="4" x2="82" y2="108" stroke="#C7D2DE"></line><line x1="108" y1="4" x2="108" y2="108" stroke="#C7D2DE"></line><line x1="134" y1="4" x2="134" y2="108" stroke="#C7D2DE"></line><line x1="160" y1="4" x2="160" y2="108" stroke="#C7D2DE"></line><line x1="4" y1="4" x2="160" y2="4" stroke="#C7D2DE"></line><line x1="4" y1="30" x2="160" y2="30" stroke="#C7D2DE"></line><line x1="4" y1="56" x2="160" y2="56" stroke="#C7D2DE"></line><line x1="4" y1="82" x2="160" y2="82" stroke="#C7D2DE"></line><line x1="4" y1="108" x2="160" y2="108" stroke="#C7D2DE"></line><polyline points="30,30 134,30" fill="none" stroke="#7A4FC0" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></polyline><circle cx="30" cy="30" r="4" fill="#E35D3A"></circle><text x="39" y="24" font-size="13" text-anchor="middle" fill="#1F3A5C" font-weight="700" font-family="Space Grotesk, sans-serif">A</text><circle cx="134" cy="30" r="4" fill="#E35D3A"></circle><text x="143" y="24" font-size="13" text-anchor="middle" fill="#1F3A5C" font-weight="700" font-family="Space Grotesk, sans-serif">B</text><circle cx="82" cy="82" r="4" fill="#E35D3A"></circle><text x="91" y="76" font-size="13" text-anchor="middle" fill="#1F3A5C" font-weight="700" font-family="Space Grotesk, sans-serif">C</text></svg></div><p style="text-align:center;margin:2px 0;">Un quadrillage a des <b>lignes</b> et des <b>nœuds</b> (là où deux lignes se croisent). A, B et C sont sur des nœuds.</p></div>
+<span class="prop-badge oliv-b oliv-savoir" data-oliv="C'est la règle !">Règle</span><div class="def-box">Pour se déplacer sur un quadrillage, on compte les <b>carreaux</b> : de A à B, il y a 4 carreaux.</div>
+
+<div class="lesson-header"><span class="num">4</span><h3>Reproduire une figure</h3></div>
+<div class="figure-wrap cm-anim" data-anim="cp-g3-reproduire"><div class="cma-scene"><svg viewBox="0 0 462 190" class="cma-svg" style="max-width:560px;"><line x1="4" y1="4" x2="4" y2="160" stroke="#C7D2DE"></line><line x1="30" y1="4" x2="30" y2="160" stroke="#C7D2DE"></line><line x1="56" y1="4" x2="56" y2="160" stroke="#C7D2DE"></line><line x1="82" y1="4" x2="82" y2="160" stroke="#C7D2DE"></line><line x1="108" y1="4" x2="108" y2="160" stroke="#C7D2DE"></line><line x1="134" y1="4" x2="134" y2="160" stroke="#C7D2DE"></line><line x1="160" y1="4" x2="160" y2="160" stroke="#C7D2DE"></line><line x1="186" y1="4" x2="186" y2="160" stroke="#C7D2DE"></line><line x1="212" y1="4" x2="212" y2="160" stroke="#C7D2DE"></line><line x1="4" y1="4" x2="212" y2="4" stroke="#C7D2DE"></line><line x1="4" y1="30" x2="212" y2="30" stroke="#C7D2DE"></line><line x1="4" y1="56" x2="212" y2="56" stroke="#C7D2DE"></line><line x1="4" y1="82" x2="212" y2="82" stroke="#C7D2DE"></line><line x1="4" y1="108" x2="212" y2="108" stroke="#C7D2DE"></line><line x1="4" y1="134" x2="212" y2="134" stroke="#C7D2DE"></line><line x1="4" y1="160" x2="212" y2="160" stroke="#C7D2DE"></line><line x1="248" y1="4" x2="248" y2="160" stroke="#C7D2DE"></line><line x1="274" y1="4" x2="274" y2="160" stroke="#C7D2DE"></line><line x1="300" y1="4" x2="300" y2="160" stroke="#C7D2DE"></line><line x1="326" y1="4" x2="326" y2="160" stroke="#C7D2DE"></line><line x1="352" y1="4" x2="352" y2="160" stroke="#C7D2DE"></line><line x1="378" y1="4" x2="378" y2="160" stroke="#C7D2DE"></line><line x1="404" y1="4" x2="404" y2="160" stroke="#C7D2DE"></line><line x1="430" y1="4" x2="430" y2="160" stroke="#C7D2DE"></line><line x1="456" y1="4" x2="456" y2="160" stroke="#C7D2DE"></line><line x1="248" y1="4" x2="456" y2="4" stroke="#C7D2DE"></line><line x1="248" y1="30" x2="456" y2="30" stroke="#C7D2DE"></line><line x1="248" y1="56" x2="456" y2="56" stroke="#C7D2DE"></line><line x1="248" y1="82" x2="456" y2="82" stroke="#C7D2DE"></line><line x1="248" y1="108" x2="456" y2="108" stroke="#C7D2DE"></line><line x1="248" y1="134" x2="456" y2="134" stroke="#C7D2DE"></line><line x1="248" y1="160" x2="456" y2="160" stroke="#C7D2DE"></line><text x="108" y="182" font-size="13" text-anchor="middle" fill="#5B6472" font-weight="600" font-family="Space Grotesk, sans-serif">le modèle</text><text x="352" y="182" font-size="13" text-anchor="middle" fill="#5B6472" font-weight="600" font-family="Space Grotesk, sans-serif">ma reproduction</text><polyline points="30,134 30,56 82,4 134,56 134,134 30,134" fill="none" stroke="#1F3A5C" stroke-width="3" stroke-linejoin="round"></polyline></svg></div><div class="cma-texte">On repère le point de départ sur le modèle, puis le même point sur sa feuille.</div>
+    
+    <p class="hint" style="margin:4px 0 0;">Pour chaque côté, on compte les carreaux sur le modèle, puis on trace sur la feuille.</p></div>
+<span class="prop-badge oliv-b oliv-savoir" data-oliv="Important !">Règle</span><div class="def-box">Pour reproduire une figure :<ul class="cm-liste"><li>je repère un point de départ ;</li><li>je compte les carreaux de chaque côté ;</li><li>je trace à la règle, côté après côté ;</li><li>je compare avec le modèle.</li></ul></div>
+<div class="redaction-note" style="background:rgba(227,93,58,.07);border-color:rgba(227,93,58,.25);color:#8A2E1C;">Pour un trait en biais, on compte les carreaux vers la droite (ou la gauche) ET vers le haut (ou le bas), et on relie les deux nœuds.</div>
+</section>
+
+<section class="seo-section" id="methode">
+  <h2><span class="gicon">draw</span> Méthode</h2>
+  <p class="hint" style="margin:-4px 0 12px;">Dans l'application, cette méthode est animée étape par étape (règle, équerre, compas, rapporteur).</p>
+  <div class="sub-header oliv-sh" data-oliv="Suis la méthode !"><span class="letter">M</span><h4>Vérifier si trois points sont alignés</h4></div><div class="figure-wrap">
+    <div class="step-display" id="cm1d-cp-g3-m-aligne"><div class="step-avec-fig"><div class="step-column"><div class="">Je pose la règle sur A et B.</div></div><div class="step-fig"><svg class="pl-libre" viewBox="0 0 164 112" style="width:164px;max-width:100%;display:inline-block;vertical-align:middle;"><line x1="4" y1="4" x2="4" y2="108" stroke="#C7D2DE"></line><line x1="30" y1="4" x2="30" y2="108" stroke="#C7D2DE"></line><line x1="56" y1="4" x2="56" y2="108" stroke="#C7D2DE"></line><line x1="82" y1="4" x2="82" y2="108" stroke="#C7D2DE"></line><line x1="108" y1="4" x2="108" y2="108" stroke="#C7D2DE"></line><line x1="134" y1="4" x2="134" y2="108" stroke="#C7D2DE"></line><line x1="160" y1="4" x2="160" y2="108" stroke="#C7D2DE"></line><line x1="4" y1="4" x2="160" y2="4" stroke="#C7D2DE"></line><line x1="4" y1="30" x2="160" y2="30" stroke="#C7D2DE"></line><line x1="4" y1="56" x2="160" y2="56" stroke="#C7D2DE"></line><line x1="4" y1="82" x2="160" y2="82" stroke="#C7D2DE"></line><line x1="4" y1="108" x2="160" y2="108" stroke="#C7D2DE"></line><polyline points="4,95 160,17" fill="none" stroke="#C9A24A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></polyline><circle cx="30" cy="82" r="4" fill="#E35D3A"></circle><text x="39" y="76" font-size="13" text-anchor="middle" fill="#1F3A5C" font-weight="700" font-family="Space Grotesk, sans-serif">A</text><circle cx="82" cy="56" r="4" fill="#E35D3A"></circle><text x="91" y="50" font-size="13" text-anchor="middle" fill="#1F3A5C" font-weight="700" font-family="Space Grotesk, sans-serif">B</text><circle cx="134" cy="30" r="4" fill="#E35D3A"></circle><text x="143" y="24" font-size="13" text-anchor="middle" fill="#1F3A5C" font-weight="700" font-family="Space Grotesk, sans-serif">C</text></svg></div></div><div class="step-note">Le bord de la règle touche les deux points.</div></div></div>
+<div class="sub-header oliv-sh" data-oliv="Pas à pas !"><span class="letter">M</span><h4>Reproduire un triangle</h4></div><div class="figure-wrap">
+    <div class="step-display" id="cm1d-cp-g3-m-reproduire"><div class="step-avec-fig"><div class="step-column"><div class="">Je repère le départ : le coin en bas à gauche.</div></div><div class="step-fig"><svg class="pl-libre" viewBox="0 0 164 112" style="width:164px;max-width:100%;display:inline-block;vertical-align:middle;"><line x1="4" y1="4" x2="4" y2="108" stroke="#C7D2DE"></line><line x1="30" y1="4" x2="30" y2="108" stroke="#C7D2DE"></line><line x1="56" y1="4" x2="56" y2="108" stroke="#C7D2DE"></line><line x1="82" y1="4" x2="82" y2="108" stroke="#C7D2DE"></line><line x1="108" y1="4" x2="108" y2="108" stroke="#C7D2DE"></line><line x1="134" y1="4" x2="134" y2="108" stroke="#C7D2DE"></line><line x1="160" y1="4" x2="160" y2="108" stroke="#C7D2DE"></line><line x1="4" y1="4" x2="160" y2="4" stroke="#C7D2DE"></line><line x1="4" y1="30" x2="160" y2="30" stroke="#C7D2DE"></line><line x1="4" y1="56" x2="160" y2="56" stroke="#C7D2DE"></line><line x1="4" y1="82" x2="160" y2="82" stroke="#C7D2DE"></line><line x1="4" y1="108" x2="160" y2="108" stroke="#C7D2DE"></line><polygon points="30,82 134,82 30,30" fill="#E9C46A" fill-opacity=".3" stroke="#1F3A5C" stroke-width="2.5"></polygon></svg></div></div><div class="step-note">Je mets un point au même endroit sur ma feuille.</div></div></div>
+</section>
+
+<section class="seo-section" id="exercices">
+  <h2><span class="gicon">edit</span> Exercices et rédaction</h2>
+  
+  <div class="redaction-block"><h3>Exercices</h3><div class="exo-card"><div class="num">Exercice 1</div>Les points A, B et C sont-ils alignés ?<div class="cpn-rang"><svg class="pl-libre" viewBox="0 0 164 112" style="width:164px;max-width:100%;display:inline-block;vertical-align:middle;"><line x1="4" y1="4" x2="4" y2="108" stroke="#C7D2DE"></line><line x1="30" y1="4" x2="30" y2="108" stroke="#C7D2DE"></line><line x1="56" y1="4" x2="56" y2="108" stroke="#C7D2DE"></line><line x1="82" y1="4" x2="82" y2="108" stroke="#C7D2DE"></line><line x1="108" y1="4" x2="108" y2="108" stroke="#C7D2DE"></line><line x1="134" y1="4" x2="134" y2="108" stroke="#C7D2DE"></line><line x1="160" y1="4" x2="160" y2="108" stroke="#C7D2DE"></line><line x1="4" y1="4" x2="160" y2="4" stroke="#C7D2DE"></line><line x1="4" y1="30" x2="160" y2="30" stroke="#C7D2DE"></line><line x1="4" y1="56" x2="160" y2="56" stroke="#C7D2DE"></line><line x1="4" y1="82" x2="160" y2="82" stroke="#C7D2DE"></line><line x1="4" y1="108" x2="160" y2="108" stroke="#C7D2DE"></line><circle cx="4" cy="4" r="4" fill="#E35D3A"></circle><text x="13" y="-2" font-size="13" text-anchor="middle" fill="#1F3A5C" font-weight="700" font-family="Space Grotesk, sans-serif">A</text><circle cx="56" cy="30" r="4" fill="#E35D3A"></circle><text x="65" y="24" font-size="13" text-anchor="middle" fill="#1F3A5C" font-weight="700" font-family="Space Grotesk, sans-serif">B</text><circle cx="108" cy="56" r="4" fill="#E35D3A"></circle><text x="117" y="50" font-size="13" text-anchor="middle" fill="#1F3A5C" font-weight="700" font-family="Space Grotesk, sans-serif">C</text></svg></div>
+      
+      </div><div class="exo-card"><div class="num">Exercice 2</div>Les points D, E et F sont-ils alignés ?<div class="cpn-rang"><svg class="pl-libre" viewBox="0 0 164 112" style="width:164px;max-width:100%;display:inline-block;vertical-align:middle;"><line x1="4" y1="4" x2="4" y2="108" stroke="#C7D2DE"></line><line x1="30" y1="4" x2="30" y2="108" stroke="#C7D2DE"></line><line x1="56" y1="4" x2="56" y2="108" stroke="#C7D2DE"></line><line x1="82" y1="4" x2="82" y2="108" stroke="#C7D2DE"></line><line x1="108" y1="4" x2="108" y2="108" stroke="#C7D2DE"></line><line x1="134" y1="4" x2="134" y2="108" stroke="#C7D2DE"></line><line x1="160" y1="4" x2="160" y2="108" stroke="#C7D2DE"></line><line x1="4" y1="4" x2="160" y2="4" stroke="#C7D2DE"></line><line x1="4" y1="30" x2="160" y2="30" stroke="#C7D2DE"></line><line x1="4" y1="56" x2="160" y2="56" stroke="#C7D2DE"></line><line x1="4" y1="82" x2="160" y2="82" stroke="#C7D2DE"></line><line x1="4" y1="108" x2="160" y2="108" stroke="#C7D2DE"></line><circle cx="30" cy="82" r="4" fill="#E35D3A"></circle><text x="39" y="76" font-size="13" text-anchor="middle" fill="#1F3A5C" font-weight="700" font-family="Space Grotesk, sans-serif">D</text><circle cx="82" cy="30" r="4" fill="#E35D3A"></circle><text x="91" y="24" font-size="13" text-anchor="middle" fill="#1F3A5C" font-weight="700" font-family="Space Grotesk, sans-serif">E</text><circle cx="134" cy="56" r="4" fill="#E35D3A"></circle><text x="143" y="50" font-size="13" text-anchor="middle" fill="#1F3A5C" font-weight="700" font-family="Space Grotesk, sans-serif">F</text></svg></div>
+      
+      </div><div class="exo-card"><div class="num">Exercice 3</div>Combien de carreaux y a-t-il entre A et B ?<div class="cpn-rang"><svg class="pl-libre" viewBox="0 0 190 60" style="width:190px;max-width:100%;display:inline-block;vertical-align:middle;"><line x1="4" y1="4" x2="4" y2="56" stroke="#C7D2DE"></line><line x1="30" y1="4" x2="30" y2="56" stroke="#C7D2DE"></line><line x1="56" y1="4" x2="56" y2="56" stroke="#C7D2DE"></line><line x1="82" y1="4" x2="82" y2="56" stroke="#C7D2DE"></line><line x1="108" y1="4" x2="108" y2="56" stroke="#C7D2DE"></line><line x1="134" y1="4" x2="134" y2="56" stroke="#C7D2DE"></line><line x1="160" y1="4" x2="160" y2="56" stroke="#C7D2DE"></line><line x1="186" y1="4" x2="186" y2="56" stroke="#C7D2DE"></line><line x1="4" y1="4" x2="186" y2="4" stroke="#C7D2DE"></line><line x1="4" y1="30" x2="186" y2="30" stroke="#C7D2DE"></line><line x1="4" y1="56" x2="186" y2="56" stroke="#C7D2DE"></line><polyline points="30,30 160,30" fill="none" stroke="#7A4FC0" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></polyline><circle cx="30" cy="30" r="4" fill="#E35D3A"></circle><text x="39" y="24" font-size="13" text-anchor="middle" fill="#1F3A5C" font-weight="700" font-family="Space Grotesk, sans-serif">A</text><circle cx="160" cy="30" r="4" fill="#E35D3A"></circle><text x="169" y="24" font-size="13" text-anchor="middle" fill="#1F3A5C" font-weight="700" font-family="Space Grotesk, sans-serif">B</text></svg></div>
+      
+      </div><div class="exo-card"><div class="num">Exercice 4</div>Reproduis ce carré sur un quadrillage.<div class="cpn-rang"><svg class="pl-libre" viewBox="0 0 138 138" style="width:138px;max-width:100%;display:inline-block;vertical-align:middle;"><line x1="4" y1="4" x2="4" y2="134" stroke="#C7D2DE"></line><line x1="30" y1="4" x2="30" y2="134" stroke="#C7D2DE"></line><line x1="56" y1="4" x2="56" y2="134" stroke="#C7D2DE"></line><line x1="82" y1="4" x2="82" y2="134" stroke="#C7D2DE"></line><line x1="108" y1="4" x2="108" y2="134" stroke="#C7D2DE"></line><line x1="134" y1="4" x2="134" y2="134" stroke="#C7D2DE"></line><line x1="4" y1="4" x2="134" y2="4" stroke="#C7D2DE"></line><line x1="4" y1="30" x2="134" y2="30" stroke="#C7D2DE"></line><line x1="4" y1="56" x2="134" y2="56" stroke="#C7D2DE"></line><line x1="4" y1="82" x2="134" y2="82" stroke="#C7D2DE"></line><line x1="4" y1="108" x2="134" y2="108" stroke="#C7D2DE"></line><line x1="4" y1="134" x2="134" y2="134" stroke="#C7D2DE"></line><polygon points="30,30 108,30 108,108 30,108" fill="#2EA8C9" fill-opacity=".3" stroke="#1F3A5C" stroke-width="2.5"></polygon></svg></div>
+      
+      </div><div class="exo-card"><div class="num">Exercice 5</div>Reproduis l'escalier.<div class="cpn-rang"><svg class="pl-libre" viewBox="0 0 138 164" style="width:138px;max-width:100%;display:inline-block;vertical-align:middle;"><line x1="4" y1="4" x2="4" y2="160" stroke="#C7D2DE"></line><line x1="30" y1="4" x2="30" y2="160" stroke="#C7D2DE"></line><line x1="56" y1="4" x2="56" y2="160" stroke="#C7D2DE"></line><line x1="82" y1="4" x2="82" y2="160" stroke="#C7D2DE"></line><line x1="108" y1="4" x2="108" y2="160" stroke="#C7D2DE"></line><line x1="134" y1="4" x2="134" y2="160" stroke="#C7D2DE"></line><line x1="4" y1="4" x2="134" y2="4" stroke="#C7D2DE"></line><line x1="4" y1="30" x2="134" y2="30" stroke="#C7D2DE"></line><line x1="4" y1="56" x2="134" y2="56" stroke="#C7D2DE"></line><line x1="4" y1="82" x2="134" y2="82" stroke="#C7D2DE"></line><line x1="4" y1="108" x2="134" y2="108" stroke="#C7D2DE"></line><line x1="4" y1="134" x2="134" y2="134" stroke="#C7D2DE"></line><line x1="4" y1="160" x2="134" y2="160" stroke="#C7D2DE"></line><polyline points="30,134 30,108 56,108 56,82 82,82 82,56 108,56 108,134 30,134" fill="none" stroke="#1F3A5C" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></polyline></svg></div>
+      
+      </div><div class="exo-card"><div class="num">Exercice 6</div>Termine le dessin : c'est un rectangle de 5 carreaux sur 2.<div class="cpn-rang"><svg class="pl-libre" viewBox="0 0 190 112" style="width:190px;max-width:100%;display:inline-block;vertical-align:middle;"><line x1="4" y1="4" x2="4" y2="108" stroke="#C7D2DE"></line><line x1="30" y1="4" x2="30" y2="108" stroke="#C7D2DE"></line><line x1="56" y1="4" x2="56" y2="108" stroke="#C7D2DE"></line><line x1="82" y1="4" x2="82" y2="108" stroke="#C7D2DE"></line><line x1="108" y1="4" x2="108" y2="108" stroke="#C7D2DE"></line><line x1="134" y1="4" x2="134" y2="108" stroke="#C7D2DE"></line><line x1="160" y1="4" x2="160" y2="108" stroke="#C7D2DE"></line><line x1="186" y1="4" x2="186" y2="108" stroke="#C7D2DE"></line><line x1="4" y1="4" x2="186" y2="4" stroke="#C7D2DE"></line><line x1="4" y1="30" x2="186" y2="30" stroke="#C7D2DE"></line><line x1="4" y1="56" x2="186" y2="56" stroke="#C7D2DE"></line><line x1="4" y1="82" x2="186" y2="82" stroke="#C7D2DE"></line><line x1="4" y1="108" x2="186" y2="108" stroke="#C7D2DE"></line><polyline points="30,30 160,30 160,82" fill="none" stroke="#1F3A5C" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></polyline></svg></div>
+      
+      </div><div class="exo-card"><div class="num">Exercice 7</div>Trace un trait droit qui passe par les points A et B, puis dis si C est sur ce trait.<div class="cpn-rang"><svg class="pl-libre" viewBox="0 0 216 112" style="width:216px;max-width:100%;display:inline-block;vertical-align:middle;"><line x1="4" y1="4" x2="4" y2="108" stroke="#C7D2DE"></line><line x1="30" y1="4" x2="30" y2="108" stroke="#C7D2DE"></line><line x1="56" y1="4" x2="56" y2="108" stroke="#C7D2DE"></line><line x1="82" y1="4" x2="82" y2="108" stroke="#C7D2DE"></line><line x1="108" y1="4" x2="108" y2="108" stroke="#C7D2DE"></line><line x1="134" y1="4" x2="134" y2="108" stroke="#C7D2DE"></line><line x1="160" y1="4" x2="160" y2="108" stroke="#C7D2DE"></line><line x1="186" y1="4" x2="186" y2="108" stroke="#C7D2DE"></line><line x1="212" y1="4" x2="212" y2="108" stroke="#C7D2DE"></line><line x1="4" y1="4" x2="212" y2="4" stroke="#C7D2DE"></line><line x1="4" y1="30" x2="212" y2="30" stroke="#C7D2DE"></line><line x1="4" y1="56" x2="212" y2="56" stroke="#C7D2DE"></line><line x1="4" y1="82" x2="212" y2="82" stroke="#C7D2DE"></line><line x1="4" y1="108" x2="212" y2="108" stroke="#C7D2DE"></line><circle cx="30" cy="82" r="4" fill="#E35D3A"></circle><text x="39" y="76" font-size="13" text-anchor="middle" fill="#1F3A5C" font-weight="700" font-family="Space Grotesk, sans-serif">A</text><circle cx="82" cy="56" r="4" fill="#E35D3A"></circle><text x="91" y="50" font-size="13" text-anchor="middle" fill="#1F3A5C" font-weight="700" font-family="Space Grotesk, sans-serif">B</text><circle cx="186" cy="4" r="4" fill="#E35D3A"></circle><text x="195" y="-2" font-size="13" text-anchor="middle" fill="#1F3A5C" font-weight="700" font-family="Space Grotesk, sans-serif">C</text></svg></div>
+      
+      </div></div>
+</section>
+
+
+<section class="seo-section" id="histoire">
+  <h2><span class="gicon">history_edu</span> Un peu d'histoire</h2>
+  
+  <div class="history-box"><div class="history-title"><span class="gicon">history_edu</span> Un peu d'histoire : planter des arbres bien alignés</div><p style="margin:0 0 12px;">Comment les jardiniers d'autrefois plantaient-ils des arbres bien alignés, sans règle géante ? Ils plantaient trois piquets et regardaient en fermant un œil : si le premier piquet cachait les deux autres, ils étaient <b>alignés</b>.</p><p style="margin:0 0 12px;">C'est ce qu'on appelle « <b>viser</b> ». Les jardins du château de Versailles, dessinés il y a plus de 350 ans par André Le Nôtre, ont des allées parfaitement droites tracées ainsi, avec des cordeaux tendus.</p></div>
+</section>
+<div class="seo-cta">
+  <p>Pour s'entraîner : <b>quiz générés à chaque essai</b>, figures manipulables et constructions animées.</p>
+  <a class="seo-btn" href="/#/chapitre/cp/20-alignements-et-traces-sur-quadrillage/quiz">Faire le quiz</a>
+</div>
+<nav class="seo-nav">
+  <span>← <a href="/cp/des-groupes-egaux/">Des groupes égaux</a></span>
+  <a href="/cp/">Tous les chapitres de CP</a>
+  <span><a href="/cp/tableaux-et-diagrammes-en-barres/">Tableaux et diagrammes en barres</a> →</span>
+</nav>
+</main>
+<footer class="seo-foot">
+  <a href="/">L'Atelier des Maths</a> · cours de mathématiques interactifs pour l'école et le collège ·
+  <a href="/cp/">Cours de maths CP</a> · <a href="/ce1/">Cours de maths CE1</a> · <a href="/ce2/">Cours de maths CE2</a> · <a href="/cm1/">Cours de maths CM1</a> · <a href="/cm2/">Cours de maths CM2</a> · <a href="/6e/">Cours de maths 6e</a> · <a href="/5e/">Cours de maths 5e</a> · <a href="/4e/">Cours de maths 4e</a> · <a href="/3e/">Cours de maths 3e</a> · <a href="/programmes/">Les notions du CP à la 3e</a> · <a href="/professeurs/">Pour les professeurs</a><br>
+  Une production de <a href="https://www.latelieraugmente.fr" rel="noopener">L'Atelier Augmenté</a> · Programme de mathématiques B.O. 2026.
+</footer>
+</body>
+</html>

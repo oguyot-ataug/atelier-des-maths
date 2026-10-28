@@ -333,8 +333,11 @@ function iaContexteNiveau(n){
   if(k === 'cm2') return 'Élèves de CM2 (école élémentaire, cycle 3, 10-11 ans). Nombres entiers jusqu\'à 999 999 999, nombres décimaux jusqu\'aux millièmes, fractions de dénominateur au plus 60 (ou 100 et 1 000 pour les fractions décimales), multiplication d\'un décimal par un entier uniquement, division par un diviseur à un chiffre, degrés à partir de l\'angle droit (90°) mais pas de rapporteur, probabilités sous la forme « a chances sur b ».' + commun;
   return '';
 }
-// Niveaux en préparation, réservés aux administrateurs (menu masqué, routes refusées aux autres).
-const NIVEAUX_ADMIN = ['cp', 'ce1', 'ce2']; // CP, CE1 et CE2 en préparation (administrateurs) ; la 4e est publiée depuis le build 786, la 3e depuis le build 817
+// Niveaux pas encore compris dans les offres (Professeur seul, Famille, licence établissement). Ils ont d'abord été
+// réservés aux administrateurs ; publiés pour tous le 28/10/2026 (build 1193) -- demandé : « On peut tout publier. La
+// relecture se fera progressivement », niveaux « visibles, pas vendus ». Un bêta-testeur (profiles.niveaux_beta) les
+// garde même si son offre ne les comprend pas. La 4e est publiée depuis le build 786, la 3e depuis le build 817.
+const NIVEAUX_ADMIN = ['cp', 'ce1', 'ce2'];
 /* Ouverture des ventes -- demandé : « pour l'instant je ne vends rien tant que ce n'est pas nickel. On peut ajouter
    une date, genre dispo à la vente à partir de... décembre 2026. Et mettre en démo pour le moment ». Puis (12/10/2026) :
    « bloque l'ouverture des ventes » : plus d'ouverture automatique à une date. Les ventes s'ouvrent seulement à la main,
@@ -367,7 +370,10 @@ async function niveauxBetaCharger(role){
     }
   }catch(e){ NIVEAUX_BETA = []; }
 }
-function niveauVisible(lvl){ return !NIVEAUX_ADMIN.includes(lvl) || currentUserRole === 'admin' || NIVEAUX_BETA.includes(lvl); }
+// Tous les niveaux sont publiés (build 1193) : plus aucun n'est masqué. Garder la fonction : menus, routes,
+// planches et frise d'histoire l'appellent, pour pouvoir remettre un niveau en préparation.
+const NIVEAUX_MASQUES = [];
+function niveauVisible(lvl){ return !NIVEAUX_MASQUES.includes(lvl) || currentUserRole === 'admin' || NIVEAUX_BETA.includes(lvl); }
 
 const VACANCES = {
   '6e':[{after:3,label:'Vacances de Toussaint · 17 oct → 2 nov'},{after:7,label:'Vacances de Noël · 19 déc → 4 jan'},{after:11,label:'Vacances d\'hiver · 20 fév → 8 mars'},{after:15,label:'Vacances de printemps · 17 avr → 3 mai'}],
@@ -3659,6 +3665,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1193', date:'2026-10-28', items:[
+    "CP, CE1 et CE2 publiés pour tous -- demandé : « On peut tout publier. La relecture se fera progressivement ». Menus, cartes de l'accueil, chapitres, planches, questions flash et outils du professeur (correction, TD, Ma progression) proposent maintenant les neuf niveaux. Ces trois niveaux ne sont pas encore dans les offres ; les bêta-testeurs gardent leur accès.",
+    "Référencement Google : sommaires /cp/, /ce1/, /ce2/ et une page par chapitre ; liens dans l'en-tête et le pied des pages publiques ; titre et description de l'accueil : « du CP à la 3e ».",
+  ] },
   { version:'2026-08-19.1192', date:'2026-10-28', items:[
     "Nouvelle page publique « Les notions de maths du CP à la 3e » (latelierdesmaths.fr/programmes/) : ce que les programmes officiels attendent à chaque niveau, notion par notion, avec le vocabulaire qu'ils nomment ; filtres par domaine, cycle ou niveau, recherche, vocabulaire seul, et le nouveau programme de 4e et 3e en regard de celui en vigueur.",
     "Liens vers cette page : « Ma progression », la page « Pour les professeurs » et le pied de page des pages de cours.",

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Les solides : reconnaître les solides, faces, arêtes, sommets – Cours de maths CE2 | L'Atelier des Maths</title>
+<meta name="description" content="Cours de maths CE2 (cours élémentaire 2e année) : Les solides. Reconnaître les solides, Faces, arêtes, sommets, Le patron du cube. Définitions, figures…">
+<link rel="canonical" href="https://latelierdesmaths.fr/ce2/les-solides/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="L'Atelier des Maths">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="Les solides : reconnaître les solides, faces, arêtes, sommets – Cours de maths CE2 | L'Atelier des Maths">
+<meta property="og:description" content="Cours de maths CE2 (cours élémentaire 2e année) : Les solides. Reconnaître les solides, Faces, arêtes, sommets, Le patron du cube. Définitions, figures…">
+<meta property="og:url" content="https://latelierdesmaths.fr/ce2/les-solides/">
+<meta property="og:image" content="https://latelierdesmaths.fr/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0C5BA0">
+<link rel="icon" type="image/png" href="/assets/logo-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Caveat:wght@600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<link rel="stylesheet" href="/styles.css">
+
+<style>
+  .seo-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 20px;background:rgba(253,249,246,.95);border-bottom:1px solid rgba(28,43,57,.08);position:sticky;top:0;z-index:5;}
+  .seo-top img{height:40px;display:block;}
+  .seo-top nav{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+  .seo-top nav a{padding:7px 12px;border-radius:8px;font-weight:600;font-size:.92rem;color:var(--ink);}
+  .seo-top nav a:hover{background:rgba(12,91,160,.07);}
+  .seo-top nav a.cta{background:var(--accent);color:#fff;}
+  .seo-wrap{max-width:920px;margin:0 auto;padding:18px 16px 40px;}
+  .seo-crumbs{font-size:.85rem;color:var(--ink-soft);margin:4px 0 14px;}
+  .seo-crumbs a{text-decoration:underline;text-underline-offset:2px;}
+  .seo-wrap h1{font-size:2rem;margin:0 0 6px;line-height:1.15;}
+  .seo-sub{color:var(--ink-soft);margin:0 0 16px;font-size:1.02rem;}
+  .seo-badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.78rem;font-weight:700;margin-right:6px;vertical-align:middle;}
+  .seo-cta{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:space-between;background:rgba(12,91,160,.06);border:1px solid rgba(12,91,160,.18);border-radius:12px;padding:14px 16px;margin:14px 0 24px;}
+  .seo-cta p{margin:0;flex:1;min-width:220px;}
+  .seo-btn{display:inline-block;background:var(--accent);color:#fff !important;font-weight:700;padding:10px 16px;border-radius:9px;white-space:nowrap;}
+  .seo-btn.alt{background:#fff;color:var(--accent) !important;border:1px solid rgba(12,91,160,.35);}
+  .seo-section{background:var(--white);border-radius:14px;box-shadow:var(--shadow);padding:18px 20px;margin:0 0 22px;overflow-x:auto;}
+  .seo-section > h2{margin:0 0 12px;font-size:1.35rem;display:flex;align-items:center;gap:8px;}
+  .seo-section svg{max-width:100%;height:auto;}
+  .seo-list{list-style:none;padding:0;margin:0;display:grid;gap:10px;}
+  .seo-list li a, .seo-list li > span{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:10px;background:var(--white);box-shadow:var(--shadow);}
+  .seo-list li a:hover{outline:2px solid rgba(12,91,160,.25);}
+  .seo-list .num{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.2rem;min-width:2ch;color:var(--accent);}
+  .seo-list .soon{opacity:.6;}
+  .seo-nav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:8px;}
+  .seo-nav a{font-weight:600;color:var(--accent);}
+  .seo-feat{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin:0 0 22px;}
+  .seo-feat div{background:var(--white);border-radius:12px;box-shadow:var(--shadow);padding:14px 16px;}
+  .seo-feat h3{margin:0 0 6px;font-size:1.05rem;display:flex;gap:8px;align-items:center;}
+  .seo-feat p{margin:0;font-size:.93rem;color:var(--ink-soft);line-height:1.5;}
+  .seo-foot{max-width:920px;margin:0 auto;padding:18px 16px 30px;font-size:.85rem;color:var(--ink-soft);border-top:1px solid rgba(28,43,57,.08);}
+  .seo-foot a{text-decoration:underline;text-underline-offset:2px;}
+  @media (max-width:600px){ .seo-wrap h1{font-size:1.55rem;} .seo-section{padding:14px 12px;} .seo-top{padding:10px 12px;} }
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"LearningResource","name":"Les solides (CE2)","headline":"Les solides – cours de mathématiques de CE2","description":"Cours de maths CE2 (cours élémentaire 2e année) : Les solides. Reconnaître les solides, Faces, arêtes, sommets, Le patron du cube. Définitions, figures…","url":"https://latelierdesmaths.fr/ce2/les-solides/","inLanguage":"fr","learningResourceType":["Cours","Exercices"],"educationalLevel":"CE2 (cycle 2, école élémentaire)","about":"Géométrie","teaches":["Reconnaître les solides","Faces, arêtes, sommets","Le patron du cube"],"isAccessibleForFree":true,"audience":{"@type":"EducationalAudience","educationalRole":"student"},"publisher":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://latelierdesmaths.fr/","logo":"https://latelierdesmaths.fr/assets/logo-icon.png"},"isPartOf":{"@type":"Course","name":"Mathématiques CE2","url":"https://latelierdesmaths.fr/ce2/","provider":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://latelierdesmaths.fr/","logo":"https://latelierdesmaths.fr/assets/logo-icon.png"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://latelierdesmaths.fr/"},{"@type":"ListItem","position":2,"name":"Cours de maths CE2","item":"https://latelierdesmaths.fr/ce2/"},{"@type":"ListItem","position":3,"name":"Les solides","item":"https://latelierdesmaths.fr/ce2/les-solides/"}]}]}</script>
+</head>
+<body>
+<header class="seo-top">
+  <a href="/" aria-label="L'Atelier des Maths, accueil"><img src="/assets/logo-horizontal.png" alt="L'Atelier des Maths" width="115" height="40"></a>
+  <nav>
+    <a href="/cp/">Cours CP</a>
+    <a href="/ce1/">Cours CE1</a>
+    <a href="/ce2/">Cours CE2</a>
+    <a href="/cm1/">Cours CM1</a>
+    <a href="/cm2/">Cours CM2</a>
+    <a href="/6e/">Cours 6e</a>
+    <a href="/5e/">Cours 5e</a>
+    <a href="/4e/">Cours 4e</a>
+    <a href="/3e/">Cours 3e</a>
+    <a href="/programmes/">Programmes</a>
+    <a href="/professeurs/">Professeurs</a>
+    <a class="cta" href="/">Ouvrir l'application</a>
+  </nav>
+</header>
+<main class="seo-wrap">
+
+<div class="seo-crumbs"><a href="/">Accueil</a> › <a href="/ce2/">Cours de maths CE2</a> › Les solides</div>
+<h1>Les solides</h1>
+<p class="seo-sub"><span class="seo-badge" style="background:#B9E8C4;color:#1F6B3A;">Géométrie</span> Cours de mathématiques de CE2 (cours élémentaire 2e année) · chapitre 21 · Reconnaître les solides · Faces, arêtes, sommets · Le patron du cube</p>
+<div class="seo-cta">
+  <p><b>Version interactive :</b> dans l'application, les points des figures se déplacent, les figures se construisent pas à pas à la règle et au compas et un quiz s'invente à chaque essai.</p>
+  <a class="seo-btn" href="/#/chapitre/ce2/21-les-solides/cours">Ouvrir le chapitre interactif</a>
+</div>
+
+<section class="seo-section" id="cours">
+  <h2><span class="gicon">menu_book</span> Le cours</h2>
+  
+  <div class="lesson-header"><span class="num">1</span><h3>Reconnaître les solides</h3></div>
+<div class="figure-wrap" style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;"><div style="text-align:center;"><svg viewBox="0 0 120 110" style="width:112px;"><polygon points="20,40 75,40 103,18 48,18" fill="#2EA8C9" fill-opacity=".25"></polygon><polygon points="75,40 103,18 103,73 75,95" fill="#2EA8C9" fill-opacity=".4"></polygon><rect x="20" y="40" width="55" height="55" fill="#2EA8C9" fill-opacity=".15"></rect>
+  <rect x="20" y="40" width="55" height="55" stroke="#1F3A5C" stroke-width="2" fill="none"></rect><polyline points="20,40 48,18 103,18 75,40" stroke="#1F3A5C" stroke-width="2" fill="none"></polyline><polyline points="103,18 103,73 75,95" stroke="#1F3A5C" stroke-width="2" fill="none"></polyline>
+  <polyline points="48,18 48,73 103,73" stroke="#1F3A5C" stroke-width="1.6" fill="none" stroke-dasharray="5 4"></polyline><line x1="48" y1="73" x2="20" y2="95" stroke="#1F3A5C" stroke-width="1.6" fill="none" stroke-dasharray="5 4"></line></svg><div style="font-family:'Space Grotesk',sans-serif;font-weight:700;color:#1F3A5C;">Cube</div></div><div style="text-align:center;"><svg viewBox="0 0 120 110" style="width:112px;"><polygon points="10,50 88,50 112,30 34,30" fill="#2E9C6A" fill-opacity=".25"></polygon><polygon points="88,50 112,30 112,72 88,92" fill="#2E9C6A" fill-opacity=".4"></polygon><rect x="10" y="50" width="78" height="42" fill="#2E9C6A" fill-opacity=".15"></rect>
+  <rect x="10" y="50" width="78" height="42" stroke="#1F3A5C" stroke-width="2" fill="none"></rect><polyline points="10,50 34,30 112,30 88,50" stroke="#1F3A5C" stroke-width="2" fill="none"></polyline><polyline points="112,30 112,72 88,92" stroke="#1F3A5C" stroke-width="2" fill="none"></polyline>
+  <polyline points="34,30 34,72 112,72" stroke="#1F3A5C" stroke-width="1.6" fill="none" stroke-dasharray="5 4"></polyline><line x1="34" y1="72" x2="10" y2="92" stroke="#1F3A5C" stroke-width="1.6" fill="none" stroke-dasharray="5 4"></line></svg><div style="font-family:'Space Grotesk',sans-serif;font-weight:700;color:#1F3A5C;">Pavé</div></div><div style="text-align:center;"><svg viewBox="0 0 120 110" style="width:112px;"><polygon points="15,90 75,90 60,15" fill="#E35D3A" fill-opacity=".2"></polygon><polygon points="75,90 100,72 60,15" fill="#E35D3A" fill-opacity=".35"></polygon><polyline points="15,90 75,90 100,72 60,15 15,90" stroke="#1F3A5C" stroke-width="2" fill="none"></polyline><line x1="75" y1="90" x2="60" y2="15" stroke="#1F3A5C" stroke-width="2"></line><polyline points="15,90 40,72 100,72" stroke="#1F3A5C" stroke-width="1.6" fill="none" stroke-dasharray="5 4"></polyline><line x1="40" y1="72" x2="60" y2="15" stroke="#1F3A5C" stroke-width="1.6" fill="none" stroke-dasharray="5 4"></line></svg><div style="font-family:'Space Grotesk',sans-serif;font-weight:700;color:#1F3A5C;">Pyramide</div></div><div style="text-align:center;"><svg viewBox="0 0 120 110" style="width:112px;"><rect x="25" y="25" width="70" height="65" fill="#B8962E" fill-opacity=".2"></rect><ellipse cx="60" cy="25" rx="35" ry="11" fill="#B8962E" fill-opacity=".3" stroke="#1F3A5C" stroke-width="2"></ellipse><line x1="25" y1="25" x2="25" y2="90" stroke="#1F3A5C" stroke-width="2"></line><line x1="95" y1="25" x2="95" y2="90" stroke="#1F3A5C" stroke-width="2"></line><path d="M25 90 A35 11 0 0 0 95 90" stroke="#1F3A5C" stroke-width="2" fill="none"></path><path d="M25 90 A35 11 0 0 1 95 90" stroke="#1F3A5C" stroke-width="1.6" fill="none" stroke-dasharray="5 4"></path></svg><div style="font-family:'Space Grotesk',sans-serif;font-weight:700;color:#1F3A5C;">Cylindre</div></div><div style="text-align:center;"><svg viewBox="0 0 120 110" style="width:112px;"><polygon points="25,88 95,88 60,12" fill="#2EA8C9" fill-opacity=".2"></polygon><line x1="25" y1="88" x2="60" y2="12" stroke="#1F3A5C" stroke-width="2"></line><line x1="95" y1="88" x2="60" y2="12" stroke="#1F3A5C" stroke-width="2"></line><path d="M25 88 A35 11 0 0 0 95 88" stroke="#1F3A5C" stroke-width="2" fill="none"></path><path d="M25 88 A35 11 0 0 1 95 88" stroke="#1F3A5C" stroke-width="1.6" fill="none" stroke-dasharray="5 4"></path></svg><div style="font-family:'Space Grotesk',sans-serif;font-weight:700;color:#1F3A5C;">Cône</div></div><div style="text-align:center;"><svg viewBox="0 0 120 110" style="width:112px;"><circle cx="60" cy="55" r="40" fill="#2E9C6A" fill-opacity=".2" stroke="#1F3A5C" stroke-width="2"></circle><path d="M20 55 A40 12 0 0 0 100 55" stroke="#1F3A5C" stroke-width="2" fill="none"></path><path d="M20 55 A40 12 0 0 1 100 55" stroke="#1F3A5C" stroke-width="1.6" fill="none" stroke-dasharray="5 4"></path></svg><div style="font-family:'Space Grotesk',sans-serif;font-weight:700;color:#1F3A5C;">Boule</div></div></div>
+<div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">Sur ces dessins en <b>perspective</b>, on ne voit pas tout le solide : certaines faces sont cachées. Les arêtes cachées sont dessinées en <b>pointillés</b>.</div>
+<p class="example-title">Dans la vie courante :</p><ul class="example-list"><li>une boîte à chaussures a la forme d'un <b>pavé</b> ; un dé, celle d'un <b>cube</b> ;</li><li>une boîte de conserve, celle d'un <b>cylindre</b> ; un cornet de glace, celle d'un <b>cône</b> ;</li><li>une balle de tennis, celle d'une <b>boule</b>.</li></ul>
+
+<div class="lesson-header"><span class="num">2</span><h3>Faces, arêtes, sommets</h3></div>
+<span class="def-badge oliv-b oliv-savoir" data-oliv="À savoir !">Vocabulaire</span><div class="def-box"><ul style="margin:0;padding-left:18px;line-height:1.9;"><li>Une <b>face</b> est une surface plate du solide.</li><li>Une <b>arête</b> est un segment où deux faces se rencontrent.</li><li>Un <b>sommet</b> est un point où plusieurs arêtes se rencontrent.</li></ul></div>
+<div style="overflow-x:auto;margin:6px 0 14px;"><table style="border-collapse:collapse;text-align:center;font-size:.95rem;">
+    <tbody><tr><th style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);background:var(--accent-orange);color:#fff;font-family:'Space Grotesk',sans-serif;">Solide</th><th style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);background:var(--accent-orange);color:#fff;font-family:'Space Grotesk',sans-serif;">Faces</th><th style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);background:var(--accent-orange);color:#fff;font-family:'Space Grotesk',sans-serif;">Arêtes</th><th style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);background:var(--accent-orange);color:#fff;font-family:'Space Grotesk',sans-serif;">Sommets</th><th style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);background:var(--accent-orange);color:#fff;font-family:'Space Grotesk',sans-serif;">Nature des faces</th></tr>
+    <tr><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">Cube</td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">6</td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">12</td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">8</td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">6 carrés</td></tr><tr><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">Pavé</td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">6</td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">12</td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">8</td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">des rectangles (parfois 2 carrés)</td></tr><tr><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">Pyramide à base carrée</td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">5</td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">8</td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">5</td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">1 carré et 4 triangles</td></tr><tr><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">Pyramide à base triangulaire</td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">4</td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">6</td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">4</td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">4 triangles</td></tr></tbody></table></div>
+<span class="prop-badge oliv-b oliv-savoir" data-oliv="Retiens bien !">Règle</span><div class="def-box">Les faces d'une <b>pyramide</b> sont des <b>triangles</b> qui ont <b>un sommet commun</b>, sauf peut-être une face, la <b>base</b>, qui est un polygone (triangle, carré, pentagone…).</div>
+<div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">Le cylindre, le cône et la boule ont une surface <b>courbe</b> : ils peuvent rouler.</div>
+
+<div class="lesson-header"><span class="num">3</span><h3>Le patron du cube</h3></div>
+<span class="def-badge oliv-b oliv-savoir" data-oliv="Le mot juste !">Définition</span><div class="def-box">Un <b>patron</b> du cube est une figure faite de <b>6 carrés</b>, en un seul morceau, qu'on peut découper et plier pour fabriquer le cube, sans que deux faces se chevauchent.</div>
+<div class="figure-wrap" style="text-align:center;"><svg viewBox="0 0 92 70" style="width:110px;display:inline-block;vertical-align:middle;"><rect x="24" y="2" width="22" height="22" fill="#2EA8C9" fill-opacity=".3" stroke="#1F3A5C" stroke-width="1.6"></rect><rect x="2" y="24" width="22" height="22" fill="#2EA8C9" fill-opacity=".3" stroke="#1F3A5C" stroke-width="1.6"></rect><rect x="24" y="24" width="22" height="22" fill="#2EA8C9" fill-opacity=".3" stroke="#1F3A5C" stroke-width="1.6"></rect><rect x="46" y="24" width="22" height="22" fill="#2EA8C9" fill-opacity=".3" stroke="#1F3A5C" stroke-width="1.6"></rect><rect x="68" y="24" width="22" height="22" fill="#2EA8C9" fill-opacity=".3" stroke="#1F3A5C" stroke-width="1.6"></rect><rect x="24" y="46" width="22" height="22" fill="#2EA8C9" fill-opacity=".3" stroke="#1F3A5C" stroke-width="1.6"></rect></svg><div class="hint" style="margin:0;">Un patron du cube : la croix</div></div>
+<div class="figure-wrap cm-pliage" data-pliage="ce2-cube">
+    <svg class="cmp-svg" viewBox="-2.316392658584341 -2.0170878121146902 4.632785317168682 3.564139936678049"><polygon points="-0.591,-0.772 0.261,-0.347 0.784,-1.040 -0.068,-1.465" fill="#C2185B" fill-opacity="0.80" stroke="#1F3A5C" stroke-width="0.033" stroke-linejoin="round"></polygon><polygon points="-1.966,-0.504 -1.114,-0.078 -0.591,-0.772 -1.444,-1.197" fill="#E35D3A" fill-opacity="0.80" stroke="#1F3A5C" stroke-width="0.033" stroke-linejoin="round"></polygon><polygon points="-1.114,-0.078 -0.261,0.347 0.261,-0.347 -0.591,-0.772" fill="#2E9C6A" fill-opacity="0.80" stroke="#1F3A5C" stroke-width="0.033" stroke-linejoin="round"></polygon><polygon points="-0.261,0.347 0.591,0.772 1.114,0.078 0.261,-0.347" fill="#F2A93B" fill-opacity="0.80" stroke="#1F3A5C" stroke-width="0.033" stroke-linejoin="round"></polygon><polygon points="-1.637,0.615 -0.784,1.040 -0.261,0.347 -1.114,-0.078" fill="#2EA8C9" fill-opacity="0.80" stroke="#1F3A5C" stroke-width="0.033" stroke-linejoin="round"></polygon><polygon points="0.591,0.772 1.444,1.197 1.966,0.504 1.114,0.078" fill="#7A4FC0" fill-opacity="0.80" stroke="#1F3A5C" stroke-width="0.033" stroke-linejoin="round"></polygon></svg>
+    
+    <p class="hint" style="margin:4px 0 0;">Choisis un des <b>11 patrons du cube</b>, puis clique sur « Plier ». Fais glisser le dessin pour tourner autour du cube.</p></div>
+<div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;"><b>Attention :</b> 6 carrés en un seul morceau ne forment pas toujours un patron. Avec la figure ci-dessous, deux faces se retrouvent au même endroit. Plie-la pour le voir.
+<div style="text-align:center;margin:8px 0 4px;"><svg viewBox="0 0 92 48" style="width:110px;display:inline-block;vertical-align:middle;"><rect x="2" y="2" width="22" height="22" fill="#E35D3A" fill-opacity=".3" stroke="#1F3A5C" stroke-width="1.6"></rect><rect x="24" y="2" width="22" height="22" fill="#E35D3A" fill-opacity=".3" stroke="#1F3A5C" stroke-width="1.6"></rect><rect x="46" y="2" width="22" height="22" fill="#E35D3A" fill-opacity=".3" stroke="#1F3A5C" stroke-width="1.6"></rect><rect x="68" y="2" width="22" height="22" fill="#E35D3A" fill-opacity=".3" stroke="#1F3A5C" stroke-width="1.6"></rect><rect x="2" y="24" width="22" height="22" fill="#E35D3A" fill-opacity=".3" stroke="#1F3A5C" stroke-width="1.6"></rect><rect x="24" y="24" width="22" height="22" fill="#E35D3A" fill-opacity=".3" stroke="#1F3A5C" stroke-width="1.6"></rect></svg></div>
+<div class="figure-wrap cm-pliage" data-pliage="ce2-cube-faux">
+    <svg class="cmp-svg" viewBox="-2.5777362730496707 -2.175940085545003 4.632785317168682 4.069720542336538"><polygon points="-1.705,-0.850 -0.853,-0.425 -0.330,-1.119 -1.182,-1.544" fill="#7A4FC0" fill-opacity="0.80" stroke="#1F3A5C" stroke-width="0.033" stroke-linejoin="round"></polygon><polygon points="-0.853,-0.425 0.000,0.000 0.523,-0.693 -0.330,-1.119" fill="#C2185B" fill-opacity="0.80" stroke="#1F3A5C" stroke-width="0.033" stroke-linejoin="round"></polygon><polygon points="-2.228,-0.157 -1.375,0.268 -0.853,-0.425 -1.705,-0.850" fill="#2EA8C9" fill-opacity="0.80" stroke="#1F3A5C" stroke-width="0.033" stroke-linejoin="round"></polygon><polygon points="-1.375,0.268 -0.523,0.693 0.000,0.000 -0.853,-0.425" fill="#E35D3A" fill-opacity="0.80" stroke="#1F3A5C" stroke-width="0.033" stroke-linejoin="round"></polygon><polygon points="-0.523,0.693 0.330,1.119 0.853,0.425 0.000,0.000" fill="#2E9C6A" fill-opacity="0.80" stroke="#1F3A5C" stroke-width="0.033" stroke-linejoin="round"></polygon><polygon points="0.330,1.119 1.182,1.544 1.705,0.850 0.853,0.425" fill="#F2A93B" fill-opacity="0.80" stroke="#1F3A5C" stroke-width="0.033" stroke-linejoin="round"></polygon></svg>
+    
+    <p class="hint" style="margin:4px 0 0;">Les deux faces qui se superposent deviennent rouges.</p></div></div>
+</section>
+
+<section class="seo-section" id="methode">
+  <h2><span class="gicon">draw</span> Méthode</h2>
+  <p class="hint" style="margin:-4px 0 12px;">Dans l'application, cette méthode est animée étape par étape (règle, équerre, compas, rapporteur).</p>
+  <div class="sub-header oliv-sh" data-oliv="Suis la méthode !"><span class="letter">M</span><h4>Justifier la nature d'un solide</h4></div><div class="figure-wrap">
+    <div class="step-display" id="cm1d-ce2-so-justifier"><div class="step-avec-fig"><div class="step-column"><div class="">4 faces triangulaires avec un sommet commun</div></div><div class="step-fig"><svg class="pl-libre" viewBox="0 0 170 140" style="width:170px;max-width:100%;display:inline-block;vertical-align:middle;"><polygon points="20,110 110,110 150,82 60,82" fill="#fff" fill-opacity="0.45" stroke="#1F3A5C" stroke-width="2.2" stroke-linejoin="round"></polygon><polygon points="20,110 110,110 85,15" fill="#2EA8C9" fill-opacity="0.3" stroke="#1F3A5C" stroke-width="2.2" stroke-linejoin="round"></polygon><polygon points="110,110 150,82 85,15" fill="#2EA8C9" fill-opacity="0.45" stroke="#1F3A5C" stroke-width="2.2" stroke-linejoin="round"></polygon><line x1="60" y1="82" x2="85" y2="15" stroke="#1F3A5C" stroke-width="1.4" stroke-dasharray="6 4" stroke-linecap="round"></line><line x1="20" y1="110" x2="60" y2="82" stroke="#1F3A5C" stroke-width="1.4" stroke-dasharray="6 4" stroke-linecap="round"></line><line x1="60" y1="82" x2="150" y2="82" stroke="#1F3A5C" stroke-width="1.4" stroke-dasharray="6 4" stroke-linecap="round"></line><circle cx="85" cy="15" r="3.6" fill="#E35D3A"></circle><text x="95" y="15" font-size="12" text-anchor="middle" fill="#E35D3A" font-family="Space Grotesk" font-weight="700">sommet</text></svg></div></div><div class="step-note">C'est la caractéristique d'une pyramide.</div></div></div>
+</section>
+
+<section class="seo-section" id="exercices">
+  <h2><span class="gicon">edit</span> Exercices et rédaction</h2>
+  
+  <div class="redaction-block"><h3>Exercices</h3><div class="exo-card"><div class="num">Exercice 1</div>Nomme le solide qui a la forme de chacun de ces objets.<ul class="cm-liste"><li>une brique</li><li>un rouleau d'essuie-tout</li><li>une orange</li><li>un chapeau pointu</li></ul>
+      
+      </div><div class="exo-card"><div class="num">Exercice 2</div>Combien de faces, d'arêtes et de sommets a un cube ?
+      
+      </div><div class="exo-card"><div class="num">Exercice 3</div>Quelle est la nature des faces d'un pavé ?
+      
+      </div><div class="exo-card"><div class="num">Exercice 4</div>Je suis un solide à 4 faces, toutes triangulaires. Qui suis-je ?
+      
+      </div><div class="exo-card"><div class="num">Exercice 5</div>Cette figure est-elle un patron de cube ?<div style="margin:6px 0;"><svg viewBox="0 0 92 70" style="width:100px;display:inline-block;vertical-align:middle;"><rect x="2" y="2" width="22" height="22" fill="#7A4FC0" fill-opacity=".3" stroke="#1F3A5C" stroke-width="1.6"></rect><rect x="24" y="2" width="22" height="22" fill="#7A4FC0" fill-opacity=".3" stroke="#1F3A5C" stroke-width="1.6"></rect><rect x="24" y="24" width="22" height="22" fill="#7A4FC0" fill-opacity=".3" stroke="#1F3A5C" stroke-width="1.6"></rect><rect x="46" y="24" width="22" height="22" fill="#7A4FC0" fill-opacity=".3" stroke="#1F3A5C" stroke-width="1.6"></rect><rect x="46" y="46" width="22" height="22" fill="#7A4FC0" fill-opacity=".3" stroke="#1F3A5C" stroke-width="1.6"></rect><rect x="68" y="46" width="22" height="22" fill="#7A4FC0" fill-opacity=".3" stroke="#1F3A5C" stroke-width="1.6"></rect></svg></div>
+      
+      </div></div>
+</section>
+
+
+<section class="seo-section" id="histoire">
+  <h2><span class="gicon">history_edu</span> Un peu d'histoire</h2>
+  
+  <div class="history-box"><div class="history-title"><span class="gicon">history_edu</span> Un peu d'histoire : les pyramides d'Égypte</div><p style="margin:0 0 12px;">La grande <b>pyramide de Khéops</b>, en Égypte, a été construite il y a environ 4 500 ans. C'est une pyramide à base carrée de 230 m de côté, faite de plus de deux millions de blocs de pierre !</p></div>
+</section>
+<div class="seo-cta">
+  <p>Pour s'entraîner : <b>quiz générés à chaque essai</b>, figures manipulables et constructions animées.</p>
+  <a class="seo-btn" href="/#/chapitre/ce2/21-les-solides/quiz">Faire le quiz</a>
+</div>
+<nav class="seo-nav">
+  <span>← <a href="/ce2/comparer-et-additionner-des-fractions/">Comparer et additionner des fractions</a></span>
+  <a href="/ce2/">Tous les chapitres de CE2</a>
+  <span><a href="/ce2/le-perimetre/">Le périmètre</a> →</span>
+</nav>
+</main>
+<footer class="seo-foot">
+  <a href="/">L'Atelier des Maths</a> · cours de mathématiques interactifs pour l'école et le collège ·
+  <a href="/cp/">Cours de maths CP</a> · <a href="/ce1/">Cours de maths CE1</a> · <a href="/ce2/">Cours de maths CE2</a> · <a href="/cm1/">Cours de maths CM1</a> · <a href="/cm2/">Cours de maths CM2</a> · <a href="/6e/">Cours de maths 6e</a> · <a href="/5e/">Cours de maths 5e</a> · <a href="/4e/">Cours de maths 4e</a> · <a href="/3e/">Cours de maths 3e</a> · <a href="/programmes/">Les notions du CP à la 3e</a> · <a href="/professeurs/">Pour les professeurs</a><br>
+  Une production de <a href="https://www.latelieraugmente.fr" rel="noopener">L'Atelier Augmenté</a> · Programme de mathématiques B.O. 2026.
+</footer>
+</body>
+</html>

@@ -33,14 +33,19 @@ const { chromium } = require('playwright');
 
 const ROOT = path.resolve(__dirname, '..');
 const SITE = 'https://latelierdesmaths.fr';
-const LEVELS = ['cm1', 'cm2', '6e', '5e', '4e', '3e']; // la 3e est publiée depuis le build 817, le CM1 depuis le build 868, le CM2 depuis le build 873
+const LEVELS = ['cp', 'ce1', 'ce2', 'cm1', 'cm2', '6e', '5e', '4e', '3e']; // la 3e est publiée depuis le build 817, le CM1 depuis le build 868, le CM2 depuis le build 873, le CP, le CE1 et le CE2 depuis le build 1193
+const NIV_TOUS = ['cp', 'ce1', 'ce2', 'cm1', 'cm2', '6e', '5e', '4e', '3e'];
+const autres = lvl => NIV_TOUS.filter(n => n !== lvl);
 const LEVEL_INFO = {
-  'cm1': { cycle: 'cycle 3', long: 'cours moyen 1re année', label: 'CM1', ecole: 'école élémentaire', other: ['cm2', '6e', '5e', '4e', '3e'] },
-  'cm2': { cycle: 'cycle 3', long: 'cours moyen 2e année', label: 'CM2', ecole: 'école élémentaire', other: ['cm1', '6e', '5e', '4e', '3e'] },
-  '6e': { cycle: 'cycle 3', long: 'sixième', label: '6e', ecole: 'collège', other: ['cm1', 'cm2', '5e', '4e', '3e'] },
-  '5e': { cycle: 'cycle 4', long: 'cinquième', label: '5e', ecole: 'collège', other: ['cm1', 'cm2', '6e', '4e', '3e'] },
-  '4e': { cycle: 'cycle 4', long: 'quatrième', label: '4e', ecole: 'collège', other: ['cm1', 'cm2', '6e', '5e', '3e'] },
-  '3e': { cycle: 'cycle 4', long: 'troisième', label: '3e', ecole: 'collège', other: ['cm1', 'cm2', '6e', '5e', '4e'] },
+  'cp': { cycle: 'cycle 2', long: 'cours préparatoire', label: 'CP', ecole: 'école élémentaire', other: autres('cp') },
+  'ce1': { cycle: 'cycle 2', long: 'cours élémentaire 1re année', label: 'CE1', ecole: 'école élémentaire', other: autres('ce1') },
+  'ce2': { cycle: 'cycle 2', long: 'cours élémentaire 2e année', label: 'CE2', ecole: 'école élémentaire', other: autres('ce2') },
+  'cm1': { cycle: 'cycle 3', long: 'cours moyen 1re année', label: 'CM1', ecole: 'école élémentaire', other: autres('cm1') },
+  'cm2': { cycle: 'cycle 3', long: 'cours moyen 2e année', label: 'CM2', ecole: 'école élémentaire', other: autres('cm2') },
+  '6e': { cycle: 'cycle 3', long: 'sixième', label: '6e', ecole: 'collège', other: autres('6e') },
+  '5e': { cycle: 'cycle 4', long: 'cinquième', label: '5e', ecole: 'collège', other: autres('5e') },
+  '4e': { cycle: 'cycle 4', long: 'quatrième', label: '4e', ecole: 'collège', other: autres('4e') },
+  '3e': { cycle: 'cycle 4', long: 'troisième', label: '3e', ecole: 'collège', other: autres('3e') },
 };
 const lab = lvl => (LEVEL_INFO[lvl] || {}).label || lvl;
 const CAT_LABEL = { N: 'Nombres et calculs', G: 'Géométrie', D: 'Données et probabilités', M: 'Grandeurs et mesures', P: 'Proportionnalité et fonctions' };
@@ -187,6 +192,9 @@ ${jsonld ? `<script type="application/ld+json">${JSON.stringify(jsonld)}</script
 <header class="seo-top">
   <a href="/" aria-label="L'Atelier des Maths, accueil"><img src="/assets/logo-horizontal.png" alt="L'Atelier des Maths" width="115" height="40"></a>
   <nav>
+    <a href="/cp/">Cours CP</a>
+    <a href="/ce1/">Cours CE1</a>
+    <a href="/ce2/">Cours CE2</a>
     <a href="/cm1/">Cours CM1</a>
     <a href="/cm2/">Cours CM2</a>
     <a href="/6e/">Cours 6e</a>
@@ -203,7 +211,7 @@ ${body}
 </main>
 <footer class="seo-foot">
   <a href="/">L'Atelier des Maths</a> · cours de mathématiques interactifs pour l'école et le collège ·
-  <a href="/cm1/">Cours de maths CM1</a> · <a href="/cm2/">Cours de maths CM2</a> · <a href="/6e/">Cours de maths 6e</a> · <a href="/5e/">Cours de maths 5e</a> · <a href="/4e/">Cours de maths 4e</a> · <a href="/3e/">Cours de maths 3e</a> · <a href="/programmes/">Les notions du CP à la 3e</a> · <a href="/professeurs/">Pour les professeurs</a><br>
+  <a href="/cp/">Cours de maths CP</a> · <a href="/ce1/">Cours de maths CE1</a> · <a href="/ce2/">Cours de maths CE2</a> · <a href="/cm1/">Cours de maths CM1</a> · <a href="/cm2/">Cours de maths CM2</a> · <a href="/6e/">Cours de maths 6e</a> · <a href="/5e/">Cours de maths 5e</a> · <a href="/4e/">Cours de maths 4e</a> · <a href="/3e/">Cours de maths 3e</a> · <a href="/programmes/">Les notions du CP à la 3e</a> · <a href="/professeurs/">Pour les professeurs</a><br>
   Une production de <a href="https://www.latelieraugmente.fr" rel="noopener">L'Atelier Augmenté</a> · Programme de mathématiques B.O. 2026.
 </footer>
 </body>
@@ -217,10 +225,11 @@ const crumbsLd = items => ({ '@type': 'BreadcrumbList', itemListElement: items.m
 // Search Console (octobre 2026) : « angles correspondants », « polyèdres cm2 », « cours maths 6ème »… Les notions
 // principales vont dans le titre (Google y donne beaucoup de poids), et le niveau s'écrit « 6ème », comme dans les
 // recherches (« 6e » reste dans la description et la page).
-const NIV_EME = { '6e': '6ème', '5e': '5ème', '4e': '4ème', '3e': '3ème', 'cm1': 'CM1', 'cm2': 'CM2' };
-const varNiv = lvl => ({ '6e': '6ème, sixième', '5e': '5ème, cinquième', '4e': '4ème, quatrième', '3e': '3ème, troisième', 'cm1': 'cours moyen 1re année', 'cm2': 'cours moyen 2e année' })[lvl] || lab(lvl);
-// 4e et 3e : le nouveau programme n'entre en vigueur qu'en 2027 et 2028, on garde l'ancien d'ici là.
-const PROG = lvl => (lvl === '4e' || lvl === '3e') ? 'programme en vigueur' : 'programme 2026';
+const NIV_EME = { '6e': '6ème', '5e': '5ème', '4e': '4ème', '3e': '3ème', 'cp': 'CP', 'ce1': 'CE1', 'ce2': 'CE2', 'cm1': 'CM1', 'cm2': 'CM2' };
+const varNiv = lvl => ({ '6e': '6ème, sixième', '5e': '5ème, cinquième', '4e': '4ème, quatrième', '3e': '3ème, troisième', 'cp': 'cours préparatoire', 'ce1': 'cours élémentaire 1re année', 'ce2': 'cours élémentaire 2e année', 'cm1': 'cours moyen 1re année', 'cm2': 'cours moyen 2e année' })[lvl] || lab(lvl);
+// 4e et 3e : le nouveau programme n'entre en vigueur qu'en 2027 et 2028, on garde l'ancien d'ici là ;
+// CP, CE1, CE2 : programme du cycle 2 de 2024.
+const PROG = lvl => (lvl === '4e' || lvl === '3e' || lvl === 'cp' || lvl === 'ce1' || lvl === 'ce2') ? 'programme en vigueur' : 'programme 2026';
 const GENERIQUES = /^(d[ée]finitions?|vocabulaire( de base)?|rappels?|m[ée]thodes?|exemples?|propri[ée]t[ée]s?|introduction|[àa] retenir|notations?|bilan|synth[èe]se|r[ée]sum[ée]|exercices?|probl[èe]mes?)$/i;
 function titreChapitre(ch){
   const fin = ` – Cours de maths ${NIV_EME[ch.lvl] || lab(ch.lvl)}`, base = ch.t, mots = base.toLowerCase();
@@ -342,7 +351,7 @@ function teachersPage() {
   const body = `
 <div class="seo-crumbs"><a href="/">Accueil</a> › Pour les professeurs</div>
 <h1>Des outils pour enseigner les maths au collège</h1>
-<p class="seo-sub">L'Atelier des Maths accompagne les professeurs de mathématiques du CM1 à la 3e : en classe (projection, géométrie au tableau), pour les devoirs, les évaluations et le suivi des élèves. Conçu par un professeur de mathématiques, conforme aux programmes en vigueur.</p>
+<p class="seo-sub">L'Atelier des Maths accompagne les professeurs de mathématiques du CP à la 3e : en classe (projection, géométrie au tableau), pour les devoirs, les évaluations et le suivi des élèves. Conçu par un professeur de mathématiques, conforme aux programmes en vigueur.</p>
 <div class="seo-feat">
 ${feats.map(f => `  <div><h3><span class="gicon">${f[0]}</span> ${esc(f[1])}</h3><p>${esc(f[2])}</p></div>`).join('\n')}
 </div>
@@ -503,7 +512,7 @@ async function ogImage(page, base) {
     newManifest[e.url] = { hash: e.hash, lastmod: old && old.hash === e.hash ? old.lastmod : today };
   }
   fs.writeFileSync(manifestPath, JSON.stringify(newManifest, null, 1) + '\n');
-  const prio = u => u === '/' ? '1.0' : /^\/(cm1|cm2|6e|5e|4e|3e)\/$/.test(u) || u === '/professeurs/' || u === '/programmes/' ? '0.9' : '0.8';
+  const prio = u => u === '/' ? '1.0' : /^\/(cp|ce1|ce2|cm1|cm2|6e|5e|4e|3e)\/$/.test(u) || u === '/professeurs/' || u === '/programmes/' ? '0.9' : '0.8';
   fs.writeFileSync(path.join(ROOT, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${entries.map(e => `  <url><loc>${SITE}${e.url}</loc><lastmod>${newManifest[e.url].lastmod}</lastmod><priority>${prio(e.url)}</priority></url>`).join('\n')}
