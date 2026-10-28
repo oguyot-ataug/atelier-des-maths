@@ -4,6 +4,9 @@
    12, avec des bandes et des disques : « si je fais des parts deux fois plus petites et que j'en prends
    deux fois plus, j'en prends la même quantité » ; reconnaître les fractions égales à un demi.
    Fractions toujours écrites en LaTeX (cm1Frac).
+   Relecture CE2-N4 (28/10/2026) : plus d'exemples là où il restait de la place, deux problèmes côte à côte,
+   « identique » au lieu de « pareille » ; à l'écran, fraction à écrire dans des cases et choix en LaTeX rendus
+   (planches-num.js).
    ============================================================ */
 (() => {
 const { rmp, chx } = P3, F = cm1Frac;
@@ -18,8 +21,8 @@ PLANCHES['ce2|Fractions égales'] = [
     attendus: ['Lire et écrire une fraction d\'une bande ou d\'un disque', 'Savoir ce que représentent le numérateur et le dénominateur'],
     exos: [
       { etoiles: 1, consigne: 'Écris la fraction coloriée.',
-        eleve: plGrille([bande(4, 3) + '<br>' + plFrac(), bande(6, 1) + '<br>' + plFrac(), cm1Disque(8, 5) + '<br>' + plFrac()], 3),
-        corr: plGrille([bande(4, 3) + '<br>' + P3.R(F(3, 4)), bande(6, 1) + '<br>' + P3.R(F(1, 6)), cm1Disque(8, 5) + '<br>' + P3.R(F(5, 8))], 3) },
+        eleve: plGrille([bande(4, 3), bande(6, 1), cm1Disque(8, 5), cm1Disque(3, 2), bande(10, 7), cm1Disque(6, 5)].map(f => f + '<br>' + plFrac()), 3),
+        corr: plGrille([[bande(4, 3), 3, 4], [bande(6, 1), 1, 6], [cm1Disque(8, 5), 5, 8], [cm1Disque(3, 2), 2, 3], [bande(10, 7), 7, 10], [cm1Disque(6, 5), 5, 6]].map(([f, a, b]) => f + '<br>' + P3.R(F(a, b))), 3) },
       { etoiles: 1, consigne: 'Colorie la fraction demandée.',
         eleve: plGrille([bande(5, 0) + '<br>' + F(2, 5), bande(3, 0) + '<br>' + F(3, 3), bande(10, 0) + '<br>' + F(7, 10)], 3),
         corr: plGrille([bande(5, 2) + '<br>' + F(2, 5), bande(3, 3) + '<br>' + F(3, 3), bande(10, 7) + '<br>' + F(7, 10)], 3) },
@@ -32,15 +35,21 @@ PLANCHES['ce2|Fractions égales'] = [
     attendus: ['Trouver des fractions égales avec des bandes', 'Expliquer : des parts deux fois plus petites, deux fois plus de parts'],
     exos: [
       { etoiles: 1, consigne: 'Les deux bandes ont la même partie coloriée. Complète l\'égalité.',
-        eleve: plListe([bande(4, 1) + ' ' + F(1, 4) + '<br>' + bande(8, 2) + ' ' + plFrac(), bande(3, 2) + ' ' + F(2, 3) + '<br>' + bande(6, 4) + ' ' + plFrac()]),
-        corr: plListe([bande(4, 1) + ' ' + F(1, 4) + '<br>' + bande(8, 2) + ' ' + P3.R(F(2, 8)), bande(3, 2) + ' ' + F(2, 3) + '<br>' + bande(6, 4) + ' ' + P3.R(F(4, 6))]) },
-      { etoiles: 2, col: 1, consigne: 'Complète les égalités.',
-        ...egal([[3, 4, true, 6, 8], [1, 3, true, 2, 6], [2, 5, true, 4, 10], [5, 6, true, 10, 12]]) },
-      { etoiles: 2, col: 1, consigne: 'Entoure si l\'égalité est vraie ou fausse.',
-        ...chx([[`${F(2, 4)} = ${F(1, 2)}`, 'vraie', 'vraie · fausse'], [`${F(2, 3)} = ${F(3, 4)}`, 'fausse', 'vraie · fausse'], [`${F(6, 8)} = ${F(3, 4)}`, 'vraie', 'vraie · fausse']]) },
-      { etoiles: 3, cahier: true, consigne: `Léo a mangé ${F(2, 6)} d'une tarte, Inès ${F(1, 3)} d'une tarte pareille. Qui a mangé le plus ? Explique avec un dessin.`,
+        ...(() => { const P = [[1, 4, 2, 8], [2, 3, 4, 6], [1, 2, 3, 6], [3, 5, 6, 10]];
+          return { eleve: plListe(P.map(([a, b, c, d]) => bande(b, a) + ' ' + F(a, b) + '<br>' + bande(d, c) + ' ' + plFrac())),
+            corr: plListe(P.map(([a, b, c, d]) => bande(b, a) + ' ' + F(a, b) + '<br>' + bande(d, c) + ' ' + P3.R(F(c, d)))) }; })() },
+      { etoiles: 2, consigne: 'Complète les égalités.',
+        ...egal([[3, 4, true, 6, 8], [1, 3, true, 2, 6], [2, 5, true, 4, 10], [5, 6, true, 10, 12], [1, 4, false, 12, 3], [2, 3, false, 9, 6], [1, 5, true, 2, 10], [3, 4, false, 12, 9]]) },
+      { etoiles: 2, consigne: 'Entoure si l\'égalité est vraie ou fausse.',
+        ...(() => { const V = 'vraie · fausse', g = P3.chxTab([[`${F(2, 4)} = ${F(1, 2)}`, 'vraie', V], [`${F(2, 3)} = ${F(3, 4)}`, 'fausse', V], [`${F(6, 8)} = ${F(3, 4)}`, 'vraie', V]]),
+            d = P3.chxTab([[`${F(1, 3)} = ${F(2, 6)}`, 'vraie', V], [`${F(2, 5)} = ${F(4, 5)}`, 'fausse', V], [`${F(4, 12)} = ${F(1, 3)}`, 'vraie', V]]),
+            deux = (x, y) => `<div style="display:flex;justify-content:space-around;flex-wrap:wrap;gap:4px 24px;">${x}${y}</div>`;
+          return { eleve: deux(g.eleve, d.eleve), corr: deux(g.corr, d.corr) }; })() },
+      { etoiles: 3, col: 1, cahier: true, consigne: `Léo a mangé ${F(2, 6)} d'une tarte, Inès ${F(1, 3)} d'une tarte identique. Qui a mangé le plus ? Explique avec un dessin.`,
         corr: cm1Redac('Comparer', `${F(1, 3)} = ${F(2, 6)}`, 'Si on coupe chaque tiers en deux, on obtient 2 sixièmes : Léo et Inès ont mangé autant de tarte.', bande(3, 1) + '<br>' + bande(6, 2)) },
-      { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['Un demi = @ quarts', 2], ['Un tiers = @ sixièmes', 2], ['Deux quarts = @ huitièmes', 4]], 2) },
+      { etoiles: 3, col: 1, cahier: true, consigne: `Deux rubans identiques. Sami colorie ${F(3, 4)} du sien, Jade colorie ${F(6, 8)} du sien. Qui a colorié le plus ? Explique avec un dessin.`,
+        corr: cm1Redac('Comparer', `${F(3, 4)} = ${F(6, 8)}`, 'Si on coupe chaque quart en deux, 3 quarts deviennent 6 huitièmes : Sami et Jade ont colorié autant de ruban.', bande(4, 3) + '<br>' + bande(8, 6)) },
+      { etoiles: 2, consigne: 'Complète.', ...P3.rmp([['Un demi = @ quarts', 2], ['Un tiers = @ sixièmes', 2], ['Deux quarts = @ huitièmes', 4], ['Un demi = @ dixièmes', 5], ['Deux tiers = @ sixièmes', 4], ['Un quart = @ huitièmes', 2], ['Un cinquième = @ dixièmes', 2], ['Trois quarts = @ douzièmes', 9]], 2) },
     ] },
   { titre: 'Les fractions égales à un demi', duree: '25 min',
     attendus: ['Reconnaître une fraction égale à un demi', 'Trouver la moitié d\'une unité partagée en un nombre pair de parts'],

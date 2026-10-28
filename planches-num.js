@@ -87,7 +87,10 @@ function plNumAnalyser(x){
       if(b){
         if(mk.length !== 1) return; vues++;
         const mots = b.textContent.split('·').map(s => s.trim()), id = 'ch' + cibles.length;
-        b.outerHTML = `<span class="pn-choix" data-pn="${id}">${mots.map(w => `<button type="button" class="pn-mot" data-pnmot="${escapeHtml(w)}">${escapeHtml(w)}</button>`).join('<span class="pn-sep"></span>')}</span>`;
+        // Contenu affiché : le HTML de chaque choix (fractions en LaTeX rendues, relecture CE2-N4-P1-E5 : « les fractions
+        // s'affichent en code LaTeX en ligne ») ; la clé reste le texte.
+        const vus = b.querySelector('.tex') ? b.innerHTML.split('·').map(h => h.trim()) : mots.map(escapeHtml);
+        b.outerHTML = `<span class="pn-choix" data-pn="${id}">${mots.map((w, i) => `<button type="button" class="pn-mot" data-pnmot="${escapeHtml(w)}">${vus[i]}</button>`).join('<span class="pn-sep"></span>')}</span>`;
         cibles.push({ type: 'choix', id, rep: plNumNorm(mk[0].textContent) });
         return;
       }
@@ -109,7 +112,9 @@ function plNumAnalyser(x){
   if(trous.length !== reps.length) return null;
   for(let n = 0; n < trous.length; n++){
     const tr = trous[n], r = reps[n], id = 'v' + cibles.length;
-    if(tr.classList.contains('pl-frac')){
+    // Pointillés dont la réponse est une fraction : deux cases (numérateur, dénominateur) -- relecture CE2-N4-P1-E4 :
+    // « on ne peut pas remplir en ligne ».
+    if(tr.classList.contains('pl-frac') || (tr.classList.contains('pl-pts') && plNumFracDe(r))){
       const f = plNumFracDe(r); if(!f) return null;
       tr.outerHTML = `<span class="pn-frac" data-pn="${id}"><button type="button" class="pn-case" data-pnv="${id}n"></button><span class="pn-barre"></span><button type="button" class="pn-case" data-pnv="${id}d"></button></span>`;
       cibles.push({ type: 'frac', id, rep: f, equiv: r.hasAttribute('data-equiv') }); // data-equiv : une fraction égale est acceptée (lire une figure)
