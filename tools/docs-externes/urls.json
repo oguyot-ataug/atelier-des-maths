@@ -1,6 +1,9 @@
 {
  "_": "Documentations externes à lire (non joignables depuis l'environnement de travail) : téléchargées par le workflow « Docs externes » sur une branche de travail, dans tools/docs-externes/out/ (à supprimer avant main).",
- "att-4e.pdf": "https://web.archive.org/web/20190919111844id_/https://cache.media.eduscol.education.fr/file/Attendus_et_reperes_C2-3-4/74/6/16-Maths-4e-attendus-eduscol_1114746.pdf",
- "att-3e.pdf": "https://web.archive.org/web/20190919110029id_/https://cache.media.eduscol.education.fr/file/Attendus_et_reperes_C2-3-4/74/8/18-Maths-3e-attendus-eduscol_1114748.pdf",
- "rep-c4.pdf": "https://web.archive.org/web/20190917002627id_/https://cache.media.eduscol.education.fr/file/Attendus_et_reperes_C2-3-4/75/6/26-Maths-C4-reperes-eduscol_1114756.pdf"
+ "cdx-att-4e.json": "https://web.archive.org/cdx/search/cdx?url=cache.media.eduscol.education.fr/file/Attendus_et_reperes_C2-3-4/74/6/16-Maths-4e-attendus-eduscol_1114746.pdf&output=json&fl=timestamp,length,statuscode,digest",
+ "direct-att-4e.pdf": "https://cache.media.eduscol.education.fr/file/Attendus_et_reperes_C2-3-4/74/6/16-Maths-4e-attendus-eduscol_1114746.pdf",
+ "cdx-att-3e.json": "https://web.archive.org/cdx/search/cdx?url=cache.media.eduscol.education.fr/file/Attendus_et_reperes_C2-3-4/74/8/18-Maths-3e-attendus-eduscol_1114748.pdf&output=json&fl=timestamp,length,statuscode,digest",
+ "direct-att-3e.pdf": "https://cache.media.eduscol.education.fr/file/Attendus_et_reperes_C2-3-4/74/8/18-Maths-3e-attendus-eduscol_1114748.pdf",
+ "cdx-rep-c4.json": "https://web.archive.org/cdx/search/cdx?url=cache.media.eduscol.education.fr/file/Attendus_et_reperes_C2-3-4/75/6/26-Maths-C4-reperes-eduscol_1114756.pdf&output=json&fl=timestamp,length,statuscode,digest",
+ "direct-rep-c4.pdf": "https://cache.media.eduscol.education.fr/file/Attendus_et_reperes_C2-3-4/75/6/26-Maths-C4-reperes-eduscol_1114756.pdf"
 }
