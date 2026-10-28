@@ -1,6 +1,0 @@
-cdx-att-4e.json : HTTP 200, 461 octets (https://web.archive.org/cdx/search/cdx?url=cache.media.eduscol.education.fr/file/Attendus_et_reperes_C2-3-4/74/6/16-Maths-4e-attendus-eduscol_1114746.pdf&output=json&fl=timestamp,length,statuscode,digest)
-direct-att-4e.pdf : HTTP 200, 1546128 octets (https://eduscol.education.gouv.fr/sites/default/files/document/16-maths-4e-attendus-eduscol1114746pdf-74682.pdf)
-cdx-att-3e.json : HTTP 200, 392 octets (https://web.archive.org/cdx/search/cdx?url=cache.media.eduscol.education.fr/file/Attendus_et_reperes_C2-3-4/74/8/18-Maths-3e-attendus-eduscol_1114748.pdf&output=json&fl=timestamp,length,statuscode,digest)
-direct-att-3e.pdf : HTTP 200, 1320721 octets (https://eduscol.education.gouv.fr/sites/default/files/document/18-maths-3e-attendus-eduscol1114748pdf-74688.pdf)
-cdx-rep-c4.json : HTTP 200, 323 octets (https://web.archive.org/cdx/search/cdx?url=cache.media.eduscol.education.fr/file/Attendus_et_reperes_C2-3-4/75/6/26-Maths-C4-reperes-eduscol_1114756.pdf&output=json&fl=timestamp,length,statuscode,digest)
-direct-rep-c4.pdf : HTTP 200, 2270068 octets (https://eduscol.education.gouv.fr/sites/default/files/document/26-maths-c4-reperes-eduscol1114756pdf-74694.pdf)
