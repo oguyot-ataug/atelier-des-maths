@@ -11,11 +11,11 @@ on:
   workflow_dispatch:
     inputs:
       etape:
-        description: 'base (copie de la base, comptes compris), fichiers (Storage), fonctions (Edge Functions) ou verification (comptages)'
+        description: 'base (copie de la base, comptes compris), fichiers (Storage), fonctions (Edge Functions), secrets (ALERTE_CLE + comparaison des noms) ou verification (comptages)'
         required: true
         default: verification
         type: choice
-        options: [verification, base, fichiers, fonctions]
+        options: [verification, base, fichiers, fonctions, secrets]
 
 permissions:
   contents: read
@@ -61,7 +61,7 @@ jobs:
         run: bash .github/scripts/migration-comptages.sh avant
 
       - name: Supabase CLI
-        if: inputs.etape == 'base' || inputs.etape == 'fonctions'
+        if: inputs.etape == 'base' || inputs.etape == 'fonctions' || inputs.etape == 'secrets'
         uses: supabase/setup-cli@v1
         with:
           version: latest
@@ -122,8 +122,24 @@ jobs:
           echo "::notice title=Fonctions::$T"
           [ -z "$KO" ]
 
+      - name: Secrets des fonctions (ALERTE_CLE recopiée depuis GitHub, comparaison des noms)
+        if: inputs.etape == 'secrets'
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          ALERTE_CLE: ${{ secrets.ALERTE_CLE }}
+        run: |
+          # ALERTE_CLE est déjà un secret GitHub (surveillance.yml, test-charge.yml) : recopiée telle quelle à Paris.
+          R="ALERTE_CLE : "
+          if [ -z "$ALERTE_CLE" ]; then R="${R}absente des secrets GitHub";
+          elif supabase secrets set --project-ref "$NEW_REF" "ALERTE_CLE=$ALERTE_CLE" > /tmp/s.log 2>&1; then R="${R}recopiée";
+          else R="${R}échec ($(tail -1 /tmp/s.log | sed -E 's/"[^"]*"/"…"/g' | head -c 200))"; fi
+          noms() { supabase secrets list --project-ref "$1" -o json 2>/dev/null | jq -r '.[].name' | grep -v '^SUPABASE_' | sort; }
+          noms "$OLD_REF" > /tmp/a; noms "$NEW_REF" > /tmp/b
+          T="$R%0AManquent à Paris : $(comm -23 /tmp/a /tmp/b | tr '\n' ' ')%0AEn plus à Paris : $(comm -13 /tmp/a /tmp/b | tr '\n' ' ')%0APrésents à Paris : $(tr '\n' ' ' < /tmp/b)"
+          echo "::notice title=Secrets::$T"
+
       - name: Comptages après
-        if: inputs.etape != 'verification'
+        if: inputs.etape == 'base' || inputs.etape == 'fichiers'
         env:
           OLD_DB: ${{ secrets.SUPA_OLD_DB_URL }}
           NEW_DB: ${{ secrets.SUPA_NEW_DB_URL }}
