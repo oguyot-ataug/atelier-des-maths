@@ -19,6 +19,10 @@ echo "$ANC" | jq --arg o "$OLD_REF" --arg n "$NEW_REF" '
   | walk(if type == "string" then gsub($o; $n) else . end)' > /tmp/corps.json
 DIFF_AVANT=$(jq -rn --slurpfile a /tmp/corps.json --argjson b "$NEU" '$a[0] | to_entries | map(select($b[.key] != .value)) | map(.key) | join(" ")')
 MASQUES=$(echo "$ANC" | jq -r 'to_entries | map(select((.value | type) == "string" and (.value | test("^\\*+$")))) | map(.key) | join(" ")')
+# Serveur OAuth de Supabase (non utilisé) : ses réglages ne s'envoient que tous ensemble ; laissés de côté s'il est désactivé.
+if [ "$(jq -r '.oauth_server_enabled // false' /tmp/corps.json)" != true ]; then
+  jq 'with_entries(select(.key | startswith("oauth_server") | not))' /tmp/corps.json > /tmp/c2.json && mv /tmp/c2.json /tmp/corps.json
+fi
 envoyer() { curl "${H[@]}" -X PATCH -d @/tmp/corps.json -w '\n%{http_code}' "$API/$NEW_REF/config/auth"; }
 R=$(envoyer); C=${R##*$'\n'}; B=${R%$'\n'*}
 # Champs refusés par le PATCH (lecture seule ou inconnus) : retirés un à un d'après le message d'erreur, 15 essais au plus.
@@ -36,7 +40,7 @@ for i in $(seq 1 15); do
     R=$(envoyer); C=${R##*$'\n'}; B=${R%$'\n'*}; continue
   fi
   [ "$C" = 400 ] || break
-  K=$(echo "$B" | grep -oE '"[a-z0-9_]+"' | tr -d '"' | while read -r k; do jq -e --arg k "$k" 'has($k)' /tmp/corps.json > /dev/null && { echo "$k"; break; }; done || true)
+  K=$( { echo "$B" | grep -oE '"[a-z0-9_]+"' | tr -d '"'; echo "$B" | grep -oE '\b[A-Z][A-Z0-9_]{3,}\b' | tr 'A-Z' 'a-z'; } | while read -r k; do jq -e --arg k "$k" 'has($k)' /tmp/corps.json > /dev/null && { echo "$k"; break; }; done || true)
   [ -n "$K" ] || break
   jq --arg k "$K" 'del(.[$k])' /tmp/corps.json > /tmp/c2.json && mv /tmp/c2.json /tmp/corps.json; RETIRES="$RETIRES $K"
   R=$(envoyer); C=${R##*$'\n'}; B=${R%$'\n'*}
