@@ -30,7 +30,8 @@ for i in $(seq 1 15); do
   jq --arg k "$K" 'del(.[$k])' /tmp/corps.json > /tmp/c2.json && mv /tmp/c2.json /tmp/corps.json; RETIRES="$RETIRES $K"
   R=$(envoyer); C=${R##*$'\n'}; B=${R%$'\n'*}
 done
-if [ "$C" != 200 ]; then note "Écriture refusée à Paris (HTTP $C) : $(echo "$B" | sed -E 's/"[^"]*"/"…"/g' | head -c 300)"; exit 1; fi
+# Message d'erreur de l'API : clés et textes (noms de droits ou de réglages, pas de valeurs du projet).
+if [ "$C" != 200 ]; then note "Écriture refusée à Paris (HTTP $C) : $(echo "$B" | jq -c '.' 2>/dev/null | head -c 600)"; exit 1; fi
 R=$(lire "$NEW_REF"); NEU2=${R%$'\n'*}
 DIFF_APRES=$(jq -rn --slurpfile a /tmp/corps.json --argjson b "$NEU2" '$a[0] | to_entries | map(select($b[.key] != .value)) | map(.key) | join(" ")')
 SITE=$(echo "$NEU2" | jq -r '.site_url // ""'); LISTE=$(echo "$NEU2" | jq -r '.uri_allow_list // ""')
