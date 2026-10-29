@@ -11,11 +11,11 @@ on:
   workflow_dispatch:
     inputs:
       etape:
-        description: 'base (copie de la base, comptes compris), fichiers (Storage), fonctions (Edge Functions), secrets (ALERTE_CLE + comparaison des noms), auth (réglages de connexion) ou verification (comptages)'
+        description: 'base (copie de la base, comptes compris), donnees (recopie des données à la bascule : Paris vidé puis rechargé), fichiers (Storage), fonctions (Edge Functions), secrets (ALERTE_CLE + comparaison des noms), auth (réglages de connexion) ou verification (comptages)'
         required: true
         default: verification
         type: choice
-        options: [verification, base, fichiers, fonctions, secrets, auth]
+        options: [verification, base, donnees, fichiers, fonctions, secrets, auth]
 
 permissions:
   contents: read
@@ -61,7 +61,7 @@ jobs:
         run: bash .github/scripts/migration-comptages.sh avant
 
       - name: Supabase CLI
-        if: inputs.etape == 'base' || inputs.etape == 'fonctions' || inputs.etape == 'secrets'
+        if: inputs.etape == 'base' || inputs.etape == 'donnees' || inputs.etape == 'fonctions' || inputs.etape == 'secrets'
         uses: supabase/setup-cli@v1
         with:
           version: latest
@@ -87,6 +87,27 @@ jobs:
             --command 'SET session_replication_role = replica' \
             --file data.sql --dbname "$NEW_DB" > log 2>&1 || { echo "Échec : rien n'a été écrit dans le nouveau projet (transaction unique)."; masque < log; exit 1; }
           echo "Copie de la base terminée."
+          rm -f /tmp/m/*.sql /tmp/m/log
+
+      - name: Recopie des données à la bascule (Paris vidé puis rechargé, structure inchangée)
+        if: inputs.etape == 'donnees'
+        env:
+          OLD_DB: ${{ secrets.SUPA_OLD_DB_URL }}
+          NEW_DB: ${{ secrets.SUPA_NEW_DB_URL }}
+        run: |
+          # Toutes les tables présentes dans la sauvegarde des données de Dublin sont vidées à Paris (DELETE, déclencheurs
+          # et clés étrangères suspendus par session_replication_role = replica) puis rechargées, le tout en UNE transaction :
+          # en cas d'erreur, Paris reste exactement comme avant.
+          set -o pipefail
+          umask 077; mkdir -p /tmp/m && cd /tmp/m
+          masque() { grep -E '^(psql:|ERROR|FATAL|error)' | sed -E 's/"[^"]*"/"…"/g; s/'"'"'[^'"'"']*'"'"'/'"'"'…'"'"'/g; s/\([^)]*\)=\([^)]*\)/(…)=(…)/g' | head -20 | tee /tmp/m/err; E=$(cat /tmp/m/err); E="${E//'%'/'%25'}"; echo "::error title=Migration::${E//$'\n'/'%0A'}"; }
+          supabase db dump --db-url "$OLD_DB" -f data.sql --use-copy --data-only -x "storage.buckets_vectors" -x "storage.vector_indexes" > log 2>&1 || { masque < log; exit 1; }
+          grep -oE '^COPY "[^"]+"\."[^"]+"' data.sql | sed 's/^COPY //' | sort -u | sed 's/^/DELETE FROM /; s/$/;/' > vider.sql
+          echo "Tables rechargées : $(wc -l < vider.sql)"
+          psql --quiet --single-transaction --variable ON_ERROR_STOP=1 \
+            --command 'SET session_replication_role = replica' \
+            --file vider.sql --file data.sql --dbname "$NEW_DB" > log 2>&1 || { echo "Échec : Paris inchangé (transaction unique)."; masque < log; exit 1; }
+          echo "::notice title=Données::Données recopiées de Dublin à Paris ($(wc -l < vider.sql) tables)."
           rm -f /tmp/m/*.sql /tmp/m/log
 
       - name: Copie des fichiers (Storage)
@@ -145,7 +166,7 @@ jobs:
         run: bash .github/scripts/migration-auth.sh
 
       - name: Comptages après
-        if: inputs.etape == 'base' || inputs.etape == 'fichiers'
+        if: inputs.etape == 'base' || inputs.etape == 'donnees' || inputs.etape == 'fichiers'
         env:
           OLD_DB: ${{ secrets.SUPA_OLD_DB_URL }}
           NEW_DB: ${{ secrets.SUPA_NEW_DB_URL }}
