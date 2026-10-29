@@ -5,7 +5,8 @@ REQ="select n.nspname||'.'||c.relname, (xpath('/row/c/text()', query_to_xml(form
 from pg_class c join pg_namespace n on n.oid = c.relnamespace
 where c.relkind = 'r' and (n.nspname = 'public' or (n.nspname, c.relname) in (('auth','users'),('auth','identities'),('storage','buckets'),('storage','objects')))
 order by 1"
-compte() { psql --quiet --no-psqlrc -At -F ' ' --dbname "$1" -c "$REQ" 2>/dev/null || echo "(connexion impossible)"; }
+# En cas d'échec, la raison sans les valeurs (le mot de passe est de toute façon masqué par GitHub).
+compte() { psql --quiet --no-psqlrc -At -F ' ' --dbname "$1" -c "$REQ" 2>/tmp/err.txt || echo "connexion_impossible:$(head -c 300 /tmp/err.txt | tr '\n ' '__' | sed -E 's/"[^"]*"/"…"/g')"; }
 compte "$OLD_DB" > /tmp/ancien.txt; compte "$NEW_DB" > /tmp/nouveau.txt
 T=$( { echo "table | Dublin | Paris"; join -a1 -a2 -e '-' -o 0,1.2,2.2 <(sort /tmp/ancien.txt) <(sort /tmp/nouveau.txt) | awk '{ m = ($2 == $3) ? "" : "  <-- différent"; print $1 " | " $2 " | " $3 m }'; } )
 echo "$T"
