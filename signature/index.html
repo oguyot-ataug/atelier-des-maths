@@ -83,8 +83,8 @@
 <script>
 /* Page de signature d'un devis (lien personnel envoyé par e-mail). Toute la logique et les
    contrôles (validité du lien, code, essais) sont côté serveur, fonction devis-signature. */
-const FN = 'https://rngzubhnypmistjsumpz.supabase.co/functions/v1/devis-signature';
-const ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJuZ3p1YmhueXBtaXN0anN1bXB6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4MTExNjEsImV4cCI6MjEwMDM4NzE2MX0.V56LFlb1ITWPmoO-DwLw3coeS7epY9NM5K2Waj03pac';
+const FN = 'https://tdsdwbsvduitgrrrfjrp.supabase.co/functions/v1/devis-signature';
+const ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRkc2R3YnN2ZHVpdGdycnJmanJwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMyNTg4NjksImV4cCI6MjEwODgzNDg2OX0.hrbj6tWi6U8IupaYjN0ccVeNdpHk1CsxykMKNQVxK7s';
 const token = new URLSearchParams(location.search).get('t') || '';
 const app = document.getElementById('app');
 let state = { data:null, step:1, nom:'', qualite:'' };

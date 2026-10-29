@@ -21,7 +21,10 @@ elle-même). Sans ce GRANT, la table se crée sans erreur mais devient inaccessi
 ("permission denied" côté PostgREST), y compris sur un nouveau projet, une preview branch, ou un
 `supabase db reset` local. Source : mail Supabase du 23/09/2026.
 
-Project ID Supabase de ce dépôt : `rngzubhnypmistjsumpz`.
+Project ID Supabase de ce dépôt : `tdsdwbsvduitgrrrfjrp` (projet « AtelierMaths_Paris », région Paris eu-west-3, depuis le
+29/10/2026). L'ancien projet de Dublin (`rngzubhnypmistjsumpz`, eu-west-1) est gardé intact quelques jours pour un retour en
+arrière, puis supprimé : ne plus jamais l'utiliser. Déménagement fait par `.github/workflows/migration-paris.yml` (copie de la
+base, des fichiers, des fonctions et des réglages de connexion ; les secrets des fonctions ont été ressaisis à la main).
 
 ## Référencement : régénérer les pages statiques après toute modification d'un chapitre
 

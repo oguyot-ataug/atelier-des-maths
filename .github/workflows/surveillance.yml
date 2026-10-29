@@ -55,7 +55,7 @@ jobs:
         run: |
           mkdir -p etat
           if [ -z "$FREE_SMS_USER" ] || [ -z "$FREE_SMS_PASS" ]; then echo "Secrets SMS absents : rien à faire."; exit 0; fi
-          SUPA=https://rngzubhnypmistjsumpz.supabase.co
+          SUPA=https://tdsdwbsvduitgrrrfjrp.supabase.co
           ANON=$(grep -o "SUPABASE_ANON_KEY = '[^']*'" app.js | head -1 | cut -d"'" -f2)
           sms() { curl -s -o /dev/null -w "SMS %{http_code}\n" -G https://smsapi.free-mobile.fr/sendmsg \
                     --data-urlencode "user=$FREE_SMS_USER" --data-urlencode "pass=$FREE_SMS_PASS" --data-urlencode "msg=$1"; }

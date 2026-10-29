@@ -12,7 +12,7 @@
 //  - professeur : lien d'invitation / mot de passe des élèves de SES classes.
 //
 // Déploiement (depuis un terminal, une fois) :
-//   supabase functions deploy admin-create-user --project-ref rngzubhnypmistjsumpz
+//   supabase functions deploy admin-create-user --project-ref tdsdwbsvduitgrrrfjrp
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";

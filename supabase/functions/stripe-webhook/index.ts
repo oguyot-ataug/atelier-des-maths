@@ -25,7 +25,7 @@
 //   SUPABASE_SERVICE_ROLE_KEY (déjà configuré, utilisé par admin-create-user)
 //
 // Configuration côté Stripe (Dashboard > Développeurs > Webhooks) :
-//   URL : https://rngzubhnypmistjsumpz.supabase.co/functions/v1/stripe-webhook
+//   URL : https://tdsdwbsvduitgrrrfjrp.supabase.co/functions/v1/stripe-webhook
 //   Événements à écouter : checkout.session.completed,
 //     customer.subscription.updated, customer.subscription.deleted
 
