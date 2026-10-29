@@ -11,11 +11,11 @@ on:
   workflow_dispatch:
     inputs:
       etape:
-        description: 'base (copie de la base, comptes compris), fichiers (Storage), fonctions (Edge Functions), secrets (ALERTE_CLE + comparaison des noms) ou verification (comptages)'
+        description: 'base (copie de la base, comptes compris), fichiers (Storage), fonctions (Edge Functions), secrets (ALERTE_CLE + comparaison des noms), auth (réglages de connexion) ou verification (comptages)'
         required: true
         default: verification
         type: choice
-        options: [verification, base, fichiers, fonctions, secrets]
+        options: [verification, base, fichiers, fonctions, secrets, auth]
 
 permissions:
   contents: read
@@ -137,6 +137,12 @@ jobs:
           noms "$OLD_REF" > /tmp/a; noms "$NEW_REF" > /tmp/b
           T="$R%0AManquent à Paris : $(comm -23 /tmp/a /tmp/b | tr '\n' ' ')%0AEn plus à Paris : $(comm -13 /tmp/a /tmp/b | tr '\n' ' ')%0APrésents à Paris : $(tr '\n' ' ' < /tmp/b)"
           echo "::notice title=Secrets::$T"
+
+      - name: Réglages de connexion (Auth) recopiés de Dublin à Paris
+        if: inputs.etape == 'auth'
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: bash .github/scripts/migration-auth.sh
 
       - name: Comptages après
         if: inputs.etape == 'base' || inputs.etape == 'fichiers'
