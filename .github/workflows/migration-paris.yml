@@ -58,7 +58,7 @@ jobs:
         env:
           OLD_DB: ${{ secrets.SUPA_OLD_DB_URL }}
           NEW_DB: ${{ secrets.SUPA_NEW_DB_URL }}
-        run: bash .github/scripts/migration-comptages.sh
+        run: bash .github/scripts/migration-comptages.sh avant
 
       - name: Supabase CLI
         if: inputs.etape == 'base'
@@ -74,7 +74,7 @@ jobs:
         run: |
           set -o pipefail
           umask 077; mkdir -p /tmp/m && cd /tmp/m
-          masque() { grep -E '^(psql:|ERROR|FATAL|error)' | sed -E 's/"[^"]*"/"…"/g; s/'"'"'[^'"'"']*'"'"'/'"'"'…'"'"'/g; s/\([^)]*\)=\([^)]*\)/(…)=(…)/g' | head -20; }
+          masque() { grep -E '^(psql:|ERROR|FATAL|error)' | sed -E 's/"[^"]*"/"…"/g; s/'"'"'[^'"'"']*'"'"'/'"'"'…'"'"'/g; s/\([^)]*\)=\([^)]*\)/(…)=(…)/g' | head -20 | tee /tmp/m/err; E=$(cat /tmp/m/err); E="${E//'%'/'%25'}"; echo "::error title=Migration::${E//$'\n'/'%0A'}"; }
           supabase db dump --db-url "$OLD_DB" -f roles.sql --role-only > log 2>&1 || { masque < log; exit 1; }
           supabase db dump --db-url "$OLD_DB" -f schema.sql > log 2>&1 || { masque < log; exit 1; }
           supabase db dump --db-url "$OLD_DB" -f data.sql --use-copy --data-only -x "storage.buckets_vectors" -x "storage.vector_indexes" > log 2>&1 || { masque < log; exit 1; }
@@ -95,12 +95,14 @@ jobs:
           OLD_KEY: ${{ secrets.SUPA_OLD_SERVICE_KEY }}
           NEW_KEY: ${{ secrets.SUPA_NEW_SERVICE_KEY }}
         run: |
+          set -o pipefail
           cd /tmp && npm install --silent --no-audit --no-fund @supabase/supabase-js@2 > /dev/null 2>&1
-          NODE_PATH=/tmp/node_modules node "$GITHUB_WORKSPACE/.github/scripts/migration-fichiers.cjs"
+          R=0; NODE_PATH=/tmp/node_modules node "$GITHUB_WORKSPACE/.github/scripts/migration-fichiers.cjs" 2>&1 | tee /tmp/f.txt || R=$?
+          T=$(cat /tmp/f.txt); T="${T//'%'/'%25'}"; echo "::notice title=Fichiers::${T//$'\n'/'%0A'}"; exit $R
 
       - name: Comptages après
         if: inputs.etape != 'verification'
         env:
           OLD_DB: ${{ secrets.SUPA_OLD_DB_URL }}
           NEW_DB: ${{ secrets.SUPA_NEW_DB_URL }}
-        run: bash .github/scripts/migration-comptages.sh
+        run: bash .github/scripts/migration-comptages.sh après
