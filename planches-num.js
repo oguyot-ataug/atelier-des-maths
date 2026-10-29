@@ -134,6 +134,18 @@ function plNumAnalyser(x){
       cibles.push({ type: 'txt', id, rep, classes, maj: /^[(\[]?[A-ZÉÈ]/.test(r.textContent.trim()) }); // réponse en majuscule (nom de point…) : clavier en majuscules
     }
   }
+  // 2 bis. Retenues d'une opération posée (cm1Posee) : petites cases à remplir, non notées (relecture CE2-N3-P1-E3 :
+  // « permettre d'ajouter des retenues »). Dans une opération posée, la touche OK suit l'ordre du calcul, de droite à
+  // gauche : unités, retenue, dizaines… (soustraction : le « 1 » en haut, le « +1 » en bas, puis le chiffre du résultat).
+  E.querySelectorAll('.pl-ret-case').forEach((r, k) => { const t = r.dataset.plret;
+    r.outerHTML = `<button type="button" class="pn-case pn-ret pn-ret-${t}" data-pnv="ret${k}" data-plret="${t}" data-plcol="${r.dataset.plcol}" aria-label="retenue" style="${t === 'a' ? '' : (r.getAttribute('style') || '').replace(/visibility:hidden;?/, '')}"></button>`; });
+  E.querySelectorAll('table').forEach(tb => {
+    if(tb.parentElement && tb.parentElement.closest('table')) return;
+    const L = [...tb.querySelectorAll('[data-pnv]')].map(b => { const ret = b.dataset.plret, td = b.closest('td'), c = +(ret ? b.dataset.plcol : td && td.dataset.plcol);
+      return { b, k: isNaN(c) ? null : ret === 'b' ? 2 * c - 2.5 : ret ? 2 * c - 1 : 2 * c }; });
+    if(!L.length || L.some(z => z.k == null) || !tb.querySelector('.pn-ret')) return;
+    L.sort((x, y) => x.k - y.k).forEach((z, i) => z.b.setAttribute('data-pnsuiv', i + 1 < L.length ? L[i + 1].b.dataset.pnv : ''));
+  });
   // 3. Figures blanches dans l'énoncé, coloriées dans le corrigé.
   let svE = [...E.querySelectorAll('svg')], svC = [...C.querySelectorAll('svg')];
   if(svE.length !== svC.length) return null;
@@ -224,9 +236,15 @@ function plNum(root, x, o){
     if(t === 'ok-fin'){ sel = null; afficher(); return; }
     let v = etat.v[sel] || '';
     if(t === '⌫') v = v.slice(0, -1);
-    else if(t === 'ok'){ const cases = [...root.querySelectorAll('[data-pnv]')].map(b => b.dataset.pnv), i = cases.indexOf(sel); choisir(cases[i + 1] || null); return; }
+    else if(t === 'ok'){ const els = [...root.querySelectorAll('[data-pnv]')], b = els.find(z => z.dataset.pnv === sel);
+      if(b && b.hasAttribute('data-pnsuiv')){ // opération posée : ordre du calcul, puis la case qui suit l'opération
+        if(b.dataset.pnsuiv){ choisir(b.dataset.pnsuiv); return; }
+        const tb = b.closest('table'), apres = els.find(z => !tb.contains(z) && (tb.compareDocumentPosition(z) & Node.DOCUMENT_POSITION_FOLLOWING));
+        choisir(apres ? apres.dataset.pnv : null); return; }
+      const cases = els.map(z => z.dataset.pnv), i = cases.indexOf(sel); choisir(cases[i + 1] || null); return; }
     else if(t === 'vider') v = '';
     else if(/^[<>=]$/.test(t)) v = t;
+    else if(/^ret/.test(sel) && /^\d$/.test(t)) v = t; // retenue : un seul chiffre, on le remplace
     else if(t === ' ' && (!v || v.endsWith(' '))) return; // pas d'espace au début ni deux de suite
     else if(v.length < 24) v += t;
     etat.v[sel] = v; effacerMarques(); afficher(); change();
@@ -615,6 +633,9 @@ function plClavierPhysique(e){
     .cx-td .pn-ex, .cx-td.pn-ex{ font-size:1.1rem; line-height:1.5; } @media (min-width:700px){ .cx-td.pn-ex{ zoom:1.3; } } .cx-td svg{ max-width:100%; height:auto; }
     .pn-ex .pn-case{ white-space:pre; display:inline-flex; align-items:center; justify-content:center; min-width:30px; height:26px; padding:0 5px; border:2px solid #3A6EA5; border-radius:6px; background:#fff;
       font:700 1rem 'Space Grotesk',Arial,sans-serif; color:#1F3A5C; cursor:pointer; vertical-align:middle; margin:0 2px; }
+    .pn-ex .pn-case.pn-ret{ min-width:0; width:17px; height:17px; padding:0; border-width:1.5px; border-style:dashed; border-color:#F0A36B; border-radius:4px; font:700 .72rem 'JetBrains Mono',monospace; color:#E35D3A; z-index:1; }
+    .pn-ex .pn-case.pn-ret.pn-vide{ background:rgba(255,255,255,.85); } .pn-ex .pn-case.pn-ret:not(.pn-vide){ border-style:solid; border-color:transparent; background:transparent; }
+    .pn-ex .pn-case.pn-ret.pn-sel{ border-style:solid; border-color:#E35D3A; background:#FFF6F2; } .pn-ex .pn-ret-b:not(.pn-vide)::before{ content:'+'; }
     .pn-ex .pn-case.pn-large{ min-width:120px; } .pn-ex .pn-case.pn-vide{ background:#F3F7FC; }
     .pn-ex .pn-case.pn-sel{ border-color:#E35D3A; box-shadow:0 0 0 3px rgba(227,93,58,.25); background:#FFF6F2; }
     .pn-ex .pn-frac{ display:inline-flex; flex-direction:column; align-items:center; gap:3px; vertical-align:middle; margin:0 3px; }

@@ -275,15 +275,47 @@ function cm1Tex(src){ return `<span class="tex">${src}</span>`; }
 // retenues = chaîne alignée à droite (espaces = pas de retenue). Commune au CM1 et au CM2.
 // opts.trous : le résultat est remplacé par des cases à remplir (planche à l'écran) ; opts.rep : le
 // résultat est marqué comme réponse (corrigé lu par planches-num.js, case par case).
+// Retenues à l'écran (relecture CE2-N3-P1-E3 : « permettre d'ajouter des retenues ») : avec opts.trous, de
+// petites cases de retenue sont prévues (cachées sur papier, où elles laissent la place d'écrire) --
+// au-dessus de chaque rang pour une addition ou une multiplication, et pour une soustraction les marques de
+// la compensation (« 1 » devant le chiffre du haut, « +1 » sous le chiffre du bas). planches-num.js en fait
+// des cases à remplir, non notées. Avec opts.rep (corrigé à l'écran), ces retenues sont écrites.
+// opts.retenues === false : pas de cases de retenue.
+function cm1PoseeMarques(lignes, larg){
+  const L = lignes.map(([s, n, t]) => [s, n.padStart(larg), t]), op = (L.find(l => /[+−×]/.test(l[0])) || [])[0];
+  const chiffre = (n, j) => /\d/.test(n[j]) ? +n[j] : 0, cols = []; for(let j = larg - 1; j >= 0; j--) if(!L.some(l => l[1][j] === ',')) cols.push(j);
+  const m = { op, ret: {}, haut: {}, bas: {} };
+  if(op === '+' && !L.some(l => l[2]) && L.slice(0, -1).every(l => l[0] === ' ' || l[0] === '+')){
+    const termes = L.slice(0, -1); let c = 0;
+    cols.forEach((j, k) => { const t = termes.reduce((x, l) => x + chiffre(l[1], j), 0) + c; c = Math.floor(t / 10); const g = cols[k + 1];
+      if(c && g != null && termes.some(l => /\d/.test(l[1].slice(0, g + 1)))) m.ret[g] = c; }); // pas de retenue au-dessus du chiffre qui dépasse tous les termes
+  } else if(op === '−' && L.length === 3){
+    let r = 0;
+    cols.forEach(j => { const y = chiffre(L[1][1], j) + r; if(r) m.bas[j] = true; if(chiffre(L[0][1], j) < y){ m.haut[j] = true; r = 1; } else r = 0; });
+  }
+  return m;
+}
 function cm1Posee(lignes, retenues, opts){
   opts = opts || {};
   const larg = Math.max(...lignes.map(l => l[1].length), retenues ? retenues.length : 0);
   const virg = new Set(); lignes.forEach(([, n]) => n.padStart(larg).split('').forEach((c, j) => { if(c === ',') virg.add(j); }));
-  const cell = (c, st, res, j) => `<td style="width:${virg.has(j) ? 12 : 30}px;height:28px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:700;padding:2px 0;color:#1C1B2E;${st || ''}">${c === ' ' ? '' : res && opts.trous && typeof plCase === 'function' ? '<span class="pl-case pl-case-seule" style="margin:0;width:18px;"></span>' : res && opts.rep && typeof plRep === 'function' ? plRep(c) : c}</td>`;
-  let h = '<table style="border-collapse:collapse;margin:5px auto;">';
+  const op = (lignes.find(l => /[+−×]/.test(l[0])) || [])[0], cases = opts.trous && opts.retenues !== false && !retenues;
+  const M = opts.rep && !retenues ? cm1PoseeMarques(lignes, larg) : null;
+  if(M && M.op === '+' && Object.keys(M.ret).length) retenues = Array.from({ length: larg }, (_, j) => M.ret[j] ? String(M.ret[j]) : ' ').join('');
+  // Rang compté depuis la droite (pour l'ordre de saisie à l'écran : unités, retenue, dizaines…).
+  const rang = j => larg - 1 - j;
+  const caseRet = (k, j, st) => `<span class="pl-ret-case" data-plret="${k}" data-plcol="${rang(j)}" style="visibility:hidden;${st || ''}"></span>`;
+  const cell = (c, st, res, j, plus) => `<td${res && opts.trous && c !== ' ' ? ` data-plcol="${rang(j)}"` : ''} style="position:relative;width:${virg.has(j) ? 12 : 30}px;height:28px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:700;padding:2px 0;color:#1C1B2E;${st || ''}">${c === ' ' ? '' : res && opts.trous && typeof plCase === 'function' ? '<span class="pl-case pl-case-seule" style="margin:0;width:18px;"></span>' : res && opts.rep && typeof plRep === 'function' ? plRep(c) : c}${plus || ''}</td>`;
+  const marque = (t, ou) => `<span style="position:absolute;${ou};font-size:.68rem;line-height:1;color:#E35D3A;font-weight:700;">${t}</span>`;
+  const sous = op === '−' && lignes.length === 3;
+  let h = `<table style="border-collapse:collapse;margin:${sous && (cases || M) ? 10 : 5}px auto 5px;">`;
   if(retenues) h += `<tr><td></td>${retenues.padStart(larg).split('').map(c => cell(c, 'font-size:.72rem;color:#FF8208;')).join('')}</tr>`;
-  lignes.forEach(([s, n, trait], i) => { const res = i === lignes.length - 1;
-    h += `<tr style="${res || trait ? 'border-top:2px solid #1C1B2E;' : ''}">${cell(s, 'width:26px;color:#FF8208;')}${n.padStart(larg).split('').map((c, j) => cell(c, res ? 'color:#FF8208;font-size:1.2rem;' : '', res, j)).join('')}</tr>`; });
+  else if(cases && (op === '+' || op === '×')) h += `<tr><td></td>${Array.from({ length: larg }, (_, j) => `<td style="height:20px;padding:0;text-align:center;">${rang(j) > 0 && !virg.has(j) ? caseRet('a', j, 'display:inline-block;width:16px;height:16px;') : ''}</td>`).join('')}</tr>`;
+  lignes.forEach(([s, n, trait], i) => { const res = i === lignes.length - 1, ch = n.padStart(larg).split('');
+    // Soustraction : « 1 » devant le chiffre du haut (+10), « +1 » sous le chiffre du bas (compensation).
+    const plus = j => !sous || virg.has(j) ? '' : i === 0 ? (cases && rang(j) < larg - 1 ? caseRet('h', j, 'position:absolute;left:-5px;top:-7px;') : M && M.haut[j] ? marque('1', 'left:1px;top:0') : '')
+      : i === 1 ? (cases && rang(j) > 0 ? caseRet('b', j, 'position:absolute;right:-5px;bottom:-6px;') : M && M.bas[j] ? marque('+1', 'right:-3px;bottom:-1px') : '') : '';
+    h += `<tr style="${res || trait ? 'border-top:2px solid #1C1B2E;' : ''}">${cell(s, 'width:26px;color:#FF8208;')}${ch.map((c, j) => cell(c, res ? 'color:#FF8208;font-size:1.2rem;' : '', res, j, plus(j))).join('')}</tr>`; });
   return h + '</table>';
 }
 
