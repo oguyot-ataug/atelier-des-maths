@@ -75,15 +75,15 @@ jobs:
           set -o pipefail
           umask 077; mkdir -p /tmp/m && cd /tmp/m
           masque() { grep -E '^(psql:|ERROR|FATAL|error)' | sed -E 's/"[^"]*"/"…"/g; s/'"'"'[^'"'"']*'"'"'/'"'"'…'"'"'/g; s/\([^)]*\)=\([^)]*\)/(…)=(…)/g' | head -20 | tee /tmp/m/err; E=$(cat /tmp/m/err); E="${E//'%'/'%25'}"; echo "::error title=Migration::${E//$'\n'/'%0A'}"; }
-          supabase db dump --db-url "$OLD_DB" -f roles.sql --role-only > log 2>&1 || { masque < log; exit 1; }
+          # Pas de roles.sql : l'ancien projet n'a aucun rôle personnalisé (vérifié le 29/10/2026), tous les rôles sont ceux
+          # de Supabase et existent déjà dans le nouveau projet ; les recréer échoue (« permission denied for parameter … »).
           supabase db dump --db-url "$OLD_DB" -f schema.sql > log 2>&1 || { masque < log; exit 1; }
           supabase db dump --db-url "$OLD_DB" -f data.sql --use-copy --data-only -x "storage.buckets_vectors" -x "storage.vector_indexes" > log 2>&1 || { masque < log; exit 1; }
           # Problèmes connus listés par Supabase (« Troubleshooting notes ») : propriétaire supabase_admin, rôle cli_login_postgres.
           sed -i -E 's/^(ALTER .* OWNER TO "supabase_admin";)$/-- \1/' schema.sql
-          sed -i -E 's/^(GRANT "postgres" TO "cli_login_postgres".*)$/-- \1/' roles.sql
-          echo "Tailles : roles $(wc -l < roles.sql) lignes, schema $(wc -l < schema.sql) lignes, data $(du -h data.sql | cut -f1)"
+          echo "Tailles : schema $(wc -l < schema.sql) lignes, data $(du -h data.sql | cut -f1)"
           psql --quiet --single-transaction --variable ON_ERROR_STOP=1 \
-            --file roles.sql --file schema.sql \
+            --file schema.sql \
             --command 'SET session_replication_role = replica' \
             --file data.sql --dbname "$NEW_DB" > log 2>&1 || { echo "Échec : rien n'a été écrit dans le nouveau projet (transaction unique)."; masque < log; exit 1; }
           echo "Copie de la base terminée."
