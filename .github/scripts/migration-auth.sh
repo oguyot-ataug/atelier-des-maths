@@ -24,6 +24,17 @@ R=$(envoyer); C=${R##*$'\n'}; B=${R%$'\n'*}
 # Champs refusés par le PATCH (lecture seule ou inconnus) : retirés un à un d'après le message d'erreur, 15 essais au plus.
 RETIRES=""
 for i in $(seq 1 15); do
+  # 402 : crochets (hooks) réservés aux offres Team/Enterprise (HOOK_PASSWORD_VERIFICATION_ATTEMPT…) : retirés
+  # de la copie, avec une mention s'ils étaient activés à Dublin (impossible en offre Pro, donc normalement non).
+  if [ "$C" = 402 ]; then
+    P=$(echo "$B" | grep -oE 'HOOK_[A-Z_]+' | tr 'A-Z' 'a-z' | sort -u)
+    [ -n "$P" ] || break
+    for h in $P; do
+      [ "$(jq -r --arg h "$h" '.[$h + "_enabled"] // false' /tmp/corps.json)" = true ] && RETIRES="$RETIRES (${h} était ACTIVÉ)"
+      jq --arg h "$h" 'with_entries(select(.key | startswith($h) | not))' /tmp/corps.json > /tmp/c2.json && mv /tmp/c2.json /tmp/corps.json; RETIRES="$RETIRES $h*"
+    done
+    R=$(envoyer); C=${R##*$'\n'}; B=${R%$'\n'*}; continue
+  fi
   [ "$C" = 400 ] || break
   K=$(echo "$B" | grep -oE '"[a-z0-9_]+"' | tr -d '"' | while read -r k; do jq -e --arg k "$k" 'has($k)' /tmp/corps.json > /dev/null && { echo "$k"; break; }; done || true)
   [ -n "$K" ] || break
