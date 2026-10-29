@@ -72,8 +72,8 @@
   "lastmod": "2026-10-28"
  },
  "/cp/l-addition-posee/": {
-  "hash": "8859c1c5f71288bf38526fff151d6c2698b2589c",
-  "lastmod": "2026-10-28"
+  "hash": "410130ee803238d6e906aafe2ac03ab7551f7773",
+  "lastmod": "2026-10-29"
  },
  "/cp/des-groupes-egaux/": {
   "hash": "ac1dca0241dc87fa44cc7cbf9422ca64e2e88abf",
@@ -136,8 +136,8 @@
   "lastmod": "2026-10-28"
  },
  "/ce1/l-addition-posee/": {
-  "hash": "7e9818ac5347358b21d0ee891f2fa76b41d0eb6f",
-  "lastmod": "2026-10-28"
+  "hash": "c3499c18720970c24d98bc327446890b7b2bc25d",
+  "lastmod": "2026-10-29"
  },
  "/ce1/longueurs-centimetre-metre-kilometre/": {
   "hash": "e8cb2002699edb7fc261973321b1630bd2081ada",
@@ -180,8 +180,8 @@
   "lastmod": "2026-10-28"
  },
  "/ce1/la-soustraction-posee/": {
-  "hash": "c87149d3d48485da1dc74d81d55fcfd47d65a027",
-  "lastmod": "2026-10-28"
+  "hash": "eda4dd497f35eb56dd0d1401979133949dfe3d8c",
+  "lastmod": "2026-10-29"
  },
  "/ce1/tables-de-multiplication-de-3-et-4/": {
   "hash": "3ddc4b5b075623065193079a0fadc5f5af0f1bf5",
@@ -236,12 +236,12 @@
   "lastmod": "2026-10-28"
  },
  "/ce2/addition-et-soustraction-posees/": {
-  "hash": "074b6964f312c5c10e554e1bfaf9979ee68802d3",
-  "lastmod": "2026-10-28"
+  "hash": "849b77ddfaafa2928726ad125bd61c8cedad8952",
+  "lastmod": "2026-10-29"
  },
  "/ce2/la-monnaie/": {
-  "hash": "75e294a8971f994a0a5096bb67a8679a781f7d14",
-  "lastmod": "2026-10-28"
+  "hash": "08e8c47f69d1d352d05ef0e65d931dadf29eb909",
+  "lastmod": "2026-10-29"
  },
  "/ce2/fractions-egales/": {
   "hash": "9cdee8b894b06a7d8a98ed8ee8319bcfed54696e",
@@ -280,8 +280,8 @@
   "lastmod": "2026-10-28"
  },
  "/ce2/la-multiplication-posee/": {
-  "hash": "77372fce3599844351b054fd394af1a94975b2e7",
-  "lastmod": "2026-10-28"
+  "hash": "eb79a4a31e19912ead4e1ff4351fc0c9826f40c6",
+  "lastmod": "2026-10-29"
  },
  "/ce2/masses-et-contenances/": {
   "hash": "47370881f4088008ff95f4150f9c44c5e78021d7",
@@ -440,16 +440,16 @@
   "lastmod": "2026-10-28"
  },
  "/cm2/addition-et-soustraction/": {
-  "hash": "1239f5f8518e5508c7c1af53e4f83a032ff1e5cf",
-  "lastmod": "2026-10-28"
+  "hash": "e15a7c3c63d2d7835cbe8fc11fd41012f96f572d",
+  "lastmod": "2026-10-29"
  },
  "/cm2/figures-planes/": {
   "hash": "3341aae31a62219e431ab634bb36e60dc31697d5",
   "lastmod": "2026-10-28"
  },
  "/cm2/multiplication/": {
-  "hash": "6f798e2d45ab96f21a9f3eff5b0501a0bf604528",
-  "lastmod": "2026-10-28"
+  "hash": "7c0aa404863853fef63357b17942d35b002014b6",
+  "lastmod": "2026-10-29"
  },
  "/cm2/probabilites/": {
   "hash": "6217738129181180dac320b00a4d304051c97866",
@@ -648,8 +648,8 @@
   "lastmod": "2026-10-28"
  },
  "/5e/statistiques/": {
-  "hash": "e64789a506217ba9343856b8188072a5ac095e98",
-  "lastmod": "2026-10-28"
+  "hash": "cef63d804c78185bd1a03f107c02613490573030",
+  "lastmod": "2026-10-29"
  },
  "/5e/operations-sur-les-nombres-relatifs/": {
   "hash": "9377e76855a341d0ae1ca2478ad13e8089560710",
@@ -772,8 +772,8 @@
   "lastmod": "2026-10-28"
  },
  "/3e/nombres-et-calculs/": {
-  "hash": "80f7bcc5c1e3d32c550083c17f47576cc3c1863f",
-  "lastmod": "2026-10-28"
+  "hash": "afa2c0af5bdd9da925c2c70e6e6884e4463bc8d1",
+  "lastmod": "2026-10-29"
  },
  "/3e/theoreme-de-thales/": {
   "hash": "a2e62c3f2c952624c2eb36bdc2a1e272e13afd04",
@@ -796,8 +796,8 @@
   "lastmod": "2026-10-28"
  },
  "/3e/statistiques/": {
-  "hash": "3488b0e5e36ed9988368ca54d1d2a89162931944",
-  "lastmod": "2026-10-28"
+  "hash": "9e6adc2ef2438aa46190510a98a3f82d0597d148",
+  "lastmod": "2026-10-29"
  },
  "/3e/calcul-litteral/": {
   "hash": "07d2da3f100d1344868b7ce0844bab7ac730c42f",
@@ -808,8 +808,8 @@
   "lastmod": "2026-10-28"
  },
  "/3e/probabilites/": {
-  "hash": "b5d9f931de57119d3c1b25756fc23bf5fcfd37de",
-  "lastmod": "2026-10-28"
+  "hash": "6216787c62c347153ae7afb844cc15840b50673f",
+  "lastmod": "2026-10-29"
  },
  "/3e/equations/": {
   "hash": "8eb7bc9408930e1b3df720a860ff17661a41b09d",
@@ -832,8 +832,8 @@
   "lastmod": "2026-10-28"
  },
  "/3e/algorithmique-et-programmation/": {
-  "hash": "0114e9d38f6d71f860b8212d57b7faf462ceac7f",
-  "lastmod": "2026-10-28"
+  "hash": "fce61a954b3af148b44fe9b456b1aab457813707",
+  "lastmod": "2026-10-29"
  },
  "/3e/": {
   "hash": "df0a9c7e272f15fb91c76c73ba2fa3ee6614e11b",
