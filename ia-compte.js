@@ -760,7 +760,7 @@ function oliviaLettreFamilles(){
   <h2>Quelles informations sont utilisées ?</h2>
   <ul>
     <li>Pour produire une réponse, le <b>texte de la leçon affichée</b> et la <b>question écrite par l'élève</b> sont envoyés à la société <b>Anthropic</b> (intelligence artificielle Claude), aux États-Unis. <b>Ni le nom, ni l'identifiant, ni la classe de l'élève ne sont transmis.</b></li>
-    <li>Les échanges (questions et réponses) sont <b>conservés sur les serveurs du site, dans l'Union européenne (Irlande)</b>, pour que le professeur puisse les relire et repérer les notions qui posent difficulté. Seuls l'élève et son professeur y ont accès.</li>
+    <li>Les échanges (questions et réponses) sont <b>conservés sur les serveurs du site, en France (Paris, Union européenne)</b>, pour que le professeur puisse les relire et repérer les notions qui posent difficulté. Seuls l'élève et son professeur y ont accès.</li>
     <li>Ils sont <b>supprimés par le professeur</b> ${champ('au plus tard six mois après leur création, et en fin d\'année scolaire')}.</li>
     <li>Oliv'IA <b>ne note pas</b> les élèves et ne prend <b>aucune décision</b> les concernant. Il est indiqué à l'élève qu'il échange avec une intelligence artificielle, qui peut se tromper.</li>
   </ul>
