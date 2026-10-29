@@ -1,0 +1,106 @@
+# Déménagement de la base Supabase de Dublin (rngzubhnypmistjsumpz, eu-west-1) vers Paris
+# (tdsdwbsvduitgrrrfjrp, eu-west-3) -- demandé le 29/10/2026 (« prépare la bascule vers Paris »).
+# Méthode officielle Supabase « Backup and Restore using the CLI » + copie des fichiers du Storage.
+# Lancement à la main seulement (onglet Actions). Les mots de passe et clés sont des secrets du dépôt
+# (SUPA_OLD_DB_URL, SUPA_NEW_DB_URL, SUPA_OLD_SERVICE_KEY, SUPA_NEW_SERVICE_KEY).
+# Le dépôt est PUBLIC : les journaux n'affichent que des comptages et des erreurs masquées, et aucun
+# fichier de sauvegarde n'est conservé (la machine GitHub est effacée à la fin).
+name: Migration Supabase vers Paris
+
+on:
+  workflow_dispatch:
+    inputs:
+      etape:
+        description: 'base (copie de la base, comptes compris), fichiers (Storage) ou verification (comptages)'
+        required: true
+        default: verification
+        type: choice
+        options: [verification, base, fichiers]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: migration-paris
+  cancel-in-progress: false
+
+env:
+  OLD_REF: rngzubhnypmistjsumpz
+  NEW_REF: tdsdwbsvduitgrrrfjrp
+
+jobs:
+  migration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Récupération du dépôt
+        uses: actions/checkout@v5
+
+      - name: Contrôle des secrets (ancien = Dublin, nouveau = Paris, jamais l'inverse)
+        env:
+          OLD_DB: ${{ secrets.SUPA_OLD_DB_URL }}
+          NEW_DB: ${{ secrets.SUPA_NEW_DB_URL }}
+        run: |
+          [[ "$OLD_DB" == *"$OLD_REF"* ]] || { echo "SUPA_OLD_DB_URL ne désigne pas l'ancien projet ($OLD_REF)"; exit 1; }
+          [[ "$NEW_DB" == *"$NEW_REF"* ]] || { echo "SUPA_NEW_DB_URL ne désigne pas le nouveau projet ($NEW_REF)"; exit 1; }
+          [[ "$NEW_DB" != *"$OLD_REF"* ]] || { echo "SUPA_NEW_DB_URL contient l'ancien projet : arrêt"; exit 1; }
+          echo "Secrets cohérents."
+
+      - name: Client PostgreSQL 17
+        run: |
+          sudo install -d /usr/share/postgresql-common/pgdg
+          sudo curl -sS -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc --fail https://www.postgresql.org/media/keys/ACCC4CF8.asc
+          echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list > /dev/null
+          sudo apt-get update -qq > /dev/null && sudo apt-get install -y -qq postgresql-client-17 > /dev/null
+          echo "/usr/lib/postgresql/17/bin" >> "$GITHUB_PATH"
+
+      - name: Comptages avant (ancien et nouveau projet)
+        env:
+          OLD_DB: ${{ secrets.SUPA_OLD_DB_URL }}
+          NEW_DB: ${{ secrets.SUPA_NEW_DB_URL }}
+        run: bash .github/scripts/migration-comptages.sh
+
+      - name: Supabase CLI
+        if: inputs.etape == 'base'
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Copie de la base (rôles, structure, données, comptes)
+        if: inputs.etape == 'base'
+        env:
+          OLD_DB: ${{ secrets.SUPA_OLD_DB_URL }}
+          NEW_DB: ${{ secrets.SUPA_NEW_DB_URL }}
+        run: |
+          set -o pipefail
+          umask 077; mkdir -p /tmp/m && cd /tmp/m
+          masque() { grep -E '^(psql:|ERROR|FATAL|error)' | sed -E 's/"[^"]*"/"…"/g; s/'"'"'[^'"'"']*'"'"'/'"'"'…'"'"'/g; s/\([^)]*\)=\([^)]*\)/(…)=(…)/g' | head -20; }
+          supabase db dump --db-url "$OLD_DB" -f roles.sql --role-only > log 2>&1 || { masque < log; exit 1; }
+          supabase db dump --db-url "$OLD_DB" -f schema.sql > log 2>&1 || { masque < log; exit 1; }
+          supabase db dump --db-url "$OLD_DB" -f data.sql --use-copy --data-only -x "storage.buckets_vectors" -x "storage.vector_indexes" > log 2>&1 || { masque < log; exit 1; }
+          # Problèmes connus listés par Supabase (« Troubleshooting notes ») : propriétaire supabase_admin, rôle cli_login_postgres.
+          sed -i -E 's/^(ALTER .* OWNER TO "supabase_admin";)$/-- \1/' schema.sql
+          sed -i -E 's/^(GRANT "postgres" TO "cli_login_postgres".*)$/-- \1/' roles.sql
+          echo "Tailles : roles $(wc -l < roles.sql) lignes, schema $(wc -l < schema.sql) lignes, data $(du -h data.sql | cut -f1)"
+          psql --quiet --single-transaction --variable ON_ERROR_STOP=1 \
+            --file roles.sql --file schema.sql \
+            --command 'SET session_replication_role = replica' \
+            --file data.sql --dbname "$NEW_DB" > log 2>&1 || { echo "Échec : rien n'a été écrit dans le nouveau projet (transaction unique)."; masque < log; exit 1; }
+          echo "Copie de la base terminée."
+          rm -f /tmp/m/*.sql /tmp/m/log
+
+      - name: Copie des fichiers (Storage)
+        if: inputs.etape == 'fichiers'
+        env:
+          OLD_KEY: ${{ secrets.SUPA_OLD_SERVICE_KEY }}
+          NEW_KEY: ${{ secrets.SUPA_NEW_SERVICE_KEY }}
+        run: |
+          cd /tmp && npm install --silent --no-audit --no-fund @supabase/supabase-js@2 > /dev/null 2>&1
+          NODE_PATH=/tmp/node_modules node "$GITHUB_WORKSPACE/.github/scripts/migration-fichiers.cjs"
+
+      - name: Comptages après
+        if: inputs.etape != 'verification'
+        env:
+          OLD_DB: ${{ secrets.SUPA_OLD_DB_URL }}
+          NEW_DB: ${{ secrets.SUPA_NEW_DB_URL }}
+        run: bash .github/scripts/migration-comptages.sh
