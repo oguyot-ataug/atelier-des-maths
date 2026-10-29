@@ -11,11 +11,11 @@ on:
   workflow_dispatch:
     inputs:
       etape:
-        description: 'base (copie de la base, comptes compris), fichiers (Storage) ou verification (comptages)'
+        description: 'base (copie de la base, comptes compris), fichiers (Storage), fonctions (Edge Functions) ou verification (comptages)'
         required: true
         default: verification
         type: choice
-        options: [verification, base, fichiers]
+        options: [verification, base, fichiers, fonctions]
 
 permissions:
   contents: read
@@ -61,7 +61,7 @@ jobs:
         run: bash .github/scripts/migration-comptages.sh avant
 
       - name: Supabase CLI
-        if: inputs.etape == 'base'
+        if: inputs.etape == 'base' || inputs.etape == 'fonctions'
         uses: supabase/setup-cli@v1
         with:
           version: latest
@@ -99,6 +99,28 @@ jobs:
           cd /tmp && npm install --silent --no-audit --no-fund @supabase/supabase-js@2 > /dev/null 2>&1
           R=0; NODE_PATH=/tmp/node_modules node "$GITHUB_WORKSPACE/.github/scripts/migration-fichiers.cjs" 2>&1 | tee /tmp/f.txt || R=$?
           T=$(cat /tmp/f.txt); T="${T//'%'/'%25'}"; echo "::notice title=Fichiers::${T//$'\n'/'%0A'}"; exit $R
+
+      - name: Copie des fonctions serveur (Edge Functions) et liste des secrets à recréer
+        if: inputs.etape == 'fonctions'
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: |
+          # Code téléchargé tel qu'il est déployé à Dublin, redéployé tel quel à Paris, avec le même réglage verify_jwt.
+          # Les valeurs des secrets ne sont jamais lisibles (Supabase ne donne que les noms) : la liste des NOMS sert à les
+          # recréer à la main dans le nouveau projet.
+          set -o pipefail
+          mkdir -p /tmp/fn && cd /tmp/fn && supabase init --force > /dev/null 2>&1 || true
+          OK=""; KO=""
+          for f in admin-create-user:1 ai-proxy:0 notify-prof-signup:1 create-checkout-session:1 stripe-webhook:0 facturation-mail:1 devis-signature:0 famille:1 prof-offre:1 simulateur:1 alerte-sms:0 test-charge:0 qonto:0; do
+            n=${f%%:*}; v=${f##*:}
+            if supabase functions download "$n" --project-ref "$OLD_REF" > /tmp/fn/log 2>&1 \
+               && supabase functions deploy "$n" --project-ref "$NEW_REF" --use-api $([ "$v" = 0 ] && echo --no-verify-jwt) >> /tmp/fn/log 2>&1; then OK="$OK $n"; else KO="$KO $n"; tail -3 /tmp/fn/log; fi
+          done
+          N=$(supabase secrets list --project-ref "$OLD_REF" -o json 2>/dev/null | jq -r '.[].name' | grep -v '^SUPABASE_' | sort | tr '\n' ' ')
+          T="Déployées à Paris :$OK%0AEn échec :${KO:- aucune}%0ASecrets à recréer (noms) : $N"
+          echo "$T" | sed 's/%0A/\n/g'
+          echo "::notice title=Fonctions::$T"
+          [ -z "$KO" ]
 
       - name: Comptages après
         if: inputs.etape != 'verification'
