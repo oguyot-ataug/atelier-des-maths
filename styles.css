@@ -2174,3 +2174,11 @@ select:not([multiple]):not([size]){
 .profil-etat.ok { background:#EAF7EF; color:#1F7A4D; }
 .profil-etat.attente { background:#FFF4E5; color:#B45309; }
 .profil-etat.vide { background:#FDECEA; color:#C0392B; }
+
+/* Paiement intégré (Stripe Embedded Checkout, app.js paiementOuvrir) */
+.paiement-modal{position:fixed;inset:0;background:rgba(28,43,57,.55);z-index:1000;display:flex;align-items:flex-start;justify-content:center;padding:4vh 12px;overflow-y:auto;}
+.paiement-boite{background:#fff;border-radius:16px;width:100%;max-width:1040px;box-shadow:0 18px 50px rgba(0,0,0,.25);overflow:hidden;}
+.paiement-tete{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px 10px 18px;background:#0C5BA0;color:#fff;font-weight:700;}
+.paiement-fermer{background:none;border:none;color:#fff;cursor:pointer;padding:6px;border-radius:8px;font-size:1.1rem;line-height:1;}
+.paiement-fermer:hover{background:rgba(255,255,255,.15);}
+#paiementStripe{min-height:300px;}

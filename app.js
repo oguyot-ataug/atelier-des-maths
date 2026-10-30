@@ -368,6 +368,39 @@ async function venteCharger(){
 function venteOuverte(test){ return currentUserRole === 'admin' || VENTES_OUVERTES || !!test; }
 const VENTE_MSG = 'Les offres ne sont pas encore en vente. D\'ici là, le site est en démonstration : essayez-le gratuitement.';
 const VENTE_BOUTON = 'Bientôt en vente';
+/* Paiement intégré au site (Stripe Embedded Checkout) -- demandé le 30/10/2026 : « intègre le paiement ». Les fonctions
+   prof-offre et famille renvoient client_secret + clé publique quand on leur passe integre:true (et que la clé publique est
+   enregistrée côté serveur) ; sinon l'adresse de la page Stripe, où l'on est redirigé comme avant. Après le paiement,
+   Stripe ramène la page entière à l'adresse de retour (?abonnement=succes ou ?famille=paye). */
+let paiementStripe = null;
+async function paiementOuvrir(d){
+  if(!d.client_secret || !d.publishable_key || typeof Stripe !== 'function'){
+    if(d.url){ location.href = d.url; return; }
+    throw new Error('Paiement indisponible pour le moment.');
+  }
+  paiementFermer();
+  const ov = document.createElement('div');
+  ov.id = 'paiementModal'; ov.className = 'paiement-modal';
+  ov.innerHTML = `<div class="paiement-boite" role="dialog" aria-modal="true" aria-label="Paiement sécurisé">
+    <div class="paiement-tete"><span><span class="gicon">lock</span> Paiement sécurisé par Stripe</span>
+      <button class="paiement-fermer" onclick="paiementFermer()" aria-label="Fermer"><span class="gicon">close</span></button></div>
+    <div id="paiementStripe"><p class="hint" style="padding:24px;">Chargement du paiement sécurisé…</p></div></div>`;
+  ov.addEventListener('click', e => { if(e.target === ov) paiementFermer(); });
+  document.body.appendChild(ov); document.body.style.overflow = 'hidden';
+  try{
+    const co = await Stripe(d.publishable_key).initEmbeddedCheckout({ fetchClientSecret: async () => d.client_secret });
+    if(!document.getElementById('paiementModal')){ co.destroy(); return; } // fermé pendant le chargement
+    paiementStripe = co;
+    document.getElementById('paiementStripe').innerHTML = '';
+    co.mount('#paiementStripe');
+  }catch(e){ paiementFermer(); throw new Error('Le paiement sécurisé n\'a pas pu s\'ouvrir : ' + (e && e.message || e)); }
+}
+function paiementFermer(){
+  if(paiementStripe){ try{ paiementStripe.destroy(); }catch(e){} paiementStripe = null; }
+  const m = document.getElementById('paiementModal'); if(m) m.remove();
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => { if(e.key === 'Escape' && document.getElementById('paiementModal')) paiementFermer(); });
 /* Bêta-testeurs d'un niveau en préparation -- demandé : « permettre à l'admin d'attribuer le niveau ce2 à des
    enseignants (béta testeurs) ». Professeur : profiles.niveaux_beta (coché par l'administrateur général dans sa
    fiche) ; élève : niveaux en préparation de ses classes (seul l'administrateur crée ces classes). */
@@ -3680,6 +3713,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1205', date:'2026-10-30', items:['Paiement intégré au site -- demandé : « intègre le paiement ». Le formulaire de paiement sécurisé de Stripe s\'ouvre dans une fenêtre du site (offres professeur et Famille), sans partir sur stripe.com ; après le paiement, on revient sur « Mon abonnement » ou l\'Espace famille. Tant que la clé publique Stripe n\'est pas enregistrée sur le serveur, la page Stripe habituelle prend le relais.', 'Espace famille sans prix tant que les ventes sont fermées -- demandé : « masque les prix famille ». La présentation et l\'espace des parents annoncent « Ouverture des ventes prochainement » au lieu des offres et des prix (sauf comptes marqués « test »).'] },
   { version:'2026-08-19.1204', date:'2026-10-30', items:['Page des tarifs masquée tant que les ventes sont fermées -- demandé : « Oui, masque les prix de la page tarifs ». La page /tarifs/ annonce « Ouverture des ventes prochainement », sans aucun prix : accès gratuit en démonstration pour les professeurs inscrits, contact et prise de rendez-vous pour les établissements. La page complète est gardée hors ligne et sera remise à l\'ouverture des ventes (rappel dans la confirmation « Ouvrir les ventes »).'] },
   { version:'2026-08-19.1203', date:'2026-10-30', items:['« Mon abonnement » pendant la démonstration -- demandé : « j\'espère que abonnement n\'est pas visible pour l\'instant pour les profs non test ». Tant que les ventes sont fermées, un professeur qui n\'est pas marqué « test » n\'y voit que son statut de démonstration et sa classe : ni offres, ni prix, ni bouton de paiement (déjà le cas), et plus de lien vers la page des tarifs en bas de page.'] },
   { version:'2026-08-19.1202', date:'2026-10-30', items:['Facture en PDF jointe à l\'e-mail envoyé après un paiement -- demandé : « Joins la facture en PDF à l\'e-mail. » Offres professeur et Famille : la facture (même mise en page que sur le site, logos compris) part en pièce jointe ; elle reste consultable dans « Mon abonnement » ou l\'Espace famille. Sur la facture d\'un professeur, l\'objet indique désormais « offre professeur » (et non « offre Famille »).'] },

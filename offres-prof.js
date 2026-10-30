@@ -254,11 +254,12 @@ async function opPayer(){
   if(typeof venteOuverte === 'function' && !venteOuverte(opOffre && opOffre.stripe_test)){ opMsg('opPayMsg', VENTE_MSG); return; }
   if(!document.getElementById('opEngagement').checked){ opMsg('opPayMsg', 'Merci de cocher l\'engagement d\'utilisation.'); return; }
   if(!document.getElementById('opRenonciation').checked){ opMsg('opPayMsg', 'Merci de cocher la demande d\'accès immédiat et les conditions de vente.'); return; }
-  btn.disabled = true; opMsg('opPayMsg', 'Redirection vers le paiement sécurisé…', true);
+  btn.disabled = true; opMsg('opPayMsg', 'Ouverture du paiement sécurisé…', true);
   try{
     const d = await opCall({ action:'paiement', offre: opEtat.choix, niveaux: Array.from(opEtat.niveaux), classes_sup: opEtat.classesSup, places: opEtat.places,
-      engagement: true, renonciation: true, origin: location.origin });
-    location.href = d.url;
+      engagement: true, renonciation: true, origin: location.origin, integre: true });
+    await paiementOuvrir(d);
+    if(!d.url){ opMsg('opPayMsg', ''); btn.disabled = false; } // paiement intégré : le bouton reste utilisable si l'on ferme la fenêtre
   }catch(e){ opMsg('opPayMsg', e.message); btn.disabled = false; }
 }
 

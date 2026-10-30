@@ -112,13 +112,13 @@ function famPresentationHtml(){
     <h1 style="margin:0 0 6px;"><span class="gicon">family_restroom</span> L'Atelier des Maths en famille</h1>
     <p style="margin:0;max-width:72ch;">Les cours, méthodes et exercices du CM1 à la 3e, les automatismes et Objectif Nombre, avec un compte pour chaque enfant et un suivi pour vous.</p>
   </div>
-  <div class="fam-offres">
+  ${typeof venteOuverte === 'function' && !venteOuverte(false) ? famVenteFermeeHtml() : `<div class="fam-offres">
     <div class="fam-offre"><b>1 niveau</b><span class="fam-prix">${famPrixTxt(famGrille['1'])}</span><small>par année scolaire</small></div>
     <div class="fam-offre"><b>2 niveaux</b><span class="fam-prix">${famPrixTxt(famGrille['2'])}</span><small>par année scolaire</small></div>
     <div class="fam-offre"><b>Collège complet</b><span class="fam-prix">${famPrixTxt(famGrille['3'])}</span><small>de la 6e à la 3e</small></div>
     <div class="fam-offre"><b>École : CM1 ou CM2</b><span class="fam-prix">${famPrixTxt(famGrille.ecole1)}</span><small>par année scolaire</small></div>
     <div class="fam-offre"><b>CM1 et CM2</b><span class="fam-prix">${famPrixTxt(famGrille.ecole2)}</span><small>par année scolaire</small></div>
-  </div>
+  </div>`}
   <ul class="fam-points">
     <li><span class="gicon">group</span><span>Jusqu'à <b>4 comptes enfants</b> (des jumeaux ont chacun leur compte), gérés par vous.</span></li>
     <li><span class="gicon">history_edu</span><span>Chaque niveau choisi ouvre aussi le <b>niveau inférieur en révision</b>.</span></li>
@@ -126,6 +126,10 @@ function famPresentationHtml(){
     <li><span class="gicon">smart_toy</span><span>IA facultative, avec <b>votre propre clé</b> Anthropic, réglable pour chaque enfant.</span></li>
     <li><span class="gicon">event_available</span><span>Paiement unique jusqu'au 31 août, <b>sans reconduction automatique</b>.</span></li>
   </ul>`;
+}
+// Ventes fermées (demandé le 30/10/2026 : « masque les prix famille ») : ni prix, ni choix d'offre, sauf compte « test ».
+function famVenteFermeeHtml(){
+  return `<div class="fam-banner"><span class="gicon">event</span><span><b>Ouverture des ventes prochainement.</b> Les offres Famille seront bientôt disponibles : vous pouvez déjà créer votre compte, vous serez prévenu à l'ouverture.</span></div>`;
 }
 function famSignupHtml(){
   return `
@@ -207,7 +211,7 @@ let famData = null;
 async function renderFamille(){
   const root = document.getElementById('famRoot');
   if(!root) return;
-  await famChargerGrille();
+  await Promise.all([famChargerGrille(), typeof venteCharger === 'function' ? venteCharger() : null]); // prix montrés seulement si les ventes sont ouvertes
   if(!currentUser){ root.innerHTML = famPresentationHtml() + famSignupHtml(); return; }
   if(!currentUserRole){
     // Le profil vient peut-être d'être créé : on relit le rôle avant de proposer de finaliser.
@@ -290,6 +294,7 @@ function famAccesHtml(fam, active){
   <div class="tool-shell fam-card">
     <strong class="fam-h"><span class="gicon">confirmation_number</span> 1. Votre accès</strong>
     ${statut}
+    ${typeof venteOuverte === 'function' && !venteOuverte(fam.stripe_test) ? famVenteFermeeHtml() : `
     <p class="hint" style="margin:10px 0 4px;">${memePeriode ? 'Ajouter un niveau (vous ne payez que la différence) :' : 'Choisissez les niveaux pour l\'année scolaire '+anneeLabel+' (accès jusqu\'au '+famDate(fin)+') :'}</p>
     <div class="fam-nivs">${cases}</div>
     <div class="fam-code">
@@ -301,7 +306,7 @@ function famAccesHtml(fam, active){
     <label class="fam-check"><input type="checkbox" id="famRenonce"> <span>Je demande l'accès immédiat au contenu numérique dès le paiement et je reconnais perdre ainsi mon droit de rétractation de 14 jours (art. L221-28 13° du Code de la consommation).</span></label>
     <button class="btn" id="famPayBtn" onclick="famPayer()" disabled><span class="gicon">credit_card</span> ${typeof venteOuverte !== 'function' || venteOuverte(fam.stripe_test) ? 'Payer par carte' : VENTE_BOUTON}</button>
     <span class="hint" id="famPayMsg" style="display:block;margin-top:6px;"></span>
-    <p class="hint" style="margin:8px 0 0;">Paiement unique et sécurisé (Stripe), <b>sans reconduction automatique</b> : rien ne sera prélevé l'an prochain sans votre accord. Facture émise par L'Atelier Augmenté, disponible ci-dessous. En cas de litige, après nous avoir écrit, vous pouvez recourir gratuitement au médiateur de la consommation CM2C (<a href="https://www.cm2c.net/declarer-un-litige.php" target="_blank" rel="noopener">cm2c.net</a>, 49 rue de Ponthieu, 75008 Paris) ; voir les <a href="#/cgv">CGV</a>.${fam.montant_paye_centimes && memePeriode ? ' Déjà payé pour cette année : '+famEuros(fam.montant_paye_centimes)+'.' : ''}</p>
+    <p class="hint" style="margin:8px 0 0;">Paiement unique et sécurisé (Stripe), <b>sans reconduction automatique</b> : rien ne sera prélevé l'an prochain sans votre accord. Facture émise par L'Atelier Augmenté, disponible ci-dessous. En cas de litige, après nous avoir écrit, vous pouvez recourir gratuitement au médiateur de la consommation CM2C (<a href="https://www.cm2c.net/declarer-un-litige.php" target="_blank" rel="noopener">cm2c.net</a>, 49 rue de Ponthieu, 75008 Paris) ; voir les <a href="#/cgv">CGV</a>.${fam.montant_paye_centimes && memePeriode ? ' Déjà payé pour cette année : '+famEuros(fam.montant_paye_centimes)+'.' : ''}</p>`}
     ${famData.pay.length ? `<details style="margin-top:8px;"><summary class="hint">Historique des paiements</summary><table class="fam-table" style="margin-top:6px;"><tr><th>Date</th><th>Niveaux</th><th>Montant</th><th>Accès jusqu'au</th></tr>${famData.pay.map(p=>`<tr><td>${famDate(p.created_at)}</td><td>${(p.niveaux||[]).map(famLib).join(', ')}</td><td>${famEuros(p.montant_centimes)}${p.test?' <span class="fam-badge" style="background:#6A4FB3;">test</span>':''}</td><td>${famDate(p.acces_until)}</td></tr>`).join('')}</table></details>` : ''}
   </div>`;
 }
@@ -336,10 +341,11 @@ async function famPayer(){
   if(typeof venteOuverte === 'function' && !venteOuverte(famData && famData.fam.stripe_test)) return famMsg('famPayMsg', VENTE_MSG);
   if(!document.getElementById('famRenonce').checked) return famMsg('famPayMsg', 'Cochez la case d\'accès immédiat pour continuer.');
   const btn = document.getElementById('famPayBtn'); btn.disabled = true;
-  famMsg('famPayMsg', 'Redirection vers le paiement…', true);
+  famMsg('famPayMsg', 'Ouverture du paiement sécurisé…', true);
   try{
-    const r = await famCall({ action:'paiement', niveaux: choisis, code: famData.code || '', renonciation:true, origin: location.origin });
-    location.href = r.url;
+    const r = await famCall({ action:'paiement', niveaux: choisis, code: famData.code || '', renonciation:true, origin: location.origin, integre: true });
+    await paiementOuvrir(r);
+    if(!r.url){ btn.disabled = false; famMsg('famPayMsg', ''); } // paiement intégré : le bouton reste utilisable si l'on ferme la fenêtre
   }catch(e){ btn.disabled = false; famMsg('famPayMsg', e.message); }
 }
 

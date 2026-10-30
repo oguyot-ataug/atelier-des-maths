@@ -315,16 +315,25 @@ serve(async (req) => {
       p.set("billing_address_collection", "required");
       p.set("custom_text[submit][message]",
         "Accès immédiat : vous avez demandé à accéder au service dès le paiement et renoncé à votre droit de rétractation (art. L221-28 13° du Code de la consommation). Sans reconduction automatique.");
-      p.set("success_url", origin + "/?famille=paye#/famille");
-      p.set("cancel_url", origin + "/#/famille");
+      // Paiement intégré au site (Stripe Embedded Checkout, demandé le 30/10/2026 : « intègre le paiement ») quand le site le
+      // demande et que la clé publique est enregistrée (STRIPE_TEST_PUBLISHABLE_KEY / STRIPE_PUBLISHABLE_KEY) ; sinon, page Stripe.
+      const cle = Deno.env.get(test ? "STRIPE_TEST_PUBLISHABLE_KEY" : "STRIPE_PUBLISHABLE_KEY") || "";
+      const integre = body.integre === true && cle.startsWith(test ? "pk_test_" : "pk_live_");
+      if (integre) {
+        p.set("ui_mode", "embedded");
+        p.set("return_url", origin + "/?famille=paye#/famille");
+      } else {
+        p.set("success_url", origin + "/?famille=paye#/famille");
+        p.set("cancel_url", origin + "/#/famille");
+      }
       const res = await fetch("https://api.stripe.com/v1/checkout/sessions", {
         method: "POST",
         headers: { "Authorization": "Bearer " + stripeKey, "Content-Type": "application/x-www-form-urlencoded" },
         body: p.toString(),
       });
       const sess = await res.json();
-      if (!res.ok || !sess.url) return json({ error: "Stripe : " + (sess?.error?.message || res.status) }, 502);
-      return json({ ok: true, url: sess.url });
+      if (!res.ok || !(integre ? sess.client_secret : sess.url)) return json({ error: "Stripe : " + (sess?.error?.message || res.status) }, 502);
+      return json(integre ? { ok: true, client_secret: sess.client_secret, publishable_key: cle } : { ok: true, url: sess.url });
     }
 
     if (action === "supprimer-compte") {

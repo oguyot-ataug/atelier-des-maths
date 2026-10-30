@@ -131,4 +131,7 @@ Tant que les ventes ne sont pas ouvertes (bouton « Ouvrir les ventes » d'Admin
 est une page d'attente sans aucun prix (« Ouverture des ventes prochainement »). La page complète des tarifs est gardée dans
 `_hors-ligne/tarifs.html`, dossier exclu de la publication (`deploy-pages.yml`). À l'ouverture des ventes : la recopier dans
 `tarifs/index.html` (en retirant le bandeau « Ouverture des ventes prochainement »). Les comptes non « test » ne voient ni
-offres, ni prix, ni lien vers les tarifs dans « Mon abonnement ».
+offres, ni prix, ni lien vers les tarifs dans « Mon abonnement », ni prix dans l'Espace famille (`famVenteFermeeHtml`).
+
+Paiement intégré au site (Stripe Embedded Checkout, build 1205) : `paiementOuvrir` (app.js) ; les fonctions prof-offre et famille
+renvoient client_secret + clé publique si les secrets STRIPE_TEST_PUBLISHABLE_KEY / STRIPE_PUBLISHABLE_KEY existent, sinon la page Stripe.
