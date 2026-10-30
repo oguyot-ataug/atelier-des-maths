@@ -20,6 +20,9 @@
 // Professeur particulier, paiement unique pour l'année scolaire ; prof_activer puis prof_facturer,
 // e-mail vers le professeur (facture dans « Mon abonnement »).
 //
+// FACTURE EN PDF (v13, demandé le 30/10/2026 : « Joins la facture en PDF à l'e-mail. ») : la facture
+// est jointe à l'e-mail (facture-pdf.ts, même mise en page que sur le site).
+//
 // Secrets nécessaires (Project Settings > Edge Functions > Secrets) :
 //   STRIPE_WEBHOOK_SECRET  (whsec_..., donné par Stripe à la création du webhook)
 //   SUPABASE_SERVICE_ROLE_KEY (déjà configuré, utilisé par admin-create-user)
@@ -31,17 +34,31 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { base64, facturePdf } from "./facture-pdf.ts";
 
 function esc(s: unknown): string {
   return String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
 function euros(n: number): string { return Number(n).toFixed(2).replace(".", ",") + " €"; }
 
-// E-mail d'envoi de la facture (aux couleurs du site) ; la facture elle-même se consulte et se
-// télécharge dans l'Espace famille (ou « Mon abonnement » pour un professeur).
-async function envoyerFacture(f: any, prof = false): Promise<void> {
+// Logos de la facture PDF (versions réduites, servies par le site).
+async function logo(nom: string): Promise<Uint8Array | null> {
+  try { const r = await fetch("https://latelierdesmaths.fr/assets/" + nom); return r.ok ? new Uint8Array(await r.arrayBuffer()) : null; }
+  catch (_) { return null; }
+}
+
+// E-mail d'envoi de la facture (aux couleurs du site), avec la facture en PDF jointe ; elle se consulte
+// et se télécharge aussi dans l'Espace famille (ou « Mon abonnement » pour un professeur).
+async function envoyerFacture(f: any, prof = false, adminClient: any = null): Promise<void> {
   const key = Deno.env.get("RESEND_API_KEY");
   if (!key || !f?.email || /@mathcollege\.local$/i.test(f.email)) return; // jamais vers une adresse fictive de connexion
+  // Facture en PDF jointe ; si elle ne peut pas être produite, l'e-mail part sans (la facture reste sur le site).
+  let piece: { filename: string; content: string } | null = null;
+  try {
+    const { data: doc } = await adminClient.from("facturation_documents").select("*").eq("id", f.id).single();
+    const [atelier, maths] = await Promise.all([logo("logo-atelier-augmente-pdf.png"), logo("logo-header-pdf.png")]);
+    if (doc) piece = { filename: "Facture " + doc.numero + ".pdf", content: base64(await facturePdf(doc, { atelier, maths })) };
+  } catch (_e) { piece = null; }
   const lien = prof ? "https://latelierdesmaths.fr/#/abonnement" : "https://latelierdesmaths.fr/#/famille";
   const ouvert = prof ? "votre offre est active" : "l'accès de votre famille est ouvert";
   const ou = prof ? "dans « Mon abonnement »" : "dans votre Espace famille, rubrique « Mes factures »";
@@ -51,7 +68,7 @@ async function envoyerFacture(f: any, prof = false): Promise<void> {
     <tr><td style="padding:24px;">
       ${f.test ? '<p style="background:#efe9fb;color:#4b2c91;border-radius:8px;padding:8px 12px;font-size:13px;margin:0 0 14px;"><b>Paiement de test</b> : facture sans valeur, aucun argent n\'a été prélevé.</p>' : ""}
       <p style="font-size:17px;font-weight:bold;margin:0 0 12px;">Merci${f.prenom ? " " + esc(f.prenom) : ""} !</p>
-      <p style="font-size:15px;line-height:1.55;margin:0 0 16px;">Votre paiement de <b>${euros(f.total)}</b> est bien reçu et ${ouvert}. Votre facture <b>${esc(f.numero)}</b> est disponible ${ou} : vous pouvez la consulter et la télécharger à tout moment.</p>
+      <p style="font-size:15px;line-height:1.55;margin:0 0 16px;">Votre paiement de <b>${euros(f.total)}</b> est bien reçu et ${ouvert}. Votre facture <b>${esc(f.numero)}</b> est ${piece ? "jointe à cet e-mail (PDF) ; elle reste aussi disponible " + ou : "disponible " + ou + " : vous pouvez la consulter et la télécharger à tout moment"}.</p>
       <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto 18px;"><tr><td style="background:#ff8208;border-radius:10px;"><a href="${lien}" style="display:inline-block;padding:14px 28px;color:#fff;font-size:16px;font-weight:bold;text-decoration:none;">Voir ma facture</a></td></tr></table>
       <p style="font-size:13px;color:#6b7785;line-height:1.5;margin:0;">Rappel : paiement unique, sans reconduction automatique. Une question ? Répondez simplement à cet e-mail.</p>
     </td></tr>
@@ -65,7 +82,8 @@ async function envoyerFacture(f: any, prof = false): Promise<void> {
         from: "L'Atelier Augmenté <factures@latelieraugmente.fr>", to: [f.email], reply_to: "contact@latelieraugmente.fr",
         subject: (f.test ? "[TEST] " : "") + "Votre facture " + f.numero + " – L'Atelier des Maths",
         html,
-        text: "Merci ! Votre paiement de " + euros(f.total) + " est bien reçu. Votre facture " + f.numero + " est disponible " + ou + " : " + lien,
+        ...(piece ? { attachments: [piece] } : {}),
+        text: "Merci ! Votre paiement de " + euros(f.total) + " est bien reçu. Votre facture " + f.numero + (piece ? " est jointe à cet e-mail (PDF) ; elle reste aussi disponible " : " est disponible ") + ou + " : " + lien,
       }),
     });
   } catch (_e) { /* la facture reste consultable sur le site */ }
@@ -145,7 +163,7 @@ serve(async (req) => {
       // Facture (idempotente : si Stripe renvoie l'événement, la même facture est retrouvée).
       const { data: fac, error: fErr } = await adminClient.rpc("famille_facturer", { p_session: session.id, p_client: clientDe(session) });
       if (fErr) return json({ error: fErr.message }, 500);
-      if (fac?.created) await envoyerFacture(fac);
+      if (fac?.created) await envoyerFacture(fac, false, adminClient);
       return json({ received: true, famille: true, facture: fac?.numero || null });
     }
 
@@ -169,7 +187,7 @@ serve(async (req) => {
       if (error) return json({ error: error.message }, 500);
       const { data: fac, error: fErr } = await adminClient.rpc("prof_facturer", { p_session: session.id, p_client: clientDe(session) });
       if (fErr) return json({ error: fErr.message }, 500);
-      if (fac?.created) await envoyerFacture(fac, true);
+      if (fac?.created) await envoyerFacture(fac, true, adminClient);
       return json({ received: true, prof: true, facture: fac?.numero || null });
     }
 

@@ -684,7 +684,7 @@ function facDocHtml(d){
       : `<p>Pour commander : adressez un bon de commande mentionnant le numéro de ce devis (<b>${facEsc(d.numero)}</b>) à ${facEsc(em.email)}.</p>`);
   } else if(d.type === 'facture' && particulier){
     bloc = `<p><b>Facture acquittée</b> : payée par carte bancaire le ${facDate(d.paye_le || d.date_emission)} (paiement en ligne sécurisé).</p>
-      <p class="small">Accès personnel et familial à L'Atelier des Maths, sans reconduction automatique. Conditions générales de vente : latelierdesmaths.fr/#/cgv.</p>`;
+      <p class="small">${d.prof_id ? 'Accès professionnel' : 'Accès personnel et familial'} à L'Atelier des Maths, sans reconduction automatique. Conditions générales de vente : latelierdesmaths.fr/#/cgv.</p>`;
   } else if(d.type === 'facture'){
     bloc = `<p>Échéance : <b>${facDate(d.date_echeance)}</b>${d.numero_engagement ? ` · ${prive ? 'Commande' : 'N° d\'engagement'} : <b>${facEsc(d.numero_engagement)}</b>` : ''}</p>
       <p>${prive ? `Paiement par virement, en indiquant la référence <b>${facEsc(d.numero)}</b> :${iban}` : `Facture déposée sur Chorus Pro. Paiement par mandat administratif, par virement :${iban}`}</p>
@@ -736,7 +736,7 @@ function facDocHtml(d){
       <div class="ttl"><h1>${titre}</h1><div>N° <b>${facEsc(d.numero)}</b><br>Date : ${facDate(d.date_emission)}${particulier && d.type === 'facture' ? '<br><b style="color:#1F7A4D;">Acquittée</b>' : ''}${d.type === 'devis' && d.date_validite ? '<br>Valable jusqu\'au ' + facDate(d.date_validite) : ''}${d.type === 'facture' && d.date_echeance ? '<br>Échéance : ' + facDate(d.date_echeance) : ''}</div></div>
     </div>
     <div class="dest"><div class="lbl">${d.type === 'devis' ? 'Établissement' : 'Facturé à'}</div>${destinataire}${cli.adresse ? '<br>' + nl(cli.adresse) : ''}${contactClient}${ids ? '<br>' + ids : ''}</div>
-    <div class="obj"><img class="logo-adm" src="${facLogo('logo-header.png')}" alt="L'Atelier des Maths"><div><b>Objet :</b> L'Atelier des Maths (latelierdesmaths.fr) – ${particulier ? 'offre Famille' : 'licence établissement'}${periode ? ', ' + periode : ''}${(d.niveaux||[]).length ? ' – niveaux ' + d.niveaux.map(facLib).join(', ') : ''}.</div></div>
+    <div class="obj"><img class="logo-adm" src="${facLogo('logo-header.png')}" alt="L'Atelier des Maths"><div><b>Objet :</b> L'Atelier des Maths (latelierdesmaths.fr) – ${d.prof_id ? 'offre professeur' : particulier ? 'offre Famille' : 'licence établissement'}${periode ? ', ' + periode : ''}${(d.niveaux||[]).length ? ' – niveaux ' + d.niveaux.map(facLib).join(', ') : ''}.</div></div>
     <table><tr><th>Désignation</th><th class="n">Quantité</th><th class="n">Prix unitaire</th><th class="n">Montant</th></tr>${lignes}</table>
     <table class="tot"><tr class="big"><td>${d.type === 'avoir' ? 'Total de l\'avoir' : d.type === 'devis' ? 'Total' : particulier ? 'Total payé' : 'Net à payer'}</td><td class="n">${facMoney(d.total)}</td></tr></table>
     ${em.mention_tva ? `<div class="tva">${facEsc(em.mention_tva)}</div>` : ''}
