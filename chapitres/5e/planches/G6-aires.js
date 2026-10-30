@@ -85,7 +85,7 @@ PLANCHES['5e|Aires'] = [
         ...rmp([['Un disque a une aire de 36π cm². Son rayon mesure @ cm.', 6], ['Un disque a une aire de 100π m². Son diamètre mesure @ m.', 20], ['Rayon 1 m : aire arrondie au centième : @ m²', '3,14']], 2) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Une pizza a un diamètre de 30 cm. Calcule son aire, arrondie au dixième.',
         corr: cm1Redac('Aire de la pizza', { suite: ['r = 30 ÷ 2 = 15', 'A = π × 15 × 15 = 225π', 'A ≈ 706,9'] }, 'L\'aire de la pizza est d\'environ 706,9 cm².') },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'Qui a la plus grande aire : un carré de côté 4 cm ou un disque de rayon 2,5 cm ?',
+      { etoiles: 3, cahier: true, consigne: 'Qui a la plus grande aire : un carré de côté 4 cm ou un disque de rayon 2,5 cm ?',
         corr: cm1Redac('Comparaison', { suite: ['Carré : 4 × 4 = 16', 'Disque : π × 2,5 × 2,5 = 6,25π ≈ 19,6'] }, 'Le disque a la plus grande aire (environ 19,6 cm² contre 16 cm²).') },
     ] },
   { titre: 'Figures composées', duree: '45 min',

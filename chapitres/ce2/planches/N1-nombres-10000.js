@@ -55,7 +55,7 @@ PLANCHES['ce2|Nombres jusqu\'à 10 000'] = [
       { etoiles: 2, col: 1, consigne: 'Décompose.', ...P3.rmp([['6 305 = 6 000 + @ + 5', 300], ['9 060 = @ + 60', '9 000'], ['2 718 = @ + @ + @ + @', '2 000', 700, 10, 8]], 3) },
       { etoiles: 2, consigne: 'Entoure l\'écriture juste.', ...P3.chxTab([['3 040', 'trois-mille-quarante', 'trois-mille-quarante · trois-cent-quarante'], ['7 700', 'sept-mille-sept-cents', 'sept-mille-sept-cents · sept-mille-soixante-dix']]) },
       { etoiles: 2, col: 1, consigne: 'Quel nombre est-ce ?', ...P3.rmp([['5 milliers et 12 unités : @', '5 012'], ['40 centaines : @', '4 000'], ['2 milliers et 30 dizaines : @', '2 300']], 4) },
-      { etoiles: 3, col: 1, consigne: 'Complète.', ...P3.rmp([['le plus grand nombre de 4 chiffres : @', '9 999'], ['le plus petit nombre de 4 chiffres : @', '1 000'], ['le plus grand nombre de 4 chiffres tous différents : @', '9 876']], 4) },
+      { etoiles: 3, consigne: 'Complète.', ...P3.rmp([['le plus grand nombre de 4 chiffres : @', '9 999'], ['le plus petit nombre de 4 chiffres : @', '1 000'], ['le plus grand nombre de 4 chiffres tous différents : @', '9 876'], ['le plus petit nombre de 4 chiffres tous différents : @', '1 023'], ['le plus grand nombre de 3 chiffres : @', 999], ['le plus petit nombre de 4 chiffres qui finit par 5 : @', '1 005']], 4) },
     ] },
   { titre: 'Comparer, encadrer, ranger', duree: '30 min',
     attendus: ['Comparer deux nombres avec <, > ou =', 'Encadrer un nombre entre deux centaines, deux milliers', 'Ranger des nombres'],
@@ -74,7 +74,7 @@ PLANCHES['ce2|Nombres jusqu\'à 10 000'] = [
       { etoiles: 1, col: 1, consigne: 'Complète avec <, > ou =.', ...P3.rmp([['6 543 @ 6 534', '>'], ['1 099 @ 1 100', '<'], ['7 000 @ 7 milliers', '=']], 1) },
       { etoiles: 2, col: 1, consigne: 'Encadre entre deux dizaines qui se suivent.', ...P3.rmp([['@ < 3 456 < @', '3 450', '3 460'], ['@ < 9 995 < @', '9 990', '10 000']], 4) },
       { etoiles: 2, col: 1, consigne: 'Écris un nombre qui convient.', ...P3.rmp([['4 999 < @ < 5 001', '5 000'], ['2 300 < @ < 2 400', { ex: '2 350', entre: [2300, 2400] }]], 4) },
-      { etoiles: 2, col: 1, consigne: 'Entoure le plus petit nombre.', ...P3.chx([['', '4 099', '4 099 · 4 909 · 4 990'], ['', '6 008', '6 080 · 6 800 · 6 008']]) },
+      { etoiles: 2, consigne: 'Entoure le plus petit nombre.', ...P3.chx2([['', '4 099', '4 099 · 4 909 · 4 990'], ['', '6 008', '6 080 · 6 800 · 6 008'], ['', '2 359', '2 395 · 2 359 · 2 539'], ['', '7 070', '7 700 · 7 070 · 7 707']]) },
     ] },
   { titre: 'La demi-droite graduée', duree: '25 min',
     attendus: ['Lire l\'abscisse d\'un point sur une demi-droite graduée', 'Placer un nombre sur une demi-droite graduée', 'Repérer le pas de la graduation'],
@@ -95,7 +95,7 @@ PLANCHES['ce2|Nombres jusqu\'à 10 000'] = [
       { etoiles: 1, consigne: 'Écris le nombre de chaque point.',
         eleve: droite(5000, 6000, 100, 500, [[5200, 'G'], [5500, 'H'], [5900, 'K']]) + plListe(['G : ' + P3.B(4) + '   H : ' + P3.B(4) + '   K : ' + P3.B(4)]),
         corr: droite(5000, 6000, 100, 500, [[5200, 'G'], [5500, 'H'], [5900, 'K']]) + plListe(['G : ' + P3.R('5 200') + '   H : ' + P3.R('5 500') + '   K : ' + P3.R('5 900')]) },
-      { etoiles: 2, col: 1, consigne: 'Complète la suite.', ...P3.rmp([['@ ; 6 000 ; 6 001', '5 999'], ['2 450 ; 2 500 ; @ ; @', '2 550', '2 600']], 4) },
+      { etoiles: 2, consigne: 'Complète la suite.', ...P3.rmp([['@ ; 6 000 ; 6 001', '5 999'], ['2 450 ; 2 500 ; @ ; @', '2 550', '2 600'], ['9 000 ; 9 100 ; @ ; @', '9 200', '9 300'], ['1 995 ; 2 000 ; @ ; @', '2 005', '2 010']], 4) },
     ] },
 ];
 })();

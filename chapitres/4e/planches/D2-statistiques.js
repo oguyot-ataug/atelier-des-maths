@@ -72,7 +72,7 @@ PLANCHES['4e|Statistiques'] = [
         corr: cm1Redac('Moyenne', { suite: ['Effectif : 6 + 9 + 7 + 3 = 25', 'Masse totale : 6 × 2 + 9 × 3 + 7 × 4 + 3 × 6 = 12 + 27 + 28 + 18 = 85 kg', '85 : 25 = 3,4'] }, 'Chaque élève a apporté en moyenne 3,4 kg.') + cm1Redac('Médiane', '25 valeurs : la médiane est la 13e ; les 6 premières valent 2, les 9 suivantes (7e à 15e) valent 3.', 'La médiane est 3 kg.') },
       { etoiles: 1, col: 1, consigne: 'Série : 4 ; 8 ; 6 ; 10 ; 12. Complète.', ...P3.rmp([['moyenne : @', 8], ['médiane : @', 8], ['étendue : @', 8]], 2) },
       { etoiles: 2, col: 1, consigne: 'Série : 2 ; 2 ; 5 ; 7 ; 9 ; 11. Complète.', ...P3.rmp([['moyenne : @', 6], ['médiane : @', 6], ['étendue : @', 9]], 2) },
-      { etoiles: 2, col: 1, consigne: 'On ajoute la valeur 50 à la série 4 ; 8 ; 6 ; 10 ; 12. Entoure.', ...P3.chx([['La moyenne…', 'augmente beaucoup', 'augmente beaucoup · ne change pas'], ['La médiane…', 'change peu', 'change peu · augmente beaucoup']]) },
+      { etoiles: 2, consigne: 'On ajoute la valeur 50 à la série 4 ; 8 ; 6 ; 10 ; 12. Entoure.', ...P3.chx([['La moyenne…', 'augmente beaucoup', 'augmente beaucoup · ne change pas'], ['La médiane…', 'change peu', 'change peu · augmente beaucoup']]) },
     ] },
 ];
 })();

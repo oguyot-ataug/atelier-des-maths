@@ -19,7 +19,7 @@ PLANCHES['cm2|Procédures de calcul mental'] = [
       { etoiles: 2, cahier: true, consigne: 'Explique comment calculer 465 + 199 de tête.',
         corr: cm1Redac('Calcul de 465 + 199', { suite: ['465 + 200 = 665', '665 − 1 = 664'] }, 'Ajouter 199, c\'est ajouter 200 puis retirer 1 : 465 + 199 = 664.') },
       { etoiles: 1, col: 1, consigne: 'Calcule.', ...P3.rmp([['465 + 199 = @', 664], ['327 + 99 = @', 426], ['1 250 − 99 = @', '1 151']], 3) },
-      { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['85 + @ = 100', 15], ['640 + @ = 1 000', 360], ['@ + 275 = 1 000', 725]], 2) },
+      { etoiles: 2, consigne: 'Complète.', ...P3.rmp([['85 + @ = 100', 15], ['640 + @ = 1 000', 360], ['@ + 275 = 1 000', 725], ['37 + @ = 100', 63], ['380 + @ = 1 000', 620], ['@ + 450 = 1 000', 550]], 2) },
     ] },
   { titre: 'Décimaux et nombres ronds', duree: '25 min',
     attendus: ['Calculer avec des décimaux simples', 'Multiplier et diviser des nombres ronds', 'Utiliser la numération'],

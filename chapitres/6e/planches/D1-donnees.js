@@ -95,7 +95,7 @@ PLANCHES['6e|Gestion de données'] = [
       { etoiles: 2, col: 1, consigne: 'Complète.',
         eleve: plListe(['Augmentation de température entre 8 h et 12 h : ' + B(1) + ' °C', 'Baisse entre 16 h et 22 h : ' + B(1) + ' °C']),
         corr: plListe(['Augmentation de température entre 8 h et 12 h : 14 − 7 = ' + R(7) + ' °C', 'Baisse entre 16 h et 22 h : 15 − 6 = ' + R(9) + ' °C']) },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'Raconte en trois phrases l\'évolution de la température au cours de cette journée.',
+      { etoiles: 3, cahier: true, consigne: 'Raconte en trois phrases l\'évolution de la température au cours de cette journée.',
         corr: cm1Redac('Évolution', { suite: ['La nuit, la température baisse jusqu\'à 2 °C à 4 h.', 'Elle monte ensuite jusqu\'à 16 °C à 14 h.', 'Puis elle redescend jusqu\'à 5 °C à minuit.'] }, 'La journée est plus chaude l\'après-midi, comme souvent.') },
     ] },
   { titre: 'Mener une enquête', duree: '40 min',

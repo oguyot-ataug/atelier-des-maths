@@ -24,7 +24,7 @@ PLANCHES['ce2|Le périmètre'] = [
       { etoiles: 2, col: 1, consigne: 'Entoure vrai ou faux.',
         ...chx([['Le périmètre, c\'est la longueur du contour.', 'vrai', 'vrai · faux'], ['Deux figures différentes peuvent avoir le même périmètre.', 'vrai', 'vrai · faux'], ['Le périmètre se mesure en carreaux coloriés.', 'faux', 'vrai · faux']]) },
       { etoiles: 1, col: 1, consigne: 'Calcule le périmètre.', ...P3.rmp([['un carré de 5 cm de côté : @ cm', 20], ['un rectangle de 6 cm sur 2 cm : @ cm', 16], ['un triangle de côtés 3 cm, 4 cm et 5 cm : @ cm', 12]], 2) },
-      { etoiles: 2, col: 1, consigne: 'Le périmètre, c\'est… Entoure.', ...P3.chx([['', 'la longueur du tour', 'la longueur du tour · la place à l\'intérieur']]) },
+      { etoiles: 2, consigne: 'Le périmètre, c\'est… Entoure.', ...P3.chx([['', 'la longueur du tour', 'la longueur du tour · la place à l\'intérieur']]) },
       { etoiles: 2, consigne: 'Un côté de carreau mesure 1 cm. Écris le périmètre de chaque figure. Que remarques-tu ?',
         ...PCP.compte([[cpQuadFig(5, 4, [[[[0, 0], [3, 0], [3, 1], [1, 1], [1, 3], [0, 3]], '#2EA8C9']], { px: 110 }), '12 cm'], [cpQuadFig(5, 4, [[[[0, 0], [4, 0], [4, 2], [0, 2]], '#2E9C6A']], { px: 110 }), '12 cm : le même !']], 2, 3) },
     ] },

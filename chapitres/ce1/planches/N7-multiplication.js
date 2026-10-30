@@ -27,7 +27,7 @@ PLANCHES['ce1|La multiplication : le signe ×'] = [
         corr: plGrille([ce1Rangees(3, 6, { p: 16 }) + '<br>' + R('3 × 6 = 18'), ce1Rangees(5, 2, { p: 16 }) + '<br>' + R('5 × 2 = 10')], 2) },
       { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['4 × 2 = 2 × @', 4], ['5 × 3 = @ × 5', 3], ['10 × 2 = 2 × @', 10]], 2) },
       { etoiles: 2, col: 1, consigne: 'Dessine 2 rangées de 6 jetons. Écris la multiplication.', eleve: PCP.cadre(60), corr: lig(ce1Rangees(2, 6, { p: 16 })) + lig(R('2 × 6 = 12')) },
-      { etoiles: 3, col: 1, consigne: 'Complète.', ...P3.rmp([['@ × 5 = 15', 3], ['2 × @ = 12', 6], ['@ × 10 = 50', 5]], 2) },
+      { etoiles: 3, consigne: 'Complète.', ...P3.rmp([['@ × 5 = 15', 3], ['2 × @ = 12', 6], ['@ × 10 = 50', 5], ['@ × 2 = 8', 4], ['5 × @ = 25', 5], ['@ × 10 = 70', 7]], 2) },
     ] },
   { titre: 'Problèmes', duree: '20 min',
     attendus: ['Résoudre des problèmes de groupes égaux avec une multiplication'],

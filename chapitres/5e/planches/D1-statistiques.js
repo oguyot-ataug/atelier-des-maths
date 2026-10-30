@@ -79,7 +79,7 @@ PLANCHES['5e|Statistiques'] = [
         ...rmp([['Moyenne : @ °C', 20], ['Température la plus haute : @ °C', 24], ['Étendue (plus haute − plus basse) : @ °C', 7]], 2) },
       { etoiles: 2, col: 1, consigne: 'Entoure la moyenne de la série.',
         ...chx([['10 ; 20 ; 30 :', '20', '20 · 30 · 60'], ['4 ; 4 ; 4 ; 8 :', '5', '4 · 5 · 6'], ['1 ; 2 ; 3 ; 4 ; 5 ; 6 :', '3,5', '3 · 3,5 · 4']]) },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'Une équipe de basket marque en moyenne 72 points par match sur 4 matchs. Elle marque 82 points au 5e match. Quelle est sa nouvelle moyenne ?',
+      { etoiles: 3, cahier: true, consigne: 'Une équipe de basket marque en moyenne 72 points par match sur 4 matchs. Elle marque 82 points au 5e match. Quelle est sa nouvelle moyenne ?',
         corr: cm1Redac('Points sur 4 matchs', '72 × 4 = 288', '') + cm1Redac('Nouvelle moyenne', '(288 + 82) : 5 = 370 : 5 = 74', 'La nouvelle moyenne est de 74 points par match.') },
     ] },
   { titre: 'Interpréter des données', duree: '40 min',

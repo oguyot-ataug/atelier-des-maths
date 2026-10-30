@@ -57,7 +57,7 @@ PLANCHES['5e|Angles et parallélisme'] = [
       { etoiles: 2, col: 1, consigne: 'Les points A, O, B sont alignés. Calcule l\'angle manquant.',
         ...(() => { const f = S(220, 100, L([15, 85], [205, 85]) + L([110, 85], [160, 18]) + arc([110, 85], 0, 53, 20, Ro, '53°') + arc([110, 85], 53, 180, 26, Bl, '?') + T([12, 98], 'A', K) + T([208, 98], 'B', K) + T([110, 99], 'O', K), 220), q = rmp([['Angle manquant : @ °', 127]], 2);
           return { eleve: f + q.eleve, corr: f + q.corr }; })() },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'Deux angles sont complémentaires et l\'un est le double de l\'autre. Quelles sont leurs mesures ?',
+      { etoiles: 3, cahier: true, consigne: 'Deux angles sont complémentaires et l\'un est le double de l\'autre. Quelles sont leurs mesures ?',
         corr: cm1Redac('Mesures', { suite: ['Le petit angle et son double font 3 fois le petit angle : 3 × a = 90°.', 'a = 90 : 3 = 30° ; le double vaut 60°.'] }, 'Les angles mesurent 30° et 60°.') },
     ] },
   { titre: 'Angles opposés par le sommet', duree: '30 min',
@@ -108,7 +108,7 @@ PLANCHES['5e|Angles et parallélisme'] = [
       { etoiles: 2, col: 1, consigne: '(d₁) // (d₂). Calcule les angles x et y.',
         ...(() => { const f = secante({ p1: 0, p2: 0, s: 70, w: 230, h: 150, num: false, marques: [[2, Ro, '110°'], [6, Bl, 'x'], [5, Ve, 'y']] }), q = rmp([['x = @ °', 110], ['y = @ °', 70]], 2);
           return { eleve: f + q.eleve, corr: f + q.corr }; })() },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'Deux droites (d) et (d\') sont coupées par une sécante. Deux angles alternes-internes mesurent 47° chacun. Démontre que (d) et (d\') sont parallèles (rédige : données, propriété, conclusion).',
+      { etoiles: 3, cahier: true, consigne: 'Deux droites (d) et (d\') sont coupées par une sécante. Deux angles alternes-internes mesurent 47° chacun. Démontre que (d) et (d\') sont parallèles (rédige : données, propriété, conclusion).',
         corr: cm1Redac('Démonstration', { suite: ['Données : les angles alternes-internes mesurent tous les deux 47°.', 'Propriété : si deux angles alternes-internes ont la même mesure, alors les droites sont parallèles.'] }, 'Conclusion : (d) et (d\') sont parallèles.') },
     ] },
   { titre: 'Somme des angles d\'un triangle', duree: '40 min',
@@ -127,7 +127,7 @@ PLANCHES['5e|Angles et parallélisme'] = [
         ...ch([['Un triangle peut avoir deux angles obtus :', 'faux'], ['Dans un triangle rectangle, les deux angles aigus sont complémentaires :', 'vrai'], ['Un triangle peut avoir trois angles aigus :', 'vrai']], 'vrai · faux') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'ABC est un triangle isocèle en A tel que l\'angle BAC mesure 48°. Calcule les angles ABC et ACB. Rédige.',
         corr: cm1Redac('Angles à la base', { suite: ['Somme des angles : 180°. Les deux angles à la base sont égaux (triangle isocèle).', '(180 − 48) : 2 = 132 : 2 = 66'] }, 'Les angles ABC et ACB mesurent 66° chacun.') },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'Un triangle a un angle de 40° ; le deuxième angle est le triple du premier. Quel est le troisième angle ? Quelle est la nature du triangle ?',
+      { etoiles: 3, cahier: true, consigne: 'Un triangle a un angle de 40° ; le deuxième angle est le triple du premier. Quel est le troisième angle ? Quelle est la nature du triangle ?',
         corr: cm1Redac('Troisième angle', '40 × 3 = 120 et 180 − 40 − 120 = 20', 'Le troisième angle mesure 20° : le triangle a un angle obtus (120°), il est obtusangle.') },
     ] },
 ];

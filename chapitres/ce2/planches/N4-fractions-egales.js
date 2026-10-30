@@ -37,7 +37,7 @@ PLANCHES['ce2|Fractions égales'] = [
       { etoiles: 2, col: 1, consigne: 'Complète.',
         ...rmp([[`Dans ${F(3, 8)}, l'unité est partagée en @ parts égales.`, 8], [`Dans ${F(3, 8)}, on prend @ parts.`, 3], [`${F(4, 4)} est égal à @ unité.`, 1]], 3) },
       { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['Une pizza en 8 parts égales : une part, c\'est @ de la pizza.', cm1Frac(1, 8)], ['Les 8 parts font @ pizza.', 1]], 3) },
-      { etoiles: 2, col: 1, consigne: 'Entoure la plus grande part.',
+      { etoiles: 2, consigne: 'Entoure la plus grande part.',
         ...(() => { const g = P3.chx([['', F(1, 3), `${F(1, 3)} · ${F(1, 6)}`], ['', F(1, 2), `${F(1, 2)} · ${F(1, 8)}`]]), d = P3.chx([['', F(1, 4), `${F(1, 10)} · ${F(1, 4)}`], ['', F(1, 5), `${F(1, 5)} · ${F(1, 9)}`]]);
           return { eleve: deux(g.eleve, d.eleve), corr: deux(g.corr, d.corr) }; })() },
     ] },
@@ -74,7 +74,7 @@ PLANCHES['ce2|Fractions égales'] = [
       { etoiles: 3, col: 1, cahier: true, consigne: `Une fraction égale à ${F(1, 2)} peut-elle avoir 7 comme dénominateur ? Explique.`,
         corr: cm1Redac('Moitié de 7 parts', '7 parts : on ne peut pas faire deux paquets égaux', `Non : 7 est impair, on ne peut pas prendre la moitié des 7 parts. Une fraction égale à ${F(1, 2)} a un dénominateur pair.`) },
       { etoiles: 1, col: 1, consigne: 'Complète.', ...P3.rmp([['Sur 10 parts, la moitié, c\'est @ parts.', 5], ['Sur 12 parts, la moitié, c\'est @ parts.', 6]], 2) },
-      { etoiles: 2, col: 1, consigne: `Est-ce égal à ${cm1Frac(1, 2)} ? Entoure.`, ...P3.chx([[cm1Frac(3, 6), 'oui', 'oui · non'], [cm1Frac(2, 5), 'non', 'oui · non'], [cm1Frac(5, 10), 'oui', 'oui · non']]) },
+      { etoiles: 2, consigne: `Est-ce égal à ${cm1Frac(1, 2)} ? Entoure.`, ...P3.chx2([[cm1Frac(3, 6), 'oui', 'oui · non'], [cm1Frac(2, 5), 'non', 'oui · non'], [cm1Frac(5, 10), 'oui', 'oui · non'], [cm1Frac(4, 8), 'oui', 'oui · non'], [cm1Frac(3, 4), 'non', 'oui · non'], [cm1Frac(2, 4), 'oui', 'oui · non']]) },
     ] },
 ];
 })();

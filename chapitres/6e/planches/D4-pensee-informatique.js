@@ -30,7 +30,7 @@ PLANCHES['6e|Initiation à la pensée informatique'] = [
       { etoiles: 1, col: 1, consigne: 'Même consigne : le robot passe entre les obstacles.', ...lire(6, 4, [0, 0], 'bbddhhd', [[1, 0], [1, 1], [3, 2], [3, 3]]) },
       { etoiles: 2, col: 1, consigne: 'Écris un programme pour amener le robot sur l\'étoile sans toucher les obstacles.', ...robot(6, 4, [0, 3], [5, 0], [[1, 2], [2, 2], [4, 1]], 'dddddhhh') },
       { etoiles: 2, col: 1, consigne: 'Écris le programme le plus court possible pour atteindre l\'étoile.', ...robot(5, 5, [0, 4], [4, 0], [[1, 3], [2, 1], [3, 3]], 'hhhhdddd') },
-      { etoiles: 3, col: 1, cahier: true, consigne: `Sami veut amener le robot sur l'étoile avec le programme ${prog('ddhdd')}, mais le robot heurte l'obstacle. Propose une correction en changeant une seule flèche de place.<div style="text-align:center;">${G(5, 3, { dep: [0, 2], but: [4, 1], obs: [[2, 2]] })}</div>`,
+      { etoiles: 3, cahier: true, consigne: `Sami veut amener le robot sur l'étoile avec le programme ${prog('ddhdd')}, mais le robot heurte l'obstacle. Propose une correction en changeant une seule flèche de place.<div style="text-align:center;">${G(5, 3, { dep: [0, 2], but: [4, 1], obs: [[2, 2]] })}</div>`,
         corr: cm1Redac('Correction', 'L\'ordre des instructions compte : un programme est une séquence.', `Par exemple ${prog('dhddd')} : on monte plus tôt pour passer au-dessus de l'obstacle.`) },
     ] },
   { titre: 'Entrées et sorties', duree: '35 min',
@@ -63,7 +63,7 @@ PLANCHES['6e|Initiation à la pensée informatique'] = [
         eleve: plListe(['Après la 1re boucle, x = ' + B(), 'À la fin, x = ' + B()]), corr: plListe(['Après la 1re boucle, x = ' + R(15), 'À la fin, x = ' + R(60)]) },
       { etoiles: 2, col: 1, consigne: 'Pour aller tout droit de 6 cases vers la droite, quel programme est le plus court ? Entoure.',
         ...ch([['Programme le plus court :', 'répéter 6 fois →']], '→ → → → → → · répéter 6 fois →') },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'Écris un programme avec une boucle pour dessiner un « escalier » de 4 marches : chaque marche monte de 1 case puis avance de 1 case vers la droite.',
+      { etoiles: 3, cahier: true, consigne: 'Écris un programme avec une boucle pour dessiner un « escalier » de 4 marches : chaque marche monte de 1 case puis avance de 1 case vers la droite.',
         corr: cm1Redac('Programme', 'répéter 4 fois : ↑ puis →', 'Le robot fait 4 fois la même séquence de deux instructions.') },
     ] },
 ];

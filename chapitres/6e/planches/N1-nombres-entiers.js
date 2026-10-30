@@ -36,7 +36,7 @@ PLANCHES['6e|Nombres entiers'] = [
       { etoiles: 2, consigne: 'Quel nombre correspond à chaque point ?',
         eleve: cm1Axe(2000000, 3000000, 100000, 500000, [[2300000, 'A'], [2800000, 'B'], [2650000, 'C']], { fmt: v => v.toLocaleString('fr-FR'), alterne: true }) + `<div style="display:flex;gap:30px;justify-content:center;"><span>A : ${B(8)}</span><span>B : ${B(8)}</span><span>C : ${B(8)}</span></div>`,
         corr: cm1Axe(2000000, 3000000, 100000, 500000, [[2300000, 'A'], [2800000, 'B'], [2650000, 'C']], { fmt: v => v.toLocaleString('fr-FR'), alterne: true }) + `<div style="display:flex;gap:30px;justify-content:center;"><span>A : ${R('2 300 000')}</span><span>B : ${R('2 800 000')}</span><span>C : ${R('2 650 000')}</span></div>` },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'La population de la France est d\'environ 68 400 000 habitants, celle du Canada de 40 100 000. Écris ces nombres en lettres, puis calcule la différence.',
+      { etoiles: 3, cahier: true, consigne: 'La population de la France est d\'environ 68 400 000 habitants, celle du Canada de 40 100 000. Écris ces nombres en lettres, puis calcule la différence.',
         corr: cm1Redac('En lettres', { suite: ['68 400 000 : soixante-huit-millions-quatre-cent-mille', '40 100 000 : quarante-millions-cent-mille'] }, 'On écrit les classes des millions, puis des mille.') + cm1Redac('Différence', '68 400 000 − 40 100 000 = 28 300 000', 'La France compte environ 28 300 000 habitants de plus que le Canada.') },
     ] },
   { titre: 'Écrire et décomposer les grands nombres', duree: '35 min',

@@ -31,7 +31,7 @@ PLANCHES['ce1|Programmer des déplacements'] = [
   { titre: 'Avancer et tourner', duree: '25 min',
     attendus: ['Exécuter un programme avec « avance », « tourne à gauche », « tourne à droite »'],
     exos: [
-      { etoiles: 1, col: 1, consigne: 'Complète.', ...P3.rmp([['Le robot regarde vers le haut. Il tourne à droite : il regarde vers @.', 'la droite'], ['Le robot regarde vers la droite. Il tourne à gauche : il regarde vers @.', 'le haut'], ['Le robot regarde vers le bas. Il tourne à droite : il regarde vers @.', 'la gauche']], 4) },
+      { etoiles: 1, consigne: 'Complète.', ...P3.rmp([['Le robot regarde vers le haut. Il tourne à droite : il regarde vers @.', 'la droite'], ['Le robot regarde vers la droite. Il tourne à gauche : il regarde vers @.', 'le haut'], ['Le robot regarde vers le bas. Il tourne à droite : il regarde vers @.', 'la gauche'], ['Le robot regarde vers la gauche. Il tourne à droite : il regarde vers @.', 'le haut'], ['Le robot regarde vers le haut. Il tourne à gauche : il regarde vers @.', 'la gauche'], ['Le robot regarde vers la droite. Il tourne à droite : il regarde vers @.', 'le bas']], 4) },
       { etoiles: 2, consigne: 'La tortue suit le programme. Dessine une croix sur sa case d\'arrivée.', ...tortueEx(5, 4, [0, 3, 1], 'AAGAA') },
       { etoiles: 3, consigne: 'La tortue suit le programme. Dessine une croix sur sa case d\'arrivée.', ...tortueEx(5, 4, [1, 0, 2], 'AADAGA') },
     ] },

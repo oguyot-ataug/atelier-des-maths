@@ -56,7 +56,7 @@ PLANCHES['cm2|Addition et soustraction'] = [
         corr: cm1Redac('Après les dépenses', { suite: ['135,40 − 28,75 = 106,65', '106,65 − 47,90 = 58,75'] }, 'Après ses achats, il lui reste 58,75 €.') + cm1Redac('Après les 50 €', '58,75 + 50 = 108,75', 'Hugo a maintenant 108,75 €.') },
       { etoiles: 1, col: 1, consigne: 'Calcule (on commence par les parenthèses).', ...P3.rmp([['(12 − 4) + 6 = @', 14], ['12 − (4 + 6) = @', 2], ['(25 + 15) − 10 = @', 30]], 2) },
       { etoiles: 2, col: 1, consigne: 'Calcule les étapes de la randonnée.', ...P3.rmp([['8,6 + 12,35 = @', '20,95'], ['20,95 + 9,05 = @', 30]], 3) },
-      { etoiles: 3, col: 1, consigne: 'Calcule les étapes du compte d\'Hugo.', ...P3.rmp([['135,40 − 28,75 = @', '106,65'], ['106,65 − 47,90 = @', '58,75'], ['58,75 + 50 = @', '108,75']], 3) },
+      { etoiles: 3, consigne: 'Calcule les étapes du compte d\'Hugo.', ...P3.rmp([['135,40 − 28,75 = @', '106,65'], ['106,65 − 47,90 = @', '58,75'], ['58,75 + 50 = @', '108,75']], 3) },
     ] },
 ];
 })();

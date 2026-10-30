@@ -29,8 +29,8 @@ PLANCHES['cp|La monnaie : les euros'] = [
         ...P3.rmp([['1 billet de 20 € = @ billets de 10 €', 2], ['1 billet de 10 € = @ pièces de 2 €', 5], ['1 billet de 50 € = @ billets de 10 €', 5]], 2) },
       { etoiles: 2, consigne: 'Entoure l\'argent qu\'il faut pour payer 15 €.',
         ...entoure([[cpArgent([10, 2, 2], { px: 170 }), false], [cpArgent([10, 5], { px: 150 }), true], [cpArgent([5, 5, 2], { px: 170 }), false]], 3) },
-      { etoiles: 3, col: 1, consigne: 'Combien de pièces de 1 € pour faire… ?',
-        ...P3.rmp([['un billet de 5 € et une pièce de 2 € : @ pièces', 7], ['deux billets de 5 € : @ pièces', 10]], 2) },
+      { etoiles: 3, consigne: 'Combien de pièces de 1 € pour faire… ?',
+        ...P3.rmp([['un billet de 5 € et une pièce de 2 € : @ pièces', 7], ['deux billets de 5 € : @ pièces', 10], ['un billet de 10 € : @ pièces', 10], ['un billet de 5 € et trois pièces de 1 € : @ pièces', 8]], 2) },
     ] },
   { titre: 'Problèmes de prix', duree: '20 min',
     attendus: ['Résoudre des problèmes de prix (ajouter, ce qui reste)'],
@@ -47,8 +47,8 @@ PLANCHES['cp|La monnaie : les euros'] = [
         ...P3.rmp([['Une balle à 3 € et un sifflet à 4 € : @', '7 €'], ['Un livre à 10 € et un stylo à 5 € : @', '15 €'], ['Un jeu à 20 € et une carte à 2 € : @', '22 €']], 3) },
       { etoiles: 2, col: 1, consigne: 'Dessine l\'argent pour payer 9 €.',
         eleve: cadre(70), corr: lig(cpArgent([5, 2, 2], { px: 160 })) + '<p style="text-align:center;">D\'autres façons sont justes.</p>' },
-      { etoiles: 3, col: 1, consigne: 'J\'ai 10 €. Ai-je assez pour acheter… ? Entoure.',
-        ...P3.chx([['un livre à 8 €', 'oui', 'oui · non'], ['un jeu à 12 €', 'non', 'oui · non'], ['un ballon à 10 €', 'oui', 'oui · non']]) },
+      { etoiles: 3, consigne: 'J\'ai 10 €. Ai-je assez pour acheter… ? Entoure.',
+        ...P3.chx2([['un livre à 8 €', 'oui', 'oui · non'], ['un jeu à 12 €', 'non', 'oui · non'], ['un ballon à 10 €', 'oui', 'oui · non'], ['une poupée à 15 €', 'non', 'oui · non'], ['un puzzle à 6 €', 'oui', 'oui · non'], ['un vélo à 90 €', 'non', 'oui · non']]) },
     ] },
 ];
 })();

@@ -13,7 +13,7 @@ PLANCHES['ce1|Calcul mental : ajouter et soustraire'] = [
       { etoiles: 3, col: 1, consigne: 'Complète la table d\'addition.',
         eleve: cm1Tableau(['+', '4', '5', '6'], [['6', '', '', ''], ['7', '', '', ''], ['8', '', '', '']]),
         corr: cm1Tableau(['+', '4', '5', '6'], [['6', R(10), R(11), R(12)], ['7', R(11), R(12), R(13)], ['8', R(12), R(13), R(14)]]) },
-      { etoiles: 2, col: 1, consigne: 'Calcule.', ...P3.rmp([['5 + 6 = @', 11], ['8 + 7 = @', 15], ['4 + 5 = @', 9], ['9 + 10 = @', 19]], 2) },
+      { etoiles: 2, consigne: 'Calcule.', ...P3.rmp([['5 + 6 = @', 11], ['8 + 7 = @', 15], ['4 + 5 = @', 9], ['9 + 10 = @', 19], ['7 + 8 = @', 15], ['6 + 6 = @', 12], ['9 + 4 = @', 13], ['10 + 8 = @', 18]], 2) },
     ] },
   { titre: 'Passer la dizaine', duree: '20 min',
     attendus: ['Ajouter ou soustraire en passant par la dizaine'],
@@ -38,7 +38,7 @@ PLANCHES['ce1|Calcul mental : ajouter et soustraire'] = [
       { etoiles: 1, col: 1, consigne: 'Calcule.', ...P3.rmp([['63 + 20 = @', 83], ['90 − 30 = @', 60], ['48 + 40 = @', 88], ['75 − 50 = @', 25]], 2) },
       { etoiles: 2, col: 1, consigne: 'Calcule.', ...P3.rmp([['34 + 9 = @', 43], ['67 + 11 = @', 78], ['81 − 11 = @', 70], ['55 − 9 = @', 46]], 2) },
       { etoiles: 2, col: 1, consigne: 'Décompose pour calculer.', ...P3.rmp([['41 + 37 = @', 78], ['64 − 23 = @', 41], ['35 + 52 = @', 87]], 2) },
-      { etoiles: 3, col: 1, consigne: 'Complète.', ...P3.rmp([['@ + 30 = 85', 55], ['67 − @ = 27', 40], ['@ + 9 = 50', 41]], 2) },
+      { etoiles: 3, consigne: 'Complète.', ...P3.rmp([['@ + 30 = 85', 55], ['67 − @ = 27', 40], ['@ + 9 = 50', 41], ['@ + 20 = 64', 44], ['58 − @ = 18', 40], ['@ + 8 = 30', 22]], 2) },
     ] },
 ];
 })();

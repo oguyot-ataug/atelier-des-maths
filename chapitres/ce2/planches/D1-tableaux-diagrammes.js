@@ -48,7 +48,7 @@ PLANCHES['ce2|Tableaux et diagrammes en barres'] = [
       { etoiles: 2, consigne: 'Complète les cases vides du tableau.',
         eleve: tab([['', 'Matin', 'Après-midi', 'Total'], ['Lundi', 120, P3.B(3), 200], ['Mardi', P3.B(3), 95, 160], ['Total', P3.B(3), P3.B(3), P3.B(3)]], { coul: '#558B2F' }),
         corr: tab([['', 'Matin', 'Après-midi', 'Total'], ['Lundi', 120, P3.R(80), 200], ['Mardi', P3.R(65), 95, 160], ['Total', P3.R(185), P3.R(175), P3.R(360)]], { coul: '#558B2F' }) },
-      { etoiles: 2, col: 1, consigne: 'Les animaux des élèves. Complète.', eleve: cm1Tableau(['', 'Chats', 'Chiens'], [['CE2 A', '5', '8'], ['CE2 B', '7', '4']]) + plListe(['Chats du CE2 B : ' + P3.B(2), 'Animaux du CE2 A : ' + P3.B(2), 'Chiens en tout : ' + P3.B(2)]), corr: cm1Tableau(['', 'Chats', 'Chiens'], [['CE2 A', '5', '8'], ['CE2 B', '7', '4']]) + plListe(['Chats du CE2 B : ' + P3.R(7), 'Animaux du CE2 A : ' + P3.R(13), 'Chiens en tout : ' + P3.R(12)]) },
+      { etoiles: 2, consigne: 'Les animaux des élèves. Complète.', eleve: cm1Tableau(['', 'Chats', 'Chiens'], [['CE2 A', '5', '8'], ['CE2 B', '7', '4']]) + plListe(['Chats du CE2 B : ' + P3.B(2), 'Animaux du CE2 A : ' + P3.B(2), 'Chiens en tout : ' + P3.B(2), 'Chats en tout : ' + P3.B(2), 'Animaux du CE2 B : ' + P3.B(2), 'Animaux des deux classes : ' + P3.B(2)]), corr: cm1Tableau(['', 'Chats', 'Chiens'], [['CE2 A', '5', '8'], ['CE2 B', '7', '4']]) + plListe(['Chats du CE2 B : ' + P3.R(7), 'Animaux du CE2 A : ' + P3.R(13), 'Chiens en tout : ' + P3.R(12), 'Chats en tout : ' + P3.R(12), 'Animaux du CE2 B : ' + P3.R(11), 'Animaux des deux classes : ' + P3.R(24)]) },
     ] },
 ];
 })();

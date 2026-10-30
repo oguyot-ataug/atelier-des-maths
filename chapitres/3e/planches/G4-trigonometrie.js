@@ -65,7 +65,7 @@ PLANCHES['3e|Trigonométrie'] = [
         ...rmp([['cos x = 0,5 : x = @°', 60], ['tan x = 1 : x = @°', 45], ['sin x = 0,8 : x ≈ @°', 53], ['cos x = 0,3 : x ≈ @°', 73]]) },
       { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.',
         ...ch([['Le cosinus d\'un angle aigu est compris entre 0 et 1.', 'vrai'], ['tan x = sin x : cos x', 'vrai'], ['sin 30° est la moitié de sin 60°.', 'faux'], ['(cos x)² + (sin x)² = 1', 'vrai']], 'vrai · faux') },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'Prouve que, dans un triangle rectangle, (cos Â)² + (sin Â)² = 1. (Utilise le théorème de Pythagore.)',
+      { etoiles: 3, cahier: true, consigne: 'Prouve que, dans un triangle rectangle, (cos Â)² + (sin Â)² = 1. (Utilise le théorème de Pythagore.)',
         corr: cm1Redac('Preuve', { suite: [`(cos Â)² + (sin Â)² = ${cm1Frac('AB²', 'AC²')} + ${cm1Frac('BC²', 'AC²')} = ${cm1Frac('AB² + BC²', 'AC²')}`, 'Pythagore : AB² + BC² = AC²'] }, 'Donc (cos Â)² + (sin Â)² = 1.') },
     ] },
   { titre: 'Calculer une longueur', duree: '40 min',

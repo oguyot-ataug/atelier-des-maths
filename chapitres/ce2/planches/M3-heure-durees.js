@@ -40,7 +40,7 @@ PLANCHES['ce2|L\'heure et les durées'] = [
       { etoiles: 2, col: 1, consigne: 'Entoure la plus courte durée.', ...P3.chx([['', '50 min', '1 h · 50 min'], ['', '1 h 5 min', '70 min · 1 h 5 min']]) },
       { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['1 jour = @ h', 24], ['2 jours = @ h', 48], ['1 semaine = @ jours', 7]], 2) },
       { etoiles: 2, col: 1, consigne: 'Quelle heure sera-t-il ?', ...P3.rmp([['8 h 45 + 30 min : @', '9 h 15'], ['11 h 50 + 15 min : @', '12 h 05']], 3) },
-      { etoiles: 1, col: 1, consigne: 'Entoure la durée qui convient.', ...P3.chx([['un match de football :', '1 h 30 min', '1 h 30 min · 1 min 30 s'], ['se laver les mains :', '30 s', '30 s · 30 min']]) },
+      { etoiles: 1, consigne: 'Entoure la durée qui convient.', ...P3.chx2([['un match de football :', '1 h 30 min', '1 h 30 min · 1 min 30 s'], ['se laver les mains :', '30 s', '30 s · 30 min'], ['une nuit de sommeil :', '10 h', '10 h · 10 min'], ['se brosser les dents :', '3 min', '3 min · 3 h']]) },
     ] },
   { titre: 'Calculer une durée', duree: '35 min',
     attendus: ['Calculer une durée entre deux instants avec un axe du temps', 'Trouver l\'heure de fin ou de début'],

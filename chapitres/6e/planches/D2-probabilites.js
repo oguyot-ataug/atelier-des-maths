@@ -25,7 +25,7 @@ PLANCHES['6e|Probabilités'] = [
         corr: plListe(['Lancer une pièce : ' + R(2), 'Lancer un dé à 6 faces : ' + R(6), 'Tirer une boule dans une urne de 3 couleurs : ' + R(3), 'Tourner une roue de 8 secteurs numérotés : ' + R(8)]) },
       { etoiles: 2, col: 1, consigne: `Dans cette urne, on tire une boule au hasard.<div style="text-align:center;">${urne([[5, ROU], [2, BLE], [1, VER]])}</div>`,
         ...ch([['Tirer une boule rouge est', 'le plus probable'], ['Tirer une boule verte est', 'le moins probable'], ['Tirer une boule jaune est', 'impossible']], 'impossible · le moins probable · le plus probable') },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'Invente une expérience aléatoire avec un événement certain, un événement impossible et un événement peu probable.',
+      { etoiles: 3, cahier: true, consigne: 'Invente une expérience aléatoire avec un événement certain, un événement impossible et un événement peu probable.',
         corr: cm1Redac('Exemple', { suite: ['On tire une carte dans un jeu de 32 cartes.', 'Certain : tirer une carte rouge ou noire. Impossible : tirer un joker. Peu probable : tirer l\'as de cœur.'] }, 'Chaque événement est décrit par une phrase.') },
     ] },
   { titre: 'Calculer des probabilités', duree: '40 min',

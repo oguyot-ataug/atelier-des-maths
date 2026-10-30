@@ -81,7 +81,7 @@ PLANCHES['5e|Nombres relatifs'] = [
       { etoiles: 2, col: 1, consigne: 'Donne tous les nombres entiers, dans l\'ordre croissant.',
         eleve: plListe(['compris strictement entre −3 et 1 : ' + B(2) + ' ; ' + B(2) + ' ; ' + B(2), 'compris strictement entre −6 et −2 : ' + B(2) + ' ; ' + B(2) + ' ; ' + B(2)]),
         corr: plListe(['compris strictement entre −3 et 1 : ' + R('−2') + ' ; ' + R('−1') + ' ; ' + R('0'), 'compris strictement entre −6 et −2 : ' + R('−5') + ' ; ' + R('−4') + ' ; ' + R('−3')]) },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'Températures minimales d\'une semaine : lundi −4 °C, mardi −7 °C, mercredi 1 °C, jeudi −2 °C, vendredi 0 °C. Range-les de la plus froide à la plus douce. Quel jour a-t-il fait le plus froid ?',
+      { etoiles: 3, cahier: true, consigne: 'Températures minimales d\'une semaine : lundi −4 °C, mardi −7 °C, mercredi 1 °C, jeudi −2 °C, vendredi 0 °C. Range-les de la plus froide à la plus douce. Quel jour a-t-il fait le plus froid ?',
         corr: cm1Redac('Rangement', '−7 &lt; −4 &lt; −2 &lt; 0 &lt; 1', 'Le jour le plus froid est mardi (−7 °C).') },
     ] },
   { titre: 'Se repérer dans le plan', duree: '40 min',
@@ -119,7 +119,7 @@ PLANCHES['5e|Nombres relatifs'] = [
         ...rmp([['Minimale −5 °C, maximale 3 °C : écart @ degrés', 8], ['Minimale −8 °C, écart 6 degrés : maximale @ °C', '−2'], ['Maximale 1 °C, écart 9 degrés : minimale @ °C', '−8'], ['Minimale −2,5 °C, maximale 4,5 °C : écart @ degrés', 7]], 2) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'À Moscou, il fait −18 °C ; à Paris, 25 degrés de plus ; à Madrid, 9 degrés de plus qu\'à Paris. Quelle température fait-il à Paris ? À Madrid ?',
         corr: cm1Redac('Températures', { suite: ['Paris : −18 + 25 = 7 °C', 'Madrid : 7 + 9 = 16 °C'] }, 'Il fait 7 °C à Paris et 16 °C à Madrid.') },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'Un jeu : on gagne 5 points par bonne réponse et on perd 3 points par erreur. Zoé part de 0, a 4 bonnes réponses et 9 erreurs. Quel est son score ?',
+      { etoiles: 3, cahier: true, consigne: 'Un jeu : on gagne 5 points par bonne réponse et on perd 3 points par erreur. Zoé part de 0, a 4 bonnes réponses et 9 erreurs. Quel est son score ?',
         corr: cm1Redac('Score', '4 × 5 − 9 × 3 = 20 − 27 = −7', 'Le score de Zoé est −7 points.') },
     ] },
 ];

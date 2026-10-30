@@ -71,7 +71,7 @@ PLANCHES['3e|Rotation'] = [
         ...rmp([['Angle total : @°', 360], ['La figure revient-elle à sa position de départ ? @', 'oui']]) },
       { etoiles: 2, col: 1, cahier: true, consigne: 'Un motif de 3 cm de large est reproduit par des translations de 3 cm pour faire une frise de 30 cm. Combien de motifs y a-t-il ?',
         corr: cm1Redac('Nombre de motifs', '30 : 3 = 10', 'La frise compte 10 motifs.') },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'On applique à A(2 ; 1) la symétrie d\'axe (Ox), puis la symétrie d\'axe (Oy). Quelle transformation unique donne le même résultat ?',
+      { etoiles: 3, cahier: true, consigne: 'On applique à A(2 ; 1) la symétrie d\'axe (Ox), puis la symétrie d\'axe (Oy). Quelle transformation unique donne le même résultat ?',
         corr: cm1Redac('Images', { suite: ['Symétrie d\'axe (Ox) : (2 ; −1)', 'Puis symétrie d\'axe (Oy) : (−2 ; −1)'] }, 'On obtient le symétrique de A par rapport à O : c\'est la symétrie centrale de centre O (rotation de 180°).') },
     ] },
   { titre: 'Rotation et transformations', duree: '45 min', brevet: true,

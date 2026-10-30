@@ -23,7 +23,7 @@ PLANCHES['ce1|Tables de multiplication de 2, 5 et 10'] = [
       { etoiles: 1, consigne: 'Complète la table de 10.', ...table(10, [3, 5, 6, 8, 9]) },
       { etoiles: 2, col: 1, consigne: 'Calcule.', ...P3.rmp([['5 × 8 = @', 40], ['10 × 7 = @', 70], ['5 × @ = 30', 6], ['@ × 10 = 90', 9]], 2) },
       { etoiles: 1, col: 1, consigne: 'Complète les suites.', ...P3.rmp([['5, 10, 15, @, @', 20, 25], ['10, 20, 30, @, @', 40, 50]], 2) },
-      { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['3 billets de 10 € : @ €', 30], ['7 billets de 5 € : @ €', 35], ['4 billets de 10 € : @ €', 40]], 2) },
+      { etoiles: 2, consigne: 'Complète.', ...P3.rmp([['3 billets de 10 € : @ €', 30], ['7 billets de 5 € : @ €', 35], ['4 billets de 10 € : @ €', 40], ['6 billets de 5 € : @ €', 30], ['9 billets de 10 € : @ €', 90], ['8 pièces de 2 € : @ €', 16]], 2) },
     ] },
   { titre: 'Utiliser les tables', duree: '20 min',
     attendus: ['Résoudre des problèmes avec les tables de 2, 5 et 10'],

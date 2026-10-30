@@ -22,7 +22,7 @@ PLANCHES['6e|Fractions : multiplication'] = [
       { etoiles: 2, col: 1, consigne: 'Calcule et donne le résultat sous forme décimale.',
         eleve: plListe([ligne('3 ×', F(1, 4), '=', B()), ligne('7 ×', F(1, 10), '=', B()), ligne('5 ×', F(3, 2), '=', B())]),
         corr: plListe([ligne('3 ×', F(1, 4), '=', F(3, 4), '=', R('0,75')), ligne('7 ×', F(1, 10), '=', F(7, 10), '=', R('0,7')), ligne('5 ×', F(3, 2), '=', F(15, 2), '=', R('7,5'))]) },
-      { etoiles: 3, col: 1, cahier: true, consigne: `Chaque jour, Lina boit ${T(3, 4)} L de lait. Combien de litres boit-elle en une semaine ? Donne le résultat sous forme d'une fraction, puis d'un nombre décimal.`,
+      { etoiles: 3, cahier: true, consigne: `Chaque jour, Lina boit ${T(3, 4)} L de lait. Combien de litres boit-elle en une semaine ? Donne le résultat sous forme d'une fraction, puis d'un nombre décimal.`,
         corr: cm1Redac('Une semaine', `7 × ${F(3, 4)} = ${F(21, 4)}`, `Lina boit ${F(21, 4)} L, soit 5,25 L.`) },
     ] },
   { titre: 'Prendre une fraction d\'une quantité', duree: '35 min',
@@ -77,7 +77,7 @@ PLANCHES['6e|Fractions : multiplication'] = [
         corr: plListe(['Prix des cerises : ' + R(6) + ' €', 'Prix des fraises : ' + R(3) + ' €', 'Total : ' + R(9) + ' €']) },
       { etoiles: 3, col: 1, cahier: true, consigne: `Un roman a 360 pages. Le premier jour, Sacha lit ${T(1, 4)} du livre ; le deuxième jour, ${T(1, 3)} du livre. Combien de pages lui reste-t-il à lire ? Quelle fraction du livre cela représente-t-il ?`,
         corr: cm1Redac('Pages lues', { suite: [`${F(1, 4)} × 360 = 90`, `${F(1, 3)} × 360 = 120`, '90 + 120 = 210'] }, 'Sacha a lu 210 pages.') + cm1Redac('Pages restantes', '360 − 210 = 150', `Il lui reste 150 pages, soit ${F(150, 360)} = ${F(5, 12)} du livre.`) },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'Le prix d\'un jeu augmente de 10 %, puis baisse de 10 %. Revient-il à son prix de départ (40 €) ? Calcule.',
+      { etoiles: 3, cahier: true, consigne: 'Le prix d\'un jeu augmente de 10 %, puis baisse de 10 %. Revient-il à son prix de départ (40 €) ? Calcule.',
         corr: cm1Redac('Augmentation', '40 + 10 % de 40 = 40 + 4 = 44', 'Après l\'augmentation : 44 €.') + cm1Redac('Baisse', '44 − 10 % de 44 = 44 − 4,40 = 39,60', 'Le jeu coûte 39,60 € : il ne revient pas à 40 €.') },
     ] },
 ];

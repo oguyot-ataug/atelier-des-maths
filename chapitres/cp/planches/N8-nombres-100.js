@@ -29,8 +29,8 @@ PLANCHES['cp|Les nombres jusqu\'à 100'] = [
         ...P3.rmp([['soixante-et-onze : @', 71], ['quatre-vingt-onze : @', 91], ['soixante-dix-sept : @', 77]], 2) },
       { etoiles: 1, col: 1, consigne: 'Écris en chiffres.',
         ...P3.rmp([['soixante : @', 60], ['quatre-vingt-quatre : @', 84], ['soixante-dix-huit : @', 78], ['cent : @', 100]], 2) },
-      { etoiles: 2, col: 1, consigne: 'Écris en lettres.',
-        ...P3.rmp([['70 : @', 'soixante-dix'], ['90 : @', 'quatre-vingt-dix'], ['62 : @', 'soixante-deux']], 10) },
+      { etoiles: 2, consigne: 'Écris en lettres.',
+        ...P3.rmp([['70 : @', 'soixante-dix'], ['90 : @', 'quatre-vingt-dix'], ['62 : @', 'soixante-deux'], ['80 : @', 'quatre-vingts'], ['45 : @', 'quarante-cinq'], ['71 : @', 'soixante-et-onze']], 10) },
       { etoiles: 1, consigne: 'Combien de cubes ? Écris le nombre en chiffres.',
         ...compte([[cpBarres(61, { q: 6 }), 61], [cpBarres(96, { q: 6 }), 96]], 2) },
     ] },
@@ -47,8 +47,8 @@ PLANCHES['cp|Les nombres jusqu\'à 100'] = [
         ...suite([75, '@74', 73, '@72', 71, '@70', 69]) },
       { etoiles: 3, col: 1, consigne: 'Dans le tableau des nombres, quel nombre est… ?',
         ...P3.rmp([['juste en dessous de 47 : @', 57], ['juste au-dessus de 47 : @', 37], ['juste en dessous de 82 : @', 92]], 2) },
-      { etoiles: 2, col: 1, consigne: 'Complète ce morceau du tableau.',
-        eleve: lig(cpTableau(30, 49, { trous: [32, 38, 41, 45, 49], c: 22 })), corr: lig(cpTableau(30, 49, { on: [32, 38, 41, 45, 49], c: 22 })) },
+      { etoiles: 2, consigne: 'Complète ce morceau du tableau.',
+        eleve: lig(cpTableau(30, 49, { trous: [32, 38, 41, 45, 49], c: 22 }), cpTableau(50, 69, { trous: [53, 57, 60, 64, 68], c: 22 })), corr: lig(cpTableau(30, 49, { on: [32, 38, 41, 45, 49], c: 22 }), cpTableau(50, 69, { on: [53, 57, 60, 64, 68], c: 22 })) },
     ] },
 ];
 })();

@@ -48,7 +48,7 @@ PLANCHES['cm2|Probabilités'] = [
         corr: cm1Redac('Prochain lancer', 'pile ou face : 2 issues', 'Léo a tort : la pièce ne se souvient pas des lancers précédents. Il a toujours 1 chance sur 2 d\'obtenir face.') },
       { etoiles: 1, col: 1, consigne: 'On lance un dé à 6 faces. Complète.', ...P3.rmp([['obtenir 6 : @ chance sur @', 1, 6], ['obtenir un nombre pair : @ chances sur @', 3, 6], ['obtenir 7 : @ chance sur 6', 0]], 1) },
       { etoiles: 2, col: 1, consigne: 'Un sac contient 4 billes rouges et 6 bleues. Complète.', ...P3.rmp([['tirer une rouge : @ chances sur @', 4, 10], ['tirer une bleue : @ chances sur @', 6, 10]], 1) },
-      { etoiles: 2, col: 1, consigne: 'On lance une pièce. Entoure.', ...P3.chx([['obtenir pile :', '1 chance sur 2', '1 chance sur 2 · 1 chance sur 6']]) },
+      { etoiles: 2, consigne: 'On lance une pièce. Entoure.', ...P3.chx2([['obtenir pile :', '1 chance sur 2', '1 chance sur 2 · 1 chance sur 6'], ['obtenir face :', '1 chance sur 2', '1 chance sur 2 · 1 chance sur 3']]) },
     ] },
   { titre: 'Expériences en deux étapes', duree: '35 min',
     attendus: ['Lister les issues avec un tableau ou un arbre', 'Compter les issues', 'Exprimer des chances dans une expérience en deux étapes'],

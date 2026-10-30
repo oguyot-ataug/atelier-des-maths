@@ -35,7 +35,7 @@ PLANCHES['ce2|Problèmes multiplicatifs'] = [
       { etoiles: 1, col: 1, consigne: 'Complète.', ...P3.rmp([['4 fois plus que 32 : @', 128], ['3 fois plus que 25 : @', 75], ['2 fois moins que 50 : @', 25]], 2) },
       { etoiles: 2, col: 1, consigne: 'Tom a 6 billes. Entoure.', ...P3.chx([['Léa en a 3 fois plus. Elle en a…', '18', '9 · 18'], ['Max en a 3 de plus. Il en a…', '9', '9 · 18']]) },
       { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['10 fois plus que 45 : @', 450], ['La moitié de 90 : @', 45]], 2) },
-      { etoiles: 3, col: 1, consigne: 'Complète.', ...P3.rmp([['Un chien pèse 5 fois plus qu\'un chat de 4 kg : @ kg', 20], ['Un lapin pèse 2 kg de moins que le chat : @ kg', 2]], 2) },
+      { etoiles: 3, consigne: 'Complète.', ...P3.rmp([['Un chien pèse 5 fois plus qu\'un chat de 4 kg : @ kg', 20], ['Un lapin pèse 2 kg de moins que le chat : @ kg', 2], ['Un poney pèse 50 fois plus que le chat : @ kg', 200], ['Un chaton pèse 3 kg de moins que le chat : @ kg', 1]], 2) },
     ] },
   { titre: 'Compter toutes les possibilités', duree: '30 min',
     attendus: ['Organiser les possibilités dans un tableau ou un arbre', 'Trouver le nombre de possibilités par une multiplication'],
@@ -47,7 +47,7 @@ PLANCHES['ce2|Problèmes multiplicatifs'] = [
         corr: cm1Redac('Nombre de tenues', '3 × 7 = 21', 'Chaque pantalon va avec les 7 tee-shirts : Inès peut composer 21 tenues.') },
       { etoiles: 1, col: 1, consigne: 'Combien de possibilités ?', ...P3.rmp([['2 chapeaux et 3 nœuds : @', 6], ['3 pantalons et 7 tee-shirts : @', 21]], 2) },
       { etoiles: 2, col: 1, consigne: 'Combien de menus différents ?', ...P3.rmp([['4 entrées et 3 desserts : @', 12], ['2 pains et 5 garnitures : @ sandwichs', 10]], 2) },
-      { etoiles: 3, col: 1, consigne: 'Avec les chiffres 1, 2 et 3 (sans répéter), écris tous les nombres de 2 chiffres.', eleve: plLignes(2), corr: plListe(['12, 13, 21, 23, 31, 32 : 6 nombres']) },
+      { etoiles: 3, consigne: 'Avec les chiffres 1, 2 et 3 (sans répéter), écris tous les nombres de 2 chiffres.', eleve: plLignes(2), corr: plListe(['12, 13, 21, 23, 31, 32 : 6 nombres']) },
     ] },
 ];
 })();

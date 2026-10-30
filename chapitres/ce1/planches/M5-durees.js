@@ -26,7 +26,7 @@ PLANCHES['ce1|Les durées : heures et minutes'] = [
     exos: [
       { etoiles: 1, col: 1, consigne: 'Combien de temps ?', ...P3.rmp([['de 8 h 30 à 8 h 45 : @', '15 min'], ['de 10 h à 10 h 30 : @', '30 min'], ['de midi à 20 h : @', '8 h']], 3) },
       { etoiles: 2, col: 1, consigne: 'Combien de temps ?', ...P3.rmp([['de 15 h 45 à 16 h 15 : @', '30 min'], ['de 9 h 15 à 10 h : @', '45 min'], ['de 13 h 30 à 15 h : @', '1 h 30 min']], 4) },
-      { etoiles: 2, col: 1, consigne: 'Entoure la durée la plus longue.', ...P3.chx([['', '130 minutes', '2 heures · 130 minutes'], ['', '1 heure', '50 minutes · 1 heure'], ['', '1 h 30 min', '1 h 30 min · 80 minutes']]) },
+      { etoiles: 2, consigne: 'Entoure la durée la plus longue.', ...P3.chx2([['', '130 minutes', '2 heures · 130 minutes'], ['', '1 heure', '50 minutes · 1 heure'], ['', '1 h 30 min', '1 h 30 min · 80 minutes'], ['', '1 semaine', '6 jours · 1 semaine'], ['', '90 minutes', '1 heure · 90 minutes'], ['', '2 jours', '40 heures · 2 jours']]) },
       { etoiles: 2, cahier: true, consigne: 'Mamie a passé un quart d\'heure à tailler ses rosiers et une demi-heure à bêcher son potager. Combien de temps est-elle restée dans le jardin ?', corr: cm1Redac('Temps au jardin', '15 min + 30 min = 45 min', 'Mamie est restée 45 minutes dans le jardin.') },
       { etoiles: 3, cahier: true, consigne: 'Le film commence à 14 h 30 et finit à 16 h 15. Combien de temps dure-t-il ?', corr: cm1Redac('Durée du film', { suite: ['De 14 h 30 à 15 h : 30 min', 'De 15 h à 16 h : 1 h', 'De 16 h à 16 h 15 : 15 min'] }, 'Le film dure 1 h 45 min.') },
     ] },
@@ -39,7 +39,7 @@ PLANCHES['ce1|Les durées : heures et minutes'] = [
       { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['Une semaine a @ jours.', 7], ['Le premier jour de la semaine : @', 'lundi'], ['Le premier mois de l\'année : @', 'janvier']], 5) },
       { etoiles: 3, col: 1, consigne: 'Aujourd\'hui, c\'est jeudi. Quel jour sera-t-on… ?', ...P3.rmp([['demain : @', 'vendredi'], ['après-demain : @', 'samedi'], ['dans une semaine : @', 'jeudi']], 5) },
       { etoiles: 2, col: 1, consigne: 'Quel jour était-ce ? Aujourd\'hui, c\'est mardi.', ...P3.rmp([['hier : @', 'lundi'], ['avant-hier : @', 'dimanche']], 5) },
-      { etoiles: 3, col: 1, consigne: 'Écris les mois qui ont 31 jours.', eleve: plLignes(2), corr: plListe(['janvier, mars, mai, juillet, août, octobre, décembre']) },
+      { etoiles: 3, consigne: 'Écris les mois qui ont 31 jours.', eleve: plLignes(2), corr: plListe(['janvier, mars, mai, juillet, août, octobre, décembre']) },
     ] },
   { titre: 'Pour aller plus loin : lire un calendrier', duree: '20 min',
     attendus: ['Trouver le jour d\'une date', 'Compter des jours sur un calendrier'],

@@ -121,6 +121,14 @@ fichier) ; la page est écrite par `tools/build-seo.js`.
   s'il tient, sinon « A = … » développé en colonne avec le résultat encadré ; puis une phrase de
   conclusion, systématiquement.
 
+## Planches : jamais d'exercice seul en demi-largeur (demandé le 30/10/2026)
+
+« Je ne veux jamais voir ça dans aucun niveau » : un exercice `{ col: 1 }` (demi-largeur) resté seul laisse un trou à sa droite
+dans le Manuel. Chaque planche doit donc avoir un nombre pair d'exercices demi-largeur. Sinon : ajouter un exercice, ou mettre
+l'exercice seul en pleine largeur (retirer `col: 1`) en doublant ses exemples pour remplir deux colonnes (listes `P3.rmp` : deux
+colonnes automatiques ; choix « oui / non », « vrai / faux » : `P3.chx2`, deux tableaux côte à côte). Après toute modification de
+planche, lancer `NODE_PATH=/opt/node22/lib/node_modules node tools/verif-trous.js` (doit répondre « Aucun trou »).
+
 ## Conformité aux programmes : « Pour aller plus loin » (demandé le 28/10/2026)
 
 « Ce qui est hors programme peut être mis en "pour aller plus loin" » : une notion d'un niveau supérieur n'est

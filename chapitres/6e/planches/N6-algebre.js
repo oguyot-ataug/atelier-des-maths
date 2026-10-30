@@ -24,7 +24,7 @@ PLANCHES['6e|Initiation à l\'algèbre'] = [
         corr: plListe(['n + 12 = 30 : n = ' + R(18), '5 × n = 45 : n = ' + R(9), 'n − 6 = 14 : n = ' + R(20), 'n ÷ 4 = 8 : n = ' + R(32)]) },
       { etoiles: 2, col: 1, consigne: 'Les boîtes « ? » ont toutes la même masse ; une boule pèse 1 unité. Combien pèse une boîte ?',
         eleve: `<div style="text-align:center;">${bal(2, 1, 9)}</div>` + plListe(['Égalité : 2 × n + 1 = 9', 'Une boîte pèse ' + B(1) + ' unités']), corr: `<div style="text-align:center;">${bal(2, 1, 9)}</div>` + plListe(['Égalité : 2 × n + 1 = 9', 'On enlève 1 boule de chaque côté : 2 × n = 8.', 'Une boîte pèse ' + R(4) + ' unités']) },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'Le périmètre d\'un carré est 52 cm. On appelle c la longueur de son côté. Écris une égalité, puis trouve c.',
+      { etoiles: 3, cahier: true, consigne: 'Le périmètre d\'un carré est 52 cm. On appelle c la longueur de son côté. Écris une égalité, puis trouve c.',
         corr: cm1Redac('Le nombre cherché', '4 × c = 52', 'c = 52 ÷ 4 = 13 : le côté mesure 13 cm.') },
     ] },
   { titre: 'Résoudre un problème algébrique', duree: '40 min',

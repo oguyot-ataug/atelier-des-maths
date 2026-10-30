@@ -22,7 +22,7 @@ PLANCHES['cm2|Multiples et diviseurs'] = [
         corr: cm1Redac('Multiples de 5 et de 2', 'Un nombre divisible par 2 et par 5 se termine par 0.', 'Entre 40 et 60, le seul nombre qui se termine par 0 est 50 : Léo a 50 billes.') },
       { etoiles: 1, col: 1, consigne: 'Continue la liste des multiples.', ...P3.rmp([['de 7 : 7, 14, @, @, @', 21, 28, 35], ['de 12 : 12, 24, @, @', 36, 48]], 2) },
       { etoiles: 2, col: 1, consigne: 'Divisible par 3 ? Entoure.', ...P3.chx([['123', 'oui', 'oui · non'], ['250', 'non', 'oui · non'], ['999', 'oui', 'oui · non']]) },
-      { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['Divisible par 2 : le chiffre des unités est @.', 'pair'], ['Divisible par 5 : il se termine par @ ou @.', 0, 5], ['Divisible par 10 : il se termine par @.', 0]], 2) },
+      { etoiles: 2, consigne: 'Complète.', ...P3.rmp([['Divisible par 2 : le chiffre des unités est @.', 'pair'], ['Divisible par 5 : il se termine par @ ou @.', 0, 5], ['Divisible par 10 : il se termine par @.', 0], ['Divisible par 3 : la somme de ses chiffres est dans la table de @.', 3], ['Divisible par 9 : la somme de ses chiffres est dans la table de @.', 9], ['Un nombre pair est divisible par @.', 2]], 2) },
     ] },
   { titre: 'Trouver tous les diviseurs', duree: '30 min',
     attendus: ['Trouver tous les diviseurs d\'un nombre', 'Reconnaître un diviseur', 'Utiliser les tables de multiplication'],
@@ -52,7 +52,7 @@ PLANCHES['cm2|Multiples et diviseurs'] = [
         corr: cm1Redac('Multiples communs', { suite: ['Multiples de 6 : 6 ; 12 ; 18 ; 24 ; 30', 'Multiples de 10 : 10 ; 20 ; 30'] }, 'Ils s\'allumeront de nouveau ensemble dans 30 secondes.') },
       { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['Diviseurs communs à 12 et 18 : @', '1, 2, 3, 6'], ['Le plus grand : @', 6]], 6) },
       { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['Multiples communs à 4 et 6, jusqu\'à 30 : @', '12 et 24'], ['Le plus petit : @', 12]], 5) },
-      { etoiles: 3, col: 1, consigne: 'Complète.', ...P3.rmp([['Diviseurs communs à 24 et 36 : @', '1, 2, 3, 4, 6, 12']], 8) },
+      { etoiles: 3, consigne: 'Complète.', ...P3.rmp([['Diviseurs communs à 24 et 36 : @', '1, 2, 3, 4, 6, 12'], ['Diviseurs communs à 18 et 30 : @', '1, 2, 3, 6']], 8) },
     ] },
 ];
 })();

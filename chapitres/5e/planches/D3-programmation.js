@@ -55,7 +55,7 @@ PLANCHES['5e|Pensée informatique et programmation'] = [
       { etoiles: 1, col: 1, consigne: 'Que dit le lutin ?',
         ...(() => { const P = blocs([['evt', 'quand le drapeau est cliqué'], ['var', 'mettre prix à 12'], ['var', 'mettre quantité à 3'], ['sty', 'dire prix × quantité']]), q = rmp([['Le lutin dit @', 36]], 2);
           return { eleve: P + q.eleve, corr: P + q.corr }; })() },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'Écris un programme qui demande la longueur du côté d\'un carré, puis qui dit son périmètre et son aire. Teste-le avec 7.',
+      { etoiles: 3, cahier: true, consigne: 'Écris un programme qui demande la longueur du côté d\'un carré, puis qui dit son périmètre et son aire. Teste-le avec 7.',
         corr: cm1Redac('Programme', { suite: ['demander « côté ? » ; mettre c à réponse', 'dire 4 × c ; dire c × c'] }, 'Avec 7, le programme dit 28 (périmètre) puis 49 (aire).') },
     ] },
   { titre: 'Programmes de calcul et formules', duree: '35 min',
@@ -74,7 +74,7 @@ PLANCHES['5e|Pensée informatique et programmation'] = [
         ...rmp([['Entrée 2 → sortie @', 10], ['Entrée 0 → sortie @', 4], ['Entrée −1 → sortie @', 1], ['Sortie 19 ← entrée @', 5]], 2) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Prouve que le programme précédent (« + 6 ; × 2 ; − 12 ») donne toujours le double du nombre choisi.',
         corr: cm1Redac('Preuve', '(x + 6) × 2 − 12 = 2x + 12 − 12 = 2x', 'Le résultat est toujours le double du nombre choisi.') },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'Écris en blocs un programme qui demande le prix d\'un article et qui dit son prix après une remise de 20 %. Teste-le avec 45 €.',
+      { etoiles: 3, cahier: true, consigne: 'Écris en blocs un programme qui demande le prix d\'un article et qui dit son prix après une remise de 20 %. Teste-le avec 45 €.',
         corr: cm1Redac('Programme', { suite: ['demander « prix ? » ; mettre p à réponse', 'mettre r à p × 20 : 100 ; dire p − r'] }, 'Avec 45 €, le programme dit 36 €.') },
     ] },
   { titre: 'Répéter : les boucles', duree: '40 min',
@@ -90,7 +90,7 @@ PLANCHES['5e|Pensée informatique et programmation'] = [
       { etoiles: 1, col: 1, consigne: 'Écris le programme avec une boucle (complète).',
         ...(() => { const l = [[`${prog('hhhhhh')} = répéter ${B(1)} fois ( ↑ )`, `${prog('hhhhhh')} = répéter ${R(6)} fois ( ↑ )`], [`${prog('gggghh')} = répéter ${B(1)} fois ( ← ) puis répéter ${B(1)} fois ( ↑ )`, `${prog('gggghh')} = répéter ${R(4)} fois ( ← ) puis répéter ${R(2)} fois ( ↑ )`]];
           return { eleve: plListe(l.map(x => x[0])), corr: plListe(l.map(x => x[1])) }; })() },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'Écris avec une boucle un programme qui fait dire au lutin les multiples de 7 de 7 à 70.',
+      { etoiles: 3, cahier: true, consigne: 'Écris avec une boucle un programme qui fait dire au lutin les multiples de 7 de 7 à 70.',
         corr: cm1Redac('Programme', { suite: ['mettre n à 7', 'répéter 10 fois ( dire n ; ajouter 7 à n )'] }, 'Le lutin dit 7, 14, 21… jusqu\'à 70.') },
     ] },
   { titre: 'Tracer des figures avec le stylo', duree: '40 min',
@@ -109,7 +109,7 @@ PLANCHES['5e|Pensée informatique et programmation'] = [
         ...ch([['Pour tracer un carré, on tourne 4 fois de 90° :', 'vrai'], ['Pour tracer un triangle équilatéral, on tourne de 60° :', 'faux']], 'vrai · faux') },
       { etoiles: 2, col: 1, consigne: 'Le lutin trace un carré de côté 50 pas. Complète.',
         ...rmp([['Longueur totale tracée : @ pas', 200], ['Nombre de rotations : @', 4], ['Somme des rotations : @ °', 360]], 2) },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'Écris un programme qui trace un octogone régulier de côté 40, puis un programme qui trace un rectangle de 100 sur 50.',
+      { etoiles: 3, cahier: true, consigne: 'Écris un programme qui trace un octogone régulier de côté 40, puis un programme qui trace un rectangle de 100 sur 50.',
         corr: cm1Redac('Programmes', { suite: ['Octogone : répéter 8 fois ( avancer de 40 ; tourner de 45° )', 'Rectangle : répéter 2 fois ( avancer de 100 ; tourner de 90° ; avancer de 50 ; tourner de 90° )'] }, 'Pour un polygone régulier, l\'angle de rotation vaut 360 : nombre de côtés.') },
     ] },
 ];

@@ -52,8 +52,8 @@ PLANCHES['cp|Comparer des longueurs'] = [
         ...PCP.compte([[ruban(4, '#2EA8C9'), 4], [ruban(8, '#E35D3A'), 8]], 2) },
       { etoiles: 2, consigne: 'Entoure le ruban le plus long.',
         ...PCP.entoure([[ruban(6), false], [ruban(3, '#F2A93B'), false], [ruban(7, '#2EA8C9'), true]], 1) },
-      { etoiles: 2, col: 1, consigne: 'Le ruban vert mesure 5 trombones, le ruban rouge 3 trombones. Complète.',
-        ...P3.rmp([['Le plus long : le ruban @', 'vert'], ['Il a @ trombones de plus.', 2]], 4) },
+      { etoiles: 2, consigne: 'Le ruban vert mesure 5 trombones, le ruban rouge 3 trombones, le ruban bleu 7 trombones. Complète.',
+        ...P3.rmp([['Le plus long : le ruban @', 'bleu'], ['Le plus court : le ruban @', 'rouge'], ['Le vert a @ trombones de plus que le rouge.', 2], ['Le bleu a @ trombones de plus que le vert.', 2]], 4) },
     ] },
 ];
 })();

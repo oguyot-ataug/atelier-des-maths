@@ -42,7 +42,7 @@ PLANCHES['ce1|Se repérer sur un quadrillage'] = [
         corr: lig(grille(6, 4, [['arbre', 0, 0], ['arbre', 5, 3], ['coeur', 2, 1], ['etoile', 4, 0], ['rond', 1, 3], ['carre', 3, 2]], [], 230)) + plListe(['Le cœur (le banc) est en ' + R('C2'), 'Le carré (le bac à sable) est en ' + R('D3'), 'Les arbres sont en ' + R('A1') + ' et en ' + R('F4')]) },
       { etoiles: 2, col: 1, consigne: 'Vu de dessus, à quoi ressemble… ? Entoure.', ...P3.chx([['une table ronde', 'un disque', 'un disque · un carré'], ['un lit', 'un rectangle', 'un rond · un rectangle'], ['un dé', 'un carré', 'un carré · un triangle']]) },
       { etoiles: 2, col: 1, consigne: 'Sur le plan du jardin, écris le code pour aller du banc (C2) à l\'étoile (E1).', eleve: cadre(40), corr: lig(cpCode('ddh')) + '<p style="text-align:center;">D\'autres codes sont justes.</p>' },
-      { etoiles: 3, col: 1, consigne: 'Sur le plan du jardin, quelle case est… ?', ...P3.rmp([['juste à droite du banc : @', 'D2'], ['juste au-dessus du rond : @', 'B3'], ['entre les deux arbres, sur la ligne 4 : @', 'B4, C4, D4 ou E4']], 3) },
+      { etoiles: 3, consigne: 'Sur le plan du jardin, quelle case est… ?', ...P3.rmp([['juste à droite du banc : @', 'D2'], ['juste au-dessus du rond : @', 'B3'], ['entre les deux arbres, sur la ligne 4 : @', 'B4, C4, D4 ou E4']], 3) },
     ] },
 ];
 })();

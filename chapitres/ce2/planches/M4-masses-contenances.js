@@ -19,7 +19,7 @@ PLANCHES['ce2|Masses et contenances'] = [
       { etoiles: 1, col: 1, consigne: 'Complète.', ...P3.rmp([['1 kg = @ g', '1 000'], ['1 t = @ kg', '1 000'], ['3 kg = @ g', '3 000'], ['2 500 g = @ kg @ g', 2, 500]], 3) },
       { etoiles: 1, col: 1, consigne: 'Entoure la masse qui convient.', ...P3.chx([['un éléphant :', '5 t', '5 kg · 5 t'], ['une plume :', '1 g', '1 g · 1 kg'], ['un dictionnaire :', '1 kg', '1 g · 1 kg']]) },
       { etoiles: 2, col: 1, consigne: 'Range de la plus légère à la plus lourde.', ...P3.rmp([['800 g · 1 kg · 750 g · 2 kg : @', '750 g < 800 g < 1 kg < 2 kg']], 10) },
-      { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['1 kg − 300 g = @ g', 700], ['500 g + 500 g = @ kg', 1]], 3) },
+      { etoiles: 2, consigne: 'Complète.', ...P3.rmp([['1 kg − 300 g = @ g', 700], ['500 g + 500 g = @ kg', 1], ['1 kg − 650 g = @ g', 350], ['250 g + 750 g = @ kg', 1]], 3) },
     ] },
   { titre: 'Peser avec une balance', duree: '25 min',
     attendus: ['Lire une pesée sur une balance à plateaux', 'Résoudre un problème de masses'],
@@ -33,7 +33,7 @@ PLANCHES['ce2|Masses et contenances'] = [
         corr: cm1Redac('Masse du camion vide', '3 t = 3 000 kg', 'Le camion vide pèse 3 000 kg.') + cm1Redac('Masse du camion chargé', '3 000 kg + 1 500 kg = 4 500 kg', 'Le camion chargé pèse 4 500 kg, moins que 5 000 kg : il peut passer.') },
       { etoiles: 1, col: 1, consigne: 'Complète.', ...P3.rmp([['2 kg + 750 g = @ g', '2 750'], ['3 t + 1 500 kg = @ kg', '4 500']], 3) },
       { etoiles: 2, col: 1, consigne: 'Entoure le plus lourd.', ...P3.chx([['', '1 kg', '1 kg · 900 g'], ['', '2 t', '2 t · 1 900 kg']]) },
-      { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['4 paquets de 250 g : @ g', '1 000'], ['soit @ kg', 1]], 3) },
+      { etoiles: 2, consigne: 'Complète.', ...P3.rmp([['4 paquets de 250 g : @ g', '1 000'], ['soit @ kg', 1], ['8 paquets de 125 g : @ g', '1 000'], ['soit @ kg', 1]], 3) },
     ] },
   { titre: 'Les contenances', duree: '25 min',
     attendus: ['Connaître L, dL, cL', 'Savoir que 1 L = 10 dL = 100 cL', 'Comparer des contenances'],
@@ -48,7 +48,7 @@ PLANCHES['ce2|Masses et contenances'] = [
       { etoiles: 1, col: 1, consigne: 'Entoure la contenance qui convient.', ...P3.chx([['une baignoire :', '200 L', '2 L · 200 L'], ['une cuillère :', '1 cL', '1 cL · 1 L'], ['un seau :', '10 L', '10 cL · 10 L']]) },
       { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['5 verres de 20 cL : @ cL', 100], ['soit @ L', 1]], 3) },
       { etoiles: 2, col: 1, consigne: 'Range de la plus petite à la plus grande.', ...P3.rmp([['1 L · 75 cL · 2 L · 150 cL : @', '75 cL < 1 L < 150 cL < 2 L']], 10) },
-      { etoiles: 3, col: 1, consigne: 'Complète.', ...P3.rmp([['1 L et 50 cL = @ cL', 150], ['Une bouteille de 1 L remplit @ verres de 25 cL.', 4]], 3) },
+      { etoiles: 3, consigne: 'Complète.', ...P3.rmp([['1 L et 50 cL = @ cL', 150], ['Une bouteille de 1 L remplit @ verres de 25 cL.', 4], ['2 L = @ cL', 200], ['Une bouteille de 1 L remplit @ verres de 20 cL.', 5]], 3) },
     ] },
 ];
 })();

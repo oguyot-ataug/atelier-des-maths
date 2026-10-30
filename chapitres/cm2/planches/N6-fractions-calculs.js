@@ -33,9 +33,9 @@ PLANCHES['cm2|Fractions : comparer et calculer'] = [
       { etoiles: 2, col: 1, consigne: 'Calcule (transforme d\'abord une des fractions).',
         eleve: plListe([`${F(1, 2)} + ${F(1, 4)} = ${Fr}`, `${F(3, 5)} + ${F(1, 10)} = ${Fr}`, `${F(5, 6)} − ${F(1, 3)} = ${Fr}`]),
         corr: plListe([`${F(2, 4)} + ${F(1, 4)} = ${R(F(3, 4))}`, `${F(6, 10)} + ${F(1, 10)} = ${R(F(7, 10))}`, `${F(5, 6)} − ${F(2, 6)} = ${R(F(3, 6))}`]) },
-      { etoiles: 2, col: 1, consigne: 'Calcule.',
-        eleve: plListe([`3 × ${F(2, 7)} = ${Fr}`, `4 × ${F(3, 10)} = ${Fr}`, `5 × ${F(1, 5)} = ${B(2)}`]),
-        corr: plListe([`3 × ${F(2, 7)} = ${R(F(6, 7))}`, `4 × ${F(3, 10)} = ${R(F(12, 10))}`, `5 × ${F(1, 5)} = ${R(1)}`]) },
+      { etoiles: 2, consigne: 'Calcule.',
+        eleve: plListe([`3 × ${F(2, 7)} = ${Fr}`, `4 × ${F(3, 10)} = ${Fr}`, `5 × ${F(1, 5)} = ${B(2)}`, `2 × ${F(4, 9)} = ${Fr}`, `6 × ${F(1, 8)} = ${Fr}`, `3 × ${F(1, 3)} = ${B(2)}`]),
+        corr: plListe([`3 × ${F(2, 7)} = ${R(F(6, 7))}`, `4 × ${F(3, 10)} = ${R(F(12, 10))}`, `5 × ${F(1, 5)} = ${R(1)}`, `2 × ${F(4, 9)} = ${R(F(8, 9))}`, `6 × ${F(1, 8)} = ${R(F(6, 8))}`, `3 × ${F(1, 3)} = ${R(1)}`]) },
       { etoiles: 3, cahier: true, consigne: `Pour un gâteau, il faut ${F(1, 2)} L de lait et ${F(1, 4)} L de crème. Quelle quantité de liquide faut-il en tout ? Et pour 3 gâteaux ?`,
         corr: cm1Redac('Pour un gâteau', `${F(1, 2)} + ${F(1, 4)} = ${F(2, 4)} + ${F(1, 4)} = ${F(3, 4)}`, `Il faut ${F(3, 4)} L de liquide.`) + cm1Redac('Pour 3 gâteaux', `3 × ${F(3, 4)} = ${F(9, 4)}`, `Il faut ${F(9, 4)} L, soit 2 L et ${F(1, 4)} L.`) },
     ] },
@@ -51,7 +51,7 @@ PLANCHES['cm2|Fractions : comparer et calculer'] = [
       { etoiles: 3, cahier: true, consigne: `Un sac de riz de 2 kg est entamé : il en reste ${F(3, 4)}. Combien de grammes de riz reste-t-il ? (1 kg = 1 000 g)`,
         corr: cm1Redac('Masse en grammes', '2 kg = 2 000 g', 'Le sac contenait 2 000 g.') + cm1Redac('Masse restante', { suite: ['2 000 : 4 = 500', '500 × 3 = 1 500'] }, 'Il reste 1 500 g de riz, soit 1,5 kg.') },
       { etoiles: 1, col: 1, consigne: 'Écris en nombre décimal.', ...P3.rmp([[`${cm1Frac(1, 4)} = @`, '0,25'], [`${cm1Frac(3, 10)} = @`, '0,3'], [`${cm1Frac(7, 100)} = @`, '0,07']], 3) },
-      { etoiles: 2, col: 1, consigne: 'Écris avec une fraction.', ...P3.rmp([['0,5 = @', cm1Frac(1, 2)], ['0,75 = @', cm1Frac(3, 4)]], 3) },
+      { etoiles: 2, consigne: 'Écris avec une fraction.', ...P3.rmp([['0,5 = @', cm1Frac(1, 2)], ['0,75 = @', cm1Frac(3, 4)], ['0,25 = @', cm1Frac(1, 4)], ['1,5 = @', cm1Frac(3, 2)]], 3) },
     ] },
 ];
 })();

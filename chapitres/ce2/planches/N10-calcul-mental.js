@@ -33,7 +33,7 @@ PLANCHES['ce2|Procédures de calcul mental'] = [
       { etoiles: 1, col: 1, consigne: 'Complète.', ...P3.rmp([['le double de 35 : @', 70], ['le double de 140 : @', 280], ['la moitié de 90 : @', 45], ['la moitié de 360 : @', 180]], 2) },
       { etoiles: 2, col: 1, consigne: 'Multiplie par 4.', ...P3.rmp([['13 × 4 = @', 52], ['35 × 4 = @', 140], ['250 × 4 = @', '1 000']], 3) },
       { etoiles: 2, col: 1, consigne: 'Multiplie par 8 en doublant trois fois.', ...P3.rmp([['6 × 8 = @', 48], ['15 × 8 = @', 120], ['25 × 8 = @', 200]], 2) },
-      { etoiles: 2, col: 1, consigne: 'Complète les étapes.', ...P3.rmp([['45 × 2 = @', 90], ['90 × 2 = @', 180], ['donc 45 × 4 = @', 180]], 2) },
+      { etoiles: 2, consigne: 'Complète les étapes.', ...P3.rmp([['45 × 2 = @', 90], ['90 × 2 = @', 180], ['donc 45 × 4 = @', 180], ['35 × 2 = @', 70], ['70 × 2 = @', 140], ['donc 35 × 4 = @', 140]], 2) },
     ] },
   { titre: 'Calculer avec les dizaines et les centaines', duree: '25 min',
     attendus: ['Ajouter ou retirer des dizaines, des centaines', 'Compléter à la centaine ou au millier supérieur', 'Multiplier par un nombre de dizaines'],
@@ -47,7 +47,7 @@ PLANCHES['ce2|Procédures de calcul mental'] = [
       { etoiles: 1, col: 1, consigne: 'Calcule.', ...P3.rmp([['400 + 300 = @', 700], ['1 200 + 800 = @', '2 000'], ['5 000 − 300 = @', '4 700']], 3) },
       { etoiles: 2, col: 1, consigne: 'Calcule.', ...P3.rmp([['70 × 3 = @', 210], ['600 ÷ 2 = @', 300], ['80 × 5 = @', 400]], 2) },
       { etoiles: 2, col: 1, consigne: 'Trouve le nombre manquant.', ...P3.rmp([['@ + 250 = 1 000', 750], ['2 000 − @ = 1 400', 600]], 3) },
-      { etoiles: 3, col: 1, consigne: 'Entoure le résultat le plus proche.', ...P3.chx([['398 + 503 : environ', '900', '800 · 900 · 1 000'], ['1 990 − 610 : environ', '1 400', '1 200 · 1 400 · 1 600']]) },
+      { etoiles: 3, consigne: 'Entoure le résultat le plus proche.', ...P3.chx2([['398 + 503 : environ', '900', '800 · 900 · 1 000'], ['1 990 − 610 : environ', '1 400', '1 200 · 1 400 · 1 600'], ['702 + 296 : environ', '1 000', '900 · 1 000 · 1 100'], ['2 510 − 1 490 : environ', '1 000', '900 · 1 000 · 1 500']]) },
     ] },
 ];
 })();

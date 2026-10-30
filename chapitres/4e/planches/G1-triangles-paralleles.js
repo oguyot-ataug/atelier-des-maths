@@ -58,7 +58,7 @@ PLANCHES['4e|Triangles et parallèles'] = [
         ...ch([[`${T(3, 5)} et ${T('4{,}5', '7{,}5')} :`, 'oui'], [`${T(2, 7)} et ${T(3, 10)} :`, 'non'], [`${T(6, 8)} et ${T(9, 12)} :`, 'oui']], 'oui · non') },
       { etoiles: 2, col: 1, consigne: 'M ∈ [AB] et N ∈ [AC]. Les droites (MN) et (BC) sont-elles parallèles ? Entoure.',
         ...ch([['AM = 2, AB = 5, AN = 3, AC = 7,5 :', 'oui'], ['AM = 3, AB = 8, AN = 4, AC = 10 :', 'non'], ['AM = 1,5, AB = 6, AN = 2, AC = 8 :', 'oui']], 'oui · non') },
-      { etoiles: 2, col: 1, consigne: 'Complète le raisonnement : AM = 4, AB = 6, AN = 5, AC = 7,5 (M ∈ [AB], N ∈ [AC]).',
+      { etoiles: 2, consigne: 'Complète le raisonnement : AM = 4, AB = 6, AN = 5, AC = 7,5 (M ∈ [AB], N ∈ [AC]).',
         eleve: plListe([ligne(`${T('AM', 'AB')} = ${T(4, 6)} = ${T(2, 3)} et ${T('AN', 'AC')} = ${T(5, '7{,}5')} =`, Fr), 'Les rapports sont égaux et les points sont dans le même ordre : les droites (MN) et (BC) sont ' + P3.B(6)]),
         corr: plListe([ligne(`${T('AM', 'AB')} = ${T(4, 6)} = ${T(2, 3)} et ${T('AN', 'AC')} = ${T(5, '7{,}5')} =`, R(F(2, 3))), 'Les rapports sont égaux et les points sont dans le même ordre : les droites (MN) et (BC) sont ' + R('parallèles')]) },
       { etoiles: 3, cahier: true, consigne: 'Dans le triangle EFG, H ∈ [EF] et K ∈ [EG]. EH = 3,5 cm, EF = 5 cm, EK = 4 cm et EG = 6 cm. Les droites (HK) et (FG) sont-elles parallèles ? Rédige.',
@@ -69,7 +69,7 @@ PLANCHES['4e|Triangles et parallèles'] = [
   { titre: 'Problèmes avec le théorème de Thalès', duree: '40 min',
     attendus: ['Reconnaître une configuration de Thalès dans une situation concrète', 'Calculer une longueur inaccessible', 'Rédiger la solution'],
     exos: [
-      { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.',
+      { etoiles: 2, consigne: 'Vrai ou faux ? Entoure.',
         ...ch([['Le théorème de Thalès permet de calculer une longueur.', 'vrai'], ['Sa réciproque permet de prouver que deux droites sont parallèles.', 'vrai'], ['Il faut un angle droit pour utiliser le théorème de Thalès.', 'faux']], 'vrai · faux') },
       { etoiles: 2, cahier: true, consigne: illu(ombre, 'Au même moment, un bâton vertical de 1 m a une ombre de 1,5 m et un poteau électrique a une ombre de 9 m. Les rayons du soleil sont parallèles. Quelle est la hauteur du poteau ?'),
         corr: cm1Redac('Thalès', { suite: [`${F('h', 1)} = ${F(9, '1{,}5')}`, 'h = 9 : 1,5 = 6'] }, 'Le poteau mesure 6 m de haut.') },

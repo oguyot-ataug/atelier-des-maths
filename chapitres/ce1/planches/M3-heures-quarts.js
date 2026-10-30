@@ -31,7 +31,7 @@ PLANCHES['ce1|Lire l\'heure : demi-heures et quarts d\'heure'] = [
       { etoiles: 2, consigne: 'C\'est l\'après-midi. Quelle heure est-il ? Écris-la comme ceci : 15 h.', ...compte([[hor(3, 0), '15 h'], [hor(5, 30), '17 h 30'], [hor(1, 0), '13 h']], 3, 4) },
       { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['2 demi-heures = @ heure', 1], ['1 heure et demie = @ minutes', 90]], 2) },
       { etoiles: 3, col: 1, consigne: 'Range dans l\'ordre de la journée : 13 h, 9 h, 16 h 30, 12 h.', ...P3.rmp([['@', '9 h, 12 h, 13 h, 16 h 30']], 10) },
-      { etoiles: 2, col: 1, consigne: 'Écris l\'heure du matin.', ...P3.rmp([['Le réveil sonne à 7 h. Il est @ du matin.', '7 h'], ['L\'école commence à 8 h 30, c\'est le @.', 'matin']], 3) },
+      { etoiles: 2, consigne: 'Écris l\'heure du matin.', ...P3.rmp([['Le réveil sonne à 7 h. Il est @ du matin.', '7 h'], ['L\'école commence à 8 h 30, c\'est le @.', 'matin'], ['Le petit-déjeuner est à 7 h 30, c\'est le @.', 'matin'], ['La récréation commence à 10 h. Il est @ du matin.', '10 h']], 3) },
     ] },
   { titre: 'Calculer une durée', duree: '25 min',
     attendus: ['Calculer une durée simple en heures et demi-heures'],
@@ -50,7 +50,7 @@ PLANCHES['ce1|Lire l\'heure : demi-heures et quarts d\'heure'] = [
     exos: [
       { etoiles: 1, col: 1, consigne: 'Combien de temps ?', ...P3.rmp([['de 8 h 30 à 8 h 45 : @', '15 minutes'], ['de 15 h 45 à 16 h 15 : @', '30 minutes'], ['de midi à 20 h : @', '8 heures']], 4) },
       { etoiles: 2, col: 1, consigne: 'Quelle heure sera-t-il ?', ...P3.rmp([['9 h, un quart d\'heure plus tard : @', '9 h 15'], ['10 h 45, un quart d\'heure plus tard : @', '11 h'], ['14 h 15, une demi-heure plus tard : @', '14 h 45']], 3) },
-      { etoiles: 2, col: 1, consigne: 'Entoure la durée la plus longue.', ...P3.chx([['', '130 minutes', '2 heures · 130 minutes'], ['', '1 heure', '45 minutes · 1 heure'], ['', 'une demi-heure', 'un quart d\'heure · une demi-heure']]) },
+      { etoiles: 2, consigne: 'Entoure la durée la plus longue.', ...P3.chx2([['', '130 minutes', '2 heures · 130 minutes'], ['', '1 heure', '45 minutes · 1 heure'], ['', 'une demi-heure', 'un quart d\'heure · une demi-heure'], ['', '1 h 15 min', '1 h 15 min · 70 minutes'], ['', '3 quarts d\'heure', '40 minutes · 3 quarts d\'heure'], ['', '2 heures', '2 heures · 100 minutes']]) },
       { etoiles: 3, cahier: true, consigne: 'La séance de piscine commence à 13 h 45 et finit à 14 h 30. Combien de temps dure-t-elle ?', corr: cm1Redac('Durée de la séance', { suite: ['De 13 h 45 à 14 h : 15 minutes', 'De 14 h à 14 h 30 : 30 minutes', '15 + 30 = 45'] }, 'La séance dure 45 minutes, trois quarts d\'heure.') },
     ] },
 ];

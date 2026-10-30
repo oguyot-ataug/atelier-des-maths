@@ -29,7 +29,7 @@ PLANCHES['cm2|Aires'] = [
         ...ch([['Deux figures de même aire ont toujours le même périmètre.', 'faux'], ['L\'aire se mesure en cm², en m²…', 'vrai'], ['Le périmètre se mesure en cm, en m…', 'vrai']], 'vrai · faux') },
       { etoiles: 2, col: 1, consigne: 'Entoure l\'unité qui convient.',
         ...chx([['Aire d\'une chambre : 12…', 'm²', 'cm² · dm² · m²'], ['Aire d\'un timbre : 6…', 'cm²', 'cm² · dm² · m²'], ['Aire d\'une feuille A4 : 6…', 'dm²', 'cm² · dm² · m²']]) },
-      { etoiles: 1, col: 1, consigne: 'Aire ou périmètre ? Entoure.', ...P3.chx([['la longueur de clôture d\'un jardin', 'périmètre', 'aire · périmètre'], ['la moquette pour une chambre', 'aire', 'aire · périmètre']]) },
+      { etoiles: 1, consigne: 'Aire ou périmètre ? Entoure.', ...P3.chx2([['la longueur de clôture d\'un jardin', 'périmètre', 'aire · périmètre'], ['la moquette pour une chambre', 'aire', 'aire · périmètre'], ['la peinture pour un mur', 'aire', 'aire · périmètre'], ['le ruban autour d\'un cadre', 'périmètre', 'aire · périmètre']]) },
     ] },
   { titre: 'Aire du rectangle et du carré', duree: '35 min',
     attendus: ['Convertir des aires en raisonnant', 'Calculer l\'aire d\'un rectangle et d\'un carré', 'Résoudre un problème d\'aire'],
@@ -55,7 +55,7 @@ PLANCHES['cm2|Aires'] = [
       { etoiles: 3, cahier: true, consigne: illu(jardin, 'Un jardin rectangulaire mesure 20 m sur 15 m. Au milieu, on a construit une piscine de 8 m sur 4 m. Le reste est couvert de pelouse. Quelle est l\'aire de la pelouse ?'),
         corr: cm1Redac('Aire du jardin', '20 × 15 = 300', 'Le jardin a une aire de 300 m².') + cm1Redac('Aire de la piscine', '8 × 4 = 32', 'La piscine a une aire de 32 m².') + cm1Redac('Aire de la pelouse', '300 − 32 = 268', 'La pelouse a une aire de 268 m².') },
       { etoiles: 1, consigne: 'L\'unité d\'aire est un carreau. Écris l\'aire de chaque figure.', eleve: plGrille(AIRES3.map(([f]) => f + '<br>' + P3.B(4)), 3), corr: plGrille(AIRES3.map(([f, r]) => f + '<br>' + P3.R(r)), 3) },
-      { etoiles: 2, col: 1, consigne: 'Calcule l\'aire de la figure composée.', ...P3.rmp([['un carré de 4 cm de côté collé à un rectangle de 6 cm sur 2 cm : @ cm²', 28], ['un rectangle de 10 cm sur 6 cm dont on enlève un carré de 2 cm de côté : @ cm²', 56]], 2) },
+      { etoiles: 2, consigne: 'Calcule l\'aire de la figure composée.', ...P3.rmp([['un carré de 4 cm de côté collé à un rectangle de 6 cm sur 2 cm : @ cm²', 28], ['un rectangle de 10 cm sur 6 cm dont on enlève un carré de 2 cm de côté : @ cm²', 56]], 2) },
     ] },
 ];
 })();

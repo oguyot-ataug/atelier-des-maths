@@ -32,8 +32,8 @@ PLANCHES['cp|Les nombres jusqu\'à 10'] = [
         ...suite([10, '@9', 8, '@7', 6, '@5', 4, '@3', 2, '@1', 0]) },
       { etoiles: 2, col: 1, consigne: 'Écris en chiffres.',
         ...P3.rmp([['sept : @', 7], ['deux : @', 2], ['neuf : @', 9], ['zéro : @', 0]], 2) },
-      { etoiles: 2, col: 1, consigne: 'Compte et écris le nombre.',
-        ...compte([[cpDe(4, { c: 34 }), 4], [cpDe(9, { c: 28, cinq: true }), 9]], 2) },
+      { etoiles: 2, consigne: 'Compte et écris le nombre.',
+        ...compte([[cpDe(4, { c: 34 }), 4], [cpDe(9, { c: 28, cinq: true }), 9], [cpDe(6, { c: 34 }), 6], [cpDe(7, { c: 28, cinq: true }), 7]], 4) },
     ] },
   { titre: 'Comparer des collections', duree: '20 min',
     attendus: ['Comparer deux collections (plus, moins, autant)', 'Comparer deux nombres jusqu\'à 10'],
@@ -49,8 +49,8 @@ PLANCHES['cp|Les nombres jusqu\'à 10'] = [
         corr: lig(cpJetons(6), ' Léo') + lig(cpJetons(8, 0, Array(8).fill(CPC.jeton2)), ' Zoé') + plListe(['Qui a le plus de billes ? <b>Léo · ' + plEntoure('Zoé') + '</b>']) + '<p style="text-align:center;">Zoé a 2 billes de plus que Léo.</p>' },
       { etoiles: 2, col: 1, consigne: 'Entoure le plus petit nombre.',
         ...P3.chx([['', '3', '3 · 8'], ['', '5', '7 · 5'], ['', '0', '2 · 0']]) },
-      { etoiles: 2, col: 1, consigne: 'Dessine autant de ronds que de points sur le dé.',
-        eleve: lig(cpDe(5, { c: 40 })) + lig(PCP.zone(5)), corr: lig(cpDe(5, { c: 40 })) + lig(cpJetons(5)) },
+      { etoiles: 2, consigne: 'Dessine autant de ronds que de points sur le dé.',
+        eleve: lig(cpDe(5, { c: 40 }), PCP.zone(5)), corr: lig(cpDe(5, { c: 40 }), cpJetons(5)) },
     ] },
 ];
 })();

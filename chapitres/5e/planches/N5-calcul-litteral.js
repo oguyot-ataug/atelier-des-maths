@@ -32,7 +32,7 @@ PLANCHES['5e|Calcul littéral'] = [
         corr: `<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-around;">${rect('a', '3')}<span>P = ${R('2a+6')}</span></div>` + plListe(['Un carré de côté c : P = ' + R('4c'), 'Un triangle équilatéral de côté t : P = ' + R('3t')]) },
       { etoiles: 2, col: 1, consigne: 'Associe chaque phrase à son expression : entoure.',
         ...ch([['Le carré de x :', x2], ['Le double de x :', '2x'], ['x augmenté de 2 :', 'x + 2'], ['Le double de x, au carré :', '(2x)²']], `${x2} · 2x · x + 2 · (2x)² · 2x²`) },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'Une place de cinéma coûte 8 € et un menu 5 €. Écris le prix payé par un groupe de n personnes qui prennent chacune une place et un menu, de deux façons différentes.',
+      { etoiles: 3, cahier: true, consigne: 'Une place de cinéma coûte 8 € et un menu 5 €. Écris le prix payé par un groupe de n personnes qui prennent chacune une place et un menu, de deux façons différentes.',
         corr: cm1Redac('Prix payé', { suite: ['8n + 5n (les places, puis les menus)', '13n (place et menu pour une personne : 13 €)'] }, 'Les deux expressions sont égales : 8n + 5n = 13n.') },
     ] },
   { titre: 'Calculer la valeur d\'une expression', duree: '35 min',

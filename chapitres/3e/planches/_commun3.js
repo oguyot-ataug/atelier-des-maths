@@ -33,6 +33,10 @@ const P3 = {
   chxTab: it => { const t = c => `<table class="pl-chxtab" style="border-collapse:collapse;margin:2px 0;">${it.map(c).join('')}</table>`;
     return { eleve: t(([q, , m]) => `<tr class="pl-item" style="display:table-row;"><td style="padding:3px 18px 3px 0;white-space:nowrap;">${q}</td><td style="white-space:nowrap;"><b>${m}</b></td></tr>`),
       corr: t(([q, r, m]) => `<tr class="pl-item" style="display:table-row;"><td style="padding:3px 18px 3px 0;white-space:nowrap;">${q}</td><td style="white-space:nowrap;">${P3.entoureParmi(m, r)}</td></tr>`) }; },
+  // Choix en deux tableaux côte à côte, pour un exercice pleine largeur -- demandé le 30/10/2026 : « Je ne veux jamais voir
+  // ça dans aucun niveau » (un exercice seul en demi-largeur, un trou à sa droite) : plus d'exemples, sur deux colonnes.
+  chx2: it => { const h = Math.ceil(it.length / 2), a = P3.chxTab(it.slice(0, h)), b = P3.chxTab(it.slice(h)), d = (x, y) => `<div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:2px 24px;align-items:start;">${x}${y}</div>`;
+    return { eleve: d(a.eleve, b.eleve), corr: d(a.corr, b.corr) }; },
   // Corrigé d'un choix : tous les mots proposés restent visibles, le bon est entouré (relecture CP-N1-P3-E3 : « dans la
   // correction, on ne voit plus que le plus grand nombre, il faut continuer à voir les deux »). Réponse absente des choix : entourée seule.
   entoureParmi: (m, r) => { const L = String(m).split(' · '), i = L.findIndex(w => w.trim() === String(r).trim());

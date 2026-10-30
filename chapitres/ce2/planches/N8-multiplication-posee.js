@@ -36,7 +36,7 @@ PLANCHES['ce2|La multiplication posée'] = [
         corr: cm1Redac('Prix des ballons', { pose: cm1Posee([['', '24'], ['×', '18'], ['', '192', true], ['+', '240'], ['', '432']], '3 ') }, 'Le club paie 432 €.') },
       { etoiles: 1, col: 1, consigne: 'Calcule.', ...P3.rmp([['23 × 10 = @', 230], ['23 × 20 = @', 460], ['46 × 30 = @', '1 380']], 3) },
       { etoiles: 2, col: 1, consigne: 'Entoure l\'ordre de grandeur.', ...P3.chx([['24 × 18 : environ', '400', '40 · 400 · 4 000'], ['52 × 31 : environ', '1 500', '150 · 1 500 · 15 000']]) },
-      { etoiles: 2, col: 1, consigne: 'Pose dans ton cahier, puis écris le résultat.', ...P3.rmp([['12 × 12 = @', 144], ['15 × 11 = @', 165]], 3) },
+      { etoiles: 2, consigne: 'Pose dans ton cahier, puis écris le résultat.', ...P3.rmp([['12 × 12 = @', 144], ['15 × 11 = @', 165], ['14 × 13 = @', 182], ['21 × 12 = @', 252]], 3) },
     ] },
   { titre: 'Vérifier son résultat', duree: '25 min',
     attendus: ['Estimer un ordre de grandeur', 'Repérer un résultat faux'],
@@ -51,7 +51,7 @@ PLANCHES['ce2|La multiplication posée'] = [
       { etoiles: 2, col: 1, consigne: 'Ce résultat est-il possible ? Entoure.', ...P3.chx([['45 × 6 = 270', 'oui', 'oui · non'], ['38 × 5 = 1 900', 'non', 'oui · non'], ['99 × 9 = 891', 'oui', 'oui · non']]) },
       { etoiles: 2, col: 1, consigne: 'Calcule.', ...P3.rmp([['70 × 9 = @', 630], ['67 × 10 = @', 670]], 3) },
       { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['30 × 4 = @', 120], ['donc 32 × 4 est proche de @', 120]], 3) },
-      { etoiles: 3, col: 1, consigne: 'Pour calculer 67 × 9 : calcule 67 × 10, puis enlève 67.', ...P3.rmp([['67 × 10 = @', 670], ['670 − 67 = @', 603], ['donc 67 × 9 = @', 603]], 3) },
+      { etoiles: 3, consigne: 'Pour multiplier par 9 : multiplie par 10, puis enlève le nombre.', ...P3.rmp([['67 × 10 = @', 670], ['670 − 67 = @', 603], ['donc 67 × 9 = @', 603], ['45 × 10 = @', 450], ['450 − 45 = @', 405], ['donc 45 × 9 = @', 405]], 3) },
     ] },
 ];
 })();

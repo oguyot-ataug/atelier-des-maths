@@ -62,7 +62,7 @@ PLANCHES['6e|Opérations et ordre de grandeur'] = [
         ...ch([['45,6 + 38,9 :', '84,5', '74,5 · 84,5 · 845'], ['120,4 − 59,7 :', '60,7', '60,7 · 70,7 · 607'], ['9,98 + 0,7 :', '10,68', '9,105 · 10,68 · 16,98']]) },
       { etoiles: 2, col: 1, consigne: 'Ces résultats sont-ils vraisemblables ? Entoure.',
         ...ch([['Un panier de courses : 4,95 € + 12,30 € + 6,80 € = 240,05 €', 'non', 'oui · non'], ['Une course : 1,2 km + 0,85 km = 2,05 km', 'oui', 'oui · non'], ['Une taille : 1,52 m − 0,3 m = 1,49 m', 'non', 'oui · non']]) },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'Avec 50 €, Nina veut acheter un pull à 23,90 €, un tee-shirt à 9,95 € et une casquette à 14,85 €. A-t-elle assez d\'argent ? Réponds d\'abord avec un ordre de grandeur, puis vérifie par un calcul exact.',
+      { etoiles: 3, cahier: true, consigne: 'Avec 50 €, Nina veut acheter un pull à 23,90 €, un tee-shirt à 9,95 € et une casquette à 14,85 €. A-t-elle assez d\'argent ? Réponds d\'abord avec un ordre de grandeur, puis vérifie par un calcul exact.',
         corr: cm1Redac('Ordre de grandeur', '24 + 10 + 15 = 49', 'C\'est proche de 50 € : il faut calculer exactement.') + cm1Redac('Calcul exact', '23,90 + 9,95 + 14,85 = 48,70', 'Nina a assez d\'argent : il lui reste 50 − 48,70 = 1,30 €.') },
     ] },
   { titre: 'Problèmes d\'addition et de soustraction', duree: '40 min',
@@ -80,7 +80,7 @@ PLANCHES['6e|Opérations et ordre de grandeur'] = [
         corr: cm1Redac('Après-midi', '12,6 − 3,85 = 8,75', 'L\'après-midi, il parcourt 8,75 km.') + cm1Redac('Journée', '12,6 + 8,75 = 21,35', 'Il a parcouru 21,35 km dans la journée.') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Mila a 3 billets de 5 € et 2,60 € en pièces. Elle achète un jeu à 11,95 €. Combien lui reste-t-il ? Peut-elle encore acheter une boisson à 5,80 € ?',
         corr: cm1Redac('Argent de Mila', '15 + 2,60 = 17,60', 'Mila a 17,60 €.') + cm1Redac('Après l\'achat', '17,60 − 11,95 = 5,65', 'Il lui reste 5,65 € : elle ne peut pas acheter la boisson (5,65 &lt; 5,80).') },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'Trouve deux nombres décimaux dont la somme est 10 et la différence 2,6.',
+      { etoiles: 3, cahier: true, consigne: 'Trouve deux nombres décimaux dont la somme est 10 et la différence 2,6.',
         corr: cm1Redac('Recherche', { suite: ['Le plus grand vaut la moitié de 10 + 2,6 : 12,6 ÷ 2 = 6,3.', 'Le plus petit : 10 − 6,3 = 3,7.'] }, 'Les nombres sont 6,3 et 3,7 (6,3 + 3,7 = 10 et 6,3 − 3,7 = 2,6).') },
     ] },
 ];

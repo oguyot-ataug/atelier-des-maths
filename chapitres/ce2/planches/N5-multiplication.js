@@ -35,7 +35,7 @@ PLANCHES['ce2|La multiplication'] = [
       { etoiles: 1, col: 1, consigne: 'Calcule.', ...P3.rmp([['34 × 10 = @', 340], ['7 × 100 = @', 700], ['56 × 100 = @', '5 600'], ['10 × 90 = @', 900]], 3) },
       { etoiles: 2, col: 1, consigne: 'Trouve le nombre manquant.', ...P3.rmp([['@ × 10 = 450', 45], ['@ × 100 = 3 000', 30]], 2) },
       { etoiles: 2, col: 1, consigne: 'Calcule.', ...P3.rmp([['4 × 20 = @', 80], ['3 × 300 = @', 900], ['6 × 50 = @', 300]], 3) },
-      { etoiles: 3, col: 1, consigne: 'Vrai ou faux ? Entoure.', ...P3.chx([['25 × 10 = 250', 'vrai', 'vrai · faux'], ['12 × 100 = 1 200', 'vrai', 'vrai · faux'], ['30 × 10 = 3 000', 'faux', 'vrai · faux']]) },
+      { etoiles: 3, consigne: 'Vrai ou faux ? Entoure.', ...P3.chx2([['25 × 10 = 250', 'vrai', 'vrai · faux'], ['12 × 100 = 1 200', 'vrai', 'vrai · faux'], ['30 × 10 = 3 000', 'faux', 'vrai · faux'], ['7 × 100 = 700', 'vrai', 'vrai · faux'], ['40 × 10 = 4 000', 'faux', 'vrai · faux'], ['100 × 15 = 1 500', 'vrai', 'vrai · faux']]) },
     ] },
   { titre: 'Des astuces de calcul', duree: '30 min',
     attendus: ['Multiplier par 4 en doublant deux fois, par 8 en doublant trois fois', 'Décomposer un facteur pour calculer', 'Reconnaître un nombre pair'],
@@ -52,7 +52,7 @@ PLANCHES['ce2|La multiplication'] = [
       { etoiles: 1, col: 1, consigne: 'Multiplie par 4 en doublant deux fois.', ...P3.rmp([['15 × 4 = @', 60], ['25 × 4 = @', 100], ['12 × 4 = @', 48]], 2) },
       { etoiles: 2, col: 1, consigne: 'Multiplie par 5 : multiplie par 10, puis prends la moitié.', ...P3.rmp([['10 × 18 = @', 180], ['donc 5 × 18 = @', 90]], 3) },
       { etoiles: 2, col: 1, consigne: 'Calcule.', ...P3.rmp([['21 × 3 = @', 63], ['32 × 3 = @', 96], ['11 × 7 = @', 77]], 2) },
-      { etoiles: 2, col: 1, consigne: 'Entoure le nombre pair.', ...P3.chx([['', '36', '36 · 45'], ['', '108', '108 · 77'], ['', '250', '125 · 250']]) },
+      { etoiles: 2, consigne: 'Entoure le nombre pair.', ...P3.chx2([['', '36', '36 · 45'], ['', '108', '108 · 77'], ['', '250', '125 · 250'], ['', '94', '94 · 63'], ['', '1 000', '1 000 · 999'], ['', '72', '51 · 72']]) },
     ] },
 ];
 })();

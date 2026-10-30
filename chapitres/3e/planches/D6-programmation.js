@@ -12,7 +12,7 @@ PLANCHES['3e|Algorithmique et programmation'] = [
   { titre: 'Répéter jusqu\'à, simulations', duree: '35 min',
     attendus: ['Utiliser la boucle « répéter jusqu\'à »', 'Simuler une expérience aléatoire'],
     exos: [
-      { etoiles: 1, col: 1, consigne: 'mettre n à 1 ; répéter jusqu\'à n > 50 [mettre n à n × 3] ; dire n. Complète.', ...P3.rmp([['Valeurs successives de n : 1, @, @, @, @', 3, 9, 27, 81], ['Le programme dit : @', 81]], 3) },
+      { etoiles: 1, consigne: 'mettre n à 1 ; répéter jusqu\'à n > 50 [mettre n à n × 3] ; dire n. Complète.', ...P3.rmp([['Valeurs successives de n : 1, @, @, @, @', 3, 9, 27, 81], ['Le programme dit : @', 81]], 3) },
       { etoiles: 2, cahier: true, consigne: 'Écris un programme qui simule 500 lancers d\'un dé et compte le nombre de 6 obtenus.', corr: cm1Redac('La simulation', '', 'mettre six à 0 ; répéter 500 fois [si nombre aléatoire entre 1 et 6 = 6 alors ajouter 1 à six] ; dire six.') },
       { etoiles: 3, cahier: true, consigne: 'Le programme précédent dit 91. La fréquence obtenue est-elle cohérente avec la probabilité d\'obtenir 6 ?', corr: cm1Redac('Fréquence', { suite: ['91 : 500 = 0,182', '1 : 6 ≈ 0,167'] }, 'Oui : la fréquence 0,182 est proche de la probabilité 1/6 ≈ 0,167 ; sur 500 lancers, la fréquence fluctue autour de la probabilité.') },
     ] },

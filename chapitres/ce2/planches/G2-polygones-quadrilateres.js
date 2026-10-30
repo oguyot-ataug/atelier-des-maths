@@ -19,7 +19,7 @@ PLANCHES['ce2|Polygones et quadrilatères'] = [
       { etoiles: 1, col: 1, consigne: 'Complète.',
         ...rmp([['Un triangle a @ côtés et @ sommets.', 3, 3], ['Un quadrilatère a @ côtés.', 4], ['Un hexagone a @ côtés.', 6], ['Un polygone de 5 côtés est un @.', 'pentagone']], 4) },
       { etoiles: 1, col: 1, consigne: 'Combien de côtés ?', ...P3.rmp([['un hexagone : @', 6], ['un pentagone : @', 5], ['un triangle : @', 3], ['un quadrilatère : @', 4]], 2) },
-      { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.', ...P3.chx([['Un cercle est un polygone.', 'faux', 'vrai · faux'], ['Un carré est un quadrilatère.', 'vrai', 'vrai · faux'], ['Un polygone a des côtés droits.', 'vrai', 'vrai · faux']]) },
+      { etoiles: 2, consigne: 'Vrai ou faux ? Entoure.', ...P3.chx2([['Un cercle est un polygone.', 'faux', 'vrai · faux'], ['Un carré est un quadrilatère.', 'vrai', 'vrai · faux'], ['Un polygone a des côtés droits.', 'vrai', 'vrai · faux'], ['Un triangle a 4 côtés.', 'faux', 'vrai · faux'], ['Un rectangle est un quadrilatère.', 'vrai', 'vrai · faux'], ['Un losange a 4 côtés de même longueur.', 'vrai', 'vrai · faux']]) },
     ] },
   { titre: 'Carré, rectangle, losange', duree: '30 min',
     attendus: ['Reconnaître carré, rectangle, losange par leurs côtés et leurs angles droits', 'Lire les codages', 'Justifier : « ce n\'est pas un carré car… »'],

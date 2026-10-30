@@ -39,7 +39,7 @@ PLANCHES['5e|Opérations sur les nombres relatifs'] = [
         ...rmp([['(−4) + @ = 3', 7], ['@ + (+6) = −2', -8], ['(+9) + @ = 0', -9], ['(−5) + @ = −12', -7]], 2) },
       { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.',
         ...ch([['La somme de deux nombres négatifs est négative :', 'vrai'], ['La somme d\'un positif et d\'un négatif est toujours négative :', 'faux'], ['(−3) + (+3) = 0 :', 'vrai'], ['(−6) + (−2) = −4 :', 'faux']], 'vrai · faux') },
-      { etoiles: 3, col: 1, cahier: true, consigne: illu(thermometre, 'Le matin, il fait −6 °C. La température augmente de 9 °C dans la journée, puis baisse de 11 °C la nuit. Quelle est la température la nuit ? Écris les additions.'),
+      { etoiles: 3, cahier: true, consigne: illu(thermometre, 'Le matin, il fait −6 °C. La température augmente de 9 °C dans la journée, puis baisse de 11 °C la nuit. Quelle est la température la nuit ? Écris les additions.'),
         corr: cm1Redac('Température', '(−6) + (+9) + (−11) = (+3) + (−11) = −8', 'La nuit, il fait −8 °C.') },
     ] },
   { titre: 'Additionner : tableaux et carrés magiques', duree: '35 min',

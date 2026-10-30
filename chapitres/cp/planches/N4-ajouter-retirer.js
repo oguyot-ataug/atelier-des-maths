@@ -37,9 +37,9 @@ PLANCHES['cp|Ajouter, retirer : premiers problèmes'] = [
         eleve: lig(cpJetons(7)) + lig('7 − 3 = ' + B(1)), corr: lig(cpJetons(7, 3)) + lig('7 − 3 = ' + R(4)) },
       { etoiles: 2, col: 1, consigne: 'Calcule.',
         ...P3.rmp([['8 − 2 = @', 6], ['5 − 3 = @', 2], ['10 − 5 = @', 5], ['9 − 1 = @', 8]], 2) },
-      { etoiles: 3, col: 1, consigne: 'Recule sur la bande : calcule.',
-        eleve: lig(cpBande(0, 10, { c: 24, px: 260 })) + plListe(['9 − 3 = ' + B(1), '8 − 4 = ' + B(1), '6 − 5 = ' + B(1)]),
-        corr: lig(cpBande(0, 10, { c: 24, px: 260 })) + plListe(['9 − 3 = ' + R(6), '8 − 4 = ' + R(4), '6 − 5 = ' + R(1)]) },
+      { etoiles: 3, consigne: 'Recule sur la bande : calcule.',
+        eleve: lig(cpBande(0, 10, { c: 24, px: 260 })) + plListe(['9 − 3 = ' + B(1), '8 − 4 = ' + B(1), '6 − 5 = ' + B(1), '10 − 2 = ' + B(1), '7 − 4 = ' + B(1), '5 − 3 = ' + B(1)]),
+        corr: lig(cpBande(0, 10, { c: 24, px: 260 })) + plListe(['9 − 3 = ' + R(6), '8 − 4 = ' + R(4), '6 − 5 = ' + R(1), '10 − 2 = ' + R(8), '7 − 4 = ' + R(3), '5 − 3 = ' + R(2)]) },
     ] },
   { titre: 'Résoudre des problèmes', duree: '25 min',
     attendus: ['Résoudre un problème additif ou soustractif', 'Représenter le problème par un dessin', 'Répondre par une phrase'],
@@ -54,8 +54,8 @@ PLANCHES['cp|Ajouter, retirer : premiers problèmes'] = [
         eleve: cadre(60) + lig('Calcul : ' + B(4)), corr: lig(cpJetons(6, 2)) + lig('6 − 2 = ' + R(4)) },
       { etoiles: 2, consigne: 'Paul a 3 voitures. Il en reçoit 4 pour son anniversaire. Combien en a-t-il ? Dessine, puis écris le calcul.',
         eleve: cadre(60) + lig('Calcul : ' + B(4)), corr: lig(cpJetons(7, 0, cpBleus(3, 4))) + lig('3 + 4 = ' + R(7)) },
-      { etoiles: 2, col: 1, consigne: 'Faut-il ajouter ou retirer ? Entoure.',
-        ...P3.chx([['Je gagne 3 billes.', 'ajouter', 'ajouter · retirer'], ['Je perds 2 billes.', 'retirer', 'ajouter · retirer'], ['Je mange 1 bonbon.', 'retirer', 'ajouter · retirer'], ['On me donne 5 images.', 'ajouter', 'ajouter · retirer']]) },
+      { etoiles: 2, consigne: 'Faut-il ajouter ou retirer ? Entoure.',
+        ...P3.chx2([['Je gagne 3 billes.', 'ajouter', 'ajouter · retirer'], ['Je perds 2 billes.', 'retirer', 'ajouter · retirer'], ['Je mange 1 bonbon.', 'retirer', 'ajouter · retirer'], ['On me donne 5 images.', 'ajouter', 'ajouter · retirer'], ['J\'achète 2 livres.', 'ajouter', 'ajouter · retirer'], ['Je donne 4 cartes.', 'retirer', 'ajouter · retirer'], ['Je casse 1 crayon.', 'retirer', 'ajouter · retirer'], ['Je trouve 3 coquillages.', 'ajouter', 'ajouter · retirer']]) },
     ] },
 ];
 })();

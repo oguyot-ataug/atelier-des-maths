@@ -84,7 +84,7 @@ PLANCHES['5e|Équations'] = [
         corr: cm1Redac('Rangées', { suite: ['Soit x le nombre de rangées : 24x = 312', 'x = 312 : 24 = 13'] }, 'Il y a 13 rangées.') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Un abonnement de streaming coûte 9 € par mois plus 15 € de frais d\'inscription. Après combien de mois aura-t-on payé 96 € en tout ?',
         corr: cm1Redac('Durée', { suite: ['Soit x le nombre de mois : 9x + 15 = 96', '9x = 81 donc x = 9'] }, 'On aura payé 96 € au bout de 9 mois.') },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'Trois nombres entiers consécutifs ont pour somme 72. Quels sont-ils ? (Appelle n le plus petit.)',
+      { etoiles: 3, cahier: true, consigne: 'Trois nombres entiers consécutifs ont pour somme 72. Quels sont-ils ? (Appelle n le plus petit.)',
         corr: cm1Redac('Nombres', { suite: ['n + (n + 1) + (n + 2) = 72', '3n + 3 = 72 donc 3n = 69 et n = 23'] }, 'Les nombres sont 23, 24 et 25.') },
     ] },
 ];

@@ -131,7 +131,7 @@ PLANCHES['6e|Droites parallèles et perpendiculaires'] = [
         ...(() => { const T = traceD(10, 7, 21, { seg: [[[1, 6], [9, 6]], [[9, 6], [3, 2]], [[3, 2], [1, 6]]], pts: [[[1, 6], 'A', -14, 14], [[9, 6], 'B', 6, 14], [[3, 2], 'C', -16, -2]] },
             [{ p: [1, 6], v: [2, -3] }, { p: [9, 6], v: [2, 1] }, { p: [3, 2], v: [0, 1] }]);
           return { eleve: `<div style="text-align:center;">${T.eleve}</div>` + plListe(['Les trois droites passent par un même point : <b>oui · non</b>']), corr: `<div style="text-align:center;">${T.corr}</div>` + plListe(['Les trois droites passent par un même point : ' + plEntoure('oui')]) }; })() },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'Sur une feuille blanche, trace un triangle EFG. À l\'équerre, trace la perpendiculaire à (EF) passant par G et la perpendiculaire à (FG) passant par E.',
+      { etoiles: 3, cahier: true, consigne: 'Sur une feuille blanche, trace un triangle EFG. À l\'équerre, trace la perpendiculaire à (EF) passant par G et la perpendiculaire à (FG) passant par E.',
         corr: cm1Redac('Méthode à l\'équerre', { suite: ['Un côté de l\'angle droit de l\'équerre le long de (EF), je la fais glisser jusqu\'à G et je trace.', 'Même chose avec (FG) et le point E.'] }, 'Je code chaque angle droit par un petit carré.') },
     ] },
   { titre: 'Tracer des parallèles', duree: '35 min',
@@ -148,7 +148,7 @@ PLANCHES['6e|Droites parallèles et perpendiculaires'] = [
             [{ p: [1, 5], v: [3, -4] }, { p: [9, 2], v: [5, 1] }]);
           return { eleve: `<div style="text-align:center;">${T.eleve}</div>` + plListe(['Les côtés opposés du quadrilatère ABCD sont <b>parallèles · perpendiculaires</b>']),
             corr: `<div style="text-align:center;">${T.corr.replace('</svg>', P([96, 24], 'D', -6, -8, Ro) + '</svg>')}</div>` + plListe(['Les côtés opposés du quadrilatère ABCD sont ' + plEntoure('parallèles') + '.']) }; })() },
-      { etoiles: 2, col: 1, consigne: 'Trace la perpendiculaire à (d) passant par M, la parallèle à (d) passant par M et la parallèle à (d) passant par N.',
+      { etoiles: 2, consigne: 'Trace la perpendiculaire à (d) passant par M, la parallèle à (d) passant par M et la parallèle à (d) passant par N.',
         ...(() => { const T = traceD(12, 8, 22, { d: [{ p: [0, 2], v: [1, 1], n: '(d)', lab: [.7, 3.4] }], pts: [[[7, 2], 'M', 6, -4], [[2, 7], 'N', -14, -4]] },
             [{ p: [7, 2], v: [1, -1] }, { p: [7, 2], v: [1, 1] }, { p: [2, 7], v: [1, 1] }]);
           return { eleve: `<div style="text-align:center;">${T.eleve}</div>`, corr: `<div style="text-align:center;">${T.corr}</div>` }; })() },
@@ -188,7 +188,7 @@ PLANCHES['6e|Droites parallèles et perpendiculaires'] = [
         corr: plListe(['Si MA = 4 cm, alors MB = ' + R(4) + ' cm.', 'Si MB = 7,5 cm, alors MA = ' + R('7,5') + ' cm.', 'Le point N vérifie NA = NB = 3 cm. N est-il sur la médiatrice de [AB] ? ' + plEntoure('oui'), 'Le point P vérifie PA = 5 cm et PB = 6 cm. P est-il sur la médiatrice ? ' + plEntoure('non')]) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Le point M est sur la médiatrice du segment [AB], et MA = 5 cm. Quelle est la longueur MB ? Rédige ta réponse.',
         corr: cm1Redac('Démonstration', { suite: ['On sait que : M est sur la médiatrice de [AB] et MA = 5 cm.', 'Propriété : si un point est sur la médiatrice d\'un segment, alors il est à égale distance des extrémités de ce segment.'] }, 'Donc : MB = MA = 5 cm.') },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'Une antenne doit être installée à égale distance de deux villages A et B. Où peut-on la placer ? Justifie.',
+      { etoiles: 3, cahier: true, consigne: 'Une antenne doit être installée à égale distance de deux villages A et B. Où peut-on la placer ? Justifie.',
         corr: cm1Redac('Position de l\'antenne', 'Les points à égale distance de A et de B sont ceux de la médiatrice de [AB].', 'On peut la placer n\'importe où sur la médiatrice de [AB].') },
     ] },
   { titre: 'Construire des médiatrices et reproduire des figures', duree: '45 min',

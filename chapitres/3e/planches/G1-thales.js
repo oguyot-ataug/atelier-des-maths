@@ -83,7 +83,7 @@ PLANCHES['3e|Théorème de Thalès'] = [
         corr: cm1Redac('Rapports', { suite: [`${cm1Frac('OM', 'OA')} = ${cm1Frac(5, 8)} = 0,625`, `${cm1Frac('ON', 'OB')} = ${cm1Frac(4, '6,5')} ≈ 0,615`] }, 'Les rapports ne sont pas égaux : si les droites étaient parallèles, ils le seraient (théorème de Thalès). Donc (MN) et (AB) ne sont pas parallèles.') },
       { etoiles: 2, col: 1, cahier: true, consigne: 'Dans le triangle ABC, AB = 4, AC = 5 et BC = 6. On place D sur [AB) et E sur [AC) avec AD = 10 et AE = 12,5. Montre que (DE) // (BC), puis calcule DE.',
         corr: cm1Redac('Parallèles', `${cm1Frac('AB', 'AD')} = ${cm1Frac(4, 10)} = 0,4 et ${cm1Frac('AC', 'AE')} = ${cm1Frac(5, '12,5')} = 0,4`, 'D\'après la réciproque du théorème de Thalès, (DE) // (BC).') + cm1Redac('Longueur DE', 'DE = BC : 0,4 = 6 : 0,4 = 15', 'DE = 15.') },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'Les points A, O, C sont alignés dans cet ordre, ainsi que B, O, D. OA = 3, OC = 4,5, OB = 4 et OD = 6. Les droites (AB) et (CD) sont-elles parallèles ?',
+      { etoiles: 3, cahier: true, consigne: 'Les points A, O, C sont alignés dans cet ordre, ainsi que B, O, D. OA = 3, OC = 4,5, OB = 4 et OD = 6. Les droites (AB) et (CD) sont-elles parallèles ?',
         corr: cm1Redac('Rapports', `${cm1Frac('OA', 'OC')} = ${cm1Frac(3, '4,5')} = ${cm1Frac(2, 3)} et ${cm1Frac('OB', 'OD')} = ${cm1Frac(4, 6)} = ${cm1Frac(2, 3)}`, 'Les rapports sont égaux et les points sont alignés dans le même ordre (configuration papillon) : (AB) // (CD).') },
     ] },
   { titre: 'Thalès et Pythagore', duree: '40 min',

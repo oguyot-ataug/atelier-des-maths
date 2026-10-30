@@ -40,7 +40,7 @@ PLANCHES['4e|Équations'] = [
         ...rmp([['2x + 3 = 15 : x = @', 6], ['5x − 7 = 18 : x = @', 5], ['4x + 9 = 1 : x = @', '−2'], ['7 − 3x = 22 : x = @', '−5']]) },
       { etoiles: 2, col: 1, consigne: 'Résous.',
         ...rmp([['3x + 2 = x + 10 : x = @', 4], ['5x − 4 = 2x + 11 : x = @', 5], ['6x + 1 = 8x − 7 : x = @', 4], ['2(x + 3) = 14 : x = @', 4]]) },
-      { etoiles: 2, col: 1, consigne: 'Pour résoudre 3x + 4 = 19, Léo a écrit dans l\'ordre : « 3x = 23 », puis « x = 23 : 3 ». Recopie sa première erreur, puis donne la bonne solution.',
+      { etoiles: 2, consigne: 'Pour résoudre 3x + 4 = 19, Léo a écrit dans l\'ordre : « 3x = 23 », puis « x = 23 : 3 ». Recopie sa première erreur, puis donne la bonne solution.',
         ...rmp([['Première erreur : @', '3x = 23 (il fallait 3x = 19 − 4 = 15)'], ['Solution : x = @', 5]], 6) },
       { etoiles: 2, cahier: true, consigne: illu(balance, 'La balance est en équilibre. Chaque sac contient le même nombre x de billes. Écris l\'équation correspondante, puis trouve x.'),
         corr: cm1Redac('Équation', { suite: ['3x + 4 = 19', '3x = 15', 'x = 5'] }, 'Chaque sac contient 5 billes.') },

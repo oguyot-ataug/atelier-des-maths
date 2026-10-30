@@ -50,7 +50,7 @@ PLANCHES['6e|Multiplication et division'] = [
         corr: plListe(['3,7 × 24 = ' + R('88,8'), '37 × 2,4 = ' + R('88,8'), '3,7 × 2,4 = ' + R('8,88'), '0,37 × 0,24 = ' + R('0,0888')]) },
       { etoiles: 2, col: 1, consigne: 'Sans calculer, entoure le résultat juste (ordre de grandeur et nombre de décimales).',
         ...ch([['5,2 × 3,9 :', '20,28', '2,028 · 20,28 · 202,8'], ['0,6 × 0,5 :', '0,3', '3 · 0,3 · 0,03'], ['49,8 × 2,1 :', '104,58', '10,458 · 104,58 · 1 045,8']]) },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'Un litre de carburant coûte 1,85 €. Combien coûtent 42,5 L ? Donne d\'abord un ordre de grandeur.',
+      { etoiles: 3, cahier: true, consigne: 'Un litre de carburant coûte 1,85 €. Combien coûtent 42,5 L ? Donne d\'abord un ordre de grandeur.',
         corr: cm1Redac('Ordre de grandeur', '2 × 40 = 80', 'Environ 80 €.') + cm1Redac('Calcul exact', '1,85 × 42,5 = 78,625', 'Le plein coûte 78,625 €, soit environ 78,63 €.') },
     ] },
   { titre: 'Diviser un décimal par un entier', duree: '40 min',
@@ -85,7 +85,7 @@ PLANCHES['6e|Multiplication et division'] = [
         corr: plListe(['Aire : 4,5 × 2,4 = ' + R('10,8') + ' cm²', 'Périmètre : 2 × (4,5 + 2,4) = ' + R('13,8') + ' cm', 'Longueur du côté d\'un carré de même périmètre : 13,8 ÷ 4 = ' + R('3,45') + ' cm']) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Une voiture consomme 5,8 L aux 100 km. Combien consomme-t-elle pour 350 km ? Le carburant coûte 1,90 € le litre : quel est le coût du trajet ?',
         corr: cm1Redac('Consommation', '5,8 × 3,5 = 20,3', 'Elle consomme 20,3 L.') + cm1Redac('Coût', '20,3 × 1,90 = 38,57', 'Le trajet coûte 38,57 €.') },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'Un paquet de 6 bouteilles d\'eau de 1,5 L coûte 2,70 €. Quel est le prix d\'un litre d\'eau ?',
+      { etoiles: 3, cahier: true, consigne: 'Un paquet de 6 bouteilles d\'eau de 1,5 L coûte 2,70 €. Quel est le prix d\'un litre d\'eau ?',
         corr: cm1Redac('Volume du paquet', '6 × 1,5 = 9', 'Le paquet contient 9 L.') + cm1Redac('Prix d\'un litre', '2,70 ÷ 9 = 0,30', 'Un litre coûte 0,30 €.') },
     ] },
 ];

@@ -48,7 +48,7 @@ PLANCHES['6e|Propriétés des triangles'] = [
         corr: plListe(['Somme des deux autres angles : ' + R(150) + ' °', 'Chacun mesure : ' + R(75) + ' °', 'Ce triangle est ' + plEntoure('isocèle')]) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'ABC est un triangle rectangle en A tel que ' + W('ABC') + ' = 2 × ' + W('ACB') + '. Calcule les angles.',
         corr: cm1Redac('Calcul', { suite: [W('ABC') + ' + ' + W('ACB') + ' = 90° et ' + W('ABC') + ' = 2 × ' + W('ACB') + '.', '3 × ' + W('ACB') + ' = 90°, donc ' + W('ACB') + ' = 30°.'] }, W('ACB') + ' = 30° et ' + W('ABC') + ' = 60°.') },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'Le triangle EFG est isocèle en E et ' + W('EFG') + ' = 72°. Le point H est sur [FG] et [EH] est la bissectrice de ' + W('FEG') + '. Calcule ' + W('FEH') + '.',
+      { etoiles: 3, cahier: true, consigne: 'Le triangle EFG est isocèle en E et ' + W('EFG') + ' = 72°. Le point H est sur [FG] et [EH] est la bissectrice de ' + W('FEG') + '. Calcule ' + W('FEH') + '.',
         corr: cm1Redac('Calcul', { suite: [W('EGF') + ' = 72° (angles à la base égaux).', W('FEG') + ' = 180 − 72 − 72 = 36°.'] }, W('FEH') + ' = 36 ÷ 2 = 18°.') },
     ] },
   { titre: 'Cercle circonscrit à un triangle', duree: '40 min',
@@ -78,7 +78,7 @@ PLANCHES['6e|Propriétés des triangles'] = [
         corr: plListe([W('ABC') + ' = 180 ÷ 6 = ' + R(30) + ' °', W('BAC') + ' = ' + R(60) + ' °', W('ACB') + ' = ' + R(90) + ' °']) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Construis un triangle ABC rectangle en A tel que BC = 8 cm et ' + W('ABC') + ' = 40°. Trace son cercle circonscrit. Où est son centre ?',
         corr: cm1Redac('Construction', { suite: ['Je trace [BC] de 8 cm et le cercle de diamètre [BC].', 'En B, je construis un angle de 40° : sa demi-droite coupe le cercle en A.'] }, 'Le centre du cercle circonscrit est le milieu de l\'hypoténuse [BC] ; le rayon est 4 cm.') },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'Un triangle isocèle a un angle de 40°. Combien mesurent ses autres angles ? (Attention : il y a deux possibilités.)',
+      { etoiles: 3, cahier: true, consigne: 'Un triangle isocèle a un angle de 40°. Combien mesurent ses autres angles ? (Attention : il y a deux possibilités.)',
         corr: cm1Redac('Deux cas', { suite: ['Si 40° est l\'angle principal : (180 − 40) ÷ 2 = 70° ; angles 40°, 70°, 70°.', 'Si 40° est un angle à la base : 180 − 40 − 40 = 100° ; angles 40°, 40°, 100°.'] }, 'Il y a deux triangles possibles.') },
     ] },
 ];

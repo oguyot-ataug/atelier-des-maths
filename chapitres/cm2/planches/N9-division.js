@@ -34,7 +34,7 @@ PLANCHES['cm2|Division'] = [
       { etoiles: 3, cahier: true, consigne: 'Cinq amis se partagent équitablement une addition de 63,50 €. Combien paie chacun ?',
         corr: cm1Redac('Part de chacun', '63,50 : 5 = 12,70', 'Chacun paie 12,70 €.') },
       { etoiles: 1, col: 1, consigne: 'Calcule.', ...P3.rmp([['45 ÷ 10 = @', '4,5'], ['320 ÷ 100 = @', '3,2'], ['7 ÷ 1 000 = @', '0,007']], 3) },
-      { etoiles: 2, col: 1, consigne: 'Calcule.', ...P3.rmp([['84 ÷ 4 = @', 21], ['250 ÷ 4 = @', '62,5'], ['9 ÷ 2 = @', '4,5']], 3) },
+      { etoiles: 2, consigne: 'Calcule.', ...P3.rmp([['84 ÷ 4 = @', 21], ['250 ÷ 4 = @', '62,5'], ['9 ÷ 2 = @', '4,5'], ['96 ÷ 8 = @', 12], ['150 ÷ 4 = @', '37,5'], ['7 ÷ 4 = @', '1,75']], 3) },
     ] },
   { titre: 'Partager ou grouper : problèmes', duree: '35 min',
     attendus: ['Reconnaître un problème de partage ou de groupement', 'Interpréter le quotient et le reste', 'Rédiger la solution'],
@@ -49,7 +49,7 @@ PLANCHES['cm2|Division'] = [
         corr: cm1Redac('Nombre de verres', { suite: ['0,25 L, c\'est un quart de litre : il y a 4 verres dans 1 L.', '1,5 L = 1 L + 0,5 L', '4 + 2 = 6'] }, 'On peut remplir 6 verres.') },
       { etoiles: 2, col: 1, consigne: 'Entoure le calcul qui convient.', ...P3.chx([['1 250 pommes en cagettes de 36 : combien de cagettes ?', '1 250 ÷ 36', '1 250 × 36 · 1 250 ÷ 36']]) },
       { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['1 250 = 36 × @ + @', 34, 26], ['donc @ cagettes pleines', 34]], 1) },
-      { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['1,5 L en verres de 0,25 L : @ verres', 6], ['2 L en verres de 0,2 L : @ verres', 10]], 1) },
+      { etoiles: 2, consigne: 'Complète.', ...P3.rmp([['1,5 L en verres de 0,25 L : @ verres', 6], ['2 L en verres de 0,2 L : @ verres', 10], ['3 L en verres de 0,25 L : @ verres', 12], ['1 L en verres de 0,1 L : @ verres', 10]], 1) },
     ] },
 ];
 })();

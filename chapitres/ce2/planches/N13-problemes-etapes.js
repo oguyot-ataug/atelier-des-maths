@@ -19,7 +19,7 @@ PLANCHES['ce2|Problèmes en plusieurs étapes'] = [
       { etoiles: 2, col: 1, consigne: 'Calcule les étapes du problème des tables.', ...P3.rmp([['4 × 6 = @', 24], ['7 × 4 = @', 28], ['24 + 28 = @', 52]], 2) },
       { etoiles: 2, col: 1, consigne: 'Quelle question faut-il se poser d\'abord ? Entoure.', ...P3.chx([['Paul achète 4 places à 7 € et un pop-corn à 5 €.', 'le prix des 4 places', 'le prix des 4 places · le prix du pop-corn']]) },
       { etoiles: 2, col: 1, consigne: 'Combien paie-t-on ?', ...P3.rmp([['3 cahiers à 2 € et un stylo à 4 € : @ €', 10], ['2 livres à 6 € et un jeu à 9 € : @ €', 21]], 2) },
-      { etoiles: 3, col: 1, consigne: 'Complète.', ...P3.rmp([['5 paquets de 10 crayons. On en donne 12. Il en reste @.', 38]], 2) },
+      { etoiles: 3, consigne: 'Complète.', ...P3.rmp([['5 paquets de 10 crayons. On en donne 12. Il en reste @.', 38], ['3 boîtes de 6 œufs. On en casse 4. Il en reste @.', 14]], 2) },
     ] },
   { titre: 'Soustraire des prix', duree: '30 min',
     attendus: ['Poser une soustraction de prix (virgules alignées)', 'Rendre la monnaie par une soustraction'],
@@ -33,7 +33,7 @@ PLANCHES['ce2|Problèmes en plusieurs étapes'] = [
       { etoiles: 1, col: 1, consigne: 'Calcule.', ...P3.rmp([['10 € − 4,50 € = @', '5,50 €'], ['20 € − 12,50 € = @', '7,50 €'], ['5 € − 1,25 € = @', '3,75 €']], 3) },
       { etoiles: 2, col: 1, consigne: 'Calcule.', ...P3.rmp([['1,35 € + 12,50 € = @', '13,85 €'], ['2,40 € + 3,60 € = @', '6 €']], 3) },
       { etoiles: 2, col: 1, consigne: 'Complète pour faire 10 €.', ...P3.rmp([['8,75 € + @ = 10 €', '1,25 €'], ['6,30 € + @ = 10 €', '3,70 €']], 3) },
-      { etoiles: 3, col: 1, consigne: 'J\'ai 20 €. Ai-je assez ? Entoure.', ...P3.chx([['un pain à 1,35 € et un gâteau à 12,50 €', 'oui', 'oui · non'], ['deux jeux à 9,90 € et une carte à 1 €', 'non', 'oui · non']]) },
+      { etoiles: 3, consigne: 'J\'ai 20 €. Ai-je assez ? Entoure.', ...P3.chx2([['un pain à 1,35 € et un gâteau à 12,50 €', 'oui', 'oui · non'], ['deux jeux à 9,90 € et une carte à 1 €', 'non', 'oui · non'], ['trois livres à 5,50 €', 'oui', 'oui · non'], ['un ballon à 14,90 € et un sifflet à 6 €', 'non', 'oui · non']]) },
     ] },
   { titre: 'Vérifier son résultat', duree: '30 min',
     attendus: ['Relire la question', 'Estimer pour repérer une réponse impossible'],
@@ -45,7 +45,7 @@ PLANCHES['ce2|Problèmes en plusieurs étapes'] = [
       { etoiles: 3, cahier: true, consigne: 'Un fermier ramasse 48 œufs. Il les range par boîtes de 6, et vend chaque boîte 3 €. Combien gagne-t-il s\'il vend toutes les boîtes ?',
         corr: cm1Redac('Nombre de boîtes', '48 ÷ 6 = 8', 'Car 6 × 8 = 48 : il remplit 8 boîtes.') + cm1Redac('Gain', '8 × 3 = 24', 'Il gagne 24 €.') },
       { etoiles: 1, col: 1, consigne: 'Calcule les étapes du problème des cahiers.', ...P3.rmp([['6 × 120 = @', 720], ['720 − 450 = @', 270]], 2) },
-      { etoiles: 2, col: 1, consigne: 'Calcule les étapes du problème des œufs.', ...P3.rmp([['48 ÷ 6 = @', 8], ['8 × 3 = @', 24]], 2) },
+      { etoiles: 2, consigne: 'Calcule les étapes du problème des œufs.', ...P3.rmp([['48 ÷ 6 = @', 8], ['8 × 3 = @', 24]], 2) },
     ] },
 ];
 })();

@@ -15,7 +15,7 @@ PLANCHES['ce1|Problèmes : ajouter, retirer, comparer'] = [
       { etoiles: 2, consigne: 'Dessine le schéma, puis réponds : il y a 47 pommes rouges et 38 pommes vertes. Combien de pommes en tout ?',
         eleve: PCP.cadre(60) + lig('Il y a ' + B(2) + ' pommes.'),
         corr: lig(cpSchema([[47, '47', '#E35D3A'], [38, '38', '#2E9C6A']], '85', { u: 4 })) + plListe(['47 + 38 = 85']) + lig('Il y a ' + R(85) + ' pommes.') },
-      { etoiles: 1, col: 1, consigne: 'Cherche-t-on le tout ou une partie ? Entoure.', ...P3.chx([['12 billes rouges et 9 bleues : combien en tout ?', 'le tout', 'le tout · une partie'], ['30 élèves, dont 14 filles : combien de garçons ?', 'une partie', 'le tout · une partie']]) },
+      { etoiles: 1, consigne: 'Cherche-t-on le tout ou une partie ? Entoure.', ...P3.chx([['12 billes rouges et 9 bleues : combien en tout ?', 'le tout', 'le tout · une partie'], ['30 élèves, dont 14 filles : combien de garçons ?', 'une partie', 'le tout · une partie'], ['Un bouquet de 15 fleurs, dont 6 roses : combien d\'autres fleurs ?', 'une partie', 'le tout · une partie'], ['8 filles et 7 garçons : combien d\'enfants ?', 'le tout', 'le tout · une partie']]) },
     ] },
   { titre: 'Avant, après', duree: '25 min',
     attendus: ['Résoudre des problèmes de transformation (chercher la fin, le début, le changement)'],

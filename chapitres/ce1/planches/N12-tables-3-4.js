@@ -10,7 +10,7 @@ PLANCHES['ce1|Tables de multiplication de 3 et 4'] = [
       { etoiles: 1, consigne: 'Complète la table de 3.', ...table(3, [3, 4, 6, 7, 9]) },
       { etoiles: 2, col: 1, consigne: 'Calcule.', ...P3.rmp([['3 × 7 = @', 21], ['3 × 9 = @', 27], ['6 × 3 = @', 18], ['3 × @ = 24', 8]], 2) },
       { etoiles: 1, col: 1, consigne: 'Compte de 3 en 3.', ...P3.rmp([['3, 6, 9, @, @, @', 12, 15, 18], ['30, 27, 24, @, @', 21, 18]], 2) },
-      { etoiles: 2, col: 1, consigne: 'Calcule.', ...P3.rmp([['3 × 3 = @', 9], ['3 × 5 = @', 15], ['10 × 3 = @', 30], ['@ × 3 = 12', 4]], 2) },
+      { etoiles: 2, consigne: 'Calcule.', ...P3.rmp([['3 × 3 = @', 9], ['3 × 5 = @', 15], ['10 × 3 = @', 30], ['@ × 3 = 12', 4], ['4 × 4 = @', 16], ['3 × 8 = @', 24], ['4 × 10 = @', 40], ['@ × 4 = 28', 7]], 2) },
       { etoiles: 1, consigne: 'Écris la multiplication et le nombre de jetons.',
         eleve: plGrille([ce1Rangees(3, 5, { p: 16 }) + '<br>' + B(3) + ' × ' + B(3) + ' = ' + B(2), ce1Rangees(3, 8, { p: 16 }) + '<br>' + B(3) + ' × ' + B(3) + ' = ' + B(2)], 2),
         corr: plGrille([ce1Rangees(3, 5, { p: 16 }) + '<br>' + R('3 × 5 = 15'), ce1Rangees(3, 8, { p: 16 }) + '<br>' + R('3 × 8 = 24')], 2) },
@@ -37,7 +37,7 @@ PLANCHES['ce1|Tables de multiplication de 3 et 4'] = [
       { etoiles: 2, col: 1, consigne: 'Complète le tableau.',
         eleve: cm1Tableau(['×', '2', '5', '7', '9'], [['<b>3</b>', '', '', '', ''], ['<b>4</b>', '', '', '', '']]),
         corr: cm1Tableau(['×', '2', '5', '7', '9'], [['<b>3</b>', R(6), R(15), R(21), R(27)], ['<b>4</b>', R(8), R(20), R(28), R(36)]]) },
-      { etoiles: 2, col: 1, consigne: 'Calcule.', ...P3.rmp([['3 × 7 = @', 21], ['4 × 6 = @', 24], ['3 × 9 = @', 27], ['4 × 8 = @', 32]], 2) },
+      { etoiles: 2, consigne: 'Calcule.', ...P3.rmp([['3 × 7 = @', 21], ['4 × 6 = @', 24], ['3 × 9 = @', 27], ['4 × 8 = @', 32], ['3 × 6 = @', 18], ['4 × 9 = @', 36], ['3 × 8 = @', 24], ['4 × 7 = @', 28]], 2) },
     ] },
 ];
 })();

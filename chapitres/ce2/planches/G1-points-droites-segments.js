@@ -56,7 +56,7 @@ PLANCHES['ce2|Points, droites, segments'] = [
         corr: Q(12, 5, 20, g => L(g(1, 1), g(9, 1), '#1F3A5C', 2) + X(g(1, 1), 'E', [-8, -6]) + X(g(9, 1), 'F', [8, -6]) + L(g(2, 4), g(8, 4), '#1F3A5C', 2) + X(g(2, 4), 'G', [-8, 0]) + X(g(8, 4), 'H', [8, 0]) + X(g(5, 1), 'I', [0, -9], '#E35D3A') + X(g(5, 4), 'J', [0, -9], '#E35D3A'), 240) },
       { etoiles: 2, consigne: 'Reproduis la figure sur le quadrillage de droite.',
         eleve: plGrille([modele, vide], 2), corr: plGrille([modele, modele], 2) },
-      { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['Un segment mesure 12 cm. Son milieu est à @ cm de chaque extrémité.', 6], ['Un segment mesure 9 cm. Son milieu est à @ de chaque extrémité.', '4 cm 5 mm']], 4) },
+      { etoiles: 2, consigne: 'Complète.', ...P3.rmp([['Un segment mesure 12 cm. Son milieu est à @ cm de chaque extrémité.', 6], ['Un segment mesure 9 cm. Son milieu est à @ de chaque extrémité.', '4 cm 5 mm'], ['Un segment mesure 8 cm. Son milieu est à @ cm de chaque extrémité.', 4], ['Un segment mesure 15 cm. Son milieu est à @ de chaque extrémité.', '7 cm 5 mm']], 4) },
     ] },
 ];
 })();

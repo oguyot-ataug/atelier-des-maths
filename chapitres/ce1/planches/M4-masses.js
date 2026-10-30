@@ -11,7 +11,7 @@ PLANCHES['ce1|Les masses : le gramme et le kilogramme'] = [
       { etoiles: 2, col: 1, consigne: 'Calcule la masse totale.', ...P3.rmp([['200 g + 100 g + 100 g = @ g', 400], ['500 g + 200 g + 50 g = @ g', 750], ['500 g + 500 g = @ g', '1 000']], 2) },
       { etoiles: 2, consigne: 'Quelle est la masse de l\'objet équilibré par ces masses ?', ...compte([[masses([500, 100, 100, 50]), '750 g'], [masses([200, 200, 50, 5]), '455 g']], 2, 4) },
       { etoiles: 3, col: 1, consigne: 'Complète pour équilibrer.', ...P3.rmp([['300 g = 200 g + @ g', 100], ['650 g = 500 g + 100 g + @ g', 50]], 2) },
-      { etoiles: 1, col: 1, consigne: 'Combien de grammes ?', ...P3.rmp([['une masse de 100 g et une de 50 g : @ g', 150], ['deux masses de 200 g : @ g', 400]], 2) },
+      { etoiles: 1, consigne: 'Combien de grammes ?', ...P3.rmp([['une masse de 100 g et une de 50 g : @ g', 150], ['deux masses de 200 g : @ g', 400], ['une masse de 500 g et une de 200 g : @ g', 700], ['trois masses de 100 g : @ g', 300]], 2) },
     ] },
   { titre: 'Gramme ou kilogramme', duree: '20 min',
     attendus: ['Choisir l\'unité qui convient', 'Connaître 1 kg = 1 000 g'],
@@ -31,7 +31,7 @@ PLANCHES['ce1|Les masses : le gramme et le kilogramme'] = [
       { etoiles: 2, cahier: true, consigne: 'Quel est le plus lourd : un paquet de 1 kg ou un sac de 850 g ? De combien ?', corr: cm1Redac('Le plus lourd', { suite: ['1 kg = 1 000 g', '850 + 150 = 1 000'] }, 'Le paquet de 1 kg est plus lourd, de 150 g.') },
       { etoiles: 1, col: 1, consigne: 'Complète.', ...P3.rmp([['3 paquets de 200 g : @ g', 600], ['Une pomme de 150 g et une poire de 200 g : @ g', 350]], 2) },
       { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['1 kg − 300 g = @ g', 700], ['2 kg + 500 g = @ g', '2 500']], 3) },
-      { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['Un chiot pesait 2 kg. Il a pris 3 kg. Il pèse @ kg.', 5], ['Un sac de 1 kg de riz. On en utilise 400 g. Il reste @ g.', 600]], 2) },
+      { etoiles: 2, consigne: 'Complète.', ...P3.rmp([['Un chiot pesait 2 kg. Il a pris 3 kg. Il pèse @ kg.', 5], ['Un sac de 1 kg de riz. On en utilise 400 g. Il reste @ g.', 600], ['Un melon de 900 g et une pomme de 100 g pèsent @ g.', 1000], ['Un sac de 2 kg de farine. On en utilise 1 kg. Il reste @ kg.', 1]], 2) },
       { etoiles: 3, consigne: 'Le panier vide pèse 200 g. Avec les fruits, il pèse 1 kg. Combien pèsent les fruits ? Complète.', eleve: plListe(['1 kg = ' + B(3) + ' g', 'Les fruits pèsent ' + B(3) + ' g.']), corr: plListe(['1 kg = ' + R('1 000') + ' g', '1 000 − 200 = 800', 'Les fruits pèsent ' + R(800) + ' g.']) },
     ] },
 ];

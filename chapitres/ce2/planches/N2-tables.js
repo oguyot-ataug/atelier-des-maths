@@ -24,7 +24,7 @@ PLANCHES['ce2|Tables d\'addition et de multiplication'] = [
         ...rmp([['15 − 7 = @', 8], ['13 − 9 = @', 4], ['16 − 8 = @', 8], ['12 − 5 = @', 7]], 2) },
       { etoiles: 1, col: 1, consigne: 'Calcule.', ...P3.rmp([['8 + 7 = @', 15], ['9 + 6 = @', 15], ['7 + 5 = @', 12], ['6 + 8 = @', 14]], 2) },
       { etoiles: 1, col: 1, consigne: 'Calcule.', ...P3.rmp([['13 − 6 = @', 7], ['15 − 8 = @', 7], ['12 − 9 = @', 3], ['17 − 8 = @', 9]], 2) },
-      { etoiles: 2, col: 1, consigne: 'Trouve le nombre manquant.', ...P3.rmp([['@ + 9 = 16', 7], ['8 + @ = 13', 5], ['@ + 7 = 14', 7]], 2) },
+      { etoiles: 2, consigne: 'Trouve le nombre manquant.', ...P3.rmp([['@ + 9 = 16', 7], ['8 + @ = 13', 5], ['@ + 7 = 14', 7], ['@ + 6 = 15', 9], ['9 + @ = 17', 8], ['@ + 8 = 12', 4]], 2) },
     ] },
   { titre: 'Les tables de multiplication', duree: '30 min',
     attendus: ['Connaître les tables de multiplication dans les deux sens', 'Savoir que l\'ordre des facteurs ne change pas le produit', 'Retrouver un résultat oublié'],

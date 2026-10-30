@@ -40,7 +40,7 @@ PLANCHES['4e|Espace'] = [
         ...rmp([['Base de 12 cm², hauteur 5 cm : V = @ cm³', 20], ['Base carrée de 6 cm de côté, hauteur 10 cm : V = @ cm³', 120], ['Base rectangle 4 cm × 3 cm, hauteur 7 cm : V = @ cm³', 28]]) },
       { etoiles: 2, col: 1, consigne: 'Calcule le volume du cône (valeur exacte avec π, puis arrondie au cm³).',
         ...rmp([['r = 3 cm, h = 4 cm : V = @π cm³ ≈ @ cm³', 12, 38], ['r = 6 cm, h = 5 cm : V = @π cm³ ≈ @ cm³', 60, 188]]) },
-      { etoiles: 2, col: 1, consigne: 'Entoure la bonne réponse.',
+      { etoiles: 2, consigne: 'Entoure la bonne réponse.',
         ...chx([['Un cube et une pyramide ont la même base et la même hauteur. Le volume de la pyramide est…', 'le tiers', 'le double · la moitié · le tiers'], ['1 L =', '1 dm³', '1 cm³ · 1 dm³ · 1 m³']]) },
       { etoiles: 3, cahier: true, consigne: 'La pyramide du Louvre a une base carrée de 35 m de côté et une hauteur de 21,6 m. Calcule son volume, arrondi au m³.',
         corr: cm1Redac('Volume', { suite: ['Aire de la base : 35 × 35 = 1 225 m²', 'V = 1 225 × 21,6 : 3 = 8 820'] }, 'Le volume de la pyramide du Louvre est de 8 820 m³.') },
@@ -55,7 +55,7 @@ PLANCHES['4e|Espace'] = [
         corr: `<div style="text-align:center;">${pave}</div>` + rmp([['C(@ ; @ ; @)', 4, 3, 0], ['F(@ ; @ ; @)', 4, 0, 2], ['G(@ ; @ ; @)', 4, 3, 2], ['H(@ ; @ ; @)', 0, 3, 2]]).corr },
       { etoiles: 2, col: 1, consigne: 'Même pavé. Quel sommet a pour coordonnées…',
         ...rmp([['(0 ; 3 ; 0) ? @', 'D'], ['(4 ; 0 ; 2) ? @', 'F'], ['(0 ; 0 ; 2) ? @', 'E']]) },
-      { etoiles: 2, col: 1, consigne: 'Le point M est le milieu de l\'arête [EF]. Le point N est le centre de la face ABCD.',
+      { etoiles: 2, consigne: 'Le point M est le milieu de l\'arête [EF]. Le point N est le centre de la face ABCD.',
         ...rmp([['M(@ ; @ ; @)', 2, 0, 2], ['N(@ ; @ ; @)', 2, '1,5', 0]]) },
       { etoiles: 3, cahier: true, consigne: 'Une salle de classe a la forme d\'un pavé de 8 m de long, 6 m de large et 3 m de haut. Une lampe est fixée au centre du plafond. En prenant un coin du sol comme origine, donne les coordonnées de la lampe.',
         corr: cm1Redac('Coordonnées', 'Centre du plafond : moitié de la longueur, moitié de la largeur, hauteur du plafond.', 'La lampe a pour coordonnées (4 ; 3 ; 3).') },
@@ -72,7 +72,7 @@ PLANCHES['4e|Espace'] = [
       { etoiles: 3, cahier: true, consigne: 'Une maison a la forme d\'un pavé de 10 m sur 8 m et de 6 m de haut, surmonté d\'un toit en pyramide de 3 m de haut. Calcule le volume total.',
         corr: cm1Redac('Pavé', '10 × 8 × 6 = 480', 'Le pavé a un volume de 480 m³.') + cm1Redac('Toit', '10 × 8 × 3 : 3 = 80', 'Le toit a un volume de 80 m³.') + cm1Redac('Total', '480 + 80 = 560', 'La maison a un volume de 560 m³.') },
       { etoiles: 1, col: 1, consigne: 'Convertis.', ...P3.rmp([['1 m³ = @ dm³', '1 000'], ['1 dm³ = @ L', 1], ['2 500 cm³ = @ L', '2,5']], 3) },
-      { etoiles: 2, col: 1, consigne: 'Volume d\'une pyramide : (aire de la base × hauteur) ÷ 3.', ...P3.rmp([['base 9 m², hauteur 4 m : @ m³', 12], ['base 30 cm², hauteur 10 cm : @ cm³', 100]], 2) },
+      { etoiles: 2, consigne: 'Volume d\'une pyramide : (aire de la base × hauteur) ÷ 3.', ...P3.rmp([['base 9 m², hauteur 4 m : @ m³', 12], ['base 30 cm², hauteur 10 cm : @ cm³', 100], ['base 12 cm², hauteur 5 cm : @ cm³', 20], ['base 6 m², hauteur 7 m : @ m³', 14]], 2) },
     ] },
 ];
 })();

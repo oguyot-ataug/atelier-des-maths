@@ -5,7 +5,7 @@ PLANCHES['4e|Formules et graphiques'] = [
   { titre: 'Produire une formule', duree: '30 min',
     attendus: ['Produire une formule littérale représentant la dépendance de deux grandeurs'],
     exos: [
-      { etoiles: 1, col: 1, consigne: 'Écris une formule.', ...P3.rmp([['Le périmètre p d\'un carré de côté c : @', T('p = 4c')], ['Le prix P de n cahiers à 3 € : @', T('P = 3n')], ['L\'aire A d\'un rectangle de longueur 8 et de largeur ℓ : @', T('A = 8\\ell')]], 4) },
+      { etoiles: 1, consigne: 'Écris une formule.', ...P3.rmp([['Le périmètre p d\'un carré de côté c : @', T('p = 4c')], ['Le prix P de n cahiers à 3 € : @', T('P = 3n')], ['L\'aire A d\'un rectangle de longueur 8 et de largeur ℓ : @', T('A = 8\\ell')]], 4) },
       { etoiles: 2, cahier: true, consigne: 'Une salle de sport coûte 30 € d\'inscription, puis 5 € par séance. Exprime le prix P en fonction du nombre n de séances, puis calcule P pour 12 séances.', corr: cm1Redac('Prix', { suite: [T('P = 30 + 5n'), T('P = 30 + 5 \\times 12 = 90')] }, 'Pour 12 séances, on paie 90 €.') },
       { etoiles: 3, cahier: true, consigne: 'On enlève quatre carrés de côté x aux coins d\'un rectangle de 20 cm sur 13 cm. Exprime l\'aire restante A en fonction de x.', corr: cm1Redac('Aire restante', T('A = 20 \\times 13 - 4x^2 = 260 - 4x^2'), 'L\'aire restante est 260 − 4x² cm².') },
     ] },
@@ -19,7 +19,7 @@ PLANCHES['4e|Formules et graphiques'] = [
   { titre: 'Lire un graphique', duree: '25 min',
     attendus: ['Lire des valeurs sur l\'axe des abscisses ou des ordonnées'],
     exos: [
-      { etoiles: 1, col: 1, consigne: 'Le four : 20 °C au départ, 52 °C à 2 min, 78 °C à 4 min, 97 °C à 6 min, 110 °C à 8 min. Complète.', ...P3.rmp([['Température au bout de 4 min : @', '78 °C'], ['Temps pour atteindre 110 °C : @', '8 min'], ['Augmentation entre 2 et 6 min : @', '45 °C']], 4) },
+      { etoiles: 1, consigne: 'Le four : 20 °C au départ, 52 °C à 2 min, 78 °C à 4 min, 97 °C à 6 min, 110 °C à 8 min. Complète.', ...P3.rmp([['Température au bout de 4 min : @', '78 °C'], ['Temps pour atteindre 110 °C : @', '8 min'], ['Augmentation entre 2 et 6 min : @', '45 °C']], 4) },
       { etoiles: 2, cahier: true, consigne: 'Une lecture graphique donne-t-elle une valeur exacte ? Explique.', corr: cm1Redac('Lecture graphique', '', 'Non : elle donne une valeur approchée, qui dépend de la précision du tracé. Avec une formule, on peut calculer la valeur exacte.') },
     ] },
 ];

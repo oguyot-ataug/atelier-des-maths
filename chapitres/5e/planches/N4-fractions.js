@@ -97,7 +97,7 @@ PLANCHES['5e|Fractions'] = [
       { etoiles: 2, col: 1, consigne: 'Complète.',
         eleve: plListe([ligne(F(2, 7), '+', Fr, '= 1'), ligne(F(1, 4), '+', Fr, '=', F(3, 4), '(sur 4)'), ligne(Fr, '−', F(1, 6), '=', F(1, 2), '(sur 6)')]),
         corr: plListe([ligne(F(2, 7), '+', R(F(5, 7)), '= 1'), ligne(F(1, 4), '+', R(F(2, 4)), '=', F(3, 4)), ligne(R(F(4, 6)), '−', F(1, 6), '=', F(1, 2))]) },
-      { etoiles: 3, col: 1, cahier: true, consigne: `Calcule ${T(1, 2)} + ${T(1, 4)} + ${T(1, 8)}, puis simplifie si possible. Que manque-t-il pour obtenir 1 ?`,
+      { etoiles: 3, cahier: true, consigne: `Calcule ${T(1, 2)} + ${T(1, 4)} + ${T(1, 8)}, puis simplifie si possible. Que manque-t-il pour obtenir 1 ?`,
         corr: cm1Redac('Somme', `${F(4, 8)} + ${F(2, 8)} + ${F(1, 8)} = ${F(7, 8)}`, `La somme vaut ${F(7, 8)} : il manque ${F(1, 8)} pour obtenir 1.`) },
     ] },
   { titre: 'Résoudre des problèmes avec des fractions', duree: '45 min',

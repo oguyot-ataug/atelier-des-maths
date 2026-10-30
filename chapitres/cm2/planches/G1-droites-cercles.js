@@ -32,7 +32,7 @@ PLANCHES['cm2|Droites, segments et cercles'] = [
         ...ch([['Un segment a deux extrémités.', 'vrai'], ['On peut mesurer la longueur d\'une droite.', 'faux'], ['La demi-droite [AB) a pour origine le point A.', 'vrai']], 'vrai · faux') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Les points A, B et C sont alignés dans cet ordre. AB = 4 cm et BC = 3,5 cm. Fais un schéma, puis calcule la longueur AC.',
         corr: cm1Redac('Longueur AC', '4 + 3,5 = 7,5', 'B est entre A et C : AC = 7,5 cm.') },
-      { etoiles: 1, col: 1, consigne: 'Écris avec la bonne notation.', ...P3.rmp([['le segment d\'extrémités A et B : @', '[AB]'], ['la droite qui passe par C et D : @', '(CD)'], ['la demi-droite d\'origine E qui passe par F : @', '[EF)']], 2) },
+      { etoiles: 1, consigne: 'Écris avec la bonne notation.', ...P3.rmp([['le segment d\'extrémités A et B : @', '[AB]'], ['la droite qui passe par C et D : @', '(CD)'], ['la demi-droite d\'origine E qui passe par F : @', '[EF)'], ['le segment d\'extrémités M et N : @', '[MN]'], ['la droite qui passe par R et S : @', '(RS)'], ['la demi-droite d\'origine K qui passe par L : @', '[KL)']], 2) },
     ] },
   { titre: 'Droites perpendiculaires et parallèles', duree: '35 min',
     attendus: ['Reconnaître des droites perpendiculaires et parallèles', 'Tracer une perpendiculaire et une parallèle sur quadrillage', 'Utiliser l\'équerre'],

@@ -43,7 +43,7 @@ PLANCHES['cm2|Nombres entiers (révisions jusqu\'à 999 999)'] = [
         corr: cm1Redac('Rangement', 'Nancy, Annecy, Brest, Dijon', 'Du moins peuplé au plus peuplé : Nancy, Annecy, Brest, puis Dijon.') + cm1Redac('Arrondi', '158 002 est entre 150 000 et 160 000, plus près de 160 000.', 'Dijon compte environ 160 000 habitants.') },
       { etoiles: 1, col: 1, consigne: 'Complète avec <, > ou =.', ...P3.rmp([['409 999 @ 410 000', '<'], ['78 600 @ 78 060', '>'], ['300 000 @ 3 centaines de mille', '=']], 1) },
       { etoiles: 2, col: 1, consigne: 'Arrondis à la centaine la plus proche.', ...P3.rmp([['45 672 : @', '45 700'], ['129 349 : @', '129 300']], 4) },
-      { etoiles: 2, col: 1, consigne: 'Entoure le nombre le plus proche de 100 000.', ...P3.chx([['', '99 800', '98 000 · 99 800 · 101 000']]) },
+      { etoiles: 2, consigne: 'Entoure le nombre le plus proche de 100 000.', ...P3.chx2([['', '99 800', '98 000 · 99 800 · 101 000'], ['', '100 090', '100 900 · 100 090 · 99 000']]) },
     ] },
   { titre: 'Demi-droite graduée et devinettes', duree: '30 min',
     attendus: ['Lire et placer des nombres sur une demi-droite graduée', 'Trouver le nombre qui suit ou qui précède', 'Résoudre une devinette sur les nombres'],

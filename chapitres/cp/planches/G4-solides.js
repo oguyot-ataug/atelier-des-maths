@@ -56,8 +56,8 @@ PLANCHES['cp|Les solides'] = [
         ...PCP.compte([3, 5].map(n => [cpSvg(90, 34 * n + 14, Array.from({ length: n }, (_, i) => boite(14, 10 + 34 * (n - 1 - i), 34, 34, 15, 12, '#2E9C6A')).join(''), 50), n]), 2) },
       { etoiles: 2, col: 1, consigne: 'Entoure la bonne réponse.',
         ...P3.chx([['Les faces du pavé sont des…', 'rectangles', 'rectangles · disques'], ['La face plate du cylindre est un…', 'disque', 'carré · disque']]) },
-      { etoiles: 1, col: 1, consigne: 'Complète.',
-        ...P3.rmp([['Le pavé a @ faces.', 6], ['Une face du cube est un @.', 'carré']], 4) },
+      { etoiles: 1, consigne: 'Complète.',
+        ...P3.rmp([['Le pavé a @ faces.', 6], ['Une face du cube est un @.', 'carré'], ['Le cube a @ faces.', 6], ['La boule roule : elle n\'a pas de @.', 'face']], 4) },
     ] },
 ];
 })();

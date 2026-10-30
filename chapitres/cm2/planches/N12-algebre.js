@@ -55,7 +55,7 @@ PLANCHES['cm2|Algèbre'] = [
         corr: cm1Redac('On remonte le programme', { suite: ['26 − 5 = 21', '21 : 3 = 7'] }, 'Inès a choisi 7.') },
       { etoiles: 1, col: 1, consigne: 'Continue chaque suite.', ...P3.rmp([['3, 7, 11, 15, @, @', 19, 23], ['2, 4, 8, 16, @, @', 32, 64], ['100, 90, 81, 73, @', 66]], 2) },
       { etoiles: 2, col: 1, consigne: 'Programme : multiplie par 3, puis ajoute 5.', ...P3.rmp([['avec 4 : @', 17], ['avec 10 : @', 35], ['avec 0 : @', 5]], 2) },
-      { etoiles: 3, col: 1, consigne: 'Même programme : quel nombre a-t-on choisi ?', ...P3.rmp([['le résultat est 11 : @', 2], ['le résultat est 35 : @', 10]], 2) },
+      { etoiles: 3, consigne: 'Même programme : quel nombre a-t-on choisi ?', ...P3.rmp([['le résultat est 11 : @', 2], ['le résultat est 35 : @', 10], ['le résultat est 20 : @', 5], ['le résultat est 5 : @', 0]], 2) },
     ] },
 ];
 })();

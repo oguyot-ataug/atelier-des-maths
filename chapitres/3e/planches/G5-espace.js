@@ -86,7 +86,7 @@ PLANCHES['3e|Espace'] = [
         corr: cm1Redac('Quart de cercle', '2 × π × 6 370 : 4 ≈ 10 006', 'On parcourt environ 10 000 km.') },
       { etoiles: 2, col: 1, cahier: true, consigne: 'Deux villes sont sur le même méridien, aux latitudes 49° N et 4° N. Quelle distance les sépare le long du méridien ?',
         corr: cm1Redac('Arc de méridien', { suite: ['49 − 4 = 45°', '45 : 360 × 2 × π × 6 370 ≈ 5 003'] }, 'Elles sont à environ 5 000 km l\'une de l\'autre.') },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'Le parallèle de latitude 60° N est un cercle de rayon 6 370 × cos 60°. Quelle est sa longueur ? Compare-la à celle de l\'équateur.',
+      { etoiles: 3, cahier: true, consigne: 'Le parallèle de latitude 60° N est un cercle de rayon 6 370 × cos 60°. Quelle est sa longueur ? Compare-la à celle de l\'équateur.',
         corr: cm1Redac('Longueur', { suite: ['Rayon : 6 370 × 0,5 = 3 185 km', '2 × π × 3 185 ≈ 20 012'] }, 'Il mesure environ 20 000 km : la moitié de l\'équateur.') },
     ] },
   { titre: 'Volumes et sections', duree: '40 min',

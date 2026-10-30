@@ -813,7 +813,7 @@ const PL_CSS = `
   .cpn-prix{ display:inline-block; padding:4px 10px; border:2px dashed #E35D3A; border-radius:8px; }
   .cpn-prix b{ display:block; font-weight:600; font-size:.85em; color:#5B6472; }
   .pl-item{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; min-height:26px; }
-  .pl-liste{ margin:0; padding-left:20px; columns:2; } .pl-liste li{ margin:2px 0; break-inside:avoid; }
+  .pl-liste{ margin:0; padding-left:20px; columns:2; } .pl-liste li{ margin:0; padding:1px 0; break-inside:avoid; } /* marge en padding : la 2e colonne commence à la même hauteur que la 1re */
   .pl-frac{ display:inline-flex; flex-direction:column; align-items:center; vertical-align:middle; gap:2px; margin:0 3px; }
   .pl-case{ display:inline-block; width:22px; height:18px; border:1.5px solid #8A93A3; border-radius:4px; background:#fff; }
   .pl-case-seule{ vertical-align:middle; margin:0 4px; }
@@ -965,7 +965,7 @@ const PL_CSS_LIVRE = `
     .td-vig .pl-grille, .pl-ex-cahier .pl-grille{ display:grid; gap:6px 14px; align-items:center; } .td-vig .pl-item, .pl-ex-cahier .pl-item{ display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
     .td-vig .pl-liste, .pl-ex-cahier .pl-liste{ margin:0; padding-left:18px; } .td-vig .pl-liste li, .pl-ex-cahier .pl-liste li{ margin:3px 0; }
     /* Exercice pleine largeur : la liste sur deux colonnes, comme sur la feuille -- relecture 5e-N7-P4-E1 : « Il n'y a pas deux colonnes ici et plein de place à droite ». */
-    .td-vig.td-plein .pl-liste{ columns:2; column-gap:28px; } .td-vig.td-plein .pl-liste li{ break-inside:avoid; } .td-vig.td-plein .pl-col1 .pl-liste{ columns:1; }
+    .td-vig.td-plein .pl-liste{ columns:2; column-gap:28px; } .td-vig.td-plein .pl-liste li{ break-inside:avoid; margin:0; padding:1.5px 0; } .td-vig.td-plein .pl-col1 .pl-liste{ columns:1; }
     .td-vig .pl-frac, .pl-ex-cahier .pl-frac, .cd-contenu .pl-frac{ display:inline-flex; flex-direction:column; align-items:center; vertical-align:middle; gap:2px; margin:0 3px; }
     .td-vig .pl-case, .pl-ex-cahier .pl-case, .cd-contenu .pl-case{ display:inline-block; width:20px; height:16px; border:1.5px solid #8A93A3; border-radius:4px; background:#fff; } .pl-case-seule{ vertical-align:middle; margin:0 4px; }
     .td-vig .pl-barre, .pl-ex-cahier .pl-barre, .cd-contenu .pl-barre{ display:block; width:26px; border-top:2px solid #1C2B39; }

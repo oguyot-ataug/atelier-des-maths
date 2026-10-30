@@ -49,7 +49,7 @@ PLANCHES['5e|Pourcentages'] = [
         ...ch([['Un pourcentage est toujours inférieur à 100 :', 'faux'], ['Tous les pourcentages d\'un tableau complet ont pour somme 100 % :', 'vrai'], [`${T(1, 3)} vaut exactement 33 % :`, 'faux']], 'vrai · faux') },
       { etoiles: 1, col: 1, consigne: 'Complète.',
         ...rmp([['32 sur 100 = @ %', 32], ['7 sur 50 = @ %', 14], ['1 sur 4 = @ %', 25], ['6 sur 6 = @ %', 100]], 2) },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'Dans la classe A, 18 élèves sur 24 pratiquent un sport ; dans la classe B, 21 élèves sur 30. Quelle classe est la plus sportive en proportion ? Justifie avec des pourcentages.',
+      { etoiles: 3, cahier: true, consigne: 'Dans la classe A, 18 élèves sur 24 pratiquent un sport ; dans la classe B, 21 élèves sur 30. Quelle classe est la plus sportive en proportion ? Justifie avec des pourcentages.',
         corr: cm1Redac('Pourcentages', { suite: [`Classe A : ${F(18, 24)} = ${F(75, 100)} = 75 %`, `Classe B : ${F(21, 30)} = ${F(70, 100)} = 70 %`] }, 'La classe A est la plus sportive en proportion.') },
     ] },
   { titre: 'Remises et augmentations', duree: '40 min',

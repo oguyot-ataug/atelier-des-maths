@@ -13,7 +13,7 @@ PLANCHES['ce1|Partager et faire des groupes'] = [
         eleve: plGrille([sachets(4, 0) + '<br>' + B(2) + ' par sachet', sachets(2, 0) + '<br>' + B(2) + ' par sachet'], 2),
         corr: plGrille([sachets(4, 3) + '<br>' + R(3) + ' par sachet', sachets(2, 7) + '<br>' + R(7) + ' par sachet'], 2) },
       { etoiles: 2, col: 1, consigne: 'Combien pour chacun ?', ...P3.rmp([['24 images pour 3 enfants : @', 8], ['50 € pour 5 enfants : @', '10 €'], ['12 gâteaux pour 6 enfants : @', 2]], 3) },
-      { etoiles: 2, col: 1, consigne: 'Vérifie avec une multiplication.', ...P3.rmp([['4 × @ = 20', 5], ['3 × @ = 15', 5], ['2 × @ = 18', 9]], 2) },
+      { etoiles: 2, consigne: 'Vérifie avec une multiplication.', ...P3.rmp([['4 × @ = 20', 5], ['3 × @ = 15', 5], ['2 × @ = 18', 9], ['5 × @ = 30', 6], ['10 × @ = 40', 4], ['3 × @ = 21', 7]], 2) },
     ] },
   { titre: 'Faire des groupes', duree: '20 min',
     attendus: ['Résoudre un problème de groupement (combien de groupes ?)'],

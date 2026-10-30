@@ -23,7 +23,7 @@ PLANCHES['cm2|Fractions'] = [
         ...rmp([[`${F(1, 4)} de la bande mesure @ cm`, 3], [`${F(3, 4)} de la bande mesurent @ cm`, 9], [`${F(5, 6)} de la bande mesurent @ cm`, 10]]) },
       { etoiles: 3, cahier: true, consigne: `Une tablette de chocolat a 24 carrés. Léa en mange ${F(1, 4)} et Tom ${F(1, 3)}. Combien de carrés chacun a-t-il mangés ? Combien en reste-t-il ?`,
         corr: cm1Redac('Carrés de Léa', `${F(1, 4)} de 24 = 24 : 4 = 6`, 'Léa a mangé 6 carrés.') + cm1Redac('Carrés de Tom', `${F(1, 3)} de 24 = 24 : 3 = 8`, 'Tom a mangé 8 carrés.') + cm1Redac('Carrés restants', { suite: ['6 + 8 = 14', '24 − 14 = 10'] }, 'Il reste 10 carrés.') },
-      { etoiles: 2, col: 1, consigne: 'Une bande unité mesure 12 cm. Complète.', ...P3.rmp([[`${cm1Frac(1, 4)} de la bande : @ cm`, 3], [`${cm1Frac(3, 4)} de la bande : @ cm`, 9]], 2) },
+      { etoiles: 2, consigne: 'Une bande unité mesure 12 cm. Complète.', ...P3.rmp([[`${cm1Frac(1, 4)} de la bande : @ cm`, 3], [`${cm1Frac(3, 4)} de la bande : @ cm`, 9], [`${cm1Frac(1, 2)} de la bande : @ cm`, 6], [`${cm1Frac(1, 3)} de la bande : @ cm`, 4]], 2) },
     ] },
   // Lire et colorier des fractions de figures (fractions-figures.js) -- demandé : « Reconnaître les parts
   // coloriées et remplir les parts… Il faut ce genre d'exercices en nombre. »
@@ -54,7 +54,7 @@ PLANCHES['cm2|Fractions'] = [
         corr: cm1Graduation(3, 4, [[0.75, 'A'], [1.5, 'B'], [2.25, 'C']], { unite: 140 }) + plGrille([`A : ${R(F(3, 4))}`, `B : ${R(F(6, 4))}`, `C : ${R(F(9, 4))}`], 3) },
       { etoiles: 3, cahier: true, consigne: `Une course mesure 1 km. Ali a parcouru ${F(5, 8)} de la course et Zoé ${F(3, 4)}. Qui est le plus avancé ? Explique.`,
         corr: cm1Redac('Même partage', `${F(3, 4)} = ${F(6, 8)}`, `Zoé a parcouru ${F(6, 8)} de la course.`) + cm1Redac('Comparaison', `${F(6, 8)} est plus grand que ${F(5, 8)}.`, 'Zoé est la plus avancée.') },
-      { etoiles: 2, col: 1, consigne: 'Plus grand que 1 ? Entoure.', ...P3.chx([[cm1Frac(7, 4), 'oui', 'oui · non'], [cm1Frac(4, 7), 'non', 'oui · non'], [cm1Frac(9, 9), 'non', 'oui · non']]) },
+      { etoiles: 2, consigne: 'Plus grand que 1 ? Entoure.', ...P3.chx2([[cm1Frac(7, 4), 'oui', 'oui · non'], [cm1Frac(4, 7), 'non', 'oui · non'], [cm1Frac(9, 9), 'non', 'oui · non'], [cm1Frac(10, 3), 'oui', 'oui · non'], [cm1Frac(5, 6), 'non', 'oui · non'], [cm1Frac(12, 10), 'oui', 'oui · non']]) },
     ] },
   { titre: 'Fraction d\'une quantité', duree: '30 min',
     attendus: ['Calculer une fraction d\'une quantité', 'Résoudre un problème avec une fraction d\'une quantité', 'Rédiger la réponse'],
@@ -63,8 +63,8 @@ PLANCHES['cm2|Fractions'] = [
         ...rmp([[`${F(1, 2)} de 30 = @`, 15], [`${F(1, 5)} de 40 = @`, 8], [`${F(1, 10)} de 70 = @`, 7], [`${F(1, 4)} de 100 = @`, 25]]) },
       { etoiles: 2, col: 1, consigne: 'Calcule.',
         ...rmp([[`${F(3, 4)} de 20 = @`, 15], [`${F(2, 5)} de 35 = @`, 14], [`${F(5, 6)} de 42 = @`, 35], [`${F(7, 10)} de 200 = @`, 140]]) },
-      { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.',
-        ...ch([[`${F(1, 2)} de 50 € = 25 €`, 'vrai'], [`${F(3, 4)} d'une heure = 30 minutes`, 'faux'], [`${F(1, 3)} de 1 m = ${F(2, 6)} de 1 m`, 'vrai']], 'vrai · faux') },
+      { etoiles: 2, consigne: 'Vrai ou faux ? Entoure.',
+        ...P3.chx2([[`${F(1, 2)} de 50 € = 25 €`, 'vrai', 'vrai · faux'], [`${F(3, 4)} d'une heure = 30 minutes`, 'faux', 'vrai · faux'], [`${F(1, 3)} de 1 m = ${F(2, 6)} de 1 m`, 'vrai', 'vrai · faux'], [`${F(1, 4)} de 100 € = 25 €`, 'vrai', 'vrai · faux'], [`${F(1, 2)} d'une heure = 50 minutes`, 'faux', 'vrai · faux'], [`${F(1, 10)} de 1 m = 10 cm`, 'vrai', 'vrai · faux']]) },
       { etoiles: 2, cahier: true, consigne: `Dans une classe de 28 élèves, ${F(3, 7)} des élèves mangent à la cantine. Combien d'élèves mangent à la cantine ? Combien n'y mangent pas ?`,
         corr: cm1Redac('Élèves à la cantine', { suite: ['28 : 7 = 4', '4 × 3 = 12'] }, '12 élèves mangent à la cantine.') + cm1Redac('Élèves qui n\'y mangent pas', '28 − 12 = 16', '16 élèves ne mangent pas à la cantine.') },
       { etoiles: 3, cahier: true, consigne: `Un vélo coûte 240 €. Les parents de Sam paient ${F(3, 4)} du prix ; Sam paie le reste avec ses économies. Combien Sam doit-il payer ?`,

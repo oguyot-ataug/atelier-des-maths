@@ -51,8 +51,8 @@ PLANCHES['cp|Comparer et ranger les nombres'] = [
         corr: lig(cpBande(30, 40, { c: 26, on: [36] })) + lig(R(30) + ' < 36 < ' + R(40)) },
       { etoiles: 2, col: 1, consigne: 'Complète.',
         ...P3.rmp([['@ < 38 < @', 30, 40], ['@ < 51 < @', 50, 60], ['@ < 9 < @', 0, 10]], 2) },
-      { etoiles: 2, col: 1, consigne: 'Écris un nombre qui va dans la case.',
-        ...P3.rmp([['40 < @ < 50', { ex: '45', entre: [40, 50] }], ['20 < @ < 30', { ex: '26', entre: [20, 30] }], ['10 < @ < 20', { ex: '13', entre: [10, 20] }]], 2) },
+      { etoiles: 2, consigne: 'Écris un nombre qui va dans la case.',
+        ...P3.rmp([['40 < @ < 50', { ex: '45', entre: [40, 50] }], ['20 < @ < 30', { ex: '26', entre: [20, 30] }], ['10 < @ < 20', { ex: '13', entre: [10, 20] }], ['50 < @ < 60', { ex: '54', entre: [50, 60] }], ['30 < @ < 40', { ex: '37', entre: [30, 40] }], ['60 < @ < 70', { ex: '62', entre: [60, 70] }]], 2) },
       { etoiles: 3, consigne: 'Entoure les nombres qui sont entre 20 et 30.',
         ...PCP.entoure([['<b style="font-size:1.3em;">12</b>', false], ['<b style="font-size:1.3em;">25</b>', true], ['<b style="font-size:1.3em;">31</b>', false], ['<b style="font-size:1.3em;">28</b>', true], ['<b style="font-size:1.3em;">32</b>', false], ['<b style="font-size:1.3em;">23</b>', true]], 6) },
       { etoiles: 2, consigne: 'Colorie la case de 14 sur la bande, puis écris les dizaines qui l\'entourent.',
@@ -66,7 +66,7 @@ PLANCHES['cp|Comparer et ranger les nombres'] = [
       { etoiles: 1, col: 1, consigne: 'Complète.', ...P3.rmp([['Je suis le troisième de la file : devant moi, il y a @ personnes.', 2], ['Je suis le dixième : devant moi, il y a @ personnes.', 9]], 2) },
       { etoiles: 2, col: 1, consigne: 'Dans la liste 2, 6, 10, 14, 18, complète.', ...P3.rmp([['Le quatrième nombre est @.', 14], ['10 est en @ position.', 'troisième']], 4) },
       { etoiles: 2, consigne: 'Continue la suite.', ...PCP.suite(['△', '▢', '○', '△', '▢', '○', '@△', '@▢', '@○']) },
-      { etoiles: 3, col: 1, consigne: 'Complète.', ...P3.rmp([['ABABAB… La 12<sup>e</sup> lettre est @.', 'B'], ['ABABAB… La 19<sup>e</sup> lettre est @.', 'A'], ['1, 3, 5, 7, 9… Le septième nombre est @.', 13]], 2) },
+      { etoiles: 3, consigne: 'Complète.', ...P3.rmp([['ABABAB… La 12<sup>e</sup> lettre est @.', 'B'], ['ABABAB… La 19<sup>e</sup> lettre est @.', 'A'], ['1, 3, 5, 7, 9… Le septième nombre est @.', 13], ['ABCABC… La 6<sup>e</sup> lettre est @.', 'C'], ['ABCABC… La 10<sup>e</sup> lettre est @.', 'A'], ['2, 4, 6, 8… Le sixième nombre est @.', 12]], 2) },
     ] },
 ];
 })();
