@@ -98,10 +98,10 @@ const RELECTURE_CHGT = {
   '5e-N7-P1-E1': { date: '2026-10-30T19:40:00Z', note: "À l'écran, « 6 × 6 » est accepté, tapé avec la touche × du clavier, avec * ou avec x (la réponse attendue restait écrite en LaTeX) ; vaut pour toutes les planches" },
   '5e-N7-P1-E3': { date: '2026-10-30T21:10:00Z', note: "À l'écran, la base et l'exposant s'écrivent chacun dans leur case, ajustée au chiffre, dans la police et à la taille de l'énoncé, sur la même ligne ; la case de l'exposant est petite et surélevée, collée à la base (comme une vraie puissance) ; une 4e ligne (7 × 7 × 7)" },
   '5e-N7-P1-E4': { date: '2026-10-30T19:40:00Z', note: "Vrai ou faux en tableau : l'égalité à gauche, « vrai faux » alignés à droite ; une 4e égalité (1³ = 1). Sur papier, les exposants s'impriment bien (6² et non « 6^2 », défaut corrigé pour toutes les planches)" },
-  '5e-N7-P2-E1': { date: '2026-10-30T19:40:00Z', note: "À l'écran, la base s'écrit dans une case, le ² est déjà imprimé" },
-  '5e-N7-P2-E2': { date: '2026-10-30T19:40:00Z', note: "À l'écran, la base s'écrit dans une case, le ³ est déjà imprimé ; une 4e ligne (8 = 2³)" },
-  '5e-N7-P2-E3': { date: '2026-10-30T19:40:00Z', note: "Consigne précisée : « sous la forme d'un carré, puis sous la forme d'un cube » (64 = 8² = 4³), pour qu'il n'y ait qu'une réponse juste par case ; à l'écran, les bases s'écrivent dans des cases" },
-  '5e-N7-P2-E4': { date: '2026-10-30T19:40:00Z', note: "À l'écran, les bases s'écrivent dans des cases, le ² est déjà imprimé (7² < 50 < 8²)" },
+  '5e-N7-P2-E1': { date: '2026-10-30T21:30:00Z', note: "À l'écran, la base et l'exposant s'écrivent chacun dans leur case (6 puis 2) : rien n'est imprimé d'avance" },
+  '5e-N7-P2-E2': { date: '2026-10-30T21:30:00Z', note: "À l'écran, la base et l'exposant s'écrivent chacun dans leur case (3 puis 3) : rien n'est imprimé d'avance ; une 4e ligne (8 = 2³)" },
+  '5e-N7-P2-E3': { date: '2026-10-30T21:30:00Z', note: "Consigne précisée : « sous la forme d'un carré, puis sous la forme d'un cube » (64 = 8² = 4³), pour qu'il n'y ait qu'une réponse juste par case ; à l'écran, les bases et les exposants s'écrivent dans des cases, rien n'est imprimé d'avance" },
+  '5e-N7-P2-E4': { date: '2026-10-30T21:30:00Z', note: "À l'écran, les bases et les exposants s'écrivent dans des cases, rien n'est imprimé d'avance (7² < 50 < 8²)" },
 };
 
 const RL_REMARQUES = [

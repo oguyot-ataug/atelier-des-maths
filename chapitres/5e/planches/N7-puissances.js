@@ -4,7 +4,9 @@
    expressions littérales avec une puissance simple, problèmes d'aire et de volume.
    Relecture 5e-N7 (30/10/2026) : à l'écran, les exposants se complètent dans une case en exposant (comme en 3e),
    « 6 × 6 » tapé au clavier est accepté (planches-num.js) ; vrai ou faux en tableau ; « 64 de deux façons » devient
-   « sous la forme d'un carré, puis d'un cube » (une seule réponse juste pour chaque case).
+   « sous la forme d'un carré, puis d'un cube » (une seule réponse juste pour chaque case). Planche 2 : l'élève écrit
+   aussi l'exposant, rien n'est imprimé d'avance -- relecture du 30/10 : « pourquoi avoir ajouté les puissances ? Il faut
+   laisser l'élève les écrire ».
    ============================================================ */
 (() => {
 const T = cm1Tex, R = P3.R, B = P3.B;
@@ -21,10 +23,10 @@ PLANCHES['5e|Puissances'] = [
   { titre: 'Écrire un nombre comme une puissance', duree: '25 min',
     attendus: ['Écrire un nombre sous la forme d\'un carré ou d\'un cube'],
     exos: [
-      { etoiles: 1, col: 1, consigne: 'Écris sous la forme d\'un carré.', ...P3.rmp([['36 = @<sup>2</sup>', 6], ['81 = @<sup>2</sup>', 9], ['100 = @<sup>2</sup>', 10], ['144 = @<sup>2</sup>', 12]], 2) },
-      { etoiles: 2, col: 1, consigne: 'Écris sous la forme d\'un cube.', ...P3.rmp([['27 = @<sup>3</sup>', 3], ['125 = @<sup>3</sup>', 5], ['1 000 = @<sup>3</sup>', 10], ['8 = @<sup>3</sup>', 2]], 2) },
-      { etoiles: 2, col: 1, consigne: 'Écris 64 sous la forme d\'un carré, puis sous la forme d\'un cube.', ...P3.rmp([['64 = @<sup>2</sup> = @<sup>3</sup>', 8, 4]], 2) },
-      { etoiles: 3, col: 1, consigne: 'Entre quels carrés consécutifs se trouve chaque nombre ?', ...P3.rmp([['@<sup>2</sup> &lt; 50 &lt; @<sup>2</sup>', 7, 8], ['@<sup>2</sup> &lt; 130 &lt; @<sup>2</sup>', 11, 12]], 2) },
+      { etoiles: 1, col: 1, consigne: 'Écris sous la forme d\'un carré.', ...P3.rmp([['36 = @<sup>@</sup>', 6, 2], ['81 = @<sup>@</sup>', 9, 2], ['100 = @<sup>@</sup>', 10, 2], ['144 = @<sup>@</sup>', 12, 2]], 2) },
+      { etoiles: 2, col: 1, consigne: 'Écris sous la forme d\'un cube.', ...P3.rmp([['27 = @<sup>@</sup>', 3, 3], ['125 = @<sup>@</sup>', 5, 3], ['1 000 = @<sup>@</sup>', 10, 3], ['8 = @<sup>@</sup>', 2, 3]], 2) },
+      { etoiles: 2, col: 1, consigne: 'Écris 64 sous la forme d\'un carré, puis sous la forme d\'un cube.', ...P3.rmp([['64 = @<sup>@</sup> = @<sup>@</sup>', 8, 2, 4, 3]], 2) },
+      { etoiles: 3, col: 1, consigne: 'Entre quels carrés consécutifs se trouve chaque nombre ?', ...P3.rmp([['@<sup>@</sup> &lt; 50 &lt; @<sup>@</sup>', 7, 2, 8, 2], ['@<sup>@</sup> &lt; 130 &lt; @<sup>@</sup>', 11, 2, 12, 2]], 2) },
     ] },
   { titre: 'Calculer avec des puissances', duree: '35 min',
     attendus: ['Respecter les priorités : puissances, puis multiplications, puis additions', 'Calculer une expression littérale avec une puissance'],
