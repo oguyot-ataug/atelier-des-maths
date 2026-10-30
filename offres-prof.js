@@ -163,7 +163,7 @@ async function renderAbonnement(){
     ${peutPayer ? opOffresHtml(o, payee) : ''}
     ${peutClasses ? '<div id="opClasses"><p class="hint">Chargement de vos classes…</p></div>' : ''}
     ${opFacturesHtml()}
-    <p class="hint" style="margin:18px 0 0;">Tout l'établissement ? La <a href="tarifs/">licence établissement</a> couvre tous les professeurs et tous les élèves des niveaux choisis. Conditions : <a href="#/cgv">conditions générales de vente</a>.</p>`;
+    ${venteOuverte(o && o.stripe_test) ? `<p class="hint" style="margin:18px 0 0;">Tout l'établissement ? La <a href="tarifs/">licence établissement</a> couvre tous les professeurs et tous les élèves des niveaux choisis. Conditions : <a href="#/cgv">conditions générales de vente</a>.</p>` : ''}`; // ventes fermées : pas de lien vers la page des prix
   if(peutPayer) opMajDevis();
   if(peutClasses) opRenderClasses(payee ? o.offre : 'essai');
   if(new URLSearchParams(location.search).get('abonnement') === 'succes') opAttendreActivation();
