@@ -38,9 +38,6 @@ export function deParis(jour: string, heure: string): number {
   return t;
 }
 
-const minutes = (h: string) => { const [a, b] = h.split(":").map(Number); return a * 60 + b; };
-const hhmm = (m: number) => String(Math.floor(m / 60)).padStart(2, "0") + ":" + String(m % 60).padStart(2, "0");
-
 // 1 = lundi … 7 = dimanche.
 export function jourSemaine(jour: string): number {
   const [y, m, d] = jour.split("-").map(Number);
@@ -61,8 +58,10 @@ export function joursEntre(de: string, a: string): string[] {
 }
 
 // Créneaux libres de `de` à `a` : dans les plages du jour, au moins `preavis_h` heures après maintenant, au plus
-// `horizon_j` jours après, hors périodes bloquées, et sans chevaucher un moment occupé (rendez-vous, agenda Google),
-// pause comprise de part et d'autre.
+// `horizon_j` jours après, hors périodes bloquées. Les créneaux s'enchaînent sans pause (8 h, 8 h 30, 9 h…) ; la pause ne
+// sert qu'autour d'un moment occupé (rendez-vous pris, agenda Google) : un créneau doit finir `pause_min` avant lui, et
+// après lui la grille repart de sa fin plus la pause -- demandé le 30/10/2026 : « Il y a toujours un décalage de 10 minutes entre
+// chaque RV qui ne fait que grandir. Il faut que ça s'adapte. »
 export function creneauxLibres(r: Reglages, de: string, a: string, maintenant: number, occupes: Intervalle[]): Creneau[] {
   const res: Creneau[] = [];
   const duree = r.duree_min * 60000, pause = r.pause_min * 60000;
@@ -70,11 +69,14 @@ export function creneauxLibres(r: Reglages, de: string, a: string, maintenant: n
   for (const jour of joursEntre(de, a)) {
     if ((r.bloques || []).some((b) => b && b.du && jour >= b.du && jour <= (b.au || b.du))) continue;
     for (const [h1, h2] of (r.plages || {})[String(jourSemaine(jour))] || []) {
-      for (let t = minutes(h1); t + r.duree_min <= minutes(h2); t += r.duree_min + r.pause_min) {
-        const debut = deParis(jour, hhmm(t)), fin = debut + duree;
-        if (debut < mini || debut > maxi) continue;
-        if (occupes.some((o) => o.debut < fin + pause && o.fin > debut - pause)) continue;
-        res.push({ debut: new Date(debut).toISOString(), jour, heure: hhmm(t) });
+      const finPlage = deParis(jour, h2);
+      let debut = deParis(jour, h1);
+      while (debut + duree <= finPlage) {
+        const fin = debut + duree;
+        const genes = occupes.filter((o) => o.debut < fin + pause && o.fin > debut - pause);
+        if (genes.length) { debut = Math.max(...genes.map((o) => o.fin)) + pause; continue; }
+        if (debut >= mini && debut <= maxi) res.push({ debut: new Date(debut).toISOString(), jour, heure: enParis(debut).heure });
+        debut = fin;
       }
     }
   }
