@@ -2182,3 +2182,8 @@ select:not([multiple]):not([size]){
 .paiement-fermer{background:none;border:none;color:#fff;cursor:pointer;padding:6px;border-radius:8px;font-size:1.1rem;line-height:1;}
 .paiement-fermer:hover{background:rgba(255,255,255,.15);}
 #paiementStripe{min-height:300px;}
+
+/* Prendre rendez-vous (rdv.js) : agenda Google intégré */
+.rdv-cadre{background:#fff;border-radius:14px;box-shadow:var(--shadow);overflow:hidden;margin-top:14px;}
+.rdv-cadre iframe{display:block;width:100%;height:760px;border:0;}
+@media (max-width:700px){ .rdv-cadre iframe{height:900px;} }

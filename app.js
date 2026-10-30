@@ -535,6 +535,7 @@ document.querySelectorAll('[data-nav]').forEach(el=>{
     document.querySelectorAll('.nav-dropdown.open').forEach(d=>d.classList.remove('open'));
     const nav = el.getAttribute('data-nav');
     if(nav==='home'){ showView('view-home'); setActiveTopnav(null); }
+    if(nav==='rendez-vous'){ if(typeof rdvOuvrir==='function') rdvOuvrir(); return; }
     if(nav==='niveau'){ if(!niveauVisible(el.getAttribute('data-lvl'))) return; currentLevel = el.getAttribute('data-lvl')||currentLevel; renderNiveau(currentLevel); showView('view-niveau'); setActiveTopnav(currentLevel); }
     // Visiteur non connecté : les outils de L'Atelier montrent leur page de présentation (demo.js).
     if(!currentUser && typeof demoGarde==='function' && demoGarde(nav)) return;
@@ -3719,6 +3720,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1207', date:'2026-10-30', items:['Prise de rendez-vous dans le site -- demandé : « j\'aimerais que les professeurs puissent prendre rendez-vous aussi sans quitter le site ». Nouvelle page « Prendre rendez-vous » (#/rendez-vous) avec l\'agenda intégré : présentation en visio, question sur un compte ou projet d\'établissement, confirmation et lien de la visio par e-mail. Accès par le menu « L\'Atelier du prof », la page Pour les professeurs et la page des tarifs.'] },
   { version:'2026-08-19.1206', date:'2026-10-30', items:['SMS immédiat à chaque inscription -- demandé : « Est-ce que je peux avoir un SMS direct à chaque demande d\'inscription ? » Dès qu\'un professeur (demande à valider) ou un parent crée son compte, l\'administrateur reçoit un SMS (nom, adresse, établissement), au lieu d\'attendre la surveillance automatique, que GitHub ne lance parfois que toutes les quelques heures. Elle reste en filet de sécurité ; un compte n\'est signalé qu\'une fois. Jamais de SMS pour les élèves.'] },
   { version:'2026-08-19.1205', date:'2026-10-30', items:['Paiement intégré au site -- demandé : « intègre le paiement ». Le formulaire de paiement sécurisé de Stripe s\'ouvre dans une fenêtre du site (offres professeur et Famille), sans partir sur stripe.com ; après le paiement, on revient sur « Mon abonnement » ou l\'Espace famille. Tant que la clé publique Stripe n\'est pas enregistrée sur le serveur, la page Stripe habituelle prend le relais.', 'Espace famille sans prix tant que les ventes sont fermées -- demandé : « masque les prix famille ». La présentation et l\'espace des parents annoncent « Ouverture des ventes prochainement » au lieu des offres et des prix (sauf comptes marqués « test »).'] },
   { version:'2026-08-19.1204', date:'2026-10-30', items:['Page des tarifs masquée tant que les ventes sont fermées -- demandé : « Oui, masque les prix de la page tarifs ». La page /tarifs/ annonce « Ouverture des ventes prochainement », sans aucun prix : accès gratuit en démonstration pour les professeurs inscrits, contact et prise de rendez-vous pour les établissements. La page complète est gardée hors ligne et sera remise à l\'ouverture des ventes (rappel dans la confirmation « Ouvrir les ventes »).'] },

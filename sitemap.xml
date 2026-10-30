@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://latelierdesmaths.fr/</loc><lastmod>2026-10-28</lastmod><priority>1.0</priority></url>
+  <url><loc>https://latelierdesmaths.fr/</loc><lastmod>2026-10-30</lastmod><priority>1.0</priority></url>
   <url><loc>https://latelierdesmaths.fr/cp/les-nombres-jusqu-a-10/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
   <url><loc>https://latelierdesmaths.fr/cp/decomposer-les-nombres-jusqu-a-10/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
   <url><loc>https://latelierdesmaths.fr/cp/se-reperer-dans-l-espace/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
@@ -15,7 +15,7 @@
   <url><loc>https://latelierdesmaths.fr/cp/les-nombres-jusqu-a-100/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
   <url><loc>https://latelierdesmaths.fr/cp/ajouter-et-soustraire-des-dizaines/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
   <url><loc>https://latelierdesmaths.fr/cp/soustraire-en-cassant-une-dizaine/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
-  <url><loc>https://latelierdesmaths.fr/cp/lire-l-heure-les-heures-entieres/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
+  <url><loc>https://latelierdesmaths.fr/cp/lire-l-heure-les-heures-entieres/</loc><lastmod>2026-10-30</lastmod><priority>0.8</priority></url>
   <url><loc>https://latelierdesmaths.fr/cp/problemes-en-deux-etapes/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
   <url><loc>https://latelierdesmaths.fr/cp/mesurer-avec-la-regle/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
   <url><loc>https://latelierdesmaths.fr/cp/l-addition-posee/</loc><lastmod>2026-10-29</lastmod><priority>0.8</priority></url>
@@ -41,7 +41,7 @@
   <url><loc>https://latelierdesmaths.fr/ce1/la-monnaie-euros-et-centimes/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
   <url><loc>https://latelierdesmaths.fr/ce1/tables-de-multiplication-de-2-5-et-10/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
   <url><loc>https://latelierdesmaths.fr/ce1/les-fractions-partager-en-parts-egales/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
-  <url><loc>https://latelierdesmaths.fr/ce1/lire-l-heure-demi-heures-et-quarts-d-heure/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
+  <url><loc>https://latelierdesmaths.fr/ce1/lire-l-heure-demi-heures-et-quarts-d-heure/</loc><lastmod>2026-10-30</lastmod><priority>0.8</priority></url>
   <url><loc>https://latelierdesmaths.fr/ce1/partager-et-faire-des-groupes/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
   <url><loc>https://latelierdesmaths.fr/ce1/tableaux-et-diagrammes/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
   <url><loc>https://latelierdesmaths.fr/ce1/cercle-milieu-et-points-alignes/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
@@ -66,7 +66,7 @@
   <url><loc>https://latelierdesmaths.fr/ce2/la-multiplication/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
   <url><loc>https://latelierdesmaths.fr/ce2/polygones-et-quadrilateres/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
   <url><loc>https://latelierdesmaths.fr/ce2/problemes-additifs/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
-  <url><loc>https://latelierdesmaths.fr/ce2/l-heure-et-les-durees/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
+  <url><loc>https://latelierdesmaths.fr/ce2/l-heure-et-les-durees/</loc><lastmod>2026-10-30</lastmod><priority>0.8</priority></url>
   <url><loc>https://latelierdesmaths.fr/ce2/fractions-et-mesure-de-longueurs/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
   <url><loc>https://latelierdesmaths.fr/ce2/tableaux-et-diagrammes-en-barres/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
   <url><loc>https://latelierdesmaths.fr/ce2/angle-droit-cercle-et-constructions/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
@@ -102,7 +102,7 @@
   <url><loc>https://latelierdesmaths.fr/cm1/proportionnalite/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
   <url><loc>https://latelierdesmaths.fr/cm1/algebre/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
   <url><loc>https://latelierdesmaths.fr/cm1/angles/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
-  <url><loc>https://latelierdesmaths.fr/cm1/heures-et-durees/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
+  <url><loc>https://latelierdesmaths.fr/cm1/heures-et-durees/</loc><lastmod>2026-10-30</lastmod><priority>0.8</priority></url>
   <url><loc>https://latelierdesmaths.fr/cm1/initiation-a-la-pensee-informatique/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
   <url><loc>https://latelierdesmaths.fr/cm1/</loc><lastmod>2026-10-28</lastmod><priority>0.9</priority></url>
   <url><loc>https://latelierdesmaths.fr/cm2/nombres-entiers-revisions-jusqu-a-999-999/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
@@ -128,7 +128,7 @@
   <url><loc>https://latelierdesmaths.fr/cm2/procedures-de-calcul-mental/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
   <url><loc>https://latelierdesmaths.fr/cm2/solides-et-reperage-dans-l-espace/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
   <url><loc>https://latelierdesmaths.fr/cm2/algebre/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
-  <url><loc>https://latelierdesmaths.fr/cm2/heures-et-durees/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
+  <url><loc>https://latelierdesmaths.fr/cm2/heures-et-durees/</loc><lastmod>2026-10-30</lastmod><priority>0.8</priority></url>
   <url><loc>https://latelierdesmaths.fr/cm2/pensee-informatique/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
   <url><loc>https://latelierdesmaths.fr/cm2/</loc><lastmod>2026-10-28</lastmod><priority>0.9</priority></url>
   <url><loc>https://latelierdesmaths.fr/6e/nombres-entiers/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
@@ -136,7 +136,7 @@
   <url><loc>https://latelierdesmaths.fr/6e/fractions-nombres-et-partage/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
   <url><loc>https://latelierdesmaths.fr/6e/distance-et-cercles/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
   <url><loc>https://latelierdesmaths.fr/6e/nombres-decimaux/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
-  <url><loc>https://latelierdesmaths.fr/6e/angles-et-rapporteur/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
+  <url><loc>https://latelierdesmaths.fr/6e/angles-et-rapporteur/</loc><lastmod>2026-10-30</lastmod><priority>0.8</priority></url>
   <url><loc>https://latelierdesmaths.fr/6e/operations-et-ordre-de-grandeur/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
   <url><loc>https://latelierdesmaths.fr/6e/construction-de-triangles/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
   <url><loc>https://latelierdesmaths.fr/6e/multiplication-et-division/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
@@ -154,15 +154,15 @@
   <url><loc>https://latelierdesmaths.fr/6e/initiation-a-la-pensee-informatique/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
   <url><loc>https://latelierdesmaths.fr/6e/</loc><lastmod>2026-10-28</lastmod><priority>0.9</priority></url>
   <url><loc>https://latelierdesmaths.fr/5e/operations-sur-les-nombres-decimaux/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
-  <url><loc>https://latelierdesmaths.fr/5e/symetrie-centrale/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
+  <url><loc>https://latelierdesmaths.fr/5e/symetrie-centrale/</loc><lastmod>2026-10-30</lastmod><priority>0.8</priority></url>
   <url><loc>https://latelierdesmaths.fr/5e/divisibilite/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
-  <url><loc>https://latelierdesmaths.fr/5e/angles-et-parallelisme/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
+  <url><loc>https://latelierdesmaths.fr/5e/angles-et-parallelisme/</loc><lastmod>2026-10-30</lastmod><priority>0.8</priority></url>
   <url><loc>https://latelierdesmaths.fr/5e/fractions/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
   <url><loc>https://latelierdesmaths.fr/5e/droites-remarquables-dans-un-triangle/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
   <url><loc>https://latelierdesmaths.fr/5e/proportionnalite/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
   <url><loc>https://latelierdesmaths.fr/5e/nombres-relatifs/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
   <url><loc>https://latelierdesmaths.fr/5e/parallelogrammes/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
-  <url><loc>https://latelierdesmaths.fr/5e/statistiques/</loc><lastmod>2026-10-29</lastmod><priority>0.8</priority></url>
+  <url><loc>https://latelierdesmaths.fr/5e/statistiques/</loc><lastmod>2026-10-30</lastmod><priority>0.8</priority></url>
   <url><loc>https://latelierdesmaths.fr/5e/operations-sur-les-nombres-relatifs/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
   <url><loc>https://latelierdesmaths.fr/5e/parallelogrammes-particuliers/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
   <url><loc>https://latelierdesmaths.fr/5e/pourcentages/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
@@ -185,21 +185,21 @@
   <url><loc>https://latelierdesmaths.fr/4e/theoreme-de-pythagore/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
   <url><loc>https://latelierdesmaths.fr/4e/puissances/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
   <url><loc>https://latelierdesmaths.fr/4e/probabilites/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
-  <url><loc>https://latelierdesmaths.fr/4e/calcul-litteral/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
-  <url><loc>https://latelierdesmaths.fr/4e/cosinus/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
+  <url><loc>https://latelierdesmaths.fr/4e/calcul-litteral/</loc><lastmod>2026-10-30</lastmod><priority>0.8</priority></url>
+  <url><loc>https://latelierdesmaths.fr/4e/cosinus/</loc><lastmod>2026-10-30</lastmod><priority>0.8</priority></url>
   <url><loc>https://latelierdesmaths.fr/4e/proportionnalite/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
   <url><loc>https://latelierdesmaths.fr/4e/equations/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
   <url><loc>https://latelierdesmaths.fr/4e/espace/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
   <url><loc>https://latelierdesmaths.fr/4e/formules-et-graphiques/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
   <url><loc>https://latelierdesmaths.fr/4e/algorithmique-et-programmation/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
   <url><loc>https://latelierdesmaths.fr/4e/</loc><lastmod>2026-10-28</lastmod><priority>0.9</priority></url>
-  <url><loc>https://latelierdesmaths.fr/3e/nombres-et-calculs/</loc><lastmod>2026-10-29</lastmod><priority>0.8</priority></url>
+  <url><loc>https://latelierdesmaths.fr/3e/nombres-et-calculs/</loc><lastmod>2026-10-30</lastmod><priority>0.8</priority></url>
   <url><loc>https://latelierdesmaths.fr/3e/theoreme-de-thales/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
   <url><loc>https://latelierdesmaths.fr/3e/arithmetique/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
   <url><loc>https://latelierdesmaths.fr/3e/grandeurs-composees/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
   <url><loc>https://latelierdesmaths.fr/3e/rotation/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
   <url><loc>https://latelierdesmaths.fr/3e/puissances/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
-  <url><loc>https://latelierdesmaths.fr/3e/statistiques/</loc><lastmod>2026-10-29</lastmod><priority>0.8</priority></url>
+  <url><loc>https://latelierdesmaths.fr/3e/statistiques/</loc><lastmod>2026-10-30</lastmod><priority>0.8</priority></url>
   <url><loc>https://latelierdesmaths.fr/3e/calcul-litteral/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
   <url><loc>https://latelierdesmaths.fr/3e/homothetie/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
   <url><loc>https://latelierdesmaths.fr/3e/probabilites/</loc><lastmod>2026-10-29</lastmod><priority>0.8</priority></url>
@@ -210,6 +210,6 @@
   <url><loc>https://latelierdesmaths.fr/3e/espace/</loc><lastmod>2026-10-28</lastmod><priority>0.8</priority></url>
   <url><loc>https://latelierdesmaths.fr/3e/algorithmique-et-programmation/</loc><lastmod>2026-10-29</lastmod><priority>0.8</priority></url>
   <url><loc>https://latelierdesmaths.fr/3e/</loc><lastmod>2026-10-28</lastmod><priority>0.9</priority></url>
-  <url><loc>https://latelierdesmaths.fr/professeurs/</loc><lastmod>2026-10-28</lastmod><priority>0.9</priority></url>
+  <url><loc>https://latelierdesmaths.fr/professeurs/</loc><lastmod>2026-10-30</lastmod><priority>0.9</priority></url>
   <url><loc>https://latelierdesmaths.fr/programmes/</loc><lastmod>2026-10-28</lastmod><priority>0.9</priority></url>
 </urlset>

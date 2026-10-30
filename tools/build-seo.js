@@ -367,7 +367,7 @@ ${feats.map(f => `  <div><h3><span class="gicon">${f[0]}</span> ${esc(f[1])}</h3
 <section class="seo-section">
   <h2><span class="gicon">key</span> Accès</h2>
   <p>L'inscription est réservée aux enseignants disposant d'une adresse académique : chaque compte est vérifié avant d'être ouvert. Un professeur référent peut aussi gérer les comptes de tout son établissement. Les fonctions d'IA utilisent votre propre clé, celle de l'établissement ou celle du site selon ce qui a été décidé : vous voyez toujours le détail de la consommation.</p>
-  <p style="margin-top:12px;"><a class="seo-btn" href="/">Découvrir l'application</a></p>
+  <p style="margin-top:12px;"><a class="seo-btn" href="/">Découvrir l'application</a> <a class="seo-btn" href="/#/rendez-vous" style="margin-left:8px;">Prendre rendez-vous</a></p>
 </section>`;
   return { url, html: layout({ title, description, canonical: url, jsonld, body, ogType: 'website' }) };
 }
