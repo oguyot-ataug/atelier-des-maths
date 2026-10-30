@@ -146,7 +146,7 @@ function plNumAnalyser(x){
       // Puissance (« @<sup>@</sup> ») : base et exposant en cases ajustées au chiffre, l'exposant petit et surélevé --
       // relecture 5e-N7-P1-E3 : « c'est encore trop grossier, les cases pour les nombres sont trop larges ».
       const expo = tr.parentElement && tr.parentElement.tagName === 'SUP', base = !expo && tr.nextElementSibling && tr.nextElementSibling.tagName === 'SUP';
-      const largeur = expo ? 0 : base ? Math.max(28, lg * 11 + 14) : Math.max(46, lg * 12 + 26);
+      const largeur = expo ? 0 : base ? Math.max(30, lg * 11 + 18) : Math.max(46, lg * 12 + 26);
       tr.outerHTML = `<button type="button" class="pn-case${large ? ' pn-large' : ''}${base ? ' pn-base' : ''}${tr.classList.contains('pl-case-seule') ? ' pn-signe' : ''}" data-pn="${id}" data-pnv="${id}"${!tr.classList.contains('pl-case-seule') && !large && largeur ? ` style="min-width:${Math.min(320, largeur)}px"` : ''}></button>`;
       // classes : la réponse attendue contient un grand nombre écrit par classes, l'élève doit l'écrire ainsi.
       const brut = r.textContent.replace(/[\u00a0\u202f]/g, ' '), classes = /\d{1,3}(?: \d{3})+/.test(brut) && plNumClassesOk(brut);
@@ -654,9 +654,12 @@ function plClavierPhysique(e){
       font:700 1rem 'Space Grotesk',Arial,sans-serif; color:#1F3A5C; cursor:pointer; vertical-align:middle; margin:0 2px; }
     /* Exposant à écrire (« @<sup>@</sup> ») : petite case surélevée, collée à la base -- signalé le 30/10/2026 (5e-N7) : la
        case de l'exposant avait la taille et la hauteur de celle de la base, on ne voyait pas la puissance. */
-    .pn-ex sup{ vertical-align:baseline; position:relative; top:-.55em; line-height:0; }
-    .pn-ex sup .pn-case{ min-width:16px !important; width:auto; height:17px; padding:0 2px; margin:0 0 0 1px; font-size:.72rem; border-width:1.5px; border-radius:4px; }
-    .pn-ex .pn-case.pn-base{ padding:0 3px; margin-right:0; }
+    /* Base et exposant écrits dans la police et à la taille de l'énoncé, sur la même ligne de base que lui -- signalé le
+       30/10/2026 : « problème d'alignement et de tailles de police entre l'énoncé et les réponses ». */
+    .pn-ex sup{ vertical-align:baseline; position:relative; top:-.6em; line-height:0; font-size:.75em; }
+    .pn-ex .pn-case.pn-base, .pn-ex sup .pn-case{ display:inline-block; vertical-align:baseline; height:auto; font:inherit; line-height:1.3; padding:0 4px; margin:0 1px; text-align:center; }
+    .pn-ex .pn-case.pn-base::before, .pn-ex sup .pn-case::before{ content:'\\200b'; }
+    .pn-ex sup .pn-case{ min-width:1.4em !important; padding:0 2px; margin:0 0 0 1px; border-width:1.5px; border-radius:4px; }
     .pn-ex .pn-case.pn-ret{ min-width:0; width:17px; height:17px; padding:0; border-width:1.5px; border-style:dashed; border-color:#F0A36B; border-radius:4px; font:700 .72rem 'JetBrains Mono',monospace; color:#E35D3A; z-index:1; }
     .pn-ex .pn-case.pn-ret.pn-vide{ background:rgba(255,255,255,.85); } .pn-ex .pn-case.pn-ret:not(.pn-vide){ border-style:solid; border-color:transparent; background:transparent; }
     .pn-ex .pn-case.pn-ret.pn-sel{ border-style:solid; border-color:#E35D3A; background:#FFF6F2; } .pn-ex .pn-ret-b:not(.pn-vide)::before{ content:'+'; }
