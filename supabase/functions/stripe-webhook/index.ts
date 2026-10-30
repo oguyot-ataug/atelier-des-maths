@@ -41,7 +41,7 @@ function euros(n: number): string { return Number(n).toFixed(2).replace(".", ","
 // télécharge dans l'Espace famille (ou « Mon abonnement » pour un professeur).
 async function envoyerFacture(f: any, prof = false): Promise<void> {
   const key = Deno.env.get("RESEND_API_KEY");
-  if (!key || !f?.email) return;
+  if (!key || !f?.email || /@mathcollege\.local$/i.test(f.email)) return; // jamais vers une adresse fictive de connexion
   const lien = prof ? "https://latelierdesmaths.fr/#/abonnement" : "https://latelierdesmaths.fr/#/famille";
   const ouvert = prof ? "votre offre est active" : "l'accès de votre famille est ouvert";
   const ou = prof ? "dans « Mon abonnement »" : "dans votre Espace famille, rubrique « Mes factures »";

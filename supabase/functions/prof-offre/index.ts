@@ -138,7 +138,11 @@ serve(async (req) => {
       const p = new URLSearchParams();
       p.set("mode", "payment"); p.set("locale", "fr");
       p.set("client_reference_id", user.id);
-      p.set("customer_email", user.email || "");
+      // Adresse pré-remplie sur la page de paiement : jamais l'adresse fictive de connexion (identifiant@mathcollege.local) ;
+      // l'adresse de récupération confirmée (« Mon profil »), sinon le client tape la sienne sur Stripe (elle reçoit la facture).
+      const { data: contact } = await admin.from("profil_contact").select("email_recuperation").eq("user_id", user.id).maybeSingle();
+      const emailClient = contact?.email_recuperation || (/@mathcollege\.local$/i.test(user.email || "") ? "" : user.email || "");
+      if (emailClient) p.set("customer_email", emailClient);
       p.set("customer_creation", "always");
       p.set("line_items[0][quantity]", "1");
       p.set("line_items[0][price_data][currency]", "eur");
