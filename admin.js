@@ -1274,7 +1274,7 @@ async function adminRefreshBugReports(){
       </button>
       <div class="nb-accordion-body" id="${accId}">
         <div style="margin:6px 0;white-space:pre-wrap;">${escapeHtml(r.message)}</div>
-        ${r.build_version ? `<p class="hint" style="margin:0 0 8px;">build ${escapeHtml(r.build_version)}</p>` : ''}
+        ${r.build_version ? `<p class="hint" style="margin:0 0 8px;">version ${escapeHtml(String(r.build_version).replace(/^2026-08-19\./,''))}</p>` : ''}
         <label class="hint" style="display:inline-flex;align-items:center;gap:6px;">
           Statut :
           <select onchange="adminUpdateBugStatus('${r.id}', this.value)" style="color:${statusColor};font-weight:600;">

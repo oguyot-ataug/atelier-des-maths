@@ -3740,6 +3740,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1229', date:'2026-10-30', items:['Numéro de version : en bas de page et dans l\'historique, « version 1229 » au lieu de « build 2026-08-19.1229 » -- demandé : « affiche seulement version 1228 » (la date du début, 19/08, laissait croire à une date de mise en ligne).'] },
   { version:'2026-08-19.1228', date:'2026-10-30', items:['Planches imprimées : pas de pointillés pour un exposant à écrire -- signalé : « Il n\'est pas nécessaire non plus de mettre des pointillés pour l\'exposant sur la version papier ». La place de l\'exposant reste en blanc, en haut à droite des pointillés de la base (5e et 3e, puissances).'] },
   { version:'2026-08-19.1227', date:'2026-10-30', items:['5e, Puissances, planche 2 : l\'élève écrit aussi l\'exposant -- signalé : « pourquoi avoir ajouté les puissances ? Il faut laisser l\'élève les écrire ». Dans « sous la forme d\'un carré », « d\'un cube », « 64 de deux façons » et « entre quels carrés », le ² et le ³ ne sont plus imprimés d\'avance : une case pour la base, une petite case pour l\'exposant, sur la feuille comme à l\'écran.'] },
   { version:'2026-08-19.1226', date:'2026-10-30', items:['Puissances à l\'écran : réponses alignées sur l\'énoncé -- signalé : « Il y a un problème d\'alignement et de tailles de police entre l\'énoncé et les réponses ». Ce qu\'on écrit dans la case de la base et dans celle de l\'exposant a maintenant la police et la taille de l\'énoncé et repose sur la même ligne ; l\'exposant a la taille d\'un exposant imprimé. « Écris avec une puissance » (5e) : l\'énoncé est écrit dans la même police que les autres exercices du chapitre.'] },
@@ -7019,7 +7020,7 @@ function renderChangelog(){
   const el = document.getElementById('changelogList');
   el.innerHTML = CHANGELOG_DATA.map(v=>`
     <div style="margin-bottom:18px;">
-      <div style="font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--accent);margin-bottom:6px;">build ${v.version}</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--accent);margin-bottom:6px;">version ${v.version.split('.').pop()}</div>
       <ul style="margin:0;padding-left:20px;line-height:1.7;">
         ${v.items.map(i=>`<li>${i}</li>`).join('')}
       </ul>
@@ -7077,7 +7078,7 @@ async function submitBugReport(){
     chapitre: chapitre || null,
     message,
     report_type: bugReportTypeOverride,
-    build_version: document.getElementById('buildTag') ? document.getElementById('buildTag').textContent.replace('build ','') : null,
+    build_version: document.getElementById('buildTag') ? document.getElementById('buildTag').textContent.replace(/^(build|version)\s*/,'') : null,
   });
   if(error){ status.textContent = "Échec de l'envoi : " + error.message; return; }
   status.textContent = bugReportTypeOverride==='suggestion' ? 'Suggestion envoyée, merci !' : 'Signalement envoyé, merci !';
@@ -11859,7 +11860,7 @@ let versionUserActed = false;
 ['pointerdown','keydown'].forEach(ev => addEventListener(ev, () => { versionUserActed = true; }, { capture:true, once:true }));
 function freshVersionUrl(tag){
   const q = new URLSearchParams(location.search);
-  q.set('_vc', tag ? tag.replace(/^build\s*/, '') : String(Date.now()));
+  q.set('_vc', tag ? tag.replace(/^(build|version)\s*/, '') : String(Date.now()));
   return location.pathname + '?' + q.toString() + location.hash;
 }
 async function checkForNewVersion(){
