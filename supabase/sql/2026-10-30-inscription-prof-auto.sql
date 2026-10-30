@@ -49,3 +49,8 @@ $$;
 revoke all on function public.derniere_activite(uuid) from public, anon, authenticated;
 -- get_last_sign_in_times() et get_my_students_last_sign_in() renvoient public.derniere_activite(au.id) au lieu de
 -- au.last_sign_in_at (même filtre d'accès qu'avant).
+-- Fonctions de « dernière connexion » réservées aux comptes connectés (migration derniere_connexion_sans_anon).
+revoke execute on function public.get_last_sign_in_times() from anon, public;
+revoke execute on function public.get_my_students_last_sign_in() from anon, public;
+grant execute on function public.get_last_sign_in_times() to authenticated;
+grant execute on function public.get_my_students_last_sign_in() to authenticated;
