@@ -3462,6 +3462,10 @@ async function refreshAuthUI(){
     else if(typeof loadAiAccess==='function') loadAiAccess();
     const btnReportBug = document.getElementById('btnReportBug');
     if(btnReportBug) btnReportBug.style.display = isStaff ? 'block' : 'none';
+    // « Prendre rendez-vous » (rdv.js) : visiteurs, professeurs, parents, administrateurs -- jamais les élèves.
+    const pasEleve = !(profile && profile.role === 'eleve');
+    const btnRdv = document.getElementById('btnRdv'); if(btnRdv) btnRdv.style.display = pasEleve ? 'block' : 'none';
+    const footRdv = document.getElementById('footRdv'); if(footRdv) footRdv.style.display = pasEleve ? '' : 'none';
     const chapSuggestRow = document.getElementById('chapSuggestRow');
     if(chapSuggestRow) chapSuggestRow.style.display = isStaff ? 'block' : 'none';
     if(typeof cpOnAuthChange==='function') cpOnAuthChange();
@@ -3530,6 +3534,7 @@ async function refreshAuthUI(){
     if(typeof clearAiAccess==='function') clearAiAccess();
     const btnReportBugOut = document.getElementById('btnReportBug');
     if(btnReportBugOut) btnReportBugOut.style.display='none';
+    const footRdvOut = document.getElementById('footRdv'); if(footRdvOut) footRdvOut.style.display = '';
     const chapSuggestRowOut = document.getElementById('chapSuggestRow');
     if(chapSuggestRowOut) chapSuggestRowOut.style.display='none';
     if(typeof cpOnAuthChange==='function') cpOnAuthChange();
@@ -3720,6 +3725,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1212', date:'2026-10-30', items:['« Prendre rendez-vous » ouvert à tous -- demandé : « Cette fonctionnalité ne devrait pas être réservée qu\'aux professeurs. je pense que le menu est mal placé. » Le lien quitte le menu « L\'Atelier du prof » : il est désormais dans le menu du compte (visiteurs : « Une question ? Prendre rendez-vous » ; parents, professeurs, administrateurs : « Prendre rendez-vous ») et dans le pied de page, ainsi que sur les pages Pour les professeurs et Tarifs. Jamais proposé aux élèves.'] },
   { version:'2026-08-19.1211', date:'2026-10-30', items:['Prise de rendez-vous : retour à la vue mois -- demandé : « Remets la première vue finalement ».'] },
   { version:'2026-08-19.1210', date:'2026-10-30', items:['Prise de rendez-vous en vue Colonnes -- demandé : « N\'afficher que la plage 8 h 20 h », puis « Oui, passe en vue Colonnes ». Les jours de la semaine sont côte à côte, avec seulement les créneaux réservables (la vue semaine de Cal.com montrait les 24 heures).'] },
   { version:'2026-08-19.1209', date:'2026-10-30', items:['Prise de rendez-vous : l\'agenda s\'ouvre en vue semaine -- demandé : « je voudrais une vue semaine et non mensuelle ».'] },

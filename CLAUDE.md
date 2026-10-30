@@ -138,6 +138,7 @@ renvoient client_secret + clé publique si les secrets STRIPE_TEST_PUBLISHABLE_K
 
 ## Prise de rendez-vous : Cal.com (depuis le 30/10/2026, build 1208)
 
-Page « Prendre rendez-vous » (`#/rendez-vous`, `rdv.js`) : agenda Cal.com `cal.com/latelierdesmaths/rendez-vous` intégré au site
+Page « Prendre rendez-vous » (`#/rendez-vous`, `rdv.js`, accès : menu du compte, pied de page, /professeurs/, /tarifs/ ; pour tous sauf
+les élèves) : agenda Cal.com `cal.com/latelierdesmaths/rendez-vous` intégré au site
 (nom affiché « L'Atelier des Maths », jamais le nom de l'administrateur ; relié à son agenda Google et à Google Meet). Ne plus
 utiliser le lien de l'agenda Google (calendar.google.com/…/appointments), qui affiche son nom.

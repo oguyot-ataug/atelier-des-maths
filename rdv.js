@@ -3,8 +3,9 @@
    Demandé le 30/10/2026 : « j'aimerais que les professeurs puissent prendre rendez-vous aussi sans quitter le site »,
    puis « Je ne veux pas que mon nom apparaisse » : l'agenda Google affichait le nom du compte ; Cal.com affiche
    « L'Atelier des Maths » (page cal.com/latelierdesmaths/rendez-vous, reliée à l'agenda Google et à Google Meet).
-   Ouverte depuis le menu « L'Atelier du prof », la page /professeurs/ et la page /tarifs/ (#/rendez-vous), pour tous,
-   connecté ou non. L'agenda n'est chargé qu'à l'ouverture de la page ; pour un adulte connecté, le nom, l'adresse
+   Ouverte depuis le menu du compte (visiteurs et adultes connectés), le pied de page, la page /professeurs/ et la page
+   /tarifs/ (#/rendez-vous) -- demandé : « Cette fonctionnalité ne devrait pas être réservée qu'aux professeurs » ; jamais
+   proposée aux élèves. L'agenda n'est chargé qu'à l'ouverture de la page ; pour un adulte connecté, le nom, l'adresse
    (de récupération, jamais l'adresse fictive de connexion) et l'établissement sont pré-remplis.
    ============================================================ */
 
