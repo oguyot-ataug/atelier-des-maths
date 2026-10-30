@@ -12,8 +12,9 @@
 //                                         lien Meet (sans invitation Google : c'est notre e-mail qui part), envoie l'e-mail
 //                                         de confirmation aux couleurs du site (+ fichier .ics) et un SMS à l'administrateur.
 //  - voir / annuler / deplacer { jeton [, debut] } : lien « Modifier ou annuler » de l'e-mail.
-//  - rappels                            : e-mail de rappel la veille (appelée toutes les heures par pg_cron ; sans effet
-//                                         si rien n'est dû, donc sans clé).
+//  - rappels                            : e-mail de rappel la veille, et nouvelle tentative de retrait de l'agenda pour
+//                                         les rendez-vous annulés (appelée toutes les heures par pg_cron ; sans effet si
+//                                         rien n'est dû, donc sans clé).
 //  - admin-annuler { id }               : annulation par l'administrateur (jeton de session d'un compte admin).
 //  - admin-agendas                      : agendas Google visibles (choix des agendas pris en compte, rdv_reglages.agendas).
 //
@@ -120,8 +121,25 @@ async function googleModifier(jeton: string, res: any) {
   await fetch(AGENDA + "/" + encodeURIComponent(res.google_event_id) + "?sendUpdates=none", { method: "PATCH", headers: { Authorization: "Bearer " + jeton, "Content-Type": "application/json" },
     body: JSON.stringify(evenement(res)) });
 }
-async function googleSupprimer(jeton: string, id: string) {
-  await fetch(AGENDA + "/" + encodeURIComponent(id) + "?sendUpdates=none", { method: "DELETE", headers: { Authorization: "Bearer " + jeton } });
+// Vrai si l'événement n'est plus dans l'agenda (supprimé, ou déjà absent : 404 / 410) -- signalé le 30/10/2026 : « J'ai un
+// RV annulé qui est encore dans mon agenda » (la réponse de Google n'était pas vérifiée).
+async function googleSupprimer(jeton: string, id: string): Promise<boolean> {
+  try {
+    const r = await fetch(AGENDA + "/" + encodeURIComponent(id) + "?sendUpdates=none", { method: "DELETE", headers: { Authorization: "Bearer " + jeton } });
+    const ok = r.ok || r.status === 404 || r.status === 410;
+    if (!ok) console.error("Google : événement non supprimé", r.status, (await r.text()).slice(0, 300));
+    else await r.body?.cancel();
+    return ok;
+  } catch (e) { console.error("Google : suppression impossible", String(e)); return false; }
+}
+// Rendez-vous annulés dont l'événement est encore dans l'agenda : nouvelle tentative (action rappels, toutes les heures).
+async function retirerAnnules(db: any): Promise<number> {
+  const { data } = await db.from("rdv_reservations").select("id,google_event_id").eq("statut", "annule").not("google_event_id", "is", null).limit(50);
+  if (!data || !data.length) return 0;
+  const g = await google(); if (!g) return 0;
+  let n = 0;
+  for (const x of data) if (await googleSupprimer(g, x.google_event_id)) { await db.from("rdv_reservations").update({ google_event_id: null }).eq("id", x.id); n++; }
+  return n;
 }
 
 // ---------- E-mails (Resend) et SMS ----------
@@ -308,7 +326,7 @@ serve(async (req) => {
       if (body.action === "annuler") {
         await db.from("rdv_reservations").update({ statut: "annule", annule_at: new Date().toISOString(), annule_par: "client" }).eq("id", res.id);
         const g = res.google_event_id ? await google() : null;
-        if (g) await googleSupprimer(g, res.google_event_id);
+        if (g && await googleSupprimer(g, res.google_event_id)) await db.from("rdv_reservations").update({ google_event_id: null }).eq("id", res.id);
         await mailAnnulation(res, false);
         await prevenirAdmin(`RDV annulé ${dateLongue(Date.parse(res.debut))} ${heure(Date.parse(res.debut))} : ${qui(res)}`, res, true);
         return json({ ok: true });
@@ -327,7 +345,8 @@ serve(async (req) => {
     }
 
     if (body.action === "rappels") {
-      if (!r.rappel_veille) return json({ ok: true, envoyes: 0 });
+      const retires = await retirerAnnules(db);
+      if (!r.rappel_veille) return json({ ok: true, envoyes: 0, retires });
       const { data: dus } = await db.from("rdv_reservations").select("*").eq("statut", "confirme").is("rappel_envoye_at", null)
         .gt("debut", new Date(now + 2 * 3600000).toISOString()).lte("debut", new Date(now + 26 * 3600000).toISOString());
       let n = 0;
@@ -336,7 +355,7 @@ serve(async (req) => {
         await db.from("rdv_reservations").update({ rappel_envoye_at: new Date().toISOString() }).eq("id", res.id);
         await mailRappel(res, visioDe(res)); n++;
       }
-      return json({ ok: true, envoyes: n });
+      return json({ ok: true, envoyes: n, retires });
     }
 
     const estAdmin = async () => {
@@ -359,7 +378,7 @@ serve(async (req) => {
       if (!res || res.statut !== "confirme") return json({ error: "Rendez-vous introuvable ou déjà annulé." }, 404);
       await db.from("rdv_reservations").update({ statut: "annule", annule_at: new Date().toISOString(), annule_par: "admin" }).eq("id", res.id);
       const g = res.google_event_id ? await google() : null;
-      if (g) await googleSupprimer(g, res.google_event_id);
+      if (g && await googleSupprimer(g, res.google_event_id)) await db.from("rdv_reservations").update({ google_event_id: null }).eq("id", res.id);
       if (body.prevenir !== false) await mailAnnulation(res, true);
       return json({ ok: true });
     }
