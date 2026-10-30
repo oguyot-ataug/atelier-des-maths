@@ -34,6 +34,11 @@ On se connecte par identifiant (adresse fictive `identifiant@mathcollege.local`)
 e-mail de récupération dans « Mon profil » (`profil.js`, table `profil_contact`, fonction `profil`) ; « Mot de passe
 oublié » envoie le lien à cette adresse confirmée. Jamais d'adresse pour les élèves (mineurs).
 
+Inscription d'un professeur : le profil « pending » est créé PAR LA BASE à la confirmation de l'adresse (déclencheur
+`inscription_prof_auto` sur auth.users, `supabase/sql/2026-10-30-inscription-prof-auto.sql`), qui prévient aussi l'administrateur
+(SMS + e-mail) ; le code du site (`finaliserInscriptionEnAttente`) reste en secours. « Dernière connexion » = `derniere_activite()`
+(mot de passe ou session restée ouverte).
+
 ## Référencement : régénérer les pages statiques après toute modification d'un chapitre
 
 Les pages indexables par Google (`cp/<chapitre>/`, `ce1/<chapitre>/`, `ce2/<chapitre>/`, `cm1/<chapitre>/`, `cm2/<chapitre>/`, `6e/<chapitre>/`, `5e/<chapitre>/`, `4e/<chapitre>/`, `3e/<chapitre>/`, `cp/`, `ce1/`, `ce2/`, `cm1/`, `cm2/`, `6e/`, `5e/`, `4e/`, `3e/`,

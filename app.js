@@ -3293,7 +3293,10 @@ async function submitProfSignup(){
     id: userId, role: 'prof', nom, prenom, email, uai,
     signup_status: 'pending', subscription_status: 'trial',
   });
-  if(profileError){
+  // Profil déjà créé par la base à la confirmation de l'adresse (déclencheur inscription_prof_auto, qui prévient aussi
+  // l'administrateur) : rien à refaire.
+  const dejaCree = profileError && profileError.code === '23505';
+  if(profileError && !dejaCree){
     status.textContent = 'Erreur lors de la création du profil : '+profileError.message;
     btn.disabled = false;
     return;
@@ -3302,8 +3305,10 @@ async function submitProfSignup(){
   // Notification à contact@latelieraugmente.fr : volontairement non-bloquant -- si l'envoi
   // échoue (ex. secret RESEND_API_KEY pas encore configuré côté Supabase), l'inscription
   // elle-même reste enregistrée et valide, seule la notification est manquée.
-  try{ await sb.functions.invoke('notify-prof-signup', { body: { nom, prenom, email, uai } }); }catch(e){ /* silencieux, voir commentaire ci-dessus */ }
-  alerteInscription();
+  if(!dejaCree){
+    try{ await sb.functions.invoke('notify-prof-signup', { body: { nom, prenom, email, uai } }); }catch(e){ /* silencieux, voir commentaire ci-dessus */ }
+    alerteInscription();
+  }
 
   status.textContent = VENTES_OUVERTES
     ? "Inscription enregistrée ! Votre compte sera activé après vérification par l'administrateur, avec 15 jours d'essai gratuit à compter de l'activation."
@@ -3340,7 +3345,9 @@ async function startStripeCheckout(){
 }
 /* Inscription commencée avant la confirmation de l'adresse e-mail (lien reçu par e-mail) : le
    compte existe, pas encore le profil. On le crée à la première connexion, à partir des
-   informations saisies lors de l'inscription (user_metadata). Une seule fois par page. */
+   informations saisies lors de l'inscription (user_metadata). Une seule fois par page.
+   Professeur : depuis le 30/10/2026, la base crée elle-même le profil à la confirmation de l'adresse (déclencheur
+   inscription_prof_auto, supabase/sql/2026-10-30-inscription-prof-auto.sql) ; ce code reste en secours. */
 let finalisationInscription = null;
 function finaliserInscriptionEnAttente(user){
   if(finalisationInscription) return finalisationInscription;
@@ -3356,7 +3363,7 @@ function finaliserInscriptionEnAttente(user){
         await creerEtablissementProvisoire(m.uai);
         const { error } = await sb.from('profiles').insert({ id: user.id, role: 'prof', nom: m.nom, prenom: m.prenom, email: user.email, uai: m.uai,
           signup_status: 'pending', subscription_status: 'trial' });
-        if(error) return false;
+        if(error) return error.code === '23505'; // déjà créé par la base : rien à refaire
         try{ await sb.functions.invoke('notify-prof-signup', { body: { nom: m.nom, prenom: m.prenom, email: user.email, uai: m.uai } }); }catch(e){ /* non bloquant */ }
         alerteInscription();
         return true;
@@ -3733,6 +3740,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1221', date:'2026-10-30', items:['Inscription des professeurs fiabilisée -- signalé : « ça fait déjà deux fois en deux jours que l\'inscription pose problème ». Le profil « en attente de validation » est maintenant créé par la base elle-même dès que le professeur confirme son adresse (avec l\'établissement provisoire s\'il est inconnu), puis l\'administrateur reçoit le SMS et l\'e-mail de nouvelle inscription : l\'inscription ne dépend plus du navigateur du professeur.', '« Dernière connexion » corrigée -- signalé : « Hélène s\'est connectée en octobre, j\'étais avec elle ! ». La date tient compte des visites avec une session restée ouverte (sans retaper le mot de passe), et plus seulement des connexions par mot de passe ; pour les professeurs comme pour les élèves.'] },
   { version:'2026-08-19.1220', date:'2026-10-30', items:['Inscription des professeurs d\'un établissement encore inconnu corrigée -- signalé : « Une amie vient de s\'inscrire mais je ne la vois pas ». Le compte de connexion était créé, mais pas le profil : l\'établissement provisoire était refusé par la base (une insertion « sauf doublon » exige de pouvoir déjà lire l\'établissement, ce qu\'un nouveau compte ne peut pas). L\'établissement est maintenant ajouté par une simple insertion ; l\'inscription concernée a été complétée à la main et attend la validation.'] },
   { version:'2026-08-19.1219', date:'2026-10-30', items:['Rendez-vous : vraie invitation d\'agenda dans les e-mails -- signalé : un rendez-vous annulé restait dans l\'agenda personnel où Gmail l\'avait ajouté. Le fichier joint est maintenant une invitation au nom de « L\'Atelier des Maths » : Gmail, Outlook et Apple Calendrier ajoutent le rendez-vous, puis le déplacent ou le retirent tout seuls quand il est déplacé ou annulé. Le bouton « Ajouter à Google Agenda », qui créait une copie impossible à retirer, est supprimé.'] },
   { version:'2026-08-19.1218', date:'2026-10-30', items:['Rendez-vous annulés retirés de l\'agenda Google à coup sûr -- signalé : « J\'ai un RV annulé qui est encore dans mon agenda ». La réponse de Google à la suppression est maintenant vérifiée ; si elle échoue, le site réessaie toutes les heures jusqu\'à ce que l\'événement disparaisse.'] },
