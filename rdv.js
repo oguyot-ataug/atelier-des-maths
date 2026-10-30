@@ -16,14 +16,14 @@ async function rdvOuvrir(){
   showView('view-rdv'); setActiveTopnav(null);
   if(rdvCharge) return;
   rdvCharge = true;
-  const config = { layout: 'column_view', theme: 'light' }; // vue Colonnes : les jours de la semaine côte à côte, avec seulement les créneaux libres (demandé le 30/10/2026 : vue semaine limitée à 8 h - 20 h, que la vue semaine de Cal.com ne permet pas)
+  const config = { layout: 'month_view', theme: 'light' }; // vue mois (vues semaine et colonnes essayées puis écartées le 30/10/2026)
   try{ Object.assign(config, await rdvPreremplir()); }catch(e){ /* sans pré-remplissage */ }
   const box = document.getElementById('rdvAgenda'); if(box) box.innerHTML = '';
   // Code d'intégration officiel de Cal.com (charge app.cal.com/embed/embed.js).
   (function (C, A, L) { let p = function (a, ar) { a.q.push(ar); }; let d = C.document; C.Cal = C.Cal || function () { let cal = C.Cal; let ar = arguments; if (!cal.loaded) { cal.ns = {}; cal.q = cal.q || []; d.head.appendChild(d.createElement("script")).src = A; cal.loaded = true; } if (ar[0] === L) { const api = function () { p(api, arguments); }; const namespace = ar[1]; api.q = api.q || []; if (typeof namespace === "string") { cal.ns[namespace] = cal.ns[namespace] || api; p(cal.ns[namespace], ar); p(cal, ["initNamespace", namespace]); } else p(cal, ar); return; } p(cal, ar); }; })(window, "https://app.cal.com/embed/embed.js", "init");
   Cal('init', 'rdv', { origin: 'https://cal.com' });
   Cal.ns.rdv('inline', { elementOrSelector: '#rdvAgenda', config, calLink: RDV_CAL });
-  Cal.ns.rdv('ui', { hideEventTypeDetails: false, layout: 'column_view', cssVarsPerTheme: { light: { 'cal-brand': '#0C5BA0' } } });
+  Cal.ns.rdv('ui', { hideEventTypeDetails: false, layout: 'month_view', cssVarsPerTheme: { light: { 'cal-brand': '#0C5BA0' } } });
 }
 
 // Nom, adresse e-mail et établissement d'un adulte connecté (questions du formulaire Cal.com : name, email, Etablissement).

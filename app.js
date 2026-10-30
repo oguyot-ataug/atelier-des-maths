@@ -3720,6 +3720,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1211', date:'2026-10-30', items:['Prise de rendez-vous : retour à la vue mois -- demandé : « Remets la première vue finalement ».'] },
   { version:'2026-08-19.1210', date:'2026-10-30', items:['Prise de rendez-vous en vue Colonnes -- demandé : « N\'afficher que la plage 8 h 20 h », puis « Oui, passe en vue Colonnes ». Les jours de la semaine sont côte à côte, avec seulement les créneaux réservables (la vue semaine de Cal.com montrait les 24 heures).'] },
   { version:'2026-08-19.1209', date:'2026-10-30', items:['Prise de rendez-vous : l\'agenda s\'ouvre en vue semaine -- demandé : « je voudrais une vue semaine et non mensuelle ».'] },
   { version:'2026-08-19.1208', date:'2026-10-30', items:['Prise de rendez-vous avec Cal.com -- demandé : « Je ne veux pas que mon nom apparaisse ». L\'agenda Google affichait le nom du titulaire du compte ; la page « Prendre rendez-vous » intègre désormais l\'agenda Cal.com de « L\'Atelier des Maths » (relié à l\'agenda Google et à Google Meet). Pour un professeur connecté, le nom, l\'adresse e-mail (de récupération) et l\'établissement sont pré-remplis. Politique de confidentialité complétée (Cal.com).'] },
