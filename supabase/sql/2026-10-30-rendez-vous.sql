@@ -60,3 +60,7 @@ create extension if not exists pg_net;
 create extension if not exists pg_cron;
 select cron.schedule('rdv-rappels', '17 * * * *', $$select net.http_post(url := 'https://tdsdwbsvduitgrrrfjrp.supabase.co/functions/v1/rdv', body := '{"action":"rappels"}'::jsonb, headers := '{"Content-Type":"application/json"}'::jsonb)$$);
 select cron.schedule('rdv-purge', '43 3 * * *', $$delete from public.rdv_reservations where fin < now() - interval '1 year'$$);
+
+-- Agendas pris en compte (migration rendez_vous_agendas, demandé : « Il faudrait qu'il puisse prendre en compte d'autres
+-- agendas secondaires ou autre ») : identifiants Google, 'primary' = agenda principal.
+alter table public.rdv_reglages add column agendas text[] not null default '{primary}';

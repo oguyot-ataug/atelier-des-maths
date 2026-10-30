@@ -15,6 +15,7 @@
 //  - rappels                            : e-mail de rappel la veille (appelée toutes les heures par pg_cron ; sans effet
 //                                         si rien n'est dû, donc sans clé).
 //  - admin-annuler { id }               : annulation par l'administrateur (jeton de session d'un compte admin).
+//  - admin-agendas                      : agendas Google visibles (choix des agendas pris en compte, rdv_reglages.agendas).
 //
 // Secrets : SUPABASE_*, RESEND_API_KEY, ALERTE_CLE (SMS par la fonction alerte-sms). Agenda Google (facultatif) :
 // GOOGLE_RDV_CLE (clé JSON d'un compte de service avec délégation au niveau du domaine Workspace) et GOOGLE_RDV_COMPTE
@@ -67,11 +68,34 @@ async function google(): Promise<string | null> {
   } catch (e) { console.error("Google : clé illisible", String(e)); return null; }
 }
 const AGENDA = "https://www.googleapis.com/calendar/v3/calendars/primary/events";
-async function googleOccupe(jeton: string, de: number, a: number): Promise<Intervalle[]> {
-  const r = await fetch("https://www.googleapis.com/calendar/v3/freeBusy", { method: "POST", headers: { Authorization: "Bearer " + jeton, "Content-Type": "application/json" },
-    body: JSON.stringify({ timeMin: new Date(de).toISOString(), timeMax: new Date(a).toISOString(), items: [{ id: "primary" }] }) });
-  const j = await r.json();
-  return ((j.calendars && j.calendars.primary && j.calendars.primary.busy) || []).map((b: any) => ({ debut: Date.parse(b.start), fin: Date.parse(b.end) }));
+// Moments occupés de plusieurs agendas (rdv_reglages.agendas -- demandé : « Il faudrait qu'il puisse prendre en compte
+// d'autres agendas secondaires ou autre »). freeBusy d'abord ; pour un agenda qu'il ne sait pas lire (agenda abonné par
+// une adresse iCal : emploi du temps, Outlook…), lecture de ses événements (répétitions développées par Google), sans les
+// journées entières ni les événements marqués « Disponible ».
+async function googleOccupe(jeton: string, de: number, a: number, agendas: string[]): Promise<Intervalle[]> {
+  const ids = (agendas && agendas.length ? agendas : ["primary"]).slice(0, 20);
+  const h = { Authorization: "Bearer " + jeton, "Content-Type": "application/json" };
+  const r = await fetch("https://www.googleapis.com/calendar/v3/freeBusy", { method: "POST", headers: h,
+    body: JSON.stringify({ timeMin: new Date(de).toISOString(), timeMax: new Date(a).toISOString(), items: ids.map((id) => ({ id })) }) });
+  const j = await r.json(), out: Intervalle[] = [];
+  for (const id of ids) {
+    const c = j.calendars && j.calendars[id];
+    if (c && !(c.errors && c.errors.length)) { (c.busy || []).forEach((b: any) => out.push({ debut: Date.parse(b.start), fin: Date.parse(b.end) })); continue; }
+    try {
+      const q = new URLSearchParams({ timeMin: new Date(de).toISOString(), timeMax: new Date(a).toISOString(), singleEvents: "true", maxResults: "2500" });
+      const e = await (await fetch("https://www.googleapis.com/calendar/v3/calendars/" + encodeURIComponent(id) + "/events?" + q, { headers: h })).json();
+      (e.items || []).forEach((ev: any) => {
+        if (ev.status === "cancelled" || ev.transparency === "transparent" || !ev.start || !ev.start.dateTime) return;
+        out.push({ debut: Date.parse(ev.start.dateTime), fin: Date.parse(ev.end.dateTime) });
+      });
+    } catch (err) { console.error("Google : agenda illisible", id, String(err)); }
+  }
+  return out;
+}
+// Agendas visibles par le compte (Administration › Rendez-vous, « Agendas pris en compte »).
+async function googleAgendas(jeton: string) {
+  const j = await (await fetch("https://www.googleapis.com/calendar/v3/users/me/calendarList?maxResults=250", { headers: { Authorization: "Bearer " + jeton } })).json();
+  return (j.items || []).map((c: any) => ({ id: c.primary ? "primary" : c.id, nom: c.summaryOverride || c.summary || c.id, principal: !!c.primary, couleur: c.backgroundColor || "" }));
 }
 function evenement(res: any) {
   return {
@@ -221,7 +245,7 @@ serve(async (req) => {
         .gte("debut", new Date(debut).toISOString()).lt("debut", new Date(fin).toISOString());
       const occupes: Intervalle[] = (pris || []).filter((p: any) => p.id !== sauf).map((p: any) => ({ debut: Date.parse(p.debut), fin: Date.parse(p.fin) }));
       const g = await google();
-      if (g) { try { occupes.push(...(await googleOccupe(g, debut, fin))); } catch (e) { console.error("Google : agenda illisible", String(e)); } }
+      if (g) { try { occupes.push(...(await googleOccupe(g, debut, fin, r.agendas))); } catch (e) { console.error("Google : agenda illisible", String(e)); } }
       // Le rendez-vous déplacé occupe aussi son propre événement Google : on le retire des moments occupés.
       if (sauf) {
         const { data: s } = await db.from("rdv_reservations").select("debut,fin").eq("id", sauf).maybeSingle();
@@ -311,11 +335,22 @@ serve(async (req) => {
       return json({ ok: true, envoyes: n });
     }
 
-    if (body.action === "admin-annuler") {
+    const estAdmin = async () => {
       const auth = (req.headers.get("authorization") || "").replace(/^Bearer\s+/i, "");
       const { data: u } = await db.auth.getUser(auth);
       const { data: p } = u?.user ? await db.from("profiles").select("role").eq("id", u.user.id).maybeSingle() : { data: null };
-      if (!p || p.role !== "admin") return json({ error: "Réservé à l'administrateur." }, 403);
+      return !!p && p.role === "admin";
+    };
+
+    if (body.action === "admin-agendas") {
+      if (!(await estAdmin())) return json({ error: "Réservé à l'administrateur." }, 403);
+      const g = await google();
+      if (!g) return json({ relie: false, agendas: [] });
+      return json({ relie: true, agendas: await googleAgendas(g) });
+    }
+
+    if (body.action === "admin-annuler") {
+      if (!(await estAdmin())) return json({ error: "Réservé à l'administrateur." }, 403);
       const { data: res } = await db.from("rdv_reservations").select("*").eq("id", String(body.id || "")).maybeSingle();
       if (!res || res.statut !== "confirme") return json({ error: "Rendez-vous introuvable ou déjà annulé." }, 404);
       await db.from("rdv_reservations").update({ statut: "annule", annule_at: new Date().toISOString(), annule_par: "admin" }).eq("id", res.id);

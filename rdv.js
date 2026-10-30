@@ -288,6 +288,9 @@ async function rdvAdminRefresh(){
         <label>Réservable jusqu'à <input type="number" id="rdvAdmHorizon" min="1" max="365" value="${r.horizon_j}"> jours</label>
       </div>
       <label class="rdv-adm-ligne"><input type="checkbox" id="rdvAdmRappel" ${r.rappel_veille ? 'checked' : ''}> E-mail de rappel la veille</label>
+      <p class="op-lab">Agendas pris en compte</p>
+      <p class="hint" style="margin:0 0 6px;">Les moments occupés des agendas cochés bloquent les créneaux. Emploi du temps de l'ENT, agenda Outlook… : abonnez-vous à son adresse iCal dans Google Agenda (« Autres agendas » → + → « À partir de l'URL »), puis cochez-le ici.</p>
+      <div id="rdvAdmAgendas"><p class="hint">Lecture des agendas Google…</p></div>
       <p class="op-lab">Périodes sans rendez-vous</p>
       <div id="rdvAdmBloques"></div>
       <p class="op-lab">Lien de visio de secours</p>
@@ -295,7 +298,24 @@ async function rdvAdminRefresh(){
       <p class="hint" style="margin:4px 0 0;">Utilisé tant que l'agenda Google n'est pas relié au site (sinon, chaque rendez-vous a son propre lien Meet).</p>
       <p style="margin-top:14px;"><button class="btn" onclick="rdvAdminEnregistrer()"><span class="gicon">save</span> Enregistrer les réglages</button> <span class="hint" id="rdvAdmMsg"></span></p>
     </div>`;
-  rdvAdminPlagesRendre(); rdvAdminBloquesRendre();
+  rdvAdminPlagesRendre(); rdvAdminBloquesRendre(); rdvAdminAgendasCharger();
+}
+
+// Agendas Google visibles par le compte relié ; coche = pris en compte (rdv_reglages.agendas).
+let rdvAdminAgendasListe = null;
+async function rdvAdminAgendasCharger(){
+  const box = document.getElementById('rdvAdmAgendas'); if(!box) return;
+  rdvAdminAgendasListe = null;
+  try{
+    const d = await rdvAppel({ action: 'admin-agendas' });
+    if(!d.relie){ box.innerHTML = '<p class="hint">L\'agenda Google n\'est pas relié au site : seuls vos plages, vos rendez-vous et vos périodes bloquées comptent.</p>'; return; }
+    const coches = new Set(rdvAdminReglages.agendas || ['primary']);
+    rdvAdminAgendasListe = d.agendas;
+    // Agenda coché mais plus visible (supprimé, partage retiré) : gardé dans la liste pour pouvoir le décocher.
+    coches.forEach(id => { if(!d.agendas.some(a => a.id === id)) d.agendas.push({ id, nom: id + ' (introuvable)', principal: false, couleur: '' }); });
+    box.innerHTML = d.agendas.map(a => `<label class="rdv-adm-ligne"><input type="checkbox" class="rdvAdmAgenda" value="${rdvEsc(a.id)}" ${coches.has(a.id) ? 'checked' : ''}>
+      <span class="rdv-adm-pastille" style="background:${rdvEsc(a.couleur || '#B6BDC6')};"></span> ${rdvEsc(a.nom)}${a.principal ? ' <span class="hint">(agenda principal)</span>' : ''}</label>`).join('');
+  }catch(e){ box.innerHTML = `<p class="hint">Agendas illisibles : ${rdvEsc(e.message)}</p>`; }
 }
 
 function rdvAdminPlagesRendre(){
@@ -329,6 +349,7 @@ async function rdvAdminEnregistrer(){
   const maj = { actif: document.getElementById('rdvAdmActif').checked, plages, duree_min: n('rdvAdmDuree'), pause_min: n('rdvAdmPause'), preavis_h: n('rdvAdmPreavis'),
     horizon_j: n('rdvAdmHorizon'), rappel_veille: document.getElementById('rdvAdmRappel').checked, bloques,
     lien_visio: (document.getElementById('rdvAdmVisio').value || '').trim(), updated_at: new Date().toISOString() };
+  if(rdvAdminAgendasListe) maj.agendas = [...document.querySelectorAll('.rdvAdmAgenda:checked')].map(c => c.value);
   if(maj.lien_visio && !/^https:\/\//.test(maj.lien_visio)) return (msg.textContent = 'Le lien de visio doit commencer par https://');
   msg.textContent = 'Enregistrement…';
   const { error } = await sb.from('rdv_reglages').update(maj).eq('id', 1);

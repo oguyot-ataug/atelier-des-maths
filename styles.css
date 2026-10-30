@@ -2239,6 +2239,7 @@ select:not([multiple]):not([size]){
 .rdv-adm-x{background:none;border:none;color:#B3261E;font-size:1.2rem;cursor:pointer;line-height:1;}
 .rdv-adm-grille{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px 16px;margin:12px 0 4px;}
 .rdv-adm-grille input{width:72px;border:1px solid rgba(28,43,57,.2);border-radius:7px;padding:4px 6px;font:inherit;}
+.rdv-adm-pastille{display:inline-block;width:12px;height:12px;border-radius:3px;flex:none;}
 .rdv-adm-visio{width:100%;max-width:420px;border:1px solid rgba(28,43,57,.2);border-radius:7px;padding:7px 9px;font:inherit;}
 @media (max-width:700px){
   .rdv-grille{grid-template-columns:1fr;}

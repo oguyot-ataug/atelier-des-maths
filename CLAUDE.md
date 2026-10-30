@@ -142,6 +142,7 @@ Page « Prendre rendez-vous » (`#/rendez-vous`, `rdv.js` ; accès : menu du com
 tous sauf les élèves). Fonction `rdv` (verify_jwt non ; calcul des créneaux dans `supabase/functions/rdv/creneaux.ts`), tables
 `rdv_reglages` et `rdv_reservations` (`supabase/sql/2026-10-30-rendez-vous.sql`), réglages dans Administration › Rendez-vous.
 E-mails aux couleurs du site (Resend, rendez-vous@latelieraugmente.fr), SMS par `alerte-sms` (sans_limite), rappels la veille et
-purge à un an par pg_cron. Agenda Google relié par un compte de service (secrets GOOGLE_RDV_CLE, GOOGLE_RDV_COMPTE) : jamais
+purge à un an par pg_cron. Agendas pris en compte : `rdv_reglages.agendas` (cochés dans l'administration ; agendas abonnés par
+adresse iCal lus événement par événement). Agenda Google relié par un compte de service (secrets GOOGLE_RDV_CLE, GOOGLE_RDV_COMPTE) : jamais
 d'invitation Google (sendUpdates=none), le nom de l'administrateur n'apparaît nulle part. Cal.com et l'agenda de rendez-vous
 Google ne sont plus utilisés.
