@@ -237,7 +237,7 @@ function rdvRendreFait(box){
   box.innerHTML = `<div class="rdv-fait"><span class="gicon">task_alt</span>
     <h2>Rendez-vous confirmé</h2>
     <p><b>${rdvEsc(rdvQuand(f.debut))}</b> (heure de Paris)</p>
-    <p>Un e-mail de confirmation vient de partir vers <b>${rdvEsc(f.email)}</b>, avec ${f.visio ? 'le lien de la visio' : 'tous les détails'}, un fichier à ajouter à votre agenda et un lien pour modifier ou annuler. Pensez à regarder dans les indésirables.</p>
+    <p>Un e-mail de confirmation vient de partir vers <b>${rdvEsc(f.email)}</b>, avec ${f.visio ? 'le lien de la visio' : 'tous les détails'}, une invitation pour votre agenda et un lien pour modifier ou annuler. Pensez à regarder dans les indésirables.</p>
     <button type="button" class="btn secondary" onclick="rdvEtat.fait=null;rdvRecharger(0);">Prendre un autre rendez-vous</button></div>`;
 }
 

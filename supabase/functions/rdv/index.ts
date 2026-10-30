@@ -143,15 +143,22 @@ async function retirerAnnules(db: any): Promise<number> {
 }
 
 // ---------- E-mails (Resend) et SMS ----------
+// Invitation (REQUEST, puis CANCEL avec le même UID et une SEQUENCE plus grande) au nom de « L'Atelier des Maths » : Gmail,
+// Outlook et Apple Calendrier ajoutent le rendez-vous à l'agenda de la personne, puis le déplacent ou le retirent tout
+// seuls -- signalé le 30/10/2026 : un rendez-vous annulé restait dans l'agenda personnel où Gmail l'avait ajouté
+// (l'ancien fichier « PUBLISH » n'était qu'un événement à ajouter, que l'annulation ne retirait pas).
 function ics(res: any, annule = false): string {
   const t = (ms: number) => new Date(ms).toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
   const e = (s: string) => s.replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\n/g, "\\n");
   const visio = res.meet_url || res.lien_visio || "";
-  const lignes = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//L'Atelier des Maths//Rendez-vous//FR", "CALSCALE:GREGORIAN", `METHOD:${annule ? "CANCEL" : "PUBLISH"}`,
+  const lignes = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//L'Atelier des Maths//Rendez-vous//FR", "CALSCALE:GREGORIAN", `METHOD:${annule ? "CANCEL" : "REQUEST"}`,
     "BEGIN:VEVENT", `UID:${res.id}@latelierdesmaths.fr`, `SEQUENCE:${Math.floor(Date.now() / 1000)}`, `DTSTAMP:${t(Date.now())}`,
     `DTSTART:${t(Date.parse(res.debut))}`, `DTEND:${t(Date.parse(res.fin))}`, `SUMMARY:${e("Rendez-vous L'Atelier des Maths")}`,
     `DESCRIPTION:${e((visio ? "Visio : " + visio + "\n" : "") + "Modifier ou annuler : " + SITE + "/?rdv=" + res.jeton + "#/rendez-vous")}`,
-    `LOCATION:${e(visio || "Visio (lien envoyé par e-mail)")}`, `STATUS:${annule ? "CANCELLED" : "CONFIRMED"}`, "END:VEVENT", "END:VCALENDAR"];
+    `LOCATION:${e(visio || "Visio (lien envoyé par e-mail)")}`, `STATUS:${annule ? "CANCELLED" : "CONFIRMED"}`,
+    `ORGANIZER;CN="L'Atelier des Maths":mailto:${ADMIN_EMAIL}`,
+    `ATTENDEE;CN="${qui(res).replace(/"/g, "")}";ROLE=REQ-PARTICIPANT;PARTSTAT=ACCEPTED;RSVP=FALSE:mailto:${res.email}`,
+    "END:VEVENT", "END:VCALENDAR"];
   // Lignes de 75 octets au plus (RFC 5545) : repli à 70 caractères.
   return lignes.map((l) => { let o = ""; while (l.length > 70) { o += l.slice(0, 70) + "\r\n "; l = l.slice(70); } return o + l; }).join("\r\n") + "\r\n";
 }
@@ -185,23 +192,18 @@ async function envoyerMail(a: string, sujet: string, html: string, texte: string
   try {
     await fetch("https://api.resend.com/emails", { method: "POST", headers: { Authorization: "Bearer " + key, "Content-Type": "application/json" },
       body: JSON.stringify({ from: "L'Atelier des Maths <rendez-vous@latelieraugmente.fr>", to: [a], reply_to: ADMIN_EMAIL, subject: sujet, html, text: texte,
-        ...(piece ? { attachments: [{ filename: annule ? "rendez-vous-annule.ics" : "rendez-vous.ics", content: b64(piece), content_type: `text/calendar; method=${annule ? "CANCEL" : "PUBLISH"}` }] } : {}) }) });
+        ...(piece ? { attachments: [{ filename: annule ? "rendez-vous-annule.ics" : "rendez-vous.ics", content: b64(piece), content_type: `text/calendar; method=${annule ? "CANCEL" : "REQUEST"}` }] } : {}) }) });
   } catch (e) { console.error("Resend", String(e)); }
 }
 const gerer = (res: any) => `${SITE}/?rdv=${res.jeton}#/rendez-vous`;
-function lienGoogleAgenda(res: any, visio: string) {
-  const t = (ms: number) => new Date(ms).toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
-  return "https://calendar.google.com/calendar/render?action=TEMPLATE&text=" + encodeURIComponent("Rendez-vous L'Atelier des Maths") +
-    "&dates=" + t(Date.parse(res.debut)) + "/" + t(Date.parse(res.fin)) + "&details=" + encodeURIComponent((visio ? "Visio : " + visio + "\n" : "") + "Modifier ou annuler : " + gerer(res));
-}
 async function mailConfirmation(res: any, visio: string, deplace = false) {
   const prenom = esc(prenomDe(res));
   const html = gabarit(`<p style="font-size:20px;font-weight:bold;color:#1F3A5C;margin:0 0 12px 0;">${deplace ? "Votre rendez-vous est déplacé" : "Votre rendez-vous est confirmé"}</p>
     <p style="margin:0 0 12px 0;">Bonjour ${prenom},</p>
     <p style="margin:0 0 6px 0;">${deplace ? "Voici le nouvel horaire de notre rendez-vous :" : "Merci pour votre réservation : à bientôt en visio !"}</p>
     ${encadre(res, visio)}
-    ${visio ? bouton(visio, "&#127909; Rejoindre la visio") : ""}${bouton(lienGoogleAgenda(res, visio), "Ajouter à Google Agenda", "#1F3A5C")}
-    <p style="font-size:13px;color:#5B6472;margin:10px 0 14px 0;">Outlook, Apple Calendrier : ouvrez le fichier joint pour ajouter le rendez-vous à votre agenda.</p>
+    ${visio ? bouton(visio, "&#127909; Rejoindre la visio") : ""}
+    <p style="font-size:13px;color:#5B6472;margin:10px 0 14px 0;">L'invitation jointe ajoute le rendez-vous à votre agenda (Gmail, Outlook, Apple Calendrier) ; elle se met à jour toute seule s'il est déplacé ou annulé.</p>
     <p style="margin:0 0 4px 0;">Un empêchement ? <a href="${esc(gerer(res))}" style="color:#0C5BA0;font-weight:bold;">Modifier l'horaire ou annuler</a>.</p>
     <p style="margin:16px 0 0 0;">À bientôt,<br><b>L'Atelier des Maths</b></p>`);
   const texte = `${deplace ? "Votre rendez-vous est déplacé" : "Votre rendez-vous est confirmé"} : ${quand(Date.parse(res.debut), Date.parse(res.fin))} (heure de Paris). ` +
