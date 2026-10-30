@@ -135,3 +135,9 @@ offres, ni prix, ni lien vers les tarifs dans « Mon abonnement », ni prix dans
 
 Paiement intégré au site (Stripe Embedded Checkout, build 1205) : `paiementOuvrir` (app.js) ; les fonctions prof-offre et famille
 renvoient client_secret + clé publique si les secrets STRIPE_TEST_PUBLISHABLE_KEY / STRIPE_PUBLISHABLE_KEY existent, sinon la page Stripe.
+
+## Prise de rendez-vous : Cal.com (depuis le 30/10/2026, build 1208)
+
+Page « Prendre rendez-vous » (`#/rendez-vous`, `rdv.js`) : agenda Cal.com `cal.com/latelierdesmaths/rendez-vous` intégré au site
+(nom affiché « L'Atelier des Maths », jamais le nom de l'administrateur ; relié à son agenda Google et à Google Meet). Ne plus
+utiliser le lien de l'agenda Google (calendar.google.com/…/appointments), qui affiche son nom.
