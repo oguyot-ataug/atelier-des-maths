@@ -54,3 +54,9 @@ create policy rdv_reservations_admin on public.rdv_reservations for all to authe
   using ((select public.is_admin())) with check ((select public.is_admin()));
 grant select, update, delete on public.rdv_reservations to authenticated;
 grant select, insert, update, delete on public.rdv_reservations to service_role;
+
+-- Tâches automatiques (migration rendez_vous_taches_auto) : rappels la veille et purge à un an.
+create extension if not exists pg_net;
+create extension if not exists pg_cron;
+select cron.schedule('rdv-rappels', '17 * * * *', $$select net.http_post(url := 'https://tdsdwbsvduitgrrrfjrp.supabase.co/functions/v1/rdv', body := '{"action":"rappels"}'::jsonb, headers := '{"Content-Type":"application/json"}'::jsonb)$$);
+select cron.schedule('rdv-purge', '43 3 * * *', $$delete from public.rdv_reservations where fin < now() - interval '1 year'$$);
