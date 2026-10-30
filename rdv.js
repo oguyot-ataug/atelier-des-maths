@@ -107,7 +107,7 @@ function rdvChoisirJour(j){ rdvEtat.jour = j; rdvEtat.etape = 'choix'; rdvRendre
 function rdvChoisirHeure(debut){
   const c = Object.values(rdvEtat.creneaux).flat().find(x => x.debut === debut); if(!c) return;
   rdvEtat.choix = c; rdvEtat.etape = 'form'; rdvRendre();
-  const f = document.getElementById('rdvNom'); if(f && !f.value) f.focus();
+  const f = document.getElementById('rdvPrenom'); if(f && !f.value) f.focus();
 }
 
 function rdvFormHtml(){
@@ -115,7 +115,8 @@ function rdvFormHtml(){
   return `<div class="rdv-form">
     <button type="button" class="rdv-retour" onclick="rdvEtat.etape='choix';rdvRendre();"><span class="gicon">arrow_back</span> Changer d'horaire</button>
     <p class="rdv-recap"><span class="gicon">event_available</span> <b>${rdvMaj(rdvJourLong(c.jour))} à ${rdvHeure(c.heure)}</b></p>
-    <label for="rdvNom">Nom et prénom</label><input id="rdvNom" maxlength="80" autocomplete="name" value="${rdvEsc(v.nom)}">
+    <div class="rdv-deux"><div><label for="rdvPrenom">Prénom</label><input id="rdvPrenom" maxlength="60" autocomplete="given-name" value="${rdvEsc(v.prenom)}"></div>
+      <div><label for="rdvNom">Nom</label><input id="rdvNom" maxlength="80" autocomplete="family-name" value="${rdvEsc(v.nom)}"></div></div>
     <label for="rdvEmail">Adresse e-mail</label><input id="rdvEmail" type="email" maxlength="160" autocomplete="email" value="${rdvEsc(v.email)}">
     <label for="rdvEtab">Établissement <small>(facultatif)</small></label><input id="rdvEtab" maxlength="120" placeholder="Nom et ville de votre école ou collège" value="${rdvEsc(v.etablissement)}">
     <label for="rdvObjet">Objet du rendez-vous</label>
@@ -138,20 +139,22 @@ async function rdvPreremplirForm(){
       sb.from('profil_contact').select('email_recuperation').eq('user_id', currentUser.id).maybeSingle(),
     ]);
     const s = rdvEtat.saisie = rdvEtat.saisie || {};
-    s.nom = s.nom || [p && p.prenom, p && p.nom].filter(Boolean).join(' ');
+    s.prenom = s.prenom || (p && p.prenom) || '';
+    s.nom = s.nom || (p && p.nom) || '';
     s.email = s.email || (c && c.email_recuperation) || (/@mathcollege\.local$/i.test(currentUser.email || '') ? '' : currentUser.email || '');
     if(!s.etablissement && p && p.uai){
       const { data: e } = await sb.from('etablissements').select('nom,ville').eq('uai', p.uai).maybeSingle();
       if(e && e.nom && !/^À vérifier/.test(e.nom)) s.etablissement = e.nom + (e.ville ? ', ' + e.ville : '');
     }
-    [['rdvNom', s.nom], ['rdvEmail', s.email], ['rdvEtab', s.etablissement]].forEach(([id, val]) => { const f = document.getElementById(id); if(f && !f.value && val) f.value = val; });
+    [['rdvPrenom', s.prenom], ['rdvNom', s.nom], ['rdvEmail', s.email], ['rdvEtab', s.etablissement]].forEach(([id, val]) => { const f = document.getElementById(id); if(f && !f.value && val) f.value = val; });
   }catch(e){ /* sans pré-remplissage */ }
 }
 
 async function rdvReserver(){
   const v = id => (document.getElementById(id).value || '').trim();
-  const s = rdvEtat.saisie = { nom: v('rdvNom'), email: v('rdvEmail'), etablissement: v('rdvEtab'), objet: v('rdvObjet'), message: v('rdvMessage') };
+  const s = rdvEtat.saisie = { prenom: v('rdvPrenom'), nom: v('rdvNom'), email: v('rdvEmail'), etablissement: v('rdvEtab'), objet: v('rdvObjet'), message: v('rdvMessage') };
   const msg = document.getElementById('rdvMsg'), btn = document.getElementById('rdvOk');
+  if(!s.prenom) return (msg.textContent = 'Indiquez votre prénom.');
   if(s.nom.length < 2) return (msg.textContent = 'Indiquez votre nom.');
   if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(s.email)) return (msg.textContent = 'Indiquez une adresse e-mail valide.');
   if(!s.objet) return (msg.textContent = 'Choisissez l\'objet du rendez-vous.');
@@ -159,7 +162,7 @@ async function rdvReserver(){
   try{
     const r = await rdvAppel({ action: 'reserver', debut: rdvEtat.choix.debut, ...s, site: v('rdvSite') });
     rdvEtat.fait = { debut: r.debut, email: s.email, visio: r.visio };
-    rdvEtat.choix = null; rdvEtat.etape = 'choix'; rdvEtat.charge = false; rdvEtat.saisie = { nom: s.nom, email: s.email, etablissement: s.etablissement };
+    rdvEtat.choix = null; rdvEtat.etape = 'choix'; rdvEtat.charge = false; rdvEtat.saisie = { prenom: s.prenom, nom: s.nom, email: s.email, etablissement: s.etablissement };
     rdvRendre(); window.scrollTo({ top: 0, behavior: 'smooth' });
   }catch(e){
     btn.disabled = false; msg.textContent = e.message;
@@ -268,7 +271,7 @@ async function rdvAdminRefresh(){
   const avenir = (liste || []).filter(x => x.statut === 'confirme' && Date.parse(x.fin) >= maintenant);
   const autres = (liste || []).filter(x => !avenir.includes(x)).reverse();
   const ligne = x => `<tr class="${x.statut === 'annule' ? 'rdv-annule' : ''}"><td><b>${rdvEsc(rdvQuand(x.debut))}</b>${x.statut === 'annule' ? ` <span class="hint">annulé${x.annule_par === 'admin' ? ' par vous' : ''}</span>` : ''}</td>
-    <td>${rdvEsc(x.nom)}<br><small class="hint">${rdvEsc(x.email)}</small></td><td>${rdvEsc(x.etablissement || '–')}</td>
+    <td>${rdvEsc([x.prenom, x.nom].filter(Boolean).join(' '))}<br><small class="hint">${rdvEsc(x.email)}</small></td><td>${rdvEsc(x.etablissement || '–')}</td>
     <td>${rdvEsc(x.objet)}${x.message ? `<br><small class="hint">« ${rdvEsc(x.message)} »</small>` : ''}</td>
     <td style="white-space:nowrap;">${x.meet_url ? `<a href="${rdvEsc(x.meet_url)}" target="_blank" rel="noopener" class="btn qz-mini">Visio</a> ` : ''}${x.statut === 'confirme' && Date.parse(x.debut) > maintenant ? `<button class="btn secondary qz-mini" onclick="rdvAdminAnnuler('${x.id}')">Annuler</button>` : ''}</td></tr>`;
   const tete = '<thead><tr><th>Quand</th><th>Qui</th><th>Établissement</th><th>Objet</th><th></th></tr></thead>';

@@ -2186,7 +2186,7 @@ select:not([multiple]):not([size]){
 /* Prendre rendez-vous (rdv.js) : outil de réservation du site */
 .rdv-cadre{background:#fff;border-radius:16px;box-shadow:var(--shadow);overflow:hidden;margin-top:14px;max-width:900px;}
 #rdvAgenda{min-height:420px;}
-.rdv-grille{display:grid;grid-template-columns:minmax(260px,330px) 1fr;}
+.rdv-grille{display:grid;grid-template-columns:minmax(260px,330px) minmax(0,1fr);}
 .rdv-cal{padding:22px 22px 18px;border-right:1px solid rgba(28,43,57,.08);}
 .rdv-cal-tete{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
 .rdv-cal-tete b{font-family:'Space Grotesk',sans-serif;font-size:1.1rem;text-transform:capitalize;}
@@ -2212,7 +2212,9 @@ select:not([multiple]):not([size]){
 .rdv-form{display:flex;flex-direction:column;gap:4px;max-width:440px;}
 .rdv-form label{font-weight:600;font-size:.9rem;margin-top:8px;}
 .rdv-form label small{font-weight:400;color:var(--ink-soft);}
-.rdv-form input,.rdv-form select,.rdv-form textarea{border:1px solid rgba(28,43,57,.2);border-radius:9px;padding:9px 11px;font:inherit;background:#fff;}
+.rdv-form input,.rdv-form select,.rdv-form textarea{border:1px solid rgba(28,43,57,.2);border-radius:9px;padding:9px 11px;font:inherit;background:#fff;width:100%;min-width:0;box-sizing:border-box;}
+.rdv-deux{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 10px;}
+.rdv-deux > div{display:flex;flex-direction:column;gap:4px;}
 .rdv-form .rdv-ok{margin-top:14px;align-self:flex-start;}
 .rdv-retour{align-self:flex-start;background:none;border:none;color:#0C5BA0;font-weight:600;cursor:pointer;padding:0;font-family:inherit;}
 .rdv-recap{display:flex;align-items:center;gap:8px;margin:6px 0 4px;font-size:1.02rem;text-transform:none;}
@@ -2242,7 +2244,7 @@ select:not([multiple]):not([size]){
 .rdv-adm-pastille{display:inline-block;width:12px;height:12px;border-radius:3px;flex:none;}
 .rdv-adm-visio{width:100%;max-width:420px;border:1px solid rgba(28,43,57,.2);border-radius:7px;padding:7px 9px;font:inherit;}
 @media (max-width:700px){
-  .rdv-grille{grid-template-columns:1fr;}
+  .rdv-grille{grid-template-columns:minmax(0,1fr);}
   .rdv-cal{border-right:none;border-bottom:1px solid rgba(28,43,57,.08);padding:16px;}
   .rdv-droite{padding:16px;}
   .rdv-adm-jour{grid-template-columns:1fr;}

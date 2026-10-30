@@ -8,7 +8,7 @@
 // Actions (POST JSON) :
 //  - creneaux { de, a }                 : créneaux libres (AAAA-MM-JJ, heures de Paris), d'après rdv_reglages,
 //                                         les rendez-vous déjà pris et, si l'agenda Google est relié, ses moments occupés.
-//  - reserver { debut, nom, email, etablissement, objet, message } : réserve, crée l'événement Google Agenda avec son
+//  - reserver { debut, prenom, nom, email, etablissement, objet, message } : réserve, crée l'événement Google Agenda avec son
 //                                         lien Meet (sans invitation Google : c'est notre e-mail qui part), envoie l'e-mail
 //                                         de confirmation aux couleurs du site (+ fichier .ics) et un SMS à l'administrateur.
 //  - voir / annuler / deplacer { jeton [, debut] } : lien « Modifier ou annuler » de l'e-mail.
@@ -34,6 +34,9 @@ const ADMIN_EMAIL = "contact@latelieraugmente.fr";
 const OBJETS = ["Présentation du site", "Question sur mon compte", "Projet pour mon établissement", "Autre"];
 const JOUR = /^\d{4}-\d{2}-\d{2}$/;
 const coupe = (s: unknown, n: number) => String(s ?? "").replace(/\s+/g, " ").trim().slice(0, n);
+// « Marie Durand » ; prénom seul pour « Bonjour Marie » (anciens rendez-vous sans prénom : premier mot du nom).
+const qui = (res: any) => [res.prenom, res.nom].filter(Boolean).join(" ");
+const prenomDe = (res: any) => res.prenom || String(res.nom || "").split(" ")[0];
 const esc = (s: unknown) => String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
 // ---------- Dates ----------
@@ -99,7 +102,7 @@ async function googleAgendas(jeton: string) {
 }
 function evenement(res: any) {
   return {
-    summary: `Rendez-vous L'Atelier des Maths – ${res.nom}${res.etablissement ? " (" + res.etablissement + ")" : ""}`,
+    summary: `Rendez-vous L'Atelier des Maths – ${qui(res)}${res.etablissement ? " (" + res.etablissement + ")" : ""}`,
     description: [`Objet : ${res.objet}`, `E-mail : ${res.email}`, res.etablissement ? `Établissement : ${res.etablissement}` : "", res.message ? `Message : ${res.message}` : "",
       `Gérer : ${SITE}/?rdv=${res.jeton}#/rendez-vous`].filter(Boolean).join("\n"),
     start: { dateTime: new Date(res.debut).toISOString(), timeZone: "Europe/Paris" },
@@ -174,7 +177,7 @@ function lienGoogleAgenda(res: any, visio: string) {
     "&dates=" + t(Date.parse(res.debut)) + "/" + t(Date.parse(res.fin)) + "&details=" + encodeURIComponent((visio ? "Visio : " + visio + "\n" : "") + "Modifier ou annuler : " + gerer(res));
 }
 async function mailConfirmation(res: any, visio: string, deplace = false) {
-  const prenom = esc(String(res.nom).split(" ")[0]);
+  const prenom = esc(prenomDe(res));
   const html = gabarit(`<p style="font-size:20px;font-weight:bold;color:#1F3A5C;margin:0 0 12px 0;">${deplace ? "Votre rendez-vous est déplacé" : "Votre rendez-vous est confirmé"}</p>
     <p style="margin:0 0 12px 0;">Bonjour ${prenom},</p>
     <p style="margin:0 0 6px 0;">${deplace ? "Voici le nouvel horaire de notre rendez-vous :" : "Merci pour votre réservation : à bientôt en visio !"}</p>
@@ -189,7 +192,7 @@ async function mailConfirmation(res: any, visio: string, deplace = false) {
 }
 async function mailAnnulation(res: any, parAdmin: boolean) {
   const html = gabarit(`<p style="font-size:20px;font-weight:bold;color:#1F3A5C;margin:0 0 12px 0;">Rendez-vous annulé</p>
-    <p style="margin:0 0 12px 0;">Bonjour ${esc(String(res.nom).split(" ")[0])},</p>
+    <p style="margin:0 0 12px 0;">Bonjour ${esc(prenomDe(res))},</p>
     <p style="margin:0 0 12px 0;">${parAdmin ? "Nous sommes désolés : nous devons annuler notre rendez-vous du" : "Votre rendez-vous du"} <b>${esc(quand(Date.parse(res.debut), Date.parse(res.fin)))}</b>${parAdmin ? "." : " est bien annulé."}</p>
     <p style="margin:0 0 14px 0;">${parAdmin ? "Choisissez un autre créneau quand vous le souhaitez :" : "Vous pouvez en réserver un autre à tout moment :"}</p>
     ${bouton(SITE + "/#/rendez-vous", "Prendre un nouveau rendez-vous")}
@@ -199,7 +202,7 @@ async function mailAnnulation(res: any, parAdmin: boolean) {
 }
 async function mailRappel(res: any, visio: string) {
   const html = gabarit(`<p style="font-size:20px;font-weight:bold;color:#1F3A5C;margin:0 0 12px 0;">Rappel : rendez-vous demain</p>
-    <p style="margin:0 0 12px 0;">Bonjour ${esc(String(res.nom).split(" ")[0])},</p>
+    <p style="margin:0 0 12px 0;">Bonjour ${esc(prenomDe(res))},</p>
     <p style="margin:0 0 6px 0;">Petit rappel de notre rendez-vous :</p>
     ${encadre(res, visio)}
     ${visio ? bouton(visio, "&#127909; Rejoindre la visio") : ""}
@@ -218,7 +221,7 @@ async function prevenirAdmin(message: string, res?: any, annule = false) {
     } catch (_e) { /* le rendez-vous reste enregistré */ }
   }
   if (res && !res.google_event_id) {
-    await envoyerMail(ADMIN_EMAIL, (annule ? "Rendez-vous annulé : " : "Nouveau rendez-vous : ") + res.nom, gabarit(`<p><b>${esc(message)}</b></p>
+    await envoyerMail(ADMIN_EMAIL, (annule ? "Rendez-vous annulé : " : "Nouveau rendez-vous : ") + qui(res), gabarit(`<p><b>${esc(message)}</b></p>
       <p>${esc(res.email)}${res.etablissement ? " · " + esc(res.etablissement) : ""}<br>${esc(res.objet)}${res.message ? "<br>« " + esc(res.message) + " »" : ""}</p>
       <p style="font-size:13px;color:#5B6472;">L'agenda Google n'est pas relié : ouvrez le fichier joint pour ${annule ? "retirer" : "ajouter"} le rendez-vous de votre agenda.</p>`),
       message, ics(res, annule), annule);
@@ -270,8 +273,9 @@ serve(async (req) => {
     if (body.action === "reserver") {
       if (body.site) return json({ ok: true }); // champ piège rempli par un robot
       if (!r.actif) return json({ error: "La prise de rendez-vous est momentanément fermée." }, 403);
-      const nom = coupe(body.nom, 80), email = coupe(body.email, 160).toLowerCase(), etablissement = coupe(body.etablissement, 120);
+      const prenom = coupe(body.prenom, 60), nom = coupe(body.nom, 80), email = coupe(body.email, 160).toLowerCase(), etablissement = coupe(body.etablissement, 120);
       const objet = OBJETS.includes(body.objet) ? body.objet : "", message = String(body.message ?? "").trim().slice(0, 1000);
+      if (!prenom) return json({ error: "Indiquez votre prénom." }, 400);
       if (nom.length < 2) return json({ error: "Indiquez votre nom." }, 400);
       if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email) || /@mathcollege\.local$/.test(email)) return json({ error: "Indiquez une adresse e-mail valide." }, 400);
       if (!objet) return json({ error: "Choisissez l'objet du rendez-vous." }, 400);
@@ -283,7 +287,7 @@ serve(async (req) => {
       if (auth) { try { const { data } = await db.auth.getUser(auth); user_id = data?.user?.id || null; } catch (_e) { /* visiteur */ } }
       const debut = Date.parse(String(body.debut));
       const { data: res, error } = await db.from("rdv_reservations").insert({ debut: new Date(debut).toISOString(), fin: new Date(debut + r.duree_min * 60000).toISOString(),
-        nom, email, etablissement, objet, message, user_id }).select("*").single();
+        prenom, nom, email, etablissement, objet, message, user_id }).select("*").single();
       if (error) return json({ error: /duplicate|unique/i.test(error.message) ? "Ce créneau vient d'être réservé : choisissez-en un autre." : "Réservation impossible pour le moment.", indisponible: true }, 409);
       const g = await google();
       if (g) {
@@ -291,7 +295,7 @@ serve(async (req) => {
         if (ev) { res.google_event_id = ev.id; res.meet_url = ev.meet || null; await db.from("rdv_reservations").update({ google_event_id: ev.id, meet_url: ev.meet || null }).eq("id", res.id); }
       }
       await mailConfirmation(res, visioDe(res));
-      await prevenirAdmin(`RDV ${dateLongue(debut)} ${heure(debut)} : ${nom}${etablissement ? " (" + etablissement + ")" : ""}, ${objet}, ${email}`, res);
+      await prevenirAdmin(`RDV ${dateLongue(debut)} ${heure(debut)} : ${prenom} ${nom}${etablissement ? " (" + etablissement + ")" : ""}, ${objet}, ${email}`, res);
       return json({ ok: true, debut: res.debut, fin: res.fin, jeton: res.jeton, visio: !!visioDe(res) });
     }
 
@@ -299,14 +303,14 @@ serve(async (req) => {
       const { data: res } = await db.from("rdv_reservations").select("*").eq("jeton", String(body.jeton || "")).maybeSingle();
       if (!res) return json({ error: "Ce lien de rendez-vous n'est pas valable." }, 404);
       const passe = Date.parse(res.debut) <= now;
-      if (body.action === "voir") return json({ rdv: { debut: res.debut, fin: res.fin, nom: res.nom, objet: res.objet, statut: res.statut, passe, visio: visioDe(res) } });
+      if (body.action === "voir") return json({ rdv: { debut: res.debut, fin: res.fin, nom: qui(res), objet: res.objet, statut: res.statut, passe, visio: visioDe(res) } });
       if (res.statut !== "confirme" || passe) return json({ error: res.statut !== "confirme" ? "Ce rendez-vous est déjà annulé." : "Ce rendez-vous est passé." }, 400);
       if (body.action === "annuler") {
         await db.from("rdv_reservations").update({ statut: "annule", annule_at: new Date().toISOString(), annule_par: "client" }).eq("id", res.id);
         const g = res.google_event_id ? await google() : null;
         if (g) await googleSupprimer(g, res.google_event_id);
         await mailAnnulation(res, false);
-        await prevenirAdmin(`RDV annulé ${dateLongue(Date.parse(res.debut))} ${heure(Date.parse(res.debut))} : ${res.nom}`, res, true);
+        await prevenirAdmin(`RDV annulé ${dateLongue(Date.parse(res.debut))} ${heure(Date.parse(res.debut))} : ${qui(res)}`, res, true);
         return json({ ok: true });
       }
       if (!(await creneauLibre(String(body.debut), res.id))) return json({ error: "Ce créneau n'est plus disponible : choisissez-en un autre.", indisponible: true }, 409);
@@ -318,7 +322,7 @@ serve(async (req) => {
       const g = res.google_event_id ? await google() : null;
       if (g) await googleModifier(g, res);
       await mailConfirmation(res, visioDe(res), true);
-      await prevenirAdmin(`RDV déplacé : ${res.nom}, du ${dateLongue(Date.parse(ancien))} ${heure(Date.parse(ancien))} au ${dateLongue(debut)} ${heure(debut)}`, res);
+      await prevenirAdmin(`RDV déplacé : ${qui(res)}, du ${dateLongue(Date.parse(ancien))} ${heure(Date.parse(ancien))} au ${dateLongue(debut)} ${heure(debut)}`, res);
       return json({ ok: true, debut: res.debut, fin: res.fin });
     }
 

@@ -64,3 +64,7 @@ select cron.schedule('rdv-purge', '43 3 * * *', $$delete from public.rdv_reserva
 -- Agendas pris en compte (migration rendez_vous_agendas, demandé : « Il faudrait qu'il puisse prendre en compte d'autres
 -- agendas secondaires ou autre ») : identifiants Google, 'primary' = agenda principal.
 alter table public.rdv_reglages add column agendas text[] not null default '{primary}';
+
+-- Prénom à part (migration rendez_vous_prenom, demandé : « Dans le mail, bonjour Prénom serait mieux. Mais il faut avoir
+-- le prénom ») ; nom = nom de famille.
+alter table public.rdv_reservations add column prenom text not null default '';
