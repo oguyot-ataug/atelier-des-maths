@@ -55,7 +55,7 @@ PLANCHES['cp|Ajouter, retirer : premiers problèmes'] = [
       { etoiles: 2, consigne: 'Paul a 3 voitures. Il en reçoit 4 pour son anniversaire. Combien en a-t-il ? Dessine, puis écris le calcul.',
         eleve: cadre(60) + lig('Calcul : ' + B(4)), corr: lig(cpJetons(7, 0, cpBleus(3, 4))) + lig('3 + 4 = ' + R(7)) },
       { etoiles: 2, consigne: 'Faut-il ajouter ou retirer ? Entoure.',
-        ...P3.chx2([['Je gagne 3 billes.', 'ajouter', 'ajouter · retirer'], ['Je perds 2 billes.', 'retirer', 'ajouter · retirer'], ['Je mange 1 bonbon.', 'retirer', 'ajouter · retirer'], ['On me donne 5 images.', 'ajouter', 'ajouter · retirer'], ['J\'achète 2 livres.', 'ajouter', 'ajouter · retirer'], ['Je donne 4 cartes.', 'retirer', 'ajouter · retirer'], ['Je casse 1 crayon.', 'retirer', 'ajouter · retirer'], ['Je trouve 3 coquillages.', 'ajouter', 'ajouter · retirer']]) },
+        ...P3.chx2([['Je gagne 3 billes.', 'ajouter', 'ajouter · retirer'], ['Je perds 2 billes.', 'retirer', 'ajouter · retirer'], ['Je mange 1 bonbon.', 'retirer', 'ajouter · retirer'], ['On me donne 5 images.', 'ajouter', 'ajouter · retirer'], ['J\'achète 2 livres.', 'ajouter', 'ajouter · retirer'], ['Je donne 4 cartes.', 'retirer', 'ajouter · retirer']]) },
     ] },
 ];
 })();

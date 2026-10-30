@@ -17,7 +17,7 @@ PLANCHES['ce2|Problèmes additifs'] = [
       { etoiles: 2, cahier: true, consigne: 'Pour la kermesse, l\'école a vendu 1 475 tickets le samedi et 2 380 le dimanche. Combien de tickets en tout ?',
         corr: cm1Redac('Nombre de tickets', '1 475 + 2 380 = 3 855', 'L\'école a vendu 3 855 tickets.', PQ([[1475, '1 475'], [2380, '2 380']], { accolade: '? tickets' })) },
       { etoiles: 1, col: 1, consigne: 'Calcule.', ...P3.rmp([['356 + @ = 520', 164], ['1 475 + 2 380 = @', '3 855']], 3) },
-      { etoiles: 2, consigne: 'Cherche-t-on le tout ou une partie ? Entoure.', ...P3.chx([['30 élèves, dont 13 filles. Combien de garçons ?', 'une partie', 'le tout · une partie'], ['245 adultes et 128 enfants. Combien de personnes ?', 'le tout', 'le tout · une partie'], ['Un livre de 120 pages ; j\'en ai lu 75. Combien en reste-t-il ?', 'une partie', 'le tout · une partie'], ['36 poules et 18 canards. Combien d\'animaux ?', 'le tout', 'le tout · une partie']]) },
+      { etoiles: 2, consigne: 'Cherche-t-on le tout ou une partie ? Entoure.', ...P3.chx([['30 élèves, dont 13 filles. Combien de garçons ?', 'une partie', 'le tout · une partie'], ['245 adultes et 128 enfants. Combien de personnes ?', 'le tout', 'le tout · une partie']]) },
     ] },
   { titre: 'Transformer, comparer', duree: '30 min',
     attendus: ['Résoudre un problème où une quantité augmente ou diminue', 'Distinguer « de plus » et « de moins »'],
