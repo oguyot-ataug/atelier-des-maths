@@ -17,6 +17,11 @@
 //                             appels IA du jour au-delà du seuil ; à partir de 18 h (Paris), le résumé de
 //                             la journée, une fois par jour.
 //  - { action: 'test' }     : envoie « Alertes SMS : ça marche ».
+//  - { action: 'inscription' } (SANS clé, appelé par le site juste après une inscription de professeur ou de parent --
+//                             demandé le 30/10/2026 : « un SMS direct à chaque demande d'inscription ») : signale tout de
+//                             suite les nouveaux comptes pas encore signalés ; ne renvoie rien d'autre que le nombre envoyé.
+//                             La veille (toutes les 15 minutes, souvent retardée par GitHub) reste le filet de sécurité :
+//                             les deux partagent le repère « comptes-depuis », un compte n'est signalé qu'une fois.
 // Les noms d'élèves ne sont jamais envoyés : seuls les comptes professeur et parent sont signalés.
 //
 // État (dernière veille, dernier résumé, limiteur) : table alertes_etat, lue et écrite par cette
@@ -46,10 +51,11 @@ function paris(d = new Date()) {
   return { jour: `${p.year}-${p.month}-${p.day}`, jourFr: `${p.day}/${p.month}`, heure: +p.hour, minute: +p.minute };
 }
 
+const CORS = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type" };
+
 serve(async (req) => {
+  if (req.method === "OPTIONS") return new Response("ok", { headers: CORS });
   if (req.method !== "POST") return json({ error: "POST attendu" }, 405);
-  const cle = Deno.env.get("ALERTE_CLE");
-  if (!cle || req.headers.get("x-alerte-cle") !== cle) return json({ error: "non autorisé" }, 401);
   const db = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
   const lire = async (k: string) => { const { data } = await db.from("alertes_etat").select("valeur").eq("cle", k).maybeSingle(); return data?.valeur ?? null; };
   const ecrire = (k: string, v: unknown) => db.from("alertes_etat").upsert({ cle: k, valeur: v, updated_at: new Date().toISOString() });
@@ -64,8 +70,26 @@ serve(async (req) => {
     return r;
   };
 
+  // Nouveaux comptes professeur ou parent (jamais les élèves) pas encore signalés : un SMS, puis le repère avance.
+  const signalerComptes = async (depuisDefaut: string) => {
+    const depuisC = String((await lire("comptes-depuis")) || depuisDefaut);
+    const { data: comptes } = await db.from("profiles").select("role,nom,prenom,email,uai,signup_status,created_at").in("role", ["prof", "parent"]).gt("created_at", depuisC).order("created_at");
+    if (!comptes || !comptes.length) return 0;
+    const l = comptes.slice(0, 4).map((c: any) => `${c.role === "prof" ? (c.signup_status === "pending" ? "prof à valider" : "prof") : "parent"} ${coupe(`${c.prenom || ""} ${c.nom || ""}`, 40)}${c.email ? " (" + c.email + ")" : ""}${c.uai ? " " + c.uai : ""}`);
+    const m = `Atelier · ${comptes.length} nouveau${comptes.length > 1 ? "x" : ""} compte${comptes.length > 1 ? "s" : ""} : ${l.join(" ; ")}${comptes.length > 4 ? " ; …" : ""}`;
+    if (!(await envoyer("comptes", m, true)).ok) return 0;
+    await ecrire("comptes-depuis", comptes[comptes.length - 1].created_at);
+    return comptes.length;
+  };
+
   let body: any = {};
   try { body = await req.json(); } catch (_e) { /* corps vide */ }
+  if (body.action === "inscription") {
+    try { return new Response(JSON.stringify({ ok: true, n: await signalerComptes(new Date(Date.now() - 3600000).toISOString()) }), { headers: { ...CORS, "Content-Type": "application/json" } }); }
+    catch (_e) { return new Response(JSON.stringify({ ok: false }), { status: 500, headers: { ...CORS, "Content-Type": "application/json" } }); }
+  }
+  const cle = Deno.env.get("ALERTE_CLE");
+  if (!cle || req.headers.get("x-alerte-cle") !== cle) return json({ error: "non autorisé" }, 401);
   try {
     if (body.action === "test") return json(await envoyer("test", "Alertes SMS de L'Atelier : ça marche !", true));
 
@@ -76,13 +100,8 @@ serve(async (req) => {
     const depuis = await lire("veille");
     if (!depuis) { await ecrire("veille", maintenant); return json({ ok: true, premiere: true }); }
 
-    // 1. Nouveaux comptes professeur ou parent (jamais les élèves).
-    const { data: comptes } = await db.from("profiles").select("role,nom,prenom,email,uai").in("role", ["prof", "parent"]).gt("created_at", depuis).order("created_at");
-    if (comptes && comptes.length) {
-      const l = comptes.slice(0, 4).map((c: any) => `${c.role === "prof" ? "prof" : "parent"} ${coupe(`${c.prenom || ""} ${c.nom || ""}`, 40)}${c.email ? " (" + c.email + ")" : ""}${c.uai ? " " + c.uai : ""}`);
-      const m = `Atelier · ${comptes.length} nouveau${comptes.length > 1 ? "x" : ""} compte${comptes.length > 1 ? "s" : ""} : ${l.join(" ; ")}${comptes.length > 4 ? " ; …" : ""}`;
-      if ((await envoyer("comptes", m, true)).ok) envois.push("comptes");
-    }
+    // 1. Nouveaux comptes professeur ou parent pas encore signalés à l'inscription (jamais les élèves).
+    if (await signalerComptes(String(depuis))) envois.push("comptes");
     // 2. Signalements et suggestions.
     const { data: sig } = await db.from("bug_reports").select("report_type,section,message").gt("created_at", depuis).order("created_at");
     if (sig && sig.length) {

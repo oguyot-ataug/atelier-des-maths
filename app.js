@@ -368,6 +368,9 @@ async function venteCharger(){
 function venteOuverte(test){ return currentUserRole === 'admin' || VENTES_OUVERTES || !!test; }
 const VENTE_MSG = 'Les offres ne sont pas encore en vente. D\'ici là, le site est en démonstration : essayez-le gratuitement.';
 const VENTE_BOUTON = 'Bientôt en vente';
+// SMS immédiat à l'administrateur après une inscription de professeur ou de parent (fonction alerte-sms, action
+// « inscription ») -- demandé le 30/10/2026 : « un SMS direct à chaque demande d'inscription ». Non bloquant.
+function alerteInscription(){ try{ sb.functions.invoke('alerte-sms', { body: { action: 'inscription' } }).catch(() => {}); }catch(e){} }
 /* Paiement intégré au site (Stripe Embedded Checkout) -- demandé le 30/10/2026 : « intègre le paiement ». Les fonctions
    prof-offre et famille renvoient client_secret + clé publique quand on leur passe integre:true (et que la clé publique est
    enregistrée côté serveur) ; sinon l'adresse de la page Stripe, où l'on est redirigé comme avant. Après le paiement,
@@ -3291,6 +3294,7 @@ async function submitProfSignup(){
   // échoue (ex. secret RESEND_API_KEY pas encore configuré côté Supabase), l'inscription
   // elle-même reste enregistrée et valide, seule la notification est manquée.
   try{ await sb.functions.invoke('notify-prof-signup', { body: { nom, prenom, email, uai } }); }catch(e){ /* silencieux, voir commentaire ci-dessus */ }
+  alerteInscription();
 
   status.textContent = VENTES_OUVERTES
     ? "Inscription enregistrée ! Votre compte sera activé après vérification par l'administrateur, avec 15 jours d'essai gratuit à compter de l'activation."
@@ -3336,6 +3340,7 @@ function finaliserInscriptionEnAttente(user){
     try{
       if(m.inscription==='famille' && typeof famCall==='function'){
         await famCall({ action:'inscription', prenom:m.prenom, nom:m.nom, certification:m.certification===true, cgv:m.cgv===true });
+        alerteInscription();
         return true;
       }
       if(m.inscription==='prof' && m.uai){
@@ -3344,6 +3349,7 @@ function finaliserInscriptionEnAttente(user){
           signup_status: 'pending', subscription_status: 'trial' });
         if(error) return false;
         try{ await sb.functions.invoke('notify-prof-signup', { body: { nom: m.nom, prenom: m.prenom, email: user.email, uai: m.uai } }); }catch(e){ /* non bloquant */ }
+        alerteInscription();
         return true;
       }
     }catch(e){ console.warn('Finalisation de l\'inscription :', e); }
@@ -3713,6 +3719,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1206', date:'2026-10-30', items:['SMS immédiat à chaque inscription -- demandé : « Est-ce que je peux avoir un SMS direct à chaque demande d\'inscription ? » Dès qu\'un professeur (demande à valider) ou un parent crée son compte, l\'administrateur reçoit un SMS (nom, adresse, établissement), au lieu d\'attendre la surveillance automatique, que GitHub ne lance parfois que toutes les quelques heures. Elle reste en filet de sécurité ; un compte n\'est signalé qu\'une fois. Jamais de SMS pour les élèves.'] },
   { version:'2026-08-19.1205', date:'2026-10-30', items:['Paiement intégré au site -- demandé : « intègre le paiement ». Le formulaire de paiement sécurisé de Stripe s\'ouvre dans une fenêtre du site (offres professeur et Famille), sans partir sur stripe.com ; après le paiement, on revient sur « Mon abonnement » ou l\'Espace famille. Tant que la clé publique Stripe n\'est pas enregistrée sur le serveur, la page Stripe habituelle prend le relais.', 'Espace famille sans prix tant que les ventes sont fermées -- demandé : « masque les prix famille ». La présentation et l\'espace des parents annoncent « Ouverture des ventes prochainement » au lieu des offres et des prix (sauf comptes marqués « test »).'] },
   { version:'2026-08-19.1204', date:'2026-10-30', items:['Page des tarifs masquée tant que les ventes sont fermées -- demandé : « Oui, masque les prix de la page tarifs ». La page /tarifs/ annonce « Ouverture des ventes prochainement », sans aucun prix : accès gratuit en démonstration pour les professeurs inscrits, contact et prise de rendez-vous pour les établissements. La page complète est gardée hors ligne et sera remise à l\'ouverture des ventes (rappel dans la confirmation « Ouvrir les ventes »).'] },
   { version:'2026-08-19.1203', date:'2026-10-30', items:['« Mon abonnement » pendant la démonstration -- demandé : « j\'espère que abonnement n\'est pas visible pour l\'instant pour les profs non test ». Tant que les ventes sont fermées, un professeur qui n\'est pas marqué « test » n\'y voit que son statut de démonstration et sa classe : ni offres, ni prix, ni bouton de paiement (déjà le cas), et plus de lien vers la page des tarifs en bas de page.'] },

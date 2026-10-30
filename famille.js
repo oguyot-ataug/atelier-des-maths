@@ -190,6 +190,7 @@ async function famSignup(){
   try{
     await famCall({ action:'inscription', prenom, nom, certification:true, cgv:true });
   }catch(e){ btn.disabled = false; return famMsg('famSuMsg', e.message); }
+  if(typeof alerteInscription === 'function') alerteInscription();
   await refreshAuthUI();
   renderFamille();
 }
@@ -202,6 +203,7 @@ async function famFinaliser(){
   if(!document.getElementById('famSuCgv').checked) return famMsg('famSuMsg', 'Merci d\'accepter les conditions générales de vente.');
   try{ await famCall({ action:'inscription', prenom, nom, certification:true, cgv:true }); }
   catch(e){ return famMsg('famSuMsg', e.message); }
+  if(typeof alerteInscription === 'function') alerteInscription();
   await refreshAuthUI();
   renderFamille();
 }
