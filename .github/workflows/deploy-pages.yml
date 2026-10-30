@@ -30,10 +30,10 @@ jobs:
         uses: actions/checkout@v5
       - name: Configuration de Pages
         uses: actions/configure-pages@v6
-      - name: Préparation du contenu à publier (exclut .git et .github)
+      - name: Préparation du contenu à publier (exclut .git, .github et _hors-ligne)
         run: |
           mkdir _site
-          rsync -a --exclude='.git' --exclude='.github' --exclude='_site' ./ _site/
+          rsync -a --exclude='.git' --exclude='.github' --exclude='_site' --exclude='_hors-ligne' ./ _site/
       - name: Empaquetage du site (contenu statique, sans compilation)
         uses: actions/upload-pages-artifact@v5
         with:

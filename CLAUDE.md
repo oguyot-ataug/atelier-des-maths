@@ -124,3 +124,11 @@ dans `chapitres/ce1/_anims.js`, ou le même `sub-header` avec `data-oliv-plus`),
 plus loin : … », ses exercices préfixés « Pour aller plus loin : ». Ce qui manque au programme est ajouté au
 chapitre concerné. CE1 contrôlé en entier, CP, 5e, 4e et 3e complétés (build 1194), CM1 et 6e (build 1195).
 À la 4e et à la 3e, le contrôle suit l'ancien programme (2020) et ses attendus de fin d'année tant qu'il est en vigueur.
+
+## Ventes fermées : page des tarifs hors ligne (depuis le 30/10/2026, build 1204)
+
+Tant que les ventes ne sont pas ouvertes (bouton « Ouvrir les ventes » d'Administration › Offres profs), `tarifs/index.html`
+est une page d'attente sans aucun prix (« Ouverture des ventes prochainement »). La page complète des tarifs est gardée dans
+`_hors-ligne/tarifs.html`, dossier exclu de la publication (`deploy-pages.yml`). À l'ouverture des ventes : la recopier dans
+`tarifs/index.html` (en retirant le bandeau « Ouverture des ventes prochainement »). Les comptes non « test » ne voient ni
+offres, ni prix, ni lien vers les tarifs dans « Mon abonnement ».

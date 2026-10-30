@@ -526,7 +526,7 @@ async function opAdminRefresh(){
 }
 async function opAdminVentes(ouvrir){
   const ok = await niceConfirm(ouvrir
-    ? 'Ouvrir les ventes ? Les professeurs et les familles pourront payer par carte, avec de vrais paiements. Les professeurs en démonstration commencent alors leurs 15 jours d\'essai (prévenez-les). À faire seulement une fois l\'autorisation de cumul d\'activités obtenue.'
+    ? 'Ouvrir les ventes ? Les professeurs et les familles pourront payer par carte, avec de vrais paiements. Les professeurs en démonstration commencent alors leurs 15 jours d\'essai (prévenez-les). À faire seulement une fois l\'autorisation de cumul d\'activités obtenue. Pensez ensuite à remettre en ligne la page des tarifs (gardée dans _hors-ligne/tarifs.html).'
     : 'Fermer les ventes ? Plus aucun paiement réel ne sera possible jusqu\'à leur réouverture.');
   if(!ok) return;
   const { error } = await sb.from('prof_parametres').update({ ventes_ouvertes: !!ouvrir, updated_at: new Date().toISOString() }).eq('id', 1);
