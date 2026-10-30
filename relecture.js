@@ -96,7 +96,7 @@ const RELECTURE_CHGT = {
   'CE2-N4-P1-E1': { date: '2026-10-30T19:40:00Z', note: "Huit figures plus petites sur quatre colonnes, la fraction toujours sous sa figure ; à l'écran, chaque fraction s'écrit dans ses deux cases" },
   'CE2-N4-P1-E5': { date: '2026-10-30T19:40:00Z', note: "Les fractions des choix s'affichent bien à l'écran (depuis le 28/10) ; deux exemples de plus, sur deux colonnes" },
   '5e-N7-P1-E1': { date: '2026-10-30T19:40:00Z', note: "À l'écran, « 6 × 6 » est accepté, tapé avec la touche × du clavier, avec * ou avec x (la réponse attendue restait écrite en LaTeX) ; vaut pour toutes les planches" },
-  '5e-N7-P1-E3': { date: '2026-10-30T19:40:00Z', note: "À l'écran, la base et l'exposant s'écrivent chacun dans leur case (l'exposant en petit, en haut) ; une 4e ligne (7 × 7 × 7)" },
+  '5e-N7-P1-E3': { date: '2026-10-30T20:05:00Z', note: "À l'écran, la base et l'exposant s'écrivent chacun dans leur case ; la case de l'exposant est petite et surélevée, collée à la base (comme une vraie puissance) ; une 4e ligne (7 × 7 × 7)" },
   '5e-N7-P1-E4': { date: '2026-10-30T19:40:00Z', note: "Vrai ou faux en tableau : l'égalité à gauche, « vrai faux » alignés à droite ; une 4e égalité (1³ = 1). Sur papier, les exposants s'impriment bien (6² et non « 6^2 », défaut corrigé pour toutes les planches)" },
   '5e-N7-P2-E1': { date: '2026-10-30T19:40:00Z', note: "À l'écran, la base s'écrit dans une case, le ² est déjà imprimé" },
   '5e-N7-P2-E2': { date: '2026-10-30T19:40:00Z', note: "À l'écran, la base s'écrit dans une case, le ³ est déjà imprimé ; une 4e ligne (8 = 2³)" },

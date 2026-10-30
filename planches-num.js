@@ -648,6 +648,10 @@ function plClavierPhysique(e){
     .cx-td .pn-ex, .cx-td.pn-ex{ font-size:1.1rem; line-height:1.5; } @media (min-width:700px){ .cx-td.pn-ex{ zoom:1.3; } } .cx-td svg{ max-width:100%; height:auto; }
     .pn-ex .pn-case{ white-space:pre; display:inline-flex; align-items:center; justify-content:center; min-width:30px; height:26px; padding:0 5px; border:2px solid #3A6EA5; border-radius:6px; background:#fff;
       font:700 1rem 'Space Grotesk',Arial,sans-serif; color:#1F3A5C; cursor:pointer; vertical-align:middle; margin:0 2px; }
+    /* Exposant à écrire (« @<sup>@</sup> ») : petite case surélevée, collée à la base -- signalé le 30/10/2026 (5e-N7) : la
+       case de l'exposant avait la taille et la hauteur de celle de la base, on ne voyait pas la puissance. */
+    .pn-ex sup{ vertical-align:baseline; position:relative; top:-.7em; line-height:0; }
+    .pn-ex sup .pn-case{ min-width:24px !important; width:auto; height:22px; padding:0 3px; margin:0 1px 0 -1px; font-size:.85rem; border-width:1.5px; border-radius:5px; }
     .pn-ex .pn-case.pn-ret{ min-width:0; width:17px; height:17px; padding:0; border-width:1.5px; border-style:dashed; border-color:#F0A36B; border-radius:4px; font:700 .72rem 'JetBrains Mono',monospace; color:#E35D3A; z-index:1; }
     .pn-ex .pn-case.pn-ret.pn-vide{ background:rgba(255,255,255,.85); } .pn-ex .pn-case.pn-ret:not(.pn-vide){ border-style:solid; border-color:transparent; background:transparent; }
     .pn-ex .pn-case.pn-ret.pn-sel{ border-style:solid; border-color:#E35D3A; background:#FFF6F2; } .pn-ex .pn-ret-b:not(.pn-vide)::before{ content:'+'; }
