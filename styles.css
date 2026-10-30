@@ -2274,3 +2274,8 @@ select:not([multiple]):not([size]){
   .rdv-edt-c{font-size:.68rem;}
   .rdv-edt{padding:0 6px 14px 0;}
 }
+
+/* Questions flash avec dessin (CP, CE1) : dessin agrandi dans l'essai (flash-prets.js › fpEnonceHtml) */
+.fp-essai-q .cpn-rang{margin:8px 0 2px;}
+.fp-essai-q svg.pl-libre{width:auto !important;height:110px !important;max-width:100%;}
+.fp-essai-q .cpn-code svg.pl-libre{height:40px !important;}

@@ -97,8 +97,43 @@ function fpFigCoherente(x){
 }
 
 // Au format des questionnaires (QCM à une bonne réponse : compatible avec les cartes A à D).
+/* ---------- Questions écrites avec un dessin dans l'énoncé (CP, CE1 : dés, doigts, pommes, jetons, flèches de code…) ----------
+   Signalé le 30/10/2026 (« Question flash 1er chapitre CP ») : le dessin s'affichait en code (ses x et y pris pour des
+   variables). À l'écran (choix des questions, essai) : le texte mis en forme et les dessins tels quels ; en séance (format
+   questionnaire) : le texte, un dessin glissé dans la phrase devenant « (voir le dessin) », et tous les dessins réunis en
+   une image. Seules les questions écrites dans le site sont concernées, jamais celles de l'IA. */
+function fpAvecDessin(x){ return !!x && !x.ia && /<(svg|div|span)\b/i.test(String(x.q)); }
+function fpNoeuds(q){ const t = document.createElement('template'); t.innerHTML = String(q); return [...t.content.childNodes]; }
+function fpEnonceHtml(x){
+  if(!fpAvecDessin(x)) return qzMath(fpTex(x.q));
+  return fpNoeuds(x.q).map(n => n.nodeType === 3 ? qzMath(fpTex(n.textContent)) : n.nodeType === 1 ? n.outerHTML : '').join('');
+}
+function fpEnonceTexte(x){
+  if(!fpAvecDessin(x)) return x.q;
+  const ns = fpNoeuds(x.q);
+  return ns.map((n, i) => n.nodeType === 3 ? n.textContent
+    : n.nodeType === 1 && ns.slice(i + 1).some(m => m.nodeType === 3 && m.textContent.trim()) ? ' (voir le dessin) ' : ' ')
+    .join('').replace(/\s+/g, ' ').replace(/\s+([.,])/g, '$1').trim(); // espace gardée devant ? ! ; : (typographie française)
+}
+function fpDessinUri(x){
+  if(!fpAvecDessin(x)) return null;
+  const t = document.createElement('template'); t.innerHTML = String(x.q);
+  const morceaux = [...t.content.querySelectorAll('svg')].filter(s => !s.parentElement || !s.parentElement.closest('svg')).map(s => {
+    const vb = (s.getAttribute('viewBox') || '').trim().split(/[\s,]+/).map(Number), avecVb = vb.length === 4 && vb[2] > 0 && vb[3] > 0;
+    const w = parseFloat(s.style.width) || parseFloat(s.getAttribute('width')) || (avecVb ? vb[2] : 100);
+    return { s, w, h: avecVb ? w * vb[3] / vb[2] : (parseFloat(s.getAttribute('height')) || w) };
+  });
+  if(!morceaux.length) return null;
+  const ecart = 14, W = morceaux.reduce((a, m) => a + m.w, 0) + ecart * (morceaux.length - 1), H = Math.max(...morceaux.map(m => m.h));
+  let x0 = 0;
+  const interieur = morceaux.map(m => { const c = m.s.cloneNode(true); c.removeAttribute('style'); c.removeAttribute('class');
+    c.setAttribute('x', x0); c.setAttribute('y', (H - m.h) / 2); c.setAttribute('width', m.w); c.setAttribute('height', m.h); x0 += m.w + ecart; return c.outerHTML; }).join('');
+  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="${Math.round(W * 2)}" height="${Math.round(H * 2)}" viewBox="0 0 ${W} ${H}">${interieur}</svg>`);
+}
+
 function fpVersQuestionnaire(liste){
-  return liste.map((x, i) => ({ id: 'fp' + i, type: 'qcm', enonce: fpTex(x.q), points: 1, competence: '', ...(x.fig && fpFigUri(x.fig) ? { image: fpFigUri(x.fig) } : {}),
+  return liste.map((x, i) => ({ id: 'fp' + i, type: 'qcm', enonce: fpTex(fpEnonceTexte(x)), points: 1, competence: '',
+    ...(x.fig && fpFigUri(x.fig) ? { image: fpFigUri(x.fig) } : fpDessinUri(x) ? { image: fpDessinUri(x) } : {}),
     choix: x.r.map((t, j) => ({ id: 'fp' + i + 'c' + j, texte: fpTex(t), correct: j === x.ok })) }));
 }
 
@@ -140,7 +175,7 @@ function fpRanger(liste, lecons){
   const sets = lecons.map(l => new Set(fpMots(l.titre + ' ' + l.titre + ' ' + l.texte))), df = new Map();
   sets.forEach(S => S.forEach(w => df.set(w, (df.get(w) || 0) + 1)));
   liste.forEach(x => { if(x.l != null) return; // déjà rangée (questions IA : indice ; questions prêtes : voir fpOuvrir)
-    const mots = fpMots(x.q + ' ' + x.r.join(' ')); let best = -1, bs = 0;
+    const mots = fpMots(fpEnonceTexte(x) + ' ' + x.r.join(' ')); let best = -1, bs = 0;
     sets.forEach((S, k) => { const sc = mots.reduce((a, w) => a + (S.has(w) ? 1 / df.get(w) : 0), 0); if(sc > bs){ bs = sc; best = k; } });
     x.l = best >= 0 && bs >= .5 ? best : null; });
 }
@@ -177,7 +212,7 @@ function fpEssayer(liste, titre){
     o.innerHTML = `<div class="qzd-modal fp-essai" role="dialog" aria-label="Essayer les questions flash">
       <div class="fp-essai-tete"><b><span class="gicon">quiz</span> Essai · ${qzEsc(titre)}</b><span>${fini ? 'Terminé' : `Question ${i + 1} / ${liste.length}`}</span><button type="button" class="modal-close" data-x><span class="gicon">close</span></button></div>
       ${fini ? `<div class="fp-essai-fin"><b>${bons} / ${liste.length}</b> bonne${bons > 1 ? 's' : ''} réponse${bons > 1 ? 's' : ''}.<p class="hint">Rien n'est enregistré : c'était pour essayer les questions avant la classe.</p><button type="button" class="btn" data-x>Fermer</button></div>`
-      : `<div class="fp-essai-q">${qzMath(fpTex(x.q))}${fpFigHtml(x.fig, 'fp-essai-fig')}</div>
+      : `<div class="fp-essai-q">${fpEnonceHtml(x)}${fpFigHtml(x.fig, 'fp-essai-fig')}</div>
       <div class="fp-essai-r">${x.r.map((t, j) => `<button type="button" class="fp-essai-c${choisi == null ? '' : j === x.ok ? ' ok' : j === choisi ? ' ko' : ' off'}" data-c="${j}" ${choisi == null ? '' : 'disabled'}><span class="fp-l">${FP_LETTRES[j]}</span> ${qzMath(fpTex(t))}</button>`).join('')}</div>
       <div class="fp-actions"><span class="hint" style="margin:0;">${choisi == null ? 'Choisissez une réponse.' : choisi === x.ok ? '<b style="color:#1E7A4F;">Juste !</b>' : `<b style="color:#9E1F5E;">Non :</b> la bonne réponse est ${FP_LETTRES[x.ok]}.`}</span><span style="flex:1"></span>
         <button type="button" class="btn" data-suiv ${choisi == null ? 'disabled' : ''}>${i + 1 < liste.length ? 'Question suivante' : 'Voir le résultat'} <span class="gicon">arrow_forward</span></button></div>`}</div>`;
@@ -216,7 +251,7 @@ function fpOuvrir(lvl, titre){
       ${iaOk ? `<div class="fp-ia"><span class="gicon">auto_awesome</span> <span>Générer avec l'IA ${lec ? `sur « ${qzEsc(lec.titre)} »` : 'sur tout le chapitre'} :</span>
         ${[5, 10].map(n => `<button type="button" class="btn secondary qz-mini" data-ia="${n}" ${attente ? 'disabled' : ''}>${n} questions</button>`).join('')}${attente ? '<span class="hint" style="margin:0;">Génération en cours…</span>' : ''}${msg ? `<span class="hint" style="margin:0;">${msg}</span>` : ''}</div>` : ''}
       <div class="fp-liste">${vis.length ? vis.map(({ x, k }) => `<label class="fp-q${gardees.has(k) ? '' : ' off'}"><input type="checkbox" data-k="${k}" ${gardees.has(k) ? 'checked' : ''}>
-        <span><b>${qzMath(fpTex(x.q))}</b>${fpFigHtml(x.fig)}${x.ia ? ' <span class="fp-tag">IA</span>' : ''}${filtre === 'tout' && x.l != null && lecons[x.l] ? ` <span class="fp-tag fp-tag-l">${qzEsc(lecons[x.l].num)}. ${qzEsc(lecons[x.l].titre)}</span>` : ''}
+        <span><b>${fpEnonceHtml(x)}</b>${fpFigHtml(x.fig)}${x.ia ? ' <span class="fp-tag">IA</span>' : ''}${filtre === 'tout' && x.l != null && lecons[x.l] ? ` <span class="fp-tag fp-tag-l">${qzEsc(lecons[x.l].num)}. ${qzEsc(lecons[x.l].titre)}</span>` : ''}
           <span class="fp-r">${x.r.map((t, j) => `<span class="${j === x.ok ? 'ok' : ''}"><span class="fp-l">${FP_LETTRES[j]}</span> ${qzMath(fpTex(t))}</span>`).join('')}</span></span>
         ${x.ia ? `<button type="button" class="fp-suppr" data-suppr="${k}" title="Supprimer cette question"><span class="gicon">delete</span></button>` : ''}</label>`).join('')
         : `<p class="hint">Pas encore de question prête sur cette partie.${iaOk ? ' Générez-en avec l\'IA ci-dessus.' : ' Avec l\'option IA (Mon compte › Intelligence artificielle), vous pourriez en générer.'}</p>`}</div>
