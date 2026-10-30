@@ -136,9 +136,12 @@ offres, ni prix, ni lien vers les tarifs dans « Mon abonnement », ni prix dans
 Paiement intégré au site (Stripe Embedded Checkout, build 1205) : `paiementOuvrir` (app.js) ; les fonctions prof-offre et famille
 renvoient client_secret + clé publique si les secrets STRIPE_TEST_PUBLISHABLE_KEY / STRIPE_PUBLISHABLE_KEY existent, sinon la page Stripe.
 
-## Prise de rendez-vous : Cal.com (depuis le 30/10/2026, build 1208)
+## Prise de rendez-vous : outil du site (depuis le 30/10/2026, build 1213)
 
-Page « Prendre rendez-vous » (`#/rendez-vous`, `rdv.js`, accès : menu du compte, pied de page, /professeurs/, /tarifs/ ; pour tous sauf
-les élèves) : agenda Cal.com `cal.com/latelierdesmaths/rendez-vous` intégré au site
-(nom affiché « L'Atelier des Maths », jamais le nom de l'administrateur ; relié à son agenda Google et à Google Meet). Ne plus
-utiliser le lien de l'agenda Google (calendar.google.com/…/appointments), qui affiche son nom.
+Page « Prendre rendez-vous » (`#/rendez-vous`, `rdv.js` ; accès : menu du compte, pied de page, /professeurs/, /tarifs/ ; pour
+tous sauf les élèves). Fonction `rdv` (verify_jwt non ; calcul des créneaux dans `supabase/functions/rdv/creneaux.ts`), tables
+`rdv_reglages` et `rdv_reservations` (`supabase/sql/2026-10-30-rendez-vous.sql`), réglages dans Administration › Rendez-vous.
+E-mails aux couleurs du site (Resend, rendez-vous@latelieraugmente.fr), SMS par `alerte-sms` (sans_limite), rappels la veille et
+purge à un an par pg_cron. Agenda Google relié par un compte de service (secrets GOOGLE_RDV_CLE, GOOGLE_RDV_COMPTE) : jamais
+d'invitation Google (sendUpdates=none), le nom de l'administrateur n'apparaît nulle part. Cal.com et l'agenda de rendez-vous
+Google ne sont plus utilisés.

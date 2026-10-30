@@ -2183,7 +2183,66 @@ select:not([multiple]):not([size]){
 .paiement-fermer:hover{background:rgba(255,255,255,.15);}
 #paiementStripe{min-height:300px;}
 
-/* Prendre rendez-vous (rdv.js) : agenda Google intégré */
-.rdv-cadre{background:#fff;border-radius:14px;box-shadow:var(--shadow);overflow:hidden;margin-top:14px;}
-#rdvAgenda{min-height:640px;}
-#rdvAgenda iframe{display:block;width:100%;border:0;}
+/* Prendre rendez-vous (rdv.js) : outil de réservation du site */
+.rdv-cadre{background:#fff;border-radius:16px;box-shadow:var(--shadow);overflow:hidden;margin-top:14px;max-width:900px;}
+#rdvAgenda{min-height:420px;}
+.rdv-grille{display:grid;grid-template-columns:minmax(260px,330px) 1fr;}
+.rdv-cal{padding:22px 22px 18px;border-right:1px solid rgba(28,43,57,.08);}
+.rdv-cal-tete{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.rdv-cal-tete b{font-family:'Space Grotesk',sans-serif;font-size:1.1rem;text-transform:capitalize;}
+.rdv-nav{background:none;border:1px solid rgba(28,43,57,.12);border-radius:8px;width:34px;height:34px;cursor:pointer;color:var(--ink);margin-left:4px;}
+.rdv-nav:disabled{opacity:.35;cursor:default;}
+.rdv-sem,.rdv-jours{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center;}
+.rdv-sem span{font-size:.75rem;font-weight:700;color:var(--ink-soft);padding:4px 0;}
+.rdv-jours.charge{opacity:.45;}
+.rdv-j{aspect-ratio:1;border:none;border-radius:10px;background:none;color:#B6BDC6;font-weight:600;font-size:.92rem;font-family:inherit;}
+.rdv-j.libre{background:rgba(12,91,160,.09);color:#0C5BA0;cursor:pointer;}
+.rdv-j.libre:hover{background:rgba(12,91,160,.18);}
+.rdv-j.choisi{background:#0C5BA0;color:#fff;}
+.rdv-j.auj{box-shadow:inset 0 0 0 2px rgba(255,130,8,.6);}
+.rdv-info{margin:14px 0 0;font-size:.85rem;color:var(--ink-soft);display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center;}
+.rdv-info .gicon{font-size:1.05em;}
+.rdv-droite{padding:22px 24px;}
+.rdv-titre-jour{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.05rem;margin:0 0 12px;}
+.rdv-heures{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px;}
+.rdv-h{border:1.5px solid #0C5BA0;color:#0C5BA0;background:#fff;border-radius:10px;padding:11px 6px;font-weight:700;font-size:.98rem;cursor:pointer;font-family:inherit;}
+.rdv-h:hover{background:#0C5BA0;color:#fff;}
+.rdv-vide,.rdv-erreur{padding:24px;color:var(--ink-soft);margin:0;}
+.rdv-erreur{color:#B3261E;}
+.rdv-form{display:flex;flex-direction:column;gap:4px;max-width:440px;}
+.rdv-form label{font-weight:600;font-size:.9rem;margin-top:8px;}
+.rdv-form label small{font-weight:400;color:var(--ink-soft);}
+.rdv-form input,.rdv-form select,.rdv-form textarea{border:1px solid rgba(28,43,57,.2);border-radius:9px;padding:9px 11px;font:inherit;background:#fff;}
+.rdv-form .rdv-ok{margin-top:14px;align-self:flex-start;}
+.rdv-retour{align-self:flex-start;background:none;border:none;color:#0C5BA0;font-weight:600;cursor:pointer;padding:0;font-family:inherit;}
+.rdv-recap{display:flex;align-items:center;gap:8px;margin:6px 0 4px;font-size:1.02rem;text-transform:none;}
+.rdv-recap .gicon{color:#0C5BA0;}
+.rdv-rgpd{font-size:.8rem;margin-top:8px !important;}
+.rdv-piege{position:absolute;left:-9999px;width:1px;height:1px;opacity:0;}
+.rdv-fait,.rdv-gestion{padding:30px 28px;text-align:center;}
+.rdv-gestion{text-align:left;}
+.rdv-fait > .gicon{font-size:52px;color:#1E7B34;}
+.rdv-fait h2,.rdv-gestion h2{font-family:'Space Grotesk',sans-serif;margin:6px 0 10px;}
+.rdv-fait p{max-width:56ch;margin:6px auto 12px;}
+.rdv-gestion-actions{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0 6px;}
+.rdv-annuler{color:#B3261E !important;}
+.rdv-etat{font-weight:700;color:var(--ink-soft);}
+.rdv-etat.annule{color:#B3261E;}
+.rdv-tab td{vertical-align:top;}
+.rdv-tab tr.rdv-annule td{opacity:.55;}
+.rdv-adm-ligne{display:flex;align-items:center;gap:8px;margin:8px 0;}
+.rdv-adm-jour{display:grid;grid-template-columns:100px 1fr;gap:8px;align-items:center;padding:6px 0;border-bottom:1px solid rgba(28,43,57,.06);}
+.rdv-adm-jour b{text-transform:capitalize;}
+.rdv-adm-jour > span{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;}
+.rdv-adm-plage{display:inline-flex;align-items:center;gap:6px;margin:3px 0;flex-wrap:wrap;}
+.rdv-adm-plage input{border:1px solid rgba(28,43,57,.2);border-radius:7px;padding:4px 6px;font:inherit;}
+.rdv-adm-x{background:none;border:none;color:#B3261E;font-size:1.2rem;cursor:pointer;line-height:1;}
+.rdv-adm-grille{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px 16px;margin:12px 0 4px;}
+.rdv-adm-grille input{width:72px;border:1px solid rgba(28,43,57,.2);border-radius:7px;padding:4px 6px;font:inherit;}
+.rdv-adm-visio{width:100%;max-width:420px;border:1px solid rgba(28,43,57,.2);border-radius:7px;padding:7px 9px;font:inherit;}
+@media (max-width:700px){
+  .rdv-grille{grid-template-columns:1fr;}
+  .rdv-cal{border-right:none;border-bottom:1px solid rgba(28,43,57,.08);padding:16px;}
+  .rdv-droite{padding:16px;}
+  .rdv-adm-jour{grid-template-columns:1fr;}
+}

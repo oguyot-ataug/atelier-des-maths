@@ -93,7 +93,8 @@ serve(async (req) => {
   try {
     if (body.action === "test") return json(await envoyer("test", "Alertes SMS de L'Atelier : ça marche !", true));
 
-    if (body.type && body.message) return json(await envoyer(String(body.type).slice(0, 40), "Atelier · " + String(body.message)));
+    // sans_limite : un SMS par événement (rendez-vous pris, déplacé ou annulé, fonction rdv), sans le limiteur de 30 minutes.
+    if (body.type && body.message) return json(await envoyer(String(body.type).slice(0, 40), "Atelier · " + String(body.message), body.sans_limite === true));
 
     if (body.action !== "veille") return json({ error: "action inconnue" }, 400);
     const maintenant = new Date().toISOString(), envois: string[] = [];
