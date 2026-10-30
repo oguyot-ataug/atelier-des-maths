@@ -520,7 +520,9 @@ function plFigerMaths(el){
   for(let n = tw.nextNode(); n; n = tw.nextNode()) if(/\d \d{3}/.test(n.nodeValue)) n.nodeValue = n.nodeValue.replace(/(\d) (?=\d{3}(?!\d))/g, '$1\u00a0');
   el.querySelectorAll('span.tex').forEach(t => {
     const h = t.textContent.replace(/\\[dt]?frac\{([^{}]*)\}\{([^{}]*)\}/g, (m, a, b) => `<span class="pl-f"><span>${a}</span><span>${b}</span></span>`);
-    if(!/\\/.test(h)){ const sp = document.createElement('span'); sp.className = 'pl-tex'; sp.innerHTML = h; t.replaceWith(sp);
+    // Formule sans aucune notation LaTeX (après les fractions) : texte simple ; sinon KaTeX. Un exposant « 6^2 » ou une
+    // virgule « 0{,}3 » sans commande \… restait imprimé tel quel (vu à la relecture 5e-N7, 30/10/2026).
+    if(!/[\\^_{}]/.test(h)){ const sp = document.createElement('span'); sp.className = 'pl-tex'; sp.innerHTML = h; t.replaceWith(sp);
       // La ponctuation qui suit une fraction reste sur sa ligne (pas de « . » seul en début de ligne).
       const n = sp.nextSibling;
       if(n && n.nodeType === 3 && /^[.,;:!?)]/.test(n.nodeValue)){ const w = document.createElement('span'); w.style.whiteSpace = 'nowrap'; sp.replaceWith(w); w.append(sp, n.nodeValue[0]); n.nodeValue = n.nodeValue.slice(1); } }

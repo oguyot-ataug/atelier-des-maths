@@ -7,6 +7,8 @@
    Relecture CE2-N4 (28/10/2026) : plus d'exemples là où il restait de la place, deux problèmes côte à côte,
    « identique » au lieu de « pareille » ; à l'écran, fraction à écrire dans des cases et choix en LaTeX rendus
    (planches-num.js).
+   Relecture CE2-N4-P1-E1 (30/10/2026, « On peut en mettre plus en réduisant un peu la taille des figures ») : 8 figures
+   plus petites sur 4 colonnes, la fraction toujours sous sa figure.
    ============================================================ */
 (() => {
 const { rmp, chx } = P3, F = cm1Frac;
@@ -16,20 +18,28 @@ const fracT = (a, b) => `<span class="pl-frac">${a == null ? '<span class="pl-ca
 const egal = l => ({ eleve: plListe(l.map(([a, b, haut, r, t]) => `${F(a, b)} = ${haut ? fracT(null, t) : fracT(t, null)}`)),
   corr: plListe(l.map(([a, b, haut, r, t]) => `${F(a, b)} = ${P3.R(haut ? F(r, t) : F(t, r))}`)) });
 const bande = (n, k) => cm1Bande(n, k, { largeur: 200 }).replace(/style="width:[^;]*;max-width:[^;]*;/, 'style="width:210px;max-width:100%;');
+// Petite figure (bande ou disque) avec, dessous, sa fraction : [figure, contenu sous la figure].
+const petite = f => f[0] === 'b' ? cm1Bande(f[1], f[2], { largeur: 200 }).replace(/style="width:[^;]*;max-width:[^;]*;/, 'style="width:140px;max-width:100%;') : cm1Disque(f[1], f[2], { taille: 62 });
+const sousFig = (fig, bas) => `<div style="display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:6px;width:100%;height:100%;">${fig}<div>${bas}</div></div>`;
+// Deux listes côte à côte (la place à droite est utilisée).
+const deux = (x, y) => `<div style="display:flex;justify-content:space-around;flex-wrap:wrap;gap:4px 24px;">${x}${y}</div>`;
+const LIRE = [['b', 4, 3], ['b', 6, 1], ['d', 8, 5], ['d', 3, 2], ['b', 10, 7], ['d', 6, 5], ['b', 5, 2], ['d', 4, 1]];
 PLANCHES['ce2|Fractions égales'] = [
   { titre: 'Une fraction d\'un tout', duree: '25 min',
     attendus: ['Lire et écrire une fraction d\'une bande ou d\'un disque', 'Savoir ce que représentent le numérateur et le dénominateur'],
     exos: [
       { etoiles: 1, consigne: 'Écris la fraction coloriée.',
-        eleve: plGrille([bande(4, 3), bande(6, 1), cm1Disque(8, 5), cm1Disque(3, 2), bande(10, 7), cm1Disque(6, 5)].map(f => f + '<br>' + plFrac()), 3),
-        corr: plGrille([[bande(4, 3), 3, 4], [bande(6, 1), 1, 6], [cm1Disque(8, 5), 5, 8], [cm1Disque(3, 2), 2, 3], [bande(10, 7), 7, 10], [cm1Disque(6, 5), 5, 6]].map(([f, a, b]) => f + '<br>' + P3.R(F(a, b))), 3) },
+        eleve: plGrille(LIRE.map(f => sousFig(petite(f), plFrac())), 4),
+        corr: plGrille(LIRE.map(f => sousFig(petite(f), P3.R(F(f[2], f[1])))), 4) },
       { etoiles: 1, consigne: 'Colorie la fraction demandée.',
         eleve: plGrille([bande(5, 0) + '<br>' + F(2, 5), bande(3, 0) + '<br>' + F(3, 3), bande(10, 0) + '<br>' + F(7, 10)], 3),
         corr: plGrille([bande(5, 2) + '<br>' + F(2, 5), bande(3, 3) + '<br>' + F(3, 3), bande(10, 7) + '<br>' + F(7, 10)], 3) },
       { etoiles: 2, col: 1, consigne: 'Complète.',
         ...rmp([[`Dans ${F(3, 8)}, l'unité est partagée en @ parts égales.`, 8], [`Dans ${F(3, 8)}, on prend @ parts.`, 3], [`${F(4, 4)} est égal à @ unité.`, 1]], 3) },
       { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['Une pizza en 8 parts égales : une part, c\'est @ de la pizza.', cm1Frac(1, 8)], ['Les 8 parts font @ pizza.', 1]], 3) },
-      { etoiles: 2, col: 1, consigne: 'Entoure la plus grande part.', ...P3.chx([['', cm1Frac(1, 3), `${cm1Frac(1, 3)} · ${cm1Frac(1, 6)}`], ['', cm1Frac(1, 2), `${cm1Frac(1, 2)} · ${cm1Frac(1, 8)}`]]) },
+      { etoiles: 2, col: 1, consigne: 'Entoure la plus grande part.',
+        ...(() => { const g = P3.chx([['', F(1, 3), `${F(1, 3)} · ${F(1, 6)}`], ['', F(1, 2), `${F(1, 2)} · ${F(1, 8)}`]]), d = P3.chx([['', F(1, 4), `${F(1, 10)} · ${F(1, 4)}`], ['', F(1, 5), `${F(1, 5)} · ${F(1, 9)}`]]);
+          return { eleve: deux(g.eleve, d.eleve), corr: deux(g.corr, d.corr) }; })() },
     ] },
   { titre: 'Des fractions égales', duree: '30 min',
     attendus: ['Trouver des fractions égales avec des bandes', 'Expliquer : des parts deux fois plus petites, deux fois plus de parts'],
@@ -42,8 +52,7 @@ PLANCHES['ce2|Fractions égales'] = [
         ...egal([[3, 4, true, 6, 8], [1, 3, true, 2, 6], [2, 5, true, 4, 10], [5, 6, true, 10, 12], [1, 4, false, 12, 3], [2, 3, false, 9, 6], [1, 5, true, 2, 10], [3, 4, false, 12, 9]]) },
       { etoiles: 2, consigne: 'Entoure si l\'égalité est vraie ou fausse.',
         ...(() => { const V = 'vraie · fausse', g = P3.chxTab([[`${F(2, 4)} = ${F(1, 2)}`, 'vraie', V], [`${F(2, 3)} = ${F(3, 4)}`, 'fausse', V], [`${F(6, 8)} = ${F(3, 4)}`, 'vraie', V]]),
-            d = P3.chxTab([[`${F(1, 3)} = ${F(2, 6)}`, 'vraie', V], [`${F(2, 5)} = ${F(4, 5)}`, 'fausse', V], [`${F(4, 12)} = ${F(1, 3)}`, 'vraie', V]]),
-            deux = (x, y) => `<div style="display:flex;justify-content:space-around;flex-wrap:wrap;gap:4px 24px;">${x}${y}</div>`;
+            d = P3.chxTab([[`${F(1, 3)} = ${F(2, 6)}`, 'vraie', V], [`${F(2, 5)} = ${F(4, 5)}`, 'fausse', V], [`${F(4, 12)} = ${F(1, 3)}`, 'vraie', V]]);
           return { eleve: deux(g.eleve, d.eleve), corr: deux(g.corr, d.corr) }; })() },
       { etoiles: 3, col: 1, cahier: true, consigne: `Léo a mangé ${F(2, 6)} d'une tarte, Inès ${F(1, 3)} d'une tarte identique. Qui a mangé le plus ? Explique avec un dessin.`,
         corr: cm1Redac('Comparer', `${F(1, 3)} = ${F(2, 6)}`, 'Si on coupe chaque tiers en deux, on obtient 2 sixièmes : Léo et Inès ont mangé autant de tarte.', bande(3, 1) + '<br>' + bande(6, 2)) },

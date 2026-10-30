@@ -2,6 +2,9 @@
    5e · Planches : Puissances (N7)
    Carré et cube, carrés de 0 à 12 et cube de 10, écrire un nombre comme une puissance, priorités,
    expressions littérales avec une puissance simple, problèmes d'aire et de volume.
+   Relecture 5e-N7 (30/10/2026) : à l'écran, les exposants se complètent dans une case en exposant (comme en 3e),
+   « 6 × 6 » tapé au clavier est accepté (planches-num.js) ; vrai ou faux en tableau ; « 64 de deux façons » devient
+   « sous la forme d'un carré, puis d'un cube » (une seule réponse juste pour chaque case).
    ============================================================ */
 (() => {
 const T = cm1Tex, R = P3.R, B = P3.B;
@@ -11,17 +14,17 @@ PLANCHES['5e|Puissances'] = [
     exos: [
       { etoiles: 1, col: 1, consigne: 'Écris sous la forme d\'un produit, puis calcule.', ...P3.rmp([[`${T('6^2')} = @ = @`, T('6 \\times 6'), 36], [`${T('4^3')} = @ = @`, T('4 \\times 4 \\times 4'), 64], [`${T('0{,}3^2')} = @ = @`, T('0{,}3 \\times 0{,}3'), '0,09']], 5) },
       { etoiles: 1, col: 1, consigne: 'Complète sans calculatrice.', ...P3.rmp([[`${T('7^2')} = @`, 49], [`${T('11^2')} = @`, 121], [`${T('12^2')} = @`, 144], [`${T('10^3')} = @`, '1 000']], 3) },
-      { etoiles: 2, col: 1, consigne: 'Écris avec une puissance.', ...P3.rmp([[`${T('5 \\times 5')} = @`, T('5^2')], [`${T('2 \\times 2 \\times 2')} = @`, T('2^3')], [`${T('9 \\times 9')} = @`, T('9^2')]], 3) },
-      { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.', ...P3.chx([[`${T('3^2 = 6')}`, 'faux', 'vrai · faux'], [`${T('10^2 = 100')}`, 'vrai', 'vrai · faux'], [`${T('2^3 = 3^2')}`, 'faux', 'vrai · faux']]) },
+      { etoiles: 2, col: 1, consigne: 'Écris avec une puissance.', ...P3.rmp([[`${T('5 \\times 5')} = @<sup>@</sup>`, 5, 2], [`${T('2 \\times 2 \\times 2')} = @<sup>@</sup>`, 2, 3], [`${T('9 \\times 9')} = @<sup>@</sup>`, 9, 2], [`${T('7 \\times 7 \\times 7')} = @<sup>@</sup>`, 7, 3]], 2) },
+      { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.', ...P3.chxTab([[T('3^2 = 6'), 'faux', 'vrai · faux'], [T('10^2 = 100'), 'vrai', 'vrai · faux'], [T('2^3 = 3^2'), 'faux', 'vrai · faux'], [T('1^3 = 1'), 'vrai', 'vrai · faux']]) },
       { etoiles: 3, cahier: true, consigne: 'Léa dit : « 5² = 10 ». Explique son erreur.', corr: cm1Redac('L\'erreur de Léa', T('5^2 = 5 \\times 5 = 25'), 'Léa a calculé 5 × 2. Le carré de 5, c\'est 5 multiplié par lui-même : 25.') },
     ] },
   { titre: 'Écrire un nombre comme une puissance', duree: '25 min',
     attendus: ['Écrire un nombre sous la forme d\'un carré ou d\'un cube'],
     exos: [
-      { etoiles: 1, col: 1, consigne: 'Écris sous la forme d\'un carré.', ...P3.rmp([['36 = @', T('6^2')], ['81 = @', T('9^2')], ['100 = @', T('10^2')], ['144 = @', T('12^2')]], 3) },
-      { etoiles: 2, col: 1, consigne: 'Écris sous la forme d\'un cube.', ...P3.rmp([['27 = @', T('3^3')], ['125 = @', T('5^3')], ['1 000 = @', T('10^3')]], 3) },
-      { etoiles: 2, col: 1, consigne: 'Écris 64 de deux façons.', ...P3.rmp([['64 = @ = @', T('8^2'), T('4^3')]], 3) },
-      { etoiles: 3, col: 1, consigne: 'Entre quels carrés consécutifs se trouve chaque nombre ?', ...P3.rmp([['@ &lt; 50 &lt; @', T('7^2'), T('8^2')], ['@ &lt; 130 &lt; @', T('11^2'), T('12^2')]], 3) },
+      { etoiles: 1, col: 1, consigne: 'Écris sous la forme d\'un carré.', ...P3.rmp([['36 = @<sup>2</sup>', 6], ['81 = @<sup>2</sup>', 9], ['100 = @<sup>2</sup>', 10], ['144 = @<sup>2</sup>', 12]], 2) },
+      { etoiles: 2, col: 1, consigne: 'Écris sous la forme d\'un cube.', ...P3.rmp([['27 = @<sup>3</sup>', 3], ['125 = @<sup>3</sup>', 5], ['1 000 = @<sup>3</sup>', 10], ['8 = @<sup>3</sup>', 2]], 2) },
+      { etoiles: 2, col: 1, consigne: 'Écris 64 sous la forme d\'un carré, puis sous la forme d\'un cube.', ...P3.rmp([['64 = @<sup>2</sup> = @<sup>3</sup>', 8, 4]], 2) },
+      { etoiles: 3, col: 1, consigne: 'Entre quels carrés consécutifs se trouve chaque nombre ?', ...P3.rmp([['@<sup>2</sup> &lt; 50 &lt; @<sup>2</sup>', 7, 8], ['@<sup>2</sup> &lt; 130 &lt; @<sup>2</sup>', 11, 12]], 2) },
     ] },
   { titre: 'Calculer avec des puissances', duree: '35 min',
     attendus: ['Respecter les priorités : puissances, puis multiplications, puis additions', 'Calculer une expression littérale avec une puissance'],

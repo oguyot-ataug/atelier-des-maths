@@ -28,7 +28,7 @@
 const plNumCache = new Map();
 // Normalisation d'une réponse : espaces, casse, ponctuation finale ; un nombre perd ses zéros de tête
 // (« 05 » minutes = « 5 ») et ses espaces (« 1 200 » = « 1200 »).
-const plNumNorm = s => { const t = String(s ?? '').replace(/[\u00a0\u202f]/g, ' ').replace(/\s+/g, ' ').trim().toLowerCase().replace(/[.!]$/, '').replace(/’/g, '\''), n = t.replace(/(\d) (?=\d)/g, '$1').replace(/[−–]/g, '-'); if(/^\d+$/.test(n)) return String(+n); return /[a-zà-ÿ]/i.test(n) ? (/[a-zà-ÿ]{3,}/i.test(t) ? t.replace(/[−–]/g, '-') : n.replace(/\s+/g, '')) : n.replace(/\s+/g, ''); }; // calcul littéral (« 5x + 3 », « 12 h 30 ») : sans espaces non plus // calcul (« 5 000 000 + 8 ») : sans espaces
+const plNumNorm = s => { const t = String(s ?? '').replace(/(\d)\s*[*xX]\s*(?=\d)/g, '$1 × ').replace(/\*/g, '×').replace(/[\u00a0\u202f]/g, ' ').replace(/\s+/g, ' ').trim().toLowerCase().replace(/[.!]$/, '').replace(/’/g, '\''), n = t.replace(/(\d) (?=\d)/g, '$1').replace(/[−–]/g, '-'); if(/^\d+$/.test(n)) return String(+n); return /[a-zà-ÿ]/i.test(n) ? (/[a-zà-ÿ]{3,}/i.test(t) ? t.replace(/[−–]/g, '-') : n.replace(/\s+/g, '')) : n.replace(/\s+/g, ''); }; // calcul littéral (« 5x + 3 », « 12 h 30 ») : sans espaces non plus // calcul (« 5 000 000 + 8 ») : sans espaces
 // Grands nombres écrits par classes -- relecture 6e-N1-P1 : « En version numérique, respecter l'écriture avec
 // espace des grands nombres ». Un entier de 4 chiffres ou plus doit être écrit par classes de trois chiffres
 // séparées par un espace (2 300 000) ; « 2300000 » ou « 2 30 0000 » sont faux. La partie décimale n'est pas concernée.
@@ -44,6 +44,21 @@ function plNumClassesOk(s){
   return true;
 }
 // Valeur d'un nombre écrit par l'élève (espaces, virgule) ; null si ce n'est pas un nombre.
+// Texte d'une réponse du corrigé, les formules (cm1Tex, rendues ou non par KaTeX) en écriture courante : « 6 \times 6 »
+// → « 6 × 6 », « 0{,}3 » → « 0,3 », « 5^2 » → « 5² » -- signalé le 30/10/2026 (relecture 5e-N7-P1-E1) : « 6*6 (en utilisant
+// le fois du clavier virtuel) en ligne est compté faux » (la réponse attendue restait écrite en LaTeX).
+function plNumTexPlat(s){
+  const SUP = { 0: '⁰', 1: '¹', 2: '²', 3: '³', 4: '⁴', 5: '⁵', 6: '⁶', 7: '⁷', 8: '⁸', 9: '⁹', '-': '⁻' };
+  return String(s).replace(/\\(times|cdot)/g, ' × ').replace(/\\div/g, ' ÷ ').replace(/\{,\}/g, ',').replace(/\\[,;!: ]/g, ' ')
+    .replace(/\\d?frac\{([^{}]*)\}\{([^{}]*)\}/g, '$1/$2').replace(/\^\{?(-?\d+)\}?/g, (m, e) => [...e].map(x => SUP[x]).join(''))
+    .replace(/\\[a-zA-Z]+/g, '').replace(/[{}]/g, '');
+}
+function plNumTxt(el){
+  const c = el.cloneNode(true);
+  c.querySelectorAll('.tex').forEach(k => { const a = k.querySelector('annotation'); k.replaceWith(document.createTextNode(plNumTexPlat(a ? a.textContent : k.textContent))); });
+  c.querySelectorAll('.katex').forEach(k => { const a = k.querySelector('annotation'); k.replaceWith(document.createTextNode(plNumTexPlat(a ? a.textContent : k.textContent))); });
+  return c.textContent;
+}
 function plNumVal(s){ const t = String(s ?? '').replace(/[\u00a0\u202f\s]/g, '').replace(',', '.').replace(/[−–]/g, '-'); return /^-?\d+(\.\d+)?$/.test(t) ? +t : null; }
 // Fraction écrite en LaTeX dans un bout de corrigé : [numérateur, dénominateur] ou null.
 function plNumFracDe(el){
@@ -123,9 +138,9 @@ function plNumAnalyser(x){
       if(r.dataset.entre){ const [a, b] = r.dataset.entre.split('|').map(plNumVal); // réponse ouverte : un nombre entre a et b
         tr.outerHTML = `<button type="button" class="pn-case" data-pn="${id}" data-pnv="${id}" style="min-width:${Math.min(320, r.textContent.trim().length * 12 + 26)}px"></button>`;
         cibles.push({ type: 'entre', id, rep: [a, b] }); continue; }
-      const rep = plNumNorm(r.textContent); if(!rep) return null;
+      const rTxt = plNumTxt(r), rep = plNumNorm(rTxt); if(!rep) return null;
       const large = tr.classList.contains('pl-pts') && /[a-z]/i.test(rep);
-      const lg = r.textContent.replace(/\s+/g, ' ').trim().length; // case à la taille de la réponse attendue
+      const lg = rTxt.replace(/\s+/g, ' ').trim().length; // case à la taille de la réponse attendue
       // Case à la taille de la réponse attendue, avec de la marge, dès le départ : elle ne grandit pas quand on écrit
       // (relecture CP-N2-P3-E1, CP-N3-P1 : « quand on écrit 10, la case se décale », « les cases réponses bougent »).
       tr.outerHTML = `<button type="button" class="pn-case${large ? ' pn-large' : ''}${tr.classList.contains('pl-case-seule') ? ' pn-signe' : ''}" data-pn="${id}" data-pnv="${id}"${!tr.classList.contains('pl-case-seule') && !large ? ` style="min-width:${Math.min(320, Math.max(46, lg * 12 + 26))}px"` : ''}></button>`;
