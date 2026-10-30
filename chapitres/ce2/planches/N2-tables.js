@@ -2,9 +2,11 @@
    CE2 · Planches : Tables d'addition et de multiplication (N2)
    Tables dans les deux sens (égalités à trou), doubles et moitiés usuels, multiples de 25,
    décompositions multiplicatives de 60. Fin de CE2 : 15 additions et 12 multiplications en une minute.
+   Relecture CE2-N2-P3-E4 (30/10/2026) : « oui non » en tableau, détaché de la question (« Tabulation pour ne pas coller
+   oui non à la question »).
    ============================================================ */
 (() => {
-const { rmp, chx } = P3;
+const { rmp, chx, chxTab } = P3;
 const { svg } = CM2G;
 // Rangées de jetons (l rangées de c).
 const jetons = (l, c) => { let g = ''; for(let i = 0; i < l; i++) for(let j = 0; j < c; j++) g += `<circle cx="${12 + j * 20}" cy="${12 + i * 20}" r="7.5" fill="${i % 2 ? '#E35D3A' : '#2EA8C9'}" stroke="#1F3A5C" stroke-width=".8"/>`; return svg(c * 20 + 4, l * 20 + 4, g, Math.min(200, c * 20 + 4)); };
@@ -49,7 +51,7 @@ PLANCHES['ce2|Tables d\'addition et de multiplication'] = [
       { etoiles: 2, col: 1, consigne: 'Complète.',
         ...rmp([['25 × 2 = @', 50], ['25 × @ = 75', 3], ['25 × 4 = @', 100], ['@ × 25 = 50', 2]], 3) },
       { etoiles: 2, col: 1, consigne: 'Entoure les produits qui font 60.',
-        ...chx([['4 × 15', 'oui', 'oui · non'], ['5 × 11', 'non', 'oui · non'], ['3 × 20', 'oui', 'oui · non'], ['6 × 12', 'non', 'oui · non'], ['5 × 12', 'oui', 'oui · non']]) },
+        ...chxTab([['4 × 15', 'oui', 'oui · non'], ['5 × 11', 'non', 'oui · non'], ['3 × 20', 'oui', 'oui · non'], ['6 × 12', 'non', 'oui · non'], ['5 × 12', 'oui', 'oui · non']]) },
       { etoiles: 3, cahier: true, consigne: 'Un billet de cinéma coûte 25 €. Paul achète des billets pour lui et ses trois amis. Il paie avec deux billets de 50 €. Combien lui rend-on ?',
         corr: cm1Redac('Prix des billets', '25 × 4 = 100', 'Les 4 billets coûtent 100 €.') + cm1Redac('Somme donnée', '50 + 50 = 100', 'Paul donne 100 € : on ne lui rend rien.') },
       { etoiles: 2, col: 1, consigne: 'Calcule.', ...P3.rmp([['25 × 4 = @', 100], ['50 × 2 = @', 100], ['20 × 5 = @', 100], ['250 × 4 = @', '1 000']], 3) },
