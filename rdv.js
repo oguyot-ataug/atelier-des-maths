@@ -6,13 +6,16 @@
    Ouverte depuis le menu du compte (visiteurs et adultes connectés), le pied de page, la page /professeurs/ et la page
    /tarifs/ (#/rendez-vous) -- « Cette fonctionnalité ne devrait pas être réservée qu'aux professeurs » ; jamais
    proposée aux élèves. Le lien « Modifier ou annuler » des e-mails ouvre /?rdv=<jeton>#/rendez-vous.
+   Deux vues : « Semaine », un emploi du temps de 8 h à 20 h (22 h au plus) -- demandé : « Peux-tu faire une vue "emploi du
+   temps semaine" ? de 8h à 20h (ou 22h max) » --, par défaut, et « Mois » (calendrier puis créneaux du jour).
    Administration : onglet « Rendez-vous » (plages horaires, durée, pause, préavis, périodes bloquées, liste).
    ============================================================ */
 
 const RDV_OBJETS = ['Présentation du site', 'Question sur mon compte', 'Projet pour mon établissement', 'Autre'];
 const RDV_JOURS = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'];
 const RDV_MOIS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
-let rdvEtat = { mois: null, creneaux: {}, jour: null, choix: null, etape: 'choix', jeton: null, rdv: null, fait: null, charge: false };
+let rdvEtat = { vue: 'semaine', mois: null, lundi: null, creneaux: {}, jour: null, choix: null, etape: 'choix',
+  jeton: null, rdv: null, fait: null, charge: false, essais: 0 };
 
 const rdvEsc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const rdvIso = (y, m, d) => new Date(Date.UTC(y, m, d)).toISOString().slice(0, 10);
@@ -23,6 +26,9 @@ const rdvParisJour = new Intl.DateTimeFormat('fr-FR', { timeZone: 'Europe/Paris'
 const rdvParisHeure = new Intl.DateTimeFormat('fr-FR', { timeZone: 'Europe/Paris', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' });
 const rdvQuand = iso => rdvParisJour.format(new Date(iso)) + ' à ' + rdvHeure(rdvParisHeure.format(new Date(iso)));
 const rdvMaj = s => s.charAt(0).toUpperCase() + s.slice(1);
+const rdvIsoDate = d => rdvIso(d.getFullYear(), d.getMonth(), d.getDate());
+const rdvLundiDe = d => { const x = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 12); x.setDate(x.getDate() - (x.getDay() + 6) % 7); return x; };
+const rdvMinutes = hhmm => { const [h, m] = hhmm.split(':').map(Number); return h * 60 + m; };
 
 async function rdvAppel(corps){
   const { data, error } = await sb.functions.invoke('rdv', { body: corps });
@@ -40,8 +46,39 @@ function rdvOuvrir(){
   showView('view-rdv'); setActiveTopnav(null);
   if(rdvEtat.jeton) return rdvGestion();
   if(rdvEtat.fait){ rdvEtat.fait = null; rdvEtat.etape = 'choix'; }
-  if(!rdvEtat.charge) rdvChargerMois(null);
+  if(!rdvEtat.charge) rdvRecharger(null);
   else rdvRendre();
+}
+
+// decalage : null au premier affichage (période sans créneau : on avance, 4 fois au plus), 0 pour recharger, ±1 pour naviguer.
+function rdvRecharger(decalage){ return rdvEtat.vue === 'semaine' ? rdvChargerSemaine(decalage) : rdvChargerMois(decalage); }
+function rdvChangerVue(v){
+  if(rdvEtat.vue === v) return;
+  rdvEtat.vue = v; rdvEtat.etape = 'choix';
+  const base = rdvEtat.jour ? new Date(rdvEtat.jour + 'T12:00') : rdvEtat.lundi ? new Date(rdvEtat.lundi + 'T12:00') : new Date();
+  if(v === 'semaine') rdvEtat.lundi = rdvIsoDate(rdvLundiDe(base));
+  else rdvEtat.mois = { y: base.getFullYear(), m: base.getMonth() };
+  rdvRecharger(0);
+}
+async function rdvChargerPeriode(de, a, decalage, suivant){
+  rdvEtat.charge = true; rdvEtat.chargement = true; rdvRendre();
+  try{
+    const d = de > a ? { creneaux: [] } : await rdvAppel({ action: 'creneaux', de, a });
+    rdvEtat.creneaux = {}; rdvEtat.ferme = !!d.ferme; rdvEtat.duree = d.duree || rdvEtat.duree || 30;
+    (d.creneaux || []).forEach(c => (rdvEtat.creneaux[c.jour] = rdvEtat.creneaux[c.jour] || []).push(c));
+    rdvEtat.erreur = null;
+    const jours = Object.keys(rdvEtat.creneaux).sort();
+    if(!jours.length && decalage === null && rdvEtat.essais < 4){ rdvEtat.essais++; rdvEtat.chargement = false; return suivant(); }
+    rdvEtat.jour = jours.includes(rdvEtat.jour) ? rdvEtat.jour : (jours[0] || null);
+  }catch(e){ rdvEtat.erreur = e.message; }
+  rdvEtat.chargement = false; rdvRendre();
+}
+async function rdvChargerSemaine(decalage){
+  const aujIso = rdvIsoDate(new Date());
+  if(!rdvEtat.lundi) rdvEtat.lundi = rdvIsoDate(rdvLundiDe(new Date()));
+  if(decalage){ const t = new Date(rdvEtat.lundi + 'T12:00'); t.setDate(t.getDate() + 7 * decalage); rdvEtat.lundi = rdvIsoDate(t); }
+  const dim = new Date(rdvEtat.lundi + 'T12:00'); dim.setDate(dim.getDate() + 6);
+  return rdvChargerPeriode(rdvEtat.lundi < aujIso ? aujIso : rdvEtat.lundi, rdvIsoDate(dim), decalage, () => rdvChargerSemaine(1));
 }
 
 /* ---------- Réservation ---------- */
@@ -49,21 +86,8 @@ async function rdvChargerMois(decalage){
   const auj = new Date();
   if(!rdvEtat.mois) rdvEtat.mois = { y: auj.getFullYear(), m: auj.getMonth() };
   if(decalage){ const t = new Date(rdvEtat.mois.y, rdvEtat.mois.m + decalage, 1); rdvEtat.mois = { y: t.getFullYear(), m: t.getMonth() }; }
-  const { y, m } = rdvEtat.mois;
-  const de = rdvIso(y, m, 1) < rdvIso(auj.getFullYear(), auj.getMonth(), auj.getDate()) ? rdvIso(auj.getFullYear(), auj.getMonth(), auj.getDate()) : rdvIso(y, m, 1);
-  const a = rdvIso(y, m + 1, 0);
-  rdvEtat.charge = true; rdvEtat.chargement = true; rdvRendre();
-  try{
-    const d = de > a ? { creneaux: [] } : await rdvAppel({ action: 'creneaux', de, a });
-    rdvEtat.creneaux = {}; rdvEtat.ferme = !!d.ferme; rdvEtat.duree = d.duree || rdvEtat.duree || 30;
-    (d.creneaux || []).forEach(c => (rdvEtat.creneaux[c.jour] = rdvEtat.creneaux[c.jour] || []).push(c));
-    rdvEtat.erreur = null;
-    // Premier jour libre du mois choisi d'office ; mois sans créneau au premier affichage : on passe au suivant.
-    const jours = Object.keys(rdvEtat.creneaux).sort();
-    if(!jours.length && decalage === null && !rdvEtat.essai){ rdvEtat.essai = true; rdvEtat.chargement = false; return rdvChargerMois(1); }
-    rdvEtat.jour = jours.includes(rdvEtat.jour) ? rdvEtat.jour : (jours[0] || null);
-  }catch(e){ rdvEtat.erreur = e.message; }
-  rdvEtat.chargement = false; rdvRendre();
+  const { y, m } = rdvEtat.mois, aujIso = rdvIsoDate(auj);
+  return rdvChargerPeriode(rdvIso(y, m, 1) < aujIso ? aujIso : rdvIso(y, m, 1), rdvIso(y, m + 1, 0), decalage, () => rdvChargerMois(1));
 }
 
 function rdvRendre(){
@@ -71,7 +95,13 @@ function rdvRendre(){
   if(rdvEtat.fait) return rdvRendreFait(box);
   if(rdvEtat.erreur){ box.innerHTML = `<p class="rdv-erreur">${rdvEsc(rdvEtat.erreur)}</p>`; return; }
   if(rdvEtat.ferme){ box.innerHTML = `<p class="rdv-vide">La prise de rendez-vous est momentanément fermée. Écrivez-nous à contact@latelieraugmente.fr.</p>`; return; }
-  box.innerHTML = `<div class="rdv-grille">${rdvCalendrierHtml()}<div class="rdv-droite" id="rdvDroite">${rdvEtat.etape === 'form' && rdvEtat.choix ? rdvFormHtml() : rdvHeuresHtml()}</div></div>`;
+  const form = rdvEtat.etape === 'form' && rdvEtat.choix;
+  const barre = `<div class="rdv-barre"><div class="rdv-vues" role="group" aria-label="Affichage">
+      <button type="button" class="${rdvEtat.vue === 'semaine' ? 'on' : ''}" onclick="rdvChangerVue('semaine')"><span class="gicon">view_week</span> Semaine</button>
+      <button type="button" class="${rdvEtat.vue === 'mois' ? 'on' : ''}" onclick="rdvChangerVue('mois')"><span class="gicon">calendar_month</span> Mois</button></div>
+    <span class="rdv-info"><span class="gicon">schedule</span> ${rdvEtat.duree || 30} min · <span class="gicon">videocam</span> visio Google Meet · heure de Paris</span></div>`;
+  if(rdvEtat.vue === 'semaine') box.innerHTML = form ? `<div class="rdv-droite">${rdvFormHtml()}</div>` : barre + rdvSemaineHtml();
+  else box.innerHTML = (form ? '' : barre) + `<div class="rdv-grille">${rdvCalendrierHtml()}<div class="rdv-droite" id="rdvDroite">${form ? rdvFormHtml() : rdvHeuresHtml()}</div></div>`;
   if(rdvEtat.etape === 'form') rdvPreremplirForm();
 }
 
@@ -91,8 +121,40 @@ function rdvCalendrierHtml(){
       <button type="button" class="rdv-nav" onclick="rdvChargerMois(1)" aria-label="Mois suivant"><span class="gicon">chevron_right</span></button></span></div>
     <div class="rdv-sem">${['L', 'M', 'M', 'J', 'V', 'S', 'D'].map(x => `<span>${x}</span>`).join('')}</div>
     <div class="rdv-jours${rdvEtat.chargement ? ' charge' : ''}">${cases}</div>
-    <p class="rdv-info"><span class="gicon">schedule</span> ${rdvEtat.duree || 30} min · <span class="gicon">videocam</span> visio Google Meet · heure de Paris</p>
   </div>`;
+}
+
+// Emploi du temps de la semaine : du lundi au samedi (le dimanche s'il a des créneaux), de 8 h à 20 h, prolongé jusqu'à
+// 22 h au plus si un créneau finit plus tard ; chaque créneau libre est placé à son heure.
+const RDV_PX_HEURE = 64;
+function rdvSemaineHtml(){
+  const l = new Date(rdvEtat.lundi + 'T12:00'), aujIso = rdvIsoDate(new Date()), duree = rdvEtat.duree || 30;
+  const jours = [...Array(7)].map((_, i) => { const d = new Date(l); d.setDate(l.getDate() + i); return rdvIsoDate(d); });
+  const visibles = jours.filter((j, i) => i < 6 || (rdvEtat.creneaux[j] || []).length);
+  let h0 = 8, h1 = 20;
+  visibles.forEach(j => (rdvEtat.creneaux[j] || []).forEach(c => { const m = rdvMinutes(c.heure); h0 = Math.min(h0, Math.floor(m / 60)); h1 = Math.max(h1, Math.ceil((m + duree) / 60)); }));
+  h0 = Math.max(h0, 6); h1 = Math.min(h1, 22);
+  const px = m => (m - h0 * 60) / 60 * RDV_PX_HEURE;
+  const dernier = jours[6], [ly, lm, ld] = rdvEtat.lundi.split('-').map(Number), [dy, dm, dd] = dernier.split('-').map(Number);
+  const titre = `Semaine du ${ld === 1 ? '1er' : ld}${lm !== dm ? ' ' + RDV_MOIS[lm - 1] : ''} au ${dd === 1 ? '1er' : dd} ${RDV_MOIS[dm - 1]} ${dy}`;
+  const avant = rdvEtat.lundi <= rdvIsoDate(rdvLundiDe(new Date()));
+  const vide = !rdvEtat.chargement && !visibles.some(j => (rdvEtat.creneaux[j] || []).length);
+  const heures = [...Array(h1 - h0 + 1)].map((_, i) => `<span style="top:${i * RDV_PX_HEURE}px;">${h0 + i} h</span>`).join('');
+  const colonnes = visibles.map(j => {
+    const cr = (rdvEtat.creneaux[j] || []).filter(c => { const m = rdvMinutes(c.heure); return m >= h0 * 60 && m + duree <= h1 * 60; });
+    return `<div class="rdv-edt-col${j < aujIso ? ' passe' : ''}${j === aujIso ? ' auj' : ''}">${cr.map(c => `<button type="button" class="rdv-edt-c" style="top:${px(rdvMinutes(c.heure))}px;height:${duree / 60 * RDV_PX_HEURE - 3}px;" onclick="rdvChoisirHeure('${c.debut}')" title="${rdvEsc(rdvMaj(rdvJourLong(j)))} à ${rdvHeure(c.heure)}">${rdvHeure(c.heure)}</button>`).join('')}</div>`;
+  }).join('');
+  return `<div class="rdv-edt-tete-nav"><b>${titre}</b><span>
+      <button type="button" class="rdv-nav" onclick="rdvChargerSemaine(-1)" ${avant ? 'disabled' : ''} aria-label="Semaine précédente"><span class="gicon">chevron_left</span></button>
+      <button type="button" class="rdv-nav" onclick="rdvChargerSemaine(1)" aria-label="Semaine suivante"><span class="gicon">chevron_right</span></button></span></div>
+    ${vide ? `<p class="rdv-vide" style="padding:4px 20px 10px;">Aucun créneau libre cette semaine : <a href="#" onclick="rdvChargerSemaine(1);return false;">semaine suivante</a>.</p>` : ''}
+    <div class="rdv-edt${rdvEtat.chargement ? ' charge' : ''}" style="--n:${visibles.length};">
+      <div class="rdv-edt-tete"><span></span>${visibles.map(j => { const [, , d] = j.split('-').map(Number), w = (new Date(j + 'T12:00').getDay() + 6) % 7;
+        return `<span class="${j === aujIso ? 'auj' : ''}"><b>${RDV_JOURS[w].slice(0, 3)}.</b> ${d}</span>`; }).join('')}</div>
+      <div class="rdv-edt-corps" style="height:${(h1 - h0) * RDV_PX_HEURE}px;--ph:${RDV_PX_HEURE}px;">
+        <div class="rdv-edt-heures">${heures}</div>${colonnes}
+      </div>
+    </div>`;
 }
 
 function rdvHeuresHtml(){
@@ -166,7 +228,7 @@ async function rdvReserver(){
     rdvRendre(); window.scrollTo({ top: 0, behavior: 'smooth' });
   }catch(e){
     btn.disabled = false; msg.textContent = e.message;
-    if(e.indisponible){ rdvEtat.etape = 'choix'; setTimeout(() => rdvChargerMois(0), 1800); }
+    if(e.indisponible){ rdvEtat.etape = 'choix'; setTimeout(() => rdvRecharger(0), 1800); }
   }
 }
 
@@ -176,7 +238,7 @@ function rdvRendreFait(box){
     <h2>Rendez-vous confirmé</h2>
     <p><b>${rdvEsc(rdvQuand(f.debut))}</b> (heure de Paris)</p>
     <p>Un e-mail de confirmation vient de partir vers <b>${rdvEsc(f.email)}</b>, avec ${f.visio ? 'le lien de la visio' : 'tous les détails'}, un fichier à ajouter à votre agenda et un lien pour modifier ou annuler. Pensez à regarder dans les indésirables.</p>
-    <button type="button" class="btn secondary" onclick="rdvEtat.fait=null;rdvChargerMois(0);">Prendre un autre rendez-vous</button></div>`;
+    <button type="button" class="btn secondary" onclick="rdvEtat.fait=null;rdvRecharger(0);">Prendre un autre rendez-vous</button></div>`;
 }
 
 /* ---------- Modifier ou annuler (lien de l'e-mail) ---------- */
@@ -198,7 +260,7 @@ async function rdvGestion(){
     <div id="rdvDeplacer"></div>
     <p style="margin-top:18px;"><button class="btn secondary" onclick="rdvQuitterGestion()">Prendre un autre rendez-vous</button></p></div>`;
 }
-function rdvQuitterGestion(){ rdvEtat.jeton = null; rdvEtat.charge = false; rdvOuvrir(); }
+function rdvQuitterGestion(){ rdvEtat.jeton = null; rdvEtat.charge = false; rdvEtat.essais = 0; rdvOuvrir(); }
 async function rdvAnnuler(){
   if(!confirm('Annuler ce rendez-vous ?')) return;
   const msg = document.getElementById('rdvGestionMsg'); msg.textContent = 'Annulation…';
@@ -207,7 +269,7 @@ async function rdvAnnuler(){
 }
 // Nouvel horaire : le même calendrier, sous le rendez-vous actuel.
 async function rdvDeplacerChoisir(){
-  rdvEtat.deplacement = true; rdvEtat.charge = false; rdvEtat.mois = null; rdvEtat.essai = false;
+  rdvEtat.deplacement = true; rdvEtat.charge = false; rdvEtat.mois = null; rdvEtat.lundi = null; rdvEtat.essais = 0;
   const zone = document.getElementById('rdvDeplacer');
   zone.innerHTML = '<p class="rdv-titre-jour" style="margin-top:16px;">Choisissez le nouvel horaire</p><div id="rdvAgendaDeplacement"></div>';
   const vrai = document.getElementById('rdvAgenda'); vrai.id = 'rdvAgendaGestion';
@@ -217,9 +279,9 @@ async function rdvDeplacerChoisir(){
     try{
       await rdvAppel({ action: 'deplacer', jeton: rdvEtat.jeton, debut });
       location.replace(location.pathname + '?rdv=' + encodeURIComponent(rdvEtat.jeton) + '&deplace=1#/rendez-vous');
-    }catch(e){ m.textContent = e.message; if(e.indisponible) rdvChargerMois(0); }
+    }catch(e){ m.textContent = e.message; if(e.indisponible) rdvRecharger(0); }
   };
-  await rdvChargerMois(null);
+  await rdvRecharger(null);
 }
 
 // Lien de l'e-mail : /?rdv=<jeton>#/rendez-vous
