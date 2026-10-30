@@ -819,6 +819,8 @@ const PL_CSS = `
   .pl-case-seule{ vertical-align:middle; margin:0 4px; }
   .pl-barre{ display:block; width:28px; height:0; border-top:2px solid #1C2B39; }
   .pl-pts{ display:inline-block; border-bottom:1.5px dotted #8A93A3; height:1.1em; vertical-align:baseline; }
+  /* Exposant à écrire : un blanc, sans pointillés -- relecture 5e-N7 (30/10/2026) : « pas nécessaire de mettre des pointillés pour l'exposant ». */
+  sup .pl-pts{ border-bottom:none; }
   .pl-lignes div{ height:24px; border-bottom:1px solid #CBD2DC; }
   .pl-rep{ color:#1F7A4D; font-weight:700; }
   .pl-entoure{ display:inline-block; border:2px solid #1F7A4D; border-radius:50%; padding:2px 6px; }
@@ -966,6 +968,7 @@ const PL_CSS_LIVRE = `
     .td-vig .pl-case, .pl-ex-cahier .pl-case, .cd-contenu .pl-case{ display:inline-block; width:20px; height:16px; border:1.5px solid #8A93A3; border-radius:4px; background:#fff; } .pl-case-seule{ vertical-align:middle; margin:0 4px; }
     .td-vig .pl-barre, .pl-ex-cahier .pl-barre, .cd-contenu .pl-barre{ display:block; width:26px; border-top:2px solid #1C2B39; }
     .td-vig .pl-pts, .pl-ex-cahier .pl-pts, .cd-contenu .pl-pts{ display:inline-block; border-bottom:1.5px dotted #8A93A3; height:1.1em; min-width:3em; }
+    .td-vig sup .pl-pts, .pl-ex-cahier sup .pl-pts, .cd-contenu sup .pl-pts{ border-bottom:none; min-width:1em; }
     .td-vig .pl-rep, .pl-ex-cahier .pl-rep, .cd-contenu .pl-rep{ color:#1F7A4D; font-weight:800; } .pl-entoure{ display:inline-block; border:2px solid #1F7A4D; border-radius:50%; padding:1px 6px; }
     .pl-barre-rep{ position:relative; display:inline-block; } .pl-barre-rep::after{ content:''; position:absolute; left:-4px; right:-4px; top:50%; border-top:2.5px solid #C0392B; transform:rotate(-20deg); }
     .td-vig svg, .pl-ex-cahier svg{ max-width:100%; height:auto; } .pl-unites{ display:inline-flex; gap:5px; flex-wrap:wrap; align-items:center; vertical-align:middle; }
@@ -995,6 +998,7 @@ const PL_CSS_LIVRE = `
     .plp-corps .pl-case{ display:inline-block; width:22px; height:18px; border:1.5px solid #8A93A3; border-radius:4px; background:#fff; } .plp-corps .pl-case-seule{ vertical-align:middle; margin:0 4px; }
     .plp-corps .pl-barre{ display:block; width:28px; border-top:2px solid #1C2B39; }
     .plp-corps .pl-pts{ display:inline-block; border-bottom:1.5px dotted #8A93A3; height:1.1em; }
+    .plp-corps sup .pl-pts{ border-bottom:none; }
     .plp-corps .pl-lignes div{ height:24px; border-bottom:1px solid #CBD2DC; }
     .plp-corps .pl-rep{ color:#1F7A4D; font-weight:800; } .plp-corps .pl-entoure{ display:inline-block; border:2px solid #1F7A4D; border-radius:50%; padding:2px 6px; }
     .plp-corps svg{ max-width:100%; height:auto; } .plp-corps .cm-redac{ margin:2px 0 8px; }
