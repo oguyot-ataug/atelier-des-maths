@@ -102,6 +102,11 @@ const RELECTURE_CHGT = {
   '5e-N7-P2-E2': { date: '2026-10-30T21:50:00Z', note: "À l'écran, la base et l'exposant s'écrivent chacun dans leur case (3 puis 3) : rien n'est imprimé d'avance ; une 4e ligne (8 = 2³) ; sur la feuille, la place de l'exposant est laissée en blanc, sans pointillés" },
   '5e-N7-P2-E3': { date: '2026-10-30T21:50:00Z', note: "Consigne précisée : « sous la forme d'un carré, puis sous la forme d'un cube » (64 = 8² = 4³), pour qu'il n'y ait qu'une réponse juste par case ; à l'écran, les bases et les exposants s'écrivent dans des cases, rien n'est imprimé d'avance ; sur la feuille, la place de l'exposant est laissée en blanc, sans pointillés" },
   '5e-N7-P2-E4': { date: '2026-10-30T21:50:00Z', note: "À l'écran, les bases et les exposants s'écrivent dans des cases, rien n'est imprimé d'avance (7² < 50 < 8²) ; sur la feuille, la place de l'exposant est laissée en blanc, sans pointillés" },
+  // Build 1230 (30/10) : remarques du soir sur 5e-N7, planches 3 et 4.
+  '5e-N7-P3-E2': { date: '2026-10-30T22:10:00Z', note: "Corrigé réécrit : plus de titre « B : » ni de phrase ; la première ligne est le calcul demandé (B = 4 + 3 × 2³), puis B = 4 + 3 × 8, B = 4 + 24, B = 28 encadré" },
+  '5e-N7-P3-E4': { date: '2026-10-30T22:10:00Z', note: "Corrigé : chaque calcul commence par le calcul demandé (C = (5 + 4)², D = 5² + 4²), résultats encadrés ; la phrase réponse reste, la question en demande une" },
+  '5e-N7-P4-E1': { date: '2026-10-30T22:10:00Z', note: "Six questions sur deux colonnes (trois aires de carrés, trois volumes de cubes), formulées plus court pour tenir sur une ligne" },
+  '5e-N7-P4-E2': { date: '2026-10-30T22:10:00Z', note: "Exercice remplacé : « Un carré a un périmètre de 36 m. Calcule son aire. » La réponse vient de deux calculs (36 ÷ 4 = 9, puis 9² = 81) ; retrouver un côté à partir de l'aire (racine carrée) est au programme de 4e" },
 };
 
 const RL_REMARQUES = [
