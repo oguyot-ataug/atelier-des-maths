@@ -25,6 +25,14 @@ Project ID Supabase de ce dépôt : `tdsdwbsvduitgrrrfjrp` (projet « AtelierMat
 29/10/2026). L'ancien projet de Dublin (`rngzubhnypmistjsumpz`, eu-west-1) est gardé intact quelques jours pour un retour en
 arrière, puis supprimé : ne plus jamais l'utiliser. Déménagement fait par `.github/workflows/migration-paris.yml` (copie de la
 base, des fichiers, des fonctions et des réglages de connexion ; les secrets des fonctions ont été ressaisis à la main).
+Fonctions serveur : le code est dans `supabase/functions/<nom>/index.ts` ; la tâche GitHub « Déployer une fonction
+serveur » (`.github/workflows/deploy-fonction.yml`, secret SUPABASE_ACCESS_TOKEN) le déploie à Paris à l'identique.
+
+## Comptes : identifiant et adresse de récupération (depuis le 30/10/2026, build 1200)
+
+On se connecte par identifiant (adresse fictive `identifiant@mathcollege.local`). Les adultes enregistrent une adresse
+e-mail de récupération dans « Mon profil » (`profil.js`, table `profil_contact`, fonction `profil`) ; « Mot de passe
+oublié » envoie le lien à cette adresse confirmée. Jamais d'adresse pour les élèves (mineurs).
 
 ## Référencement : régénérer les pages statiques après toute modification d'un chapitre
 

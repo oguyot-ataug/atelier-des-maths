@@ -3085,10 +3085,12 @@ async function submitChangePassword(){
   setTimeout(()=>{ document.getElementById('changePasswordModalOverlay').style.display = 'none'; }, 900);
 }
 /* Mot de passe oublié -- signalé : "Il manque aussi 'mot de passe oublié' (pour les familles ou
-   les professeurs qui ont bien une adresse académique renseignée)". Supabase envoie un lien
-   personnel par e-mail ; au retour sur le site (?reinit=1, événement PASSWORD_RECOVERY), la
-   fenêtre de changement de mot de passe s'ouvre. Les élèves (identifiant sans adresse e-mail)
-   sont renvoyés vers leur professeur ou leurs parents. */
+   les professeurs qui ont bien une adresse académique renseignée)", puis (30/10/2026) : « Le champ email
+   n'est pas présent. Donc pour récupérer son mot de passe oublié, ça pose problème. » On tape son
+   identifiant ou une adresse : la fonction serveur « profil » envoie un lien personnel à l'adresse de
+   récupération confirmée (page « Mon profil », profil.js), ou à l'adresse de connexion si elle est réelle.
+   Au retour sur le site (?reinit=1, événement PASSWORD_RECOVERY), la fenêtre de changement de mot de passe
+   s'ouvre. Les élèves (sans adresse) sont renvoyés vers leur professeur ou leurs parents. */
 function toggleForgotPassword(show){
   document.getElementById('authLoginForm').style.display = show ? 'none' : '';
   document.getElementById('authForgotForm').style.display = show ? '' : 'none';
@@ -3097,26 +3099,22 @@ function toggleForgotPassword(show){
   if(show){
     const id = (document.getElementById('globalAuthEmail').value || '').trim();
     const f = document.getElementById('forgotEmail');
-    if(id.includes('@') && !/@mathcollege\.local$/i.test(id)) f.value = id;
+    if(id) f.value = id;
     setTimeout(()=>f.focus(), 50);
   }
 }
 async function submitForgotPassword(){
-  const email = (document.getElementById('forgotEmail').value || '').trim();
+  const saisie = (document.getElementById('forgotEmail').value || '').trim();
   const st = document.getElementById('forgotStatus');
-  if(!email.includes('@') || /@mathcollege\.local$/i.test(email)){
-    st.textContent = "Un identifiant d'élève n'a pas d'adresse e-mail : demandez un nouveau mot de passe à votre professeur (ou à vos parents pour un compte Famille).";
-    return;
-  }
-  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ st.textContent = 'Adresse e-mail invalide.'; return; }
+  if(!saisie){ st.textContent = 'Indiquez votre identifiant ou votre adresse e-mail.'; return; }
   const btn = document.getElementById('btnForgotSubmit'); btn.disabled = true;
   st.textContent = 'Envoi en cours…';
-  const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: location.origin + '/?reinit=1' });
+  const { error } = await sb.functions.invoke('profil', { body: { action: 'oubli', identifiant: saisie, origine: location.origin } });
   btn.disabled = false;
-  // Même message que l'adresse existe ou non : on ne révèle pas quels e-mails ont un compte.
-  st.textContent = error && /rate|seconds|too many/i.test(error.message)
-    ? 'Trop de demandes rapprochées : réessayez dans une minute.'
-    : "Si un compte existe avec cette adresse, un e-mail vient d'être envoyé. Cliquez sur le lien qu'il contient pour choisir un nouveau mot de passe (pensez à regarder dans les indésirables).";
+  // Même message que le compte existe ou non : on ne révèle pas quels comptes existent.
+  st.textContent = error
+    ? "L'envoi n'a pas pu être fait. Réessayez dans une minute, ou écrivez à contact@latelierdesmaths.fr."
+    : "Si ce compte a une adresse e-mail enregistrée, un lien vient d'y être envoyé : cliquez dessus pour choisir un nouveau mot de passe (pensez à regarder dans les indésirables). Sans adresse enregistrée, demandez un nouveau mot de passe à votre professeur, à votre référent d'établissement ou à contact@latelierdesmaths.fr.";
 }
 function ouvrirReinitialisation(){
   if(/[?&]reinit=1/.test(location.search)) history.replaceState(null, '', location.pathname + '#/');
@@ -3457,6 +3455,8 @@ async function refreshAuthUI(){
     // modale de changement de mot de passe s'ouvre automatiquement, sans possibilité de
     // l'ignorer, tant que le mot de passe n'a pas été changé.
     if(profile && profile.must_change_password && !mdpJusteChange) openChangePasswordModal(true);
+    // Adulte connecté par identifiant sans adresse de récupération : rappel dans le menu du compte (profil.js).
+    if(typeof profilRappelMenu==='function') profilRappelMenu();
     // Retour du lien « mot de passe oublié » reçu par e-mail.
     if(/[?&]reinit=1/.test(location.search)) ouvrirReinitialisation();
 
@@ -3680,6 +3680,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1200', date:'2026-10-30', items:['Page « Mon profil » -- demandé : « Il serait bien d\'avoir une page votre profil qui permet de modifier certaines données nous concernant. Le champ email n\'est pas présent. Donc pour récupérer son mot de passe oublié, ça pose problème. » Dans le menu du compte, « Mon profil » permet de modifier son prénom et son nom, de voir son identifiant et son établissement, de changer son mot de passe et d\'enregistrer une adresse e-mail de récupération (professeurs, parents, administrateurs), confirmée par un lien reçu par e-mail. « Mot de passe oublié » accepte maintenant l\'identifiant ou l\'adresse : le lien part vers l\'adresse de récupération confirmée (ou vers l\'adresse de connexion si c\'en est une vraie). Un rappel discret dans le menu invite les adultes sans adresse à en ajouter une. Les élèves n\'ont pas d\'adresse : leur professeur leur donne un nouveau mot de passe.'] },
   { version:'2026-08-19.1199', date:'2026-10-29', items:['Mentions légales, politique de confidentialité et fenêtre d\'information d\'Oliv\'IA mises à jour -- demandé : « On peut changer les mentions légales ». Les données (base, comptes, fonctions serveur, échanges avec Oliv\'IA) sont hébergées en France, à Paris, et non plus en Irlande.'] },
   { version:'2026-08-19.1198', date:'2026-10-29', items:['Les données du site sont désormais hébergées en France (Paris) -- demandé : « prépare la bascule vers Paris ». Comptes, classes, résultats, cahiers, images et fonctions du serveur ont été recopiés à l\'identique depuis l\'Irlande. Chacun doit simplement se reconnecter une fois, avec le même identifiant et le même mot de passe.'] },
   { version:'2026-08-19.1197', date:'2026-10-29', items:['Retenues dans les opérations posées à l\'écran -- demandé : « Fais le système pour insérer des retenues dans un calcul » (relecture CE2-N3-P1-E3). Dans toutes les additions, soustractions et multiplications posées à compléter à l\'écran (planches, projection, sessions ; CE2, CM1, 6e), de petites cases pointillées permettent d\'écrire les retenues : au-dessus de chaque rang pour l\'addition et la multiplication ; pour la soustraction, les marques de la compensation (« 1 » devant le chiffre du haut, « +1 » sous le chiffre du bas). Les retenues aident l\'élève mais ne sont pas notées. La touche OK suit l\'ordre du calcul, de droite à gauche : unités, retenue, dizaines… La correction à l\'écran montre les retenues attendues. Sur papier, rien ne change.'] },
