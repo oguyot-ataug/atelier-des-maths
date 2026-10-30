@@ -368,6 +368,14 @@ async function venteCharger(){
 function venteOuverte(test){ return currentUserRole === 'admin' || VENTES_OUVERTES || !!test; }
 const VENTE_MSG = 'Les offres ne sont pas encore en vente. D\'ici là, le site est en démonstration : essayez-le gratuitement.';
 const VENTE_BOUTON = 'Bientôt en vente';
+// Établissement inconnu d'un professeur qui s'inscrit : simple insertion, l'établissement déjà connu (erreur de doublon)
+// est ignoré. Pas d'upsert « ignorer les doublons » : Postgres exige alors que le nouveau compte puisse déjà lire
+// l'établissement, ce qu'il ne peut qu'une fois son profil créé -- le profil n'était donc jamais créé (signalé le
+// 30/10/2026 : « Une amie vient de s'inscrire mais je ne la vois pas »).
+async function creerEtablissementProvisoire(uai){
+  const { error } = await sb.from('etablissements').insert({ uai, nom: 'À vérifier par l\'administrateur' });
+  if(error && error.code !== '23505') console.warn('Établissement provisoire non créé :', error.message);
+}
 // SMS immédiat à l'administrateur après une inscription de professeur ou de parent (fonction alerte-sms, action
 // « inscription ») -- demandé le 30/10/2026 : « un SMS direct à chaque demande d'inscription ». Non bloquant.
 function alerteInscription(){ try{ sb.functions.invoke('alerte-sms', { body: { action: 'inscription' } }).catch(() => {}); }catch(e){} }
@@ -3279,7 +3287,7 @@ async function submitProfSignup(){
   // L'établissement doit exister dans notre référentiel (contrainte de clé étrangère sur
   // profiles.uai) : on le crée avec un nom provisoire si inconnu, l'admin complètera le
   // nom réel au moment de la validation.
-  await sb.from('etablissements').upsert({ uai, nom: 'À vérifier par l\'administrateur' }, { onConflict: 'uai', ignoreDuplicates: true });
+  await creerEtablissementProvisoire(uai);
 
   const { error: profileError } = await sb.from('profiles').insert({
     id: userId, role: 'prof', nom, prenom, email, uai,
@@ -3345,7 +3353,7 @@ function finaliserInscriptionEnAttente(user){
         return true;
       }
       if(m.inscription==='prof' && m.uai){
-        await sb.from('etablissements').upsert({ uai: m.uai, nom: 'À vérifier par l\'administrateur' }, { onConflict: 'uai', ignoreDuplicates: true });
+        await creerEtablissementProvisoire(m.uai);
         const { error } = await sb.from('profiles').insert({ id: user.id, role: 'prof', nom: m.nom, prenom: m.prenom, email: user.email, uai: m.uai,
           signup_status: 'pending', subscription_status: 'trial' });
         if(error) return false;
@@ -3725,6 +3733,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1220', date:'2026-10-30', items:['Inscription des professeurs d\'un établissement encore inconnu corrigée -- signalé : « Une amie vient de s\'inscrire mais je ne la vois pas ». Le compte de connexion était créé, mais pas le profil : l\'établissement provisoire était refusé par la base (une insertion « sauf doublon » exige de pouvoir déjà lire l\'établissement, ce qu\'un nouveau compte ne peut pas). L\'établissement est maintenant ajouté par une simple insertion ; l\'inscription concernée a été complétée à la main et attend la validation.'] },
   { version:'2026-08-19.1219', date:'2026-10-30', items:['Rendez-vous : vraie invitation d\'agenda dans les e-mails -- signalé : un rendez-vous annulé restait dans l\'agenda personnel où Gmail l\'avait ajouté. Le fichier joint est maintenant une invitation au nom de « L\'Atelier des Maths » : Gmail, Outlook et Apple Calendrier ajoutent le rendez-vous, puis le déplacent ou le retirent tout seuls quand il est déplacé ou annulé. Le bouton « Ajouter à Google Agenda », qui créait une copie impossible à retirer, est supprimé.'] },
   { version:'2026-08-19.1218', date:'2026-10-30', items:['Rendez-vous annulés retirés de l\'agenda Google à coup sûr -- signalé : « J\'ai un RV annulé qui est encore dans mon agenda ». La réponse de Google à la suppression est maintenant vérifiée ; si elle échoue, le site réessaie toutes les heures jusqu\'à ce que l\'événement disparaisse.'] },
   { version:'2026-08-19.1217', date:'2026-10-30', items:['Prise de rendez-vous : vue « emploi du temps de la semaine » -- demandé : « Peux-tu faire une vue "emploi du temps semaine" ? de 8h à 20h (ou 22h max) ». Les jours de la semaine en colonnes (le dimanche seulement s\'il a des créneaux), les heures de 8 h à 20 h (prolongées jusqu\'à 22 h au plus si un créneau finit plus tard), chaque créneau libre placé à son heure ; flèches pour changer de semaine. C\'est la vue par défaut ; le bouton « Mois » ramène au calendrier du mois.'] },
