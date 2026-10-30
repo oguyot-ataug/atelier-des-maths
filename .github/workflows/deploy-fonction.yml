@@ -1,0 +1,52 @@
+# Déploiement d'une fonction serveur (Edge Function) du dossier supabase/functions vers le projet Supabase de Paris
+# (tdsdwbsvduitgrrrfjrp), à l'identique du dépôt. Lancement à la main (onglet Actions) ou par Claude.
+# Secret : SUPABASE_ACCESS_TOKEN (jeton d'accès Supabase avec Edge Functions en écriture).
+name: Déployer une fonction serveur
+
+on:
+  workflow_dispatch:
+    inputs:
+      nom:
+        description: 'Nom de la fonction (dossier de supabase/functions)'
+        required: true
+        type: string
+      verifier_jwt:
+        description: 'Exiger un jeton de session (verify_jwt)'
+        required: true
+        default: 'non'
+        type: choice
+        options: ['non', 'oui']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-fonction-${{ inputs.nom }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - name: Contrôle du nom
+        env:
+          NOM: ${{ inputs.nom }}
+        run: |
+          [[ "$NOM" =~ ^[a-z0-9-]+$ ]] && [ -f "supabase/functions/$NOM/index.ts" ] || { echo "::error title=Fonction::supabase/functions/$NOM/index.ts introuvable"; exit 1; }
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - name: Déploiement
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          NOM: ${{ inputs.nom }}
+          JWT: ${{ inputs.verifier_jwt }}
+        run: |
+          [ -f supabase/config.toml ] || supabase init --force > /dev/null 2>&1 || true
+          if supabase functions deploy "$NOM" --project-ref tdsdwbsvduitgrrrfjrp --use-api $([ "$JWT" = non ] && echo --no-verify-jwt) > /tmp/d.log 2>&1; then
+            echo "::notice title=Fonction::$NOM déployée (verify_jwt : $JWT)"
+          else
+            E=$(tail -5 /tmp/d.log | sed -E 's/"[^"]*"/"…"/g'); echo "::error title=Fonction::${E//$'\n'/'%0A'}"; exit 1
+          fi
