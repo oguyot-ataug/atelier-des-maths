@@ -3,7 +3,7 @@
    Tables dans les deux sens (égalités à trou), doubles et moitiés usuels, multiples de 25,
    décompositions multiplicatives de 60. Fin de CE2 : 15 additions et 12 multiplications en une minute.
    Relecture CE2-N2-P3-E4 (30/10/2026) : « oui non » en tableau, détaché de la question (« Tabulation pour ne pas coller
-   oui non à la question »).
+   oui non à la question ») ; énoncé « Les produits suivants sont-ils égaux à 60 ? ».
    ============================================================ */
 (() => {
 const { rmp, chx, chxTab } = P3;
@@ -50,7 +50,7 @@ PLANCHES['ce2|Tables d\'addition et de multiplication'] = [
         ...rmp([['30 : @', 15], ['50 : @', 25], ['90 : @', 45], ['300 : @', 150], ['1 000 : @', 500]], 3) },
       { etoiles: 2, col: 1, consigne: 'Complète.',
         ...rmp([['25 × 2 = @', 50], ['25 × @ = 75', 3], ['25 × 4 = @', 100], ['@ × 25 = 50', 2]], 3) },
-      { etoiles: 2, col: 1, consigne: 'Entoure les produits qui font 60.',
+      { etoiles: 2, col: 1, consigne: 'Les produits suivants sont-ils égaux à 60 ?',
         ...chxTab([['4 × 15', 'oui', 'oui · non'], ['5 × 11', 'non', 'oui · non'], ['3 × 20', 'oui', 'oui · non'], ['6 × 12', 'non', 'oui · non'], ['5 × 12', 'oui', 'oui · non']]) },
       { etoiles: 3, cahier: true, consigne: 'Un billet de cinéma coûte 25 €. Paul achète des billets pour lui et ses trois amis. Il paie avec deux billets de 50 €. Combien lui rend-on ?',
         corr: cm1Redac('Prix des billets', '25 × 4 = 100', 'Les 4 billets coûtent 100 €.') + cm1Redac('Somme donnée', '50 + 50 = 100', 'Paul donne 100 € : on ne lui rend rien.') },

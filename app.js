@@ -3740,6 +3740,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1233', date:'2026-10-30', items:['Relecture des exercices commentés. CE2, Tables, planche 3, exercice 4 : nouvel énoncé « Les produits suivants sont-ils égaux à 60 ? » (demandé en relecture).'] },
   { version:'2026-08-19.1232', date:'2026-10-30', items:['Relecture des exercices commentés. CE2, Tables, planche 3 : « Entoure les produits qui font 60 » en tableau, « oui » et « non » alignés en colonnes, détachés du calcul (signalé : « Tabulation pour ne pas coller oui non à la question »).'] },
   { version:'2026-08-19.1231', date:'2026-10-30', items:['Manuel (exercices des planches) : la liste d\'un exercice pleine largeur est sur deux colonnes, comme sur la feuille -- signalé (5e-N7-P4-E1) : « Il n\'y a pas deux colonnes ici et plein de place à droite ».'] },
   { version:'2026-08-19.1230', date:'2026-10-30', items:['Relecture des exercices commentés, 5e, Puissances. Planche 3 : les corrigés de calcul commencent toujours par le calcul demandé (B = 4 + 3 × 2³, C = (5 + 4)², D = 5² + 4²), sans titre ni phrase quand il n\'y a qu\'à calculer. Planche 4 : six questions sur deux colonnes à l\'exercice 1 ; l\'exercice 2 devient « Un carré a un périmètre de 36 m. Calcule son aire. » (la réponse vient d\'un calcul, au lieu de 9² = 81 lu à l\'envers).'] },

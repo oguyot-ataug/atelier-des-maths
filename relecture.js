@@ -103,7 +103,7 @@ const RELECTURE_CHGT = {
   '5e-N7-P2-E3': { date: '2026-10-30T21:50:00Z', note: "Consigne précisée : « sous la forme d'un carré, puis sous la forme d'un cube » (64 = 8² = 4³), pour qu'il n'y ait qu'une réponse juste par case ; à l'écran, les bases et les exposants s'écrivent dans des cases, rien n'est imprimé d'avance ; sur la feuille, la place de l'exposant est laissée en blanc, sans pointillés" },
   '5e-N7-P2-E4': { date: '2026-10-30T21:50:00Z', note: "À l'écran, les bases et les exposants s'écrivent dans des cases, rien n'est imprimé d'avance (7² < 50 < 8²) ; sur la feuille, la place de l'exposant est laissée en blanc, sans pointillés" },
   // Version 1232 (30/10).
-  'CE2-N2-P3-E4': { date: '2026-10-30T22:55:00Z', note: "« oui non » en tableau : les produits à gauche, « oui » et « non » alignés dans leurs colonnes, à distance de la question" },
+  'CE2-N2-P3-E4': { date: '2026-10-30T23:10:00Z', note: "Énoncé : « Les produits suivants sont-ils égaux à 60 ? » ; « oui non » en tableau : les produits à gauche, « oui » et « non » alignés dans leurs colonnes, à distance de la question" },
   // Build 1230 (30/10) : remarques du soir sur 5e-N7, planches 3 et 4.
   '5e-N7-P3-E2': { date: '2026-10-30T22:10:00Z', note: "Corrigé réécrit : plus de titre « B : » ni de phrase ; la première ligne est le calcul demandé (B = 4 + 3 × 2³), puis B = 4 + 3 × 8, B = 4 + 24, B = 28 encadré" },
   '5e-N7-P3-E4': { date: '2026-10-30T22:10:00Z', note: "Corrigé : chaque calcul commence par le calcul demandé (C = (5 + 4)², D = 5² + 4²), résultats encadrés ; la phrase réponse reste, la question en demande une" },
