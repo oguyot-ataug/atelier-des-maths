@@ -479,7 +479,7 @@ PLANCHES['cm1|Opérations sur les nombres entiers'] = [
       { etoiles: 2, col: 1, consigne: 'Calcule ces multiplications.',
         eleve: duo([pose('1237', '×', '4'), pose('2506', '×', '3')]),
         corr: duo([pose('1237', '×', '4', '4948'), pose('2506', '×', '3', '7518')]), ...ecr([['1237', '×', '4', '4948'], ['2506', '×', '3', '7518']]) },
-      { etoiles: 2, col: 1, consigne: 'Décompose pour calculer de tête.',
+      { etoiles: 2, uneLigne: true, consigne: 'Décompose pour calculer de tête.',
         eleve: plListe(['23 × 4 = (20 × 4) + (3 × 4) = ' + B(3) + ' + ' + B(3) + ' = ' + B(3), '45 × 3 = (40 × 3) + (5 × 3) = ' + B(3) + ' + ' + B(3) + ' = ' + B(3)]),
         corr: plListe(['23 × 4 = (20 × 4) + (3 × 4) = ' + R(80) + ' + ' + R(12) + ' = ' + R(92), '45 × 3 = (40 × 3) + (5 × 3) = ' + R(120) + ' + ' + R(15) + ' = ' + R(135)]) },
       { etoiles: 3, consigne: 'Pose et calcule dans le quadrillage. Écris à côté de chaque ligne ce qu\'elle représente.',
@@ -491,7 +491,7 @@ PLANCHES['cm1|Opérations sur les nombres entiers'] = [
           corr: duo([cm1Posee([[' ', '253'], ['×', '24'], [' ', '1012', true], ['+', '5060'], [' ', '6072']], '', { rep: true }), cm1Posee([[' ', '312'], ['×', '15'], [' ', '1560', true], ['+', '3120'], [' ', '4680']], '', { rep: true }), pose('1408', '×', '6', '8448', '', { rep: true })]) } },
       { etoiles: 2, col: 1, cahier: true, consigne: 'Une boîte contient 24 crayons. Combien de crayons y a-t-il dans 15 boîtes ?',
         corr: cm1Redac('Nombre de crayons', '24 × 15 = 360', 'Il y a 360 crayons dans 15 boîtes.') },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'Un car a 48 places. L\'école loue 6 cars pour transporter 275 élèves. Y a-t-il assez de places ? Combien en reste-t-il de libres ?',
+      { etoiles: 3, cahier: true, consigne: 'Un car a 48 places. L\'école loue 6 cars pour transporter 275 élèves. Y a-t-il assez de places ? Combien en reste-t-il de libres ?',
         corr: cm1Redac('Nombre de places', '48 × 6 = 288', '288 places, c\'est plus que 275 élèves : il y a assez de places.')
           + cm1Redac('Places libres', '288 − 275 = 13', 'Il reste 13 places libres.') },
     ] },

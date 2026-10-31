@@ -231,7 +231,7 @@ function plTdRendre(lvl, c){
     ${liste.map((p, i) => `<section class="td-planche"><div class="td-p-tete"><span class="pl-ref">${plRef(lvl, plCode(lvl, c), i)}</span>${p.brevet ? '<span class="pl-brevet">Objectif Brevet</span>' : ''}<b>${esc(p.titre)}</b>
         <span class="hint" style="margin:0;">${(p.attendus || []).map(esc).join(' · ')}</span>
         <button type="button" class="btn secondary td-mini" data-tdproj="${i}|0"><span class="gicon">present_to_all</span> Projeter la planche</button></div>
-      <div class="td-grille">${p.exos.map((x, k) => `<div class="td-vig${x.col === 1 ? '' : ' td-plein'}" id="tdv-${i}-${k}">
+      <div class="td-grille">${p.exos.map((x, k) => `<div class="td-vig${x.col === 1 ? '' : ' td-plein'}${x.uneLigne ? ' pl-une-ligne' : ''}" id="tdv-${i}-${k}">
         <div class="td-v-tete"><span class="pl-num">Exercice ${k + 1}</span><span class="td-ver" id="tdver-${i}-${k}">${plTdVerTxt(lvl, c, i, k)}</span>${plMarque(lvl, x)}${typeof plNumPossible === 'function' && plNumPossible(x) ? '<span class="td-num" title="Se fait aussi à l\'écran (au tableau ou en session) : colorier, compléter avec le clavier, vérifier"><span class="gicon">touch_app</span> à l\'écran</span>' : ''}<span class="pl-et">${plEtoiles(x.etoiles || 1)}</span></div>
         <div class="td-v-corps"><div class="pl-consigne">${x.consigne}</div><div class="pl-corps">${plExoCorps(plTdX(lvl, c, i, k), false)}</div></div>
         <div class="td-v-pied"><button type="button" class="btn secondary td-mini" data-tdproj="${i}|${k}" title="En grand, un par un"><span class="gicon">present_to_all</span> Projeter</button>
@@ -525,7 +525,7 @@ function plPageHtml(lvl, c, p, i, n, mode, pr, logo){
     <div class="pl-titre"><h1>${p.brevet ? '<span class="pl-brevet">Objectif Brevet</span> ' : ''}Planche ${i + 1} : ${escapeHtml(p.titre)}</h1>${corr ? '' : `<span class="pl-oliv-tete"><span class="pl-oliv">${plOliv(p.brevet ? 'savoir' : 'muscle')}</span><span class="pl-bulle">${p.brevet ? 'Objectif Brevet !' : 'Muscle ton jeu !'}</span></span>`}</div>
     ${ident}
     <div class="pl-attendus"><b>Je travaille :</b> ${(p.attendus || []).map(a => escapeHtml(a)).join(' ; ')}</div>
-    <div class="pl-exos">${p.exos.map((x, k) => `<div class="pl-exo${x.col === 1 ? ' pl-demi' : ''}"><div class="pl-exo-tete"><span class="pl-num">Exercice ${k + 1}</span>${plMarque(lvl, x)}<span class="pl-et">${plEtoiles(x.etoiles || 1)}</span></div>
+    <div class="pl-exos">${p.exos.map((x, k) => `<div class="pl-exo${x.col === 1 ? ' pl-demi' : ''}${x.uneLigne ? ' pl-une-ligne' : ''}"><div class="pl-exo-tete"><span class="pl-num">Exercice ${k + 1}</span>${plMarque(lvl, x)}<span class="pl-et">${plEtoiles(x.etoiles || 1)}</span></div>
       <div class="pl-consigne">${x.consigne}</div><div class="pl-corps">${plExoCorps(x, corr)}</div></div>`).join('')}</div>
     ${corr ? '' : plPointHtml(p)}
     <footer class="pl-pied">${ref} · Planche ${i + 1} sur ${n} · ${niv} · ${escapeHtml(c.t)} · ${p.duree ? 'environ ' + escapeHtml(p.duree) + ' · ' : ''}L'Atelier des Maths</footer>
@@ -854,6 +854,9 @@ const PL_CSS = `
   sup .pl-pts{ border-bottom:none; }
   .pl-lignes div{ height:24px; border-bottom:1px solid #CBD2DC; }
   .pl-rep{ color:#1F7A4D; font-weight:700; }
+  /* { uneLigne: true } : un calcul, une décomposition, un rangement par ligne, sans retour à la ligne, sur toute la largeur --
+     demandé le 31/10/2026 : « une décomposition ne doit jamais se poursuivre sur la ligne suivante ». */
+  .pl-une-ligne .pl-liste{ columns:1 !important; } .pl-une-ligne .pl-liste li{ white-space:nowrap; }
   .pl-props{ display:inline-flex; flex-wrap:wrap; column-gap:1.5em; row-gap:2px; vertical-align:baseline; } .pl-prop{ white-space:nowrap; }
   .pl-entoure{ display:inline-block; border:2px solid #1F7A4D; border-radius:50%; padding:2px 6px; }
   .pl-barre-rep{ position:relative; display:inline-block; } .pl-barre-rep::after{ content:''; position:absolute; left:-4px; right:-4px; top:50%; border-top:2.5px solid #C0392B; transform:rotate(-20deg); }
@@ -1003,6 +1006,7 @@ const PL_CSS_LIVRE = `
     .td-vig .pl-barre, .pl-ex-cahier .pl-barre, .cd-contenu .pl-barre{ display:block; width:26px; border-top:2px solid #1C2B39; }
     .td-vig .pl-pts, .pl-ex-cahier .pl-pts, .cd-contenu .pl-pts{ display:inline-block; border-bottom:1.5px dotted #8A93A3; height:1.1em; min-width:3em; }
     .td-vig sup .pl-pts, .pl-ex-cahier sup .pl-pts, .cd-contenu sup .pl-pts{ border-bottom:none; min-width:1em; }
+    .td-vig.pl-une-ligne .pl-liste{ columns:1 !important; } .td-vig.pl-une-ligne .pl-liste li{ white-space:nowrap; }
     .pl-props{ display:inline-flex; flex-wrap:wrap; column-gap:1.5em; row-gap:2px; vertical-align:baseline; } .pl-prop{ white-space:nowrap; }
     .td-vig .pl-rep, .pl-ex-cahier .pl-rep, .cd-contenu .pl-rep{ color:#1F7A4D; font-weight:800; } .pl-entoure{ display:inline-block; border:2px solid #1F7A4D; border-radius:50%; padding:1px 6px; }
     .pl-barre-rep{ position:relative; display:inline-block; } .pl-barre-rep::after{ content:''; position:absolute; left:-4px; right:-4px; top:50%; border-top:2.5px solid #C0392B; transform:rotate(-20deg); }

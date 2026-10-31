@@ -129,7 +129,7 @@ PLANCHES['cm1|Nombres entiers jusqu\'à 9 999'] = [
       { etoiles: 1, col: 1, consigne: 'Complète.',
         eleve: plListe(['1 millier = ' + B(3) + ' centaines', '1 centaine = ' + B(3) + ' dizaines', '1 millier = ' + B(3) + ' dizaines', '3 milliers = ' + B(3) + ' unités']),
         corr: plListe(['1 millier = ' + R(10) + ' centaines', '1 centaine = ' + R(10) + ' dizaines', '1 millier = ' + R(100) + ' dizaines', '3 milliers = ' + R('3 000') + ' unités']) },
-      { etoiles: 2, col: 1, consigne: 'Décompose avec la valeur de chaque chiffre.',
+      { etoiles: 2, uneLigne: true, consigne: 'Décompose avec la valeur de chaque chiffre.',
         eleve: plListe(['4 375 = ' + B(3) + ' + ' + B(3) + ' + ' + B(2) + ' + ' + B(2), '6 208 = ' + B(3) + ' + ' + B(3) + ' + ' + B(2), '9 040 = ' + B(3) + ' + ' + B(2)]),
         corr: plListe(['4 375 = ' + R('4 000') + ' + ' + R(300) + ' + ' + R(70) + ' + ' + R(5), '6 208 = ' + R('6 000') + ' + ' + R(200) + ' + ' + R(8), '9 040 = ' + R('9 000') + ' + ' + R(40)]) },
       { etoiles: 2, consigne: 'Complète le tableau : « le chiffre des… » et « le nombre de… ».',
@@ -138,7 +138,7 @@ PLANCHES['cm1|Nombres entiers jusqu\'à 9 999'] = [
       { etoiles: 2, col: 1, consigne: 'Qui suis-je ?',
         eleve: plListe(['J\'ai 4 milliers, 0 centaine, 7 dizaines et 2 unités : ' + B(), 'J\'ai 25 centaines et 3 unités : ' + B(), 'J\'ai 6 milliers et 14 dizaines : ' + B()]),
         corr: plListe(['J\'ai 4 milliers, 0 centaine, 7 dizaines et 2 unités : ' + R('4 072'), 'J\'ai 25 centaines et 3 unités : ' + R('2 503'), 'J\'ai 6 milliers et 14 dizaines : ' + R('6 140')]) },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'Avec les chiffres 3, 0, 8 et 5 (chacun une seule fois), écris le plus grand et le plus petit nombre de 4 chiffres.',
+      { etoiles: 3, cahier: true, consigne: 'Avec les chiffres 3, 0, 8 et 5 (chacun une seule fois), écris le plus grand et le plus petit nombre de 4 chiffres.',
         corr: cm1Redac('Le plus grand nombre', 'Je place les chiffres du plus grand au plus petit : 8 530', 'Le plus grand nombre est 8 530.')
           + cm1Redac('Le plus petit nombre', 'Un nombre de 4 chiffres ne commence pas par 0 : 3 058', 'Le plus petit nombre est 3 058.') },
     ] },

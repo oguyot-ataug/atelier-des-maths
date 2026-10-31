@@ -45,7 +45,7 @@ PLANCHES['5e|Droites remarquables dans un triangle'] = [
             return `<svg class="pl-libre" viewBox="0 0 ${w * k} ${h * k}" style="width:${w * k}px;max-width:100%;display:block;margin:0 auto;"><defs><clipPath id="medAB"><rect width="${w * k}" height="${h * k}"/></clipPath></defs><g clip-path="url(#medAB)">${s}</g></svg>`; };
           const sol = [mediatrice(A, Bp), mediatrice(C, D)];
           return { eleve: plX(base(), { t: 'droites', k, ox: 0, oy: 0, w, h, att: sol }), corr: base(sol) }; })() },
-      { etoiles: 1, col: 1, consigne: 'La droite (d) est la médiatrice de [EF]. Complète.',
+      { etoiles: 1, uneLigne: true, consigne: 'La droite (d) est la médiatrice de [EF]. Complète.',
         ...rmp([['(d) coupe [EF] en son @.', 'milieu'], ['(d) est @ à (EF).', 'perpendiculaire'], ['Si M est sur (d) et ME = 4 cm, alors MF = @ cm.', 4]], 9) },
       { etoiles: 2, col: 1, consigne: 'Le point M est-il sur la médiatrice de [AB] ? Entoure.',
         ...ch([['MA = 5 cm et MB = 5 cm :', 'oui'], ['MA = 3 cm et MB = 4 cm :', 'non'], ['M est le milieu de [AB] :', 'oui'], ['MA = MB = 0 :', 'non']], 'oui · non') },
@@ -53,7 +53,7 @@ PLANCHES['5e|Droites remarquables dans un triangle'] = [
         ...ch([['La médiatrice d\'un segment passe par son milieu :', 'vrai'], ['Toute perpendiculaire à [AB] est sa médiatrice :', 'faux'], ['Pour tracer une médiatrice au compas, on trace deux arcs de même rayon :', 'vrai']], 'vrai · faux') },
       { etoiles: 2, col: 1, consigne: 'Construction de la médiatrice de [AB] au compas : remets les étapes dans l\'ordre (écris 1, 2, 3).',
         ...rmp([['Je trace la droite qui passe par les deux points d\'intersection : étape @', 3], ['Je trace un arc de centre A, de rayon plus grand que la moitié de AB : étape @', 1], ['Avec le même rayon, je trace un arc de centre B : étape @', 2]], 1) },
-      { etoiles: 2, col: 1, consigne: 'Les points sont-ils sur la médiatrice de [AB] (AB = 6 cm) ? Entoure.',
+      { etoiles: 2, consigne: 'Les points sont-ils sur la médiatrice de [AB] (AB = 6 cm) ? Entoure.',
         ...ch([['P tel que PA = 3 cm et PB = 3 cm :', 'oui'], ['Q tel que QA = 6 cm et QB = 6 cm :', 'oui'], ['R tel que RA = 2 cm et RB = 4 cm :', 'non']], 'oui · non') },
       { etoiles: 3, cahier: true, consigne: 'Trace un segment [AB] de 7 cm et construis sa médiatrice au compas. Place un point M sur la médiatrice, à 5 cm de A. Que vaut MB ? Justifie.',
         corr: cm1Redac('Justification', 'M est sur la médiatrice de [AB] : il est à égale distance de A et de B.', 'MB = MA = 5 cm.') },

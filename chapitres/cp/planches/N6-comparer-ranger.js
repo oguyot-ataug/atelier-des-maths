@@ -26,9 +26,9 @@ PLANCHES['cp|Comparer et ranger les nombres'] = [
   { titre: 'Ranger des nombres', duree: '20 min',
     attendus: ['Ranger des nombres dans l\'ordre croissant ou décroissant'],
     exos: [
-      { etoiles: 1, consigne: 'Range du plus petit au plus grand.',
+      { etoiles: 1, uneLigne: true, consigne: 'Range du plus petit au plus grand.',
         ...P3.rmp([['12 · 31 · 8 · 25 : @ < @ < @ < @', '8', '12', '25', '31'], ['40 · 14 · 41 · 4 : @ < @ < @ < @', '4', '14', '40', '41']], 3) },
-      { etoiles: 2, consigne: 'Range du plus grand au plus petit.',
+      { etoiles: 2, uneLigne: true, consigne: 'Range du plus grand au plus petit.',
         ...P3.rmp([['33 · 53 · 35 · 50 : @ > @ > @ > @', '53', '50', '35', '33']], 3) },
       { etoiles: 3, cahier: true, consigne: 'Léa a 34 images, Hugo 43, Malo 29. Range-les de celui qui a le moins d\'images à celui qui en a le plus.',
         corr: cm1Redac('Du moins au plus', '29 < 34 < 43', 'Malo (29), puis Léa (34), puis Hugo (43).') },

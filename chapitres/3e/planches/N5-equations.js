@@ -30,7 +30,7 @@ PLANCHES['3e|Équations'] = [
     exos: [
       { etoiles: 1, col: 1, consigne: 'Entoure les solutions.',
         ...chx([['(x − 3)(x + 5) = 0 :', '3 et −5', '3 et 5 · −3 et 5 · 3 et −5'], ['x(x − 7) = 0 :', '0 et 7', '7 · 0 et 7 · 0 et −7'], ['(2x − 6)(x + 1) = 0 :', '3 et −1', '6 et −1 · 3 et −1 · 3 et 1'], ['(x + 4)² = 0 :', '−4', '4 · −4 · 4 et −4']]) },
-      { etoiles: 2, col: 1, consigne: 'Résous.',
+      { etoiles: 2, uneLigne: true, consigne: 'Résous.',
         ...rmp([['(x − 2)(x − 9) = 0 : x = @ ou x = @', 2, 9], ['(x + 1)(x − 6) = 0 : x = @ ou x = @', '−1', 6], ['(3x − 12)(x + 2) = 0 : x = @ ou x = @', 4, '−2'], ['5x(x − 10) = 0 : x = @ ou x = @', 0, 10]]) },
       { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.',
         ...ch([['Si a × b = 0, alors a = 0 ou b = 0.', 'vrai'], ['L\'équation (x − 1)(x + 1) = 0 a deux solutions.', 'vrai'], ['L\'équation x(x + 3) = 0 a une seule solution : −3.', 'faux'], ['Si a × b = 6, alors a = 6 ou b = 6.', 'faux']], 'vrai · faux') },
@@ -38,7 +38,7 @@ PLANCHES['3e|Équations'] = [
         corr: cm1Redac('Équation produit', { suite: ['Un produit est nul si l\'un de ses facteurs est nul.', `4x − 1 = 0 donc x = ${F(1, 4)}`, `2x + 3 = 0 donc x = −${F(3, 2)}`] }, `Les solutions sont ${F(1, 4)} et −${F(3, 2)}.`) },
       { etoiles: 2, col: 1, cahier: true, consigne: 'Factorise, puis résous : x² − 5x = 0, puis (x + 2)(x − 1) + (x + 2)(3x + 4) = 0.',
         corr: cm1Redac('x² − 5x = 0', { suite: ['x(x − 5) = 0', 'x = 0 ou x − 5 = 0'] }, 'Les solutions sont 0 et 5.') + cm1Redac('(x + 2)(x − 1) + (x + 2)(3x + 4) = 0', { suite: ['(x + 2)(x − 1 + 3x + 4) = 0', '(x + 2)(4x + 3) = 0'] }, `Les solutions sont −2 et −${F(3, 4)}.`) },
-      { etoiles: 2, col: 1, cahier: true, consigne: 'Le double du carré d\'un nombre, diminué de 8 fois ce nombre, est nul. Quel peut être ce nombre ?',
+      { etoiles: 2, cahier: true, consigne: 'Le double du carré d\'un nombre, diminué de 8 fois ce nombre, est nul. Quel peut être ce nombre ?',
         corr: cm1Redac('Mise en équation', { suite: ['2x² − 8x = 0', '2x(x − 4) = 0', 'x = 0 ou x = 4'] }, 'Ce nombre est 0 ou 4.') },
       { etoiles: 3, cahier: true, consigne: 'Résous (2x + 1)² − 16 = 0 en factorisant.',
         corr: cm1Redac('Factorisation', { suite: ['(2x + 1 − 4)(2x + 1 + 4) = 0', '(2x − 3)(2x + 5) = 0'] }, `Les solutions sont ${F(3, 2)} et −${F(5, 2)}.`) },

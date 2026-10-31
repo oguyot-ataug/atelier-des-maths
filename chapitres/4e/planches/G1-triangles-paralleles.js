@@ -28,11 +28,11 @@ PLANCHES['4e|Triangles et parallèles'] = [
     exos: [
       { etoiles: 1, col: 1, consigne: 'Quel cas d\'égalité permet de conclure ? Entoure.',
         ...chx([['AB = DE, BC = EF et AC = DF :', 'trois côtés', 'trois côtés · deux côtés et l\'angle compris · un côté et deux angles'], ['AB = DE, AC = DF et Â = D̂ :', 'deux côtés et l\'angle compris', 'trois côtés · deux côtés et l\'angle compris · un côté et deux angles'], ['BC = EF, B̂ = Ê et Ĉ = F̂ :', 'un côté et deux angles', 'trois côtés · deux côtés et l\'angle compris · un côté et deux angles']]) },
-      { etoiles: 2, col: 1, consigne: 'Ces deux triangles sont-ils forcément égaux ? Entoure.',
+      { etoiles: 2, uneLigne: true, consigne: 'Ces deux triangles sont-ils forcément égaux ? Entoure.',
         ...ch([['Côtés 4 cm, 5 cm, 6 cm et côtés 6 cm, 4 cm, 5 cm :', 'oui'], ['Tous deux ont des angles de 50°, 60° et 70° :', 'non'], ['AB = 3, BC = 7, B̂ = 40° et DE = 3, EF = 7, Ê = 40° :', 'oui']], 'oui · non') },
       { etoiles: 2, col: 1, consigne: 'Les codages indiquent les égalités. Les triangles ABC et DEF sont égaux.',
         ...fig(deuxTri, [['Cas d\'égalité utilisé : @', 'deux côtés et l\'angle compris'], ['Le côté homologue de [AC] est @', '[DF]'], ['Si AC = 5,2 cm, alors DF = @ cm', '5,2']]) },
-      { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.',
+      { etoiles: 2, consigne: 'Vrai ou faux ? Entoure.',
         ...ch([['Deux triangles égaux ont la même aire.', 'vrai'], ['Deux triangles qui ont les mêmes angles sont égaux.', 'faux'], ['Deux triangles égaux ont le même périmètre.', 'vrai']], 'vrai · faux') },
       { etoiles: 3, cahier: true, consigne: 'ABCD est un parallélogramme. Justifie que les triangles ABC et CDA sont égaux.',
         corr: cm1Redac('Égalités', { suite: ['Dans un parallélogramme, les côtés opposés ont la même longueur : AB = CD et BC = DA.', 'Le côté [AC] est commun aux deux triangles.'] }, 'Les triangles ABC et CDA ont leurs trois côtés égaux deux à deux : ils sont égaux.') },

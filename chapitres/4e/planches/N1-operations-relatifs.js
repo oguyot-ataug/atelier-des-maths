@@ -60,7 +60,7 @@ PLANCHES['4e|Opérations sur les nombres relatifs'] = [
         ...rmp([['(−63) : @ = 9', '−7'], ['@ : (−4) = 5', '−20'], ['@ : 6 = −8', '−48']]) },
       { etoiles: 2, col: 1, consigne: 'Entoure le bon résultat.',
         ...chx([['(−8) × 3 : (−6) =', '4', '−4 · 4 · −0,25'], ['−12 : (−4) + (−5) =', '−2', '−2 · 8 · −8'], ['(−3) × (−3) × (−3) =', '−27', '9 · −27 · 27']]) },
-      { etoiles: 2, consigne: 'Tom s\'est trompé. Écris le bon résultat.',
+      { etoiles: 2, uneLigne: true, consigne: 'Tom s\'est trompé. Écris le bon résultat.',
         ...rmp([['−2 + 3 × (−4) = −4 ; le bon résultat est @', '−14'], ['(−20) : (−4) × (−2) = −2,5 ; le bon résultat est @', '−10'], ['15 − (−3) × 2 = 36 ; le bon résultat est @', 21]]) },
       { etoiles: 3, cahier: true, consigne: 'Programme de calcul : choisir un nombre ; le multiplier par −3 ; ajouter 12 ; diviser le résultat par −3. Applique-le à 5, puis à −2. Que remarques-tu ?',
         corr: cm1Redac('Avec 5', { suite: ['5 × (−3) = −15', '−15 + 12 = −3', '−3 : (−3) = 1'] }, 'Avec 5, on obtient 1.') + cm1Redac('Avec −2', { suite: ['(−2) × (−3) = 6', '6 + 12 = 18', '18 : (−3) = −6'] }, 'Avec −2, on obtient −6. On remarque que le résultat est toujours le nombre choisi diminué de 4.') },

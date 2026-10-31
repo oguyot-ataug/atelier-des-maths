@@ -69,10 +69,10 @@ PLANCHES['6e|Symétrie axiale'] = [
     exos: [
       { etoiles: 1, col: 1, consigne: 'Place les symétriques A\', B\', C\' des points A, B, C par rapport à la droite rouge.', ...placeSym([[1, 2, 'A'], [3, 5, 'B'], [2, 6, 'C']], 'v', 5, 10, 7) },
       { etoiles: 2, col: 1, consigne: 'Place les symétriques D\', E\', F\' par rapport à la droite rouge (une diagonale).', ...placeSym([[1, 4, 'D'], [2, 6, 'E'], [4, 7, 'F']], 'd', 0, 8, 8) },
-      { etoiles: 1, col: 1, consigne: 'M\' est le symétrique de M par rapport à la droite (d). Complète.',
+      { etoiles: 1, consigne: 'M\' est le symétrique de M par rapport à la droite (d). Complète.',
         eleve: plListe(['(d) est la ' + B(6) + ' du segment [MM\'].', '(d) est ' + B(7) + ' à (MM\').', '(d) coupe [MM\'] en son ' + B(4) + '.', 'Si M est sur (d), son symétrique est ' + B(1)]),
         corr: plListe(['(d) est la ' + R('médiatrice') + ' du segment [MM\'].', '(d) est ' + R('perpendiculaire') + ' à (MM\').', '(d) coupe [MM\'] en son ' + R('milieu') + '.', 'Si M est sur (d), son symétrique est ' + R('M')]) },
-      { etoiles: 2, col: 1, consigne: 'Le point N\' est-il le symétrique de N par rapport à (d) ? Entoure (I est le point d\'intersection de (NN\') et de (d)).',
+      { etoiles: 2, uneLigne: true, consigne: 'Le point N\' est-il le symétrique de N par rapport à (d) ? Entoure (I est le point d\'intersection de (NN\') et de (d)).',
         ...ch([['(NN\') ⊥ (d) et IN = IN\' :', 'oui'], ['(NN\') ⊥ (d) mais IN = 2 cm et IN\' = 3 cm :', 'non'], ['IN = IN\' mais (NN\') n\'est pas perpendiculaire à (d) :', 'non']], 'oui · non') },
       { etoiles: 3, cahier: true, consigne: 'Trace une droite (d) et un point M à 3 cm de (d). Construis son symétrique M\' à l\'équerre et à la règle, puis vérifie au compas.',
         corr: cm1Redac('Construction', { suite: ['À l\'équerre : je trace la perpendiculaire à (d) passant par M ; elle coupe (d) en I.', 'Je reporte la longueur IM de l\'autre côté de (d) : IM\' = IM = 3 cm.'] }, 'Vérification au compas : deux cercles centrés sur (d) et passant par M passent aussi par M\'.') },

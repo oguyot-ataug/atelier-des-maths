@@ -36,9 +36,9 @@ PLANCHES['4e|Espace'] = [
   { titre: 'Volume d\'une pyramide et d\'un cône', duree: '35 min',
     attendus: ['Calculer le volume d\'une pyramide : aire de la base × hauteur : 3', 'Calculer le volume d\'un cône', 'Donner une valeur exacte puis arrondie'],
     exos: [
-      { etoiles: 1, col: 1, consigne: 'Calcule le volume de la pyramide.',
+      { etoiles: 1, consigne: 'Calcule le volume de la pyramide.',
         ...rmp([['Base de 12 cm², hauteur 5 cm : V = @ cm³', 20], ['Base carrée de 6 cm de côté, hauteur 10 cm : V = @ cm³', 120], ['Base rectangle 4 cm × 3 cm, hauteur 7 cm : V = @ cm³', 28]]) },
-      { etoiles: 2, col: 1, consigne: 'Calcule le volume du cône (valeur exacte avec π, puis arrondie au cm³).',
+      { etoiles: 2, uneLigne: true, consigne: 'Calcule le volume du cône (valeur exacte avec π, puis arrondie au cm³).',
         ...rmp([['r = 3 cm, h = 4 cm : V = @π cm³ ≈ @ cm³', 12, 38], ['r = 6 cm, h = 5 cm : V = @π cm³ ≈ @ cm³', 60, 188]]) },
       { etoiles: 2, consigne: 'Entoure la bonne réponse.',
         ...chx([['Un cube et une pyramide ont la même base et la même hauteur. Le volume de la pyramide est…', 'le tiers', 'le double · la moitié · le tiers'], ['1 L =', '1 dm³', '1 cm³ · 1 dm³ · 1 m³']]) },

@@ -42,12 +42,12 @@ PLANCHES['ce2|Les longueurs'] = [
         corr: plGrille([cm1RegleGraduee(60, 'AB', { largeur: '260px' }) + 'AB : ' + P3.R('6 cm'), cm1RegleGraduee(43, 'CD', { largeur: '260px' }) + 'CD : ' + P3.R('4 cm 3 mm')], 2) },
       { etoiles: 2, col: 1, cahier: true, consigne: 'Trace trois segments : le premier de 7 cm, le deuxième de 5 cm 4 mm, le troisième de 82 mm.',
         corr: cm1Redac('Le troisième segment', '82 mm = 8 cm 2 mm', 'On place le 0 de la règle au début du segment, et on s\'arrête 2 mm après le 8.') },
-      { etoiles: 2, col: 1, consigne: 'Range ces longueurs de la plus courte à la plus longue.',
+      { etoiles: 2, uneLigne: true, consigne: 'Range ces longueurs de la plus courte à la plus longue.',
         ...rmp([['7 cm · 65 mm · 1 dm · 9 cm 5 mm : @', '65 mm < 7 cm < 9 cm 5 mm < 1 dm']], 14) },
       { etoiles: 1, col: 1, consigne: 'Complète.', ...P3.rmp([['5 cm 4 mm = @ mm', 54], ['82 mm = @ cm @ mm', 8, 2], ['10 cm = @ mm', 100]], 2) },
       { etoiles: 2, col: 1, consigne: 'Entoure la plus grande longueur.', ...P3.chx([['', '9 cm', '85 mm · 9 cm'], ['', '1 m', '95 cm · 1 m'], ['', '2 km', '2 km · 1 900 m']]) },
       { etoiles: 2, col: 1, consigne: 'Calcule.', ...P3.rmp([['3 cm 5 mm + 2 cm 5 mm = @ cm', 6], ['45 mm + 15 mm = @ cm', 6]], 2) },
-      { etoiles: 3, col: 1, consigne: 'Complète.', ...P3.rmp([['Un trait de 12 cm. J\'en efface 35 mm. Il reste @ mm.', 85]], 2) },
+      { etoiles: 3, consigne: 'Complète.', ...P3.rmp([['Un trait de 12 cm. J\'en efface 35 mm. Il reste @ mm.', 85]], 2) },
     ] },
 ];
 })();

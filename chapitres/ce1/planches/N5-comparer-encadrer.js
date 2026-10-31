@@ -18,10 +18,10 @@ PLANCHES['ce1|Comparer, ranger, encadrer'] = [
   { titre: 'Ranger', duree: '20 min',
     attendus: ['Ranger des nombres dans l\'ordre croissant ou décroissant'],
     exos: [
-      { etoiles: 1, consigne: 'Range dans l\'ordre croissant.', ...P3.rmp([['345 · 435 · 354 · 453 : @ < @ < @ < @', '345', '354', '435', '453']], 3) },
-      { etoiles: 2, consigne: 'Range dans l\'ordre décroissant.', ...P3.rmp([['809 · 98 · 890 · 908 : @ > @ > @ > @', '908', '890', '809', '98']], 3) },
+      { etoiles: 1, uneLigne: true, consigne: 'Range dans l\'ordre croissant.', ...P3.rmp([['345 · 435 · 354 · 453 : @ < @ < @ < @', '345', '354', '435', '453']], 3) },
+      { etoiles: 2, uneLigne: true, consigne: 'Range dans l\'ordre décroissant.', ...P3.rmp([['809 · 98 · 890 · 908 : @ > @ > @ > @', '908', '890', '809', '98']], 3) },
       { etoiles: 3, cahier: true, consigne: 'Avec les chiffres 4, 7 et 1 (une fois chacun), écris le plus grand et le plus petit nombre de trois chiffres.', corr: cm1Redac('Les nombres', { suite: ['Le plus grand : 741', 'Le plus petit : 147'] }, 'Le plus grand est 741, le plus petit est 147.') },
-      { etoiles: 2, consigne: 'Range dans l\'ordre croissant.', ...P3.rmp([['127 · 271 · 172 · 217 : @ < @ < @ < @', '127', '172', '217', '271']], 3) },
+      { etoiles: 2, uneLigne: true, consigne: 'Range dans l\'ordre croissant.', ...P3.rmp([['127 · 271 · 172 · 217 : @ < @ < @ < @', '127', '172', '217', '271']], 3) },
       { etoiles: 2, col: 1, consigne: 'Écris un nombre qui convient.', ...P3.rmp([['250 < @ < 260', { ex: '255', entre: [250, 260] }], ['699 < @ < 701', 700], ['998 < @ < 1 000', 999]], 4) },
       { etoiles: 3, col: 1, consigne: 'Avec les chiffres 3, 8 et 5 (une fois chacun), écris…', ...P3.rmp([['le plus grand nombre : @', 853], ['le plus petit nombre : @', 358]], 3) },
     ] },

@@ -89,7 +89,7 @@ PLANCHES['6e|Nombres entiers'] = [
       { etoiles: 2, col: 1, consigne: 'Arrondis au million le plus proche.',
         eleve: plListe(['4 752 300 → ' + B(9), '19 080 000 → ' + B(9), '7 499 999 → ' + B(9), '999 600 → ' + B(9)]),
         corr: plListe(['4 752 300 → ' + R('5 000 000'), '19 080 000 → ' + R('19 000 000'), '7 499 999 → ' + R('7 000 000'), '999 600 → ' + R('1 000 000')]) },
-      { etoiles: 2, consigne: 'Encadre chaque nombre entre deux centaines de mille consécutives.',
+      { etoiles: 2, uneLigne: true, consigne: 'Encadre chaque nombre entre deux centaines de mille consécutives.',
         eleve: plListe([`${B(7)} &lt; 4 752 300 &lt; ${B(7)}`, `${B(7)} &lt; 19 080 000 &lt; ${B(7)}`, `${B(7)} &lt; 630 500 &lt; ${B(7)}`].map(ligne)),
         corr: plListe([`${R('4 700 000')} &lt; 4 752 300 &lt; ${R('4 800 000')}`, `${R('19 000 000')} &lt; 19 080 000 &lt; ${R('19 100 000')}`, `${R('600 000')} &lt; 630 500 &lt; ${R('700 000')}`].map(ligne)) },
       { etoiles: 3, cahier: true, consigne: `Voici la population de quatre pays (2024).${tab(['Espagne', 'Belgique', 'Italie', 'Suisse'], [['48 619 695', '11 822 592', '58 989 749', '8 921 981']])}Range ces pays du plus peuplé au moins peuplé, puis arrondis chaque population au million.`,

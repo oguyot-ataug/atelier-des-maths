@@ -47,7 +47,7 @@ PLANCHES['5e|Opérations sur les nombres relatifs'] = [
     exos: [
       { etoiles: 1, col: 1, consigne: 'Calcule de proche en proche.',
         ...calc([['(−3) + (+5) + (−4)', -2, '(+2) + (−4)'], ['(+8) + (−10) + (+7)', 5, '(−2) + (+7)'], ['(−1) + (−2) + (−3) + (+6)', 0, '(−6) + (+6)']]) },
-      { etoiles: 2, col: 1, consigne: 'Regroupe les nombres positifs et les nombres négatifs, puis calcule.',
+      { etoiles: 2, uneLigne: true, consigne: 'Regroupe les nombres positifs et les nombres négatifs, puis calcule.',
         ...calc([['(+4) + (−9) + (+6) + (−3)', -2, '(+10) + (−12)'], ['(−7) + (+2) + (−5) + (+11)', 1, '(+13) + (−12)'], ['(+2,5) + (−4) + (+1,5) + (−6)', -6, '(+4) + (−10)']]) },
       { etoiles: 2, col: 1, consigne: 'Table d\'addition : la case = nombre de la ligne + nombre de la colonne.',
         ...(() => { const L = [-3, 5], Cc = [-4, 2, -7], tab = f => `<table class="pl-tab"><tr><th>+</th>${Cc.map(c => `<th>${rel(c)}</th>`).join('')}</tr>${L.map(l => `<tr><th>${rel(l)}</th>${Cc.map(c => `<td>${f(l + c)}</td>`).join('')}</tr>`).join('')}</table>`;
@@ -60,7 +60,7 @@ PLANCHES['5e|Opérations sur les nombres relatifs'] = [
       { etoiles: 2, col: 1, consigne: 'Pyramide : chaque brique est la somme des deux briques sur lesquelles elle repose. Base : −3 ; 5 ; −6. Complète.',
         ...rmp([['Étage 2, à gauche : (−3) + (+5) = @', 2], ['Étage 2, à droite : (+5) + (−6) = @', -1], ['Sommet : @', 1]], 2) },
       { etoiles: 2, col: 1, consigne: 'Calcule.', ...calc([['(−1,5) + (+4) + (−2,5)', 0], ['(+12) + (−30) + (+8)', -10], ['(−0,1) + (−0,9) + (+5)', 4]]) },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'Sur un compte, il y a 125 €. On fait trois opérations : un retrait de 80 €, un dépôt de 30 € et un retrait de 95 €. Écris la somme de relatifs, puis calcule le solde.',
+      { etoiles: 3, cahier: true, consigne: 'Sur un compte, il y a 125 €. On fait trois opérations : un retrait de 80 €, un dépôt de 30 € et un retrait de 95 €. Écris la somme de relatifs, puis calcule le solde.',
         corr: cm1Redac('Solde', '(+125) + (−80) + (+30) + (−95) = (+155) + (−175) = −20', 'Le compte est à découvert : −20 €.') },
     ] },
   { titre: 'Soustraire un nombre relatif', duree: '40 min',

@@ -137,7 +137,9 @@ planche, lancer `NODE_PATH=/opt/node22/lib/node_modules node tools/verif-trous.j
 Mise en forme (demandé le 31/10/2026) : un nombre n'est jamais coupé en fin de ligne (fait automatiquement : `plInsecable`,
 planches.js) ; une décomposition, un encadrement, une égalité à compléter ne se poursuivent jamais sur la ligne suivante
 (`white-space:nowrap` sur la ligne, exercice élargi si besoin) ; plusieurs propositions à entourer sont sur une même ligne ou
-alignées en dessous (`P3.chxTab`, `P3.chx2`), jamais collées à la question.
+alignées en dessous (`P3.chxTab`, `P3.chx2`), jamais collées à la question. Automatique : les propositions « <b>a · b · c</b> »
+ne sont jamais coupées (`.pl-props`, planches.js) ; un exercice `{ uneLigne: true }` met une ligne de calcul par question, sur
+toute la largeur, sans retour à la ligne (rangements, décompositions, encadrements trop longs pour une demi-colonne).
 
 Une feuille qui dépasse la page A4 est resserrée à l'impression (`plRemplirPages`, planches.js) : jusqu'à 15 % pour l'élève, 30 %
 pour le corrigé, en gardant toute la largeur ; jamais sur une feuille d'élève où l'on mesure une longueur à la règle. Au-delà,

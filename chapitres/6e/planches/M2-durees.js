@@ -65,7 +65,7 @@ PLANCHES['6e|Heures et durée'] = [
       { etoiles: 1, consigne: 'Complète le tableau.',
         eleve: tab(['Début', 'Durée', 'Fin'], [['8 h 15', '2 h 30 min', B()], ['13 h 40', B(), '15 h 10'], [B(), '45 min', '10 h 20'], ['22 h 50', '1 h 25 min', B()]]),
         corr: tab(['Début', 'Durée', 'Fin'], [['8 h 15', '2 h 30 min', R('10 h 45')], ['13 h 40', R('1 h 30 min'), '15 h 10'], [R('9 h 35'), '45 min', '10 h 20'], ['22 h 50', '1 h 25 min', R('0 h 15')]]) },
-      { etoiles: 2, col: 1, consigne: 'Additionne les durées.',
+      { etoiles: 2, uneLigne: true, consigne: 'Additionne les durées.',
         eleve: plListe(['1 h 40 min + 50 min = ' + B(1) + ' h ' + B(2) + ' min', '2 h 35 min + 1 h 45 min = ' + B(1) + ' h ' + B(2) + ' min', '45 s + 1 min 30 s = ' + B(1) + ' min ' + B(2) + ' s']),
         corr: plListe(['1 h 40 min + 50 min = ' + R(2) + ' h ' + R(30) + ' min', '2 h 35 min + 1 h 45 min = ' + R(4) + ' h ' + R(20) + ' min', '45 s + 1 min 30 s = ' + R(2) + ' min ' + R(15) + ' s']) },
       { etoiles: 2, col: 1, consigne: 'Un train part de Lyon à 9 h 47 et arrive à Paris à 11 h 45.',
@@ -73,7 +73,7 @@ PLANCHES['6e|Heures et durée'] = [
         corr: plListe(['Durée du trajet : ' + R(1) + ' h ' + R(58) + ' min', 'Avec 12 min de retard, il arrive à ' + R('11 h 57')]) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Un cours de 55 min commence à 8 h 05. Il est suivi de 5 min de pause, puis d\'un cours de 55 min. À quelle heure finit le deuxième cours ?',
         corr: cm1Redac('Calcul', { suite: ['8 h 05 + 55 min = 9 h', '9 h + 5 min = 9 h 05', '9 h 05 + 55 min = 10 h'] }, 'Le deuxième cours finit à 10 h.') },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'Un marathonien court 42 km en 3 h 30 min. Combien de minutes met-il, en moyenne, pour parcourir 1 km ?',
+      { etoiles: 3, cahier: true, consigne: 'Un marathonien court 42 km en 3 h 30 min. Combien de minutes met-il, en moyenne, pour parcourir 1 km ?',
         corr: cm1Redac('Calcul', { suite: ['3 h 30 min = 210 min', '210 ÷ 42 = 5'] }, 'Il met en moyenne 5 minutes par kilomètre.') },
     ] },
 ];
