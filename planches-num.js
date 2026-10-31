@@ -28,7 +28,7 @@
 const plNumCache = new Map();
 // Normalisation d'une réponse : espaces, casse, ponctuation finale ; un nombre perd ses zéros de tête
 // (« 05 » minutes = « 5 ») et ses espaces (« 1 200 » = « 1200 »).
-const plNumNorm = s => { const t = String(s ?? '').replace(/(\d)\s*[*xX]\s*(?=\d)/g, '$1 × ').replace(/\*/g, '×').replace(/[\u00a0\u202f]/g, ' ').replace(/\s+/g, ' ').trim().toLowerCase().replace(/[.!]$/, '').replace(/’/g, '\''), n = t.replace(/(\d) (?=\d)/g, '$1').replace(/[−–]/g, '-'); if(/^\d+$/.test(n)) return String(+n); return /[a-zà-ÿ]/i.test(n) ? (/[a-zà-ÿ]{3,}/i.test(t) ? t.replace(/[−–]/g, '-') : n.replace(/\s+/g, '')) : n.replace(/\s+/g, ''); }; // calcul littéral (« 5x + 3 », « 12 h 30 ») : sans espaces non plus // calcul (« 5 000 000 + 8 ») : sans espaces
+const plNumNorm = s => { const t = String(s ?? '').replace(/(\d)\s*[*xX×]\s*(?=\d)/g, '$1 × ').replace(/\*/g, '×').replace(/[\u00a0\u202f]/g, ' ').replace(/\s+/g, ' ').trim().toLowerCase().replace(/[.!]$/, '').replace(/’/g, '\''), n = t.replace(/(\d) (?=\d)/g, '$1').replace(/[−–]/g, '-'); if(/^\d+$/.test(n)) return String(+n); return /[a-zà-ÿ]/i.test(n) ? (/[a-zà-ÿ]{3,}/i.test(t) ? t.replace(/[−–]/g, '-') : n.replace(/\s+/g, '')) : n.replace(/\s+/g, ''); }; // calcul littéral (« 5x + 3 », « 12 h 30 ») : sans espaces non plus // calcul (« 5 000 000 + 8 ») : sans espaces
 // Grands nombres écrits par classes -- relecture 6e-N1-P1 : « En version numérique, respecter l'écriture avec
 // espace des grands nombres ». Un entier de 4 chiffres ou plus doit être écrit par classes de trois chiffres
 // séparées par un espace (2 300 000) ; « 2300000 » ou « 2 30 0000 » sont faux. La partie décimale n'est pas concernée.
@@ -254,7 +254,14 @@ function plNum(root, x, o){
     if(!sel) return;
     if(t === 'ok-fin'){ sel = null; afficher(); return; }
     let v = etat.v[sel] || '';
-    if(t === '⌫') v = v.slice(0, -1);
+    // Clavier de l'ordinateur : « * » s'écrit « × » (et « x » entre deux nombres, hors réponse en lettres), « - » s'écrit « − »
+    // -- demandé le 31/10/2026 : « Écrire * devrait se transformer en fois correctement écrit ». Le signe fois est entouré
+    // d'espaces (« 3 × 5 ») ; « 3*5 », « 3 * 5 », « 3×5 » et « 3x5 » sont tous acceptés à la vérification (plNumNorm).
+    if(t === '*' || ((t === 'x' || t === 'X') && plClavier.mode === '123')) t = '×';
+    else if(t === '-') t = '−';
+    if(t === '×' && /[\d)a-z]$/i.test(v)){ v = v.replace(/\s+$/, '') + ' × '; etat.v[sel] = v; effacerMarques(); afficher(); change(); return; }
+    if(t === '⌫' && / × $/.test(v)) v = v.slice(0, -3);
+    else if(t === '⌫') v = v.slice(0, -1);
     else if(t === 'ok'){ const els = [...root.querySelectorAll('[data-pnv]')], b = els.find(z => z.dataset.pnv === sel);
       if(b && b.hasAttribute('data-pnsuiv')){ // opération posée : ordre du calcul, puis la case qui suit l'opération
         if(b.dataset.pnsuiv){ choisir(b.dataset.pnsuiv); return; }
