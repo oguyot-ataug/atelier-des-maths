@@ -278,7 +278,9 @@ function plNum(root, x, o){
     else if(/^[<>=]$/.test(t)) v = t;
     else if(/^ret/.test(sel) && /^\d$/.test(t)) v = t; // retenue : un seul chiffre, on le remplace
     else if(t === ' ' && (!v || v.endsWith(' '))) return; // pas d'espace au début ni deux de suite
-    else if(v.length < 24) v += t;
+    // Longueur maximale : 24 caractères, ou plus quand la réponse attendue est longue (relecture 6e-N1-P1-E2 : « trois
+    // millions quatre-cents » était coupé à « quatre-ce » : « je ne peux toujours pas aller plus loin »).
+    else { const c = M.cibles.find(z => z.id === sel), lim = c && c.type === 'txt' ? Math.max(24, c.rep.length + 15) : 24; if(v.length < lim) v += t; }
     etat.v[sel] = v; effacerMarques(); afficher(); change();
   };
   root.onclick = e => {
