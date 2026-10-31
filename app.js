@@ -3740,6 +3740,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1237', date:'2026-10-31', items:['Loupe (plein écran) des définitions, règles, figures et exercices : le bloc est agrandi d\'un seul tenant, texte et figures ensemble, pour remplir l\'écran -- signalé : « Le zoom doit agrandir (pleine page) sans modifier le format du contenu ». Avant, le texte passait au double et les figures à 700 px, chacun de son côté : la mise en page était déformée (barres de dizaines immenses, texte coupé). La mise en page reste celle de la page ; sur téléphone, le bloc s\'affiche à la largeur de l\'écran.'] },
   { version:'2026-08-19.1236', date:'2026-10-31', items:['Adresses e-mail en latelierdesmaths.fr -- demandé : « Tout ce qui concerne l\'atelier des maths doit avoir comme domaine latelierdesmaths.fr, y compris mailing ». Le site affiche contact@latelierdesmaths.fr partout (page Rendez-vous, accueil, tarifs, espace famille, signature des devis, messages d\'erreur) ; les e-mails partent de notifications@, compte@, devis@, factures@ et rendez-vous@latelierdesmaths.fr, réponses vers contact@latelierdesmaths.fr ; l\'émetteur des factures et devis à venir aussi. Tant que Resend n\'a pas vérifié le domaine, les e-mails repartent automatiquement depuis l\'ancienne adresse : aucun n\'est perdu.'] },
   { version:'2026-08-19.1235', date:'2026-10-31', items:['Planches imprimées : plus aucune feuille sur deux pages -- demandé : « Occupe-toi des feuilles qui débordent ». 78 feuilles dépassaient un peu la page A4 (15 feuilles d\'élève, de 0,1 à 13 % ; 63 corrigés, jusqu\'à 25 %, surtout les planches Objectif Brevet de 3e). À l\'impression, une feuille trop haute est maintenant resserrée juste ce qu\'il faut pour tenir sur sa page, en gardant toute la largeur (jusqu\'à 15 % pour l\'élève, 30 % pour le corrigé ; jamais sur une feuille où l\'élève mesure une longueur à la règle).'] },
   { version:'2026-08-19.1234', date:'2026-10-30', items:['Planches de tous les niveaux : plus jamais d\'exercice seul en demi-largeur avec un trou à sa droite -- demandé : « Je ne veux jamais voir ça dans aucun niveau. Soit tu combles le trou par un exercice supplémentaire, soit tu rajoutes des colonnes avec d\'autres exemples. » 310 exercices concernés : 125 problèmes « dans ton cahier » passent en pleine largeur ; les listes passent en pleine largeur sur deux colonnes, avec deux fois plus d\'exemples (calculs, questions, « oui / non » et « vrai / faux » en deux tableaux côte à côte) ; les autres (dessins, tableaux) sont élargis ou complétés. Dans le Manuel comme sur la feuille, les deux colonnes d\'une liste commencent à la même hauteur. Un contrôle (tools/verif-trous.js) empêche les trous de revenir.'] },
@@ -9314,17 +9315,53 @@ function openZoomBox(box){
   box.parentNode.insertBefore(zoomedBoxPlaceholder, box);
   if(typeof lrnState!=='undefined' && lrnState && lrnState.box===box) lrnStop();
   box.querySelectorAll('.zoom-btn, .read-aloud-btn, .learn-btn, .ord-btn').forEach(b=>{ b.dataset.zoomHidden='1'; b.style.display='none'; });
-  // Proportions de chaque figure SVG : en zoom, sa largeur est limitée pour qu'elle tienne
-  // entière en hauteur dans l'écran (voir #zoomBoxOverlay dans styles.css).
-  box.querySelectorAll('svg').forEach(svg=>{
-    const vb = svg.viewBox && svg.viewBox.baseVal;
-    if(vb && vb.width > 0 && vb.height > 0) svg.style.setProperty('--zoom-ratio', String(vb.width / vb.height));
-  });
+  // Le bloc garde la largeur qu'il avait dans la page et il est agrandi d'un seul tenant pour remplir l'écran (texte et
+  // figures ensemble) -- demandé : « Le zoom doit agrandir (pleine page) sans modifier le format du contenu ».
+  const largeur = Math.max(200, zoomLargeurUtile(box));
   const contentEl = document.getElementById('zoomBoxContent');
   contentEl.innerHTML = '';
-  contentEl.appendChild(box);
+  const echelle = document.createElement('div');
+  echelle.className = 'zoom-echelle';
+  echelle.style.width = largeur + 'px';
+  echelle.appendChild(box);
+  contentEl.appendChild(echelle);
   document.getElementById('zoomBoxOverlay').style.display = 'flex';
+  zoomAjuster();
 }
+// Largeur réellement occupée par le contenu du bloc (texte, figures, tableaux) : un bloc large dont le contenu n'occupe que
+// la gauche, ou une figure centrée, peut ainsi grossir davantage. Le texte ne se recompose pas : la largeur retenue contient
+// toujours sa ligne la plus longue.
+function zoomLargeurUtile(box){
+  const br = box.getBoundingClientRect(), cs = getComputedStyle(box);
+  const padG = parseFloat(cs.paddingLeft) || 0, padD = parseFloat(cs.paddingRight) || 0;
+  let g = Infinity, d = -Infinity;
+  const marche = document.createTreeWalker(box, NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT);
+  for(let n = marche.nextNode(); n; n = marche.nextNode()){
+    let rs;
+    if(n.nodeType === 3){ if(!n.nodeValue.trim()) continue; const r = document.createRange(); r.selectNodeContents(n); rs = r.getClientRects(); }
+    else if(/^(svg|img|canvas|input|select|textarea|table)$/i.test(n.tagName)) rs = [n.getBoundingClientRect()];
+    else continue;
+    for(const r of rs) if(r.width && r.height){ g = Math.min(g, r.left); d = Math.max(d, r.right); }
+  }
+  if(!isFinite(g)) return br.width;
+  const videGauche = g - br.left - padG; // contenu centré : on retire le vide des deux côtés
+  const utile = videGauche > 20 ? (d - g) + padG + padD : (d - br.left) + padD;
+  return Math.min(br.width, Math.ceil(utile) + 6);
+}
+// Facteur d'agrandissement : le plus grand qui fait tenir le bloc entier dans l'écran (jamais moins que la taille normale).
+function zoomAjuster(){
+  const echelle = document.querySelector('#zoomBoxContent .zoom-echelle');
+  if(!echelle) return;
+  echelle.style.zoom = 1;
+  const r = echelle.getBoundingClientRect();
+  const ov = getComputedStyle(document.getElementById('zoomBoxOverlay')), ct = getComputedStyle(document.getElementById('zoomBoxContent'));
+  const marges = parseFloat(ov.paddingLeft) * 2 + parseFloat(ct.paddingLeft) * 2 + 2;
+  const zL = (window.innerWidth - marges) / r.width, zH = (window.innerHeight - marges) / r.height;
+  let z = Math.min(zL, zH);
+  if(z < 1) z = Math.min(1, zL); // bloc plus haut que l'écran : à sa taille (ou à la largeur de l'écran), on fait défiler
+  echelle.style.zoom = z.toFixed(3);
+}
+window.addEventListener('resize', ()=>{ if(zoomedBox) zoomAjuster(); });
 function closeZoomBox(){
   if(!zoomedBox) return;
   zoomedBox.querySelectorAll('[data-zoom-hidden]').forEach(b=>{ b.style.display=''; delete b.dataset.zoomHidden; });
