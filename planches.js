@@ -580,13 +580,23 @@ function plRemplirPages(doc){
   doc.body.appendChild(sonde); const L = sonde.getBoundingClientRect().height - 4; sonde.remove();
   const H = el => el.getBoundingClientRect().height;
   doc.querySelectorAll('.pl-planche').forEach(pg => {
-    if(H(pg) > L) return;
+    // Feuille un peu trop haute (jusqu'à 15 % pour l'élève, 30 % pour le corrigé) : resserrée pour tenir sur une page
+    // -- demandé le 31/10/2026 : « Occupe-toi des feuilles qui débordent ». Jamais sur une feuille d'élève où l'on mesure
+    // une longueur à la règle sur un dessin imprimé (les longueurs doivent rester vraies).
+    let z = 1;
+    if(H(pg) > L){
+      const corr = pg.classList.contains('pl-corrige'), regle = /mesure[rsz]? (le|la|les|ce|cette|ces|chaque) (segment|longueur|côté|trait|ligne|bande)|avec (ta|la|une) règle|règle graduée/i.test(pg.textContent);
+      z = L / H(pg) - .003;
+      if(z < (corr ? .7 : .85) || (regle && !corr)) return;
+      pg.style.zoom = z.toFixed(3); pg.classList.add('pl-reduit');
+      if(H(pg) > L){ pg.style.zoom = ''; pg.classList.remove('pl-reduit'); return; }
+    }
     const ex = [...pg.querySelectorAll('.pl-exos > .pl-exo')];
     ex.forEach(e => { if(!e.classList.contains('pl-demi')) return; const t = e.getBoundingClientRect().top;
       if(!ex.some(f => f !== e && f.classList.contains('pl-demi') && Math.abs(f.getBoundingClientRect().top - t) < 3)) e.classList.add('pl-seul'); });
     const pt = pg.querySelector('.pl-point');
     if(pt && L - H(pg) > 100){ pt.hidden = false; if(H(pg) > L) pt.hidden = true; }
-    if(H(pg) <= L){ pg.classList.add('pl-plein'); pg.style.height = L + 'px'; }
+    if(H(pg) <= L){ pg.classList.add('pl-plein'); pg.style.height = (L / z) + 'px'; } // en unités de la feuille resserrée
   });
   // Pages pleines du livre (couverture, séparation) et numéros de page du sommaire.
   // Couverture et sommaire : la dernière page n'est jamais à moitié vide (l'espace se répartit entre les chapitres).
