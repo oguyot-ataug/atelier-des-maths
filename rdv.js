@@ -94,7 +94,7 @@ function rdvRendre(){
   const box = document.getElementById('rdvAgenda'); if(!box) return;
   if(rdvEtat.fait) return rdvRendreFait(box);
   if(rdvEtat.erreur){ box.innerHTML = `<p class="rdv-erreur">${rdvEsc(rdvEtat.erreur)}</p>`; return; }
-  if(rdvEtat.ferme){ box.innerHTML = `<p class="rdv-vide">La prise de rendez-vous est momentanément fermée. Écrivez-nous à contact@latelieraugmente.fr.</p>`; return; }
+  if(rdvEtat.ferme){ box.innerHTML = `<p class="rdv-vide">La prise de rendez-vous est momentanément fermée. Écrivez-nous à contact@latelierdesmaths.fr.</p>`; return; }
   const form = rdvEtat.etape === 'form' && rdvEtat.choix;
   const barre = `<div class="rdv-barre"><div class="rdv-vues" role="group" aria-label="Affichage">
       <button type="button" class="${rdvEtat.vue === 'semaine' ? 'on' : ''}" onclick="rdvChangerVue('semaine')"><span class="gicon">view_week</span> Semaine</button>

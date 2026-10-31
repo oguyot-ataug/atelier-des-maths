@@ -3302,7 +3302,7 @@ async function submitProfSignup(){
     return;
   }
 
-  // Notification à contact@latelieraugmente.fr : volontairement non-bloquant -- si l'envoi
+  // Notification à contact@latelierdesmaths.fr : volontairement non-bloquant -- si l'envoi
   // échoue (ex. secret RESEND_API_KEY pas encore configuré côté Supabase), l'inscription
   // elle-même reste enregistrée et valide, seule la notification est manquée.
   if(!dejaCree){
@@ -3333,7 +3333,7 @@ async function startStripeCheckout(){
       body: { origin: window.location.origin }
     });
     if(error || !data || !data.url){
-      status.textContent = "Erreur : impossible de démarrer le paiement pour le moment. Réessayez plus tard ou contactez contact@latelieraugmente.fr.";
+      status.textContent = "Erreur : impossible de démarrer le paiement pour le moment. Réessayez plus tard ou contactez contact@latelierdesmaths.fr.";
       btn.disabled = false;
       return;
     }
@@ -3432,11 +3432,11 @@ async function refreshAuthUI(){
     if(pendingOrRejected){
       document.getElementById('accountRoleDisplay').innerHTML = profile.signup_status==='pending'
         ? '<span class=gicon>hourglass_top</span> Inscription en attente de validation par l\'administrateur.'
-        : '<span class=gicon>cancel</span> Inscription refusée. Contactez contact@latelieraugmente.fr.';
+        : '<span class=gicon>cancel</span> Inscription refusée. Contactez contact@latelierdesmaths.fr.';
     } else if(subscriptionExpired){
       document.getElementById('accountRoleDisplay').innerHTML = profile.role==='prof'
         ? '<span class=gicon>warning</span> Essai ou offre terminé : choisissez votre offre dans « Mon abonnement ».'
-        : '<span class=gicon>warning</span> Abonnement expiré. Contactez contact@latelieraugmente.fr pour le renouveler.';
+        : '<span class=gicon>warning</span> Abonnement expiré. Contactez contact@latelierdesmaths.fr pour le renouveler.';
     } else {
       document.getElementById('accountRoleDisplay').textContent =
         (currentUserRole==='admin' ? 'Administrateur' : currentUserRole==='prof' ? 'Professeur' : currentUserRole==='parent' ? 'Parent · compte Famille' : isFamilleEnfant ? 'Élève · compte Famille' : currentUserRole==='eleve' ? 'Élève' : '')
@@ -3740,6 +3740,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1236', date:'2026-10-31', items:['Adresses e-mail en latelierdesmaths.fr -- demandé : « Tout ce qui concerne l\'atelier des maths doit avoir comme domaine latelierdesmaths.fr, y compris mailing ». Le site affiche contact@latelierdesmaths.fr partout (page Rendez-vous, accueil, tarifs, espace famille, signature des devis, messages d\'erreur) ; les e-mails partent de notifications@, compte@, devis@, factures@ et rendez-vous@latelierdesmaths.fr, réponses vers contact@latelierdesmaths.fr ; l\'émetteur des factures et devis à venir aussi. Tant que Resend n\'a pas vérifié le domaine, les e-mails repartent automatiquement depuis l\'ancienne adresse : aucun n\'est perdu.'] },
   { version:'2026-08-19.1235', date:'2026-10-31', items:['Planches imprimées : plus aucune feuille sur deux pages -- demandé : « Occupe-toi des feuilles qui débordent ». 78 feuilles dépassaient un peu la page A4 (15 feuilles d\'élève, de 0,1 à 13 % ; 63 corrigés, jusqu\'à 25 %, surtout les planches Objectif Brevet de 3e). À l\'impression, une feuille trop haute est maintenant resserrée juste ce qu\'il faut pour tenir sur sa page, en gardant toute la largeur (jusqu\'à 15 % pour l\'élève, 30 % pour le corrigé ; jamais sur une feuille où l\'élève mesure une longueur à la règle).'] },
   { version:'2026-08-19.1234', date:'2026-10-30', items:['Planches de tous les niveaux : plus jamais d\'exercice seul en demi-largeur avec un trou à sa droite -- demandé : « Je ne veux jamais voir ça dans aucun niveau. Soit tu combles le trou par un exercice supplémentaire, soit tu rajoutes des colonnes avec d\'autres exemples. » 310 exercices concernés : 125 problèmes « dans ton cahier » passent en pleine largeur ; les listes passent en pleine largeur sur deux colonnes, avec deux fois plus d\'exemples (calculs, questions, « oui / non » et « vrai / faux » en deux tableaux côte à côte) ; les autres (dessins, tableaux) sont élargis ou complétés. Dans le Manuel comme sur la feuille, les deux colonnes d\'une liste commencent à la même hauteur. Un contrôle (tools/verif-trous.js) empêche les trous de revenir.'] },
   { version:'2026-08-19.1233', date:'2026-10-30', items:['Relecture des exercices commentés. CE2, Tables, planche 3, exercice 4 : nouvel énoncé « Les produits suivants sont-ils égaux à 60 ? » (demandé en relecture).'] },

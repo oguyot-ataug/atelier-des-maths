@@ -78,7 +78,7 @@ function facPanelHtml(){
         <button class="btn" onclick="facSaveEmetteur()">Enregistrer mes informations</button> <span class="hint" id="facEmMsg" style="margin:0;"></span>
         <div class="tool-row" style="margin-top:12px;">
           <button class="btn secondary" onclick="facTestMail()"><span class="gicon">mail</span> Envoyer un e-mail de test</button>
-          <span class="hint" id="facMailMsg" style="margin:0;">Envoyé depuis devis@latelieraugmente.fr vers votre adresse ci-dessus.</span>
+          <span class="hint" id="facMailMsg" style="margin:0;">Envoyé depuis devis@latelierdesmaths.fr vers votre adresse ci-dessus.</span>
         </div>
         <div class="tool-row" style="margin-top:8px;">
           <button class="btn secondary" onclick="facQontoTest()"><span class="gicon">account_balance</span> Tester la connexion Qonto</button>

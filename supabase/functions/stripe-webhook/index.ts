@@ -14,7 +14,7 @@
 //
 // FACTURE (v9) : après l'activation, la facture est émise dans la série de L'Atelier Augmenté
 // (famille_facturer : F-AAAA-NNN, ou TEST-AAAA-NNN pour un paiement test) avec le nom et l'adresse
-// saisis sur Stripe, puis un e-mail part de factures@latelieraugmente.fr (Resend) vers le parent.
+// saisis sur Stripe, puis un e-mail part de factures@latelierdesmaths.fr (Resend) vers le parent.
 //
 // OFFRES PROFESSEUR (v10) : metadata.kind = "prof" (fonction prof-offre) : Professeur seul ou
 // Professeur particulier, paiement unique pour l'année scolaire ; prof_activer puis prof_facturer,
@@ -35,6 +35,18 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { base64, facturePdf } from "./facture-pdf.ts";
+
+// Envoi Resend : expéditeur en @latelierdesmaths.fr (demandé le 31/10/2026 : « Tout ce qui concerne l'atelier des maths doit
+// avoir comme domaine latelierdesmaths.fr, y compris mailing »). Tant que ce domaine n'est pas vérifié chez Resend, l'envoi
+// est refusé : on renvoie alors depuis l'ancien domaine, pour ne perdre aucun e-mail.
+async function envoiResend(init: RequestInit): Promise<Response> {
+  const res = await fetch("https://api.resend.com/emails", init);
+  if (res.ok || ![403, 422].includes(res.status)) return res;
+  const err = await res.clone().text();
+  if (!/domain/i.test(err)) return res;
+  console.warn("Resend : domaine latelierdesmaths.fr refusé, repli sur latelieraugmente.fr", err);
+  return fetch("https://api.resend.com/emails", { ...init, body: String(init.body).replace(/@latelierdesmaths\.fr>/g, "@latelieraugmente.fr>") });
+}
 
 function esc(s: unknown): string {
   return String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -72,14 +84,14 @@ async function envoyerFacture(f: any, prof = false, adminClient: any = null): Pr
       <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto 18px;"><tr><td style="background:#ff8208;border-radius:10px;"><a href="${lien}" style="display:inline-block;padding:14px 28px;color:#fff;font-size:16px;font-weight:bold;text-decoration:none;">Voir ma facture</a></td></tr></table>
       <p style="font-size:13px;color:#6b7785;line-height:1.5;margin:0;">Rappel : paiement unique, sans reconduction automatique. Une question ? Répondez simplement à cet e-mail.</p>
     </td></tr>
-    <tr><td style="padding:14px 24px;background:#faf9f7;border-top:1px solid #eeeae3;font-size:12px;color:#6b7785;">L'Atelier Augmenté · contact@latelieraugmente.fr</td></tr>
+    <tr><td style="padding:14px 24px;background:#faf9f7;border-top:1px solid #eeeae3;font-size:12px;color:#6b7785;">L'Atelier Augmenté · contact@latelierdesmaths.fr</td></tr>
   </table></div>`;
   try {
-    await fetch("https://api.resend.com/emails", {
+    await envoiResend({
       method: "POST",
       headers: { "Authorization": "Bearer " + key, "Content-Type": "application/json" },
       body: JSON.stringify({
-        from: "L'Atelier Augmenté <factures@latelieraugmente.fr>", to: [f.email], reply_to: "contact@latelieraugmente.fr",
+        from: "L'Atelier Augmenté <factures@latelierdesmaths.fr>", to: [f.email], reply_to: "contact@latelierdesmaths.fr",
         subject: (f.test ? "[TEST] " : "") + "Votre facture " + f.numero + " – L'Atelier des Maths",
         html,
         ...(piece ? { attachments: [piece] } : {}),

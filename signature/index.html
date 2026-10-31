@@ -158,10 +158,10 @@ function render(){
   const d = state.data;
   if(!d){ return; }
   let head = '';
-  if(d.error) { app.innerHTML = `<div class="banner err"><span class="gicon">error</span><div><b>${esc(d.error)}</b><br>Si vous pensez qu'il s'agit d'une erreur, écrivez à <a href="mailto:contact@latelieraugmente.fr">contact@latelieraugmente.fr</a>.</div></div>`; return; }
+  if(d.error) { app.innerHTML = `<div class="banner err"><span class="gicon">error</span><div><b>${esc(d.error)}</b><br>Si vous pensez qu'il s'agit d'une erreur, écrivez à <a href="mailto:contact@latelierdesmaths.fr">contact@latelierdesmaths.fr</a>.</div></div>`; return; }
   if(d.signed) head = `<div class="banner ok"><span class="gicon">verified</span><div><b>Ce devis est signé.</b> Merci ! La facture vous sera adressée prochainement.</div></div>`;
   else if(d.revoked) head = `<div class="banner warn"><span class="gicon">link_off</span><div><b>Ce lien n'est plus valable</b> : un lien plus récent vous a été envoyé par e-mail.</div></div>`;
-  else if(d.expired) head = `<div class="banner warn"><span class="gicon">event_busy</span><div><b>Ce devis a dépassé sa date de validité.</b> Écrivez à <a href="mailto:contact@latelieraugmente.fr">contact@latelieraugmente.fr</a> pour en recevoir un nouveau.</div></div>`;
+  else if(d.expired) head = `<div class="banner warn"><span class="gicon">event_busy</span><div><b>Ce devis a dépassé sa date de validité.</b> Écrivez à <a href="mailto:contact@latelierdesmaths.fr">contact@latelierdesmaths.fr</a> pour en recevoir un nouveau.</div></div>`;
   else if(d.doc.statut !== 'emis') head = `<div class="banner warn"><span class="gicon">info</span><div><b>Ce devis n'est plus en attente de signature.</b></div></div>`;
   const canSign = !d.signed && !d.revoked && !d.expired && d.doc.statut === 'emis';
   app.innerHTML = `<h1>Devis ${esc(d.doc.numero)}</h1><p class="sub">${esc((d.doc.client||{}).nom)} · ${money(d.doc.total)}</p>${head}

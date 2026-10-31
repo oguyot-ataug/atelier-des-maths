@@ -27,11 +27,23 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { creneauxLibres, enParis, type Intervalle } from "./creneaux.ts";
 
+// Envoi Resend : expéditeur en @latelierdesmaths.fr (demandé le 31/10/2026 : « Tout ce qui concerne l'atelier des maths doit
+// avoir comme domaine latelierdesmaths.fr, y compris mailing »). Tant que ce domaine n'est pas vérifié chez Resend, l'envoi
+// est refusé : on renvoie alors depuis l'ancien domaine, pour ne perdre aucun e-mail.
+async function envoiResend(init: RequestInit): Promise<Response> {
+  const res = await fetch("https://api.resend.com/emails", init);
+  if (res.ok || ![403, 422].includes(res.status)) return res;
+  const err = await res.clone().text();
+  if (!/domain/i.test(err)) return res;
+  console.warn("Resend : domaine latelierdesmaths.fr refusé, repli sur latelieraugmente.fr", err);
+  return fetch("https://api.resend.com/emails", { ...init, body: String(init.body).replace(/@latelierdesmaths\.fr>/g, "@latelieraugmente.fr>") });
+}
+
 const CORS = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type" };
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { ...CORS, "Content-Type": "application/json" } });
 
 const SITE = "https://latelierdesmaths.fr";
-const ADMIN_EMAIL = "contact@latelieraugmente.fr";
+const ADMIN_EMAIL = "contact@latelierdesmaths.fr";
 const OBJETS = ["Présentation du site", "Question sur mon compte", "Projet pour mon établissement", "Autre"];
 const JOUR = /^\d{4}-\d{2}-\d{2}$/;
 const coupe = (s: unknown, n: number) => String(s ?? "").replace(/\s+/g, " ").trim().slice(0, n);
@@ -190,8 +202,8 @@ async function envoyerMail(a: string, sujet: string, html: string, texte: string
   const key = Deno.env.get("RESEND_API_KEY");
   if (!key || !a || /@mathcollege\.local$/i.test(a)) return;
   try {
-    await fetch("https://api.resend.com/emails", { method: "POST", headers: { Authorization: "Bearer " + key, "Content-Type": "application/json" },
-      body: JSON.stringify({ from: "L'Atelier des Maths <rendez-vous@latelieraugmente.fr>", to: [a], reply_to: ADMIN_EMAIL, subject: sujet, html, text: texte,
+    await envoiResend({ method: "POST", headers: { Authorization: "Bearer " + key, "Content-Type": "application/json" },
+      body: JSON.stringify({ from: "L'Atelier des Maths <rendez-vous@latelierdesmaths.fr>", to: [a], reply_to: ADMIN_EMAIL, subject: sujet, html, text: texte,
         ...(piece ? { attachments: [{ filename: annule ? "rendez-vous-annule.ics" : "rendez-vous.ics", content: b64(piece), content_type: `text/calendar; method=${annule ? "CANCEL" : "REQUEST"}` }] } : {}) }) });
   } catch (e) { console.error("Resend", String(e)); }
 }

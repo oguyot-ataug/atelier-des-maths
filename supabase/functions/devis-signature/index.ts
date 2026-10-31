@@ -17,6 +17,18 @@
 
 import { createClient } from "npm:@supabase/supabase-js@2";
 
+// Envoi Resend : expéditeur en @latelierdesmaths.fr (demandé le 31/10/2026 : « Tout ce qui concerne l'atelier des maths doit
+// avoir comme domaine latelierdesmaths.fr, y compris mailing »). Tant que ce domaine n'est pas vérifié chez Resend, l'envoi
+// est refusé : on renvoie alors depuis l'ancien domaine, pour ne perdre aucun e-mail.
+async function envoiResend(init: RequestInit): Promise<Response> {
+  const res = await fetch("https://api.resend.com/emails", init);
+  if (res.ok || ![403, 422].includes(res.status)) return res;
+  const err = await res.clone().text();
+  if (!/domain/i.test(err)) return res;
+  console.warn("Resend : domaine latelierdesmaths.fr refusé, repli sur latelieraugmente.fr", err);
+  return fetch("https://api.resend.com/emails", { ...init, body: String(init.body).replace(/@latelierdesmaths\.fr>/g, "@latelieraugmente.fr>") });
+}
+
 const cors = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -25,7 +37,7 @@ const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { ...cors, "Content-Type": "application/json" } });
 
 const SITE = "https://latelierdesmaths.fr";
-const FROM = "L'Atelier des Maths <devis@latelieraugmente.fr>";
+const FROM = "L'Atelier des Maths <devis@latelierdesmaths.fr>";
 const CODE_TTL_MIN = 15, MAX_CODE_SENDS = 5, MAX_ATTEMPTS = 5;
 
 function serviceKey(): string {
@@ -59,7 +71,7 @@ function maskEmail(e: string) {
 async function sendMail(to: string, subject: string, text: string, html: string, replyTo: string) {
   const key = Deno.env.get("RESEND_API_KEY");
   if (!key) throw new Error("RESEND_API_KEY non configurée.");
-  const res = await fetch("https://api.resend.com/emails", {
+  const res = await envoiResend({
     method: "POST",
     headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
     body: JSON.stringify({ from: FROM, to, subject, text, html, reply_to: replyTo }),
@@ -139,7 +151,7 @@ Deno.serve(async (req) => {
         "La signature se fait en deux minutes : vous indiquez votre nom et votre qualité, puis vous recevez à cette adresse un code à 6 chiffres qui valide la signature.",
       ], { href: link, label: "Consulter et signer le devis" }) +
         `<div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;font-size:13px;color:#1c2330;">Pour toute question, répondez simplement à cet e-mail.<br><br>${esc(em.nom)}</div>`;
-      await sendMail(email, `Devis ${doc.numero} à signer – L'Atelier des Maths`, text, html, em.email || "contact@latelieraugmente.fr");
+      await sendMail(email, `Devis ${doc.numero} à signer – L'Atelier des Maths`, text, html, em.email || "contact@latelierdesmaths.fr");
       return json({ ok: true, email, expires_at: expires.toISOString() });
     }
 
@@ -173,7 +185,7 @@ Deno.serve(async (req) => {
         `<span style="font-size:30px;font-weight:bold;letter-spacing:6px;color:#0C5BA0;">${code}</span>`,
         `Il est valable ${CODE_TTL_MIN} minutes. Si vous n'êtes pas à l'origine de cette demande, ignorez cet e-mail.`,
       ]);
-      await sendMail(sig.email, `${code} : code de signature du devis ${doc.numero}`, text, html, (doc.emetteur || {}).email || "contact@latelieraugmente.fr");
+      await sendMail(sig.email, `${code} : code de signature du devis ${doc.numero}`, text, html, (doc.emetteur || {}).email || "contact@latelierdesmaths.fr");
       return json({ ok: true, email: maskEmail(sig.email), minutes: CODE_TTL_MIN });
     }
 
@@ -219,7 +231,7 @@ Deno.serve(async (req) => {
           mailHtml(`Devis ${esc(doc.numero)} signé`, [`Bonjour ${esc(nom)},`, `Le devis <b>${esc(doc.numero)}</b> (${money(doc.total)}) a bien été signé le ${esc(quand)}. Merci !`,
             lic ? `L'accès de l'établissement à L'Atelier des Maths est ouvert jusqu'au <b>${frDate(lic)}</b>.` : ""].filter(Boolean),
             { href: `${SITE}/signature/?t=${body.token}`, label: "Voir le devis signé" }),
-          em.email || "contact@latelieraugmente.fr"),
+          em.email || "contact@latelierdesmaths.fr"),
       ];
       if (em.email) mails.push(sendMail(em.email, `✓ Devis ${doc.numero} signé en ligne – ${cl.nom}`,
         `Le devis ${doc.numero} (${cl.nom}, ${money(doc.total)}) a été signé en ligne le ${quand} par ${nom} (${qualite}), code envoyé à ${sig.email}.\n\nIl est passé en « Commande reçue »${lic ? ` et la licence de l'établissement est ouverte jusqu'au ${frDate(lic)}` : ""}. Il reste à émettre la facture : Administration > Facturation.`,

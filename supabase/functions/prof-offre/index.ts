@@ -84,7 +84,7 @@ serve(async (req) => {
       const fin = finAnneeScolaire();
       const memePeriode = payee && offre.acces_until === fin;
       if (memePeriode && offre.offre !== type) {
-        return json({ error: "Vous avez déjà l'offre " + (offre.offre === "seul" ? "Professeur seul" : "Professeur particulier") + " pour cette année : pour en changer, écrivez à contact@latelieraugmente.fr." }, 400);
+        return json({ error: "Vous avez déjà l'offre " + (offre.offre === "seul" ? "Professeur seul" : "Professeur particulier") + " pour cette année : pour en changer, écrivez à contact@latelierdesmaths.fr." }, 400);
       }
       const deja = memePeriode ? offre.montant_paye_centimes || 0 : 0;
       let niveaux: string[] = [], places = 0, classesSup = 0, prix = 0, lignes: string[] = [];
@@ -192,7 +192,7 @@ serve(async (req) => {
       const niveau = ORDRE.includes(demande) ? demande : null;
       if (!nom) return json({ error: "Donnez un nom à la classe (ex. 6e B)." }, 400);
       if (!niveau || !NIVEAUX_DISPONIBLES.includes(niveau)) return json({ error: "Choisissez le niveau (" + NIVEAUX_DISPONIBLES.map(lib).join(", ") + ")." }, 400);
-      if (regime === "essai" && classes.length >= 1) return json({ error: demo ? "Pendant la démonstration : une classe. Écrivez à contact@latelieraugmente.fr s'il vous en faut d'autres." : "Pendant l'essai : une classe. Choisissez une offre pour en créer d'autres." }, 400);
+      if (regime === "essai" && classes.length >= 1) return json({ error: demo ? "Pendant la démonstration : une classe. Écrivez à contact@latelierdesmaths.fr s'il vous en faut d'autres." : "Pendant l'essai : une classe. Choisissez une offre pour en créer d'autres." }, 400);
       if (regime === "seul") {
         if (!(offre.niveaux || []).includes(niveau)) return json({ error: "Votre offre ne comprend pas le niveau " + lib(niveau) + " : ajoutez-le dans « Mon abonnement »." }, 400);
         const permises = classesComprises(offre.niveaux || [], offre.classes_sup || 0);

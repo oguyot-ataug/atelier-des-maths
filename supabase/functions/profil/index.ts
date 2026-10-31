@@ -24,6 +24,18 @@
 
 import { createClient } from "npm:@supabase/supabase-js@2";
 
+// Envoi Resend : expéditeur en @latelierdesmaths.fr (demandé le 31/10/2026 : « Tout ce qui concerne l'atelier des maths doit
+// avoir comme domaine latelierdesmaths.fr, y compris mailing »). Tant que ce domaine n'est pas vérifié chez Resend, l'envoi
+// est refusé : on renvoie alors depuis l'ancien domaine, pour ne perdre aucun e-mail.
+async function envoiResend(init: RequestInit): Promise<Response> {
+  const res = await fetch("https://api.resend.com/emails", init);
+  if (res.ok || ![403, 422].includes(res.status)) return res;
+  const err = await res.clone().text();
+  if (!/domain/i.test(err)) return res;
+  console.warn("Resend : domaine latelierdesmaths.fr refusé, repli sur latelieraugmente.fr", err);
+  return fetch("https://api.resend.com/emails", { ...init, body: String(init.body).replace(/@latelierdesmaths\.fr>/g, "@latelieraugmente.fr>") });
+}
+
 const cors = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -34,8 +46,8 @@ const json = (body: unknown, status = 200) =>
 const SITE = "https://latelierdesmaths.fr";
 // Adresses d'où l'on peut revenir (règles de redirection de Supabase Auth) : le site, l'Atelier du Prof, et l'ancienne adresse.
 const ORIGINES = ["https://latelierdesmaths.fr", "https://adp.latelieraugmente.fr", "https://maths.latelieraugmente.fr"];
-const FROM = "L'Atelier des Maths <compte@latelieraugmente.fr>";
-const REPLY = "contact@latelieraugmente.fr";
+const FROM = "L'Atelier des Maths <compte@latelierdesmaths.fr>";
+const REPLY = "contact@latelierdesmaths.fr";
 const CONFIRM_HEURES = 48, OUBLI_MINUTES = 2;
 const FICTIF = /@mathcollege\.local$/i;
 
@@ -62,7 +74,7 @@ const origineDe = (o: unknown) => ORIGINES.includes(String(o)) ? String(o) : SIT
 async function sendMail(to: string, subject: string, text: string, html: string) {
   const key = Deno.env.get("RESEND_API_KEY");
   if (!key) throw new Error("RESEND_API_KEY non configurée.");
-  const res = await fetch("https://api.resend.com/emails", {
+  const res = await envoiResend({
     method: "POST",
     headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
     body: JSON.stringify({ from: FROM, to, subject, text, html, reply_to: REPLY }),

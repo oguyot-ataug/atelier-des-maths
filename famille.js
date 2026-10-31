@@ -184,7 +184,7 @@ async function famSignup(){
   if(!data.session){
     document.querySelector('#famRoot .fam-signup .auth-modal-body').outerHTML = `<div class="auth-modal-body"><strong class="fam-h"><span class="gicon">mark_email_unread</span> Plus qu'une étape : confirmez votre adresse</strong>
       <p style="margin:8px 0;">Un e-mail de <b>L'Atelier des Maths</b> vient d'être envoyé à <b>${famEsc(email)}</b>. Cliquez sur le bouton qu'il contient : vous reviendrez ici, connecté, et votre compte Famille sera prêt.</p>
-      <p class="hint" style="margin:0;">Rien reçu d'ici quelques minutes ? Regardez dans les courriers indésirables, ou écrivez à contact@latelieraugmente.fr.</p></div>`;
+      <p class="hint" style="margin:0;">Rien reçu d'ici quelques minutes ? Regardez dans les courriers indésirables, ou écrivez à contact@latelierdesmaths.fr.</p></div>`;
     return;
   }
   try{
@@ -544,7 +544,7 @@ function famCompteHtml(fam){
   <div class="tool-shell fam-card">
     <strong class="fam-h"><span class="gicon">manage_accounts</span> 5. Votre compte</strong>
     <p class="hint" style="margin:4px 0;">Déclaration sur l'honneur faite le ${famDate(c.date)} : « ${famEsc(c.texte||'')} »</p>
-    <p class="hint" style="margin:4px 0;"><a href="#/cgv">Conditions générales de vente</a> · <a href="#/confidentialite">Confidentialité</a> · Une question : <a href="mailto:contact@latelieraugmente.fr">contact@latelieraugmente.fr</a></p>
+    <p class="hint" style="margin:4px 0;"><a href="#/cgv">Conditions générales de vente</a> · <a href="#/confidentialite">Confidentialité</a> · Une question : <a href="mailto:contact@latelierdesmaths.fr">contact@latelierdesmaths.fr</a></p>
     <details style="margin-top:6px;"><summary class="hint" style="color:#B3261E;">Supprimer mon compte Famille</summary>
       <p class="hint">Supprime définitivement votre compte, ceux de vos enfants, leurs résultats et votre clé IA. L'accès payé n'est pas remboursé. Tapez <b>SUPPRIMER</b> pour confirmer.</p>
       <input type="text" id="famDelConfirm" placeholder="SUPPRIMER"> <button class="btn secondary" style="color:#B3261E;" onclick="famSupprimerCompte()">Supprimer définitivement</button>
