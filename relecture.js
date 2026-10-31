@@ -36,10 +36,12 @@
 
 // Changements faits à la suite d'une remarque : clé → { date (ISO, heure UTC du changement), note }.
 const RELECTURE_CHGT = {
+  // Version 1246 (31/10, fin d'après-midi).
+  '6e-N1-P2-E2': { date: '2026-10-31T16:30:00Z', note: "La décomposition s'écrit avec les puissances de 10, comme dans le reste de la planche : 5 040 008 = 5 × 1 000 000 + 4 × 10 000 + 8 ; 12 000 300 = 1 × 10 000 000 + 2 × 1 000 000 + 3 × 100. Place agrandie sur papier et à l'écran (case à la longueur de la décomposition, « * » ou « x » acceptés pour ×)" },
+  '6e-N1-P3-E6': { date: '2026-10-31T16:30:00Z', note: "Six encadrements présentés en deux colonnes de trois" },
   // Version 1244 (31/10) : remarques du 31/10 sur 6e-N1, CP-N3, CE2-N2.
   'CP-N3-P1-E2': { date: '2026-10-31T13:30:00Z', note: "Les cubes sont dessinés en barres de dix bien droites, les unités en colonnes alignées à côté, le tout posé sur la même ligne de base (avant : cubes en vrac). À l'écran, les cases gardent la taille de la réponse" },
   '6e-N1-P1-E2': { date: '2026-10-31T14:30:00Z', note: "À l'écran, la saisie n'est plus coupée à 24 caractères : on peut écrire toute la réponse, même longue (deux milliards cinq-cents millions). Sur papier, les pointillés partent sous chaque nombre et vont jusqu'au bord droit. À l'écran, la case est à la longueur du nombre en lettres attendu (jusqu'à toute la largeur). Orthographe : « million » et « milliard » sont des noms, sans trait d'union (trois millions quatre-cents) ; les deux écritures sont acceptées à l'écran. Même correction dans tout le chapitre, le cours de 6e et le cours de CM2 sur les grands nombres" },
-  '6e-N1-P3-E6': { date: '2026-10-31T13:30:00Z', note: "Quatrième encadrement ajouté : … < 7 251 900 < … (7 200 000 et 7 300 000)" },
   '6e-N1-P4-E2': { date: '2026-10-31T13:30:00Z', note: "Sur papier, une case vide dans chaque colonne pour les produits intermédiaires et le résultat. À l'écran, les produits intermédiaires ne sont plus écrits d'avance : ce sont des cases à remplir, ligne par ligne (la touche OK suit l'ordre du calcul) ; les trois opérations sont séparées dans des cadres bien espacés. Même chose pour CM1-N3 (253 × 24 et 312 × 15)" },
   '6e-N1-P6-E3': { date: '2026-10-31T13:30:00Z', note: "Grille plus haute (11 carreaux) : toute la division, soustractions comprises, tient dedans" },
   'CE2-N2-P2-E1': { date: '2026-10-31T13:30:00Z', note: "Faisable à l'écran : une case par nombre (… × … = …) ; les deux facteurs sont acceptés dans un ordre ou dans l'autre (3 × 6 ou 6 × 3)" },
@@ -48,7 +50,6 @@ const RELECTURE_CHGT = {
   '6e-N1-P1-E1': { date: '2026-10-09T14:24:20Z', note: "À l'écran, touche « espace » sur le clavier des chiffres ; un nombre de 5 chiffres ou plus doit être écrit par classes (2 300 000), sinon il est compté faux avec l'explication" },
   '6e-N1-P1-E4': { date: '2026-10-09T14:24:20Z', note: "À l'écran, touche « espace » sur le clavier des chiffres ; un nombre de 5 chiffres ou plus doit être écrit par classes (2 300 000), sinon il est compté faux avec l'explication" },
   // Version 1242 (31/10) : remarques du matin sur 6e-N1 (anciennes clés P1-E3 et P1-E4).
-  '6e-N1-P2-E2': { date: '2026-10-31T12:00:00Z', note: "Exercice déplacé en planche 2 (Décomposer). À l'écran, une ligne par nombre : « en chiffres » puis « décomposition », avec une case assez longue pour toute la décomposition (le tableau reste sur papier)" },
   '6e-N1-P3-E4': { date: '2026-10-31T12:00:00Z', note: "Exercice déplacé en planche 3 (Comparer). À l'écran, on clique dans la case : 1 clic <, 2 clics >, 3 clics =, un 4e clic vide la case (sans clavier) ; vaut pour toutes les cases de signe du site" },
   // Build 1182 : CP-N1, exercices faits à l'écran ; corrigés des choix à entourer ; choix sous les petites figures (bêta).
   'CP-N1-P1-E4': { date: '2026-10-27T18:33:51Z', note: "À l'écran : on touche le cadre pour dessiner un rond, on touche un rond pour l'effacer (bouton « Tout effacer ») ; c'est juste quand il y a le bon nombre de ronds" },

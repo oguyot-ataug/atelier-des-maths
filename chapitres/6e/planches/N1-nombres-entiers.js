@@ -60,12 +60,14 @@ PLANCHES['6e|Nombres entiers'] = [
         eleve: '<div class="pl-col1">' + plListe(['4 052 300 = 4 × 1 000 000 + 5 × ' + B(6) + ' + 2 × ' + B(6) + ' + 3 × 100', '70 008 040 = 7 × ' + B(9) + ' + 8 × 1 000 + 4 × 10', '3 × 1 000 000 + 6 × 10 000 + 9 = ' + B(8)].map(ligne)) + '</div>',
         corr: '<div class="pl-col1">' + plListe(['4 052 300 = 4 × 1 000 000 + 5 × ' + R('10 000') + ' + 2 × ' + R('1 000') + ' + 3 × 100', '70 008 040 = 7 × ' + R('10 000 000') + ' + 8 × 1 000 + 4 × 10', '3 × 1 000 000 + 6 × 10 000 + 9 = ' + R('3 060 009')].map(ligne)) + '</div>' },
       { etoiles: 2, consigne: 'Complète le tableau : écris chaque nombre en chiffres, puis décompose-le.',
-        eleve: tab(['En lettres', 'En chiffres', 'Décomposition'], [['cinq millions quarante-mille-huit', B(7), B(14)], ['douze millions trois-cents', B(7), B(14)]], true),
-        corr: tab(['En lettres', 'En chiffres', 'Décomposition'], [['cinq millions quarante-mille-huit', R('5 040 008'), R('5 000 000 + 40 000 + 8')], ['douze millions trois-cents', R('12 000 300'), R('12 000 000 + 300')]], true),
+        // Décomposition avec les puissances de 10, comme dans le reste de la planche (relecture 6e-N1-P2-E2 : « Décomposer c'est
+        // écrire 5 × 1 000 000 + 4 × 10 000 + … Non ? »).
+        eleve: tab(['En lettres', 'En chiffres', 'Décomposition'], [['cinq millions quarante-mille-huit', B(7), B(24)], ['douze millions trois-cents', B(7), B(24)]], true),
+        corr: tab(['En lettres', 'En chiffres', 'Décomposition'], [['cinq millions quarante-mille-huit', R('5 040 008'), R('5 × 1 000 000 + 4 × 10 000 + 8')], ['douze millions trois-cents', R('12 000 300'), R('1 × 10 000 000 + 2 × 1 000 000 + 3 × 100')]], true),
         // À l'écran, une ligne entière pour la décomposition (relecture 6e-N1-P1-E3 : « en mode écran, on n'a pas la place pour
         // écrire la décomposition »).
-        ecran: (() => { const l = f => '<div class="pl-col1">' + plListe([['cinq millions quarante-mille-huit', '5 040 008', '5 000 000 + 40 000 + 8'], ['douze millions trois-cents', '12 000 300', '12 000 000 + 300']]
-            .map(([t, c, d]) => `<b>${t}</b><br>en chiffres : ${f(c, 7)}<br>décomposition : ${f(d, 16)}`)) + '</div>';
+        ecran: (() => { const l = f => '<div class="pl-col1">' + plListe([['cinq millions quarante-mille-huit', '5 040 008', '5 × 1 000 000 + 4 × 10 000 + 8'], ['douze millions trois-cents', '12 000 300', '1 × 10 000 000 + 2 × 1 000 000 + 3 × 100']]
+            .map(([t, c, d]) => `<b>${t}</b><br>en chiffres : ${f(c, 7)}<br>décomposition : ${f(d, 26)}`)) + '</div>';
           return { eleve: l((v, n) => B(n)), corr: l(v => R(v)) }; })() },
       { etoiles: 2, consigne: 'Écris le nombre qui correspond à chaque décomposition.',
         eleve: '<div class="pl-col1">' + plListe(['5 × 1 000 000 + 3 × 1 000 + 8 = ' + B(8), '2 × 10 000 000 + 4 × 100 000 + 6 × 10 = ' + B(8), '9 × 1 000 000 000 + 7 × 1 000 000 + 5 × 1 000 = ' + B(10)].map(ligne)) + '</div>',
@@ -96,9 +98,10 @@ PLANCHES['6e|Nombres entiers'] = [
       { etoiles: 2, col: 1, consigne: 'Arrondis au million le plus proche.',
         eleve: plListe(['4 752 300 → ' + B(9), '19 080 000 → ' + B(9), '7 499 999 → ' + B(9), '999 600 → ' + B(9)]),
         corr: plListe(['4 752 300 → ' + R('5 000 000'), '19 080 000 → ' + R('19 000 000'), '7 499 999 → ' + R('7 000 000'), '999 600 → ' + R('1 000 000')]) },
-      { etoiles: 2, uneLigne: true, consigne: 'Encadre chaque nombre entre deux centaines de mille consécutives.',
-        eleve: plListe([`${B(7)} &lt; 4 752 300 &lt; ${B(7)}`, `${B(7)} &lt; 19 080 000 &lt; ${B(7)}`, `${B(7)} &lt; 630 500 &lt; ${B(7)}`, `${B(7)} &lt; 7 251 900 &lt; ${B(7)}`].map(ligne)),
-        corr: plListe([`${R('4 700 000')} &lt; 4 752 300 &lt; ${R('4 800 000')}`, `${R('19 000 000')} &lt; 19 080 000 &lt; ${R('19 100 000')}`, `${R('600 000')} &lt; 630 500 &lt; ${R('700 000')}`, `${R('7 200 000')} &lt; 7 251 900 &lt; ${R('7 300 000')}`].map(ligne)) },
+      // Deux colonnes de trois (relecture 6e-N1-P3-E6 : « à présenter en deux colonnes (3*2) »).
+      { etoiles: 2, consigne: 'Encadre chaque nombre entre deux centaines de mille consécutives.',
+        eleve: plListe([`${B(7)} &lt; 4 752 300 &lt; ${B(7)}`, `${B(7)} &lt; 19 080 000 &lt; ${B(7)}`, `${B(7)} &lt; 630 500 &lt; ${B(7)}`, `${B(7)} &lt; 7 251 900 &lt; ${B(7)}`, `${B(7)} &lt; 12 960 000 &lt; ${B(7)}`, `${B(7)} &lt; 2 049 999 &lt; ${B(7)}`].map(ligne)),
+        corr: plListe([`${R('4 700 000')} &lt; 4 752 300 &lt; ${R('4 800 000')}`, `${R('19 000 000')} &lt; 19 080 000 &lt; ${R('19 100 000')}`, `${R('600 000')} &lt; 630 500 &lt; ${R('700 000')}`, `${R('7 200 000')} &lt; 7 251 900 &lt; ${R('7 300 000')}`, `${R('12 900 000')} &lt; 12 960 000 &lt; ${R('13 000 000')}`, `${R('2 000 000')} &lt; 2 049 999 &lt; ${R('2 100 000')}`].map(ligne)) },
       { etoiles: 3, cahier: true, consigne: `Voici la population de quatre pays (2024).${tab(['Espagne', 'Belgique', 'Italie', 'Suisse'], [['48 619 695', '11 822 592', '58 989 749', '8 921 981']])}Range ces pays du plus peuplé au moins peuplé, puis arrondis chaque population au million.`,
         corr: cm1Redac('Rangement', { suite: ['Italie (58 989 749) &gt; Espagne (48 619 695)', 'Espagne &gt; Belgique (11 822 592) &gt; Suisse (8 921 981)'] }, 'Arrondis au million : Italie 59 000 000 ; Espagne 49 000 000 ; Belgique 12 000 000 ; Suisse 9 000 000.') },
     ] },
