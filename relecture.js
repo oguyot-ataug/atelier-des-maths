@@ -193,6 +193,38 @@ async function rlEnregistrer(lvl, c, i, k, maj){
   return true;
 }
 
+/* ---------- Compteurs de relecture dans la progression d'un niveau (administrateur) ----------
+   Demandé le 31/10/2026 : « Dans les progressions, peux-tu écrire pour admin, le nombre d'exercices validés, non examinés et
+   commentés sous chaque chapitre ? Comme ça je peux avancer plus vite. » Sous chaque carte (vue Par thème) et chaque ligne
+   (Frise de l'année) : validés, commentés, non examinés (et changés à revoir), d'après le statut de l'administrateur. */
+function rlCompteChapitre(lvl, c){
+  const n = { ok: 0, com: 0, non: 0, chgt: 0, total: 0 };
+  plDe(lvl, c.t).forEach((p, i) => p.exos.forEach((x, k) => {
+    const cle = rlCle(lvl, c, i, k); n.total++;
+    if(rlChgt(cle)) n.chgt++;
+    else { const st = (rl.lignes.get(cle) || {}).statut; n[st === 'ok' || st === 'com' ? st : 'non']++; }
+  }));
+  return n;
+}
+function rlCompteHtml(n){
+  const b = (cl, ic, nb, un, plu) => nb ? `<span class="rl-pc rl-pc-${cl}"><span class="gicon">${ic}</span>${nb} ${nb > 1 ? plu : un}</span>` : '';
+  if(n.ok === n.total) return `<span class="rl-pc rl-pc-fini"><span class="gicon">verified</span>${n.total} validés : terminé</span>`;
+  return b('ok', 'verified', n.ok, 'validé', 'validés') + b('com', 'rate_review', n.com, 'commenté', 'commentés') + b('chgt', 'published_with_changes', n.chgt, 'à revoir', 'à revoir')
+    + b('non', 'radio_button_unchecked', n.non, 'non examiné', 'non examinés');
+}
+async function rlProgression(lvl){
+  if(!rlAdmin()) return;
+  await rlCharger();
+  document.querySelectorAll('#niveau-theme .chap-card[data-t], #niveau-frise .tl-item[data-t]').forEach(el => {
+    const c = { code: el.dataset.code, t: el.dataset.t };
+    let z = el.querySelector('.rl-prog');
+    const n = rlCompteChapitre(lvl, c);
+    if(!n.total){ if(z) z.remove(); return; }
+    if(!z){ z = document.createElement('div'); z.className = 'rl-prog'; el.appendChild(z); }
+    z.innerHTML = rlCompteHtml(n);
+  });
+}
+
 /* ---------- Barre de relecture sous chaque vignette ---------- */
 function rlBarreHtml(cle){
   const l = rl.lignes.get(cle), st = (l && l.statut) || 'non', ch = rlChgt(cle);

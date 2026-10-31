@@ -2253,3 +2253,11 @@ select:not([multiple]):not([size]){
 .fp-essai-q .cpn-rang{margin:8px 0 2px;}
 .fp-essai-q svg.pl-libre{width:auto !important;height:110px !important;max-width:100%;}
 .fp-essai-q .cpn-code svg.pl-libre{height:40px !important;}
+
+/* Relecture : compteurs sous chaque chapitre de la progression (administrateur, relecture.js › rlProgression). */
+.rl-prog{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;flex-basis:100%;}
+.rl-pc{display:inline-flex;align-items:center;gap:3px;white-space:nowrap;font:600 .72rem 'Inter',sans-serif;border-radius:999px;padding:1px 7px 1px 4px;background:#EEF1F5;color:#4E5665;}
+.rl-pc .gicon{font-size:.95rem;}
+.rl-pc-ok{background:#E3F4EA;color:#1E7B34;} .rl-pc-com{background:#FFF1E0;color:#B35C00;} .rl-pc-chgt{background:#E6EEFB;color:#2457A6;}
+.rl-pc-fini{background:#1E7B34;color:#fff;padding:1px 8px;}
+.tl-item:has(.rl-prog){flex-wrap:wrap;} .tl-item .rl-prog{margin:2px 0 0 22px;}

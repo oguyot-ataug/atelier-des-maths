@@ -1107,6 +1107,7 @@ function renderTheme(data, lvl){
   });
   const box=document.getElementById('niveau-theme');
   box.innerHTML=html;
+  if(typeof rlProgression==='function') rlProgression(lvl); // relecture : compteurs sous chaque chapitre (administrateur)
   box.querySelectorAll('.chap-card').forEach(card=>{
     card.addEventListener('click',()=>{
       if(card.classList.contains('locked')){ onLockedChapterClick(); return; }
@@ -1243,6 +1244,7 @@ function renderFrise(data, lvl){
   html += '</div>';
   const box=document.getElementById('niveau-frise');
   box.innerHTML=html;
+  if(typeof rlProgression==='function') rlProgression(lvl); // relecture : compteurs sous chaque chapitre (administrateur)
   box.querySelectorAll('.tl-item:not(.tl-evt)').forEach(card=>{
     card.addEventListener('click',()=>{
       if(card.classList.contains('locked')){ onLockedChapterClick(); return; }
@@ -3740,6 +3742,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1239', date:'2026-10-31', items:['Relecture (administrateur) : sous chaque chapitre de la progression d\'un niveau (vue Par thème et Frise de l\'année), le nombre d\'exercices validés, commentés, à revoir (changés depuis) et non examinés ; « terminé » quand tout est validé -- demandé : « Dans les progressions, peux-tu écrire pour admin, le nombre d\'exercices validés, non examinés et commentés sous chaque chapitre ? Comme ça je peux avancer plus vite ».'] },
   { version:'2026-08-19.1238', date:'2026-10-31', items:['Jeu « Remettre dans l\'ordre » (shaker) : seulement sur les phrases à reconstruire -- signalé : « Certaines définitions, règles ou propriétés n\'ont pas d\'intérêt de passer au shaker ». Plus de shaker sur un encadré avec un dessin ou un tableau, fait surtout de formules, de listes à apprendre (pièces, conversions, compléments…) ou d\'une suite d\'égalités, de moins de 6 mots ou de plus de 60 mots. 305 encadrés le perdent, 674 le gardent.'] },
   { version:'2026-08-19.1237', date:'2026-10-31', items:['Loupe (plein écran) des définitions, règles, figures et exercices : le bloc est agrandi d\'un seul tenant, texte et figures ensemble, pour remplir l\'écran -- signalé : « Le zoom doit agrandir (pleine page) sans modifier le format du contenu ». Avant, le texte passait au double et les figures à 700 px, chacun de son côté : la mise en page était déformée (barres de dizaines immenses, texte coupé). La mise en page reste celle de la page ; sur téléphone, le bloc s\'affiche à la largeur de l\'écran.'] },
   { version:'2026-08-19.1236', date:'2026-10-31', items:['Adresses e-mail en latelierdesmaths.fr -- demandé : « Tout ce qui concerne l\'atelier des maths doit avoir comme domaine latelierdesmaths.fr, y compris mailing ». Le site affiche contact@latelierdesmaths.fr partout (page Rendez-vous, accueil, tarifs, espace famille, signature des devis, messages d\'erreur) ; les e-mails partent de notifications@, compte@, devis@, factures@ et rendez-vous@latelierdesmaths.fr, réponses vers contact@latelierdesmaths.fr ; l\'émetteur des factures et devis à venir aussi. Tant que Resend n\'a pas vérifié le domaine, les e-mails repartent automatiquement depuis l\'ancienne adresse : aucun n\'est perdu.'] },
