@@ -486,7 +486,18 @@ function plSepAeres(h){
 function plSepNoeuds(el){
   const w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, { acceptNode: n => n.nodeValue.indexOf(' · ') >= 0 && !(n.parentNode && n.parentNode.closest && n.parentNode.closest('svg, .katex, script, style')) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT });
   const L = []; while(w.nextNode()) L.push(w.currentNode);
-  L.forEach(n => { const f = document.createDocumentFragment(); n.nodeValue.split(' · ').forEach((t, i) => { if(i){ const s = document.createElement('span'); s.className = 'pl-chsep'; s.style.cssText = 'display:inline-block;width:1.5em;'; f.appendChild(s); } f.appendChild(document.createTextNode(t)); }); n.parentNode.replaceChild(f, n); });
+  L.forEach(n => {
+    // Propositions à entourer (« <b>a · b · c</b> ») : jamais coupées en fin de ligne -- demandé le 31/10/2026 : « En cas de
+    // plusieurs propositions, les mettre sur une même ligne ou bien alignées en dessous ». Chaque proposition est d'un seul
+    // tenant ; le groupe passe entier à la ligne suivante s'il ne tient pas, et ses propositions se rangent alignées.
+    const b = n.parentNode;
+    if(b.tagName === 'B'){
+      b.classList.add('pl-props');
+      const f = document.createDocumentFragment();
+      n.nodeValue.split(' · ').forEach(t => { if(!t.trim()) return; const s = document.createElement('span'); s.className = 'pl-prop'; s.textContent = t.trim(); f.appendChild(s); });
+      b.replaceChild(f, n); return;
+    }
+    const f = document.createDocumentFragment(); n.nodeValue.split(' · ').forEach((t, i) => { if(i){ const s = document.createElement('span'); s.className = 'pl-chsep'; s.style.cssText = 'display:inline-block;width:1.5em;'; f.appendChild(s); } f.appendChild(document.createTextNode(t)); }); n.parentNode.replaceChild(f, n); });
 }
 // Les pointillés sont élargis d'après la réponse du corrigé (demandé : « les cases sont trop petites pour
 // répondre ») : un pointillé tient au moins la réponse attendue, avec un peu de marge pour l'écriture
@@ -843,6 +854,7 @@ const PL_CSS = `
   sup .pl-pts{ border-bottom:none; }
   .pl-lignes div{ height:24px; border-bottom:1px solid #CBD2DC; }
   .pl-rep{ color:#1F7A4D; font-weight:700; }
+  .pl-props{ display:inline-flex; flex-wrap:wrap; column-gap:1.5em; row-gap:2px; vertical-align:baseline; } .pl-prop{ white-space:nowrap; }
   .pl-entoure{ display:inline-block; border:2px solid #1F7A4D; border-radius:50%; padding:2px 6px; }
   .pl-barre-rep{ position:relative; display:inline-block; } .pl-barre-rep::after{ content:''; position:absolute; left:-4px; right:-4px; top:50%; border-top:2.5px solid #C0392B; transform:rotate(-20deg); }
   .pl-exos > .pl-exo.pl-demi.pl-seul{ grid-column:1 / -1; }
@@ -991,6 +1003,7 @@ const PL_CSS_LIVRE = `
     .td-vig .pl-barre, .pl-ex-cahier .pl-barre, .cd-contenu .pl-barre{ display:block; width:26px; border-top:2px solid #1C2B39; }
     .td-vig .pl-pts, .pl-ex-cahier .pl-pts, .cd-contenu .pl-pts{ display:inline-block; border-bottom:1.5px dotted #8A93A3; height:1.1em; min-width:3em; }
     .td-vig sup .pl-pts, .pl-ex-cahier sup .pl-pts, .cd-contenu sup .pl-pts{ border-bottom:none; min-width:1em; }
+    .pl-props{ display:inline-flex; flex-wrap:wrap; column-gap:1.5em; row-gap:2px; vertical-align:baseline; } .pl-prop{ white-space:nowrap; }
     .td-vig .pl-rep, .pl-ex-cahier .pl-rep, .cd-contenu .pl-rep{ color:#1F7A4D; font-weight:800; } .pl-entoure{ display:inline-block; border:2px solid #1F7A4D; border-radius:50%; padding:1px 6px; }
     .pl-barre-rep{ position:relative; display:inline-block; } .pl-barre-rep::after{ content:''; position:absolute; left:-4px; right:-4px; top:50%; border-top:2.5px solid #C0392B; transform:rotate(-20deg); }
     .td-vig svg, .pl-ex-cahier svg{ max-width:100%; height:auto; } .pl-unites{ display:inline-flex; gap:5px; flex-wrap:wrap; align-items:center; vertical-align:middle; }
