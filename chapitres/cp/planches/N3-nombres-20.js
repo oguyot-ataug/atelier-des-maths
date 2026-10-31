@@ -1,4 +1,5 @@
-/* CP · Planches : Les nombres jusqu'à 20 (N3) -- la dizaine, écrire de 11 à 20, la file des nombres, comparer. */
+/* CP · Planches : Les nombres jusqu'à 20 (N3) -- la dizaine, écrire de 11 à 20, la file des nombres, comparer.
+   Relecture CP-N3-P1-E2 (31/10/2026) : « les barres de dizaines ne sont pas alignées » -- barres de dix droites (cpBarres). */
 (() => {
 const { lig, compte, entoure, suite, cadre } = PCP, B = P3.B, R = P3.R;
 const boites = n => lig(cpBoiteDix(Math.min(10, n), { c: 16 }), cpBoiteDix(Math.max(0, n - 10), { c: 16, couleurs: Array(10).fill(CPC.jeton2) }));
@@ -9,7 +10,7 @@ PLANCHES['cp|Les nombres jusqu\'à 20'] = [
       { etoiles: 1, consigne: 'Combien de jetons ? Écris le nombre.',
         ...compte([[boites(13), 13], [boites(17), 17], [boites(20), 20]], 3) },
       { etoiles: 1, consigne: 'Combien de cubes ?',
-        ...compte([[cpCubes(12, { q: 10 }), 12], [cpCubes(16, { q: 10 }), 16], [cpCubes(19, { q: 10 }), 19]], 3) },
+        ...compte([[cpBarres(12, { q: 12 }), 12], [cpBarres(16, { q: 12 }), 16], [cpBarres(19, { q: 12 }), 19]], 3) },
       { etoiles: 2, col: 1, consigne: 'Complète.',
         ...P3.rmp([['14 = 10 + @', 4], ['18 = 10 + @', 8], ['10 + 5 = @', 15], ['10 + 10 = @', 20]], 2) },
       { etoiles: 2, col: 1, consigne: 'Écris le nombre.',
@@ -33,7 +34,7 @@ PLANCHES['cp|Les nombres jusqu\'à 20'] = [
       { etoiles: 2, col: 1, consigne: 'Écris en lettres.',
         ...P3.rmp([['13 : @', 'treize'], ['20 : @', 'vingt'], ['12 : @', 'douze']], 8) },
       { etoiles: 1, consigne: 'Combien de cubes ? Écris le nombre.',
-        ...compte([[cpCubes(14, { q: 10 }), 14], [cpCubes(18, { q: 10 }), 18], [cpCubes(11, { q: 10 }), 11]], 3) },
+        ...compte([[cpBarres(14, { q: 12 }), 14], [cpBarres(18, { q: 12 }), 18], [cpBarres(11, { q: 12 }), 11]], 3) },
       { etoiles: 2, consigne: 'Dessine 12 jetons dans les boîtes de dix : remplis d\'abord la première boîte.',
         eleve: lig(PCP.boite(10), PCP.boite(2, { coul: CPC.jeton2 })), corr: lig(cpBoiteDix(10, { c: 22 }), cpBoiteDix(2, { c: 22, couleurs: Array(10).fill(CPC.jeton2) })) },
     ] },

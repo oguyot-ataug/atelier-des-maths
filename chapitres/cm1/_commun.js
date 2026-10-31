@@ -305,17 +305,21 @@ function cm1Posee(lignes, retenues, opts){
   // Rang compté depuis la droite (pour l'ordre de saisie à l'écran : unités, retenue, dizaines…).
   const rang = j => larg - 1 - j;
   const caseRet = (k, j, st) => `<span class="pl-ret-case" data-plret="${k}" data-plcol="${rang(j)}" style="visibility:hidden;${st || ''}"></span>`;
-  const cell = (c, st, res, j, plus) => `<td${res && opts.trous && c !== ' ' ? ` data-plcol="${rang(j)}"` : ''} style="position:relative;width:${virg.has(j) ? 12 : 30}px;height:28px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:700;padding:2px 0;color:#1C1B2E;${st || ''}">${c === ' ' ? '' : res && opts.trous && typeof plCase === 'function' ? '<span class="pl-case pl-case-seule" style="margin:0;width:18px;"></span>' : res && opts.rep && typeof plRep === 'function' ? plRep(c) : c}${plus || ''}</td>`;
+  // res : ligne à remplir (n° de ligne + 1, pour l'ordre de saisie à l'écran). opts.cases : version papier, une case vide
+  // dans chaque colonne des lignes à remplir (relecture 6e-N1-P4-E2 : « préparer des cases pour la réponse sur papier »).
+  const cell = (c, st, res, j, plus) => `<td${res && opts.trous && c !== ' ' ? ` data-plcol="${rang(j)}" data-plrow="${res}"` : ''} style="position:relative;width:${virg.has(j) ? 12 : 30}px;height:28px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:700;padding:2px 0;color:#1C1B2E;${st || ''}">${res && opts.cases && !virg.has(j) ? '<span style="display:inline-block;width:20px;height:23px;border:1px solid #A9A4BE;border-radius:3px;vertical-align:middle;"></span>' : c === ' ' ? '' : res && opts.trous && typeof plCase === 'function' ? '<span class="pl-case pl-case-seule" style="margin:0;width:18px;"></span>' : res && opts.rep && typeof plRep === 'function' ? plRep(c) : c}${plus || ''}</td>`;
   const marque = (t, ou) => `<span style="position:absolute;${ou};font-size:.68rem;line-height:1;color:#E35D3A;font-weight:700;">${t}</span>`;
   const sous = op === '−' && lignes.length === 3;
   let h = `<table style="border-collapse:collapse;margin:${sous && (cases || M) ? 10 : 5}px auto 5px;">`;
   if(retenues) h += `<tr><td></td>${retenues.padStart(larg).split('').map(c => cell(c, 'font-size:.72rem;color:#FF8208;')).join('')}</tr>`;
   else if(cases && (op === '+' || op === '×')) h += `<tr><td></td>${Array.from({ length: larg }, (_, j) => `<td style="height:20px;padding:0;text-align:center;">${rang(j) > 0 && !virg.has(j) ? caseRet('a', j, 'display:inline-block;width:16px;height:16px;') : ''}</td>`).join('')}</tr>`;
-  lignes.forEach(([s, n, trait], i) => { const res = i === lignes.length - 1, ch = n.padStart(larg).split('');
+  // Lignes à remplir : le résultat, et dans une multiplication les produits intermédiaires aussi (relecture 6e-N1-P4-E2 :
+  // « en ligne, les produits ont déjà été réalisés »).
+  lignes.forEach(([s, n, trait], i) => { const fin = i === lignes.length - 1, res = fin || (op === '×' && i >= 2 && (opts.trous || opts.rep || opts.cases)) ? i + 1 : 0, ch = n.padStart(larg).split('');
     // Soustraction : « 1 » devant le chiffre du haut (+10), « +1 » sous le chiffre du bas (compensation).
     const plus = j => !sous || virg.has(j) ? '' : i === 0 ? (cases && rang(j) < larg - 1 ? caseRet('h', j, 'position:absolute;left:-5px;top:-7px;') : M && M.haut[j] ? marque('1', 'left:1px;top:0') : '')
       : i === 1 ? (cases && rang(j) > 0 ? caseRet('b', j, 'position:absolute;right:-5px;bottom:-6px;') : M && M.bas[j] ? marque('+1', 'right:-3px;bottom:-1px') : '') : '';
-    h += `<tr style="${res || trait ? 'border-top:2px solid #1C1B2E;' : ''}">${cell(s, 'width:26px;color:#FF8208;')}${ch.map((c, j) => cell(c, res ? 'color:#FF8208;font-size:1.2rem;' : '', res, j, plus(j))).join('')}</tr>`; });
+    h += `<tr style="${fin || trait ? 'border-top:2px solid #1C1B2E;' : ''}">${cell(s, 'width:26px;color:#FF8208;')}${ch.map((c, j) => cell(c, fin ? 'color:#FF8208;font-size:1.2rem;' : '', res, j, plus(j))).join('')}</tr>`; });
   return h + '</table>';
 }
 

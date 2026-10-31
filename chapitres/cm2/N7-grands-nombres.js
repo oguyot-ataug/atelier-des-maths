@@ -17,8 +17,8 @@ ${cm1Tableau(['<span style="font-size:.78rem;">Classe des millions</span>', '', 
   ['c', 'd', 'u', 'c', 'd', 'u', 'c', 'd', 'u'],
   ['<b>3</b>', '<b>0</b>', '<b>5</b>', '<b>0</b>', '<b>6</b>', '<b>2</b>', '<b>8</b>', '<b>0</b>', '<b>0</b>'],
 ])}
-${cm1Exemple('Le nombre 305 062 800 :', ['On le découpe en classes de 3 chiffres à partir de la droite : 305 | 062 | 800.', 'Il se lit : <b>trois-cent-cinq-millions-soixante-deux-mille-huit-cents</b>.', 'Décomposition : (3 × 100 000 000) + (5 × 1 000 000) + (6 × 10 000) + (2 × 1 000) + (8 × 100).'])}
-${cm1Astuce('« million » est un nom : il prend un « s » au pluriel (trois-cent-cinq-millions), contrairement à « mille ».')}
+${cm1Exemple('Le nombre 305 062 800 :', ['On le découpe en classes de 3 chiffres à partir de la droite : 305 | 062 | 800.', 'Il se lit : <b>trois-cent-cinq millions soixante-deux-mille-huit-cents</b>.', 'Décomposition : (3 × 100 000 000) + (5 × 1 000 000) + (6 × 10 000) + (2 × 1 000) + (8 × 100).'])}
+${cm1Astuce('« million » est un nom : il prend un « s » au pluriel (trois-cent-cinq millions), contrairement à « mille ».')}
 
 ${cm1Lecon(2, 'Chiffre des… et nombre de…')}
 ${cm1Exemple('Dans 305 062 800 :', ['le chiffre des millions est <b>5</b> ;', 'le nombre de millions est <b>305</b> ;', 'le chiffre des dizaines de mille est <b>6</b> ;', 'le nombre de milliers est <b>305 062</b>.'])}
@@ -32,12 +32,12 @@ ${cm1Lecon(4, 'Demi-droite graduée')}
 ${cm1Exemple('Entre 10 000 000 et 11 000 000, 10 écarts : chaque écart vaut 100 000.', ['A correspond à 10 400 000.', 'B est au milieu entre 10 700 000 et 10 800 000 : il correspond à 10 750 000.'])}
 `,
   methode: `
-${cm1Demo('c2-gn-ecrire', 'Écrire en chiffres un grand nombre', 'Écris en chiffres : « quarante-millions-trois-mille-cinq ».')}
+${cm1Demo('c2-gn-ecrire', 'Écrire en chiffres un grand nombre', 'Écris en chiffres : « quarante millions trois-mille-cinq ».')}
 ${cm1Demo('c2-gn-ranger', 'Comparer deux grands nombres', 'Compare 708 650 000 et 780 065 000.')}
 `,
   demos: [
     ['c2-gn-ecrire', [
-      { expr: 'quarante-millions | trois-mille | cinq', note: 'On repère les mots « millions » et « mille » : ils séparent les classes.' },
+      { expr: 'quarante millions | trois-mille | cinq', note: 'On repère les mots « millions » et « mille » : ils séparent les classes.' },
       { expr: `${H('040')} | … | …`, note: 'Classe des millions : 40, écrit avec 3 chiffres : 040 (on ne garde pas le premier 0 au début du nombre).' },
       { expr: `40 | ${H('003')} | ${H('005')}`, note: 'Classe des mille : 003. Classe des unités : 005.' },
       { expr: '40 003 005', note: 'Chaque classe (sauf la première) a toujours exactement 3 chiffres.' },
@@ -50,9 +50,9 @@ ${cm1Demo('c2-gn-ranger', 'Comparer deux grands nombres', 'Compare 708 650 000 e
   ],
   exos: cm1Exos('c2gn', [
     [`Écris ces nombres en lettres.${cm1Liste(['7 450 000', '230 008 015'])}`,
-      cm1Redac('7 450 000 en lettres', '7 | 450 | 000', 'On écrit : sept-millions-quatre-cent-cinquante-mille.')
-      + cm1Redac('230 008 015 en lettres', '230 | 008 | 015', 'On écrit : deux-cent-trente-millions-huit-mille-quinze.')],
-    [`Écris ces nombres en chiffres.${cm1Liste(['six-cents-millions', 'douze-millions-quatre-vingt-mille-deux', 'neuf-cent-mille-neuf'])}`,
+      cm1Redac('7 450 000 en lettres', '7 | 450 | 000', 'On écrit : sept millions quatre-cent-cinquante-mille.')
+      + cm1Redac('230 008 015 en lettres', '230 | 008 | 015', 'On écrit : deux-cent-trente millions huit-mille-quinze.')],
+    [`Écris ces nombres en chiffres.${cm1Liste(['six-cents millions', 'douze millions quatre-vingt-mille-deux', 'neuf-cent-mille-neuf'])}`,
       cm1Redac('Les nombres en chiffres', { suite: ['600 | 000 | 000', '12 | 080 | 002', '900 | 009'] }, 'Ces nombres s\'écrivent 600 000 000, 12 080 002 et 900 009.')],
     [`Réponds aux questions sur le nombre 614 507 392.${cm1Liste(['Quel est son chiffre des dizaines de millions ?', 'Quel est son nombre de millions ?', 'Quel est son chiffre des centaines de mille ?'])}`,
       cm1Redac('Chiffre des dizaines de millions', '6<b>1</b>4 507 392', 'Le chiffre des dizaines de millions est 1.')
@@ -66,7 +66,7 @@ ${cm1Demo('c2-gn-ranger', 'Comparer deux grands nombres', 'Compare 708 650 000 e
       cm1Redac('Encadrement', '67 000 000 &lt; 67 348 125 &lt; 68 000 000', '67 348 125 est compris entre 67 millions et 68 millions.')
       + cm1Redac('Arrondi', '67 348 125 &lt; 67 500 000', 'Il est avant le milieu : arrondi au million, il vaut 67 000 000.')],
     ['La Terre est à environ 149 600 000 km du Soleil. Écris ce nombre en lettres et arrondis-le à la dizaine de millions.',
-      cm1Redac('En lettres', '149 | 600 | 000', 'On écrit : cent-quarante-neuf-millions-six-cent-mille.')
+      cm1Redac('En lettres', '149 | 600 | 000', 'On écrit : cent-quarante-neuf millions six-cent-mille.')
       + cm1Redac('Arrondi', '149 600 000 &gt; 145 000 000', 'Il est après le milieu entre 140 et 150 millions : arrondi, la distance est de 150 000 000 km.')],
   ]),
   histoire: cm1Histoire('Un peu d\'histoire : le mot « million »', [
@@ -76,7 +76,7 @@ ${cm1Demo('c2-gn-ranger', 'Comparer deux grands nombres', 'Compare 708 650 000 e
   quiz: [
     { q: 'Combien de zéros dans un million ?', opts: ['5', '6', '9'], correct: 1 },
     { q: 'Dans 452 318 007, le nombre de millions est…', opts: ['2', '452', '452 318'], correct: 1 },
-    { q: 'Comment s\'écrit « trois-millions-vingt » ?', opts: ['3 000 020', '3 020 000', '300 020'], correct: 0 },
+    { q: 'Comment s\'écrit « trois millions vingt » ?', opts: ['3 000 020', '3 020 000', '300 020'], correct: 0 },
   ],
 });
 })();

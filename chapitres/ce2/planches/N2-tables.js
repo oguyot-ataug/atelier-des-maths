@@ -4,10 +4,13 @@
    décompositions multiplicatives de 60. Fin de CE2 : 15 additions et 12 multiplications en une minute.
    Relecture CE2-N2-P3-E4 (30/10/2026) : « oui non » en tableau, détaché de la question (« Tabulation pour ne pas coller
    oui non à la question ») ; énoncé « Les produits suivants sont-ils égaux à 60 ? ».
+   Relecture CE2-N2-P2-E1 (31/10/2026) : faisable à l'écran (une réponse par case, facteurs dans les deux ordres).
    ============================================================ */
 (() => {
 const { rmp, chx, chxTab } = P3;
 const { svg } = CM2G;
+// Produit au corrigé : une réponse par case ; les deux facteurs peuvent être écrits dans un ordre ou dans l'autre à l'écran.
+const F = (a, b, p, g) => `<span class="pl-rep" data-perm="${g}">${a}</span> × <span class="pl-rep" data-perm="${g}">${b}</span> = ${P3.R(p)}`;
 // Rangées de jetons (l rangées de c).
 const jetons = (l, c) => { let g = ''; for(let i = 0; i < l; i++) for(let j = 0; j < c; j++) g += `<circle cx="${12 + j * 20}" cy="${12 + i * 20}" r="7.5" fill="${i % 2 ? '#E35D3A' : '#2EA8C9'}" stroke="#1F3A5C" stroke-width=".8"/>`; return svg(c * 20 + 4, l * 20 + 4, g, Math.min(200, c * 20 + 4)); };
 PLANCHES['ce2|Tables d\'addition et de multiplication'] = [
@@ -31,7 +34,9 @@ PLANCHES['ce2|Tables d\'addition et de multiplication'] = [
     exos: [
       { etoiles: 1, consigne: 'Écris la multiplication qui correspond aux jetons, puis calcule.',
         eleve: plGrille([jetons(3, 6) + '<br>' + P3.B(3) + ' × ' + P3.B(3) + ' = ' + P3.B(3), jetons(4, 5) + '<br>' + P3.B(3) + ' × ' + P3.B(3) + ' = ' + P3.B(3)], 2),
-        corr: plGrille([jetons(3, 6) + '<br>' + P3.R('3 × 6 = 18'), jetons(4, 5) + '<br>' + P3.R('4 × 5 = 20')], 2) },
+        // Une réponse par case, les deux facteurs dans un ordre ou dans l'autre (relecture CE2-N2-P2-E1 : « devrait pouvoir
+        // se faire à l'écran »).
+        corr: plGrille([jetons(3, 6) + '<br>' + F(3, 6, 18, 'a'), jetons(4, 5) + '<br>' + F(4, 5, 20, 'b')], 2) },
       { etoiles: 1, col: 1, consigne: 'Calcule.',
         ...rmp([['7 × 6 = @', 42], ['8 × 4 = @', 32], ['9 × 5 = @', 45], ['6 × 8 = @', 48], ['7 × 7 = @', 49], ['9 × 3 = @', 27]], 2) },
       { etoiles: 2, col: 1, consigne: 'Trouve le nombre manquant.',

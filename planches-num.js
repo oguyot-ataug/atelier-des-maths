@@ -28,7 +28,7 @@
 const plNumCache = new Map();
 // Normalisation d'une réponse : espaces, casse, ponctuation finale ; un nombre perd ses zéros de tête
 // (« 05 » minutes = « 5 ») et ses espaces (« 1 200 » = « 1200 »).
-const plNumNorm = s => { const t = String(s ?? '').replace(/(\d)\s*[*xX×]\s*(?=\d)/g, '$1 × ').replace(/\*/g, '×').replace(/[\u00a0\u202f]/g, ' ').replace(/\s+/g, ' ').trim().toLowerCase().replace(/[.!]$/, '').replace(/’/g, '\''), n = t.replace(/(\d) (?=\d)/g, '$1').replace(/[−–]/g, '-'); if(/^\d+$/.test(n)) return String(+n); return /[a-zà-ÿ]/i.test(n) ? (/[a-zà-ÿ]{3,}/i.test(t) ? t.replace(/[−–]/g, '-') : n.replace(/\s+/g, '')) : n.replace(/\s+/g, ''); }; // calcul littéral (« 5x + 3 », « 12 h 30 ») : sans espaces non plus // calcul (« 5 000 000 + 8 ») : sans espaces
+const plNumNorm = s => { const t = String(s ?? '').replace(/(\d)\s*[*xX×]\s*(?=\d)/g, '$1 × ').replace(/\*/g, '×').replace(/[\u00a0\u202f]/g, ' ').replace(/\s+/g, ' ').trim().toLowerCase().replace(/[.!]$/, '').replace(/’/g, '\''), n = t.replace(/(\d) (?=\d)/g, '$1').replace(/[−–]/g, '-'); if(/^\d+$/.test(n)) return String(+n); return /[a-zà-ÿ]/i.test(n) ? (/[a-zà-ÿ]{3,}/i.test(t) ? t.replace(/[−–]/g, '-').replace(/[\s-]*\b(milli(?:on|ard)s?)\b[\s-]*/g, ' $1 ').trim() : n.replace(/\s+/g, '')) : n.replace(/\s+/g, ''); }; // calcul littéral (« 5x + 3 », « 12 h 30 ») : sans espaces non plus // calcul (« 5 000 000 + 8 ») : sans espaces
 // Grands nombres écrits par classes -- relecture 6e-N1-P1 : « En version numérique, respecter l'écriture avec
 // espace des grands nombres ». Un entier de 4 chiffres ou plus doit être écrit par classes de trois chiffres
 // séparées par un espace (2 300 000) ; « 2300000 » ou « 2 30 0000 » sont faux. La partie décimale n'est pas concernée.
@@ -147,10 +147,12 @@ function plNumAnalyser(x){
       // relecture 5e-N7-P1-E3 : « c'est encore trop grossier, les cases pour les nombres sont trop larges ».
       const expo = tr.parentElement && tr.parentElement.tagName === 'SUP', base = !expo && tr.nextElementSibling && tr.nextElementSibling.tagName === 'SUP';
       const largeur = expo ? 0 : base ? Math.max(30, lg * 11 + 18) : Math.max(46, lg * 12 + 26);
-      tr.outerHTML = `<button type="button" class="pn-case${large ? ' pn-large' : ''}${base ? ' pn-base' : ''}${tr.classList.contains('pl-case-seule') ? ' pn-signe' : ''}" data-pn="${id}" data-pnv="${id}"${!tr.classList.contains('pl-case-seule') && !large && largeur ? ` style="min-width:${Math.min(320, largeur)}px"` : ''}></button>`;
+      // Réponse en lettres : case à la longueur de la phrase attendue, jusqu'à toute la largeur (relecture 6e-N1-P1-E2 :
+      // « sur écran, la case n'est pas assez grande pour écrire le résultat »).
+      tr.outerHTML = `<button type="button" class="pn-case${large ? ' pn-large' : ''}${base ? ' pn-base' : ''}${tr.classList.contains('pl-case-seule') ? ' pn-signe' : ''}" data-pn="${id}" data-pnv="${id}"${tr.classList.contains('pl-case-seule') ? '' : large ? ` style="min-width:min(100%, ${Math.max(120, lg * 11 + 30)}px)"` : largeur ? ` style="min-width:${Math.min(320, largeur)}px"` : ''}></button>`;
       // classes : la réponse attendue contient un grand nombre écrit par classes, l'élève doit l'écrire ainsi.
       const brut = r.textContent.replace(/[\u00a0\u202f]/g, ' '), classes = /\d{1,3}(?: \d{3})+/.test(brut) && plNumClassesOk(brut);
-      cibles.push({ type: 'txt', id, rep, classes, maj: /^[(\[]?[A-ZÉÈ]/.test(r.textContent.trim()) }); // réponse en majuscule (nom de point…) : clavier en majuscules
+      cibles.push({ type: 'txt', id, rep, classes, maj: /^[(\[]?[A-ZÉÈ]/.test(r.textContent.trim()), perm: r.dataset.perm || '' }); // réponse en majuscule (nom de point…) : clavier en majuscules
     }
   }
   // 2 bis. Retenues d'une opération posée (cm1Posee) : petites cases à remplir, non notées (relecture CE2-N3-P1-E3 :
@@ -160,8 +162,12 @@ function plNumAnalyser(x){
     r.outerHTML = `<button type="button" class="pn-case pn-ret pn-ret-${t}" data-pnv="ret${k}" data-plret="${t}" data-plcol="${r.dataset.plcol}" aria-label="retenue" style="${t === 'a' ? '' : (r.getAttribute('style') || '').replace(/visibility:hidden;?/, '')}"></button>`; });
   E.querySelectorAll('table').forEach(tb => {
     if(tb.parentElement && tb.parentElement.closest('table')) return;
+    // Plusieurs lignes à remplir (produits intermédiaires d'une multiplication) : ligne par ligne, de droite à gauche ; les
+    // retenues vont avec la première ligne.
+    const lg = [...tb.querySelectorAll('td[data-plrow]')].map(td => +td.dataset.plrow), r0 = lg.length ? Math.min(...lg) : 0;
     const L = [...tb.querySelectorAll('[data-pnv]')].map(b => { const ret = b.dataset.plret, td = b.closest('td'), c = +(ret ? b.dataset.plcol : td && td.dataset.plcol);
-      return { b, k: isNaN(c) ? null : ret === 'b' ? 2 * c - 2.5 : ret ? 2 * c - 1 : 2 * c }; });
+      const ligne = ret ? r0 : +(td && td.dataset.plrow) || r0;
+      return { b, k: isNaN(c) ? null : 1000 * ligne + (ret === 'b' ? 2 * c - 2.5 : ret ? 2 * c - 1 : 2 * c) }; });
     if(!L.length || L.some(z => z.k == null) || !tb.querySelector('.pn-ret')) return;
     L.sort((x, y) => x.k - y.k).forEach((z, i) => z.b.setAttribute('data-pnsuiv', i + 1 < L.length ? L[i + 1].b.dataset.pnv : ''));
   });
@@ -307,6 +313,10 @@ function plNum(root, x, o){
   const malEcrit = c => (c.type === 'txt' && c.classes && plNumNorm(etat.v[c.id]) === c.rep && !plNumClassesOk(etat.v[c.id]))
     || (c.type === 'entre' && plNumVal(etat.v[c.id]) != null && !plNumClassesOk(etat.v[c.id]));
   const juste = c => {
+    // Réponses interchangeables (plRep(…) avec data-perm="g") : les facteurs d'un produit dans un ordre ou dans l'autre
+    // (relecture CE2-N2-P2-E1 : 3 × 6 ou 6 × 3 pour 3 rangées de 6 jetons).
+    if(c.type === 'txt' && c.perm){ const g = M.cibles.filter(z => z.type === 'txt' && z.perm === c.perm), tri = l => l.slice().sort().join('|');
+      if(tri(g.map(z => z.rep)) === tri(g.map(z => plNumNorm(etat.v[z.id])))) return true; }
     if(c.type === 'txt') return plNumNorm(etat.v[c.id]) === c.rep && (!c.classes || plNumClassesOk(etat.v[c.id]));
     if(c.type === 'entre'){ const t = etat.v[c.id], v = plNumVal(t); return v != null && v > c.rep[0] && v < c.rep[1] && plNumClassesOk(t); }
     if(c.type === 'frac'){

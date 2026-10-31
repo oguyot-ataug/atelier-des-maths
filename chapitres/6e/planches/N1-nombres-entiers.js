@@ -6,12 +6,17 @@
    des exercices similaires dans des thèmes différents » : un thème par planche, dans l'ordre de l'apprentissage (lire et écrire,
    décomposer, comparer-ranger-encadrer-arrondir, opérations posées, calcul mental, division euclidienne, multiples-diviseurs-
    critères) ; la 2e droite graduée et le 2e encadrement retirés ; « Pour aller plus loin » à la fin de la planche 7.
+   Relecture du 31/10/2026 : nombres en lettres sans trait d'union autour de « million » et « milliard » (des noms),
+   pointillés jusqu'au bord (P1-E2), 4e encadrement (P3-E6), produits intermédiaires à remplir (P4-E2), grille plus haute (P6-E3).
    ============================================================ */
 (() => {
+const BL = '<span class="pl-pts" style="display:block;min-width:0;height:1.5em;margin-bottom:2px;"></span>'; // pointillés jusqu'au bord droit
 const B = n => plPointilles(n || 5), R = v => plRep(String(v)), C = plCase();
 const lt = '&lt;', gt = '&gt;';
 // large : tableau aligné à gauche, la dernière colonne va jusqu'à la marge droite (relecture 6e-N1-P1-E3).
 const tab = (ent, lignes, large) => `<table class="pl-tab${large ? ' pl-tab-large' : ''}"><tr>${ent.map(e => `<th>${e}</th>`).join('')}</tr>${lignes.map(l => `<tr>${l.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</table>`;
+// À l'écran, les opérations posées bien séparées (relecture 6e-N1-P4-E2 : « en ligne, bien séparer les calculs »).
+const duoE = l => `<div style="display:flex;justify-content:center;align-items:flex-start;gap:18px 34px;flex-wrap:wrap;">${l.map(x => `<div style="border:1px solid #E4E1EE;border-radius:10px;padding:4px 12px;">${x}</div>`).join('')}</div>`;
 const duo = l => `<div style="display:flex;justify-content:space-around;align-items:flex-start;gap:8px;flex-wrap:wrap;">${l.join('')}</div>`;
 const pose = (a, op, b, res, o) => cm1Posee([[' ', a], [op, b], [' ', res]], '', o);
 const div = (a, b) => typeof divisionPoseeHTML === 'function' ? `<div class="pl-div">${divisionPoseeHTML(computeDivisionPosee(a, b))}</div>` : '';
@@ -27,13 +32,15 @@ PLANCHES['6e|Nombres entiers'] = [
     attendus: ['Lire et écrire les grands nombres (jusqu\'aux milliards)', 'Passer de l\'écriture en lettres à l\'écriture en chiffres, et inversement', 'Connaître la valeur de chaque chiffre selon son rang'],
     exos: [
       { etoiles: 1, col: 1, consigne: 'Écris en chiffres.',
-        eleve: plListe(['deux-millions-trois-cent-mille : ' + B(8), 'quarante-millions-cinquante : ' + B(8), 'trois-milliards-deux-millions : ' + B(9)]),
-        corr: plListe(['deux-millions-trois-cent-mille : ' + R('2 300 000'), 'quarante-millions-cinquante : ' + R('40 000 050'), 'trois-milliards-deux-millions : ' + R('3 002 000 000')]) },
-      { etoiles: 2, col: 1, consigne: 'Écris chaque nombre en lettres (avec des traits d\'union).',
-        eleve: plListe(['3 000 400 : ' + B(14), '80 000 000 : ' + B(14), '2 500 000 000 : ' + B(18)]),
-        corr: plListe(['3 000 400 : ' + R('trois-millions-quatre-cents'), '80 000 000 : ' + R('quatre-vingts-millions'), '2 500 000 000 : ' + R('deux-milliards-cinq-cents-millions')]) },
+        eleve: plListe(['deux millions trois-cent-mille : ' + B(8), 'quarante millions cinquante : ' + B(8), 'trois milliards deux millions : ' + B(9)]),
+        corr: plListe(['deux millions trois-cent-mille : ' + R('2 300 000'), 'quarante millions cinquante : ' + R('40 000 050'), 'trois milliards deux millions : ' + R('3 002 000 000')]) },
+      { etoiles: 2, col: 1, consigne: 'Écris chaque nombre en lettres (traits d\'union entre les mots ; « million » et « milliard » sont des noms, sans trait d\'union).',
+        // Pointillés sur toute la largeur, sous le nombre (relecture 6e-N1-P1-E2 : « sur papier, prolonger les pointillés
+        // jusqu'au bord droit ») ; à l'écran, la case est à la taille de la réponse.
+        eleve: plListe(['3 000 400 :' + BL, '80 000 000 :' + BL, '2 500 000 000 :' + BL]),
+        corr: plListe(['3 000 400 : ' + R('trois millions quatre-cents'), '80 000 000 : ' + R('quatre-vingts millions'), '2 500 000 000 : ' + R('deux milliards cinq-cents millions')]) },
       { etoiles: 1, consigne: 'Entoure l\'écriture en chiffres qui convient.',
-        ...P3.chxTab([['deux-millions-quarante :', '2 000 040', '2 040 000 · 2 000 040 · 2 400 000'], ['trente-millions-six-mille :', '30 006 000', '30 600 000 · 30 006 000 · 3 006 000'], ['un-milliard-deux-cents-millions :', '1 200 000 000', '1 000 200 000 · 1 200 000 · 1 200 000 000']]) },
+        ...P3.chxTab([['deux millions quarante :', '2 000 040', '2 040 000 · 2 000 040 · 2 400 000'], ['trente millions six-mille :', '30 006 000', '30 600 000 · 30 006 000 · 3 006 000'], ['un milliard deux-cents millions :', '1 200 000 000', '1 000 200 000 · 1 200 000 · 1 200 000 000']]) },
       { etoiles: 1, col: 1, consigne: 'Dans le nombre 7 253 048 916, quel est…',
         eleve: plListe(['le chiffre des millions ? ' + B(2), 'le chiffre des centaines de mille ? ' + B(2), 'le nombre de millions ? ' + B(4), 'le nombre de milliers ? ' + B(6)]),
         corr: plListe(['le chiffre des millions ? ' + R(3), 'le chiffre des centaines de mille ? ' + R(0), 'le nombre de millions ? ' + R('7 253'), 'le nombre de milliers ? ' + R('7 253 048')]) },
@@ -44,7 +51,7 @@ PLANCHES['6e|Nombres entiers'] = [
         eleve: plListe(['le plus grand nombre possible : ' + B(8), 'le plus petit nombre de 7 chiffres : ' + B(8), 'le plus grand nombre impair : ' + B(8)]),
         corr: plListe(['le plus grand nombre possible : ' + R('9 754 210'), 'le plus petit nombre de 7 chiffres : ' + R('1 024 579'), 'le plus grand nombre impair : ' + R('9 754 201')]) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'La population de la France est d\'environ 68 400 000 habitants, celle du Canada de 40 100 000. Écris ces nombres en lettres, puis calcule la différence.',
-        corr: cm1Redac('En lettres', { suite: ['68 400 000 : soixante-huit-millions-quatre-cent-mille', '40 100 000 : quarante-millions-cent-mille'] }, 'On écrit les classes des millions, puis des mille.') + cm1Redac('Différence', '68 400 000 − 40 100 000 = 28 300 000', 'La France compte environ 28 300 000 habitants de plus que le Canada.') },
+        corr: cm1Redac('En lettres', { suite: ['68 400 000 : soixante-huit millions quatre-cent-mille', '40 100 000 : quarante millions cent-mille'] }, 'On écrit les classes des millions, puis des mille.') + cm1Redac('Différence', '68 400 000 − 40 100 000 = 28 300 000', 'La France compte environ 28 300 000 habitants de plus que le Canada.') },
     ] },
   { titre: 'Décomposer les grands nombres', duree: '35 min',
     attendus: ['Décomposer un nombre selon les puissances de 10', 'Passer d\'une décomposition au nombre', 'Utiliser les mots millions, milliers, unités'],
@@ -53,11 +60,11 @@ PLANCHES['6e|Nombres entiers'] = [
         eleve: '<div class="pl-col1">' + plListe(['4 052 300 = 4 × 1 000 000 + 5 × ' + B(6) + ' + 2 × ' + B(6) + ' + 3 × 100', '70 008 040 = 7 × ' + B(9) + ' + 8 × 1 000 + 4 × 10', '3 × 1 000 000 + 6 × 10 000 + 9 = ' + B(8)].map(ligne)) + '</div>',
         corr: '<div class="pl-col1">' + plListe(['4 052 300 = 4 × 1 000 000 + 5 × ' + R('10 000') + ' + 2 × ' + R('1 000') + ' + 3 × 100', '70 008 040 = 7 × ' + R('10 000 000') + ' + 8 × 1 000 + 4 × 10', '3 × 1 000 000 + 6 × 10 000 + 9 = ' + R('3 060 009')].map(ligne)) + '</div>' },
       { etoiles: 2, consigne: 'Complète le tableau : écris chaque nombre en chiffres, puis décompose-le.',
-        eleve: tab(['En lettres', 'En chiffres', 'Décomposition'], [['cinq-millions-quarante-mille-huit', B(7), B(14)], ['douze-millions-trois-cents', B(7), B(14)]], true),
-        corr: tab(['En lettres', 'En chiffres', 'Décomposition'], [['cinq-millions-quarante-mille-huit', R('5 040 008'), R('5 000 000 + 40 000 + 8')], ['douze-millions-trois-cents', R('12 000 300'), R('12 000 000 + 300')]], true),
+        eleve: tab(['En lettres', 'En chiffres', 'Décomposition'], [['cinq millions quarante-mille-huit', B(7), B(14)], ['douze millions trois-cents', B(7), B(14)]], true),
+        corr: tab(['En lettres', 'En chiffres', 'Décomposition'], [['cinq millions quarante-mille-huit', R('5 040 008'), R('5 000 000 + 40 000 + 8')], ['douze millions trois-cents', R('12 000 300'), R('12 000 000 + 300')]], true),
         // À l'écran, une ligne entière pour la décomposition (relecture 6e-N1-P1-E3 : « en mode écran, on n'a pas la place pour
         // écrire la décomposition »).
-        ecran: (() => { const l = f => '<div class="pl-col1">' + plListe([['cinq-millions-quarante-mille-huit', '5 040 008', '5 000 000 + 40 000 + 8'], ['douze-millions-trois-cents', '12 000 300', '12 000 000 + 300']]
+        ecran: (() => { const l = f => '<div class="pl-col1">' + plListe([['cinq millions quarante-mille-huit', '5 040 008', '5 000 000 + 40 000 + 8'], ['douze millions trois-cents', '12 000 300', '12 000 000 + 300']]
             .map(([t, c, d]) => `<b>${t}</b><br>en chiffres : ${f(c, 7)}<br>décomposition : ${f(d, 16)}`)) + '</div>';
           return { eleve: l((v, n) => B(n)), corr: l(v => R(v)) }; })() },
       { etoiles: 2, consigne: 'Écris le nombre qui correspond à chaque décomposition.',
@@ -90,8 +97,8 @@ PLANCHES['6e|Nombres entiers'] = [
         eleve: plListe(['4 752 300 → ' + B(9), '19 080 000 → ' + B(9), '7 499 999 → ' + B(9), '999 600 → ' + B(9)]),
         corr: plListe(['4 752 300 → ' + R('5 000 000'), '19 080 000 → ' + R('19 000 000'), '7 499 999 → ' + R('7 000 000'), '999 600 → ' + R('1 000 000')]) },
       { etoiles: 2, uneLigne: true, consigne: 'Encadre chaque nombre entre deux centaines de mille consécutives.',
-        eleve: plListe([`${B(7)} &lt; 4 752 300 &lt; ${B(7)}`, `${B(7)} &lt; 19 080 000 &lt; ${B(7)}`, `${B(7)} &lt; 630 500 &lt; ${B(7)}`].map(ligne)),
-        corr: plListe([`${R('4 700 000')} &lt; 4 752 300 &lt; ${R('4 800 000')}`, `${R('19 000 000')} &lt; 19 080 000 &lt; ${R('19 100 000')}`, `${R('600 000')} &lt; 630 500 &lt; ${R('700 000')}`].map(ligne)) },
+        eleve: plListe([`${B(7)} &lt; 4 752 300 &lt; ${B(7)}`, `${B(7)} &lt; 19 080 000 &lt; ${B(7)}`, `${B(7)} &lt; 630 500 &lt; ${B(7)}`, `${B(7)} &lt; 7 251 900 &lt; ${B(7)}`].map(ligne)),
+        corr: plListe([`${R('4 700 000')} &lt; 4 752 300 &lt; ${R('4 800 000')}`, `${R('19 000 000')} &lt; 19 080 000 &lt; ${R('19 100 000')}`, `${R('600 000')} &lt; 630 500 &lt; ${R('700 000')}`, `${R('7 200 000')} &lt; 7 251 900 &lt; ${R('7 300 000')}`].map(ligne)) },
       { etoiles: 3, cahier: true, consigne: `Voici la population de quatre pays (2024).${tab(['Espagne', 'Belgique', 'Italie', 'Suisse'], [['48 619 695', '11 822 592', '58 989 749', '8 921 981']])}Range ces pays du plus peuplé au moins peuplé, puis arrondis chaque population au million.`,
         corr: cm1Redac('Rangement', { suite: ['Italie (58 989 749) &gt; Espagne (48 619 695)', 'Espagne &gt; Belgique (11 822 592) &gt; Suisse (8 921 981)'] }, 'Arrondis au million : Italie 59 000 000 ; Espagne 49 000 000 ; Belgique 12 000 000 ; Suisse 9 000 000.') },
     ] },
@@ -103,9 +110,9 @@ PLANCHES['6e|Nombres entiers'] = [
         corr: duo([pose('35648', '+', '9875', '45523'), pose('7004', '−', '2569', '4435'), pose('12307', '−', '4589', '7718')]),
         ecran: { eleve: duo([pose('35648', '+', '9875', '45523', { trous: true }), pose('7004', '−', '2569', '4435', { trous: true }), pose('12307', '−', '4589', '7718', { trous: true })]), corr: duo([pose('35648', '+', '9875', '45523', { rep: true }), pose('7004', '−', '2569', '4435', { rep: true }), pose('12307', '−', '4589', '7718', { rep: true })]) } },
       { etoiles: 2, consigne: 'Calcule. Pour multiplier par un nombre à deux chiffres, écris les produits intermédiaires.',
-        eleve: duo([cm1Posee([[' ', '427'], ['×', '36'], [' ', '    ', true], ['+', '     '], [' ', '     ']]), cm1Posee([[' ', '508'], ['×', '47'], [' ', '    ', true], ['+', '     '], [' ', '     ']]), cm1Posee([[' ', '1245'], ['×', '8'], [' ', '    ']])]),
+        eleve: duo([cm1Posee([[' ', '427'], ['×', '36'], [' ', '    ', true], ['+', '     '], [' ', '     ']], '', { cases: true }), cm1Posee([[' ', '508'], ['×', '47'], [' ', '    ', true], ['+', '     '], [' ', '     ']], '', { cases: true }), cm1Posee([[' ', '1245'], ['×', '8'], [' ', '    ']], '', { cases: true })]),
         corr: duo([cm1Posee([[' ', '427'], ['×', '36'], [' ', '2562', true], ['+', '12810'], [' ', '15372']]), cm1Posee([[' ', '508'], ['×', '47'], [' ', '3556', true], ['+', '20320'], [' ', '23876']]), cm1Posee([[' ', '1245'], ['×', '8'], [' ', '9960']])]),
-        ecran: { eleve: duo([cm1Posee([[' ', '427'], ['×', '36'], [' ', '2562', true], ['+', '12810'], [' ', '15372']], '', { trous: true }), cm1Posee([[' ', '508'], ['×', '47'], [' ', '3556', true], ['+', '20320'], [' ', '23876']], '', { trous: true }), cm1Posee([[' ', '1245'], ['×', '8'], [' ', '9960']], '', { trous: true })]), corr: duo([cm1Posee([[' ', '427'], ['×', '36'], [' ', '2562', true], ['+', '12810'], [' ', '15372']], '', { rep: true }), cm1Posee([[' ', '508'], ['×', '47'], [' ', '3556', true], ['+', '20320'], [' ', '23876']], '', { rep: true }), cm1Posee([[' ', '1245'], ['×', '8'], [' ', '9960']], '', { rep: true })]) } },
+        ecran: { eleve: duoE([cm1Posee([[' ', '427'], ['×', '36'], [' ', '2562', true], ['+', '12810'], [' ', '15372']], '', { trous: true }), cm1Posee([[' ', '508'], ['×', '47'], [' ', '3556', true], ['+', '20320'], [' ', '23876']], '', { trous: true }), cm1Posee([[' ', '1245'], ['×', '8'], [' ', '9960']], '', { trous: true })]), corr: duoE([cm1Posee([[' ', '427'], ['×', '36'], [' ', '2562', true], ['+', '12810'], [' ', '15372']], '', { rep: true }), cm1Posee([[' ', '508'], ['×', '47'], [' ', '3556', true], ['+', '20320'], [' ', '23876']], '', { rep: true }), cm1Posee([[' ', '1245'], ['×', '8'], [' ', '9960']], '', { rep: true })]) } },
       { etoiles: 2, col: 1, consigne: 'Calcule en ligne.',
         eleve: plListe(['458 + 99 = ' + B(), '1 200 − 350 = ' + B(), '25 × 12 = ' + B(), '204 × 5 = ' + B()]),
         corr: plListe(['458 + 99 = ' + R(557), '1 200 − 350 = ' + R(850), '25 × 12 = ' + R(300), '204 × 5 = ' + R('1 020')]) },
@@ -147,7 +154,9 @@ PLANCHES['6e|Nombres entiers'] = [
         ...(() => { const t = P3.chxTab([['100 = 8 × 12 + 4', 'oui', 'oui · non'], ['100 = 8 × 11 + 12', 'non', 'oui · non'], ['64 = 8 × 8 + 0', 'oui', 'oui · non']]);
           return { eleve: t.eleve, corr: t.corr + '<div class="pl-petit">Le reste doit être plus petit que le diviseur : 12 &gt; 8.</div>' }; })() },
       { etoiles: 2, consigne: 'Pose et calcule ces divisions euclidiennes. Écris l\'égalité qui les traduit.',
-        eleve: duo([`<span style="text-align:center;">1 285 ÷ 7<br>${grille()}<br>1 285 = 7 × ${B(3)} + ${B(2)}</span>`, `<span style="text-align:center;">2 034 ÷ 15<br>${grille()}<br>2 034 = 15 × ${B(3)} + ${B(2)}</span>`]),
+        // Grille plus haute : toute la division y tient, soustractions comprises (relecture 6e-N1-P6-E3 : « laisser plus de
+        // place pour la division (hauteur) »).
+        eleve: duo([`<span style="text-align:center;">1 285 ÷ 7<br>${grille(11, 11)}<br>1 285 = 7 × ${B(3)} + ${B(2)}</span>`, `<span style="text-align:center;">2 034 ÷ 15<br>${grille(11, 11)}<br>2 034 = 15 × ${B(3)} + ${B(2)}</span>`]),
         corr: duo([`<span style="text-align:center;">${div(1285, 7)}1 285 = 7 × ${R(183)} + ${R(4)}</span>`, `<span style="text-align:center;">${div(2034, 15)}2 034 = 15 × ${R(135)} + ${R(9)}</span>`]),
         ecran: { eleve: duo([`<span style="text-align:center;"><b>avec les soustractions</b><br>${plDivision(1285, 7, { mode: 'trous' })}<br>1 285 = 7 × ${B(3)} + ${B(2)}</span>`, `<span style="text-align:center;"><b>sans les soustractions</b><br>${plDivision(2034, 15, { mode: 'trous', diff: false })}<br>2 034 = 15 × ${B(3)} + ${B(2)}</span>`]),
           corr: duo([`<span style="text-align:center;"><b>avec les soustractions</b><br>${plDivision(1285, 7, { mode: 'rep' })}<br>1 285 = 7 × ${R(183)} + ${R(4)}</span>`, `<span style="text-align:center;"><b>sans les soustractions</b><br>${plDivision(2034, 15, { mode: 'rep', diff: false })}<br>2 034 = 15 × ${R(135)} + ${R(9)}</span>`]) } },

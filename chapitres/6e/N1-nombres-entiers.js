@@ -47,7 +47,7 @@ document.getElementById('cours-demo-nombres-entiers').innerHTML = `
 </table>
 </div>
 <ul class="example-list">
-  <li>Ce nombre s'écrit : deux-milliards-trois-cent-quatre-vingt-quatre-millions-neuf-cent-sept-mille-cent-cinquante-six.</li>
+  <li>Ce nombre s'écrit : deux milliards trois-cent-quatre-vingt-quatre millions neuf-cent-sept-mille-cent-cinquante-six.</li>
   <li>Il se décompose ainsi :<br>
     2 384 907 156 = (2 × 1 000 000 000) + (3 × 100 000 000) + (8 × 10 000 000) + (4 × 1 000 000)<br>
     + (9 × 100 000) + (7 × 1 000) + (1 × 100) + (5 × 10) + (6 × 1)
@@ -202,7 +202,7 @@ document.getElementById('exos-demo-nombres-entiers').innerHTML = `
     Écris en toutes lettres le nombre 3 052 189, puis décompose-le.
     <button type="button" class="exo-correction-toggle" data-target="ne-correction-1" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
     <div class="exo-correction" id="ne-correction-1">
-      <p style="margin:0 0 8px;">3 052 189 s'écrit : <b>trois-millions-cinquante-deux-mille-cent-quatre-vingt-neuf</b>.</p>
+      <p style="margin:0 0 8px;">3 052 189 s'écrit : <b>trois millions cinquante-deux-mille-cent-quatre-vingt-neuf</b>.</p>
       <p style="margin:0;">Il se décompose ainsi :<br>3 052 189 = (3×1 000 000) + (0×100 000) + (5×10 000) + (2×1 000) + (1×100) + (8×10) + (9×1)</p>
     </div>
   </div>
