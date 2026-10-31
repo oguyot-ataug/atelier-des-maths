@@ -113,6 +113,8 @@ ${cm1Demo('fr-quantite', 'Calculer une fraction d\'une quantité', `Dans une cla
   ],
   // Planches d'exercices imprimables (planches.js) : une par grande notion du chapitre ; { col: 1 } =
   // demi-largeur (deux exercices côte à côte), { cahier: true } = rédaction dans le cahier.
+  // Planches : « Lire et colorier : encore des figures » retirée le 31/10/2026, elle répétait les planches 1 et 4 (vérification
+  // de la cohérence des thèmes demandée : « On retrouve des exercices similaires dans des thèmes différents »).
   planches: [
     { titre: 'Partager et colorier', duree: '30 min',
       attendus: ['Utiliser une fraction pour dire un partage en parts égales', 'Lire et écrire une fraction'],
@@ -210,18 +212,6 @@ ${cm1Demo('fr-quantite', 'Calculer une fraction d\'une quantité', `Dans une cla
       ] },
     // Encore des figures (fractions-figures.js) -- demandé : « Reconnaître les parts coloriées et remplir
     // les parts… Il faut ce genre d'exercices en nombre. »
-    { titre: 'Lire et colorier : encore des figures', duree: '30 min',
-      attendus: ['Écrire la fraction d\'une figure qui est coloriée', 'Colorier une fraction donnée d\'une figure'],
-      exos: [
-        { etoiles: 1, consigne: 'Écris la fraction de chaque figure qui est coloriée.',
-          ...FRF.lire([[{ forme: 'rect', l: 2, c: 2 }, [0, 3]], [{ forme: 'hexagone' }, [0]], [{ forme: 'carre4' }, [0, 1, 2]], [{ forme: 'triangle', k: 2 }, [1]], [{ forme: 'rect', l: 2, c: 3 }, [0, 1, 2, 3]], [{ forme: 'disque', n: 5 }, [0, 1]]], { coul: '#9ED3DA' }) },
-        { etoiles: 1, consigne: 'Écris la fraction de chaque disque qui est coloriée.',
-          ...FRF.lire([[{ forme: 'disque', n: 3 }, [0]], [{ forme: 'disque', n: 4 }, [0, 1, 2]], [{ forme: 'disque', n: 6 }, [0, 1]], [{ forme: 'disque', n: 7 }, [0, 1, 2, 3]], [{ forme: 'disque', n: 8 }, [0, 1, 2, 3, 4]], [{ forme: 'disque', n: 10 }, [0, 1, 2]]], { coul: '#F8C9A8' }) },
-        { etoiles: 2, consigne: 'Colorie la fraction de la figure qui est indiquée.',
-          ...FRF.colorier([[{ forme: 'hexagone' }, 2, 6], [{ forme: 'carre4' }, 1, 4], [{ forme: 'triangle', k: 2 }, 3, 4], [{ forme: 'carre8' }, 3, 8], [{ forme: 'triangle', k: 3 }, 5, 9], [{ forme: 'hexagone' }, 5, 6]]) },
-        { etoiles: 2, consigne: 'Colorie la fraction du rectangle qui est indiquée.',
-          ...FRF.colorier([[{ forme: 'rect', l: 2, c: 3 }, 5, 6], [{ forme: 'rect', l: 2, c: 4 }, 3, 8], [{ forme: 'rect', l: 2, c: 5 }, 7, 10], [{ forme: 'rect', l: 3, c: 3 }, 4, 9], [{ forme: 'rect', l: 3, c: 4 }, 5, 12], [{ forme: 'rect', l: 2, c: 6 }, 11, 12]], { coul: '#CDE8C4' }) },
-      ] },
     { titre: 'Fractions plus grandes que 1 en images', duree: '30 min',
       attendus: ['Représenter une fraction plus grande que 1', 'Écrire une fraction comme un entier plus une fraction plus petite que 1'],
       exos: [

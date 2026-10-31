@@ -1,6 +1,9 @@
 /* ============================================================
    6e · Planches : Fractions, nombres et partage (N2)
    ============================================================ */
+/* Réorganisation (31/10/2026) -- « vérifie la cohérence des thèmes des exercices dans tous les chapitres » : chaque exercice dans
+   la planche de son thème (« quelle fraction est coloriée ? » en planche 1, la droite graduée en planche 4, les égalités de
+   fractions en planche 3) ; deux doublons retirés (« encadre 17/5 » et un second « complète les égalités »). */
 (() => {
 const B = n => plPointilles(n || 3), R = v => plRep(String(v)), F = cm1Frac, Fr = plFrac(), C = plCase();
 const T = (a, b) => cm1Tex(`\\dfrac{${a}}{${b}}`);
@@ -29,6 +32,8 @@ PLANCHES['6e|Fractions : nombres et partage'] = [
       { etoiles: 2, consigne: 'Écris la fraction coloriée, puis simplifie-la le plus possible.',
         eleve: plGrille([[{ forme: 'rect', l: 3, c: 4 }, [0, 1, 2, 4, 5, 6]], [{ forme: 'disque', n: 8 }, [0, 1, 2, 3, 4, 5]], [{ forme: 'triangle', k: 3 }, [0, 1, 3]], [{ forme: 'carre8' }, [0, 1, 4, 5]]].map(([f, c]) => ligne(FRF.svg(f, c, { px: 70, coul: '#C9B6E8' }), Fr, '=', Fr)), 2),
         corr: plGrille([[{ forme: 'rect', l: 3, c: 4 }, [0, 1, 2, 4, 5, 6], 6, 12, 1, 2], [{ forme: 'disque', n: 8 }, [0, 1, 2, 3, 4, 5], 6, 8, 3, 4], [{ forme: 'triangle', k: 3 }, [0, 1, 3], 3, 9, 1, 3], [{ forme: 'carre8' }, [0, 1, 4, 5], 4, 8, 1, 2]].map(([f, c, a, b, x, y]) => ligne(FRF.svg(f, c, { px: 70, coul: '#C9B6E8' }), R(F(a, b)), '=', R(F(x, y)))), 2) },
+      { etoiles: 1, consigne: 'Quelle fraction de chaque figure est coloriée ?',
+        eleve: plGrille(FIGS.map(([f]) => col(f, Fr)), 3), corr: plGrille(FIGS.map(([f, a, b]) => col(f, R(F(a, b)))), 3) },
     ] },
   { titre: 'Colorier une fraction d\'une figure', duree: '35 min',
     attendus: ['Colorier une fraction donnée d\'une figure partagée en parts égales', 'Utiliser des fractions égales pour colorier', 'Expliquer un coloriage'],
@@ -42,27 +47,23 @@ PLANCHES['6e|Fractions : nombres et partage'] = [
       { etoiles: 3, consigne: 'Attention : le nombre de parts n\'est pas le dénominateur ! Colorie la fraction indiquée (cherche une fraction égale).',
         ...FRF.colorier([[{ forme: 'disque', n: 4 }, 1, 2], [{ forme: 'disque', n: 6 }, 2, 3], [{ forme: 'disque', n: 8 }, 3, 4], [{ forme: 'disque', n: 10 }, 4, 5], [{ forme: 'disque', n: 12 }, 1, 3], [{ forme: 'disque', n: 12 }, 5, 6]], { coul: '#F8C9A8' }) },
     ] },
-  { titre: 'Écriture fractionnaire et égalités de fractions', duree: '40 min',
+  { titre: 'Quotient et égalités de fractions', duree: '40 min',
     attendus: ['Utiliser une fraction pour exprimer un partage, un quotient', 'Repérer une fraction sur une demi-droite graduée', 'Reconnaître et produire des fractions égales, simplifier'],
     exos: [
-      { etoiles: 1, col: 1, consigne: 'Quelle fraction de chaque figure est coloriée ?',
-        eleve: plGrille(FIGS.map(([f]) => col(f, Fr)), 3), corr: plGrille(FIGS.map(([f, a, b]) => col(f, R(F(a, b)))), 3) },
       { etoiles: 1, col: 1, consigne: `Le quotient de 7 par 4 est le nombre ${T(7, 4)} : c'est le nombre qui, multiplié par 4, donne 7. Complète.`,
         eleve: plListe([ligne('4 ×', Fr, '= 7'), ligne('5 ×', Fr, '= 2'), ligne('3 ×', Fr, '= 10')]),
         corr: plListe([ligne('4 ×', R(F(7, 4)), '= 7'), ligne('5 ×', R(F(2, 5)), '= 2'), ligne('3 ×', R(F(10, 3)), '= 10')]) },
-      { etoiles: 2, consigne: 'L\'unité est partagée en 4. Quelle fraction repère chaque point ?',
-        eleve: cm1Graduation(3, 4, [[0.75, 'A', '#E35D3A'], [1.5, 'B', '#2EA8C9'], [2.25, 'C', '#2E9C6A']], { unite: 150 }) + plGrille(['A : ' + Fr, 'B : ' + Fr, 'C : ' + Fr], 3),
-        corr: cm1Graduation(3, 4, [[0.75, 'A', '#E35D3A'], [1.5, 'B', '#2EA8C9'], [2.25, 'C', '#2E9C6A']], { unite: 150 }) + plGrille(['A : ' + R(F(3, 4)), 'B : ' + R(F(6, 4)), 'C : ' + R(F(9, 4))], 3) },
       { etoiles: 2, col: 1, consigne: 'Complète les égalités.',
         eleve: plListe([ligne(F(2, 3), '=', Fr, '(dénominateur 12)'), ligne(F(15, 20), '=', Fr, '(numérateur 3)'), ligne(F(7, 5), '=', Fr, '(numérateur 21)'), ligne('1 =', Fr, '(dénominateur 9)')]),
         corr: plListe([ligne(F(2, 3), '=', R(F(8, 12))), ligne(F(15, 20), '=', R(F(3, 4))), ligne(F(7, 5), '=', R(F(21, 15))), ligne('1 =', R(F(9, 9)))]) },
       { etoiles: 2, col: 1, consigne: 'Simplifie le plus possible.',
         eleve: plListe([ligne(F(12, 18), '=', Fr), ligne(F(25, 100), '=', Fr), ligne(F(14, 21), '=', Fr), ligne(F(30, 45), '=', Fr)]),
         corr: plListe([ligne(F(12, 18), '=', R(F(2, 3))), ligne(F(25, 100), '=', R(F(1, 4))), ligne(F(14, 21), '=', R(F(2, 3))), ligne(F(30, 45), '=', R(F(2, 3)))]) },
-      { etoiles: 3, col: 1, cahier: true, consigne: `Léa affirme : « ${T(3, 4)} = ${T(6, 8)} = ${T(9, 12)} ». A-t-elle raison ? Justifie.`,
+      { etoiles: 2, col: 1, consigne: `Entoure les fractions égales à ${T(2, 3)}.`,
+        eleve: plGrille([[4, 6], [6, 9], [3, 4], [10, 15], [8, 12], [5, 6]].map(([a, b]) => F(a, b)), 3),
+        corr: plGrille([[4, 6], [6, 9], [3, 4], [10, 15], [8, 12], [5, 6]].map(([a, b]) => a * 3 === b * 2 ? plEntoure(F(a, b)) : F(a, b)), 3) },
+      { etoiles: 3, cahier: true, consigne: `Léa affirme : « ${T(3, 4)} = ${T(6, 8)} = ${T(9, 12)} ». A-t-elle raison ? Justifie.`,
         corr: cm1Redac('Fractions égales', { suite: [`${F(3, 4)} = ${F('3 × 2', '4 × 2')} = ${F(6, 8)}`, `${F(3, 4)} = ${F('3 × 3', '4 × 3')} = ${F(9, 12)}`] }, 'Léa a raison : on multiplie le numérateur et le dénominateur par le même nombre.') },
-      { etoiles: 3, col: 1, cahier: true, consigne: `Encadre ${T(17, 5)} entre deux nombres entiers consécutifs. Explique.`,
-        corr: cm1Redac('Encadrement', { suite: [`${F(17, 5)} = ${F(15, 5)} + ${F(2, 5)} = 3 + ${F(2, 5)}`, `3 &lt; ${F(17, 5)} &lt; 4`] }, `${F(17, 5)} est compris entre 3 et 4, car ${F(2, 5)} est plus petit que 1.`) },
     ] },
   { titre: 'Fractions sur une demi-droite graduée', duree: '35 min',
     attendus: ['Repérer une fraction sur une demi-droite graduée', 'Décomposer une fraction en un entier plus une fraction inférieure à 1', 'Encadrer une fraction entre deux entiers consécutifs'],
@@ -73,6 +74,9 @@ PLANCHES['6e|Fractions : nombres et partage'] = [
       { etoiles: 1, consigne: 'L\'unité est partagée en 5. Quelle fraction repère chaque point ?',
         ...(() => { const g = cm1Graduation(3, 5, [[3 / 5, 'D', '#E35D3A'], [6 / 5, 'E', '#2EA8C9'], [12 / 5, 'F', '#2E9C6A']], { unite: 150 });
           return { eleve: g + plGrille(['D : ' + Fr, 'E : ' + Fr, 'F : ' + Fr], 3), corr: g + plGrille(['D : ' + R(F(3, 5)), 'E : ' + R(F(6, 5)), 'F : ' + R(F(12, 5))], 3) }; })() },
+      { etoiles: 2, consigne: 'L\'unité est partagée en 4. Quelle fraction repère chaque point ?',
+        eleve: cm1Graduation(3, 4, [[0.75, 'A', '#E35D3A'], [1.5, 'B', '#2EA8C9'], [2.25, 'C', '#2E9C6A']], { unite: 150 }) + plGrille(['A : ' + Fr, 'B : ' + Fr, 'C : ' + Fr], 3),
+        corr: cm1Graduation(3, 4, [[0.75, 'A', '#E35D3A'], [1.5, 'B', '#2EA8C9'], [2.25, 'C', '#2E9C6A']], { unite: 150 }) + plGrille(['A : ' + R(F(3, 4)), 'B : ' + R(F(6, 4)), 'C : ' + R(F(9, 4))], 3) },
       { etoiles: 2, col: 1, consigne: 'Décompose chaque fraction en un nombre entier plus une fraction plus petite que 1.',
         eleve: plListe([ligne(F(7, 3), '=', B(1), '+', Fr), ligne(F(11, 4), '=', B(1), '+', Fr), ligne(F(9, 5), '=', B(1), '+', Fr), ligne(F(17, 6), '=', B(1), '+', Fr)]),
         corr: plListe([ligne(F(7, 3), '=', R(2), '+', R(F(1, 3))), ligne(F(11, 4), '=', R(2), '+', R(F(3, 4))), ligne(F(9, 5), '=', R(1), '+', R(F(4, 5))), ligne(F(17, 6), '=', R(2), '+', R(F(5, 6)))]) },
@@ -85,7 +89,7 @@ PLANCHES['6e|Fractions : nombres et partage'] = [
       { etoiles: 3, col: 1, cahier: true, consigne: `Trace une demi-droite graduée (l'unité mesure 6 carreaux) et place-y les nombres ${T(1, 2)}, ${T(5, 3)}, ${T(7, 6)} et 2.`,
         corr: cm1Redac('Placement', { suite: ['L\'unité vaut 6 carreaux : un sixième vaut 1 carreau.', `${F(1, 2)} = ${F(3, 6)} : 3 carreaux ; ${F(7, 6)} : 7 carreaux.`, `${F(5, 3)} = ${F(10, 6)} : 10 carreaux ; 2 : 12 carreaux.`] }, 'On compte les carreaux depuis l\'origine pour placer chaque point.') },
     ] },
-  { titre: 'Fractions décimales, quotients et égalités', duree: '35 min',
+  { titre: 'Fractions décimales et quotients', duree: '35 min',
     attendus: ['Passer d\'une fraction décimale à un nombre décimal, et inversement', 'Reconnaître des fractions égales', 'Utiliser le quotient pour résoudre a × … = b'],
     exos: [
       { etoiles: 1, col: 1, consigne: 'Écris chaque nombre sous forme décimale.',
@@ -94,12 +98,6 @@ PLANCHES['6e|Fractions : nombres et partage'] = [
       { etoiles: 1, col: 1, consigne: 'Écris chaque nombre sous forme d\'une fraction décimale.',
         eleve: plListe([ligne('0,7 =', Fr), ligne('1,23 =', Fr), ligne('0,05 =', Fr), ligne('2,9 =', Fr)]),
         corr: plListe([ligne('0,7 =', R(F(7, 10))), ligne('1,23 =', R(F(123, 100))), ligne('0,05 =', R(F(5, 100))), ligne('2,9 =', R(F(29, 10)))]) },
-      { etoiles: 2, col: 1, consigne: `Entoure les fractions égales à ${T(2, 3)}.`,
-        eleve: plGrille([[4, 6], [6, 9], [3, 4], [10, 15], [8, 12], [5, 6]].map(([a, b]) => F(a, b)), 3),
-        corr: plGrille([[4, 6], [6, 9], [3, 4], [10, 15], [8, 12], [5, 6]].map(([a, b]) => a * 3 === b * 2 ? plEntoure(F(a, b)) : F(a, b)), 3) },
-      { etoiles: 2, col: 1, consigne: 'Complète les égalités.',
-        eleve: plListe([ligne(F(3, 5), '=', Fr, '(dénominateur 20)'), ligne(F(4, 7), '=', Fr, '(numérateur 20)'), ligne(F(18, 24), '=', Fr, '(simplifiée)'), ligne('2 =', Fr, '(dénominateur 5)')]),
-        corr: plListe([ligne(F(3, 5), '=', R(F(12, 20))), ligne(F(4, 7), '=', R(F(20, 35))), ligne(F(18, 24), '=', R(F(3, 4))), ligne('2 =', R(F(10, 5)))]) },
       { etoiles: 2, col: 1, consigne: 'Trouve le nombre manquant (écris-le sous forme décimale).',
         eleve: plListe(['6 × ' + B() + ' = 15', '4 × ' + B() + ' = 3', '8 × ' + B() + ' = 2', '5 × ' + B() + ' = 7']),
         corr: plListe(['6 × ' + R('2,5') + ' = 15', '4 × ' + R('0,75') + ' = 3', '8 × ' + R('0,25') + ' = 2', '5 × ' + R('1,4') + ' = 7']) },
