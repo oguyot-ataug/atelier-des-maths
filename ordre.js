@@ -39,7 +39,7 @@ function injectOrdreButtons(container){
   if (!container) return;
   container.querySelectorAll('.def-box').forEach(box => {
     if (box.querySelector(':scope > .ord-btn')) return;
-    if (ordUnites(box).length < 4) return;
+    if (!ordInteressant(box)) return;
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'ord-btn';
@@ -49,6 +49,25 @@ function injectOrdreButtons(container){
     btn.onclick = e => { e.stopPropagation(); ordBasculer(box); };
     box.appendChild(btn);
   });
+}
+
+/* Le jeu n'a d'intérêt que sur une phrase à reconstruire -- demandé le 31/10/2026 : « Certaines définitions, règles ou
+   propriétés n'ont pas d'intérêt de passer au shaker ». Pas de shaker sur un encadré avec un dessin ou un tableau, fait
+   surtout de formules, de listes à apprendre (compléments, conversions…) ou d'une suite d'égalités, trop court (moins de
+   6 mots) ou trop long (plus de 60 mots). data-ordre="oui" / "non" sur l'encadré force le choix. */
+function ordInteressant(box){
+  if (box.dataset.ordre === 'non') return false;
+  if (box.dataset.ordre === 'oui') return true;
+  const horsFormule = el => !el.closest('button, .katex, .tex, .lrn-bar');
+  if ([...box.querySelectorAll('svg, img, canvas, table')].some(horsFormule)) return false;
+  const u = ordUnites(box);
+  if (u.length < 6 || u.length > 60) return false;
+  if (u.filter(x => x.cle.startsWith('f:')).length / u.length > .3) return false;
+  const egalites = u.filter(x => x.cle.includes('=')).length;
+  if (egalites >= 3) return false;
+  const lis = [...box.querySelectorAll('li')].filter(horsFormule);
+  if (lis.length >= 2 && lis.reduce((n, li) => n + li.textContent.trim().split(/\s+/).length, 0) / lis.length < 7) return false;
+  return true;
 }
 
 /* Mots de l'encadré dans l'ordre de lecture (lecture seule) : { html, cle }. */
