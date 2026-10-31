@@ -177,7 +177,15 @@ function plOliv(pose){ return typeof olivPoseSvg === 'function' ? olivPoseSvg(po
 
 /* ---------- Bouton et fenêtre du chapitre ---------- */
 const PL_NIVEAUX_TXT = { cp: 'CP', ce1: 'CE1', ce2: 'CE2', cm1: 'CM1', cm2: 'CM2', '6e': '6e', '5e': '5e', '4e': '4e', '3e': '3e' };
-function plDe(lvl, titre){ return (typeof PLANCHES !== 'undefined' && PLANCHES[lvl + '|' + titre]) || []; }
+function plDe(lvl, titre){ const l = (typeof PLANCHES !== 'undefined' && PLANCHES[lvl + '|' + titre]) || []; if(l.length && !l._insecable) plInsecable(l); return l; }
+// Un nombre n'est jamais coupé en fin de ligne -- demandé le 31/10/2026 : « Un nombre ne doit jamais être coupé sur la ligne
+// suivante. » Dans le texte des énoncés et des corrigés (hors balises et hors formules LaTeX), l'espace entre deux classes de
+// chiffres (« 4 752 300 ») devient une espace insécable ; fait une seule fois par chapitre, à la première lecture.
+function plInsecableTxt(h){ return String(h).replace(/(^|>)([^<]+)/g, (m, a, t) => a + t.split(/(\\\(.*?\\\)|\\\[.*?\\\])/).map((u, i) => i % 2 || /\\/.test(u) ? u : u.replace(/(\d) (?=\d{3}(?!\d))/g, '$1\u00a0')).join('')); }
+function plInsecable(l){
+  l._insecable = true;
+  l.forEach(p => (p.exos || []).forEach(x => ['consigne', 'eleve', 'corr'].forEach(k => { if(typeof x[k] === 'string') x[k] = plInsecableTxt(x[k]); })));
+}
 function plRef(lvl, code, i){ return `${PL_NIVEAUX_TXT[lvl] || lvl}-${code}-P${i + 1}`; }
 // Code de chapitre unique dans le niveau (en 6e, deux chapitres N4 et deux N5 : N4a, N4b…).
 function plCode(lvl, c){ const l = ((typeof CHAPITRES_BY_LEVEL !== 'undefined' && CHAPITRES_BY_LEVEL[lvl]) || []).filter(x => x.code === c.code);

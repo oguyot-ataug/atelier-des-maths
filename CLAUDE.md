@@ -134,6 +134,11 @@ l'exercice seul en pleine largeur (retirer `col: 1`) en doublant ses exemples po
 colonnes automatiques ; choix « oui / non », « vrai / faux » : `P3.chx2`, deux tableaux côte à côte). Après toute modification de
 planche, lancer `NODE_PATH=/opt/node22/lib/node_modules node tools/verif-trous.js` (doit répondre « Aucun trou »).
 
+Mise en forme (demandé le 31/10/2026) : un nombre n'est jamais coupé en fin de ligne (fait automatiquement : `plInsecable`,
+planches.js) ; une décomposition, un encadrement, une égalité à compléter ne se poursuivent jamais sur la ligne suivante
+(`white-space:nowrap` sur la ligne, exercice élargi si besoin) ; plusieurs propositions à entourer sont sur une même ligne ou
+alignées en dessous (`P3.chxTab`, `P3.chx2`), jamais collées à la question.
+
 Une feuille qui dépasse la page A4 est resserrée à l'impression (`plRemplirPages`, planches.js) : jusqu'à 15 % pour l'élève, 30 %
 pour le corrigé, en gardant toute la largeur ; jamais sur une feuille d'élève où l'on mesure une longueur à la règle. Au-delà,
 alléger le contenu (demandé le 31/10/2026 : « Occupe-toi des feuilles qui débordent »).

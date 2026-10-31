@@ -1,6 +1,7 @@
 /* ============================================================
    6e · Planches d'exercices imprimables : Nombres entiers (N1)
    Même fonctionnement qu'au primaire (planches.js) : énoncé, corrigé rédigé, version à l'écran.
+   Mise en forme (31/10/2026) : décompositions et encadrements sur une seule ligne, choix à entourer alignés en tableau.
    ============================================================ */
 (() => {
 const B = n => plPointilles(n || 5), R = v => plRep(String(v)), C = plCase();
@@ -13,6 +14,9 @@ const div = (a, b) => typeof divisionPoseeHTML === 'function' ? `<div class="pl-
 const grille = (l, h) => cm1Quad(l || 10, h || 7, [], { k: 16, largeur: (l || 10) * 16 });
 // Choix : [texte, réponse, mots] ; suite : n cases (ou les réponses) séparées par un signe.
 const ch = it => ({ eleve: plListe(it.map(([t, , m]) => `${t} <b>${m}</b>`)), corr: plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) });
+// Une décomposition, un encadrement ne se coupent jamais en fin de ligne (demandé le 31/10/2026 : « une décomposition ne doit
+// jamais se poursuivre sur la ligne suivante »).
+const ligne = h => `<span style="white-space:nowrap;">${h}</span>`;
 const suite = (n, l, sg) => '<div style="text-align:center;line-height:2.4;">' + (Array.isArray(n) ? n.map(R) : Array.from({ length: n }, () => B(l))).join(` ${sg} `) + '</div>';
 PLANCHES['6e|Nombres entiers'] = [
   { titre: 'Les grands nombres', duree: '35 min',
@@ -31,8 +35,8 @@ PLANCHES['6e|Nombres entiers'] = [
         eleve: plListe([`3 400 500 ${C} 3 045 500`, `999 999 ${C} 1 000 000`, `12 milliards ${C} 12 000 000 000`, `80 080 800 ${C} 80 800 080`]),
         corr: plListe([`3 400 500 ${R(gt)} 3 045 500`, `999 999 ${R(lt)} 1 000 000`, `12 milliards ${R('=')} 12 000 000 000`, `80 080 800 ${R(lt)} 80 800 080`]) },
       { etoiles: 2, col: 1, consigne: 'Encadre au million près.',
-        eleve: plListe([`${B(8)} &lt; 4 752 300 &lt; ${B(8)}`, `${B(8)} &lt; 19 080 000 &lt; ${B(8)}`]),
-        corr: plListe([`${R('4 000 000')} &lt; 4 752 300 &lt; ${R('5 000 000')}`, `${R('19 000 000')} &lt; 19 080 000 &lt; ${R('20 000 000')}`]) },
+        eleve: plListe([`${B(7)} &lt; 4 752 300 &lt; ${B(7)}`, `${B(7)} &lt; 19 080 000 &lt; ${B(7)}`].map(ligne)),
+        corr: plListe([`${R('4 000 000')} &lt; 4 752 300 &lt; ${R('5 000 000')}`, `${R('19 000 000')} &lt; 19 080 000 &lt; ${R('20 000 000')}`].map(ligne)) },
       { etoiles: 2, consigne: 'Quel nombre correspond à chaque point ?',
         eleve: cm1Axe(2000000, 3000000, 100000, 500000, [[2300000, 'A'], [2800000, 'B'], [2650000, 'C']], { fmt: v => v.toLocaleString('fr-FR'), alterne: true }) + `<div style="display:flex;gap:30px;justify-content:center;"><span>A : ${B(8)}</span><span>B : ${B(8)}</span><span>C : ${B(8)}</span></div>`,
         corr: cm1Axe(2000000, 3000000, 100000, 500000, [[2300000, 'A'], [2800000, 'B'], [2650000, 'C']], { fmt: v => v.toLocaleString('fr-FR'), alterne: true }) + `<div style="display:flex;gap:30px;justify-content:center;"><span>A : ${R('2 300 000')}</span><span>B : ${R('2 800 000')}</span><span>C : ${R('2 650 000')}</span></div>` },
@@ -42,11 +46,11 @@ PLANCHES['6e|Nombres entiers'] = [
   { titre: 'Écrire et décomposer les grands nombres', duree: '35 min',
     attendus: ['Passer de l\'écriture en lettres à l\'écriture en chiffres, et inversement', 'Décomposer un nombre selon les puissances de 10', 'Utiliser les mots millions, milliers, unités'],
     exos: [
-      { etoiles: 1, col: 1, consigne: 'Entoure l\'écriture en chiffres qui convient.',
-        ...ch([['deux-millions-quarante :', '2 000 040', '2 040 000 · 2 000 040 · 2 400 000'], ['trente-millions-six-mille :', '30 006 000', '30 600 000 · 30 006 000 · 3 006 000'], ['un-milliard-deux-cents-millions :', '1 200 000 000', '1 000 200 000 · 1 200 000 · 1 200 000 000']]) },
-      { etoiles: 1, col: 1, consigne: 'Complète les décompositions.',
-        eleve: plListe(['4 052 300 = 4 × 1 000 000 + 5 × ' + B(6) + ' + 2 × ' + B(6) + ' + 3 × 100', '70 008 040 = 7 × ' + B(9) + ' + 8 × 1 000 + 4 × 10', '3 × 1 000 000 + 6 × 10 000 + 9 = ' + B(8)]),
-        corr: plListe(['4 052 300 = 4 × 1 000 000 + 5 × ' + R('10 000') + ' + 2 × ' + R('1 000') + ' + 3 × 100', '70 008 040 = 7 × ' + R('10 000 000') + ' + 8 × 1 000 + 4 × 10', '3 × 1 000 000 + 6 × 10 000 + 9 = ' + R('3 060 009')]) },
+      { etoiles: 1, consigne: 'Entoure l\'écriture en chiffres qui convient.',
+        ...P3.chxTab([['deux-millions-quarante :', '2 000 040', '2 040 000 · 2 000 040 · 2 400 000'], ['trente-millions-six-mille :', '30 006 000', '30 600 000 · 30 006 000 · 3 006 000'], ['un-milliard-deux-cents-millions :', '1 200 000 000', '1 000 200 000 · 1 200 000 · 1 200 000 000']]) },
+      { etoiles: 1, consigne: 'Complète les décompositions.',
+        eleve: '<div class="pl-col1">' + plListe(['4 052 300 = 4 × 1 000 000 + 5 × ' + B(6) + ' + 2 × ' + B(6) + ' + 3 × 100', '70 008 040 = 7 × ' + B(9) + ' + 8 × 1 000 + 4 × 10', '3 × 1 000 000 + 6 × 10 000 + 9 = ' + B(8)].map(ligne)) + '</div>',
+        corr: '<div class="pl-col1">' + plListe(['4 052 300 = 4 × 1 000 000 + 5 × ' + R('10 000') + ' + 2 × ' + R('1 000') + ' + 3 × 100', '70 008 040 = 7 × ' + R('10 000 000') + ' + 8 × 1 000 + 4 × 10', '3 × 1 000 000 + 6 × 10 000 + 9 = ' + R('3 060 009')].map(ligne)) + '</div>' },
       { etoiles: 2, col: 1, consigne: 'Écris chaque nombre en chiffres.',
         eleve: plListe(['5 millions, 32 milliers et 7 unités : ' + B(8), '18 milliards et 400 millions : ' + B(10), '250 milliers : ' + B(7), '4 520 dizaines de mille : ' + B(8)]),
         corr: plListe(['5 millions, 32 milliers et 7 unités : ' + R('5 032 007'), '18 milliards et 400 millions : ' + R('18 400 000 000'), '250 milliers : ' + R('250 000'), '4 520 dizaines de mille : ' + R('45 200 000')]) },
@@ -74,8 +78,8 @@ PLANCHES['6e|Nombres entiers'] = [
         eleve: plListe(['4 752 300 → ' + B(9), '19 080 000 → ' + B(9), '7 499 999 → ' + B(9), '999 600 → ' + B(9)]),
         corr: plListe(['4 752 300 → ' + R('5 000 000'), '19 080 000 → ' + R('19 000 000'), '7 499 999 → ' + R('7 000 000'), '999 600 → ' + R('1 000 000')]) },
       { etoiles: 2, consigne: 'Encadre chaque nombre entre deux centaines de mille consécutives.',
-        eleve: plListe([`${B(8)} &lt; 4 752 300 &lt; ${B(8)}`, `${B(8)} &lt; 19 080 000 &lt; ${B(8)}`, `${B(8)} &lt; 630 500 &lt; ${B(8)}`]),
-        corr: plListe([`${R('4 700 000')} &lt; 4 752 300 &lt; ${R('4 800 000')}`, `${R('19 000 000')} &lt; 19 080 000 &lt; ${R('19 100 000')}`, `${R('600 000')} &lt; 630 500 &lt; ${R('700 000')}`]) },
+        eleve: plListe([`${B(7)} &lt; 4 752 300 &lt; ${B(7)}`, `${B(7)} &lt; 19 080 000 &lt; ${B(7)}`, `${B(7)} &lt; 630 500 &lt; ${B(7)}`].map(ligne)),
+        corr: plListe([`${R('4 700 000')} &lt; 4 752 300 &lt; ${R('4 800 000')}`, `${R('19 000 000')} &lt; 19 080 000 &lt; ${R('19 100 000')}`, `${R('600 000')} &lt; 630 500 &lt; ${R('700 000')}`].map(ligne)) },
       { etoiles: 3, col: 1, cahier: true, consigne: `Voici la population de quatre pays (2024).${tab(['Espagne', 'Belgique', 'Italie', 'Suisse'], [['48 619 695', '11 822 592', '58 989 749', '8 921 981']])}Range ces pays du plus peuplé au moins peuplé, puis arrondis chaque population au million.`,
         corr: cm1Redac('Rangement', { suite: ['Italie (58 989 749) &gt; Espagne (48 619 695)', 'Espagne &gt; Belgique (11 822 592) &gt; Suisse (8 921 981)'] }, 'Arrondis au million : Italie 59 000 000 ; Espagne 49 000 000 ; Belgique 12 000 000 ; Suisse 9 000 000.') },
     ] },
@@ -128,8 +132,8 @@ PLANCHES['6e|Nombres entiers'] = [
         eleve: plListe(['47 = 6 × ' + B(2) + ' + ' + B(2), '83 = 9 × ' + B(2) + ' + ' + B(2), '100 = 7 × ' + B(2) + ' + ' + B(2)]),
         corr: plListe(['47 = 6 × ' + R(7) + ' + ' + R(5), '83 = 9 × ' + R(9) + ' + ' + R(2), '100 = 7 × ' + R(14) + ' + ' + R(2)]) },
       { etoiles: 2, col: 1, consigne: 'Ces égalités traduisent-elles une division euclidienne par 8 ? Entoure.',
-        eleve: plListe(['100 = 8 × 12 + 4 <b>oui · non</b>', '100 = 8 × 11 + 12 <b>oui · non</b>', '64 = 8 × 8 + 0 <b>oui · non</b>']),
-        corr: plListe([['100 = 8 × 12 + 4 ', 'oui'], ['100 = 8 × 11 + 12 ', 'non'], ['64 = 8 × 8 + 0 ', 'oui']].map(([t, r]) => t + plEntoure(r)) ) + '<div class="pl-petit">Le reste doit être plus petit que le diviseur : 12 &gt; 8.</div>' },
+        ...(() => { const t = P3.chxTab([['100 = 8 × 12 + 4', 'oui', 'oui · non'], ['100 = 8 × 11 + 12', 'non', 'oui · non'], ['64 = 8 × 8 + 0', 'oui', 'oui · non']]);
+          return { eleve: t.eleve, corr: t.corr + '<div class="pl-petit">Le reste doit être plus petit que le diviseur : 12 &gt; 8.</div>' }; })() },
       { etoiles: 2, consigne: 'Pose et calcule ces divisions euclidiennes. Écris l\'égalité qui les traduit.',
         eleve: duo([`<span style="text-align:center;">1 285 ÷ 7<br>${grille()}<br>1 285 = 7 × ${B(3)} + ${B(2)}</span>`, `<span style="text-align:center;">2 034 ÷ 15<br>${grille()}<br>2 034 = 15 × ${B(3)} + ${B(2)}</span>`]),
         corr: duo([`<span style="text-align:center;">${div(1285, 7)}1 285 = 7 × ${R(183)} + ${R(4)}</span>`, `<span style="text-align:center;">${div(2034, 15)}2 034 = 15 × ${R(135)} + ${R(9)}</span>`]),
@@ -157,8 +161,7 @@ PLANCHES['6e|Nombres entiers'] = [
         eleve: plListe(['48■ est divisible par 10 : ■ = ' + B(1), '2■4 est divisible par 9 : ■ = ' + B(1), '7■ est divisible par 2 et par 9 : ■ = ' + B(1), '■05 est un nombre de 3 chiffres divisible par 9 : ■ = ' + B(1)]),
         corr: plListe(['48■ est divisible par 10 : ■ = ' + R(0), '2■4 est divisible par 9 : ■ = ' + R(3), '7■ est divisible par 2 et par 9 : ■ = ' + R(2), '■05 est un nombre de 3 chiffres divisible par 9 : ■ = ' + R(4)]) },
       { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.',
-        eleve: plListe(['45 est un multiple de 9. <b>vrai · faux</b>', '7 est un diviseur de 56. <b>vrai · faux</b>', '125 est divisible par 2. <b>vrai · faux</b>', '36 est un multiple de 8. <b>vrai · faux</b>']),
-        corr: plListe([['45 est un multiple de 9. ', 'vrai'], ['7 est un diviseur de 56. ', 'vrai'], ['125 est divisible par 2. ', 'faux'], ['36 est un multiple de 8. ', 'faux']].map(([t, r]) => t + plEntoure(r))) },
+        ...P3.chxTab([['45 est un multiple de 9.', 'vrai', 'vrai · faux'], ['7 est un diviseur de 56.', 'vrai', 'vrai · faux'], ['125 est divisible par 2.', 'faux', 'vrai · faux'], ['36 est un multiple de 8.', 'faux', 'vrai · faux']]) },
       { etoiles: 2, col: 1, consigne: 'Écris tous les multiples de 7 compris entre 30 et 60.',
         eleve: suite(4, 2, ';'), corr: suite(['35', '42', '49', '56'], 0, ';') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Les élèves d\'une classe (moins de 40) peuvent se ranger par 2, par 3 ou par 5 sans qu\'il en reste aucun. Combien sont-ils ?',
