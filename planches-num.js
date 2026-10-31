@@ -284,6 +284,13 @@ function plNum(root, x, o){
       else { const P = xs.createSVGPoint(); P.x = e.clientX; P.y = e.clientY; const m = xs.getScreenCTM(); if(!m || !K.tap) return; const q = P.matrixTransform(m.inverse()); K.tap(c.rep, st, q.x, q.y); }
       etat.x[id] = st; effacerMarques(); afficher(); change(); return; }
     const c = e.target.closest('[data-pnv]'), p = e.target.closest('[data-pnp]'), t = e.target.closest('[data-pnt]'), m = e.target.closest('.pn-mot');
+    // Case d'un signe <, > ou = : chaque clic passe au signe suivant (<, >, =, puis vide), sans clavier -- relecture
+    // 6e-N1-P1-E4 (31/10/2026) : « ce genre d'exercice devrait se faire en cliquant plusieurs fois dans la case, chaque clic
+    // faisant <, >, =, . »
+    if(c && c.classList.contains('pn-signe')){ const cb = M.cibles.find(z => z.id === c.dataset.pnv);
+      if(cb && /^[<>=]$/.test(cb.rep)){ const cycle = ['', '<', '>', '='], v = etat.v[c.dataset.pnv] || '';
+        etat.v[c.dataset.pnv] = cycle[(cycle.indexOf(v) + 1) % cycle.length]; if(sel){ sel = null; plClavier.fermer(); }
+        effacerMarques(); afficher(); change(); return; } }
     if(c){ choisir(sel === c.dataset.pnv ? null : c.dataset.pnv); return; }
     const tr = e.target.closest('[data-pntr]');
     if(tr){ const [id, i, j] = tr.dataset.pntr.split(':'), q = [+i, +j]; let l = (etat.tr[id] || []).slice();

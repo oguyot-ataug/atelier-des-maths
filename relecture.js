@@ -36,12 +36,13 @@
 
 // Changements faits à la suite d'une remarque : clé → { date (ISO, heure UTC du changement), note }.
 const RELECTURE_CHGT = {
-  // Build 1044 : grands nombres à l'écran, tableau de 6e-N1-P1-E3.
+  // Build 1044 : grands nombres à l'écran. Clés mises à jour le 31/10/2026 (planches de 6e-N1 réorganisées par thème :
+  // P1-E2 → P1-E4, P1-E3 → P2-E2, P1-E4 → P3-E4 ; P1-E5 et P1-E6, doublons de la planche 3, retirés).
   '6e-N1-P1-E1': { date: '2026-10-09T14:24:20Z', note: "À l'écran, touche « espace » sur le clavier des chiffres ; un nombre de 5 chiffres ou plus doit être écrit par classes (2 300 000), sinon il est compté faux avec l'explication" },
-  '6e-N1-P1-E2': { date: '2026-10-09T14:24:20Z', note: "À l'écran, touche « espace » sur le clavier des chiffres ; un nombre de 5 chiffres ou plus doit être écrit par classes (2 300 000), sinon il est compté faux avec l'explication" },
-  '6e-N1-P1-E5': { date: '2026-10-09T14:24:20Z', note: "À l'écran, touche « espace » sur le clavier des chiffres ; un nombre de 5 chiffres ou plus doit être écrit par classes (2 300 000), sinon il est compté faux avec l'explication" },
-  '6e-N1-P1-E6': { date: '2026-10-09T14:24:20Z', note: "À l'écran, touche « espace » sur le clavier des chiffres ; un nombre de 5 chiffres ou plus doit être écrit par classes (2 300 000), sinon il est compté faux avec l'explication" },
-  '6e-N1-P1-E3': { date: '2026-10-09T14:24:20Z', note: "Tableau aligné à gauche, la colonne Décomposition va jusqu'à la marge droite ; à l'écran, nombres écrits par classes comme ci-dessus" },
+  '6e-N1-P1-E4': { date: '2026-10-09T14:24:20Z', note: "À l'écran, touche « espace » sur le clavier des chiffres ; un nombre de 5 chiffres ou plus doit être écrit par classes (2 300 000), sinon il est compté faux avec l'explication" },
+  // Version 1242 (31/10) : remarques du matin sur 6e-N1 (anciennes clés P1-E3 et P1-E4).
+  '6e-N1-P2-E2': { date: '2026-10-31T12:00:00Z', note: "Exercice déplacé en planche 2 (Décomposer). À l'écran, une ligne par nombre : « en chiffres » puis « décomposition », avec une case assez longue pour toute la décomposition (le tableau reste sur papier)" },
+  '6e-N1-P3-E4': { date: '2026-10-31T12:00:00Z', note: "Exercice déplacé en planche 3 (Comparer). À l'écran, on clique dans la case : 1 clic <, 2 clics >, 3 clics =, un 4e clic vide la case (sans clavier) ; vaut pour toutes les cases de signe du site" },
   // Build 1182 : CP-N1, exercices faits à l'écran ; corrigés des choix à entourer ; choix sous les petites figures (bêta).
   'CP-N1-P1-E4': { date: '2026-10-27T18:33:51Z', note: "À l'écran : on touche le cadre pour dessiner un rond, on touche un rond pour l'effacer (bouton « Tout effacer ») ; c'est juste quand il y a le bon nombre de ronds" },
   'CP-N1-P1-E5': { date: '2026-10-27T19:10:49Z', note: "À l'écran, la case touchée se colorie en entier (plus de disque) ; le corrigé montre aussi des cases coloriées. Les boîtes « Dessine des jetons » (N2, N3) gardent des jetons" },
