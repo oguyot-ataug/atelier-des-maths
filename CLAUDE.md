@@ -129,6 +129,10 @@ l'exercice seul en pleine largeur (retirer `col: 1`) en doublant ses exemples po
 colonnes automatiques ; choix « oui / non », « vrai / faux » : `P3.chx2`, deux tableaux côte à côte). Après toute modification de
 planche, lancer `NODE_PATH=/opt/node22/lib/node_modules node tools/verif-trous.js` (doit répondre « Aucun trou »).
 
+Une feuille qui dépasse la page A4 est resserrée à l'impression (`plRemplirPages`, planches.js) : jusqu'à 15 % pour l'élève, 30 %
+pour le corrigé, en gardant toute la largeur ; jamais sur une feuille d'élève où l'on mesure une longueur à la règle. Au-delà,
+alléger le contenu (demandé le 31/10/2026 : « Occupe-toi des feuilles qui débordent »).
+
 ## Conformité aux programmes : « Pour aller plus loin » (demandé le 28/10/2026)
 
 « Ce qui est hors programme peut être mis en "pour aller plus loin" » : une notion d'un niveau supérieur n'est

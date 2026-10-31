@@ -586,10 +586,12 @@ function plRemplirPages(doc){
     let z = 1;
     if(H(pg) > L){
       const corr = pg.classList.contains('pl-corrige'), regle = /mesure[rsz]? (le|la|les|ce|cette|ces|chaque) (segment|longueur|côté|trait|ligne|bande)|avec (ta|la|une) règle|règle graduée/i.test(pg.textContent);
-      z = L / H(pg) - .003;
-      if(z < (corr ? .7 : .85) || (regle && !corr)) return;
-      pg.style.zoom = z.toFixed(3); pg.classList.add('pl-reduit');
-      if(H(pg) > L){ pg.style.zoom = ''; pg.classList.remove('pl-reduit'); return; }
+      const min = corr ? .7 : .85; z = L / H(pg);
+      if(z < min || (regle && !corr)) return;
+      const W = pg.getBoundingClientRect().width; // la feuille resserrée garde toute la largeur
+      do { z -= .005; pg.style.zoom = z.toFixed(3); pg.style.maxWidth = 'none'; pg.style.width = (W / z) + 'px'; } while(H(pg) > L && z > min); // le texte se recompose : on resserre par petits pas
+      if(H(pg) > L){ pg.style.zoom = ''; pg.style.width = ''; pg.style.maxWidth = ''; return; }
+      pg.classList.add('pl-reduit');
     }
     const ex = [...pg.querySelectorAll('.pl-exos > .pl-exo')];
     ex.forEach(e => { if(!e.classList.contains('pl-demi')) return; const t = e.getBoundingClientRect().top;
