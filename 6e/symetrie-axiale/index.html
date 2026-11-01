@@ -95,7 +95,7 @@
 <div class="def-box">Deux figures sont <b>symétriques</b> par rapport à une droite si elles se superposent par pliage le long de cette droite, appelée l'<b>axe de symétrie</b>.</div>
 <p class="example-title">Exemple :</p>
 <div class="figure-wrap" style="max-width:300px;margin:12px auto;">
-  <svg viewBox="0 0 280 160" style="width:100%;display:block;">
+  <svg viewBox="0 0 280 160" style="width:100%;display:block;" data-geo-points="1">
     <line x1="140" y1="10" x2="140" y2="150" stroke="#E35D3A" stroke-width="1.4" stroke-dasharray="5 4"></line>
     <polygon points="60,60 100,60 100,100 80,120 60,100" fill="rgba(31,58,92,.10)" stroke="#1F3A5C" stroke-width="1.8"></polygon>
     <g id="symF1RightGroup" transform="translate(140,0) scale(1,1) translate(-140,0)">
@@ -115,7 +115,7 @@
 <p class="example-title">Exemple : construis M', symétrique du point M par rapport à la droite (d).</p>
 <p class="hint" style="margin:0 0 8px;">Axe horizontal ou vertical :</p>
 <div class="figure-wrap" style="max-width:320px;margin:12px auto;">
-  <svg id="symF2Svg" viewBox="0 0 260 140" style="width:100%;display:block;">
+  <svg id="symF2Svg" viewBox="0 0 260 140" style="width:100%;display:block;" data-geo-points="1">
     <defs>
       <pattern id="gridSymAxiale" width="20" height="20" patternUnits="userSpaceOnUse">
         <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#E4DFD6" stroke-width="1"></path>
@@ -124,10 +124,10 @@
     <rect x="0" y="0" width="260" height="140" fill="url(#gridSymAxiale)"></rect>
     <line x1="140" y1="0" x2="140" y2="140" stroke="#E35D3A" stroke-width="1.4"></line>
     <line id="symF2Line" x1="80" y1="60" x2="200" y2="60" stroke="#9CA3AF" stroke-width="1.2" stroke-dasharray="4 3"></line>
-    <line id="symF2MpCross1" stroke="#1F3A5C" stroke-width="1.6" x1="195" y1="55" x2="205" y2="65"></line>
-    <line id="symF2MpCross2" stroke="#1F3A5C" stroke-width="1.6" x1="195" y1="65" x2="205" y2="55"></line>
-    <line id="symF2MCross1" stroke="#1F3A5C" stroke-width="1.8" x1="74" y1="54" x2="86" y2="66"></line>
-    <line id="symF2MCross2" stroke="#1F3A5C" stroke-width="1.8" x1="74" y1="66" x2="86" y2="54"></line>
+    <line x1="200.00" y1="52.93" x2="200.00" y2="67.07" stroke="rgb(31, 58, 92)" stroke-width="1.6" stroke-linecap="round"></line>
+    
+    <line x1="80.00" y1="51.51" x2="80.00" y2="68.49" stroke="rgb(31, 58, 92)" stroke-width="1.8" stroke-linecap="round"></line>
+    
     <circle id="symF2M" cx="80" cy="60" r="11" fill="transparent" style=""></circle>
     <text id="symF2MLabel" x="58" y="52" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700">M</text>
     <text id="symF2MpLabel" x="210" y="52" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700">M'</text>
@@ -139,7 +139,7 @@
 
 <p class="hint" style="margin:16px 0 8px;">Axe en diagonale : on rejoint <b>(d)</b> à l'horizontale en comptant les carreaux, puis on redescend à la verticale en comptant le <b>même nombre</b> de carreaux.</p>
 <div class="figure-wrap" style="max-width:280px;margin:12px auto;">
-  <svg id="symF3Svg" viewBox="0 0 200 180" style="width:100%;display:block;">
+  <svg id="symF3Svg" viewBox="0 0 200 180" style="width:100%;display:block;" data-geo-points="1">
     <rect x="0" y="0" width="200" height="180" fill="url(#gridSymAxiale)"></rect>
     <line x1="10" y1="170" x2="190" y2="-10" stroke="#E35D3A" stroke-width="1.4"></line>
     <line id="symF3LineH" x1="60" y1="60" x2="120.0" y2="60.0" stroke="#9CA3AF" stroke-width="1.3" stroke-dasharray="3 3"></line>
@@ -147,10 +147,10 @@
     <text id="symF3HCount" x="76" y="54" font-family="JetBrains Mono" font-size="11" fill="#6B7280">3 carreaux</text>
     <text id="symF3VCount" x="128" y="94" font-family="JetBrains Mono" font-size="11" fill="#6B7280">3 carreaux</text>
     <circle id="symF3H" cx="120.0" cy="60.0" r="2" fill="#9CA3AF"></circle>
-    <line id="symF3MpCross1" stroke="#1F3A5C" stroke-width="1.6" x1="115" y1="115" x2="125" y2="125"></line>
-    <line id="symF3MpCross2" stroke="#1F3A5C" stroke-width="1.6" x1="115" y1="125" x2="125" y2="115"></line>
-    <line id="symF3MCross1" stroke="#1F3A5C" stroke-width="1.8" x1="54" y1="54" x2="66" y2="66"></line>
-    <line id="symF3MCross2" stroke="#1F3A5C" stroke-width="1.8" x1="54" y1="66" x2="66" y2="54"></line>
+    <line x1="127.07" y1="120.00" x2="112.93" y2="120.00" stroke="rgb(31, 58, 92)" stroke-width="1.6" stroke-linecap="round"></line>
+    
+    <line x1="60.00" y1="51.51" x2="60.00" y2="68.49" stroke="rgb(31, 58, 92)" stroke-width="1.8" stroke-linecap="round"></line>
+    
     <circle id="symF3M" cx="60" cy="60" r="11" fill="transparent" style=""></circle>
     <text id="symF3MLabel" x="38" y="52" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700">M</text>
     <text id="symF3MpLabel" x="128" y="138" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700">M'</text>
@@ -187,7 +187,7 @@
 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin:10px 0;">
   <div class="figure-wrap" style="margin:0;">
     <p class="hint" style="text-align:center;margin:0 0 4px;">Symétrique d'une droite</p>
-    <svg id="symF4Svg" viewBox="0 0 280 160" style="width:100%;display:block;">
+    <svg id="symF4Svg" viewBox="0 0 280 160" style="width:100%;display:block;" data-geo-points="1">
       <line x1="140" y1="10" x2="140" y2="150" stroke="#E35D3A" stroke-width="1.4" stroke-dasharray="5 4"></line>
       <line id="symF4Left" x1="51.3" y1="24.3" x2="118.7" y2="145.7" stroke="#1F3A5C" stroke-width="1.8"></line>
       <line id="symF4Right" x1="228.7" y1="24.3" x2="161.3" y2="145.7" stroke="#E35D3A" stroke-width="1.8"></line>
@@ -200,7 +200,7 @@
   </div>
   <div class="figure-wrap" style="margin:0;">
     <p class="hint" style="text-align:center;margin:0 0 4px;">Symétrique d'un segment</p>
-    <svg id="symF5Svg" viewBox="0 0 280 160" style="width:100%;display:block;">
+    <svg id="symF5Svg" viewBox="0 0 280 160" style="width:100%;display:block;" data-geo-points="1">
       <line x1="140" y1="10" x2="140" y2="150" stroke="#E35D3A" stroke-width="1.4" stroke-dasharray="5 4"></line>
       <line id="symF5Left" x1="60" y1="50" x2="100" y2="110" stroke="#1F3A5C" stroke-width="1.8"></line>
       <line id="symF5Right" x1="220" y1="50" x2="180" y2="110" stroke="#E35D3A" stroke-width="1.8"></line>
@@ -219,15 +219,15 @@
   </div>
   <div class="figure-wrap" style="margin:0;">
     <p class="hint" style="text-align:center;margin:0 0 4px;">Symétrique d'un cercle</p>
-    <svg id="symF6Svg" viewBox="0 0 280 160" style="width:100%;display:block;">
+    <svg id="symF6Svg" viewBox="0 0 280 160" style="width:100%;display:block;" data-geo-points="1">
       <line x1="140" y1="10" x2="140" y2="150" stroke="#E35D3A" stroke-width="1.4" stroke-dasharray="5 4"></line>
       <line id="symF6Axis" x1="70" y1="80" x2="210" y2="80" stroke="#9CA3AF" stroke-width="1.2" stroke-dasharray="4 3"></line>
       <circle id="symF6Left" cx="70" cy="80" r="35" fill="none" stroke="#1F3A5C" stroke-width="1.8"></circle>
       <circle id="symF6Right" cx="210" cy="80" r="35" fill="none" stroke="#E35D3A" stroke-width="1.8"></circle>
-      <line id="symF6RightCross1" stroke="#E35D3A" stroke-width="1.4" x1="205" y1="75" x2="215" y2="85"></line>
-      <line id="symF6RightCross2" stroke="#E35D3A" stroke-width="1.4" x1="205" y1="85" x2="215" y2="75"></line>
-      <line id="symF6LeftCross1" stroke="#1F3A5C" stroke-width="1.6" x1="64" y1="74" x2="76" y2="86"></line>
-      <line id="symF6LeftCross2" stroke="#1F3A5C" stroke-width="1.6" x1="64" y1="86" x2="76" y2="74"></line>
+      <line x1="210.00" y1="72.93" x2="210.00" y2="87.07" stroke="rgb(227, 93, 58)" stroke-width="1.4" stroke-linecap="round"></line>
+      
+      <line x1="70.00" y1="71.51" x2="70.00" y2="88.49" stroke="rgb(31, 58, 92)" stroke-width="1.6" stroke-linecap="round"></line>
+      
       <circle id="symF6LeftCenter" cx="70" cy="80" r="11" fill="transparent" style=""></circle>
     </svg>
     <p class="hint" style="text-align:center;margin:2px 0 0;">Déplace le centre bleu.</p>
@@ -253,7 +253,7 @@
 
 <p class="example-title">Exemple :</p>
 <div class="figure-wrap" style="max-width:280px;margin:12px auto;">
-  <svg id="symF7Svg" viewBox="0 0 240 170" style="width:100%;display:block;">
+  <svg id="symF7Svg" viewBox="0 0 240 170" style="width:100%;display:block;" data-geo-points="1">
     <line x1="120" y1="20" x2="120" y2="150" stroke="#E35D3A" stroke-width="1.4" stroke-dasharray="5 4"></line>
     <line x1="50" y1="140" x2="190" y2="140" stroke="#1C1B2E" stroke-width="1.8"></line>
     <path d="M 108 140 L 108 128 L 120 128 L 120 140" fill="none" stroke="#9CA3AF" stroke-width="1.1"></path>
@@ -261,8 +261,8 @@
     <line id="symF7PB" x1="190" y1="140" x2="120" y2="50" stroke="#1C1B2E" stroke-width="1"></line>
     <line id="symF7TickA" x1="78.17598996647047" y1="93.44022852241483" x2="91.82401003352953" y2="96.55977147758517" stroke="#1C1B2E" stroke-width="1.6" opacity="1"></line>
     <line id="symF7TickB" x1="161.82401003352953" y1="93.44022852241483" x2="148.17598996647047" y2="96.55977147758517" stroke="#1C1B2E" stroke-width="1.6" opacity="1"></line>
-    <line id="symF7PCross1" stroke="#1F3A5C" stroke-width="1.8" x1="114" y1="44" x2="126" y2="56"></line>
-    <line id="symF7PCross2" stroke="#1F3A5C" stroke-width="1.8" x1="114" y1="56" x2="126" y2="44"></line>
+    
+    
     <circle id="symF7P" cx="120" cy="50" r="11" fill="transparent" style=""></circle>
     <text x="38" y="150" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700">A</text>
     <text x="196" y="150" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700">B</text>
@@ -281,7 +281,7 @@
 
 <p class="example-title">Exemple :</p>
 <div class="figure-wrap" style="max-width:280px;margin:12px auto;">
-  <svg id="symF8Svg" viewBox="0 0 250 190" style="width:100%;display:block;">
+  <svg id="symF8Svg" viewBox="0 0 250 190" style="width:100%;display:block;" data-geo-points="1">
     <line id="symF8RayX" x1="60" y1="170" x2="248.0" y2="170.0" stroke="#1C1B2E" stroke-width="1.8"></line>
     <line id="symF8RayY" x1="60" y1="170" x2="167.8" y2="16.0" stroke="#1C1B2E" stroke-width="1.8"></line>
     <line id="symF8Bis" x1="60" y1="170" x2="184.2" y2="105.3" stroke="#E35D3A" stroke-width="1.4" stroke-dasharray="5 4"></line>
@@ -297,7 +297,7 @@
   </svg>
   <p class="hint" style="text-align:center;margin:2px 0 0;">Déplace les points <b>A</b> et <b>B</b> (les points bleus).</p>
 </div>
-<p style="margin:4px 0 0;">La demi-droite (en pointillés), <b>bissectrice</b> de l'angle <span class="tex" data-tex-source="\widehat{AOB}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mrow><mi>A</mi><mi>O</mi><mi>B</mi></mrow><mo stretchy="true">^</mo></mover></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.9833em;"><span style="top:-3em;"><span class="mord"><span class="mord mathnormal">A</span><span class="mord mathnormal" style="margin-right:0.05017em;">OB</span></span></span><span class="svg-align" style="top:-3.6833em;"><span style="height:0.3em;"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="0.3em" viewBox="0 0 2364 300" preserveAspectRatio="none"><path d="M1181 0h2l1171 176c6 0 10 5 10 11l-2 23c-1 6-5 10
+<p style="margin:4px 0 0;">La demi-droite (en pointillés), <b>bissectrice</b> de l'angle <span class="tex" data-tex-source="\widehat{AOB}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mrow><mi>A</mi><mi>O</mi><mi>B</mi></mrow><mo stretchy="true">^</mo></mover></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.9833em;"><span style="top:-3em;"><span class="mord"><span class="mord mathnormal">A</span><span class="mord mathnormal" style="margin-right:0.05017em;">OB</span></span></span><span class="svg-align" style="top:-3.6833em;"><span style="height:0.3em;"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="0.3em" viewBox="0 0 2364 300" preserveAspectRatio="none" data-geo-points="1"><path d="M1181 0h2l1171 176c6 0 10 5 10 11l-2 23c-1 6-5 10
 -11 10h-1L1182 67 15 220h-1c-6 0-10-4-11-10l-2-23c-1-6 4-11 10-11z"></path></svg></span></span></span></span></span></span></span></span></span></span>, le partage en deux angles de même mesure.</p>
 </section>
 
@@ -307,7 +307,7 @@
   <div class="sub-header oliv-sh" data-oliv="Suis la méthode !"><span class="letter">M</span><h4>Bissectrice d'un angle au compas</h4></div>
 <p class="hint" style="margin:8px 0;">La construction à l'équerre et au rapporteur a déjà été vue dans le chapitre sur les angles. Voici la construction <b>au compas</b>.</p>
 <div class="figure-wrap" style="max-width:340px;margin:12px auto;">
-  <svg id="bisSvg" viewBox="0 100 280 320" style="width:100%;display:block;">
+  <svg id="bisSvg" viewBox="0 100 280 320" style="width:100%;display:block;" data-geo-points="1">
     <line id="bisRay1" x1="70" y1="300" x2="220" y2="300" stroke="#1C1B2E" stroke-width="1.8"></line>
     <line id="bisRay2" x1="70" y1="300" x2="156.0" y2="177.1" stroke="#1C1B2E" stroke-width="1.8"></line>
     <polyline id="bisArcO1" fill="none" stroke="#9CA3AF" stroke-width="1.2" opacity="0"></polyline>
@@ -347,7 +347,7 @@
 <div class="sub-header oliv-sh" style="margin-top:28px;" data-oliv="Pas à pas !"><span class="letter">M</span><h4>Médiatrice d'un segment au compas</h4></div>
 <p class="hint" style="margin:8px 0;">Une seconde méthode, avec le compas plutôt qu'à la règle et à l'équerre.</p>
 <div class="figure-wrap" style="max-width:320px;margin:12px auto;">
-  <svg id="medSvg" viewBox="0 190 250 220" style="width:100%;display:block;">
+  <svg id="medSvg" viewBox="0 190 250 220" style="width:100%;display:block;" data-geo-points="1">
     <line id="medSegAB" x1="50" y1="300" x2="190" y2="300" stroke="#1C1B2E" stroke-width="1.8"></line>
     <polyline id="medArcA1" fill="none" stroke="#9CA3AF" stroke-width="1.2" opacity="0"></polyline>
     <polyline id="medArcA2" fill="none" stroke="#9CA3AF" stroke-width="1.2" opacity="0"></polyline>
@@ -397,10 +397,10 @@
   </div>
   <h3 style="margin-top:18px;">Rédaction type : « Justifier qu'une demi-droite est une bissectrice »</h3>
   <div class="redaction-template">
-    La demi-droite <span class="fill">[Oz)</span> partage l'angle <span class="fill tex" data-tex-source="\widehat{xOy}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mrow><mi>x</mi><mi>O</mi><mi>y</mi></mrow><mo stretchy="true">^</mo></mover></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord accent"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.9833em;"><span style="top:-3em;"><span class="mord"><span class="mord mathnormal">x</span><span class="mord mathnormal" style="margin-right:0.02778em;">O</span><span class="mord mathnormal" style="margin-right:0.03588em;">y</span></span></span><span class="svg-align" style="top:-3.6833em;"><span style="height:0.3em;"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="0.3em" viewBox="0 0 2364 300" preserveAspectRatio="none"><path d="M1181 0h2l1171 176c6 0 10 5 10 11l-2 23c-1 6-5 10
--11 10h-1L1182 67 15 220h-1c-6 0-10-4-11-10l-2-23c-1-6 4-11 10-11z"></path></svg></span></span></span><span class="vlist-s">​</span></span></span></span></span></span></span></span> en deux angles de même mesure : <span class="fill tex" data-tex-source="\widehat{xOz} = \widehat{zOy}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mrow><mi>x</mi><mi>O</mi><mi>z</mi></mrow><mo stretchy="true">^</mo></mover><mo>=</mo><mover accent="true"><mrow><mi>z</mi><mi>O</mi><mi>y</mi></mrow><mo stretchy="true">^</mo></mover></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.9833em;"><span style="top:-3em;"><span class="mord"><span class="mord mathnormal">x</span><span class="mord mathnormal" style="margin-right:0.02778em;">O</span><span class="mord mathnormal" style="margin-right:0.04398em;">z</span></span></span><span class="svg-align" style="top:-3.6833em;"><span style="height:0.3em;"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="0.3em" viewBox="0 0 2364 300" preserveAspectRatio="none"><path d="M1181 0h2l1171 176c6 0 10 5 10 11l-2 23c-1 6-5 10
--11 10h-1L1182 67 15 220h-1c-6 0-10-4-11-10l-2-23c-1-6 4-11 10-11z"></path></svg></span></span></span></span></span></span><span class="mrel">=</span></span><span class="base"><span class="mord accent"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.9833em;"><span style="top:-3em;"><span class="mord"><span class="mord mathnormal" style="margin-right:0.04398em;">z</span><span class="mord mathnormal" style="margin-right:0.02778em;">O</span><span class="mord mathnormal" style="margin-right:0.03588em;">y</span></span></span><span class="svg-align" style="top:-3.6833em;"><span style="height:0.3em;"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="0.3em" viewBox="0 0 2364 300" preserveAspectRatio="none"><path d="M1181 0h2l1171 176c6 0 10 5 10 11l-2 23c-1 6-5 10
--11 10h-1L1182 67 15 220h-1c-6 0-10-4-11-10l-2-23c-1-6 4-11 10-11z"></path></svg></span></span></span><span class="vlist-s">​</span></span></span></span></span></span></span></span>.<br>Donc <span class="fill">[Oz)</span> est la bissectrice de l'angle <span class="fill tex" data-tex-source="\widehat{xOy}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mrow><mi>x</mi><mi>O</mi><mi>y</mi></mrow><mo stretchy="true">^</mo></mover></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord accent"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.9833em;"><span style="top:-3em;"><span class="mord"><span class="mord mathnormal">x</span><span class="mord mathnormal" style="margin-right:0.02778em;">O</span><span class="mord mathnormal" style="margin-right:0.03588em;">y</span></span></span><span class="svg-align" style="top:-3.6833em;"><span style="height:0.3em;"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="0.3em" viewBox="0 0 2364 300" preserveAspectRatio="none"><path d="M1181 0h2l1171 176c6 0 10 5 10 11l-2 23c-1 6-5 10
+    La demi-droite <span class="fill">[Oz)</span> partage l'angle <span class="fill tex" data-tex-source="\widehat{xOy}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mrow><mi>x</mi><mi>O</mi><mi>y</mi></mrow><mo stretchy="true">^</mo></mover></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord accent"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.9833em;"><span style="top:-3em;"><span class="mord"><span class="mord mathnormal">x</span><span class="mord mathnormal" style="margin-right:0.02778em;">O</span><span class="mord mathnormal" style="margin-right:0.03588em;">y</span></span></span><span class="svg-align" style="top:-3.6833em;"><span style="height:0.3em;"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="0.3em" viewBox="0 0 2364 300" preserveAspectRatio="none" data-geo-points="1"><path d="M1181 0h2l1171 176c6 0 10 5 10 11l-2 23c-1 6-5 10
+-11 10h-1L1182 67 15 220h-1c-6 0-10-4-11-10l-2-23c-1-6 4-11 10-11z"></path></svg></span></span></span><span class="vlist-s">​</span></span></span></span></span></span></span></span> en deux angles de même mesure : <span class="fill tex" data-tex-source="\widehat{xOz} = \widehat{zOy}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mrow><mi>x</mi><mi>O</mi><mi>z</mi></mrow><mo stretchy="true">^</mo></mover><mo>=</mo><mover accent="true"><mrow><mi>z</mi><mi>O</mi><mi>y</mi></mrow><mo stretchy="true">^</mo></mover></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.9833em;"><span style="top:-3em;"><span class="mord"><span class="mord mathnormal">x</span><span class="mord mathnormal" style="margin-right:0.02778em;">O</span><span class="mord mathnormal" style="margin-right:0.04398em;">z</span></span></span><span class="svg-align" style="top:-3.6833em;"><span style="height:0.3em;"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="0.3em" viewBox="0 0 2364 300" preserveAspectRatio="none" data-geo-points="1"><path d="M1181 0h2l1171 176c6 0 10 5 10 11l-2 23c-1 6-5 10
+-11 10h-1L1182 67 15 220h-1c-6 0-10-4-11-10l-2-23c-1-6 4-11 10-11z"></path></svg></span></span></span></span></span></span><span class="mrel">=</span></span><span class="base"><span class="mord accent"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.9833em;"><span style="top:-3em;"><span class="mord"><span class="mord mathnormal" style="margin-right:0.04398em;">z</span><span class="mord mathnormal" style="margin-right:0.02778em;">O</span><span class="mord mathnormal" style="margin-right:0.03588em;">y</span></span></span><span class="svg-align" style="top:-3.6833em;"><span style="height:0.3em;"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="0.3em" viewBox="0 0 2364 300" preserveAspectRatio="none" data-geo-points="1"><path d="M1181 0h2l1171 176c6 0 10 5 10 11l-2 23c-1 6-5 10
+-11 10h-1L1182 67 15 220h-1c-6 0-10-4-11-10l-2-23c-1-6 4-11 10-11z"></path></svg></span></span></span><span class="vlist-s">​</span></span></span></span></span></span></span></span>.<br>Donc <span class="fill">[Oz)</span> est la bissectrice de l'angle <span class="fill tex" data-tex-source="\widehat{xOy}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mrow><mi>x</mi><mi>O</mi><mi>y</mi></mrow><mo stretchy="true">^</mo></mover></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord accent"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.9833em;"><span style="top:-3em;"><span class="mord"><span class="mord mathnormal">x</span><span class="mord mathnormal" style="margin-right:0.02778em;">O</span><span class="mord mathnormal" style="margin-right:0.03588em;">y</span></span></span><span class="svg-align" style="top:-3.6833em;"><span style="height:0.3em;"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="0.3em" viewBox="0 0 2364 300" preserveAspectRatio="none" data-geo-points="1"><path d="M1181 0h2l1171 176c6 0 10 5 10 11l-2 23c-1 6-5 10
 -11 10h-1L1182 67 15 220h-1c-6 0-10-4-11-10l-2-23c-1-6 4-11 10-11z"></path></svg></span></span></span><span class="vlist-s">​</span></span></span></span></span></span></span></span>.
   </div>
 </div>
@@ -420,7 +420,7 @@
   </div>
   <div class="exo-card">
     <div class="num">Exercice 3</div>
-    Trace un angle <span class="tex" data-tex-source="\widehat{xOy}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mrow><mi>x</mi><mi>O</mi><mi>y</mi></mrow><mo stretchy="true">^</mo></mover></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord accent"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.9833em;"><span style="top:-3em;"><span class="mord"><span class="mord mathnormal">x</span><span class="mord mathnormal" style="margin-right:0.02778em;">O</span><span class="mord mathnormal" style="margin-right:0.03588em;">y</span></span></span><span class="svg-align" style="top:-3.6833em;"><span style="height:0.3em;"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="0.3em" viewBox="0 0 2364 300" preserveAspectRatio="none"><path d="M1181 0h2l1171 176c6 0 10 5 10 11l-2 23c-1 6-5 10
+    Trace un angle <span class="tex" data-tex-source="\widehat{xOy}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mrow><mi>x</mi><mi>O</mi><mi>y</mi></mrow><mo stretchy="true">^</mo></mover></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord accent"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.9833em;"><span style="top:-3em;"><span class="mord"><span class="mord mathnormal">x</span><span class="mord mathnormal" style="margin-right:0.02778em;">O</span><span class="mord mathnormal" style="margin-right:0.03588em;">y</span></span></span><span class="svg-align" style="top:-3.6833em;"><span style="height:0.3em;"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="0.3em" viewBox="0 0 2364 300" preserveAspectRatio="none" data-geo-points="1"><path d="M1181 0h2l1171 176c6 0 10 5 10 11l-2 23c-1 6-5 10
 -11 10h-1L1182 67 15 220h-1c-6 0-10-4-11-10l-2-23c-1-6 4-11 10-11z"></path></svg></span></span></span><span class="vlist-s">​</span></span></span></span></span></span></span></span> de 70°. Construis sa bissectrice au compas, en laissant apparents les traits de construction. Code les deux angles obtenus.
     
     
@@ -447,7 +447,7 @@
           <div class="figure-wrap"><div class="na-flocon" data-modes="axe,flocon"><div class="na-box">
     
     <div class="na-consigne">Dessine avec la souris (ou le doigt) <b>n'importe où</b> : ton tracé est recopié aussitôt.</div>
-    <svg class="na-svg na-dessin" viewBox="0 0 400 400"><rect width="400" height="400" fill="#EEF5FB"></rect><g transform="translate(200,200)"><line x1="-0.0" y1="-195.0" x2="0.0" y2="195.0" stroke="#D3302F" stroke-width="1" stroke-dasharray="5 4" opacity=".55"></line><line x1="-97.5" y1="-168.9" x2="97.5" y2="168.9" stroke="#D3302F" stroke-width="1" stroke-dasharray="5 4" opacity=".55"></line><line x1="-168.9" y1="-97.5" x2="168.9" y2="97.5" stroke="#D3302F" stroke-width="1" stroke-dasharray="5 4" opacity=".55"></line><line x1="-195.0" y1="0.0" x2="195.0" y2="0.0" stroke="#D3302F" stroke-width="1" stroke-dasharray="5 4" opacity=".55"></line><line x1="-168.9" y1="97.5" x2="168.9" y2="-97.5" stroke="#D3302F" stroke-width="1" stroke-dasharray="5 4" opacity=".55"></line><line x1="-97.5" y1="168.9" x2="97.5" y2="-168.9" stroke="#D3302F" stroke-width="1" stroke-dasharray="5 4" opacity=".55"></line><circle r="3" fill="#D3302F" opacity=".6"></circle></g></svg>
+    <svg class="na-svg na-dessin" viewBox="0 0 400 400" data-geo-points="1"><rect width="400" height="400" fill="#EEF5FB"></rect><g transform="translate(200,200)"><line x1="-0.0" y1="-195.0" x2="0.0" y2="195.0" stroke="#D3302F" stroke-width="1" stroke-dasharray="5 4" opacity=".55"></line><line x1="-97.5" y1="-168.9" x2="97.5" y2="168.9" stroke="#D3302F" stroke-width="1" stroke-dasharray="5 4" opacity=".55"></line><line x1="-168.9" y1="-97.5" x2="168.9" y2="97.5" stroke="#D3302F" stroke-width="1" stroke-dasharray="5 4" opacity=".55"></line><line x1="-195.0" y1="0.0" x2="195.0" y2="0.0" stroke="#D3302F" stroke-width="1" stroke-dasharray="5 4" opacity=".55"></line><line x1="-168.9" y1="97.5" x2="168.9" y2="-97.5" stroke="#D3302F" stroke-width="1" stroke-dasharray="5 4" opacity=".55"></line><line x1="-97.5" y1="168.9" x2="97.5" y2="-168.9" stroke="#D3302F" stroke-width="1" stroke-dasharray="5 4" opacity=".55"></line><circle r="3" fill="#D3302F" opacity=".6"></circle></g></svg>
     <div class="na-msg" aria-live="polite">Ton tracé est recopié par <b>symétrie</b> par rapport à chacun des <b>6 axes</b> (en pointillés), puis les copies sont recopiées à leur tour : un flocon de neige a <b>6 axes de symétrie</b>.</div>
     </div></div></div>
 <div class="history-box na-hist">
