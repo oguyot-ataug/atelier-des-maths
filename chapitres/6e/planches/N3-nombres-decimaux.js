@@ -1,6 +1,8 @@
 /* ============================================================
    6e · Planches : Nombres décimaux (N3)
    Fractions décimales, nom des chiffres, demi-droite graduée, comparaison, encadrement, problèmes.
+   Relecture du 01/11/2026 : centièmes écrits à chaque terme et tableau de numération (P1-E6), « nombre de… » à côté de
+   « chiffre des… » (P2-E1), demi-droite graduée tracée dans le corrigé (P3-E5).
    ============================================================ */
 (() => {
 const B = n => plPointilles(n || 4), R = v => plRep(String(v)), F = cm1Frac, Fr = plFrac(), C = plCase();
@@ -37,14 +39,18 @@ PLANCHES['6e|Nombres décimaux'] = [
         ...(() => { const f = [[cm1Bande(10, 7, { largeur: 150 }), '0,7'], [cm1Quad(10, 10, Array.from({ length: 34 }, (_, i) => [i % 10, Math.floor(i / 10)]), { k: 9, c: '#FF8208' }), '0,34']];
           return { eleve: plGrille(f.map(([s]) => `<span style="display:flex;flex-direction:column;align-items:center;gap:4px;">${s}<span>${B()}</span></span>`), 2), corr: plGrille(f.map(([s, r]) => `<span style="display:flex;flex-direction:column;align-items:center;gap:4px;">${s}<span>${R(r)}</span></span>`), 2) }; })() },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Combien y a-t-il de centièmes dans 4 unités ? Dans 4,5 ? Dans 0,08 ? Explique.',
-        corr: cm1Redac('Nombre de centièmes', { suite: ['4 unités = 4 × 100 centièmes = 400 centièmes.', '4,5 = 4 unités et 5 dixièmes = 400 + 50 = 450 centièmes.', '0,08 = 8 centièmes.'] }, 'Il y a 400, puis 450, puis 8 centièmes.') },
+        // Chaque terme écrit avec son unité, « 400 centièmes + 50 centièmes », et le tableau de numération pour lire le nombre
+        // de centièmes (relecture 6e-N3-P1-E6).
+        corr: cm1Redac('Nombre de centièmes', { suite: ['4 unités = 4 × 100 centièmes = 400 centièmes.', '4,5 = 4 unités et 5 dixièmes.', '5 dixièmes = 5 × 10 centièmes = 50 centièmes.', '4,5 = 400 centièmes + 50 centièmes', '4,5 = 450 centièmes.', '0,08 = 8 centièmes.'] }, 'Il y a 400 centièmes dans 4, 450 centièmes dans 4,5 et 8 centièmes dans 0,08.')
+          + '<div style="display:flex;justify-content:center;margin-top:6px;">' + tab(['', 'unités', 'dixièmes', 'centièmes', 'je lis'], [['4', '4', '0', '0', '<span style="white-space:nowrap;">' + R(400) + ' centièmes</span>'], ['4,5', '4', '5', '0', '<span style="white-space:nowrap;">' + R(450) + ' centièmes</span>'], ['0,08', '0', '0', '8', '<span style="white-space:nowrap;">' + R(8) + ' centièmes</span>']]) + '</div>' },
     ] },
   { titre: 'Décomposition et nom des chiffres', duree: '35 min',
     attendus: ['Connaître la valeur de chaque chiffre selon son rang', 'Décomposer un nombre décimal', 'Passer de l\'écriture en lettres à l\'écriture en chiffres'],
     exos: [
       { etoiles: 1, col: 1, consigne: 'Dans le nombre 352,867 :',
-        eleve: plListe(['le chiffre des dixièmes est ' + B(1), 'le chiffre des centièmes est ' + B(1), 'le chiffre des millièmes est ' + B(1), 'le chiffre des dizaines est ' + B(1), 'la partie entière est ' + B(3)]),
-        corr: plListe(['le chiffre des dixièmes est ' + R(8), 'le chiffre des centièmes est ' + R(6), 'le chiffre des millièmes est ' + R(7), 'le chiffre des dizaines est ' + R(5), 'la partie entière est ' + R(352)]) },
+        // « Chiffre des… » et aussi « nombre de… » (relecture 6e-N3-P2-E1).
+        eleve: plListe(['le chiffre des dixièmes est ' + B(1), 'le nombre de dixièmes est ' + B(4), 'le chiffre des centièmes est ' + B(1), 'le nombre de centièmes est ' + B(5), 'le chiffre des millièmes est ' + B(1), 'le chiffre des dizaines est ' + B(1), 'le nombre de dizaines est ' + B(2), 'la partie entière est ' + B(3)]),
+        corr: plListe(['le chiffre des dixièmes est ' + R(8), 'le nombre de dixièmes est ' + R('3 528'), 'le chiffre des centièmes est ' + R(6), 'le nombre de centièmes est ' + R('35 286'), 'le chiffre des millièmes est ' + R(7), 'le chiffre des dizaines est ' + R(5), 'le nombre de dizaines est ' + R(35), 'la partie entière est ' + R(352)]) },
       { etoiles: 1, col: 1, consigne: 'Écris le nombre décrit.',
         eleve: plListe(['4 unités, 2 dixièmes et 5 centièmes : ' + B(), '3 dizaines et 8 millièmes : ' + B(), '7 centièmes : ' + B(), '6 unités et 3 millièmes : ' + B()]),
         corr: plListe(['4 unités, 2 dixièmes et 5 centièmes : ' + R('4,25'), '3 dizaines et 8 millièmes : ' + R('30,008'), '7 centièmes : ' + R('0,07'), '6 unités et 3 millièmes : ' + R('6,003')]) },
@@ -66,9 +72,12 @@ PLANCHES['6e|Nombres décimaux'] = [
       { etoiles: 2, consigne: 'Lis l\'abscisse de chaque point (la graduation est en centièmes).', ...lire(3.2, 3.4, .01, .05, [[3.23, 'E'], [3.31, 'F'], [3.38, 'G']]) },
       { etoiles: 2, consigne: 'Place les points H(2,6), I(3,1) et J(4,9).', ...place(2, 5, .1, .5, [[2.6, 'H'], [3.1, 'I'], [4.9, 'J']]) },
       { etoiles: 2, consigne: 'Place les points K(0,15), L(0,08) et M(0,2).', ...place(0, .2, .01, .05, [[.15, 'K'], [.08, 'L'], [.2, 'M']]) },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'Trace une demi-droite graduée où 1 unité mesure 10 cm. Place les points d\'abscisses 0,4 ; 0,45 ; 0,5 et 0,62. Explique combien mesure un centième.',
-        corr: cm1Redac('Graduation', { suite: ['1 unité = 10 cm, donc 1 dixième = 1 cm et 1 centième = 1 mm.', '0,4 : à 4 cm ; 0,45 : à 4,5 cm ; 0,5 : à 5 cm ; 0,62 : à 6,2 cm de l\'origine.'] }, 'Un centième de l\'unité mesure 1 mm.') },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'Sur une demi-droite graduée, le point A a pour abscisse 2,3 et le point B a pour abscisse 2,4. Cite trois nombres dont le point serait entre A et B.',
+      // La demi-droite graduée tracée dans le corrigé (relecture 6e-N3-P3-E5) : pleine largeur pour la lire, et l'exercice
+      // suivant aussi (jamais un exercice seul en demi-largeur).
+      { etoiles: 3, cahier: true, consigne: 'Trace une demi-droite graduée où 1 unité mesure 10 cm. Place les points d\'abscisses 0,4 ; 0,45 ; 0,5 et 0,62. Explique combien mesure un centième.',
+        corr: cm1Redac('Graduation', { suite: ['1 unité = 10 cm, donc 1 dixième = 1 cm et 1 centième = 1 mm.', 'A(0,4) est à 4 cm de l\'origine.', 'B(0,45) est à 4,5 cm de l\'origine.', 'C(0,5) est à 5 cm de l\'origine.', 'D(0,62) est à 6,2 cm de l\'origine.'] }, 'Un centième de l\'unité mesure 1 mm.')
+          + cm1Axe(0, .7, .01, .1, [[.4, 'A'], [.45, 'B'], [.5, 'C'], [.62, 'D']], { fmt: dec, alterne: true, L: 560 }) + '<div class="pl-petit" style="text-align:center;">Figure réduite : sur le cahier, 1 dixième = 1 cm et 1 centième = 1 mm.</div>' },
+      { etoiles: 3, cahier: true, consigne: 'Sur une demi-droite graduée, le point A a pour abscisse 2,3 et le point B a pour abscisse 2,4. Cite trois nombres dont le point serait entre A et B.',
         corr: cm1Redac('Nombres entre 2,3 et 2,4', '2,3 = 2,30 et 2,4 = 2,40', 'Par exemple 2,31 ; 2,35 et 2,38 (il y en a une infinité : 2,301 ; 2,3005…).') },
     ] },
   { titre: 'Comparer et ranger des nombres décimaux', duree: '35 min',

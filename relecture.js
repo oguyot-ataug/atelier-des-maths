@@ -39,6 +39,10 @@ const RELECTURE_CHGT = {
   // La date d'un changement est l'heure RÉELLE de sa mise en ligne (heure du commit poussé sur main), jamais une heure
   // arrondie dans le futur : un exercice validé entre la mise en ligne et une date trop tardive resterait « Chgt effectué »
   // (signalé le 01/11/2026 pour 6e-N1 ; dates corrigées d'après l'historique des publications).
+  // Version 1274 (01/11).
+  '6e-N3-P1-E6': { date: '2026-11-01T23:08:17Z', note: "Corrigé : « 400 centièmes + 50 centièmes = 450 centièmes », chaque terme avec son unité, une étape par ligne ; tableau de numération (unités, dixièmes, centièmes) pour lire le nombre de centièmes" },
+  '6e-N3-P2-E1': { date: '2026-11-01T23:08:17Z', note: "Ajout de « le nombre de dixièmes / de centièmes / de dizaines » à côté de « le chiffre des… »" },
+  '6e-N3-P3-E5': { date: '2026-11-01T23:08:17Z', note: "Corrigé : la demi-droite graduée tracée (de 0 à 0,7, en centièmes), avec les points A(0,4), B(0,45), C(0,5), D(0,62) ; exercice et voisin en pleine largeur" },
   // Version 1269 (01/11).
   '6e-G1-P4-E5': { date: '2026-11-01T17:20:27Z', note: "Bouton « Voir la construction aux instruments » : la construction rejouée avec la règle graduée et le compas du tableau (lecteur du site) ; sur le papier, la figure avec ses arcs" },
   // Version 1267 (01/11).
