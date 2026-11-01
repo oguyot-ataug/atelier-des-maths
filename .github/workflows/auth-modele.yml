@@ -4,6 +4,8 @@
 # son objet dans supabase/auth/confirmation.sujet.txt.
 #   lire      : affiche l'objet actuel, l'expéditeur et si le modèle est celui par défaut (rien n'est modifié) ;
 #   appliquer : installe le modèle et l'objet du dépôt dans le projet de Paris.
+#   expediteur : les e-mails de connexion partent de notifications@latelierdesmaths.fr (domaine vérifié chez Resend,
+#                confirmé le 01/11/2026) ; expediteur-ancien : retour à notifications@latelieraugmente.fr.
 # Secret : SUPABASE_ACCESS_TOKEN. Dépôt public : n'affiche que des noms de réglages et des textes non secrets.
 name: Modèle de l'e-mail de confirmation
 
@@ -15,7 +17,7 @@ on:
         required: true
         default: 'lire'
         type: choice
-        options: ['lire', 'appliquer']
+        options: ['lire', 'appliquer', 'expediteur', 'expediteur-ancien']
 
 permissions:
   contents: read
@@ -50,3 +52,11 @@ jobs:
             -H "Content-Type: application/json" -d @/tmp/corps.json "https://api.supabase.com/v1/projects/$REF/config/auth")
           [ "$C" = 200 ] || { echo "::error title=Auth::Écriture refusée (HTTP $C) : $(head -c 400 /tmp/r.json)"; exit 1; }
           echo "::notice title=Auth::Modèle de confirmation installé : $(jq -r '.mailer_subjects_confirmation' /tmp/r.json)"
+      - name: Adresse d'expédition
+        if: startsWith(inputs.etape, 'expediteur')
+        run: |
+          A=notifications@latelierdesmaths.fr; [ "${{ inputs.etape }}" = expediteur-ancien ] && A=notifications@latelieraugmente.fr
+          C=$(curl -sS -o /tmp/r.json -w '%{http_code}' -X PATCH -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" -d "{\"smtp_admin_email\":\"$A\"}" "https://api.supabase.com/v1/projects/$REF/config/auth")
+          [ "$C" = 200 ] || { echo "::error title=Auth::Écriture refusée (HTTP $C) : $(head -c 400 /tmp/r.json)"; exit 1; }
+          echo "::notice title=Auth::Expéditeur : $(jq -r '"\(.smtp_sender_name) <\(.smtp_admin_email)>"' /tmp/r.json)"
