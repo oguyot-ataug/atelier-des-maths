@@ -116,9 +116,12 @@ PLANCHES['6e|Fractions : nombres et partage'] = [
       { etoiles: 2, col: 1, consigne: 'Complète chaque partage équitable par une fraction.',
         eleve: plListe([ligne('3 pizzas pour 4 enfants : chacun a', Fr, 'de pizza.'), ligne('5 tablettes pour 2 enfants : chacun a', Fr, 'tablette.'), ligne('7 m de ruban en 3 morceaux égaux : chacun mesure', Fr, 'm.')]),
         corr: plListe([ligne('3 pizzas pour 4 enfants : chacun a', R(F(3, 4)), 'de pizza.'), ligne('5 tablettes pour 2 enfants : chacun a', R(F(5, 2)), 'tablette.'), ligne('7 m de ruban en 3 morceaux égaux : chacun mesure', R(F(7, 3)), 'm.')]) },
-      { etoiles: 2, uneLigne: true, consigne: 'Entoure la plus grande quantité.',
-        eleve: plListe([`${F(1, 3)} de 90 ou ${F(3, 10)} de 90 : <b>la première · la seconde</b>`, `${F(3, 4)} de 60 ou ${F(4, 5)} de 60 : <b>la première · la seconde</b>`, `${F(1, 2)} de 50 ou ${F(2, 4)} de 50 : <b>la première · la seconde · égales</b>`]),
-        corr: plListe([`${F(1, 3)} de 90 = 30 ; ${F(3, 10)} de 90 = 27 : ` + plEntoure('la première'), `${F(3, 4)} de 60 = 45 ; ${F(4, 5)} de 60 = 48 : ` + plEntoure('la seconde'), `${F(1, 2)} de 50 = ${F(2, 4)} de 50 = 25 : ` + plEntoure('égales')]) },
+      // Compléter avec <, > ou = (demandé le 01/11/2026 : « Dans ce genre d'exercices, compléter par <, > =. ») ; à l'écran, la
+      // case passe de < à >, puis = à chaque clic.
+      { etoiles: 2, uneLigne: true, consigne: 'Complète avec &lt;, &gt; ou =.',
+        ...(() => { const it = [[`${F(1, 3)} de 90`, `${F(3, 10)} de 90`, '>', '(30 et 27)'], [`${F(3, 4)} de 60`, `${F(4, 5)} de 60`, '<', '(45 et 48)'], [`${F(1, 2)} de 50`, `${F(2, 4)} de 50`, '=', '(25 et 25)']];
+          return { eleve: plListe(it.map(([a, b]) => `<span style="white-space:nowrap;display:inline-block;padding:4px 0;">${a} ${plCase()} ${b}</span>`)),
+            corr: plListe(it.map(([a, b, r, x]) => `<span style="white-space:nowrap;display:inline-block;padding:4px 0;">${a} ${plRep(r === '<' ? '&lt;' : r === '>' ? '&gt;' : r)} ${b}</span> <small>${x}</small>`)) }; })() },
       { etoiles: 2, col: 1, consigne: 'Dans un sac de 36 billes, il y a des rouges, des bleues et des vertes.',
         eleve: plListe([ligne(F(2, 9), 'des billes sont rouges :', B(), 'billes rouges.'), ligne(F(1, 4), 'des billes sont bleues :', B(), 'billes bleues.'), ligne('Les autres sont vertes :', B(), 'billes vertes.')]),
         corr: plListe([ligne(F(2, 9), 'des billes sont rouges :', R(8), 'billes rouges.'), ligne(F(1, 4), 'des billes sont bleues :', R(9), 'billes bleues.'), ligne('Les autres sont vertes : 36 − 8 − 9 =', R(19), 'billes vertes.')]) },

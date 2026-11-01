@@ -9,6 +9,8 @@ const ligne = (...h) => `<span style="display:inline-flex;align-items:center;gap
 const cmp = l => ({ eleve: plListe(l.map(([a, b, c, d]) => ligne(F(a, b), C, F(c, d)))), corr: plListe(l.map(([a, b, c, d]) => { const x = a * d - c * b; return ligne(F(a, b), R(x > 0 ? gt : x < 0 ? lt : '='), F(c, d)); })) });
 const suite = (l, sg) => ({ eleve: '<div style="text-align:center;">' + ligne(...l.map(() => Fr).join(` ${sg} `).split(' ')) + '</div>', corr: '<div style="text-align:center;">' + ligne(...l.map(([a, b]) => R(F(a, b))).join(`¤${sg}¤`).split('¤')) + '</div>' });
 const ops = (l, op) => ({ eleve: plListe(l.map(([a, b, c, d]) => ligne(F(a, b), op, F(c, d), '=', Fr))), corr: plListe(l.map(([a, b, c, d, r]) => ligne(F(a, b), op, F(c, d), '=', ...(r[2] ? [r[2], '='] : []), R(F(r[0], r[1]))))) });
+// Comparer deux fractions : une case à compléter avec <, > ou = (bascule au clic à l'écran), demandé le 01/11/2026.
+const signe = (it, f = h => `<span style="white-space:nowrap;display:inline-block;padding:4px 0;">${h}</span>`) => ({ eleve: plListe(it.map(([a, b]) => f(`${a} ${plCase()} ${b}`))), corr: plListe(it.map(([a, b, r, x]) => f(`${a} ${plRep(r === '<' ? '&lt;' : r === '>' ? '&gt;' : r)} ${b}`) + (x ? ` <small>${x}</small>` : ''))) });
 const ch = (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) + '</div>' });
 PLANCHES['6e|Fractions : comparaison et addition'] = [
   { titre: 'Comparer des fractions simples', duree: '35 min',
@@ -20,8 +22,8 @@ PLANCHES['6e|Fractions : comparaison et addition'] = [
       { etoiles: 1, col: 1, consigne: 'Même dénominateur : compare les numérateurs.', ...cmp([[3, 8, 5, 8], [11, 9, 7, 9], [4, 5, 4, 5], [13, 10, 31, 10]]) },
       { etoiles: 2, col: 1, consigne: 'Même numérateur : la fraction qui a le plus grand dénominateur est la plus petite (parts plus petites).', ...cmp([[3, 4, 3, 5], [2, 9, 2, 7], [5, 12, 5, 6], [7, 3, 7, 10]]) },
       { etoiles: 2, consigne: `Range dans l'ordre croissant : ${T(7, 5)} ; ${T(2, 5)} ; ${T(9, 5)} ; ${T(1, 5)} ; ${T(5, 5)}.`, ...suite([[1, 5], [2, 5], [5, 5], [7, 5], [9, 5]], lt) },
-      { etoiles: 2, col: 1, consigne: 'Entoure la plus grande fraction.',
-        ...ch([[`${T(3, 4)} ou ${T(5, 4)} :`, 'la seconde'], [`${T(2, 3)} ou ${T(2, 5)} :`, 'la première'], [`${T(7, 8)} ou ${T(9, 10)} (compare à 1) :`, 'la seconde']], 'la première · la seconde') },
+      { etoiles: 2, col: 1, consigne: 'Complète avec &lt;, &gt; ou =.',
+        ...signe([[T(3, 4), T(5, 4), '<'], [T(2, 3), T(2, 5), '>'], [T(7, 8), `${T(9, 10)} <small>(compare à 1)</small>`, '<', `il manque ${T(1, 8)} et ${T(1, 10)} pour faire 1`]]) },
       { etoiles: 3, cahier: true, consigne: `Inès a mangé ${T(3, 8)} d'une pizza et Hugo ${T(3, 6)} d'une pizza identique. Qui en a mangé le plus ? Explique avec un dessin.`,
         corr: cm1Redac('Comparaison', `Même numérateur : ${F(3, 6)} &gt; ${F(3, 8)} (un sixième est plus grand qu'un huitième).`, 'Hugo a mangé plus de pizza qu\'Inès.') },
     ] },

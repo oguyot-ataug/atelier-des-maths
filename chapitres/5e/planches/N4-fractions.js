@@ -19,6 +19,8 @@ const B = n => plPointilles(n || 3), R = v => plRep(String(v)), F = cm1Frac, Fr 
 const T = (a, b) => cm1Tex(`\\dfrac{${a}}{${b}}`);
 const lt = '&lt;', gt = '&gt;';
 const ligne = (...h) => `<span style="display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap;">${h.join(' ')}</span>`;
+// Comparer deux fractions : une case à compléter avec <, > ou = (bascule au clic à l'écran), demandé le 01/11/2026.
+const signe = (it, f = h => `<span style="white-space:nowrap;display:inline-block;padding:4px 0;">${h}</span>`) => ({ eleve: plListe(it.map(([a, b]) => f(`${a} ${plCase()} ${b}`))), corr: plListe(it.map(([a, b, r, x]) => f(`${a} ${plRep(r === '<' ? '&lt;' : r === '>' ? '&gt;' : r)} ${b}`) + (x ? ` <small>${x}</small>` : ''))) });
 const ch = (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) + '</div>' });
 // Fractions égales : [a, b, c, d] → a/b = c/d, la case vide est la seconde fraction.
 const egal = l => ({ eleve: plListe(l.map(([a, b]) => ligne(F(a, b), '=', Fr))), corr: plListe(l.map(([a, b, c, d]) => ligne(F(a, b), '=', R(F(c, d))))) });
@@ -77,8 +79,8 @@ PLANCHES['5e|Fractions'] = [
       { etoiles: 2, consigne: `Range dans l'ordre croissant : ${T(5, 6)} ; ${T(2, 3)} ; ${T(7, 12)} ; ${T(3, 4)} ; ${T(1, 2)} (pense aux douzièmes).`,
         eleve: '<div style="text-align:center;">' + ligne(Fr, lt, Fr, lt, Fr, lt, Fr, lt, Fr) + '</div>',
         corr: '<div style="text-align:center;">' + ligne(R(F(1, 2)), lt, R(F(7, 12)), lt, R(F(2, 3)), lt, R(F(3, 4)), lt, R(F(5, 6))) + '</div>' },
-      { etoiles: 2, col: 1, consigne: 'Entoure la plus grande fraction.',
-        ...ch([[`${T(3, 8)} ou ${T(1, 4)} :`, 'la première'], [`${T(5, 9)} ou ${T(2, 3)} :`, 'la seconde'], [`${T(11, 10)} ou ${T(6, 5)} :`, 'la seconde'], [`${T(7, 7)} ou ${T(13, 14)} :`, 'la première']], 'la première · la seconde') },
+      { etoiles: 2, col: 1, consigne: 'Complète avec &lt;, &gt; ou =.',
+        ...signe([[T(3, 8), T(1, 4), '>'], [T(5, 9), T(2, 3), '<'], [T(11, 10), T(6, 5), '<'], [T(7, 7), T(13, 14), '>']]) },
       { etoiles: 3, col: 1, cahier: true, consigne: `Lucas a lu ${T(3, 5)} de son livre et Nora ${T(7, 10)} du même livre. Qui en a lu le plus ? Justifie.`,
         corr: cm1Redac('Comparaison', `${F(3, 5)} = ${F(6, 10)} et ${F(6, 10)} &lt; ${F(7, 10)}`, 'Nora a lu la plus grande partie du livre.') },
       { etoiles: 3, col: 1, cahier: true, consigne: `Trouve une fraction comprise entre ${T(3, 4)} et 1, puis une fraction comprise entre ${T(1, 3)} et ${T(1, 2)}.`,

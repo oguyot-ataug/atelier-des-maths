@@ -5,6 +5,8 @@
 const B = n => plPointilles(n || 3), R = v => plRep(String(v)), F = cm1Frac, Fr = plFrac();
 const T = (a, b) => cm1Tex(`\\dfrac{${a}}{${b}}`);
 const ligne = (...h) => `<span style="display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap;">${h.join(' ')}</span>`;
+// Comparer deux quantités : une case à compléter avec <, > ou = (bascule au clic à l'écran), demandé le 01/11/2026.
+const signe = (it, f = h => `<span style="white-space:nowrap;display:inline-block;padding:4px 0;">${h}</span>`) => ({ eleve: plListe(it.map(([a, b]) => f(`${a} ${plCase()} ${b}`))), corr: plListe(it.map(([a, b, r, x]) => f(`${a} ${plRep(r === '<' ? '&lt;' : r === '>' ? '&gt;' : r)} ${b}`) + (x ? ` <small>${x}</small>` : ''))) });
 const ch = (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) + '</div>' });
 PLANCHES['6e|Fractions : multiplication'] = [
   { titre: 'Multiplier une fraction par un nombre entier', duree: '35 min',
@@ -37,8 +39,8 @@ PLANCHES['6e|Fractions : multiplication'] = [
       { etoiles: 2, col: 1, consigne: 'Complète avec la bonne unité.',
         eleve: plListe([ligne(F(3, 4), 'd\'heure =', B(), 'min'), ligne(F(2, 5), 'de 1 km =', B(), 'm'), ligne(F(3, 8), 'de 1 kg =', B(), 'g'), ligne(F(5, 6), 'de 1 h =', B(), 'min')]),
         corr: plListe([ligne(F(3, 4), 'd\'heure =', R(45), 'min'), ligne(F(2, 5), 'de 1 km =', R(400), 'm'), ligne(F(3, 8), 'de 1 kg =', R(375), 'g'), ligne(F(5, 6), 'de 1 h =', R(50), 'min')]) },
-      { etoiles: 2, col: 1, consigne: 'Entoure la plus grande quantité.',
-        ...ch([[`${T(1, 4)} de 100 ou ${T(1, 5)} de 100 :`, 'la première'], [`${T(2, 3)} de 60 ou ${T(3, 4)} de 60 :`, 'la seconde'], [`${T(5, 10)} de 30 ou ${T(1, 2)} de 30 :`, 'égales']], 'la première · la seconde · égales') },
+      { etoiles: 2, col: 1, consigne: 'Complète avec &lt;, &gt; ou =.',
+        ...signe([[`${T(1, 4)} de 100`, `${T(1, 5)} de 100`, '>', '(25 et 20)'], [`${T(2, 3)} de 60`, `${T(3, 4)} de 60`, '<', '(40 et 45)'], [`${T(5, 10)} de 30`, `${T(1, 2)} de 30`, '=', '(15 et 15)']]) },
       { etoiles: 3, col: 1, cahier: true, consigne: `Une classe de 28 élèves part en sortie. ${T(3, 7)} des élèves vont au musée, les autres au parc. Combien d'élèves vont au parc ?`,
         corr: cm1Redac('Au musée', `${F(3, 7)} × 28 = (28 ÷ 7) × 3 = 12`, '12 élèves vont au musée.') + cm1Redac('Au parc', '28 − 12 = 16', '16 élèves vont au parc.') },
       { etoiles: 3, col: 1, cahier: true, consigne: `Un réservoir de 60 L est rempli aux ${T(2, 3)}. On utilise ${T(1, 4)} de son contenu. Combien de litres reste-t-il ?`,
