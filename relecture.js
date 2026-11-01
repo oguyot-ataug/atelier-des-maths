@@ -39,6 +39,8 @@ const RELECTURE_CHGT = {
   // La date d'un changement est l'heure RÉELLE de sa mise en ligne (heure du commit poussé sur main), jamais une heure
   // arrondie dans le futur : un exercice validé entre la mise en ligne et une date trop tardive resterait « Chgt effectué »
   // (signalé le 01/11/2026 pour 6e-N1 ; dates corrigées d'après l'historique des publications).
+  '6e-G1-P1-E3': { date: '2026-11-01T16:30:50Z', note: "Doubles codages inclinés comme les simples ; consigne : « I est le milieu du segment [AB] et AB = 6 cm » (le seul trait sur [IB] ne le montrait pas)" },
+  '6e-G1-P1-E4': { date: '2026-11-01T16:30:50Z', note: "« vrai · faux » dans une colonne à part, plus loin de l'énoncé, alignés (automatique pour toutes les listes de propositions à entourer)" },
   // Version 1263 (01/11).
   '6e-G2-P8-E4': { date: '2026-11-01T16:05:16Z', note: "Figure du corrigé sans « 5 cm » sur [CB] (longueur cherchée) ; rédaction : C appartient à la médiatrice de [AB] et CA = 5 cm. Or, tout point de la médiatrice d'un segment est à égale distance des extrémités de ce segment. Donc CB = CA = 5 cm." },
   // Version 1262 (01/11).
