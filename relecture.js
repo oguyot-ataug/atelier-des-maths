@@ -45,8 +45,8 @@ const RELECTURE_CHGT = {
   '6e-N2-P4-E6': { date: '2026-11-01T15:47:51Z', note: "« 7/8 … 1 » à compléter par <, > ou = dans une case ; à l'écran, un clic passe de < à >, puis =" },
   '6e-N2-P4-E7': { date: '2026-11-01T15:47:51Z', note: "Corrigé avec le tracé : la demi-droite graduée sur papier quadrillé (unité 6 carreaux), les points 1/2, 7/6, 5/3 placés" },
   '6e-N2-P6-E6': { date: '2026-11-01T15:47:51Z', note: "Corrigé : 1/5 × 240 = 240/5 = 48, puis 2/5 × 240 = (2 × 240)/5 = 480/5 = 96, fractions écrites en étage" },
-  '6e-N2-P7-E6': { date: '2026-11-01T15:47:51Z', note: "Corrigé : 25 % de 40 € = 25/100 × 40 = (25 × 40)/100 = 1000/100 = 10 €, une étape par ligne" },
-  '6e-N2-P7-E7': { date: '2026-11-01T15:47:51Z', note: "Corrigé : 45 % de 600 = 45/100 × 600 = 45 × 600/100 = 45 × 6 = 270, une étape par ligne" },
+  '6e-N2-P7-E6': { date: '2026-11-01T15:56:42Z', note: "Corrigé en colonne avec une lettre : R = 25/100 × 40, R = (25 × 40)/100, R = 1000/100, R = 10 encadré ; aucune ligne ne commence par =, calcul jamais coupé" },
+  '6e-N2-P7-E7': { date: '2026-11-01T15:56:42Z', note: "Corrigé en colonne avec une lettre : N = 45/100 × 600, N = 45 × 600/100, N = 45 × 6, N = 270 encadré" },
   // Version 1259 (01/11).
   '6e-G2-P1-E4': { date: '2026-11-01T13:25:00Z', note: "Phrase précisée : « Deux droites parallèles et distinctes n'ont aucun point commun » (deux droites confondues sont aussi parallèles et ont une infinité de points communs)" },
   '6e-G2-P3-E3': { date: '2026-11-01T13:25:00Z', note: "Figure du corrigé : (d), (d') et la parallèle passant par C restent tracées en entier comme traits de construction ; B n'est plus coupé" },

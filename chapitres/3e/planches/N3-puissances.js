@@ -42,7 +42,7 @@ PLANCHES['3e|Puissances'] = [
       { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.',
         ...ch([['10⁵ + 10⁵ = 10¹⁰', 'faux'], ['10³ × 10³ = 10⁶', 'vrai'], ['10⁻³ est un nombre négatif.', 'faux'], ['10² + 10³ = 1 100', 'vrai']], 'vrai · faux') },
       { etoiles: 3, cahier: true, consigne: 'Un disque dur a une capacité de 2 To (1 To = 10¹² octets). Une photo occupe 4 Mo (1 Mo = 10⁶ octets). Combien de photos peut-on y stocker ?',
-        corr: cm1Redac('Nombre de photos', { suite: ['2 × 10¹² : (4 × 10⁶)', '= 0,5 × 10⁶', '= 500 000'] }, 'On peut stocker 500 000 photos.') },
+        corr: cm1Redac('Nombre de photos', { nom: 'N', lignes: ['2 × 10¹² : (4 × 10⁶)', '0,5 × 10⁶', '500 000'] }, 'On peut stocker 500 000 photos.') },
     ] },
   { titre: 'L\'écriture scientifique', duree: '35 min',
     attendus: ['Reconnaître une écriture scientifique', 'Donner l\'écriture scientifique d\'un nombre ou d\'un calcul', 'Comparer des nombres en écriture scientifique'],

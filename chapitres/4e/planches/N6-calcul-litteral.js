@@ -57,7 +57,7 @@ PLANCHES['4e|Calcul littéral'] = [
       { etoiles: 2, col: 1, consigne: 'Complète.',
         ...rmp([['8x + 20 = 4(@ + 5)', '2x'], ['15 − 9y = 3(5 − @)', '3y'], ['2x² + 6x = 2x(x + @)', 3]]) },
       { etoiles: 3, cahier: true, consigne: 'Calcule astucieusement en factorisant : 17 × 23 + 17 × 77, puis 4,5 × 12 − 4,5 × 2.',
-        corr: cm1Redac('Premier calcul', { suite: ['17 × 23 + 17 × 77 = 17 × (23 + 77)', '= 17 × 100 = 1 700'] }, 'Le premier calcul vaut 1 700.') + cm1Redac('Second calcul', { suite: ['4,5 × 12 − 4,5 × 2 = 4,5 × (12 − 2)', '= 4,5 × 10 = 45'] }, 'Le second calcul vaut 45.') },
+        corr: cm1Redac('Premier calcul', { nom: 'P', lignes: ['17 × 23 + 17 × 77', '17 × (23 + 77)', '17 × 100', '1 700'] }, 'Le premier calcul vaut 1 700.') + cm1Redac('Second calcul', { nom: 'S', lignes: ['4,5 × 12 − 4,5 × 2', '4,5 × (12 − 2)', '4,5 × 10', '45'] }, 'Le second calcul vaut 45.') },
       { etoiles: 1, col: 1, consigne: 'Factorise.', ...P3.rmp([['6x + 12 = @', '6(x + 2)'], ['15x − 10 = @', '5(3x − 2)'], ['7x + 7 = @', '7(x + 1)']], 4) },
       { etoiles: 2, col: 1, consigne: 'Factorise par x.', ...P3.rmp([['x² + 5x = @', 'x(x + 5)'], ['3x² − x = @', 'x(3x − 1)']], 4) },
       { etoiles: 2, col: 1, consigne: 'Calcule astucieusement.', ...P3.rmp([['13 × 47 + 13 × 53 = @', '1 300'], ['8,5 × 7 − 8,5 × 5 = @', 17]], 3) },
@@ -75,7 +75,7 @@ PLANCHES['4e|Calcul littéral'] = [
       { etoiles: 2, cahier: true, consigne: illu(figureL, 'Cette figure est un rectangle de 2x + 4 sur 6, dont on a retiré un rectangle de x sur 3 (en cm). Montre que son aire est égale à 9x + 24.'),
         corr: cm1Redac('Aire de la figure', { suite: ['A = 6(2x + 4) − 3x', 'A = 12x + 24 − 3x', 'A = 9x + 24'] }, 'L\'aire de la figure est bien égale à 9x + 24 (en cm²).') },
       { etoiles: 3, cahier: true, consigne: 'Programme : choisir un nombre ; ajouter 5 ; multiplier par 4 ; soustraire 20 ; soustraire le triple du nombre choisi. Prouve que l\'on obtient toujours le nombre de départ.',
-        corr: cm1Redac('Avec x', { suite: ['4(x + 5) − 20 − 3x', '= 4x + 20 − 20 − 3x', '= x'] }, 'On obtient toujours le nombre choisi au départ.') },
+        corr: cm1Redac('Avec x', { nom: 'E', lignes: ['4(x + 5) − 20 − 3x', '4x + 20 − 20 − 3x', 'x'] }, 'On obtient toujours le nombre choisi au départ.') },
     ] },
 ];
 })();

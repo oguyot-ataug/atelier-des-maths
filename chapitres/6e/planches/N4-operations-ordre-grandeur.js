@@ -31,7 +31,7 @@ PLANCHES['6e|Opérations et ordre de grandeur'] = [
         eleve: plListe(['0,3 + ' + B() + ' = 1', '0,45 + ' + B() + ' = 1', '2,8 + ' + B() + ' = 3', '6,95 + ' + B() + ' = 7']),
         corr: plListe(['0,3 + ' + R('0,7') + ' = 1', '0,45 + ' + R('0,55') + ' = 1', '2,8 + ' + R('0,2') + ' = 3', '6,95 + ' + R('0,05') + ' = 7']) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Léo a acheté un livre à 12,90 €, un cahier à 3,45 € et un stylo à 1,65 €. Combien a-t-il dépensé ?',
-        corr: cm1Redac('Dépense totale', { suite: ['12,90 + 3,45 + 1,65', '= 12,90 + (3,45 + 1,65) = 12,90 + 5,10'] }, 'Léo a dépensé 18 €.') },
+        corr: cm1Redac('Dépense totale', { nom: 'D', lignes: ['12,90 + 3,45 + 1,65', '12,90 + (3,45 + 1,65)', '12,90 + 5,10', '18'] }, 'Léo a dépensé 18 €.') },
     ] },
   { titre: 'Soustraire des nombres décimaux', duree: '35 min',
     attendus: ['Poser une soustraction de nombres décimaux en complétant par des zéros', 'Calculer mentalement une différence simple', 'Contrôler par une addition'],

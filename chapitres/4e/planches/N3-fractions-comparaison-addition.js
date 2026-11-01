@@ -61,7 +61,7 @@ PLANCHES['4e|Fractions : comparaison et addition'] = [
         eleve: plListe([ligne(F(1, 2), '+', F(1, 3), '+', F(1, 6), '=', Fr), ligne(F(5, 4), '−', F(1, 2), '−', F(1, 8), '=', Fr)]),
         corr: plListe([ligne(F(1, 2), '+', F(1, 3), '+', F(1, 6), '=', F(3, 6), '+', F(2, 6), '+', F(1, 6), '=', F(6, 6), '=', R('1')), ligne(F(5, 4), '−', F(1, 2), '−', F(1, 8), '=', F(10, 8), '−', F(4, 8), '−', F(1, 8), '=', R(F(5, 8)))]) },
       { etoiles: 3, cahier: true, consigne: `Dans un champ, ${T(1, 3)} de la surface est semé de blé et ${T(2, 5)} de maïs. Le reste est en herbe. Quelle fraction du champ est en herbe ?`,
-        corr: cm1Redac('Fraction en herbe', { suite: [`1 − ${F(1, 3)} − ${F(2, 5)}`, `= ${F(15, 15)} − ${F(5, 15)} − ${F(6, 15)}`, `= ${F(4, 15)}`] }, `L'herbe occupe ${F(4, 15)} du champ.`) },
+        corr: cm1Redac('Fraction en herbe', { nom: 'F', lignes: [`1 − ${F(1, 3)} − ${F(2, 5)}`, `${F(15, 15)} − ${F(5, 15)} − ${F(6, 15)}`, `${F(4, 15)}`] }, `L'herbe occupe ${F(4, 15)} du champ.`) },
     ] },
   { titre: 'Problèmes avec des fractions', duree: '40 min',
     attendus: ['Additionner des fractions dans un problème', 'Trouver la part restante', 'Rédiger la solution d\'un problème'],

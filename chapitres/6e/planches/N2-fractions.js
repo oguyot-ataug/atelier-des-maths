@@ -159,11 +159,11 @@ PLANCHES['6e|Fractions : nombres et partage'] = [
         eleve: plListe(['Sac A : 3 boules vertes sur 12 ; sac B : 5 vertes sur 20. Même proportion de vertes ? <b>oui · non</b>', 'Club A : 6 filles sur 10 ; club B : 13 filles sur 25. Plus grande proportion de filles : <b>A · B</b>']),
         corr: plListe(['Sac A : 3 boules vertes sur 12 ; sac B : 5 vertes sur 20. Même proportion de vertes ? ' + plEntoure('oui') + ` (${F(1, 4)} dans les deux cas)`, 'Club A : 6 filles sur 10 ; club B : 13 filles sur 25. Plus grande proportion de filles : ' + plEntoure('A') + ' (60 % contre 52 %)']) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Un pull coûte 40 €. Pendant les soldes, son prix baisse de 25 %. Quel est son nouveau prix ?',
-        // 25 % = 25/100 (relecture 6e-N2-P7-E6).
-        corr: cm1Redac('Montant de la réduction', { suite: [`25 % de 40 € = ${F(25, 100)} × 40`, `= ${F('25 \\times 40', 100)}`, `= ${F(1000, 100)}`, '= 10 €'] }, 'La réduction est de 10 €.') + cm1Redac('Nouveau prix', '40 € − 10 € = 30 €', 'Le pull coûte 30 € pendant les soldes.') },
+        // 25 % = 25/100, calcul déroulé en colonne derrière une lettre, jamais une ligne qui commence par « = » (relecture 6e-N2-P7-E6).
+        corr: cm1Redac('Montant de la réduction', { nom: 'R', lignes: [`${F(25, 100)} × 40`, F('25 \\times 40', 100), F(1000, 100), '10'] }, 'La réduction est de 10 €.') + cm1Redac('Nouveau prix', '40 € − 10 € = 30 €', 'Le pull coûte 30 € pendant les soldes.') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Dans un collège de 600 élèves, 45 % sont demi-pensionnaires. Combien d\'élèves sont demi-pensionnaires ?',
-        // 45 % = 45/100 (relecture 6e-N2-P7-E7).
-        corr: cm1Redac('Nombre de demi-pensionnaires', { suite: [`45 % de 600 = ${F(45, 100)} × 600`, `= 45 × ${F(600, 100)}`, '= 45 × 6', '= 270'] }, '270 élèves sont demi-pensionnaires.') },
+        // 45 % = 45/100, lettre devant le calcul déroulé en colonne (relecture 6e-N2-P7-E7).
+        corr: cm1Redac('Nombre de demi-pensionnaires', { nom: 'N', lignes: [`${F(45, 100)} × 600`, `45 × ${F(600, 100)}`, '45 × 6', '270'] }, '270 élèves sont demi-pensionnaires.') },
     ] },
 ];
 })();

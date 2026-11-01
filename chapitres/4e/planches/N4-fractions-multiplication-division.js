@@ -25,7 +25,7 @@ PLANCHES['4e|Fractions : multiplication et division'] = [
       { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.',
         ...ch([[`${T(1, 2)} × ${T(1, 2)} = ${T(1, 4)}`, 'vrai'], [`${T(2, 3)} × 3 = ${T(6, 9)}`, 'faux'], [`Multiplier par ${T(1, 2)}, c'est diviser par 2.`, 'vrai']], 'vrai · faux') },
       { etoiles: 3, cahier: true, consigne: `Calcule ${T(15, 28)} × ${T(14, 25)} en simplifiant avant d'effectuer les produits.`,
-        corr: cm1Redac('Produit', { suite: [`${F(15, 28)} × ${F(14, 25)} = ${F('3 × 5 × 2 × 7', '2 × 2 × 7 × 5 × 5')}`, `= ${F(3, '2 × 5')}`, `= ${F(3, 10)}`] }, `Le produit vaut ${F(3, 10)}.`) },
+        corr: cm1Redac('Produit', { nom: 'P', lignes: [`${F(15, 28)} × ${F(14, 25)}`, `${F('3 × 5 × 2 × 7', '2 × 2 × 7 × 5 × 5')}`, `${F(3, '2 × 5')}`, `${F(3, 10)}`] }, `Le produit vaut ${F(3, 10)}.`) },
     ] },
   { titre: 'Fraction d\'une quantité et produits en croix', duree: '30 min',
     attendus: ['Calculer une fraction d\'une quantité', 'Prendre une fraction d\'une fraction', 'Utiliser les produits en croix'],
