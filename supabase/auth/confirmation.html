@@ -1,0 +1,16 @@
+<div style="background:#F3F6FA;padding:24px 12px;font-family:Arial,Helvetica,sans-serif;color:#1F2A37;">
+  <div style="max-width:560px;margin:0 auto;background:#FFFFFF;border:1px solid #E1E7EF;border-radius:14px;overflow:hidden;">
+    <div style="background:#1F3A5C;padding:20px 28px;color:#FFFFFF;font-size:20px;font-weight:bold;">L'Atelier des Maths</div>
+    <div style="height:5px;background:#FF8208;font-size:0;line-height:0;">&nbsp;</div>
+    <div style="padding:26px 28px 8px 28px;font-size:15px;line-height:1.6;">
+      <h2 style="font-size:18px;margin:0 0 14px 0;color:#1F3A5C;">Confirmez votre adresse e-mail</h2>
+      <p style="margin:0 0 14px 0;">{{ if .Data.prenom }}Bonjour {{ .Data.prenom }},{{ else }}Bonjour,{{ end }}</p>
+      <p style="margin:0 0 14px 0;">Merci pour votre inscription à L'Atelier des Maths !</p>
+      <p style="margin:0 0 14px 0;">Pour la terminer, il reste à confirmer que cette adresse est bien la vôtre : cliquez sur le bouton ci-dessous, le site s'ouvrira et vous serez connecté{{ if .Data.uai }}. Votre demande sera ensuite examinée, et vous recevrez un e-mail dès que votre compte sera ouvert{{ end }}.</p>
+      <p style="margin:22px 0;text-align:center;"><a href="{{ .ConfirmationURL }}" style="background:#FF8208;color:#FFFFFF;text-decoration:none;padding:12px 26px;border-radius:999px;font-weight:bold;display:inline-block;">Confirmer mon adresse</a></p>
+      <p style="margin:0 0 12px 0;font-size:13px;color:#5B6472;">Si le bouton ne fonctionne pas, copiez ce lien dans votre navigateur :<br><a href="{{ .ConfirmationURL }}" style="color:#1F3A5C;word-break:break-all;">{{ .ConfirmationURL }}</a></p>
+      <p style="margin:0 0 12px 0;font-size:13px;color:#5B6472;">Vous n'êtes pas à l'origine de cette inscription ? Ignorez simplement ce message : aucun compte ne sera ouvert.</p>
+    </div>
+    <div style="background:#F7F9FC;border-top:1px solid #E1E7EF;padding:14px 28px;font-size:12px;color:#5B6472;">latelierdesmaths.fr · une production de L'Atelier Augmenté</div>
+  </div>
+</div>

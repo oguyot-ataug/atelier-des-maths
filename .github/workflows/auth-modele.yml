@@ -1,0 +1,50 @@
+# Modèle de l'e-mail de confirmation d'adresse (inscription professeur ou famille) envoyé par Supabase Auth -- demandé le
+# 01/11/2026 : « Oui, fais les deux » (e-mail de bienvenue + message de confirmation en français, aux couleurs du site).
+# Le modèle est dans supabase/auth/confirmation.html (variables Supabase : {{ .ConfirmationURL }}, {{ .Data.prenom }}…),
+# son objet dans supabase/auth/confirmation.sujet.txt.
+#   lire      : affiche l'objet actuel, l'expéditeur et si le modèle est celui par défaut (rien n'est modifié) ;
+#   appliquer : installe le modèle et l'objet du dépôt dans le projet de Paris.
+# Secret : SUPABASE_ACCESS_TOKEN. Dépôt public : n'affiche que des noms de réglages et des textes non secrets.
+name: Modèle de l'e-mail de confirmation
+
+on:
+  workflow_dispatch:
+    inputs:
+      etape:
+        description: 'lire ou appliquer'
+        required: true
+        default: 'lire'
+        type: choice
+        options: ['lire', 'appliquer']
+
+permissions:
+  contents: read
+
+jobs:
+  modele:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      REF: tdsdwbsvduitgrrrfjrp
+    steps:
+      - uses: actions/checkout@v5
+      - name: Lecture des réglages actuels
+        run: |
+          R=$(curl -sS -w '\n%{http_code}' -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" "https://api.supabase.com/v1/projects/$REF/config/auth")
+          C=${R##*$'\n'}; B=${R%$'\n'*}
+          [ "$C" = 200 ] || { echo "::error title=Auth::Lecture impossible (HTTP $C)"; exit 1; }
+          echo "$B" | jq -r '"Objet actuel : \(.mailer_subjects_confirmation // "(défaut)")",
+            "Modèle actuel : \(if (.mailer_templates_confirmation_content // "") == "" then "(défaut)" else ((.mailer_templates_confirmation_content | length | tostring) + " caractères, commence par : " + (.mailer_templates_confirmation_content | gsub("\\s+"; " ") | .[0:160])) end)",
+            "Serveur d envoi : \(.smtp_host // "Supabase (par défaut)")",
+            "Expéditeur : \(.smtp_sender_name // "-") <\(.smtp_admin_email // "-")>",
+            "Confirmation exigée : \(.mailer_autoconfirm | not)"'
+      - name: Installation du modèle du dépôt
+        if: inputs.etape == 'appliquer'
+        run: |
+          jq -n --rawfile c supabase/auth/confirmation.html --rawfile s supabase/auth/confirmation.sujet.txt \
+            '{mailer_templates_confirmation_content: $c, mailer_subjects_confirmation: ($s | rtrimstr("\n"))}' > /tmp/corps.json
+          C=$(curl -sS -o /tmp/r.json -w '%{http_code}' -X PATCH -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" -d @/tmp/corps.json "https://api.supabase.com/v1/projects/$REF/config/auth")
+          [ "$C" = 200 ] || { echo "::error title=Auth::Écriture refusée (HTTP $C) : $(head -c 400 /tmp/r.json)"; exit 1; }
+          echo "::notice title=Auth::Modèle de confirmation installé : $(jq -r '.mailer_subjects_confirmation' /tmp/r.json)"

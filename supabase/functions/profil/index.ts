@@ -13,6 +13,9 @@
 //   email     (connecté)  : { email } enregistre l'adresse en attente et envoie le lien de confirmation (48 h) ;
 //                           { email: "" } retire l'adresse de récupération.
 //   confirmer (public)    : { jeton } confirme l'adresse (lien reçu par e-mail).
+//   bienvenue (public)    : { user_id } e-mail de bienvenue au professeur dont l'inscription vient d'être approuvée
+//                           (appelée par le déclencheur bienvenue_prof_auto sur profiles). Une seule fois par compte
+//                           (profil_contact.bienvenue_at), et seulement dans les 3 jours qui suivent l'approbation.
 //   oubli     (public)    : { identifiant } identifiant, adresse de connexion ou adresse de récupération : envoie un
 //                           lien de réinitialisation (Supabase generateLink « recovery ») à l'adresse confirmée, ou à
 //                           l'adresse de connexion si elle est réelle. Réponse identique dans tous les cas (on ne
@@ -23,6 +26,7 @@
 // verify_jwt = false : « oubli » et « confirmer » sont appelées sans compte ; les autres actions vérifient le jeton.
 
 import { createClient } from "npm:@supabase/supabase-js@2";
+import { mailBienvenue } from "./bienvenue.ts";
 
 // Envoi Resend : expéditeur en @latelierdesmaths.fr (demandé le 31/10/2026 : « Tout ce qui concerne l'atelier des maths doit
 // avoir comme domaine latelierdesmaths.fr, y compris mailing »). Tant que ce domaine n'est pas vérifié chez Resend, l'envoi
@@ -133,6 +137,30 @@ Deno.serve(async (req) => {
           ])).catch((e) => console.error("oubli", (e as Error).message));
       }
       return json(reponse);
+    }
+
+    /* ---------- Bienvenue (public, appelée par la base à l'approbation d'un professeur) ---------- */
+    if (body.action === "bienvenue") {
+      const id = String(body.user_id ?? "");
+      if (!/^[0-9a-f-]{36}$/i.test(id)) return json({ error: "Compte inconnu." }, 400);
+      const { data: p } = await db.from("profiles").select("role, prenom, signup_status, trial_started_at, subscription_expires_at").eq("id", id).maybeSingle();
+      if (!p || p.role !== "prof" || p.signup_status !== "approved") return json({ ok: false, raison: "pas un professeur approuvé" });
+      if (!p.trial_started_at || Date.now() - new Date(p.trial_started_at).getTime() > 3 * 86400000) return json({ ok: false, raison: "approbation trop ancienne" });
+      const { data: ct } = await db.from("profil_contact").select("email_recuperation, bienvenue_at").eq("user_id", id).maybeSingle();
+      if (ct?.bienvenue_at) return json({ ok: false, raison: "déjà envoyé" });
+      const { data: u } = await db.auth.admin.getUserById(id);
+      const connexion = u?.user?.email || "";
+      const dest = FICTIF.test(connexion) ? ct?.email_recuperation : connexion;
+      if (!dest) return json({ ok: false, raison: "aucune adresse" });
+      // Marqué AVANT l'envoi : deux appels simultanés n'envoient pas deux e-mails.
+      await db.from("profil_contact").upsert({ user_id: id, bienvenue_at: new Date().toISOString(), updated_at: new Date().toISOString() }, { onConflict: "user_id" });
+      const m = mailBienvenue({ prenom: p.prenom, identifiant: identifiantDe(connexion), finEssai: p.subscription_expires_at ? new Date(p.subscription_expires_at) : null });
+      try { await sendMail(dest, m.sujet, m.texte, m.html); }
+      catch (e) {
+        await db.from("profil_contact").update({ bienvenue_at: null }).eq("user_id", id);
+        throw e;
+      }
+      return json({ ok: true });
     }
 
     /* ---------- Confirmation de l'adresse (public, lien reçu par e-mail) ---------- */
