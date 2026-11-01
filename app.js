@@ -3743,6 +3743,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1254', date:'2026-11-01', items:['Figures : correction d\'une erreur qui pouvait interrompre la mise en forme automatique (marques des points, codages, indices des noms de droites) quand un texte disparaissait aussitôt affiché.'] },
   { version:'2026-08-19.1253', date:'2026-11-01', items:['Noms des droites : le numéro est en indice partout, (d₁), (d₂)…, dans les figures comme dans les énoncés et les corrigés -- demandé : « bien mettre les chiffres en indice ». 6e Droites parallèles et perpendiculaires : noms des droites plus petits sur le quadrillage (« les écritures des labels des droites sont trop grosses »).'] },
   { version:'2026-08-19.1252', date:'2026-11-01', items:['Relecture, 6e Droites parallèles et perpendiculaires : propositions en tableau, à distance des énoncés ; symboles ⊥ et // à compléter (à l\'écran, un clic passe de l\'un à l\'autre) ; étiquettes de points décollées et dans le cadre ; à l\'écran, les droites tracées se nomment ((AB), (d), (d\')) et les noms sont vérifiés.'] },
   { version:'2026-08-19.1251', date:'2026-11-01', items:['Figures de géométrie (tous niveaux) : les codages de longueur sont plus petits et inclinés, pour ne plus être confondus avec les petits traits des points -- demandé : « Pour les codages de longueur, les faire inclinés et assez petits pour ne pas les confondre avec des points ». Les graduations des droites graduées ne changent pas.'] },

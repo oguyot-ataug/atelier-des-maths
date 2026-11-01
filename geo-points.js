@@ -263,9 +263,9 @@
     const vue = doc.defaultView || window; let prevu = false;
     let ajouts = new Set([doc.body]);
     const passe = () => { prevu = false; const A = ajouts; ajouts = new Set();
-      A.forEach(n => { if(n.isConnected){ try{ indices(n); }catch(e){} } });
+      A.forEach(n => { if(n && n.isConnected){ try{ indices(n); }catch(e){} } });
       doc.querySelectorAll('svg:not([data-geo-points])').forEach(s => { const r = s.getBoundingClientRect(); if(!r.width || !r.height) return; try{ corriger(s); }catch(e){} }); };
-    const plus = recs => { (recs || []).forEach(r => { if(r.type === 'childList') r.addedNodes.forEach(n => ajouts.add(n.nodeType === 3 ? n.parentNode : n)); else if(r.type === 'characterData') ajouts.add(r.target.parentNode); });
+    const plus = recs => { (recs || []).forEach(r => { if(r.type === 'childList') r.addedNodes.forEach(n => { const e = n.nodeType === 3 ? n.parentNode : n; if(e) ajouts.add(e); }); else if(r.type === 'characterData' && r.target.parentNode) ajouts.add(r.target.parentNode); });
       if(!prevu){ prevu = true; vue.requestAnimationFrame(passe); } };
     new vue.MutationObserver(plus).observe(doc.body, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ['class', 'style', 'hidden'] });
     plus();
