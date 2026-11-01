@@ -35,7 +35,8 @@ function plFrac(){ return '<span class="pl-frac"><span class="pl-case"></span><s
 // Pointillés pour écrire une réponse (largeur en caractères environ).
 function plPointilles(n){ return `<span class="pl-pts" style="min-width:${(n || 12) * 0.55}em;"></span>`; }
 // Case vide (signe <, = ou >, une lettre…).
-function plCase(){ return '<span class="pl-case pl-case-seule"></span>'; }
+// choix : réponses possibles « a|b|c » ; à l'écran, chaque clic dans la case passe à la suivante (sans clavier).
+function plCase(choix){ return `<span class="pl-case pl-case-seule"${choix ? ` data-plchoix="${String(choix).replace(/"/g, '&quot;')}" style="min-width:${Math.max(...String(choix).split('|').map(t => t.length)) * .62 + .6}em;"` : ''}></span>`; }
 // Réponse écrite dans le corrigé.
 function plRep(html){ return `<span class="pl-rep">${html}</span>`; }
 // Réponse barrée dans le corrigé.

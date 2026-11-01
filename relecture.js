@@ -39,6 +39,18 @@ const RELECTURE_CHGT = {
   // La date d'un changement est l'heure RÉELLE de sa mise en ligne (heure du commit poussé sur main), jamais une heure
   // arrondie dans le futur : un exercice validé entre la mise en ligne et une date trop tardive resterait « Chgt effectué »
   // (signalé le 01/11/2026 pour 6e-N1 ; dates corrigées d'après l'historique des publications).
+  // Version 1259 (01/11).
+  '6e-G2-P1-E4': { date: '2026-11-01T13:25:00Z', note: "Phrase précisée : « Deux droites parallèles et distinctes n'ont aucun point commun » (deux droites confondues sont aussi parallèles et ont une infinité de points communs)" },
+  '6e-G2-P3-E3': { date: '2026-11-01T13:25:00Z', note: "Figure du corrigé : (d), (d') et la parallèle passant par C restent tracées en entier comme traits de construction ; B n'est plus coupé" },
+  '6e-G2-P4-E2': { date: '2026-11-01T13:25:00Z', note: "À l'écran : les trois quadrillages côte à côte, l'aide « touche deux points… » écrite une seule fois sous l'ensemble" },
+  '6e-G2-P4-E5': { date: '2026-11-01T13:25:00Z', note: "Un cadre sur la feuille pour faire le tracé (plus besoin du cahier)" },
+  '6e-G2-P5-E1': { date: '2026-11-01T13:25:00Z', note: "On complète (d1) … (d2) dans une case, sans écrire de phrase ; à l'écran, un clic passe de ⊥ à //, puis vide" },
+  '6e-G2-P5-E2': { date: '2026-11-01T13:25:00Z', note: "À l'écran : les trois quadrillages côte à côte, l'aide écrite une seule fois sous l'ensemble" },
+  '6e-G2-P6-E1': { date: '2026-11-01T13:25:00Z', note: "« Complète avec ⊥ ou // » dans une case ; à l'écran, bascule au clic" },
+  '6e-G2-P6-E2': { date: '2026-11-01T13:25:00Z', note: "« Donc : (d3) … (d2) » à compléter dans une case ; à l'écran, bascule au clic" },
+  '6e-G2-P6-E4': { date: '2026-11-01T13:25:00Z', note: "Figure ajoutée au corrigé : (d), (d') perpendiculaire passant par A, (d'') perpendiculaire à (d') passant par A, angles droits codés" },
+  '6e-G2-P7-E1': { date: '2026-11-01T13:25:00Z', note: "« La médiatrice de [AB] est … » à compléter ; à l'écran, un clic dans la case passe de (d1) à (d2), puis (d3)" },
+  '6e-G2-P8-E4': { date: '2026-11-01T13:25:00Z', note: "Médiatrice tracée avec la règle graduée et l'équerre (milieu, puis perpendiculaire), sans compas ; le corrigé décrit la construction" },
   // Version 1257 (01/11).
   '6e-G2-P3-E1': { date: '2026-11-01T12:59:57Z', note: "Nom (d) écrit à côté de la droite sur les trois figures ; dans la figure 3, la droite (d) est d'un seul tenant (elle était brisée en F)" },
   // Version 1256 (01/11) : retour bêta.
@@ -167,7 +179,10 @@ async function rlEstBeta(){
 const rlBeta = () => !rlAdmin() && rl.beta && currentUser && rl.betaUid === currentUser.id;
 const rlNom = r => r && r.profiles ? [r.profiles.prenom, r.profiles.nom].filter(Boolean).join(' ') : 'Bêta-testeur';
 // Retours des bêta-testeurs à traiter (vus par l'administrateur).
-const rlATraiter = r => r.statut === 'com' && !r.traite;
+// Une remarque de bêta-testeur antérieure à une correction publiée (RELECTURE_CHGT) est traitée d'office (demandé le
+// 01/11/2026 : « Cet exercice est validé ! Pourquoi est-il en retour bêta ? »).
+const rlCorrigeApres = r => { const ch = RELECTURE_CHGT[r.cle]; return !!ch && Date.parse(ch.date) > Date.parse(r.updated_at); };
+const rlATraiter = r => r.statut === 'com' && !r.traite && !rlCorrigeApres(r);
 const rlEsc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const rlCle = (lvl, c, i, k) => `${plRef(lvl, plCode(lvl, c), i)}-E${k + 1}`;
 // Changement effectué et pas encore revu (la ligne a été mise à jour avant la date du changement).
@@ -200,7 +215,8 @@ async function rlEtatsCharger(){
 }
 function rlEtat(cle){
   const e = rl.etats.get(cle) || {}, chgt = !!RELECTURE_CHGT[cle] && !!rlChgt(cle);
-  const n = (e.remarques_ouvertes || 0) + (e.statut_admin === 'com' ? 1 : 0);
+  const dejaCorr = ((rl.retours && rl.retours.get(cle)) || []).filter(r => r.statut === 'com' && !r.traite && rlCorrigeApres(r)).length;
+  const n = Math.max(0, (e.remarques_ouvertes || 0) - dejaCorr) + (e.statut_admin === 'com' ? 1 : 0);
   if(n || chgt) return ['examen', 'hourglass_top', 'En cours d\'examen', n ? `${n} remarque${n > 1 ? 's' : ''} en attente` : 'modifié, à revoir'];
   if(e.statut_admin === 'ok') return ['valide', 'verified', 'Validé', ''];
   return ['nonex', 'radio_button_unchecked', 'Non examiné', e.validations ? `validé par ${e.validations} testeur${e.validations > 1 ? 's' : ''}` : ''];
@@ -266,7 +282,7 @@ function rlBarreHtml(cle){
 function rlRetoursHtml(cle){
   const l = rl.retours.get(cle) || []; if(!l.length) return '';
   const ok = l.filter(r => r.statut === 'ok'), com = l.filter(r => r.statut === 'com');
-  return `<div class="rl-betas">${com.map(r => `<div class="rl-beta${r.traite ? ' traite' : ''}"><span class="gicon">group</span> <b>${rlEsc(rlNom(r))}</b>
+  return `<div class="rl-betas">${com.map(r => `<div class="rl-beta${r.traite || rlCorrigeApres(r) ? ' traite' : ''}"><span class="gicon">group</span> <b>${rlEsc(rlNom(r))}</b>
       <span class="rl-rem">${(r.tags || []).map(t => `<span>${rlEsc(t)}</span>`).join('')}${r.commentaire ? `<em>${rlEsc(r.commentaire)}</em>` : ''}</span>
       <button type="button" class="rl-b rl-tr${r.traite ? ' on' : ''}" data-rltr="${r.id}"><span class="gicon">${r.traite ? 'task_alt' : 'radio_button_unchecked'}</span> Traité</button></div>`).join('')}
     ${ok.length ? `<div class="rl-beta-ok"><span class="gicon">group</span> Validé par ${ok.map(r => rlEsc(rlNom(r))).join(', ')}</div>` : ''}</div>`;

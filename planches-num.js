@@ -149,7 +149,7 @@ function plNumAnalyser(x){
       const largeur = expo ? 0 : base ? Math.max(30, lg * 11 + 18) : Math.max(46, lg * 12 + 26);
       // Réponse en lettres : case à la longueur de la phrase attendue, jusqu'à toute la largeur (relecture 6e-N1-P1-E2 :
       // « sur écran, la case n'est pas assez grande pour écrire le résultat »).
-      tr.outerHTML = `<button type="button" class="pn-case${large ? ' pn-large' : ''}${base ? ' pn-base' : ''}${tr.classList.contains('pl-case-seule') ? ' pn-signe' : ''}" data-pn="${id}" data-pnv="${id}"${tr.classList.contains('pl-case-seule') ? '' : large ? ` style="min-width:min(100%, ${Math.max(120, lg * 11 + 30)}px)"` : largeur ? ` style="min-width:${largeur > 320 ? `min(100%, ${largeur}px)` : largeur + 'px'}"` : ''}></button>`;
+      tr.outerHTML = `<button type="button" class="pn-case${large ? ' pn-large' : ''}${base ? ' pn-base' : ''}${tr.classList.contains('pl-case-seule') ? ' pn-signe' : ''}" data-pn="${id}" data-pnv="${id}"${tr.dataset.plchoix ? ` data-pnchoix="${tr.dataset.plchoix.replace(/"/g, '&quot;')}" style="min-width:${Math.max(...tr.dataset.plchoix.split('|').map(t => t.length)) * 11 + 26}px"` : ''}${tr.classList.contains('pl-case-seule') ? '' : large ? ` style="min-width:min(100%, ${Math.max(120, lg * 11 + 30)}px)"` : largeur ? ` style="min-width:${largeur > 320 ? `min(100%, ${largeur}px)` : largeur + 'px'}"` : ''}></button>`;
       // classes : la réponse attendue contient un grand nombre écrit par classes, l'élève doit l'écrire ainsi.
       const brut = r.textContent.replace(/[\u00a0\u202f]/g, ' '), classes = /\d{1,3}(?: \d{3})+/.test(brut) && plNumClassesOk(brut);
       cibles.push({ type: 'txt', id, rep, classes, maj: /^[(\[]?[A-ZÉÈ]/.test(r.textContent.trim()), perm: r.dataset.perm || '' }); // réponse en majuscule (nom de point…) : clavier en majuscules
@@ -204,7 +204,11 @@ function plNumAnalyser(x){
   groupes.forEach((G, g) => { if(!G.rep) return; /* rien à colorier dans le corrigé : ce n'est pas un coloriage */ g.setAttribute('data-pn', G.id); g.classList.add('pn-fig'); cibles.push({ type: 'fig', id: G.id, rep: G.rep, coul: G.coul || '#E35D3A' }); });
   // Plusieurs quadrillages où tracer une droite : figures plus petites, côte à côte, l'aide passe à la ligne sous chacune
   // (sinon trois figures de 520 px s'empilaient et la projection rapetissait tout l'exercice).
-  { const tr = E.querySelectorAll('svg.pn-trace'); if(tr.length > 1) tr.forEach(t => t.classList.add('pn-trace-n')); }
+  { const tr = [...E.querySelectorAll('svg.pn-trace')]; if(tr.length > 1){ tr.forEach(t => t.classList.add('pn-trace-n'));
+    // Une seule fois l'aide, sous l'ensemble des figures (relecture 6e-G2-P4-E2 : « une seule fois la consigne »).
+    E.querySelectorAll('.pn-tr-aide').forEach(a => a.remove());
+    let g = tr[0].parentElement; while(g && g !== E && !tr.every(t => g.contains(t))) g = g.parentElement;
+    (g && g !== E ? g : tr[tr.length - 1]).insertAdjacentHTML('afterend', '<div class="pn-tr-aide pn-tr-aide-n">Dans chaque figure, touche deux points du quadrillage : la droite passe par ces deux points. Touche encore pour recommencer.</div>'); } }
   if(!cibles.length) return null;
   return { html: E.innerHTML, cibles };
 }
@@ -312,7 +316,8 @@ function plNum(root, x, o){
     // faisant <, >, =, . »
     if(c && c.classList.contains('pn-signe')){ const cb = M.cibles.find(z => z.id === c.dataset.pnv);
       // Symboles de position de deux droites (relecture 6e-G2-P1-E5) : chaque clic passe de ⊥ à //, puis vide.
-      const cycle = cb && (/^[<>=]$/.test(cb.rep) ? ['', '<', '>', '='] : /^(⊥|\/\/)$/.test(cb.rep) ? ['', '⊥', '//'] : null);
+      // Choix donnés par l'exercice (plCase('(d1)|(d2)|(d3)')) : même bascule au clic (relecture 6e-G2-P7-E1).
+      const cycle = cb && (c.dataset.pnchoix ? ['', ...c.dataset.pnchoix.split('|')] : /^[<>=]$/.test(cb.rep) ? ['', '<', '>', '='] : /^(⊥|\/\/)$/.test(cb.rep) ? ['', '⊥', '//'] : null);
       if(cycle){ const v = etat.v[c.dataset.pnv] || '';
         etat.v[c.dataset.pnv] = cycle[(cycle.indexOf(v) + 1) % cycle.length]; if(sel){ sel = null; plClavier.fermer(); }
         effacerMarques(); afficher(); change(); return; } }
@@ -727,7 +732,7 @@ function plClavierPhysique(e){
     .pn-ex .pn-frac{ display:inline-flex; flex-direction:column; align-items:center; gap:3px; vertical-align:middle; margin:0 3px; }
     .pn-ex .pn-barre{ display:block; width:36px; border-top:2px solid #1C2B39; }
     .pn-ex svg.pn-trace{ width:min(100%, 520px) !important; height:auto !important; max-height:none !important; display:block; touch-action:manipulation; }
-    .pn-ex svg.pn-trace.pn-trace-n{ width:min(100%, 250px) !important; margin:0 auto; } .pn-ex svg.pn-trace-n + .pn-tr-aide{ max-width:250px; margin-left:auto; margin-right:auto; text-align:center; }
+    .pn-ex svg.pn-trace.pn-trace-n{ width:min(100%, 250px) !important; margin:0 auto; } .pn-ex .pn-tr-aide-n{ text-align:center; margin-top:8px; }
     .pn-ex .pn-tr-n{ cursor:pointer; } .pn-ex .pn-tr-n:hover{ fill:rgba(227,93,58,.25); } .pn-lecture .pn-tr-n{ cursor:default; } .pn-tr-aide{ font-size:.85rem; color:#4E5665; margin-top:4px; } .pn-lecture .pn-tr-aide{ display:none; }
     .pn-ex .pn-part{ cursor:pointer; } .pn-ex .pn-part:hover{ fill-opacity:.85; }
     .pn-lecture .pn-case, .pn-lecture .pn-part, .pn-lecture .pn-bascule, .pn-lecture .pn-mot{ cursor:default; }

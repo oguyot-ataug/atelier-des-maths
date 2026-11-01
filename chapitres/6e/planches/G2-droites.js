@@ -3,6 +3,8 @@
    Notations du collège : (AB), [AB), [AB], ⊥, //, médiatrice.
    Relecture du 01/11/2026 : propositions en tableau (P1-E2, P1-E4, P2-E1), symboles ⊥ et // à compléter (P1-E5), étiquettes A et D
    décollées, noms des droites à donner à l'écran (P2-E4). P3-E1 : nom (d) sur les figures, droite de la figure 3 d'un seul tenant.
+   Relecture (suite) : ⊥ et // à compléter dans une case qui bascule au clic (P5-E1, P6-E1, P6-E2, P7-E1 avec (d1)/(d2)/(d3)),
+   droites de construction (P3-E3), place pour tracer (P4-E5), figure du corrigé (P6-E4), médiatrice sans compas (P8-E4).
    ============================================================ */
 (() => {
 const B = n => plPointilles(n || 3), R = v => plRep(String(v));
@@ -80,7 +82,7 @@ PLANCHES['6e|Droites parallèles et perpendiculaires'] = [
         corr: plListe(['Deux droites avec un seul point commun sont ' + R('sécantes') + '.', 'Deux droites perpendiculaires forment un angle ' + R('droit') + '.', 'Deux droites sécantes formant un angle droit sont ' + R('perpendiculaires') + '.', 'Deux droites qui ne se coupent jamais sont ' + R('parallèles') + '.']) },
       { etoiles: 2, consigne: 'Vrai ou faux ? Entoure.',
         // « vrai faux » en tableau, sur une ligne, à distance de la phrase (relecture 6e-G2-P1-E4).
-        ...P3.chxTab([['Deux droites perpendiculaires sont sécantes.', 'vrai'], ['Deux droites sécantes sont perpendiculaires.', 'faux'], ['Deux droites qui ne se coupent pas sur le dessin sont parallèles.', 'faux'], ['Deux droites parallèles n\'ont aucun point commun.', 'vrai']].map(([t, r]) => [t, r, 'vrai · faux'])) },
+        ...P3.chxTab([['Deux droites perpendiculaires sont sécantes.', 'vrai'], ['Deux droites sécantes sont perpendiculaires.', 'faux'], ['Deux droites qui ne se coupent pas sur le dessin sont parallèles.', 'faux'], ['Deux droites parallèles et distinctes n\'ont aucun point commun.', 'vrai']].map(([t, r]) => [t, r, 'vrai · faux'])) },
       { etoiles: 2, consigne: 'Trace les droites (AB), (CD) et (EF), puis complète avec le symbole ⊥ (perpendiculaires) ou // (parallèles).',
         // Symboles ⊥ et // ; à l'écran, chaque clic dans la case passe de l'un à l'autre ; étiquette A dans le cadre (relecture 6e-G2-P1-E5).
         ...(() => { const o = { pts: [[[1, 5], 'A', 3, 14], [[5, 3], 'B', 4, -8], [[4, 6], 'C', -14, -4], [[8, 4], 'D', 4, -8], [[9, 1], 'E', -14, -2], [[11, 5], 'F', 8, 12]] },
@@ -122,7 +124,11 @@ PLANCHES['6e|Droites parallèles et perpendiculaires'] = [
         eleve: plListe(['La droite qui passe par E et F : ' + B(3), 'Le segment d\'extrémités E et F : ' + B(3), 'La demi-droite d\'origine E qui passe par F : ' + B(3), 'La demi-droite d\'origine F qui passe par E : ' + B(3)]),
         corr: plListe(['La droite qui passe par E et F : ' + R('(EF)'), 'Le segment d\'extrémités E et F : ' + R('[EF]'), 'La demi-droite d\'origine E qui passe par F : ' + R('[EF)'), 'La demi-droite d\'origine F qui passe par E : ' + R('[FE)')]) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Suis ce programme sur une feuille blanche : « Trace un segment [AB] de 5 cm. Trace la droite (d) perpendiculaire à (AB) passant par A, et la droite (d\') perpendiculaire à (AB) passant par B. Place le point C sur (d) à 3 cm de A. Trace la parallèle à (AB) passant par C : elle coupe (d\') en D. » Quelle figure obtiens-tu ?',
-        corr: cm1Redac('Figure obtenue', { suite: ['ABDC a quatre angles droits : c\'est un rectangle.', 'Ses côtés mesurent 5 cm et 3 cm.'] }, 'J\'obtiens un rectangle ABDC de longueur 5 cm et de largeur 3 cm.', `<span class="cm-fig-d">${S(140, 90, L([15, 80], [125, 80], K, 2) + L([15, 80], [15, 14], K, 2) + L([125, 80], [125, 14], K, 2) + L([15, 14], [125, 14], Ro, 2) + ad([15, 80], [1, 0], [0, -1]) + ad([125, 80], [-1, 0], [0, -1]) + cmT(8, 90, 'A', { fs: 11 }) + cmT(132, 90, 'B', { fs: 11 }) + cmT(8, 12, 'C', { fs: 11 }) + cmT(133, 12, 'D', { fs: 11 }), 130)}</span>`) },
+        corr: cm1Redac('Figure obtenue', { suite: ['ABDC a quatre angles droits : c\'est un rectangle.', 'Ses côtés mesurent 5 cm et 3 cm.'] }, 'J\'obtiens un rectangle ABDC de longueur 5 cm et de largeur 3 cm.',
+          // Les droites (d), (d') et la parallèle restent tracées en entier, comme traits de construction ; B dans le cadre (relecture 6e-G2-P3-E3).
+          `<span class="cm-fig-d">${S(180, 120, L([28, 4], [28, 116], Bl, 1.4) + L([138, 4], [138, 116], Bl, 1.4) + L([6, 40], [172, 40], Ro, 1.4) + L([28, 90], [138, 90], K, 2.2)
+            + ad([28, 90], [1, 0], [0, -1]) + ad([138, 90], [-1, 0], [0, -1]) + cmT(22, 12, '(d)', { fs: 10, c: Bl, a: 'end' }) + cmT(144, 12, "(d')", { fs: 10, c: Bl, a: 'start' })
+            + cmT(18, 104, 'A', { fs: 11 }) + cmT(148, 104, 'B', { fs: 11 }) + cmT(18, 34, 'C', { fs: 11 }) + cmT(148, 34, 'D', { fs: 11 }), 160)}</span>`) },
       { etoiles: 3, cahier: true, consigne: `Écris un programme de construction de cette figure, pour qu'un camarade puisse la reproduire sans la voir.<span class="cm-fig-d">${S(240, 130, L([10, 105], [230, 105], K, 2) + cmT(222, 97, '(d)', { fs: 12, a: 'end' }) + L([60, 5], [60, 125], Ro, 2) + L([170, 5], [170, 125], Ro, 2) + ad([60, 105], [1, 0], [0, -1]) + ad([170, 105], [1, 0], [0, -1]) + L([10, 35], [230, 35], Bl, 2) + P([60, 105], 'A', -14, 16) + P([170, 105], 'B', 6, 16) + P([60, 35], 'C', -14, -4) + P([170, 35], 'D', 6, -4), 220)}</span>`,
         corr: cm1Redac('Programme de construction', { suite: ['Trace une droite (d) et place deux points A et B sur (d).', 'Trace la perpendiculaire à (d) passant par A, puis la perpendiculaire à (d) passant par B.', 'Place un point C sur la perpendiculaire passant par A.', 'Trace la parallèle à (d) passant par C : elle coupe la perpendiculaire passant par B au point D.'] }, 'D\'autres programmes sont possibles, s\'ils permettent de construire exactement cette figure.') },
     ] },
@@ -144,14 +150,18 @@ PLANCHES['6e|Droites parallèles et perpendiculaires'] = [
         ...(() => { const T = traceD(10, 7, 21, { seg: [[[1, 6], [9, 6]], [[9, 6], [3, 2]], [[3, 2], [1, 6]]], pts: [[[1, 6], 'A', -14, 14], [[9, 6], 'B', 6, 14], [[3, 2], 'C', -16, -2]] },
             [{ p: [1, 6], v: [2, -3] }, { p: [9, 6], v: [2, 1] }, { p: [3, 2], v: [0, 1] }]);
           return { eleve: `<div style="text-align:center;">${T.eleve}</div>` + plListe(['Les trois droites passent par un même point : <b>oui · non</b>']), corr: `<div style="text-align:center;">${T.corr}</div>` + plListe(['Les trois droites passent par un même point : ' + plEntoure('oui')]) }; })() },
-      { etoiles: 3, cahier: true, consigne: 'Sur une feuille blanche, trace un triangle EFG. À l\'équerre, trace la perpendiculaire à (EF) passant par G et la perpendiculaire à (FG) passant par E.',
+      // Place pour tracer sur la feuille, sans passer par le cahier (relecture 6e-G2-P4-E5).
+      { etoiles: 3, consigne: 'Dans le cadre, trace un triangle EFG. À l\'équerre, trace la perpendiculaire à (EF) passant par G et la perpendiculaire à (FG) passant par E.',
+        eleve: '<div class="pl-cadre-trace" style="height:62mm;border:1.2px dashed #B9C3CF;border-radius:6px;"></div>',
         corr: cm1Redac('Méthode à l\'équerre', { suite: ['Un côté de l\'angle droit de l\'équerre le long de (EF), je la fais glisser jusqu\'à G et je trace.', 'Même chose avec (FG) et le point E.'] }, 'Je code chaque angle droit par un petit carré.') },
     ] },
   { titre: 'Tracer des parallèles', duree: '35 min',
     attendus: ['Utiliser les symboles ⊥ et //', 'Tracer la parallèle à une droite passant par un point, sur quadrillage', 'Tracer plusieurs parallèles et perpendiculaires dans une figure'],
     exos: [
       { etoiles: 1, col: 1, consigne: `Complète avec ⊥ ou //, en t'aidant des codages.<div style="text-align:center;">${POS}</div>`,
-        ...choix([['(d1) … (d2) :', '⊥'], ['(d1) … (d3) :', '//'], ['(d2) … (d3) :', '⊥']], '⊥ · //') },
+        // Une case à compléter ; à l'écran, un clic passe de ⊥ à // (relecture 6e-G2-P5-E1).
+        ...(() => { const it = [['(d1)', '⊥', '(d2)'], ['(d1)', '//', '(d3)'], ['(d2)', '⊥', '(d3)']], l = h => `<span style="white-space:nowrap;font-size:1.1em;">${h}</span>`;
+          return { eleve: plListe(it.map(([a, , b]) => l(`${a} ${plCase()} ${b}`))), corr: plListe(it.map(([a, r, b]) => l(`${a} ${R(r)} ${b}`))) }; })() },
       { etoiles: 2, consigne: 'Dans chaque cas, trace la droite parallèle à (d) passant par le point, en suivant le quadrillage.',
         ...(() => { const c = [{ d: [[0, 88], [154, 88]], M: [66, 22], nomM: 'R' }, { d: [[22, 0], [132, 110]], M: [110, 22], nomM: 'S' }, { d: [[0, 132], [132, 66]], M: [22, 44], nomM: 'T' }];
           const f = o => cm1dpFig({ w: 154, h: 132, k: 22, ...o });
@@ -169,15 +179,20 @@ PLANCHES['6e|Droites parallèles et perpendiculaires'] = [
   { titre: 'Propriétés et démonstrations', duree: '35 min',
     attendus: ['Connaître les propriétés reliant perpendiculaires et parallèles', 'Rédiger une courte démonstration : on sait que, propriété, donc', 'Ne pas conclure seulement sur l\'aspect du dessin'],
     exos: [
-      { etoiles: 2, consigne: 'Que peux-tu dire des droites ? Entoure.',
-        ...choix([['(d1) ⊥ (d3) et (d2) ⊥ (d3), donc (d1) … (d2) :', '//'], ['(d1) // (d2) et (d3) ⊥ (d1), donc (d3) … (d2) :', '⊥'], ['(d1) // (d2) et (d2) // (d3), donc (d1) … (d3) :', '//'], ['(d1) ⊥ (d2) et (d2) // (d3), donc (d1) … (d3) :', '⊥']], '⊥ · //') },
+      // Compléter par ⊥ ou // ; à l'écran, un clic dans la case passe de l'un à l'autre (relecture 6e-G2-P6-E1).
+      { etoiles: 2, consigne: 'Que peux-tu dire des droites ? Complète avec ⊥ ou //.',
+        ...(() => { const it = [['(d1) ⊥ (d3) et (d2) ⊥ (d3), donc', '(d1)', '//', '(d2)'], ['(d1) // (d2) et (d3) ⊥ (d1), donc', '(d3)', '⊥', '(d2)'], ['(d1) // (d2) et (d2) // (d3), donc', '(d1)', '//', '(d3)'], ['(d1) ⊥ (d2) et (d2) // (d3), donc', '(d1)', '⊥', '(d3)']];
+          return { eleve: plListe(it.map(([t, a, , b]) => `${t} <span style="white-space:nowrap;">${a} ${plCase()} ${b}</span>`)), corr: plListe(it.map(([t, a, r, b]) => `${t} <span style="white-space:nowrap;">${a} ${R(r)} ${b}</span>`)) }; })() },
       { etoiles: 2, col: 1, consigne: 'Complète la démonstration.',
-        eleve: plListe(['On sait que : (d1) // (d2) et (d3) ⊥ (d1).', 'Propriété : si deux droites sont parallèles, alors toute droite perpendiculaire à l\'une est ' + B(7) + ' à l\'autre.', 'Donc : (d3) <b>⊥ · //</b> (d2).']),
-        corr: plListe(['On sait que : (d1) // (d2) et (d3) ⊥ (d1).', 'Propriété : si deux droites sont parallèles, alors toute droite perpendiculaire à l\'une est ' + R('perpendiculaire') + ' à l\'autre.', 'Donc : (d3) ' + plEntoure('⊥') + ' (d2).']) },
+        eleve: plListe(['On sait que : (d1) // (d2) et (d3) ⊥ (d1).', 'Propriété : si deux droites sont parallèles, alors toute droite perpendiculaire à l\'une est ' + B(7) + ' à l\'autre.', 'Donc : (d3) ' + plCase() + ' (d2).']), // relecture 6e-G2-P6-E2 : à compléter, bascule au clic à l'écran
+        corr: plListe(['On sait que : (d1) // (d2) et (d3) ⊥ (d1).', 'Propriété : si deux droites sont parallèles, alors toute droite perpendiculaire à l\'une est ' + R('perpendiculaire') + ' à l\'autre.', 'Donc : (d3) ' + R('⊥') + ' (d2).']) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'On sait que (AB) ⊥ (d) et (CD) ⊥ (d). Démontre que les droites (AB) et (CD) sont parallèles.',
         corr: cm1Redac('Démonstration', { suite: ['On sait que : (AB) ⊥ (d) et (CD) ⊥ (d).', 'Propriété : si deux droites sont perpendiculaires à une même droite, alors elles sont parallèles.'] }, 'Donc : (AB) // (CD).', `<span class="cm-fig-d">${S(140, 90, L([10, 75], [130, 75], K, 2) + L([45, 8], [45, 88], Ro, 2) + L([100, 8], [100, 88], Bl, 2) + ad([45, 75], [1, 0], [0, -1]) + ad([100, 75], [1, 0], [0, -1]) + cmT(126, 70, '(d)', { fs: 11, a: 'end' }), 130)}</span>`) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Trace (d) et un point A hors de (d). À l\'équerre, trace la perpendiculaire (d\') à (d) passant par A, puis la perpendiculaire (d\'\') à (d\') passant par A. Que peux-tu dire de (d) et (d\'\') ? Démontre-le.',
-        corr: cm1Redac('Démonstration', { suite: ['On sait que : (d) ⊥ (d\') et (d\'\') ⊥ (d\').', 'Propriété : si deux droites sont perpendiculaires à une même droite, alors elles sont parallèles.'] }, 'Donc : (d) // (d\'\'). C\'est la méthode pour tracer une parallèle avec l\'équerre seule.') },
+        corr: cm1Redac('Démonstration', { suite: ['On sait que : (d) ⊥ (d\') et (d\'\') ⊥ (d\').', 'Propriété : si deux droites sont perpendiculaires à une même droite, alors elles sont parallèles.'] }, 'Donc : (d) // (d\'\'). C\'est la méthode pour tracer une parallèle avec l\'équerre seule.',
+          // Figure dans le corrigé (relecture 6e-G2-P6-E4).
+          `<span class="cm-fig-d">${S(170, 110, L([6, 88], [164, 88], K, 2) + cmT(160, 82, '(d)', { fs: 10, a: 'end' }) + L([70, 4], [70, 106], Ro, 2) + cmT(76, 14, "(d')", { fs: 10, c: Ro, a: 'start' })
+            + L([6, 36], [164, 36], Bl, 2) + cmT(160, 30, "(d'')", { fs: 10, c: Bl, a: 'end' }) + ad([70, 88], [1, 0], [0, -1]) + ad([70, 36], [1, 0], [0, 1], Bl) + P([70, 36], 'A', -14, -6), 160)}</span>`) },
       { etoiles: 3, col: 1, cahier: true, consigne: `Léo affirme : « Les droites (d1) et (d2) sont parallèles, puisqu'elles ne se coupent pas. » A-t-il raison ? Explique comment vérifier.<div style="text-align:center;">${S(240, 90, L([10, 15], [230, 40], K, 2) + L([10, 80], [230, 58], Ro, 2) + cmT(20, 32, '(d1)', { fs: 12, a: 'start' }) + cmT(20, 72, '(d2)', { fs: 12, c: Ro, a: 'start' }))}</div>`,
         corr: cm1Redac('Réponse', { suite: ['Une droite est illimitée : je prolonge (d1) et (d2) vers la droite.', 'L\'écart entre les deux droites diminue : elles finissent par se couper.'] }, 'Léo a tort : (d1) et (d2) sont sécantes. Pour vérifier, on prolonge les droites, ou on mesure l\'écart entre elles en deux endroits.') },
     ] },
@@ -185,7 +200,8 @@ PLANCHES['6e|Droites parallèles et perpendiculaires'] = [
     attendus: ['Connaître la définition de la médiatrice d\'un segment', 'Lire et utiliser les codages (milieu, angle droit)', 'Utiliser la propriété : un point de la médiatrice est à égale distance des extrémités'],
     exos: [
       { etoiles: 1, col: 1, consigne: `Quelle droite est la médiatrice du segment [AB] ? Entoure.<div style="text-align:center;">${S(220, 130, L([30, 70], [190, 70], K, 2.4) + P([30, 70], 'A', -14, -6) + P([190, 70], 'B', 6, -6) + cd([30, 70], [110, 70]) + cd([110, 70], [190, 70]) + L([110, 5], [110, 125], Ve, 2) + ad([110, 70], [1, 0], [0, -1], Ve) + cmT(122, 14, '(d1)', { fs: 12, c: Ve, a: 'start' }) + L([150, 5], [150, 125], Bl, 2) + ad([150, 70], [1, 0], [0, -1], Bl) + cmT(160, 120, '(d2)', { fs: 12, c: Bl, a: 'start' }) + L([80, 125], [140, 5], Ro, 2) + cmT(66, 120, '(d3)', { fs: 12, c: Ro, a: 'end' }), 165)}</div>`,
-        eleve: plListe(['La médiatrice de [AB] est <b>(d1) · (d2) · (d3)</b>']), corr: plListe(['La médiatrice de [AB] est ' + plEntoure('(d1)') + ' : elle est perpendiculaire à [AB] et passe par son milieu.']) },
+        // À compléter ; à l'écran, un clic dans la case passe de (d1) à (d2), puis (d3) (relecture 6e-G2-P7-E1).
+        eleve: plListe(['La médiatrice de [AB] est ' + plCase('(d1)|(d2)|(d3)') + '.']), corr: plListe(['La médiatrice de [AB] est ' + R('(d1)') + ' : elle est perpendiculaire à [AB] et passe par son milieu.']) },
       { etoiles: 1, consigne: 'D\'après les codages, la droite rouge est-elle la médiatrice du segment [AB] ? Entoure.',
         ...(() => { const A = [15, 55], Bp = [105, 55], ab = P(A, 'A', -4, 16) + P(Bp, 'B', -4, 16);
           const V = [vig([[A, Bp], [[60, 6], [60, 82], Ro]], cd(A, [60, 55]) + cd([60, 55], Bp) + ad([60, 55], [1, 0], [0, -1], Ro) + ab),
@@ -219,8 +235,8 @@ PLANCHES['6e|Droites parallèles et perpendiculaires'] = [
           const dep = x => `<circle cx="${x(1)}" cy="${x(1)}" r="4" fill="${Ro}"/>`;
           const fin = Gr(8, 8, 16, x => dep(x) + segs(1).map(([a, b, c, d]) => L([x(a), x(b)], [x(c), x(d)], Ro, 2.4)).join(''));
           return { eleve: duo([col(mod, 'Le modèle'), col(plX(Gr(8, 8, 16, dep), { t: 'seg', k: 16, ox: 0, oy: 0, w: 8, h: 8, att: segs(1) }), 'À toi !')]), corr: duo([col(mod, 'Le modèle'), col(fin, 'La reproduction')]) }; })() },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'Trace un segment [AB] de 6 cm et sa médiatrice (d), au compas. Place un point C sur (d) tel que CA = 5 cm. Quelle est la longueur CB ? Quelle est la nature du triangle ABC ?',
-        corr: cm1Redac('Construction et justification', { suite: ['Le point C est sur la médiatrice de [AB] : il est à égale distance de A et de B.', 'Donc CB = CA = 5 cm.'] }, 'Le triangle ABC a deux côtés de même longueur : c\'est un triangle isocèle en C.') },
+      { etoiles: 3, col: 1, cahier: true, consigne: 'Trace un segment [AB] de 6 cm et sa médiatrice (d), avec la règle graduée et l\'équerre. Place un point C sur (d) tel que CA = 5 cm. Quelle est la longueur CB ? Quelle est la nature du triangle ABC ?',
+        corr: cm1Redac('Construction et justification', { suite: ['Je place le milieu I de [AB] (AI = 3 cm), puis je trace à l\'équerre la perpendiculaire à [AB] passant par I : c\'est (d).', 'Le point C est sur la médiatrice de [AB] : il est à égale distance de A et de B.', 'Donc CB = CA = 5 cm.'] }, 'Le triangle ABC a deux côtés de même longueur : c\'est un triangle isocèle en C.') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Construis un carré ABCD de 4 cm de côté. Trace la médiatrice de [AB] et la médiatrice de [BC]. Que remarques-tu ?',
         corr: cm1Redac('Observation', { suite: ['La médiatrice de [AB] passe aussi par le milieu de [CD].', 'La médiatrice de [BC] passe aussi par le milieu de [AD].'] }, 'Les deux médiatrices se coupent au centre du carré et le partagent en quatre petits carrés de 2 cm de côté.') },
     ] },
