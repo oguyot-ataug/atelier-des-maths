@@ -83,11 +83,22 @@ PLANCHES['6e|Fractions : nombres et partage'] = [
       { etoiles: 2, col: 1, consigne: 'Encadre chaque fraction entre deux nombres entiers consécutifs.',
         eleve: plListe([ligne(B(1), '&lt;', F(13, 4), '&lt;', B(1)), ligne(B(1), '&lt;', F(22, 5), '&lt;', B(1)), ligne(B(1), '&lt;', F(9, 2), '&lt;', B(1)), ligne(B(1), '&lt;', F(30, 7), '&lt;', B(1))]),
         corr: plListe([ligne(R(3), '&lt;', F(13, 4), '&lt;', R(4)), ligne(R(4), '&lt;', F(22, 5), '&lt;', R(5)), ligne(R(4), '&lt;', F(9, 2), '&lt;', R(5)), ligne(R(4), '&lt;', F(30, 7), '&lt;', R(5))]) },
-      { etoiles: 2, col: 1, consigne: 'Compare chaque fraction à 1. Entoure.',
-        eleve: plListe([ligne(F(7, 8), ':', '<b>&lt; 1 · = 1 · &gt; 1</b>'), ligne(F(9, 8), ':', '<b>&lt; 1 · = 1 · &gt; 1</b>'), ligne(F(12, 12), ':', '<b>&lt; 1 · = 1 · &gt; 1</b>')]),
-        corr: plListe([ligne(F(7, 8), ':', plEntoure('&lt; 1'), '(7 &lt; 8)'), ligne(F(9, 8), ':', plEntoure('&gt; 1'), '(9 &gt; 8)'), ligne(F(12, 12), ':', plEntoure('= 1'))]) },
+      // « … 1 » à compléter par <, > ou = ; à l'écran, la case bascule au clic (relecture 6e-N2-P4-E6).
+      { etoiles: 2, col: 1, consigne: 'Compare chaque fraction à 1 : complète avec &lt;, &gt; ou =.',
+        eleve: plListe([ligne(F(7, 8), plCase(), '1'), ligne(F(9, 8), plCase(), '1'), ligne(F(12, 12), plCase(), '1')]),
+        corr: plListe([ligne(F(7, 8), R('&lt;'), '1', '<small>(7 &lt; 8)</small>'), ligne(F(9, 8), R('&gt;'), '1', '<small>(9 &gt; 8)</small>'), ligne(F(12, 12), R('='), '1')]) },
       { etoiles: 3, col: 1, cahier: true, consigne: `Trace une demi-droite graduée (l'unité mesure 6 carreaux) et place-y les nombres ${T(1, 2)}, ${T(5, 3)}, ${T(7, 6)} et 2.`,
-        corr: cm1Redac('Placement', { suite: ['L\'unité vaut 6 carreaux : un sixième vaut 1 carreau.', `${F(1, 2)} = ${F(3, 6)} : 3 carreaux ; ${F(7, 6)} : 7 carreaux.`, `${F(5, 3)} = ${F(10, 6)} : 10 carreaux ; 2 : 12 carreaux.`] }, 'On compte les carreaux depuis l\'origine pour placer chaque point.') },
+        corr: cm1Redac('Placement', { suite: ['L\'unité vaut 6 carreaux : un sixième vaut 1 carreau.', `${F(1, 2)} = ${F(3, 6)} : 3 carreaux ; ${F(7, 6)} : 7 carreaux.`, `${F(5, 3)} = ${F(10, 6)} : 10 carreaux ; 2 : 12 carreaux.`] }, 'On compte les carreaux depuis l\'origine pour placer chaque point.',
+          // Le tracé sur papier quadrillé (relecture 6e-N2-P4-E7).
+          (() => { const k = 14, x0 = k, y = 3 * k, w = 14 * k, h = 5 * k; let g = '';
+            for(let i = 0; i <= 14; i++) g += `<line x1="${i * k}" y1="0" x2="${i * k}" y2="${h}" stroke="#D5E3EF" stroke-width="1"/>`;
+            for(let j = 0; j <= 5; j++) g += `<line x1="0" y1="${j * k}" x2="${w}" y2="${j * k}" stroke="#D5E3EF" stroke-width="1"/>`;
+            g += `<line x1="${x0}" y1="${y}" x2="${w - 4}" y2="${y}" stroke="#1F3A5C" stroke-width="1.8"/><polygon points="${w - 2},${y} ${w - 9},${y - 4} ${w - 9},${y + 4}" fill="#1F3A5C"/>`;
+            [[0, '0'], [6, '1'], [12, '2']].forEach(([c, t]) => { g += `<line x1="${x0 + c * k}" y1="${y - 5}" x2="${x0 + c * k}" y2="${y + 5}" stroke="#1F3A5C" stroke-width="1.6"/>` + cmT(x0 + c * k, y + 17, t, { fs: 11 }); });
+            const fe = (c, a, b) => `<path d="M${x0 + c * k - 4},${y - 4} L${x0 + c * k + 4},${y + 4} M${x0 + c * k - 4},${y + 4} L${x0 + c * k + 4},${y - 4}" stroke="#E35D3A" stroke-width="1.8"/>`
+              + cmT(x0 + c * k, y - 25, a, { fs: 10, c: '#E35D3A' }) + `<line x1="${x0 + c * k - 6}" y1="${y - 21}" x2="${x0 + c * k + 6}" y2="${y - 21}" stroke="#E35D3A" stroke-width="1.2"/>` + cmT(x0 + c * k, y - 11, b, { fs: 10, c: '#E35D3A' });
+            g += fe(3, 1, 2) + fe(7, 7, 6) + fe(10, 5, 3);
+            return `<span class="cm-fig-d"><svg class="pl-libre" viewBox="0 0 ${w} ${h}" style="width:${w}px;max-width:100%;">${g}</svg></span>`; })()) },
     ] },
   { titre: 'Fractions décimales et quotients', duree: '35 min',
     attendus: ['Passer d\'une fraction décimale à un nombre décimal, et inversement', 'Reconnaître des fractions égales', 'Utiliser le quotient pour résoudre a × … = b'],
@@ -126,7 +137,8 @@ PLANCHES['6e|Fractions : nombres et partage'] = [
         eleve: plListe([ligne(F(2, 9), 'des billes sont rouges :', B(), 'billes rouges.'), ligne(F(1, 4), 'des billes sont bleues :', B(), 'billes bleues.'), ligne('Les autres sont vertes :', B(), 'billes vertes.')]),
         corr: plListe([ligne(F(2, 9), 'des billes sont rouges :', R(8), 'billes rouges.'), ligne(F(1, 4), 'des billes sont bleues :', R(9), 'billes bleues.'), ligne('Les autres sont vertes : 36 − 8 − 9 =', R(19), 'billes vertes.')]) },
       { etoiles: 3, cahier: true, consigne: `Tom a lu ${T(2, 5)} d'un livre de 240 pages. Combien de pages a-t-il lues ? Combien lui en reste-t-il ?`,
-        corr: cm1Redac('Pages lues', { suite: [`${F(1, 5)} de 240 = 240 ÷ 5 = 48`, `${F(2, 5)} de 240 = 2 × 48 = 96`] }, 'Tom a lu 96 pages.') + cm1Redac('Pages restantes', '240 − 96 = 144', 'Il lui reste 144 pages à lire.') },
+        // Calcul écrit avec la fraction (relecture 6e-N2-P6-E6).
+        corr: cm1Redac('Pages lues', { suite: [`${F(1, 5)} × 240 = ${F(240, 5)} = 48`, `${F(2, 5)} × 240 = ${F('2 \\times 240', 5)} = ${F(480, 5)} = 96`] }, 'Tom a lu 96 pages.') + cm1Redac('Pages restantes', '240 − 96 = 144', 'Il lui reste 144 pages à lire.') },
     ] },
   { titre: 'Proportions et pourcentages', duree: '40 min',
     attendus: ['Exprimer une proportion par une fraction', 'Passer d\'une fraction à un pourcentage', 'Calculer un pourcentage simple d\'une quantité'],
@@ -147,9 +159,11 @@ PLANCHES['6e|Fractions : nombres et partage'] = [
         eleve: plListe(['Sac A : 3 boules vertes sur 12 ; sac B : 5 vertes sur 20. Même proportion de vertes ? <b>oui · non</b>', 'Club A : 6 filles sur 10 ; club B : 13 filles sur 25. Plus grande proportion de filles : <b>A · B</b>']),
         corr: plListe(['Sac A : 3 boules vertes sur 12 ; sac B : 5 vertes sur 20. Même proportion de vertes ? ' + plEntoure('oui') + ` (${F(1, 4)} dans les deux cas)`, 'Club A : 6 filles sur 10 ; club B : 13 filles sur 25. Plus grande proportion de filles : ' + plEntoure('A') + ' (60 % contre 52 %)']) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Un pull coûte 40 €. Pendant les soldes, son prix baisse de 25 %. Quel est son nouveau prix ?',
-        corr: cm1Redac('Montant de la réduction', '25 % de 40 € = 40 € ÷ 4 = 10 €', 'La réduction est de 10 €.') + cm1Redac('Nouveau prix', '40 € − 10 € = 30 €', 'Le pull coûte 30 € pendant les soldes.') },
+        // 25 % = 25/100 (relecture 6e-N2-P7-E6).
+        corr: cm1Redac('Montant de la réduction', { suite: [`25 % de 40 € = ${F(25, 100)} × 40`, `= ${F('25 \\times 40', 100)}`, `= ${F(1000, 100)}`, '= 10 €'] }, 'La réduction est de 10 €.') + cm1Redac('Nouveau prix', '40 € − 10 € = 30 €', 'Le pull coûte 30 € pendant les soldes.') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Dans un collège de 600 élèves, 45 % sont demi-pensionnaires. Combien d\'élèves sont demi-pensionnaires ?',
-        corr: cm1Redac('Nombre de demi-pensionnaires', { suite: ['10 % de 600 = 60', '5 % de 600 = 30', '45 % = 4 × 10 % + 5 % : 4 × 60 + 30 = 270'] }, '270 élèves sont demi-pensionnaires.') },
+        // 45 % = 45/100 (relecture 6e-N2-P7-E7).
+        corr: cm1Redac('Nombre de demi-pensionnaires', { suite: [`45 % de 600 = ${F(45, 100)} × 600`, `= 45 × ${F(600, 100)}`, '= 45 × 6', '= 270'] }, '270 élèves sont demi-pensionnaires.') },
     ] },
 ];
 })();
