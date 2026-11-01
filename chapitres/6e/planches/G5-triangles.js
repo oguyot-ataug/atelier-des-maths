@@ -29,14 +29,14 @@ function placeC(A, Bp, c, nom, w, h){ const k = 20, base = g => L(g(...A), g(...
 const CPT = (p, nom, dx, dy, c) => ({ pt: p, nom, dx, dy, c });
 // Triangle RST : RS = 7 cm, RT = 5 cm, ST = 4 cm (1 cm = 18 px).
 const TRI_RST = (() => { const k = 18, R = [20, 110], S7 = [20 + 7 * k, 110], x = (25 - 16 + 49) / 14, T = [20 + x * k, 110 - Math.sqrt(25 - x * x) * k];
-  return plConstruction({ w: 166, h: 126, px: 170, etapes: [
+  return plConstruction({ programme: [{"op": "point", "name": "R"}, {"op": "segment_length", "from": "R", "to": "S", "length": 7}, {"op": "circle", "id": "cR", "center": "R", "radius": 5}, {"op": "circle", "id": "cS", "center": "S", "radius": 4}, {"op": "intersect", "name": "T", "of": ["cR", "cS"], "pick": "up"}, {"op": "segment", "from": "R", "to": "T"}, {"op": "segment", "from": "S", "to": "T"}], outils: ["regle", "compas"], w: 166, h: 126, px: 170, etapes: [
     { texte: 'Je trace le segment [RS] de 7 cm.', el: [{ seg: [R, S7] }, CPT(R, 'R', -11, 4), CPT(S7, 'S', 11, 4), { txt: [83, 123], t: '7 cm' }] },
     { texte: 'Je trace un arc de cercle de centre R et de rayon 5 cm.', el: [{ arc: [R, 5 * k, 22, 46], c: '#2EA8C9' }] },
     { texte: 'Je trace un arc de cercle de centre S et de rayon 4 cm.', el: [{ arc: [S7, 4 * k, 123, 148], c: '#2E9C6A' }] },
     { texte: 'Les deux arcs se coupent en T : je trace [RT] et [ST].', el: [{ seg: [R, T] }, { seg: [S7, T] }, CPT(T, 'T', 0, -9)] }] }); })();
 // Triangle équilatéral EFG de côté 5 cm (1 cm = 20 px).
 const TRI_EFG = (() => { const E = [20, 110], F = [120, 110], G = [70, 110 - 50 * Math.sqrt(3)];
-  return plConstruction({ w: 140, h: 124, px: 150, etapes: [
+  return plConstruction({ programme: [{"op": "point", "name": "E"}, {"op": "segment_length", "from": "E", "to": "F", "length": 5}, {"op": "circle", "id": "cE", "center": "E", "radius": 5}, {"op": "circle", "id": "cF", "center": "F", "radius": 5}, {"op": "intersect", "name": "G", "of": ["cE", "cF"], "pick": "up"}, {"op": "segment", "from": "E", "to": "G"}, {"op": "segment", "from": "F", "to": "G"}, {"op": "mark_equal", "segments": [["E", "F"], ["E", "G"], ["F", "G"]], "count": 1}], outils: ["regle", "compas"], w: 140, h: 124, px: 150, etapes: [
     { texte: 'Je trace le segment [EF] de 5 cm.', el: [{ seg: [E, F] }, CPT(E, 'E', -11, 4), CPT(F, 'F', 11, 4)] },
     { texte: 'Je trace un arc de cercle de centre E et de rayon 5 cm.', el: [{ arc: [E, 100, 48, 72], c: '#2EA8C9' }] },
     { texte: 'Je trace un arc de cercle de centre F et de rayon 5 cm.', el: [{ arc: [F, 100, 108, 132], c: '#2E9C6A' }] },

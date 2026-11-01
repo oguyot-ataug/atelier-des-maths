@@ -1,22 +1,20 @@
 /* ============================================================
-   Corrections animées des constructions (règle, équerre, compas)
+   Corrections animées des constructions -- AUX INSTRUMENTS DU SITE
    -- demandé le 01/11/2026 (relecture 6e-G1-P4-E5 : « Est-il possible d'y mettre une correction animée avec notre
-   outil ? », puis « Oui, mets en place la correction animée »).
+   outil ? », « Oui, mets en place la correction animée », puis « Tu n'as pas utilisé les instruments du site ! »).
 
-   plConstruction({ w, h, px, depart: [éléments], etapes: [{ texte, el: [éléments] }] }) renvoie la figure FINALE
-   (papier, Manuel, impressions : rien ne change). À l'écran (vignettes, correction, projection), une barre
-   « Voir la construction » est ajoutée sous la figure : les étapes se tracent l'une après l'autre, avec leur phrase ;
-   le compas apparaît pour tracer les arcs et les cercles ; ◀ ▶ pour avancer pas à pas (projection en classe).
+   plConstruction({ w, h, px, depart, etapes: [{ texte, el: [éléments] }], programme: [...], outils: [...] }) :
+   - la figure FINALE en SVG (papier, Manuel, impressions : rien ne change) ;
+   - `programme` : le programme de construction du tableau interactif (format de tableau-ia.js : point,
+     segment_length, circle, intersect, perpendicular, midpoint, perpendicular_bisector, angle_bisector…) ;
+     `outils` : instruments autorisés (regle, equerre, requerre, compas, rapporteur ; tous par défaut).
+   À l'écran (vignettes, correction, projection), un bouton « Voir la construction aux instruments » sous la figure
+   ouvre le lecteur du tableau (tbAiOpenPlayer) : la vraie règle graduée, l'équerre, le compas, pas à pas, avec la
+   barre de lecture habituelle.
 
-   Éléments (coordonnées SVG, y vers le bas ; angles en degrés, sens trigonométrique, comme sur une feuille) :
-     { seg: [a, b], c, ep, tirets }        segment
-     { arc: [o, r, de, a], c }             arc de cercle de centre o (tracé au compas)
-     { cercle: [o, r], c, tirets }         cercle (tracé au compas)
-     { pt: p, nom, dx, dy, c }             point (croix ; geo-points.js la change en trait ou l'efface selon la figure)
-     { txt: [x, y], t, c, fs, a }          texte
-     { codage: [a, b], n }                 codage de longueur au milieu de [ab] (n traits)
-     { droit: [a, b, c] }                  angle droit en b
-     { svg: '…' }                          dessin libre
+   Éléments de la figure (coordonnées SVG, y vers le bas ; angles en degrés, sens trigonométrique) :
+     { seg: [a, b], c, ep, tirets }   { arc: [o, r, de, a], c }   { cercle: [o, r], c, tirets }
+     { pt: p, nom, dx, dy, c }        { txt: [x, y], t, c, fs, a } { codage: [a, b], n }   { droit: [a, b, c] }   { svg: '…' }
    ============================================================ */
 (() => {
 const NS = 'http://www.w3.org/2000/svg';
@@ -46,83 +44,40 @@ function txt(x, y, t, c, fs, a){ return `<text x="${f1(x)}" y="${f1(y)}" font-si
 window.plConstruction = function(o){
   const et = o.etapes || [];
   const g = (n, l) => `<g data-etape="${n}">${(l || []).map(el).join('')}</g>`;
-  return `<svg class="pl-libre pl-constr" viewBox="0 0 ${o.w} ${o.h}" style="width:${o.px || o.w}px;max-width:100%;display:inline-block;vertical-align:middle;" data-constr="${esc(JSON.stringify(et.map(e => e.texte || '')))}">`
+  const prog = o.programme ? ` data-tbprog="${esc(JSON.stringify({ program: o.programme, tools: o.outils || ['regle', 'equerre', 'compas', 'rapporteur'] }))}"` : '';
+  return `<svg class="pl-libre pl-constr" viewBox="0 0 ${o.w} ${o.h}" style="width:${o.px || o.w}px;max-width:100%;display:inline-block;vertical-align:middle;"${prog}>`
     + g(0, o.depart) + et.map((e, i) => g(i + 1, e.el)).join('') + '</svg>';
 };
 
-/* ---------- Lecteur (écran seulement) ---------- */
-const CSS = `.pl-constr-bar{ display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:6px; margin:6px auto 2px; max-width:440px; font-size:.86rem; }
-.pl-constr-bar button{ border:1px solid #C9DCEB !important; background:#fff !important; color:#1F3A5C !important; opacity:1 !important; border-radius:999px; padding:3px 10px; font:inherit; font-weight:700; cursor:pointer; }
-.pl-constr-bar button:hover{ background:#EAF4FB !important; } .pl-constr-bar button.pl-constr-jouer{ background:#1F3A5C !important; color:#fff !important; border-color:#1F3A5C !important; }
-.pl-constr-txt{ flex-basis:100%; text-align:center; color:#1F3A5C; min-height:1.3em; line-height:1.35; }
-.pl-constr-txt:empty{ display:none; }
+/* ---------- Bouton « Voir la construction aux instruments » (écran seulement) ---------- */
+const CSS = `.pl-constr-bar{ display:flex; justify-content:center; margin:6px auto 2px; }
+.pl-constr-bar button{ display:inline-flex; align-items:center; gap:6px; border:1px solid #1F3A5C !important; background:#1F3A5C !important; color:#fff !important; opacity:1 !important; border-radius:999px; padding:4px 14px; font:inherit; font-size:.86rem; font-weight:700; cursor:pointer; }
+.pl-constr-bar button:hover{ background:#2C4E75 !important; }
 @media print{ .pl-constr-bar{ display:none !important; } }`;
 function css(doc){ if(doc.getElementById('pl-constr-css')) return; const s = doc.createElement('style'); s.id = 'pl-constr-css'; s.textContent = CSS; (doc.head || doc.body).appendChild(s); }
 function preparer(svg){
   if(svg.hasAttribute('data-constr-pret')) return; svg.setAttribute('data-constr-pret', '1');
   if(svg.closest('.pl-planche, .pl-page')) return; // feuille imprimée ou Manuel : la figure finale seule
-  let T; try{ T = JSON.parse(svg.getAttribute('data-constr')); }catch(e){ return; } if(!T || !T.length) return;
-  const doc = svg.ownerDocument, win = doc.defaultView || window, n = T.length; css(doc);
+  const doc = svg.ownerDocument, win = doc.defaultView || window;
+  if(typeof win.tbAiOpenPlayer !== 'function' || !doc.getElementById('tbAiPlayerOverlay')) return; // lecteur du tableau absent (autre fenêtre)
+  let d; try{ d = JSON.parse(svg.getAttribute('data-tbprog')); }catch(e){ return; } if(!d || !Array.isArray(d.program)) return;
+  css(doc);
   const bar = doc.createElement('div'); bar.className = 'pl-constr-bar';
-  bar.innerHTML = '<button type="button" class="pl-constr-jouer">▶ Voir la construction</button><button type="button" class="pl-constr-prec" title="Étape précédente" aria-label="Étape précédente">◀</button><button type="button" class="pl-constr-suiv" title="Étape suivante" aria-label="Étape suivante">▶</button><span class="pl-constr-txt"></span>';
-  // la barre sous la figure (hors d'un petit bloc flottant)
+  bar.innerHTML = '<button type="button" title="La construction pas à pas, avec la règle graduée, l\'équerre et le compas du tableau"><span class="gicon">play_circle</span> Voir la construction aux instruments</button>';
   const ancre = svg.parentElement && svg.parentElement.classList.contains('cm-fig-d') ? svg.parentElement : svg;
   ancre.insertAdjacentElement('afterend', bar);
-  const jouer = bar.querySelector('.pl-constr-jouer'), txt = bar.querySelector('.pl-constr-txt');
-  let k = n, anim = null, auto = false, compas = null;
-  const groupes = () => [...svg.querySelectorAll('g[data-etape]')];
-  const traits = g => [...g.querySelectorAll('line, path, circle, ellipse, polyline, polygon, text')];
-  function remettre(e){ e.style.strokeDasharray = ''; e.style.strokeDashoffset = ''; e.style.opacity = ''; }
-  function legende(){ txt.textContent = k === 0 ? 'Au départ.' : `Étape ${k} sur ${n} : ${T[k - 1]}`; }
-  function boutons(){ jouer.textContent = auto ? '⏸ Pause' : (k >= n && !anim ? '↻ Revoir la construction' : '▶ Voir la construction'); }
-  function arreter(){ if(anim){ win.cancelAnimationFrame(anim); anim = null; } if(compas){ compas.remove(); compas = null; } }
-  // état fixe : étapes ≤ k visibles, les suivantes cachées
-  function poser(){ arreter(); groupes().forEach(g => { const e = +g.getAttribute('data-etape'); g.style.visibility = e <= k ? '' : 'hidden'; traits(g).forEach(remettre); }); legende(); boutons(); }
-  function dessinerCompas(o, p){
-    if(!compas){ compas = doc.createElementNS(NS, 'g'); compas.setAttribute('data-geo-garde', '1'); compas.setAttribute('pointer-events', 'none'); svg.appendChild(compas); }
-    const d = Math.hypot(p[0] - o[0], p[1] - o[1]), m = [(o[0] + p[0]) / 2, (o[1] + p[1]) / 2], l = Math.max(d * .78, d / 2 + 14), hh = Math.sqrt(Math.max(l * l - d * d / 4, 0));
-    let u = d ? [-(p[1] - o[1]) / d, (p[0] - o[0]) / d] : [0, -1]; if(u[1] > 0) u = [-u[0], -u[1]]; // la charnière vers le haut
-    const h = [m[0] + u[0] * hh, m[1] + u[1] * hh];
-    compas.innerHTML = `<line x1="${o[0]}" y1="${o[1]}" x2="${h[0]}" y2="${h[1]}" stroke="#5B6472" stroke-width="2.6" stroke-linecap="round" opacity=".85"/>`
-      + `<line x1="${h[0]}" y1="${h[1]}" x2="${p[0]}" y2="${p[1]}" stroke="#5B6472" stroke-width="2.6" stroke-linecap="round" opacity=".85"/>`
-      + `<circle cx="${h[0]}" cy="${h[1]}" r="3.4" fill="#5B6472"/><circle cx="${o[0]}" cy="${o[1]}" r="1.8" fill="#1F3A5C"/><circle cx="${p[0]}" cy="${p[1]}" r="2.6" fill="#E35D3A"/>`;
-  }
-  // tracer l'étape k (les précédentes visibles)
-  function tracer(fin){
-    arreter(); const g = groupes().find(x => +x.getAttribute('data-etape') === k); groupes().forEach(x => { const e = +x.getAttribute('data-etape'); x.style.visibility = e <= k ? '' : 'hidden'; if(e < k) traits(x).forEach(remettre); });
-    legende(); boutons(); if(!g){ if(fin) fin(); return; }
-    const L = traits(g).map(e => { let lg = 0; try{ lg = e.tagName !== 'text' && e.getTotalLength ? e.getTotalLength() : 0; }catch(err){}
-      const pointille = (e.getAttribute('stroke-dasharray') || '') !== '', petit = lg < 26; return { e, lg, mode: e.tagName === 'text' || pointille || petit || !lg ? 'fondu' : 'trait', o: e.getAttribute('data-compas') }; });
-    const longs = L.filter(x => x.mode === 'trait'), duree = Math.max(1300, longs.reduce((z, x) => z + (x.o ? 1500 : 650), 0)), t0 = win.performance.now();
-    L.forEach(x => { if(x.mode === 'trait'){ x.e.style.strokeDasharray = x.lg; x.e.style.strokeDashoffset = x.lg; } else x.e.style.opacity = 0; });
-    const pas = now => {
-      const t = Math.min(1, (now - t0) / duree);
-      // les traits l'un après l'autre ; points et textes à la fin
-      const part = longs.length ? .82 / longs.length : 0;
-      longs.forEach((x, i) => { const p = Math.max(0, Math.min(1, (t - i * part) / part)); x.e.style.strokeDashoffset = x.lg * (1 - p);
-        if(x.o && p > 0 && p < 1){ try{ const q = x.e.getPointAtLength(x.lg * p), o = x.o.split(',').map(Number); dessinerCompas(o, [q.x, q.y]); }catch(err){} } });
-      if(!longs.some((x, i) => x.o && t > i * part && t < (i + 1) * part) && compas){ compas.remove(); compas = null; }
-      const tf = longs.length ? Math.max(0, (t - .8) / .2) : t; L.filter(x => x.mode === 'fondu').forEach(x => { x.e.style.opacity = tf; });
-      if(t < 1){ anim = win.requestAnimationFrame(pas); return; }
-      anim = null; if(compas){ compas.remove(); compas = null; } L.forEach(x => remettre(x.e)); boutons(); if(fin) fin();
-    };
-    anim = win.requestAnimationFrame(pas);
-  }
-  function suite(){ if(!auto) return; if(k >= n){ auto = false; boutons(); return; } win.setTimeout(() => { if(!auto) return; k++; tracer(suite); }, 700); }
-  jouer.addEventListener('click', () => {
-    if(auto){ auto = false; boutons(); return; }
-    if(k >= n){ k = 0; poser(); }
-    auto = true; boutons(); if(k === 0) suite(); else tracer(suite);
+  bar.querySelector('button').addEventListener('click', ev => {
+    ev.stopPropagation();
+    // au-dessus de la projection d'une planche (plein écran)
+    const ov = doc.getElementById('tbAiPlayerOverlay'); if(ov) ov.style.zIndex = svg.closest('#plProj') ? '9700' : '300';
+    win.tbAiOpenPlayer(d);
   });
-  bar.querySelector('.pl-constr-suiv').addEventListener('click', () => { auto = false; if(k >= n && !anim){ k = 0; poser(); return; } if(anim){ poser(); } if(k < n){ k++; tracer(); } });
-  bar.querySelector('.pl-constr-prec').addEventListener('click', () => { auto = false; if(k > 0) k--; poser(); });
-  txt.textContent = '';
 }
 window.plConstrPreparer = preparer;
-// Suivi d'un document (fenêtre principale, fenêtre de projection) : toute figure de construction affichée reçoit sa barre.
+// Suivi d'un document : toute figure de construction affichée reçoit son bouton.
 window.plConstrSuivre = function(doc){
   doc = doc || document; if(!doc.body || doc.__constrSuivi) return; doc.__constrSuivi = true;
-  let prevu = false; const scan = () => { prevu = false; doc.querySelectorAll('svg[data-constr]:not([data-constr-pret])').forEach(s => { try{ preparer(s); }catch(e){} }); };
+  let prevu = false; const scan = () => { prevu = false; doc.querySelectorAll('svg[data-tbprog]:not([data-constr-pret])').forEach(s => { try{ preparer(s); }catch(e){} }); };
   new (doc.defaultView || window).MutationObserver(() => { if(!prevu){ prevu = true; (doc.defaultView || window).setTimeout(scan, 60); } }).observe(doc.body, { childList: true, subtree: true });
   scan();
 };

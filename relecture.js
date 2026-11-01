@@ -39,8 +39,8 @@ const RELECTURE_CHGT = {
   // La date d'un changement est l'heure RÉELLE de sa mise en ligne (heure du commit poussé sur main), jamais une heure
   // arrondie dans le futur : un exercice validé entre la mise en ligne et une date trop tardive resterait « Chgt effectué »
   // (signalé le 01/11/2026 pour 6e-N1 ; dates corrigées d'après l'historique des publications).
-  // Version 1268 (01/11).
-  '6e-G1-P4-E5': { date: '2026-11-01T17:11:21Z', note: "Correction animée à l'écran : bouton « Voir la construction » (segment, arcs tracés au compas, point C, côtés) ; sur le papier, la figure avec ses arcs" },
+  // Version 1269 (01/11).
+  '6e-G1-P4-E5': { date: '2026-11-01T17:20:27Z', note: "Bouton « Voir la construction aux instruments » : la construction rejouée avec la règle graduée et le compas du tableau (lecteur du site) ; sur le papier, la figure avec ses arcs" },
   // Version 1267 (01/11).
   '6e-G1-P1-E5': { date: '2026-11-01T16:51:35Z', note: "Corrigé : un schéma pour chaque cas (A, B, C alignés, longueurs indiquées)" },
   '6e-G1-P2-E5': { date: '2026-11-01T16:51:35Z', note: "La phrase se termine par des pointillés ; les propositions sont à part, en dessous, alignées" },

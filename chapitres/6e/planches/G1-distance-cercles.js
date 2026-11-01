@@ -22,14 +22,14 @@ const CERCLE = S(200, 160, Ci(O, r) + L(O, pt(40), Ro, 2.2) + L(pt(160), pt(340)
 const CPT = (p, nom, dx, dy, c) => ({ pt: p, nom, dx, dy, c });
 // Triangle AB = 6 cm, AC = 4 cm, BC = 5 cm (1 cm = 20 px).
 const TRI_ARCS = (() => { const A = [20, 100], B = [140, 100], C = [65, 100 - Math.sqrt(16 - 2.25 * 2.25) * 20];
-  return plConstruction({ w: 160, h: 116, px: 170, etapes: [
+  return plConstruction({ programme: [{"op": "point", "name": "A"}, {"op": "segment_length", "from": "A", "to": "B", "length": 6}, {"op": "circle", "id": "cA", "center": "A", "radius": 4}, {"op": "circle", "id": "cB", "center": "B", "radius": 5}, {"op": "intersect", "name": "C", "of": ["cA", "cB"], "pick": "up"}, {"op": "segment", "from": "A", "to": "C"}, {"op": "segment", "from": "B", "to": "C"}], outils: ["regle", "compas"], w: 160, h: 116, px: 170, etapes: [
     { texte: 'Je trace le segment [AB] de 6 cm.', el: [{ seg: [A, B] }, CPT(A, 'A', -11, 4), CPT(B, 'B', 11, 4), { txt: [80, 113], t: '6 cm' }] },
     { texte: 'Je trace un arc de cercle de centre A et de rayon 4 cm.', el: [{ arc: [A, 80, 40, 72], c: '#2EA8C9' }] },
     { texte: 'Je trace un arc de cercle de centre B et de rayon 5 cm.', el: [{ arc: [B, 100, 126, 152], c: '#2E9C6A' }] },
     { texte: 'Les deux arcs se coupent en C : je trace [AC] et [BC].', el: [{ seg: [A, C] }, { seg: [B, C] }, CPT(C, 'C', 0, -9), { txt: [37, 66], t: '4 cm', c: '#2EA8C9', a: 'end' }, { txt: [108, 66], t: '5 cm', c: '#2E9C6A', a: 'start' }] }] }); })();
 // Programme de la planche 5 : cercles de centres A et B, de rayon AB = 5 cm (1 cm = 14 px), losange ACBD.
 const LOSANGE = (() => { const A = [80, 95], B = [150, 95], h = Math.sqrt(70 * 70 - 35 * 35), C = [115, 95 - h], D = [115, 95 + h];
-  return plConstruction({ w: 230, h: 190, px: 170, etapes: [
+  return plConstruction({ programme: [{"op": "point", "name": "A"}, {"op": "segment_length", "from": "A", "to": "B", "length": 5}, {"op": "circle", "id": "cA", "center": "A", "radius": 5, "full": true}, {"op": "circle", "id": "cB", "center": "B", "radius": 5, "full": true}, {"op": "intersect", "name": "C", "of": ["cA", "cB"], "pick": "up"}, {"op": "intersect", "name": "D", "of": ["cA", "cB"], "pick": "down"}, {"op": "segment", "from": "A", "to": "C", "color": "rouge"}, {"op": "segment", "from": "B", "to": "C", "color": "rouge"}, {"op": "segment", "from": "A", "to": "D"}, {"op": "segment", "from": "B", "to": "D"}], outils: ["regle", "compas"], w: 230, h: 190, px: 170, etapes: [
     { texte: 'Je trace le segment [AB] de 5 cm.', el: [{ seg: [A, B] }, CPT(A, 'A', -12, 4), CPT(B, 'B', 12, 4)] },
     { texte: 'Je trace le cercle de centre A et de rayon 5 cm : il passe par B.', el: [{ cercle: [A, 70], c: '#2EA8C9' }] },
     { texte: 'Je trace le cercle de centre B, de même rayon : il passe par A.', el: [{ cercle: [B, 70], c: '#2E9C6A' }] },
@@ -37,19 +37,19 @@ const LOSANGE = (() => { const A = [80, 95], B = [150, 95], h = Math.sqrt(70 * 7
     { texte: 'Je trace [AC], [BC], [AD] et [BD].', el: [{ seg: [A, C], c: '#E35D3A' }, { seg: [B, C], c: '#E35D3A' }, { seg: [A, D], ep: 1.6 }, { seg: [B, D], ep: 1.6 }] }] }); })();
 // Planche 3, exercice 5 : les points à 3 cm de A et à 4 cm de B (1 cm = 12 px).
 const DEUX_CERCLES = (() => { const A = [45, 60], B = [105, 60];
-  return plConstruction({ w: 160, h: 120, px: 160, etapes: [
+  return plConstruction({ programme: [{"op": "point", "name": "A"}, {"op": "segment_length", "from": "A", "to": "B", "length": 5}, {"op": "circle", "id": "cA", "center": "A", "radius": 3, "full": true, "color": "bleu"}, {"op": "circle", "id": "cB", "center": "B", "radius": 4, "full": true, "color": "vert"}, {"op": "intersect", "name": "M", "of": ["cA", "cB"], "pick": "up"}, {"op": "intersect", "name": "N", "of": ["cA", "cB"], "pick": "down"}], outils: ["regle", "compas"], w: 160, h: 120, px: 160, etapes: [
     { texte: 'Je trace le segment [AB] de 5 cm.', el: [{ seg: [A, B] }, CPT(A, 'A', -14, 4), CPT(B, 'B', 4, 14)] },
     { texte: 'Les points à 3 cm de A sont sur le cercle de centre A et de rayon 3 cm.', el: [{ cercle: [A, 36], c: '#2EA8C9' }] },
     { texte: 'Les points à 4 cm de B sont sur le cercle de centre B et de rayon 4 cm.', el: [{ cercle: [B, 48], c: '#2E9C6A' }] },
     { texte: 'Les deux cercles se coupent en deux points : ce sont les points cherchés.', el: [CPT([66.6, 31.2], 'M', 0, -8, '#E35D3A'), CPT([66.6, 88.8], 'N', 0, 18, '#E35D3A')] }] }); })();
 // Planche 3, exercice 4 : cercle de centre O passant par A, cercle de diamètre [OA].
-const CERCLES_OA = plConstruction({ w: 220, h: 150, px: 200, depart: [CPT([110, 75], 'O', -14, 14), CPT([170, 75], 'A', 11, 4)], etapes: [
+const CERCLES_OA = plConstruction({ programme: [{"op": "point", "name": "O"}, {"op": "point", "name": "A", "from": "O", "dx": 3, "dy": 0}, {"op": "circle", "id": "c1", "center": "O", "radius_from": ["O", "A"], "full": true, "color": "vert"}, {"op": "midpoint", "name": "I", "of": ["O", "A"]}, {"op": "circle", "id": "c2", "center": "I", "radius_from": ["I", "O"], "full": true, "color": "bleu"}], outils: ["regle", "compas"], w: 220, h: 150, px: 200, depart: [CPT([110, 75], 'O', -14, 14), CPT([170, 75], 'A', 11, 4)], etapes: [
   { texte: 'Je pique la pointe du compas en O et je l\'écarte jusqu\'à A : je trace le cercle de centre O qui passe par A.', el: [{ cercle: [[110, 75], 60], c: '#2E9C6A' }] },
   { texte: 'Je place le milieu I de [OA].', el: [{ seg: [[110, 75], [170, 75]], ep: 1.4, tirets: true }, CPT([140, 75], 'I', 0, -8)] },
   { texte: 'Je pique en I et je trace le cercle qui passe par O (et par A) : c\'est le cercle de diamètre [OA].', el: [{ cercle: [[140, 75], 30], c: '#2EA8C9' }] }] });
 // Planche 5, exercice 3 : la rosace (rayon 3 cm, 1 cm = 15 px).
 const ROSACE = (() => { const o = [70, 70], r = 45, c = i => [o[0] + r * Math.cos(-i * Math.PI / 3), o[1] - r * Math.sin(-i * Math.PI / 3)], a = i => ({ arc: [c(i), r, 120 - i * 60, 240 - i * 60], c: '#7A4FC0', ep: 2 }); // arc tourné vers O
-  return plConstruction({ w: 140, h: 140, px: 150, etapes: [
+  return plConstruction({ programme: [{"op": "point", "name": "O"}, {"op": "point", "name": "A", "from": "O", "dx": 3, "dy": 0}, {"op": "circle", "id": "c0", "center": "O", "radius_from": ["O", "A"], "full": true}, {"op": "circle", "id": "c1", "center": "A", "radius_from": ["O", "A"], "arc": [120, 240], "color": "violet"}, {"op": "intersect", "name": "B", "of": ["c0", "c1"], "pick": "up"}, {"op": "circle", "id": "c2", "center": "B", "radius_from": ["O", "A"], "arc": [180, 300], "color": "violet"}, {"op": "intersect", "name": "C", "of": ["c0", "c2"], "pick": "left"}, {"op": "circle", "id": "c3", "center": "C", "radius_from": ["O", "A"], "arc": [240, 360], "color": "violet"}, {"op": "intersect", "name": "D", "of": ["c0", "c3"], "pick": "left"}, {"op": "circle", "id": "c4", "center": "D", "radius_from": ["O", "A"], "arc": [-60, 60], "color": "violet"}, {"op": "intersect", "name": "E", "of": ["c0", "c4"], "pick": "down"}, {"op": "circle", "id": "c5", "center": "E", "radius_from": ["O", "A"], "arc": [0, 120], "color": "violet"}, {"op": "intersect", "name": "F", "of": ["c0", "c5"], "pick": "right"}, {"op": "circle", "id": "c6", "center": "F", "radius_from": ["O", "A"], "arc": [60, 180], "color": "violet"}], outils: ["regle", "compas"], w: 140, h: 140, px: 150, etapes: [
     { texte: 'Je trace un cercle de centre O et de rayon 3 cm, et je place un point A sur ce cercle.', el: [{ cercle: [o, r], c: '#1F3A5C' }, CPT(o, 'O', -11, 4), CPT(c(0), 'A', 11, 4)] },
     { texte: 'Sans changer l\'écartement, je pique en A et je trace l\'arc à l\'intérieur du cercle.', el: [a(0)] },
     { texte: 'Je pique au point où l\'arc coupe le cercle, je trace l\'arc suivant, et je recommence jusqu\'à revenir en A.', el: [1, 2, 3, 4, 5].map(a) }] }); })();

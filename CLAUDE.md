@@ -169,14 +169,16 @@ plus, nombre à côté).
 Noms de droites (demandé le 01/11/2026) : « (d1) » s'affiche toujours (d₁) (numéro en indice, `<sub>` ou tspan), automatiquement
 (`geoIndices`, même fichier) ; on peut donc continuer à écrire « (d1) » dans les sources.
 
-## Corrections animées des constructions (demandé le 01/11/2026)
+## Corrections animées des constructions : AUX INSTRUMENTS DU SITE (demandé le 01/11/2026)
 
-« Oui, mets en place la correction animée » : une figure de construction (règle, équerre, compas) d'un corrigé s'écrit avec
-`plConstruction({ w, h, px, depart, etapes: [{ texte, el: [...] }] })` (`constructions.js`, éléments seg, arc, cercle, pt, txt,
-codage, droit). Papier, Manuel et impressions : la figure finale, arcs compris. À l'écran (vignettes, correction, projection) :
-barre « Voir la construction » sous la figure, étapes tracées une à une avec leur phrase, le compas qui trace arcs et cercles,
-◀ ▶ pour le pas à pas. En place en 6e : Distance et cercles, Construction de triangles, Angles (bissectrice), Symétrie axiale,
-Propriétés des triangles (cercle circonscrit). Toute nouvelle construction au compas d'un corrigé utilise cet outil.
+« Oui, mets en place la correction animée », puis « Tu n'as pas utilisé les instruments du site ! » : une figure de construction
+d'un corrigé s'écrit avec `plConstruction({ w, h, px, programme, outils, depart, etapes })` (`constructions.js`). Papier, Manuel,
+impressions : la figure finale dessinée par `depart`/`etapes` (éléments seg, arc, cercle, pt, txt, codage, droit). À l'écran
+(vignettes, correction, projection) : bouton « Voir la construction aux instruments » qui ouvre le lecteur du tableau interactif
+(`tbAiOpenPlayer`, tableau-ia.js) avec `programme` = programme de construction au format du tableau (point, segment_length, circle,
+intersect, midpoint, perpendicular, perpendicular_bisector, angle_bisector… ; voir `tbAiBuildPrompt`) : vraie règle graduée,
+équerre, compas, barre de lecture. Ne jamais refaire une animation maison. En place en 6e : Distance et cercles, Construction de
+triangles, Angles (bissectrice), Symétrie axiale, Propriétés des triangles (cercle circonscrit).
 
 ## Conformité aux programmes : « Pour aller plus loin » (demandé le 28/10/2026)
 
