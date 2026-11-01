@@ -153,6 +153,10 @@ impressions, projection) par `geo-points.js` : chaque croix est comparée aux li
 (le quadrillage, clair ou fin, ne compte pas). Les figures peuvent donc toujours dessiner les points en croix. Contrôle :
 `NODE_PATH=/opt/node22/lib/node_modules node tools/verif-points.js` (doit répondre « Aucune croix mal placée »). Une figure
 qui doit garder ses croix telles quelles : attribut `data-geo-garde` sur le groupe concerné.
+Codages de longueur (demandé le 01/11/2026 : « les faire inclinés et assez petits pour ne pas les confondre avec des points ») :
+même fichier, deuxième passe ; un petit trait (ou 2, 3 traits parallèles) qui coupe une ligne en son milieu devient un trait de
+7 px incliné à 60°. Ne sont pas touchés : traits de points nommés, graduations (trait à l'extrémité de la ligne, plus de trois
+traits serrés, cinq groupes ou plus, étiquette à côté).
 
 ## Conformité aux programmes : « Pour aller plus loin » (demandé le 28/10/2026)
 

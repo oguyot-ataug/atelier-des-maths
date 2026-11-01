@@ -131,12 +131,71 @@
         let inv = null; try{ inv = m && m.inverse(); }catch(e){}
         const p1 = app(inv, x.c[0] - Math.cos(a) * h, x.c[1] - Math.sin(a) * h), p2 = app(inv, x.c[0] + Math.cos(a) * h, x.c[1] + Math.sin(a) * h);
         t.setAttribute('x1', p1[0].toFixed(2)); t.setAttribute('y1', p1[1].toFixed(2)); t.setAttribute('x2', p2[0].toFixed(2)); t.setAttribute('y2', p2[1].toFixed(2));
-        t.setAttribute('stroke', cs.stroke); t.setAttribute('stroke-width', el0.getAttribute('stroke-width') || cs.strokeWidth); t.setAttribute('stroke-linecap', 'round');
+        t.setAttribute('stroke', cs.stroke); t.setAttribute('stroke-width', el0.getAttribute('stroke-width') || cs.strokeWidth); t.setAttribute('stroke-linecap', 'round'); t.setAttribute('data-geo-trait', '1');
         el0.parentNode.insertBefore(t, el0);
       }
       x.els.forEach(e => e.remove()); n++;
     });
+    try{ n += codages(svg); }catch(e){}
     svg.setAttribute('data-geo-points', '1');
+    return n;
+  }
+  /* Codages de longueur (demandé le 01/11/2026 : « les faire inclinés et assez petits pour ne pas les confondre avec des
+     points ») : un petit trait (ou deux, trois traits parallèles) qui coupe une ligne en son milieu devient un trait court
+     (7 px) incliné à 60° sur la ligne. Ne sont pas des codages : les traits des points (nom de point à côté), les
+     graduations (une ligne qui en porte à son extrémité, plus de trois traits serrés, ou au moins cinq groupes de traits). */
+  function codages(svg){
+    const k = echelle(svg), cand = [];
+    svg.querySelectorAll('path, line').forEach(el => {
+      if(el.closest('defs, marker, pattern, clipPath, mask, symbol, [data-geo-garde]') || el.hasAttribute('data-geo-trait') || decor(el)) return;
+      let tr;
+      if(el.tagName === 'line') tr = [[[+el.getAttribute('x1'), +el.getAttribute('y1')], [+el.getAttribute('x2'), +el.getAttribute('y2')]]];
+      else { const sc = sousChemins(el.getAttribute('d')); if(!sc || !sc.length || sc.length > 3 || sc.some(q => q.length !== 2)) return; tr = sc; }
+      const m = mat(svg, el); if(!m) return;
+      const T = tr.map(([a, b]) => [app(m, ...a), app(m, ...b)]), lg = q => Math.hypot(q[1][0] - q[0][0], q[1][1] - q[0][1]) / k;
+      if(!T.every(q => lg(q) >= 5 && lg(q) <= 20)) return;
+      if(T.length > 1){ const u = T[0], du = [u[1][0] - u[0][0], u[1][1] - u[0][1]]; if(!T.every(q => { const d = [q[1][0] - q[0][0], q[1][1] - q[0][1]]; return Math.abs(du[0] * d[1] - du[1] * d[0]) / (Math.hypot(...du) * Math.hypot(...d)) < .12; })) return; }
+      cand.push({ el, T, m });
+    });
+    if(!cand.length) return 0;
+    const L = lignes(svg, new Set(cand.map(c => c.el)), k), tol = 1.6 * k;
+    const textes = [...svg.querySelectorAll('text')].map(t => { try{ const b = t.getBBox(), m = mat(svg, t); return app(m, b.x + b.width / 2, b.y + b.height / 2); }catch(e){ return null; } }).filter(Boolean);
+    const traits = [];
+    cand.forEach(c => c.T.forEach((q, i) => {
+      const mid = [(q[0][0] + q[1][0]) / 2, (q[0][1] + q[1][1]) / 2], d = [q[1][0] - q[0][0], q[1][1] - q[0][1]];
+      // ligne coupée en son milieu, presque perpendiculairement
+      let sup = null;
+      L.forEach((s, si) => { for(let j = 0; j + 1 < s.l.length && !sup; j++){ const a = s.l[j], b = s.l[j + 1], ab = [b[0] - a[0], b[1] - a[1]], n2 = ab[0] * ab[0] + ab[1] * ab[1]; if(n2 < 1e-9) continue;
+        let t = ((mid[0] - a[0]) * ab[0] + (mid[1] - a[1]) * ab[1]) / n2; if(t < -.01 || t > 1.01) continue;
+        const p = [a[0] + t * ab[0], a[1] + t * ab[1]]; if(Math.hypot(p[0] - mid[0], p[1] - mid[1]) > tol) continue;
+        const sin = Math.abs(ab[0] * d[1] - ab[1] * d[0]) / (Math.sqrt(n2) * Math.hypot(...d)); if(sin < .82) continue;
+        const bout = (j === 0 && t < .02 * Math.sqrt(1)) || (j + 2 === s.l.length && t > .98);
+        const pres = Math.min(Math.hypot(mid[0] - s.l[0][0], mid[1] - s.l[0][1]), Math.hypot(mid[0] - s.l[s.l.length - 1][0], mid[1] - s.l[s.l.length - 1][1])) < 2.5 * k;
+        sup = { si, ang: Math.atan2(ab[1], ab[0]), bout: pres }; } });
+      if(sup) traits.push({ c, i, mid, sup });
+    }));
+    // graduations : ligne qui porte un trait à son extrémité, ou au moins quatre traits isolés
+    const parLigne = new Map(); traits.forEach(t => { if(!parLigne.has(t.sup.si)) parLigne.set(t.sup.si, []); parLigne.get(t.sup.si).push(t); });
+    let n = 0;
+    parLigne.forEach(l => {
+      if(l.some(t => t.sup.bout)) return;
+      // groupes de traits voisins (moins de 8 px) : un codage a 1 à 3 traits ; une graduation, des traits réguliers en nombre
+      const groupes = []; l.forEach(t => { const g = groupes.find(g => g.some(u => Math.hypot(u.mid[0] - t.mid[0], u.mid[1] - t.mid[1]) < 8 * k)); if(g) g.push(t); else groupes.push([t]); });
+      if(groupes.some(g => g.length > 3) || groupes.length >= 5) return;
+      // un trait accompagné d'une étiquette (nombre, heure, nom de point) : graduation ou point, pas un codage
+      if(l.some(t => textes.some(p => Math.hypot(p[0] - t.mid[0], p[1] - t.mid[1]) < 22 * k))) return;
+      l.forEach(t => {
+        if(textes.some(p => Math.hypot(p[0] - t.mid[0], p[1] - t.mid[1]) < 13 * k)) return; // trait d'un point nommé
+        let th = t.sup.ang; if(th > Math.PI / 2) th -= Math.PI; if(th <= -Math.PI / 2) th += Math.PI;
+        const a = th - Math.PI / 3, h = 3.6 * k, p1 = [t.mid[0] - Math.cos(a) * h, t.mid[1] - Math.sin(a) * h], p2 = [t.mid[0] + Math.cos(a) * h, t.mid[1] + Math.sin(a) * h];
+        t.c.T[t.i] = [p1, p2]; t.c.fait = true; n++;
+      });
+    });
+    cand.filter(c => c.fait).forEach(c => { let inv = null; try{ inv = c.m.inverse(); }catch(e){ return; }
+      const loc = c.T.map(([a, b]) => [app(inv, ...a), app(inv, ...b)]);
+      if(c.el.tagName === 'line'){ const [[x1, y1], [x2, y2]] = loc[0]; c.el.setAttribute('x1', x1.toFixed(2)); c.el.setAttribute('y1', y1.toFixed(2)); c.el.setAttribute('x2', x2.toFixed(2)); c.el.setAttribute('y2', y2.toFixed(2)); }
+      else c.el.setAttribute('d', loc.map(([a, b]) => `M${a[0].toFixed(2)},${a[1].toFixed(2)} L${b[0].toFixed(2)},${b[1].toFixed(2)}`).join(' '));
+      c.el.setAttribute('stroke-linecap', 'round'); c.el.setAttribute('data-geo-codage', '1'); });
     return n;
   }
   window.geoPointsAnalyse = analyse;
