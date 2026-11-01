@@ -109,6 +109,10 @@ function simRendre(){
         ${sim.eleves.length ? `<button class="btn secondary" style="color:#a83c1f;" onclick="simSupprimer()" title="Supprime la classe de simulation, vos élèves fictifs et tout ce qui s'y trouve"><span class="gicon">delete</span></button>` : ''}
         <span class="hint" id="simEtat" style="margin:0;">${sim.classe ? `Classe « ${escapeHtml(sim.classe.nom)} » (${nivTxt(sim.classe.niveau)}) · élèves fictifs : ${sim.eleves.map(e => 'Élève ' + e.lettre).join(', ') || 'aucun'}.` : ''}</span></div>
     </div>
+    <div class="sim-rappel"><span class="gicon">lightbulb</span><div><b>Ensuite, donnez du travail à vos élèves fictifs</b> : sans cela, ils n'ont rien à faire.
+      Dans la fenêtre professeur, donnez un devoir ou une interrogation à la classe « Simulation », ou lancez une séance en direct,
+      une session COURS ou des questions flash. Puis, dans la fenêtre d'un élève, faites le travail à sa place : vous voyez exactement
+      ce que voit l'élève, et ses réponses arrivent chez vous comme en classe.</div></div>
     <div id="simScene"></div>`;
 }
 async function simPreparer(){
@@ -135,12 +139,25 @@ function simLancer(){
   sc.innerHTML = `<div class="sim-outils"><button class="btn secondary" onclick="simPleinEcran()"><span class="gicon">fullscreen</span> Plein écran</button>
       <button class="btn secondary" onclick="simArreter()"><span class="gicon">stop</span> Arrêter la simulation</button>
       <span class="hint" style="margin:0;">Astuce : dans la fenêtre professeur, ouvrez une session COURS (Cahier de corrections) ou des questions flash : le bandeau « Rejoindre » apparaît chez les élèves fictifs.</span></div>
+    <div id="simRienAFaire"></div>
     <div class="sim-grille ${sim.disposition}${sim.grand ? ' grand' : ''}">
       ${sim.disposition === 'prof' ? cadre('prof', '<span class="gicon">school</span> Professeur (vous) · classe de simulation', base + '?simprof=' + eleves.map(e => e.student_id).join(',') + '#/', 'prof') : ''}
       <div class="sim-eleves n${eleves.length}">${eleves.map(e => cadre(e.student_id, `<span class="gicon">person</span> Élève ${e.lettre} <small>(test)</small>`, `${base}?simu=${e.student_id}#/`, 'eleve')).join('')}</div></div>`;
   simAjuster();
+  simRienAFaire();
   window.addEventListener('resize', simAjuster);
   sc.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+/* Rappel bien visible quand la classe de simulation n'a encore ni devoir ni interrogation -- demandé le 01/11/2026 : une
+   nouvelle inscrite avait préparé ses trois élèves fictifs et ouvert leurs écrans, sans rien leur donner à faire (« oui, ajoute
+   le rappel dans le simulateur »). Les interrogations sont des devoirs de type « questionnaire » : un seul décompte suffit. */
+async function simRienAFaire(){
+  const box = document.getElementById('simRienAFaire'); if(!box || !sim.classe) return;
+  const { count, error } = await sb.from('devoirs').select('id', { count: 'exact', head: true }).eq('class_id', sim.classe.id);
+  if(error || count) { box.innerHTML = ''; return; }
+  box.innerHTML = `<div class="sim-rappel fort"><span class="gicon">assignment_late</span><div><b>Vos élèves fictifs n'ont encore rien à faire.</b>
+    Commencez dans la fenêtre <b>Professeur</b> : donnez un devoir ou une interrogation à la classe « Simulation » (ou lancez une séance
+    en direct), puis passez dans la fenêtre d'un élève pour le faire à sa place. <button class="btn secondary qz-mini" onclick="simRienAFaire()"><span class="gicon">refresh</span> C'est fait</button></div></div>`;
 }
 // Chaque écran garde une vraie taille d'ordinateur (1280 px de large) et s'affiche réduit.
 function simAjuster(){
@@ -181,6 +198,10 @@ function simArreter(){ const sc = document.getElementById('simScene'); if(sc) sc
     .sim-prep{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px 18px;background:#fff;border:1px solid rgba(28,43,57,.1);border-radius:14px;padding:12px 16px;margin:10px 0 14px;}
     .sim-go{grid-column:1 / -1;display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
     .sim-outils{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 10px;}
+    .sim-rappel{display:flex;gap:12px;align-items:flex-start;background:#F4F8FC;border:1px solid #D5E2F0;border-radius:12px;padding:10px 14px;margin:0 0 14px;font-size:.93rem;line-height:1.5;color:var(--ink);}
+    .sim-rappel > .gicon{color:#0C5BA0;font-size:22px;flex:none;margin-top:1px;}
+    .sim-rappel.fort{background:#FFF6E8;border-color:#FFD49A;border-left:4px solid #FF8208;} .sim-rappel.fort > .gicon{color:#FF8208;}
+    .sim-rappel .btn{margin-left:6px;vertical-align:middle;}
     .sim-grille{display:grid;gap:12px;margin-left:calc(50% - 50vw + 16px);margin-right:calc(50% - 50vw + 16px);}
     #view-simulateur:fullscreen .sim-grille{margin:0;}
     .sim-grille.prof{grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);}
