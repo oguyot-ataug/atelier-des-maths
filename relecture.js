@@ -39,6 +39,8 @@ const RELECTURE_CHGT = {
   // La date d'un changement est l'heure RÉELLE de sa mise en ligne (heure du commit poussé sur main), jamais une heure
   // arrondie dans le futur : un exercice validé entre la mise en ligne et une date trop tardive resterait « Chgt effectué »
   // (signalé le 01/11/2026 pour 6e-N1 ; dates corrigées d'après l'historique des publications).
+  // Version 1256 (01/11) : retour bêta.
+  '6e-G2-P1-E1': { date: '2026-11-01T12:50:58Z', note: "Les figures sur une ligne, la lettre dessous ; les choix en tableau en dessous, une ligne par figure (sous chaque petite figure, les mots empilés débordaient sur la voisine). Même présentation pour les autres exercices « une figure, un choix » du chapitre" },
   // Version 1252 (01/11).
   '6e-G2-P1-E2': { date: '2026-11-01T11:15:41Z', note: "Propositions en tableau, alignées en colonnes et à distance des noms des droites" },
   '6e-G2-P1-E4': { date: '2026-11-01T11:15:41Z', note: "Exercice en pleine largeur, « vrai faux » en tableau sur une seule ligne, à distance des phrases (l'exercice 3 passe aussi en pleine largeur, sur deux colonnes)" },

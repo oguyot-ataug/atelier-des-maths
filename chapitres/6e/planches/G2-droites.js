@@ -46,8 +46,11 @@ const traceD = (w, h, k, o, sol) => ({ eleve: plX(QD(w, h, k, o), { t: 'droites'
 // Vignettes avec le choix sous chaque figure (V : figures ; it : [nom, réponse] ; m : les mots ; note : précision du corrigé).
 const vigCap = (t, w) => `<span class="pl-item" style="display:block;text-align:center;line-height:1.3;max-width:${w}px;font-size:.92em;"><b style="font-size:1.1em;">${t}</b> `;
 const duoH = l => duo(l).replace('align-items:flex-end', 'align-items:flex-start');
-const vigs = (V, it, m, note) => ({ eleve: duoH(V.map((v, i) => `<span style="display:flex;flex-direction:column;align-items:center;gap:2px;">${v}${vigCap(it[i][0], 104)}<b>${m}</b></span></span>`)),
-  corr: duoH(V.map((v, i) => `<span style="display:flex;flex-direction:column;align-items:center;gap:2px;">${v}${vigCap(it[i][0], note ? 150 : 104)}${plEntoure(it[i][1])}${note ? `<br><small>${note[i]}</small>` : ''}</span></span>`)) });
+// Les figures sur une ligne (lettre dessous), puis les choix en tableau, une ligne par figure : sous chaque petite figure, les
+// mots empilés débordaient sur la figure voisine (retour bêta 6e-G2-P1-E1 : « les choix se superposent »).
+const vigs = (V, it, m, note) => { const figs = duoH(V.map((v, i) => `<span style="display:flex;flex-direction:column;align-items:center;gap:2px;">${v}<b>${it[i][0]}</b></span>`)),
+    T = P3.chxTab(it.map(([l, r]) => [`Figure <b>${l}</b> :`, r, m]));
+  return { eleve: figs + T.eleve, corr: figs + T.corr + (note ? `<div class="pl-petit">${it.map(([l], i) => `<b>${l}</b> : ${note[i]}`).join(' ; ')}.</div>` : '') }; };
 // Figure à gauche, questions à droite.
 const cote = (f, h) => `<div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:center;"><div>${f}</div><div style="flex:1;min-width:250px;">${h}</div></div>`;
 const vig = (l, extra) => S(120, 86, `<rect x="1" y="1" width="118" height="84" rx="8" fill="#fff" stroke="#C9DCEB"/>` + l.map(([a, b, c]) => L(a, b, c || K, 2)).join('') + (extra || ''), 98);
