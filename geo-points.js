@@ -230,16 +230,44 @@
       c.el.setAttribute('stroke-linecap', 'round'); c.el.setAttribute('data-geo-codage', '1'); });
     return n;
   }
+  /* Noms des droites : le numéro en indice, (d1) s'écrit (d₁) (demandé le 01/11/2026 : « bien mettre les chiffres en indice »),
+     dans les figures (tspan en indice) comme dans les textes (<sub>). (D1), code de chapitre, n'est pas touché. */
+  const RE_D = /\(([dΔ])(\d+)(['’′]*)\)/g;
+  function indices(racine){
+    if(!racine) return;
+    const doc = racine.ownerDocument || racine, vue = doc.defaultView || window;
+    const w = doc.createTreeWalker(racine, vue.NodeFilter.SHOW_TEXT, { acceptNode: n => {
+      RE_D.lastIndex = 0; if(!RE_D.test(n.nodeValue)) return vue.NodeFilter.FILTER_REJECT;
+      const p = n.parentElement; if(!p || p.closest('script, style, textarea, input, select, [contenteditable], .katex, sub, tspan[data-geo-indice], [data-geo-garde]')) return vue.NodeFilter.FILTER_REJECT;
+      return vue.NodeFilter.FILTER_ACCEPT; } });
+    const L = []; while(w.nextNode()) L.push(w.currentNode);
+    L.forEach(n => {
+      const svg = n.parentElement.closest('svg'), f = doc.createDocumentFragment(), t = n.nodeValue; let i = 0; RE_D.lastIndex = 0; let m;
+      while((m = RE_D.exec(t))){
+        f.appendChild(doc.createTextNode(t.slice(i, m.index) + '(' + m[1]));
+        if(svg){ const s = doc.createElementNS(NS, 'tspan'); s.setAttribute('baseline-shift', 'sub'); s.setAttribute('font-size', '72%'); s.setAttribute('data-geo-indice', '1'); s.textContent = m[2]; f.appendChild(s); }
+        else { const s = doc.createElement('sub'); s.textContent = m[2]; f.appendChild(s); }
+        f.appendChild(doc.createTextNode(m[3] + ')')); i = m.index + m[0].length;
+      }
+      f.appendChild(doc.createTextNode(t.slice(i))); n.parentNode.replaceChild(f, n);
+    });
+  }
+  window.geoIndices = indices;
   window.geoPointsAnalyse = analyse;
-  window.geoPoints = function(racine){ let n = 0; (racine || document).querySelectorAll('svg:not([data-geo-points])').forEach(s => { try{ n += corriger(s); }catch(e){} }); return n; };
+  window.geoPoints = function(racine){ let n = 0; (racine || document).querySelectorAll('svg:not([data-geo-points])').forEach(s => { try{ n += corriger(s); }catch(e){} });
+    try{ indices(racine && racine.body ? racine.body : racine || document.body); }catch(e){} return n; };
   // Suivi d'un document : toute figure ajoutée (vignette, planche, écran, cours, image d'une animation…) est traitée
   // juste après son affichage. Une figure masquée (sans taille) attend d'être affichée.
   window.geoPointsSuivre = function(doc){
     doc = doc || document; if(!doc.body || doc.__geoSuivi) return; doc.__geoSuivi = true;
     const vue = doc.defaultView || window; let prevu = false;
-    const passe = () => { prevu = false; doc.querySelectorAll('svg:not([data-geo-points])').forEach(s => { const r = s.getBoundingClientRect(); if(!r.width || !r.height) return; try{ corriger(s); }catch(e){} }); };
-    const plus = () => { if(!prevu){ prevu = true; vue.requestAnimationFrame(passe); } };
-    new vue.MutationObserver(plus).observe(doc.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class', 'style', 'hidden'] });
+    let ajouts = new Set([doc.body]);
+    const passe = () => { prevu = false; const A = ajouts; ajouts = new Set();
+      A.forEach(n => { if(n.isConnected){ try{ indices(n); }catch(e){} } });
+      doc.querySelectorAll('svg:not([data-geo-points])').forEach(s => { const r = s.getBoundingClientRect(); if(!r.width || !r.height) return; try{ corriger(s); }catch(e){} }); };
+    const plus = recs => { (recs || []).forEach(r => { if(r.type === 'childList') r.addedNodes.forEach(n => ajouts.add(n.nodeType === 3 ? n.parentNode : n)); else if(r.type === 'characterData') ajouts.add(r.target.parentNode); });
+      if(!prevu){ prevu = true; vue.requestAnimationFrame(passe); } };
+    new vue.MutationObserver(plus).observe(doc.body, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ['class', 'style', 'hidden'] });
     plus();
   };
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => geoPointsSuivre(document)); else geoPointsSuivre(document);

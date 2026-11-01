@@ -31,7 +31,7 @@ const POS = S(240, 140, L([20, 30], [220, 30], K, 2) + cmT(200, 22, '(d1)', { fs
 const COUL = [Ve, Ro, '#7A4FC0', Bl, '#C98A1E', K];
 function droiteG(p, v, w, h, k, c, nom, lab, ep){ let t0 = -1e9, t1 = 1e9; [[0, w], [0, h]].forEach(([mn, mx], q) => { if(!v[q]) return; const e1 = (mn - p[q]) / v[q], e2 = (mx - p[q]) / v[q]; t0 = Math.max(t0, Math.min(e1, e2)); t1 = Math.min(t1, Math.max(e1, e2)); });
   const a = [(p[0] + v[0] * t0) * k, (p[1] + v[1] * t0) * k], b = [(p[0] + v[0] * t1) * k, (p[1] + v[1] * t1) * k];
-  return L(a, b, c, ep || 2) + (nom ? cmT(lab[0] * k, lab[1] * k + 4, nom, { fs: 12, c }) : ''); }
+  return L(a, b, c, ep || 2) + (nom ? cmT(lab[0] * k, lab[1] * k + 3, nom, { fs: 10, c, fw: 600 }) : ''); }
 function QD(w, h, k, o){ const g = q => [q[0] * k, q[1] * k]; let s = '';
   (o.d || []).forEach(d => s += droiteG(d.p, d.v, w, h, k, d.c || K, d.n, d.lab || d.p, d.ep));
   (o.seg || []).forEach(([a, b, c]) => s += L(g(a), g(b), c || K, 2.2));

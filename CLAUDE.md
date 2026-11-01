@@ -158,6 +158,8 @@ même fichier, deuxième passe ; un petit trait (ou 2, 3 traits parallèles) qui
 7 px incliné à 60°. Ne sont pas touchés : traits de points (nom à côté, ou trait simple qui n'est pas au milieu d'un segment
 entre deux repères), graduations (ligne fléchée, trait à l'extrémité de la ligne, plus de trois traits serrés, cinq groupes ou
 plus, nombre à côté).
+Noms de droites (demandé le 01/11/2026) : « (d1) » s'affiche toujours (d₁) (numéro en indice, `<sub>` ou tspan), automatiquement
+(`geoIndices`, même fichier) ; on peut donc continuer à écrire « (d1) » dans les sources.
 
 ## Conformité aux programmes : « Pour aller plus loin » (demandé le 28/10/2026)
 
