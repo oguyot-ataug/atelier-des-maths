@@ -202,6 +202,9 @@ function plNumAnalyser(x){
     fa.forEach(f => { f.setAttribute('data-pnp', `${G.id}:${G.n++}`); f.classList.add('pn-part'); });
   }
   groupes.forEach((G, g) => { if(!G.rep) return; /* rien à colorier dans le corrigé : ce n'est pas un coloriage */ g.setAttribute('data-pn', G.id); g.classList.add('pn-fig'); cibles.push({ type: 'fig', id: G.id, rep: G.rep, coul: G.coul || '#E35D3A' }); });
+  // Plusieurs quadrillages où tracer une droite : figures plus petites, côte à côte, l'aide passe à la ligne sous chacune
+  // (sinon trois figures de 520 px s'empilaient et la projection rapetissait tout l'exercice).
+  { const tr = E.querySelectorAll('svg.pn-trace'); if(tr.length > 1) tr.forEach(t => t.classList.add('pn-trace-n')); }
   if(!cibles.length) return null;
   return { html: E.innerHTML, cibles };
 }
@@ -724,6 +727,7 @@ function plClavierPhysique(e){
     .pn-ex .pn-frac{ display:inline-flex; flex-direction:column; align-items:center; gap:3px; vertical-align:middle; margin:0 3px; }
     .pn-ex .pn-barre{ display:block; width:36px; border-top:2px solid #1C2B39; }
     .pn-ex svg.pn-trace{ width:min(100%, 520px) !important; height:auto !important; max-height:none !important; display:block; touch-action:manipulation; }
+    .pn-ex svg.pn-trace.pn-trace-n{ width:min(100%, 250px) !important; margin:0 auto; } .pn-ex svg.pn-trace-n + .pn-tr-aide{ max-width:250px; margin-left:auto; margin-right:auto; text-align:center; }
     .pn-ex .pn-tr-n{ cursor:pointer; } .pn-ex .pn-tr-n:hover{ fill:rgba(227,93,58,.25); } .pn-lecture .pn-tr-n{ cursor:default; } .pn-tr-aide{ font-size:.85rem; color:#4E5665; margin-top:4px; } .pn-lecture .pn-tr-aide{ display:none; }
     .pn-ex .pn-part{ cursor:pointer; } .pn-ex .pn-part:hover{ fill-opacity:.85; }
     .pn-lecture .pn-case, .pn-lecture .pn-part, .pn-lecture .pn-bascule, .pn-lecture .pn-mot{ cursor:default; }
