@@ -94,7 +94,8 @@
           const l = []; for(let i = 0; i <= 96; i++){ const a = i / 96 * 2 * Math.PI; l.push([cx + rx * Math.cos(a), cy + ry * Math.sin(a)]); } pts = [l]; }
         else if(el.tagName === 'rect'){ const x = +el.getAttribute('x') || 0, y = +el.getAttribute('y') || 0, w = +el.getAttribute('width'), h = +el.getAttribute('height'); if(!(w > 0 && h > 0)) return; pts = [[[x, y], [x + w, y], [x + w, y + h], [x, y + h], [x, y]]]; }
       }catch(e){ return; }
-      pts.forEach(l => { if(l.length > 1) out.push({ el, l: l.map(p => app(m, p[0], p[1])) }); });
+      const courbe = (el.tagName === 'path' && !sousChemins(el.getAttribute('d'))) || el.tagName === 'circle' || el.tagName === 'ellipse';
+      pts.forEach(l => { if(l.length > 1) out.push({ el, l: l.map(p => app(m, p[0], p[1])), courbe }); });
     });
     return out;
   }
@@ -136,7 +137,7 @@
       }
       x.els.forEach(e => e.remove()); n++;
     });
-    try{ n += codages(svg); }catch(e){}
+    try{ n += codages(svg); }catch(e){ console.warn('geo-points, codages :', e); }
     svg.setAttribute('data-geo-points', '1');
     return n;
   }
@@ -159,7 +160,8 @@
     });
     if(!cand.length) return 0;
     const L = lignes(svg, new Set(cand.map(c => c.el)), k), tol = 1.6 * k;
-    const textes = [...svg.querySelectorAll('text')].map(t => { try{ const b = t.getBBox(), m = mat(svg, t); return app(m, b.x + b.width / 2, b.y + b.height / 2); }catch(e){ return null; } }).filter(Boolean);
+    // étiquettes : nombres (graduations) ou noms (points)
+    const textes = [...svg.querySelectorAll('text')].map(t => { try{ const b = t.getBBox(), m = mat(svg, t), p = app(m, b.x + b.width / 2, b.y + b.height / 2); p.nombre = /\d/.test(t.textContent); return p; }catch(e){ return null; } }).filter(Boolean);
     const traits = [];
     cand.forEach(c => c.T.forEach((q, i) => {
       const mid = [(q[0][0] + q[1][0]) / 2, (q[0][1] + q[1][1]) / 2], d = [q[1][0] - q[0][0], q[1][1] - q[0][1]];
@@ -171,21 +173,51 @@
         const sin = Math.abs(ab[0] * d[1] - ab[1] * d[0]) / (Math.sqrt(n2) * Math.hypot(...d)); if(sin < .82) continue;
         const bout = (j === 0 && t < .02 * Math.sqrt(1)) || (j + 2 === s.l.length && t > .98);
         const pres = Math.min(Math.hypot(mid[0] - s.l[0][0], mid[1] - s.l[0][1]), Math.hypot(mid[0] - s.l[s.l.length - 1][0], mid[1] - s.l[s.l.length - 1][1])) < 2.5 * k;
-        sup = { si, ang: Math.atan2(ab[1], ab[0]), bout: pres }; } });
+        sup = { si, ang: Math.atan2(ab[1], ab[0]), bout: pres, a, b, t }; } });
       if(sup) traits.push({ c, i, mid, sup });
     }));
+    // Axes et droites graduées : une ligne terminée par une flèche (pointe pleine près d'un bout, ou marqueur) n'a pas de codage.
+    // pointe de flèche : petit triangle plein (polygone ou chemin droit de 3 ou 4 sommets ; un secteur d'angle, courbe, n'en est pas une)
+    const triangle = e => { if(e.tagName === 'polygon') return (e.getAttribute('points') || '').trim().split(/[\s,]+/).length <= 8; const sc = sousChemins(e.getAttribute('d')); return !!sc && sc.length === 1 && sc[0].length <= 5; };
+    const pointes = [...svg.querySelectorAll('polygon, path')].filter(e => { const cs = gcs(e); return cs.fill && cs.fill !== 'none' && !/rgba\(0, 0, 0, 0\)/.test(cs.fill) && triangle(e); })
+      .map(e => { try{ const b = e.getBBox(), m = mat(svg, e); if(b.width / k > 22 || b.height / k > 22) return null; return app(m, b.x + b.width / 2, b.y + b.height / 2); }catch(err){ return null; } }).filter(Boolean);
+    const fleche = s => { const l = s.l, a = l[0], z = l[l.length - 1]; if(s.el.getAttribute('marker-end') || s.el.getAttribute('marker-start')) return true;
+      if(Math.hypot(a[0] - z[0], a[1] - z[1]) < .5 * k) return false; // contour fermé (polygone) : pas de bout, pas de flèche
+      return pointes.some(p => Math.min(Math.hypot(p[0] - a[0], p[1] - a[1]), Math.hypot(p[0] - z[0], p[1] - z[1])) < 12 * k); };
     // graduations : ligne qui porte un trait à son extrémité, ou au moins quatre traits isolés
     const parLigne = new Map(); traits.forEach(t => { if(!parLigne.has(t.sup.si)) parLigne.set(t.sup.si, []); parLigne.get(t.sup.si).push(t); });
+    const ptsMarques = [...svg.querySelectorAll('circle, ellipse, line[data-geo-trait]')].map(e => { try{ const m = mat(svg, e);
+        if(e.tagName === 'line') return app(m, (+e.getAttribute('x1') + +e.getAttribute('x2')) / 2, (+e.getAttribute('y1') + +e.getAttribute('y2')) / 2);
+        const r = +(e.getAttribute('r') || e.getAttribute('rx')); if(!(r / k < 6)) return null; return app(m, +e.getAttribute('cx'), +e.getAttribute('cy')); }catch(err){ return null; } }).filter(Boolean);
+    // position (0 à 1) des repères sur le côté [a, b] qui porte le trait
+    function milieu(t){
+      // côté d'un polygone : le trait est un codage (un point sur un côté est nommé, et le nom l'a déjà écarté)
+      const S = L[t.sup.si].l; if(Math.hypot(S[0][0] - S[S.length - 1][0], S[0][1] - S[S.length - 1][1]) < .5 * k) return true;
+      const { a, b } = t.sup, ab = [b[0] - a[0], b[1] - a[1]], n2 = ab[0] * ab[0] + ab[1] * ab[1], lg = Math.sqrt(n2);
+      const par = p => ((p[0] - a[0]) * ab[0] + (p[1] - a[1]) * ab[1]) / n2, dist = p => Math.abs((p[0] - a[0]) * ab[1] - (p[1] - a[1]) * ab[0]) / lg;
+      const rep = [0, 1];
+      traits.forEach(u => { if(u !== t && dist(u.mid) < 2 * k) rep.push(par(u.mid)); });
+      ptsMarques.forEach(q => { if(dist(q) < 2 * k) rep.push(par(q)); }); // points dessinés en rond ou marqués d'un trait
+      L.forEach((o, oi) => { if(oi === t.sup.si || o.courbe) return; for(let j = 0; j + 1 < o.l.length; j++){ const c = o.l[j], d = o.l[j + 1], cd = [d[0] - c[0], d[1] - c[1]], den = ab[0] * cd[1] - ab[1] * cd[0]; if(Math.abs(den) < 1e-9) continue;
+        const x = ((c[0] - a[0]) * cd[1] - (c[1] - a[1]) * cd[0]) / den, y = ((c[0] - a[0]) * ab[1] - (c[1] - a[1]) * ab[0]) / den; if(x > 0 && x < 1 && y >= -.01 && y <= 1.01) rep.push(x); } });
+      const x = t.sup.t, g = Math.max(...rep.filter(r => r < x - 1e-6), 0), d = Math.min(...rep.filter(r => r > x + 1e-6), 1);
+      return Math.abs(x - (g + d) / 2) * lg <= Math.max(4 * k, .07 * (d - g) * lg);
+    }
     let n = 0;
-    parLigne.forEach(l => {
-      if(l.some(t => t.sup.bout)) return;
+    parLigne.forEach((l, si) => {
+      if(l.some(t => t.sup.bout) || fleche(L[si])) return;
       // groupes de traits voisins (moins de 8 px) : un codage a 1 à 3 traits ; une graduation, des traits réguliers en nombre
       const groupes = []; l.forEach(t => { const g = groupes.find(g => g.some(u => Math.hypot(u.mid[0] - t.mid[0], u.mid[1] - t.mid[1]) < 8 * k)); if(g) g.push(t); else groupes.push([t]); });
       if(groupes.some(g => g.length > 3) || groupes.length >= 5) return;
-      // un trait accompagné d'une étiquette (nombre, heure, nom de point) : graduation ou point, pas un codage
-      if(l.some(t => textes.some(p => Math.hypot(p[0] - t.mid[0], p[1] - t.mid[1]) < 22 * k))) return;
+      // un trait accompagné d'un nombre (graduation, heure) : pas un codage, toute la ligne est laissée
+      if(l.some(t => textes.some(p => p.nombre && Math.hypot(p[0] - t.mid[0], p[1] - t.mid[1]) < 22 * k))) return;
       l.forEach(t => {
-        if(textes.some(p => Math.hypot(p[0] - t.mid[0], p[1] - t.mid[1]) < 13 * k)) return; // trait d'un point nommé
+        // Un codage est au milieu d'un segment : entre deux repères voisins sur la ligne (bouts du côté, intersections avec
+        // les autres lignes, autres traits). Un trait ailleurs marque un point. Un codage à 2 ou 3 traits n'a pas ce doute.
+        // trait d'un point nommé : le nom est à côté du trait, au même endroit le long de la ligne (un codage est entre deux points)
+        const u = [Math.cos(t.sup.ang), Math.sin(t.sup.ang)];
+        if(textes.some(p => { if(p.nombre) return false; const d = [p[0] - t.mid[0], p[1] - t.mid[1]]; return Math.abs(d[0] * u[0] + d[1] * u[1]) < 8 * k && Math.abs(d[0] * u[1] - d[1] * u[0]) < 26 * k; })) return;
+        if(t.c.T.length === 1 && !milieu(t)) return;
         let th = t.sup.ang; if(th > Math.PI / 2) th -= Math.PI; if(th <= -Math.PI / 2) th += Math.PI;
         const a = th - Math.PI / 3, h = 3.6 * k, p1 = [t.mid[0] - Math.cos(a) * h, t.mid[1] - Math.sin(a) * h], p2 = [t.mid[0] + Math.cos(a) * h, t.mid[1] + Math.sin(a) * h];
         t.c.T[t.i] = [p1, p2]; t.c.fait = true; n++;
