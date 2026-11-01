@@ -143,7 +143,7 @@ toute la largeur, sans retour à la ligne (rangements, décompositions, encadrem
 
 Propositions à entourer en fin de question (« vrai · faux », « oui · non »…) : rangées automatiquement dans une colonne à part,
 alignées, plus loin de l'énoncé (`plChoixCols`, planches.js ; demandé le 01/11/2026). Propositions trop longues pour tenir à côté
-(plus de 16 caractères en demi-largeur, 30 en pleine largeur) : sous chaque question, au même retrait. Rien à écrire dans les sources.
+(plus de 16 caractères en demi-largeur, 48 en pleine largeur) : sous chaque question, au même retrait. Rien à écrire dans les sources.
 
 Collège (6e à 3e), sur le papier (Manuel et feuilles imprimées) : les cases (`plCase`, fractions `plFrac`) s'affichent en pointillés
 (classe `pl-college`, demandé le 01/11/2026) ; l'écran garde ses cases à cliquer. Comparer deux quantités : « Complète avec <, > ou = »

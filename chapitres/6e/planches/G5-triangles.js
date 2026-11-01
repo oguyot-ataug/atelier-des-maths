@@ -99,8 +99,8 @@ PLANCHES['6e|Construction de triangles'] = [
   { titre: 'Triangles sur quadrillage', duree: '30 min',
     attendus: ['Placer un sommet pour obtenir un triangle particulier', 'Utiliser les lignes et les diagonales du quadrillage', 'Justifier la nature d\'un triangle tracé sur quadrillage'],
     exos: [
-      { etoiles: 1, col: 1, consigne: 'Place le point C pour que ABC soit rectangle en B, avec BC = 4 carreaux (C au-dessus de B).', ...placeC([1, 6], [6, 6], [6, 2]) },
-      { etoiles: 2, col: 1, consigne: 'Place le point C, au-dessus de [AB], pour que ABC soit isocèle en C et que C soit à 4 carreaux de la droite (AB).', ...placeC([1, 6], [7, 6], [4, 2]) },
+      { etoiles: 1, col: 1, consigne: 'Place le point C pour que ABC soit rectangle en B, avec BC = 4 côtés de carreau (C au-dessus de B).', ...placeC([1, 6], [6, 6], [6, 2]) },
+      { etoiles: 2, col: 1, consigne: 'Place le point C, au-dessus de [AB], pour que ABC soit isocèle en C et que C soit à 4 côtés de carreau de la droite (AB).', ...placeC([1, 6], [7, 6], [4, 2]) },
       { etoiles: 2, col: 1, consigne: 'Place le point C pour que ABC soit rectangle isocèle en A (C au-dessus de [AB]).', ...placeC([2, 6], [6, 6], [2, 2]) },
       { etoiles: 2, col: 1, consigne: 'Place le point C pour que ABC soit rectangle en A et que [AC] suive une diagonale du quadrillage (C en haut à droite de A, à 3 diagonales).', ...placeC([2, 4], [5, 7], [5, 1], 'C', 9, 8) },
       { etoiles: 3, cahier: true, consigne: 'Sur un quadrillage, trace un triangle isocèle dont la base est sur une ligne du quadrillage et un triangle rectangle dont aucun côté n\'est sur une ligne du quadrillage. Explique.',

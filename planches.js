@@ -501,10 +501,9 @@ function plChoixCols(root, ref, plein){
       r.appendChild(f); while(li.firstChild) q.appendChild(li.firstChild); li.appendChild(q); li.appendChild(r); });
     // Propositions trop longues pour une colonne à côté de l'énoncé (« impossible · possible · certain » dans une
     // demi-colonne) : sous chaque question, alignées au même retrait.
-    const large = plein && !ul.closest('.pl-col1');
-    if(lg > (large ? 30 : 16)){ ul.classList.add('pl-chbas'); return; }
+    if(lg > (plein ? 48 : 16)){ ul.classList.add('pl-chbas'); return; }
     ul.classList.add('pl-chcol');
-    if(large && ul.children.length >= 4 && lg <= 16) ul.classList.add('pl-chcol2');
+    if(plein && !ul.closest('.pl-col1') && ul.children.length >= 4 && lg <= 16) ul.classList.add('pl-chcol2');
   });
 }
 const plChCache = new Map();

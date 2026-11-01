@@ -6,7 +6,10 @@ const B = n => plPointilles(n || 3), R = v => plRep(String(v));
 const K = '#1F3A5C', Ro = '#E35D3A', Bl = '#2EA8C9', Ve = '#2E9C6A', Vi = '#7A4FC0';
 const S = (w, h, inner, px) => `<svg class="pl-libre" viewBox="0 0 ${w} ${h}" style="width:${px || w}px;max-width:100%;display:inline-block;vertical-align:middle;">${inner}</svg>`;
 const L = (a, b, c, w, d) => `<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="${c || K}" stroke-width="${w || 2}"${d ? ' stroke-dasharray="6 4"' : ''} stroke-linecap="round"/>`;
-const P = (p, n, dx, dy, c) => `<path d="M${p[0] - 4},${p[1] - 4} L${p[0] + 4},${p[1] + 4} M${p[0] - 4},${p[1] + 4} L${p[0] + 4},${p[1] - 4}" stroke="${c || K}" stroke-width="2"/>` + (n ? cmT(p[0] + (dx == null ? 8 : dx), p[1] + (dy == null ? -7 : dy), n, { fs: 13, c: c || K }) : '');
+// Nom d'un point : jamais sur la croix (relecture 6e-G1-P3-E4 : « le label de A est sur la croix ») -- un nom centré trop
+// près horizontalement et à la hauteur de la croix est écarté sur le côté.
+const P = (p, n, dx, dy, c) => { if(n && dx != null && dy != null && Math.abs(dx) < 10 && dy > -9 && dy < 12) dx = dx < 0 ? -11 : 11; return P0(p, n, dx, dy, c); };
+const P0 = (p, n, dx, dy, c) => `<path d="M${p[0] - 4},${p[1] - 4} L${p[0] + 4},${p[1] + 4} M${p[0] - 4},${p[1] + 4} L${p[0] + 4},${p[1] - 4}" stroke="${c || K}" stroke-width="2"/>` + (n ? cmT(p[0] + (dx == null ? 8 : dx), p[1] + (dy == null ? -7 : dy), n, { fs: 13, c: c || K }) : '');
 const Ci = (o, r, c, d) => `<circle cx="${o[0]}" cy="${o[1]}" r="${r}" fill="none" stroke="${c || K}" stroke-width="2"${d ? ' stroke-dasharray="5 4"' : ''}/>`;
 const cd = (a, b, n) => { const m = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2], l = Math.hypot(b[0] - a[0], b[1] - a[1]), u = [(b[0] - a[0]) / l, (b[1] - a[1]) / l], v = [-u[1] * 6, u[0] * 6]; let s = ''; for(let i = 0; i < (n || 1); i++){ const d = (i - ((n || 1) - 1) / 2) * 4; s += L([m[0] + u[0] * d - v[0], m[1] + u[1] * d - v[1]], [m[0] + u[0] * d + v[0], m[1] + u[1] * d + v[1]], Ro, 1.6); } return s; };
 const choix = (items, mots) => ({ eleve: '<div class="pl-col1">' + plListe(items.map(([t]) => `${t} <b>${mots}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(items.map(([t, r]) => `${t} ${plEntoure(r)}`)) + '</div>' });
@@ -14,8 +17,23 @@ const regle = (mm, nom, rep) => `<span style="display:flex;flex-direction:column
 // Cercle de centre O : rayon [OA], diamètre [BC], corde [DE].
 const O = [90, 80], r = 62, pt = a => [O[0] + r * Math.cos(a * Math.PI / 180), O[1] - r * Math.sin(a * Math.PI / 180)];
 const CERCLE = S(200, 160, Ci(O, r) + L(O, pt(40), Ro, 2.2) + L(pt(160), pt(340), Bl, 2.2) + L(pt(100), pt(230), Ve, 2.2) + P(O, 'O', -14, 14) + P(pt(40), 'A', 6, -2) + P(pt(160), 'B', -14, -2) + P(pt(340), 'C', 6, 10) + P(pt(100), 'D', -4, -8) + P(pt(230), 'E', -12, 12), 180);
+// Triangle AB = 6 cm, AC = 4 cm, BC = 5 cm construit au compas : les deux arcs restent visibles (1 cm = 20 px).
+const arc = (o, r, a1, a2, c) => { const p = a => [o[0] + r * Math.cos(a * Math.PI / 180), o[1] - r * Math.sin(a * Math.PI / 180)], u = p(a1), v = p(a2); return `<path d="M${u[0].toFixed(1)},${u[1].toFixed(1)} A${r},${r} 0 0 0 ${v[0].toFixed(1)},${v[1].toFixed(1)}" fill="none" stroke="${c}" stroke-width="1.4"/>`; };
+const TRI_ARCS = (() => { const A = [20, 100], B = [140, 100], C = [20 + 2.25 * 20, 100 - Math.sqrt(16 - 2.25 * 2.25) * 20];
+  return S(160, 116, arc(A, 80, 40, 72, Bl) + arc(B, 100, 126, 152, Ve) + L(A, B, K, 2) + L(A, C, K, 2) + L(B, C, K, 2)
+    + P(A, 'A', -11, 4) + P(B, 'B', 11, 4) + P(C, 'C', 0, -9) + cmT(80, 113, '6 cm', { fs: 11 }) + cmT(37, 66, '4 cm', { fs: 11, c: Bl, a: 'end' }) + cmT(108, 66, '5 cm', { fs: 11, c: Ve, a: 'start' }), 170); })();
+// Programme de la planche 5 : cercles de centres A et B, de rayon AB = 5 cm (1 cm = 14 px), losange ACBD.
+const LOSANGE = (() => { const A = [80, 95], B = [150, 95], h = Math.sqrt(70 * 70 - 35 * 35), C = [115, 95 - h], D = [115, 95 + h];
+  return S(230, 190, Ci(A, 70, Bl) + Ci(B, 70, Ve) + L(A, B, K, 2) + L(A, C, Ro, 2) + L(B, C, Ro, 2) + L(A, D, K, 1.6) + L(B, D, K, 1.6)
+    + P(A, 'A', -12, 4) + P(B, 'B', 12, 4) + P(C, 'C', 0, -8) + P(D, 'D', 0, 18), 170); })();
 // Quadrillage w × h carreaux de k px (nœuds en i·k).
 function Gq(w, h, k, f){ let s = ''; for(let x = 0; x <= w; x++) s += L([x * k, 0], [x * k, h * k], '#C9DCEB', 1); for(let y = 0; y <= h; y++) s += L([0, y * k], [w * k, y * k], '#C9DCEB', 1); return S(w * k, h * k, s + f(x => x * k), w * k); }
+// Schéma de points alignés : pts [[nom, abscisse en cm]], cotes au-dessus [[de, à, texte, couleur]], une cote en dessous.
+const schema = (pts, haut, bas) => { const k = 16, x = v => 12 + v * k, y = 40, fin = Math.max(...pts.map(q => q[1]));
+  let s = L([x(0), y], [x(fin), y], K, 2) + pts.map(([n, v]) => P0([x(v), y], n, 0, 17)).join('');
+  haut.forEach(([a, b, t, c]) => { s += cmT((x(a) + x(b)) / 2, y - 9, t, { fs: 11, c: c || Bl }); });
+  if(bas){ const [a, b, t] = bas, yb = y + 26; s += L([x(a), yb], [x(b), yb], Ro, 1.4) + L([x(a), yb - 4], [x(a), yb + 4], Ro, 1.4) + L([x(b), yb - 4], [x(b), yb + 4], Ro, 1.4) + cmT((x(a) + x(b)) / 2, yb + 14, t, { fs: 11, c: Ro }); }
+  return S(x(fin) + 14, 84, s, x(fin) + 14); };
 const duo = l => `<div style="display:flex;justify-content:space-around;align-items:flex-start;gap:10px;flex-wrap:wrap;">${l.join('')}</div>`;
 PLANCHES['6e|Distance et cercles'] = [
   { titre: 'Distance entre deux points, milieu d\'un segment', duree: '35 min',
@@ -32,7 +50,9 @@ PLANCHES['6e|Distance et cercles'] = [
       { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.',
         ...choix([['Si I est le milieu de [AB], alors AI = IB.', 'vrai'], ['Si AI = IB, alors I est forcément le milieu de [AB].', 'faux'], ['AB désigne la longueur du segment [AB].', 'vrai'], ['Le milieu d\'un segment est toujours sur ce segment.', 'vrai']], 'vrai · faux') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'A, B et C sont alignés, avec AB = 5 cm et BC = 3 cm. Combien peut mesurer AC ? Trouve les deux possibilités et fais un schéma.',
-        corr: cm1Redac('C après B', '5 cm + 3 cm = 8 cm', 'Si B est entre A et C, alors AC = 8 cm.') + cm1Redac('C entre A et B', '5 cm − 3 cm = 2 cm', 'Si C est entre A et B, alors AC = 2 cm.') },
+        // Un schéma pour chaque cas (relecture 6e-G1-P1-E5 : « Fais des figures pour expliquer »).
+        corr: cm1Redac('C après B', '5 cm + 3 cm = 8 cm', 'Si B est entre A et C, alors AC = 8 cm.', `<span class="cm-fig-d">${schema([['A', 0], ['B', 5], ['C', 8]], [[0, 5, '5 cm'], [5, 8, '3 cm']], [0, 8, 'AC = 8 cm'])}</span>`)
+          + cm1Redac('C entre A et B', '5 cm − 3 cm = 2 cm', 'Si C est entre A et B, alors AC = 2 cm.', `<span class="cm-fig-d">${schema([['A', 0], ['C', 2], ['B', 5]], [[0, 2, '2 cm', Ro], [2, 5, '3 cm']], [0, 5, 'AB = 5 cm'])}</span>`) },
       { etoiles: 3, cahier: true, consigne: 'Pour le contre-exemple : place deux points A et B, puis un point I tel que AI = IB, mais qui ne soit pas le milieu de [AB].',
         corr: cm1Redac('Un contre-exemple', 'I n\'est pas sur le segment [AB], mais AI = IB.', 'I est sur la médiatrice de [AB], au-dessus du segment : il n\'est pas le milieu, car A, I et B ne sont pas alignés.', `<span class="cm-fig-d">${S(120, 80, L([10, 70], [110, 70], K, 2) + L([10, 70], [60, 15], Bl, 1.6) + L([60, 15], [110, 70], Bl, 1.6) + cd([10, 70], [60, 15]) + cd([60, 15], [110, 70]) + P([10, 70], 'A', -4, 12) + P([110, 70], 'B', -4, 12) + P([60, 15], 'I', 6, 0), 110)}</span>`) },
     ] },
@@ -54,17 +74,29 @@ PLANCHES['6e|Distance et cercles'] = [
       { etoiles: 2, col: 1, consigne: `Les points sont alignés et la figure est codée. On sait que AE = 12 cm. Complète.<div style="text-align:center;">${S(250, 60, L([10, 35], [240, 35], K, 2.2) + [[10, 'A'], [67.5, 'B'], [125, 'C'], [182.5, 'D'], [240, 'E']].map(([x, n]) => P([x, 35], n, -4, -10)).join('') + cd([10, 35], [67.5, 35], 1) + cd([67.5, 35], [125, 35], 1) + cd([125, 35], [182.5, 35], 1) + cd([182.5, 35], [240, 35], 1), 230)}</div>`,
         eleve: plListe(['AB = ' + B() + ' cm', 'AC = ' + B() + ' cm', 'BD = ' + B() + ' cm', 'Le milieu de [AE] est le point ' + B(1)]),
         corr: plListe(['AB = 12 ÷ 4 = ' + R(3) + ' cm', 'AC = ' + R(6) + ' cm', 'BD = ' + R(6) + ' cm', 'Le milieu de [AE] est le point ' + R('C')]) },
+      // La phrase se termine par des pointillés, les propositions sont à part, en dessous (relecture 6e-G1-P2-E5 : « la première
+      // proposition est trop collée au texte. Terminer la partie manquante par des pointillés »).
       { etoiles: 2, col: 1, consigne: 'Entoure la bonne réponse.',
-        eleve: '<div class="pl-col1">' + plListe(['Si I est le milieu de [AB], les points A, I et B sont <b>alignés · non alignés</b>', 'Un segment a <b>un seul milieu · plusieurs milieux</b>', 'Si AI = IB et I est sur [AB], I est <b>le milieu · un autre point</b>']) + '</div>',
-        corr: '<div class="pl-col1">' + plListe(['Si I est le milieu de [AB], les points A, I et B sont ' + plEntoure('alignés'), 'Un segment a ' + plEntoure('un seul milieu'), 'Si AI = IB et I est sur [AB], I est ' + plEntoure('le milieu')]) + '</div>' },
-      { etoiles: 3, cahier: true, consigne: 'Trace un segment [AB] de 7 cm. Construis son milieu I au compas et à la règle non graduée, puis vérifie en mesurant AI.',
-        corr: cm1Redac('Construction', { suite: ['Avec le compas, je trace deux arcs de même rayon, de centres A et B, qui se coupent de part et d\'autre de [AB].', 'La droite qui passe par les deux points d\'intersection coupe [AB] en son milieu I.'] }, 'Je vérifie : AI = IB = 3,5 cm.') },
+        ...(() => { const it = [['Si I est le milieu de [AB], les points A, I et B sont', 'alignés', 'alignés · non alignés'], ['Un segment a', 'un seul milieu', 'un seul milieu · plusieurs milieux'], ['Si AI = IB et I est sur [AB], I est', 'le milieu', 'le milieu · un autre point']];
+          const pts = '<span style="display:inline-block;min-width:4.5em;border-bottom:1.5px dotted #8A93A3;height:1.1em;vertical-align:baseline;"></span>';
+          const parmi = (m, r) => '<b>' + m.split(' · ').map(w => w === r ? plEntoure(w) : w).join(' · ') + '</b>';
+          return { eleve: '<div class="pl-col1">' + plListe(it.map(([t, , m]) => `${t} ${pts}. <b>${m}</b>`)) + '</div>',
+            corr: '<div class="pl-col1">' + plListe(it.map(([t, r, m]) => `${t} <span style="color:#1F7A4D;font-weight:700;">${r}</span>. ${parmi(m, r)}`)) + '</div>' }; })() },
+      // Milieu placé à la règle graduée : la construction au compas (médiatrice) ne vient qu'avec la symétrie axiale
+      // (relecture 6e-G1-P2-E6).
+      { etoiles: 3, cahier: true, consigne: 'Trace un segment [AB] de 7 cm. Place son milieu I avec la règle graduée. Explique comment tu as trouvé où placer I, puis vérifie en mesurant IB.',
+        corr: cm1Redac('Position de I', '7 cm ÷ 2 = 3,5 cm', 'Je place I sur [AB], à 3,5 cm de A. Je vérifie : IB = 3,5 cm, donc AI = IB et I est bien le milieu de [AB].') },
     ] },
   { titre: 'Le cercle', duree: '35 min',
     attendus: ['Utiliser le vocabulaire du cercle : centre, rayon, diamètre, corde', 'Savoir que les points d\'un cercle sont tous à la même distance du centre', 'Tracer un cercle au compas'],
     exos: [
+      // « un rayon » (un segment) et « le rayon » (une longueur) -- relecture 6e-G1-P3-E1 : « Travailler aussi sur le rayon /
+      // un rayon ; le diamètre / un diamètre ».
       { etoiles: 1, col: 1, consigne: `Observe le cercle de centre O, puis entoure le bon mot.<div style="text-align:center;">${CERCLE}</div>`,
-        ...choix([['[OA] est', 'un rayon'], ['[BC] est', 'un diamètre'], ['[DE] est', 'une corde']].map(([t, r]) => [t + ' :', r]), 'un rayon · un diamètre · une corde') },
+        ...(() => { const m = 'un rayon · un diamètre · une corde', it = [['Le segment [OA] est', 'un rayon', m], ['Le segment [BC] est', 'un diamètre', m], ['Le segment [DE] est', 'une corde', m],
+            ['La longueur OA est', 'le rayon', 'le rayon · un rayon'], ['La longueur BC est', 'le diamètre', 'le diamètre · un diamètre'], ['Le segment [OC] est', 'un rayon', 'le rayon · un rayon']];
+          const parmi = (m, r) => '<b>' + m.split(' · ').map(w => w === r ? plEntoure(w) : w).join(' · ') + '</b>';
+          return { eleve: '<div class="pl-col1">' + plListe(it.map(([t, , m]) => `${t} : <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r, m]) => `${t} : ${parmi(m, r)}`)) + '</div>' }; })() },
       { etoiles: 1, col: 1, consigne: 'Complète.',
         eleve: plListe(['rayon 4 cm : diamètre ' + B() + ' cm', 'diamètre 9 cm : rayon ' + B() + ' cm', 'rayon 2,5 cm : diamètre ' + B() + ' cm', 'diamètre 13 cm : rayon ' + B() + ' cm']),
         corr: plListe(['rayon 4 cm : diamètre ' + R(8) + ' cm', 'diamètre 9 cm : rayon ' + R('4,5') + ' cm', 'rayon 2,5 cm : diamètre ' + R(5) + ' cm', 'diamètre 13 cm : rayon ' + R('6,5') + ' cm']) },
@@ -74,12 +106,12 @@ PLANCHES['6e|Distance et cercles'] = [
         eleve: `<div style="text-align:center;">${S(220, 150, P([110, 75], 'O', -14, 14) + P([170, 75], 'A', 6, 4), 200)}</div>`,
         corr: `<div style="text-align:center;">${S(220, 150, Ci([110, 75], 60, Ve) + Ci([140, 75], 30, Bl) + L([110, 75], [170, 75], K, 1.4, true) + P([110, 75], 'O', -14, 14) + P([170, 75], 'A', 6, 4), 200)}</div><div class="pl-petit">Le cercle de diamètre [OA] a pour centre le milieu de [OA].</div>` },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Trace un segment [AB] de 5 cm. Place tous les points qui sont à 3 cm de A et à 4 cm de B.',
-        corr: cm1Redac('Construction', { suite: ['Les points à 3 cm de A sont sur le cercle de centre A et de rayon 3 cm.', 'Les points à 4 cm de B sont sur le cercle de centre B et de rayon 4 cm.'] }, 'Les deux cercles se coupent en deux points : ce sont les points cherchés.', `<span class="cm-fig-d">${S(150, 120, Ci([45, 60], 36, Bl, true) + Ci([105, 60], 48, Ve, true) + L([45, 60], [105, 60], K, 2) + P([45, 60], 'A', -14, 4) + P([105, 60], 'B', 4, 14) + P([66.6, 31.2], '', 0, 0, Ro) + P([66.6, 88.8], '', 0, 0, Ro), 130)}</span>`) },
+        corr: cm1Redac('Construction', { suite: ['Les points à 3 cm de A sont sur le cercle de centre A et de rayon 3 cm.', 'Les points à 4 cm de B sont sur le cercle de centre B et de rayon 4 cm.'] }, 'Les deux cercles se coupent en deux points : ce sont les points cherchés.', `<span class="cm-fig-d">${S(160, 120, Ci([45, 60], 36, Bl, true) + Ci([105, 60], 48, Ve, true) + L([45, 60], [105, 60], K, 2) + P([45, 60], 'A', -14, 4) + P([105, 60], 'B', 4, 14) + P([66.6, 31.2], '', 0, 0, Ro) + P([66.6, 88.8], '', 0, 0, Ro), 140)}</span>`) },
     ] },
   { titre: 'Cercles : distances et propriétés', duree: '35 min',
     attendus: ['Savoir qu\'un point est sur un cercle quand sa distance au centre est égale au rayon', 'Utiliser rayon et diamètre dans des calculs', 'Construire un triangle à partir de ses trois longueurs'],
     exos: [
-      { etoiles: 1, col: 1, consigne: 'Le cercle a pour centre O et pour rayon 5 carreaux. Où se trouve chaque point ? Vérifie au compas.',
+      { etoiles: 1, col: 1, consigne: 'Le cercle a pour centre O et pour rayon 5 côtés de carreau. Où se trouve chaque point ? Vérifie au compas.',
         ...(() => { const k = 18, o = [6, 6], g = (i, j) => [i * k, j * k];
           const f = Gq(12, 12, k, () => Ci(g(...o), 5 * k) + P(g(...o), 'O', -14, 14) + P(g(9, 2), 'A', 6, -4) + P(g(10, 10), 'B', 6, -2) + P(g(4, 5), 'C', -14, -4) + P(g(1, 6), 'D', 6, -6));
           const it = [['A :', 'sur'], ['B :', 'à l\'extérieur'], ['C :', 'à l\'intérieur'], ['D :', 'sur']], m = 'sur · à l\'intérieur · à l\'extérieur';
@@ -93,14 +125,15 @@ PLANCHES['6e|Distance et cercles'] = [
         eleve: plListe(['OP = ' + B() + ' cm', 'Diamètre du petit cercle : ' + B() + ' cm', 'Distance entre les deux cercles, mesurée sur un rayon : ' + B() + ' cm']),
         corr: plListe(['OP = ' + R(5) + ' cm', 'Diamètre du petit cercle : ' + R(4) + ' cm', 'Distance entre les deux cercles, mesurée sur un rayon : 5 − 2 = ' + R(3) + ' cm']) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Construis le triangle ABC tel que AB = 6 cm, AC = 4 cm et BC = 5 cm. Explique ta méthode.',
-        corr: cm1Redac('Construction au compas', { suite: ['Je trace le segment [AB] de 6 cm.', 'Je trace un arc de cercle de centre A et de rayon 4 cm.', 'Je trace un arc de cercle de centre B et de rayon 5 cm.'] }, 'Les deux arcs se coupent en C : je trace [AC] et [BC].') },
+        // La figure, avec les arcs de la construction (relecture 6e-G1-P4-E5).
+        corr: cm1Redac('Construction au compas', { suite: ['Je trace le segment [AB] de 6 cm.', 'Je trace un arc de cercle de centre A et de rayon 4 cm.', 'Je trace un arc de cercle de centre B et de rayon 5 cm.'] }, 'Les deux arcs se coupent en C : je trace [AC] et [BC].') + `<div style="text-align:center;margin-top:4px;">${TRI_ARCS}</div>` },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Un chien est attaché à un piquet par une corde de 3 m. Décris la zone où il peut se déplacer. Peut-il atteindre une gamelle posée à 2,5 m du piquet ? Et un os à 3,5 m ?',
         corr: cm1Redac('Zone du chien', 'Le chien peut aller partout à 3 m ou moins du piquet : à l\'intérieur du disque de centre le piquet et de rayon 3 m.', 'Il atteint la gamelle (2,5 m &lt; 3 m) mais pas l\'os (3,5 m &gt; 3 m).') },
     ] },
   { titre: 'Construire et reproduire des figures avec des cercles', duree: '45 min',
     attendus: ['Lire une figure : centres et rayons des cercles', 'Suivre un programme de construction avec le compas', 'Reproduire une figure en vraie grandeur'],
     exos: [
-      { etoiles: 1, col: 1, consigne: 'Sur ce quadrillage, 1 carreau représente 1 cm. Complète.',
+      { etoiles: 1, col: 1, consigne: 'Sur ce quadrillage, 1 côté de carreau représente 1 cm. Complète.',
         ...(() => { const k = 18, g = (i, j) => [i * k, j * k];
           const f = Gq(12, 8, k, () => Ci(g(4, 4), 3 * k, Bl) + Ci(g(7, 4), 3 * k, Ro) + Ci(g(4, 4), k, Ve) + P(g(4, 4), 'A', -14, -4) + P(g(7, 4), 'B', 6, -4));
           return { eleve: `<div style="text-align:center;">${f}</div>` + plListe(['Rayon du cercle bleu : ' + B() + ' cm', 'Centre du cercle rouge : ' + B(1), 'Diamètre du cercle vert : ' + B() + ' cm', 'Distance AB : ' + B() + ' cm']),
@@ -113,7 +146,8 @@ PLANCHES['6e|Distance et cercles'] = [
       { etoiles: 2, col: 1, cahier: true, consigne: `Écris un programme de construction de cette figure (le grand cercle a pour rayon 4 cm).<div style="text-align:center;">${S(180, 120, Ci([90, 60], 50, K) + Ci([65, 60], 25, Bl) + Ci([115, 60], 25, Ro) + L([40, 60], [140, 60], K, 1.6) + P([40, 60], 'A', -12, 4) + P([140, 60], 'B', 4, 4) + P([90, 60], 'O', -4, 16), 170)}</div>`,
         corr: cm1Redac('Programme de construction', { suite: ['Trace un segment [AB] de 8 cm et place son milieu O.', 'Trace le cercle de centre O passant par A.', 'Trace le cercle de diamètre [AO] et le cercle de diamètre [OB].'] }, 'Les deux petits cercles ont pour rayon 2 cm.') },
       { etoiles: 3, cahier: true, consigne: 'Suis ce programme : « Trace un segment [AB] de 5 cm. Trace le cercle de centre A et de rayon 5 cm, puis le cercle de centre B de même rayon. Ils se coupent en C et D. Trace les segments [AC], [BC], [AD] et [BD]. » Quelles sont les longueurs des côtés du triangle ABC ?',
-        corr: cm1Redac('Longueurs', { suite: ['C est sur le cercle de centre A de rayon 5 cm : AC = 5 cm.', 'C est sur le cercle de centre B de rayon 5 cm : BC = 5 cm.'] }, 'AB = AC = BC = 5 cm : ses trois côtés ont la même longueur (triangle équilatéral).') },
+        // La figure construite (relecture 6e-G1-P5-E5 : « Construis la figure »).
+        corr: cm1Redac('Longueurs', { suite: ['C est sur le cercle de centre A de rayon 5 cm : AC = 5 cm.', 'C est sur le cercle de centre B de rayon 5 cm : BC = 5 cm.'] }, 'AB = AC = BC = 5 cm : ses trois côtés ont la même longueur (triangle équilatéral).') + `<div style="text-align:center;margin-top:4px;">${LOSANGE}</div>` },
     ] },
 ];
 })();
