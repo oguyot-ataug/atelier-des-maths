@@ -51,6 +51,9 @@ const SITE = "https://latelierdesmaths.fr";
 // Adresses d'où l'on peut revenir (règles de redirection de Supabase Auth) : le site, l'Atelier du Prof, et l'ancienne adresse.
 const ORIGINES = ["https://latelierdesmaths.fr", "https://adp.latelieraugmente.fr", "https://maths.latelieraugmente.fr"];
 const FROM = "L'Atelier des Maths <compte@latelierdesmaths.fr>";
+// E-mail de bienvenue : depuis contact@, l'adresse que l'on invite à écrire (demandé le 01/11/2026 : « Pourquoi compte ? et
+// pas simplement contact qui existe ? », puis « ne multiplie pas les adresses à l'avenir »).
+const FROM_CONTACT = "L'Atelier des Maths <contact@latelierdesmaths.fr>";
 const REPLY = "contact@latelierdesmaths.fr";
 const CONFIRM_HEURES = 48, OUBLI_MINUTES = 2;
 const FICTIF = /@mathcollege\.local$/i;
@@ -75,13 +78,13 @@ const emailOk = (e: string) => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e) && e.length 
 const identifiantDe = (email: string) => FICTIF.test(email) ? email.replace(FICTIF, "") : email;
 const origineDe = (o: unknown) => ORIGINES.includes(String(o)) ? String(o) : SITE;
 
-async function sendMail(to: string, subject: string, text: string, html: string) {
+async function sendMail(to: string, subject: string, text: string, html: string, from = FROM) {
   const key = Deno.env.get("RESEND_API_KEY");
   if (!key) throw new Error("RESEND_API_KEY non configurée.");
   const res = await envoiResend({
     method: "POST",
     headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ from: FROM, to, subject, text, html, reply_to: REPLY }),
+    body: JSON.stringify({ from, to, subject, text, html, reply_to: REPLY }),
   });
   if (!res.ok) throw new Error(`Envoi de l'e-mail impossible (${res.status}) : ${await res.text()}`);
 }
@@ -155,7 +158,7 @@ Deno.serve(async (req) => {
       // Marqué AVANT l'envoi : deux appels simultanés n'envoient pas deux e-mails.
       await db.from("profil_contact").upsert({ user_id: id, bienvenue_at: new Date().toISOString(), updated_at: new Date().toISOString() }, { onConflict: "user_id" });
       const m = mailBienvenue({ prenom: p.prenom, identifiant: identifiantDe(connexion), finEssai: p.subscription_expires_at ? new Date(p.subscription_expires_at) : null });
-      try { await sendMail(dest, m.sujet, m.texte, m.html); }
+      try { await sendMail(dest, m.sujet, m.texte, m.html, FROM_CONTACT); }
       catch (e) {
         await db.from("profil_contact").update({ bienvenue_at: null }).eq("user_id", id);
         throw e;

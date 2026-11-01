@@ -69,7 +69,9 @@ fonctions Supabase, mails, `tools/build-seo.js`) utilise latelierdesmaths.fr. L'
 
 **Adresses e-mail en @latelierdesmaths.fr (depuis le 31/10/2026)** : « Tout ce qui concerne l'atelier des maths doit avoir comme
 domaine latelierdesmaths.fr, y compris mailing ». Contact : contact@latelierdesmaths.fr ; expéditeurs Resend notifications@, compte@,
-devis@, factures@, rendez-vous@latelierdesmaths.fr. Chaque fonction envoie par `envoiResend` : si Resend refuse le domaine
+devis@, factures@, rendez-vous@latelierdesmaths.fr. **Ne pas créer de nouvelle adresse** (demandé le 01/11/2026 : « ne multiplie pas
+les adresses à l'avenir ») : tout nouvel e-mail part de contact@latelierdesmaths.fr (l'e-mail de bienvenue des professeurs, par
+exemple), ou d'une adresse existante de la liste ci-dessus si le même type d'e-mail en a déjà une. Chaque fonction envoie par `envoiResend` : si Resend refuse le domaine
 (pas encore vérifié), l'e-mail repart depuis l'ancien domaine latelieraugmente.fr. Les documents de facturation déjà émis gardent
 leur adresse d'origine. Ne pas toucher à adp.js (L'Atelier du Prof).
 
