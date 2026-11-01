@@ -1,6 +1,6 @@
 {
  "/": {
-  "hash": "778930c4794d5bee4090e4426e728cd7255b9c29",
+  "hash": "96c581517cd82bd3ad0abcd757e2b63aab2c6eed",
   "lastmod": "2026-11-01"
  },
  "/cp/les-nombres-jusqu-a-10/": {
@@ -176,7 +176,7 @@
   "lastmod": "2026-11-01"
  },
  "/ce1/cercle-milieu-et-points-alignes/": {
-  "hash": "c6c48fdcaf29ffa19384a95ea1ea3265e2e57619",
+  "hash": "a614841db3d646fd7a0d0634cfc26daabca556f5",
   "lastmod": "2026-11-01"
  },
  "/ce1/la-soustraction-posee/": {
@@ -232,7 +232,7 @@
   "lastmod": "2026-11-01"
  },
  "/ce2/points-droites-segments/": {
-  "hash": "ecec2f035a906db6c25d86b22e968d6a91d86a20",
+  "hash": "5cdc435a0cc9bf0b71e67d83fefaab4f292c4ab9",
   "lastmod": "2026-11-01"
  },
  "/ce2/addition-et-soustraction-posees/": {
@@ -256,7 +256,7 @@
   "lastmod": "2026-11-01"
  },
  "/ce2/polygones-et-quadrilateres/": {
-  "hash": "8d7b36ab22e8a35f55bd0d91fd9c010dcdec9273",
+  "hash": "cd2d679462c6475b556ab8c761c57a608911b02a",
   "lastmod": "2026-11-01"
  },
  "/ce2/problemes-additifs/": {
@@ -332,7 +332,7 @@
   "lastmod": "2026-11-01"
  },
  "/cm1/droites-paralleles-et-perpendiculaires/": {
-  "hash": "848d0946a6ab557cd344dcddf0c9751907b0f302",
+  "hash": "229d0721353811b52afc3d8bec25c56a9a7fd20d",
   "lastmod": "2026-11-01"
  },
  "/cm1/operations-sur-les-nombres-entiers/": {
@@ -348,7 +348,7 @@
   "lastmod": "2026-11-01"
  },
  "/cm1/construction-de-figures/": {
-  "hash": "539bd4b0e5611b7f3c3e6870ec088eb91ce37a8c",
+  "hash": "9bc8fc7dd5dacd94fe22b966f82f27fe26768614",
   "lastmod": "2026-11-01"
  },
  "/cm1/fractions-comparaison-et-operations/": {
@@ -444,7 +444,7 @@
   "lastmod": "2026-11-01"
  },
  "/cm2/figures-planes/": {
-  "hash": "8e42a8bbd2c8f6b410feb27cd55448e6b01c3fb2",
+  "hash": "17445474e81d4d373f1a4a56741c5f2e4dcc2cfa",
   "lastmod": "2026-11-01"
  },
  "/cm2/multiplication/": {
@@ -528,7 +528,7 @@
   "lastmod": "2026-10-31"
  },
  "/6e/droites-paralleles-et-perpendiculaires/": {
-  "hash": "bb4d64e173a79e3b91ccc6cbf51a2fddefc45746",
+  "hash": "d27bd509f9827c8642c5f831dcb379122aa0e553",
   "lastmod": "2026-11-01"
  },
  "/6e/fractions-nombres-et-partage/": {
@@ -536,7 +536,7 @@
   "lastmod": "2026-11-01"
  },
  "/6e/distance-et-cercles/": {
-  "hash": "a324f1634a0aa89010574cc23456d1b0d4aef2cf",
+  "hash": "3cad208a6ce2a54b02a3b81780cb5a75a35b79a2",
   "lastmod": "2026-11-01"
  },
  "/6e/nombres-decimaux/": {
@@ -552,7 +552,7 @@
   "lastmod": "2026-10-28"
  },
  "/6e/construction-de-triangles/": {
-  "hash": "d31f24ad42bfdbc99f0ba8fa3133e96284edcfaf",
+  "hash": "71256f45476e6979586b92c3f2ca8092ef96804e",
   "lastmod": "2026-11-01"
  },
  "/6e/multiplication-et-division/": {
@@ -560,7 +560,7 @@
   "lastmod": "2026-10-28"
  },
  "/6e/symetrie-axiale/": {
-  "hash": "724319793e3a1e21f799085641b3c2c7bf7bff2e",
+  "hash": "2f5af3c3dff4b6a7d6706e6931aa42b3f76fb4b9",
   "lastmod": "2026-11-01"
  },
  "/6e/fractions-comparaison-et-addition/": {
@@ -616,7 +616,7 @@
   "lastmod": "2026-11-01"
  },
  "/5e/symetrie-centrale/": {
-  "hash": "e7790a7864748fa6b034cdc01fec7c7d05a8d1b4",
+  "hash": "f396ce02896a1df5337284bdcdc64055cea6b380",
   "lastmod": "2026-11-01"
  },
  "/5e/divisibilite/": {
@@ -632,11 +632,11 @@
   "lastmod": "2026-10-28"
  },
  "/5e/droites-remarquables-dans-un-triangle/": {
-  "hash": "7477eaf07e34db3a03b055bcc0b0ae73eb573bdb",
+  "hash": "aefda2355835f6f2ecc77ecfbce9bad4c57531f2",
   "lastmod": "2026-11-01"
  },
  "/5e/proportionnalite/": {
-  "hash": "c50a688e6356371446d454e6cff930255ccc25a0",
+  "hash": "0cb211bf93b0d262d8edf24dc4cc0483acff4bfa",
   "lastmod": "2026-11-01"
  },
  "/5e/nombres-relatifs/": {
@@ -644,7 +644,7 @@
   "lastmod": "2026-11-01"
  },
  "/5e/parallelogrammes/": {
-  "hash": "00107d2b05ddcb02b75756f13c985aaeb6f0070f",
+  "hash": "42095a29ee140cf2efe7d1538bf94813cd839428",
   "lastmod": "2026-11-01"
  },
  "/5e/statistiques/": {
@@ -656,7 +656,7 @@
   "lastmod": "2026-11-01"
  },
  "/5e/parallelogrammes-particuliers/": {
-  "hash": "bed0bcba3616c3f606e082a13787b6b0fbb4c767",
+  "hash": "0a9a9eb549db7158549d8fd6d2bed5508ee3d376",
   "lastmod": "2026-11-01"
  },
  "/5e/pourcentages/": {
@@ -704,7 +704,7 @@
   "lastmod": "2026-10-28"
  },
  "/4e/triangles-et-paralleles/": {
-  "hash": "9147f76d72bf78c2f2505cc73bc4d618c8683883",
+  "hash": "db2093b879e4ee044cef12b754d52bc094bc9dcf",
   "lastmod": "2026-11-01"
  },
  "/4e/divisibilite/": {
@@ -712,7 +712,7 @@
   "lastmod": "2026-11-01"
  },
  "/4e/translations/": {
-  "hash": "126c9ae9f934b2fcc6327e2913c7d16c520d273b",
+  "hash": "77a4f2be43dac2c6cd4cbf17bcb524f45907c51f",
   "lastmod": "2026-11-01"
  },
  "/4e/fractions-comparaison-et-addition/": {
@@ -788,7 +788,7 @@
   "lastmod": "2026-11-01"
  },
  "/3e/rotation/": {
-  "hash": "31c4c3580f5a9353fccc186e5a3e1a8b09312872",
+  "hash": "fffedc785e420dfb2b51b02c7dce8a68a33b6c41",
   "lastmod": "2026-11-01"
  },
  "/3e/puissances/": {
@@ -804,7 +804,7 @@
   "lastmod": "2026-11-01"
  },
  "/3e/homothetie/": {
-  "hash": "b5a181ab8b9834509763cb9ef100956a9ef977e9",
+  "hash": "3fa2ee11ac5483882b8038e9fcb4c9acfac51ac0",
   "lastmod": "2026-11-01"
  },
  "/3e/probabilites/": {
@@ -828,7 +828,7 @@
   "lastmod": "2026-11-01"
  },
  "/3e/espace/": {
-  "hash": "7b0de19f000b7fcc3df0af736591019d724d71f4",
+  "hash": "197917a0cfd7bcec6f95577c8da36bef26d7e72c",
   "lastmod": "2026-11-01"
  },
  "/3e/algorithmique-et-programmation/": {
