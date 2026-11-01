@@ -170,6 +170,10 @@ function plNumAnalyser(x){
       return { b, k: isNaN(c) ? null : 1000 * ligne + (ret === 'b' ? 2 * c - 2.5 : ret ? 2 * c - 1 : 2 * c) }; });
     if(!L.length || L.some(z => z.k == null) || !tb.querySelector('.pn-ret')) return;
     L.sort((x, y) => x.k - y.k).forEach((z, i) => z.b.setAttribute('data-pnsuiv', i + 1 < L.length ? L[i + 1].b.dataset.pnv : ''));
+    // Plusieurs lignes de produits : les mêmes cases de retenues servent à chaque ligne, on les efface pour passer à la
+    // suivante (relecture du 01/11/2026 : « on va remplir les retenues une première fois mais il faut pouvoir les effacer
+    // pour la ligne suivante »). Bouton sous l'opération ; OK qui passe à la ligne suivante les efface aussi.
+    if(new Set(lg).size > 1) tb.insertAdjacentHTML('afterend', '<button type="button" class="pn-effret">Effacer les retenues</button>');
   });
   // 3. Figures blanches dans l'énoncé, coloriées dans le corrigé.
   let svE = [...E.querySelectorAll('svg')], svC = [...C.querySelectorAll('svg')];
@@ -270,7 +274,12 @@ function plNum(root, x, o){
     else if(t === '⌫') v = v.slice(0, -1);
     else if(t === 'ok'){ const els = [...root.querySelectorAll('[data-pnv]')], b = els.find(z => z.dataset.pnv === sel);
       if(b && b.hasAttribute('data-pnsuiv')){ // opération posée : ordre du calcul, puis la case qui suit l'opération
-        if(b.dataset.pnsuiv){ choisir(b.dataset.pnsuiv); return; }
+        if(b.dataset.pnsuiv){ const n = els.find(z => z.dataset.pnv === b.dataset.pnsuiv), tb = b.closest('table');
+          const r0 = Math.min(...[...tb.querySelectorAll('td[data-plrow]')].map(td => +td.dataset.plrow)); // les retenues suivent la 1re ligne
+          const ligne = z => !z ? null : z.dataset.plret ? String(r0) : z.closest('td') ? z.closest('td').dataset.plrow : null;
+          // Passage à la ligne de produit suivante : les retenues de la ligne finie sont effacées.
+          if(ligne(b) && ligne(n) && ligne(b) !== ligne(n)) effacerRetenues(b.closest('table'));
+          choisir(b.dataset.pnsuiv); return; }
         const tb = b.closest('table'), apres = els.find(z => !tb.contains(z) && (tb.compareDocumentPosition(z) & Node.DOCUMENT_POSITION_FOLLOWING));
         choisir(apres ? apres.dataset.pnv : null); return; }
       const cases = els.map(z => z.dataset.pnv), i = cases.indexOf(sel); choisir(cases[i + 1] || null); return; }
@@ -283,8 +292,11 @@ function plNum(root, x, o){
     else { const c = M.cibles.find(z => z.id === sel), lim = c && c.type === 'txt' ? Math.max(24, c.rep.length + 15) : 24; if(v.length < lim) v += t; }
     etat.v[sel] = v; effacerMarques(); afficher(); change();
   };
+  function effacerRetenues(tb){ if(!tb) return; tb.querySelectorAll('.pn-ret[data-pnv]').forEach(r => { delete etat.v[r.dataset.pnv]; }); effacerMarques(); afficher(); change(); }
   root.onclick = e => {
     if(o.lecture) return;
+    const er = e.target.closest('.pn-effret');
+    if(er){ const tb = er.previousElementSibling; if(tb && tb.tagName === 'TABLE') effacerRetenues(tb); return; }
     const xb = e.target.closest('[data-pnxb]'), xs = e.target.closest('svg.pn-x');
     if(xb || xs){ const id = xb ? xb.dataset.pnxb.split('|')[0] : xs.dataset.pn, c = M.cibles.find(z => z.id === id); if(!c) return;
       const K = PLX[c.rep.t], st = JSON.parse(JSON.stringify(etat.x[id] || {}));
@@ -689,7 +701,9 @@ function plClavierPhysique(e){
     .pn-ex .pn-case.pn-ret{ min-width:0; width:17px; height:17px; padding:0; border-width:1.5px; border-style:dashed; border-color:#F0A36B; border-radius:4px; font:700 .72rem 'JetBrains Mono',monospace; color:#E35D3A; z-index:1; }
     .pn-ex .pn-case.pn-ret.pn-vide{ background:rgba(255,255,255,.85); } .pn-ex .pn-case.pn-ret:not(.pn-vide){ border-style:solid; border-color:transparent; background:transparent; }
     .pn-ex .pn-case.pn-ret.pn-sel{ border-style:solid; border-color:#E35D3A; background:#FFF6F2; } .pn-ex .pn-ret-b:not(.pn-vide)::before{ content:'+'; }
-    .pn-ex .pn-case.pn-large{ min-width:120px; } .pn-ex .pn-case.pn-vide{ background:#F3F7FC; }
+    .pn-ex .pn-case.pn-large{ min-width:120px; }
+    .pn-ex .pn-effret{ display:block; margin:2px auto 0; font:inherit; font-size:.78rem; font-weight:600; color:#E07A1F; background:none; border:1px dashed #F0B27A; border-radius:6px; padding:3px 10px; cursor:pointer; }
+    .pn-ex .pn-effret:hover{ background:#FFF4E8; } .pn-ex .pn-case.pn-vide{ background:#F3F7FC; }
     .pn-ex .pn-case.pn-sel{ border-color:#E35D3A; box-shadow:0 0 0 3px rgba(227,93,58,.25); background:#FFF6F2; }
     .pn-ex .pn-frac{ display:inline-flex; flex-direction:column; align-items:center; gap:3px; vertical-align:middle; margin:0 3px; }
     .pn-ex .pn-barre{ display:block; width:36px; border-top:2px solid #1C2B39; }
