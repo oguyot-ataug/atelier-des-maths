@@ -3384,6 +3384,7 @@ async function refreshAuthUI(){
   const navMesResultats = document.getElementById('navMesResultats');
   const navMesDevoirs = document.getElementById('navMesDevoirs');
 
+  window.plFiligrane = null; // filigrane des impressions en lot (chapitre complet, livre) : comptes professeur en essai
   if(session){
     currentUser = session.user;
     const profileCols = 'role,nom,prenom,uai,signup_status,subscription_status,subscription_expires_at,must_change_password';
@@ -3422,6 +3423,9 @@ async function refreshAuthUI(){
     const nomTrim = profile && profile.nom ? profile.nom.trim() : '';
     const fullName = [prenomTrim, nomTrim].filter(Boolean).join(' ');
     document.getElementById('accountNameDisplay').textContent = fullName || currentUser.email;
+    // Demandé le 01/11/2026 : filigrane « Version d'essai » + nom du professeur sur le livre entier et les planches complètes
+    // d'un chapitre, pour les comptes en essai seulement (ni abonnés, ni licence établissement, ni administrateur).
+    if(profile && profile.role === 'prof' && profile.subscription_status === 'trial' && !currentEtabLicence) window.plFiligrane = 'Version d\'essai · ' + (fullName || 'compte d\'essai');
 
     // Un compte prof en attente de validation, refusé, ou dont l'abonnement a expiré ne
     // doit pas accéder aux fonctionnalités (mais reste connecté pour voir son statut).
@@ -3743,6 +3747,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1255', date:'2026-11-01', items:['Impressions des comptes en essai : le livre entier et les planches complètes d\'un chapitre portent un filigrane discret en diagonale, « Version d\'essai · » suivi du nom du professeur, sur chaque page (élève et corrigé). Les planches imprimées une à une restent sans filigrane ; rien ne change pour les abonnés et les licences établissement.', 'Relecture 6e-G2-P2-E1 : propositions sous chaque question, en retrait (le tableau s\'écrasait à l\'impression en demi-largeur).'] },
   { version:'2026-08-19.1254', date:'2026-11-01', items:['Figures : correction d\'une erreur qui pouvait interrompre la mise en forme automatique (marques des points, codages, indices des noms de droites) quand un texte disparaissait aussitôt affiché.'] },
   { version:'2026-08-19.1253', date:'2026-11-01', items:['Noms des droites : le numéro est en indice partout, (d₁), (d₂)…, dans les figures comme dans les énoncés et les corrigés -- demandé : « bien mettre les chiffres en indice ». 6e Droites parallèles et perpendiculaires : noms des droites plus petits sur le quadrillage (« les écritures des labels des droites sont trop grosses »).'] },
   { version:'2026-08-19.1252', date:'2026-11-01', items:['Relecture, 6e Droites parallèles et perpendiculaires : propositions en tableau, à distance des énoncés ; symboles ⊥ et // à compléter (à l\'écran, un clic passe de l\'un à l\'autre) ; étiquettes de points décollées et dans le cadre ; à l\'écran, les droites tracées se nomment ((AB), (d), (d\')) et les noms sont vérifiés.'] },

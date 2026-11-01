@@ -449,7 +449,7 @@ function plOuvrir(lvl, c){
     if(t === o || t.closest('[data-x]')){ o.remove(); return; }
     const pr = t.closest('[data-proj]'); if(pr){ plProjeter(lvl, c, Number(pr.dataset.proj)); return; }
     const b = t.closest('[data-imp]'); if(b){ plImprimer(lvl, [{ c, indices: [Number(b.dataset.imp)] }], b.dataset.mode); return; }
-    const a = t.closest('[data-tout]'); if(a){ plImprimer(lvl, [{ c, indices: liste.map((_, i) => i) }], a.dataset.tout); return; }
+    const a = t.closest('[data-tout]'); if(a){ plImprimer(lvl, [{ c, indices: liste.map((_, i) => i) }], a.dataset.tout, { filigrane: window.plFiligrane || null }); return; }
     const lv = t.closest('[data-livre]'); if(lv) plLivre(lvl, lv.dataset.livre === 'corr');
   });
 }
@@ -552,6 +552,12 @@ function plFigerMaths(el){
 
 /* ---------- Impression : des planches, ou un livre ---------- */
 // blocs = [{ c, indices }] (un chapitre et ses planches) ; avant / apres = pages en plus (couverture…).
+// Filigrane des impressions en lot pour les comptes en essai : le texte en diagonale, gris très clair, sur toute la page.
+function plFiligraneSvg(t){
+  const e = escapeHtml(t); let l = '';
+  for(let y = -60; y < 380; y += 62) for(let x = -120; x < 260; x += 205) l += `<text x="${x + (y / 62 % 2 ? 100 : 0)}" y="${y}">${e}</text>`;
+  return `<svg class="pl-filigrane" viewBox="0 0 210 297" preserveAspectRatio="xMidYMid slice" aria-hidden="true" data-geo-garde="1"><g transform="rotate(-32 105 148)" font-family="Inter, Arial, sans-serif" font-size="8.5" font-weight="700" fill="#5B6472" fill-opacity=".11">${l}</g></svg>`;
+}
 async function plImprimer(lvl, blocs, mode, opts){
   opts = opts || {};
   const pr = plPrefs(), logo = await plLogo();
@@ -560,6 +566,7 @@ async function plImprimer(lvl, blocs, mode, opts){
   const tmp = document.createElement('div'); tmp.style.cssText = 'position:absolute;left:-9999px;top:0;width:180mm;';
   tmp.innerHTML = (opts.avant || '') + (mode === 'livre' ? pages('eleve') + (opts.sansCorriges ? '' : (opts.entreCorriges || '') + pages('corr')) : mode === 'les2' ? pages('eleve') + pages('corr') : pages(mode));
   document.body.appendChild(tmp);
+  if(opts.filigrane) tmp.querySelectorAll('.pl-page').forEach(pg => pg.insertAdjacentHTML('afterbegin', plFiligraneSvg(opts.filigrane)));
   plFigerMaths(tmp);
   const corps = tmp.innerHTML + (tmp.innerHTML.includes('#plRapporteur') ? plDefsImages(await plRappDataUrl()) : ''); tmp.remove();
   const w = window.open('', '_blank', 'width=900,height=1000');
@@ -696,7 +703,7 @@ async function plLivre(lvl, avecCorriges){
       <div><span class="pl-guide-i">${plVisage(0)}${plVisage(1)}${plVisage(2)}</span><span><b>Je fais le point</b> : à la fin d'une planche, tu colories le visage qui te ressemble.</span></div>
       <div><span class="pl-guide-i pl-guide-ref">CM1-N2-P1</span><span><b>La référence</b> de chaque planche : le niveau, le chapitre, puis le numéro de la planche.</span></div>
     </div></div></section>`;
-  plImprimer(lvl, chaps.map(c => ({ c, indices: plDe(lvl, c.t).map((_, i) => i) })), 'livre', { avant: couv + sommaire, sansCorriges: !avecCorriges, titre: `Livre d'exercices ${niv}${avecCorriges ? ' (avec corrigés)' : ''}` });
+  plImprimer(lvl, chaps.map(c => ({ c, indices: plDe(lvl, c.t).map((_, i) => i) })), 'livre', { avant: couv + sommaire, sansCorriges: !avecCorriges, titre: `Livre d'exercices ${niv}${avecCorriges ? ' (avec corrigés)' : ''}`, filigrane: window.plFiligrane || null });
 }
 
 /* ---------- Projection : un exercice à la fois, avec la correction ---------- */
@@ -806,6 +813,7 @@ const PL_CSS = `
   .pl-bouton-imp{ display:block; margin:12px auto; padding:10px 18px; border:0; border-radius:24px; background:#0C5BA0; color:#fff; font:600 14px Inter,Arial,sans-serif; cursor:pointer; }
   @media print{ .pl-bouton-imp{ display:none; } }
   .pl-page{ max-width:184mm; margin:0 auto 10mm; page-break-after:always; break-after:page; position:relative; }
+  .pl-filigrane{ position:absolute; inset:0; width:100%; height:100%; pointer-events:none; z-index:6; overflow:hidden; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
   .pl-page:last-child{ page-break-after:auto; break-after:auto; }
   .pl-tete{ display:flex; justify-content:space-between; align-items:center; gap:10px; border-bottom:2px solid #1F3A5C; padding-bottom:4px; font-size:9pt; color:#4E5665; }
   .pl-logo{ height:24px; width:auto; } .pl-tete .pl-site{ margin-right:auto; }

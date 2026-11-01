@@ -90,7 +90,10 @@ PLANCHES['6e|Droites parallèles et perpendiculaires'] = [
     exos: [
       { etoiles: 1, col: 1, consigne: `Observe la figure, puis entoure la bonne notation.<div style="text-align:center;">${NOT}</div>`,
         ...(() => { const it = [['la droite qui passe par A et B :', '(AB)', '(AB) · [AB) · [AB]'], ['la demi-droite d\'origine A qui passe par C :', '[AC)', '(AC) · [AC) · [AC]'], ['le segment d\'extrémités B et C :', '[BC]', '(BC) · [BC) · [BC]'], ['le point D appartient-il à la droite (AC) ?', 'non', 'oui · non']];
-          return P3.chxTab(it); })() }, // propositions en tableau, à distance des questions (relecture 6e-G2-P2-E1)
+          // Propositions sur leur propre ligne, sous la question et en retrait : en demi-largeur, un tableau les écrasait à
+          // l'impression (relecture 6e-G2-P2-E1 : « ne pas coller les réponses aux énoncés »).
+          const sous = h => `<div style="padding:2px 0 0 1.4em;white-space:nowrap;">${h}</div>`;
+          return { eleve: plListe(it.map(([t, , m]) => t + sous(`<b>${m}</b>`))), corr: plListe(it.map(([t, r, m]) => t + sous(P3.entoureParmi(m, r)))) }; })() },
       { etoiles: 1, col: 1, consigne: `Observe la figure, puis complète son programme de construction.<div style="text-align:center;">${S(250, 130, L([30, 110], [220, 110], K, 2.2) + L([90, 5], [90, 128], Ro, 2) + ad([90, 110], [1, 0], [0, -1]) + L([220, 110], [49, 5], Bl, 2) + P([30, 110], 'A', -14, 4) + P([220, 110], 'B', 4, 14) + P([90, 30], 'C', -14, -2) + P([90, 110], 'H', -14, 16))}</div>`,
         eleve: plListe(['Trace le segment ' + B(3) + '.', 'Place un point C qui n\'appartient pas à la droite ' + B(3) + '.', 'Trace la droite perpendiculaire à (AB) passant par le point ' + B(2) + '.', 'Cette droite coupe le segment [AB] au point ' + B(2) + '.', 'Trace la demi-droite d\'origine B qui passe par C : ' + B(3) + '.']),
         corr: plListe(['Trace le segment ' + R('[AB]') + '.', 'Place un point C qui n\'appartient pas à la droite ' + R('(AB)') + '.', 'Trace la droite perpendiculaire à (AB) passant par le point ' + R('C') + '.', 'Cette droite coupe le segment [AB] au point ' + R('H') + '.', 'Trace la demi-droite d\'origine B qui passe par C : ' + R('[BC)') + '.']) },
