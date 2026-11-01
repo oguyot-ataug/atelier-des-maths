@@ -3747,6 +3747,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1265', date:'2026-11-01', items:['Relecture 6e-G2-P8-E4 : la figure du corrigé n\'indique plus 5 cm sur [CB] (c\'est la longueur cherchée) ; la réponse est rédigée en trois temps : C appartient à la médiatrice de [AB] et CA = 5 cm ; or, tout point de la médiatrice d\'un segment est à égale distance des extrémités de ce segment ; donc CB = CA = 5 cm.'] },
   { version:'2026-08-19.1264', date:'2026-11-01', items:['Relecture 6e-N2-P7-E6 et E7 : corrigés rédigés avec une lettre devant le calcul, déroulé en colonne (R = …, N = …) et résultat encadré ; aucune ligne ne commence par « = ». Même présentation pour les autres corrigés qui enchaînaient des lignes « = … » : 6e Opérations (dépense totale), 3e Puissances, 4e Nombres relatifs, Fractions (addition, multiplication) et Calcul littéral.'] },
   { version:'2026-08-19.1263', date:'2026-11-01', items:['Relecture 6e-G2-P8-E4 : le corrigé montre la figure (médiatrice codée, triangle isocèle ABC) au lieu de décrire la construction.'] },
   { version:'2026-08-19.1262', date:'2026-11-01', items:['Relecture, 6e Fractions : nombres et partage : comparer une fraction à 1 avec <, > ou = dans une case ; corrigé de la demi-droite graduée tracé sur papier quadrillé ; calculs du corrigé écrits avec la fraction (1/5 × 240 = 240/5 = 48 ; 25/100 × 40 = 1000/100 = 10 ; 45/100 × 600 = 45 × 6 = 270).'] },

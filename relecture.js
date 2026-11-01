@@ -40,7 +40,7 @@ const RELECTURE_CHGT = {
   // arrondie dans le futur : un exercice validé entre la mise en ligne et une date trop tardive resterait « Chgt effectué »
   // (signalé le 01/11/2026 pour 6e-N1 ; dates corrigées d'après l'historique des publications).
   // Version 1263 (01/11).
-  '6e-G2-P8-E4': { date: '2026-11-01T15:51:32Z', note: "Le corrigé montre la figure (segment [AB], médiatrice (d) codée, point C, CA = CB = 5 cm) au lieu de décrire la construction ; la consigne reste « avec la règle graduée et l'équerre », sans compas" },
+  '6e-G2-P8-E4': { date: '2026-11-01T16:05:16Z', note: "Figure du corrigé sans « 5 cm » sur [CB] (longueur cherchée) ; rédaction : C appartient à la médiatrice de [AB] et CA = 5 cm. Or, tout point de la médiatrice d'un segment est à égale distance des extrémités de ce segment. Donc CB = CA = 5 cm." },
   // Version 1262 (01/11).
   '6e-N2-P4-E6': { date: '2026-11-01T15:47:51Z', note: "« 7/8 … 1 » à compléter par <, > ou = dans une case ; à l'écran, un clic passe de < à >, puis =" },
   '6e-N2-P4-E7': { date: '2026-11-01T15:47:51Z', note: "Corrigé avec le tracé : la demi-droite graduée sur papier quadrillé (unité 6 carreaux), les points 1/2, 7/6, 5/3 placés" },
