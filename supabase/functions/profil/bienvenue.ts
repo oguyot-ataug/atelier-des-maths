@@ -14,6 +14,11 @@ export function mailBienvenue(p: { prenom: string | null; identifiant: string; f
   const acces = fin
     ? `Votre essai gratuit de 15 jours commence aujourd'hui et court jusqu'au <b>${fin}</b>, avec un accès complet au site.`
     : `Pendant la période de lancement, votre accès est <b>complet et gratuit</b>, sans date de fin.`;
+  // Relecture des exercices (demandé le 01/11/2026 : « Préciser dans le mail que tous les exercices sont en phase de
+  // relecture avec une deadline au premier décembre ») : la mention disparaît d'elle-même une fois la date passée.
+  const relecture = Date.now() < Date.UTC(2026, 11, 2)
+    ? "Tous les exercices sont en cours de relecture, jusqu'au <b>1er décembre 2026</b> au plus tard. Si vous repérez une erreur d'ici là, merci de nous la signaler en répondant à cet e-mail : elle sera corrigée rapidement."
+    : "";
   const etapes: [string, string, string, string][] = [
     ["Parcourir un chapitre", "Cours avec figures manipulables, méthodes animées, exercices corrigés et quiz, du CP à la 3e.", "/", "Voir les cours"],
     ["Créer vos classes", "Dans « Mes classes » : chaque élève reçoit son identifiant, et vous suivez ses devoirs et ses résultats.", "/#/supervision", "Mes classes"],
@@ -41,6 +46,7 @@ export function mailBienvenue(p: { prenom: string | null; identifiant: string; f
       <h3 style="font-size:16px;margin:8px 0 12px 0;color:#1F3A5C;">Pour bien démarrer</h3>
       <table role="presentation" cellpadding="0" cellspacing="0" style="border-collapse:collapse;width:100%;">${etapesHtml}
       </table>
+      ${relecture ? `<div style="background:#FFF6E8;border-left:4px solid #FF8208;border-radius:8px;padding:12px 16px;margin:4px 0 16px 0;font-size:14px;line-height:1.5;"><b style="color:#1F3A5C;">Bon à savoir</b><br>${relecture}</div>` : ""}
       <p style="margin:6px 0 14px 0;">Une question, ou envie d'une démonstration ? <a href="${SITE}/#/rendez-vous" style="color:#0C5BA0;font-weight:bold;">Prenez rendez-vous</a> pour en parler, ou répondez simplement à cet e-mail.</p>
       <p style="margin:0 0 18px 0;">Bonne découverte !<br>L'équipe de L'Atelier des Maths</p>
     </div>
@@ -57,7 +63,7 @@ ${acces.replace(/<\/?b>/g, "")}
 
 Pour bien démarrer :
 ${etapes.map(([t, d, href]) => `- ${t} : ${d} ${SITE}${href}`).join("\n")}
-
+${relecture ? "\nBon à savoir : " + relecture.replace(/<\/?b>/g, "") + "\n" : ""}
 Une question, ou envie d'une démonstration ? Prenez rendez-vous : ${SITE}/#/rendez-vous, ou répondez simplement à cet e-mail.
 
 Bonne découverte !
