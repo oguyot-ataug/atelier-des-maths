@@ -39,6 +39,8 @@ jobs:
             "Serveur d envoi : \(.smtp_host // "Supabase (par défaut)")",
             "Expéditeur : \(.smtp_sender_name // "-") <\(.smtp_admin_email // "-")>",
             "Confirmation exigée : \(.mailer_autoconfirm | not)"'
+          echo "----- modèle actuel, en entier -----"
+          echo "$B" | jq -r '.mailer_templates_confirmation_content // "(défaut)"'
       - name: Installation du modèle du dépôt
         if: inputs.etape == 'appliquer'
         run: |
