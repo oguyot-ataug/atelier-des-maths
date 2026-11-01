@@ -3747,6 +3747,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1257', date:'2026-11-01', items:['6e Droites parallèles et perpendiculaires, programme de construction (planche 3) : la droite (d) est nommée sur les trois figures, et elle n\'est plus brisée dans la figure 3 -- signalé : « Il manque les labels des droites et la droite de la dernière figure est brisée ».'] },
   { version:'2026-08-19.1256', date:'2026-11-01', items:['6e Droites parallèles et perpendiculaires (retour de bêta-test : « les choix se superposent ») : dans les exercices « une figure, un choix », les figures sont sur une ligne et les choix en tableau en dessous, une ligne par figure.'] },
   { version:'2026-08-19.1255', date:'2026-11-01', items:['Impressions des comptes en essai : le livre entier et les planches complètes d\'un chapitre portent un filigrane discret en diagonale, « Version d\'essai · » suivi du nom du professeur, sur chaque page (élève et corrigé). Les planches imprimées une à une restent sans filigrane ; rien ne change pour les abonnés et les licences établissement.', 'Relecture 6e-G2-P2-E1 : propositions sous chaque question, en retrait (le tableau s\'écrasait à l\'impression en demi-largeur).'] },
   { version:'2026-08-19.1254', date:'2026-11-01', items:['Figures : correction d\'une erreur qui pouvait interrompre la mise en forme automatique (marques des points, codages, indices des noms de droites) quand un texte disparaissait aussitôt affiché.'] },

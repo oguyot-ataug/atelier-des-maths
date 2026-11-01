@@ -2,7 +2,7 @@
    6e · Planches : Droites parallèles et perpendiculaires (G2)
    Notations du collège : (AB), [AB), [AB], ⊥, //, médiatrice.
    Relecture du 01/11/2026 : propositions en tableau (P1-E2, P1-E4, P2-E1), symboles ⊥ et // à compléter (P1-E5), étiquettes A et D
-   décollées, noms des droites à donner à l'écran (P2-E4).
+   décollées, noms des droites à donner à l'écran (P2-E4). P3-E1 : nom (d) sur les figures, droite de la figure 3 d'un seul tenant.
    ============================================================ */
 (() => {
 const B = n => plPointilles(n || 3), R = v => plRep(String(v));
@@ -113,9 +113,9 @@ PLANCHES['6e|Droites parallèles et perpendiculaires'] = [
     exos: [
       { etoiles: 2, consigne: 'Programme : « Trace un segment [EF]. Trace la droite (d) perpendiculaire à (EF) passant par F. Place un point G sur (d), puis trace le segment [EG]. » Quelle figure correspond à ce programme ?',
         ...(() => { const f = (inner) => S(150, 110, `<rect x="1" y="1" width="148" height="108" rx="8" fill="#fff" stroke="#C9DCEB"/>` + inner, 140);
-          const V = [f(L([20, 90], [110, 90], K, 2.2) + L([110, 5], [110, 105], Ro, 2) + ad([110, 90], [-1, 0], [0, -1]) + L([20, 90], [110, 25], Bl, 2) + P([20, 90], 'E', -4, 16) + P([110, 90], 'F', 8, 14) + P([110, 25], 'G', 8, -2)),
-            f(L([30, 90], [120, 90], K, 2.2) + L([30, 5], [30, 105], Ro, 2) + ad([30, 90], [1, 0], [0, -1]) + L([120, 90], [30, 25], Bl, 2) + P([30, 90], 'E', -14, 16) + P([120, 90], 'F', 4, 16) + P([30, 25], 'G', 8, -2)),
-            f(L([20, 90], [100, 90], K, 2.2) + L([100, 90], [140, 5], Ro, 2) + L([100, 90], [84, 105], Ro, 2) + L([20, 90], [128, 30], Bl, 2) + P([20, 90], 'E', -4, 16) + P([100, 90], 'F', -2, 16) + P([128, 30], 'G', -16, -4))];
+          const V = [f(L([20, 90], [110, 90], K, 2.2) + L([110, 5], [110, 105], Ro, 2) + cmT(104, 66, '(d)', { fs: 11, c: Ro, a: 'end' }) + ad([110, 90], [-1, 0], [0, -1]) + L([20, 90], [110, 25], Bl, 2) + P([20, 90], 'E', -4, 16) + P([110, 90], 'F', 8, 14) + P([110, 25], 'G', 8, -2)),
+            f(L([30, 90], [120, 90], K, 2.2) + L([30, 5], [30, 105], Ro, 2) + cmT(36, 66, '(d)', { fs: 11, c: Ro, a: 'start' }) + ad([30, 90], [1, 0], [0, -1]) + L([120, 90], [30, 25], Bl, 2) + P([30, 90], 'E', -14, 16) + P([120, 90], 'F', 4, 16) + P([30, 25], 'G', 8, -2)),
+            f(L([20, 90], [100, 90], K, 2.2) + L([140, 5], [92.9, 105], Ro, 2) + cmT(124, 66, '(d)', { fs: 11, c: Ro, a: 'start' }) + L([20, 90], [128, 30], Bl, 2) + P([20, 90], 'E', -4, 16) + P([100, 90], 'F', -2, 16) + P([128, 30], 'G', -16, -4))];
           return { eleve: duo(V.map((v, i) => col(v, 'Figure ' + (i + 1)))) + '<div class="pl-col1">' + plListe(['La bonne figure est la <b>figure 1 · figure 2 · figure 3</b>']) + '</div>',
             corr: duo(V.map((v, i) => col(v, 'Figure ' + (i + 1)))) + '<div class="pl-col1">' + plListe(['La bonne figure est la ' + plEntoure('figure 1') + ' : l\'angle droit est en F, et le segment tracé est [EG]. Dans la figure 2, l\'angle droit est en E ; dans la figure 3, (d) n\'est pas perpendiculaire à (EF).']) + '</div>' }; })() },
       { etoiles: 2, col: 1, consigne: 'Écris la notation qui convient.',

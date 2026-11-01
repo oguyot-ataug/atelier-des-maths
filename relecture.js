@@ -39,6 +39,8 @@ const RELECTURE_CHGT = {
   // La date d'un changement est l'heure RÉELLE de sa mise en ligne (heure du commit poussé sur main), jamais une heure
   // arrondie dans le futur : un exercice validé entre la mise en ligne et une date trop tardive resterait « Chgt effectué »
   // (signalé le 01/11/2026 pour 6e-N1 ; dates corrigées d'après l'historique des publications).
+  // Version 1257 (01/11).
+  '6e-G2-P3-E1': { date: '2026-11-01T12:59:57Z', note: "Nom (d) écrit à côté de la droite sur les trois figures ; dans la figure 3, la droite (d) est d'un seul tenant (elle était brisée en F)" },
   // Version 1256 (01/11) : retour bêta.
   '6e-G2-P1-E1': { date: '2026-11-01T12:50:58Z', note: "Les figures sur une ligne, la lettre dessous ; les choix en tableau en dessous, une ligne par figure (sous chaque petite figure, les mots empilés débordaient sur la voisine). Même présentation pour les autres exercices « une figure, un choix » du chapitre" },
   // Version 1252 (01/11).
