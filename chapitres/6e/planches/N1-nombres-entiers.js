@@ -8,6 +8,8 @@
    critères) ; la 2e droite graduée et le 2e encadrement retirés ; « Pour aller plus loin » à la fin de la planche 7.
    Relecture du 31/10/2026 : nombres en lettres sans trait d'union autour de « million » et « milliard » (des noms),
    pointillés jusqu'au bord (P1-E2), 4e encadrement (P3-E6), produits intermédiaires à remplir (P4-E2), grille plus haute (P6-E3).
+   Relecture du 01/11/2026 : étiquettes de la droite graduée entières (P3-E3), « ; » entre les noms rangés (P3-E7), ordres de
+   grandeur en tableau (P4-E4), chiffre caché raisonné sur la multiplication (P4-E6), × 99 et × 101 en « Pour aller plus loin » (P5).
    ============================================================ */
 (() => {
 const BL = '<span class="pl-pts" style="display:block;min-width:0;height:1.5em;margin-bottom:2px;"></span>'; // pointillés jusqu'au bord droit
@@ -103,7 +105,9 @@ PLANCHES['6e|Nombres entiers'] = [
         eleve: plListe([`${B(7)} &lt; 4 752 300 &lt; ${B(7)}`, `${B(7)} &lt; 19 080 000 &lt; ${B(7)}`, `${B(7)} &lt; 630 500 &lt; ${B(7)}`, `${B(7)} &lt; 7 251 900 &lt; ${B(7)}`, `${B(7)} &lt; 12 960 000 &lt; ${B(7)}`, `${B(7)} &lt; 2 049 999 &lt; ${B(7)}`].map(ligne)),
         corr: plListe([`${R('4 700 000')} &lt; 4 752 300 &lt; ${R('4 800 000')}`, `${R('19 000 000')} &lt; 19 080 000 &lt; ${R('19 100 000')}`, `${R('600 000')} &lt; 630 500 &lt; ${R('700 000')}`, `${R('7 200 000')} &lt; 7 251 900 &lt; ${R('7 300 000')}`, `${R('12 900 000')} &lt; 12 960 000 &lt; ${R('13 000 000')}`, `${R('2 000 000')} &lt; 2 049 999 &lt; ${R('2 100 000')}`].map(ligne)) },
       { etoiles: 3, cahier: true, consigne: `Voici la population de quatre pays (2024).${tab(['Espagne', 'Belgique', 'Italie', 'Suisse'], [['48 619 695', '11 822 592', '58 989 749', '8 921 981']])}Range ces pays du plus peuplé au moins peuplé, puis arrondis chaque population au million.`,
-        corr: cm1Redac('Rangement', { suite: ['Italie (58 989 749) &gt; Espagne (48 619 695)', 'Espagne &gt; Belgique (11 822 592) &gt; Suisse (8 921 981)'] }, 'Arrondis au million : Italie 59 000 000 ; Espagne 49 000 000 ; Belgique 12 000 000 ; Suisse 9 000 000.') },
+        // Le signe &gt; seulement entre des nombres ; les noms sont séparés par « ; » (relecture 6e-N1-P3-E7).
+        corr: cm1Redac('Rangement', { suite: ['58 989 749 &gt; 48 619 695 &gt; 11 822 592 &gt; 8 921 981'] }, 'Du plus peuplé au moins peuplé : Italie ; Espagne ; Belgique ; Suisse.')
+          + cm1Redac('Arrondis au million', { suite: ['Italie : 59 000 000', 'Espagne : 49 000 000', 'Belgique : 12 000 000', 'Suisse : 9 000 000'] }, 'Chaque population est arrondie au million le plus proche.') },
     ] },
   { titre: 'Opérations posées', duree: '35 min',
     attendus: ['Poser et calculer une addition, une soustraction, une multiplication', 'Vérifier un résultat avec un ordre de grandeur'],
@@ -120,15 +124,18 @@ PLANCHES['6e|Nombres entiers'] = [
         eleve: plListe(['458 + 99 = ' + B(), '1 200 − 350 = ' + B(), '25 × 12 = ' + B(), '204 × 5 = ' + B()]),
         corr: plListe(['458 + 99 = ' + R(557), '1 200 − 350 = ' + R(850), '25 × 12 = ' + R(300), '204 × 5 = ' + R('1 020')]) },
       { etoiles: 2, col: 1, consigne: 'Sans poser l\'opération, entoure l\'ordre de grandeur du résultat.',
-        eleve: plListe(['398 × 21 : <b>800 · 8 000 · 80 000</b>', '5 012 − 1 989 : <b>3 000 · 30 000 · 300</b>', '49 × 52 : <b>250 · 2 500 · 25 000</b>']),
-        corr: plListe([['398 × 21 : ', '8 000'], ['5 012 − 1 989 : ', '3 000'], ['49 × 52 : ', '2 500']].map(([t, r]) => t + plEntoure(r))) },
+        // Propositions en tableau, à distance du calcul (relecture 6e-N1-P4-E4 : « tabulation pour ne pas trop coller les
+        // résultats à l'énoncé »).
+        ...P3.chxTab([['398 × 21', '8 000', '800 · 8 000 · 80 000'], ['5 012 − 1 989', '3 000', '300 · 3 000 · 30 000'], ['49 × 52', '2 500', '250 · 2 500 · 25 000']]) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Un cinéma a 24 rangées de 36 fauteuils. 785 spectateurs sont assis. Combien de fauteuils restent libres ?',
         corr: cm1Redac('Nombre de fauteuils', '24 × 36 = 864', 'Le cinéma a 864 fauteuils.') + cm1Redac('Fauteuils libres', '864 − 785 = 79', '79 fauteuils restent libres.') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Trouve le chiffre caché : 3■7 × 4 = 1 508.',
-        corr: cm1Redac('Chiffre caché', '1 508 ÷ 4 = 377', 'Le nombre est 377 : le chiffre caché est 7.') },
+        // Raisonnement sur la multiplication posée, puis la division en autre méthode (relecture 6e-N1-P4-E6).
+        corr: cm1Redac('Chiffre caché', { suite: ['Unités : 4 × 7 = 28 ; on écrit 8, on retient 2.', 'Centaines : 4 × 3 = 12, mais on lit 15 : la retenue venue des dizaines est 3.', 'Dizaines : 4 × ■ + 2 donne 30 (on lit 0, on retient 3).', '4 × ■ = 28, donc ■ = 7.'] }, 'Le chiffre caché est 7 : 377 × 4 = 1 508.')
+          + cm1Redac('Autre méthode', '1 508 ÷ 4 = 377', 'On retrouve 377 : le chiffre caché est 7.') },
     ] },
   { titre: 'Calcul mental et problèmes', duree: '35 min',
-    attendus: ['Multiplier et diviser par 10, 100, 1 000', 'Calculer astucieusement en regroupant les facteurs', 'Résoudre un problème en plusieurs étapes'],
+    attendus: ['Multiplier et diviser par 10, 100, 1 000', 'Calculer astucieusement en regroupant les facteurs', 'Résoudre un problème en plusieurs étapes', 'Pour aller plus loin (5e) : multiplier par 99 ou par 101'],
     exos: [
       { etoiles: 1, col: 1, consigne: 'Calcule.',
         eleve: plListe(['47 × 100 = ' + B(), '305 × 1 000 = ' + B(7), '4 500 ÷ 100 = ' + B(), '72 000 ÷ 1 000 = ' + B()]),
@@ -140,12 +147,17 @@ PLANCHES['6e|Nombres entiers'] = [
         eleve: plListe(['1 000 − ' + B(4) + ' = 653', B(4) + ' + 2 450 = 10 000', '12 × ' + B(3) + ' = 96', B(3) + ' × 25 = 1 000']),
         corr: plListe(['1 000 − ' + R(347) + ' = 653', R('7 550') + ' + 2 450 = 10 000', '12 × ' + R(8) + ' = 96', R(40) + ' × 25 = 1 000']) },
       { etoiles: 2, col: 1, consigne: 'Calcule en ligne : pense à 100 ou à 200.',
-        eleve: plListe(['99 × 7 = ' + B(), '101 × 15 = ' + B(), '48 + 199 = ' + B(), '1 000 − 457 = ' + B()]),
-        corr: plListe(['99 × 7 = 700 − 7 = ' + R(693), '101 × 15 = 1 500 + 15 = ' + R('1 515'), '48 + 199 = 48 + 200 − 1 = ' + R(247), '1 000 − 457 = ' + R(543)]) },
+        // Sans × 99 ni × 101 : ils demandent la distributivité, au programme de 5e (relecture 6e-N1-P5-E4) ; ils sont en
+        // « Pour aller plus loin » à la fin de la planche.
+        eleve: plListe(['356 + 99 = ' + B(), '725 − 98 = ' + B(), '48 + 199 = ' + B(), '1 000 − 457 = ' + B()]),
+        corr: plListe(['356 + 99 = 356 + 100 − 1 = ' + R(455), '725 − 98 = 725 − 100 + 2 = ' + R(627), '48 + 199 = 48 + 200 − 1 = ' + R(247), '1 000 − 457 = ' + R(543)]) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Une salle de spectacle a 1 200 places. Un soir, 875 places sont vendues à 15 € chacune. Quelle est la recette de la soirée ? Combien de places restent vides ?',
         corr: cm1Redac('Recette', '875 × 15 = 13 125', 'La recette est de 13 125 €.') + cm1Redac('Places vides', '1 200 − 875 = 325', '325 places restent vides.') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Un avion fait l\'aller-retour Paris-Tokyo (9 715 km dans chaque sens) 3 fois par semaine. Quelle distance parcourt-il en une semaine ? En 4 semaines ?',
         corr: cm1Redac('Un aller-retour', '9 715 × 2 = 19 430', 'Un aller-retour fait 19 430 km.') + cm1Redac('Distances', { suite: ['19 430 × 3 = 58 290', '58 290 × 4 = 233 160'] }, 'L\'avion parcourt 58 290 km par semaine et 233 160 km en 4 semaines.') },
+      { etoiles: 3, consigne: 'Pour aller plus loin (5e) : multiplie par 99 ou par 101 comme dans l\'exemple. 99 × 7 = 100 × 7 − 7 = 700 − 7 = 693.',
+        eleve: plListe(['99 × 12 = 100 × 12 − 12 = ' + B(), '99 × 25 = 100 × 25 − 25 = ' + B(), '101 × 15 = 100 × 15 + 15 = ' + B(), '101 × 43 = 100 × 43 + 43 = ' + B()].map(ligne)),
+        corr: plListe(['99 × 12 = 100 × 12 − 12 = 1 200 − 12 = ' + R('1 188'), '99 × 25 = 100 × 25 − 25 = 2 500 − 25 = ' + R('2 475'), '101 × 15 = 100 × 15 + 15 = 1 500 + 15 = ' + R('1 515'), '101 × 43 = 100 × 43 + 43 = 4 300 + 43 = ' + R('4 343')].map(ligne)) },
     ] },
   { titre: 'Division euclidienne', duree: '40 min',
     attendus: ['Effectuer une division euclidienne', 'Écrire l\'égalité a = b × q + r, avec r plus petit que b', 'Résoudre un problème de partage'],

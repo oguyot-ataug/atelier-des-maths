@@ -39,6 +39,12 @@ const RELECTURE_CHGT = {
   // La date d'un changement est l'heure RÉELLE de sa mise en ligne (heure du commit poussé sur main), jamais une heure
   // arrondie dans le futur : un exercice validé entre la mise en ligne et une date trop tardive resterait « Chgt effectué »
   // (signalé le 01/11/2026 pour 6e-N1 ; dates corrigées d'après l'historique des publications).
+  // Version 1249 (01/11).
+  '6e-N1-P3-E3': { date: '2026-11-01T09:31:51Z', note: "Les étiquettes 40 000 000 et 41 000 000 ne sont plus coupées : la droite graduée laisse la place des nombres aux deux bouts (vaut pour toutes les droites graduées du site)" },
+  '6e-N1-P3-E7': { date: '2026-11-01T09:31:51Z', note: "Corrigé : le signe > seulement entre les nombres (58 989 749 > 48 619 695 > 11 822 592 > 8 921 981), puis les pays séparés par « ; » : Italie ; Espagne ; Belgique ; Suisse. Arrondis sur une ligne chacun" },
+  '6e-N1-P4-E4': { date: '2026-11-01T09:31:51Z', note: "Propositions en tableau, à distance du calcul, alignées en colonnes" },
+  '6e-N1-P4-E6': { date: '2026-11-01T09:31:51Z', note: "Corrigé raisonné sur la multiplication posée : 4 × 7 = 28 (on retient 2) ; on lit 15 au lieu de 12, donc 3 de retenue ; 4 × ■ + 2 = 30, 4 × ■ = 28, ■ = 7. La division 1 508 ÷ 4 = 377 reste en « autre méthode »" },
+  '6e-N1-P5-E4': { date: '2026-11-01T09:31:51Z', note: "× 99 et × 101 retirés (la distributivité est au programme de 5e) : remplacés par 356 + 99 et 725 − 98. Les produits par 99 et 101 sont dans un nouvel exercice « Pour aller plus loin (5e) » à la fin de la planche, avec un exemple rédigé" },
   // Version 1246 (31/10, fin d'après-midi).
   '6e-N1-P2-E2': { date: '2026-10-31T16:08:00Z', note: "La décomposition s'écrit avec les puissances de 10, comme dans le reste de la planche : 5 040 008 = 5 × 1 000 000 + 4 × 10 000 + 8 ; 12 000 300 = 1 × 10 000 000 + 2 × 1 000 000 + 3 × 100. Place agrandie sur papier et à l'écran (case à la longueur de la décomposition, « * » ou « x » acceptés pour ×)" },
   '6e-N1-P3-E6': { date: '2026-10-31T16:08:00Z', note: "Six encadrements présentés en deux colonnes de trois" },

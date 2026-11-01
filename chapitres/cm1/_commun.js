@@ -235,8 +235,12 @@ function cm1Rect(x0, y0, l, h){ const r = []; for(let y = y0; y < y0 + h; y++) f
 // Axe gradué pour ranger des mesures : de min à max, graduations tous les pas, étiquette tous les
 // etiq ; points [[valeur, nom]].
 function cm1Axe(min, max, pas, etiq, points, opts){
-  opts = opts || {}; const L = opts.L || 460, W = L + 60, px = v => 30 + L * (v - min) / (max - min);
-  let s = `<svg class="pl-libre" viewBox="0 0 ${W} 76" style="width:100%;max-width:${W}px;display:block;margin:2px 0;"><line x1="20" y1="44" x2="${W - 10}" y2="44" stroke="#1C1B2E" stroke-width="1.6"/><polygon points="${W - 10},44 ${W - 18},40 ${W - 18},48" fill="#1C1B2E"/>`;
+  opts = opts || {}; const L = opts.L || 460;
+  // Marge à la taille des étiquettes des extrémités (relecture 6e-N1-P3-E3 : « 40 000 000 et 41 000 000 sont légèrement
+  // coupés, à gauche et à droite ») : chiffres de 12 px en police à chasse fixe, environ 7,3 px chacun.
+  const lg = Math.max(String((opts.fmt || String)(min)).length, String((opts.fmt || String)(max)).length), m = Math.max(30, Math.ceil(lg * 7.3 / 2) + 6);
+  const W = L + 2 * m, px = v => m + L * (v - min) / (max - min);
+  let s = `<svg class="pl-libre" viewBox="0 0 ${W} 76" style="width:100%;max-width:${W}px;display:block;margin:2px 0;"><line x1="${m - 10}" y1="44" x2="${W - 10}" y2="44" stroke="#1C1B2E" stroke-width="1.6"/><polygon points="${W - 10},44 ${W - 18},40 ${W - 18},48" fill="#1C1B2E"/>`;
   for(let v = min; v <= max + 1e-9; v += pas){ const e = Math.abs((v - min) / etiq - Math.round((v - min) / etiq)) < 1e-6; s += `<line x1="${px(v)}" y1="${e ? 37 : 40}" x2="${px(v)}" y2="${e ? 51 : 48}" stroke="#1C1B2E" stroke-width="${e ? 1.3 : 1}"/>` + (e ? `<text x="${px(v)}" y="68" font-size="12" text-anchor="middle" fill="#1C1B2E" font-family="JetBrains Mono, monospace">${(opts.fmt || String)(v)}</text>` : ''); }
   (points || []).forEach(([v, nom], i) => { s += `<circle cx="${px(v)}" cy="44" r="4.5" fill="#FF8208"/>` + cmT(px(v), i % 2 && opts.alterne ? 30 : 28, nom, { fs: 13, c: '#FF8208' }); });
   return s + '</svg>';
