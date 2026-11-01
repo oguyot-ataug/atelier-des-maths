@@ -3229,6 +3229,8 @@ const PROF_SIGNUP_EMAIL_RE = /^[^\s@]+@ac-[a-z-]+\.(fr|nc|pf|wf)$/i;
 const PROF_SIGNUP_UAI_RE = /^[0-9]{7}[A-Za-z]$/;
 function openProfSignupModal(){
   document.getElementById('profSignupModalOverlay').style.display = 'flex';
+  const fini = document.getElementById('profSignupEnvoye'); // formulaire masqué après l'envoi de l'e-mail de confirmation
+  if(fini){ fini.remove(); document.querySelector('#profSignupModalOverlay form.auth-modal-body').style.display = ''; }
   document.getElementById('profSignupStatus').textContent = '';
   profSignupTextes();
 }
@@ -3283,7 +3285,16 @@ async function submitProfSignup(){
   }
   const userId = signUpData.user && signUpData.user.id;
   if(!userId || !signUpData.session){
-    status.textContent = "Presque fini ! Un e-mail de confirmation vient d'être envoyé à votre adresse académique : cliquez sur le lien qu'il contient pour valider votre inscription (pensez à regarder dans les indésirables).";
+    /* Signalé le 01/11/2026 (« les dernières personnes inscrites ont dû changer leur mot de passe deux fois ») : le
+       message restait discret sous un formulaire toujours rempli et cliquable, et une inscrite a cliqué six fois
+       (un e-mail de confirmation par clic). Comme pour l'inscription Famille, le formulaire laisse place à un
+       message clair. */
+    const form = document.querySelector('#profSignupModalOverlay form.auth-modal-body');
+    form.style.display = 'none';
+    form.insertAdjacentHTML('afterend', `<div class="auth-modal-body" id="profSignupEnvoye"><strong style="display:flex;align-items:center;gap:8px;font-size:1.05rem;"><span class="gicon">mark_email_unread</span> Plus qu'une étape : confirmez votre adresse</strong>
+      <p style="margin:10px 0;">Un e-mail de <b>L'Atelier des Maths</b> vient d'être envoyé à <b>${escapeHtml(email)}</b>. Cliquez sur le bouton qu'il contient : vous reviendrez sur le site, connecté, avec le mot de passe que vous venez de choisir.</p>
+      <p class="hint" style="margin:0;">Rien reçu d'ici quelques minutes ? Regardez dans les courriers indésirables, ou écrivez à contact@latelierdesmaths.fr.</p></div>`);
+    status.textContent = '';
     btn.disabled = false;
     return;
   }
@@ -3295,7 +3306,7 @@ async function submitProfSignup(){
 
   const { error: profileError } = await sb.from('profiles').insert({
     id: userId, role: 'prof', nom, prenom, email, uai,
-    signup_status: 'pending', subscription_status: 'trial',
+    signup_status: 'pending', subscription_status: 'trial', must_change_password: false,
   });
   // Profil déjà créé par la base à la confirmation de l'adresse (déclencheur inscription_prof_auto, qui prévient aussi
   // l'administrateur) : rien à refaire.
@@ -3366,7 +3377,7 @@ function finaliserInscriptionEnAttente(user){
       if(m.inscription==='prof' && m.uai){
         await creerEtablissementProvisoire(m.uai);
         const { error } = await sb.from('profiles').insert({ id: user.id, role: 'prof', nom: m.nom, prenom: m.prenom, email: user.email, uai: m.uai,
-          signup_status: 'pending', subscription_status: 'trial' });
+          signup_status: 'pending', subscription_status: 'trial', must_change_password: false });
         if(error) return error.code === '23505'; // déjà créé par la base : rien à refaire
         try{ await sb.functions.invoke('notify-prof-signup', { body: { nom: m.nom, prenom: m.prenom, email: user.email, uai: m.uai } }); }catch(e){ /* non bloquant */ }
         alerteInscription();
@@ -3521,6 +3532,16 @@ async function refreshAuthUI(){
     // Première connexion (ou tout compte créé/réinitialisé par un administrateur) : la
     // modale de changement de mot de passe s'ouvre automatiquement, sans possibilité de
     // l'ignorer, tant que le mot de passe n'a pas été changé.
+    // Sauf pour un compte que la personne a créé elle-même (inscription professeur ou famille) : elle vient de choisir son
+    // mot de passe -- signalé le 01/11/2026 : « les dernières personnes inscrites ont dû changer leur mot de passe deux
+    // fois ». Le profil créé par la base à la confirmation de l'adresse (inscription_prof_auto) garde la valeur par
+    // défaut (true) : on la remet à false sans rien demander.
+    const inscritSeul = ['prof', 'famille'].includes(currentUser.user_metadata && currentUser.user_metadata.inscription);
+    if(profile && profile.must_change_password && inscritSeul){
+      profile.must_change_password = false;
+      sb.from('profiles').update({ must_change_password: false }).eq('id', currentUser.id)
+        .then(({ error }) => { if(error) console.warn('must_change_password non remis à false :', error.message); });
+    }
     if(profile && profile.must_change_password && !mdpJusteChange) openChangePasswordModal(true);
     // Adulte connecté par identifiant sans adresse de récupération : rappel dans le menu du compte (profil.js).
     if(typeof profilRappelMenu==='function') profilRappelMenu();
@@ -3748,6 +3769,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1271', date:'2026-11-01', items:["Inscription des professeurs -- signalé : « il semblerait que les dernières personnes inscrites ont dû changer leur mot de passe deux fois ! » Cause : le profil créé à la confirmation de l'adresse était marqué « mot de passe à changer » (réglage prévu pour les comptes créés par un tiers, comme les élèves) ; la personne, qui venait de choisir son mot de passe, devait donc en choisir un autre dès sa première connexion. Désormais, un compte créé par la personne elle-même (inscription professeur ou famille) n'impose plus ce changement. Autre correction : après l'envoi de l'inscription, le formulaire restait affiché et cliquable sous un message discret, et une inscrite a cliqué six fois (six e-mails de confirmation demandés) ; il laisse maintenant place à un message clair « Plus qu'une étape : confirmez votre adresse », comme pour l'inscription Famille."]},
   { version:'2026-08-19.1270', date:'2026-11-01', items:["Inscription des professeurs : deux e-mails aux couleurs du site -- demandé : « Est-ce qu'elle a reçu un joli mail ? », puis « Oui, fais les deux ». 1) Le message de confirmation d'adresse envoyé par Supabase (inscription professeur ou famille) est en français, avec le bandeau du site, un bouton « Confirmer mon adresse », et pour un professeur l'annonce qu'un e-mail suivra à l'ouverture du compte (modèle dans supabase/auth, installé par la tâche GitHub « Modèle de l'e-mail de confirmation »). 2) Quand l'administrateur approuve une inscription, le professeur reçoit automatiquement un e-mail de bienvenue : son identifiant, son accès (essai ou période de lancement), un bouton « Me connecter », trois premiers pas (parcourir un chapitre, créer ses classes, projeter une correction) et le lien de prise de rendez-vous. Un seul envoi par compte."]},
   { version:'2026-08-19.1269', date:'2026-11-01', items:['Corrections animées des constructions : le bouton « Voir la construction aux instruments » ouvre maintenant le lecteur du tableau interactif, avec la vraie règle graduée, l\'équerre et le compas du site (écartement pris sur la règle, arcs tracés au compas, barre de lecture : Lecture, Étape suivante, vitesse) -- demandé : « Tu n\'as pas utilisé les instruments du site ! ». Dix constructions de 6e : triangles au compas, losange, cercles, rosace, bissectrice, symétrique d\'un point, cercle circonscrit.'] },
   { version:'2026-08-19.1268', date:'2026-11-01', items:['Corrections animées des constructions : à l\'écran (vignettes, correction, projection), un bouton « Voir la construction » sous la figure du corrigé trace les étapes une à une, avec leur phrase ; le compas apparaît pour tracer les arcs et les cercles ; ◀ ▶ pour avancer pas à pas en classe. Sur le papier, la figure finale avec ses arcs. En 6e : triangles construits au compas, cercles (rosace, losange, cercle de diamètre [OA], points à distance donnée), bissectrice au compas, symétrique d\'un point, cercle circonscrit -- demandé : « Oui, mets en place la correction animée ».'] },
