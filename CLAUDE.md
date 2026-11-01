@@ -141,6 +141,10 @@ alignées en dessous (`P3.chxTab`, `P3.chx2`), jamais collées à la question. A
 ne sont jamais coupées (`.pl-props`, planches.js) ; un exercice `{ uneLigne: true }` met une ligne de calcul par question, sur
 toute la largeur, sans retour à la ligne (rangements, décompositions, encadrements trop longs pour une demi-colonne).
 
+Collège (6e à 3e), sur le papier (Manuel et feuilles imprimées) : les cases (`plCase`, fractions `plFrac`) s'affichent en pointillés
+(classe `pl-college`, demandé le 01/11/2026) ; l'écran garde ses cases à cliquer. Comparer deux quantités : « Complète avec <, > ou = »
+dans une case (`plCase()`), jamais « entoure la première · la seconde » ; une case à choix au clic : `plCase('(d1)|(d2)|(d3)')`.
+
 Une feuille qui dépasse la page A4 est resserrée à l'impression (`plRemplirPages`, planches.js) : jusqu'à 15 % pour l'élève, 30 %
 pour le corrigé, en gardant toute la largeur ; jamais sur une feuille d'élève où l'on mesure une longueur à la règle. Au-delà,
 alléger le contenu (demandé le 31/10/2026 : « Occupe-toi des feuilles qui débordent »).

@@ -225,6 +225,7 @@ function plTdMaj(lvl, c){
 }
 function plTdRendre(lvl, c){
   const root = document.getElementById('tdRoot'); if(!root) return;
+  root.classList.toggle('pl-college', plCollege(lvl)); // collège : pointillés au lieu des cases sur le papier
   const liste = plDe(lvl, c.t), esc = s => escapeHtml(String(s ?? ''));
   root.innerHTML = `<div class="td-intro"><span class="pl-oliv">${plOliv('muscle')}</span><div><b>Manuel : ${liste.reduce((n, p) => n + p.exos.length, 0)} exercices</b>
       <p class="hint" style="margin:2px 0 0;">Les exercices des planches de ce chapitre. Projetez-les un par un, affichez la correction, ajoutez-les au cahier de la classe ou à une session COURS (bouton « Session », ou « Ajouter un exercice » dans la session, onglet Manuel).</p></div>
@@ -521,7 +522,7 @@ function plPageHtml(lvl, c, p, i, n, mode, pr, logo){
   const ident = corr ? '<p class="pl-pour-prof">Corrigé réservé au professeur.</p>'
     : (pr.identite !== 'aucun' || pr.date) ? `<div class="pl-nom">${pr.identite === 'nom' ? '<span>NOM : <span class="pl-pts" style="min-width:10em;"></span></span><span>Prénom : <span class="pl-pts" style="min-width:9em;"></span></span>'
         : pr.identite === 'prenom' ? '<span>Prénom : <span class="pl-pts" style="min-width:13em;"></span></span>' : ''}${pr.date ? '<span>Date : <span class="pl-pts" style="min-width:7em;"></span></span>' : ''}</div>` : '';
-  return `<section class="pl-page pl-planche${corr ? ' pl-corrige' : ''}" data-ref="${ref}${corr ? '-c' : ''}">
+  return `<section class="pl-page pl-planche${corr ? ' pl-corrige' : ''}${plCollege(lvl) ? ' pl-college' : ''}" data-ref="${ref}${corr ? '-c' : ''}">
     <header class="pl-tete">${logo ? `<img class="pl-logo" src="${logo}" alt="L'Atelier des Maths">` : '<span class="pl-site">L\'Atelier des Maths</span>'}<span class="pl-site">${niv} · ${escapeHtml(c.t)}</span><span class="pl-ref">${ref}${corr ? ' · CORRIGÉ' : ''}</span></header>
     <div class="pl-titre"><h1>${p.brevet ? '<span class="pl-brevet">Objectif Brevet</span> ' : ''}Planche ${i + 1} : ${escapeHtml(p.titre)}</h1>${corr ? '' : `<span class="pl-oliv-tete"><span class="pl-oliv">${plOliv(p.brevet ? 'savoir' : 'muscle')}</span><span class="pl-bulle">${p.brevet ? 'Objectif Brevet !' : 'Muscle ton jeu !'}</span></span>`}</div>
     ${ident}
@@ -859,6 +860,10 @@ const PL_CSS = `
   .pl-liste{ margin:0; padding-left:20px; columns:2; } .pl-liste li{ margin:0; padding:1px 0; break-inside:avoid; } /* marge en padding : la 2e colonne commence à la même hauteur que la 1re */
   .pl-frac{ display:inline-flex; flex-direction:column; align-items:center; vertical-align:middle; gap:2px; margin:0 3px; }
   .pl-case{ display:inline-block; width:22px; height:18px; border:1.5px solid #8A93A3; border-radius:4px; background:#fff; }
+  /* Collège : sur le papier, des pointillés au lieu des cases (demandé le 01/11/2026 : « Dans les exercices de collèges,
+     remplacer les cases par des pointillés sur le papier »). */
+  .pl-college .pl-case{ border:0; border-bottom:1.5px dotted #6F7A89; border-radius:0; background:transparent; width:2.6em; height:1.15em; }
+  .pl-college .pl-frac .pl-case{ width:2em; height:1.35em; margin:1px 0 3px; } .pl-college .pl-case-seule{ width:1.8em; }
   .pl-case-seule{ vertical-align:middle; margin:0 4px; }
   .pl-barre{ display:block; width:28px; height:0; border-top:2px solid #1C2B39; }
   .pl-pts{ display:inline-block; border-bottom:1.5px dotted #8A93A3; height:1.1em; vertical-align:baseline; }
@@ -1015,6 +1020,7 @@ const PL_CSS_LIVRE = `
     .td-vig.td-plein .pl-liste{ columns:2; column-gap:28px; } .td-vig.td-plein .pl-liste li{ break-inside:avoid; margin:0; padding:1.5px 0; } .td-vig.td-plein .pl-col1 .pl-liste{ columns:1; }
     .td-vig .pl-frac, .pl-ex-cahier .pl-frac, .cd-contenu .pl-frac{ display:inline-flex; flex-direction:column; align-items:center; vertical-align:middle; gap:2px; margin:0 3px; }
     .td-vig .pl-case, .pl-ex-cahier .pl-case, .cd-contenu .pl-case{ display:inline-block; width:20px; height:16px; border:1.5px solid #8A93A3; border-radius:4px; background:#fff; } .pl-case-seule{ vertical-align:middle; margin:0 4px; }
+    .pl-college .td-vig .pl-case{ border:0; border-bottom:1.5px dotted #6F7A89; border-radius:0; background:transparent; width:2.6em; height:1.15em; } .pl-college .td-vig .pl-frac .pl-case{ width:2em; height:1.35em; margin:1px 0 3px; } .pl-college .td-vig .pl-case-seule{ width:1.8em; }
     .td-vig .pl-barre, .pl-ex-cahier .pl-barre, .cd-contenu .pl-barre{ display:block; width:26px; border-top:2px solid #1C2B39; }
     .td-vig .pl-pts, .pl-ex-cahier .pl-pts, .cd-contenu .pl-pts{ display:inline-block; border-bottom:1.5px dotted #8A93A3; height:1.1em; min-width:3em; }
     .td-vig sup .pl-pts, .pl-ex-cahier sup .pl-pts, .cd-contenu sup .pl-pts{ border-bottom:none; min-width:1em; }
