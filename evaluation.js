@@ -1071,6 +1071,7 @@ async function exportEvaluationPDF(){
     // Petit délai de sécurité : laisse le temps à la mise en page de se stabiliser
     // complètement (polices, styles) avant de mesurer les disques et d'imprimer.
     setTimeout(()=>{
+      if(typeof geoPoints === 'function') geoPoints(w.document); // marques des points des figures
       syncDiskSizes(w.document);
       // Certains navigateurs figent le rendu dès l'appel à print(), avant que les styles
       // qu'on vient de modifier (taille des disques) n'aient été réellement repeints à

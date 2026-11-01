@@ -571,7 +571,7 @@ async function plImprimer(lvl, blocs, mode, opts){
     <style>${PL_CSS}${plCssReglages(pr)}${mode === 'livre' ? PL_CSS_LIVRE : ''}</style></head><body class="pl-imp">
     <button type="button" class="pl-bouton-imp" onclick="window.print()">Imprimer / Enregistrer en PDF</button>${corps}</body></html>`);
   w.document.close();
-  const lancer = () => setTimeout(() => { try{ plRemplirPages(w.document); }catch(e){ console.warn(e); } w.focus(); w.print(); }, 300);
+  const lancer = () => setTimeout(() => { try{ if(typeof geoPoints === 'function') geoPoints(w.document); }catch(e){} try{ plRemplirPages(w.document); }catch(e){ console.warn(e); } w.focus(); w.print(); }, 300);
   let parti = false; const pret = () => { if(parti) return; parti = true; const f = w.document.fonts && w.document.fonts.ready; Promise.race([f || Promise.resolve(), new Promise(ok => setTimeout(ok, 2000))]).then(lancer); };
   w.onload = pret; if(w.document.readyState === 'complete') pret(); setTimeout(pret, 2500);
 }

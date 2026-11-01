@@ -145,6 +145,15 @@ Une feuille qui dépasse la page A4 est resserrée à l'impression (`plRemplirPa
 pour le corrigé, en gardant toute la largeur ; jamais sur une feuille d'élève où l'on mesure une longueur à la règle. Au-delà,
 alléger le contenu (demandé le 31/10/2026 : « Occupe-toi des feuilles qui débordent »).
 
+## Figures : marques des points (demandé le 01/11/2026)
+
+« Point isolé : une croix ; point sur une droite, un segment, une demi-droite : un petit trait perpendiculaire ; point
+d'intersection : rien. » Appliqué automatiquement à toutes les figures SVG (planches, Manuel, écran, cours, animations,
+impressions, projection) par `geo-points.js` : chaque croix est comparée aux lignes de la figure qui passent par son centre
+(le quadrillage, clair ou fin, ne compte pas). Les figures peuvent donc toujours dessiner les points en croix. Contrôle :
+`NODE_PATH=/opt/node22/lib/node_modules node tools/verif-points.js` (doit répondre « Aucune croix mal placée »). Une figure
+qui doit garder ses croix telles quelles : attribut `data-geo-garde` sur le groupe concerné.
+
 ## Conformité aux programmes : « Pour aller plus loin » (demandé le 28/10/2026)
 
 « Ce qui est hors programme peut être mis en "pour aller plus loin" » : une notion d'un niveau supérieur n'est

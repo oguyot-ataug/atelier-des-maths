@@ -2540,6 +2540,7 @@ async function toggleProjection(){
     </style>
   </head><body><div id="projHeader"></div><div id="projContent"></div></body></html>`);
   ceProjWin.document.close();
+  if(typeof geoPointsSuivre === 'function') geoPointsSuivre(ceProjWin.document); // marques des points des figures projetées
   renderCorrectionPreview();
   btn.innerHTML = '<span class=gicon>close</span> Fermer la fenêtre de projection';
   const watcher = setInterval(()=>{
@@ -3742,6 +3743,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1250', date:'2026-11-01', items:['Figures de géométrie (tous niveaux, planches, Manuel, écran, cours, animations, impressions) : les points suivent les règles de représentation -- point isolé : une croix ; point sur une droite, un segment, une demi-droite ou un cercle : un petit trait perpendiculaire ; point d\'intersection ou sommet : rien, seulement son nom. Demandé : « ne pas oublier les règles de constructions et de représentations des points […] Vérifie l\'ensemble des figures tracées ». Contrôle de toutes les figures : 2 940 figures de planches et tous les cours.'] },
   { version:'2026-08-19.1249', date:'2026-11-01', items:['Relecture, 6e Nombres entiers : droite graduée sans nombres coupés aux extrémités (toutes les droites graduées) ; rangement des pays avec « ; » entre les noms (le signe > seulement entre des nombres) ; ordres de grandeur en tableau ; chiffre caché raisonné sur la multiplication posée ; × 99 et × 101 (distributivité, programme de 5e) passés en « Pour aller plus loin ».'] },
   { version:'2026-08-19.1248', date:'2026-11-01', items:['Relecture : les exercices validés après leur correction ne restent plus dans « Chgt effectué » (6e Nombres entiers, 5e Puissances) -- signalé : « 3 exercices du chapitre N1 de 6e sont notés validés mais ne disparaissent pas de Chgt effectué ». La date de chaque changement est désormais l\'heure réelle de sa mise en ligne.'] },
   { version:'2026-08-19.1247', date:'2026-11-01', items:['Exercices à l\'écran, multiplications posées par un nombre à deux chiffres (6e et CM1) : un bouton « Effacer les retenues » sous l\'opération, et les retenues s\'effacent toutes seules quand la touche OK passe à la ligne de produit suivante -- demandé : « on va remplir les retenues une première fois mais il faut pouvoir les effacer pour la ligne suivante ».'] },
@@ -8839,6 +8841,7 @@ async function exportCahierAsPDF(){
   w.document.close();
   w.onload = () => {
     setTimeout(()=>{
+      if(typeof geoPoints === 'function') geoPoints(w.document); // marques des points des figures
       syncDiskSizesForPrint(w.document);
       requestAnimationFrame(()=>requestAnimationFrame(()=>{
         w.focus();
@@ -9108,6 +9111,7 @@ async function exportCahierDayAsPDF(date){
   w.document.close();
   w.onload = () => {
     setTimeout(()=>{
+      if(typeof geoPoints === 'function') geoPoints(w.document); // marques des points des figures
       syncDiskSizesForPrint(w.document);
       requestAnimationFrame(()=>requestAnimationFrame(()=>{
         w.focus();
