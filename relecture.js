@@ -39,6 +39,8 @@ const RELECTURE_CHGT = {
   // La date d'un changement est l'heure RÉELLE de sa mise en ligne (heure du commit poussé sur main), jamais une heure
   // arrondie dans le futur : un exercice validé entre la mise en ligne et une date trop tardive resterait « Chgt effectué »
   // (signalé le 01/11/2026 pour 6e-N1 ; dates corrigées d'après l'historique des publications).
+  // Version 1268 (01/11).
+  '6e-G1-P4-E5': { date: '2026-11-01T17:11:21Z', note: "Correction animée à l'écran : bouton « Voir la construction » (segment, arcs tracés au compas, point C, côtés) ; sur le papier, la figure avec ses arcs" },
   // Version 1267 (01/11).
   '6e-G1-P1-E5': { date: '2026-11-01T16:51:35Z', note: "Corrigé : un schéma pour chaque cas (A, B, C alignés, longueurs indiquées)" },
   '6e-G1-P2-E5': { date: '2026-11-01T16:51:35Z', note: "La phrase se termine par des pointillés ; les propositions sont à part, en dessous, alignées" },
@@ -47,7 +49,6 @@ const RELECTURE_CHGT = {
   '6e-G1-P3-E4': { date: '2026-11-01T16:51:35Z', note: "Nom du point A écarté de la croix (même règle pour tous les points du chapitre)" },
   '6e-G1-P3-E5': { date: '2026-11-01T16:51:35Z', note: "Figure du corrigé élargie : le cercle de centre B n'est plus coupé" },
   '6e-G1-P4-E1': { date: '2026-11-01T16:51:35Z', note: "« rayon 5 côtés de carreau » (un carreau n'est pas une longueur)" },
-  '6e-G1-P4-E5': { date: '2026-11-01T16:51:35Z', note: "Corrigé : la figure, avec les arcs de cercle de la construction" },
   '6e-G1-P5-E1': { date: '2026-11-01T16:51:35Z', note: "« 1 côté de carreau représente 1 cm »" },
   '6e-G1-P5-E5': { date: '2026-11-01T16:51:35Z', note: "Corrigé : la figure construite (deux cercles, C et D, triangles ABC et ABD)" },
   '6e-G1-P1-E3': { date: '2026-11-01T16:30:50Z', note: "Doubles codages inclinés comme les simples ; consigne : « I est le milieu du segment [AB] et AB = 6 cm » (le seul trait sur [IB] ne le montrait pas)" },

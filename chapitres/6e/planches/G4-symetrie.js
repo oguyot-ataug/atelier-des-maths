@@ -30,6 +30,16 @@ const complExo = (l, x) => { const r = l.map(a => compl(...a)); return Object.as
 function placeSym(P, t, c, w, h, k){ k = k || 20; const f = SY[t](c), [a, b] = axe(t, c, w, h), base = g => L(g(...a), g(...b), Ro, 2.2, true) + P.map(([x, y, n]) => X(g(x, y), n)).join('');
   return { eleve: plX(Gq(w, h, k, base), { t: 'pts', grille: { k, ox: 0, oy: 0, w, h }, noms: P.map(p => p[2] + '\''), att: Object.fromEntries(P.map(([x, y, n]) => [n + '\'', f([x, y]).map(v => v * k)])) }),
     corr: Gq(w, h, k, g => base(g) + P.map(([x, y, n]) => X(g(...f([x, y])), n + '\'', null, null, Ve) + L(g(x, y), g(...f([x, y])), Ve, 1, true)).join('')) }; }
+// Constructions des corrigés, animées à l'écran (constructions.js ; demandé le 01/11/2026 : « Oui, mets en place la
+// correction animée »). Sur le papier : la figure finale, arcs compris.
+const CPT = (p, nom, dx, dy, c) => ({ pt: p, nom, dx, dy, c });
+// Symétrique d'un point à l'équerre et à la règle, vérifié au compas (MI = 3 cm, 1 cm = 20 px).
+const SYM_PT = (() => { const M = [40, 60], I = [100, 60], M2 = [160, 60], P = [100, 112], r = Math.hypot(60, 52), a = q => Math.atan2(P[1] - q[1], q[0] - P[0]) * 180 / Math.PI;
+  return plConstruction({ w: 200, h: 140, px: 190, depart: [{ seg: [[100, 4], [100, 136]] }, { txt: [108, 132], t: '(d)', a: 'start' }, CPT(M, 'M', 0, -9)], etapes: [
+    { texte: 'À l\'équerre, je trace la perpendiculaire à (d) passant par M ; elle coupe (d) en I.', el: [{ seg: [[22, 60], [182, 60]], c: '#2EA8C9', ep: 1.4 }, { droit: [M, I, [100, 4]] }, CPT(I, 'I', 9, -8)] },
+    { texte: 'Je pique en I, j\'écarte le compas jusqu\'à M et je reporte cette longueur de l\'autre côté de (d).', el: [{ arc: [I, 60, -25, 25], c: '#2E9C6A' }] },
+    { texte: 'L\'arc coupe la perpendiculaire en M\' : IM\' = IM = 3 cm.', el: [CPT(M2, 'M\'', 0, -9, '#E35D3A'), { codage: [M, I], n: 2 }, { codage: [I, M2], n: 2 }] },
+    { texte: 'Vérification : le cercle de centre P, un point de (d), qui passe par M passe aussi par M\'.', el: [CPT(P, 'P', 11, 4), { arc: [P, r, a(M2) - 12, a(M) + 12], c: '#7A4FC0', ep: 1.3 }] }] }); })();
 PLANCHES['6e|Symétrie axiale'] = [
   { titre: 'Figures symétriques et axes de symétrie', duree: '35 min',
     attendus: ['Reconnaître deux figures symétriques par rapport à une droite (pliage)', 'Reconnaître un axe de symétrie d\'une figure', 'Connaître le nombre d\'axes des figures usuelles'],
@@ -75,7 +85,7 @@ PLANCHES['6e|Symétrie axiale'] = [
       { etoiles: 2, uneLigne: true, consigne: 'Le point N\' est-il le symétrique de N par rapport à (d) ? Entoure (I est le point d\'intersection de (NN\') et de (d)).',
         ...ch([['(NN\') ⊥ (d) et IN = IN\' :', 'oui'], ['(NN\') ⊥ (d) mais IN = 2 cm et IN\' = 3 cm :', 'non'], ['IN = IN\' mais (NN\') n\'est pas perpendiculaire à (d) :', 'non']], 'oui · non') },
       { etoiles: 3, cahier: true, consigne: 'Trace une droite (d) et un point M à 3 cm de (d). Construis son symétrique M\' à l\'équerre et à la règle, puis vérifie au compas.',
-        corr: cm1Redac('Construction', { suite: ['À l\'équerre : je trace la perpendiculaire à (d) passant par M ; elle coupe (d) en I.', 'Je reporte la longueur IM de l\'autre côté de (d) : IM\' = IM = 3 cm.'] }, 'Vérification au compas : deux cercles centrés sur (d) et passant par M passent aussi par M\'.') },
+        corr: cm1Redac('Construction', { suite: ['À l\'équerre : je trace la perpendiculaire à (d) passant par M ; elle coupe (d) en I.', 'Je reporte la longueur IM de l\'autre côté de (d) : IM\' = IM = 3 cm.'] }, 'Vérification au compas : deux cercles centrés sur (d) et passant par M passent aussi par M\'.') + `<div style="text-align:center;margin-top:4px;">${SYM_PT}</div>` },
     ] },
   { titre: 'Propriétés de la symétrie axiale', duree: '35 min',
     attendus: ['Savoir que la symétrie conserve les longueurs, les angles, les aires et l\'alignement', 'Utiliser ces propriétés pour trouver une mesure', 'Construire le symétrique d\'une figure sans quadrillage'],

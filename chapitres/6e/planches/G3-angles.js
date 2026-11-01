@@ -68,6 +68,17 @@ function triAng(a, b, sol){ const A = [40, 172], Bp = [220, 172], ta = Math.tan(
   let s = `<polygon points="${A.join(',')} ${Bp.join(',')} ${C.map(v => v.toFixed(1)).join(',')}" fill="#fff" stroke="${K}" stroke-width="1.6"/>` + T([A[0] - 8, A[1] + 12], 'A') + T([Bp[0] + 8, Bp[1] + 12], 'B') + T([C[0], C[1] - 7], 'C');
   if(sol) s += arc(A, 0, a, 20, Ro) + arc(Bp, 180 - b, 180, 20, Bl) + arc(C, 180 + a, 360 - b, 18, Ve);
   return { svg: S(260, 186, s, 196), A, B: Bp, C }; }
+// Constructions des corrigés, animées à l'écran (constructions.js ; demandé le 01/11/2026 : « Oui, mets en place la
+// correction animée »). Sur le papier : la figure finale, arcs compris.
+const CPT = (p, nom, dx, dy, c) => ({ pt: p, nom, dx, dy, c });
+// Bissectrice au compas : angle xOy de 50°.
+const BISSECTRICE = (() => { const O = [20, 120], d = (r, a) => [O[0] + r * Math.cos(a * Math.PI / 180), O[1] - r * Math.sin(a * Math.PI / 180)];
+  const A = d(70, 0), Bp = d(70, 50), t = (126.88 + Math.sqrt(126.88 * 126.88 - 5200)) / 2, C = d(t, 25);
+  const ang = (c, p) => Math.atan2(c[1] - p[1], p[0] - c[0]) * 180 / Math.PI;
+  return plConstruction({ w: 190, h: 140, px: 180, depart: [{ seg: [O, d(165, 0)] }, { seg: [O, d(150, 50)] }, CPT(O, 'O', -11, 4), { txt: d(160, 6), t: 'x' }, { txt: d(136, 44), t: 'y' }], etapes: [
+    { texte: 'Je trace un arc de centre O qui coupe [Ox) en A et [Oy) en B.', el: [{ arc: [O, 70, -8, 58], c: '#2EA8C9' }, CPT(A, 'A', 4, 17), CPT(Bp, 'B', -11, -4)] },
+    { texte: 'Je trace un arc de centre A, puis un arc de centre B, de même rayon : ils se coupent en C.', el: [{ arc: [A, 60, ang(A, C) - 15, ang(A, C) + 15], c: '#2E9C6A' }, { arc: [Bp, 60, ang(Bp, C) - 15, ang(Bp, C) + 15], c: '#2E9C6A' }, CPT(C, 'C', 4, -9)] },
+    { texte: 'Je trace la demi-droite [OC) : c\'est la bissectrice de l\'angle xOy.', el: [{ seg: [O, d(165, 25)], c: '#E35D3A' }] }] }); })();
 PLANCHES['6e|Angles et rapporteur'] = [
   { titre: 'Notion d\'angle et notations', duree: '35 min',
     attendus: ['Reconnaître un angle : un sommet et deux côtés (demi-droites)', 'Nommer un angle avec trois lettres, le sommet au milieu', 'Comparer des angles sans les mesurer'],
@@ -197,7 +208,7 @@ PLANCHES['6e|Angles et rapporteur'] = [
       { etoiles: 2, col: 1, cahier: true, consigne: 'Construis un angle ' + W('xOy') + ' de 110°, puis sa bissectrice au rapporteur.',
         corr: cm1Redac('Au rapporteur', '110 ÷ 2 = 55', 'Je place un repère à 55° à partir de [Ox), puis je trace la demi-droite [Oz) : ' + W('xOz') + ' = ' + W('zOy') + ' = 55°.') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Construis la bissectrice d\'un angle ' + W('xOy') + ' au compas, sans rapporteur. Explique.',
-        corr: cm1Redac('Au compas', { suite: ['Je trace un arc de centre O qui coupe [Ox) en A et [Oy) en B.', 'Je trace deux arcs de même rayon, de centres A et B, qui se coupent en un point C.'] }, 'La demi-droite [OC) est la bissectrice de ' + W('xOy') + '.') },
+        corr: cm1Redac('Au compas', { suite: ['Je trace un arc de centre O qui coupe [Ox) en A et [Oy) en B.', 'Je trace deux arcs de même rayon, de centres A et B, qui se coupent en un point C.'] }, 'La demi-droite [OC) est la bissectrice de ' + W('xOy') + '.') + `<div style="text-align:center;margin-top:4px;">${BISSECTRICE}</div>` },
     ] },
   { titre: 'Calculer des angles : synthèse', duree: '35 min',
     attendus: ['Calculer des mesures d\'angles par addition et soustraction', 'Utiliser les angles d\'un tour complet (360°) et d\'un angle plat (180°)', 'Réinvestir le vocabulaire des angles'],

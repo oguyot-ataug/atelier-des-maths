@@ -17,15 +17,42 @@ const regle = (mm, nom, rep) => `<span style="display:flex;flex-direction:column
 // Cercle de centre O : rayon [OA], diamètre [BC], corde [DE].
 const O = [90, 80], r = 62, pt = a => [O[0] + r * Math.cos(a * Math.PI / 180), O[1] - r * Math.sin(a * Math.PI / 180)];
 const CERCLE = S(200, 160, Ci(O, r) + L(O, pt(40), Ro, 2.2) + L(pt(160), pt(340), Bl, 2.2) + L(pt(100), pt(230), Ve, 2.2) + P(O, 'O', -14, 14) + P(pt(40), 'A', 6, -2) + P(pt(160), 'B', -14, -2) + P(pt(340), 'C', 6, 10) + P(pt(100), 'D', -4, -8) + P(pt(230), 'E', -12, 12), 180);
-// Triangle AB = 6 cm, AC = 4 cm, BC = 5 cm construit au compas : les deux arcs restent visibles (1 cm = 20 px).
-const arc = (o, r, a1, a2, c) => { const p = a => [o[0] + r * Math.cos(a * Math.PI / 180), o[1] - r * Math.sin(a * Math.PI / 180)], u = p(a1), v = p(a2); return `<path d="M${u[0].toFixed(1)},${u[1].toFixed(1)} A${r},${r} 0 0 0 ${v[0].toFixed(1)},${v[1].toFixed(1)}" fill="none" stroke="${c}" stroke-width="1.4"/>`; };
-const TRI_ARCS = (() => { const A = [20, 100], B = [140, 100], C = [20 + 2.25 * 20, 100 - Math.sqrt(16 - 2.25 * 2.25) * 20];
-  return S(160, 116, arc(A, 80, 40, 72, Bl) + arc(B, 100, 126, 152, Ve) + L(A, B, K, 2) + L(A, C, K, 2) + L(B, C, K, 2)
-    + P(A, 'A', -11, 4) + P(B, 'B', 11, 4) + P(C, 'C', 0, -9) + cmT(80, 113, '6 cm', { fs: 11 }) + cmT(37, 66, '4 cm', { fs: 11, c: Bl, a: 'end' }) + cmT(108, 66, '5 cm', { fs: 11, c: Ve, a: 'start' }), 170); })();
+// Constructions au compas des corrigés, animées à l'écran (constructions.js ; demandé le 01/11/2026 : « Oui, mets en place la
+// correction animée »). Sur le papier : la figure finale, arcs compris.
+const CPT = (p, nom, dx, dy, c) => ({ pt: p, nom, dx, dy, c });
+// Triangle AB = 6 cm, AC = 4 cm, BC = 5 cm (1 cm = 20 px).
+const TRI_ARCS = (() => { const A = [20, 100], B = [140, 100], C = [65, 100 - Math.sqrt(16 - 2.25 * 2.25) * 20];
+  return plConstruction({ w: 160, h: 116, px: 170, etapes: [
+    { texte: 'Je trace le segment [AB] de 6 cm.', el: [{ seg: [A, B] }, CPT(A, 'A', -11, 4), CPT(B, 'B', 11, 4), { txt: [80, 113], t: '6 cm' }] },
+    { texte: 'Je trace un arc de cercle de centre A et de rayon 4 cm.', el: [{ arc: [A, 80, 40, 72], c: '#2EA8C9' }] },
+    { texte: 'Je trace un arc de cercle de centre B et de rayon 5 cm.', el: [{ arc: [B, 100, 126, 152], c: '#2E9C6A' }] },
+    { texte: 'Les deux arcs se coupent en C : je trace [AC] et [BC].', el: [{ seg: [A, C] }, { seg: [B, C] }, CPT(C, 'C', 0, -9), { txt: [37, 66], t: '4 cm', c: '#2EA8C9', a: 'end' }, { txt: [108, 66], t: '5 cm', c: '#2E9C6A', a: 'start' }] }] }); })();
 // Programme de la planche 5 : cercles de centres A et B, de rayon AB = 5 cm (1 cm = 14 px), losange ACBD.
 const LOSANGE = (() => { const A = [80, 95], B = [150, 95], h = Math.sqrt(70 * 70 - 35 * 35), C = [115, 95 - h], D = [115, 95 + h];
-  return S(230, 190, Ci(A, 70, Bl) + Ci(B, 70, Ve) + L(A, B, K, 2) + L(A, C, Ro, 2) + L(B, C, Ro, 2) + L(A, D, K, 1.6) + L(B, D, K, 1.6)
-    + P(A, 'A', -12, 4) + P(B, 'B', 12, 4) + P(C, 'C', 0, -8) + P(D, 'D', 0, 18), 170); })();
+  return plConstruction({ w: 230, h: 190, px: 170, etapes: [
+    { texte: 'Je trace le segment [AB] de 5 cm.', el: [{ seg: [A, B] }, CPT(A, 'A', -12, 4), CPT(B, 'B', 12, 4)] },
+    { texte: 'Je trace le cercle de centre A et de rayon 5 cm : il passe par B.', el: [{ cercle: [A, 70], c: '#2EA8C9' }] },
+    { texte: 'Je trace le cercle de centre B, de même rayon : il passe par A.', el: [{ cercle: [B, 70], c: '#2E9C6A' }] },
+    { texte: 'Les deux cercles se coupent en C et en D.', el: [CPT(C, 'C', 0, -8), CPT(D, 'D', 0, 18)] },
+    { texte: 'Je trace [AC], [BC], [AD] et [BD].', el: [{ seg: [A, C], c: '#E35D3A' }, { seg: [B, C], c: '#E35D3A' }, { seg: [A, D], ep: 1.6 }, { seg: [B, D], ep: 1.6 }] }] }); })();
+// Planche 3, exercice 5 : les points à 3 cm de A et à 4 cm de B (1 cm = 12 px).
+const DEUX_CERCLES = (() => { const A = [45, 60], B = [105, 60];
+  return plConstruction({ w: 160, h: 120, px: 160, etapes: [
+    { texte: 'Je trace le segment [AB] de 5 cm.', el: [{ seg: [A, B] }, CPT(A, 'A', -14, 4), CPT(B, 'B', 4, 14)] },
+    { texte: 'Les points à 3 cm de A sont sur le cercle de centre A et de rayon 3 cm.', el: [{ cercle: [A, 36], c: '#2EA8C9' }] },
+    { texte: 'Les points à 4 cm de B sont sur le cercle de centre B et de rayon 4 cm.', el: [{ cercle: [B, 48], c: '#2E9C6A' }] },
+    { texte: 'Les deux cercles se coupent en deux points : ce sont les points cherchés.', el: [CPT([66.6, 31.2], 'M', 0, -8, '#E35D3A'), CPT([66.6, 88.8], 'N', 0, 18, '#E35D3A')] }] }); })();
+// Planche 3, exercice 4 : cercle de centre O passant par A, cercle de diamètre [OA].
+const CERCLES_OA = plConstruction({ w: 220, h: 150, px: 200, depart: [CPT([110, 75], 'O', -14, 14), CPT([170, 75], 'A', 11, 4)], etapes: [
+  { texte: 'Je pique la pointe du compas en O et je l\'écarte jusqu\'à A : je trace le cercle de centre O qui passe par A.', el: [{ cercle: [[110, 75], 60], c: '#2E9C6A' }] },
+  { texte: 'Je place le milieu I de [OA].', el: [{ seg: [[110, 75], [170, 75]], ep: 1.4, tirets: true }, CPT([140, 75], 'I', 0, -8)] },
+  { texte: 'Je pique en I et je trace le cercle qui passe par O (et par A) : c\'est le cercle de diamètre [OA].', el: [{ cercle: [[140, 75], 30], c: '#2EA8C9' }] }] });
+// Planche 5, exercice 3 : la rosace (rayon 3 cm, 1 cm = 15 px).
+const ROSACE = (() => { const o = [70, 70], r = 45, c = i => [o[0] + r * Math.cos(-i * Math.PI / 3), o[1] - r * Math.sin(-i * Math.PI / 3)], a = i => ({ arc: [c(i), r, 120 - i * 60, 240 - i * 60], c: '#7A4FC0', ep: 2 }); // arc tourné vers O
+  return plConstruction({ w: 140, h: 140, px: 150, etapes: [
+    { texte: 'Je trace un cercle de centre O et de rayon 3 cm, et je place un point A sur ce cercle.', el: [{ cercle: [o, r], c: '#1F3A5C' }, CPT(o, 'O', -11, 4), CPT(c(0), 'A', 11, 4)] },
+    { texte: 'Sans changer l\'écartement, je pique en A et je trace l\'arc à l\'intérieur du cercle.', el: [a(0)] },
+    { texte: 'Je pique au point où l\'arc coupe le cercle, je trace l\'arc suivant, et je recommence jusqu\'à revenir en A.', el: [1, 2, 3, 4, 5].map(a) }] }); })();
 // Quadrillage w × h carreaux de k px (nœuds en i·k).
 function Gq(w, h, k, f){ let s = ''; for(let x = 0; x <= w; x++) s += L([x * k, 0], [x * k, h * k], '#C9DCEB', 1); for(let y = 0; y <= h; y++) s += L([0, y * k], [w * k, y * k], '#C9DCEB', 1); return S(w * k, h * k, s + f(x => x * k), w * k); }
 // Schéma de points alignés : pts [[nom, abscisse en cm]], cotes au-dessus [[de, à, texte, couleur]], une cote en dessous.
@@ -104,9 +131,9 @@ PLANCHES['6e|Distance et cercles'] = [
         ...choix([['OM = 4 cm : M est', 'sur le cercle'], ['OP = 2,5 cm : P est', 'à l\'intérieur'], ['OQ = 6 cm : Q est', 'à l\'extérieur'], ['[OR] est un rayon : R est', 'sur le cercle']], 'sur le cercle · à l\'intérieur · à l\'extérieur') },
       { etoiles: 2, col: 1, consigne: 'Avec ton compas, trace le cercle de centre O qui passe par A, puis le cercle de diamètre [OA].',
         eleve: `<div style="text-align:center;">${S(220, 150, P([110, 75], 'O', -14, 14) + P([170, 75], 'A', 6, 4), 200)}</div>`,
-        corr: `<div style="text-align:center;">${S(220, 150, Ci([110, 75], 60, Ve) + Ci([140, 75], 30, Bl) + L([110, 75], [170, 75], K, 1.4, true) + P([110, 75], 'O', -14, 14) + P([170, 75], 'A', 6, 4), 200)}</div><div class="pl-petit">Le cercle de diamètre [OA] a pour centre le milieu de [OA].</div>` },
+        corr: `<div style="text-align:center;">${CERCLES_OA}</div><div class="pl-petit">Le cercle de diamètre [OA] a pour centre le milieu de [OA].</div>` },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Trace un segment [AB] de 5 cm. Place tous les points qui sont à 3 cm de A et à 4 cm de B.',
-        corr: cm1Redac('Construction', { suite: ['Les points à 3 cm de A sont sur le cercle de centre A et de rayon 3 cm.', 'Les points à 4 cm de B sont sur le cercle de centre B et de rayon 4 cm.'] }, 'Les deux cercles se coupent en deux points : ce sont les points cherchés.', `<span class="cm-fig-d">${S(160, 120, Ci([45, 60], 36, Bl, true) + Ci([105, 60], 48, Ve, true) + L([45, 60], [105, 60], K, 2) + P([45, 60], 'A', -14, 4) + P([105, 60], 'B', 4, 14) + P([66.6, 31.2], '', 0, 0, Ro) + P([66.6, 88.8], '', 0, 0, Ro), 140)}</span>`) },
+        corr: cm1Redac('Construction', { suite: ['Les points à 3 cm de A sont sur le cercle de centre A et de rayon 3 cm.', 'Les points à 4 cm de B sont sur le cercle de centre B et de rayon 4 cm.'] }, 'Les deux cercles se coupent en deux points : ce sont les points cherchés.') + `<div style="text-align:center;margin-top:4px;">${DEUX_CERCLES}</div>` },
     ] },
   { titre: 'Cercles : distances et propriétés', duree: '35 min',
     attendus: ['Savoir qu\'un point est sur un cercle quand sa distance au centre est égale au rayon', 'Utiliser rayon et diamètre dans des calculs', 'Construire un triangle à partir de ses trois longueurs'],
@@ -142,7 +169,7 @@ PLANCHES['6e|Distance et cercles'] = [
         eleve: plListe(['Trace un segment [OP] de 3 cm.', 'Trace le cercle de centre ' + B(1) + ' passant par P.', 'Trace le cercle de centre P et de rayon ' + B() + ' cm.', 'Les deux cercles ont le même ' + B(5) + '.']),
         corr: plListe(['Trace un segment [OP] de 3 cm.', 'Trace le cercle de centre ' + R('O') + ' passant par P.', 'Trace le cercle de centre P et de rayon ' + R(3) + ' cm.', 'Les deux cercles ont le même ' + R('rayon') + '.']) },
       { etoiles: 2, col: 1, cahier: true, consigne: `Reproduis cette rosace en vraie grandeur : le cercle a pour rayon 3 cm.<div style="text-align:center;">${(() => { const o = [70, 70], r = 45; let s = Ci(o, r, K); for(let i = 0; i < 6; i++){ const a = i * Math.PI / 3, c = [o[0] + r * Math.cos(a), o[1] + r * Math.sin(a)], a1 = a + 2 * Math.PI / 3, a2 = a + 4 * Math.PI / 3; s += `<path d="M${(c[0] + r * Math.cos(a1)).toFixed(1)},${(c[1] + r * Math.sin(a1)).toFixed(1)} A${r},${r} 0 0 1 ${(c[0] + r * Math.cos(a2)).toFixed(1)},${(c[1] + r * Math.sin(a2)).toFixed(1)}" fill="none" stroke="${Vi}" stroke-width="2"/>`; } return S(140, 140, s, 130); })()}</div>`,
-        corr: cm1Redac('Construction', { suite: ['Je trace un cercle de centre O et de rayon 3 cm, et je place un point A sur ce cercle.', 'Sans changer l\'écartement, je pique en A et je trace l\'arc à l\'intérieur du cercle.', 'Je pique au point où l\'arc coupe le cercle, et je recommence six fois.'] }, 'Les six arcs forment une fleur à six pétales.') },
+        corr: cm1Redac('Construction', { suite: ['Je trace un cercle de centre O et de rayon 3 cm, et je place un point A sur ce cercle.', 'Sans changer l\'écartement, je pique en A et je trace l\'arc à l\'intérieur du cercle.', 'Je pique au point où l\'arc coupe le cercle, et je recommence six fois.'] }, 'Les six arcs forment une fleur à six pétales.') + `<div style="text-align:center;margin-top:4px;">${ROSACE}</div>` },
       { etoiles: 2, col: 1, cahier: true, consigne: `Écris un programme de construction de cette figure (le grand cercle a pour rayon 4 cm).<div style="text-align:center;">${S(180, 120, Ci([90, 60], 50, K) + Ci([65, 60], 25, Bl) + Ci([115, 60], 25, Ro) + L([40, 60], [140, 60], K, 1.6) + P([40, 60], 'A', -12, 4) + P([140, 60], 'B', 4, 4) + P([90, 60], 'O', -4, 16), 170)}</div>`,
         corr: cm1Redac('Programme de construction', { suite: ['Trace un segment [AB] de 8 cm et place son milieu O.', 'Trace le cercle de centre O passant par A.', 'Trace le cercle de diamètre [AO] et le cercle de diamètre [OB].'] }, 'Les deux petits cercles ont pour rayon 2 cm.') },
       { etoiles: 3, cahier: true, consigne: 'Suis ce programme : « Trace un segment [AB] de 5 cm. Trace le cercle de centre A et de rayon 5 cm, puis le cercle de centre B de même rayon. Ils se coupent en C et D. Trace les segments [AC], [BC], [AD] et [BD]. » Quelles sont les longueurs des côtés du triangle ABC ?',

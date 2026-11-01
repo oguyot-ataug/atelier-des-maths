@@ -24,6 +24,23 @@ const X = (p, n, dx, dy, c) => `<path d="M${p[0] - 4},${p[1] - 4} L${p[0] + 4},$
 function placeC(A, Bp, c, nom, w, h){ const k = 20, base = g => L(g(...A), g(...Bp), K, 2.2) + X(g(...A), 'A', -14, 14) + X(g(...Bp), 'B', 4, 14);
   return { eleve: plX(Gq(w || 9, h || 7, k, base), { t: 'pts', grille: { k, ox: 0, oy: 0, w: w || 9, h: h || 7 }, noms: [nom || 'C'], att: { [nom || 'C']: [c[0] * k, c[1] * k] } }),
     corr: Gq(w || 9, h || 7, k, g => base(g) + L(g(...A), g(...c), Ro, 2) + L(g(...Bp), g(...c), Ro, 2) + X(g(...c), nom || 'C', 4, -4, Ro)) }; }
+// Constructions des corrigés, animées à l'écran (constructions.js ; demandé le 01/11/2026 : « Oui, mets en place la
+// correction animée »). Sur le papier : la figure finale, arcs compris.
+const CPT = (p, nom, dx, dy, c) => ({ pt: p, nom, dx, dy, c });
+// Triangle RST : RS = 7 cm, RT = 5 cm, ST = 4 cm (1 cm = 18 px).
+const TRI_RST = (() => { const k = 18, R = [20, 110], S7 = [20 + 7 * k, 110], x = (25 - 16 + 49) / 14, T = [20 + x * k, 110 - Math.sqrt(25 - x * x) * k];
+  return plConstruction({ w: 166, h: 126, px: 170, etapes: [
+    { texte: 'Je trace le segment [RS] de 7 cm.', el: [{ seg: [R, S7] }, CPT(R, 'R', -11, 4), CPT(S7, 'S', 11, 4), { txt: [83, 123], t: '7 cm' }] },
+    { texte: 'Je trace un arc de cercle de centre R et de rayon 5 cm.', el: [{ arc: [R, 5 * k, 22, 46], c: '#2EA8C9' }] },
+    { texte: 'Je trace un arc de cercle de centre S et de rayon 4 cm.', el: [{ arc: [S7, 4 * k, 123, 148], c: '#2E9C6A' }] },
+    { texte: 'Les deux arcs se coupent en T : je trace [RT] et [ST].', el: [{ seg: [R, T] }, { seg: [S7, T] }, CPT(T, 'T', 0, -9)] }] }); })();
+// Triangle équilatéral EFG de côté 5 cm (1 cm = 20 px).
+const TRI_EFG = (() => { const E = [20, 110], F = [120, 110], G = [70, 110 - 50 * Math.sqrt(3)];
+  return plConstruction({ w: 140, h: 124, px: 150, etapes: [
+    { texte: 'Je trace le segment [EF] de 5 cm.', el: [{ seg: [E, F] }, CPT(E, 'E', -11, 4), CPT(F, 'F', 11, 4)] },
+    { texte: 'Je trace un arc de cercle de centre E et de rayon 5 cm.', el: [{ arc: [E, 100, 48, 72], c: '#2EA8C9' }] },
+    { texte: 'Je trace un arc de cercle de centre F et de rayon 5 cm.', el: [{ arc: [F, 100, 108, 132], c: '#2E9C6A' }] },
+    { texte: 'Les deux arcs se coupent en G : je trace [EG] et [FG]. Les trois côtés mesurent 5 cm.', el: [{ seg: [E, G] }, { seg: [F, G] }, CPT(G, 'G', 0, -9), { codage: [E, F] }, { codage: [E, G] }, { codage: [F, G] }] }] }); })();
 PLANCHES['6e|Construction de triangles'] = [
   { titre: 'Reconnaître les triangles particuliers', duree: '35 min',
     attendus: ['Reconnaître un triangle isocèle, équilatéral, rectangle d\'après les codages', 'Utiliser le vocabulaire : sommet principal, base, hypoténuse', 'Ne pas conclure d\'après le dessin seul'],
@@ -57,7 +74,7 @@ PLANCHES['6e|Construction de triangles'] = [
       { etoiles: 2, col: 1, consigne: 'Le cas « 4 cm, 4 cm, 8 cm » est particulier. Que se passe-t-il ? Entoure.',
         eleve: plListe(['Les trois points sont <b>alignés · non alignés</b>', 'On obtient un triangle <b>aplati · rectangle</b>']), corr: plListe(['Les trois points sont ' + plEntoure('alignés') + ' (4 + 4 = 8)', 'On obtient un triangle ' + plEntoure('aplati')]) },
       { etoiles: 2, col: 1, cahier: true, consigne: 'Construis le triangle RST tel que RS = 7 cm, RT = 5 cm et ST = 4 cm. Commence par une figure à main levée codée.',
-        corr: cm1Redac('Construction', { suite: ['Je trace [RS] de 7 cm.', 'Arc de centre R, rayon 5 cm ; arc de centre S, rayon 4 cm.', 'Les arcs se coupent en T.'] }, 'Je trace [RT] et [ST] : le triangle RST est construit.') },
+        corr: cm1Redac('Construction', { suite: ['Je trace [RS] de 7 cm.', 'Arc de centre R, rayon 5 cm ; arc de centre S, rayon 4 cm.', 'Les arcs se coupent en T.'] }, 'Je trace [RT] et [ST] : le triangle RST est construit.') + `<div style="text-align:center;margin-top:4px;">${TRI_RST}</div>` },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Construis un triangle EFG avec EF = 6 cm et FG = 6 cm, dont le périmètre est 16 cm. Quelle est sa nature ?',
         corr: cm1Redac('Longueur EG', '16 − 6 − 6 = 4', 'EG = 4 cm ; EF = FG : le triangle EFG est isocèle en F.') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Combien de triangles différents (côtés entiers en cm) ont un périmètre de 9 cm ? Cite-les.',
@@ -92,7 +109,7 @@ PLANCHES['6e|Construction de triangles'] = [
       { etoiles: 2, col: 1, consigne: 'Un triangle a deux angles de 60°. Que peux-tu dire ? Entoure.',
         eleve: plListe(['Son troisième angle mesure <b>60° · 90° · 120°</b>', 'C\'est un triangle <b>équilatéral · rectangle · quelconque</b>']), corr: plListe(['Son troisième angle mesure ' + plEntoure('60°'), 'C\'est un triangle ' + plEntoure('équilatéral')]) },
       { etoiles: 2, col: 1, cahier: true, consigne: 'Construis un triangle EFG équilatéral de côté 5 cm, au compas. Vérifie au rapporteur la mesure de ses angles.',
-        corr: cm1Redac('Construction', { suite: ['[EF] de 5 cm ; arcs de rayon 5 cm, de centres E et F.', 'Les arcs se coupent en G.'] }, 'Les trois angles mesurent 60°.') },
+        corr: cm1Redac('Construction', { suite: ['[EF] de 5 cm ; arcs de rayon 5 cm, de centres E et F.', 'Les arcs se coupent en G.'] }, 'Les trois angles mesurent 60°.') + `<div style="text-align:center;margin-top:4px;">${TRI_EFG}</div>` },
       { etoiles: 3, cahier: true, consigne: 'Construis un triangle ABC isocèle en A tel que BC = 6 cm et ' + W('ABC') + ' = 50°. Calcule ' + W('BAC') + ' et vérifie en mesurant.',
         corr: cm1Redac('Construction et calcul', { suite: ['[BC] de 6 cm ; angles de 50° en B et en C (angles à la base égaux).', W('BAC') + ' = 180 − 50 − 50'] }, W('BAC') + ' = 80°.') },
     ] },

@@ -16,6 +16,17 @@ function centre(P, O, w, h, r){ const k = 20, base = g => `<polygon points="${P.
   return { eleve: plX(Gq(w, h, k, base), { t: 'pts', grille: { k, ox: 0, oy: 0, w, h }, noms: ['O'], att: { O: [O[0] * k, O[1] * k] } }),
     corr: Gq(w, h, k, g => base(g) + `<circle cx="${O[0] * k}" cy="${O[1] * k}" r="${r * k}" fill="none" stroke="${Ve}" stroke-width="2"/>` + X(g(...O), 'O', 6, -6, Ro)) }; }
 const tri = (A, Bp, C, n, ang) => `<polygon points="${A.join(',')} ${Bp.join(',')} ${C.join(',')}" fill="#EAF4FB" stroke="${K}" stroke-width="2"/>` + T([A[0] - 9, A[1] + 12], n[0]) + T([Bp[0] + 9, Bp[1] + 12], n[1]) + T([C[0], C[1] - 7], n[2]) + (ang || []).map(([p, t]) => T(p, t, Ro)).join('');
+// Constructions des corrigés, animées à l'écran (constructions.js ; demandé le 01/11/2026 : « Oui, mets en place la
+// correction animée »). Sur le papier : la figure finale, arcs compris.
+const CPT = (p, nom, dx, dy, c) => ({ pt: p, nom, dx, dy, c });
+// Cercle circonscrit au triangle AB = 6 cm, BC = 5 cm, AC = 4 cm (1 cm = 20 px).
+const CIRCONSCRIT = (() => { const A = [40, 130], B = [160, 130], C = [40 + 2.25 * 20, 130 - Math.sqrt(16 - 2.25 * 2.25) * 20];
+  const mBC = [(B[0] + C[0]) / 2, (B[1] + C[1]) / 2], u = [B[1] - C[1], C[0] - B[0]], lu = Math.hypot(...u), e = [u[0] / lu, u[1] / lu];
+  const t = (100 - mBC[0]) / e[0], O = [100, mBC[1] + t * e[1]], R = Math.hypot(O[0] - A[0], O[1] - A[1]);
+  return plConstruction({ w: 200, h: 196, px: 175, depart: [{ seg: [A, B] }, { seg: [B, C] }, { seg: [A, C] }, CPT(A, 'A', -11, 4), CPT(B, 'B', 11, 4), CPT(C, 'C', -4, -9)], etapes: [
+    { texte: 'Je trace la médiatrice de [AB] : la perpendiculaire à [AB] qui passe par son milieu.', el: [{ seg: [[100, 48], [100, 192]], c: '#2E9C6A', ep: 1.6 }, { codage: [A, [100, 130]] }, { codage: [[100, 130], B] }, { droit: [B, [100, 130], [100, 48]] }] },
+    { texte: 'Je trace la médiatrice de [BC] : elle coupe la première en O.', el: [{ seg: [[mBC[0] - 70 * e[0], mBC[1] - 70 * e[1]], [mBC[0] + 1.6 * Math.abs(t) * e[0] + 40 * e[0], mBC[1] + 1.6 * Math.abs(t) * e[1] + 40 * e[1]]], c: '#7A4FC0', ep: 1.6 }, { codage: [B, mBC], n: 2 }, { codage: [mBC, C], n: 2 }, CPT(O, 'O', 11, 6)] },
+    { texte: 'Je trace le cercle de centre O qui passe par A : il passe aussi par B et par C.', el: [{ cercle: [O, R], c: '#E35D3A' }] }] }); })();
 PLANCHES['6e|Propriétés des triangles'] = [
   { titre: 'Somme des angles d\'un triangle', duree: '35 min',
     attendus: ['Savoir que la somme des angles d\'un triangle est 180°', 'Calculer le troisième angle d\'un triangle', 'Savoir si un triangle peut exister'],
@@ -62,7 +73,7 @@ PLANCHES['6e|Propriétés des triangles'] = [
       { etoiles: 2, col: 1, consigne: 'O est le centre du cercle circonscrit au triangle RST, et OR = 4 cm. Complète.',
         eleve: plListe(['OS = ' + B() + ' cm', 'OT = ' + B() + ' cm', 'Le diamètre du cercle mesure ' + B() + ' cm']), corr: plListe(['OS = ' + R(4) + ' cm', 'OT = ' + R(4) + ' cm', 'Le diamètre du cercle mesure ' + R(8) + ' cm']) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Trace un triangle ABC avec AB = 6 cm, BC = 5 cm et AC = 4 cm. Construis son cercle circonscrit.',
-        corr: cm1Redac('Construction', { suite: ['Je construis le triangle au compas.', 'Je trace deux médiatrices (par exemple celles de [AB] et de [BC]) : elles se coupent en O.'] }, 'Je trace le cercle de centre O qui passe par A : il passe aussi par B et C.') },
+        corr: cm1Redac('Construction', { suite: ['Je construis le triangle au compas.', 'Je trace deux médiatrices (par exemple celles de [AB] et de [BC]) : elles se coupent en O.'] }, 'Je trace le cercle de centre O qui passe par A : il passe aussi par B et C.') + `<div style="text-align:center;margin-top:4px;">${CIRCONSCRIT}</div>` },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Trois maisons A, B et C ne sont pas alignées. On veut construire un puits à égale distance des trois maisons. Où le placer ? Explique.',
         corr: cm1Redac('Explication', { suite: ['À égale distance de A et B : sur la médiatrice de [AB].', 'À égale distance de B et C : sur la médiatrice de [BC].'] }, 'Le puits est au point d\'intersection des médiatrices : le centre du cercle circonscrit au triangle ABC.') },
     ] },
