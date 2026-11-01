@@ -469,7 +469,55 @@ function plMarque(lvl, x){
   return '';
 }
 function plCahierHtml(){ return `<div class="pl-cahier"><span class="pl-oliv">${plOliv('savoir')}</span><span class="pl-bulle">Dans ton cahier !</span></div>`; }
-function plExoCorps(x, corr){ return plSepAeres(corr ? (x.corr || x.eleve || '') : (plTrousAjustes(x) + (x.cahier ? plCahierHtml() : ''))); }
+function plExoCorps(x, corr){ const h = plSepAeres(corr ? (x.corr || x.eleve || '') : (plTrousAjustes(x) + (x.cahier ? plCahierHtml() : '')));
+  return plChoixColHtml(h, corr && x.corr ? x.eleve : null, !x.col && !x.uneLigne); }
+/* Propositions à entourer en fin de question (« vrai · faux », « oui · non »…) : rangées dans une colonne à part, plus loin
+   de l'énoncé, alignées les unes sous les autres -- relecture 6e-G1-P1-E4 (01/11/2026) : « les vrai faux, en tabulation
+   plus loin de l'énoncé et alignés en colonne quand c'est possible ». Automatique : une liste dont CHAQUE ligne se termine
+   par les propositions devient une grille (énoncé | propositions) ; le corrigé suit la même mise en page que l'énoncé.
+   Exercice pleine largeur et au moins quatre questions : deux paires de colonnes, comme les listes sur deux colonnes. */
+function plChFin(li){ let n = li.lastChild; while(n && n.nodeType === 3 && !n.nodeValue.trim()) n = n.previousSibling; return n && n.nodeType === 1 ? n : null; }
+function plChAvant(li, fin){ for(let n = li.firstChild; n && n !== fin; n = n.nextSibling) if(n.nodeType === 1 || n.nodeValue.trim()) return true; return false; }
+function plChRep(li){ const E = [...li.children].filter(e => e.matches('.pl-entoure, .pl-barre-rep, b, .pl-rep')); return E[E.length - 1] || null; }
+function plChListeOk(ul){ const L = [...ul.children].filter(e => e.tagName === 'LI'); if(L.length < 2 || L.length !== ul.children.length) return false;
+  return L.every(li => { const f = plChFin(li); return f && plChAvant(li, f) && (f.matches('b.pl-props, .pn-choix') || (f.tagName === 'B' && / · /.test(f.textContent))); }); }
+// largeur des propositions, en caractères (l'écart entre deux propositions compte pour 2,5)
+function plChLarg(ul){ return Math.max(0, ...[...ul.children].map(li => { const f = plChFin(li); if(!f) return 0;
+  const m = f.querySelectorAll('.pl-prop, .pn-mot'), L = m.length ? [...m].map(e => e.textContent.trim()) : f.textContent.split('·').map(t => t.trim()).filter(Boolean);
+  return L.reduce((z, t) => z + t.length, 0) + 2.5 * (L.length - 1); })); }
+function plChoixCols(root, ref, plein){
+  if(!root) return;
+  const R = ref ? [...ref.querySelectorAll('ul.pl-liste')] : null;
+  [...root.querySelectorAll('ul.pl-liste')].forEach((ul, k) => {
+    if(ul.classList.contains('pl-chcol') || ul.closest('svg, .pl-une-ligne')) return;
+    let lg = 0;
+    if(R){ const e = R[k]; if(!e || !plChListeOk(e) || e.children.length !== ul.children.length) return; lg = plChLarg(e);
+      // corrigé : la réponse entourée dans la colonne ; ce qui la suit (une précision « (60 % contre 52 %) ») reste avec la question
+      if(![...ul.children].every(li => li.tagName === 'LI' && plChRep(li) && plChAvant(li, plChRep(li)))) return; }
+    else { if(!plChListeOk(ul)) return; lg = plChLarg(ul); }
+    [...ul.children].forEach(li => { const f = R ? plChRep(li) : plChFin(li), q = document.createElement('span'), r = document.createElement('span');
+      q.className = 'pl-chq'; r.className = 'pl-chr';
+      while(li.firstChild && li.firstChild !== f) q.appendChild(li.firstChild);
+      r.appendChild(f); while(li.firstChild) q.appendChild(li.firstChild); li.appendChild(q); li.appendChild(r); });
+    // Propositions trop longues pour une colonne à côté de l'énoncé (« impossible · possible · certain » dans une
+    // demi-colonne) : sous chaque question, alignées au même retrait.
+    const large = plein && !ul.closest('.pl-col1');
+    if(lg > (large ? 30 : 16)){ ul.classList.add('pl-chbas'); return; }
+    ul.classList.add('pl-chcol');
+    if(large && ul.children.length >= 4 && lg <= 16) ul.classList.add('pl-chcol2');
+  });
+}
+const plChCache = new Map();
+function plChoixColHtml(h, refHtml, plein){
+  if(!h || h.indexOf('pl-liste') < 0) return h;
+  const cle = (plein ? '1' : '0') + h + '\u0000' + (refHtml || '');
+  if(plChCache.has(cle)) return plChCache.get(cle);
+  let out = h;
+  try{ const d = document.createElement('div'); d.innerHTML = h; let r = null; if(refHtml){ r = document.createElement('div'); r.innerHTML = refHtml; }
+    plChoixCols(d, r, plein); out = d.innerHTML; }catch(e){}
+  if(plChCache.size > 3000) plChCache.clear();
+  plChCache.set(cle, out); return out;
+}
 // Les choix « a · b · c » et les listes de nombres « 6 102 · 6 210 » s'affichent sans le point central, avec un
 // grand espace -- relecture CE2-N1-P2-E8 (« le point central entre les deux propositions amène de la confusion ») et
 // CE2-N1-P4-E4 (« les points centraux entre les nombres sont à éviter, il est préférable de les espacer davantage »).
@@ -875,6 +923,11 @@ const PL_CSS = `
      demandé le 31/10/2026 : « une décomposition ne doit jamais se poursuivre sur la ligne suivante ». */
   .pl-une-ligne .pl-liste{ columns:1 !important; } .pl-une-ligne .pl-liste li{ white-space:nowrap; }
   .pl-props{ display:inline-flex; flex-wrap:wrap; column-gap:1.5em; row-gap:2px; vertical-align:baseline; } .pl-prop{ white-space:nowrap; }
+  .pl-liste.pl-chcol{ display:grid !important; columns:auto !important; grid-template-columns:minmax(min(8em,50%),max-content) max-content; column-gap:1.8em; row-gap:3px; align-items:baseline; justify-content:start; }
+  .pl-liste.pl-chcol2{ grid-template-columns:minmax(min(8em,25%),max-content) max-content minmax(min(8em,25%),max-content) max-content; } .pl-chcol2 > li:nth-child(odd) > .pl-chr{ margin-right:1.2em; }
+  .pl-chcol > li{ display:contents !important; } .pl-chcol .pl-chq{ position:relative; } .pl-chcol .pl-chq::before{ content:'•'; position:absolute; left:-13px; } .pl-chr{ white-space:nowrap; }
+  .pl-chbas > li > .pl-chr{ display:block; padding-left:1.6em; }
+  @media (max-width:640px){ .pl-liste.pl-chcol2{ grid-template-columns:minmax(0,max-content) max-content; } }
   .pl-entoure{ display:inline-block; border:2px solid #1F7A4D; border-radius:50%; padding:2px 6px; }
   .pl-barre-rep{ position:relative; display:inline-block; } .pl-barre-rep::after{ content:''; position:absolute; left:-4px; right:-4px; top:50%; border-top:2.5px solid #C0392B; transform:rotate(-20deg); }
   .pl-exos > .pl-exo.pl-demi.pl-seul{ grid-column:1 / -1; }
@@ -1026,6 +1079,11 @@ const PL_CSS_LIVRE = `
     .td-vig sup .pl-pts, .pl-ex-cahier sup .pl-pts, .cd-contenu sup .pl-pts{ border-bottom:none; min-width:1em; }
     .td-vig.pl-une-ligne .pl-liste{ columns:1 !important; } .td-vig.pl-une-ligne .pl-liste li{ white-space:nowrap; }
     .pl-props{ display:inline-flex; flex-wrap:wrap; column-gap:1.5em; row-gap:2px; vertical-align:baseline; } .pl-prop{ white-space:nowrap; }
+    .pl-liste.pl-chcol{ display:grid !important; columns:auto !important; grid-template-columns:minmax(min(8em,50%),max-content) max-content; column-gap:1.8em; row-gap:3px; align-items:baseline; justify-content:start; }
+    .pl-liste.pl-chcol2{ grid-template-columns:minmax(min(8em,25%),max-content) max-content minmax(min(8em,25%),max-content) max-content; } .pl-chcol2 > li:nth-child(odd) > .pl-chr{ margin-right:1.2em; }
+    .pl-chcol > li{ display:contents !important; } .pl-chcol .pl-chq{ position:relative; } .pl-chcol .pl-chq::before{ content:'•'; position:absolute; left:-13px; } .pl-chr{ white-space:nowrap; }
+    .pl-chbas > li > .pl-chr{ display:block; padding-left:1.6em; }
+    @media (max-width:640px){ .pl-liste.pl-chcol2{ grid-template-columns:minmax(0,max-content) max-content; } }
     .td-vig .pl-rep, .pl-ex-cahier .pl-rep, .cd-contenu .pl-rep{ color:#1F7A4D; font-weight:800; } .pl-entoure{ display:inline-block; border:2px solid #1F7A4D; border-radius:50%; padding:1px 6px; }
     .pl-barre-rep{ position:relative; display:inline-block; } .pl-barre-rep::after{ content:''; position:absolute; left:-4px; right:-4px; top:50%; border-top:2.5px solid #C0392B; transform:rotate(-20deg); }
     .td-vig svg, .pl-ex-cahier svg{ max-width:100%; height:auto; } .pl-unites{ display:inline-flex; gap:5px; flex-wrap:wrap; align-items:center; vertical-align:middle; }
@@ -1050,7 +1108,7 @@ const PL_CSS_LIVRE = `
     .plp-verif{ background:#F08A3C !important; border-color:#F08A3C !important; }
     .plp-consigne{ font-weight:700; margin-bottom:10px; }
     .plp-corps .pl-grille{ display:grid; gap:8px 26px; align-items:center; } .plp-corps .pl-item{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
-    .plp-corps .pl-liste{ padding-left:20px; margin:0; } .plp-corps .pl-liste li{ margin:6px 0; }
+    .plp-corps .pl-liste{ padding-left:20px; margin:0; } .plp-corps .pl-liste li{ margin:6px 0; } .plp-corps .pl-liste.pl-chcol{ row-gap:12px; }
     .plp-corps .pl-frac{ display:inline-flex; flex-direction:column; align-items:center; vertical-align:middle; gap:2px; margin:0 3px; }
     .plp-corps .pl-case{ display:inline-block; width:22px; height:18px; border:1.5px solid #8A93A3; border-radius:4px; background:#fff; } .plp-corps .pl-case-seule{ vertical-align:middle; margin:0 4px; }
     .plp-corps .pl-barre{ display:block; width:28px; border-top:2px solid #1C2B39; }

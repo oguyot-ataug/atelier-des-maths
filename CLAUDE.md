@@ -141,6 +141,10 @@ alignées en dessous (`P3.chxTab`, `P3.chx2`), jamais collées à la question. A
 ne sont jamais coupées (`.pl-props`, planches.js) ; un exercice `{ uneLigne: true }` met une ligne de calcul par question, sur
 toute la largeur, sans retour à la ligne (rangements, décompositions, encadrements trop longs pour une demi-colonne).
 
+Propositions à entourer en fin de question (« vrai · faux », « oui · non »…) : rangées automatiquement dans une colonne à part,
+alignées, plus loin de l'énoncé (`plChoixCols`, planches.js ; demandé le 01/11/2026). Propositions trop longues pour tenir à côté
+(plus de 16 caractères en demi-largeur, 30 en pleine largeur) : sous chaque question, au même retrait. Rien à écrire dans les sources.
+
 Collège (6e à 3e), sur le papier (Manuel et feuilles imprimées) : les cases (`plCase`, fractions `plFrac`) s'affichent en pointillés
 (classe `pl-college`, demandé le 01/11/2026) ; l'écran garde ses cases à cliquer. Comparer deux quantités : « Complète avec <, > ou = »
 dans une case (`plCase()`), jamais « entoure la première · la seconde » ; une case à choix au clic : `plCase('(d1)|(d2)|(d3)')`.
@@ -160,7 +164,7 @@ qui doit garder ses croix telles quelles : attribut `data-geo-garde` sur le grou
 Codages de longueur (demandé le 01/11/2026 : « les faire inclinés et assez petits pour ne pas les confondre avec des points ») :
 même fichier, deuxième passe ; un petit trait (ou 2, 3 traits parallèles) qui coupe une ligne en son milieu devient un trait de
 7 px incliné à 60°. Ne sont pas touchés : traits de points (nom à côté, ou trait simple qui n'est pas au milieu d'un segment
-entre deux repères), graduations (ligne fléchée, trait à l'extrémité de la ligne, plus de trois traits serrés, cinq groupes ou
+entre deux repères ; un double ou triple trait dessiné en plusieurs lignes est testé comme un seul codage), graduations (ligne fléchée, trait à l'extrémité de la ligne, plus de trois traits serrés, cinq groupes ou
 plus, nombre à côté).
 Noms de droites (demandé le 01/11/2026) : « (d1) » s'affiche toujours (d₁) (numéro en indice, `<sub>` ou tspan), automatiquement
 (`geoIndices`, même fichier) ; on peut donc continuer à écrire « (d1) » dans les sources.

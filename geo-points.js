@@ -196,11 +196,12 @@
       const { a, b } = t.sup, ab = [b[0] - a[0], b[1] - a[1]], n2 = ab[0] * ab[0] + ab[1] * ab[1], lg = Math.sqrt(n2);
       const par = p => ((p[0] - a[0]) * ab[0] + (p[1] - a[1]) * ab[1]) / n2, dist = p => Math.abs((p[0] - a[0]) * ab[1] - (p[1] - a[1]) * ab[0]) / lg;
       const rep = [0, 1];
-      traits.forEach(u => { if(u !== t && dist(u.mid) < 2 * k) rep.push(par(u.mid)); });
+      const grp = t.grp || [t]; // les traits d'un même codage (double, triple) ne se servent pas de repères entre eux
+      traits.forEach(u => { if(!grp.includes(u) && dist(u.mid) < 2 * k) rep.push(par(u.mid)); });
       ptsMarques.forEach(q => { if(dist(q) < 2 * k) rep.push(par(q)); }); // points dessinés en rond ou marqués d'un trait
       L.forEach((o, oi) => { if(oi === t.sup.si || o.courbe) return; for(let j = 0; j + 1 < o.l.length; j++){ const c = o.l[j], d = o.l[j + 1], cd = [d[0] - c[0], d[1] - c[1]], den = ab[0] * cd[1] - ab[1] * cd[0]; if(Math.abs(den) < 1e-9) continue;
         const x = ((c[0] - a[0]) * cd[1] - (c[1] - a[1]) * cd[0]) / den, y = ((c[0] - a[0]) * ab[1] - (c[1] - a[1]) * ab[0]) / den; if(x > 0 && x < 1 && y >= -.01 && y <= 1.01) rep.push(x); } });
-      const x = t.sup.t, g = Math.max(...rep.filter(r => r < x - 1e-6), 0), d = Math.min(...rep.filter(r => r > x + 1e-6), 1);
+      const x = grp.reduce((z, u) => z + par(u.mid), 0) / grp.length, g = Math.max(...rep.filter(r => r < x - 1e-6), 0), d = Math.min(...rep.filter(r => r > x + 1e-6), 1);
       return Math.abs(x - (g + d) / 2) * lg <= Math.max(4 * k, .07 * (d - g) * lg);
     }
     let n = 0;
@@ -209,6 +210,7 @@
       // groupes de traits voisins (moins de 8 px) : un codage a 1 à 3 traits ; une graduation, des traits réguliers en nombre
       const groupes = []; l.forEach(t => { const g = groupes.find(g => g.some(u => Math.hypot(u.mid[0] - t.mid[0], u.mid[1] - t.mid[1]) < 8 * k)); if(g) g.push(t); else groupes.push([t]); });
       if(groupes.some(g => g.length > 3) || groupes.length >= 5) return;
+      groupes.forEach(g => g.forEach(t => { t.grp = g; }));
       // un trait accompagné d'un nombre (graduation, heure) : pas un codage, toute la ligne est laissée
       if(l.some(t => textes.some(p => p.nombre && Math.hypot(p[0] - t.mid[0], p[1] - t.mid[1]) < 22 * k))) return;
       l.forEach(t => {
@@ -217,7 +219,7 @@
         // trait d'un point nommé : le nom est à côté du trait, au même endroit le long de la ligne (un codage est entre deux points)
         const u = [Math.cos(t.sup.ang), Math.sin(t.sup.ang)];
         if(textes.some(p => { if(p.nombre) return false; const d = [p[0] - t.mid[0], p[1] - t.mid[1]]; return Math.abs(d[0] * u[0] + d[1] * u[1]) < 8 * k && Math.abs(d[0] * u[1] - d[1] * u[0]) < 26 * k; })) return;
-        if(t.c.T.length === 1 && !milieu(t)) return;
+        if(t.c.T.length === 1 && !milieu(t)) return; // (un double trait fait de deux lignes : testé comme un seul codage)
         let th = t.sup.ang; if(th > Math.PI / 2) th -= Math.PI; if(th <= -Math.PI / 2) th += Math.PI;
         const a = th - Math.PI / 3, h = 3.6 * k, p1 = [t.mid[0] - Math.cos(a) * h, t.mid[1] - Math.sin(a) * h], p2 = [t.mid[0] + Math.cos(a) * h, t.mid[1] + Math.sin(a) * h];
         t.c.T[t.i] = [p1, p2]; t.c.fait = true; n++;

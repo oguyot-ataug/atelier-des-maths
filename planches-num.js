@@ -223,6 +223,7 @@ function plNum(root, x, o){
   root.classList.add('pn-ex'); root.classList.toggle('pn-lecture', !!o.lecture);
   root.innerHTML = M.html;
   if(typeof plSepNoeuds === 'function') plSepNoeuds(root); // « 6 102 · 6 210 » : grand espace au lieu du point central
+  if(typeof plChoixCols === 'function') plChoixCols(root, null, !x.col && !x.uneLigne); // « vrai · faux » en colonne, à part de l'énoncé
   const NS = 'http://www.w3.org/2000/svg';
   M.cibles.filter(c => c.type === 'trace').forEach(c => {
     const svg = root.querySelector(`[data-pn="${c.id}"]`), P = c.rep; if(!svg) return;
@@ -709,7 +710,7 @@ function plClavierPhysique(e){
   const st = document.createElement('style');
   st.textContent = `
     .pn-ex .pl-grille{ display:grid; gap:8px 22px; align-items:center; } .pn-ex .pl-item{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; min-height:30px; }
-    .pn-ex .pl-liste{ margin:0; padding-left:20px; } .pn-ex .pl-liste li{ margin:6px 0; }
+    .pn-ex .pl-liste{ margin:0; padding-left:20px; } .pn-ex .pl-liste li{ margin:6px 0; } .pn-ex .pl-liste.pl-chcol{ row-gap:10px; }
     .pn-ex .pl-unites{ display:inline-flex; gap:5px; flex-wrap:wrap; align-items:center; vertical-align:middle; }
     .cx-td .pn-ex, .cx-td.pn-ex{ font-size:1.1rem; line-height:1.5; } @media (min-width:700px){ .cx-td.pn-ex{ zoom:1.3; } } .cx-td svg{ max-width:100%; height:auto; }
     .pn-ex .pn-case{ white-space:pre; display:inline-flex; align-items:center; justify-content:center; min-width:30px; height:26px; padding:0 5px; border:2px solid #3A6EA5; border-radius:6px; background:#fff;

@@ -26,7 +26,7 @@ PLANCHES['6e|Distance et cercles'] = [
       { etoiles: 1, col: 1, consigne: 'I est le milieu du segment [AB]. Complète.',
         eleve: plListe(['Si AB = 8 cm, alors AI = ' + B() + ' cm.', 'Si AI = 3,5 cm, alors AB = ' + B() + ' cm.', 'Si IB = 4,2 cm, alors AI = ' + B() + ' cm.']),
         corr: plListe(['Si AB = 8 cm, alors AI = ' + R(4) + ' cm.', 'Si AI = 3,5 cm, alors AB = ' + R(7) + ' cm.', 'Si IB = 4,2 cm, alors AI = ' + R('4,2') + ' cm.']) },
-      { etoiles: 2, col: 1, consigne: `Observe les codages. Complète, sachant que AB = 6 cm.<div style="text-align:center;">${S(230, 70, L([15, 40], [215, 40], K, 2.2) + P([15, 40], 'A', -4, -10) + P([115, 40], 'I', -4, -10) + P([215, 40], 'B', -4, -10) + P([65, 40], 'M', -4, -10) + cd([15, 40], [65, 40], 2) + cd([65, 40], [115, 40], 2) + cd([115, 40], [215, 40], 1), 230)}</div>`,
+      { etoiles: 2, col: 1, consigne: `I est le milieu du segment [AB] et AB = 6 cm. Observe les codages, puis complète.<div style="text-align:center;">${S(230, 70, L([15, 40], [215, 40], K, 2.2) + P([15, 40], 'A', -4, -10) + P([115, 40], 'I', -4, -10) + P([215, 40], 'B', -4, -10) + P([65, 40], 'M', -4, -10) + cd([15, 40], [65, 40], 2) + cd([65, 40], [115, 40], 2), 230)}</div>`,
         eleve: plListe(['IB = ' + B() + ' cm', 'AM = ' + B() + ' cm', 'MB = ' + B() + ' cm']),
         corr: plListe(['IB = ' + R(3) + ' cm', 'AM = ' + R('1,5') + ' cm', 'MB = ' + R('4,5') + ' cm']) },
       { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.',
