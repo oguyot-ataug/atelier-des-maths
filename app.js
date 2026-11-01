@@ -3747,6 +3747,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1263', date:'2026-11-01', items:['Relecture 6e-G2-P8-E4 : le corrigé montre la figure (médiatrice codée, triangle isocèle ABC) au lieu de décrire la construction.'] },
   { version:'2026-08-19.1262', date:'2026-11-01', items:['Relecture, 6e Fractions : nombres et partage : comparer une fraction à 1 avec <, > ou = dans une case ; corrigé de la demi-droite graduée tracé sur papier quadrillé ; calculs du corrigé écrits avec la fraction (1/5 × 240 = 240/5 = 48 ; 25/100 × 40 = 1000/100 = 10 ; 45/100 × 600 = 45 × 6 = 270).'] },
   { version:'2026-08-19.1261', date:'2026-11-01', items:['Collège (6e à 3e), sur le papier : les cases à remplir des exercices (fractions, signes, nombres) s\'affichent en pointillés, dans le Manuel comme sur les feuilles imprimées -- demandé : « Dans les exercices de collèges, remplacer les cases par des pointillés sur le papier ». À l\'écran, les cases à cliquer ne changent pas ; le primaire garde ses cases.'] },
   { version:'2026-08-19.1260', date:'2026-11-01', items:['Comparer deux quantités ou deux fractions (6e Fractions : nombres et partage, multiplication, comparaison ; 5e Fractions) : « Complète avec <, > ou = » dans une case, au lieu d\'entourer « la première · la seconde » ; à l\'écran, chaque clic dans la case passe de < à >, puis =. Demandé : « Dans ce genre d\'exercices, compléter par <, > =. Corrige si tu en vois d\'autres du même genre ».'] },

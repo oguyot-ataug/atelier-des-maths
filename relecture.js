@@ -39,6 +39,8 @@ const RELECTURE_CHGT = {
   // La date d'un changement est l'heure RÉELLE de sa mise en ligne (heure du commit poussé sur main), jamais une heure
   // arrondie dans le futur : un exercice validé entre la mise en ligne et une date trop tardive resterait « Chgt effectué »
   // (signalé le 01/11/2026 pour 6e-N1 ; dates corrigées d'après l'historique des publications).
+  // Version 1263 (01/11).
+  '6e-G2-P8-E4': { date: '2026-11-01T15:51:32Z', note: "Le corrigé montre la figure (segment [AB], médiatrice (d) codée, point C, CA = CB = 5 cm) au lieu de décrire la construction ; la consigne reste « avec la règle graduée et l'équerre », sans compas" },
   // Version 1262 (01/11).
   '6e-N2-P4-E6': { date: '2026-11-01T15:47:51Z', note: "« 7/8 … 1 » à compléter par <, > ou = dans une case ; à l'écran, un clic passe de < à >, puis =" },
   '6e-N2-P4-E7': { date: '2026-11-01T15:47:51Z', note: "Corrigé avec le tracé : la demi-droite graduée sur papier quadrillé (unité 6 carreaux), les points 1/2, 7/6, 5/3 placés" },
@@ -56,7 +58,6 @@ const RELECTURE_CHGT = {
   '6e-G2-P6-E2': { date: '2026-11-01T13:25:00Z', note: "« Donc : (d3) … (d2) » à compléter dans une case ; à l'écran, bascule au clic" },
   '6e-G2-P6-E4': { date: '2026-11-01T13:25:00Z', note: "Figure ajoutée au corrigé : (d), (d') perpendiculaire passant par A, (d'') perpendiculaire à (d') passant par A, angles droits codés" },
   '6e-G2-P7-E1': { date: '2026-11-01T13:25:00Z', note: "« La médiatrice de [AB] est … » à compléter ; à l'écran, un clic dans la case passe de (d1) à (d2), puis (d3)" },
-  '6e-G2-P8-E4': { date: '2026-11-01T13:25:00Z', note: "Médiatrice tracée avec la règle graduée et l'équerre (milieu, puis perpendiculaire), sans compas ; le corrigé décrit la construction" },
   // Version 1257 (01/11).
   '6e-G2-P3-E1': { date: '2026-11-01T12:59:57Z', note: "Nom (d) écrit à côté de la droite sur les trois figures ; dans la figure 3, la droite (d) est d'un seul tenant (elle était brisée en F)" },
   // Version 1256 (01/11) : retour bêta.

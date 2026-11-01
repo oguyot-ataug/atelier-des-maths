@@ -236,7 +236,11 @@ PLANCHES['6e|Droites parallèles et perpendiculaires'] = [
           const fin = Gr(8, 8, 16, x => dep(x) + segs(1).map(([a, b, c, d]) => L([x(a), x(b)], [x(c), x(d)], Ro, 2.4)).join(''));
           return { eleve: duo([col(mod, 'Le modèle'), col(plX(Gr(8, 8, 16, dep), { t: 'seg', k: 16, ox: 0, oy: 0, w: 8, h: 8, att: segs(1) }), 'À toi !')]), corr: duo([col(mod, 'Le modèle'), col(fin, 'La reproduction')]) }; })() },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Trace un segment [AB] de 6 cm et sa médiatrice (d), avec la règle graduée et l\'équerre. Place un point C sur (d) tel que CA = 5 cm. Quelle est la longueur CB ? Quelle est la nature du triangle ABC ?',
-        corr: cm1Redac('Construction et justification', { suite: ['Je place le milieu I de [AB] (AI = 3 cm), puis je trace à l\'équerre la perpendiculaire à [AB] passant par I : c\'est (d).', 'Le point C est sur la médiatrice de [AB] : il est à égale distance de A et de B.', 'Donc CB = CA = 5 cm.'] }, 'Le triangle ABC a deux côtés de même longueur : c\'est un triangle isocèle en C.') },
+        // La figure plutôt que la description de la construction (relecture 6e-G2-P8-E4).
+        corr: cm1Redac('Longueur CB', { suite: ['Le point C est sur la médiatrice de [AB] : il est à égale distance de A et de B.', 'Donc CB = CA = 5 cm.'] }, 'Le triangle ABC a deux côtés de même longueur : c\'est un triangle isocèle en C.',
+          `<span class="cm-fig-d">${S(180, 130, L([90, 4], [90, 126], Ve, 1.6) + cmT(96, 122, '(d)', { fs: 10, c: Ve, a: 'start' }) + L([20, 108], [160, 108], K, 2) + L([20, 108], [90, 15], Bl, 1.8) + L([160, 108], [90, 15], Bl, 1.8)
+            + ad([90, 108], [1, 0], [0, -1], Ve) + cd([20, 108], [90, 108]) + cd([90, 108], [160, 108]) + P([20, 108], 'A', -12, 4) + P([160, 108], 'B', 6, 4) + P([90, 15], 'C', 6, -2) + P([90, 108], 'I', -12, 16)
+            + cmT(48, 56, '5 cm', { fs: 10, c: Bl, a: 'end' }) + cmT(132, 56, '5 cm', { fs: 10, c: Bl, a: 'start' }), 170)}</span>`) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Construis un carré ABCD de 4 cm de côté. Trace la médiatrice de [AB] et la médiatrice de [BC]. Que remarques-tu ?',
         corr: cm1Redac('Observation', { suite: ['La médiatrice de [AB] passe aussi par le milieu de [CD].', 'La médiatrice de [BC] passe aussi par le milieu de [AD].'] }, 'Les deux médiatrices se coupent au centre du carré et le partagent en quatre petits carrés de 2 cm de côté.') },
     ] },
