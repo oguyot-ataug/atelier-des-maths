@@ -1,6 +1,8 @@
 /* ============================================================
    6e · Planches : Droites parallèles et perpendiculaires (G2)
    Notations du collège : (AB), [AB), [AB], ⊥, //, médiatrice.
+   Relecture du 01/11/2026 : propositions en tableau (P1-E2, P1-E4, P2-E1), symboles ⊥ et // à compléter (P1-E5), étiquettes A et D
+   décollées, noms des droites à donner à l'écran (P2-E4).
    ============================================================ */
 (() => {
 const B = n => plPointilles(n || 3), R = v => plRep(String(v));
@@ -21,7 +23,7 @@ function medi(A, B, sol, trace, kk){ const k = kk || 22, w = 10, h = 8, g = p =>
   if(trace) s = s.replace('<svg ', `<svg data-pltrace='${JSON.stringify({ k, w: w * k, h: h * k, M: g(I), v: [+nn[0].toFixed(4), +nn[1].toFixed(4)] })}' `);
   return s; }
 // Figure des notations : trois points alignés A, B, C et un point D.
-const NOT = S(260, 90, L([10, 60], [250, 30], K, 2) + P([50, 55], 'A') + P([130, 45], 'B') + P([210, 35], 'C') + P([120, 80], 'D', 8, 4));
+const NOT = S(260, 90, L([10, 60], [250, 30], K, 2) + P([50, 55], 'A') + P([130, 45], 'B') + P([210, 35], 'C') + P([120, 80], 'D', 12, 5));
 // Figure des positions : (d1) ⊥ (d2), (d1) // (d3).
 const POS = S(240, 140, L([20, 30], [220, 30], K, 2) + cmT(200, 22, '(d1)', { fs: 12 }) + L([20, 110], [220, 110], Bl, 2) + cmT(200, 128, '(d3)', { fs: 12, c: Bl }) + L([90, 8], [90, 135], Ro, 2) + cmT(104, 20, '(d2)', { fs: 12, c: Ro }) + ad([90, 30], [1, 0], [0, 1]) + L([150, 8], [190, 135], Ve, 2) + cmT(178, 80, '(d4)', { fs: 12, c: Ve }));
 // Quadrillage w × h carreaux (k px) avec des droites (point p, direction v, en carreaux) coupées au bord
@@ -38,7 +40,8 @@ function QD(w, h, k, o){ const g = q => [q[0] * k, q[1] * k]; let s = '';
   (o.pts || []).forEach(([q, n, dx, dy]) => s += P(g(q), n, dx, dy));
   return Gr(w, h, k, () => s); }
 // Exercice « trace les droites » : à l'écran, outil « droites » ; corrigé : les droites en couleur.
-const traceD = (w, h, k, o, sol) => ({ eleve: plX(QD(w, h, k, o), { t: 'droites', k, ox: 0, oy: 0, w, h, att: sol.map(d => ({ p: d.p, v: d.v })) }), corr: QD(w, h, k, { ...o, sol }) });
+// o.nommer : à l'écran, l'élève donne aussi son nom à chaque droite (relecture 6e-G2-P2-E4).
+const traceD = (w, h, k, o, sol) => ({ eleve: plX(QD(w, h, k, o), { t: 'droites', k, ox: 0, oy: 0, w, h, att: sol.map(d => ({ p: d.p, v: d.v, ...(o.nommer && d.n ? { n: d.n } : {}) })) }), corr: QD(w, h, k, { ...o, sol }) });
 // Vignette : deux droites (a, b : [point, point]) dans un cadre 120 × 86, avec codage éventuel.
 // Vignettes avec le choix sous chaque figure (V : figures ; it : [nom, réponse] ; m : les mots ; note : précision du corrigé).
 const vigCap = (t, w) => `<span class="pl-item" style="display:block;text-align:center;line-height:1.3;max-width:${w}px;font-size:.92em;"><b style="font-size:1.1em;">${t}</b> `;
@@ -66,24 +69,28 @@ PLANCHES['6e|Droites parallèles et perpendiculaires'] = [
             { p: [0, 8], v: [1, 0], c: COUL[2], n: '(d3)', lab: [1, 7.5] }, { p: [5, 0], v: [1, 1], c: COUL[3], n: '(d4)', lab: [6.55, .7] },
             { p: [13, 0], v: [1, -1], c: COUL[4], n: '(d5)', lab: [13.4, .7] }, { p: [11, 0], v: [0, 1], c: K, n: '(d6)', lab: [11.85, 4.6] }] })}</div>`;
           const it = [['(d1) et (d3)', 'parallèles'], ['(d1) et (d2)', 'perpendiculaires'], ['(d4) et (d5)', 'perpendiculaires'], ['(d2) et (d6)', 'parallèles'], ['(d3) et (d6)', 'perpendiculaires'], ['(d1) et (d4)', 'sécantes'], ['(d2) et (d5)', 'sécantes']], m = 'sécantes · perpendiculaires · parallèles';
-          return { eleve: cote(F, '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} : <b>${m}</b>`)) + '</div>'), corr: cote(F, '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} : ${plEntoure(r)}`)) + '</div>') }; })() },
-      { etoiles: 2, col: 1, consigne: 'Complète avec le bon mot.',
+          // Propositions en tableau, alignées et à distance des droites nommées (relecture 6e-G2-P1-E2).
+          const T = P3.chxTab(it.map(([t, r]) => [t, r, m]));
+          return { eleve: cote(F, T.eleve), corr: cote(F, T.corr) }; })() },
+      { etoiles: 2, consigne: 'Complète avec le bon mot.',
         eleve: plListe(['Deux droites avec un seul point commun sont ' + B(6) + '.', 'Deux droites perpendiculaires forment un angle ' + B(3) + '.', 'Deux droites sécantes formant un angle droit sont ' + B(7) + '.', 'Deux droites qui ne se coupent jamais sont ' + B(6) + '.']),
         corr: plListe(['Deux droites avec un seul point commun sont ' + R('sécantes') + '.', 'Deux droites perpendiculaires forment un angle ' + R('droit') + '.', 'Deux droites sécantes formant un angle droit sont ' + R('perpendiculaires') + '.', 'Deux droites qui ne se coupent jamais sont ' + R('parallèles') + '.']) },
-      { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.',
-        ...choix([['Deux droites perpendiculaires sont sécantes.', 'vrai'], ['Deux droites sécantes sont perpendiculaires.', 'faux'], ['Deux droites qui ne se coupent pas sur le dessin sont parallèles.', 'faux'], ['Deux droites parallèles n\'ont aucun point commun.', 'vrai']], 'vrai · faux') },
-      { etoiles: 2, consigne: 'Trace les droites (AB), (CD) et (EF), puis entoure la bonne réponse.',
-        ...(() => { const o = { pts: [[[1, 5], 'A', -14, -4], [[5, 3], 'B', 4, -8], [[4, 6], 'C', -14, -4], [[8, 4], 'D', 4, -8], [[9, 1], 'E', -14, -2], [[11, 5], 'F', 8, 12]] },
+      { etoiles: 2, consigne: 'Vrai ou faux ? Entoure.',
+        // « vrai faux » en tableau, sur une ligne, à distance de la phrase (relecture 6e-G2-P1-E4).
+        ...P3.chxTab([['Deux droites perpendiculaires sont sécantes.', 'vrai'], ['Deux droites sécantes sont perpendiculaires.', 'faux'], ['Deux droites qui ne se coupent pas sur le dessin sont parallèles.', 'faux'], ['Deux droites parallèles n\'ont aucun point commun.', 'vrai']].map(([t, r]) => [t, r, 'vrai · faux'])) },
+      { etoiles: 2, consigne: 'Trace les droites (AB), (CD) et (EF), puis complète avec le symbole ⊥ (perpendiculaires) ou // (parallèles).',
+        // Symboles ⊥ et // ; à l'écran, chaque clic dans la case passe de l'un à l'autre ; étiquette A dans le cadre (relecture 6e-G2-P1-E5).
+        ...(() => { const o = { pts: [[[1, 5], 'A', 3, 14], [[5, 3], 'B', 4, -8], [[4, 6], 'C', -14, -4], [[8, 4], 'D', 4, -8], [[9, 1], 'E', -14, -2], [[11, 5], 'F', 8, 12]] },
             T = traceD(12, 7, 15, o, [{ p: [1, 5], v: [2, -1], n: '(AB)', lab: [.9, 6.1] }, { p: [4, 6], v: [2, -1], n: '(CD)', lab: [10.6, 3.4] }, { p: [9, 1], v: [1, 2], n: '(EF)', lab: [11.3, 3.3] }]),
-            it = [['(AB) et (CD) sont', 'parallèles'], ['(AB) et (EF) sont', 'perpendiculaires'], ['(CD) et (EF) sont', 'perpendiculaires']], m = 'perpendiculaires · parallèles';
-          return { eleve: cote(T.eleve, '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`)) + '</div>'), corr: cote(T.corr, '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) + '</div>') }; })() },
+            it = [['(AB)', '//', '(CD)'], ['(AB)', '⊥', '(EF)'], ['(CD)', '⊥', '(EF)']], sym = l => `<span style="white-space:nowrap;font-size:1.1em;">${l}</span>`;
+          return { eleve: cote(T.eleve, '<div class="pl-col1">' + plListe(it.map(([a, , b]) => sym(`${a} ${plCase()} ${b}`))) + '</div>'), corr: cote(T.corr, '<div class="pl-col1">' + plListe(it.map(([a, r, b]) => sym(`${a} ${R(r)} ${b}`))) + '</div>') }; })() },
     ] },
   { titre: 'Notations et programmes de construction', duree: '35 min',
     attendus: ['Utiliser les notations (AB), [AB), [AB]', 'Compléter et remettre dans l\'ordre un programme de construction', 'Suivre un programme sur quadrillage'],
     exos: [
       { etoiles: 1, col: 1, consigne: `Observe la figure, puis entoure la bonne notation.<div style="text-align:center;">${NOT}</div>`,
         ...(() => { const it = [['la droite qui passe par A et B :', '(AB)', '(AB) · [AB) · [AB]'], ['la demi-droite d\'origine A qui passe par C :', '[AC)', '(AC) · [AC) · [AC]'], ['le segment d\'extrémités B et C :', '[BC]', '(BC) · [BC) · [BC]'], ['le point D appartient-il à la droite (AC) ?', 'non', 'oui · non']];
-          return { eleve: plListe(it.map(([t, , m]) => `${t} <b>${m}</b>`)), corr: plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) }; })() },
+          return P3.chxTab(it); })() }, // propositions en tableau, à distance des questions (relecture 6e-G2-P2-E1)
       { etoiles: 1, col: 1, consigne: `Observe la figure, puis complète son programme de construction.<div style="text-align:center;">${S(250, 130, L([30, 110], [220, 110], K, 2.2) + L([90, 5], [90, 128], Ro, 2) + ad([90, 110], [1, 0], [0, -1]) + L([220, 110], [49, 5], Bl, 2) + P([30, 110], 'A', -14, 4) + P([220, 110], 'B', 4, 14) + P([90, 30], 'C', -14, -2) + P([90, 110], 'H', -14, 16))}</div>`,
         eleve: plListe(['Trace le segment ' + B(3) + '.', 'Place un point C qui n\'appartient pas à la droite ' + B(3) + '.', 'Trace la droite perpendiculaire à (AB) passant par le point ' + B(2) + '.', 'Cette droite coupe le segment [AB] au point ' + B(2) + '.', 'Trace la demi-droite d\'origine B qui passe par C : ' + B(3) + '.']),
         corr: plListe(['Trace le segment ' + R('[AB]') + '.', 'Place un point C qui n\'appartient pas à la droite ' + R('(AB)') + '.', 'Trace la droite perpendiculaire à (AB) passant par le point ' + R('C') + '.', 'Cette droite coupe le segment [AB] au point ' + R('H') + '.', 'Trace la demi-droite d\'origine B qui passe par C : ' + R('[BC)') + '.']) },
@@ -91,7 +98,7 @@ PLANCHES['6e|Droites parallèles et perpendiculaires'] = [
         eleve: plListe(['Étape ' + B(1) + ' : place un point N sur (d\'), différent de M.', 'Étape ' + B(1) + ' : trace une droite (d) et place un point M qui n\'est pas sur (d).', 'Étape ' + B(1) + ' : trace la droite (d\'\') parallèle à (d) passant par N.', 'Étape ' + B(1) + ' : trace la droite (d\') perpendiculaire à (d) passant par M.']),
         corr: plListe(['Étape ' + R(3) + ' : place un point N sur (d\'), différent de M.', 'Étape ' + R(1) + ' : trace une droite (d) et place un point M qui n\'est pas sur (d).', 'Étape ' + R(4) + ' : trace la droite (d\'\') parallèle à (d) passant par N.', 'Étape ' + R(2) + ' : trace la droite (d\') perpendiculaire à (d) passant par M.']) },
       { etoiles: 2, col: 1, consigne: 'Suis ce programme sur le quadrillage : « Trace la droite (AB). Trace la droite (d) parallèle à (AB) passant par C. Trace la droite (d\') perpendiculaire à (AB) passant par C. »',
-        ...(() => { const T = traceD(12, 8, 22, { pts: [[[1, 6], 'A', -14, -2], [[7, 3], 'B', 2, -8], [[8, 6], 'C', 6, 14]] },
+        ...(() => { const T = traceD(12, 8, 22, { nommer: true, pts: [[[1, 6], 'A', -14, -2], [[7, 3], 'B', 2, -8], [[8, 6], 'C', 6, 14]] },
             [{ p: [1, 6], v: [2, -1], n: '(AB)', lab: [1.2, 7.3] }, { p: [8, 6], v: [2, -1], n: '(d)', lab: [11.3, 5] }, { p: [8, 6], v: [1, 2], n: "(d')", lab: [5.7, 1] }]);
           return { eleve: `<div style="text-align:center;">${T.eleve}</div>`, corr: `<div style="text-align:center;">${T.corr}</div>` }; })() },
     ] },

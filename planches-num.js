@@ -308,7 +308,9 @@ function plNum(root, x, o){
     // 6e-N1-P1-E4 (31/10/2026) : « ce genre d'exercice devrait se faire en cliquant plusieurs fois dans la case, chaque clic
     // faisant <, >, =, . »
     if(c && c.classList.contains('pn-signe')){ const cb = M.cibles.find(z => z.id === c.dataset.pnv);
-      if(cb && /^[<>=]$/.test(cb.rep)){ const cycle = ['', '<', '>', '='], v = etat.v[c.dataset.pnv] || '';
+      // Symboles de position de deux droites (relecture 6e-G2-P1-E5) : chaque clic passe de ⊥ à //, puis vide.
+      const cycle = cb && (/^[<>=]$/.test(cb.rep) ? ['', '<', '>', '='] : /^(⊥|\/\/)$/.test(cb.rep) ? ['', '⊥', '//'] : null);
+      if(cycle){ const v = etat.v[c.dataset.pnv] || '';
         etat.v[c.dataset.pnv] = cycle[(cycle.indexOf(v) + 1) % cycle.length]; if(sel){ sel = null; plClavier.fermer(); }
         effacerMarques(); afficher(); change(); return; } }
     if(c){ choisir(sel === c.dataset.pnv ? null : c.dataset.pnv); return; }
@@ -548,16 +550,30 @@ const PLX = {
       if(!st.a){ st.a = n; return; } if(st.a[0] === n[0] && st.a[1] === n[1]){ st.a = null; return; }
       const sur = (L, q) => (L[2] - L[0]) * (q[1] - L[1]) - (L[3] - L[1]) * (q[0] - L[0]) === 0;
       const k = st.l.findIndex(L => sur(L, st.a) && sur(L, n));
-      if(k >= 0) st.l.splice(k, 1); else st.l.push([st.a[0], st.a[1], n[0], n[1]]); st.a = null; },
-    action(C, st, a){ if(a === 'vide'){ st.l = []; st.a = null; } },
+      // Droites à nommer (relecture 6e-G2-P2-E4 : « à l'écran, il faut pouvoir associer les noms des droites (d) et (d') ») :
+      // la droite tracée prend le nom choisi, puis le choix passe au nom suivant pas encore donné.
+      const noms = PLX.droites.noms(C);
+      if(k >= 0) st.l.splice(k, 1);
+      else { const nom = noms.length ? (st.cur != null ? st.cur : noms.findIndex((_, i) => !st.l.some(L => L[4] === i))) : null;
+        if(nom != null && nom >= 0) st.l = st.l.filter(L => L[4] !== nom); // un nom ne sert qu'une fois
+        st.l.push([st.a[0], st.a[1], n[0], n[1], nom != null && nom >= 0 ? nom : null]);
+        if(noms.length){ const suiv = noms.findIndex((_, i) => !st.l.some(L => L[4] === i)); st.cur = suiv >= 0 ? suiv : null; } }
+      st.a = null; },
+    noms: C => (C.att || []).map(a => a.n).filter(Boolean),
+    action(C, st, a){ if(a === 'vide'){ st.l = []; st.a = null; st.cur = null; } else if(/^n\d+$/.test(a)) st.cur = +a.slice(1); },
     dessin: (C, st) => { const P = (i, j) => [C.ox + i * C.k, C.oy + j * C.k]; let s = '';
       for(let i = 0; i <= C.w; i++) for(let j = 0; j <= C.h; j++){ const [x, y] = P(i, j); s += `<circle cx="${x}" cy="${y}" r="${C.k * .14}" fill="#3A6EA5" fill-opacity=".22"/>`; }
       (st.l || []).forEach(([a, b, c, d], i) => { const v = [c - a, d - b]; let t0 = -1e9, t1 = 1e9; [[0, C.w], [0, C.h]].forEach(([mn, mx], q) => { if(!v[q]) return; const u = ([a, b][q]), e1 = (mn - u) / v[q], e2 = (mx - u) / v[q]; t0 = Math.max(t0, Math.min(e1, e2)); t1 = Math.min(t1, Math.max(e1, e2)); });
-        const p = P(a + v[0] * t0, b + v[1] * t0), q = P(a + v[0] * t1, b + v[1] * t1); s += `<line x1="${p[0]}" y1="${p[1]}" x2="${q[0]}" y2="${q[1]}" stroke="${['#2E9C6A', '#E35D3A', '#7A4FC0', '#2EA8C9'][i % 4]}" stroke-width="2.4"/>`; });
+        const p = P(a + v[0] * t0, b + v[1] * t0), q = P(a + v[0] * t1, b + v[1] * t1), coul = ['#2E9C6A', '#E35D3A', '#7A4FC0', '#2EA8C9'][i % 4]; s += `<line x1="${p[0]}" y1="${p[1]}" x2="${q[0]}" y2="${q[1]}" stroke="${coul}" stroke-width="2.4"/>`;
+        const nom = PLX.droites.noms(C)[(st.l[i] || [])[4]];
+        if(nom){ const lg = Math.hypot(q[0] - p[0], q[1] - p[1]) || 1, ux = (q[0] - p[0]) / lg, uy = (q[1] - p[1]) / lg, x = q[0] - ux * C.k * 1.1 - uy * 12, y = q[1] - uy * C.k * 1.1 + ux * 12;
+          s += `<text x="${x.toFixed(1)}" y="${(y + 4).toFixed(1)}" font-size="13" font-weight="700" text-anchor="middle" fill="${coul}" font-family="Space Grotesk" paint-order="stroke" stroke="#fff" stroke-width="3">${nom.replace(/</g, '&lt;')}</text>`; } });
       if(st.a){ const [x, y] = P(...st.a); s += `<circle cx="${x}" cy="${y}" r="${C.k * .22}" fill="#E35D3A"/>`; } return s; },
-    barre: (C, st, id) => `<span class="pn-xaide">Touche deux points du quadrillage : la droite passe par eux.</span>` + plxBtn(id, 'vide', 'Effacer les droites'),
-    juste: (C, st) => { const l = st.l || []; if(l.length !== C.att.length) return false;
-      return C.att.every(({ p, v }) => l.some(([a, b, c, d]) => (c - a) * v[1] - (d - b) * v[0] === 0 && (c - a) * (p[1] - b) - (d - b) * (p[0] - a) === 0)); }
+    barre: (C, st, id) => { const noms = PLX.droites.noms(C);
+      return (noms.length ? `<span class="pn-xaide">Choisis le nom, puis touche deux points du quadrillage : la droite passe par eux.</span>` + noms.map((n, i) => plxBtn(id, 'n' + i, n.replace(/</g, '&lt;'), st.cur === i || (st.cur == null && i === noms.findIndex((_, j) => !(st.l || []).some(L => L[4] === j))))).join('')
+        : `<span class="pn-xaide">Touche deux points du quadrillage : la droite passe par eux.</span>`) + plxBtn(id, 'vide', 'Effacer les droites'); },
+    juste: (C, st) => { const l = st.l || [], noms = PLX.droites.noms(C); if(l.length !== C.att.length) return false;
+      return C.att.every(({ p, v, n }) => l.some(([a, b, c, d, i]) => (c - a) * v[1] - (d - b) * v[0] === 0 && (c - a) * (p[1] - b) - (d - b) * (p[0] - a) === 0 && (!n || noms[i] === n))); }
   },
   // Rapporteur du tableau interactif, à poser sur la figure (mêmes règles que le permis rapporteur :
   // aimant sur le sommet, accroche de la rotation sur un côté, crayon qui glisse sur l'arc degré par degré).

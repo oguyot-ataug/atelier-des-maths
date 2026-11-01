@@ -39,6 +39,12 @@ const RELECTURE_CHGT = {
   // La date d'un changement est l'heure RÉELLE de sa mise en ligne (heure du commit poussé sur main), jamais une heure
   // arrondie dans le futur : un exercice validé entre la mise en ligne et une date trop tardive resterait « Chgt effectué »
   // (signalé le 01/11/2026 pour 6e-N1 ; dates corrigées d'après l'historique des publications).
+  // Version 1252 (01/11).
+  '6e-G2-P1-E2': { date: '2026-11-01T10:45:50Z', note: "Propositions en tableau, alignées en colonnes et à distance des noms des droites" },
+  '6e-G2-P1-E4': { date: '2026-11-01T10:45:50Z', note: "Exercice en pleine largeur, « vrai faux » en tableau sur une seule ligne, à distance des phrases (l'exercice 3 passe aussi en pleine largeur, sur deux colonnes)" },
+  '6e-G2-P1-E5': { date: '2026-11-01T10:45:50Z', note: "Étiquette A dans le cadre. On complète avec les symboles : (AB) … (CD) avec ⊥ ou // ; à l'écran, chaque clic dans la case passe de ⊥ à //, puis vide" },
+  '6e-G2-P2-E1': { date: '2026-11-01T10:45:50Z', note: "Propositions en tableau, à distance des questions ; étiquette D décollée du point" },
+  '6e-G2-P2-E4': { date: '2026-11-01T10:45:50Z', note: "À l'écran, chaque droite tracée reçoit son nom : on choisit (AB), (d) ou (d') puis on trace (le nom suivant est proposé tout seul) ; la vérification contrôle aussi les noms" },
   // Version 1249 (01/11).
   '6e-N1-P3-E3': { date: '2026-11-01T09:31:51Z', note: "Les étiquettes 40 000 000 et 41 000 000 ne sont plus coupées : la droite graduée laisse la place des nombres aux deux bouts (vaut pour toutes les droites graduées du site)" },
   '6e-N1-P3-E7': { date: '2026-11-01T09:31:51Z', note: "Corrigé : le signe > seulement entre les nombres (58 989 749 > 48 619 695 > 11 822 592 > 8 921 981), puis les pays séparés par « ; » : Italie ; Espagne ; Belgique ; Suisse. Arrondis sur une ligne chacun" },
