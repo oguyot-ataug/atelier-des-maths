@@ -1,7 +1,7 @@
 // supabase/functions/facturation-mail/index.ts
 //
 // Envois d'e-mails de la facturation (Administration > Facturation), réservés à
-// l'administrateur général. Expéditeur : devis@latelierdesmaths.fr, réponses vers l'adresse de l'émetteur
+// l'administrateur général. Expéditeur : contact@latelierdesmaths.fr (seule adresse d'envoi depuis le 01/11/2026), réponses vers l'adresse de l'émetteur
 // (contact@latelierdesmaths.fr). Secret requis : RESEND_API_KEY (Edge Functions > Secrets).
 // Code récupéré du projet le 31/10/2026 (il n'était pas dans le dépôt) pour passer au domaine latelierdesmaths.fr.
 //
@@ -30,7 +30,7 @@ async function envoiResend(init) {
   console.warn("Resend : domaine latelierdesmaths.fr refusé, repli sur latelieraugmente.fr", err);
   return fetch("https://api.resend.com/emails", { ...init, body: String(init.body).replace(/@latelierdesmaths\.fr>/g, "@latelieraugmente.fr>") });
 }
-const FROM = "L'Atelier des Maths <devis@latelierdesmaths.fr>";
+const FROM = "L'Atelier des Maths <contact@latelierdesmaths.fr>"; // une seule adresse (demandé le 01/11/2026)
 async function sendMail(to, subject, text, html, replyTo) {
   const key = Deno.env.get("RESEND_API_KEY");
   if (!key) throw new Error("RESEND_API_KEY non configurée (Edge Functions > Secrets).");

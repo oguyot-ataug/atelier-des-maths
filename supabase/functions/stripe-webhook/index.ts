@@ -14,7 +14,7 @@
 //
 // FACTURE (v9) : après l'activation, la facture est émise dans la série de L'Atelier Augmenté
 // (famille_facturer : F-AAAA-NNN, ou TEST-AAAA-NNN pour un paiement test) avec le nom et l'adresse
-// saisis sur Stripe, puis un e-mail part de factures@latelierdesmaths.fr (Resend) vers le parent.
+// saisis sur Stripe, puis un e-mail part de contact@latelierdesmaths.fr (Resend) vers le parent.
 //
 // OFFRES PROFESSEUR (v10) : metadata.kind = "prof" (fonction prof-offre) : Professeur seul ou
 // Professeur particulier, paiement unique pour l'année scolaire ; prof_activer puis prof_facturer,
@@ -91,7 +91,7 @@ async function envoyerFacture(f: any, prof = false, adminClient: any = null): Pr
       method: "POST",
       headers: { "Authorization": "Bearer " + key, "Content-Type": "application/json" },
       body: JSON.stringify({
-        from: "L'Atelier Augmenté <factures@latelierdesmaths.fr>", to: [f.email], reply_to: "contact@latelierdesmaths.fr",
+        from: "L'Atelier Augmenté <contact@latelierdesmaths.fr>", to: [f.email], reply_to: "contact@latelierdesmaths.fr",
         subject: (f.test ? "[TEST] " : "") + "Votre facture " + f.numero + " – L'Atelier des Maths",
         html,
         ...(piece ? { attachments: [piece] } : {}),

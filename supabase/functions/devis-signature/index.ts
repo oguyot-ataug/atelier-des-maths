@@ -37,7 +37,7 @@ const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { ...cors, "Content-Type": "application/json" } });
 
 const SITE = "https://latelierdesmaths.fr";
-const FROM = "L'Atelier des Maths <devis@latelierdesmaths.fr>";
+const FROM = "L'Atelier des Maths <contact@latelierdesmaths.fr>"; // une seule adresse (demandé le 01/11/2026)
 const CODE_TTL_MIN = 15, MAX_CODE_SENDS = 5, MAX_ATTEMPTS = 5;
 
 function serviceKey(): string {

@@ -68,12 +68,12 @@ dans Google Search Console. Ne jamais supprimer ces redirections. Toute nouvelle
 fonctions Supabase, mails, `tools/build-seo.js`) utilise latelierdesmaths.fr. L'Atelier du Prof reste sur adp.latelieraugmente.fr.
 
 **Adresses e-mail en @latelierdesmaths.fr (depuis le 31/10/2026)** : « Tout ce qui concerne l'atelier des maths doit avoir comme
-domaine latelierdesmaths.fr, y compris mailing ». Contact : contact@latelierdesmaths.fr ; expéditeurs Resend notifications@, compte@,
-devis@, factures@, rendez-vous@latelierdesmaths.fr. **Ne pas créer de nouvelle adresse** (demandé le 01/11/2026 : « ne multiplie pas
-les adresses à l'avenir ») : tout nouvel e-mail part de contact@latelierdesmaths.fr (l'e-mail de bienvenue des professeurs, par
-exemple), ou d'une adresse existante de la liste ci-dessus si le même type d'e-mail en a déjà une. Chaque fonction envoie par `envoiResend` : si Resend refuse le domaine
-(pas encore vérifié), l'e-mail repart depuis l'ancien domaine latelieraugmente.fr. Les documents de facturation déjà émis gardent
-leur adresse d'origine. Ne pas toucher à adp.js (L'Atelier du Prof).
+domaine latelierdesmaths.fr, y compris mailing ». **Une seule adresse, contact@latelierdesmaths.fr** (demandé le 01/11/2026 : « ne
+multiplie pas les adresses à l'avenir », puis « contact ») : tous les e-mails partent de contact@ (fonctions Resend et e-mails de
+connexion de Supabase Auth) et les réponses y reviennent. Ne jamais créer d'autre adresse d'expédition (les anciennes notifications@,
+compte@, devis@, factures@, rendez-vous@ ne servent plus). Chaque fonction envoie par `envoiResend` : si Resend refuse le domaine,
+l'e-mail repart depuis l'ancien domaine latelieraugmente.fr. Les documents de facturation déjà émis gardent leur adresse
+d'origine. Ne pas toucher à adp.js (L'Atelier du Prof).
 
 ## Programmes officiels : quel texte pour quel niveau
 
@@ -207,7 +207,7 @@ renvoient client_secret + clé publique si les secrets STRIPE_TEST_PUBLISHABLE_K
 Page « Prendre rendez-vous » (`#/rendez-vous`, `rdv.js` ; accès : menu du compte, pied de page, /professeurs/, /tarifs/ ; pour
 tous sauf les élèves). Fonction `rdv` (verify_jwt non ; calcul des créneaux dans `supabase/functions/rdv/creneaux.ts`), tables
 `rdv_reglages` et `rdv_reservations` (`supabase/sql/2026-10-30-rendez-vous.sql`), réglages dans Administration › Rendez-vous.
-E-mails aux couleurs du site (Resend, rendez-vous@latelierdesmaths.fr), SMS par `alerte-sms` (sans_limite), rappels la veille et
+E-mails aux couleurs du site (Resend, contact@latelierdesmaths.fr), SMS par `alerte-sms` (sans_limite), rappels la veille et
 purge à un an par pg_cron. Agendas pris en compte : `rdv_reglages.agendas` (cochés dans l'administration ; agendas abonnés par
 adresse iCal lus événement par événement). Agenda Google relié par un compte de service (secrets GOOGLE_RDV_CLE, GOOGLE_RDV_COMPTE) : jamais
 d'invitation Google (sendUpdates=none), le nom de l'administrateur n'apparaît nulle part. Cal.com et l'agenda de rendez-vous

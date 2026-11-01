@@ -203,7 +203,7 @@ async function envoyerMail(a: string, sujet: string, html: string, texte: string
   if (!key || !a || /@mathcollege\.local$/i.test(a)) return;
   try {
     await envoiResend({ method: "POST", headers: { Authorization: "Bearer " + key, "Content-Type": "application/json" },
-      body: JSON.stringify({ from: "L'Atelier des Maths <rendez-vous@latelierdesmaths.fr>", to: [a], reply_to: ADMIN_EMAIL, subject: sujet, html, text: texte,
+      body: JSON.stringify({ from: "L'Atelier des Maths <contact@latelierdesmaths.fr>", to: [a], reply_to: ADMIN_EMAIL, subject: sujet, html, text: texte,
         ...(piece ? { attachments: [{ filename: annule ? "rendez-vous-annule.ics" : "rendez-vous.ics", content: b64(piece), content_type: `text/calendar; method=${annule ? "CANCEL" : "REQUEST"}` }] } : {}) }) });
   } catch (e) { console.error("Resend", String(e)); }
 }

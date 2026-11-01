@@ -73,7 +73,7 @@ serve(async (req)=>{
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        from: "L'Atelier des Maths <notifications@latelierdesmaths.fr>",
+        from: "L'Atelier des Maths <contact@latelierdesmaths.fr>", // une seule adresse (demandé le 01/11/2026)
         to: DEST_EMAIL,
         reply_to: email,
         subject,
