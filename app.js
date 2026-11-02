@@ -3767,6 +3767,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1282', date:'2026-11-02', items:['Lecture à voix haute : « Oliv\'IA » est prononcé « Olivia » (voix en ligne et voix de l\'appareil) -- demandé : « Oliv\'IA doit être lu Olivia ».'] },
   { version:'2026-08-19.1281', date:'2026-11-02', items:['Lecture à voix haute : pour les comptes connectés, le réglage ne propose plus que les voix en ligne (les mêmes sur ordinateur, tablette et téléphone), Inès par défaut ; deux voix « studio » ajoutées, Léa et Hugo -- demandé : « supprime le choix des autres voix ». La voix de l\'appareil reste en secours.', 'Voix en ligne : plafond porté à 800 000 caractères par mois, sous la part gratuite de Google (1 million).'] },
   { version:'2026-08-19.1280', date:'2026-11-02', items:['Oliv\'IA a sa voix : un bouton 🔊 sur chacune de ses réponses la fait parler avec sa propre voix (voix en ligne de femme, plus aiguë et un peu plus rapide ; à défaut, la voix de l\'appareil plus aiguë) -- demandé : « on pourrait donner une voix à Oliv\'IA ».', 'Voix en ligne : seules Inès et Paul (Google Neural2) sont proposées, elles lisent juste le français écrit ; une voix choisie et retirée depuis est remplacée automatiquement.'] },
   { version:'2026-08-19.1279', date:'2026-11-02', items:['Voix en ligne : en plus des quatre voix « très naturelles » (Google Chirp 3 HD), deux voix « classiques » (Google Neural2, Inès et Paul), plus sûres sur l\'écrit -- signalé : Chirp 3 HD lit « s\'écrire » comme « esse écrire ».'] },
@@ -9690,8 +9691,10 @@ function voixFrancaises(){
   return (speechSynthesis.getVoices() || []).filter(v => /^fr(-|_|$)/i.test(v.lang))
     .sort((a, b) => note(a) - note(b) || (/fr-FR/i.test(b.lang) - /fr-FR/i.test(a.lang)) || a.name.localeCompare(b.name));
 }
+// Prononciation de mots du site : « Oliv'IA » se dit « Olivia » (demandé le 02/11/2026), pas « Oliv I A ».
+function voixPrononcer(t){ return String(t || '').replace(/\bOliv\s*['’ʼ`´]?\s*IA\b/gi, 'Olivia'); }
 function speechUtterance(text){
-  const u = new SpeechSynthesisUtterance(text), p = voixPrefs(), voix = voixFrancaises();
+  const u = new SpeechSynthesisUtterance(voixPrononcer(text)), p = voixPrefs(), voix = voixFrancaises();
   u.lang = 'fr-FR';
   const v = voix.find(x => x.name === p.nom) || voix[0];
   if(v){ u.voice = v; u.lang = v.lang; }
@@ -9763,7 +9766,7 @@ function voixArreter(){
 /* Lire un texte avec la voix choisie : voixParler(texte, { vitesse, onend, onerror }). À appeler depuis un clic. */
 function voixParler(texte, o){
   o = o || {}; voixArreter(); const n = voixLectureN;
-  texte = String(texte || '').replace(/\s+/g, ' ').trim();
+  texte = voixPrononcer(texte).replace(/\s+/g, ' ').trim();
   const fin = () => { if(n === voixLectureN && o.onend) o.onend(); }, err = () => { if(n === voixLectureN && (o.onerror || o.onend)) (o.onerror || o.onend)(); };
   if(!texte){ fin(); return true; }
   const appareil = () => {
