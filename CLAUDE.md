@@ -182,15 +182,18 @@ intersect, midpoint, perpendicular, perpendicular_bisector, angle_bisector… ; 
 équerre, compas, barre de lecture. Ne jamais refaire une animation maison. En place en 6e : Distance et cercles, Construction de
 triangles, Angles (bissectrice), Symétrie axiale, Propriétés des triangles (cercle circonscrit).
 
-## Voix en ligne (Azure AI Speech, depuis le 02/11/2026)
+## Voix en ligne (Google Cloud Text-to-Speech, depuis le 02/11/2026)
 
 Lecture à voix haute : `voixParler(texte, { vitesse, onend, onerror })` et `voixArreter()` (app.js), utilisés partout (cours,
-quiz du CP, frise d'histoire). Voix choisie dans le réglage des voix : voix de l'appareil, ou voix en ligne (Denise, Henri, Éloïse,
-Vivienne, Rémy) pour les comptes connectés quand la fonction `voix` est active. La fonction (`supabase/functions/voix`, verify_jwt
-non) synthétise chaque texte UNE fois par voix et range le MP3 dans le stockage public `voix` ; plafonds VOIX_MAX_MOIS (450 000
-caractères, sous l'offre gratuite) et VOIX_MAX_JOUR par compte (20 000), compteur `voix_usage` (`supabase/sql/2026-11-02-voix.sql`).
-Secrets : AZURE_SPEECH_KEY, AZURE_SPEECH_REGION (francecentral). Sans clé, ou en cas de souci, la voix de l'appareil prend le
-relais. Ne jamais envoyer de nom d'élève à la synthèse.
+quiz du CP, frise d'histoire). Voix choisie dans le réglage des voix : voix de l'appareil, ou voix en ligne (liste donnée par le
+serveur : deux voix de femme, deux d'homme, du type le plus naturel disponible chez Google, affichées Claire, Léa, Hugo, Louis)
+pour les comptes connectés quand la fonction `voix` est active. Microsoft Azure a été abandonné (création du compte bloquée).
+La fonction (`supabase/functions/voix`, verify_jwt non) synthétise chaque texte UNE fois par voix et range le MP3 dans le
+stockage public `voix` ; plafonds VOIX_MAX_MOIS (450 000 caractères) et VOIX_MAX_JOUR par compte (20 000), compteur
+`voix_usage` (`supabase/sql/2026-11-02-voix.sql`). Identification : le compte de service de l'agenda (secret GOOGLE_RDV_CLE,
+ou GOOGLE_TTS_CLE s'il existe), portée cloud-platform ; l'API « Cloud Text-to-Speech » doit être activée dans son projet
+Google Cloud (n° 736105734207), avec facturation. Sans cela, ou en cas de souci, la voix de l'appareil prend le relais.
+Ne jamais envoyer de nom d'élève à la synthèse.
 
 ## Conformité aux programmes : « Pour aller plus loin » (demandé le 28/10/2026)
 

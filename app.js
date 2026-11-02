@@ -3767,6 +3767,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1277', date:'2026-11-02', items:['Voix en ligne : Google Cloud Text-to-Speech au lieu de Microsoft Azure (création du compte Azure bloquée). Les voix françaises les plus naturelles disponibles chez Google (deux de femme, deux d\'homme) seront proposées aux comptes connectés dès que l\'API sera activée ; d\'ici là, rien ne change (voix de l\'appareil).'] },
   { version:'2026-08-19.1276', date:'2026-11-02', items:['Lecture à voix haute : voix en ligne naturelles (Denise, Henri, Éloïse — voix d\'enfant —, Vivienne, Rémy), les mêmes sur ordinateur, Android et iPhone, proposées en tête du réglage des voix aux comptes connectés dès que le service Azure est relié. Chaque texte n\'est synthétisé qu\'une fois puis réutilisé par tous ; sans service, ou en cas de souci, la voix de l\'appareil prend le relais. Une seule fonction de lecture pour tout le site (cours, quiz du CP, frise d\'histoire).'] },
   { version:'2026-08-19.1275', date:'2026-11-02', items:['En-tête : quand personne n\'est connecté, un vrai bouton bleu « Se connecter » (« Connexion » sur un petit téléphone) remplace la pastille vide avec un bonhomme -- signalé : « La vignette avec la personne dedans n\'est pas assez parlante. Il faudrait un bouton se connecter ». Une fois connecté, la pastille ronde avec l\'initiale revient.'] },
   { version:'2026-08-19.1274', date:'2026-11-01', items:['Relecture, 6e Nombres décimaux : nombre de centièmes rédigé terme à terme (400 centièmes + 50 centièmes) avec un tableau de numération ; « nombre de dixièmes, de centièmes, de dizaines » à côté de « chiffre des… » ; demi-droite graduée tracée dans le corrigé (0,4 ; 0,45 ; 0,5 ; 0,62).'] },
@@ -9693,23 +9694,21 @@ function speechUtterance(text){
   u.rate = p.vitesse; u.pitch = p.hauteur;
   return u;
 }
-/* Voix en ligne (Azure AI Speech, fonction serveur « voix ») -- demandé le 02/11/2026 : « essayons ». Les mêmes voix
+/* Voix en ligne (Google Cloud Text-to-Speech, fonction serveur « voix ») -- demandé le 02/11/2026 : « essayons », puis « ok on
+   part sur cloud text-to-speech ». Les mêmes voix
    naturelles sur tous les appareils (Chrome, Android, iPhone…), au lieu des seules voix installées. Chaque texte n'est
    synthétisé qu'une fois (fichier gardé dans le stockage du site, réutilisé par tous). Proposées aux comptes connectés
-   quand la fonction est active (clé Azure configurée, plafond du mois non atteint) ; sinon, ou en cas de souci, la voix
+   quand la fonction est active (API Google activée, plafond du mois non atteint) ; sinon, ou en cas de souci, la voix
    de l'appareil prend le relais sans rien dire. La hauteur ne s'applique qu'aux voix de l'appareil ; la vitesse, à toutes. */
-const VOIX_NUAGE = [
-  { id: 'fr-FR-DeniseNeural', nom: 'Denise', desc: 'voix de femme' },
-  { id: 'fr-FR-HenriNeural', nom: 'Henri', desc: 'voix d\'homme' },
-  { id: 'fr-FR-EloiseNeural', nom: 'Éloïse', desc: 'voix d\'enfant' },
-  { id: 'fr-FR-VivienneMultilingualNeural', nom: 'Vivienne', desc: 'voix de femme' },
-  { id: 'fr-FR-RemyMultilingualNeural', nom: 'Rémy', desc: 'voix d\'homme' },
-];
+// Liste donnée par le serveur (voix françaises les plus naturelles disponibles chez Google), affichée sous des prénoms.
+let VOIX_NUAGE = [];
 let voixNuageActif = null; // null : pas encore demandé au serveur
 async function voixNuageEtat(){
   if(voixNuageActif !== null) return voixNuageActif;
   try{ const r = await fetch(SUPABASE_URL + '/functions/v1/voix', { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: SUPABASE_ANON_KEY }, body: JSON.stringify({ action: 'etat' }) });
-    voixNuageActif = !!(await r.json()).actif; }catch(e){ voixNuageActif = false; }
+    const d = await r.json(), prenoms = { F: ['Claire', 'Léa', 'Inès', 'Zoé'], M: ['Hugo', 'Louis', 'Paul', 'Tom'] }, rang = { F: 0, M: 0 };
+    VOIX_NUAGE = (d.voix || []).map(v => ({ id: v.id, nom: prenoms[v.genre][rang[v.genre]++] || v.id, desc: v.genre === 'F' ? 'voix de femme' : 'voix d\'homme' }));
+    voixNuageActif = !!d.actif && VOIX_NUAGE.length > 0; }catch(e){ voixNuageActif = false; }
   return voixNuageActif;
 }
 function voixNuageChoisie(){ const n = voixPrefs().nom; return /^nuage:/.test(n) ? n.slice(6) : null; }
