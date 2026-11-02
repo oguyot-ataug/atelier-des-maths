@@ -71,3 +71,12 @@ body.nt-vonly .nt-voc{margin-top:0;} body.nt-vonly .nt-k{display:none;}
 .nt-integre .seo-top, .nt-integre .seo-foot, .nt-integre .seo-crumbs, .nt-integre main.nt > h1, .nt-integre main.nt > .seo-sub{display:none !important;}
 .nt-integre main.nt{padding-top:12px !important;margin-top:0 !important;max-width:none !important;}
 .nt-integre .nt-scroll{max-height:calc(100vh - 40px) !important;}
+
+/* Niveaux à cocher (notions.js, niveauxChips) */
+.nt-lvs{display:flex;flex-direction:column;gap:6px;}
+.nt-lv[aria-pressed="true"].nt-c2{background:var(--c2);border-color:var(--c2);}
+.nt-lv[aria-pressed="true"].nt-c3{background:var(--c3);border-color:var(--c3);}
+.nt-lv[aria-pressed="true"].nt-c4{background:var(--c4);border-color:var(--c4);}
+.nt-raccs{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:.8rem;color:var(--ink-soft);}
+.nt-racc{font:inherit;border:0;background:none;color:var(--accent);padding:0;cursor:pointer;text-decoration:underline;text-underline-offset:2px;}
+.nt-racc[aria-pressed="true"]{color:var(--ink);font-weight:700;text-decoration:none;}

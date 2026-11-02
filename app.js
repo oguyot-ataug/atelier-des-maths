@@ -3815,6 +3815,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1305', date:'2026-11-02', items:['Programmes officiels (et page publique des notions du CP à la 3e) : les niveaux se cochent un par un (CP, CE1… 3e, aux couleurs de leur cycle), avec des raccourcis Tous, École, Collège, Cycle 2, Cycle 3 et Cycle 4 ; le choix est retenu sur l\'appareil. Demandé : « Il manque la vue collège seul, ou plus simple, cocher les niveaux souhaités ».'] },
   { version:'2026-08-19.1304', date:'2026-11-02', items:['Programmes officiels dans le site : le tableau prend toute la largeur (plus de limite à 1 440 pixels), en plein écran comme dans la page, et toute la hauteur de l\'écran en plein écran -- signalé : « Plein écran mais pas pleine largeur ! ».'] },
   { version:'2026-08-19.1303', date:'2026-11-02', items:['Programmes officiels : bouton « Plein écran » pour afficher le tableau comparatif sur tout l\'écran (touche Échap pour revenir ; sur iPhone et iPad, le tableau recouvre la fenêtre avec un bouton « Quitter le plein écran ») -- demandé : « permettre le plein écran du tableau comparatif ».'] },
   { version:'2026-08-19.1302', date:'2026-11-02', items:['Programmes officiels dans le site : l\'en-tête, le fil d\'Ariane et le pied de page de la page publique ne s\'affichent plus, même si le navigateur garde une ancienne version de la page en mémoire (le site les masque lui-même au chargement) -- signalé : « On ne doit pas voir l\'entête ».'] },

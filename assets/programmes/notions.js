@@ -24,7 +24,7 @@ const LV = [
   {k:'s4',  n:'4e',  c:'c4', src:'Programme 2020 · attendus 2019', srcN:'BO 2026 · rentrée 2027', champ:'Rationnels · puissances · Pythagore'},
   {k:'s3',  n:'3e',  c:'c4', src:'Programme 2020 · attendus 2019', srcN:'BO 2026 · rentrée 2028', champ:'Fonctions · Thalès · trigonométrie'},
 ];
-const VUES = {all:LV.map(l=>l.k), c2:['cp','ce1','ce2'], c3:['cm1','cm2','s6'], c4:['s5','s4','s3'], ec:['cm2','s6','s5']};
+const VUES = {all:LV.map(l=>l.k), c2:['cp','ce1','ce2'], c3:['cm1','cm2','s6'], c4:['s5','s4','s3'], ec:['cm2','s6','s5'], ecole:['cp','ce1','ce2','cm1','cm2'], college:['s6','s5','s4','s3']};
 
 const DOMS = [
   {k:'N', n:'Nombres et calcul'},
@@ -358,9 +358,10 @@ function qRegex(q){
   return new RegExp([...base].map(ch => ACC[ch] ? '[' + ACC[ch] + ']' : ch.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join(''), 'gi');
 }
 
-/* st = {dom, vue, q, nouveau, vonly} -> {html, nRows, nWords, nLv} */
+/* st = {dom, vue, q, nouveau, vonly, niveaux?} -> {html, nRows, nWords, nLv}
+   niveaux : liste des niveaux cochés (page) ; sinon la vue (vue d'ensemble, cycle, niveau seul). */
 function notionsTable(st){
-  const keys = VUES[st.vue] || [st.vue];
+  const keys = Array.isArray(st.niveaux) && st.niveaux.length ? st.niveaux : (VUES[st.vue] || [st.vue]);
   const lvs = LV.filter(l => keys.includes(l.k));
   const rx = qRegex(st.q);
   const test = s => { if(!rx) return true; rx.lastIndex = 0; return rx.test(s); };
@@ -411,9 +412,9 @@ if(window.self !== window.top){
   document.documentElement.classList.add('nt-integre');
   const b = document.createElement('base'); b.target = '_top'; document.head.appendChild(b);
 }
-const state = {dom:'all', vue:'all', q:'', nouveau:false, vonly:false};
+const state = {dom:'all', vue:'all', q:'', nouveau:false, vonly:false, niveaux:null};
 try{ Object.assign(state, JSON.parse(localStorage.getItem('notions-cp-3e') || '{}'), {q:''}); }catch(e){}
-const save = () => { try{ localStorage.setItem('notions-cp-3e', JSON.stringify({dom:state.dom, vue:state.vue, nouveau:state.nouveau, vonly:state.vonly})); }catch(e){} };
+const save = () => { try{ localStorage.setItem('notions-cp-3e', JSON.stringify({dom:state.dom, vue:state.vue, nouveau:state.nouveau, vonly:state.vonly, niveaux:state.niveaux})); }catch(e){} };
 
 function chips(){
   const box = $('#nt-doms');
@@ -437,14 +438,40 @@ function render(){
   $('#nt-new').setAttribute('aria-pressed', state.nouveau);
   $('#nt-vonly').checked = state.vonly;
   $('#nt-vue').value = state.vue;
-  chips();
+  chips(); niveauxChips();
   const r = notionsTable(state), t = $('#nt-table');
   t.innerHTML = r.html;
   const rx = qRegex(state.q); if(rx) highlight(t, rx);
   $('#nt-count').textContent = countText(r);
 }
 $('#nt-doms').onclick = e => { const b = e.target.closest('button'); if(!b) return; state.dom = b.dataset.d; save(); render(); };
-$('#nt-vue').onchange = e => { state.vue = e.target.value; save(); render(); };
+$('#nt-vue').onchange = e => { state.vue = e.target.value; state.niveaux = null; save(); render(); };
+/* Niveaux à cocher (demandé le 02/11/2026 : « Il manque la vue collège seul, ou plus simple, cocher les niveaux souhaités ») :
+   une case par niveau, et des raccourcis (tous, école, collège, cycles). Remplace la liste « Niveaux affichés ». */
+const RACCOURCIS = [['all', 'Tous'], ['ecole', 'École'], ['college', 'Collège'], ['c2', 'Cycle 2'], ['c3', 'Cycle 3'], ['c4', 'Cycle 4']];
+const niveauxCoches = () => Array.isArray(state.niveaux) && state.niveaux.length ? state.niveaux : (VUES[state.vue] || [state.vue]);
+(function(){
+  const champ = $('#nt-vue').closest('.nt-field'); if(!champ) return;
+  $('#nt-vue').style.display = 'none';
+  const lab = champ.querySelector('label'); if(lab){ lab.textContent = 'Niveaux affichés'; lab.removeAttribute('for'); }
+  const d = document.createElement('div'); d.id = 'nt-lvs'; d.className = 'nt-lvs'; champ.appendChild(d);
+  d.onclick = e => {
+    const b = e.target.closest('button'); if(!b) return;
+    if(b.dataset.r){ state.niveaux = VUES[b.dataset.r].slice(); }
+    else {
+      const k = b.dataset.k, l = niveauxCoches().slice(), i = l.indexOf(k);
+      if(i >= 0){ if(l.length === 1) return; l.splice(i, 1); } else l.push(k);
+      state.niveaux = LV.map(x => x.k).filter(x => l.includes(x));
+    }
+    save(); render();
+  };
+})();
+function niveauxChips(){
+  const d = $('#nt-lvs'); if(!d) return;
+  const l = niveauxCoches(), egal = a => a.length === l.length && a.every(k => l.includes(k));
+  d.innerHTML = `<div class="nt-chips">${LV.map(x => `<button type="button" class="nt-chip nt-lv nt-${x.c}" data-k="${x.k}" aria-pressed="${l.includes(x.k)}">${l.includes(x.k) ? '✓ ' : ''}${x.n}</button>`).join('')}</div>`
+    + `<div class="nt-raccs">${RACCOURCIS.map(([r, n]) => `<button type="button" class="nt-racc" data-r="${r}" aria-pressed="${egal(VUES[r])}">${n}</button>`).join('')}</div>`;
+}
 $('#nt-q').oninput = e => { state.q = e.target.value; render(); };
 $('#nt-old').onclick = () => { state.nouveau = false; save(); render(); };
 $('#nt-new').onclick = () => { state.nouveau = true; save(); render(); };
