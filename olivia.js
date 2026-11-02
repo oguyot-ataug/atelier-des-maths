@@ -135,7 +135,11 @@ function oliviaFormat(t){
     let r; try{ r = typeof katexSpan === 'function' ? katexSpan(brut) : e; }catch(err){ r = e; }
     maths.push(r === brut ? e : r); return '\u0000' + (maths.length - 1) + '\u0000';
   });
-  h = h.replace(/\*\*([^*\n]+)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
+  h = h.replace(/\*\*([^*\n]+)\*\*/g, '<b>$1</b>');
+  // Listes : lignes « - … », « * … », « • … » en puces, « 1. … » numérotées (la voix ne lit plus « moins » devant).
+  h = h.replace(/(?:^|\n)((?:[ \t]*[-*•][ \t]+[^\n]*(?:\n|$))+)/g, (m, bloc) => '\n<ul class="oliv-liste">' + bloc.trim().split('\n').map(l => '<li>' + l.replace(/^[ \t]*[-*•][ \t]+/, '') + '</li>').join('') + '</ul>\n')
+    .replace(/(?:^|\n)((?:[ \t]*\d+[.)][ \t]+[^\n]*(?:\n|$))+)/g, (m, bloc) => '\n<ol class="oliv-liste">' + bloc.trim().split('\n').map(l => '<li>' + l.replace(/^[ \t]*\d+[.)][ \t]+/, '') + '</li>').join('') + '</ol>\n');
+  h = h.replace(/\n*(<\/?[ou]l[^>]*>)\n*/g, '$1').replace(/^\n+|\n+$/g, '').replace(/\n/g, '<br>');
   return h.replace(/\u0000(\d+)\u0000/g, (m, i) => maths[+i]);
 }
 function oliviaRendreFil(){

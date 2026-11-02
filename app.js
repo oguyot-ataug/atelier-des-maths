@@ -3767,6 +3767,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1287', date:'2026-11-02', items:['Lecture à voix haute : le tiret d\'une liste n\'est plus lu « moins » ; « $[AB]$ » écrit en formule est lu « le segment A B » (« la droite A B » pour (AB)), sans le redire après « le segment ». Les réponses d\'Oliv\'IA en liste s\'affichent avec de vraies puces -- signalé : « "-" ne doit pas être lu ici comme "moins" », « [AB] doit être lu "le segment [AB]" ».'] },
   { version:'2026-08-19.1286', date:'2026-11-02', items:['« Ok Olivia ! » réservé aux professeurs (demandé : « Juste pour les professeurs ») ; les élèves gardent le bouton micro pour dicter une question. Dans la fenêtre d\'Oliv\'IA, un bouton « Allumer « Ok Olivia ! » » bien visible, et, écoute allumée, la dernière phrase entendue s\'affiche (« Entendu : … ») pour voir ce que le micro comprend. Mot d\'éveil plus tolérant (« OK, Olivia », « okay Olivia », « OK Livia »…) ; écoute relancée si le navigateur la refuse un instant -- signalé : « je dis ok Olivia mais rien ne se passe ».'] },
   { version:'2026-08-19.1285', date:'2026-11-02', items:['« Ok Olivia ! » : sur une page de cours, le bouton oreille d\'Oliv\'IA allume l\'écoute ; dire « Ok Olivia » (ou « Dis Olivia ») puis sa question ouvre Oliv\'IA, qui répond à voix haute puis écoute la suite du dialogue sans qu\'il faille redire son nom (« merci » pour finir). Bouton micro pour dicter une seule question. Micro coupé pendant qu\'Oliv\'IA parle ; seule la question qui suit « Ok Olivia » lui est envoyée -- demandé : « En cours, j\'aimerais pouvoir dire "Ok Olivia !" et que ça déclenche un dialogue ».'] },
   { version:'2026-08-19.1284', date:'2026-11-02', items:['Lecture à voix haute : les émojis ne sont plus lus (« 😊 » était dit « sourire ») et les unités sont dites en toutes lettres, accordées (« 6 cm » : « six centimètres », « 1,5 km » : « un virgule cinq kilomètre », « 12 cm² », « 90 km/h », « 1 m/s », « 2 h 30 min », « 3 L », « 250 g »…), dans le texte comme dans les formules -- signalé : « cm a été lu c m ».'] },
@@ -9470,7 +9471,11 @@ function buildSpeechText(node){
 }
 function speechBrut(node, formules){
   let out = '';
-  const formule = tex => { formules.push(latexToSpeech(tex)); return ' \u0001' + (formules.length - 1) + '\u0001 '; };
+  const formule = tex => {
+    // « $[AB]$ », « $(AB)$ », « $[AB)$ » seuls : lus avec le texte autour (« le segment A B », sans le redire après « segment »).
+    const nu = String(tex).trim().replace(/\\prime|\^\{?\\prime\}?/g, '′');
+    if(/^[\[(]\s*[A-Z](?:\s*(?:[A-Z0-9]|['′]))*\s*[\])]$/.test(nu)) return ' ' + nu.replace(/\s+/g, '') + ' ';
+    formules.push(latexToSpeech(tex)); return ' \u0001' + (formules.length - 1) + '\u0001 '; };
   node.childNodes.forEach(child=>{
     if(child.nodeType === Node.TEXT_NODE){
       out += child.nodeValue;
@@ -9486,7 +9491,7 @@ function speechBrut(node, formules){
         // boutons (écouter, loupe, apprendre, + Cahier), icônes et figures : jamais lus
       } else {
         const t = child.tagName;
-        out += speechBrut(child, formules) + (t === 'TD' || t === 'TH' ? ', ' : SPEECH_BLOCS.has(t) ? '. ' : '');
+        out += (SPEECH_BLOCS.has(t) ? ' ' : '') + speechBrut(child, formules) + (t === 'TD' || t === 'TH' ? ', ' : SPEECH_BLOCS.has(t) ? '. ' : '');
       }
     }
   });
@@ -9533,7 +9538,9 @@ function speechPuissance(e){ // e : exposant déjà en texte (« 2 », « -3 »,
 
 /* Texte ordinaire (hors formules). */
 function texteToSpeech(t){
-  let s = ' ' + voixPrononcer(t) + ' '; // « Oliv'IA » -> « Olivia » AVANT l'épellation des noms de points (« IA » -> « I A »)
+  let s = ' ' + voixPrononcer(t) + ' ';
+  // Puces de liste (« - », « * », « • ») en début de ligne ou de phrase : jamais lues « moins » (demandé le 02/11/2026).
+  s = s.replace(/(^|\n|[.!?:;]\s)\s*[-–—•*]\s+(?=[^\d\s])/g, '$1 '); // « Oliv'IA » -> « Olivia » AVANT l'épellation des noms de points (« IA » -> « I A »)
   const L = 'A-Za-zÀ-ÿœŒ', P = "′'";
   // Unités au carré / au cube : « cm² » -> « centimètres carrés ».
   s = s.replace(/(\d[\d\s,]*)?\b(mm|cm|dm|dam|hm|km|m)([²³])(?![A-Za-z])/g, (m, n, u, e) => (n || '') + ' ' + SPEECH_UNITES[u] + 's ' + (e === '²' ? 'carrés' : 'cubes') + ' ');
