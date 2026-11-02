@@ -521,10 +521,10 @@ function apBuildTriangleSvg(){
 // Une étape de départ (le triangle seul) : chaque phrase correspond au dessin affiché -- signalé le 02/11/2026 (capture :
 // l'étape 2 parlait des angles vert et bleu en I, qui n'apparaissaient qu'à l'étape 3).
 const AP_TRI_STEPS = [
-  {note:"Voici un triangle IJK et ses trois angles : l'angle IJK en vert, l'angle IKJ en bleu et l'angle JIK en rose."},
+  {note:"Voici un triangle IJK et ses trois angles : l'angle <span class=\"tex\">\\widehat{IJK}</span> en vert, l'angle <span class=\"tex\">\\widehat{IKJ}</span> en bleu et l'angle <span class=\"tex\">\\widehat{JIK}</span> en rose."},
   {note:"On trace la droite parallèle à (JK) qui passe par I."},
-  {note:"On repère les angles alternes-internes égaux : à gauche de I, l'angle vert a la même mesure que l'angle IJK ; à droite de I, l'angle bleu a la même mesure que l'angle IKJ."},
-  {note:"Comme la droite tracée est une droite (elle forme un angle plat en I), la somme des trois angles autour de I sur cette droite vaut 180°. Donc IJK + JIK + IKJ = 180°."},
+  {note:"On repère les angles alternes-internes égaux : à gauche de I, l'angle vert <span class=\"tex\">\\widehat{LIJ}</span> a la même mesure que l'angle <span class=\"tex\">\\widehat{IJK}</span> ; à droite de I, l'angle bleu <span class=\"tex\">\\widehat{KIM}</span> a la même mesure que l'angle <span class=\"tex\">\\widehat{IKJ}</span>."},
+  {note:"Comme la droite tracée est une droite (elle forme un angle plat en I), la somme des trois angles autour de I sur cette droite vaut 180° : <span class=\"tex\">\\widehat{LIJ} + \\widehat{JIK} + \\widehat{KIM} = 180°</span>. Donc <span class=\"tex\">\\widehat{IJK} + \\widehat{JIK} + \\widehat{IKJ} = 180°</span>."},
 ];
 let apTriIdx = 0;
 function apRenderTriDemo(){
@@ -555,6 +555,7 @@ function apRenderTriDemo(){
     ${apLabel(K.x+8, K.y+10, 'K')}
   </svg>`;
   el.innerHTML = svg + `<div class="step-note">Étape ${apTriIdx+1} : ${AP_TRI_STEPS[apTriIdx].note}</div>`;
+  if(typeof renderStaticMath === 'function') renderStaticMath(el); // notations des angles (chapeau)
 }
 const apTriDemo = {
   next(){ if(apTriIdx<AP_TRI_STEPS.length-1) apTriIdx++; apRenderTriDemo(); },
@@ -798,7 +799,7 @@ const apMethodeOpposesDemo = makeStepDemo(AP_METHODE_OPPOSES_STEPS, 'ap-methodeO
 
 const AP_METHODE_ALIGNEMENT_STEPS = [
   {expr:'Les angles adjacents <span class="tex">\\widehat{DOE}</span> et <span class="tex">\\widehat{EOF}</span> sont tels que <span class="tex">\\widehat{DOE} = 112°</span> et <span class="tex">\\widehat{EOF} = 68°</span>.', note:"Ce que je sais."},
-  {expr:'<span style="color:var(--accent-orange);font-weight:700;">Or,</span> <span class="tex">112° + 68° = 180°</span>, donc les angles DOE et EOF sont supplémentaires.', note:"On calcule la somme des deux mesures."},
+  {expr:'<span style="color:var(--accent-orange);font-weight:700;">Or,</span> <span class="tex">112° + 68° = 180°</span>, donc les angles <span class="tex">\\widehat{DOE}</span> et <span class="tex">\\widehat{EOF}</span> sont supplémentaires.', note:"On calcule la somme des deux mesures."},
   {expr:'<span style="color:var(--accent-orange);font-weight:700;">Or,</span> deux angles adjacents et supplémentaires forment un angle plat.', note:"On énonce la propriété (remarque du cours)."},
   {expr:'<span style="color:var(--accent);font-weight:700;">Donc</span> les points D, O et F sont alignés.', note:"Conclusion."},
 ];
