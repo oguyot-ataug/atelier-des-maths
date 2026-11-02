@@ -69,8 +69,10 @@ async function google(): Promise<string | null> {
     return j.access_token;
   } catch (e) { console.error("Google : clé illisible", String(e)); return null; }
 }
-// Voix françaises proposées : deux de femme et deux d'homme, du type le plus naturel disponible. Liste gardée une heure.
-type Voix = { id: string; genre: "F" | "M" };
+// Voix françaises proposées : deux de femme et deux d'homme du type le plus naturel disponible (Chirp 3 HD), plus une voix
+// de femme et une d'homme Neural2 (plus ancienne, plus sûre sur l'écrit -- signalé le 02/11/2026 : Chirp 3 HD lit « s'écrire »
+// « esse écrire »). Liste gardée une heure.
+type Voix = { id: string; genre: "F" | "M"; type: string };
 let voixCache: { liste: Voix[]; expire: number } | null = null;
 let voixErreur = "";
 async function voixDisponibles(tok: string): Promise<Voix[]> {
@@ -80,12 +82,13 @@ async function voixDisponibles(tok: string): Promise<Voix[]> {
   voixErreur = "";
   const toutes = ((await r.json()).voices || []) as { name: string; ssmlGender: string }[];
   const fr = toutes.filter((v) => /^fr-FR-/.test(v.name));
-  let liste: Voix[] = [];
-  for (const type of ["Chirp3-HD", "Neural2", "Wavenet"]) {
+  const choisir = (type: string, n: number): Voix[] => {
     const t = fr.filter((v) => v.name.startsWith(`fr-FR-${type}-`)).sort((a, b) => a.name.localeCompare(b.name));
-    const f = t.filter((v) => v.ssmlGender === "FEMALE").slice(0, 2), m = t.filter((v) => v.ssmlGender === "MALE").slice(0, 2);
-    if (f.length + m.length >= 2) { liste = [...f.map((v) => ({ id: v.name, genre: "F" as const })), ...m.map((v) => ({ id: v.name, genre: "M" as const }))]; break; }
-  }
+    const f = t.filter((v) => v.ssmlGender === "FEMALE").slice(0, n), m = t.filter((v) => v.ssmlGender === "MALE").slice(0, n);
+    return [...f.map((v) => ({ id: v.name, genre: "F" as const, type })), ...m.map((v) => ({ id: v.name, genre: "M" as const, type }))];
+  };
+  let liste: Voix[] = [...choisir("Chirp3-HD", 2), ...choisir("Neural2", 1)];
+  if (liste.length < 2) liste = choisir("Wavenet", 2);
   voixCache = { liste, expire: Date.now() + 3600000 };
   return liste;
 }

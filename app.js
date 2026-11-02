@@ -3767,6 +3767,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1279', date:'2026-11-02', items:['Voix en ligne : en plus des quatre voix « très naturelles » (Google Chirp 3 HD), deux voix « classiques » (Google Neural2, Inès et Paul), plus sûres sur l\'écrit -- signalé : Chirp 3 HD lit « s\'écrire » comme « esse écrire ».'] },
   { version:'2026-08-19.1278', date:'2026-11-02', items:['Voix en ligne : pas de surprise de facturation -- plafond ramené à 100 000 caractères par mois pour tout le site (et 20 000 par compte et par jour), suivi dans Administration (caractères du mois et du jour, barre rouge à 80 %), SMS d\'alerte à 80 % du plafond et ligne « voix en ligne » dans le SMS du soir. Au plafond, le site reprend les voix des appareils.'] },
   { version:'2026-08-19.1277', date:'2026-11-02', items:['Voix en ligne : Google Cloud Text-to-Speech au lieu de Microsoft Azure (création du compte Azure bloquée). Les voix françaises les plus naturelles disponibles chez Google (deux de femme, deux d\'homme) seront proposées aux comptes connectés dès que l\'API sera activée ; d\'ici là, rien ne change (voix de l\'appareil).'] },
   { version:'2026-08-19.1276', date:'2026-11-02', items:['Lecture à voix haute : voix en ligne naturelles (Denise, Henri, Éloïse — voix d\'enfant —, Vivienne, Rémy), les mêmes sur ordinateur, Android et iPhone, proposées en tête du réglage des voix aux comptes connectés dès que le service Azure est relié. Chaque texte n\'est synthétisé qu\'une fois puis réutilisé par tous ; sans service, ou en cas de souci, la voix de l\'appareil prend le relais. Une seule fonction de lecture pour tout le site (cours, quiz du CP, frise d\'histoire).'] },
@@ -9708,7 +9709,8 @@ async function voixNuageEtat(){
   if(voixNuageActif !== null) return voixNuageActif;
   try{ const r = await fetch(SUPABASE_URL + '/functions/v1/voix', { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: SUPABASE_ANON_KEY }, body: JSON.stringify({ action: 'etat' }) });
     const d = await r.json(), prenoms = { F: ['Claire', 'Léa', 'Inès', 'Zoé'], M: ['Hugo', 'Louis', 'Paul', 'Tom'] }, rang = { F: 0, M: 0 };
-    VOIX_NUAGE = (d.voix || []).map(v => ({ id: v.id, nom: prenoms[v.genre][rang[v.genre]++] || v.id, desc: v.genre === 'F' ? 'voix de femme' : 'voix d\'homme' }));
+    // Chirp 3 HD : la plus naturelle ; Neural2 : plus ancienne, plus sûre sur l'écrit (élisions comme « s'écrire »).
+    VOIX_NUAGE = (d.voix || []).map(v => ({ id: v.id, nom: prenoms[v.genre][rang[v.genre]++] || v.id, desc: (v.genre === 'F' ? 'voix de femme' : 'voix d\'homme') + (v.type === 'Neural2' ? ' · classique' : ' · très naturelle') }));
     voixNuageActif = !!d.actif && VOIX_NUAGE.length > 0; }catch(e){ voixNuageActif = false; }
   return voixNuageActif;
 }
@@ -9820,7 +9822,7 @@ function voixAfficher(){
   // Voix en ligne (comptes connectés, fonction active) : en tête, les mêmes sur tous les appareils.
   const enLigne = currentUser && voixNuageActif ? '<div class="hint" style="margin:0;font-weight:700;">Voix en ligne · les mêmes sur tous les appareils</div>' + VOIX_NUAGE.map(v => `<label style="display:flex;align-items:center;gap:8px;padding:7px 10px;border:1.5px solid ${v.id === nuage ? 'var(--accent)' : 'rgba(28,43,57,.12)'};border-radius:10px;cursor:pointer;">
       <input type="radio" name="voixChoix" ${v.id === nuage ? 'checked' : ''} onchange="voixChoisirNuage('${v.id}')">
-      <span style="flex:1;"><b>${v.nom}</b> <small class="hint" style="margin:0;">${v.desc} · naturelle</small></span>
+      <span style="flex:1;"><b>${v.nom}</b> <small class="hint" style="margin:0;">${v.desc}</small></span>
       <button type="button" class="btn secondary" style="padding:3px 10px;font-size:.75rem;" onclick="event.preventDefault();voixChoisirNuage('${v.id}');voixEssayer()"><span class="gicon">play_arrow</span></button>
     </label>`).join('') + '<div class="hint" style="margin:6px 0 0;font-weight:700;">Voix de cet appareil</div>' : '';
   if(currentUser && voixNuageActif === null) voixNuageEtat().then(ok => { if(ok) voixAfficher(); });
