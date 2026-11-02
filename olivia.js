@@ -55,7 +55,7 @@ function oliviaUuid(){ return (crypto.randomUUID && crypto.randomUUID()) || 'xxx
 function oliviaMaj(){
   let lanceur = document.getElementById('olivLanceur');
   const visible = oliviaAutorisee() && oliviaSurCours();
-  if(!visible){ if(lanceur) lanceur.style.display = 'none'; const p = document.getElementById('olivPanneau'); if(p) p.style.display = 'none'; oliviaBulleSel(null); return; }
+  if(!visible){ if(lanceur) lanceur.style.display = 'none'; const p = document.getElementById('olivPanneau'); if(p) p.style.display = 'none'; oliviaBulleSel(null); oliviaEcouteMaj(); return; }
   if(!lanceur){
     lanceur = document.createElement('button');
     lanceur.id = 'olivLanceur'; lanceur.type = 'button'; lanceur.className = 'oliv-lanceur';
@@ -68,6 +68,7 @@ function oliviaMaj(){
   const cle = (typeof currentChapterLevel !== 'undefined' ? currentChapterLevel : '') + '|' + (typeof currentChapterTitle !== 'undefined' ? currentChapterTitle : '');
   if(cle !== oliv.chapKey){ oliv.chapKey = cle; oliv.conv = oliviaUuid(); oliv.hist = []; oliv.focus = ''; oliviaRendreFil(); }
   const p = document.getElementById('olivPanneau'); if(p) p.style.display = oliv.ouvert ? 'flex' : 'none';
+  oliviaEcouteMaj();
 }
 
 function oliviaOuvrir(on){
@@ -79,18 +80,21 @@ function oliviaOuvrir(on){
     p.innerHTML = `<div class="oliv-tete">
         <span class="oliv-tete-avatar">${OLIV_AVATAR}</span>
         <span class="oliv-tete-nom"><b>Oliv'IA</b><small>ta petite robote pour apprendre</small></span>
+        ${oliviaSR() ? '<button type="button" class="oliv-x oliv-ecoute-btn" id="olivEcouteBtn" onclick="oliviaEcouteBasculer()" title="Écoute « Ok Olivia ! »" aria-pressed="false"><span class="gicon">hearing</span></button>' : ''}
         <button type="button" class="oliv-x" onclick="oliviaNouvelle()" title="Nouvelle conversation"><span class="gicon">restart_alt</span></button>
         <button type="button" class="oliv-x" onclick="oliviaOuvrir(false)" title="Fermer" aria-label="Fermer"><span class="gicon">close</span></button>
       </div>
       <div class="oliv-fil" id="olivFil" aria-live="polite"></div>
       <div class="oliv-suggest" id="olivSuggest"></div>
+      <div class="oliv-ecoute-etat" id="olivEcouteEtat" style="display:none"></div>
       <form class="oliv-saisie" onsubmit="event.preventDefault(); oliviaEnvoyer();">
         <textarea id="olivTexte" rows="2" maxlength="1200" placeholder="Pose ta question sur le cours…" onkeydown="if(event.key==='Enter' && !event.shiftKey){ event.preventDefault(); oliviaEnvoyer(); }"></textarea>
+        ${oliviaSR() ? '<button type="button" class="btn oliv-micro" id="olivMicro" onclick="oliviaDicter()" title="Poser ma question à voix haute"><span class="gicon">mic</span></button>' : ''}
         <button type="submit" class="btn" id="olivEnvoyer" title="Envoyer"><span class="gicon">send</span></button>
       </form>
       <p class="oliv-pied">Oliv'IA peut se tromper : vérifie avec ton cours. Ton professeur peut relire tes échanges.</p>`;
     document.body.appendChild(p);
-    oliviaRendreFil();
+    oliviaRendreFil(); oliviaEcouteAfficher();
   }
   oliviaMaj();
   if(on) setTimeout(() => { const t = document.getElementById('olivTexte'); if(t) t.focus(); }, 60);
@@ -108,7 +112,7 @@ function oliviaBulleHtml(qui, html){
 }
 // Oliv'IA a sa voix (demandé le 02/11/2026 : « on pourrait donner une voix à Oliv'IA ») : voix en ligne d'Oliv'IA (style
 // « olivia » de la fonction voix), sinon la voix de l'appareil plus aiguë. Un clic lit la bulle, un second clic arrête.
-function oliviaEcouter(btn){
+function oliviaEcouter(btn, apres){
   const enCours = btn.classList.contains('lecture');
   if(typeof voixArreter === 'function') voixArreter();
   document.querySelectorAll('.oliv-ecouter.lecture').forEach(b => { b.classList.remove('lecture'); b.innerHTML = '<span class="gicon">volume_up</span>'; });
@@ -117,7 +121,7 @@ function oliviaEcouter(btn){
   const c = bulle.cloneNode(true); c.querySelectorAll('.oliv-ecouter, .oliv-cite').forEach(e => e.remove());
   let t = typeof buildSpeechText === 'function' ? buildSpeechText(c) : c.textContent;
   if(typeof speechFinal === 'function') t = speechFinal(t);
-  const fin = () => { btn.classList.remove('lecture'); btn.innerHTML = '<span class="gicon">volume_up</span>'; };
+  const fin = () => { btn.classList.remove('lecture'); btn.innerHTML = '<span class="gicon">volume_up</span>'; if(apres){ const a = apres; apres = null; a(); } };
   btn.classList.add('lecture'); btn.innerHTML = '<span class="gicon">stop</span>';
   if(!voixParler(t, { style: 'olivia', onend: fin, onerror: fin })) fin();
 }
@@ -175,7 +179,7 @@ function oliviaContexte(){
   return t;
 }
 
-async function oliviaEnvoyer(texte){
+async function oliviaEnvoyer(texte, parVoix){
   if(oliv.occupe) return;
   const zone = document.getElementById('olivTexte');
   const q = String(texte != null ? texte : (zone ? zone.value : '')).trim();
@@ -201,6 +205,7 @@ async function oliviaEnvoyer(texte){
     entree.r = (e && e.message) || 'Oups, je n\'ai pas pu répondre. Réessaie dans un instant.'; entree.erreur = true;
   }finally{
     oliv.occupe = false; oliviaRendreFil();
+    if(parVoix) oliviaEcouteRepondre();
   }
 }
 
@@ -232,3 +237,185 @@ document.addEventListener('mouseup', e => {
   }, 10);
 });
 document.addEventListener('click', e => { if(e.target.closest && e.target.closest('.tab-btn')) setTimeout(() => { oliviaMaj(); oliviaRendreFil(); }, 30); });
+
+/* ---------- « Ok Olivia ! » : dialogue à la voix (demandé le 02/11/2026 : « En cours, j'aimerais pouvoir dire "Ok Olivia !"
+   et que ça déclenche un dialogue ») ----------
+   - Bouton oreille dans l'en-tête d'Oliv'IA : écoute activée À LA DEMANDE (retenue sur cet appareil), seulement sur une page
+     de cours où Oliv'IA est ouverte au compte, onglet du navigateur visible. Le lanceur porte alors une petite oreille.
+   - « Ok Olivia » (ou « Dis Olivia », « Hé Olivia »…) ouvre Oliv'IA ; la phrase qui suit est la question (dans la même phrase
+     ou juste après). La réponse est lue avec la voix d'Oliv'IA, puis Oliv'IA écoute la suite quelques secondes sans qu'il
+     faille redire « Ok Olivia » (« merci », « c'est bon »… : fin du dialogue).
+   - Bouton micro à côté de « Envoyer » : une question dictée, sans mot d'éveil.
+   - Pendant qu'Oliv'IA réfléchit ou parle, le micro est coupé (elle ne s'entend pas elle-même).
+   - Reconnaissance vocale du navigateur (Chrome, Edge, Safari ; sur l'appareil quand le navigateur sait le faire). Seule la
+     question qui suit « Ok Olivia » part vers Oliv'IA, comme une question écrite ; le reste n'est ni gardé ni envoyé. */
+function oliviaSR(){ return window.SpeechRecognition || window.webkitSpeechRecognition || null; }
+const OLIV_EVEIL = /(?:^|[\s,.!?])(?:ok|okay|o\.?\s?k\.?|oké|okey|hey|h[ée]|eh|dis|salut|allô|allo|bonjour|coucou)[\s,!.]+oli(?:v|b)(?:ia|i a|iya|ie|ier|iah)\b[\s,!.?]*/i;
+const OLIV_FIN = /^(?:non\s+)?(?:merci(?: beaucoup)?(?: olivia)?|c'est bon|ça va|au revoir|stop|arr[êe]te|c'est tout|non merci|rien)[\s.!]*$/i;
+let olivEcoute = { pref: false, rec: null, actif: false, mode: 'veille', minuteur: 0, reste: '', erreurs: 0, dictee: false, relance: 0 };
+try{ olivEcoute.pref = localStorage.getItem('olivEcoute') === '1'; }catch(e){}
+
+// Doit-on écouter maintenant ?
+function oliviaEcouteVoulue(){
+  if(!oliviaSR() || !oliviaAutorisee() || !oliviaSurCours() || document.visibilityState !== 'visible') return false;
+  if(oliv.occupe || olivEcoute.mode === 'parle') return false;
+  return olivEcoute.pref || olivEcoute.dictee || olivEcoute.mode === 'question' || olivEcoute.mode === 'suite';
+}
+function oliviaEcouteMaj(){
+  const veut = oliviaEcouteVoulue();
+  if(veut && !olivEcoute.actif) oliviaEcouteDemarrer();
+  else if(!veut && olivEcoute.actif) oliviaEcouteCouper();
+  oliviaEcouteAfficher();
+}
+function oliviaEcouteDemarrer(){
+  const SR = oliviaSR(); if(!SR || olivEcoute.actif) return;
+  // Le navigateur exige un premier clic sur la page avant de faire parler Oliv'IA : on attend ce clic.
+  if(navigator.userActivation && !navigator.userActivation.hasBeenActive){
+    if(!olivEcoute.attente){ olivEcoute.attente = true; const go = () => { olivEcoute.attente = false; oliviaEcouteMaj(); };
+      document.addEventListener('pointerdown', go, { once: true }); document.addEventListener('keydown', go, { once: true }); }
+    return;
+  }
+  const rec = new SR(); rec.lang = 'fr-FR'; rec.continuous = true; rec.interimResults = true; rec.maxAlternatives = 1;
+  try{ if('processLocally' in rec && olivEcoute.local) rec.processLocally = true; }catch(e){}
+  rec.onresult = ev => oliviaEcouteResultat(rec, ev);
+  rec.onerror = ev => {
+    if(ev.error === 'not-allowed' || ev.error === 'service-not-allowed'){
+      olivEcoute.pref = false; olivEcoute.dictee = false; olivEcoute.mode = 'veille'; try{ localStorage.removeItem('olivEcoute'); }catch(e){}
+      oliviaEcouteMessage('Le micro est bloqué pour ce site : autorise-le dans le navigateur (icône du cadenas) pour me parler.');
+    } else if(ev.error === 'network' || ev.error === 'audio-capture') olivEcoute.erreurs++;
+  };
+  rec.onend = () => {
+    if(olivEcoute.rec !== rec) return;
+    olivEcoute.rec = null; olivEcoute.actif = false;
+    // Le navigateur coupe l'écoute de temps en temps : on la relance (pas indéfiniment en cas de panne).
+    if(olivEcoute.erreurs > 4){ olivEcoute.pref = false; olivEcoute.dictee = false; olivEcoute.erreurs = 0; oliviaEcouteMessage('La reconnaissance vocale ne répond pas : réessaie plus tard.'); oliviaEcouteAfficher(); return; }
+    clearTimeout(olivEcoute.relance); olivEcoute.relance = setTimeout(oliviaEcouteMaj, olivEcoute.erreurs ? 1500 * olivEcoute.erreurs : 250);
+  };
+  olivEcoute.rec = rec; olivEcoute.actif = true;
+  try{ rec.start(); }catch(e){ olivEcoute.rec = null; olivEcoute.actif = false; }
+}
+function oliviaEcouteCouper(){
+  const rec = olivEcoute.rec; olivEcoute.rec = null; olivEcoute.actif = false;
+  if(rec){ rec.onend = rec.onresult = rec.onerror = null; try{ rec.abort(); }catch(e){} }
+}
+function oliviaEcouteResultat(rec, ev){
+  if(olivEcoute.rec !== rec) return;
+  olivEcoute.erreurs = 0;
+  for(let i = ev.resultIndex; i < ev.results.length; i++){
+    const r = ev.results[i], t = (r[0] && r[0].transcript || '').trim(); if(!t) continue;
+    if(olivEcoute.mode === 'veille'){
+      const m = OLIV_EVEIL.exec(' ' + t);
+      if(!m){ continue; }
+      const apres = (' ' + t).slice(m.index + m[0].length).trim();
+      if(!r.isFinal){ oliviaEcouteEveil(apres, false, i); continue; }
+      if(oliviaEcouteEveil(apres, true, i)) return;
+    } else if(olivEcoute.mode === 'question' || olivEcoute.mode === 'suite'){
+      if(olivEcoute.mode === 'question' && olivEcoute.eveilIdx === i){ // suite de la phrase « Ok Olivia… »
+        const m = OLIV_EVEIL.exec(' ' + t); const apres = m ? (' ' + t).slice(m.index + m[0].length).trim() : t;
+        if(!r.isFinal){ oliviaEcouteTexte(apres); continue; }
+        olivEcoute.eveilIdx = -1; if(apres.length >= 3){ oliviaEcouteQuestion(apres); return; } continue;
+      }
+      if(!r.isFinal){ oliviaEcouteTexte(t); clearTimeout(olivEcoute.minuteur); continue; }
+      oliviaEcouteQuestion(t); return;
+    }
+  }
+}
+// « Ok Olivia » entendu : Oliv'IA s'ouvre et écoute la question.
+function oliviaEcouteEveil(apres, final, idx){
+  if(typeof voixArreter === 'function') voixArreter();
+  olivEcoute.mode = 'question'; olivEcoute.eveilIdx = final ? -1 : idx; olivEcoute.message = '';
+  if(!oliv.ouvert) oliviaOuvrir(true);
+  oliviaEcouteSon();
+  if(final && apres.length >= 3){ oliviaEcouteQuestion(apres); return true; }
+  oliviaEcouteTexte(apres);
+  oliviaEcouteAttendre(9000);
+  return false;
+}
+function oliviaEcouteAttendre(ms){
+  clearTimeout(olivEcoute.minuteur);
+  olivEcoute.minuteur = setTimeout(() => { // rien entendu : retour à la veille
+    if(olivEcoute.mode !== 'question' && olivEcoute.mode !== 'suite') return;
+    olivEcoute.mode = 'veille'; olivEcoute.dictee = false; oliviaEcouteTexte(''); oliviaEcouteMaj();
+  }, ms);
+}
+function oliviaEcouteQuestion(q){
+  clearTimeout(olivEcoute.minuteur); oliviaEcouteTexte('');
+  q = q.replace(/\s+/g, ' ').trim();
+  if(OLIV_FIN.test(q) || q.length < 3){ olivEcoute.mode = 'veille'; olivEcoute.dictee = false; oliviaEcouteMaj(); return; }
+  q = q.charAt(0).toUpperCase() + q.slice(1);
+  olivEcoute.dictee = false;
+  if(oliv.occupe){ olivEcoute.mode = 'veille'; oliviaEcouteMaj(); return; } // une question écrite est déjà en cours
+  olivEcoute.mode = 'parle'; oliviaEcouteMaj(); // micro coupé pendant qu'Oliv'IA réfléchit et parle
+  if(!oliv.ouvert) oliviaOuvrir(true);
+  oliviaEnvoyer(q, true);
+}
+// Réponse arrivée : Oliv'IA la dit, puis écoute la suite du dialogue.
+function oliviaEcouteRepondre(){
+  const fil = document.getElementById('olivFil'), btns = fil ? fil.querySelectorAll('.oliv-msg.oliv .oliv-ecouter') : [];
+  const btn = btns[btns.length - 1];
+  const suite = () => {
+    if(olivEcoute.mode !== 'parle') return;
+    olivEcoute.mode = 'suite'; oliviaEcouteMaj(); oliviaEcouteAttendre(10000);
+  };
+  if(!btn || typeof voixParler !== 'function'){ suite(); return; }
+  olivEcoute.mode = 'parle'; oliviaEcouteMaj();
+  oliviaEcouter(btn, suite);
+  // Lecture interrompue autrement (autre bulle écoutée, arrêt…) : le dialogue reprend quand même.
+  const garde = setInterval(() => { if(olivEcoute.mode !== 'parle'){ clearInterval(garde); return; } if(!document.querySelector('.oliv-ecouter.lecture')){ clearInterval(garde); suite(); } }, 1500);
+}
+function oliviaEcouteBasculer(){
+  olivEcoute.pref = !olivEcoute.pref;
+  try{ if(olivEcoute.pref) localStorage.setItem('olivEcoute', '1'); else localStorage.removeItem('olivEcoute'); }catch(e){}
+  if(typeof voixAudioPret === 'function') voixAudioPret(); // clic : la voix pourra ensuite parler sans nouveau clic (iPhone, iPad)
+  olivEcoute.mode = 'veille'; olivEcoute.erreurs = 0; clearTimeout(olivEcoute.minuteur);
+  if(!olivEcoute.pref){ oliviaEcouteCouper(); oliviaEcouteMessage(''); }
+  else { oliviaEcouteLocal(); oliviaEcouteMessage('Dis « Ok Olivia ! » puis ta question. Le micro reste ouvert tant que l\'oreille est allumée ; seule la question qui suit « Ok Olivia » m\'est envoyée.'); }
+  oliviaEcouteMaj();
+}
+// Dictée d'une seule question (bouton micro), sans mot d'éveil.
+function oliviaDicter(){
+  if(typeof voixAudioPret === 'function') voixAudioPret();
+  if(olivEcoute.mode === 'question' && olivEcoute.dictee){ olivEcoute.dictee = false; olivEcoute.mode = 'veille'; clearTimeout(olivEcoute.minuteur); oliviaEcouteTexte(''); oliviaEcouteCouper(); oliviaEcouteMaj(); return; }
+  if(typeof voixArreter === 'function') voixArreter();
+  oliviaEcouteCouper(); olivEcoute.dictee = true; olivEcoute.mode = 'question'; olivEcoute.eveilIdx = -1; olivEcoute.erreurs = 0;
+  oliviaEcouteTexte(''); oliviaEcouteMaj(); oliviaEcouteAttendre(9000);
+}
+// Reconnaissance sur l'appareil quand le navigateur la propose (rien n'est envoyé à un serveur de reconnaissance).
+function oliviaEcouteLocal(){
+  const SR = oliviaSR(); if(!SR || typeof SR.available !== 'function' || olivEcoute.localTeste) return; olivEcoute.localTeste = true;
+  try{
+    Promise.resolve(SR.available({ langs: ['fr-FR'], processLocally: true })).then(d => {
+      if(d === 'available'){ olivEcoute.local = true; oliviaEcouteCouper(); oliviaEcouteMaj(); }
+      else if((d === 'downloadable' || d === 'downloading') && typeof SR.install === 'function')
+        Promise.resolve(SR.install({ langs: ['fr-FR'], processLocally: true })).then(ok => { if(ok){ olivEcoute.local = true; oliviaEcouteCouper(); oliviaEcouteMaj(); } }).catch(() => {});
+    }).catch(() => {});
+  }catch(e){}
+}
+function oliviaEcouteSon(){ // petit « ding » : Oliv'IA a entendu son nom
+  try{ const C = window.AudioContext || window.webkitAudioContext; if(!C) return; const ac = oliviaEcouteSon.ac || (oliviaEcouteSon.ac = new C());
+    if(ac.state === 'suspended') ac.resume();
+    [[880, 0], [1320, .11]].forEach(([f, t]) => { const o = ac.createOscillator(), g = ac.createGain(); o.frequency.value = f; o.type = 'sine';
+      g.gain.setValueAtTime(0, ac.currentTime + t); g.gain.linearRampToValueAtTime(.18, ac.currentTime + t + .02); g.gain.exponentialRampToValueAtTime(.001, ac.currentTime + t + .22);
+      o.connect(g).connect(ac.destination); o.start(ac.currentTime + t); o.stop(ac.currentTime + t + .25); });
+  }catch(e){}
+}
+function oliviaEcouteTexte(t){ olivEcoute.texte = t; oliviaEcouteAfficher(); }
+function oliviaEcouteMessage(t){ olivEcoute.message = t; oliviaEcouteAfficher(); }
+function oliviaEcouteAfficher(){
+  const btn = document.getElementById('olivEcouteBtn');
+  if(btn){ btn.classList.toggle('on', olivEcoute.pref); btn.setAttribute('aria-pressed', olivEcoute.pref ? 'true' : 'false');
+    btn.title = olivEcoute.pref ? 'Écoute « Ok Olivia ! » allumée : clique pour l\'éteindre' : 'Écoute « Ok Olivia ! » : clique pour me parler à voix haute'; }
+  const mic = document.getElementById('olivMicro');
+  const ecouteQ = olivEcoute.mode === 'question' || olivEcoute.mode === 'suite';
+  if(mic){ mic.classList.toggle('on', ecouteQ && olivEcoute.actif); mic.title = ecouteQ ? 'Je t\'écoute… (clique pour arrêter)' : 'Poser ma question à voix haute'; }
+  const lanceur = document.getElementById('olivLanceur');
+  if(lanceur){ lanceur.classList.toggle('ecoute', olivEcoute.pref && olivEcoute.actif);
+    const b = lanceur.querySelector('.oliv-lanceur-bulle'); if(b) b.textContent = olivEcoute.pref && olivEcoute.actif ? 'Dis « Ok Olivia ! »' : 'Une question ?'; }
+  const z = document.getElementById('olivEcouteEtat'); if(!z) return;
+  let h = '';
+  if(ecouteQ && olivEcoute.actif) h = `<span class="oliv-ecoute-pastille"></span> ${olivEcoute.mode === 'suite' ? 'Je t\'écoute… (une autre question ? sinon dis « merci »)' : 'Je t\'écoute…'}${olivEcoute.texte ? ` <i>${oliviaEsc(olivEcoute.texte)}</i>` : ''}`;
+  else if(olivEcoute.message) h = oliviaEsc(olivEcoute.message);
+  else if(olivEcoute.pref && olivEcoute.actif) h = '<span class="gicon">hearing</span> Dis « Ok Olivia ! » puis ta question.';
+  z.innerHTML = h; z.style.display = h ? 'block' : 'none';
+}
+document.addEventListener('visibilitychange', () => { if(typeof oliviaEcouteMaj === 'function') oliviaEcouteMaj(); });

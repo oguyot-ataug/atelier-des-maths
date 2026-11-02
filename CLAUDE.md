@@ -197,6 +197,10 @@ VOIX_MAX_JOUR par compte (20 000), compteur
 ou GOOGLE_TTS_CLE s'il existe), portée cloud-platform ; l'API « Cloud Text-to-Speech » doit être activée dans son projet
 Google Cloud (n° 736105734207), avec facturation. Sans cela, ou en cas de souci, la voix de l'appareil prend le relais.
 Ne jamais envoyer de nom d'élève à la synthèse.
+« Ok Olivia ! » (olivia.js, 02/11/2026) : bouton oreille d'Oliv'IA (écoute à la demande, sur les pages de cours seulement), mot
+d'éveil `OLIV_EVEIL`, question dictée envoyée comme une question écrite, réponse lue puis écoute de la suite 10 s ; bouton micro
+pour une question dictée. Reconnaissance vocale du navigateur (sur l'appareil si possible) ; rien d'autre n'est gardé ni envoyé.
+Lecture : émojis jamais lus, unités en toutes lettres (`speechUnites`, `voixPrononcer`, app.js), « Oliv'IA » dit « Olivia ».
 
 ## Conformité aux programmes : « Pour aller plus loin » (demandé le 28/10/2026)
 

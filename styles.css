@@ -2270,3 +2270,13 @@ select:not([multiple]):not([size]){
 .rl-pc-ok{background:#E3F4EA;color:#1E7B34;} .rl-pc-com{background:#FFF1E0;color:#B35C00;} .rl-pc-chgt{background:#E6EEFB;color:#2457A6;}
 .rl-pc-fini{background:#1E7B34;color:#fff;padding:1px 8px;}
 .tl-item:has(.rl-prog){flex-wrap:wrap;} .tl-item .rl-prog{margin:2px 0 0 22px;}
+/* « Ok Olivia ! » (olivia.js) : écoute, micro, état */
+.oliv-x.oliv-ecoute-btn.on{background:#fff;color:#1F7A4D;box-shadow:0 0 0 3px rgba(255,255,255,.35);}
+.oliv-saisie .btn.oliv-micro{background:#fff;color:#1F7A4D;border:1px solid rgba(31,122,77,.45);}
+.oliv-saisie .btn.oliv-micro.on{background:#C7392F;color:#fff;border-color:#C7392F;animation:olivMicro 1.2s infinite;}
+@keyframes olivMicro{0%,100%{box-shadow:0 0 0 0 rgba(199,57,47,.45);}50%{box-shadow:0 0 0 6px rgba(199,57,47,0);}}
+.oliv-ecoute-etat{margin:4px 10px 0;padding:6px 10px;border-radius:10px;background:#EEF6F0;color:#1F5C3B;font-size:.8rem;line-height:1.35;}
+.oliv-ecoute-etat i{display:block;color:#20242E;margin-top:2px;}
+.oliv-ecoute-etat .gicon{font-size:1rem;vertical-align:-3px;}
+.oliv-ecoute-pastille{display:inline-block;width:9px;height:9px;border-radius:50%;background:#C7392F;margin-right:3px;animation:olivMicro 1.2s infinite;}
+.oliv-lanceur.ecoute::after{content:'hearing';font-family:'Material Symbols Outlined';position:absolute;right:-2px;bottom:-2px;width:24px;height:24px;border-radius:50%;background:#1F7A4D;color:#fff;font-size:16px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 2px #fff;}
