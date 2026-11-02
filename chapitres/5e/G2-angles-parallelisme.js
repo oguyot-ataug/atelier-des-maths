@@ -131,32 +131,68 @@ function apBaseLinesSvg(){
     <line x1="${AP_STOP.x}" y1="${AP_STOP.y}" x2="${AP_SBOT.x}" y2="${AP_SBOT.y}" stroke="#1C1B2E" stroke-width="1.6"/>`;
 }
 
-/* Figure des définitions : (d) et (d') ne sont PAS parallèles (demandé le 02/11/2026 : « ne pas mettre des droites
+/* Figures des définitions : (d) et (d') ne sont PAS parallèles (demandé le 02/11/2026 : « ne pas mettre des droites
    parallèles sur la figure initiale de la définition des angles correspondants et alternes-internes ») -- les
    définitions valent pour deux droites quelconques ; le parallélisme ne vient qu'avec les propriétés. (d') passe
-   par B, inclinée de 10°. */
-function apBuildDefinitionsSvg(){
+   par B, inclinée de 10°.
+   Puis (demandé le 02/11/2026 : « séparer les figures pour montrer les paires d'angles alternes-internes en
+   expliquant : interne (entre les droites) alterne (de chaque côté de la sécante). Puis les 4 paires d'angles
+   correspondants : on les repère en faisant le tour dans le sens des aiguilles d'une montre 1, 2, 3 et 4, puis 1, 2,
+   3 et 4 sur l'autre droite ») : une figure par paire.
+   Numérotation des angles, en A comme en B, dans le sens des aiguilles d'une montre en partant d'en haut à gauche :
+   1 (haut gauche), 2 (haut droite), 3 (bas droite), 4 (bas gauche). Alternes-internes : 3 en A avec 1 en B, 4 en A
+   avec 2 en B. Correspondants : même numéro en A et en B. */
+function apDefGeo(){
   const al = 10 * Math.PI / 180, ux = Math.cos(al), uy = -Math.sin(al);
   const dpG = { x: AP_DPLEFT_EXT.x, y: AP_B.y + (AP_DPLEFT_EXT.x - AP_B.x) / ux * uy };
   const dpD = { x: AP_DPRIGHT_EXT.x, y: AP_B.y + (AP_DPRIGHT_EXT.x - AP_B.x) / ux * uy };
-  const wBleuA = apWedge(AP_A, AP_DRIGHT, AP_SBOT, 34, '#1F3A5C');
-  const wBleuB = apWedge(AP_B, dpG, AP_STOP, 34, '#1F3A5C');
-  const wVertA = apWedge(AP_A, AP_STOP, AP_DRIGHT, 34, '#1F6B3A');
-  const wVertB = apWedge(AP_B, AP_STOP, dpD, 34, '#1F6B3A');
-  return `<svg viewBox="0 0 460 300" style="width:100%;max-width:420px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
+  return { dpG, dpD, al,
+    A: { 1: [AP_DLEFT, AP_STOP], 2: [AP_STOP, AP_DRIGHT], 3: [AP_DRIGHT, AP_SBOT], 4: [AP_SBOT, AP_DLEFT] },
+    B: { 1: [dpG, AP_STOP], 2: [AP_STOP, dpD], 3: [dpD, AP_SBOT], 4: [AP_SBOT, dpG] } };
+}
+// o : { angles: [{ at: 'A'|'B', n, c }], numeros: bool, bande: bool, px, fs }
+function apDefSvg(o){
+  const g = apDefGeo(), P = { A: AP_A, B: AP_B }, fs = o.fs || 11, fsn = Math.round(fs * 1.15);
+  const pos = (at, n, r) => { const [p1, p2] = g[at][n], m = angleArcPoints(P[at], p1, p2, r).mid; return { x: P[at].x + r * Math.cos(m), y: P[at].y + r * Math.sin(m) }; };
+  const t = (x, y, txt, size, coul, gras) => `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" font-size="${size}" text-anchor="middle" dominant-baseline="central" fill="${coul || '#1C1B2E'}"${gras ? ' font-weight="700"' : ''}>${txt}</text>`;
+  const bande = o.bande ? `<polygon points="${AP_DLEFT_EXT.x},${AP_DLEFT_EXT.y} ${AP_DRIGHT_EXT.x},${AP_DRIGHT_EXT.y} ${g.dpD.x.toFixed(1)},${g.dpD.y.toFixed(1)} ${g.dpG.x.toFixed(1)},${g.dpG.y.toFixed(1)}" fill="#F6C343" fill-opacity="0.22"/>` : '';
+  const R = o.r || 34;
+  const coins = (o.angles || []).map(a => apWedge(P[a.at], g[a.at][a.n][0], g[a.at][a.n][1], R, a.c, 0.6)).join('');
+  // numéro de l'angle coloré, juste au-delà de son secteur
+  const numsCoins = o.numCoins ? (o.angles || []).map(a => { const q = pos(a.at, a.n, R + (a.n === 1 ? 16 : 12)); return t(q.x, q.y, a.n, fsn, a.c, true); }).join('') : '';
+  const nums = o.numeros ? ['A', 'B'].map(at => [1, 2, 3, 4].map(n => { const q = pos(at, n, n === 1 ? 26 : 21); return t(q.x, q.y, n, fsn, '#B5361C', true); }).join('')).join('') : '';
+  const yDp = AP_B.y - (AP_DPLEFT.x + 8 - AP_B.x) * Math.tan(g.al); // (d') à l'abscisse de son nom
+  // nom du point dans un angle qui n'est pas coloré (jamais sur un numéro)
+  const libre = (at, pref) => pref.find(n => !(o.angles || []).some(x => x.at === at && x.n === n)) || pref[0];
+  const nomA = pos('A', libre('A', [2, 3, 1, 4]), 46), nomB = pos('B', libre('B', [4, 3, 1, 2]), 44);
+  return `<svg viewBox="0 0 460 300" style="width:100%;max-width:${o.px || 420}px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
+    ${bande}
     <line x1="${AP_DLEFT_EXT.x}" y1="${AP_DLEFT_EXT.y}" x2="${AP_DRIGHT_EXT.x}" y2="${AP_DRIGHT_EXT.y}" stroke="#1C1B2E" stroke-width="1.6"/>
-    <line x1="${dpG.x.toFixed(1)}" y1="${dpG.y.toFixed(1)}" x2="${dpD.x.toFixed(1)}" y2="${dpD.y.toFixed(1)}" stroke="#1C1B2E" stroke-width="1.6"/>
+    <line x1="${g.dpG.x.toFixed(1)}" y1="${g.dpG.y.toFixed(1)}" x2="${g.dpD.x.toFixed(1)}" y2="${g.dpD.y.toFixed(1)}" stroke="#1C1B2E" stroke-width="1.6"/>
     <line x1="${AP_STOP.x}" y1="${AP_STOP.y}" x2="${AP_SBOT.x}" y2="${AP_SBOT.y}" stroke="#1C1B2E" stroke-width="1.6"/>
-    ${wBleuA}${wBleuB}${wVertA}${wVertB}
+    ${coins}
     <circle cx="${AP_A.x}" cy="${AP_A.y}" r="2.6" fill="#1C1B2E"/>
     <circle cx="${AP_B.x}" cy="${AP_B.y}" r="2.6" fill="#1C1B2E"/>
-    ${apLabel(AP_DLEFT.x-2, AP_DLEFT.y-8, '(d)', 11, false)}
-    ${apLabel(AP_DPLEFT.x-2, dpG.y + (AP_DPLEFT.x - dpG.x) * Math.tan(al) * -1 - 10, "(d')", 11, false)}
-    ${apLabel(AP_STOP.x+6, AP_STOP.y+14, '(s)', 11, false)}
-    ${apLabel(AP_A.x+8, AP_A.y-8, 'A')}
-    ${apLabel(AP_B.x+8, AP_B.y+16, 'B')}
-  </svg>
-  <p class="hint" style="text-align:center;margin-top:6px;">En bleu : les angles <b>alternes-internes</b>. En vert : les angles <b>correspondants</b>.</p>`;
+    ${nums}${numsCoins}
+    ${t(AP_DLEFT.x + 8, AP_DLEFT.y - 12, '(d)', fs)}
+    ${t(AP_DPLEFT.x + 8, yDp - 14, "(d')", fs)}
+    ${t(AP_STOP.x + 22 + fs * 0.75, AP_STOP.y + 16, '(s)', fs)}
+    ${t(nomA.x, nomA.y, 'A', fs + 1)}${t(nomB.x, nomB.y, 'B', fs + 1)}
+  </svg>`;
+}
+const AP_BLEU = '#1F3A5C', AP_ORANGE = '#D9741F', AP_VERT = '#1F6B3A';
+const apCarte = (svg, legende) => `<div style="flex:1 1 240px;max-width:320px;">${svg}<p class="hint" style="text-align:center;margin:4px 0 0;">${legende}</p></div>`;
+const apCartes = l => `<div style="display:flex;flex-wrap:wrap;gap:14px 22px;justify-content:center;max-width:700px;margin:0 auto;">${l.join('')}</div>`;
+function apBuildAlternesSvg(){
+  return apCartes([
+    apCarte(apDefSvg({ bande: true, px: 320, fs: 22, r: 42, numCoins: true, angles: [{ at: 'A', n: 3, c: AP_BLEU }, { at: 'B', n: 1, c: AP_BLEU }] }), '1<sup>re</sup> paire d\'angles alternes-internes'),
+    apCarte(apDefSvg({ bande: true, px: 320, fs: 22, r: 42, numCoins: true, angles: [{ at: 'A', n: 4, c: AP_ORANGE }, { at: 'B', n: 2, c: AP_ORANGE }] }), '2<sup>e</sup> paire d\'angles alternes-internes'),
+  ]);
+}
+function apBuildNumerosSvg(){ return apDefSvg({ numeros: true, px: 440, fs: 14 }); }
+function apBuildCorrespondantsSvg(){
+  return apCartes([1, 2, 3, 4].map(n => apCarte(apDefSvg({ px: 320, fs: 22, r: 42, numCoins: true, angles: [{ at: 'A', n, c: AP_VERT }, { at: 'B', n, c: AP_VERT }] }),
+    `Les deux angles n° ${n} sont correspondants`)));
 }
 
 function apBuildExemple1Svg(){
@@ -557,11 +593,22 @@ document.getElementById('cours-demo-angles-parallelisme-5e').innerHTML = `
 <div class="lesson-header"><span class="num">2</span><h3>Angles correspondants, angles alternes-internes</h3></div>
 <span class="prop-badge">Définitions</span>
 <div class="def-box">
-  Deux droites (d) et (d') sont coupées par une sécante (s) en deux points A et B. Cela forme huit angles.<br>
-  Deux de ces angles sont <b>alternes-internes</b> lorsqu'ils sont situés entre (d) et (d'), de part et d'autre de la sécante (s).<br>
-  Deux de ces angles sont <b>correspondants</b> lorsqu'ils sont situés du même côté de la sécante (s), l'un en A et l'autre en B, à la même place par rapport à leur droite.
+  Deux droites (d) et (d') sont coupées par une sécante (s) en deux points A et B. Cela forme huit angles : quatre en A et quatre en B.<br>
+  Deux angles sont <b>alternes-internes</b> lorsqu'ils sont <b>internes</b> (situés entre les droites (d) et (d')) et <b>alternes</b> (situés de part et d'autre de la sécante (s), l'un en A et l'autre en B).<br>
+  Deux angles sont <b>correspondants</b> lorsqu'ils sont situés du même côté de la sécante (s), l'un en A et l'autre en B, à la même place par rapport à leur droite.
 </div>
-<div class="figure-wrap">${apBuildDefinitionsSvg()}</div>
+<p class="example-title">Les angles alternes-internes : deux paires</p>
+<div class="figure-wrap">${apBuildAlternesSvg()}</div>
+<ul style="margin:8px 0 12px;">
+  <li><b>Internes</b> : les deux angles sont <b>entre</b> les droites (d) et (d'), dans la bande colorée.</li>
+  <li><b>Alternes</b> : ils sont <b>de part et d'autre</b> de la sécante (s) : l'un à gauche de (s), l'autre à droite.</li>
+</ul>
+<p class="example-title">Les angles correspondants : quatre paires</p>
+<div class="figure-wrap">${apBuildNumerosSvg()}</div>
+<p style="margin:10px 0 4px;">Pour les repérer, on numérote les quatre angles de sommet A en faisant le tour <b>dans le sens des aiguilles d'une montre</b> : 1, 2, 3 et 4, en partant de l'angle en haut à gauche.</p>
+<p style="margin:4px 0 4px;">Puis on fait de même avec les quatre angles de sommet B, sur l'autre droite, en partant aussi d'en haut à gauche : 1, 2, 3 et 4.</p>
+<p style="margin:4px 0 10px;">Deux angles qui portent le <b>même numéro</b> sont <b>correspondants</b> : cela fait quatre paires.</p>
+<div class="figure-wrap">${apBuildCorrespondantsSvg()}</div>
 
 <span class="prop-badge">Propriétés 1</span>
 <div class="def-box">
