@@ -537,6 +537,30 @@ function homeOrdonner(){
   if(currentUserRole === 'eleve'){ if(p.previousElementSibling !== e) p.before(e); }
   else if(e.previousElementSibling !== p) e.before(p);
 }
+/* Programmes officiels : la page publique /programmes/ dans un cadre (chargé à la première ouverture). Le site masque lui-même
+   l'en-tête, le fil d'Ariane, le titre et le pied de page de la page publique dès son chargement (même origine), sans
+   dépendre d'une version en cache de la page -- signalé le 02/11/2026 : « On ne doit pas voir l'entête ». */
+function programmesOuvrir(){
+  const f = document.getElementById('programmesCadre');
+  if(f && !f.src){
+    f.style.visibility = 'hidden';
+    f.onload = () => {
+      try{
+        const d = f.contentDocument;
+        if(d && !d.getElementById('ntIntegreCss')){
+          d.documentElement.classList.add('nt-integre');
+          const st = d.createElement('style'); st.id = 'ntIntegreCss';
+          st.textContent = '.seo-top, .seo-foot, .seo-crumbs, main.nt > h1, main.nt > .seo-sub{display:none !important;} main.nt{padding-top:12px !important;margin-top:0 !important;}';
+          d.head.appendChild(st);
+          if(!d.querySelector('base')){ const b = d.createElement('base'); b.target = '_top'; d.head.appendChild(b); }
+        }
+      }catch(err){}
+      f.style.visibility = '';
+    };
+    f.src = '/programmes/';
+  }
+  showView('view-programmes'); setActiveTopnav(null);
+}
 document.querySelectorAll('[data-nav]').forEach(el=>{
   el.addEventListener('click',(e)=>{
     if(el.tagName==='A' && el.getAttribute('href')==='#') e.preventDefault();
@@ -545,7 +569,7 @@ document.querySelectorAll('[data-nav]').forEach(el=>{
     if(nav==='home'){ showView('view-home'); setActiveTopnav(null); }
     if(nav==='rendez-vous'){ if(typeof rdvOuvrir==='function') rdvOuvrir(); return; }
     // Programmes officiels : la page publique /programmes/ affichée dans le site (cadre chargé à la première ouverture).
-    if(nav==='programmes'){ if(el.tagName==='A') e.preventDefault(); const f = document.getElementById('programmesCadre'); if(f && !f.src) f.src = '/programmes/'; showView('view-programmes'); setActiveTopnav(null); return; }
+    if(nav==='programmes'){ if(el.tagName==='A') e.preventDefault(); programmesOuvrir(); return; }
     if(nav==='niveau'){ if(!niveauVisible(el.getAttribute('data-lvl'))) return; currentLevel = el.getAttribute('data-lvl')||currentLevel; renderNiveau(currentLevel); showView('view-niveau'); setActiveTopnav(currentLevel); }
     // Visiteur non connecté : les outils de L'Atelier montrent leur page de présentation (demo.js).
     if(!currentUser && typeof demoGarde==='function' && demoGarde(nav)) return;
@@ -3781,6 +3805,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1302', date:'2026-11-02', items:['Programmes officiels dans le site : l\'en-tête, le fil d\'Ariane et le pied de page de la page publique ne s\'affichent plus, même si le navigateur garde une ancienne version de la page en mémoire (le site les masque lui-même au chargement) -- signalé : « On ne doit pas voir l\'entête ».'] },
   { version:'2026-08-19.1301', date:'2026-11-02', items:['« Programmes officiels » à la fin du menu L\'Atelier du prof, avec son Oliv\'IA (une olive qui tient le Bulletin officiel), et la page intégrée au site : les notions du CP à la 3e s\'affichent dans le site (filtres, recherche, bascule 4e/3e), sous le même titre illustré, sans quitter l\'application. Le pied de page et Ma progression y mènent aussi. Demandé : « Peux-tu faire une Oliv\'IA pour le menu Programmes officiels. Place-le à la fin du menu des profs et intègre la page dans le site ».'] },
   { version:'2026-08-19.1300', date:'2026-11-02', items:['Mes classes › Comptes : bouton « 1re connexion » pour chaque élève (mis en avant pour ceux qui ne se sont jamais connectés) -- un message prêt à envoyer à l\'élève, avec son lien personnel « Activer mon compte » (il y choisit son mot de passe ; une seule fois, valable 60 jours) et son identifiant pour les connexions suivantes, à copier mis en forme ou en code HTML. Demandé : « un autre message prêt à envoyer à l\'élève pour se connecter la première fois ».'] },
   { version:'2026-08-19.1299', date:'2026-11-02', items:['Mes classes › Comptes, réinitialisation du mot de passe d\'un élève : un message « identifiants de connexion » prêt à envoyer s\'affiche (adresse du site, identifiant, nouveau mot de passe, comment se connecter, signé du professeur), avec « Copier le message » (mis en forme, à coller dans l\'ENT, Pronote ou un courriel) et « Copier le code HTML ». Le site n\'envoie rien lui-même. Demandé : « un bouton qui permet de copier le contenu html d\'un mail ».'] },
