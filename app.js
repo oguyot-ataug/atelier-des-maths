@@ -3779,6 +3779,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1296', date:'2026-11-02', items:['Loupe (plein écran) : une définition, une propriété ou une règle suivie de sa figure s\'agrandit avec sa figure, d\'un seul tenant, que l\'on clique sur la loupe de l\'encadré ou sur celle de la figure -- signalé : « Comme la figure est séparée de la définition, on ne peut pas zoomer des deux ensembles ».'] },
   { version:'2026-08-19.1295', date:'2026-11-02', items:['5e, Angles et parallélisme : notation des angles (chapeau) dans les étapes de la figure du triangle (« l\'angle vert LIJ a la même mesure que l\'angle IJK… »), dans la correction « angles DOE et EOF supplémentaires » et dans l\'exercice du triangle isocèle des planches -- signalé : « Il manque les notations sur les angles ».'] },
   { version:'2026-08-19.1294', date:'2026-11-02', items:['5e, Angles et parallélisme, somme des angles du triangle (figure pas à pas) : chaque phrase correspond enfin à la figure affichée -- nouvelle première étape avec le triangle seul, la parallèle à (JK) apparaît à l\'étape « On trace la droite parallèle », les angles vert et bleu en I à l\'étape « On repère les angles alternes-internes » (signalé par une capture : ils n\'apparaissaient qu\'à l\'étape suivante).'] },
   { version:'2026-08-19.1293', date:'2026-11-02', items:['5e, Angles et parallélisme, définitions : une figure par paire d\'angles. Alternes-internes : deux figures, avec la bande entre (d) et (d\') colorée, et l\'explication « internes : entre les droites ; alternes : de part et d\'autre de la sécante ». Correspondants : les quatre angles en A puis en B numérotés 1, 2, 3, 4 dans le sens des aiguilles d\'une montre, puis une figure pour chacune des quatre paires (même numéro). Demandé : « séparer les figures pour montrer les paires d\'angles… ».'] },
@@ -9407,22 +9408,36 @@ function injectZoomButtons(container){
 // ré-préfixage d'id, devenue inutile : plus qu'une seule copie de chaque nœud existe jamais).
 let zoomedBox = null;
 let zoomedBoxPlaceholder = null;
+let zoomedGroupe = [];
+// Une définition (ou propriété, règle) suivie directement de sa figure s'agrandit AVEC sa figure, quelle que soit la loupe
+// utilisée -- demandé le 02/11/2026 : « Comme la figure est séparée de la définition, on ne peut pas zoomer des deux
+// ensembles » (5e, angles supplémentaires).
+function zoomGroupe(box){
+  const estDef = el => el && el.classList && el.classList.contains('def-box');
+  const estFig = el => el && el.classList && el.classList.contains('figure-wrap');
+  if(estDef(box) && estFig(box.nextElementSibling)) return [box, box.nextElementSibling];
+  if(estFig(box) && estDef(box.previousElementSibling)) return [box.previousElementSibling, box];
+  return [box];
+}
 function openZoomBox(box){
   if(zoomedBox) closeZoomBox();
-  zoomedBox = box;
+  const groupe = zoomGroupe(box);
+  zoomedBox = groupe[0]; zoomedGroupe = groupe;
   zoomedBoxPlaceholder = document.createComment('zoom-placeholder');
-  box.parentNode.insertBefore(zoomedBoxPlaceholder, box);
-  if(typeof lrnState!=='undefined' && lrnState && lrnState.box===box) lrnStop();
-  box.querySelectorAll('.zoom-btn, .read-aloud-btn, .learn-btn, .ord-btn').forEach(b=>{ b.dataset.zoomHidden='1'; b.style.display='none'; });
+  groupe[0].parentNode.insertBefore(zoomedBoxPlaceholder, groupe[0]);
+  groupe.forEach(el => {
+    if(typeof lrnState!=='undefined' && lrnState && lrnState.box===el) lrnStop();
+    el.querySelectorAll('.zoom-btn, .read-aloud-btn, .learn-btn, .ord-btn').forEach(b=>{ b.dataset.zoomHidden='1'; b.style.display='none'; });
+  });
   // Le bloc garde la largeur qu'il avait dans la page et il est agrandi d'un seul tenant pour remplir l'écran (texte et
   // figures ensemble) -- demandé : « Le zoom doit agrandir (pleine page) sans modifier le format du contenu ».
-  const largeur = Math.max(200, zoomLargeurUtile(box));
+  const largeur = Math.max(200, ...groupe.map(zoomLargeurUtile));
   const contentEl = document.getElementById('zoomBoxContent');
   contentEl.innerHTML = '';
   const echelle = document.createElement('div');
   echelle.className = 'zoom-echelle';
   echelle.style.width = largeur + 'px';
-  echelle.appendChild(box);
+  groupe.forEach(el => echelle.appendChild(el));
   contentEl.appendChild(echelle);
   document.getElementById('zoomBoxOverlay').style.display = 'flex';
   zoomAjuster();
@@ -9463,9 +9478,13 @@ function zoomAjuster(){
 window.addEventListener('resize', ()=>{ if(zoomedBox) zoomAjuster(); });
 function closeZoomBox(){
   if(!zoomedBox) return;
-  zoomedBox.querySelectorAll('[data-zoom-hidden]').forEach(b=>{ b.style.display=''; delete b.dataset.zoomHidden; });
-  zoomedBoxPlaceholder.parentNode.replaceChild(zoomedBox, zoomedBoxPlaceholder);
-  zoomedBox = null;
+  const groupe = zoomedGroupe.length ? zoomedGroupe : [zoomedBox];
+  groupe.forEach(el => {
+    el.querySelectorAll('[data-zoom-hidden]').forEach(b=>{ b.style.display=''; delete b.dataset.zoomHidden; });
+    zoomedBoxPlaceholder.parentNode.insertBefore(el, zoomedBoxPlaceholder);
+  });
+  zoomedBoxPlaceholder.remove();
+  zoomedBox = null; zoomedGroupe = [];
   zoomedBoxPlaceholder = null;
   document.getElementById('zoomBoxOverlay').style.display = 'none';
 }

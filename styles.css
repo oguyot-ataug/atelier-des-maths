@@ -446,6 +446,7 @@ main{max-width:1080px;margin:0 auto;padding:40px 24px 100px;}
    largeur qu'il avait dans la page -- demandé le 31/10/2026 : « Le zoom doit agrandir (pleine page) sans modifier le format du
    contenu ». Avant, le texte passait à 2rem et les figures à 700 px, chacun de son côté : la mise en page était déformée. */
 #zoomBoxOverlay .zoom-echelle > *{ margin:0 !important; }
+#zoomBoxOverlay .zoom-echelle > * + *{ margin-top:14px !important; } /* définition + sa figure, agrandies ensemble (zoomGroupe) */
 @media (max-width:600px){ #zoomBoxOverlay{ padding:8px; } #zoomBoxOverlay .zoom-content{ padding:10px; max-width:calc(100vw - 16px); max-height:calc(100vh - 16px); } }
 #zoomBoxOverlay .zoom-close{
   position:fixed;top:24px;right:28px;border:none;background:rgba(255,255,255,.12);color:#fff;
