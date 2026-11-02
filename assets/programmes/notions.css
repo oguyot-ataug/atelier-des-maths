@@ -66,3 +66,7 @@ body.nt-vonly .nt-voc{margin-top:0;} body.nt-vonly .nt-k{display:none;}
   .nt th.nt-row, .nt thead th.nt-corner{width:132px;min-width:132px;max-width:132px;font-size:.82rem;}
   .nt-count{margin-left:0;}
 }
+
+/* Page affichée dans le site (cadre du menu « Programmes officiels », notions.js) */
+.nt-integre .seo-top, .nt-integre .seo-foot, .nt-integre .seo-crumbs, .nt-integre main.nt > h1, .nt-integre main.nt > .seo-sub{display:none !important;}
+.nt-integre main.nt{padding-top:12px !important;margin-top:0 !important;}

@@ -405,6 +405,12 @@ if(typeof module !== 'undefined' && module.exports){ module.exports = { LV, DOMS
 /* ---------- Page : filtres, recherche, bascule 4e/3e ---------- */
 const $ = s => document.querySelector(s);
 if(!$('#nt-table')) return;
+// Page affichée DANS le site (menu « Programmes officiels », cadre de view-programmes) : sans l'en-tête, le fil d'Ariane, le
+// titre ni le pied de page publics (le site a les siens) ; les liens s'ouvrent dans la fenêtre du site.
+if(window.self !== window.top){
+  document.documentElement.classList.add('nt-integre');
+  const b = document.createElement('base'); b.target = '_top'; document.head.appendChild(b);
+}
 const state = {dom:'all', vue:'all', q:'', nouveau:false, vonly:false};
 try{ Object.assign(state, JSON.parse(localStorage.getItem('notions-cp-3e') || '{}'), {q:''}); }catch(e){}
 const save = () => { try{ localStorage.setItem('notions-cp-3e', JSON.stringify({dom:state.dom, vue:state.vue, nouveau:state.nouveau, vonly:state.vonly})); }catch(e){} };

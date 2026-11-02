@@ -544,6 +544,8 @@ document.querySelectorAll('[data-nav]').forEach(el=>{
     const nav = el.getAttribute('data-nav');
     if(nav==='home'){ showView('view-home'); setActiveTopnav(null); }
     if(nav==='rendez-vous'){ if(typeof rdvOuvrir==='function') rdvOuvrir(); return; }
+    // Programmes officiels : la page publique /programmes/ affichée dans le site (cadre chargé à la première ouverture).
+    if(nav==='programmes'){ if(el.tagName==='A') e.preventDefault(); const f = document.getElementById('programmesCadre'); if(f && !f.src) f.src = '/programmes/'; showView('view-programmes'); setActiveTopnav(null); return; }
     if(nav==='niveau'){ if(!niveauVisible(el.getAttribute('data-lvl'))) return; currentLevel = el.getAttribute('data-lvl')||currentLevel; renderNiveau(currentLevel); showView('view-niveau'); setActiveTopnav(currentLevel); }
     // Visiteur non connecté : les outils de L'Atelier montrent leur page de présentation (demo.js).
     if(!currentUser && typeof demoGarde==='function' && demoGarde(nav)) return;
@@ -3779,6 +3781,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1301', date:'2026-11-02', items:['« Programmes officiels » à la fin du menu L\'Atelier du prof, avec son Oliv\'IA (une olive qui tient le Bulletin officiel), et la page intégrée au site : les notions du CP à la 3e s\'affichent dans le site (filtres, recherche, bascule 4e/3e), sous le même titre illustré, sans quitter l\'application. Le pied de page et Ma progression y mènent aussi. Demandé : « Peux-tu faire une Oliv\'IA pour le menu Programmes officiels. Place-le à la fin du menu des profs et intègre la page dans le site ».'] },
   { version:'2026-08-19.1300', date:'2026-11-02', items:['Mes classes › Comptes : bouton « 1re connexion » pour chaque élève (mis en avant pour ceux qui ne se sont jamais connectés) -- un message prêt à envoyer à l\'élève, avec son lien personnel « Activer mon compte » (il y choisit son mot de passe ; une seule fois, valable 60 jours) et son identifiant pour les connexions suivantes, à copier mis en forme ou en code HTML. Demandé : « un autre message prêt à envoyer à l\'élève pour se connecter la première fois ».'] },
   { version:'2026-08-19.1299', date:'2026-11-02', items:['Mes classes › Comptes, réinitialisation du mot de passe d\'un élève : un message « identifiants de connexion » prêt à envoyer s\'affiche (adresse du site, identifiant, nouveau mot de passe, comment se connecter, signé du professeur), avec « Copier le message » (mis en forme, à coller dans l\'ENT, Pronote ou un courriel) et « Copier le code HTML ». Le site n\'envoie rien lui-même. Demandé : « un bouton qui permet de copier le contenu html d\'un mail ».'] },
   { version:'2026-08-19.1298', date:'2026-11-02', items:['Le lien vers la page des programmes (« Programmes officiels » : les notions du CP à la 3e) passe du menu L\'Atelier au menu L\'Atelier du prof, sous « Ma progression » -- demandé : « Déplace le menu dans celui des profs ». Il reste aussi dans le pied de page.'] },
