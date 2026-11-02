@@ -120,7 +120,7 @@ async function renderIaPage(){
     const { data: st } = await sb.from('class_students').select('class_id, profiles(id,nom,prenom)').in('class_id', iaMyClasses.map(c=>c.id));
     const clsName = new Map(iaMyClasses.map(c=>[c.id, c.nom]));
     iaStudents = (st||[]).filter(r=>r.profiles).map(r=>({id:r.profiles.id, nom:r.profiles.nom||'', prenom:r.profiles.prenom||'', class_id:r.class_id, classe:clsName.get(r.class_id)||''}))
-      .sort((a,b)=>a.classe.localeCompare(b.classe) || a.nom.localeCompare(b.nom) || a.prenom.localeCompare(b.prenom));
+      .sort((a,b)=>a.classe.localeCompare(b.classe) || elevesCmp(a, b));
   }
   const isAdmin = currentUserRole==='admin';
   // Mode de clé décidé par l'administrateur ou le référent : site / établissement / personnelle.
@@ -660,7 +660,7 @@ function oliviaAfficherConversations(){
   });
   if(!parEleve.size){ box.innerHTML = '<p class="hint">Aucune conversation sur cette période.</p>'; return; }
   const fmt = t => typeof oliviaFormat==='function' ? oliviaFormat(t) : iaEsc(t);
-  box.innerHTML = [...parEleve.entries()].sort((a,b)=>nom(a[0]).localeCompare(nom(b[0]))).map(([sid, convs])=>{
+  box.innerHTML = [...parEleve.entries()].sort((a,b)=>nomCmp(nom(a[0]), nom(b[0]))).map(([sid, convs])=>{
     const nbQ = [...convs.values()].reduce((s,c)=>s+c.length, 0);
     return `<details class="oliv-conv-eleve"><summary><b>${iaEsc(nom(sid))}</b> <span class="hint" style="margin:0;">${noms.get(sid) ? iaEsc(noms.get(sid).classe) + ' · ' : ''}${nbQ} question${nbQ>1?'s':''} · ${convs.size} conversation${convs.size>1?'s':''}</span></summary>
       ${[...convs.values()].reverse().map(c=>`<div class="oliv-conv">

@@ -278,7 +278,7 @@ function qzcOutilsHtml(){
     <button type="button" class="qzd-tg" onclick="qzcGerer('${qzD.row.class_id}')" title="Numéros des cartes et impression des planches"><span class="gicon">qr_code_2</span> Cartes</button>`;
 }
 function qzcEleves(){ // élèves de la séance, par numéro de carte (sans carte : à la fin)
-  return qzD.eleves.map(e => ({ e, n: qzc.num.get(e.id) || 0 })).sort((a, b) => (a.n || 1e4) - (b.n || 1e4) || a.e.label.localeCompare(b.e.label, 'fr'));
+  return qzD.eleves.map(e => ({ e, n: qzc.num.get(e.id) || 0 })).sort((a, b) => (a.n || 1e4) - (b.n || 1e4) || nomCmp(a.e.label, b.e.label));
 }
 function qzcAttenteHtml(){
   const sans = qzD.eleves.length - qzc.num.size;

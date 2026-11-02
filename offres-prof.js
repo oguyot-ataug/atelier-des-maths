@@ -273,7 +273,7 @@ async function opRenderClasses(regime){
   const { data: ins } = ids.length ? await sb.from('class_students').select('class_id, profiles(id,prenom,nom,email)').in('class_id', ids) : { data: [] };
   const parClasse = new Map(ids.map(id => [id, []]));
   (ins || []).forEach(r => { if(r.profiles && parClasse.has(r.class_id)) parClasse.get(r.class_id).push(r.profiles); });
-  parClasse.forEach(l => l.sort((a, b) => ((a.nom||'') + (a.prenom||'')).localeCompare((b.nom||'') + (b.prenom||''), 'fr')));
+  parClasse.forEach(l => l.sort(elevesCmp));
   const total = new Set((ins || []).map(r => r.profiles && r.profiles.id)).size;
   const max = opPrix.seul_eleves_max;
   const permises = regime === 'seul' ? opNbClasses(opOffre) : 0;

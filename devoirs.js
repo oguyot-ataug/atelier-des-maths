@@ -164,7 +164,7 @@ async function renderDevoirTargetElevesPicker(){
   const classId = document.getElementById('devoirNewClasse').value;
   if(!box || !classId) return;
   const { data: eleves } = await sb.from('class_students').select('profiles(id,nom)').eq('class_id', classId);
-  const list = (eleves||[]).map(r=>r.profiles).filter(Boolean).sort((a,b)=>(a.nom||'').localeCompare(b.nom||''));
+  const list = (eleves||[]).map(r=>r.profiles).filter(Boolean).sort(elevesCmp);
   box.innerHTML = list.map(e=>`<label style="display:flex;align-items:center;gap:6px;padding:3px 0;font-size:.85rem;">
     <input type="checkbox" value="${e.id}" ${devoirNewTargetIds.has(e.id)?'checked':''} onchange="toggleDevoirTargetEleve('${e.id}',this.checked)">
     ${escapeHtml(e.nom||'(sans nom)')}
@@ -628,7 +628,7 @@ async function openDevoirSubmissions(devoirId){
     : await cibleQuery.eq('class_id', devoir.class_id);
   // Trié par élève, ordre alphabétique (accents compris) -- signalé : "trier par élève, ordre
   // alphabétique" (même demande déjà appliquée à Supervision).
-  const elevesTries = (eleves||[]).slice().sort((a,b)=>(a.profiles?.nom||'').localeCompare(b.profiles?.nom||'','fr'));
+  const elevesTries = (eleves||[]).slice().sort((a,b)=>elevesCmp(a.profiles, b.profiles));
   const overlay = document.createElement('div');
   overlay.className = 'modal-overlay';
   overlay.style.zIndex = '300';

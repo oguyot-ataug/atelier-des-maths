@@ -771,7 +771,7 @@ async function adminShowExistingInviteLinks(){
 /* Rendu commun du tableau des liens d'invitation, regroupés par classe -- réutilisé par la
    génération en masse et le rechargement depuis la base. */
 function renderInviteLinksTable(results, titre){
-  results.sort((a,b)=> a.classe.localeCompare(b.classe) || a.nom.localeCompare(b.nom));
+  results.sort((a,b)=> a.classe.localeCompare(b.classe) || nomCmp(a.nom, b.nom));
   const tableEl = document.getElementById('adminInviteLinksTable');
   if(!results.length){ tableEl.innerHTML=''; return; }
   let html = `<p class="example-title" style="margin:10px 0 6px;">${escapeHtml(titre)}</p>`;
@@ -1121,6 +1121,7 @@ async function adminRefreshListings(){
   await adminRefreshSignupRequests();
   const { data: profs } = await sb.from('profiles').select('id,nom,prenom,email,role,subscription_status,subscription_expires_at,must_change_password').in('role',['prof','admin']).order('nom');
   const { data: eleves } = await sb.from('profiles').select('id,nom,prenom,email,role,must_change_password').eq('role','eleve').order('nom');
+  if(eleves) eleves.sort(elevesCmp); // « L' » en fin des L
   // Date de dernière connexion (auth.users, normalement inaccessible via RLS classique) --
   // exposée uniquement à un admin via une fonction SECURITY DEFINER dédiée.
   const { data: lastSignIns } = await sb.rpc('get_last_sign_in_times');

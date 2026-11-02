@@ -2269,6 +2269,18 @@ function escapeHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;'
 /* Nom affiché "Nom Prénom" -- signalé : "dans supervision, résultats, administration, il faut
    afficher Nom et Prénom" (depuis la séparation des deux champs, build 605). Retombe sur l'un
    des deux seul s'il manque, puis sur null (l'appelant décide alors du repli, ex. l'e-mail). */
+// Ordre alphabétique des élèves (demandé le 02/11/2026 : « Un nom de famille L' doit être placé en fin des L ») : ordre
+// français (accents et majuscules ignorés), mais un nom en « L' » (L'Hermitte) vient après tous les autres noms en L.
+const NOM_COLL = new Intl.Collator('fr', { sensitivity: 'base', numeric: true });
+function nomCmp(a, b){
+  a = String(a || '').trim(); b = String(b || '').trim();
+  const ap = /^l\s*['’ʼ`´]/i, la = ap.test(a), lb = ap.test(b);
+  if(la !== lb && NOM_COLL.compare(a.charAt(0), b.charAt(0)) === 0) return la ? 1 : -1;
+  if(la && lb){ a = a.replace(/^l\s*['’ʼ`´]\s*/i, ''); b = b.replace(/^l\s*['’ʼ`´]\s*/i, ''); }
+  return NOM_COLL.compare(a, b);
+}
+// Élèves { nom, prenom } : nom puis prénom.
+function elevesCmp(a, b){ return nomCmp(a && a.nom, b && b.nom) || nomCmp(a && a.prenom, b && b.prenom); }
 function profileDisplayName(p){
   if(!p) return null;
   const nom = (p.nom||'').trim();
@@ -3767,6 +3779,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1290', date:'2026-11-02', items:['Listes d\'élèves (bilan, devoirs, classes, interrogations, supervision, Oliv\'IA, administration…) : un nom de famille en « L\' » (L\'Hermitte) est rangé après tous les autres noms en L, et deux élèves de même nom sont départagés par le prénom -- demandé : « Un nom de famille L\' doit être placé en fin des L ».'] },
   { version:'2026-08-19.1289', date:'2026-11-02', items:['Bilan (synthèse des notes) : bouton « Copier » sous le titre de chaque colonne, et sous Réussite et Moy. /20 -- les valeurs seules, une par ligne, dans l\'ordre des élèves du tableau, prêtes à coller dans Pronote, l\'ENT ou un tableur (note sur le barème de l\'évaluation, « Abs » pour un absent, rien pour un travail non fait). Demandé : « comment copier une colonne pour récupérer les notes ? ».'] },
   { version:'2026-08-19.1288', date:'2026-11-02', items:['Administration › IA : « Rapport détaillé des voix en ligne » -- caractères synthétisés par mois (12 derniers, par gamme de voix Neural2 / Studio, part de la gratuité Google utilisée, nombre de synthèses, coût estimé), par jour (30 derniers, en barres) et par compte pour le mois en cours. Demandé : « un rapport sur l\'utilisation de text-to-speech en nombres de caractères ».'] },
   { version:'2026-08-19.1287', date:'2026-11-02', items:['Lecture à voix haute : le tiret d\'une liste n\'est plus lu « moins » ; « $[AB]$ » écrit en formule est lu « le segment A B » (« la droite A B » pour (AB)), sans le redire après « le segment ». Les réponses d\'Oliv\'IA en liste s\'affichent avec de vraies puces -- signalé : « "-" ne doit pas être lu ici comme "moins" », « [AB] doit être lu "le segment [AB]" ».'] },
@@ -7238,7 +7251,7 @@ async function renderTeacherStudentsListing(){
   el.innerHTML = 'Chargement…';
   const { data, error } = await sb.from('class_students').select('profiles(id,nom,prenom,email)').eq('class_id', currentClassId);
   if(error){ el.innerHTML = "Erreur : "+error.message; return; }
-  const students = (data||[]).map(r=>r.profiles).filter(Boolean).sort((a,b)=>(a.nom||'').localeCompare(b.nom||''));
+  const students = (data||[]).map(r=>r.profiles).filter(Boolean).sort(elevesCmp);
   if(!students.length){ el.innerHTML = 'Aucun élève dans cette classe pour l\'instant.'; teacherStudentsCache=[]; return; }
   // Dernière connexion (auth.users, normalement inaccessible via RLS classique) -- exposée à
   // un prof uniquement pour SES PROPRES élèves via une fonction dédiée SECURITY DEFINER (pas
@@ -7360,7 +7373,7 @@ function exportSupervisionCsv(){
     const perfect = r.score===r.total;
     const date = r.created_at ? new Date(r.created_at).toLocaleString('fr-FR') : '';
     return [nameOf(r), r.sequence_label||'-', r.score, r.total, pct+'%', (perfect && r.duration_ms!=null) ? formatDuration(r.duration_ms) : '', date];
-  }).sort((a,b)=>String(a[0]).localeCompare(String(b[0]),'fr'));
+  }).sort((a,b)=>nomCmp(a[0], b[0]));
   downloadCsv(`resultats-automatismes-${new Date().toISOString().slice(0,10)}.csv`, ['Élève','Exercice','Score','Total','%','Temps','Date'], rows);
 }
 /* Export du tableau Objectif Nombre -- même principe, sur l'ensemble des tentatives de la classe
@@ -7371,7 +7384,7 @@ function exportSupervisionCebCsv(){
   const rows = supervisionCebData.map(r=>{
     const date = r.created_at ? new Date(r.created_at).toLocaleString('fr-FR') : '';
     return [nameOf(r), r.target, r.success?'Oui':'Non', r.gap, r.result_value, r.timed?'Chronométré':'Illimité', date];
-  }).sort((a,b)=>String(a[0]).localeCompare(String(b[0]),'fr'));
+  }).sort((a,b)=>nomCmp(a[0], b[0]));
   downloadCsv(`resultats-objectif-nombre-${new Date().toISOString().slice(0,10)}.csv`, ['Élève','Cible','Réussi','Écart','Résultat obtenu','Mode','Date'], rows);
 }
 document.querySelectorAll('.sup-tab-btn').forEach(btn=>{
@@ -7517,7 +7530,7 @@ async function renderSupervision(){
 }
 function populateSupervisionFilters(){
   const nameOf = r => (r.profiles && (profileDisplayName(r.profiles) || r.profiles.email)) || 'Élève inconnu';
-  const eleves = Array.from(new Set(supervisionData.map(nameOf))).sort((a,b)=>a.localeCompare(b,'fr'));
+  const eleves = Array.from(new Set(supervisionData.map(nameOf))).sort(nomCmp);
   const exercices = Array.from(new Set(supervisionData.map(r=>r.sequence_label||'-'))).sort((a,b)=>a.localeCompare(b,'fr'));
   const selEleve = document.getElementById('supFilterEleve'), selExo = document.getElementById('supFilterExercice');
   if(selEleve){
@@ -7564,7 +7577,7 @@ function renderSupervisionFiltered(){
   });
   // Trié par élève, ordre alphabétique (localeCompare pour les accents) -- signalé : "trier par
   // élève, ordre alphabétique".
-  el.innerHTML = Object.keys(byStudent).sort((a,b)=>a.localeCompare(b,'fr')).map(name=>{
+  el.innerHTML = Object.keys(byStudent).sort(nomCmp).map(name=>{
     const results = byStudent[name];
     // Barre de réussite globale de l'élève sur la sélection filtrée -- signalé : "une barre de
     // réussite, progression colorée".

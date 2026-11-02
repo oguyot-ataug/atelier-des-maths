@@ -1134,7 +1134,7 @@ async function qzElevesDevoir(devoir){
   return (data || []).map(r => r.profiles).filter(Boolean)
     .map(p => ({ id: p.id, nom: p.nom || '', prenom: p.prenom || '', label: ((p.nom || '') + ' ' + (p.prenom || '')).trim() || '(sans nom)', test: typeof estEleveTest === 'function' && estEleveTest(p.id) }))
     .filter(e => typeof SIMPROF === 'undefined' || !SIMPROF || SIMPROF.split(',').includes(e.id)) // simulateur : les élèves de la simulation seulement
-    .sort((a, b) => (a.test - b.test) || a.label.localeCompare(b.label, 'fr'));
+    .sort((a, b) => (a.test - b.test) || elevesCmp(a, b));
 }
 function qzCQuestions(){ return (qzC.qz.questions || []).filter(q => q.type !== 'texte'); }
 function qzCStatsEleve(e){
