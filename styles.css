@@ -2282,3 +2282,10 @@ select:not([multiple]):not([size]){
 .oliv-ecoute-pastille{display:inline-block;width:9px;height:9px;border-radius:50%;background:#C7392F;margin-right:3px;animation:olivMicro 1.2s infinite;}
 .oliv-lanceur.ecoute::after{content:'hearing';font-family:'Material Symbols Outlined';position:absolute;right:-2px;bottom:-2px;width:24px;height:24px;border-radius:50%;background:#1F7A4D;color:#fff;font-size:16px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 2px #fff;}
 .oliv-txt .oliv-liste{margin:4px 0;padding-left:1.25em;} .oliv-txt .oliv-liste li{margin:2px 0;}
+
+/* Programmes officiels : plein écran du tableau comparatif (app.js, programmesPleinEcran) -- vrai plein écran du navigateur,
+   sinon (iPhone, iPad) le cadre recouvre toute la fenêtre avec un bouton pour en sortir. */
+#programmesCadre:fullscreen{width:100vw !important;height:100vh !important;min-height:0 !important;border-radius:0 !important;background:#fff;}
+#programmesPleinFermer{display:none;}
+#view-programmes.prog-plein #programmesCadre{position:fixed;inset:0;width:100vw !important;height:100vh !important;min-height:0 !important;border-radius:0 !important;z-index:9990;}
+#view-programmes.prog-plein #programmesPleinFermer{display:inline-flex;align-items:center;gap:6px;position:fixed;top:10px;right:14px;z-index:9991;border:0;border-radius:999px;padding:8px 14px;background:#1F3A5C;color:#fff;font:700 .85rem 'Space Grotesk',sans-serif;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25);}

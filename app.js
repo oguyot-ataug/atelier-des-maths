@@ -561,6 +561,16 @@ function programmesOuvrir(){
   }
   showView('view-programmes'); setActiveTopnav(null);
 }
+// Plein écran du tableau comparatif (demandé le 02/11/2026 : « Et permettre le plein écran du tableau comparatif »).
+function programmesPleinEcran(on){
+  const f = document.getElementById('programmesCadre'), v = document.getElementById('view-programmes'); if(!f || !v) return;
+  const actif = !!document.fullscreenElement || v.classList.contains('prog-plein');
+  if(on === undefined) on = !actif;
+  if(!on){ if(document.fullscreenElement) document.exitFullscreen().catch(() => {}); v.classList.remove('prog-plein'); return; }
+  if(f.requestFullscreen && document.fullscreenEnabled) f.requestFullscreen().catch(() => v.classList.add('prog-plein'));
+  else v.classList.add('prog-plein'); // iPhone, iPad : le cadre recouvre la fenêtre
+}
+document.addEventListener('keydown', e => { if(e.key === 'Escape'){ const v = document.getElementById('view-programmes'); if(v && v.classList.contains('prog-plein')) v.classList.remove('prog-plein'); } });
 document.querySelectorAll('[data-nav]').forEach(el=>{
   el.addEventListener('click',(e)=>{
     if(el.tagName==='A' && el.getAttribute('href')==='#') e.preventDefault();
@@ -3805,6 +3815,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1303', date:'2026-11-02', items:['Programmes officiels : bouton « Plein écran » pour afficher le tableau comparatif sur tout l\'écran (touche Échap pour revenir ; sur iPhone et iPad, le tableau recouvre la fenêtre avec un bouton « Quitter le plein écran ») -- demandé : « permettre le plein écran du tableau comparatif ».'] },
   { version:'2026-08-19.1302', date:'2026-11-02', items:['Programmes officiels dans le site : l\'en-tête, le fil d\'Ariane et le pied de page de la page publique ne s\'affichent plus, même si le navigateur garde une ancienne version de la page en mémoire (le site les masque lui-même au chargement) -- signalé : « On ne doit pas voir l\'entête ».'] },
   { version:'2026-08-19.1301', date:'2026-11-02', items:['« Programmes officiels » à la fin du menu L\'Atelier du prof, avec son Oliv\'IA (une olive qui tient le Bulletin officiel), et la page intégrée au site : les notions du CP à la 3e s\'affichent dans le site (filtres, recherche, bascule 4e/3e), sous le même titre illustré, sans quitter l\'application. Le pied de page et Ma progression y mènent aussi. Demandé : « Peux-tu faire une Oliv\'IA pour le menu Programmes officiels. Place-le à la fin du menu des profs et intègre la page dans le site ».'] },
   { version:'2026-08-19.1300', date:'2026-11-02', items:['Mes classes › Comptes : bouton « 1re connexion » pour chaque élève (mis en avant pour ceux qui ne se sont jamais connectés) -- un message prêt à envoyer à l\'élève, avec son lien personnel « Activer mon compte » (il y choisit son mot de passe ; une seule fois, valable 60 jours) et son identifiant pour les connexions suivantes, à copier mis en forme ou en code HTML. Demandé : « un autre message prêt à envoyer à l\'élève pour se connecter la première fois ».'] },
