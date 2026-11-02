@@ -122,7 +122,9 @@ Deno.serve(async (req) => {
 
     if (body.action !== "lire") return json({ error: "Action inconnue." }, 400);
     const voix = String(body.voix ?? "");
-    const texte = String(body.texte ?? "").replace(/\s+/g, " ").trim();
+    // Apostrophe droite entre deux lettres -> apostrophe typographique : sinon la voix Google la prend pour un guillemet et
+    // épelle la lettre (signalé le 02/11/2026 : « Un nombre pouvant s'écrire… » lu « esse écrire »).
+    const texte = String(body.texte ?? "").replace(/\s+/g, " ").trim().replace(/([A-Za-zÀ-ÖØ-öø-ÿœŒ])['ʼ`´](?=[A-Za-zÀ-ÖØ-öø-ÿœŒ])/g, "$1\u2019");
     if (!/^fr-FR-[A-Za-z0-9]+(-[A-Za-z0-9]+)+$/.test(voix)) return json({ error: "Voix inconnue." }, 400);
     if (!texte) return json({ error: "Texte vide." }, 400);
     if (texte.length > MAX_TEXTE) return json({ error: "Texte trop long." }, 413);
