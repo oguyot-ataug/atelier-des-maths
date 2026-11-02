@@ -14,8 +14,9 @@
 // Chaque texte n'est synthétisé qu'UNE fois par voix : le fichier est rangé dans le stockage public « voix »
 // (empreinte SHA-256 de la voix et du texte) ; les lectures suivantes, par n'importe qui, le réutilisent sans rien payer.
 // On n'envoie à Google que des textes de cours et d'exercices (jamais de nom d'élève).
-// Plafonds : VOIX_MAX_MOIS caractères synthétisés par mois pour tout le site (100 000 par défaut -- demandé le 02/11/2026 :
-// « Comment ne pas avoir de surprise de facturation ? », puis « oui » pour un plafond plus bas), VOIX_MAX_JOUR par compte
+// Plafonds : VOIX_MAX_MOIS caractères synthétisés par mois pour tout le site (800 000 par défaut, sous le million gratuit chaque
+// mois de Neural2 et de Studio chez Google -- demandé le 02/11/2026 : « Comment ne pas avoir de surprise de facturation ? »,
+// puis « oui » pour 800 000 et les voix Studio), VOIX_MAX_JOUR par compte
 // et par jour (20 000 par défaut). Au-delà, ou en cas de souci : le site reprend les voix de l'appareil.
 // Identification Google : le compte de service déjà utilisé pour l'agenda des rendez-vous (secret GOOGLE_RDV_CLE, clé JSON),
 // sans délégation (portée cloud-platform) ; l'API « Cloud Text-to-Speech » doit être activée dans son projet Google Cloud.
@@ -46,7 +47,7 @@ async function sha256(s: string): Promise<string> {
   const b = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
   return [...new Uint8Array(b)].map((x) => x.toString(16).padStart(2, "0")).join("");
 }
-const maxMois = () => Number(Deno.env.get("VOIX_MAX_MOIS")) || 100000;
+const maxMois = () => Number(Deno.env.get("VOIX_MAX_MOIS")) || 800000;
 const maxJour = () => Number(Deno.env.get("VOIX_MAX_JOUR")) || 20000;
 const jourParis = () => new Intl.DateTimeFormat("fr-CA", { timeZone: "Europe/Paris" }).format(new Date()); // AAAA-MM-JJ
 
@@ -93,7 +94,8 @@ async function voixDisponibles(tok: string): Promise<Voix[]> {
   };
   // Neural2 seulement (Inès, Paul) : Chirp 3 HD épelle les élisions (« s'écrire » lu « esse écrire »), Neural2 lit juste
   // (vérifié le 02/11/2026 : « ça fonctionne »).
-  let liste: Voix[] = choisir("Neural2", 2);
+  // + Studio (une femme, un homme : les plus belles voix classiques, 1 million de caractères gratuits par mois aussi).
+  let liste: Voix[] = [...choisir("Neural2", 2), ...choisir("Studio", 1)];
   if (liste.length < 2) liste = choisir("Wavenet", 2);
   voixCache = { liste, expire: Date.now() + 3600000 };
   return liste;

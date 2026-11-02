@@ -3767,6 +3767,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1281', date:'2026-11-02', items:['Lecture à voix haute : pour les comptes connectés, le réglage ne propose plus que les voix en ligne (les mêmes sur ordinateur, tablette et téléphone), Inès par défaut ; deux voix « studio » ajoutées, Léa et Hugo -- demandé : « supprime le choix des autres voix ». La voix de l\'appareil reste en secours.', 'Voix en ligne : plafond porté à 800 000 caractères par mois, sous la part gratuite de Google (1 million).'] },
   { version:'2026-08-19.1280', date:'2026-11-02', items:['Oliv\'IA a sa voix : un bouton 🔊 sur chacune de ses réponses la fait parler avec sa propre voix (voix en ligne de femme, plus aiguë et un peu plus rapide ; à défaut, la voix de l\'appareil plus aiguë) -- demandé : « on pourrait donner une voix à Oliv\'IA ».', 'Voix en ligne : seules Inès et Paul (Google Neural2) sont proposées, elles lisent juste le français écrit ; une voix choisie et retirée depuis est remplacée automatiquement.'] },
   { version:'2026-08-19.1279', date:'2026-11-02', items:['Voix en ligne : en plus des quatre voix « très naturelles » (Google Chirp 3 HD), deux voix « classiques » (Google Neural2, Inès et Paul), plus sûres sur l\'écrit -- signalé : Chirp 3 HD lit « s\'écrire » comme « esse écrire ».'] },
   { version:'2026-08-19.1278', date:'2026-11-02', items:['Voix en ligne : pas de surprise de facturation -- plafond ramené à 100 000 caractères par mois pour tout le site (et 20 000 par compte et par jour), suivi dans Administration (caractères du mois et du jour, barre rouge à 80 %), SMS d\'alerte à 80 % du plafond et ligne « voix en ligne » dans le SMS du soir. Au plafond, le site reprend les voix des appareils.'] },
@@ -9709,15 +9710,17 @@ let voixNuageActif = null; // null : pas encore demandé au serveur
 async function voixNuageEtat(){
   if(voixNuageActif !== null) return voixNuageActif;
   try{ const r = await fetch(SUPABASE_URL + '/functions/v1/voix', { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: SUPABASE_ANON_KEY }, body: JSON.stringify({ action: 'etat' }) });
-    const d = await r.json(), noms = { 'fr-FR-Neural2-F': 'Inès', 'fr-FR-Neural2-G': 'Paul', 'fr-FR-Wavenet-F': 'Claire', 'fr-FR-Wavenet-G': 'Hugo' };
+    const d = await r.json(), noms = { 'fr-FR-Neural2-F': 'Inès', 'fr-FR-Neural2-G': 'Paul', 'fr-FR-Studio-A': 'Léa', 'fr-FR-Studio-D': 'Hugo', 'fr-FR-Wavenet-F': 'Claire', 'fr-FR-Wavenet-G': 'Louis' };
     // Voix Google Neural2 (Inès, Paul) : elles lisent juste le français écrit (Chirp 3 HD épelait « s'écrire »).
-    VOIX_NUAGE = (d.voix || []).map(v => ({ id: v.id, nom: noms[v.id] || v.id.replace(/^fr-FR-/, ''), desc: v.genre === 'F' ? 'voix de femme' : 'voix d\'homme' }));
+    VOIX_NUAGE = (d.voix || []).map(v => ({ id: v.id, nom: noms[v.id] || v.id.replace(/^fr-FR-/, ''), desc: (v.genre === 'F' ? 'voix de femme' : 'voix d\'homme') + (v.type === 'Studio' ? ' · studio' : '') }));
     VOIX_OLIVIA = d.olivia || null;
     voixNuageActif = !!d.actif && VOIX_NUAGE.length > 0; }catch(e){ voixNuageActif = false; }
   return voixNuageActif;
 }
+// Comptes connectés : toujours une voix en ligne (Inès par défaut) -- demandé le 02/11/2026 : « supprime le choix des autres
+// voix » (voix de l'appareil, gardées seulement en secours et pour les visiteurs).
 function voixNuageChoisie(){
-  const n = voixPrefs().nom; if(!/^nuage:/.test(n)) return null;
+  const n = voixPrefs().nom; if(!/^nuage:/.test(n)) return currentUser && voixNuageActif !== false ? ((VOIX_NUAGE[0] && VOIX_NUAGE[0].id) || 'fr-FR-Neural2-F') : null;
   const id = n.slice(6); // voix retirée depuis (ex. Chirp 3 HD) : la première voix en ligne proposée
   return VOIX_NUAGE.length && !VOIX_NUAGE.some(v => v.id === id) ? VOIX_NUAGE[0].id : id;
 }
@@ -9809,7 +9812,7 @@ function ouvrirReglageVoix(){
         <label for="voixVitesse">Vitesse</label><input id="voixVitesse" type="range" min="0.7" max="1.4" step="0.05" oninput="voixReglage()"><span id="voixVitesseV" style="font-family:'JetBrains Mono',monospace;"></span>
         <label for="voixHauteur">Hauteur</label><input id="voixHauteur" type="range" min="0.7" max="1.5" step="0.05" oninput="voixReglage()"><span id="voixHauteurV" style="font-family:'JetBrains Mono',monospace;"></span>
       </div>
-      <p class="hint" style="margin:0 0 10px;">Une voix plus aiguë et un peu plus rapide paraît souvent plus jeune. La hauteur ne change que les voix de l'appareil.</p>
+      <p class="hint" id="voixHauteurAide" style="margin:0 0 10px;">Une voix plus aiguë et un peu plus rapide paraît souvent plus jeune.</p>
       <div class="figure-toolbar" style="justify-content:flex-start;">
         <button class="btn" onclick="voixEssayer()"><span class="gicon">play_arrow</span> Essayer</button>
         <button class="btn secondary" onclick="voixParDefaut()">Réglages par défaut</button>
@@ -9828,13 +9831,17 @@ function voixAfficher(){
   const nuage = voixNuageChoisie() && currentUser && voixNuageActif ? voixNuageChoisie() : null;
   const choisie = nuage ? null : (voix.find(v => v.name === p.nom) || voix[0] || {}).name;
   // Voix en ligne (comptes connectés, fonction active) : en tête, les mêmes sur tous les appareils.
-  const enLigne = currentUser && voixNuageActif ? '<div class="hint" style="margin:0;font-weight:700;">Voix en ligne · les mêmes sur tous les appareils</div>' + VOIX_NUAGE.map(v => `<label style="display:flex;align-items:center;gap:8px;padding:7px 10px;border:1.5px solid ${v.id === nuage ? 'var(--accent)' : 'rgba(28,43,57,.12)'};border-radius:10px;cursor:pointer;">
+  const enLigne = currentUser && voixNuageActif ? '<div class="hint" style="margin:0;font-weight:700;">Voix en ligne · les mêmes sur ordinateur, tablette et téléphone</div>' + VOIX_NUAGE.map(v => `<label style="display:flex;align-items:center;gap:8px;padding:7px 10px;border:1.5px solid ${v.id === nuage ? 'var(--accent)' : 'rgba(28,43,57,.12)'};border-radius:10px;cursor:pointer;">
       <input type="radio" name="voixChoix" ${v.id === nuage ? 'checked' : ''} onchange="voixChoisirNuage('${v.id}')">
       <span style="flex:1;"><b>${v.nom}</b> <small class="hint" style="margin:0;">${v.desc}</small></span>
       <button type="button" class="btn secondary" style="padding:3px 10px;font-size:.75rem;" onclick="event.preventDefault();voixChoisirNuage('${v.id}');voixEssayer()"><span class="gicon">play_arrow</span></button>
-    </label>`).join('') + '<div class="hint" style="margin:6px 0 0;font-weight:700;">Voix de cet appareil</div>' : '';
+    </label>`).join('') : '';
   if(currentUser && voixNuageActif === null) voixNuageEtat().then(ok => { if(ok) voixAfficher(); });
-  liste.innerHTML = enLigne + (voix.length ? voix.map((v, k) => `<label style="display:flex;align-items:center;gap:8px;padding:7px 10px;border:1.5px solid ${v.name === choisie ? 'var(--accent)' : 'rgba(28,43,57,.12)'};border-radius:10px;cursor:pointer;">
+  const enLigneSeules = !!enLigne; // comptes connectés : les voix en ligne seulement (les voix de l'appareil restent en secours)
+  // La hauteur ne règle que les voix de l'appareil : masquée avec elles.
+  [document.getElementById('voixHauteur'), document.getElementById('voixHauteurV'), document.getElementById('voixHauteurAide'), document.querySelector('label[for="voixHauteur"]')]
+    .forEach(e => { if(e) e.style.display = enLigneSeules ? 'none' : ''; });
+  liste.innerHTML = enLigneSeules ? enLigne : (voix.length ? voix.map((v, k) => `<label style="display:flex;align-items:center;gap:8px;padding:7px 10px;border:1.5px solid ${v.name === choisie ? 'var(--accent)' : 'rgba(28,43,57,.12)'};border-radius:10px;cursor:pointer;">
       <input type="radio" name="voixChoix" value="${k}" ${v.name === choisie ? 'checked' : ''} onchange="voixChoisir(${k})">
       <span style="flex:1;"><b>${escapeHtml(voixNomCourt(v))}</b> <small class="hint" style="margin:0;">${escapeHtml(v.lang)}${/natural|neural|premium|enhanced|améliorée|online/i.test(v.name) ? ' · naturelle' : ''}</small></span>
       <button type="button" class="btn secondary" style="padding:3px 10px;font-size:.75rem;" onclick="event.preventDefault();voixChoisir(${k});voixEssayer()"><span class="gicon">play_arrow</span></button>
@@ -9843,7 +9850,7 @@ function voixAfficher(){
   document.getElementById('voixVitesseV').textContent = '× ' + p.vitesse.toFixed(2).replace('.', ',');
   document.getElementById('voixHauteurV').textContent = p.hauteur.toFixed(2).replace('.', ',');
   const ua = navigator.userAgent;
-  document.getElementById('voixAstuce').innerHTML = /Edg\//.test(ua) ? 'Astuce : avec Edge, les voix « naturelles » (Denise, Vivienne, Éloïse…) sont les plus agréables.'
+  document.getElementById('voixAstuce').innerHTML = enLigneSeules ? '' : /Edg\//.test(ua) ? 'Astuce : avec Edge, les voix « naturelles » (Denise, Vivienne, Éloïse…) sont les plus agréables.'
     : /iPhone|iPad|Macintosh/.test(ua) ? 'Astuce : d\'autres voix plus naturelles se téléchargent dans Réglages › Accessibilité › Contenu énoncé › Voix (versions « Améliorée » ou « Premium »).'
     : /Android/.test(ua) ? 'Astuce : d\'autres voix se téléchargent dans les paramètres Android (Synthèse vocale).'
     : 'Astuce : le navigateur Edge propose des voix françaises très naturelles (Denise, Vivienne, Éloïse…).';

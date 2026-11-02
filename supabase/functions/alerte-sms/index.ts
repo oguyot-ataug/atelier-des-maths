@@ -126,8 +126,8 @@ serve(async (req) => {
     }
 
     // 4 bis. Voix en ligne (fonction voix, Google Text-to-Speech) : alerte une fois par mois à 80 % du plafond -- demandé le
-    // 02/11/2026 : « Comment ne pas avoir de surprise de facturation ? ». Plafond : VOIX_MAX_MOIS (100 000 par défaut).
-    const moisDebut = P.jour.slice(0, 8) + "01", voixMax = Number(Deno.env.get("VOIX_MAX_MOIS")) || 100000;
+    // 02/11/2026 : « Comment ne pas avoir de surprise de facturation ? ». Plafond : VOIX_MAX_MOIS (800 000 par défaut).
+    const moisDebut = P.jour.slice(0, 8) + "01", voixMax = Number(Deno.env.get("VOIX_MAX_MOIS")) || 800000;
     const { data: vu } = await db.from("voix_usage").select("jour,caracteres").gte("jour", moisDebut);
     const voixMois = (vu || []).reduce((s: number, r: any) => s + (r.caracteres || 0), 0);
     const voixJour = (vu || []).filter((r: any) => r.jour === P.jour).reduce((s: number, r: any) => s + (r.caracteres || 0), 0);
