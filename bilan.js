@@ -267,8 +267,8 @@ function blRendre(){
     <p class="hint" style="margin:4px 0 8px;">${complet ? 'Travail en autonomie, devoirs, interrogations (en ligne et sur papier) et autres notes' : 'Devoirs publiés'} du ${new Date(B.per.du).toLocaleDateString('fr-FR')} au ${new Date(B.per.au).toLocaleDateString('fr-FR')}, archivés compris.${perso ? '' : B.per.perso ? ' Les dates de cette période sont modifiables et enregistrées dans votre compte.' : ' Les dates de chaque période sont modifiables et mémorisées sur cet appareil.'}
       ${complet ? '<span class="bl-prive"><span class="gicon">lock</span> Les appréciations ne sont visibles que par vous ; l\'IA ne reçoit jamais les noms ni les prénoms.</span>' : 'Le bilan complet, avec les interrogations et les appréciations, est dans Mes classes › Bilan.'} <span id="blEtat"></span></p>
     ${cols.length ? `<div class="bl-table"><table><thead>${groupes.length > 1 ? `<tr class="bl-grp"><th></th>${groupes.map(([g, t, n]) => `<th colspan="${n}" class="g-${g}">${t}</th>`).join('')}<th colspan="${complet ? 6 : 4}"></th></tr>` : ''}
-        <tr><th>Élève</th>${cols.map(col => `<th title="${escapeHtml(col.titre + (col.themes ? ' · ' + col.themes : ''))}"><span class="gicon">${col.icon}</span>${col.date ? `<small>${new Date(col.date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' })}</small>` : ''}<span class="bl-tit">${escapeHtml(col.court || col.titre)}</span>${blNotee(col) ? `<button type="button" class="bl-coef" data-coef="${col.id}" title="Coefficient de cette évaluation dans la moyenne">coef ${blNum(col.coef)}</button>` : ''}</th>`).join('')}
-        <th>Faits</th><th>Retards</th><th>Réussite</th><th>Moy. /20</th>${complet ? '<th>Évol.</th><th class="bl-appr-h">Appréciation <small>(vous seul, ' + BL_MAX + ' car.)</small></th>' : ''}</tr></thead>
+        <tr><th>Élève</th>${cols.map(col => `<th title="${escapeHtml(col.titre + (col.themes ? ' · ' + col.themes : ''))}"><span class="gicon">${col.icon}</span>${col.date ? `<small>${new Date(col.date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' })}</small>` : ''}<span class="bl-tit">${escapeHtml(col.court || col.titre)}</span>${blNotee(col) ? `<button type="button" class="bl-coef" data-coef="${col.id}" title="Coefficient de cette évaluation dans la moyenne">coef ${blNum(col.coef)}</button>` : ''}<button type="button" class="bl-colcopie" data-colcopie="${col.id}" title="Copier les résultats de cette colonne : une valeur par ligne, dans l'ordre des élèves du tableau (à coller dans Pronote, l'ENT ou un tableur)"><span class="gicon">content_copy</span>Copier</button></th>`).join('')}
+        <th>Faits</th><th>Retards</th><th>Réussite<button type="button" class="bl-colcopie" data-colcopie="_reussite" title="Copier les taux de réussite : une valeur par ligne, dans l'ordre des élèves du tableau (à coller dans Pronote, l'ENT ou un tableur)"><span class="gicon">content_copy</span>Copier</button></th><th>Moy. /20<button type="button" class="bl-colcopie" data-colcopie="_moy" title="Copier les moyennes sur 20 : une valeur par ligne, dans l'ordre des élèves du tableau (à coller dans Pronote, l'ENT ou un tableur)"><span class="gicon">content_copy</span>Copier</button></th>${complet ? '<th>Évol.</th><th class="bl-appr-h">Appréciation <small>(vous seul, ' + BL_MAX + ' car.)</small></th>' : ''}</tr></thead>
       <tbody>${corps || '<tr><td>Aucun élève.</td></tr>'}</tbody>
       <tfoot><tr><th>Classe</th>${moyCol}<td colspan="${complet ? 6 : 4}"></td></tr></tfoot></table></div>
       <p class="hint bl-leg"><span class="bl-c ok">≥ 70 %</span> <span class="bl-c moyen">40 à 70 %</span> <span class="bl-c ko">&lt; 40 %</span> <span class="bl-c vide">—</span> pas fait · <span class="bl-c retard">encadré</span> en retard · Réussite : moyenne des pourcentages ; Moy. /20 : notes des interrogations et des devoirs notés, pondérées par leur coefficient (cliquez sur « coef » pour le changer)${complet ? ' ; Évol. : résultats de la fin de la période comparés au début' : ''}.</p>`
@@ -307,6 +307,21 @@ function blRendre(){
     const l = B.eleves.map(e => { const t = B.cible.querySelector(`[data-appr="${e.id}"]`); return [e.label, t ? t.value.replace(/\s+/g, ' ').trim() : '']; }).filter(x => x[1]);
     if(!l.length){ blCopieFait(q('#blCopieTout'), 'Aucune appréciation'); return; }
     blCopier(l.map(x => x.join('\t')).join('\n'), q('#blCopieTout'), `${l.length} copiée${l.length > 1 ? 's' : ''}`); };
+  // Copier une colonne (demandé le 02/11/2026 : « comment copier une colonne pour récupérer les notes ? ») : les valeurs seules,
+  // une par ligne, dans l'ordre des élèves -- note sur le barème de l'évaluation (« 14,5 » pour 14,5/20, « 7 » pour 7/10),
+  // pourcentage sans le signe, « Abs » pour un absent, rien pour un travail non fait ou non donné à l'élève.
+  B.cible.querySelectorAll('[data-colcopie]').forEach(b => b.onclick = ev => { ev.stopPropagation();
+    const k = b.dataset.colcopie;
+    const val = e => {
+      if(k === '_reussite' || k === '_moy'){ const s = blSynthese(e); return k === '_moy' ? (s.moyenne != null ? blNum(s.moyenne) : '') : (s.reussite != null ? String(Math.round(100 * s.reussite)) : ''); }
+      const c = B.cellules.get(k + '|' + e.id); if(!c || c.nc || c.manque) return '';
+      if(c.abs) return 'Abs';
+      if(c.note20 != null) return String(c.txt).split('/')[0].trim();
+      if(c.v != null && !c.note20) return String(Math.round(100 * c.v));
+      return ''; };
+    const l = B.eleves.map(val), n = l.filter(Boolean).length;
+    if(!n){ blCopieFait(b, ''); return; }
+    blCopier(l.join('\n'), b, String(n)); });
   if(q('#blIa')) q('#blIa').onclick = () => { blx = B; blAppreciationsIa(); };
   if(q('#blCons')) q('#blCons').onclick = () => { blx = B; blConsigneOuvrir(); };
   q('#blCsv').onclick = () => { blx = B; blCsv(); }; q('#blImp').onclick = () => { blx = B; blImprimer(); };
@@ -552,6 +567,8 @@ function blImprimer(){
     .bl-table thead tr.bl-grp + tr th{top:24px;}
     .bl-grp .g-auto{background:#FFF4E6;} .bl-grp .g-devoir{background:#EEF4FB;} .bl-grp .g-interro{background:#F4EFFA;} .bl-grp .g-papier{background:#EAF7EF;} .bl-grp .g-autre{background:#F3F5F8;}
     .bl-table thead th .gicon{display:block;font-size:17px;color:#5B6472;} .bl-table thead th small{display:block;color:#5B6472;font-weight:500;}
+    .bl-colcopie{display:inline-flex;align-items:center;gap:2px;margin:3px auto 0;border:1px solid rgba(28,43,57,.2);background:#fff;color:#1F3A5C;border-radius:6px;font:700 .66rem Inter,sans-serif;padding:1px 5px;cursor:pointer;}
+    .bl-colcopie .gicon{font-size:.85rem;} .bl-colcopie:hover{background:#EEF2F7;}
     .bl-coef{display:inline-block;margin-top:3px;border:1px solid rgba(107,63,160,.35);background:#F4EFFA;color:#6B3FA0;border-radius:6px;font:700 .66rem Inter,sans-serif;padding:1px 6px;cursor:pointer;}
     .bl-tit{display:block;font-size:.72rem;line-height:1.15;max-height:2.4em;overflow:hidden;}
     .bl-table tfoot th, .bl-table tfoot td{background:#F3F5F8;font-weight:700;} .bl-table tfoot small, .bl-c small{display:block;font-weight:500;color:#5B6472;font-size:.68rem;}
