@@ -234,12 +234,11 @@ let hmUtt = null; // référence gardée : sinon certains navigateurs perdent l'
 function hmDire(texte, fin){
   if(!hmParoleOk()){ if(fin) fin(); return; }
   let fait = false; const finir = () => { if(!fait){ fait = true; if(fin) fin(); } };
-  speechSynthesis.cancel();
-  hmUtt = speechUtterance(texte); hmUtt.onend = finir; hmUtt.onerror = finir;
-  speechSynthesis.speak(hmUtt);
+  if(typeof voixParler === 'function') voixParler(texte, { onend: finir, onerror: finir }); // voix choisie (en ligne ou de l'appareil)
+  else { speechSynthesis.cancel(); hmUtt = speechUtterance(texte); hmUtt.onend = finir; hmUtt.onerror = finir; speechSynthesis.speak(hmUtt); }
   if(fin) setTimeout(finir, 8000 + texte.length * 110); // filet de sécurité si la fin n'est jamais signalée
 }
-function hmVoixReglage(v){ hmVoix = v; try{ localStorage.setItem('hmVoix', v ? '1' : '0'); }catch(e){} if(!v && hmParoleOk()) speechSynthesis.cancel(); }
+function hmVoixReglage(v){ hmVoix = v; try{ localStorage.setItem('hmVoix', v ? '1' : '0'); }catch(e){} if(!v && hmParoleOk()){ if(typeof voixArreter === 'function') voixArreter(); else speechSynthesis.cancel(); } }
 function hmEcouter(i){ hmStop(); hmMaj(); hmDire(hmTexteParle(HM_EVTS[i])); }
 const HM_PAS_MS = 4500; // sans la voix : au moins 4,5 s par étape, plus si le texte est long
 // Projection Equal Earth (mêmes formules que d3-geo) avec les réglages de planisphere.js.
@@ -359,7 +358,7 @@ function hmMaj(){
   } else if(!bas) bas = `<p class="hint hm-carte-aide">${monde ? 'Clique sur un point pour lire l\'étape (le nombre indique combien d\'étapes sont nées à cet endroit), sur un cadre pour zoomer, ou sur « Animer » pour voir l\'histoire se dérouler.' : 'Clique sur un point pour lire l\'étape, ou sur « Animer » pour voir l\'histoire se dérouler.'}</p>`;
   document.getElementById('hmBas').innerHTML = bas;
 }
-function hmStop(){ hmRun++; hmAnim = false; clearTimeout(hmTimer); if(hmParoleOk()) speechSynthesis.cancel(); }
+function hmStop(){ hmRun++; hmAnim = false; clearTimeout(hmTimer); if(hmParoleOk()){ if(typeof voixArreter === 'function') voixArreter(); else speechSynthesis.cancel(); } }
 function hmZoom(v){ hmVue = v; hmLieuSel = ''; hmMaj(); }
 function hmLieu(k){
   hmStop(); hmLieuSel = hmLieuSel === k ? '' : k;

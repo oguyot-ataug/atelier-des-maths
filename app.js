@@ -1793,14 +1793,8 @@ function renderQuizHTML(bank, prefixHtml){
 /* Lecture à voix haute (synthèse vocale du navigateur, en français) -- demandé pour le CP : « côté élève, un
    bouton écouter la consigne ». Le texte est lu sans ses dessins ; les réponses proposées sont lues ensuite. */
 function lireAVoixHaute(texte){
-  if(!('speechSynthesis' in window) || !texte) return false;
-  speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(texte);
-  u.lang = 'fr-FR'; u.rate = .85;
-  const voix = speechSynthesis.getVoices().find(v => /^fr(-|_)FR/i.test(v.lang)) || speechSynthesis.getVoices().find(v => /^fr/i.test(v.lang));
-  if(voix) u.voice = voix;
-  speechSynthesis.speak(u);
-  return true;
+  if(!texte) return false;
+  return voixParler(texte, { vitesse: .85 }); // voix choisie dans le réglage des voix (en ligne ou de l'appareil)
 }
 function texteALire(html){
   const d = document.createElement('div'); d.innerHTML = String(html || '').replace(/<svg[\s\S]*?<\/svg>/g, ' ');
@@ -3773,6 +3767,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1276', date:'2026-11-02', items:['Lecture à voix haute : voix en ligne naturelles (Denise, Henri, Éloïse — voix d\'enfant —, Vivienne, Rémy), les mêmes sur ordinateur, Android et iPhone, proposées en tête du réglage des voix aux comptes connectés dès que le service Azure est relié. Chaque texte n\'est synthétisé qu\'une fois puis réutilisé par tous ; sans service, ou en cas de souci, la voix de l\'appareil prend le relais. Une seule fonction de lecture pour tout le site (cours, quiz du CP, frise d\'histoire).'] },
   { version:'2026-08-19.1275', date:'2026-11-02', items:['En-tête : quand personne n\'est connecté, un vrai bouton bleu « Se connecter » (« Connexion » sur un petit téléphone) remplace la pastille vide avec un bonhomme -- signalé : « La vignette avec la personne dedans n\'est pas assez parlante. Il faudrait un bouton se connecter ». Une fois connecté, la pastille ronde avec l\'initiale revient.'] },
   { version:'2026-08-19.1274', date:'2026-11-01', items:['Relecture, 6e Nombres décimaux : nombre de centièmes rédigé terme à terme (400 centièmes + 50 centièmes) avec un tableau de numération ; « nombre de dixièmes, de centièmes, de dizaines » à côté de « chiffre des… » ; demi-droite graduée tracée dans le corrigé (0,4 ; 0,45 ; 0,5 ; 0,62).'] },
   { version:'2026-08-19.1273', date:'2026-11-01', items:["Simulateur de classe : rappel pour donner du travail aux élèves fictifs -- une nouvelle inscrite avait préparé ses trois élèves fictifs et ouvert leurs écrans sans rien leur donner à faire ; demandé : « oui, ajoute le rappel dans le simulateur ». Sous les réglages, un encadré explique la suite : donner un devoir ou une interrogation à la classe « Simulation » (ou lancer une séance en direct, une session COURS, des questions flash) dans la fenêtre professeur, puis faire le travail dans la fenêtre d'un élève. Une fois la simulation lancée, tant que la classe de simulation n'a ni devoir ni interrogation, un bandeau orange le rappelle (« Vos élèves fictifs n'ont encore rien à faire »), avec un bouton « C'est fait » pour vérifier de nouveau."]},
@@ -9698,6 +9693,93 @@ function speechUtterance(text){
   u.rate = p.vitesse; u.pitch = p.hauteur;
   return u;
 }
+/* Voix en ligne (Azure AI Speech, fonction serveur « voix ») -- demandé le 02/11/2026 : « essayons ». Les mêmes voix
+   naturelles sur tous les appareils (Chrome, Android, iPhone…), au lieu des seules voix installées. Chaque texte n'est
+   synthétisé qu'une fois (fichier gardé dans le stockage du site, réutilisé par tous). Proposées aux comptes connectés
+   quand la fonction est active (clé Azure configurée, plafond du mois non atteint) ; sinon, ou en cas de souci, la voix
+   de l'appareil prend le relais sans rien dire. La hauteur ne s'applique qu'aux voix de l'appareil ; la vitesse, à toutes. */
+const VOIX_NUAGE = [
+  { id: 'fr-FR-DeniseNeural', nom: 'Denise', desc: 'voix de femme' },
+  { id: 'fr-FR-HenriNeural', nom: 'Henri', desc: 'voix d\'homme' },
+  { id: 'fr-FR-EloiseNeural', nom: 'Éloïse', desc: 'voix d\'enfant' },
+  { id: 'fr-FR-VivienneMultilingualNeural', nom: 'Vivienne', desc: 'voix de femme' },
+  { id: 'fr-FR-RemyMultilingualNeural', nom: 'Rémy', desc: 'voix d\'homme' },
+];
+let voixNuageActif = null; // null : pas encore demandé au serveur
+async function voixNuageEtat(){
+  if(voixNuageActif !== null) return voixNuageActif;
+  try{ const r = await fetch(SUPABASE_URL + '/functions/v1/voix', { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: SUPABASE_ANON_KEY }, body: JSON.stringify({ action: 'etat' }) });
+    voixNuageActif = !!(await r.json()).actif; }catch(e){ voixNuageActif = false; }
+  return voixNuageActif;
+}
+function voixNuageChoisie(){ const n = voixPrefs().nom; return /^nuage:/.test(n) ? n.slice(6) : null; }
+async function voixNuageUrl(voix, texte){
+  let jeton = ''; try{ const { data: { session } } = await sb.auth.getSession(); jeton = session ? session.access_token : ''; }catch(e){}
+  const r = await fetch(SUPABASE_URL + '/functions/v1/voix', { method: 'POST',
+    headers: Object.assign({ 'Content-Type': 'application/json', apikey: SUPABASE_ANON_KEY }, jeton ? { Authorization: 'Bearer ' + jeton } : {}),
+    body: JSON.stringify({ action: 'lire', voix, texte }) });
+  if(!r.ok){ if(r.status === 503 || r.status === 429) voixNuageActif = false; throw new Error('voix ' + r.status); }
+  return (await r.json()).url;
+}
+// Morceaux d'au plus ~1 200 caractères, coupés aux fins de phrase (le serveur refuse au-delà de 2 500).
+function voixMorceaux(t){
+  const ph = t.match(/[^.!?;:]+[.!?;:]*\s*/g) || [t], out = [];
+  let cur = '';
+  ph.forEach(p => { if(cur && (cur + p).length > 1200){ out.push(cur.trim()); cur = ''; }
+    while(p.length > 2000){ const i = p.lastIndexOf(' ', 1500) > 0 ? p.lastIndexOf(' ', 1500) : 1500; out.push(p.slice(0, i).trim()); p = p.slice(i); }
+    cur += p; });
+  if(cur.trim()) out.push(cur.trim());
+  return out;
+}
+// Un seul lecteur audio, « débloqué » au clic (iPhone : un son ne peut démarrer qu'à la suite d'un geste de l'utilisateur).
+let voixAudio = null, voixSilence = null;
+function voixAudioPret(){
+  if(!voixAudio) voixAudio = new Audio();
+  if(!voixSilence){ const n = 800, b = new ArrayBuffer(44 + n), v = new DataView(b), w = (o, s) => [...s].forEach((c, i) => v.setUint8(o + i, c.charCodeAt(0)));
+    w(0, 'RIFF'); v.setUint32(4, 36 + n, true); w(8, 'WAVE'); w(12, 'fmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+    v.setUint32(24, 8000, true); v.setUint32(28, 8000, true); v.setUint16(32, 1, true); v.setUint16(34, 8, true); w(36, 'data'); v.setUint32(40, n, true);
+    for(let i = 0; i < n; i++) v.setUint8(44 + i, 128);
+    voixSilence = URL.createObjectURL(new Blob([b], { type: 'audio/wav' })); }
+  try{ voixAudio.src = voixSilence; const p = voixAudio.play(); if(p && p.catch) p.catch(() => {}); }catch(e){}
+  return voixAudio;
+}
+let voixLectureN = 0;
+function voixArreter(){
+  voixLectureN++;
+  if(voixAudio){ try{ voixAudio.onended = voixAudio.onerror = null; voixAudio.pause(); }catch(e){} }
+  if('speechSynthesis' in window) speechSynthesis.cancel();
+}
+/* Lire un texte avec la voix choisie : voixParler(texte, { vitesse, onend, onerror }). À appeler depuis un clic. */
+function voixParler(texte, o){
+  o = o || {}; voixArreter(); const n = voixLectureN;
+  texte = String(texte || '').replace(/\s+/g, ' ').trim();
+  const fin = () => { if(n === voixLectureN && o.onend) o.onend(); }, err = () => { if(n === voixLectureN && (o.onerror || o.onend)) (o.onerror || o.onend)(); };
+  if(!texte){ fin(); return true; }
+  const appareil = () => {
+    if(n !== voixLectureN) return;
+    if(!('speechSynthesis' in window)){ err(); return; }
+    const u = speechUtterance(texte); if(o.vitesse) u.rate = o.vitesse;
+    u.onend = fin; u.onerror = err; voixAppareilUtt = u; speechSynthesis.speak(u);
+  };
+  const id = voixNuageChoisie();
+  if(!id || !currentUser || voixNuageActif === false || typeof SUPABASE_URL === 'undefined'){ if(!('speechSynthesis' in window)) return false; appareil(); return true; }
+  let repli = false; const secours = () => { if(repli) return; repli = true; appareil(); }; // une seule fois
+  const a = voixAudioPret(), morceaux = voixMorceaux(texte), urls = [];
+  const url = k => urls[k] || (urls[k] = voixNuageUrl(id, morceaux[k]));
+  const jouer = async k => {
+    if(n !== voixLectureN) return;
+    if(k >= morceaux.length){ fin(); return; }
+    let u; try{ u = await url(k); }catch(e){ if(k === 0) secours(); else err(); return; } // souci en ligne : la voix de l'appareil
+    if(n !== voixLectureN) return;
+    if(k + 1 < morceaux.length) url(k + 1).catch(() => {}); // le morceau suivant se prépare pendant la lecture
+    a.onended = () => jouer(k + 1); a.onerror = () => { if(k === 0) secours(); else err(); };
+    a.src = u; a.playbackRate = o.vitesse || voixPrefs().vitesse;
+    const p = a.play(); if(p && p.catch) p.catch(() => { if(n !== voixLectureN) return; if(k === 0) secours(); else err(); });
+  };
+  jouer(0);
+  return true;
+}
+let voixAppareilUtt = null; // référence gardée : sinon certains navigateurs perdent l'événement de fin
 const VOIX_ESSAI = "Bonjour ! Dans un triangle rectangle, le carré de l'hypoténuse est égal à la somme des carrés des deux autres côtés.";
 function voixNomCourt(v){ return v.name.replace(/^Microsoft\s+/i, '').replace(/\s*-\s*(French|Français).*$/i, '').replace(/\s+Online\s*\((Natural|Neural)\)/i, '').replace(/\s*\((France|Canada|Belgium|Switzerland|Belgique|Suisse)\)/i, '').trim() || v.name; }
 function ouvrirReglageVoix(){
@@ -9711,13 +9793,13 @@ function ouvrirReglageVoix(){
         <strong style="font-family:'Space Grotesk',sans-serif;font-size:1.05rem;"><span class="gicon">settings_voice</span> Voix de la lecture à voix haute</strong>
         <button class="modal-close" onclick="fermerReglageVoix()" aria-label="Fermer"><span class="gicon">close</span></button>
       </div>
-      <p class="hint" style="margin:0 0 10px;">Les voix proposées sont celles de cet appareil et de ce navigateur. Le choix est mémorisé sur cet appareil.</p>
+      <p class="hint" style="margin:0 0 10px;">Le choix est mémorisé sur cet appareil.</p>
       <div id="voixListe" style="display:grid;gap:6px;max-height:40vh;overflow-y:auto;"></div>
       <div style="display:grid;grid-template-columns:auto 1fr auto;gap:8px 10px;align-items:center;margin:14px 0 6px;">
         <label for="voixVitesse">Vitesse</label><input id="voixVitesse" type="range" min="0.7" max="1.4" step="0.05" oninput="voixReglage()"><span id="voixVitesseV" style="font-family:'JetBrains Mono',monospace;"></span>
         <label for="voixHauteur">Hauteur</label><input id="voixHauteur" type="range" min="0.7" max="1.5" step="0.05" oninput="voixReglage()"><span id="voixHauteurV" style="font-family:'JetBrains Mono',monospace;"></span>
       </div>
-      <p class="hint" style="margin:0 0 10px;">Une voix plus aiguë et un peu plus rapide paraît souvent plus jeune.</p>
+      <p class="hint" style="margin:0 0 10px;">Une voix plus aiguë et un peu plus rapide paraît souvent plus jeune. La hauteur ne change que les voix de l'appareil.</p>
       <div class="figure-toolbar" style="justify-content:flex-start;">
         <button class="btn" onclick="voixEssayer()"><span class="gicon">play_arrow</span> Essayer</button>
         <button class="btn secondary" onclick="voixParDefaut()">Réglages par défaut</button>
@@ -9729,16 +9811,24 @@ function ouvrirReglageVoix(){
   ov.style.display = 'flex';
   voixAfficher();
 }
-function fermerReglageVoix(){ const ov = document.getElementById('voixOverlay'); if(ov) ov.style.display = 'none'; speechSynthesis.cancel(); }
+function fermerReglageVoix(){ const ov = document.getElementById('voixOverlay'); if(ov) ov.style.display = 'none'; voixArreter(); }
 function voixAfficher(){
   const p = voixPrefs(), voix = voixFrancaises(), liste = document.getElementById('voixListe');
   if(!liste) return;
-  const choisie = (voix.find(v => v.name === p.nom) || voix[0] || {}).name;
-  liste.innerHTML = voix.length ? voix.map((v, k) => `<label style="display:flex;align-items:center;gap:8px;padding:7px 10px;border:1.5px solid ${v.name === choisie ? 'var(--accent)' : 'rgba(28,43,57,.12)'};border-radius:10px;cursor:pointer;">
+  const nuage = voixNuageChoisie() && currentUser && voixNuageActif ? voixNuageChoisie() : null;
+  const choisie = nuage ? null : (voix.find(v => v.name === p.nom) || voix[0] || {}).name;
+  // Voix en ligne (comptes connectés, fonction active) : en tête, les mêmes sur tous les appareils.
+  const enLigne = currentUser && voixNuageActif ? '<div class="hint" style="margin:0;font-weight:700;">Voix en ligne · les mêmes sur tous les appareils</div>' + VOIX_NUAGE.map(v => `<label style="display:flex;align-items:center;gap:8px;padding:7px 10px;border:1.5px solid ${v.id === nuage ? 'var(--accent)' : 'rgba(28,43,57,.12)'};border-radius:10px;cursor:pointer;">
+      <input type="radio" name="voixChoix" ${v.id === nuage ? 'checked' : ''} onchange="voixChoisirNuage('${v.id}')">
+      <span style="flex:1;"><b>${v.nom}</b> <small class="hint" style="margin:0;">${v.desc} · naturelle</small></span>
+      <button type="button" class="btn secondary" style="padding:3px 10px;font-size:.75rem;" onclick="event.preventDefault();voixChoisirNuage('${v.id}');voixEssayer()"><span class="gicon">play_arrow</span></button>
+    </label>`).join('') + '<div class="hint" style="margin:6px 0 0;font-weight:700;">Voix de cet appareil</div>' : '';
+  if(currentUser && voixNuageActif === null) voixNuageEtat().then(ok => { if(ok) voixAfficher(); });
+  liste.innerHTML = enLigne + (voix.length ? voix.map((v, k) => `<label style="display:flex;align-items:center;gap:8px;padding:7px 10px;border:1.5px solid ${v.name === choisie ? 'var(--accent)' : 'rgba(28,43,57,.12)'};border-radius:10px;cursor:pointer;">
       <input type="radio" name="voixChoix" value="${k}" ${v.name === choisie ? 'checked' : ''} onchange="voixChoisir(${k})">
       <span style="flex:1;"><b>${escapeHtml(voixNomCourt(v))}</b> <small class="hint" style="margin:0;">${escapeHtml(v.lang)}${/natural|neural|premium|enhanced|améliorée|online/i.test(v.name) ? ' · naturelle' : ''}</small></span>
       <button type="button" class="btn secondary" style="padding:3px 10px;font-size:.75rem;" onclick="event.preventDefault();voixChoisir(${k});voixEssayer()"><span class="gicon">play_arrow</span></button>
-    </label>`).join('') : '<p class="hint" style="margin:0;">Aucune voix française n\'est installée sur cet appareil.</p>';
+    </label>`).join('') : '<p class="hint" style="margin:0;">Aucune voix française n\'est installée sur cet appareil.</p>');
   document.getElementById('voixVitesse').value = p.vitesse; document.getElementById('voixHauteur').value = p.hauteur;
   document.getElementById('voixVitesseV').textContent = '× ' + p.vitesse.toFixed(2).replace('.', ',');
   document.getElementById('voixHauteurV').textContent = p.hauteur.toFixed(2).replace('.', ',');
@@ -9749,12 +9839,13 @@ function voixAfficher(){
     : 'Astuce : le navigateur Edge propose des voix françaises très naturelles (Denise, Vivienne, Éloïse…).';
 }
 function voixChoisir(k){ const v = voixFrancaises()[k]; if(!v) return; const p = voixPrefs(); p.nom = v.name; voixEnregistrer(p); voixAfficher(); }
+function voixChoisirNuage(id){ const p = voixPrefs(); p.nom = 'nuage:' + id; voixEnregistrer(p); voixAfficher(); }
 function voixReglage(){
   const p = voixPrefs(); p.vitesse = Number(document.getElementById('voixVitesse').value); p.hauteur = Number(document.getElementById('voixHauteur').value);
   voixEnregistrer(p); voixAfficher();
 }
 function voixParDefaut(){ try{ localStorage.removeItem(VOIX_CLE); }catch(e){} voixAfficher(); }
-function voixEssayer(){ speechSynthesis.cancel(); speechSynthesis.speak(speechUtterance(VOIX_ESSAI)); }
+function voixEssayer(){ voixParler(VOIX_ESSAI); }
 if('speechSynthesis' in window){
   // La liste des voix arrive souvent après le chargement de la page (Chrome) : on la réaffiche.
   speechSynthesis.addEventListener && speechSynthesis.addEventListener('voiceschanged', () => { const ov = document.getElementById('voixOverlay'); if(ov && ov.style.display !== 'none') voixAfficher(); });
@@ -9764,15 +9855,13 @@ function toggleReadAloud(btn, text){
   // Un seul bloc lu à la fois : si on reclique sur le même bouton en cours de lecture, on
   // arrête ; sinon on coupe toute lecture en cours avant de démarrer la nouvelle.
   const wasReading = btn.classList.contains('reading');
-  speechSynthesis.cancel();
+  voixArreter();
   document.querySelectorAll('.read-aloud-btn.reading').forEach(b=>{ b.classList.remove('reading'); b.innerHTML='<span class=gicon>volume_up</span>'; });
   if(wasReading) return;
-  const utter = speechUtterance(text);
-  utter.onend = ()=>{ btn.classList.remove('reading'); btn.innerHTML='<span class=gicon>volume_up</span>'; };
-  utter.onerror = ()=>{ btn.classList.remove('reading'); btn.innerHTML='<span class=gicon>volume_up</span>'; };
+  const finLecture = ()=>{ btn.classList.remove('reading'); btn.innerHTML='<span class=gicon>volume_up</span>'; };
   btn.classList.add('reading');
   btn.textContent='⏸';
-  speechSynthesis.speak(utter);
+  voixParler(text, { onend: finLecture, onerror: finLecture });
 }
 function updateCourseAddButtonsState(){
   const isStaff = currentUserRole==='prof' || currentUserRole==='admin';

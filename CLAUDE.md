@@ -182,6 +182,16 @@ intersect, midpoint, perpendicular, perpendicular_bisector, angle_bisector… ; 
 équerre, compas, barre de lecture. Ne jamais refaire une animation maison. En place en 6e : Distance et cercles, Construction de
 triangles, Angles (bissectrice), Symétrie axiale, Propriétés des triangles (cercle circonscrit).
 
+## Voix en ligne (Azure AI Speech, depuis le 02/11/2026)
+
+Lecture à voix haute : `voixParler(texte, { vitesse, onend, onerror })` et `voixArreter()` (app.js), utilisés partout (cours,
+quiz du CP, frise d'histoire). Voix choisie dans le réglage des voix : voix de l'appareil, ou voix en ligne (Denise, Henri, Éloïse,
+Vivienne, Rémy) pour les comptes connectés quand la fonction `voix` est active. La fonction (`supabase/functions/voix`, verify_jwt
+non) synthétise chaque texte UNE fois par voix et range le MP3 dans le stockage public `voix` ; plafonds VOIX_MAX_MOIS (450 000
+caractères, sous l'offre gratuite) et VOIX_MAX_JOUR par compte (20 000), compteur `voix_usage` (`supabase/sql/2026-11-02-voix.sql`).
+Secrets : AZURE_SPEECH_KEY, AZURE_SPEECH_REGION (francecentral). Sans clé, ou en cas de souci, la voix de l'appareil prend le
+relais. Ne jamais envoyer de nom d'élève à la synthèse.
+
 ## Conformité aux programmes : « Pour aller plus loin » (demandé le 28/10/2026)
 
 « Ce qui est hors programme peut être mis en "pour aller plus loin" » : une notion d'un niveau supérieur n'est
