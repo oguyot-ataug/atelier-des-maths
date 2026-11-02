@@ -3767,6 +3767,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1284', date:'2026-11-02', items:['Lecture à voix haute : les émojis ne sont plus lus (« 😊 » était dit « sourire ») et les unités sont dites en toutes lettres, accordées (« 6 cm » : « six centimètres », « 1,5 km » : « un virgule cinq kilomètre », « 12 cm² », « 90 km/h », « 1 m/s », « 2 h 30 min », « 3 L », « 250 g »…), dans le texte comme dans les formules -- signalé : « cm a été lu c m ».'] },
   { version:'2026-08-19.1283', date:'2026-11-02', items:['Lecture à voix haute : « Oliv\'IA » enfin prononcé « Olivia » -- le site épelait « IA » comme un nom de point (« I A ») avant la correction précédente. Signalé : « Elle a encore dit Oliv IA ».'] },
   { version:'2026-08-19.1282', date:'2026-11-02', items:['Lecture à voix haute : « Oliv\'IA » est prononcé « Olivia » (voix en ligne et voix de l\'appareil) -- demandé : « Oliv\'IA doit être lu Olivia ».'] },
   { version:'2026-08-19.1281', date:'2026-11-02', items:['Lecture à voix haute : pour les comptes connectés, le réglage ne propose plus que les voix en ligne (les mêmes sur ordinateur, tablette et téléphone), Inès par défaut ; deux voix « studio » ajoutées, Léa et Hugo -- demandé : « supprime le choix des autres voix ». La voix de l\'appareil reste en secours.', 'Voix en ligne : plafond porté à 800 000 caractères par mois, sous la part gratuite de Google (1 million).'] },
@@ -9503,6 +9504,24 @@ function speechEpeler(nom){
 // Mots français parfois écrits en capitales pour insister : lus normalement, jamais épelés.
 const SPEECH_MOTS_CAPITALES = new Set(['ET', 'OU', 'NON', 'OUI', 'SI', 'EST', 'LE', 'LA', 'LES', 'UN', 'UNE', 'DE', 'DES', 'PAS', 'NE', 'TOUT', 'TOUS', 'AU', 'AUX', 'EN', 'ON', 'IL', 'ELLE', 'ATTENTION', 'JAMAIS', 'TOUJOURS', 'SEUL', 'SEULE', 'MAIS']);
 const SPEECH_UNITES = { mm: 'millimètre', cm: 'centimètre', dm: 'décimètre', m: 'mètre', dam: 'décamètre', hm: 'hectomètre', km: 'kilomètre' };
+/* Unités dites en toutes lettres (demandé le 02/11/2026 : « cm a été lu "c m" au lieu de centimètre ») : après un nombre,
+   au singulier sous 2 (« 1,5 centimètre », « 6 centimètres ») ; seules (« en cm »), au pluriel. Les unités d'une lettre
+   (m, g, L, h, s) ne sont converties qu'après un nombre suivi d'une espace (« 2m » en algèbre reste « 2 m »). */
+const SPEECH_UNITES_NOMS = { ...SPEECH_UNITES, mg: 'milligramme', cg: 'centigramme', dg: 'décigramme', g: 'gramme', dag: 'décagramme',
+  hg: 'hectogramme', kg: 'kilogramme', mL: 'millilitre', ml: 'millilitre', cL: 'centilitre', cl: 'centilitre', dL: 'décilitre',
+  dl: 'décilitre', L: 'litre', l: 'litre', daL: 'décalitre', hL: 'hectolitre', hl: 'hectolitre', h: 'heure', min: 'minute', s: 'seconde',
+  'km/h': 'kilomètre par heure', 'm/s': 'mètre par seconde' };
+function speechUnite(u, n){
+  const nom = SPEECH_UNITES_NOMS[u]; if(!nom) return null;
+  const v = n == null ? 2 : Math.abs(parseFloat(String(n).replace(/[\s\u00a0\u202f]/g, '').replace(',', '.')));
+  return v >= 2 || isNaN(v) ? nom.replace(/^(\S+)/, '$1s') : nom;
+}
+function speechUnites(s){
+  const NB = '(?<![\\dA-Za-zÀ-ÿ,])(\\d{1,3}(?:[ \\u00a0\\u202f]\\d{3})+(?:,\\d+)?|\\d+(?:,\\d+)?)';
+  return s.replace(new RegExp(NB + '[ \\u00a0\\u202f]?(km\\/h|m\\/s|mm|cm|dm|dam|hm|km|mg|cg|dg|dag|hg|kg|mL|ml|cL|cl|dL|dl|daL|hL|hl|min)(?![A-Za-zÀ-ÿ0-9²³])', 'g'), (m, n, u) => n + ' ' + speechUnite(u, n))
+    .replace(new RegExp(NB + '[ \\u00a0\\u202f](m|g|L|l|h|s)(?![A-Za-zÀ-ÿ0-9²³\'’])', 'g'), (m, n, u) => n + ' ' + speechUnite(u, n))
+    .replace(/(?<![\wÀ-ÿ\/])(km\/h|m\/s|mm|cm|dm|km|dam|hm|mg|cg|dg|dag|hg|kg|mL|cL|dL|daL|hL)(?![\wÀ-ÿ²³])/g, (m, u) => speechUnite(u));
+}
 const SPEECH_EXPOSANTS = { '⁰': '0', '¹': '1', '²': '2', '³': '3', '⁴': '4', '⁵': '5', '⁶': '6', '⁷': '7', '⁸': '8', '⁹': '9', '⁻': '-', 'ⁿ': 'n' };
 function speechPuissance(e){ // e : exposant déjà en texte (« 2 », « -3 », « n »)
   if(e === '2') return ' au carré ';
@@ -9516,6 +9535,7 @@ function texteToSpeech(t){
   const L = 'A-Za-zÀ-ÿœŒ', P = "′'";
   // Unités au carré / au cube : « cm² » -> « centimètres carrés ».
   s = s.replace(/(\d[\d\s,]*)?\b(mm|cm|dm|dam|hm|km|m)([²³])(?![A-Za-z])/g, (m, n, u, e) => (n || '') + ' ' + SPEECH_UNITES[u] + 's ' + (e === '²' ? 'carrés' : 'cubes') + ' ');
+  s = speechUnites(s);
   // Exposants en caractères (« 10³ », « 10⁻³ », « k² »).
   s = s.replace(/([0-9A-Za-z)])?([⁻]?[⁰¹²³⁴⁵⁶⁷⁸⁹ⁿ]+)/g, (m, b, e) => (b || '') + speechPuissance([...e].map(c => SPEECH_EXPOSANTS[c]).join('')));
   // Indices en caractères et lettres de ronde (« ℱ₁ » -> « F 1 »).
@@ -9589,6 +9609,7 @@ function latexToSpeech(tex){
     if(src[i] === '\\'){ const m = /^\\([A-Za-z]+|.)/.exec(src.slice(i)); i += m[0].length; return m[0]; }
     return src[i++] || '';
   }
+  const peek = () => { const j = i, g = arg(); i = j; return g; };
   const sous = g => latexToSpeech(g);
   const simple = g => /^\s*(-?[0-9]+(\\,[0-9]+)*(\{,\}[0-9]+)?|[A-Za-z]{1,3}|\\text\{[^{}]*\}|\\textcolor\{[^{}]*\}\{[A-Za-z0-9]\})\s*$/.test(g);
   let out = '', dernier = ''; // dernier : nature du dernier élément lu ('lettre', 'paren', 'fin-paren', '')
@@ -9609,6 +9630,10 @@ function latexToSpeech(tex){
         dernier = 'fin-paren';
       } else if(n === 'textcolor' || n === 'colorbox'){ arg(); out += ' ' + sous(arg()) + ' '; dernier = 'lettre'; }
       else if(n === 'color'){ arg(); }
+      else if(/^(text|textrm|mathrm|mbox)$/.test(n) && SPEECH_UNITES_NOMS[peek().trim()]){ // « 6\text{ cm} », « 6\,\mathrm{km} »
+        const u = arg().trim(), nb = (out.match(/(\d+(?:,\d+)?)\s*$/) || [])[1]; let e = '';
+        const j = i; while(src[i] === ' ') i++; if(src[i] === '^'){ i++; const x = arg().trim(); if(x === '2' || x === '3') e = x === '2' ? ' carrés' : ' cubes'; else i = j; } else i = j;
+        out += ' ' + speechUnite(u, nb) + (e && !(nb && Math.abs(parseFloat(nb.replace(',', '.'))) < 2) ? e : e.replace(/s$/, '')) + ' '; dernier = ''; }
       else if(n === 'text' || n === 'textrm' || n === 'textbf' || n === 'textit' || n === 'mbox' || n === 'operatorname'){ out += ' ' + texteToSpeech(arg()) + ' '; dernier = ''; }
       else if(n === 'mathcal' || n === 'mathbb' || n === 'mathrm' || n === 'mathbf' || n === 'mathit' || n === 'boxed'){ out += ' ' + sous(arg()) + ' '; dernier = 'lettre'; }
       else if(n === 'widehat' || n === 'hat' || n === 'angle'){ const g = n === 'angle' ? '' : arg(); out += ' l\'angle ' + speechEpeler(g.replace(/[{}\\]/g, '')) + ' '; dernier = 'lettre'; }
@@ -9693,7 +9718,8 @@ function voixFrancaises(){
     .sort((a, b) => note(a) - note(b) || (/fr-FR/i.test(b.lang) - /fr-FR/i.test(a.lang)) || a.name.localeCompare(b.name));
 }
 // Prononciation de mots du site : « Oliv'IA » se dit « Olivia » (demandé le 02/11/2026), pas « Oliv I A ».
-function voixPrononcer(t){ return String(t || '').replace(/\bOliv\s*['’ʼ`´]?\s*I\s?A\b/gi, 'Olivia'); }
+// Émojis jamais lus (demandé le 02/11/2026 : « 😊 : elle a dit sourire »).
+function voixPrononcer(t){ return String(t || '').replace(/\bOliv\s*['’ʼ`´]?\s*I\s?A\b/gi, 'Olivia').replace(/[\p{Extended_Pictographic}\u{1F1E6}-\u{1F1FF}\u{1F3FB}-\u{1F3FF}\uFE0F\u200D\u20E3]/gu, ''); }
 function speechUtterance(text){
   const u = new SpeechSynthesisUtterance(voixPrononcer(text)), p = voixPrefs(), voix = voixFrancaises();
   u.lang = 'fr-FR';
