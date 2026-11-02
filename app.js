@@ -3779,6 +3779,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1291', date:'2026-11-02', items:['Export PDF du cours (et cahier) : les formules avec un chapeau d\'angle, une flèche de vecteur ou une accolade ne sont plus écrasées (le petit trait de la formule était transformé en image pleine largeur : « \\widehat{MON} = 35° » perdait son signe égal et son chapeau couvrait toute la formule) -- signalé en 5e, Angles et parallélisme : « Les angles sont écrasés ».'] },
   { version:'2026-08-19.1290', date:'2026-11-02', items:['Listes d\'élèves (bilan, devoirs, classes, interrogations, supervision, Oliv\'IA, administration…) : un nom de famille en « L\' » (L\'Hermitte) est rangé après tous les autres noms en L, et deux élèves de même nom sont départagés par le prénom -- demandé : « Un nom de famille L\' doit être placé en fin des L ».'] },
   { version:'2026-08-19.1289', date:'2026-11-02', items:['Bilan (synthèse des notes) : bouton « Copier » sous le titre de chaque colonne, et sous Réussite et Moy. /20 -- les valeurs seules, une par ligne, dans l\'ordre des élèves du tableau, prêtes à coller dans Pronote, l\'ENT ou un tableur (note sur le barème de l\'évaluation, « Abs » pour un absent, rien pour un travail non fait). Demandé : « comment copier une colonne pour récupérer les notes ? ».'] },
   { version:'2026-08-19.1288', date:'2026-11-02', items:['Administration › IA : « Rapport détaillé des voix en ligne » -- caractères synthétisés par mois (12 derniers, par gamme de voix Neural2 / Studio, part de la gratuité Google utilisée, nombre de synthèses, coût estimé), par jour (30 derniers, en barres) et par compte pour le mois en cours. Demandé : « un rapport sur l\'utilisation de text-to-speech en nombres de caractères ».'] },
@@ -10015,6 +10016,21 @@ async function expandStepDemosInClone(wrapper){
   const remainingSvgs = Array.from(wrapper.querySelectorAll('svg'));
   for(const cloneSvg of remainingSvgs){
     const label = cloneSvg.id ? `#${cloneSvg.id}` : '(figure statique sans id)';
+    // Trait d'une formule (chapeau d'angle \widehat, flèche de vecteur, accolade…) : petite image à la place exacte du
+    // SVG (toute la largeur de son emplacement, sa hauteur propre), jamais une figure pleine largeur -- signalé le
+    // 02/11/2026 : « Les angles sont écrasés » (5e Angles et parallélisme, export PDF : « \widehat{MON} = 35° »).
+    if(cloneSvg.closest && cloneSvg.closest('.katex')){
+      try{
+        const uri = await svgToRasterDataUri(cloneSvg, 600);
+        if(uri){
+          const img = document.createElement('img');
+          img.src = uri; img.alt = '';
+          img.style.cssText = `display:block;width:100%;height:${cloneSvg.getAttribute('height') || '100%'};`;
+          cloneSvg.replaceWith(img);
+        }
+      }catch(e){ console.error('Cahier/PDF : trait de formule', e); }
+      continue;
+    }
     try{
       const liveSvg = cloneSvg.id ? document.getElementById(cloneSvg.id) : null;
       let displayWidth = 400;
