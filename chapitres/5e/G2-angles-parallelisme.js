@@ -131,18 +131,27 @@ function apBaseLinesSvg(){
     <line x1="${AP_STOP.x}" y1="${AP_STOP.y}" x2="${AP_SBOT.x}" y2="${AP_SBOT.y}" stroke="#1C1B2E" stroke-width="1.6"/>`;
 }
 
+/* Figure des définitions : (d) et (d') ne sont PAS parallèles (demandé le 02/11/2026 : « ne pas mettre des droites
+   parallèles sur la figure initiale de la définition des angles correspondants et alternes-internes ») -- les
+   définitions valent pour deux droites quelconques ; le parallélisme ne vient qu'avec les propriétés. (d') passe
+   par B, inclinée de 10°. */
 function apBuildDefinitionsSvg(){
+  const al = 10 * Math.PI / 180, ux = Math.cos(al), uy = -Math.sin(al);
+  const dpG = { x: AP_DPLEFT_EXT.x, y: AP_B.y + (AP_DPLEFT_EXT.x - AP_B.x) / ux * uy };
+  const dpD = { x: AP_DPRIGHT_EXT.x, y: AP_B.y + (AP_DPRIGHT_EXT.x - AP_B.x) / ux * uy };
   const wBleuA = apWedge(AP_A, AP_DRIGHT, AP_SBOT, 34, '#1F3A5C');
-  const wBleuB = apWedge(AP_B, AP_DPLEFT, AP_STOP, 34, '#1F3A5C');
+  const wBleuB = apWedge(AP_B, dpG, AP_STOP, 34, '#1F3A5C');
   const wVertA = apWedge(AP_A, AP_STOP, AP_DRIGHT, 34, '#1F6B3A');
-  const wVertB = apWedge(AP_B, AP_STOP, AP_DPRIGHT, 34, '#1F6B3A');
+  const wVertB = apWedge(AP_B, AP_STOP, dpD, 34, '#1F6B3A');
   return `<svg viewBox="0 0 460 300" style="width:100%;max-width:420px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
-    ${apBaseLinesSvg()}
+    <line x1="${AP_DLEFT_EXT.x}" y1="${AP_DLEFT_EXT.y}" x2="${AP_DRIGHT_EXT.x}" y2="${AP_DRIGHT_EXT.y}" stroke="#1C1B2E" stroke-width="1.6"/>
+    <line x1="${dpG.x.toFixed(1)}" y1="${dpG.y.toFixed(1)}" x2="${dpD.x.toFixed(1)}" y2="${dpD.y.toFixed(1)}" stroke="#1C1B2E" stroke-width="1.6"/>
+    <line x1="${AP_STOP.x}" y1="${AP_STOP.y}" x2="${AP_SBOT.x}" y2="${AP_SBOT.y}" stroke="#1C1B2E" stroke-width="1.6"/>
     ${wBleuA}${wBleuB}${wVertA}${wVertB}
     <circle cx="${AP_A.x}" cy="${AP_A.y}" r="2.6" fill="#1C1B2E"/>
     <circle cx="${AP_B.x}" cy="${AP_B.y}" r="2.6" fill="#1C1B2E"/>
     ${apLabel(AP_DLEFT.x-2, AP_DLEFT.y-8, '(d)', 11, false)}
-    ${apLabel(AP_DPLEFT.x-2, AP_DPLEFT.y-8, "(d')", 11, false)}
+    ${apLabel(AP_DPLEFT.x-2, dpG.y + (AP_DPLEFT.x - dpG.x) * Math.tan(al) * -1 - 10, "(d')", 11, false)}
     ${apLabel(AP_STOP.x+6, AP_STOP.y+14, '(s)', 11, false)}
     ${apLabel(AP_A.x+8, AP_A.y-8, 'A')}
     ${apLabel(AP_B.x+8, AP_B.y+16, 'B')}
