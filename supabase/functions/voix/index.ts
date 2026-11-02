@@ -10,6 +10,9 @@
 //   lire avec { style: "olivia" } : la voix d'Oliv'IA (OLIVIA : voix Neural2 de femme, plus aiguë et un peu plus rapide) --
 //                      demandé le 02/11/2026 : « on pourrait donner une voix à Oliv'IA ».
 //   conso (administrateur) : { mois, plafondMois, jour, plafondJour } caractères synthétisés ce mois-ci et aujourd'hui.
+//   rapport (administrateur) : jours (60 derniers), mois (12 derniers), comptes du mois, par gamme de voix (Neural2,
+//                      Studio…), avec la part gratuite et le prix de Google -- demandé le 02/11/2026 : « En admin, est-il
+//                      possible d'avoir un rapport sur l'utilisation de text-to-speech en nombres de caractères ? ».
 //
 // Chaque texte n'est synthétisé qu'UNE fois par voix : le fichier est rangé dans le stockage public « voix »
 // (empreinte SHA-256 de la voix et du texte) ; les lectures suivantes, par n'importe qui, le réutilisent sans rien payer.
@@ -107,6 +110,48 @@ async function utiliseCeMois(db: ReturnType<typeof admin>): Promise<number> {
   return (data || []).reduce((s: number, r: { caracteres: number }) => s + (r.caracteres || 0), 0);
 }
 
+// Gamme de prix d'une voix Google : « fr-FR-Neural2-F » -> « Neural2 », « fr-FR-Studio-A » -> « Studio ».
+function gammeDe(voix: string): string { return (voix.split("-")[2] || "?").replace(/^Wavenet$/i, "WaveNet"); }
+// Tarifs Google (tableau du 02/11/2026) : part gratuite chaque mois, puis prix par million de caractères (USD).
+const TARIFS: Record<string, { gratuit: number; prix: number }> = {
+  Neural2: { gratuit: 1_000_000, prix: 16 }, Studio: { gratuit: 1_000_000, prix: 160 }, Chirp3: { gratuit: 1_000_000, prix: 30 },
+  WaveNet: { gratuit: 4_000_000, prix: 4 }, Standard: { gratuit: 4_000_000, prix: 4 },
+};
+type Ligne = { jour: string; user_id: string; gamme: string; caracteres: number; syntheses: number };
+async function rapport(db: ReturnType<typeof admin>) {
+  const auj = jourParis(), d = new Date(auj + "T12:00:00Z");
+  const debut12 = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() - 11, 1)).toISOString().slice(0, 10);
+  const lignes: Ligne[] = [];
+  for (let de = 0; ; de += 1000) { // tout l'historique des 12 derniers mois, par pages
+    const { data, error } = await db.from("voix_usage").select("jour,user_id,gamme,caracteres,syntheses").gte("jour", debut12).order("jour").range(de, de + 999);
+    if (error) throw new Error(error.message);
+    lignes.push(...((data || []) as Ligne[])); if (!data || data.length < 1000) break;
+  }
+  const ajoute = (m: Map<string, Record<string, number>>, k: string, l: Ligne) => {
+    const o = m.get(k) || { caracteres: 0, syntheses: 0 }; o.caracteres += l.caracteres; o.syntheses += l.syntheses || 0;
+    o[l.gamme] = (o[l.gamme] || 0) + l.caracteres; m.set(k, o);
+  };
+  const debut60 = new Date(d.getTime() - 59 * 86400000).toISOString().slice(0, 10), moisCourant = auj.slice(0, 7);
+  const parJour = new Map<string, Record<string, number>>(), parMois = new Map<string, Record<string, number>>(), parCompte = new Map<string, Record<string, number>>();
+  for (const l of lignes) {
+    if (l.jour >= debut60) ajoute(parJour, l.jour, l);
+    ajoute(parMois, l.jour.slice(0, 7), l);
+    if (l.jour.slice(0, 7) === moisCourant) ajoute(parCompte, l.user_id, l);
+  }
+  const ids = [...parCompte.keys()];
+  const { data: profils } = ids.length ? await db.from("profiles").select("id,nom,prenom,role").in("id", ids) : { data: [] };
+  const nomDe = new Map((profils || []).map((p: { id: string; nom: string; prenom: string; role: string }) => [p.id, { nom: [p.prenom, p.nom].filter(Boolean).join(" ") || "(sans nom)", role: p.role }]));
+  // Coût estimé d'un mois : au-delà de la part gratuite de chaque gamme.
+  const cout = (o: Record<string, number>) => Object.keys(TARIFS).reduce((s, g) => s + Math.max(0, (o[g] || 0) - TARIFS[g].gratuit) / 1e6 * TARIFS[g].prix, 0);
+  return {
+    aujourdhui: auj, plafondMois: maxMois(), plafondJour: maxJour(), tarifs: TARIFS,
+    jours: [...parJour.entries()].map(([jour, o]) => ({ jour, ...o })),
+    mois: [...parMois.entries()].map(([mois, o]) => ({ mois, ...o, cout: Math.round(cout(o) * 100) / 100 })),
+    comptes: [...parCompte.entries()].map(([id, o]) => ({ ...(nomDe.get(id) || { nom: "(compte supprimé)", role: "" }), ...o }))
+      .sort((a, b) => (b.caracteres as number) - (a.caracteres as number)),
+  };
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
   try {
@@ -130,11 +175,12 @@ Deno.serve(async (req) => {
       return json({ voix: toutes.filter((v) => /^fr-FR-/.test(v.name)).map((v) => `${v.name} ${v.ssmlGender === "FEMALE" ? "F" : v.ssmlGender === "MALE" ? "M" : "?"}`).sort() });
     }
 
-    if (body.action === "conso") {
+    if (body.action === "conso" || body.action === "rapport") {
       const jeton = (req.headers.get("Authorization") || "").replace(/^Bearer\s+/i, "");
       const { data: u } = await db.auth.getUser(jeton);
       const { data: p } = u?.user ? await db.from("profiles").select("role").eq("id", u.user.id).maybeSingle() : { data: null };
       if (p?.role !== "admin") return json({ error: "Réservé à l'administrateur." }, 403);
+      if (body.action === "rapport") return json(await rapport(db));
       const { data: j } = await db.from("voix_usage").select("caracteres").eq("jour", jourParis());
       const jour = (j || []).reduce((s: number, r: { caracteres: number }) => s + (r.caracteres || 0), 0);
       return json({ mois: await utiliseCeMois(db), plafondMois: maxMois(), jour, plafondJour: maxJour() });
@@ -166,8 +212,10 @@ Deno.serve(async (req) => {
     if (!uid) return json({ error: "Connectez-vous pour utiliser les voix en ligne." }, 401);
     if ((await utiliseCeMois(db)) + texte.length > maxMois()) return json({ error: "Plafond du mois atteint." }, 429);
     const jour = jourParis();
-    const { data: lu } = await db.from("voix_usage").select("caracteres").eq("jour", jour).eq("user_id", uid).maybeSingle();
-    const dejaJour = lu?.caracteres || 0;
+    const gamme = gammeDe(voix);
+    const { data: lus } = await db.from("voix_usage").select("caracteres,syntheses,gamme").eq("jour", jour).eq("user_id", uid);
+    const dejaJour = (lus || []).reduce((s: number, r: { caracteres: number }) => s + (r.caracteres || 0), 0); // toutes gammes
+    const ligne = (lus || []).find((r: { gamme: string }) => r.gamme === gamme) as { caracteres: number; syntheses: number } | undefined;
     if (dejaJour + texte.length > maxJour()) return json({ error: "Plafond du jour atteint." }, 429);
 
     const res = await fetch("https://texttospeech.googleapis.com/v1/text:synthesize", {
@@ -185,7 +233,9 @@ Deno.serve(async (req) => {
     const audio = Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
     const { error: eUp } = await db.storage.from(BUCKET).upload(chemin, audio, { contentType: "audio/mpeg", cacheControl: "31536000", upsert: true });
     if (eUp) { console.error("stockage", eUp.message); return json({ error: "Enregistrement impossible." }, 500); }
-    await db.from("voix_usage").upsert({ jour, user_id: uid, caracteres: dejaJour + texte.length }, { onConflict: "jour,user_id" });
+    const { error: eCpt } = await db.from("voix_usage").upsert({ jour, user_id: uid, gamme, caracteres: (ligne?.caracteres || 0) + texte.length,
+      syntheses: (ligne?.syntheses || 0) + 1 }, { onConflict: "jour,user_id,gamme" });
+    if (eCpt) console.error("compteur", eCpt.message);
     return json({ url, cache: false });
   } catch (e) {
     console.error("voix", (e as Error).message);

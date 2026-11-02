@@ -226,6 +226,8 @@ MARTIN	Marie	6A	m.martin	soleil24"></textarea>
       <div id="adminAiUsageByFeature" class="hint"></div>
       <p class="example-title" style="margin:16px 0 6px;color:#7A4FC0;">Voix en ligne (Google Text-to-Speech)</p>
       <div id="adminVoixConso" class="hint"></div>
+      <button type="button" class="btn" style="margin-top:8px;" onclick="adminVoixRapport(this)"><span class="gicon">bar_chart</span> Rapport détaillé des voix en ligne</button>
+      <div id="adminVoixRapport" class="hint" style="display:none;margin-top:8px;"></div>
     </div>
   </div>`;
 
@@ -1332,8 +1334,44 @@ async function adminRefreshVoixConso(){
       Au plafond, le site reprend les voix des appareils jusqu'au mois suivant (SMS d'alerte à 80 %). Plafond par compte : ${nb(d.plafondJour)} caractères par jour. Les textes déjà lus ne comptent pas.`;
   }catch(e){ el.textContent = 'Indisponible : ' + e.message; }
 }
+// Rapport des voix en ligne (demandé le 02/11/2026 : « un rapport sur l'utilisation de text-to-speech en nombres de
+// caractères ») : par mois (12 derniers, avec la part gratuite et le coût estimé), par jour (30 derniers), par compte (ce mois).
+async function adminVoixRapport(btn){
+  const el = document.getElementById('adminVoixRapport'); if(!el) return;
+  if(el.style.display !== 'none' && btn){ el.style.display = 'none'; return; }
+  el.style.display = 'block'; el.textContent = 'Chargement…';
+  try{
+    const { data:{ session } } = await sb.auth.getSession();
+    const r = await fetch(SUPABASE_URL + '/functions/v1/voix', { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + (session ? session.access_token : '') }, body: JSON.stringify({ action: 'rapport' }) });
+    const d = await r.json(); if(!r.ok) throw new Error(d.error || r.status);
+    const nb = n => Number(n || 0).toLocaleString('fr-FR'), esc = t => String(t == null ? '' : t).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+    const gammes = Object.keys(d.tarifs).filter(g => [...d.mois, ...d.jours].some(o => o[g]));
+    const moisNom = m => new Date(m + '-15T12:00:00Z').toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+    const th = 'style="text-align:right;padding:3px 8px;border-bottom:1px solid rgba(28,43,57,.15);"', td = 'style="text-align:right;padding:3px 8px;"', tdg = 'style="text-align:left;padding:3px 8px;"';
+    const part = (o, g) => { const t = d.tarifs[g], v = o[g] || 0; return `${nb(v)}<br><small style="color:${v > t.gratuit ? '#C0392B' : '#6B6F7A'}">${Math.round(100 * v / t.gratuit)} % du gratuit</small>`; };
+    // Par mois
+    let h = `<p class="example-title" style="margin:6px 0;">Par mois (caractères synthétisés ; un texte déjà lu une fois ne compte plus)</p>
+      <div style="overflow-x:auto;"><table style="border-collapse:collapse;font-size:.88rem;"><tr><th ${tdg}>Mois</th>${gammes.map(g => `<th ${th}>${g}</th>`).join('')}<th ${th}>Total</th><th ${th}>Synthèses</th><th ${th}>Coût estimé</th></tr>`;
+    h += d.mois.slice().reverse().map(o => `<tr><td ${tdg}>${moisNom(o.mois)}</td>${gammes.map(g => `<td ${td}>${part(o, g)}</td>`).join('')}<td ${td}><b>${nb(o.caracteres)}</b></td><td ${td}>${nb(o.syntheses)}</td><td ${td}>${o.cout ? o.cout.toLocaleString('fr-FR', { style: 'currency', currency: 'USD' }) : '0 $'}</td></tr>`).join('') || `<tr><td ${tdg} colspan="5">Aucune synthèse pour l'instant.</td></tr>`;
+    h += `</table></div><div style="font-size:.8rem;color:#6B6F7A;margin:4px 0 12px;">Part gratuite chaque mois chez Google : ${gammes.map(g => `${g} ${nb(d.tarifs[g].gratuit)} caractères, puis ${d.tarifs[g].prix} $ le million`).join(' ; ') || '—'}. Plafond du site : ${nb(d.plafondMois)} caractères par mois, ${nb(d.plafondJour)} par compte et par jour. Facture réelle : console Google Cloud, Facturation.</div>`;
+    // Par jour (30 derniers jours, barres)
+    const jours = []; for(let i = 29; i >= 0; i--){ const t = new Date(d.aujourdhui + 'T12:00:00Z'); t.setUTCDate(t.getUTCDate() - i); jours.push(t.toISOString().slice(0, 10)); }
+    const parJour = new Map(d.jours.map(o => [o.jour, o])), max = Math.max(1, ...jours.map(j => (parJour.get(j) || {}).caracteres || 0));
+    h += `<p class="example-title" style="margin:6px 0;">Par jour (30 derniers jours)</p><div style="display:flex;align-items:flex-end;gap:2px;height:110px;max-width:640px;border-bottom:1px solid rgba(28,43,57,.2);">`
+      + jours.map(j => { const o = parJour.get(j) || {}, v = o.caracteres || 0; const dt = new Date(j + 'T12:00:00Z').toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' });
+          return `<div title="${dt} : ${nb(v)} caractères${gammes.map(g => o[g] ? ` · ${g} ${nb(o[g])}` : '').join('')} · ${nb(o.syntheses)} synthèses" style="flex:1;min-width:6px;height:${Math.max(v ? 2 : 0, Math.round(100 * v / max))}%;background:${j === d.aujourdhui ? '#2EA8C9' : '#7A4FC0'};border-radius:3px 3px 0 0;"></div>`; }).join('')
+      + `</div><div style="display:flex;justify-content:space-between;max-width:640px;font-size:.75rem;color:#6B6F7A;"><span>${new Date(jours[0] + 'T12:00:00Z').toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}</span><span>max ${nb(max)} par jour</span><span>aujourd'hui</span></div>`;
+    // Par compte (mois en cours)
+    h += `<p class="example-title" style="margin:14px 0 6px;">Par compte (${moisNom(d.aujourdhui.slice(0, 7))})</p>`;
+    h += d.comptes.length ? `<div style="overflow-x:auto;"><table style="border-collapse:collapse;font-size:.88rem;"><tr><th ${tdg}>Compte</th><th ${tdg}>Rôle</th>${gammes.map(g => `<th ${th}>${g}</th>`).join('')}<th ${th}>Total</th><th ${th}>Synthèses</th></tr>`
+      + d.comptes.map(c => `<tr><td ${tdg}>${esc(c.nom)}</td><td ${tdg}>${esc(c.role)}</td>${gammes.map(g => `<td ${td}>${nb(c[g])}</td>`).join('')}<td ${td}><b>${nb(c.caracteres)}</b></td><td ${td}>${nb(c.syntheses)}</td></tr>`).join('') + '</table></div>'
+      : '<div>Aucune synthèse ce mois-ci.</div>';
+    el.innerHTML = h;
+  }catch(e){ el.textContent = 'Indisponible : ' + e.message; }
+}
 async function adminRefreshAiUsage(){
   adminRefreshVoixConso();
+  { const r = document.getElementById('adminVoixRapport'); if(r && r.style.display !== 'none') adminVoixRapport(); }
   if(typeof iaLoadAdminTeachers==='function') iaLoadAdminTeachers('adminAiTeachers');
   const elSummary = document.getElementById('adminAiUsageSummary');
   const elByUser = document.getElementById('adminAiUsageByUser');

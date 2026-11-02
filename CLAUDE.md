@@ -193,7 +193,8 @@ olivia.js) : style « olivia » de la fonction, voix Neural2 de femme 4 demi-ton
 La fonction (`supabase/functions/voix`, verify_jwt non) synthétise chaque texte UNE fois par voix et range le MP3 dans le
 stockage public `voix` ; plafonds VOIX_MAX_MOIS (800 000 caractères, sous le million gratuit de Google, SMS d'alerte à 80 % par alerte-sms, suivi dans Administration › IA) et
 VOIX_MAX_JOUR par compte (20 000), compteur
-`voix_usage` (`supabase/sql/2026-11-02-voix.sql`). Identification : le compte de service de l'agenda (secret GOOGLE_RDV_CLE,
+`voix_usage` (`supabase/sql/2026-11-02-voix.sql` ; par gamme de voix et nombre de synthèses depuis `2026-11-02-voix-rapport.sql`),
+rapport dans Administration › IA (« Rapport détaillé des voix en ligne », action `rapport` : mois, jours, comptes, coût estimé). Identification : le compte de service de l'agenda (secret GOOGLE_RDV_CLE,
 ou GOOGLE_TTS_CLE s'il existe), portée cloud-platform ; l'API « Cloud Text-to-Speech » doit être activée dans son projet
 Google Cloud (n° 736105734207), avec facturation. Sans cela, ou en cas de souci, la voix de l'appareil prend le relais.
 Ne jamais envoyer de nom d'élève à la synthèse.
