@@ -224,6 +224,8 @@ MARTIN	Marie	6A	m.martin	soleil24"></textarea>
       <div id="adminAiUsageByPayer" class="hint"></div>
       <p class="example-title" style="margin:16px 0 6px;color:#26AAB1;">Par fonctionnalité</p>
       <div id="adminAiUsageByFeature" class="hint"></div>
+      <p class="example-title" style="margin:16px 0 6px;color:#7A4FC0;">Voix en ligne (Google Text-to-Speech)</p>
+      <div id="adminVoixConso" class="hint"></div>
     </div>
   </div>`;
 
@@ -1316,7 +1318,22 @@ function aiUsageFormatCost(costSum, knownCalls){
 /* Panneau "Usage IA" -- signalé : "Est-ce que j'ai un endroit pour voir qui a utilisé l'IA et
    le coût engendré ?". Un seul jeton d'API Anthropic (côté serveur, dans ai-proxy) sert à tout
    le monde -- ce panneau sert à suivre qui l'utilise et estimer ce que ça coûte. */
+/* Voix en ligne : caractères synthétisés ce mois-ci et aujourd'hui, face aux plafonds (fonction voix, action « conso ») --
+   demandé le 02/11/2026 : « Comment ne pas avoir de surprise de facturation ? ». Un texte déjà lu ne compte pas. */
+async function adminRefreshVoixConso(){
+  const el = document.getElementById('adminVoixConso'); if(!el) return;
+  try{
+    const { data:{ session } } = await sb.auth.getSession();
+    const r = await fetch(SUPABASE_URL + '/functions/v1/voix', { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + (session ? session.access_token : '') }, body: JSON.stringify({ action: 'conso' }) });
+    const d = await r.json(); if(!r.ok) throw new Error(d.error || r.status);
+    const pc = Math.min(100, Math.round(100 * d.mois / d.plafondMois)), nb = n => Number(n).toLocaleString('fr-FR');
+    el.innerHTML = `<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;"><b>${nb(d.mois)} / ${nb(d.plafondMois)}</b> caractères ce mois-ci (${pc} %) · ${nb(d.jour)} aujourd'hui</div>
+      <div style="height:8px;border-radius:6px;background:rgba(28,43,57,.08);margin:6px 0;max-width:420px;overflow:hidden;"><div style="height:100%;width:${pc}%;background:${pc >= 80 ? '#C0392B' : '#7A4FC0'};"></div></div>
+      Au plafond, le site reprend les voix des appareils jusqu'au mois suivant (SMS d'alerte à 80 %). Plafond par compte : ${nb(d.plafondJour)} caractères par jour. Les textes déjà lus ne comptent pas.`;
+  }catch(e){ el.textContent = 'Indisponible : ' + e.message; }
+}
 async function adminRefreshAiUsage(){
+  adminRefreshVoixConso();
   if(typeof iaLoadAdminTeachers==='function') iaLoadAdminTeachers('adminAiTeachers');
   const elSummary = document.getElementById('adminAiUsageSummary');
   const elByUser = document.getElementById('adminAiUsageByUser');

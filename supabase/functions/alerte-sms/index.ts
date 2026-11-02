@@ -125,6 +125,16 @@ serve(async (req) => {
       if ((await envoyer("ia-seuil", `Atelier · IA : ${iaSite} appels payés par la clé du site aujourd'hui (seuil ${seuil}). À surveiller sur console.anthropic.com.`, true)).ok) { await ecrire("ia-seuil", P.jour); envois.push("ia-seuil"); }
     }
 
+    // 4 bis. Voix en ligne (fonction voix, Google Text-to-Speech) : alerte une fois par mois à 80 % du plafond -- demandé le
+    // 02/11/2026 : « Comment ne pas avoir de surprise de facturation ? ». Plafond : VOIX_MAX_MOIS (100 000 par défaut).
+    const moisDebut = P.jour.slice(0, 8) + "01", voixMax = Number(Deno.env.get("VOIX_MAX_MOIS")) || 100000;
+    const { data: vu } = await db.from("voix_usage").select("jour,caracteres").gte("jour", moisDebut);
+    const voixMois = (vu || []).reduce((s: number, r: any) => s + (r.caracteres || 0), 0);
+    const voixJour = (vu || []).filter((r: any) => r.jour === P.jour).reduce((s: number, r: any) => s + (r.caracteres || 0), 0);
+    if (voixMois >= 0.8 * voixMax && (await lire("voix-80")) !== moisDebut) {
+      if ((await envoyer("voix-80", `Atelier · Voix en ligne : ${voixMois} caractères ce mois-ci, plus de 80 % du plafond (${voixMax}). Au plafond, le site reprend les voix des appareils.`, true)).ok) { await ecrire("voix-80", moisDebut); envois.push("voix-80"); }
+    }
+
     // 5. Résumé de la journée, à partir de 18 h, une fois.
     if (P.heure >= 18 && (await lire("resume")) !== P.jour) {
       const n = async (t: string, col: string, f?: (q: any) => any) => { let q = db.from(t).select(col, { count: "exact", head: true }).gte(col === "id" ? "created_at" : col, debutJour); if (f) q = f(q); const { count } = await q; return count || 0; };
@@ -138,7 +148,7 @@ serve(async (req) => {
         db.from("relecture_exercices").select("cle", { count: "exact", head: true }).eq("statut", "com").then((r: any) => r.count || 0),
         db.from("bug_reports").select("id", { count: "exact", head: true }).eq("status", "nouveau").then((r: any) => r.count || 0),
       ]);
-      const m = `Atelier · Journée du ${P.jourFr} : ${profs} nouveau(x) compte(s) prof/parent, ${eleves} élève(s) créé(s) ; ${sessions} session(s) COURS ; ${rendus} devoir(s) et ${copies} interrogation(s) rendus ; ${ia} appel(s) IA (${iaSite || 0} sur la clé du site). À traiter : ${sigNouv} signalement(s) nouveau(x), ${remarques} remarque(s) de relecture.`;
+      const m = `Atelier · Journée du ${P.jourFr} : ${profs} nouveau(x) compte(s) prof/parent, ${eleves} élève(s) créé(s) ; ${sessions} session(s) COURS ; ${rendus} devoir(s) et ${copies} interrogation(s) rendus ; ${ia} appel(s) IA (${iaSite || 0} sur la clé du site) ; voix en ligne : ${voixJour} caractères aujourd'hui, ${voixMois}/${voixMax} ce mois. À traiter : ${sigNouv} signalement(s) nouveau(x), ${remarques} remarque(s) de relecture.`;
       if ((await envoyer("resume", m, true)).ok) { await ecrire("resume", P.jour); envois.push("resume"); }
     }
     return json({ ok: true, envois });

@@ -189,7 +189,8 @@ quiz du CP, frise d'histoire). Voix choisie dans le réglage des voix : voix de 
 serveur : deux voix de femme, deux d'homme, du type le plus naturel disponible chez Google, affichées Claire, Léa, Hugo, Louis)
 pour les comptes connectés quand la fonction `voix` est active. Microsoft Azure a été abandonné (création du compte bloquée).
 La fonction (`supabase/functions/voix`, verify_jwt non) synthétise chaque texte UNE fois par voix et range le MP3 dans le
-stockage public `voix` ; plafonds VOIX_MAX_MOIS (450 000 caractères) et VOIX_MAX_JOUR par compte (20 000), compteur
+stockage public `voix` ; plafonds VOIX_MAX_MOIS (100 000 caractères, SMS d'alerte à 80 % par alerte-sms, suivi dans Administration › IA) et
+VOIX_MAX_JOUR par compte (20 000), compteur
 `voix_usage` (`supabase/sql/2026-11-02-voix.sql`). Identification : le compte de service de l'agenda (secret GOOGLE_RDV_CLE,
 ou GOOGLE_TTS_CLE s'il existe), portée cloud-platform ; l'API « Cloud Text-to-Speech » doit être activée dans son projet
 Google Cloud (n° 736105734207), avec facturation. Sans cela, ou en cas de souci, la voix de l'appareil prend le relais.

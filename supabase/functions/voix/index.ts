@@ -7,11 +7,13 @@
 //   etat  (public)   : { actif, voix: [{ id, genre }] } voix françaises disponibles (les plus naturelles : Chirp 3 HD, sinon
 //                      Neural2, sinon WaveNet ; deux voix de femme et deux d'homme), si le plafond du mois n'est pas atteint.
 //   lire  (public si l'audio existe déjà, sinon compte connecté) : { texte, voix } → { url } du fichier MP3.
+//   conso (administrateur) : { mois, plafondMois, jour, plafondJour } caractères synthétisés ce mois-ci et aujourd'hui.
 //
 // Chaque texte n'est synthétisé qu'UNE fois par voix : le fichier est rangé dans le stockage public « voix »
 // (empreinte SHA-256 de la voix et du texte) ; les lectures suivantes, par n'importe qui, le réutilisent sans rien payer.
 // On n'envoie à Google que des textes de cours et d'exercices (jamais de nom d'élève).
-// Plafonds : VOIX_MAX_MOIS caractères synthétisés par mois pour tout le site (450 000 par défaut), VOIX_MAX_JOUR par compte
+// Plafonds : VOIX_MAX_MOIS caractères synthétisés par mois pour tout le site (100 000 par défaut -- demandé le 02/11/2026 :
+// « Comment ne pas avoir de surprise de facturation ? », puis « oui » pour un plafond plus bas), VOIX_MAX_JOUR par compte
 // et par jour (20 000 par défaut). Au-delà, ou en cas de souci : le site reprend les voix de l'appareil.
 // Identification Google : le compte de service déjà utilisé pour l'agenda des rendez-vous (secret GOOGLE_RDV_CLE, clé JSON),
 // sans délégation (portée cloud-platform) ; l'API « Cloud Text-to-Speech » doit être activée dans son projet Google Cloud.
@@ -40,7 +42,7 @@ async function sha256(s: string): Promise<string> {
   const b = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
   return [...new Uint8Array(b)].map((x) => x.toString(16).padStart(2, "0")).join("");
 }
-const maxMois = () => Number(Deno.env.get("VOIX_MAX_MOIS")) || 450000;
+const maxMois = () => Number(Deno.env.get("VOIX_MAX_MOIS")) || 100000;
 const maxJour = () => Number(Deno.env.get("VOIX_MAX_JOUR")) || 20000;
 const jourParis = () => new Intl.DateTimeFormat("fr-CA", { timeZone: "Europe/Paris" }).format(new Date()); // AAAA-MM-JJ
 
@@ -106,6 +108,16 @@ Deno.serve(async (req) => {
       const liste = await voixDisponibles(tok);
       if (!liste.length) return json({ actif: false, raison: voixErreur ? "API Text-to-Speech inaccessible" : "aucune voix", detail: voixErreur.slice(0, 160) });
       return json({ actif: (await utiliseCeMois(db)) < maxMois(), voix: liste });
+    }
+
+    if (body.action === "conso") {
+      const jeton = (req.headers.get("Authorization") || "").replace(/^Bearer\s+/i, "");
+      const { data: u } = await db.auth.getUser(jeton);
+      const { data: p } = u?.user ? await db.from("profiles").select("role").eq("id", u.user.id).maybeSingle() : { data: null };
+      if (p?.role !== "admin") return json({ error: "Réservé à l'administrateur." }, 403);
+      const { data: j } = await db.from("voix_usage").select("caracteres").eq("jour", jourParis());
+      const jour = (j || []).reduce((s: number, r: { caracteres: number }) => s + (r.caracteres || 0), 0);
+      return json({ mois: await utiliseCeMois(db), plafondMois: maxMois(), jour, plafondJour: maxJour() });
     }
 
     if (body.action !== "lire") return json({ error: "Action inconnue." }, 400);
