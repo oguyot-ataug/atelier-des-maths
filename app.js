@@ -3767,6 +3767,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1283', date:'2026-11-02', items:['Lecture à voix haute : « Oliv\'IA » enfin prononcé « Olivia » -- le site épelait « IA » comme un nom de point (« I A ») avant la correction précédente. Signalé : « Elle a encore dit Oliv IA ».'] },
   { version:'2026-08-19.1282', date:'2026-11-02', items:['Lecture à voix haute : « Oliv\'IA » est prononcé « Olivia » (voix en ligne et voix de l\'appareil) -- demandé : « Oliv\'IA doit être lu Olivia ».'] },
   { version:'2026-08-19.1281', date:'2026-11-02', items:['Lecture à voix haute : pour les comptes connectés, le réglage ne propose plus que les voix en ligne (les mêmes sur ordinateur, tablette et téléphone), Inès par défaut ; deux voix « studio » ajoutées, Léa et Hugo -- demandé : « supprime le choix des autres voix ». La voix de l\'appareil reste en secours.', 'Voix en ligne : plafond porté à 800 000 caractères par mois, sous la part gratuite de Google (1 million).'] },
   { version:'2026-08-19.1280', date:'2026-11-02', items:['Oliv\'IA a sa voix : un bouton 🔊 sur chacune de ses réponses la fait parler avec sa propre voix (voix en ligne de femme, plus aiguë et un peu plus rapide ; à défaut, la voix de l\'appareil plus aiguë) -- demandé : « on pourrait donner une voix à Oliv\'IA ».', 'Voix en ligne : seules Inès et Paul (Google Neural2) sont proposées, elles lisent juste le français écrit ; une voix choisie et retirée depuis est remplacée automatiquement.'] },
@@ -9511,7 +9512,7 @@ function speechPuissance(e){ // e : exposant déjà en texte (« 2 », « -3 »,
 
 /* Texte ordinaire (hors formules). */
 function texteToSpeech(t){
-  let s = ' ' + t + ' ';
+  let s = ' ' + voixPrononcer(t) + ' '; // « Oliv'IA » -> « Olivia » AVANT l'épellation des noms de points (« IA » -> « I A »)
   const L = 'A-Za-zÀ-ÿœŒ', P = "′'";
   // Unités au carré / au cube : « cm² » -> « centimètres carrés ».
   s = s.replace(/(\d[\d\s,]*)?\b(mm|cm|dm|dam|hm|km|m)([²³])(?![A-Za-z])/g, (m, n, u, e) => (n || '') + ' ' + SPEECH_UNITES[u] + 's ' + (e === '²' ? 'carrés' : 'cubes') + ' ');
@@ -9692,7 +9693,7 @@ function voixFrancaises(){
     .sort((a, b) => note(a) - note(b) || (/fr-FR/i.test(b.lang) - /fr-FR/i.test(a.lang)) || a.name.localeCompare(b.name));
 }
 // Prononciation de mots du site : « Oliv'IA » se dit « Olivia » (demandé le 02/11/2026), pas « Oliv I A ».
-function voixPrononcer(t){ return String(t || '').replace(/\bOliv\s*['’ʼ`´]?\s*IA\b/gi, 'Olivia'); }
+function voixPrononcer(t){ return String(t || '').replace(/\bOliv\s*['’ʼ`´]?\s*I\s?A\b/gi, 'Olivia'); }
 function speechUtterance(text){
   const u = new SpeechSynthesisUtterance(voixPrononcer(text)), p = voixPrefs(), voix = voixFrancaises();
   u.lang = 'fr-FR';
