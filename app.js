@@ -580,6 +580,8 @@ document.querySelectorAll('[data-nav]').forEach(el=>{
     if(nav==='rendez-vous'){ if(typeof rdvOuvrir==='function') rdvOuvrir(); return; }
     // Programmes officiels : la page publique /programmes/ affichée dans le site (cadre chargé à la première ouverture).
     if(nav==='programmes'){ if(el.tagName==='A') e.preventDefault(); programmesOuvrir(); return; }
+    // Lexique : visible par tous (élèves, professeurs, visiteurs).
+    if(nav==='lexique'){ showView('view-lexique'); setActiveTopnav(null); if(typeof lexiqueOuvrir==='function') lexiqueOuvrir(); return; }
     if(nav==='niveau'){ if(!niveauVisible(el.getAttribute('data-lvl'))) return; currentLevel = el.getAttribute('data-lvl')||currentLevel; renderNiveau(currentLevel); showView('view-niveau'); setActiveTopnav(currentLevel); }
     // Visiteur non connecté : les outils de L'Atelier montrent leur page de présentation (demo.js).
     if(!currentUser && typeof demoGarde==='function' && demoGarde(nav)) return;
@@ -3815,6 +3817,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1306', date:'2026-11-02', items:['Nouveau : le Lexique, dans le menu L\'Atelier (visible par tous, avec son Oliv\'IA au dictionnaire) -- les 358 mots de maths que nomment les programmes officiels, du CP à la 3e, chacun avec une définition simple pour l\'élève, un exemple et une précision pour le professeur (masquée aux élèves). Niveaux à cocher (ou École, Collège, Tous), « avec les niveaux précédents » pour tout ce qu\'il faut savoir à un niveau, domaines, recherche, et lecture à voix haute de chaque mot. Les mots du nouveau programme de 4e et de 3e sont signalés. Demandé : « Et si on faisait un lexique avec tout le vocabulaire par niveau à savoir et sa définition ».'] },
   { version:'2026-08-19.1305', date:'2026-11-02', items:['Programmes officiels (et page publique des notions du CP à la 3e) : les niveaux se cochent un par un (CP, CE1… 3e, aux couleurs de leur cycle), avec des raccourcis Tous, École, Collège, Cycle 2, Cycle 3 et Cycle 4 ; le choix est retenu sur l\'appareil. Demandé : « Il manque la vue collège seul, ou plus simple, cocher les niveaux souhaités ».'] },
   { version:'2026-08-19.1304', date:'2026-11-02', items:['Programmes officiels dans le site : le tableau prend toute la largeur (plus de limite à 1 440 pixels), en plein écran comme dans la page, et toute la hauteur de l\'écran en plein écran -- signalé : « Plein écran mais pas pleine largeur ! ».'] },
   { version:'2026-08-19.1303', date:'2026-11-02', items:['Programmes officiels : bouton « Plein écran » pour afficher le tableau comparatif sur tout l\'écran (touche Échap pour revenir ; sur iPhone et iPad, le tableau recouvre la fenêtre avec un bouton « Quitter le plein écran ») -- demandé : « permettre le plein écran du tableau comparatif ».'] },

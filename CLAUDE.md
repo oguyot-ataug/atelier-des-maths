@@ -102,6 +102,13 @@ continue au fil de l'eau. Ils ne sont dans aucune offre (Professeur seul, Famill
 les ajouter aux offres ni aux fonctions de paiement sans demande. `NIVEAUX_ADMIN` (app.js) liste ces niveaux non
 vendus pour le bêta-test ; `NIVEAUX_MASQUES` (vide) masquerait un niveau en préparation.
 
+## Lexique du CP à la 3e (menu L'Atelier, visible par tous, depuis le 02/11/2026)
+
+Données : `assets/lexique/donnees.js` (358 mots : ceux que nomment les programmes, d'après `assets/programmes/notions.js`, au niveau
+où le texte les nomme la première fois ; `nv` : nouveau programme 4e/3e). Pour chaque mot : définition pour l'élève, exemple, précision
+pour le professeur (masquée aux comptes élèves). Page `#view-lexique`, code `lexique.js`. Un mot ajouté au tableau des notions doit
+aussi être ajouté (avec ses trois textes) au lexique.
+
 ## Page « Notions du CP à la 3e » (/programmes/)
 
 Données dans `assets/programmes/notions.js`, uniquement d'après les programmes officiels (sources en tête du

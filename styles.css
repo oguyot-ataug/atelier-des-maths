@@ -2289,3 +2289,40 @@ select:not([multiple]):not([size]){
 #programmesPleinFermer{display:none;}
 #view-programmes.prog-plein #programmesCadre{position:fixed;inset:0;width:100vw !important;height:100vh !important;min-height:0 !important;border-radius:0 !important;z-index:9990;}
 #view-programmes.prog-plein #programmesPleinFermer{display:inline-flex;align-items:center;gap:6px;position:fixed;top:10px;right:14px;z-index:9991;border:0;border-radius:999px;padding:8px 14px;background:#1F3A5C;color:#fff;font:700 .85rem 'Space Grotesk',sans-serif;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25);}
+
+/* ---------- Lexique (lexique.js) ---------- */
+#view-lexique{--lx-c2:#2C7A57;--lx-c3:#2D5DB0;--lx-c4:#8B3B78;}
+.lex-outils{background:var(--white);border-radius:12px;box-shadow:var(--shadow);padding:12px 14px;margin:0 0 14px;display:flex;flex-direction:column;gap:10px;}
+.lex-champ{display:flex;flex-direction:column;gap:5px;}
+.lex-lab{font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-soft);font-weight:700;}
+.lex-chips{display:flex;flex-wrap:wrap;gap:6px;}
+.lex-chip{font:inherit;font-size:.86rem;border:1px solid rgba(28,43,57,.2);background:transparent;color:var(--ink);padding:5px 11px;border-radius:999px;cursor:pointer;}
+.lex-chip[aria-pressed="true"]{background:var(--accent);color:#fff;border-color:var(--accent);}
+.lex-chip.lex-c2[aria-pressed="true"]{background:var(--lx-c2);border-color:var(--lx-c2);}
+.lex-chip.lex-c3[aria-pressed="true"]{background:var(--lx-c3);border-color:var(--lx-c3);}
+.lex-chip.lex-c4[aria-pressed="true"]{background:var(--lx-c4);border-color:var(--lx-c4);}
+.lex-raccs{display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px;font-size:.82rem;color:var(--ink-soft);}
+.lex-racc{font:inherit;border:0;background:none;color:var(--accent);padding:0;cursor:pointer;text-decoration:underline;text-underline-offset:2px;}
+.lex-racc[aria-pressed="true"]{color:var(--ink);font-weight:700;text-decoration:none;}
+.lex-case{display:inline-flex;align-items:center;gap:6px;font-size:.86rem;color:var(--ink);cursor:pointer;}
+.lex-ligne{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px 18px;}
+.lex-ligne input[type=search]{font:inherit;padding:7px 10px;border:1px solid rgba(28,43,57,.2);border-radius:8px;width:100%;box-sizing:border-box;}
+.lex-compte{margin-left:auto;font-size:.82rem;color:var(--ink-soft);}
+.lex-niv{margin:0 0 18px;}
+.lex-h{font-size:1.25rem;margin:8px 0 10px;padding-left:10px;border-left:5px solid var(--accent);}
+.lex-h.lex-c2{border-color:var(--lx-c2);} .lex-h.lex-c3{border-color:var(--lx-c3);} .lex-h.lex-c4{border-color:var(--lx-c4);}
+.lex-h small{font-size:.8rem;color:var(--ink-soft);font-weight:500;margin-left:6px;}
+.lex-grille{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px;}
+.lex-carte{background:var(--white);border:1px solid rgba(28,43,57,.1);border-radius:12px;padding:12px 14px;box-shadow:0 1px 3px rgba(28,43,57,.06);}
+.lex-tete{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
+.lex-mot{margin:0;font-size:1.08rem;color:var(--ink);}
+.lex-lire{flex:none;width:30px;height:30px;border-radius:50%;border:1px solid rgba(28,43,57,.15);background:#F4F6FA;color:var(--accent);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0;}
+.lex-lire .gicon{font-size:1.05rem;}
+.lex-tags{display:flex;flex-wrap:wrap;gap:4px;margin:4px 0 6px;}
+.lex-tag{font-size:.7rem;border-radius:999px;padding:1px 8px;background:#EEF2F7;color:#4A5568;}
+.lex-nv{background:#FFF1D6;color:#8A5A1A;}
+.lex-def{margin:0 0 6px;line-height:1.45;}
+.lex-ex{margin:0 0 6px;font-size:.92rem;color:#3B4656;line-height:1.45;}
+.lex-prof{margin:6px 0 0;padding:6px 8px;border-radius:8px;background:#F3EEFA;color:#4B3A6B;font-size:.85rem;line-height:1.4;}
+/* Lexique : ouvert aux visiteurs, sans le cadenas des outils réservés (demo.js) */
+body:not(.connecte) #navDropdownEntrainer .nav-dropdown-menu button[data-nav="lexique"]::after{content:none;}
