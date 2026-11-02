@@ -3779,6 +3779,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1300', date:'2026-11-02', items:['Mes classes › Comptes : bouton « 1re connexion » pour chaque élève (mis en avant pour ceux qui ne se sont jamais connectés) -- un message prêt à envoyer à l\'élève, avec son lien personnel « Activer mon compte » (il y choisit son mot de passe ; une seule fois, valable 60 jours) et son identifiant pour les connexions suivantes, à copier mis en forme ou en code HTML. Demandé : « un autre message prêt à envoyer à l\'élève pour se connecter la première fois ».'] },
   { version:'2026-08-19.1299', date:'2026-11-02', items:['Mes classes › Comptes, réinitialisation du mot de passe d\'un élève : un message « identifiants de connexion » prêt à envoyer s\'affiche (adresse du site, identifiant, nouveau mot de passe, comment se connecter, signé du professeur), avec « Copier le message » (mis en forme, à coller dans l\'ENT, Pronote ou un courriel) et « Copier le code HTML ». Le site n\'envoie rien lui-même. Demandé : « un bouton qui permet de copier le contenu html d\'un mail ».'] },
   { version:'2026-08-19.1298', date:'2026-11-02', items:['Le lien vers la page des programmes (« Programmes officiels » : les notions du CP à la 3e) passe du menu L\'Atelier au menu L\'Atelier du prof, sous « Ma progression » -- demandé : « Déplace le menu dans celui des profs ». Il reste aussi dans le pied de page.'] },
   { version:'2026-08-19.1297', date:'2026-11-02', items:['Angles complémentaires (hors programme : seul « supplémentaires » est nommé en 6e, BO 2025, et rien en 5e, BO 2026) : placés en « Pour aller plus loin » -- une planche « Pour aller plus loin : angles complémentaires » à la fin des planches de 6e (Angles et rapporteur) et de 5e (Angles et parallélisme) ; les autres planches n\'utilisent plus que « supplémentaires ». Demandé : « pour aller plus loin ».', 'La page « Programmes : les notions du CP à la 3e » (comparatif et évolution des programmes, /programmes/) est accessible depuis le menu L\'Atelier et le pied de page -- signalé : « je ne retrouve plus le comparatif et l\'évolution des programmes sur le site » (elle n\'était liée que depuis Ma progression).'] },
@@ -7285,7 +7286,7 @@ async function renderTeacherStudentsListing(){
   };
   teacherStudentsCache = students.map(s=>{
     const info = connexionInfo(s.id);
-    return { id:s.id, nom: profileDisplayName(s)||'?', identifiant: loginIdentifiant(s.email), statutKey: info.key, badgeHtml: info.badge };
+    return { id:s.id, nom: profileDisplayName(s)||'?', prenom: s.prenom || '', identifiant: loginIdentifiant(s.email), statutKey: info.key, badgeHtml: info.badge };
   });
   renderTeacherStudentsFiltered();
 }
@@ -7313,6 +7314,7 @@ function renderTeacherStudentsFiltered(){
         <td style="text-align:right;">
           <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="teacherShowIdentifiant('${safeName}','${idfEscaped}')"><span class=gicon>visibility</span> Identifiant</button>
           <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="teacherResetPasswordPrompt('${s.id}','${safeName}')"><span class=gicon>key</span> Mot de passe</button>
+          <button class="btn ${s.statutKey==='jamais'?'':'secondary'}" style="font-size:.72rem;padding:4px 8px;" title="Message à envoyer à l'élève : un lien pour choisir son mot de passe et se connecter la première fois" onclick="teacherPremiereConnexion('${s.id}')"><span class=gicon>mail</span> 1<sup>re</sup> connexion</button>
         </td>
       </tr>`;
     }).join('')}
@@ -7363,23 +7365,65 @@ async function teacherConfirmResetPassword(){
    d'un mail. On pourrait alors le copier et utiliser notre messagerie pour l'envoyer. » Le site n'envoie rien : le message
    est copié dans le presse-papiers, mis en forme (à coller dans la messagerie) ou en code HTML. */
 async function mailIdentifiantsHtml(o){
+  if(o.lien) return mailPremiereConnexionHtml(o);
   const e = t => escapeHtml(String(t == null ? '' : t));
   let prof = '';
   try{ const { data } = await sb.from('profiles').select('nom,prenom').eq('id', currentUser.id).maybeSingle(); prof = data ? [data.prenom, data.nom].filter(Boolean).join(' ') : ''; }catch(err){}
-  const site = 'https://latelierdesmaths.fr';
+  const site = window.ADP ? location.origin : 'https://latelierdesmaths.fr', siteNu = site.replace(/^https?:\/\//, ''), nomSite = window.ADP ? "L'Atelier du Prof" : "L'Atelier des Maths";
   const ligne = (k, v) => `<tr><td style="padding:6px 14px 6px 0;color:#5B6472;font-size:14px;">${k}</td><td style="padding:6px 0;font-size:16px;font-weight:700;color:#1C2B39;font-family:Consolas,'Courier New',monospace;">${v}</td></tr>`;
   const html = `<div style="font-family:Arial,Helvetica,sans-serif;color:#1C2B39;max-width:560px;">
-<div style="background:#0C5BA0;color:#ffffff;padding:14px 18px;border-radius:10px 10px 0 0;font-size:18px;font-weight:700;">L'Atelier des Maths</div>
+<div style="background:#0C5BA0;color:#ffffff;padding:14px 18px;border-radius:10px 10px 0 0;font-size:18px;font-weight:700;">${nomSite}</div>
 <div style="border:1px solid #D6DEE8;border-top:0;border-radius:0 0 10px 10px;padding:18px;">
 <p style="margin:0 0 12px;font-size:15px;">Bonjour,</p>
-<p style="margin:0 0 12px;font-size:15px;">Voici les identifiants de connexion${o.nom ? ` de <b>${e(o.nom)}</b>` : ''} à L'Atelier des Maths. Le mot de passe vient d'être changé.</p>
-<table style="border-collapse:collapse;margin:0 0 14px;">${ligne('Adresse du site', `<a href="${site}" style="color:#0C5BA0;">latelierdesmaths.fr</a>`)}${ligne('Identifiant', e(o.identifiant || ''))}${ligne('Mot de passe', e(o.motDePasse || ''))}</table>
+<p style="margin:0 0 12px;font-size:15px;">Voici les identifiants de connexion${o.nom ? ` de <b>${e(o.nom)}</b>` : ''} à ${nomSite}. Le mot de passe vient d'être changé.</p>
+<table style="border-collapse:collapse;margin:0 0 14px;">${ligne('Adresse du site', `<a href="${site}" style="color:#0C5BA0;">${siteNu}</a>`)}${ligne('Identifiant', e(o.identifiant || ''))}${ligne('Mot de passe', e(o.motDePasse || ''))}</table>
 <p style="margin:0 0 12px;font-size:15px;">Pour se connecter : ouvrir le site, cliquer sur <b>Se connecter</b>, puis saisir l'identifiant et le mot de passe.</p>
 <p style="margin:0 0 12px;font-size:13px;color:#5B6472;">Ces identifiants sont personnels : ils ne doivent être communiqués à personne.</p>
 <p style="margin:0;font-size:15px;">Bonne journée,${prof ? `<br>${e(prof)}` : ''}</p>
 </div></div>`;
-  const texte = `Bonjour,\n\nVoici les identifiants de connexion${o.nom ? ' de ' + o.nom : ''} à L'Atelier des Maths. Le mot de passe vient d'être changé.\n\nAdresse du site : ${site}\nIdentifiant : ${o.identifiant || ''}\nMot de passe : ${o.motDePasse || ''}\n\nPour se connecter : ouvrir le site, cliquer sur « Se connecter », puis saisir l'identifiant et le mot de passe.\nCes identifiants sont personnels : ils ne doivent être communiqués à personne.\n\nBonne journée,${prof ? '\n' + prof : ''}`;
+  const texte = `Bonjour,\n\nVoici les identifiants de connexion${o.nom ? ' de ' + o.nom : ''} à ${nomSite}. Le mot de passe vient d'être changé.\n\nAdresse du site : ${site}\nIdentifiant : ${o.identifiant || ''}\nMot de passe : ${o.motDePasse || ''}\n\nPour se connecter : ouvrir le site, cliquer sur « Se connecter », puis saisir l'identifiant et le mot de passe.\nCes identifiants sont personnels : ils ne doivent être communiqués à personne.\n\nBonne journée,${prof ? '\n' + prof : ''}`;
   return { html, texte };
+}
+/* Première connexion (demandé le 02/11/2026 : « Et un autre message prêt à envoyer à l'élève pour se connecter la première
+   fois ») : lien d'invitation personnel (invitation.html, valable 60 jours, une seule fois) où l'élève choisit son mot de
+   passe, puis son identifiant pour les fois suivantes. Message adressé à l'élève (tutoiement). */
+async function mailPremiereConnexionHtml(o){
+  const e = t => escapeHtml(String(t == null ? '' : t));
+  let prof = '';
+  try{ const { data } = await sb.from('profiles').select('nom,prenom').eq('id', currentUser.id).maybeSingle(); prof = data ? [data.prenom, data.nom].filter(Boolean).join(' ') : ''; }catch(err){}
+  const site = window.ADP ? location.origin : 'https://latelierdesmaths.fr', siteNu = site.replace(/^https?:\/\//, ''), nomSite = window.ADP ? "L'Atelier du Prof" : "L'Atelier des Maths";
+  const etape = (n, t) => `<tr><td style="vertical-align:top;padding:4px 10px 8px 0;"><span style="display:inline-block;width:24px;height:24px;line-height:24px;text-align:center;border-radius:50%;background:#0C5BA0;color:#ffffff;font-weight:700;font-size:13px;">${n}</span></td><td style="padding:6px 0 8px;font-size:15px;">${t}</td></tr>`;
+  const html = `<div style="font-family:Arial,Helvetica,sans-serif;color:#1C2B39;max-width:560px;">
+<div style="background:#0C5BA0;color:#ffffff;padding:14px 18px;border-radius:10px 10px 0 0;font-size:18px;font-weight:700;">${nomSite}</div>
+<div style="border:1px solid #D6DEE8;border-top:0;border-radius:0 0 10px 10px;padding:18px;">
+<p style="margin:0 0 12px;font-size:15px;">Bonjour${o.prenom ? ' ' + e(o.prenom) : ''},</p>
+<p style="margin:0 0 12px;font-size:15px;">Ton compte sur ${nomSite} est prêt. Pour te connecter la première fois :</p>
+<table style="border-collapse:collapse;margin:0 0 12px;">
+${etape(1, `Clique sur ce lien : <a href="${e(o.lien)}" style="color:#ffffff;background:#1F7A4D;padding:7px 14px;border-radius:6px;text-decoration:none;font-weight:700;display:inline-block;margin-top:4px;">Activer mon compte</a>`)}
+${etape(2, 'Choisis ton mot de passe (6 caractères au moins) et retiens-le bien.')}
+${etape(3, `Les fois suivantes : ouvre <a href="${site}" style="color:#0C5BA0;">${siteNu}</a>, clique sur <b>Se connecter</b> et saisis ton identifiant <b style="font-family:Consolas,'Courier New',monospace;font-size:16px;">${e(o.identifiant || '')}</b> et ton mot de passe.`)}
+</table>
+<p style="margin:0 0 6px;font-size:13px;color:#5B6472;">Si le bouton ne s'ouvre pas, copie cette adresse dans ton navigateur :<br><a href="${e(o.lien)}" style="color:#0C5BA0;word-break:break-all;">${e(o.lien)}</a></p>
+<p style="margin:0 0 12px;font-size:13px;color:#5B6472;">Ce lien est personnel et ne sert qu'une fois : ne le donne à personne. Il reste valable 60 jours.</p>
+<p style="margin:0;font-size:15px;">À bientôt sur ${nomSite} !${prof ? `<br>${e(prof)}` : ''}</p>
+</div></div>`;
+  const texte = `Bonjour${o.prenom ? ' ' + o.prenom : ''},\n\nTon compte sur ${nomSite} est prêt. Pour te connecter la première fois :\n\n1. Clique sur ce lien : ${o.lien}\n2. Choisis ton mot de passe (6 caractères au moins) et retiens-le bien.\n3. Les fois suivantes : ouvre ${site}, clique sur « Se connecter » et saisis ton identifiant ${o.identifiant || ''} et ton mot de passe.\n\nCe lien est personnel et ne sert qu'une fois : ne le donne à personne. Il reste valable 60 jours.\n\nÀ bientôt sur ${nomSite} !${prof ? '\n' + prof : ''}`;
+  return { html, texte };
+}
+async function teacherPremiereConnexion(userId){
+  const el = (typeof teacherStudentsCache !== 'undefined' ? teacherStudentsCache : []).find(x => x.id === userId) || {};
+  const ov = document.getElementById('teacherPremiereModalOverlay'), zone = document.getElementById('teacherPremiereMail'), st = document.getElementById('teacherPremiereStatus');
+  document.getElementById('teacherPremiereName').textContent = 'Élève : ' + (el.nom || '');
+  zone.style.display = 'none'; zone.innerHTML = ''; st.textContent = 'Préparation du lien personnel…'; ov.style.display = 'flex';
+  try{
+    const { data:{ session } } = await sb.auth.getSession();
+    const res = await fetch(SUPABASE_URL+'/functions/v1/admin-create-user', { method:'POST',
+      headers:{ 'Content-Type':'application/json', 'Authorization':'Bearer '+session.access_token },
+      body: JSON.stringify({ action:'create-invitation', userId }) });
+    const d = await res.json(); if(d.error || !d.token) throw new Error(d.error || 'lien non créé');
+    st.textContent = '';
+    await mailIdentifiantsAfficher(zone, { prenom: el.prenom, nom: el.nom, identifiant: el.identifiant, lien: location.origin + '/invitation.html?invite=' + d.token });
+  }catch(err){ st.textContent = 'Erreur : ' + err.message; }
 }
 async function mailIdentifiantsAfficher(zone, o){
   if(!zone) return;
