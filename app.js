@@ -3767,6 +3767,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1280', date:'2026-11-02', items:['Oliv\'IA a sa voix : un bouton 🔊 sur chacune de ses réponses la fait parler avec sa propre voix (voix en ligne de femme, plus aiguë et un peu plus rapide ; à défaut, la voix de l\'appareil plus aiguë) -- demandé : « on pourrait donner une voix à Oliv\'IA ».', 'Voix en ligne : seules Inès et Paul (Google Neural2) sont proposées, elles lisent juste le français écrit ; une voix choisie et retirée depuis est remplacée automatiquement.'] },
   { version:'2026-08-19.1279', date:'2026-11-02', items:['Voix en ligne : en plus des quatre voix « très naturelles » (Google Chirp 3 HD), deux voix « classiques » (Google Neural2, Inès et Paul), plus sûres sur l\'écrit -- signalé : Chirp 3 HD lit « s\'écrire » comme « esse écrire ».'] },
   { version:'2026-08-19.1278', date:'2026-11-02', items:['Voix en ligne : pas de surprise de facturation -- plafond ramené à 100 000 caractères par mois pour tout le site (et 20 000 par compte et par jour), suivi dans Administration (caractères du mois et du jour, barre rouge à 80 %), SMS d\'alerte à 80 % du plafond et ligne « voix en ligne » dans le SMS du soir. Au plafond, le site reprend les voix des appareils.'] },
   { version:'2026-08-19.1277', date:'2026-11-02', items:['Voix en ligne : Google Cloud Text-to-Speech au lieu de Microsoft Azure (création du compte Azure bloquée). Les voix françaises les plus naturelles disponibles chez Google (deux de femme, deux d\'homme) seront proposées aux comptes connectés dès que l\'API sera activée ; d\'ici là, rien ne change (voix de l\'appareil).'] },
@@ -9703,24 +9704,29 @@ function speechUtterance(text){
    quand la fonction est active (API Google activée, plafond du mois non atteint) ; sinon, ou en cas de souci, la voix
    de l'appareil prend le relais sans rien dire. La hauteur ne s'applique qu'aux voix de l'appareil ; la vitesse, à toutes. */
 // Liste donnée par le serveur (voix françaises les plus naturelles disponibles chez Google), affichée sous des prénoms.
-let VOIX_NUAGE = [];
+let VOIX_NUAGE = [], VOIX_OLIVIA = null;
 let voixNuageActif = null; // null : pas encore demandé au serveur
 async function voixNuageEtat(){
   if(voixNuageActif !== null) return voixNuageActif;
   try{ const r = await fetch(SUPABASE_URL + '/functions/v1/voix', { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: SUPABASE_ANON_KEY }, body: JSON.stringify({ action: 'etat' }) });
-    const d = await r.json(), prenoms = { F: ['Claire', 'Léa', 'Inès', 'Zoé'], M: ['Hugo', 'Louis', 'Paul', 'Tom'] }, rang = { F: 0, M: 0 };
-    // Chirp 3 HD : la plus naturelle ; Neural2 : plus ancienne, plus sûre sur l'écrit (élisions comme « s'écrire »).
-    VOIX_NUAGE = (d.voix || []).map(v => ({ id: v.id, nom: prenoms[v.genre][rang[v.genre]++] || v.id, desc: (v.genre === 'F' ? 'voix de femme' : 'voix d\'homme') + (v.type === 'Neural2' ? ' · classique' : ' · très naturelle') }));
+    const d = await r.json(), noms = { 'fr-FR-Neural2-F': 'Inès', 'fr-FR-Neural2-G': 'Paul', 'fr-FR-Wavenet-F': 'Claire', 'fr-FR-Wavenet-G': 'Hugo' };
+    // Voix Google Neural2 (Inès, Paul) : elles lisent juste le français écrit (Chirp 3 HD épelait « s'écrire »).
+    VOIX_NUAGE = (d.voix || []).map(v => ({ id: v.id, nom: noms[v.id] || v.id.replace(/^fr-FR-/, ''), desc: v.genre === 'F' ? 'voix de femme' : 'voix d\'homme' }));
+    VOIX_OLIVIA = d.olivia || null;
     voixNuageActif = !!d.actif && VOIX_NUAGE.length > 0; }catch(e){ voixNuageActif = false; }
   return voixNuageActif;
 }
-function voixNuageChoisie(){ const n = voixPrefs().nom; return /^nuage:/.test(n) ? n.slice(6) : null; }
-async function voixNuageUrl(voix, texte){
+function voixNuageChoisie(){
+  const n = voixPrefs().nom; if(!/^nuage:/.test(n)) return null;
+  const id = n.slice(6); // voix retirée depuis (ex. Chirp 3 HD) : la première voix en ligne proposée
+  return VOIX_NUAGE.length && !VOIX_NUAGE.some(v => v.id === id) ? VOIX_NUAGE[0].id : id;
+}
+async function voixNuageUrl(voix, texte, style){
   let jeton = ''; try{ const { data: { session } } = await sb.auth.getSession(); jeton = session ? session.access_token : ''; }catch(e){}
   const r = await fetch(SUPABASE_URL + '/functions/v1/voix', { method: 'POST',
     headers: Object.assign({ 'Content-Type': 'application/json', apikey: SUPABASE_ANON_KEY }, jeton ? { Authorization: 'Bearer ' + jeton } : {}),
-    body: JSON.stringify({ action: 'lire', voix, texte }) });
-  if(!r.ok){ if(r.status === 503 || r.status === 429) voixNuageActif = false; throw new Error('voix ' + r.status); }
+    body: JSON.stringify(Object.assign({ action: 'lire', voix, texte }, style ? { style } : {})) });
+  if(!r.ok){ if(r.status === 503 || r.status === 429) voixNuageActif = false; throw new Error('voix ' + r.status); } // 400 (voix retirée) : repli pour cette lecture seulement
   return (await r.json()).url;
 }
 // Morceaux d'au plus ~1 200 caractères, coupés aux fins de phrase (le serveur refuse au-delà de 2 500).
@@ -9761,13 +9767,15 @@ function voixParler(texte, o){
     if(n !== voixLectureN) return;
     if(!('speechSynthesis' in window)){ err(); return; }
     const u = speechUtterance(texte); if(o.vitesse) u.rate = o.vitesse;
+    if(o.style === 'olivia'){ u.pitch = Math.min(2, (u.pitch || 1) * 1.3); u.rate = (u.rate || 1) * 1.05; } // Oliv'IA : plus aiguë
     u.onend = fin; u.onerror = err; voixAppareilUtt = u; speechSynthesis.speak(u);
   };
-  const id = voixNuageChoisie();
+  // Oliv'IA a toujours sa propre voix en ligne (si elle est disponible), quelle que soit la voix choisie pour les cours.
+  const id = o.style === 'olivia' ? (voixNuageActif !== false ? (VOIX_OLIVIA || 'olivia') : null) : voixNuageChoisie();
   if(!id || !currentUser || voixNuageActif === false || typeof SUPABASE_URL === 'undefined'){ if(!('speechSynthesis' in window)) return false; appareil(); return true; }
   let repli = false; const secours = () => { if(repli) return; repli = true; appareil(); }; // une seule fois
   const a = voixAudioPret(), morceaux = voixMorceaux(texte), urls = [];
-  const url = k => urls[k] || (urls[k] = voixNuageUrl(id, morceaux[k]));
+  const url = k => urls[k] || (urls[k] = voixNuageUrl(id, morceaux[k], o.style === 'olivia' ? 'olivia' : null));
   const jouer = async k => {
     if(n !== voixLectureN) return;
     if(k >= morceaux.length){ fin(); return; }

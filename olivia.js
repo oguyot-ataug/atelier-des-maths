@@ -103,8 +103,23 @@ function oliviaBonjour(){
 }
 function oliviaBulleHtml(qui, html){
   return qui === 'oliv'
-    ? `<div class="oliv-msg oliv"><span class="oliv-mini">${OLIV_AVATAR}</span><div class="oliv-txt">${html}</div></div>`
+    ? `<div class="oliv-msg oliv"><span class="oliv-mini">${OLIV_AVATAR}</span><div class="oliv-txt">${html}${typeof voixParler === 'function' ? '<button type="button" class="oliv-ecouter" title="Écouter Oliv\'IA" aria-label="Écouter Oliv\'IA" onclick="oliviaEcouter(this)"><span class="gicon">volume_up</span></button>' : ''}</div></div>`
     : `<div class="oliv-msg eleve"><div class="oliv-txt">${html}</div></div>`;
+}
+// Oliv'IA a sa voix (demandé le 02/11/2026 : « on pourrait donner une voix à Oliv'IA ») : voix en ligne d'Oliv'IA (style
+// « olivia » de la fonction voix), sinon la voix de l'appareil plus aiguë. Un clic lit la bulle, un second clic arrête.
+function oliviaEcouter(btn){
+  const enCours = btn.classList.contains('lecture');
+  if(typeof voixArreter === 'function') voixArreter();
+  document.querySelectorAll('.oliv-ecouter.lecture').forEach(b => { b.classList.remove('lecture'); b.innerHTML = '<span class="gicon">volume_up</span>'; });
+  if(enCours) return;
+  const bulle = btn.closest('.oliv-txt'); if(!bulle) return;
+  const c = bulle.cloneNode(true); c.querySelectorAll('.oliv-ecouter, .oliv-cite').forEach(e => e.remove());
+  let t = typeof buildSpeechText === 'function' ? buildSpeechText(c) : c.textContent;
+  if(typeof speechFinal === 'function') t = speechFinal(t);
+  const fin = () => { btn.classList.remove('lecture'); btn.innerHTML = '<span class="gicon">volume_up</span>'; };
+  btn.classList.add('lecture'); btn.innerHTML = '<span class="gicon">stop</span>';
+  if(!voixParler(t, { style: 'olivia', onend: fin, onerror: fin })) fin();
 }
 function oliviaEsc(s){ return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
 // Mise en forme des réponses : formules $...$ (KaTeX), **gras**, retours à la ligne. Pas de

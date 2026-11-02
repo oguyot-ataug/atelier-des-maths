@@ -1522,6 +1522,8 @@ body.fig-proj #tbSvg{display:block;width:100vw !important;height:100vh !importan
 .oliv-msg .oliv-txt{padding:8px 11px;border-radius:14px;font-size:.92rem;line-height:1.45;max-width:85%;overflow-wrap:anywhere;}
 .oliv-msg.oliv .oliv-txt{background:#fff;border:1px solid rgba(31,122,77,.2);border-bottom-left-radius:4px;color:#20242E;}
 .oliv-msg.eleve .oliv-txt{background:#1F7A4D;color:#fff;border-bottom-right-radius:4px;}
+.oliv-ecouter{display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;margin-left:6px;width:26px;height:26px;border-radius:50%;border:1px solid rgba(31,122,77,.3);background:#F2F8EC;color:#1F7A4D;cursor:pointer;padding:0;}
+.oliv-ecouter .gicon{font-size:1rem;} .oliv-ecouter:hover{background:#E2F0D6;} .oliv-ecouter.lecture{background:#1F7A4D;color:#fff;}
 .oliv-mini svg{width:26px;height:26px;flex:none;}
 .oliv-cite{display:block;font-style:italic;opacity:.85;font-size:.82rem;margin-bottom:4px;}
 .oliv-erreur{color:#A83C1F;}

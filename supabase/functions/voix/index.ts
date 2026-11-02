@@ -7,6 +7,8 @@
 //   etat  (public)   : { actif, voix: [{ id, genre }] } voix françaises disponibles (les plus naturelles : Chirp 3 HD, sinon
 //                      Neural2, sinon WaveNet ; deux voix de femme et deux d'homme), si le plafond du mois n'est pas atteint.
 //   lire  (public si l'audio existe déjà, sinon compte connecté) : { texte, voix } → { url } du fichier MP3.
+//   lire avec { style: "olivia" } : la voix d'Oliv'IA (OLIVIA : voix Neural2 de femme, plus aiguë et un peu plus rapide) --
+//                      demandé le 02/11/2026 : « on pourrait donner une voix à Oliv'IA ».
 //   conso (administrateur) : { mois, plafondMois, jour, plafondJour } caractères synthétisés ce mois-ci et aujourd'hui.
 //
 // Chaque texte n'est synthétisé qu'UNE fois par voix : le fichier est rangé dans le stockage public « voix »
@@ -30,6 +32,8 @@ const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { ...cors, "Content-Type": "application/json" } });
 
 const MAX_TEXTE = 2500;
+// Voix d'Oliv'IA, la petite robote des cours : une voix de femme, 4 demi-tons plus haut, un peu plus rapide.
+const OLIVIA = { voix: "fr-FR-Neural2-F", pitch: 4, rate: 1.06 };
 const BUCKET = "voix";
 
 function serviceKey(): string {
@@ -87,7 +91,9 @@ async function voixDisponibles(tok: string): Promise<Voix[]> {
     const f = t.filter((v) => v.ssmlGender === "FEMALE").slice(0, n), m = t.filter((v) => v.ssmlGender === "MALE").slice(0, n);
     return [...f.map((v) => ({ id: v.name, genre: "F" as const, type })), ...m.map((v) => ({ id: v.name, genre: "M" as const, type }))];
   };
-  let liste: Voix[] = [...choisir("Chirp3-HD", 2), ...choisir("Neural2", 1)];
+  // Neural2 seulement (Inès, Paul) : Chirp 3 HD épelle les élisions (« s'écrire » lu « esse écrire »), Neural2 lit juste
+  // (vérifié le 02/11/2026 : « ça fonctionne »).
+  let liste: Voix[] = choisir("Neural2", 2);
   if (liste.length < 2) liste = choisir("Wavenet", 2);
   voixCache = { liste, expire: Date.now() + 3600000 };
   return liste;
@@ -110,7 +116,7 @@ Deno.serve(async (req) => {
       if (!tok) return json({ actif: false, raison: "non configuré" });
       const liste = await voixDisponibles(tok);
       if (!liste.length) return json({ actif: false, raison: voixErreur ? "API Text-to-Speech inaccessible" : "aucune voix", detail: voixErreur.slice(0, 160) });
-      return json({ actif: (await utiliseCeMois(db)) < maxMois(), voix: liste });
+      return json({ actif: (await utiliseCeMois(db)) < maxMois(), voix: liste, olivia: OLIVIA.voix });
     }
 
     // Catalogue des voix françaises de Google (public) : pour choisir les voix proposées.
@@ -133,7 +139,8 @@ Deno.serve(async (req) => {
     }
 
     if (body.action !== "lire") return json({ error: "Action inconnue." }, 400);
-    const voix = String(body.voix ?? "");
+    const olivia = body.style === "olivia";
+    const voix = olivia ? OLIVIA.voix : String(body.voix ?? "");
     // Apostrophe droite entre deux lettres -> apostrophe typographique : sinon la voix Google la prend pour un guillemet et
     // épelle la lettre (signalé le 02/11/2026 : « Un nombre pouvant s'écrire… » lu « esse écrire »).
     const texte = String(body.texte ?? "").replace(/\s+/g, " ").trim().replace(/([A-Za-zÀ-ÖØ-öø-ÿœŒ])['ʼ`´](?=[A-Za-zÀ-ÖØ-öø-ÿœŒ])/g, "$1\u2019");
@@ -142,7 +149,7 @@ Deno.serve(async (req) => {
     if (texte.length > MAX_TEXTE) return json({ error: "Texte trop long." }, 413);
 
     // Déjà synthétisé : le fichier public sert à tout le monde.
-    const chemin = `${voix}/${await sha256(voix + "|" + texte)}.mp3`;
+    const chemin = olivia ? `${voix}/olivia-${await sha256("olivia|" + voix + "|" + texte)}.mp3` : `${voix}/${await sha256(voix + "|" + texte)}.mp3`;
     const url = `${Deno.env.get("SUPABASE_URL")}/storage/v1/object/public/${BUCKET}/${chemin}`;
     const deja = await fetch(url, { method: "HEAD" }).catch(() => null);
     if (deja && deja.ok) return json({ url, cache: true });
@@ -150,7 +157,7 @@ Deno.serve(async (req) => {
     // Nouvelle synthèse : compte connecté, Google joignable, voix proposée, plafonds respectés.
     const tok = await google();
     if (!tok) return json({ error: "Voix en ligne non configurées." }, 503);
-    if (!(await voixDisponibles(tok)).some((v) => v.id === voix)) return json({ error: "Voix indisponible." }, 503);
+    if (!olivia && !(await voixDisponibles(tok)).some((v) => v.id === voix)) return json({ error: "Voix indisponible." }, 400);
     const jeton = (req.headers.get("Authorization") || "").replace(/^Bearer\s+/i, "");
     const { data: u } = await db.auth.getUser(jeton);
     const uid = u?.user?.id;
@@ -164,7 +171,8 @@ Deno.serve(async (req) => {
     const res = await fetch("https://texttospeech.googleapis.com/v1/text:synthesize", {
       method: "POST",
       headers: { Authorization: `Bearer ${tok}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ input: { text: texte }, voice: { languageCode: "fr-FR", name: voix }, audioConfig: { audioEncoding: "MP3" } }),
+      body: JSON.stringify({ input: { text: texte }, voice: { languageCode: "fr-FR", name: voix },
+        audioConfig: olivia ? { audioEncoding: "MP3", pitch: OLIVIA.pitch, speakingRate: OLIVIA.rate } : { audioEncoding: "MP3" } }),
     });
     if (!res.ok) {
       console.error("Google TTS", res.status, (await res.text()).slice(0, 300));

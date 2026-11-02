@@ -186,8 +186,9 @@ triangles, Angles (bissectrice), Symétrie axiale, Propriétés des triangles (c
 
 Lecture à voix haute : `voixParler(texte, { vitesse, onend, onerror })` et `voixArreter()` (app.js), utilisés partout (cours,
 quiz du CP, frise d'histoire). Voix choisie dans le réglage des voix : voix de l'appareil, ou voix en ligne (liste donnée par le
-serveur : deux voix de femme, deux d'homme, du type le plus naturel disponible chez Google, affichées Claire, Léa, Hugo, Louis)
-pour les comptes connectés quand la fonction `voix` est active. Microsoft Azure a été abandonné (création du compte bloquée).
+serveur : Google Neural2, Inès et Paul -- PAS Chirp 3 HD, qui épelle les élisions : « s'écrire » lu « esse écrire ») pour les
+comptes connectés quand la fonction `voix` est active. Oliv'IA a sa voix (bouton 🔊 sur ses réponses, `oliviaEcouter`,
+olivia.js) : style « olivia » de la fonction, voix Neural2 de femme 4 demi-tons plus haut et un peu plus rapide (OLIVIA). Microsoft Azure a été abandonné (création du compte bloquée).
 La fonction (`supabase/functions/voix`, verify_jwt non) synthétise chaque texte UNE fois par voix et range le MP3 dans le
 stockage public `voix` ; plafonds VOIX_MAX_MOIS (100 000 caractères, SMS d'alerte à 80 % par alerte-sms, suivi dans Administration › IA) et
 VOIX_MAX_JOUR par compte (20 000), compteur
