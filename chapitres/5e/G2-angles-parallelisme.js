@@ -518,7 +518,10 @@ function apBuildTriangleSvg(){
 }
 
 /* ================= Démonstration pas à pas : somme des angles d'un triangle ================= */
+// Une étape de départ (le triangle seul) : chaque phrase correspond au dessin affiché -- signalé le 02/11/2026 (capture :
+// l'étape 2 parlait des angles vert et bleu en I, qui n'apparaissaient qu'à l'étape 3).
 const AP_TRI_STEPS = [
+  {note:"Voici un triangle IJK et ses trois angles : l'angle IJK en vert, l'angle IKJ en bleu et l'angle JIK en rose."},
   {note:"On trace la droite parallèle à (JK) qui passe par I."},
   {note:"On repère les angles alternes-internes égaux : à gauche de I, l'angle vert a la même mesure que l'angle IJK ; à droite de I, l'angle bleu a la même mesure que l'angle IKJ."},
   {note:"Comme la droite tracée est une droite (elle forme un angle plat en I), la somme des trois angles autour de I sur cette droite vaut 180°. Donc IJK + JIK + IKJ = 180°."},
