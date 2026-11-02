@@ -2,6 +2,8 @@
    5e · Planches : Angles et parallélisme (G2)
    Angles adjacents, opposés par le sommet, supplémentaires (complémentaires : « Pour aller plus loin ») ; angles alternes-internes et
    correspondants ; parallélisme ; somme des angles d'un triangle.
+   Relecture du 02/11/2026 (version 1307) : chapeaux sur les angles, lettres a et b inutiles retirées, figures à main levée (P4-E2),
+   P2-E3 remplacé (angle triple), figures ajoutées aux corrigés (P2-E5, P2-E6, P3-E5), corrigés rédigés avec la propriété (P1-E5, P4-E4, P5-E2).
    ============================================================ */
 (() => {
 const B = n => plPointilles(n || 3), R = v => plRep(String(v));
@@ -20,8 +22,8 @@ const W = n => cm1Tex(`\\widehat{${n}}`);
 // Deux droites (d1) et (d2) (pentes p1, p2 en degrés) coupées par une sécante d'angle s ; angles numérotés 1 à 8.
 // Aux points E (sur d1) et F (sur d2) : 1 = entre sécante haute et d1 droite, puis sens direct.
 function secante(o){ const { p1 = 0, p2 = 0, s = 62, w = 250, h = 170, num = true, marques = [], noms = true } = o, E = [w * .56, h * .3], F = [E[0] - (h * .42) / Math.tan(rad(s)), h * .72]; // F sur la sécante, sous E (direction s de F vers E)
-  let g = ''; const dr = (V, a, len) => L(P(V, a + 180, len), P(V, a, len), K, 1.8);
-  g += dr(E, p1, w * .48) + dr(F, p2, w * .48) + L(P(E, s, 52), P(F, s + 180, 52), Bl, 1.8);
+  let g = ''; const dr = (V, a, len) => (o.ml ? ML : L)(P(V, a + 180, len), P(V, a, len), K, 1.8, o.ml);
+  g += dr(E, p1, w * .48) + dr(F, p2, w * .48) + (o.ml ? ML : L)(P(E, s, 52), P(F, s + 180, 52), Bl, 1.8, -(o.ml || 0));
   // directions aux deux sommets : d droite, sécante haute, d gauche, sécante basse
   const dirs = (pd, ss) => [pd, ss, pd + 180, ss + 180];
   const A = (V, k, pd, c, txt) => { const D = dirs(pd, s); return arc(V, D[k], D[(k + 1) % 4], 16, c, txt); };
@@ -38,25 +40,35 @@ function tri(Pts, noms, marques, px){ const [A, Bp, C] = Pts; let g = `<polygon 
   const G = [(A[0] + Bp[0] + C[0]) / 3, (A[1] + Bp[1] + C[1]) / 3];
   Pts.forEach((p, i) => { const v = [p[0] - G[0], p[1] - G[1]], n = Math.hypot(...v); g += T([p[0] + v[0] / n * 13, p[1] + v[1] / n * 13 + 4], noms[i], K, 13); });
   return S(Math.max(...Pts.map(p => p[0])) + 30, Math.max(...Pts.map(p => p[1])) + 26, g, px); }
+// Trait « à main levée » (demandé le 02/11/2026, 5e-G2-P4-E2 : « plutôt des figures à main levée car là on peut imaginer qu'elles
+// sont parallèles en regardant la figure ») : légère ondulation, toujours la même pour une figure donnée.
+const ML = (a, b, c, w, k) => { const dx = b[0] - a[0], dy = b[1] - a[1], n = Math.hypot(dx, dy) || 1, nx = -dy / n, ny = dx / n, j = (k || 1) * 2.2;
+  const q = (t, e) => [a[0] + dx * t + nx * e, a[1] + dy * t + ny * e];
+  const p1 = q(.3, j), p2 = q(.7, -j * .8), m = q(.5, j * .2);
+  return `<path d="M${a[0].toFixed(1)},${a[1].toFixed(1)} Q${p1[0].toFixed(1)},${p1[1].toFixed(1)} ${m[0].toFixed(1)},${m[1].toFixed(1)} T${b[0].toFixed(1)},${b[1].toFixed(1)}" fill="none" stroke="${c || K}" stroke-width="${w || 2}" stroke-linecap="round"/>`; };
+// Deux droites sécantes en V (directions d1 et d2, degrés), angles marqués : [[a1, a2, couleur, texte]].
+const croix = (d1, d2, marques, w, h, px) => { const V = [w / 2, h / 2]; let g = L(P(V, d1, w * .45), P(V, d1 + 180, w * .45)) + L(P(V, d2, h * .5), P(V, d2 + 180, h * .5));
+  marques.forEach(([a1, a2, c, t], i) => { g += arc(V, a1, a2, i % 2 ? 26 : 20, c, t); }); return S(w, h, g, px || w); };
 const duo = l => `<div style="display:flex;justify-content:space-around;align-items:flex-start;gap:8px;flex-wrap:wrap;">${l.join('')}</div>`;
 const col = (h, t) => `<span style="display:flex;flex-direction:column;align-items:center;gap:2px;">${h}<span class="pl-item" style="text-align:center;display:block;">${t}</span></span>`;
 PLANCHES['5e|Angles et parallélisme'] = [
   { titre: 'Angles adjacents, supplémentaires', duree: '35 min',
     attendus: ['Reconnaître deux angles adjacents', 'Savoir que deux angles supplémentaires ont pour somme 180°', 'Calculer le supplément d\'un angle'],
     exos: [
-      { etoiles: 1, col: 1, consigne: 'Calcule.',
-        ...rmp([['Supplément de 35° : @ °', 145], ['Supplément de 72° : @ °', 108], ['Supplément de 110° : @ °', 70], ['Supplément de 45° : @ °', 135], ['Supplément de 90° : @ °', 90], ['Supplément de 179° : @ °', 1]], 2) },
+      { etoiles: 1, col: 1, consigne: `Les angles ${W('a')} et ${W('b')} sont supplémentaires. Calcule ${W('b')}.`,
+        ...(() => { const l = [35, 72, 110, 45, 90]; return { eleve: plListe(l.map(a => `${W('a')} = ${a}° : ${W('b')} = ${B(6)}`)), corr: plListe(l.map(a => `${W('a')} = ${a}° : ${W('b')} = 180° − ${a}° = ${R((180 - a) + '°')}`)) }; })() },
       { etoiles: 1, col: 1, consigne: 'Ces deux angles sont-ils supplémentaires ? Entoure.',
         ...ch([['30° et 150° :', 'oui'], ['100° et 80° :', 'oui'], ['45° et 145° :', 'non'], ['90° et 90° :', 'oui'], ['50° et 50° :', 'non']], 'oui · non') },
       { etoiles: 2, consigne: 'Les angles marqués sont-ils adjacents ? Entoure.',
         ...(() => { const f1 = S(140, 90, L([20, 75], [125, 75]) + L([60, 75], [95, 15]) + L([60, 75], [25, 20]) + arc([60, 75], 0, 60, 18, Ro) + arc([60, 75], 60, 124, 26, Bl), 120),
             f2 = S(140, 90, L([15, 75], [125, 75]) + L([70, 75], [40, 15]) + L([70, 75], [110, 20]) + arc([70, 75], 0, 54, 18, Ro) + arc([70, 75], 117, 180, 18, Bl), 120);
-          return { eleve: duo([col(f1, '<b>a</b> <b>oui · non</b>'), col(f2, '<b>b</b> <b>oui · non</b>')]), corr: duo([col(f1, '<b>a</b> ' + plEntoure('oui')), col(f2, '<b>b</b> ' + plEntoure('non'))]) }; })() },
+          return { eleve: duo([col(f1, '<b>oui · non</b>'), col(f2, '<b>oui · non</b>')]), corr: duo([col(f1, plEntoure('oui')), col(f2, plEntoure('non'))]) }; })() },
       { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.',
         ...ch([['Deux angles adjacents ont le même sommet et un côté commun :', 'vrai'], ['Deux angles supplémentaires sont forcément adjacents :', 'faux'], ['Un angle obtus peut avoir un supplément :', 'vrai'], ['Deux angles droits sont supplémentaires :', 'vrai']], 'vrai · faux') },
-      { etoiles: 2, col: 1, consigne: 'Les points A, O, B sont alignés. Calcule l\'angle manquant.',
-        ...(() => { const f = S(220, 100, L([15, 85], [205, 85]) + L([110, 85], [160, 18]) + arc([110, 85], 0, 53, 20, Ro, '53°') + arc([110, 85], 53, 180, 26, Bl, '?') + T([12, 98], 'A', K) + T([208, 98], 'B', K) + T([110, 99], 'O', K), 220), q = rmp([['Angle manquant : @ °', 127]], 2);
-          return { eleve: f + q.eleve, corr: f + q.corr }; })() },
+      { etoiles: 2, col: 1, consigne: `Les points A, O, B sont alignés. Calcule l'angle ${W('AOx')}.`,
+        ...(() => { const f = S(220, 100, L([15, 85], [205, 85]) + L([110, 85], [160, 18]) + arc([110, 85], 0, 53, 20, Ro, '53°') + arc([110, 85], 53, 180, 26, Bl, '?') + T([12, 98], 'A', K) + T([208, 98], 'B', K) + T([110, 99], 'O', K) + T([168, 16], 'x', K), 220);
+          return { eleve: f + plListe([`${W('AOx')} = ${B(6)}`]),
+            corr: f + plListe([`A, O et B sont alignés : ${W('AOB')} = 180°.`, `${W('AOx')} = ${W('AOB')} − ${W('xOB')}`, `${W('AOx')} = 180° − 53°`, `${W('AOx')} = ${R('127°')}`]) }; })() },
     ] },
   { titre: 'Angles opposés par le sommet', duree: '30 min',
     attendus: ['Reconnaître deux angles opposés par le sommet', 'Savoir que deux angles opposés par le sommet ont la même mesure', 'Calculer les quatre angles formés par deux droites sécantes'],
@@ -66,16 +78,23 @@ PLANCHES['5e|Angles et parallélisme'] = [
             q = chx([['L\'angle opposé par le sommet à l\'angle 1 :', 'l\'angle 3', 'l\'angle 2 · l\'angle 3 · l\'angle 4'], ['Les angles 1 et 2 sont…', 'adjacents et supplémentaires', 'opposés par le sommet · adjacents et supplémentaires']]);
           return { eleve: f + q.eleve, corr: f + q.corr }; })() },
       { etoiles: 1, col: 1, consigne: 'Deux droites sécantes ; un des angles mesure 40°. Complète les trois autres (dans l\'ordre, en tournant).',
-        ...(() => { const V = [110, 60], f = S(220, 120, L(P(V, 20, 100), P(V, 200, 100)) + L(P(V, 60, 70), P(V, 240, 70)) + arc(V, 20, 60, 22, Ro, '40°') + arc(V, 60, 200, 30, Bl, 'a') + arc(V, 200, 240, 22, Ve, 'b') + arc(V, 240, 380, 30, Vi, 'c'), 220), q = rmp([['a = @ °', 140], ['b = @ °', 40], ['c = @ °', 140]], 2);
+        ...(() => { const V = [110, 60], f = S(220, 120, L(P(V, 20, 100), P(V, 200, 100)) + L(P(V, 60, 70), P(V, 240, 70)) + arc(V, 20, 60, 22, Ro, '40°') + arc(V, 60, 200, 30, Bl, 'a\u0302') + arc(V, 200, 240, 22, Ve, 'b\u0302') + arc(V, 240, 380, 30, Vi, 'c\u0302'), 220), q = rmp([[`${W('a')} = @ °`, 140], [`${W('b')} = @ °`, 40], [`${W('c')} = @ °`, 140]], 2);
           return { eleve: f + q.eleve, corr: f + q.corr }; })() },
-      { etoiles: 2, col: 1, consigne: 'Complète.',
-        ...rmp([['Deux angles opposés par le sommet mesurent 75° et @ °.', 75], ['Deux droites sécantes forment un angle de 90° : les trois autres mesurent @ °.', 90], ['Si un angle mesure 128°, l\'angle adjacent sur la même droite mesure @ °.', 52]], 2) },
+      // Remplacé le 02/11/2026 (« A remplacer. Aucun intérêt ») : un petit problème qui combine angles opposés et supplémentaires.
+      { etoiles: 2, col: 1, consigne: `Les droites (AB) et (CD) se coupent en O. L'angle ${W('AOC')} est le triple de l'angle ${W('AOD')}. Calcule les quatre angles.`,
+        ...(() => { const V = [100, 58], f = S(200, 116, L(P(V, 10, 90), P(V, 190, 90)) + L(P(V, 145, 62), P(V, 325, 62)) + arc(V, 190, 325, 18, Ro) + arc(V, 145, 190, 22, Bl)
+            + T(P(V, 190, 96), 'A', K) + T(P(V, 10, 96), 'B', K) + T(P(V, 145, 70), 'D', K) + T(P(V, 325, 70), 'C', K) + T([V[0] + 2, V[1] - 9], 'O', K), 200);
+          return { eleve: f + plListe([`${W('AOD')} = ${B(4)}`, `${W('AOC')} = ${B(4)}`, `${W('BOC')} = ${B(4)}`, `${W('BOD')} = ${B(4)}`]),
+            corr: f + plListe([`${W('AOC')} et ${W('AOD')} sont adjacents et supplémentaires : ${W('AOC')} + ${W('AOD')} = 180°.`, `Donc 3 × ${W('AOD')} + ${W('AOD')} = 180°, soit 4 × ${W('AOD')} = 180°.`, `${W('AOD')} = 180° : 4 = ${R('45°')}`, `${W('AOC')} = 3 × 45° = ${R('135°')}`, `${W('BOC')} = ${W('AOD')} = ${R('45°')} (opposés par le sommet)`, `${W('BOD')} = ${W('AOC')} = ${R('135°')} (opposés par le sommet)`]) }; })() },
       { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.',
         ...ch([['Deux angles opposés par le sommet sont adjacents :', 'faux'], ['Deux angles opposés par le sommet ont la même mesure :', 'vrai'], ['Deux droites sécantes forment toujours deux paires d\'angles égaux :', 'vrai']], 'vrai · faux') },
       { etoiles: 2, col: 1, consigne: 'Deux droites sécantes forment un angle de 112°. Entoure les mesures des trois autres angles.',
-        ...chx([['L\'angle opposé par le sommet :', '112°', '68° · 112° · 180°'], ['Les deux autres angles :', '68° et 68°', '68° et 68° · 112° et 68° · 78° et 78°']]) },
+        ...(() => { const q = chx([['L\'angle opposé par le sommet :', '112°', '68° · 112° · 180°'], ['Les deux autres angles :', '68° et 68°', '68° et 68° · 112° et 68° · 78° et 78°']]);
+          const f = croix(0, 112, [[0, 112, Ro, '112°'], [112, 180, Bl, '68°'], [180, 292, Ro, '112°'], [292, 360, Bl, '68°']], 210, 120);
+          return { eleve: q.eleve, corr: q.corr + `<div style="text-align:center;">${f}</div>` }; })() },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Trace deux droites sécantes en O formant un angle de 35°. Sans rapporteur, donne la mesure des trois autres angles. Justifie.',
-        corr: cm1Redac('Mesures', { suite: ['L\'angle opposé par le sommet mesure aussi 35°.', 'Les deux autres sont supplémentaires de 35° : 180 − 35 = 145°.'] }, 'Les quatre angles mesurent 35°, 145°, 35° et 145°.') },
+        corr: `<div style="text-align:center;">${croix(0, 35, [[0, 35, Ro, '35°'], [35, 180, Bl, '145°'], [180, 215, Ro, '35°'], [215, 360, Bl, '145°']], 220, 120)}</div>`
+          + cm1Redac('Mesures', { suite: ['L\'angle opposé par le sommet mesure aussi 35°.', 'Les deux autres sont supplémentaires de 35° : 180° − 35° = 145°.'] }, 'Les quatre angles mesurent 35°, 145°, 35° et 145°.') },
     ] },
   { titre: 'Angles alternes-internes et correspondants', duree: '40 min',
     attendus: ['Repérer deux angles alternes-internes formés par deux droites et une sécante', 'Repérer deux angles correspondants', 'Utiliser les bons mots pour décrire une figure'],
@@ -90,7 +109,8 @@ PLANCHES['5e|Angles et parallélisme'] = [
       { etoiles: 2, col: 1, consigne: 'Même figure (angles 1 à 8). Entoure les paires d\'angles correspondants.',
         ...(() => { const l = ['1 et 5', '2 et 8', '3 et 7', '4 et 6', '4 et 8', '2 et 4'], ok = [0, 2, 4]; return { eleve: plGrille(l, 3), corr: plGrille(l.map((t, i) => ok.includes(i) ? plEntoure(t) : t), 3) }; })() },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Trace deux droites non parallèles et une sécante. Colorie en rouge deux angles alternes-internes et en vert deux angles correspondants. Ont-ils la même mesure ?',
-        corr: cm1Redac('Observation', 'Quand les droites ne sont pas parallèles, les angles alternes-internes (ou correspondants) n\'ont pas la même mesure.', 'Ils ne sont égaux que si les deux droites sont parallèles.') },
+        corr: `<div style="text-align:center;">${secante({ p1: 0, p2: 14, s: 62, w: 250, h: 165, num: false, marques: [[4, Ro, '118°'], [6, Ro, '132°'], [1, Ve, '62°'], [5, Ve, '48°']] })}</div>`
+          + cm1Redac('Observation', 'Quand les droites ne sont pas parallèles, les angles alternes-internes (ou correspondants) n\'ont pas la même mesure.', 'Ils ne sont égaux que si les deux droites sont parallèles.') },
     ] },
   { titre: 'Angles et droites parallèles', duree: '40 min',
     attendus: ['Si deux droites parallèles sont coupées par une sécante, alors les angles alternes-internes (et correspondants) sont égaux', 'Réciproque : des angles alternes-internes égaux prouvent le parallélisme', 'Calculer des angles et rédiger une justification'],
@@ -98,14 +118,14 @@ PLANCHES['5e|Angles et parallélisme'] = [
       { etoiles: 1, col: 1, consigne: 'Les droites (d₁) et (d₂) sont parallèles. L\'angle 1 mesure 62°. Complète.',
         ...(() => { const f = secante({ p1: 0, p2: 0, s: 62, w: 250, h: 160, marques: [[1, Ro, '62°']] }), q = rmp([['Angle 5 (correspondant) : @ °', 62], ['Angle 3 (opposé) : @ °', 62], ['Angle 2 : @ °', 118], ['Angle 7 : @ °', 62]], 2);
           return { eleve: f + q.eleve, corr: f + q.corr }; })() },
-      { etoiles: 2, col: 1, consigne: 'Les droites sont-elles parallèles ? Entoure (angles alternes-internes marqués).',
-        ...(() => { const f1 = secante({ p1: 0, p2: 0, s: 60, w: 160, h: 120, num: false, noms: false, marques: [[4, Ro, '60°'], [6, Bl, '60°']], px: 150 }), f2 = secante({ p1: 0, p2: 8, s: 60, w: 160, h: 120, num: false, noms: false, marques: [[4, Ro, '60°'], [6, Bl, '52°']], px: 150 });
-          return { eleve: duo([col(f1, '<b>a</b> <b>oui · non</b>'), col(f2, '<b>b</b> <b>oui · non</b>')]), corr: duo([col(f1, '<b>a</b> ' + plEntoure('oui')), col(f2, '<b>b</b> ' + plEntoure('non'))]) }; })() },
+      { etoiles: 2, col: 1, consigne: 'Figures à main levée : les droites sont-elles parallèles ? Entoure (angles alternes-internes marqués).',
+        ...(() => { const f1 = secante({ p1: 3, p2: -4, s: 60, w: 160, h: 120, num: false, noms: false, ml: 1, marques: [[4, Ro, '60°'], [6, Bl, '60°']], px: 150 }), f2 = secante({ p1: -2, p2: 3, s: 60, w: 160, h: 120, num: false, noms: false, ml: -1, marques: [[4, Ro, '60°'], [6, Bl, '52°']], px: 150 });
+          return { eleve: duo([col(f1, '<b>oui · non</b>'), col(f2, '<b>oui · non</b>')]), corr: duo([col(f1, plEntoure('oui')), col(f2, plEntoure('non'))]) }; })() },
       { etoiles: 2, col: 1, consigne: 'Complète la propriété.',
         ...rmp([['Si deux droites @ sont coupées par une sécante, alors les angles alternes-internes ont la même mesure.', 'parallèles'], ['Si deux angles correspondants ont la même mesure, alors les droites sont @.', 'parallèles']], 9) },
       { etoiles: 2, col: 1, consigne: '(d₁) // (d₂). Calcule les angles x et y.',
         ...(() => { const f = secante({ p1: 0, p2: 0, s: 70, w: 230, h: 150, num: false, marques: [[2, Ro, '110°'], [6, Bl, 'x'], [5, Ve, 'y']] }), q = rmp([['x = @ °', 110], ['y = @ °', 70]], 2);
-          return { eleve: f + q.eleve, corr: f + q.corr }; })() },
+          return { eleve: f + q.eleve, corr: f + plListe(['Les angles marqués 110° et x sont correspondants, et (d₁) // (d₂).', 'Or, si deux droites parallèles sont coupées par une sécante, alors deux angles correspondants ont la même mesure.', `Donc x = ${R('110°')}`, 'Les angles x et y sont adjacents et forment un angle plat : ils sont supplémentaires.', `y = 180° − 110° = ${R('70°')}`]) }; })() },
       { etoiles: 3, cahier: true, consigne: 'Deux droites (d) et (d\') sont coupées par une sécante. Deux angles alternes-internes mesurent 47° chacun. Démontre que (d) et (d\') sont parallèles (rédige : données, propriété, conclusion).',
         corr: cm1Redac('Démonstration', { suite: ['Données : les angles alternes-internes mesurent tous les deux 47°.', 'Propriété : si deux angles alternes-internes ont la même mesure, alors les droites sont parallèles.'] }, 'Conclusion : (d) et (d\') sont parallèles.') },
     ] },
@@ -116,7 +136,7 @@ PLANCHES['5e|Angles et parallélisme'] = [
         ...(() => { const l = [['50° et 70°', 60], ['90° et 35°', 55], ['110° et 25°', 45], ['60° et 60°', 60], ['12,5° et 100°', '67,5']]; return { eleve: plListe(l.map(([t]) => `${t} : ${B(2)} °`)), corr: plListe(l.map(([t, r]) => `${t} : ${R(r)} °`)) }; })() },
       { etoiles: 1, col: 1, consigne: 'Calcule l\'angle marqué d\'un point d\'interrogation.',
         ...(() => { const f = tri([[20, 110], [190, 110], [80, 20]], ['A', 'B', 'C'], [[0, '57°', Ro], [1, '34°', Bl], [2, '?', Ve]], 210), q = rmp([[`${W('ACB')} = @ °`, 89]], 2);
-          return { eleve: f + q.eleve, corr: f + q.corr }; })() },
+          return { eleve: f + q.eleve, corr: f + plListe(['Dans un triangle, la somme des trois angles vaut 180°.', `${W('BAC')} + ${W('ABC')} + ${W('ACB')} = 180°`, `${W('ACB')} = 180° − ${W('BAC')} − ${W('ABC')}`, `${W('ACB')} = 180° − 57° − 34°`, `${W('ACB')} = ${R('89°')}`]) }; })() },
       { etoiles: 2, col: 1, consigne: 'Triangles particuliers : complète.',
         ...rmp([['Triangle équilatéral : chaque angle mesure @ °', 60], ['Triangle rectangle avec un angle de 28° : le troisième mesure @ °', 62], ['Triangle isocèle, angle au sommet 40° : chaque angle à la base mesure @ °', 70], ['Triangle isocèle, angles à la base de 35° : angle au sommet @ °', 110]], 2) },
       { etoiles: 2, col: 1, consigne: 'Ces triangles existent-ils ? Entoure.',

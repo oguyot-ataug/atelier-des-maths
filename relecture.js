@@ -39,6 +39,18 @@ const RELECTURE_CHGT = {
   // La date d'un changement est l'heure RÉELLE de sa mise en ligne (heure du commit poussé sur main), jamais une heure
   // arrondie dans le futur : un exercice validé entre la mise en ligne et une date trop tardive resterait « Chgt effectué »
   // (signalé le 01/11/2026 pour 6e-N1 ; dates corrigées d'après l'historique des publications).
+  // Version 1307 (02/11).
+  '5e-G2-P1-E1': { date: '2026-11-02T23:13:53Z', note: "Consigne : « Les angles â et b̂ sont supplémentaires. Calcule b̂. » ; chaque question « â = 35° : b̂ = … », corrigé « b̂ = 180° − 35° = 145° » ; chapeaux sur les angles" },
+  '5e-G2-P1-E3': { date: '2026-11-02T23:13:53Z', note: "Lettres a et b retirées des figures (inutiles et mal placées) : seuls les angles marqués restent" },
+  '5e-G2-P1-E5': { date: '2026-11-02T23:13:53Z', note: "L'angle à calculer est nommé (AOx, point x sur la demi-droite) ; corrigé en quatre lignes : A, O, B alignés donc AOB = 180° ; AOx = AOB − xOB ; AOx = 180° − 53° ; AOx = 127°" },
+  '5e-G2-P2-E2': { date: '2026-11-02T23:13:53Z', note: "Chapeaux sur les angles â, b̂, ĉ, dans la figure et dans les réponses" },
+  '5e-G2-P2-E3': { date: '2026-11-02T23:13:53Z', note: "Exercice remplacé : (AB) et (CD) se coupent en O, AOC est le triple de AOD ; calculer les quatre angles (4 × AOD = 180°, AOD = 45°, AOC = 135°, puis les opposés par le sommet), figure avec les deux angles marqués" },
+  '5e-G2-P2-E5': { date: '2026-11-02T23:13:53Z', note: "Corrigé : la figure des deux droites sécantes avec les quatre angles (112°, 68°, 112°, 68°)" },
+  '5e-G2-P2-E6': { date: '2026-11-02T23:13:53Z', note: "Corrigé : la figure des deux droites sécantes avec les quatre angles (35°, 145°, 35°, 145°) avant la justification" },
+  '5e-G2-P3-E5': { date: '2026-11-02T23:13:53Z', note: "Corrigé : une figure avec deux droites non parallèles et une sécante, deux angles alternes-internes en rouge (118° et 132°) et deux angles correspondants en vert (62° et 48°), pour voir qu'ils n'ont pas la même mesure" },
+  '5e-G2-P4-E2': { date: '2026-11-02T23:13:53Z', note: "Figures à main levée (traits tremblés), sans les lettres a et b ; consigne « Figures à main levée : les droites sont-elles parallèles ? »" },
+  '5e-G2-P4-E4': { date: '2026-11-02T23:13:53Z', note: "Corrigé rédigé avec la propriété : angles correspondants et (d1) // (d2), « si deux droites parallèles sont coupées par une sécante, alors deux angles correspondants ont la même mesure », donc x = 110° ; puis x et y supplémentaires, y = 70°" },
+  '5e-G2-P5-E2': { date: '2026-11-02T23:13:53Z', note: "Corrigé détaillé : somme des angles d'un triangle = 180°, BAC + ABC + ACB = 180°, ACB = 180° − BAC − ABC = 180° − 57° − 34° = 89°" },
   // Version 1274 (01/11).
   '6e-N3-P1-E6': { date: '2026-11-01T23:08:17Z', note: "Corrigé : « 400 centièmes + 50 centièmes = 450 centièmes », chaque terme avec son unité, une étape par ligne ; tableau de numération (unités, dixièmes, centièmes) pour lire le nombre de centièmes" },
   '6e-N3-P2-E1': { date: '2026-11-01T23:08:17Z', note: "Ajout de « le nombre de dixièmes / de centièmes / de dizaines » à côté de « le chiffre des… »" },
