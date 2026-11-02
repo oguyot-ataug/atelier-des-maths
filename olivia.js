@@ -80,7 +80,7 @@ function oliviaOuvrir(on){
     p.innerHTML = `<div class="oliv-tete">
         <span class="oliv-tete-avatar">${OLIV_AVATAR}</span>
         <span class="oliv-tete-nom"><b>Oliv'IA</b><small>ta petite robote pour apprendre</small></span>
-        ${oliviaSR() ? '<button type="button" class="oliv-x oliv-ecoute-btn" id="olivEcouteBtn" onclick="oliviaEcouteBasculer()" title="Écoute « Ok Olivia ! »" aria-pressed="false"><span class="gicon">hearing</span></button>' : ''}
+        ${oliviaSR() && oliviaProf() ? '<button type="button" class="oliv-x oliv-ecoute-btn" id="olivEcouteBtn" onclick="oliviaEcouteBasculer()" title="Écoute « Ok Olivia ! »" aria-pressed="false"><span class="gicon">hearing</span></button>' : ''}
         <button type="button" class="oliv-x" onclick="oliviaNouvelle()" title="Nouvelle conversation"><span class="gicon">restart_alt</span></button>
         <button type="button" class="oliv-x" onclick="oliviaOuvrir(false)" title="Fermer" aria-label="Fermer"><span class="gicon">close</span></button>
       </div>
@@ -249,8 +249,11 @@ document.addEventListener('click', e => { if(e.target.closest && e.target.closes
    - Pendant qu'Oliv'IA réfléchit ou parle, le micro est coupé (elle ne s'entend pas elle-même).
    - Reconnaissance vocale du navigateur (Chrome, Edge, Safari ; sur l'appareil quand le navigateur sait le faire). Seule la
      question qui suit « Ok Olivia » part vers Oliv'IA, comme une question écrite ; le reste n'est ni gardé ni envoyé. */
+// Écoute permanente réservée aux professeurs (demandé le 02/11/2026 : « Juste pour les professeurs ») ; le bouton micro reste
+// pour tous (une question dictée, le micro se coupe ensuite).
+function oliviaProf(){ const a = typeof aiAccess !== 'undefined' ? aiAccess : null; return !!(a && (a.role === 'prof' || a.role === 'admin')); }
 function oliviaSR(){ return window.SpeechRecognition || window.webkitSpeechRecognition || null; }
-const OLIV_EVEIL = /(?:^|[\s,.!?])(?:ok|okay|o\.?\s?k\.?|oké|okey|hey|h[ée]|eh|dis|salut|allô|allo|bonjour|coucou)[\s,!.]+oli(?:v|b)(?:ia|i a|iya|ie|ier|iah)\b[\s,!.?]*/i;
+const OLIV_EVEIL = /(?:^|[\s,.!?'-])(?:ok|okay|o\.?\s?k\.?|oké|okey|hey|h[ée]|eh|dis|salut|allô|allo|bonjour|coucou|au quai|aux quais)[\s,!.-]*(?:o\s?)?(?:oli|li)(?:v|b)(?:ia|i a|iya|ie|ier|iah|ya)\b[\s,!.?]*/i;
 const OLIV_FIN = /^(?:non\s+)?(?:merci(?: beaucoup)?(?: olivia)?|c'est bon|ça va|au revoir|stop|arr[êe]te|c'est tout|non merci|rien)[\s.!]*$/i;
 let olivEcoute = { pref: false, rec: null, actif: false, mode: 'veille', minuteur: 0, reste: '', erreurs: 0, dictee: false, relance: 0 };
 try{ olivEcoute.pref = localStorage.getItem('olivEcoute') === '1'; }catch(e){}
@@ -259,7 +262,7 @@ try{ olivEcoute.pref = localStorage.getItem('olivEcoute') === '1'; }catch(e){}
 function oliviaEcouteVoulue(){
   if(!oliviaSR() || !oliviaAutorisee() || !oliviaSurCours() || document.visibilityState !== 'visible') return false;
   if(oliv.occupe || olivEcoute.mode === 'parle') return false;
-  return olivEcoute.pref || olivEcoute.dictee || olivEcoute.mode === 'question' || olivEcoute.mode === 'suite';
+  return (olivEcoute.pref && oliviaProf()) || olivEcoute.dictee || olivEcoute.mode === 'question' || olivEcoute.mode === 'suite';
 }
 function oliviaEcouteMaj(){
   const veut = oliviaEcouteVoulue();
@@ -282,7 +285,10 @@ function oliviaEcouteDemarrer(){
     if(ev.error === 'not-allowed' || ev.error === 'service-not-allowed'){
       olivEcoute.pref = false; olivEcoute.dictee = false; olivEcoute.mode = 'veille'; try{ localStorage.removeItem('olivEcoute'); }catch(e){}
       oliviaEcouteMessage('Le micro est bloqué pour ce site : autorise-le dans le navigateur (icône du cadenas) pour me parler.');
-    } else if(ev.error === 'network' || ev.error === 'audio-capture') olivEcoute.erreurs++;
+    } else if(ev.error !== 'no-speech' && ev.error !== 'aborted'){
+      olivEcoute.erreurs++; olivEcoute.derniereErreur = ev.error;
+      if(olivEcoute.local){ olivEcoute.local = false; olivEcoute.localTeste = true; } // reconnaissance sur l'appareil en panne : celle du navigateur
+    }
   };
   rec.onend = () => {
     if(olivEcoute.rec !== rec) return;
@@ -292,7 +298,7 @@ function oliviaEcouteDemarrer(){
     clearTimeout(olivEcoute.relance); olivEcoute.relance = setTimeout(oliviaEcouteMaj, olivEcoute.erreurs ? 1500 * olivEcoute.erreurs : 250);
   };
   olivEcoute.rec = rec; olivEcoute.actif = true;
-  try{ rec.start(); }catch(e){ olivEcoute.rec = null; olivEcoute.actif = false; }
+  try{ rec.start(); }catch(e){ olivEcoute.rec = null; olivEcoute.actif = false; olivEcoute.erreurs++; clearTimeout(olivEcoute.relance); olivEcoute.relance = setTimeout(oliviaEcouteMaj, 600); }
 }
 function oliviaEcouteCouper(){
   const rec = olivEcoute.rec; olivEcoute.rec = null; olivEcoute.actif = false;
@@ -305,7 +311,7 @@ function oliviaEcouteResultat(rec, ev){
     const r = ev.results[i], t = (r[0] && r[0].transcript || '').trim(); if(!t) continue;
     if(olivEcoute.mode === 'veille'){
       const m = OLIV_EVEIL.exec(' ' + t);
-      if(!m){ continue; }
+      if(!m){ oliviaEcouteEntendu(t); continue; }
       const apres = (' ' + t).slice(m.index + m[0].length).trim();
       if(!r.isFinal){ oliviaEcouteEveil(apres, false, i); continue; }
       if(oliviaEcouteEveil(apres, true, i)) return;
@@ -400,7 +406,7 @@ function oliviaEcouteSon(){ // petit « ding » : Oliv'IA a entendu son nom
   }catch(e){}
 }
 function oliviaEcouteTexte(t){ olivEcoute.texte = t; oliviaEcouteAfficher(); }
-function oliviaEcouteMessage(t){ olivEcoute.message = t; oliviaEcouteAfficher(); }
+function oliviaEcouteMessage(t){ olivEcoute.message = t; oliviaEcouteAfficher(); clearTimeout(olivEcoute.messageMin); if(t) olivEcoute.messageMin = setTimeout(() => { olivEcoute.message = ''; oliviaEcouteAfficher(); }, 10000); }
 function oliviaEcouteAfficher(){
   const btn = document.getElementById('olivEcouteBtn');
   if(btn){ btn.classList.toggle('on', olivEcoute.pref); btn.setAttribute('aria-pressed', olivEcoute.pref ? 'true' : 'false');
@@ -415,7 +421,14 @@ function oliviaEcouteAfficher(){
   let h = '';
   if(ecouteQ && olivEcoute.actif) h = `<span class="oliv-ecoute-pastille"></span> ${olivEcoute.mode === 'suite' ? 'Je t\'écoute… (une autre question ? sinon dis « merci »)' : 'Je t\'écoute…'}${olivEcoute.texte ? ` <i>${oliviaEsc(olivEcoute.texte)}</i>` : ''}`;
   else if(olivEcoute.message) h = oliviaEsc(olivEcoute.message);
-  else if(olivEcoute.pref && olivEcoute.actif) h = '<span class="gicon">hearing</span> Dis « Ok Olivia ! » puis ta question.';
+  else if(olivEcoute.pref && olivEcoute.actif) h = '<span class="gicon">hearing</span> Dis « Ok Olivia ! » puis ta question.' + (olivEcoute.entendu ? `<i>Entendu : « ${oliviaEsc(olivEcoute.entendu)} »</i>` : '');
+  else if(olivEcoute.pref && oliviaProf() && oliviaSR()) h = '<span class="gicon">hearing</span> Écoute en attente : clique dans la page pour l\'allumer.';
+  else if(!olivEcoute.pref && oliviaProf() && oliviaSR()) h = '<button type="button" class="oliv-chip" onclick="oliviaEcouteBasculer()"><span class="gicon">hearing</span> Allumer « Ok Olivia ! »</button> pour me parler à voix haute.';
   z.innerHTML = h; z.style.display = h ? 'block' : 'none';
 }
 document.addEventListener('visibilitychange', () => { if(typeof oliviaEcouteMaj === 'function') oliviaEcouteMaj(); });
+// Dernière phrase entendue (sans le mot d'éveil), affichée quelques secondes : pour voir ce que le micro comprend.
+function oliviaEcouteEntendu(t){
+  olivEcoute.entendu = t.length > 80 ? '…' + t.slice(-77) : t; oliviaEcouteAfficher();
+  clearTimeout(olivEcoute.entenduMin); olivEcoute.entenduMin = setTimeout(() => { olivEcoute.entendu = ''; oliviaEcouteAfficher(); }, 5000);
+}
