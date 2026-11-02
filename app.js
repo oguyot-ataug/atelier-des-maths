@@ -3779,6 +3779,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1299', date:'2026-11-02', items:['Mes classes › Comptes, réinitialisation du mot de passe d\'un élève : un message « identifiants de connexion » prêt à envoyer s\'affiche (adresse du site, identifiant, nouveau mot de passe, comment se connecter, signé du professeur), avec « Copier le message » (mis en forme, à coller dans l\'ENT, Pronote ou un courriel) et « Copier le code HTML ». Le site n\'envoie rien lui-même. Demandé : « un bouton qui permet de copier le contenu html d\'un mail ».'] },
   { version:'2026-08-19.1298', date:'2026-11-02', items:['Le lien vers la page des programmes (« Programmes officiels » : les notions du CP à la 3e) passe du menu L\'Atelier au menu L\'Atelier du prof, sous « Ma progression » -- demandé : « Déplace le menu dans celui des profs ». Il reste aussi dans le pied de page.'] },
   { version:'2026-08-19.1297', date:'2026-11-02', items:['Angles complémentaires (hors programme : seul « supplémentaires » est nommé en 6e, BO 2025, et rien en 5e, BO 2026) : placés en « Pour aller plus loin » -- une planche « Pour aller plus loin : angles complémentaires » à la fin des planches de 6e (Angles et rapporteur) et de 5e (Angles et parallélisme) ; les autres planches n\'utilisent plus que « supplémentaires ». Demandé : « pour aller plus loin ».', 'La page « Programmes : les notions du CP à la 3e » (comparatif et évolution des programmes, /programmes/) est accessible depuis le menu L\'Atelier et le pied de page -- signalé : « je ne retrouve plus le comparatif et l\'évolution des programmes sur le site » (elle n\'était liée que depuis Ma progression).'] },
   { version:'2026-08-19.1296', date:'2026-11-02', items:['Loupe (plein écran) : une définition, une propriété ou une règle suivie de sa figure s\'agrandit avec sa figure, d\'un seul tenant, que l\'on clique sur la loupe de l\'encadré ou sur celle de la figure -- signalé : « Comme la figure est séparée de la définition, on ne peut pas zoomer des deux ensembles ».'] },
@@ -7332,6 +7333,7 @@ function teacherResetPasswordPrompt(userId, name){
   document.getElementById('teacherResetPasswordModalName').textContent = 'Élève : '+name;
   document.getElementById('teacherResetPasswordModalInput').value = '';
   document.getElementById('teacherResetPasswordModalStatus').textContent = '';
+  const mail = document.getElementById('teacherResetPasswordMail'); if(mail){ mail.style.display = 'none'; mail.innerHTML = ''; }
   document.getElementById('teacherResetPasswordModalOverlay').style.display='flex';
 }
 function closeTeacherResetPasswordModal(){
@@ -7352,8 +7354,64 @@ async function teacherConfirmResetPassword(){
     const data = await res.json();
     if(data.error){ status.textContent = "Erreur : "+data.error; return; }
     status.textContent = '✓ Mot de passe réinitialisé.';
-    setTimeout(closeTeacherResetPasswordModal, 1200);
+    const eleve = (typeof teacherStudentsCache !== 'undefined' ? teacherStudentsCache : []).find(x => x.id === teacherResetPasswordTargetId) || {};
+    mailIdentifiantsAfficher(document.getElementById('teacherResetPasswordMail'), { nom: eleve.nom, identifiant: eleve.identifiant, motDePasse: newPassword });
   }catch(err){ status.textContent = 'Erreur réseau : '+err.message; }
+}
+/* Message « vos identifiants » prêt à envoyer avec SA messagerie (ENT, Pronote, courriel) -- demandé le 02/11/2026 :
+   « Quand on réinitialise un mot de passe d'élève, il serait bien d'avoir un bouton qui permet de copier le contenu html
+   d'un mail. On pourrait alors le copier et utiliser notre messagerie pour l'envoyer. » Le site n'envoie rien : le message
+   est copié dans le presse-papiers, mis en forme (à coller dans la messagerie) ou en code HTML. */
+async function mailIdentifiantsHtml(o){
+  const e = t => escapeHtml(String(t == null ? '' : t));
+  let prof = '';
+  try{ const { data } = await sb.from('profiles').select('nom,prenom').eq('id', currentUser.id).maybeSingle(); prof = data ? [data.prenom, data.nom].filter(Boolean).join(' ') : ''; }catch(err){}
+  const site = 'https://latelierdesmaths.fr';
+  const ligne = (k, v) => `<tr><td style="padding:6px 14px 6px 0;color:#5B6472;font-size:14px;">${k}</td><td style="padding:6px 0;font-size:16px;font-weight:700;color:#1C2B39;font-family:Consolas,'Courier New',monospace;">${v}</td></tr>`;
+  const html = `<div style="font-family:Arial,Helvetica,sans-serif;color:#1C2B39;max-width:560px;">
+<div style="background:#0C5BA0;color:#ffffff;padding:14px 18px;border-radius:10px 10px 0 0;font-size:18px;font-weight:700;">L'Atelier des Maths</div>
+<div style="border:1px solid #D6DEE8;border-top:0;border-radius:0 0 10px 10px;padding:18px;">
+<p style="margin:0 0 12px;font-size:15px;">Bonjour,</p>
+<p style="margin:0 0 12px;font-size:15px;">Voici les identifiants de connexion${o.nom ? ` de <b>${e(o.nom)}</b>` : ''} à L'Atelier des Maths. Le mot de passe vient d'être changé.</p>
+<table style="border-collapse:collapse;margin:0 0 14px;">${ligne('Adresse du site', `<a href="${site}" style="color:#0C5BA0;">latelierdesmaths.fr</a>`)}${ligne('Identifiant', e(o.identifiant || ''))}${ligne('Mot de passe', e(o.motDePasse || ''))}</table>
+<p style="margin:0 0 12px;font-size:15px;">Pour se connecter : ouvrir le site, cliquer sur <b>Se connecter</b>, puis saisir l'identifiant et le mot de passe.</p>
+<p style="margin:0 0 12px;font-size:13px;color:#5B6472;">Ces identifiants sont personnels : ils ne doivent être communiqués à personne.</p>
+<p style="margin:0;font-size:15px;">Bonne journée,${prof ? `<br>${e(prof)}` : ''}</p>
+</div></div>`;
+  const texte = `Bonjour,\n\nVoici les identifiants de connexion${o.nom ? ' de ' + o.nom : ''} à L'Atelier des Maths. Le mot de passe vient d'être changé.\n\nAdresse du site : ${site}\nIdentifiant : ${o.identifiant || ''}\nMot de passe : ${o.motDePasse || ''}\n\nPour se connecter : ouvrir le site, cliquer sur « Se connecter », puis saisir l'identifiant et le mot de passe.\nCes identifiants sont personnels : ils ne doivent être communiqués à personne.\n\nBonne journée,${prof ? '\n' + prof : ''}`;
+  return { html, texte };
+}
+async function mailIdentifiantsAfficher(zone, o){
+  if(!zone) return;
+  const m = await mailIdentifiantsHtml(o);
+  zone.innerHTML = `<div style="border-top:1px solid rgba(28,43,57,.12);padding-top:10px;">
+    <b style="font-size:.9rem;">Message prêt à envoyer</b> <span class="hint">(avec votre messagerie : ENT, Pronote, courriel)</span>
+    <div class="mail-apercu" style="margin:8px 0;max-height:220px;overflow:auto;border:1px solid rgba(28,43,57,.12);border-radius:8px;padding:8px;background:#fff;zoom:.8;">${m.html}</div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;">
+      <button type="button" class="btn" data-copie="riche"><span class="gicon">content_copy</span> Copier le message</button>
+      <button type="button" class="btn secondary" data-copie="html"><span class="gicon">code</span> Copier le code HTML</button>
+    </div>
+    <span class="hint" data-etat style="display:block;margin-top:6px;">« Copier le message » : à coller tel quel dans la messagerie (mise en forme comprise). « Copier le code HTML » : pour une messagerie qui demande le code source.</span>
+  </div>`;
+  zone.style.display = 'block';
+  const etat = zone.querySelector('[data-etat]');
+  const fait = t => { etat.textContent = t; };
+  zone.querySelector('[data-copie="riche"]').onclick = async () => {
+    try{
+      if(window.ClipboardItem && navigator.clipboard && navigator.clipboard.write){
+        await navigator.clipboard.write([new ClipboardItem({ 'text/html': new Blob([m.html], { type: 'text/html' }), 'text/plain': new Blob([m.texte], { type: 'text/plain' }) })]);
+      } else {
+        // repli : sélection du message affiché, puis copie (la mise en forme suit)
+        const sel = window.getSelection(), r = document.createRange(); r.selectNodeContents(zone.querySelector('.mail-apercu')); sel.removeAllRanges(); sel.addRange(r);
+        document.execCommand('copy'); sel.removeAllRanges();
+      }
+      fait('✓ Message copié : collez-le dans votre messagerie (Ctrl+V).');
+    }catch(err){ fait('Copie impossible : sélectionnez le message ci-dessus et copiez-le (Ctrl+C).'); }
+  };
+  zone.querySelector('[data-copie="html"]').onclick = async () => {
+    try{ await navigator.clipboard.writeText(m.html); fait('✓ Code HTML copié.'); }
+    catch(err){ const t = document.createElement('textarea'); t.value = m.html; t.style.cssText = 'position:fixed;left:-9999px;'; document.body.appendChild(t); t.select(); try{ document.execCommand('copy'); fait('✓ Code HTML copié.'); }catch(e2){ fait('Copie impossible.'); } t.remove(); }
+  };
 }
 let supervisionData = [];
 let supervisionFilteredData = [];
