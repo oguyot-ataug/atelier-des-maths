@@ -550,7 +550,7 @@ function programmesOuvrir(){
         if(d && !d.getElementById('ntIntegreCss')){
           d.documentElement.classList.add('nt-integre');
           const st = d.createElement('style'); st.id = 'ntIntegreCss';
-          st.textContent = '.seo-top, .seo-foot, .seo-crumbs, main.nt > h1, main.nt > .seo-sub{display:none !important;} main.nt{padding-top:12px !important;margin-top:0 !important;}';
+          st.textContent = '.seo-top, .seo-foot, .seo-crumbs, main.nt > h1, main.nt > .seo-sub{display:none !important;} main.nt{padding-top:12px !important;margin-top:0 !important;max-width:none !important;} .nt-scroll{max-height:calc(100vh - 40px) !important;}';
           d.head.appendChild(st);
           if(!d.querySelector('base')){ const b = d.createElement('base'); b.target = '_top'; d.head.appendChild(b); }
         }
@@ -3815,6 +3815,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1304', date:'2026-11-02', items:['Programmes officiels dans le site : le tableau prend toute la largeur (plus de limite à 1 440 pixels), en plein écran comme dans la page, et toute la hauteur de l\'écran en plein écran -- signalé : « Plein écran mais pas pleine largeur ! ».'] },
   { version:'2026-08-19.1303', date:'2026-11-02', items:['Programmes officiels : bouton « Plein écran » pour afficher le tableau comparatif sur tout l\'écran (touche Échap pour revenir ; sur iPhone et iPad, le tableau recouvre la fenêtre avec un bouton « Quitter le plein écran ») -- demandé : « permettre le plein écran du tableau comparatif ».'] },
   { version:'2026-08-19.1302', date:'2026-11-02', items:['Programmes officiels dans le site : l\'en-tête, le fil d\'Ariane et le pied de page de la page publique ne s\'affichent plus, même si le navigateur garde une ancienne version de la page en mémoire (le site les masque lui-même au chargement) -- signalé : « On ne doit pas voir l\'entête ».'] },
   { version:'2026-08-19.1301', date:'2026-11-02', items:['« Programmes officiels » à la fin du menu L\'Atelier du prof, avec son Oliv\'IA (une olive qui tient le Bulletin officiel), et la page intégrée au site : les notions du CP à la 3e s\'affichent dans le site (filtres, recherche, bascule 4e/3e), sous le même titre illustré, sans quitter l\'application. Le pied de page et Ma progression y mènent aussi. Demandé : « Peux-tu faire une Oliv\'IA pour le menu Programmes officiels. Place-le à la fin du menu des profs et intègre la page dans le site ».'] },

@@ -69,4 +69,5 @@ body.nt-vonly .nt-voc{margin-top:0;} body.nt-vonly .nt-k{display:none;}
 
 /* Page affichée dans le site (cadre du menu « Programmes officiels », notions.js) */
 .nt-integre .seo-top, .nt-integre .seo-foot, .nt-integre .seo-crumbs, .nt-integre main.nt > h1, .nt-integre main.nt > .seo-sub{display:none !important;}
-.nt-integre main.nt{padding-top:12px !important;margin-top:0 !important;}
+.nt-integre main.nt{padding-top:12px !important;margin-top:0 !important;max-width:none !important;}
+.nt-integre .nt-scroll{max-height:calc(100vh - 40px) !important;}
