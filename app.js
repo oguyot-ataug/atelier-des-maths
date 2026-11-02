@@ -3468,6 +3468,7 @@ async function refreshAuthUI(){
     // Repli sur la première lettre du nom si pas de prénom, puis sur l'icône générique --
     // jamais de case vide dans le rond.
     const avatarBtn = document.getElementById('accountAvatar');
+    avatarBtn.classList.remove('account-connexion'); avatarBtn.removeAttribute('aria-label');
     const avatarLetter = (prenomTrim || nomTrim || '').charAt(0).toUpperCase();
     avatarBtn.innerHTML = avatarLetter || '<span class=gicon>person</span>';
     avatarBtn.title = fullName ? `Mon compte · ${fullName}` : 'Mon compte';
@@ -3558,7 +3559,10 @@ async function refreshAuthUI(){
     loggedOutEl.style.display='block'; loggedInEl.style.display='none';
     isStaffGlobal = false;
     const avatarBtnOut = document.getElementById('accountAvatar');
-    if(avatarBtnOut){ avatarBtnOut.innerHTML = '<span class=gicon>person</span>'; avatarBtnOut.title = 'Mon compte'; }
+    // Déconnecté : un vrai bouton « Se connecter » au lieu de la pastille vide -- signalé le 02/11/2026 : « une fois qu'un prof
+    // a saisi son mot de passe, il ne voit plus après où se connecter. La vignette avec la personne dedans n'est pas assez
+    // parlante. Il faudrait un bouton se connecter ».
+    if(avatarBtnOut){ avatarBtnOut.classList.add('account-connexion'); avatarBtnOut.innerHTML = '<span class=gicon>login</span><span class="account-connexion-txt">Se connecter</span><span class="account-connexion-court">Connexion</span>'; avatarBtnOut.title = 'Se connecter ou créer un compte'; avatarBtnOut.setAttribute('aria-label', 'Se connecter'); }
     if(navCorrection) navCorrection.style.display='none';
     if(navCahier) navCahier.style.display='none';
     if(navMesResultats) navMesResultats.style.display='none';
@@ -3769,6 +3773,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1275', date:'2026-11-02', items:['En-tête : quand personne n\'est connecté, un vrai bouton bleu « Se connecter » (« Connexion » sur un petit téléphone) remplace la pastille vide avec un bonhomme -- signalé : « La vignette avec la personne dedans n\'est pas assez parlante. Il faudrait un bouton se connecter ». Une fois connecté, la pastille ronde avec l\'initiale revient.'] },
   { version:'2026-08-19.1274', date:'2026-11-01', items:['Relecture, 6e Nombres décimaux : nombre de centièmes rédigé terme à terme (400 centièmes + 50 centièmes) avec un tableau de numération ; « nombre de dixièmes, de centièmes, de dizaines » à côté de « chiffre des… » ; demi-droite graduée tracée dans le corrigé (0,4 ; 0,45 ; 0,5 ; 0,62).'] },
   { version:'2026-08-19.1273', date:'2026-11-01', items:["Simulateur de classe : rappel pour donner du travail aux élèves fictifs -- une nouvelle inscrite avait préparé ses trois élèves fictifs et ouvert leurs écrans sans rien leur donner à faire ; demandé : « oui, ajoute le rappel dans le simulateur ». Sous les réglages, un encadré explique la suite : donner un devoir ou une interrogation à la classe « Simulation » (ou lancer une séance en direct, une session COURS, des questions flash) dans la fenêtre professeur, puis faire le travail dans la fenêtre d'un élève. Une fois la simulation lancée, tant que la classe de simulation n'a ni devoir ni interrogation, un bandeau orange le rappelle (« Vos élèves fictifs n'ont encore rien à faire »), avec un bouton « C'est fait » pour vérifier de nouveau."]},
   { version:'2026-08-19.1272', date:'2026-11-01', items:["Une seule adresse d'envoi -- demandé : « Pourquoi compte ? et pas simplement contact qui existe ? », « ne multiplie pas les adresses à l'avenir », puis « contact ». Tous les e-mails du site partent désormais de contact@latelierdesmaths.fr : bienvenue et mot de passe oublié, confirmation d'adresse à l'inscription, alerte de nouvelle inscription, rendez-vous, devis, factures. Les adresses notifications@, compte@, devis@, factures@ et rendez-vous@ ne servent plus."]},
