@@ -113,6 +113,15 @@ Deno.serve(async (req) => {
       return json({ actif: (await utiliseCeMois(db)) < maxMois(), voix: liste });
     }
 
+    // Catalogue des voix françaises de Google (public) : pour choisir les voix proposées.
+    if (body.action === "catalogue") {
+      const tok = await google();
+      if (!tok) return json({ error: "non configuré" }, 503);
+      const r = await fetch("https://texttospeech.googleapis.com/v1/voices?languageCode=fr-FR", { headers: { Authorization: `Bearer ${tok}` } });
+      const toutes = ((await r.json()).voices || []) as { name: string; ssmlGender: string }[];
+      return json({ voix: toutes.filter((v) => /^fr-FR-/.test(v.name)).map((v) => `${v.name} ${v.ssmlGender === "FEMALE" ? "F" : v.ssmlGender === "MALE" ? "M" : "?"}`).sort() });
+    }
+
     if (body.action === "conso") {
       const jeton = (req.headers.get("Authorization") || "").replace(/^Bearer\s+/i, "");
       const { data: u } = await db.auth.getUser(jeton);
