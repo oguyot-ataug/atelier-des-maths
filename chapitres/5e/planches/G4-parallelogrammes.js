@@ -70,7 +70,7 @@ PLANCHES['5e|Parallélogrammes'] = [
       { etoiles: 2, col: 1, consigne: 'Ces angles peuvent-ils être ceux d\'un parallélogramme (dans l\'ordre) ? Entoure.',
         ...ch([['60°, 120°, 60°, 120° :', 'oui'], ['70°, 110°, 80°, 100° :', 'non'], ['90°, 90°, 90°, 90° :', 'oui'], ['50°, 50°, 130°, 130° :', 'non']], 'oui · non') },
       { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.',
-        ...ch([['Deux angles consécutifs d\'un parallélogramme sont complémentaires :', 'faux'], ['Si un angle est droit, les quatre le sont :', 'vrai'], ['Un parallélogramme peut avoir trois angles aigus :', 'faux']], 'vrai · faux') },
+        ...ch([['Deux angles consécutifs d\'un parallélogramme ont toujours la même mesure :', 'faux'], ['Si un angle est droit, les quatre le sont :', 'vrai'], ['Un parallélogramme peut avoir trois angles aigus :', 'faux']], 'vrai · faux') },
       { etoiles: 2, col: 1, consigne: 'Dans le parallélogramme KLMN, complète.',
         ...rmp([[`${W('K')} = 72°, donc ${W('M')} = @ ° et ${W('L')} = 108°`, 72], [`${W('L')} + ${W('M')} = @ °`, 180], [`Si ${W('N')} = 3 × ${W('K')}, alors ${W('K')} = @ °`, 45]], 2) },
       { etoiles: 1, col: 1, consigne: 'Entoure la propriété utilisée.',

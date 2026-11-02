@@ -1,6 +1,6 @@
 /* ============================================================
    5e · Planches : Angles et parallélisme (G2)
-   Angles adjacents, opposés par le sommet, complémentaires, supplémentaires ; angles alternes-internes et
+   Angles adjacents, opposés par le sommet, supplémentaires (complémentaires : « Pour aller plus loin ») ; angles alternes-internes et
    correspondants ; parallélisme ; somme des angles d'un triangle.
    ============================================================ */
 (() => {
@@ -41,24 +41,22 @@ function tri(Pts, noms, marques, px){ const [A, Bp, C] = Pts; let g = `<polygon 
 const duo = l => `<div style="display:flex;justify-content:space-around;align-items:flex-start;gap:8px;flex-wrap:wrap;">${l.join('')}</div>`;
 const col = (h, t) => `<span style="display:flex;flex-direction:column;align-items:center;gap:2px;">${h}<span class="pl-item" style="text-align:center;display:block;">${t}</span></span>`;
 PLANCHES['5e|Angles et parallélisme'] = [
-  { titre: 'Angles adjacents, complémentaires, supplémentaires', duree: '35 min',
-    attendus: ['Reconnaître deux angles adjacents', 'Savoir que deux angles complémentaires ont pour somme 90°, supplémentaires 180°', 'Calculer le complément ou le supplément d\'un angle'],
+  { titre: 'Angles adjacents, supplémentaires', duree: '35 min',
+    attendus: ['Reconnaître deux angles adjacents', 'Savoir que deux angles supplémentaires ont pour somme 180°', 'Calculer le supplément d\'un angle'],
     exos: [
       { etoiles: 1, col: 1, consigne: 'Calcule.',
-        ...rmp([['Complément de 35° : @ °', 55], ['Complément de 72° : @ °', 18], ['Supplément de 110° : @ °', 70], ['Supplément de 45° : @ °', 135], ['Supplément de 90° : @ °', 90]], 2) },
-      { etoiles: 1, col: 1, consigne: 'Ces deux angles sont-ils complémentaires, supplémentaires, ou ni l\'un ni l\'autre ? Entoure.',
-        ...chx([['30° et 60° :', 'complémentaires', 'complémentaires · supplémentaires · ni l\'un ni l\'autre'], ['100° et 80° :', 'supplémentaires', 'complémentaires · supplémentaires · ni l\'un ni l\'autre'], ['45° et 135° :', 'supplémentaires', 'complémentaires · supplémentaires · ni l\'un ni l\'autre'], ['50° et 50° :', 'ni l\'un ni l\'autre', 'complémentaires · supplémentaires · ni l\'un ni l\'autre']]) },
+        ...rmp([['Supplément de 35° : @ °', 145], ['Supplément de 72° : @ °', 108], ['Supplément de 110° : @ °', 70], ['Supplément de 45° : @ °', 135], ['Supplément de 90° : @ °', 90], ['Supplément de 179° : @ °', 1]], 2) },
+      { etoiles: 1, col: 1, consigne: 'Ces deux angles sont-ils supplémentaires ? Entoure.',
+        ...ch([['30° et 150° :', 'oui'], ['100° et 80° :', 'oui'], ['45° et 145° :', 'non'], ['90° et 90° :', 'oui'], ['50° et 50° :', 'non']], 'oui · non') },
       { etoiles: 2, consigne: 'Les angles marqués sont-ils adjacents ? Entoure.',
         ...(() => { const f1 = S(140, 90, L([20, 75], [125, 75]) + L([60, 75], [95, 15]) + L([60, 75], [25, 20]) + arc([60, 75], 0, 60, 18, Ro) + arc([60, 75], 60, 124, 26, Bl), 120),
             f2 = S(140, 90, L([15, 75], [125, 75]) + L([70, 75], [40, 15]) + L([70, 75], [110, 20]) + arc([70, 75], 0, 54, 18, Ro) + arc([70, 75], 117, 180, 18, Bl), 120);
           return { eleve: duo([col(f1, '<b>a</b> <b>oui · non</b>'), col(f2, '<b>b</b> <b>oui · non</b>')]), corr: duo([col(f1, '<b>a</b> ' + plEntoure('oui')), col(f2, '<b>b</b> ' + plEntoure('non'))]) }; })() },
       { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.',
-        ...ch([['Deux angles adjacents ont le même sommet et un côté commun :', 'vrai'], ['Deux angles complémentaires sont forcément adjacents :', 'faux'], ['Un angle obtus peut avoir un complément :', 'faux'], ['Deux angles droits sont supplémentaires :', 'vrai']], 'vrai · faux') },
+        ...ch([['Deux angles adjacents ont le même sommet et un côté commun :', 'vrai'], ['Deux angles supplémentaires sont forcément adjacents :', 'faux'], ['Un angle obtus peut avoir un supplément :', 'vrai'], ['Deux angles droits sont supplémentaires :', 'vrai']], 'vrai · faux') },
       { etoiles: 2, col: 1, consigne: 'Les points A, O, B sont alignés. Calcule l\'angle manquant.',
         ...(() => { const f = S(220, 100, L([15, 85], [205, 85]) + L([110, 85], [160, 18]) + arc([110, 85], 0, 53, 20, Ro, '53°') + arc([110, 85], 53, 180, 26, Bl, '?') + T([12, 98], 'A', K) + T([208, 98], 'B', K) + T([110, 99], 'O', K), 220), q = rmp([['Angle manquant : @ °', 127]], 2);
           return { eleve: f + q.eleve, corr: f + q.corr }; })() },
-      { etoiles: 3, cahier: true, consigne: 'Deux angles sont complémentaires et l\'un est le double de l\'autre. Quelles sont leurs mesures ?',
-        corr: cm1Redac('Mesures', { suite: ['Le petit angle et son double font 3 fois le petit angle : 3 × a = 90°.', 'a = 90 : 3 = 30° ; le double vaut 60°.'] }, 'Les angles mesurent 30° et 60°.') },
     ] },
   { titre: 'Angles opposés par le sommet', duree: '30 min',
     attendus: ['Reconnaître deux angles opposés par le sommet', 'Savoir que deux angles opposés par le sommet ont la même mesure', 'Calculer les quatre angles formés par deux droites sécantes'],
@@ -124,11 +122,23 @@ PLANCHES['5e|Angles et parallélisme'] = [
       { etoiles: 2, col: 1, consigne: 'Ces triangles existent-ils ? Entoure.',
         ...ch([['Angles de 90°, 60° et 30° :', 'oui'], ['Angles de 100°, 50° et 40° :', 'non'], ['Deux angles droits :', 'non'], ['Angles de 45°, 45° et 90° :', 'oui']], 'oui · non') },
       { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.',
-        ...ch([['Un triangle peut avoir deux angles obtus :', 'faux'], ['Dans un triangle rectangle, les deux angles aigus sont complémentaires :', 'vrai'], ['Un triangle peut avoir trois angles aigus :', 'vrai']], 'vrai · faux') },
+        ...ch([['Un triangle peut avoir deux angles obtus :', 'faux'], ['Dans un triangle rectangle, la somme des deux angles aigus vaut 90° :', 'vrai'], ['Un triangle peut avoir trois angles aigus :', 'vrai']], 'vrai · faux') },
       { etoiles: 3, col: 1, cahier: true, consigne: `ABC est un triangle isocèle en A tel que l'angle ${W('BAC')} mesure 48°. Calcule les angles ${W('ABC')} et ${W('ACB')}. Rédige.`,
         corr: cm1Redac('Angles à la base', { suite: ['Somme des angles : 180°. Les deux angles à la base sont égaux (triangle isocèle).', '(180 − 48) : 2 = 132 : 2 = 66'] }, `Les angles ${W('ABC')} et ${W('ACB')} mesurent 66° chacun.`) },
       { etoiles: 3, cahier: true, consigne: 'Un triangle a un angle de 40° ; le deuxième angle est le triple du premier. Quel est le troisième angle ? Quelle est la nature du triangle ?',
         corr: cm1Redac('Troisième angle', '40 × 3 = 120 et 180 − 40 − 120 = 20', 'Le troisième angle mesure 20° : le triangle a un angle obtus (120°), il est obtusangle.') },
+    ] },
+  // Hors programme de 5e (BO 2026 ; en 6e, BO 2025, seul « supplémentaires » est nommé) -- demandé le 02/11/2026 :
+  // « pour aller plus loin ».
+  { titre: 'Pour aller plus loin : angles complémentaires', duree: '25 min',
+    attendus: ['Savoir que deux angles complémentaires ont pour somme 90°', 'Calculer le complément d\'un angle aigu', 'Reconnaître des angles complémentaires ou supplémentaires'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'Pour aller plus loin : deux angles complémentaires ont une somme de 90°. Calcule.',
+        ...rmp([['Complément de 35° : @ °', 55], ['Complément de 72° : @ °', 18], ['Complément de 45° : @ °', 45], ['Complément de 89° : @ °', 1]], 2) },
+      { etoiles: 1, col: 1, consigne: 'Pour aller plus loin : ces deux angles sont-ils complémentaires, supplémentaires, ou ni l\'un ni l\'autre ? Entoure.',
+        ...chx([['30° et 60° :', 'complémentaires', 'complémentaires · supplémentaires · ni l\'un ni l\'autre'], ['100° et 80° :', 'supplémentaires', 'complémentaires · supplémentaires · ni l\'un ni l\'autre'], ['45° et 135° :', 'supplémentaires', 'complémentaires · supplémentaires · ni l\'un ni l\'autre'], ['50° et 50° :', 'ni l\'un ni l\'autre', 'complémentaires · supplémentaires · ni l\'un ni l\'autre']]) },
+      { etoiles: 3, cahier: true, consigne: 'Pour aller plus loin : deux angles sont complémentaires et l\'un est le double de l\'autre. Quelles sont leurs mesures ?',
+        corr: cm1Redac('Mesures', { suite: ['Le petit angle et son double font 3 fois le petit angle : 3 × a = 90°.', 'a = 90 : 3 = 30° ; le double vaut 60°.'] }, 'Les angles mesurent 30° et 60°.') },
     ] },
 ];
 })();

@@ -174,7 +174,7 @@ PLANCHES['6e|Angles et rapporteur'] = [
         corr: cm1Redac('Méthode', { suite: ['[AB] de 6 cm ; en B, angle de 120° et C à 4 cm de B.', 'En C, angle de 45° et D à 5 cm de C.'] }, 'Je vérifie longueurs et angles.') },
     ] },
   { titre: 'Paires d\'angles particuliers', duree: '40 min',
-    attendus: ['Reconnaître des angles adjacents', 'Reconnaître des angles opposés par le sommet et savoir qu\'ils ont la même mesure', 'Reconnaître des angles complémentaires et supplémentaires'],
+    attendus: ['Reconnaître des angles adjacents', 'Reconnaître des angles opposés par le sommet et savoir qu\'ils ont la même mesure', 'Reconnaître des angles supplémentaires'],
     exos: [
       { etoiles: 1, consigne: 'Les angles colorés sont-ils adjacents (même sommet, un côté commun, de part et d\'autre de ce côté) ? Entoure.',
         ...(() => { const V = [vig(arc([20, 65], 0, 35, 22, Ro) + arc([20, 65], 35, 80, 22, Bl) + L([20, 65], [100, 65]) + L([20, 65], pt([20, 65], 35, 85)) + L([20, 65], pt([20, 65], 80, 60))),
@@ -185,11 +185,11 @@ PLANCHES['6e|Angles et rapporteur'] = [
       { etoiles: 1, col: 1, consigne: `Deux droites se coupent en O. L'angle rouge mesure 40°. Complète.<div style="text-align:center;">${S(200, 120, arc([100, 60], 20, 60, 22, Ro) + arc([100, 60], 200, 240, 22, Bl) + arc([100, 60], 60, 200, 14, Ve) + L(pt([100, 60], 20, 95), pt([100, 60], 200, 95)) + L(pt([100, 60], 60, 70), pt([100, 60], 240, 70)) + T([112, 76], 'O'), 190)}</div>`,
         eleve: plListe(['L\'angle bleu est opposé par le sommet à l\'angle rouge : il mesure ' + B() + ' °', 'Les angles rouge et vert sont supplémentaires : le vert mesure ' + B() + ' °']),
         corr: plListe(['L\'angle bleu est opposé par le sommet à l\'angle rouge : il mesure ' + R(40) + ' °', 'Les angles rouge et vert sont supplémentaires : le vert mesure 180 − 40 = ' + R(140) + ' °']) },
-      { etoiles: 2, col: 1, consigne: 'Complète : deux angles complémentaires ont une somme de 90°, deux angles supplémentaires une somme de 180°.',
-        eleve: plListe(['Complémentaire de 30° : ' + B() + ' °', 'Complémentaire de 72° : ' + B() + ' °', 'Supplémentaire de 50° : ' + B() + ' °', 'Supplémentaire de 125° : ' + B() + ' °']),
-        corr: plListe(['Complémentaire de 30° : ' + R(60) + ' °', 'Complémentaire de 72° : ' + R(18) + ' °', 'Supplémentaire de 50° : ' + R(130) + ' °', 'Supplémentaire de 125° : ' + R(55) + ' °']) },
+      { etoiles: 2, col: 1, consigne: 'Complète : deux angles supplémentaires ont une somme de 180°.',
+        eleve: plListe(['Supplémentaire de 50° : ' + B() + ' °', 'Supplémentaire de 125° : ' + B() + ' °', 'Supplémentaire de 30° : ' + B() + ' °', 'Supplémentaire de 90° : ' + B() + ' °']),
+        corr: plListe(['Supplémentaire de 50° : ' + R(130) + ' °', 'Supplémentaire de 125° : ' + R(55) + ' °', 'Supplémentaire de 30° : ' + R(150) + ' °', 'Supplémentaire de 90° : ' + R(90) + ' °']) },
       { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.',
-        ...ch([['Deux angles opposés par le sommet ont la même mesure.', 'vrai'], ['Deux angles adjacents sont forcément égaux.', 'faux'], ['Un angle obtus a un complémentaire.', 'faux'], ['Deux angles de 90° sont supplémentaires.', 'vrai']], 'vrai · faux') },
+        ...ch([['Deux angles opposés par le sommet ont la même mesure.', 'vrai'], ['Deux angles adjacents sont forcément égaux.', 'faux'], ['Deux angles supplémentaires peuvent être tous les deux obtus.', 'faux'], ['Deux angles de 90° sont supplémentaires.', 'vrai']], 'vrai · faux') },
       { etoiles: 3, col: 1, cahier: true, consigne: `Les points A, O et B sont alignés. ${W('AOC')} = 35° et ${W('COD')} = 90°. Calcule ${W('DOB')}.<span class="cm-fig-d">${S(150, 90, L([10, 70], [140, 70]) + L([75, 70], pt([75, 70], 145, 62)) + L([75, 70], pt([75, 70], 55, 62)) + T([8, 64], 'A') + T([142, 64], 'B') + T([75, 85], 'O') + T([18, 30], 'C') + T([122, 12], 'D'), 140)}</span>`,
         corr: cm1Redac('Calcul', { suite: [W('AOB') + ' est un angle plat : 180°.', W('DOB') + ' = 180° − 35° − 90°'] }, W('DOB') + ' = 55°.') },
     ] },
@@ -227,6 +227,17 @@ PLANCHES['6e|Angles et rapporteur'] = [
         corr: cm1Redac('Calcul', { suite: ['La bissectrice de ' + W('xOy') + ' fait 25° avec [Oy).', 'La bissectrice de ' + W('yOz') + ' fait 35° avec [Oy).'] }, 'L\'angle formé par les deux bissectrices mesure 25° + 35° = 60°.') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Construis un angle ' + W('xOy') + ' de 64°, puis un angle ' + W('yOz') + ' de 52° adjacent au premier. Quelle est la mesure de ' + W('xOz') + ' ? Vérifie au rapporteur.',
         corr: cm1Redac('Calcul', '64 + 52 = 116', W('xOz') + ' mesure 116° : c\'est un angle obtus.') },
+    ] },
+  // Hors programme de 6e (BO 2025 : « supplémentaires » est nommé, pas « complémentaires ») -- demandé le 02/11/2026 :
+  // « pour aller plus loin ».
+  { titre: 'Pour aller plus loin : angles complémentaires', duree: '20 min',
+    attendus: ['Savoir que deux angles complémentaires ont pour somme 90°', 'Calculer le complémentaire d\'un angle aigu'],
+    exos: [
+      { etoiles: 2, col: 1, consigne: 'Pour aller plus loin : deux angles complémentaires ont une somme de 90°. Complète.',
+        eleve: plListe(['Complémentaire de 30° : ' + B() + ' °', 'Complémentaire de 72° : ' + B() + ' °', 'Complémentaire de 45° : ' + B() + ' °', 'Complémentaire de 8° : ' + B() + ' °']),
+        corr: plListe(['Complémentaire de 30° : ' + R(60) + ' °', 'Complémentaire de 72° : ' + R(18) + ' °', 'Complémentaire de 45° : ' + R(45) + ' °', 'Complémentaire de 8° : ' + R(82) + ' °']) },
+      { etoiles: 2, col: 1, consigne: 'Pour aller plus loin : vrai ou faux ? Entoure.',
+        ...ch([['Un angle obtus a un complémentaire.', 'faux'], ['Deux angles de 45° sont complémentaires.', 'vrai'], ['Deux angles complémentaires sont forcément adjacents.', 'faux'], ['Le complémentaire d\'un angle aigu est aigu.', 'vrai']], 'vrai · faux') },
     ] },
 ];
 })();
