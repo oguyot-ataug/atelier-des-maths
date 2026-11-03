@@ -6,6 +6,7 @@
    P2-E3 remplacé (angle triple), figures ajoutées aux corrigés (P2-E5, P2-E6, P3-E5), corrigés rédigés avec la propriété (P1-E5, P4-E4, P5-E2).
    Relecture du 03/11/2026 (version 1309) : P1-E3 quatre figures, P2-E5 de nouveau cliquable à l'écran, P2-E6 figure aux instruments,
    P5-E6 propriétés rédigées, P5-E7 triangle isocèle (36°, 108°, 36°), P6-E2 cases à cocher, P6-E3 dessin à main levée â et 2â.
+   Version 1311 : P1-E3 4e figure (sommets différents, côtés dans le prolongement), P2-E6 construction dans l'ordre (droite, O, rapporteur, sécante).
    ============================================================ */
 (() => {
 const B = n => plPointilles(n || 3), R = v => plRep(String(v));
@@ -67,7 +68,9 @@ PLANCHES['5e|Angles et parallélisme'] = [
         ...(() => { const f1 = S(140, 90, L([20, 75], [125, 75]) + L([60, 75], [95, 15]) + L([60, 75], [25, 20]) + arc([60, 75], 0, 60, 18, Ro) + arc([60, 75], 60, 124, 26, Bl), 120),
             f2 = S(140, 90, L([15, 75], [125, 75]) + L([70, 75], [40, 15]) + L([70, 75], [110, 20]) + arc([70, 75], 0, 54, 18, Ro) + arc([70, 75], 117, 180, 18, Bl), 120),
             V3 = [40, 75], f3 = S(140, 90, L(V3, [130, 75]) + L(V3, P(V3, 48, 70)) + L(V3, P(V3, 105, 66)) + arc(V3, 0, 48, 20, Ro) + arc(V3, 0, 105, 30, Bl), 120),
-            V4 = [42, 75], V5 = [98, 75], f4 = S(140, 90, L([12, 75], [128, 75]) + L(V4, P(V4, 125, 55)) + L(V5, P(V5, 60, 55)) + arc(V4, 0, 125, 16, Ro) + arc(V5, 60, 180, 16, Bl), 120),
+            // 4e figure (relecture du 03/11/2026, « deux sommets différents mais des côtés dans le prolongement l'un de l'autre ») :
+            // [V4V5] côté de l'angle rouge, prolongé au-delà de V5 par le côté de l'angle bleu.
+            V4 = [22, 75], V5 = [78, 75], f4 = S(140, 90, L(V4, V5) + L(V5, [132, 75]) + L(V4, P(V4, 115, 52)) + L(V5, P(V5, 62, 56)) + arc(V4, 0, 115, 16, Ro) + arc(V5, 0, 62, 20, Bl), 120),
             pq = t => `<br><small style="font-weight:400;">${t}</small>`;
           return { eleve: duo([col(f1, '<b>oui · non</b>'), col(f2, '<b>oui · non</b>'), col(f3, '<b>oui · non</b>'), col(f4, '<b>oui · non</b>')]),
             corr: duo([col(f1, plEntoure('oui') + pq('même sommet, un côté commun,<br>de part et d\'autre')), col(f2, plEntoure('non') + pq('pas de côté commun')), col(f3, plEntoure('non') + pq('du même côté du côté commun')), col(f4, plEntoure('non') + pq('pas le même sommet'))]) }; })() },
@@ -106,10 +109,13 @@ PLANCHES['5e|Angles et parallélisme'] = [
         // Relecture du 03/11/2026 : « une figure aux instruments pour illustrer la correction » (constructions.js).
         corr: `<div style="text-align:center;">${(() => { const V = [110, 66];
             return plConstruction({ w: 220, h: 132, px: 220, outils: ['regle', 'rapporteur'],
-              programme: [{ op: 'point', name: 'O' }, { op: 'point', name: 'A', from: 'O', dx: 5, dy: 0 }, { op: 'point', name: 'C', from: 'O', dx: -5, dy: 0 },
-                { op: 'line', id: 'd1', through: ['C', 'A'] }, { op: 'angle', id: 'dB', vertex: 'O', from: 'A', degrees: 35, side: 'up' },
-                { op: 'point', name: 'B', from: 'O', dx: 4.1, dy: 2.87 }, { op: 'point', name: 'D', from: 'O', dx: -4.1, dy: -2.87 },
-                { op: 'line', id: 'd2', through: ['D', 'B'] }, { op: 'mark_angle', vertex: 'O', points: ['B', 'C'] }, { op: 'mark_angle', vertex: 'O', points: ['C', 'D'] }, { op: 'mark_angle', vertex: 'O', points: ['D', 'A'] }],
+              // Relecture du 03/11/2026 : « commence par faire une droite à la règle sans placer de point, puis place un point O sur
+              // cette droite ; avec le rapporteur, crée l'angle, puis trace la sécante ». Points A, B, C, D : appuis invisibles.
+              programme: [{ op: 'point', name: 'X', hidden: true }, { op: 'line', id: 'd1', through: 'X', direction: 0 },
+                { op: 'point', name: 'O', on: 'd1', at: 5 }, { op: 'point', name: 'A', on: 'd1', at: 9, hidden: true },
+                { op: 'angle', id: 'dB', vertex: 'O', from: 'A', degrees: 35, side: 'up' }, { op: 'line', id: 'd2', through: 'O', direction: 35 },
+                { op: 'point', name: 'B', on: 'd2', at: 3, hidden: true }, { op: 'point', name: 'C', on: 'd1', at: 1, hidden: true }, { op: 'point', name: 'D', on: 'd2', at: -3, hidden: true },
+                { op: 'mark_angle', vertex: 'O', points: ['B', 'C'] }, { op: 'mark_angle', vertex: 'O', points: ['C', 'D'] }, { op: 'mark_angle', vertex: 'O', points: ['D', 'A'] }],
               depart: [{ seg: [P(V, 0, 100), P(V, 180, 100)] }, { seg: [P(V, 35, 76), P(V, 215, 76)] },
                 { svg: arc(V, 0, 35, 20, Ro, '35°') + arc(V, 35, 180, 26, Bl, '145°') + arc(V, 180, 215, 20, Ro, '35°') + arc(V, 215, 360, 26, Bl, '145°') + T([V[0] + 8, V[1] + 18], 'O', K) }] }); })()}</div>`
           + cm1Redac('Mesures', { suite: ['L\'angle opposé par le sommet mesure aussi 35°.', 'Les deux autres sont supplémentaires de 35° : 180° − 35° = 145°.'] }, 'Les quatre angles mesurent 35°, 145°, 35° et 145°.') },

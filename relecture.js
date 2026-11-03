@@ -39,6 +39,9 @@ const RELECTURE_CHGT = {
   // La date d'un changement est l'heure RÉELLE de sa mise en ligne (heure du commit poussé sur main), jamais une heure
   // arrondie dans le futur : un exercice validé entre la mise en ligne et une date trop tardive resterait « Chgt effectué »
   // (signalé le 01/11/2026 pour 6e-N1 ; dates corrigées d'après l'historique des publications).
+  // Version 1311 (03/11).
+  '5e-G2-P1-E3': { date: '2026-11-03T08:01:01Z', note: "Quatrième figure remplacée : deux sommets différents, avec des côtés dans le prolongement l'un de l'autre (non adjacents : pas le même sommet)" },
+  '5e-G2-P2-E6': { date: '2026-11-03T08:01:01Z', note: "Construction aux instruments refaite dans l'ordre demandé : droite tracée à la règle sans aucun point, point O placé sur la droite, angle de 35° au rapporteur, puis la sécante tracée ; les quatre angles marqués ensuite" },
   // Version 1309 (03/11).
   '5e-G2-P1-E3': { date: '2026-11-03T07:40:36Z', note: "Deux figures ajoutées : un côté commun mais les angles du même côté (non), puis un côté sur la même droite mais pas le même sommet (non) ; le corrigé dit pourquoi sous chaque réponse" },
   '5e-G2-P2-E5': { date: '2026-11-03T07:40:36Z', note: "À l'écran, les choix se cliquent de nouveau (la figure du corrigé empêchait la version écran ; elle reste sur le papier)" },

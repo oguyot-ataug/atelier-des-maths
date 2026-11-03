@@ -223,7 +223,9 @@ function tbAiEvaluate(program, flips, allowed){
           p = {x: base.x + num(i, s.dx!==undefined?s.dx:5, 'dx', -35, 35), y: base.y + num(i, s.dy!==undefined?s.dy:0, 'dy', -25, 25)};
         }
         addPoint(s.name,p);
-        actions.push({op:'point', p, name:s.name});
+        // "hidden":true : point d'appui invisible (ni marqué ni nommé, aucune étape) -- relecture 5e-G2-P2-E6 du 03/11/2026 :
+        // « commence par faire une droite à la règle sans placer de point ».
+        if(!s.hidden) actions.push({op:'point', p, name:s.name});
         break;
       }
       case 'segment_length': {
