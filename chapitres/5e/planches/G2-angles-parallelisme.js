@@ -4,6 +4,8 @@
    correspondants ; parallélisme ; somme des angles d'un triangle.
    Relecture du 02/11/2026 (version 1307) : chapeaux sur les angles, lettres a et b inutiles retirées, figures à main levée (P4-E2),
    P2-E3 remplacé (angle triple), figures ajoutées aux corrigés (P2-E5, P2-E6, P3-E5), corrigés rédigés avec la propriété (P1-E5, P4-E4, P5-E2).
+   Relecture du 03/11/2026 (version 1309) : P1-E3 quatre figures, P2-E5 de nouveau cliquable à l'écran, P2-E6 figure aux instruments,
+   P5-E6 propriétés rédigées, P5-E7 triangle isocèle (36°, 108°, 36°), P6-E2 cases à cocher, P6-E3 dessin à main levée â et 2â.
    ============================================================ */
 (() => {
 const B = n => plPointilles(n || 3), R = v => plRep(String(v));
@@ -60,9 +62,15 @@ PLANCHES['5e|Angles et parallélisme'] = [
       { etoiles: 1, col: 1, consigne: 'Ces deux angles sont-ils supplémentaires ? Entoure.',
         ...ch([['30° et 150° :', 'oui'], ['100° et 80° :', 'oui'], ['45° et 145° :', 'non'], ['90° et 90° :', 'oui'], ['50° et 50° :', 'non']], 'oui · non') },
       { etoiles: 2, consigne: 'Les angles marqués sont-ils adjacents ? Entoure.',
+        // Relecture du 03/11/2026 : « une troisième figure avec un côté commun mais les angles situés du même côté, puis une
+        // quatrième avec un sommet qui n'est pas commun ».
         ...(() => { const f1 = S(140, 90, L([20, 75], [125, 75]) + L([60, 75], [95, 15]) + L([60, 75], [25, 20]) + arc([60, 75], 0, 60, 18, Ro) + arc([60, 75], 60, 124, 26, Bl), 120),
-            f2 = S(140, 90, L([15, 75], [125, 75]) + L([70, 75], [40, 15]) + L([70, 75], [110, 20]) + arc([70, 75], 0, 54, 18, Ro) + arc([70, 75], 117, 180, 18, Bl), 120);
-          return { eleve: duo([col(f1, '<b>oui · non</b>'), col(f2, '<b>oui · non</b>')]), corr: duo([col(f1, plEntoure('oui')), col(f2, plEntoure('non'))]) }; })() },
+            f2 = S(140, 90, L([15, 75], [125, 75]) + L([70, 75], [40, 15]) + L([70, 75], [110, 20]) + arc([70, 75], 0, 54, 18, Ro) + arc([70, 75], 117, 180, 18, Bl), 120),
+            V3 = [40, 75], f3 = S(140, 90, L(V3, [130, 75]) + L(V3, P(V3, 48, 70)) + L(V3, P(V3, 105, 66)) + arc(V3, 0, 48, 20, Ro) + arc(V3, 0, 105, 30, Bl), 120),
+            V4 = [42, 75], V5 = [98, 75], f4 = S(140, 90, L([12, 75], [128, 75]) + L(V4, P(V4, 125, 55)) + L(V5, P(V5, 60, 55)) + arc(V4, 0, 125, 16, Ro) + arc(V5, 60, 180, 16, Bl), 120),
+            pq = t => `<br><small style="font-weight:400;">${t}</small>`;
+          return { eleve: duo([col(f1, '<b>oui · non</b>'), col(f2, '<b>oui · non</b>'), col(f3, '<b>oui · non</b>'), col(f4, '<b>oui · non</b>')]),
+            corr: duo([col(f1, plEntoure('oui') + pq('même sommet, un côté commun,<br>de part et d\'autre')), col(f2, plEntoure('non') + pq('pas de côté commun')), col(f3, plEntoure('non') + pq('du même côté du côté commun')), col(f4, plEntoure('non') + pq('pas le même sommet'))]) }; })() },
       { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.',
         ...ch([['Deux angles adjacents ont le même sommet et un côté commun :', 'vrai'], ['Deux angles supplémentaires sont forcément adjacents :', 'faux'], ['Un angle obtus peut avoir un supplément :', 'vrai'], ['Deux angles droits sont supplémentaires :', 'vrai']], 'vrai · faux') },
       { etoiles: 2, col: 1, consigne: `Les points A, O, B sont alignés. Calcule l'angle ${W('AOx')}.`,
@@ -91,9 +99,19 @@ PLANCHES['5e|Angles et parallélisme'] = [
       { etoiles: 2, col: 1, consigne: 'Deux droites sécantes forment un angle de 112°. Entoure les mesures des trois autres angles.',
         ...(() => { const q = chx([['L\'angle opposé par le sommet :', '112°', '68° · 112° · 180°'], ['Les deux autres angles :', '68° et 68°', '68° et 68° · 112° et 68° · 78° et 78°']]);
           const f = croix(0, 112, [[0, 112, Ro, '112°'], [112, 180, Bl, '68°'], [180, 292, Ro, '112°'], [292, 360, Bl, '68°']], 210, 120);
-          return { eleve: q.eleve, corr: q.corr + `<div style="text-align:center;">${f}</div>` }; })() },
+          // Relecture du 03/11/2026 (« on ne peut pas entourer à l'écran ») : la figure du corrigé empêchait la version écran ;
+          // l'écran garde les choix à cliquer, le papier la figure.
+          return { eleve: q.eleve, corr: q.corr + `<div style="text-align:center;">${f}</div>`, ecran: { corr: q.corr } }; })() },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Trace deux droites sécantes en O formant un angle de 35°. Sans rapporteur, donne la mesure des trois autres angles. Justifie.',
-        corr: `<div style="text-align:center;">${croix(0, 35, [[0, 35, Ro, '35°'], [35, 180, Bl, '145°'], [180, 215, Ro, '35°'], [215, 360, Bl, '145°']], 220, 120)}</div>`
+        // Relecture du 03/11/2026 : « une figure aux instruments pour illustrer la correction » (constructions.js).
+        corr: `<div style="text-align:center;">${(() => { const V = [110, 66];
+            return plConstruction({ w: 220, h: 132, px: 220, outils: ['regle', 'rapporteur'],
+              programme: [{ op: 'point', name: 'O' }, { op: 'point', name: 'A', from: 'O', dx: 5, dy: 0 }, { op: 'point', name: 'C', from: 'O', dx: -5, dy: 0 },
+                { op: 'line', id: 'd1', through: ['C', 'A'] }, { op: 'angle', id: 'dB', vertex: 'O', from: 'A', degrees: 35, side: 'up' },
+                { op: 'point', name: 'B', from: 'O', dx: 4.1, dy: 2.87 }, { op: 'point', name: 'D', from: 'O', dx: -4.1, dy: -2.87 },
+                { op: 'line', id: 'd2', through: ['D', 'B'] }, { op: 'mark_angle', vertex: 'O', points: ['B', 'C'] }, { op: 'mark_angle', vertex: 'O', points: ['C', 'D'] }, { op: 'mark_angle', vertex: 'O', points: ['D', 'A'] }],
+              depart: [{ seg: [P(V, 0, 100), P(V, 180, 100)] }, { seg: [P(V, 35, 76), P(V, 215, 76)] },
+                { svg: arc(V, 0, 35, 20, Ro, '35°') + arc(V, 35, 180, 26, Bl, '145°') + arc(V, 180, 215, 20, Ro, '35°') + arc(V, 215, 360, 26, Bl, '145°') + T([V[0] + 8, V[1] + 18], 'O', K) }] }); })()}</div>`
           + cm1Redac('Mesures', { suite: ['L\'angle opposé par le sommet mesure aussi 35°.', 'Les deux autres sont supplémentaires de 35° : 180° − 35° = 145°.'] }, 'Les quatre angles mesurent 35°, 145°, 35° et 145°.') },
     ] },
   { titre: 'Angles alternes-internes et correspondants', duree: '40 min',
@@ -144,9 +162,14 @@ PLANCHES['5e|Angles et parallélisme'] = [
       { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.',
         ...ch([['Un triangle peut avoir deux angles obtus :', 'faux'], ['Dans un triangle rectangle, la somme des deux angles aigus vaut 90° :', 'vrai'], ['Un triangle peut avoir trois angles aigus :', 'vrai']], 'vrai · faux') },
       { etoiles: 3, col: 1, cahier: true, consigne: `ABC est un triangle isocèle en A tel que l'angle ${W('BAC')} mesure 48°. Calcule les angles ${W('ABC')} et ${W('ACB')}. Rédige.`,
-        corr: cm1Redac('Angles à la base', { suite: ['Somme des angles : 180°. Les deux angles à la base sont égaux (triangle isocèle).', '(180 − 48) : 2 = 132 : 2 = 66'] }, `Les angles ${W('ABC')} et ${W('ACB')} mesurent 66° chacun.`) },
-      { etoiles: 3, cahier: true, consigne: 'Un triangle a un angle de 40° ; le deuxième angle est le triple du premier. Quel est le troisième angle ? Quelle est la nature du triangle ?',
-        corr: cm1Redac('Troisième angle', '40 × 3 = 120 et 180 − 40 − 120 = 20', 'Le troisième angle mesure 20° : le triangle a un angle obtus (120°), il est obtusangle.') },
+        // Relecture du 03/11/2026 : « bien écrire les propriétés » (données, propriétés, puis les calculs une étape par ligne).
+        corr: cm1Redac('Angles à la base', { suite: [`ABC est un triangle isocèle en A et ${W('BAC')} = 48°.`,
+          'Or, dans un triangle, la somme des angles est égale à 180° ; et dans un triangle isocèle, les angles à la base ont la même mesure.',
+          `Donc ${W('ACB')} = ${W('ABC')} et ${W('BAC')} + ${W('ABC')} + ${W('ACB')} = 180°.`, `Donc ${W('BAC')} + 2 × ${W('ACB')} = 180°`, `48° + 2 × ${W('ACB')} = 180°`,
+          `2 × ${W('ACB')} = 180° − 48° = 132°`, `${W('ACB')} = 132° : 2 = 66°`] }, `Les angles ${W('ABC')} et ${W('ACB')} mesurent 66° chacun.`) },
+      // Relecture du 03/11/2026 : « jamais entendu le terme obtusangle ; prends des valeurs qui donnent un triangle isocèle ».
+      { etoiles: 3, cahier: true, consigne: 'Un triangle a un angle de 36° ; le deuxième angle est le triple du premier. Quel est le troisième angle ? Quelle est la nature du triangle ?',
+        corr: cm1Redac('Troisième angle', { suite: ['Deuxième angle : 3 × 36° = 108°', 'Troisième angle : 180° − 36° − 108° = 36°'] }, 'Le troisième angle mesure 36°. Le triangle a deux angles de même mesure (36° et 36°) : il est isocèle.') },
     ] },
   // Hors programme de 5e (BO 2026 ; en 6e, BO 2025, seul « supplémentaires » est nommé) -- demandé le 02/11/2026 :
   // « pour aller plus loin ».
@@ -155,10 +178,20 @@ PLANCHES['5e|Angles et parallélisme'] = [
     exos: [
       { etoiles: 1, col: 1, consigne: 'Pour aller plus loin : deux angles complémentaires ont une somme de 90°. Calcule.',
         ...rmp([['Complément de 35° : @ °', 55], ['Complément de 72° : @ °', 18], ['Complément de 45° : @ °', 45], ['Complément de 89° : @ °', 1]], 2) },
-      { etoiles: 1, col: 1, consigne: 'Pour aller plus loin : ces deux angles sont-ils complémentaires, supplémentaires, ou ni l\'un ni l\'autre ? Entoure.',
-        ...chx([['30° et 60° :', 'complémentaires', 'complémentaires · supplémentaires · ni l\'un ni l\'autre'], ['100° et 80° :', 'supplémentaires', 'complémentaires · supplémentaires · ni l\'un ni l\'autre'], ['45° et 135° :', 'supplémentaires', 'complémentaires · supplémentaires · ni l\'un ni l\'autre'], ['50° et 50° :', 'ni l\'un ni l\'autre', 'complémentaires · supplémentaires · ni l\'un ni l\'autre']]) },
+      // Relecture du 03/11/2026 : « sur un cahier, une case à cocher est préférable à entourer ». Papier : cases ☐ ; écran : choix à cliquer.
+      { etoiles: 1, col: 1, consigne: 'Pour aller plus loin : ces deux angles sont-ils complémentaires, supplémentaires, ou ni l\'un ni l\'autre ? Coche la bonne case.',
+        ...(() => { const O = ['complémentaires', 'supplémentaires', 'ni l\'un ni l\'autre'], l = [['30° et 60° :', 0], ['100° et 80° :', 1], ['45° et 135° :', 1], ['50° et 50° :', 2]];
+          const ec = chx(l.map(([t, r]) => [t, O[r], O.join(' · ')])); const CO = 'flex-direction:column;align-items:flex-start;row-gap:3px;'; // une case par ligne
+          return { eleve: '<div class="pl-col1">' + plListe(l.map(([t]) => `${t} <b style="${CO}">${O.map(o => '☐ ' + o).join(' · ')}</b>`)) + '</div>',
+            corr: '<div class="pl-col1">' + plListe(l.map(([t, r]) => `${t} <b style="${CO}">${O.map((o, i) => i === r ? `<span class="pl-rep">☑ ${o}</span>` : '☐ ' + o).join(' · ')}</b>`)) + '</div>',
+            ecran: ec }; })() },
       { etoiles: 3, cahier: true, consigne: 'Pour aller plus loin : deux angles sont complémentaires et l\'un est le double de l\'autre. Quelles sont leurs mesures ?',
-        corr: cm1Redac('Mesures', { suite: ['Le petit angle et son double font 3 fois le petit angle : 3 × a = 90°.', 'a = 90 : 3 = 30° ; le double vaut 60°.'] }, 'Les angles mesurent 30° et 60°.') },
+        // Relecture du 03/11/2026 : « un dessin à main levée avec â et 2â dans la correction uniquement ».
+        corr: `<div style="text-align:center;">${(() => { const V = [30, 100];
+            return S(170, 116, ML(V, [160, 100], K, 2, 1) + ML(V, [30, 8], K, 2, -1) + ML(V, P(V, 30, 128), K, 2, 1)
+              + `<polyline points="${V[0] + 10},${V[1]} ${V[0] + 10},${V[1] - 10} ${V[0]},${V[1] - 10}" fill="none" stroke="${Ro}" stroke-width="1.4"/>`
+              + arc(V, 0, 30, 46, Bl, 'â') + arc(V, 30, 90, 34, Ve, '2â'), 170); })()}</div>`
+          + cm1Redac('Mesures', { suite: [`${W('a')} + 2${W('a')} = 90° (angles complémentaires)`, `3 × ${W('a')} = 90°`, `${W('a')} = 90° : 3 = 30°`, `2${W('a')} = 2 × 30° = 60°`] }, 'Les angles mesurent 30° et 60°.') },
     ] },
 ];
 })();

@@ -39,6 +39,14 @@ const RELECTURE_CHGT = {
   // La date d'un changement est l'heure RÉELLE de sa mise en ligne (heure du commit poussé sur main), jamais une heure
   // arrondie dans le futur : un exercice validé entre la mise en ligne et une date trop tardive resterait « Chgt effectué »
   // (signalé le 01/11/2026 pour 6e-N1 ; dates corrigées d'après l'historique des publications).
+  // Version 1309 (03/11).
+  '5e-G2-P1-E3': { date: '2026-11-03T07:40:36Z', note: "Deux figures ajoutées : un côté commun mais les angles du même côté (non), puis un côté sur la même droite mais pas le même sommet (non) ; le corrigé dit pourquoi sous chaque réponse" },
+  '5e-G2-P2-E5': { date: '2026-11-03T07:40:36Z', note: "À l'écran, les choix se cliquent de nouveau (la figure du corrigé empêchait la version écran ; elle reste sur le papier)" },
+  '5e-G2-P2-E6': { date: '2026-11-03T07:40:36Z', note: "Corrigé : la figure se construit aux instruments du site (bouton « Voir la construction aux instruments » : règle, rapporteur, les quatre angles marqués) ; O placé sans chevaucher les mesures" },
+  '5e-G2-P5-E6': { date: '2026-11-03T07:40:36Z', note: "Corrigé rédigé avec les propriétés : données, « Or, dans un triangle la somme des angles est égale à 180° ; et dans un triangle isocèle, les angles à la base ont la même mesure », puis BAC + 2 × ACB = 180°, une étape par ligne, ACB = 66°" },
+  '5e-G2-P5-E7': { date: '2026-11-03T07:40:36Z', note: "Valeurs changées : 36°, le deuxième angle triple (108°), le troisième 36° : le triangle est isocèle ; plus de « obtusangle »" },
+  '5e-G2-P6-E2': { date: '2026-11-03T07:40:36Z', note: "Cases à cocher (☐) au lieu d'entourer, une par ligne ; le corrigé coche la bonne (☑) ; à l'écran, choix à cliquer" },
+  '5e-G2-P6-E3': { date: '2026-11-03T07:40:36Z', note: "Corrigé : dessin à main levée de l'angle droit partagé en â et 2â, puis â + 2â = 90°, 3 × â = 90°, â = 30°, 2â = 60°" },
   // Version 1307 (02/11).
   '5e-G2-P1-E1': { date: '2026-11-02T23:13:53Z', note: "Consigne : « Les angles â et b̂ sont supplémentaires. Calcule b̂. » ; chaque question « â = 35° : b̂ = … », corrigé « b̂ = 180° − 35° = 145° » ; chapeaux sur les angles" },
   '5e-G2-P1-E3': { date: '2026-11-02T23:13:53Z', note: "Lettres a et b retirées des figures (inutiles et mal placées) : seuls les angles marqués restent" },
