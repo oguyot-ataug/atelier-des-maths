@@ -3432,6 +3432,28 @@ function finaliserInscriptionEnAttente(user){
   })();
   return finalisationInscription;
 }
+/* Bandeau des professeurs en essai (demandé le 03/11/2026) : « un bandeau qui défile lors de leur arrivée sur le site et à
+   chaque fois qu'ils se reconnectent ou qu'ils ouvrent la page », qui invite à prendre rendez-vous pour en savoir plus et
+   éventuellement devenir bêta-testeur, et qui dit que les cours et les exercices sont en relecture.
+   Pour : professeur approuvé, en essai (subscription_status 'trial'), hors licence établissement, pas encore bêta-testeur
+   (profiles.beta_testeur), jamais sur L'Atelier du Prof. « ✕ » le masque jusqu'à la prochaine ouverture de la page ou
+   la prochaine connexion (rien n'est enregistré). Le texte s'arrête au survol ; immobile si le système demande moins
+   d'animations (prefers-reduced-motion). */
+let bandeauEssaiFerme = false, bandeauEssaiUser = null;
+async function bandeauEssaiMaj(profile){
+  const el = document.getElementById('bandeauEssai'); if(!el) return;
+  const uid = currentUser ? currentUser.id : null;
+  if(uid !== bandeauEssaiUser){ bandeauEssaiUser = uid; bandeauEssaiFerme = false; } // nouvelle connexion : le bandeau revient
+  const cible = !window.ADP && !!uid && profile && profile.role === 'prof' && profile.signup_status === 'approved'
+    && profile.subscription_status === 'trial' && !currentEtabLicence;
+  if(!cible || bandeauEssaiFerme){ el.hidden = true; return; }
+  try{ const { data } = await sb.from('profiles').select('beta_testeur').eq('id', uid).maybeSingle(); if(data && data.beta_testeur){ el.hidden = true; return; } }catch(e){}
+  if(!el.dataset.pret){
+    el.dataset.pret = '1';
+    el.querySelector('.be-fermer').onclick = () => { bandeauEssaiFerme = true; el.hidden = true; };
+  }
+  el.hidden = false;
+}
 async function refreshAuthUI(){
   const { data:{ session } } = await sb.auth.getSession();
   const loggedOutEl = document.getElementById('accountLoggedOut'), loggedInEl = document.getElementById('accountLoggedIn');
@@ -3545,6 +3567,7 @@ async function refreshAuthUI(){
     const pasEleve = !(profile && profile.role === 'eleve');
     const btnRdv = document.getElementById('btnRdv'); if(btnRdv) btnRdv.style.display = pasEleve ? 'block' : 'none';
     const footRdv = document.getElementById('footRdv'); if(footRdv) footRdv.style.display = pasEleve ? '' : 'none';
+    bandeauEssaiMaj(profile); // professeur en essai : bandeau défilant (rendez-vous, bêta-test, relecture)
     const chapSuggestRow = document.getElementById('chapSuggestRow');
     if(chapSuggestRow) chapSuggestRow.style.display = isStaff ? 'block' : 'none';
     if(typeof cpOnAuthChange==='function') cpOnAuthChange();
@@ -3602,6 +3625,7 @@ async function refreshAuthUI(){
     currentUser = null; currentUserRole = null; NIVEAUX_BETA = []; currentClassId = null; currentReferentEtab = null; currentEtabLicence = null; currentReferentEtab = null; currentEtabLicence = null;
     loggedOutEl.style.display='block'; loggedInEl.style.display='none';
     isStaffGlobal = false;
+    bandeauEssaiMaj(null);
     const avatarBtnOut = document.getElementById('accountAvatar');
     // Déconnecté : un vrai bouton « Se connecter » au lieu de la pastille vide -- signalé le 02/11/2026 : « une fois qu'un prof
     // a saisi son mot de passe, il ne voit plus après où se connecter. La vignette avec la personne dedans n'est pas assez
@@ -3817,6 +3841,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1308', date:'2026-11-03', items:['Professeurs en essai : un bandeau défilant sous le menu, à chaque ouverture du site et à chaque connexion -- demandé : « un bandeau qui défile […] qui leur demande de prendre rendez-vous pour en savoir plus et éventuellement de devenir bêta-testeur. Et de leur dire aussi que le site est en phase de relecture ». Il annonce que les cours et les exercices sont relus et améliorés chaque jour, et propose un rendez-vous en visio (bouton « Prendre rendez-vous » toujours visible). Le texte s\'arrête au survol de la souris ; la croix le masque jusqu\'à la prochaine ouverture de la page. Pas affiché aux abonnés, aux professeurs sous licence d\'établissement ni aux bêta-testeurs ; immobile si l\'appareil demande de limiter les animations.'] },
   { version:'2026-08-19.1307', date:'2026-11-03', items:['5e, Angles et parallélisme : onze exercices revus après les remarques de relecture -- chapeaux sur tous les angles, lettres inutiles retirées des figures, figures à main levée pour « les droites sont-elles parallèles ? », un nouvel exercice à la place de P2-E3 (un angle triple de l\'autre), des figures dans les corrigés (droites sécantes, angles alternes-internes et correspondants quand les droites ne sont pas parallèles), et des corrigés rédigés pas à pas avec la propriété utilisée (angle plat, angles correspondants, somme des angles d\'un triangle).'] },
   { version:'2026-08-19.1306', date:'2026-11-02', items:['Nouveau : le Lexique, dans le menu L\'Atelier (visible par tous, avec son Oliv\'IA au dictionnaire) -- les 358 mots de maths que nomment les programmes officiels, du CP à la 3e, chacun avec une définition simple pour l\'élève, un exemple et une précision pour le professeur (masquée aux élèves). Niveaux à cocher (ou École, Collège, Tous), « avec les niveaux précédents » pour tout ce qu\'il faut savoir à un niveau, domaines, recherche, et lecture à voix haute de chaque mot. Les mots du nouveau programme de 4e et de 3e sont signalés. Demandé : « Et si on faisait un lexique avec tout le vocabulaire par niveau à savoir et sa définition ».'] },
   { version:'2026-08-19.1305', date:'2026-11-02', items:['Programmes officiels (et page publique des notions du CP à la 3e) : les niveaux se cochent un par un (CP, CE1… 3e, aux couleurs de leur cycle), avec des raccourcis Tous, École, Collège, Cycle 2, Cycle 3 et Cycle 4 ; le choix est retenu sur l\'appareil. Demandé : « Il manque la vue collège seul, ou plus simple, cocher les niveaux souhaités ».'] },

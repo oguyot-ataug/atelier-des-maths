@@ -240,3 +240,5 @@ purge à un an par pg_cron. Agendas pris en compte : `rdv_reglages.agendas` (coc
 adresse iCal lus événement par événement). Agenda Google relié par un compte de service (secrets GOOGLE_RDV_CLE, GOOGLE_RDV_COMPTE) : jamais
 d'invitation Google (sendUpdates=none), le nom de l'administrateur n'apparaît nulle part. Cal.com et l'agenda de rendez-vous
 Google ne sont plus utilisés.
+Bandeau défilant des professeurs en essai (`#bandeauEssai`, `bandeauEssaiMaj`, app.js ; build 1308) : relecture en cours, invitation au
+rendez-vous et au bêta-test ; à chaque ouverture de page et connexion, jamais aux abonnés, licences établissement, bêta-testeurs, ni sur ADP.
