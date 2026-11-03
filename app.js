@@ -3454,8 +3454,15 @@ async function bandeauEssaiMaj(profile){
   }
   el.hidden = false;
 }
+// Changement de compte : retour à l'accueil (demandé le 03/11/2026 : « si je quitte une page admin, puis que je me connecte
+// en tant que prof, je suis toujours en visuel sur la page administrateur »). Un compte remplacé par un autre, ou une
+// déconnexion : la page du compte précédent ne reste jamais affichée. Ni au chargement de la page (lien direct gardé), ni
+// pour un visiteur qui se connecte depuis un cours (il y reste), ni au renouvellement de la session du même compte.
+let authUidPrec; // undefined : pas encore lu
 async function refreshAuthUI(){
   const { data:{ session } } = await sb.auth.getSession();
+  const authUid = session ? session.user.id : null, compteChange = !!authUidPrec && authUid !== authUidPrec;
+  authUidPrec = authUid;
   const loggedOutEl = document.getElementById('accountLoggedOut'), loggedInEl = document.getElementById('accountLoggedIn');
   const navAdmin = document.getElementById('navAdmin');
   const navCorrection = document.getElementById('navCorrection'), navCahier = document.getElementById('navCahier');
@@ -3669,6 +3676,7 @@ async function refreshAuthUI(){
   document.body.classList.toggle('connecte', !!currentUser);
   if(!currentUser){ const av = document.querySelector('.view.active');
     if(av && ['view-cm','view-compte','view-convertisseur','view-figure-sandbox','view-tableau','view-programmation'].includes(av.id)){ showView('view-home'); setActiveTopnav(null); } }
+  if(compteChange){ const av = document.querySelector('.view.active'); if(!av || av.id !== 'view-home'){ showView('view-home'); setActiveTopnav(null); } window.scrollTo(0, 0); }
   // reflète l'état de connexion sur les boutons "+ Cahier" déjà injectés dans les cours ouverts
   updateCourseAddButtonsState();
   // Mode découverte (demo.js) : automatismes re-verrouillés / déverrouillés, et un visiteur qui
@@ -3841,6 +3849,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1310', date:'2026-11-03', items:['Changement de compte : retour à la page d\'accueil -- signalé : « si je quitte une page admin, puis que je me connecte en tant que prof, je suis toujours en visuel sur la page administrateur ». À la déconnexion, ou quand un compte en remplace un autre, le site revient à l\'accueil, en haut de la page : la page du compte précédent (Administration, classes, cahier…) ne reste plus affichée. Un visiteur qui se connecte depuis un cours y reste, et rien ne change quand la session du même compte se renouvelle.'] },
   { version:'2026-08-19.1309', date:'2026-11-03', items:['5e, Angles et parallélisme : sept exercices revus après relecture -- angles adjacents : deux nouvelles figures (côté commun mais angles du même côté, sommets différents) et la raison sous chaque réponse du corrigé ; « entoure les mesures » de nouveau cliquable à l\'écran ; figure du corrigé « deux droites sécantes à 35° » construite aux instruments du site (règle et rapporteur) ; triangle isocèle rédigé avec ses propriétés, étape par étape ; problème de l\'angle triple avec des valeurs qui donnent un triangle isocèle (36°, 108°, 36°) ; cases à cocher au lieu d\'entourer (complémentaires, supplémentaires) ; dessin à main levée avec â et 2â dans le corrigé.'] },
   { version:'2026-08-19.1308', date:'2026-11-03', items:['Professeurs en essai : un bandeau défilant sous le menu, à chaque ouverture du site et à chaque connexion -- demandé : « un bandeau qui défile […] qui leur demande de prendre rendez-vous pour en savoir plus et éventuellement de devenir bêta-testeur. Et de leur dire aussi que le site est en phase de relecture ». Il annonce que les cours et les exercices sont relus et améliorés chaque jour, et propose un rendez-vous en visio (bouton « Prendre rendez-vous » toujours visible). Le texte s\'arrête au survol de la souris ; la croix le masque jusqu\'à la prochaine ouverture de la page. Pas affiché aux abonnés, aux professeurs sous licence d\'établissement ni aux bêta-testeurs ; immobile si l\'appareil demande de limiter les animations.'] },
   { version:'2026-08-19.1307', date:'2026-11-03', items:['5e, Angles et parallélisme : onze exercices revus après les remarques de relecture -- chapeaux sur tous les angles, lettres inutiles retirées des figures, figures à main levée pour « les droites sont-elles parallèles ? », un nouvel exercice à la place de P2-E3 (un angle triple de l\'autre), des figures dans les corrigés (droites sécantes, angles alternes-internes et correspondants quand les droites ne sont pas parallèles), et des corrigés rédigés pas à pas avec la propriété utilisée (angle plat, angles correspondants, somme des angles d\'un triangle).'] },
