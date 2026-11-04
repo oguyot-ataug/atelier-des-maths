@@ -1,7 +1,7 @@
 {
  "/": {
-  "hash": "88636f811c721bd44720da2af2d0e119846dda67",
-  "lastmod": "2026-11-02"
+  "hash": "4983e1ea95f67c01d2cb5bcb8703c941ba65c45c",
+  "lastmod": "2026-11-04"
  },
  "/cp/les-nombres-jusqu-a-10/": {
   "hash": "e43a34536ad90d7efe34f39f3cf2f50587e154f8",
@@ -592,8 +592,8 @@
   "lastmod": "2026-11-01"
  },
  "/6e/initiation-a-l-algebre/": {
-  "hash": "c5f6089d776eb1a92dbadb008ebb3db772b3eaf5",
-  "lastmod": "2026-11-01"
+  "hash": "3835c624bdcc53b33e90d8feb67de3a737d6bd06",
+  "lastmod": "2026-11-04"
  },
  "/6e/solides-et-volumes/": {
   "hash": "4c53c273c80c44107d75a19bb830c1e331477754",
@@ -624,8 +624,8 @@
   "lastmod": "2026-10-28"
  },
  "/5e/angles-et-parallelisme/": {
-  "hash": "a084c4519d5b7350aab895ea18f0e791a79f1059",
-  "lastmod": "2026-11-02"
+  "hash": "3a1c2e094801697ca4bd34988be1fe0b331c00a6",
+  "lastmod": "2026-11-04"
  },
  "/5e/fractions/": {
   "hash": "41531c4920575ab36a857bf1ccfcbb77ad91537f",
@@ -772,8 +772,8 @@
   "lastmod": "2026-10-28"
  },
  "/3e/nombres-et-calculs/": {
-  "hash": "8e48732a7626ae64677e731dc7ea919991e990de",
-  "lastmod": "2026-11-02"
+  "hash": "0868471abebbfb7bc97f1bc362097cfd1b975a51",
+  "lastmod": "2026-11-04"
  },
  "/3e/theoreme-de-thales/": {
   "hash": "238a8f34b9e05940fcbb6e014017691c2235e68d",
@@ -796,8 +796,8 @@
   "lastmod": "2026-11-01"
  },
  "/3e/statistiques/": {
-  "hash": "62e05f325c1891213e95f0b3a4fabb8ebf4348d1",
-  "lastmod": "2026-11-02"
+  "hash": "78a15087531b504aebc8c8614cfa6e38ad849c8e",
+  "lastmod": "2026-11-04"
  },
  "/3e/calcul-litteral/": {
   "hash": "a553ab0cff528c91716d30ebdb9c085190fbeab1",
@@ -808,8 +808,8 @@
   "lastmod": "2026-11-01"
  },
  "/3e/probabilites/": {
-  "hash": "ca3d7596d358a32cfc749cf072b40528dcd2434c",
-  "lastmod": "2026-11-01"
+  "hash": "81ca335fea025ca4a43f5c14623d5c2e5327aa55",
+  "lastmod": "2026-11-04"
  },
  "/3e/equations/": {
   "hash": "06bd0a61678da5694e71099c779a5f7a7e61e70b",
@@ -832,8 +832,8 @@
   "lastmod": "2026-11-01"
  },
  "/3e/algorithmique-et-programmation/": {
-  "hash": "2a129f4b584998e39ebe99f8229243daaff12e15",
-  "lastmod": "2026-11-01"
+  "hash": "93e8e7a1699005c76fa18b62426e32e26aaafc71",
+  "lastmod": "2026-11-04"
  },
  "/3e/": {
   "hash": "df0a9c7e272f15fb91c76c73ba2fa3ee6614e11b",
