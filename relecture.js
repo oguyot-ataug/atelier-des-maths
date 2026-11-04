@@ -39,6 +39,26 @@ const RELECTURE_CHGT = {
   // La date d'un changement est l'heure RÉELLE de sa mise en ligne (heure du commit poussé sur main), jamais une heure
   // arrondie dans le futur : un exercice validé entre la mise en ligne et une date trop tardive resterait « Chgt effectué »
   // (signalé le 01/11/2026 pour 6e-N1 ; dates corrigées d'après l'historique des publications).
+  // Version 1313 (04/11).
+  '5e-G2-P6-E2': { date: '2026-11-04T23:14:51Z', note: "Pleine largeur, en tableau à cocher sur deux colonnes (complémentaires, supplémentaires, aucun des deux en tête de colonne, une ligne par paire d'angles) ; huit paires ; P6-E1 aussi en pleine largeur (huit calculs)" },
+  '6e-N3-P4-E2': { date: '2026-11-04T23:14:51Z', note: "Consigne : « Supprime les zéros inutiles : réécris chaque nombre. »" },
+  '6e-N3-P4-E5': { date: '2026-11-04T23:14:51Z', note: "Plus de « milieu » : « Intercale entre les deux nombres le nombre qui a un chiffre de plus après la virgule et qui se termine par 5 » (réponse unique)" },
+  '6e-N3-P5-E3': { date: '2026-11-04T23:14:51Z', note: "Le programme de 6e ne nomme que l'arrondi : troncature et valeurs approchées par défaut et par excès ajoutées en « Pour aller plus loin » (nouvel exercice P5-E7, tableau par défaut / par excès / arrondi)" },
+  '6e-N3-P6-E3': { date: '2026-11-04T23:14:51Z', note: "« Complète avec <, > ou = » dans une case (1,5 m et 145 cm, 0,8 kg et 790 g, 2,05 € et 2 € 50 c, 3,2 m et 320 cm)" },
+  '6e-N3-P6-E5': { date: '2026-11-04T23:14:51Z', note: "Corrigé par la division euclidienne : 240 = 75 × 3 + 15 avec 15 < 75 (quotient 3, reste 15), plus de tâtonnement" },
+  'CE2-N1-P4-E2': { date: '2026-11-04T23:14:51Z', note: "Graduation de 100 en 100 (au lieu de 50 en 50), comme l'exercice précédent : placer 7 400, 7 700 et 7 900" },
+  'CE2-N3-P1-E2': { date: '2026-11-04T23:14:51Z', note: "« Dans 12 + 25 = 37, les nombres 12 et 25 sont les … » (et de même pour 60 et 37)" },
+  'CE2-N3-P1-E3': { date: '2026-11-04T23:14:51Z', note: "À l'écran, l'élève pose lui-même chaque addition écrite en ligne, dans une grille vide plus large que nécessaire (deux colonnes en plus) ; les cases en trop doivent rester vides (une case remplie à tort est comptée fausse)" },
+  'CE2-N3-P1-E7': { date: '2026-11-04T23:14:51Z', note: "À l'écran, les calculs restent sur deux colonnes comme sur le papier (tous les exercices pleine largeur)" },
+  'CE2-N3-P2-E2': { date: '2026-11-04T23:14:51Z', note: "Corrigé : le « 1 » et le « +1 » de la compensation ne décalent plus les chiffres, les colonnes restent alignées" },
+  'CE2-N3-P2-E4': { date: '2026-11-04T23:14:51Z', note: "Corrigé : les deux soustractions (compensation et cassage) alignées par le bas, résultats à la même hauteur ; chiffres alignés en colonnes" },
+  'CE2-N3-P2-E5': { date: '2026-11-04T23:14:51Z', note: "Corrigé : les deux soustractions (compensation et cassage) alignées par le bas, résultats à la même hauteur ; chiffres alignés en colonnes" },
+  'CE2-N3-P2-E6': { date: '2026-11-04T23:14:51Z', note: "À l'écran, les calculs restent sur deux colonnes comme sur le papier" },
+  'CE2-N3-P2-E7': { date: '2026-11-04T23:14:51Z', note: "À l'écran, les calculs restent sur deux colonnes comme sur le papier" },
+  'CE2-N3-P3-E1': { date: '2026-11-04T23:14:51Z', note: "À l'écran, les calculs restent sur deux colonnes comme sur le papier" },
+  'CE2-N3-P3-E2': { date: '2026-11-04T23:14:51Z', note: "Consigne : « … puis pose l'autre dans ton cahier » ; le corrigé montre les quatre calculs posés (2 487 + 3 659, 4 532 − 1 875, 6 023 − 1 847, 3 768 + 1 459)" },
+  'CE2-N3-P3-E3': { date: '2026-11-04T23:14:51Z', note: "À l'écran, les calculs restent sur deux colonnes comme sur le papier" },
+  'CE2-N3-P3-E6': { date: '2026-11-04T23:14:51Z', note: "À l'écran, les calculs restent sur deux colonnes comme sur le papier" },
   // Version 1311 (03/11).
   '5e-G2-P1-E3': { date: '2026-11-03T08:01:01Z', note: "Quatrième figure remplacée : deux sommets différents, avec des côtés dans le prolongement l'un de l'autre (non adjacents : pas le même sommet)" },
   '5e-G2-P2-E6': { date: '2026-11-03T08:01:01Z', note: "Construction aux instruments refaite dans l'ordre demandé : droite tracée à la règle sans aucun point, point O placé sur la droite, angle de 35° au rapporteur, puis la sécante tracée ; les quatre angles marqués ensuite" },

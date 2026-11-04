@@ -6,6 +6,7 @@
    P2-E3 remplacé (angle triple), figures ajoutées aux corrigés (P2-E5, P2-E6, P3-E5), corrigés rédigés avec la propriété (P1-E5, P4-E4, P5-E2).
    Relecture du 03/11/2026 (version 1309) : P1-E3 quatre figures, P2-E5 de nouveau cliquable à l'écran, P2-E6 figure aux instruments,
    P5-E6 propriétés rédigées, P5-E7 triangle isocèle (36°, 108°, 36°), P6-E2 cases à cocher, P6-E3 dessin à main levée â et 2â.
+   Relecture du 03/11/2026 (version 1313) : P6-E1 et P6-E2 en pleine largeur, P6-E2 sur deux colonnes (cases sur une ligne).
    Version 1311 : P1-E3 4e figure (sommets différents, côtés dans le prolongement), P2-E6 construction dans l'ordre (droite, O, rapporteur, sécante).
    ============================================================ */
 (() => {
@@ -188,14 +189,19 @@ PLANCHES['5e|Angles et parallélisme'] = [
   { titre: 'Pour aller plus loin : angles complémentaires', duree: '25 min',
     attendus: ['Savoir que deux angles complémentaires ont pour somme 90°', 'Calculer le complément d\'un angle aigu', 'Reconnaître des angles complémentaires ou supplémentaires'],
     exos: [
-      { etoiles: 1, col: 1, consigne: 'Pour aller plus loin : deux angles complémentaires ont une somme de 90°. Calcule.',
-        ...rmp([['Complément de 35° : @ °', 55], ['Complément de 72° : @ °', 18], ['Complément de 45° : @ °', 45], ['Complément de 89° : @ °', 1]], 2) },
+      // Pleine largeur (relecture 5e-G2-P6-E2 du 03/11/2026 : l'exercice voisin passe en pleine largeur) : huit calculs sur deux colonnes.
+      { etoiles: 1, consigne: 'Pour aller plus loin : deux angles complémentaires ont une somme de 90°. Calcule.',
+        ...rmp([['Complément de 35° : @ °', 55], ['Complément de 72° : @ °', 18], ['Complément de 45° : @ °', 45], ['Complément de 89° : @ °', 1], ['Complément de 18° : @ °', 72], ['Complément de 60° : @ °', 30], ['Complément de 9° : @ °', 81], ['Complément de 37,5° : @ °', '52,5']], 2) },
       // Relecture du 03/11/2026 : « sur un cahier, une case à cocher est préférable à entourer ». Papier : cases ☐ ; écran : choix à cliquer.
-      { etoiles: 1, col: 1, consigne: 'Pour aller plus loin : ces deux angles sont-ils complémentaires, supplémentaires, ou ni l\'un ni l\'autre ? Coche la bonne case.',
-        ...(() => { const O = ['complémentaires', 'supplémentaires', 'ni l\'un ni l\'autre'], l = [['30° et 60° :', 0], ['100° et 80° :', 1], ['45° et 135° :', 1], ['50° et 50° :', 2]];
-          const ec = chx(l.map(([t, r]) => [t, O[r], O.join(' · ')])); const CO = 'flex-direction:column;align-items:flex-start;row-gap:3px;'; // une case par ligne
-          return { eleve: '<div class="pl-col1">' + plListe(l.map(([t]) => `${t} <b style="${CO}">${O.map(o => '☐ ' + o).join(' · ')}</b>`)) + '</div>',
-            corr: '<div class="pl-col1">' + plListe(l.map(([t, r]) => `${t} <b style="${CO}">${O.map((o, i) => i === r ? `<span class="pl-rep">☑ ${o}</span>` : '☐ ' + o).join(' · ')}</b>`)) + '</div>',
+      // Relecture du 03/11/2026 : « ça prend trop de place, à mettre en pleine largeur et sur deux colonnes ».
+      { etoiles: 1, consigne: 'Pour aller plus loin : ces deux angles sont-ils complémentaires, supplémentaires, ou aucun des deux ? Coche la bonne case.',
+        ...(() => { const O = ['complémentaires', 'supplémentaires', 'aucun des deux'], l = [['30° et 60° :', 0], ['100° et 80° :', 1], ['45° et 135° :', 1], ['50° et 50° :', 2], ['25° et 65° :', 0], ['90° et 90° :', 1], ['40° et 40° :', 2], ['120° et 50° :', 2]];
+          const ec = chx(l.map(([t, r]) => [t, O[r], O.join(' · ')]));
+          // Tableau à cocher : les trois mots en tête de colonne, une ligne par paire d'angles, deux tableaux côte à côte.
+          const tb = (L, corr) => `<table style="border-collapse:collapse;width:100%;"><tr><th></th>${O.map(o => `<th style="font-size:.78em;font-weight:600;color:#5B6472;padding:0 3px 3px;text-align:center;">${o}</th>`).join('')}</tr>`
+            + L.map(([t, r]) => `<tr style="border-top:1px solid #E3E8EF;"><td style="white-space:nowrap;padding:4px 6px 4px 0;">${t.replace(' :', '')}</td>${O.map((o, i) => `<td style="text-align:center;font-size:1.15em;">${corr && i === r ? '<span class="pl-rep">☑</span>' : '☐'}</td>`).join('')}</tr>`).join('') + '</table>';
+          const g = corr => `<div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 22px;">${tb(l.slice(0, 4), corr)}${tb(l.slice(4), corr)}</div>`;
+          return { eleve: g(false), corr: g(true),
             ecran: ec }; })() },
       { etoiles: 3, cahier: true, consigne: 'Pour aller plus loin : deux angles sont complémentaires et l\'un est le double de l\'autre. Quelles sont leurs mesures ?',
         // Relecture du 03/11/2026 : « un dessin à main levée avec â et 2â dans la correction uniquement ».

@@ -9,11 +9,14 @@
    « juste ou fausse ».
    Relecture CE2-N3-P3-E3 (30/10/2026, « de la place pour en mettre d'autres à droite ») : 8 calculs sur deux colonnes
    (P2-E7 garde ses 6 calculs : la planche 2 est pleine).
+   Relecture du 03/11/2026 : à l'écran, l'élève pose lui-même les additions dans une grille plus large (P1-E3) ; « les nombres
+   12 et 25 sont… » (P1-E2) ; marques de compensation qui ne décalent plus les chiffres, compensation et cassage alignés par le
+   bas (P2-E2, P2-E4, P2-E5) ; calculs posés dans le corrigé (P3-E2) ; listes en colonnes à l'écran (planches-num.js).
    ============================================================ */
 (() => {
 const { rmp } = P3, B = P3.B, R = P3.R;
 const nb = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-const td = (c, st) => `<td style="width:28px;height:30px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:700;padding:1px 0;${st || ''}">${c}</td>`;
+const td = (c, st) => `<td style="position:relative;width:28px;height:30px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:700;padding:1px 0;${st || ''}">${c}</td>`;
 const ROUGE = '#E35D3A';
 // Addition posée (deux ou trois termes) : retenues calculées ; o.trous : résultat en cases (écran), o.rep : résultat-réponse.
 function add(L, o){
@@ -31,8 +34,8 @@ function compens(a, b){
   const haut = Array(n).fill(false), bas = Array(n).fill(false); let ret = 0;
   for(let j = n - 1; j >= 0; j--){ const y = (Bd[j] || 0) + ret; if(ret) bas[j] = true; if(A[j] < y){ haut[j] = true; ret = 1; } else ret = 0; }
   const r = String(a - b).padStart(n, ' ');
-  return `<table style="border-collapse:collapse;margin:5px auto;"><tr>${td('')}${A.map((d, j) => td(haut[j] ? `<sup style="color:${ROUGE};font-size:.7rem;">1</sup>${d}` : d)).join('')}</tr>`
-    + `<tr>${td('−', 'color:#FF8208;')}${Bd.map((d, j) => td(d == null && !bas[j] ? '' : `${d == null ? '' : d}${bas[j] ? `<sub style="color:${ROUGE};font-size:.7rem;">+1</sub>` : ''}`)).join('')}</tr>`
+  return `<table style="border-collapse:collapse;margin:5px auto;"><tr>${td('')}${A.map((d, j) => td(haut[j] ? `${d}<span style="position:absolute;left:2px;top:1px;color:${ROUGE};font-size:.68rem;line-height:1;">1</span>` : d)).join('')}</tr>`
+    + `<tr>${td('−', 'color:#FF8208;')}${Bd.map((d, j) => td(d == null && !bas[j] ? '' : `${d == null ? '' : d}${bas[j] ? `<span style="position:absolute;right:-4px;bottom:0;color:${ROUGE};font-size:.68rem;line-height:1;">+1</span>` : ''}`)).join('')}</tr>`
     + `<tr style="border-top:2px solid #1C1B2E;">${td('')}${r.split('').map(d => td(d === ' ' ? '' : d, 'color:#FF8208;font-size:1.2rem;')).join('')}</tr></table>`;
 }
 // Soustraction par cassage : les chiffres cassés sont barrés, la nouvelle valeur est écrite au-dessus.
@@ -46,6 +49,17 @@ function cassage(a, b){
     + `<tr style="border-top:2px solid #1C1B2E;">${td('')}${r.split('').map(d => td(d === ' ' ? '' : d, 'color:#FF8208;font-size:1.2rem;')).join('')}</tr></table>`;
 }
 const duo = l => `<div style="display:flex;justify-content:space-around;align-items:flex-start;gap:10px 18px;flex-wrap:wrap;">${l.join('')}</div>`;
+// Deux façons de poser la même soustraction côte à côte : alignées par le bas (le cassage a une ligne de plus au-dessus) --
+// relecture CE2-N3-P2-E4 et E5 du 03/11/2026 : « l'une est plus basse que l'autre à cause des retenues ».
+const duoBas = l => `<div style="display:flex;justify-content:space-around;align-items:flex-end;gap:10px 18px;flex-wrap:wrap;">${l.join('')}</div>`;
+// Grille à remplir à l'écran : l'élève pose lui-même l'opération écrite en ligne, dans une grille plus large que
+// nécessaire (relecture CE2-N3-P1-E3 du 03/11/2026). Les cases en trop doivent rester vides (data-vide, planches-num.js).
+function grille(a, op, b, rep){
+  const r = op === '+' ? a + b : a - b, n = Math.max(String(a).length, String(b).length, String(r).length) + 2;
+  const cel = (v, k, j, st) => `<td data-plcol="${n - 1 - j}" data-plrow="${k}" style="width:30px;height:30px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:700;${st || ''}">${rep ? (v === ' ' ? '<span class="pl-rep" data-vide=""></span>' : plRep(v)) : '<span class="pl-case pl-case-seule" style="margin:0;width:18px;"></span>'}</td>`;
+  const lig = (v, k, signe, st) => `<tr${st ? ` style="${st}"` : ''}><td style="width:22px;text-align:center;color:#FF8208;font-weight:700;">${signe}</td>${String(v).padStart(n).split('').map((c, j) => cel(c, k, j)).join('')}</tr>`;
+  return `<table style="border-collapse:collapse;margin:5px auto;">${lig(a, 1, '')}${lig(b, 2, op)}${lig(r, 3, '', 'border-top:2px solid #1C1B2E;')}</table>`;
+}
 // « Pose et calcule » : sur papier, le calcul à poser dans le cahier ; corrigé posé ; à l'écran, l'opération déjà posée se remplit case par case.
 function aPoser(L, fig){
   const txt = L.map(([a, op, b]) => `${nb(a)} ${op} ${nb(b)} = `);
@@ -68,9 +82,11 @@ PLANCHES['ce2|Addition et soustraction posées'] = [
       { etoiles: 1, col: 1, consigne: 'Complète avec « somme » ou « différence ».',
         ...rmp([['Le résultat d\'une addition est une @.', 'somme'], ['Le résultat d\'une soustraction est une @.', 'différence'], ['La @ de 50 et 20 est 70.', 'somme'], ['La @ de 50 et 20 est 30.', 'différence']], 7) },
       { etoiles: 1, col: 1, consigne: 'Complète avec « termes » ou « somme ».',
-        ...rmp([['Dans 12 + 25 = 37, 12 et 25 sont les @.', 'termes'], ['Dans 12 + 25 = 37, 37 est la @.', 'somme'], ['Dans 60 − 37 = 23, 60 et 37 sont les @.', 'termes']], 6) },
+        ...rmp([['Dans 12 + 25 = 37, les nombres 12 et 25 sont les @.', 'termes'], ['Dans 12 + 25 = 37, 37 est la @.', 'somme'], ['Dans 60 − 37 = 23, les nombres 60 et 37 sont les @.', 'termes']], 6) },
       { etoiles: 1, consigne: 'Pose et calcule dans ton cahier, puis écris le résultat.',
-        ...aPoser([[346, '+', 252], [1457, '+', 328], [2609, '+', 1394], [5087, '+', 96]]) },
+        ...(() => { const L = [[346, '+', 252], [1457, '+', 328], [2609, '+', 1394], [5087, '+', 96]], x = aPoser(L), t = ([a, op, b]) => `<div style="text-align:center;">${nb(a)} ${op} ${nb(b)}</div>`;
+          // À l'écran : l'opération écrite en ligne, et une grille vide où l'élève la pose lui-même.
+          return Object.assign(x, { ecran: { eleve: duo(L.map(o => '<div>' + t(o) + grille(o[0], o[1], o[2]) + '</div>')), corr: duo(L.map(o => '<div>' + t(o) + grille(o[0], o[1], o[2], true) + '</div>')) } }); })() },
       { etoiles: 2, consigne: 'Complète l\'addition posée (attention aux retenues).',
         ...(() => { const L = [[4586, 2738], [3095, 907], [1248, 365, 2070]], g = o => plGrille(L.map(t => add(t, o)), 3);
           return { eleve: g({ trous: true }), corr: g(), ecran: { eleve: g({ trous: true }), corr: g({ rep: true }) } }; })() },
@@ -90,9 +106,9 @@ PLANCHES['ce2|Addition et soustraction posées'] = [
       { etoiles: 2, consigne: 'Vérifie chaque soustraction par une addition, puis entoure si elle est juste ou fausse.',
         ...verif([[835, 267, 568], [4000, 1250, 3850], [1503, 728, 775]]) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Le mont Blanc mesure 4 806 m. Le puy de Dôme mesure 1 465 m. Quelle est la différence de hauteur entre ces deux sommets ?',
-        corr: cm1Redac('Différence de hauteur', { pose: duo([compens(4806, 1465), cassage(4806, 1465)]) }, 'À gauche par compensation, à droite par cassage (on casse une centaine) : le mont Blanc mesure 3 341 m de plus que le puy de Dôme.') },
+        corr: cm1Redac('Différence de hauteur', { pose: duoBas([compens(4806, 1465), cassage(4806, 1465)]) }, 'À gauche par compensation, à droite par cassage (on casse une centaine) : le mont Blanc mesure 3 341 m de plus que le puy de Dôme.') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Un avion vole à 9 450 m d\'altitude. Il descend jusqu\'à 3 875 m. De combien de mètres est-il descendu ?',
-        corr: cm1Redac('Descente de l\'avion', { pose: duo([compens(9450, 3875), cassage(9450, 3875)]) }, 'À gauche par compensation, à droite par cassage : l\'avion est descendu de 5 575 m.') },
+        corr: cm1Redac('Descente de l\'avion', { pose: duoBas([compens(9450, 3875), cassage(9450, 3875)]) }, 'À gauche par compensation, à droite par cassage : l\'avion est descendu de 5 575 m.') },
       { etoiles: 1, consigne: 'Calcule de tête.', ...rmp([['500 − 200 = @', 300], ['1 000 − 400 = @', 600], ['850 − 50 = @', 800], ['3 400 − 1 000 = @', '2 400'], ['7 000 − 3 000 = @', '4 000'], ['960 − 60 = @', 900], ['5 500 − 500 = @', '5 000'], ['2 080 − 80 = @', '2 000']], 3) },
       { etoiles: 2, consigne: 'Trouve le nombre manquant.', ...rmp([['@ − 125 = 300', 425], ['1 000 − @ = 650', 350], ['@ + 480 = 1 000', 520], ['2 000 − @ = 1 250', 750], ['@ − 600 = 1 400', '2 000'], ['@ + 3 500 = 5 000', '1 500']], 3) },
     ] },
@@ -101,8 +117,11 @@ PLANCHES['ce2|Addition et soustraction posées'] = [
     exos: [
       { etoiles: 1, consigne: 'Calcule de tête.',
         ...rmp([['3 400 + 500 = @', '3 900'], ['6 080 + 20 = @', '6 100'], ['5 000 − 300 = @', '4 700'], ['2 750 − 50 = @', '2 700'], ['1 600 + 400 = @', '2 000'], ['8 300 − 300 = @', '8 000'], ['4 950 + 50 = @', '5 000'], ['7 200 − 1 000 = @', '6 200']], 4) },
-      { etoiles: 2, consigne: 'Dans chaque ligne, entoure le calcul que tu ferais de tête. Tu poseras l\'autre.',
-        ...P3.chxTab([['Ligne A', '2 000 + 3 000', '2 000 + 3 000 · 2 487 + 3 659'], ['Ligne B', '4 500 − 100', '4 532 − 1 875 · 4 500 − 100'], ['Ligne C', '6 000 − 1', '6 000 − 1 · 6 023 − 1 847'], ['Ligne D', '3 900 + 100', '3 768 + 1 459 · 3 900 + 100']]) },
+      // Relecture CE2-N3-P3-E2 du 03/11/2026 : « il n'y a pas la place pour poser ; la correction ne montre pas ces calculs ».
+      // On pose l'autre calcul dans le cahier ; le corrigé montre les quatre opérations posées.
+      { etoiles: 2, consigne: 'Dans chaque ligne, entoure le calcul que tu ferais de tête, puis pose l\'autre dans ton cahier.',
+        ...(() => { const x = P3.chxTab([['Ligne A', '2 000 + 3 000', '2 000 + 3 000 · 2 487 + 3 659'], ['Ligne B', '4 500 − 100', '4 532 − 1 875 · 4 500 − 100'], ['Ligne C', '6 000 − 1', '6 000 − 1 · 6 023 − 1 847'], ['Ligne D', '3 900 + 100', '3 768 + 1 459 · 3 900 + 100']]);
+          return { eleve: x.eleve, corr: x.corr + `<p style="margin:8px 0 2px;">Les calculs posés :</p>` + duoBas([add([2487, 3659]), compens(4532, 1875), compens(6023, 1847), add([3768, 1459])]), ecran: { corr: x.corr } }; })() },
       { etoiles: 2, consigne: 'Complète.',
         ...rmp([['999 + @ = 1 000', 1], ['@ + 600 = 1 000', 400], ['7 500 + @ = 8 000', 500], ['@ − 1 000 = 4 500', '5 500'], ['2 750 + @ = 3 000', 250], ['@ + 90 = 1 000', 910], ['4 300 + @ = 5 000', 700], ['@ − 50 = 9 950', '10 000']], 4) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Mia a 1 000 points au jeu. Elle en perd 250, puis en gagne 600. Combien de points a-t-elle ?',

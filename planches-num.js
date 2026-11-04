@@ -135,6 +135,10 @@ function plNumAnalyser(x){
       cibles.push({ type: 'frac', id, rep: f, equiv: r.hasAttribute('data-equiv') }); // data-equiv : une fraction égale est acceptée (lire une figure)
     } else {
       if(plNumFracDe(r)) return null;
+      // Case qui doit rester vide (opération à poser soi-même dans une grille plus large que nécessaire, relecture
+      // CE2-N3-P1-E3 du 03/11/2026 : « c'est à l'élève de poser les nombres dans les cases ; faire plus de cases que prévues ») :
+      // elle ne compte pas dans le score ; remplie à tort, elle est marquée fausse.
+      if(r.hasAttribute('data-vide')){ tr.outerHTML = `<button type="button" class="pn-case pn-signe" data-pn="${id}" data-pnv="${id}"></button>`; cibles.push({ type: 'vide', id }); continue; }
       if(r.dataset.entre){ const [a, b] = r.dataset.entre.split('|').map(plNumVal); // réponse ouverte : un nombre entre a et b
         tr.outerHTML = `<button type="button" class="pn-case" data-pn="${id}" data-pnv="${id}" style="min-width:${Math.min(320, r.textContent.trim().length * 12 + 26)}px"></button>`;
         cibles.push({ type: 'entre', id, rep: [a, b] }); continue; }
@@ -221,6 +225,9 @@ function plNum(root, x, o){
   o = o || {};
   let etat = plNumEtatVide(o.etat), sel = null;
   root.classList.add('pn-ex'); root.classList.toggle('pn-lecture', !!o.lecture);
+  // Exercice pleine largeur : ses listes sur deux colonnes, comme sur le papier (relecture CE2-N3 du 03/11/2026 : « garder le
+  // format en colonne à l'écran »).
+  root.classList.toggle('pn-plein', !x.col && !x.uneLigne);
   root.innerHTML = M.html;
   if(typeof plSepNoeuds === 'function') plSepNoeuds(root); // « 6 102 · 6 210 » : grand espace au lieu du point central
   if(typeof plChoixCols === 'function') plChoixCols(root, null, !x.col && !x.uneLigne); // « vrai · faux » en colonne, à part de l'énoncé
@@ -376,10 +383,10 @@ function plNum(root, x, o){
   };
   afficher(); if(o.res) marquer(o.res);
   return {
-    total: M.cibles.filter(c => !(c.type === 'x' && c.rep.aide)).length,
+    total: M.cibles.filter(c => !(c.type === 'x' && c.rep.aide) && c.type !== 'vide').length,
     etat: () => plNumCopie(etat),
     // Résultat sans rien montrer (session où seul le professeur voit les erreurs).
-    evaluer(){ const d = M.cibles.map(c => c.type === 'x' && c.rep.aide ? null : juste(c)), n = d.filter(v => v !== null); return { juste: n.filter(Boolean).length, total: n.length, d, classes: M.cibles.some((c, i) => d[i] === false && malEcrit(c)) }; },
+    evaluer(){ const d = M.cibles.map(c => c.type === 'x' && c.rep.aide ? null : c.type === 'vide' ? (String(etat.v[c.id] || '').trim() ? false : null) : juste(c)), n = d.filter(v => v !== null); return { juste: n.filter(Boolean).length, total: n.length, d, classes: M.cibles.some((c, i) => d[i] === false && malEcrit(c)) }; },
     verifier(){ choisir(null); const res = this.evaluer(); marquer(res); return res; },
     effacer(){ etat = plNumEtatVide(); choisir(null); effacerMarques(); afficher(); change(); },
     poser(e, res){ etat = plNumEtatVide(e); afficher(); marquer(res); },
@@ -710,7 +717,9 @@ function plClavierPhysique(e){
   const st = document.createElement('style');
   st.textContent = `
     .pn-ex .pl-grille{ display:grid; gap:8px 22px; align-items:center; } .pn-ex .pl-item{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; min-height:30px; }
-    .pn-ex .pl-liste{ margin:0; padding-left:20px; } .pn-ex .pl-liste li{ margin:6px 0; } .pn-ex .pl-liste.pl-chcol{ row-gap:10px; }
+    .pn-ex .pl-liste{ margin:0; padding-left:20px; } .pn-ex .pl-liste li{ margin:6px 0; }
+    .pn-ex.pn-plein .pl-liste:not(.pl-chcol):not(.pl-chbas){ columns:2; column-gap:36px; } .pn-ex.pn-plein .pl-liste li{ break-inside:avoid; } .pn-ex.pn-plein .pl-col1 .pl-liste{ columns:1; }
+    @media (max-width:640px){ .pn-ex.pn-plein .pl-liste:not(.pl-chcol):not(.pl-chbas){ columns:1; } } .pn-ex .pl-liste.pl-chcol{ row-gap:10px; }
     .pn-ex .pl-unites{ display:inline-flex; gap:5px; flex-wrap:wrap; align-items:center; vertical-align:middle; }
     .cx-td .pn-ex, .cx-td.pn-ex{ font-size:1.1rem; line-height:1.5; } @media (min-width:700px){ .cx-td.pn-ex{ zoom:1.3; } } .cx-td svg{ max-width:100%; height:auto; }
     .pn-ex .pn-case{ white-space:pre; display:inline-flex; align-items:center; justify-content:center; min-width:30px; height:26px; padding:0 5px; border:2px solid #3A6EA5; border-radius:6px; background:#fff;

@@ -3,6 +3,9 @@
    Fractions décimales, nom des chiffres, demi-droite graduée, comparaison, encadrement, problèmes.
    Relecture du 01/11/2026 : centièmes écrits à chaque terme et tableau de numération (P1-E6), « nombre de… » à côté de
    « chiffre des… » (P2-E1), demi-droite graduée tracée dans le corrigé (P3-E5).
+   Relecture du 03/11/2026 : « supprime les zéros inutiles » (P4-E2), intercaler sans parler de « milieu » (P4-E5), troncature et
+   valeurs approchées par défaut et par excès en « pour aller plus loin » (P5-E7), comparer avec &lt;, &gt; ou = (P6-E3), division
+   euclidienne pour les étagères (P6-E5).
    ============================================================ */
 (() => {
 const B = n => plPointilles(n || 4), R = v => plRep(String(v)), F = cm1Frac, Fr = plFrac(), C = plCase();
@@ -86,14 +89,15 @@ PLANCHES['6e|Nombres décimaux'] = [
       { etoiles: 1, col: 1, consigne: 'Complète avec &lt;, &gt; ou =.',
         eleve: plListe([`4,7 ${C} 4,12`, `0,5 ${C} 0,50`, `12,03 ${C} 12,3`, `7,099 ${C} 7,1`, `0,8 ${C} 0,09`]),
         corr: plListe([`4,7 ${R(gt)} 4,12`, `0,5 ${R('=')} 0,50`, `12,03 ${R(lt)} 12,3`, `7,099 ${R(lt)} 7,1`, `0,8 ${R(gt)} 0,09`]) },
-      { etoiles: 1, col: 1, consigne: 'Barre les zéros inutiles en réécrivant chaque nombre.',
+      { etoiles: 1, col: 1, consigne: 'Supprime les zéros inutiles : réécris chaque nombre.',
         eleve: plListe(['05,20 = ' + B(), '012,050 = ' + B(), '7,000 = ' + B(), '30,600 = ' + B()]),
         corr: plListe(['05,20 = ' + R('5,2'), '012,050 = ' + R('12,05'), '7,000 = ' + R(7), '30,600 = ' + R('30,6')]) },
       { etoiles: 2, consigne: 'Range dans l\'ordre croissant : 3,5 ; 3,05 ; 3,55 ; 3,505 ; 3,055.',
         eleve: suite(5, 5, lt), corr: suite(['3,05', '3,055', '3,5', '3,505', '3,55'], 0, lt) },
       { etoiles: 2, consigne: 'Range dans l\'ordre décroissant : 0,7 ; 0,07 ; 0,77 ; 0,707 ; 0,077.',
         eleve: suite(5, 5, gt), corr: suite(['0,77', '0,707', '0,7', '0,077', '0,07'], 0, gt) },
-      { etoiles: 2, col: 1, consigne: 'Intercale un nombre entre les deux nombres (plusieurs réponses possibles ; écris celle du milieu).',
+      // Relecture du 03/11/2026 : « écris celle du milieu : non ! le milieu de deux nombres n'a pas de sens mathématique ».
+      { etoiles: 2, col: 1, consigne: 'Intercale entre les deux nombres le nombre qui a un chiffre de plus après la virgule et qui se termine par 5.',
         eleve: plListe([`4 ${lt} ${B()} ${lt} 5`, `2,3 ${lt} ${B()} ${lt} 2,4`, `0,15 ${lt} ${B()} ${lt} 0,16`]),
         corr: plListe([`4 ${lt} ${R('4,5')} ${lt} 5`, `2,3 ${lt} ${R('2,35')} ${lt} 2,4`, `0,15 ${lt} ${R('0,155')} ${lt} 0,16`]) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Au saut en longueur, Inès a sauté 3,8 m, Hugo 3,75 m, Léa 3,805 m et Sami 3,08 m. Établis le classement, du premier au dernier. Explique ta méthode.',
@@ -118,6 +122,11 @@ PLANCHES['6e|Nombres décimaux'] = [
         corr: plListe(['Arrondi du prix à l\'euro : ' + R(5) + ' €', 'Encadrement à l\'euro : ' + R(4) + ' € &lt; 4,79 € &lt; ' + R(5) + ' €', 'Avec 5 €, peut-on acheter le paquet ? ' + plEntoure('oui')]) },
       { etoiles: 3, cahier: true, consigne: 'Le nombre π vaut environ 3,14159. Donne son arrondi à l\'unité, au dixième, au centième et au millième. Explique ta méthode pour le centième.',
         corr: cm1Redac('Arrondis de π', { suite: ['à l\'unité : 3 ; au dixième : 3,1', 'au centième : 3,14 ; au millième : 3,142'] }, 'Pour le centième, je regarde le chiffre des millièmes (1) : il est inférieur à 5, donc j\'arrondis à 3,14.') },
+      // Hors programme de 6e (le programme ne nomme que l'arrondi) : « pour aller plus loin » -- relecture 6e-N3-P5-E3 du
+      // 03/11/2026 : « la troncature est-elle au programme également ? Et les arrondis par défaut ? par excès ».
+      { etoiles: 3, consigne: 'Pour aller plus loin : la troncature au dixième (valeur approchée par défaut) garde le chiffre des dixièmes et supprime les suivants ; la valeur approchée par excès est le dixième juste au-dessus. Complète.',
+        eleve: tab(['Nombre', 'par défaut (troncature)', 'par excès', 'arrondi'], [['4,728', B(3), B(3), B(3)], ['15,0549', B(3), B(3), B(3)], ['0,962', B(3), B(3), B(3)]]),
+        corr: tab(['Nombre', 'par défaut (troncature)', 'par excès', 'arrondi'], [['4,728', R('4,7'), R('4,8'), R('4,7')], ['15,0549', R('15'), R('15,1'), R('15,1')], ['0,962', R('0,9'), R(1), R(1)]]) },
     ] },
   { titre: 'Problèmes avec des nombres décimaux', duree: '40 min',
     attendus: ['Utiliser les nombres décimaux dans les mesures (longueurs, masses, prix)', 'Comparer et ranger des mesures', 'Changer d\'unité à l\'aide des nombres décimaux'],
@@ -128,13 +137,16 @@ PLANCHES['6e|Nombres décimaux'] = [
       { etoiles: 1, col: 1, consigne: 'Écris chaque masse en kilogrammes.',
         eleve: plListe(['2 kg 500 g = ' + B() + ' kg', '750 g = ' + B() + ' kg', '1 kg 25 g = ' + B() + ' kg', '8 g = ' + B() + ' kg']),
         corr: plListe(['2 kg 500 g = ' + R('2,5') + ' kg', '750 g = ' + R('0,75') + ' kg', '1 kg 25 g = ' + R('1,025') + ' kg', '8 g = ' + R('0,008') + ' kg']) },
-      { etoiles: 2, col: 1, consigne: 'Entoure la plus grande mesure.',
-        ...ch([['1,5 m ou 145 cm :', '1,5 m', '1,5 m · 145 cm'], ['0,8 kg ou 790 g :', '0,8 kg', '0,8 kg · 790 g'], ['2,05 € ou 2 € 50 c :', '2 € 50 c', '2,05 € · 2 € 50 c']]) },
+      // Relecture du 03/11/2026 : « plutôt, complète par <, > ou = ».
+      { etoiles: 2, col: 1, consigne: 'Complète avec &lt;, &gt; ou =.',
+        eleve: plListe([`1,5 m ${C} 145 cm`, `0,8 kg ${C} 790 g`, `2,05 € ${C} 2 € 50 c`, `3,2 m ${C} 320 cm`]),
+        corr: plListe([`1,5 m ${R(gt)} 145 cm`, `0,8 kg ${R(gt)} 790 g`, `2,05 € ${R(lt)} 2 € 50 c`, `3,2 m ${R('=')} 320 cm`]) },
       { etoiles: 2, col: 1, consigne: 'Voici les temps de quatre nageurs au 50 m : Ali 31,48 s ; Bea 31,5 s ; Cyril 31,09 s ; Dina 31,4 s. Complète.',
         eleve: plListe(['Le plus rapide est ' + B(), 'Le plus lent est ' + B(), 'Temps de Dina arrondi à la seconde : ' + B(2) + ' s']),
         corr: plListe(['Le plus rapide est ' + R('Cyril'), 'Le plus lent est ' + R('Bea'), 'Temps de Dina arrondi à la seconde : ' + R(31) + ' s']) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Une planche mesure 2,4 m. Paul veut y découper des étagères de 0,75 m. Combien d\'étagères peut-il découper ? Quelle longueur reste-t-il ? Explique avec des centimètres.',
-        corr: cm1Redac('En centimètres', { suite: ['2,4 m = 240 cm et 0,75 m = 75 cm.', '75 × 3 = 225 et 75 × 4 = 300 (trop long).', '240 − 225 = 15'] }, 'Paul peut découper 3 étagères ; il reste 15 cm, soit 0,15 m.') },
+        // Relecture du 03/11/2026 : « il faut faire une division ici ! » (et non chercher à tâtons).
+        corr: cm1Redac('En centimètres', { suite: ['2,4 m = 240 cm et 0,75 m = 75 cm.', 'On divise 240 par 75 (division euclidienne) :', '240 = 75 × 3 + 15, avec 15 &lt; 75', 'Quotient : 3 ; reste : 15'] }, 'Paul peut découper 3 étagères ; il reste 15 cm, soit 0,15 m.') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Un nombre a 2 chiffres après la virgule. Son arrondi au dixième est 4,6 et son chiffre des centièmes est 8. Quel est ce nombre ?',
         corr: cm1Redac('Recherche', { suite: ['Le nombre s\'écrit 4,?8 et son arrondi au dixième est 4,6.', 'Avec 8 centièmes, on arrondit au dixième supérieur : 4,58 → 4,6.'] }, 'Le nombre est 4,58.') },
     ] },

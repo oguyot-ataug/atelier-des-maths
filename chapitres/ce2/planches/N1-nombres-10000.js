@@ -82,10 +82,12 @@ PLANCHES['ce2|Nombres jusqu\'à 10 000'] = [
       { etoiles: 1, consigne: 'Écris le nombre de chaque point.',
         eleve: droite(2000, 3000, 100, 500, [[2300, 'A'], [2800, 'B'], [2600, 'C']]) + plListe(['A : ' + P3.B(4) + '   B : ' + P3.B(4) + '   C : ' + P3.B(4)]),
         corr: droite(2000, 3000, 100, 500, [[2300, 'A'], [2800, 'B'], [2600, 'C']]) + plListe(['A : ' + P3.R('2 300') + '   B : ' + P3.R('2 800') + '   C : ' + P3.R('2 600')]) },
-      { etoiles: 2, consigne: 'Place les nombres 7 400 (point D), 7 650 (point E) et 7 950 (point F).',
+      // Graduation de 100 en 100, comme l'exercice précédent (relecture CE2-N1-P4-E2 du 03/11/2026 : « n'est-ce pas un peu
+      // difficile pour des CE2 ? » -- elle allait de 50 en 50, avec des nombres écrits tous les 500).
+      { etoiles: 2, consigne: 'Place les nombres 7 400 (point D), 7 700 (point E) et 7 900 (point F).',
         // À l'écran, on place les points en touchant la graduation (relecture CE2-N1-P4-E2).
-        eleve: plX(droite(7000, 8000, 50, 500, []), { t: 'pts', tol: 9, noms: ['D', 'E', 'F'], cands: Array.from({ length: 21 }, (_, i) => [20 + i * 19.5, 30]), att: { D: [20 + 8 * 19.5, 30], E: [20 + 13 * 19.5, 30], F: [20 + 19 * 19.5, 30] } }),
-        corr: droite(7000, 8000, 50, 500, [[7400, 'D'], [7650, 'E'], [7950, 'F']]) },
+        eleve: plX(droite(7000, 8000, 100, 500, []), { t: 'pts', tol: 14, noms: ['D', 'E', 'F'], cands: Array.from({ length: 11 }, (_, i) => [20 + i * 39, 30]), att: { D: [20 + 4 * 39, 30], E: [20 + 7 * 39, 30], F: [20 + 9 * 39, 30] } }),
+        corr: droite(7000, 8000, 100, 500, [[7400, 'D'], [7700, 'E'], [7900, 'F']]) },
       { etoiles: 2, col: 1, consigne: 'Complète la suite.',
         ...rmp([['4 980 ; 4 990 ; @ ; @', '5 000', '5 010'], ['3 700 ; 3 800 ; @ ; @', '3 900', '4 000'], ['9 997 ; 9 998 ; @ ; @', '9 999', '10 000']], 4) },
       { etoiles: 3, col: 1, consigne: 'Entoure le nombre le plus proche de 5 000.',
