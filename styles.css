@@ -2355,3 +2355,9 @@ body:not(.connecte) #navDropdownEntrainer .nav-dropdown-menu button[data-nav="le
   .bandeau-essai .be-rdv{ order:3; margin:0 auto; }
 }
 @media print{ .bandeau-essai{ display:none !important; } }
+
+/* Activités de géométrie dynamique dans les cours (chapitres/5e/G2-angles-parallelisme.js ; demandé le 03/11/2026). */
+.dyn-activite{ margin:12px 0 16px; padding:10px 14px 12px; border:1.5px solid #CDBDEB; border-left:5px solid #7A4FC0; border-radius:10px; background:#FAF7FF; }
+.dyn-activite-titre{ margin:0 0 4px; font:700 1rem 'Space Grotesk',sans-serif; color:#5B3A99; display:flex; align-items:center; gap:6px; }
+.dyn-activite .fig-dyn{ margin:4px 0; }
+@media print{ .dyn-activite{ break-inside:avoid; } }

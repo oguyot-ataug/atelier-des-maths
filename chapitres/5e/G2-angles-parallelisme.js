@@ -563,6 +563,54 @@ const apTriDemo = {
 };
 registerGeoStepDemo('ap-tri-svg', { steps:()=>AP_TRI_STEPS, getIdx:()=>apTriIdx, goto:(i)=>{ apTriIdx=i; apRenderTriDemo(); } });
 
+/* ================= GÉOMÉTRIE DYNAMIQUE =================
+   Demandé le 03/11/2026 : « un/plusieurs exercices de géométrie dynamique seraient intéressants pour approfondir les notions
+   ou découvrir une notion ». Figures du moteur de la Géométrie interactive (outils-figures.js, blocs .fig-dyn) : l'élève
+   déplace les points, les mesures se mettent à jour, « Réinitialiser » remet la figure de départ. Mesure des angles d'un
+   polygone et de leur somme : forme « angles-somme » (arrondis qui gardent une somme exacte). */
+const apdP = i => ({ __ptref: i }), apdS = i => ({ __shref: i });
+const apdInter = (label, x, y, s1, s2) => ({ label, x, y, def: { type: 'intersection', s1: apdS(s1), s2: apdS(s2) }, dependsOn: [apdS(s1), apdS(s2)] });
+function apdFig(points, shapes, h){
+  // Points libres en noir (sinon ils prennent la couleur des angles qui s'appuient sur eux) ; intersections calculées
+  // exactement dès le départ (la figure s'affiche avant tout recalcul).
+  points.forEach(p => { if(!p.def) p.color = '#1C1B2E'; });
+  points.forEach(p => { if(!p.def || p.def.type !== 'intersection') return;
+    const [d1, d2] = [p.def.s1, p.def.s2].map(r => shapes[r.__shref]).map(d => [points[d.p1.__ptref], points[d.p2.__ptref]]);
+    const [a, b] = d1, [c, e] = d2, den = (a.x - b.x) * (c.y - e.y) - (a.y - b.y) * (c.x - e.x);
+    if(!den) return; const t = ((a.x - c.x) * (c.y - e.y) - (a.y - c.y) * (c.x - e.x)) / den;
+    p.x = +(a.x + t * (b.x - a.x)).toFixed(2); p.y = +(a.y + t * (b.y - a.y)).toFixed(2); });
+  const data = { fig: { points, shapes }, vue: { x: 0, y: 0, w: 500, h: h || 320 } };
+  return `<div class="fig-dyn" data-fig="${encodeURIComponent(JSON.stringify(data))}"><svg class="fig-dyn-svg" viewBox="0 0 500 ${h || 320}" style="width:100%;max-width:600px;display:block;margin:6px auto;border:1px solid rgba(28,43,57,.12);border-radius:8px;background:#fff;"></svg></div>`;
+}
+const APD_C1 = '#E35D3A', APD_C2 = '#2EA8C9';
+// 1. Angles opposés par le sommet : deux droites (AA') et (BB') qui se coupent en O.
+function apDynOpposes(){
+  return apdFig([{ label: 'A', x: 70, y: 95 }, { label: "A'", x: 430, y: 225 }, { label: 'B', x: 110, y: 265 }, { label: "B'", x: 400, y: 55 }, Object.assign(apdInter('O', 250, 160, 0, 1), { labelDx: 4, labelDy: 17 })],
+    [{ type: 'droite', p1: apdP(0), p2: apdP(1) }, { type: 'droite', p1: apdP(2), p2: apdP(3) },
+     { type: 'angle', vertex: apdP(4), p1: apdP(0), p2: apdP(3), strokeColor: APD_C1, taille: 12 }, { type: 'angle', vertex: apdP(4), p1: apdP(1), p2: apdP(2), strokeColor: APD_C1, taille: 12 },
+     { type: 'angle', vertex: apdP(4), p1: apdP(3), p2: apdP(1), strokeColor: APD_C2, taille: 12 }, { type: 'angle', vertex: apdP(4), p1: apdP(2), p2: apdP(0), strokeColor: APD_C2, taille: 12 }]);
+}
+// 2. Angles alternes-internes : (AB) et (CD) coupées par la sécante (EF) en M et N ; on fait tourner (CD) avec D.
+function apDynAlternes(){
+  return apdFig([{ label: 'A', x: 30, y: 100 }, { label: 'B', x: 470, y: 115 }, { label: 'C', x: 30, y: 230 }, { label: 'D', x: 470, y: 190 }, { label: 'E', x: 185, y: 22 }, { label: 'F', x: 330, y: 305 },
+      apdInter('M', 240, 107, 0, 2), apdInter('N', 290, 210, 1, 2)],
+    [{ type: 'droite', p1: apdP(0), p2: apdP(1) }, { type: 'droite', p1: apdP(2), p2: apdP(3) }, { type: 'droite', p1: apdP(4), p2: apdP(5), strokeColor: '#2EA8C9' },
+     { type: 'angle', vertex: apdP(6), p1: apdP(1), p2: apdP(7), strokeColor: APD_C1, taille: 12 }, { type: 'angle', vertex: apdP(7), p1: apdP(2), p2: apdP(6), strokeColor: APD_C1, taille: 12 }]);
+}
+// 3. Somme des angles d'un triangle.
+function apDynTriangle(){
+  return apdFig([{ label: 'A', x: 80, y: 240, labelDx: -13, labelDy: 5 }, { label: 'B', x: 420, y: 255 }, { label: 'C', x: 250, y: 60 }],
+    [{ type: 'segment', p1: apdP(0), p2: apdP(1) }, { type: 'segment', p1: apdP(1), p2: apdP(2) }, { type: 'segment', p1: apdP(2), p2: apdP(0) },
+     { type: 'angles-somme', sommets: [apdP(0), apdP(1), apdP(2)], x: 16, y: 304 }]);
+}
+// 4. Pour aller plus loin : somme des angles d'un quadrilatère (diagonale [AC] en pointillés : deux triangles).
+function apDynQuadri(){
+  return apdFig([{ label: 'A', x: 70, y: 230, labelDx: -13, labelDy: 6 }, { label: 'B', x: 360, y: 262, labelDx: 6, labelDy: 15 }, { label: 'C', x: 440, y: 95 }, { label: 'D', x: 170, y: 50 }],
+    [{ type: 'segment', p1: apdP(0), p2: apdP(1) }, { type: 'segment', p1: apdP(1), p2: apdP(2) }, { type: 'segment', p1: apdP(2), p2: apdP(3) }, { type: 'segment', p1: apdP(3), p2: apdP(0) },
+     { type: 'segment', p1: apdP(0), p2: apdP(2), strokePattern: 'pointille', strokeColor: '#7A8A98' },
+     { type: 'angles-somme', sommets: [apdP(0), apdP(1), apdP(2), apdP(3)], x: 16, y: 304 }]);
+}
+
 /* ================= COURS ================= */
 document.getElementById('cours-demo-angles-parallelisme-5e').innerHTML = `
 <div class="lesson-header"><span class="num">1</span><h3>Paires d'angles particuliers</h3></div>
@@ -575,6 +623,12 @@ document.getElementById('cours-demo-angles-parallelisme-5e').innerHTML = `
 <div class="figure-wrap">${apBuildOpposesSvg()}</div>
 <p style="margin:10px 0 4px;">Les angles <span class="tex">\\widehat{MON}</span> et <span class="tex">\\widehat{M'ON'}</span> ont pour sommet commun O, et leurs côtés sont dans le prolongement l'un de l'autre.</p>
 <p style="margin:4px 0 12px;">Ils sont donc <b>opposés par le sommet</b>, tout comme les angles <span class="tex">\\widehat{MON'}</span> et <span class="tex">\\widehat{M'ON}</span>.</p>
+<div class="dyn-activite">
+  <p class="dyn-activite-titre"><span class="gicon">touch_app</span> Géométrie dynamique : découvre la propriété</p>
+  <p style="margin:4px 0 6px;">Déplace les points A, A', B ou B' : les deux droites tournent, elles se coupent toujours en O.</p>
+  ${apDynOpposes()}
+  <ul style="margin:8px 0 0;"><li>Observe les deux angles rouges, puis les deux angles bleus, pour plusieurs positions. Que remarques-tu ?</li><li>Les angles rouges sont-ils <b>opposés par le sommet</b> ? Et les bleus ?</li><li>Un angle rouge et un angle bleu côte à côte : calcule leur somme. Recommence après avoir déplacé un point. Pourquoi trouve-t-on toujours le même résultat ?</li></ul>
+</div>
 <span class="prop-badge">Propriété</span>
 <div class="def-box">Deux angles <b>opposés par le sommet</b> ont la même mesure.</div>
 <p class="example-title">Exemple :</p>
@@ -614,6 +668,12 @@ document.getElementById('cours-demo-angles-parallelisme-5e').innerHTML = `
 <p style="margin:4px 0 10px;">Deux angles qui portent le <b>même numéro</b> sont <b>correspondants</b> : cela fait quatre paires.</p>
 <div class="figure-wrap">${apBuildCorrespondantsSvg()}</div>
 
+<div class="dyn-activite">
+  <p class="dyn-activite-titre"><span class="gicon">touch_app</span> Géométrie dynamique : quand deux angles alternes-internes sont-ils égaux ?</p>
+  <p style="margin:4px 0 6px;">Les droites (AB) et (CD) sont coupées par la sécante (EF), en bleu, aux points M et N. Les deux angles rouges sont alternes-internes.</p>
+  ${apDynAlternes()}
+  <ul style="margin:8px 0 0;"><li>Les deux angles rouges ont-ils la même mesure ? Les droites (AB) et (CD) semblent-elles parallèles ?</li><li>Déplace le point D jusqu'à ce que les deux angles rouges aient la même mesure. Que remarques-tu alors sur les droites (AB) et (CD) ?</li><li>Déplace maintenant E ou F : la sécante change, les deux angles changent. Restent-ils égaux ?</li><li>Écris ta conjecture : « Si deux angles alternes-internes ont la même mesure, alors … »</li></ul>
+</div>
 <span class="prop-badge">Propriétés 1</span>
 <div class="def-box">
   <b>Si</b> deux angles alternes-internes ont la même mesure, <b>alors</b> les deux droites coupées par la sécante sont parallèles.<br>
@@ -641,6 +701,12 @@ document.getElementById('cours-demo-angles-parallelisme-5e').innerHTML = `
 </div>
 
 <div class="lesson-header"><span class="num">3</span><h3>Mesure des angles dans un triangle</h3></div>
+<div class="dyn-activite">
+  <p class="dyn-activite-titre"><span class="gicon">touch_app</span> Géométrie dynamique : la somme des angles d'un triangle</p>
+  <p style="margin:4px 0 6px;">Déplace les sommets A, B et C : la forme du triangle change, les mesures de ses angles aussi.</p>
+  ${apDynTriangle()}
+  <ul style="margin:8px 0 0;"><li>Pour plusieurs triangles différents, lis la somme des trois angles. Que remarques-tu ?</li><li>Essaie d'obtenir un triangle avec un angle obtus, puis un triangle presque aplati. La somme change-t-elle ?</li><li>Peut-on construire un triangle avec deux angles droits ? Explique avec la somme.</li></ul>
+</div>
 <span class="prop-badge">Propriété</span>
 <div class="def-box">La somme des mesures des angles d'un triangle est égale à 180°.</div>
 <div class="figure-wrap">${apBuildTriangleSvg()}</div>
@@ -659,6 +725,16 @@ document.getElementById('cours-demo-angles-parallelisme-5e').innerHTML = `
 <p class="example-title" style="margin-top:20px;">Exemple : dans le triangle IJK, <span class="tex">\\widehat{IJK} = 48°</span> et <span class="tex">\\widehat{JKI} = 67°</span>. Quelle est la mesure de l'angle <span class="tex">\\widehat{KIJ}</span> ?</p>
 <p style="margin:4px 0 4px;">On sait que <span class="tex">\\widehat{IJK} + \\widehat{JKI} + \\widehat{KIJ} = 180°</span>.</p>
 <p style="margin:4px 0 12px;">Donc <span class="tex">\\widehat{KIJ} = 180° - (48° + 67°) = 180° - 115° = 65°</span>.</p>
+
+<div class="sub-header" data-oliv-plus="En route vers la 4e !"><span class="letter">+</span><h4>Pour aller plus loin : la somme des angles d'un polygone</h4></div>
+<p style="margin:6px 0 6px;">Une diagonale partage un quadrilatère en <b>deux triangles</b>. Les angles des deux triangles forment, ensemble, les quatre angles du quadrilatère.</p>
+<div class="dyn-activite">
+  <p class="dyn-activite-titre"><span class="gicon">touch_app</span> Géométrie dynamique : la somme des angles d'un quadrilatère</p>
+  <p style="margin:4px 0 6px;">Déplace les sommets : la diagonale [AC], en pointillés, partage toujours le quadrilatère en deux triangles.</p>
+  ${apDynQuadri()}
+  <ul style="margin:8px 0 0;"><li>Lis la somme des quatre angles pour plusieurs quadrilatères. Que remarques-tu ?</li><li>Explique ce résultat avec les deux triangles : 2 × 180° = 360°.</li><li>Un pentagone se partage en trois triangles (deux diagonales issues d'un même sommet). Quelle est la somme de ses angles ? Et pour un polygone à <i>n</i> côtés ?</li></ul>
+</div>
+<div class="def-box">La somme des angles d'un polygone à <i>n</i> côtés est égale à <span class="tex">(n - 2) \\times 180°</span> : 360° pour un quadrilatère, 540° pour un pentagone, 720° pour un hexagone.</div>
 `;
 
 document.getElementById('histoire-demo-angles-parallelisme-5e').innerHTML = `

@@ -5286,6 +5286,37 @@ function shapeStrokeAttrs(s, defaultColor){
   const dash = s.strokePattern==='pointille' ? ' stroke-dasharray="5,4"' : '';
   return `stroke="${color}" stroke-width="${sw}"${dash}`;
 }
+/* Angles d'un polygone et leur somme, en direct (figures dynamiques des cours ; demandé le 03/11/2026 : « des exercices de
+   géométrie dynamique pour approfondir les notions ou découvrir une notion »). Forme { type:'angles-somme', sommets:[points dans
+   l'ordre], x, y } : l'angle INTÉRIEUR à chaque sommet (rentrant compris), son arc et sa mesure, puis la ligne
+   « Â + B̂ + Ĉ = 57° + 68° + 55° = 180° » en (x, y). Les mesures affichées sont arrondies au degré de façon que leur somme
+   reste exacte (plus forts restes) : jamais « 179° » ou « 181° » pour un triangle à cause des arrondis. */
+function figAnglesSommeSvg(s){
+  const P = (s.sommets||[]).filter(Boolean), n = P.length; if(n < 3 || P.some(q=>q.indefini)) return '';
+  const C = ['#E35D3A','#2EA8C9','#2E9C6A','#7A4FC0','#E9A21C','#D93025'], nrm = a=>{ while(a>Math.PI) a-=2*Math.PI; while(a<=-Math.PI) a+=2*Math.PI; return a; };
+  const tours = P.map((q,i)=>{ const a = P[(i+n-1)%n], b = P[(i+1)%n]; return nrm(Math.atan2(b.y-q.y, b.x-q.x) - Math.atan2(q.y-a.y, q.x-a.x)); });
+  const sg = Math.sign(tours.reduce((z,t)=>z+t, 0)) || 1;
+  const ints = tours.map(t=>Math.PI - sg*t), degs = ints.map(a=>a*180/Math.PI);
+  const total = Math.round(degs.reduce((z,d)=>z+d, 0)), fl = degs.map(Math.floor);
+  let reste = total - fl.reduce((z,d)=>z+d, 0);
+  degs.map((d,i)=>[d-fl[i], i]).sort((u,v)=>v[0]-u[0]).forEach(([,i])=>{ if(reste>0){ fl[i]++; reste--; } });
+  let h = '';
+  P.forEach((q,i)=>{
+    const b = P[(i+1)%n], a = P[(i+n-1)%n], aw = Math.atan2(b.y-q.y, b.x-q.x), au = Math.atan2(a.y-q.y, a.x-q.x), I = ints[i];
+    const d = Math.abs(nrm(aw + I - au)) < Math.abs(nrm(aw - I - au)) ? 1 : -1, r = s.rayon || 22, c = C[i % C.length], pts = [];
+    for(let k=0;k<=24;k++){ const t = aw + d*I*k/24; pts.push(`${(q.x+r*Math.cos(t)).toFixed(1)},${(q.y+r*Math.sin(t)).toFixed(1)}`); }
+    const m = aw + d*I/2;
+    h += `<polyline points="${pts.join(' ')}" fill="none" stroke="${c}" stroke-width="1.8"/>`
+      + `<text x="${(q.x+(r+14)*Math.cos(m)).toFixed(1)}" y="${(q.y+(r+14)*Math.sin(m)+3).toFixed(1)}" font-family="JetBrains Mono" font-size="10" fill="${c}" text-anchor="middle">${fl[i]}°</text>`;
+  });
+  if(s.x!=null){
+    // Chapeau posé au-dessus de la lettre (le caractère combinant « B̂ » est mal placé dans cette police).
+    const larg = L=>/[MW]/.test(L) ? 11 : /[IJ]/.test(L) ? 4.5 : 8.6;
+    const noms = P.map((q,i)=>{ const L = String(q.label||'?'); return `${escapeHtml(L)}<tspan dx="${(-(larg(L.slice(-1))+6)/2).toFixed(1)}" dy="-8" font-size="11">^</tspan><tspan dy="8">${i<n-1 ? ' + ' : ' = '}</tspan>`; }).join('');
+    h += `<text x="${s.x}" y="${s.y}" font-family="Space Grotesk" font-weight="700" font-size="13" fill="#1F3A5C">${noms}${P.map((q,i)=>`<tspan fill="${C[i % C.length]}">${fl[i]}°</tspan>`).join(' + ')} = ${total}°</text>`;
+  }
+  return h;
+}
 let figRenderCible = null; // autre SVG que celui de l'outil (figure dynamique du cahier, voir figAvec)
 function renderFigureSvg(){
   const svg = figRenderCible || document.getElementById('figureSvg');
@@ -5354,11 +5385,13 @@ function renderFigureSvg(){
         [s.a1, s.a2].forEach(a=>{ html+=`<circle cx="${(s.center.x+s.radius*Math.cos(a)).toFixed(1)}" cy="${(s.center.y+s.radius*Math.sin(a)).toFixed(1)}" r="3.2" fill="#fff" stroke="#1F3A5C" stroke-width="1" data-marker="hidden"/>`; });
       }
     } else if(s.type==='angle'){
-      const r=26;
+      const r=26, ca=s.strokeColor||'#E35D3A'; // couleur au choix (figures dynamiques des cours : une couleur par paire d'angles)
       const {points,mid}=angleArcPoints(s.vertex,s.p1,s.p2,r);
-      html+=`<polyline points="${points}" fill="none" stroke="#E35D3A" stroke-width="1.8"/>`;
+      html+=`<polyline points="${points}" fill="none" stroke="${ca}" stroke-width="1.8"/>`;
       const lx=s.vertex.x+(r+14)*Math.cos(mid), ly=s.vertex.y+(r+14)*Math.sin(mid);
-      html+=`<text x="${lx}" y="${ly}" font-family="JetBrains Mono" font-size="9" fill="#E35D3A" text-anchor="middle">${angleDegrees(s.vertex,s.p1,s.p2)}°</text>`;
+      html+=`<text x="${lx}" y="${ly}" font-family="JetBrains Mono" font-size="${s.taille||9}" fill="${ca}" text-anchor="middle">${angleDegrees(s.vertex,s.p1,s.p2)}°</text>`;
+    } else if(s.type==='angles-somme'){
+      html += figAnglesSommeSvg(s);
     } else if(s.type==='bissectrice'){
       // Pas d'arc automatique ici -- le codage (2 angles égaux) se fait séparément via la
       // fenêtre de codage, qui ferait double emploi avec un arc tracé d'office à la création.

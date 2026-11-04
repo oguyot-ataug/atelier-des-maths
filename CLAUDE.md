@@ -178,6 +178,13 @@ plus, nombre à côté).
 Noms de droites (demandé le 01/11/2026) : « (d1) » s'affiche toujours (d₁) (numéro en indice, `<sub>` ou tspan), automatiquement
 (`geoIndices`, même fichier) ; on peut donc continuer à écrire « (d1) » dans les sources.
 
+## Géométrie dynamique dans les cours (demandé le 03/11/2026)
+
+« Un/plusieurs exercices de géométrie dynamique seraient intéressants pour approfondir les notions ou découvrir une notion » :
+blocs `.fig-dyn` du moteur de la Géométrie interactive (outils-figures.js : points à déplacer, Réinitialiser), écrits dans le
+fichier du chapitre (`apdFig(points, shapes)`, chapitres/5e/G2-angles-parallelisme.js ; encadré `.dyn-activite`). Forme
+`angles-somme` (sommets dans l'ordre) : angles intérieurs d'un polygone et leur somme, arrondis pour que la somme reste exacte.
+
 ## Corrections animées des constructions : AUX INSTRUMENTS DU SITE (demandé le 01/11/2026)
 
 « Oui, mets en place la correction animée », puis « Tu n'as pas utilisé les instruments du site ! » : une figure de construction

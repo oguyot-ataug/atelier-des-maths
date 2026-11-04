@@ -53,6 +53,12 @@ const ML = (a, b, c, w, k) => { const dx = b[0] - a[0], dy = b[1] - a[1], n = Ma
 const croix = (d1, d2, marques, w, h, px) => { const V = [w / 2, h / 2]; let g = L(P(V, d1, w * .45), P(V, d1 + 180, w * .45)) + L(P(V, d2, h * .5), P(V, d2 + 180, h * .5));
   marques.forEach(([a1, a2, c, t], i) => { g += arc(V, a1, a2, i % 2 ? 26 : 20, c, t); }); return S(w, h, g, px || w); };
 const duo = l => `<div style="display:flex;justify-content:space-around;align-items:flex-start;gap:8px;flex-wrap:wrap;">${l.join('')}</div>`;
+// Codage d'une longueur : n petits traits au milieu de [ab] (inclinés automatiquement par geo-points.js).
+const tk = (a, b, n) => { const m = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2], l = Math.hypot(b[0] - a[0], b[1] - a[1]) || 1, u = [(b[0] - a[0]) / l, (b[1] - a[1]) / l], v = [-u[1] * 5, u[0] * 5]; let g = '';
+  for(let i = 0; i < (n || 1); i++){ const d = (i - ((n || 1) - 1) / 2) * 4; g += L([m[0] + u[0] * d - v[0], m[1] + u[1] * d - v[1]], [m[0] + u[0] * d + v[0], m[1] + u[1] * d + v[1]], Ro, 1.5); } return g; };
+// Codage d'un angle droit en V, entre les directions de a et de c.
+const rangle = (V, a, c) => { const n = q => { const l = Math.hypot(q[0] - V[0], q[1] - V[1]); return [(q[0] - V[0]) / l * 9, (q[1] - V[1]) / l * 9]; }, u = n(a), w = n(c);
+  return `<polyline points="${V[0] + u[0]},${V[1] + u[1]} ${V[0] + u[0] + w[0]},${V[1] + u[1] + w[1]} ${V[0] + w[0]},${V[1] + w[1]}" fill="none" stroke="${Ro}" stroke-width="1.4"/>`; };
 const col = (h, t) => `<span style="display:flex;flex-direction:column;align-items:center;gap:2px;">${h}<span class="pl-item" style="text-align:center;display:block;">${t}</span></span>`;
 PLANCHES['5e|Angles et parallélisme'] = [
   { titre: 'Angles adjacents, supplémentaires', duree: '35 min',
@@ -198,6 +204,71 @@ PLANCHES['5e|Angles et parallélisme'] = [
               + `<polyline points="${V[0] + 10},${V[1]} ${V[0] + 10},${V[1] - 10} ${V[0]},${V[1] - 10}" fill="none" stroke="${Ro}" stroke-width="1.4"/>`
               + arc(V, 0, 30, 46, Bl, 'â') + arc(V, 30, 90, 34, Ve, '2â'), 170); })()}</div>`
           + cm1Redac('Mesures', { suite: [`${W('a')} + 2${W('a')} = 90° (angles complémentaires)`, `3 × ${W('a')} = 90°`, `${W('a')} = 90° : 3 = 30°`, `2${W('a')} = 2 × 30° = 60°`] }, 'Les angles mesurent 30° et 60°.') },
+    ] },
+  // Demandé le 03/11/2026 : « il manque des exercices plus complexes dans ces chapitres » -- problèmes qui enchaînent plusieurs
+  // propriétés (alignement, parallélisme, triangles particuliers). Énoncés et figures originaux.
+  { titre: 'Problèmes : enchaîner les propriétés', duree: '50 min',
+    attendus: ['Enchaîner plusieurs propriétés pour calculer des angles', 'Démontrer que des points sont alignés', 'Démontrer que deux droites sont parallèles'],
+    exos: [
+      { etoiles: 3, cahier: true, consigne: `Sur cette figure, DA = DB, le triangle DBE est équilatéral et EB = EC.<br>a. Calcule les angles ${W('ABD')}, ${W('DBE')} et ${W('EBC')}.<br>b. Déduis-en que les points A, B et C sont alignés.<br>c. Reproduis la figure en commençant par le segment [AB] de 8 cm.`,
+        ...(() => { const A = [40, 160], Bp = [200, 160], D = [120, 160 - 80 * Math.tan(rad(40))], E = P(Bp, 80, Math.hypot(80, 80 * Math.tan(rad(40)))), C = [2 * E[0] - Bp[0], 160];
+          const f = S(280, 182, `<polygon points="${[D, Bp, E].map(q => q.map(v => v.toFixed(1)).join(',')).join(' ')}" fill="#FFF3D6"/>` + L(A, Bp) + L(Bp, C) + L(A, D) + L(D, Bp) + L(D, E) + L(Bp, E) + L(E, C)
+            + tk(A, D) + tk(D, Bp) + tk(D, E) + tk(Bp, E) + tk(E, C) + arc(D, 220, 320, 16, Ro, '100°') + arc(E, 260, 280, 30, Bl) + T([E[0] + 26, E[1] + 30], '20°', Bl, 11)
+            + T([A[0] - 8, A[1] + 13], 'A', K) + T([Bp[0], Bp[1] + 15], 'B', K) + T([C[0] + 8, C[1] + 13], 'C', K) + T([D[0] - 10, D[1] - 6], 'D', K) + T([E[0] + 4, E[1] - 8], 'E', K), 280);
+          return { eleve: `<div style="text-align:center;">${f}</div>`,
+            corr: `<div style="text-align:center;">${f}</div>` + cm1Redac('Les trois angles en B', { suite: [
+              `Le triangle ABD est isocèle en D (DA = DB) : ses angles à la base ont la même mesure, et la somme de ses angles est 180°.`,
+              `${W('ABD')} = (180° − 100°) : 2 = 80° : 2 = ${R('40°')}`,
+              `Le triangle DBE est équilatéral : chacun de ses angles mesure 60°, donc ${W('DBE')} = ${R('60°')}`,
+              `Le triangle BEC est isocèle en E (EB = EC) : ${W('EBC')} = (180° − 20°) : 2 = 160° : 2 = ${R('80°')}`] }, '')
+              + cm1Redac('Alignement', { suite: [`Les angles ${W('ABD')}, ${W('DBE')} et ${W('EBC')} sont adjacents deux à deux.`, `${W('ABD')} + ${W('DBE')} + ${W('EBC')} = 40° + 60° + 80° = 180°`, `L'angle ${W('ABC')} mesure donc 180° : c'est un angle plat.`] }, 'Les points A, B et C sont alignés.') }; })() },
+      { etoiles: 3, cahier: true, consigne: `ABC est un triangle isocèle en A tel que ${W('BAC')} = 50°. M est un point de [AB] et N un point de [AC] tels que AM = AN.<br>Démontre que les droites (MN) et (BC) sont parallèles.`,
+        ...(() => { const A = [140, 22], Bp = [70, 172], C = [210, 172], M = [A[0] + .45 * (Bp[0] - A[0]), A[1] + .45 * (Bp[1] - A[1])], N = [A[0] + .45 * (C[0] - A[0]), A[1] + .45 * (C[1] - A[1])];
+          const f = S(280, 192, L(A, Bp) + L(A, C) + L(Bp, C) + L(M, N, Bl) + tk(A, M) + tk(A, N) + tk(M, Bp, 2) + tk(N, C, 2) + arc(A, 245, 295, 20, Ro, '50°')
+            + T([A[0], A[1] - 6], 'A', K) + T([Bp[0] - 9, Bp[1] + 12], 'B', K) + T([C[0] + 9, C[1] + 12], 'C', K) + T([M[0] - 11, M[1] + 2], 'M', K) + T([N[0] + 11, N[1] + 2], 'N', K), 280);
+          return { eleve: `<div style="text-align:center;">${f}</div>`,
+            corr: `<div style="text-align:center;">${f}</div>` + cm1Redac('Démonstration', { suite: [
+              `Le triangle ABC est isocèle en A : ${W('ABC')} = ${W('ACB')} et la somme de ses angles est 180°.`,
+              `${W('ABC')} = (180° − 50°) : 2 = 130° : 2 = 65°`,
+              `Le triangle AMN est isocèle en A (AM = AN) et ${W('MAN')} = ${W('BAC')} = 50° : ${W('AMN')} = (180° − 50°) : 2 = 65°`,
+              `Les angles ${W('AMN')} et ${W('ABC')} sont correspondants (droites (MN) et (BC), sécante (AB)) et ont la même mesure, 65°.`,
+              `Or, si deux angles correspondants ont la même mesure, alors les droites sont parallèles.`] }, 'Les droites (MN) et (BC) sont parallèles.') }; })() },
+      { etoiles: 2, col: 1, consigne: 'Les droites (d1) et (d2) sont parallèles. Calcule les angles x, y et z du triangle ABC.',
+        ...(() => { const A = [122, 34], Bp = [A[0] - 110 / Math.tan(rad(50)), 144], C = [A[0] + 110 / Math.tan(rad(70)), 144];
+          const f = S(250, 166, L([10, 34], [240, 34]) + L([10, 144], [240, 144]) + L(A, Bp) + L(A, C) + arc(A, 180, 230, 22, Ro, '50°') + arc(A, 290, 360, 22, Bl, '70°')
+            + arc(Bp, 0, 50, 20, Ve, 'x') + arc(C, 110, 180, 20, Ve, 'y') + arc(A, 230, 290, 16, Vi, 'z')
+            + T([A[0], A[1] - 7], 'A', K) + T([Bp[0] - 4, Bp[1] + 14], 'B', K) + T([C[0] + 4, C[1] + 14], 'C', K) + T([226, 26], '(d1)', K, 11) + T([226, 136], '(d2)', K, 11), 240);
+          const q = rmp([['x = @ °', 50], ['y = @ °', 70], ['z = @ °', 60]], 2);
+          return { eleve: f + q.eleve, corr: f + plListe([`x et l'angle de 50° sont alternes-internes, (d1) // (d2) : x = ${R('50°')}`, `y et l'angle de 70° sont alternes-internes : y = ${R('70°')}`, `Somme des angles du triangle ABC : z = 180° − 50° − 70° = ${R('60°')}`]) }; })() },
+      { etoiles: 2, col: 1, consigne: `ABC est un triangle rectangle en A tel que ${W('ABC')} = 35°. H est le pied de la hauteur issue de A. Calcule les angles ${W('ACB')}, ${W('BAH')} et ${W('HAC')}.`,
+        ...(() => { const Bp = [20, 150], C = [235, 150], A = P(Bp, 35, 215 * Math.cos(rad(35))), H = [A[0], 150];
+          const f = S(250, 170, L(Bp, C) + L(Bp, A) + L(A, C) + L(A, H, Bl)  + rangle(A, Bp, C) + rangle(H, A, C)
+            + arc(Bp, 0, 35, 26, Ro, '35°') + T([A[0] + 2, A[1] - 7], 'A', K) + T([Bp[0] - 2, Bp[1] + 14], 'B', K) + T([C[0] + 2, C[1] + 14], 'C', K) + T([H[0], H[1] + 14], 'H', K), 240);
+          const q = rmp([[`${W('ACB')} = @ °`, 55], [`${W('BAH')} = @ °`, 55], [`${W('HAC')} = @ °`, 35]], 2);
+          return { eleve: f + q.eleve, corr: f + plListe([`Triangle ABC : ${W('ACB')} = 180° − 90° − 35° = ${R('55°')}`, `Triangle ABH, rectangle en H : ${W('BAH')} = 180° − 90° − 35° = ${R('55°')}`, `${W('BAC')} = 90°, donc ${W('HAC')} = 90° − 55° = ${R('35°')}`]) }; })() },
+    ] },
+  // Hors programme de 5e (« pour aller plus loin ») : la somme des angles d'un polygone, d'après la somme des angles d'un triangle.
+  { titre: 'Pour aller plus loin : angles d\'un polygone', duree: '40 min',
+    attendus: ['Partager un polygone en triangles', 'Calculer la somme des angles d\'un polygone', 'Calculer l\'angle d\'un polygone régulier'],
+    exos: [
+      { etoiles: 2, consigne: 'Pour aller plus loin : les diagonales issues d\'un même sommet partagent un polygone en triangles. Complète.',
+        ...(() => { const poly = n => { const V = [55, 52], Q = Array.from({ length: n }, (_, k) => P(V, 90 + 360 * k / n + (n === 4 ? 45 : 0), 44)), sh = ['#FFF3D6', '#E3F2F7', '#E7F4EC', '#F0E9FA'];
+              let g = ''; for(let k = 1; k < n - 1; k++) g += `<polygon points="${[Q[0], Q[k], Q[k + 1]].map(q => q.map(v => v.toFixed(1)).join(',')).join(' ')}" fill="${sh[(k - 1) % 4]}" stroke="${K}" stroke-width="1.2"/>`;
+              return S(110, 104, g, 100); };
+          const figs = duo([col(poly(4), 'quadrilatère'), col(poly(5), 'pentagone'), col(poly(6), 'hexagone')]);
+          const q = rmp([['Quadrilatère : @ triangles', 2], ['Somme des angles d\'un quadrilatère : @ °', 360], ['Pentagone : @ triangles', 3], ['Somme des angles d\'un pentagone : @ °', 540], ['Hexagone : @ triangles', 4], ['Somme des angles d\'un hexagone : @ °', 720], ['Polygone à n côtés : (n − @) × 180°', 2], ['Décagone (10 côtés) : @ °', 1440]], 3);
+          return { eleve: figs + q.eleve, corr: figs + q.corr }; })() },
+      { etoiles: 2, col: 1, consigne: 'Pour aller plus loin : un polygone régulier a tous ses angles de même mesure. Calcule la mesure d\'un de ses angles.',
+        ...rmp([['Triangle équilatéral : @ °', 60], ['Carré : @ °', 90], ['Pentagone régulier : @ °', 108], ['Hexagone régulier : @ °', 120], ['Octogone régulier : @ °', 135]], 2) },
+      { etoiles: 3, col: 1, cahier: true, consigne: `Pour aller plus loin : ABCDE est un pentagone régulier ; on trace les diagonales [AC] et [AD].<br>a. Calcule ${W('BAC')}, puis ${W('DAE')} et ${W('CAD')}. Que remarques-tu ?<br>b. Vérifie avec la Géométrie interactive du site (menu L'Atelier) : un polygone régulier à 5 sommets, ses diagonales issues de A, puis la mesure des angles. Déplace les points : le résultat change-t-il ?`,
+        ...(() => { const V = [100, 92], Q = [90, 18, -54, -126, 162].map(a => P(V, a, 72)), nm = ['A', 'B', 'C', 'D', 'E'];
+          const base = Q.map((q, i) => L(q, Q[(i + 1) % 5])).join('') + L(Q[0], Q[2], Bl) + L(Q[0], Q[3], Bl) + Q.map((q, i) => T(P(V, [90, 18, -54, -126, 162][i], 85), nm[i], K)).join('');
+          const f = S(200, 180, base, 190), fc = S(200, 180, base + arc(Q[0], 216, 252, 40, Ro, '36°') + arc(Q[0], 252, 288, 46, Ve, '36°') + arc(Q[0], 288, 324, 40, Ro, '36°'), 190);
+          return { eleve: `<div style="text-align:center;">${f}</div>`, corr: `<div style="text-align:center;">${fc}</div>` + cm1Redac('Angles en A', { suite: [
+            'Chaque angle du pentagone régulier mesure (5 − 2) × 180° : 5 = 540° : 5 = 108°.',
+            `Le triangle ABC est isocèle en B (BA = BC) et ${W('ABC')} = 108° : ${W('BAC')} = (180° − 108°) : 2 = 36°`,
+            `De même, le triangle AED est isocèle en E : ${W('DAE')} = 36°`,
+            `${W('CAD')} = ${W('BAE')} − ${W('BAC')} − ${W('DAE')} = 108° − 36° − 36° = 36°`] }, 'Les deux diagonales partagent l\'angle en A en trois angles égaux de 36°.') }; })() },
     ] },
 ];
 })();
