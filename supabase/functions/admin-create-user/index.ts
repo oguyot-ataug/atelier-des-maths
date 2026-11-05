@@ -167,8 +167,19 @@ serve(async (req) => {
     }
 
     if (action === "create-invitation") {
-      const { userId } = body;
+      const { userId, reinit } = body;
       if (!userId) return json({ error: "userId requis" }, 400);
+      // Mot de passe oublié (demandé le 05/11/2026 : « réinitialiser le mot de passe avec un lien direct vers une création de
+      // nouveau mot de passe ») : un lien NEUF, valable 7 jours, une seule fois ; les liens encore ouverts de cet élève sont
+      // fermés. L'ancien mot de passe reste valable jusqu'à ce que l'élève en choisisse un nouveau.
+      if (reinit) {
+        const maintenant = new Date();
+        await adminClient.from("invitations").update({ expires_at: maintenant.toISOString() }).eq("user_id", userId).is("used_at", null);
+        const token = crypto.randomUUID();
+        const { error: insErr } = await adminClient.from("invitations").insert({ token, user_id: userId, expires_at: new Date(maintenant.getTime() + 7 * 864e5).toISOString() });
+        if (insErr) return json({ error: insErr.message }, 400);
+        return json({ success: true, token, jours: 7 });
+      }
       const token = await getOrCreateInvitationToken(adminClient, userId);
       return json({ success: true, token });
     }

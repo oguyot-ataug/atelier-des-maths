@@ -74,6 +74,9 @@ const pw2 = document.getElementById('pw2');
 const submitBtn = document.getElementById('submitBtn');
 
 const token = new URLSearchParams(location.search).get('invite');
+// Lien « nouveau mot de passe » créé par le professeur (réinitialisation, 05/11/2026) : mêmes étapes, autres mots.
+const reinit = new URLSearchParams(location.search).get('reinit') === '1';
+if(reinit){ document.title = 'Nouveau mot de passe'; document.querySelector('label[for="pw1"]').textContent = 'Choisissez votre nouveau mot de passe'; }
 
 function setStatus(msg, kind){
   statusEl.textContent = msg;
@@ -95,7 +98,7 @@ async function init(){
     const data = await res.json();
     if(data.alreadyUsed){
       const prenom = (data.prenom || '').trim() || (data.nom || '').trim(); // le prénom, sinon le nom
-      titleEl.textContent = prenom ? `${prenom}, vous avez déjà activé votre compte !` : 'Compte déjà activé !';
+      titleEl.textContent = reinit ? 'Ce lien a déjà servi' : prenom ? `${prenom}, vous avez déjà activé votre compte !` : 'Compte déjà activé !';
       subtitleEl.textContent = 'Votre identifiant de connexion est :';
       identifiantValue.textContent = data.identifiant;
       alreadyUsedZone.style.display = 'block';
@@ -107,8 +110,8 @@ async function init(){
       return;
     }
     const prenom = (data.prenom || '').trim() || (data.nom || '').trim(); // le prénom, sinon le nom
-    titleEl.textContent = prenom ? `Bienvenue, ${prenom} !` : 'Bienvenue !';
-    subtitleEl.textContent = 'Choisissez votre mot de passe pour activer votre compte.';
+    titleEl.textContent = reinit ? (prenom ? `Bonjour ${prenom} !` : 'Bonjour !') : prenom ? `Bienvenue, ${prenom} !` : 'Bienvenue !';
+    subtitleEl.textContent = reinit ? 'Choisissez votre nouveau mot de passe : il remplacera l\'ancien.' : 'Choisissez votre mot de passe pour activer votre compte.';
     formZone.style.display = 'block';
   }catch(err){
     titleEl.textContent = 'Erreur';
@@ -130,7 +133,7 @@ submitBtn.addEventListener('click', async ()=>{
     });
     const data = await res.json();
     if(data.error){ setStatus('Erreur : '+data.error, 'error'); submitBtn.disabled = false; return; }
-    setStatus('Compte activé ! Connexion en cours…', 'success');
+    setStatus(reinit ? 'Nouveau mot de passe enregistré ! Connexion en cours…' : 'Compte activé ! Connexion en cours…', 'success');
     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     const { error } = await sb.auth.signInWithPassword({ email: data.email, password: p1 });
     if(error){

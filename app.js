@@ -3849,6 +3849,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1322', date:'2026-11-05', items:['Professeur, « Réinitialiser le mot de passe » d\'un élève : nouveau bouton « Créer un lien pour choisir un nouveau mot de passe » -- demandé : « peut-il réinitialiser le mot de passe avec un lien direct vers une création de nouveau mot de passe ? ». L\'élève choisit lui-même son mot de passe et se retrouve connecté ; lien valable 7 jours, une seule fois (les liens précédents sont fermés) ; l\'ancien mot de passe marche jusque-là. Message prêt à envoyer : « Tu as oublié ton mot de passe ? Clique sur ce lien pour en choisir un nouveau », avec l\'identifiant rappelé.'] },
   { version:'2026-08-19.1321', date:'2026-11-05', items:['CE2, Addition et soustraction posées : encadré « Pourquoi ça marche ? » avant la soustraction posée -- demandé : « fais l\'encadré Pourquoi ça marche ? au CE2 ». Une animation sur une droite graduée : les deux termes avancent ensemble de 10, l\'écart entre eux reste le même (23 − 8 et 33 − 18, ou 52 − 17 et 62 − 27). Puis le lien avec l\'opération posée 623 − 148 : le « +10 », ce sont 10 unités ajoutées en haut ; le « +1 », c\'est 1 dizaine, donc 10 aussi, ajoutée en bas : on a ajouté 10 aux deux nombres, la différence ne change pas. Une remarque fait le lien avec le cassage appris au CE1.'] },
   { version:'2026-08-19.1320', date:'2026-11-05', items:['Opérations posées, même écriture du CP à la 6e (cours, méthodes, exercices, corrigés, outil de correction) -- demandé : « cette manière de faire doit se retrouver dans tous les niveaux ». Les retenues et le « +10 » de la soustraction par compensation sont juste au-dessus de leur chiffre ; le « +1 » est un petit indice collé en bas à droite de son chiffre, sans le déplacer (plus de « 1+ » à gauche) ; même chose dans les démonstrations de 6e (soustraction de décimaux, de durées).'] },
   { version:'2026-08-19.1319', date:'2026-11-05', items:['Opérations posées (cours, corrigés, planches, animations) : les retenues de l\'addition s\'écrivent juste au-dessus des chiffres -- demandé : « idem sur les additions, les retenues plus près du nombre ». L\'espace entre les classes (« 2 476 ») n\'occupe plus une colonne entière : un simple petit écart, les chiffres restent bien en colonnes.'] },
@@ -7479,6 +7480,7 @@ async function mailIdentifiantsHtml(o){
    fois ») : lien d'invitation personnel (invitation.html, valable 60 jours, une seule fois) où l'élève choisit son mot de
    passe, puis son identifiant pour les fois suivantes. Message adressé à l'élève (tutoiement). */
 async function mailPremiereConnexionHtml(o){
+  if(o.reinit) return mailNouveauMdpHtml(o);
   const e = t => escapeHtml(String(t == null ? '' : t));
   let prof = '';
   try{ const { data } = await sb.from('profiles').select('nom,prenom').eq('id', currentUser.id).maybeSingle(); prof = data ? [data.prenom, data.nom].filter(Boolean).join(' ') : ''; }catch(err){}
@@ -7499,6 +7501,42 @@ ${etape(3, `Les fois suivantes : ouvre <a href="${site}" style="color:#0C5BA0;">
 <p style="margin:0;font-size:15px;">À bientôt sur ${nomSite} !${prof ? `<br>${e(prof)}` : ''}</p>
 </div></div>`;
   const texte = `Bonjour${o.prenom ? ' ' + o.prenom : ''},\n\nTon compte sur ${nomSite} est prêt. Pour te connecter la première fois :\n\n1. Clique sur ce lien : ${o.lien}\n2. Choisis ton mot de passe (6 caractères au moins) et retiens-le bien.\n3. Les fois suivantes : ouvre ${site}, clique sur « Se connecter » et saisis ton identifiant ${o.identifiant || ''} et ton mot de passe.\n\nCe lien est personnel et ne sert qu'une fois : ne le donne à personne. Il reste valable 60 jours.\n\nÀ bientôt sur ${nomSite} !${prof ? '\n' + prof : ''}`;
+  return { html, texte };
+}
+// Lien « nouveau mot de passe » (demandé le 05/11/2026) : lien neuf de 7 jours (admin-create-user, create-invitation + reinit),
+// message adapté (« Tu as oublié ton mot de passe ? »), invitation.html?reinit=1.
+async function teacherLienNouveauMdp(){
+  const userId = teacherResetPasswordTargetId, el = (typeof teacherStudentsCache !== 'undefined' ? teacherStudentsCache : []).find(x => x.id === userId) || {};
+  const st = document.getElementById('teacherResetPasswordModalStatus'), zone = document.getElementById('teacherResetPasswordMail');
+  st.textContent = 'Préparation du lien…';
+  try{
+    const { data:{ session } } = await sb.auth.getSession();
+    const res = await fetch(SUPABASE_URL+'/functions/v1/admin-create-user', { method:'POST',
+      headers:{ 'Content-Type':'application/json', 'Authorization':'Bearer '+session.access_token },
+      body: JSON.stringify({ action:'create-invitation', userId, reinit: true }) });
+    const d = await res.json(); if(d.error || !d.token) throw new Error(d.error || 'lien non créé');
+    st.textContent = '✓ Lien créé : envoyez-le à l\'élève.';
+    await mailIdentifiantsAfficher(zone, { prenom: el.prenom, nom: el.nom, identifiant: el.identifiant, lien: location.origin + '/invitation.html?reinit=1&invite=' + d.token, reinit: true, jours: d.jours || 7 });
+  }catch(err){ st.textContent = 'Erreur : ' + err.message; }
+}
+// Message « nouveau mot de passe » (réinitialisation par un lien, 05/11/2026), adressé à l'élève (tutoiement).
+async function mailNouveauMdpHtml(o){
+  const e = t => escapeHtml(String(t == null ? '' : t));
+  let prof = '';
+  try{ const { data } = await sb.from('profiles').select('nom,prenom').eq('id', currentUser.id).maybeSingle(); prof = data ? [data.prenom, data.nom].filter(Boolean).join(' ') : ''; }catch(err){}
+  const site = window.ADP ? location.origin : 'https://latelierdesmaths.fr', siteNu = site.replace(/^https?:\/\//, ''), nomSite = window.ADP ? "L'Atelier du Prof" : "L'Atelier des Maths", j = o.jours || 7;
+  const html = `<div style="font-family:Arial,Helvetica,sans-serif;color:#1C2B39;max-width:560px;">
+<div style="background:#0C5BA0;color:#ffffff;padding:14px 18px;border-radius:10px 10px 0 0;font-size:18px;font-weight:700;">${nomSite}</div>
+<div style="border:1px solid #D6DEE8;border-top:0;border-radius:0 0 10px 10px;padding:18px;">
+<p style="margin:0 0 12px;font-size:15px;">Bonjour${o.prenom ? ' ' + e(o.prenom) : ''},</p>
+<p style="margin:0 0 12px;font-size:15px;">Tu as oublié ton mot de passe ? Clique sur ce lien pour en choisir un nouveau :</p>
+<p style="margin:0 0 14px;"><a href="${e(o.lien)}" style="color:#ffffff;background:#1F7A4D;padding:9px 16px;border-radius:6px;text-decoration:none;font-weight:700;display:inline-block;">Choisir mon nouveau mot de passe</a></p>
+<p style="margin:0 0 12px;font-size:15px;">Ensuite, pour te connecter : ouvre <a href="${site}" style="color:#0C5BA0;">${siteNu}</a>, clique sur <b>Se connecter</b> et saisis ton identifiant <b style="font-family:Consolas,'Courier New',monospace;font-size:16px;">${e(o.identifiant || '')}</b> et ton nouveau mot de passe.</p>
+<p style="margin:0 0 6px;font-size:13px;color:#5B6472;">Si le bouton ne s'ouvre pas, copie cette adresse dans ton navigateur :<br><a href="${e(o.lien)}" style="color:#0C5BA0;word-break:break-all;">${e(o.lien)}</a></p>
+<p style="margin:0 0 12px;font-size:13px;color:#5B6472;">Ce lien est personnel et ne sert qu'une fois : ne le donne à personne. Il reste valable ${j} jours.</p>
+<p style="margin:0;font-size:15px;">À bientôt sur ${nomSite} !${prof ? `<br>${e(prof)}` : ''}</p>
+</div></div>`;
+  const texte = `Bonjour${o.prenom ? ' ' + o.prenom : ''},\n\nTu as oublié ton mot de passe ? Clique sur ce lien pour en choisir un nouveau :\n${o.lien}\n\nEnsuite, pour te connecter : ouvre ${site}, clique sur « Se connecter » et saisis ton identifiant ${o.identifiant || ''} et ton nouveau mot de passe.\n\nCe lien est personnel et ne sert qu'une fois : ne le donne à personne. Il reste valable ${j} jours.\n\nÀ bientôt sur ${nomSite} !${prof ? '\n' + prof : ''}`;
   return { html, texte };
 }
 async function teacherPremiereConnexion(userId){
