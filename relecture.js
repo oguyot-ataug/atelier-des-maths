@@ -36,16 +36,20 @@
 
 // Changements faits à la suite d'une remarque : clé → { date (ISO, heure UTC du changement), note }.
 const RELECTURE_CHGT = {
+  // UNE SEULE entrée par clé : pour un exercice déjà corrigé, remplacer (ou retirer) l'ancienne entrée. Avec deux entrées, JavaScript
+  // garde la DERNIÈRE du fichier -- la plus ancienne, puisque les nouvelles vont en tête -- et l'exercice restait « Commenté »
+  // (signalé le 05/11/2026 : « Tu sembles avoir traité des exercices en CE2 mais ils ne sont pas marqués comme tels »).
   // La date d'un changement est l'heure RÉELLE de sa mise en ligne (heure du commit poussé sur main), jamais une heure
   // arrondie dans le futur : un exercice validé entre la mise en ligne et une date trop tardive resterait « Chgt effectué »
   // (signalé le 01/11/2026 pour 6e-N1 ; dates corrigées d'après l'historique des publications).
+  // Version 1314 (05/11).
+  '6e-N3-P5-E3': { date: '2026-11-05T06:39:33Z', note: "Tableau des arrondis en demi-largeur, aligné à gauche ; l'autre moitié revient à l'exercice voisin, et le tableau de troncature (par défaut, par excès, arrondi) passe aussi en demi-largeur (P5-E7)" },
+  '6e-N3-P6-E5': { date: '2026-11-05T06:39:33Z', note: "Gardé comme retour sur la division euclidienne (spirale) : la consigne le dit (« Convertis en centimètres, puis pose une division euclidienne ») ; corrigé 240 = 75 × 3 + 15" },
   // Version 1313 (04/11).
   '5e-G2-P6-E2': { date: '2026-11-04T23:14:51Z', note: "Pleine largeur, en tableau à cocher sur deux colonnes (complémentaires, supplémentaires, aucun des deux en tête de colonne, une ligne par paire d'angles) ; huit paires ; P6-E1 aussi en pleine largeur (huit calculs)" },
   '6e-N3-P4-E2': { date: '2026-11-04T23:14:51Z', note: "Consigne : « Supprime les zéros inutiles : réécris chaque nombre. »" },
   '6e-N3-P4-E5': { date: '2026-11-04T23:14:51Z', note: "Plus de « milieu » : « Intercale entre les deux nombres le nombre qui a un chiffre de plus après la virgule et qui se termine par 5 » (réponse unique)" },
-  '6e-N3-P5-E3': { date: '2026-11-04T23:14:51Z', note: "Le programme de 6e ne nomme que l'arrondi : troncature et valeurs approchées par défaut et par excès ajoutées en « Pour aller plus loin » (nouvel exercice P5-E7, tableau par défaut / par excès / arrondi)" },
   '6e-N3-P6-E3': { date: '2026-11-04T23:14:51Z', note: "« Complète avec <, > ou = » dans une case (1,5 m et 145 cm, 0,8 kg et 790 g, 2,05 € et 2 € 50 c, 3,2 m et 320 cm)" },
-  '6e-N3-P6-E5': { date: '2026-11-04T23:14:51Z', note: "Corrigé par la division euclidienne : 240 = 75 × 3 + 15 avec 15 < 75 (quotient 3, reste 15), plus de tâtonnement" },
   'CE2-N1-P4-E2': { date: '2026-11-04T23:14:51Z', note: "Graduation de 100 en 100 (au lieu de 50 en 50), comme l'exercice précédent : placer 7 400, 7 700 et 7 900" },
   'CE2-N3-P1-E2': { date: '2026-11-04T23:14:51Z', note: "« Dans 12 + 25 = 37, les nombres 12 et 25 sont les … » (et de même pour 60 et 37)" },
   'CE2-N3-P1-E3': { date: '2026-11-04T23:14:51Z', note: "À l'écran, l'élève pose lui-même chaque addition écrite en ligne, dans une grille vide plus large que nécessaire (deux colonnes en plus) ; les cases en trop doivent rester vides (une case remplie à tort est comptée fausse)" },
@@ -63,21 +67,15 @@ const RELECTURE_CHGT = {
   '5e-G2-P1-E3': { date: '2026-11-03T08:01:01Z', note: "Quatrième figure remplacée : deux sommets différents, avec des côtés dans le prolongement l'un de l'autre (non adjacents : pas le même sommet)" },
   '5e-G2-P2-E6': { date: '2026-11-03T08:01:01Z', note: "Construction aux instruments refaite dans l'ordre demandé : droite tracée à la règle sans aucun point, point O placé sur la droite, angle de 35° au rapporteur, puis la sécante tracée ; les quatre angles marqués ensuite" },
   // Version 1309 (03/11).
-  '5e-G2-P1-E3': { date: '2026-11-03T07:40:36Z', note: "Deux figures ajoutées : un côté commun mais les angles du même côté (non), puis un côté sur la même droite mais pas le même sommet (non) ; le corrigé dit pourquoi sous chaque réponse" },
   '5e-G2-P2-E5': { date: '2026-11-03T07:40:36Z', note: "À l'écran, les choix se cliquent de nouveau (la figure du corrigé empêchait la version écran ; elle reste sur le papier)" },
-  '5e-G2-P2-E6': { date: '2026-11-03T07:40:36Z', note: "Corrigé : la figure se construit aux instruments du site (bouton « Voir la construction aux instruments » : règle, rapporteur, les quatre angles marqués) ; O placé sans chevaucher les mesures" },
   '5e-G2-P5-E6': { date: '2026-11-03T07:40:36Z', note: "Corrigé rédigé avec les propriétés : données, « Or, dans un triangle la somme des angles est égale à 180° ; et dans un triangle isocèle, les angles à la base ont la même mesure », puis BAC + 2 × ACB = 180°, une étape par ligne, ACB = 66°" },
   '5e-G2-P5-E7': { date: '2026-11-03T07:40:36Z', note: "Valeurs changées : 36°, le deuxième angle triple (108°), le troisième 36° : le triangle est isocèle ; plus de « obtusangle »" },
-  '5e-G2-P6-E2': { date: '2026-11-03T07:40:36Z', note: "Cases à cocher (☐) au lieu d'entourer, une par ligne ; le corrigé coche la bonne (☑) ; à l'écran, choix à cliquer" },
   '5e-G2-P6-E3': { date: '2026-11-03T07:40:36Z', note: "Corrigé : dessin à main levée de l'angle droit partagé en â et 2â, puis â + 2â = 90°, 3 × â = 90°, â = 30°, 2â = 60°" },
   // Version 1307 (02/11).
   '5e-G2-P1-E1': { date: '2026-11-02T23:13:53Z', note: "Consigne : « Les angles â et b̂ sont supplémentaires. Calcule b̂. » ; chaque question « â = 35° : b̂ = … », corrigé « b̂ = 180° − 35° = 145° » ; chapeaux sur les angles" },
-  '5e-G2-P1-E3': { date: '2026-11-02T23:13:53Z', note: "Lettres a et b retirées des figures (inutiles et mal placées) : seuls les angles marqués restent" },
   '5e-G2-P1-E5': { date: '2026-11-02T23:13:53Z', note: "L'angle à calculer est nommé (AOx, point x sur la demi-droite) ; corrigé en quatre lignes : A, O, B alignés donc AOB = 180° ; AOx = AOB − xOB ; AOx = 180° − 53° ; AOx = 127°" },
   '5e-G2-P2-E2': { date: '2026-11-02T23:13:53Z', note: "Chapeaux sur les angles â, b̂, ĉ, dans la figure et dans les réponses" },
   '5e-G2-P2-E3': { date: '2026-11-02T23:13:53Z', note: "Exercice remplacé : (AB) et (CD) se coupent en O, AOC est le triple de AOD ; calculer les quatre angles (4 × AOD = 180°, AOD = 45°, AOC = 135°, puis les opposés par le sommet), figure avec les deux angles marqués" },
-  '5e-G2-P2-E5': { date: '2026-11-02T23:13:53Z', note: "Corrigé : la figure des deux droites sécantes avec les quatre angles (112°, 68°, 112°, 68°)" },
-  '5e-G2-P2-E6': { date: '2026-11-02T23:13:53Z', note: "Corrigé : la figure des deux droites sécantes avec les quatre angles (35°, 145°, 35°, 145°) avant la justification" },
   '5e-G2-P3-E5': { date: '2026-11-02T23:13:53Z', note: "Corrigé : une figure avec deux droites non parallèles et une sécante, deux angles alternes-internes en rouge (118° et 132°) et deux angles correspondants en vert (62° et 48°), pour voir qu'ils n'ont pas la même mesure" },
   '5e-G2-P4-E2': { date: '2026-11-02T23:13:53Z', note: "Figures à main levée (traits tremblés), sans les lettres a et b ; consigne « Figures à main levée : les droites sont-elles parallèles ? »" },
   '5e-G2-P4-E4': { date: '2026-11-02T23:13:53Z', note: "Corrigé rédigé avec la propriété : angles correspondants et (d1) // (d2), « si deux droites parallèles sont coupées par une sécante, alors deux angles correspondants ont la même mesure », donc x = 110° ; puis x et y supplémentaires, y = 70°" },
@@ -125,7 +123,6 @@ const RELECTURE_CHGT = {
   '6e-G2-P1-E1': { date: '2026-11-01T12:50:58Z', note: "Les figures sur une ligne, la lettre dessous ; les choix en tableau en dessous, une ligne par figure (sous chaque petite figure, les mots empilés débordaient sur la voisine). Même présentation pour les autres exercices « une figure, un choix » du chapitre" },
   // Version 1252 (01/11).
   '6e-G2-P1-E2': { date: '2026-11-01T11:15:41Z', note: "Propositions en tableau, alignées en colonnes et à distance des noms des droites" },
-  '6e-G2-P1-E4': { date: '2026-11-01T11:15:41Z', note: "Exercice en pleine largeur, « vrai faux » en tableau sur une seule ligne, à distance des phrases (l'exercice 3 passe aussi en pleine largeur, sur deux colonnes)" },
   '6e-G2-P1-E5': { date: '2026-11-01T11:15:41Z', note: "Étiquette A dans le cadre. On complète avec les symboles : (AB) … (CD) avec ⊥ ou // ; à l'écran, chaque clic dans la case passe de ⊥ à //, puis vide" },
   '6e-G2-P2-E1': { date: '2026-11-01T12:42:58Z', note: "Propositions sur leur propre ligne, sous chaque question et en retrait (en tableau, elles s'écrasaient à l'impression en demi-largeur) ; étiquette D décollée du point" },
   '6e-G2-P2-E4': { date: '2026-11-01T11:15:41Z', note: "À l'écran, chaque droite tracée reçoit son nom : on choisit (AB), (d) ou (d') puis on trace (le nom suivant est proposé tout seul) ; la vérification contrôle aussi les noms" },
@@ -157,7 +154,6 @@ const RELECTURE_CHGT = {
   'CP-N1-P3-E4': { date: '2026-10-27T18:33:51Z', note: "À l'écran : un cadre pour les billes de Léo, un pour celles de Zoé (on touche pour dessiner), puis on touche Léo ou Zoé. Consigne : « Dessine les billes de chacun, puis entoure qui en a le plus »" },
   'CP-N1-P3-E5': { date: '2026-10-27T18:33:51Z', note: "Corrigé : les deux nombres restent visibles, le bon est entouré (comme l'exercice 3)" },
   'CP-N1-P3-E6': { date: '2026-10-27T18:33:51Z', note: "À l'écran : on touche le cadre pour dessiner un rond, on touche un rond pour l'effacer (bouton « Tout effacer ») ; c'est juste quand il y a le bon nombre de ronds" },
-  '6e-G2-P1-E1': { date: '2026-10-27T18:33:51Z', note: "Retour bêta « les choix se superposent » : à l'écran, sous chaque figure, les mots passent à la ligne au lieu de se chevaucher (vaut pour tous les choix à l'écran)" },
   // Build 1183 : CP-N2, outils à l'écran (jetons bicolores, boîte à compléter, mains aux doigts mobiles).
   'CP-N2-P1-E6': { date: '2026-10-27T19:10:49Z', note: "À l'écran, on touche un jeton : rouge, puis bleu, puis blanc. Pour que la réponse puisse être vérifiée, les deux façons sont imposées : 4 rouges et 3 bleus, puis 6 rouges et 1 bleu" },
   'CP-N2-P2-E1': { date: '2026-10-27T19:51:50Z', note: "Addition « 6 + … = 10 » sur sa propre ligne, sous la boîte : les termes sont alignés (sur papier et à l'écran). Exercice placé en premier ; à l'écran, on touche les cases vides pour mettre les jetons bleus" },
@@ -173,24 +169,14 @@ const RELECTURE_CHGT = {
   'CE2-N1-P3-E2': { date: '2026-10-28T10:13:30Z', note: "L'encadrement « … < 4 563 < … » ne se coupe plus : il reste d'un seul tenant (s'il manque de place, il passe en entier à la ligne suivante). Vaut pour toutes les inégalités des exercices à compléter" },
   'CE2-N1-P3-E3': { date: '2026-10-28T10:13:30Z', note: "« … < … < … < … » ne se coupe plus en fin de ligne ; la liste des nombres à ranger est espacée, sans point central. Déjà faisable à l'écran (une case par nombre)" },
   'CE2-N1-P3-E7': { date: '2026-10-28T10:13:30Z', note: "Nombre écrit sans espace (2350) : en plus du message sous l'exercice, une étiquette apparaît au bout de la ligne : « Un espace tous les trois chiffres : 2 350 »" },
-  'CE2-N1-P4-E2': { date: '2026-10-28T10:13:30Z', note: "À l'écran : toucher un point déjà placé le sélectionne (cerclé en pointillés), puis toucher sa nouvelle place le déplace ; un bouton « Effacer D » retire le point sélectionné" },
   'CE2-N1-P4-E3': { date: '2026-10-27T22:08:00Z', note: "Règle rendue cohérente : à l'écran, dès 4 chiffres, un nombre doit s'écrire avec un espace tous les trois chiffres quand la réponse attendue est écrite ainsi (9 999 et 10 000 ; 9999 est refusé comme 10000). Le message sous l'exercice dit alors : « Écris les nombres avec un espace tous les trois chiffres (9 999, 10 000) ». Une année (2026) reste sans espace" },
   'CE2-N1-P4-E4': { date: '2026-10-28T10:13:30Z', note: "Sur papier comme à l'écran, les nombres sont séparés par un grand espace, sans point central (règle appliquée à toutes les planches) ; à l'écran, un seul nombre se choisit" },
   // Build 1196 (28/10, inscrit le 30/10) : planches CE2-N3 et CE2-N4 réécrites ; les numéros d'exercices ont changé.
-  'CE2-N3-P1-E2': { date: '2026-10-28T23:07:36Z', note: "Planche réécrite (numéros décalés) : c'est maintenant l'exercice 3. À l'écran, chaque addition se pose case par case (chiffres et retenues), puis le résultat s'écrit" },
-  'CE2-N3-P1-E3': { date: '2026-10-28T23:07:36Z', note: "Maintenant l'exercice 4 : trois additions posées, dont une à trois termes. À l'écran, on touche les cases du résultat et des retenues pour écrire (une retenue : un seul chiffre)" },
   'CE2-N3-P1-E4': { date: '2026-10-28T23:07:36Z', note: "Maintenant les exercices 5 et 6 : deux problèmes côte à côte ; le premier garde ses trois termes (l'addition à trois termes est posée à l'exercice 4)" },
   'CE2-N3-P1-E5': { date: '2026-10-28T23:07:36Z', note: "Maintenant l'exercice 7 : six calculs sur deux colonnes" },
   'CE2-N3-P2-E1': { date: '2026-10-28T23:07:36Z', note: "Corrigé avec les soustractions posées ; nombres de longueurs différentes (5 638 − 415, 1 249 − 37) pour vérifier l'alignement ; à l'écran, la soustraction se pose case par case" },
-  'CE2-N3-P2-E2': { date: '2026-10-28T23:07:36Z', note: "Corrigé posé avec les compensations (+10 en haut, +1 en bas) ; nombres de longueurs différentes (3 021 − 456) ; à l'écran, posée case par case" },
   'CE2-N3-P2-E3': { date: '2026-10-28T23:07:36Z', note: "En tableau : la soustraction, l'addition qui la vérifie (à compléter), puis « juste » ou « fausse » à entourer" },
-  'CE2-N3-P2-E4': { date: '2026-10-28T23:07:36Z', note: "Corrigé : la soustraction posée par compensation (retenues placées) et par cassage ; deux problèmes côte à côte (mont Blanc, avion)" },
-  'CE2-N3-P2-E5': { date: '2026-10-28T23:07:36Z', note: "Maintenant l'exercice 6 : huit calculs sur deux colonnes" },
-  'CE2-N3-P2-E6': { date: '2026-10-28T23:07:36Z', note: "Maintenant l'exercice 7 : six calculs sur deux colonnes" },
-  'CE2-N3-P3-E1': { date: '2026-10-28T23:07:36Z', note: "Huit calculs sur deux colonnes" },
-  'CE2-N3-P3-E2': { date: '2026-10-28T23:07:36Z', note: "Refait : une ligne par choix (Ligne A, B…), les deux calculs côte à côte et bien espacés, sans répétition ; consigne : « entoure le calcul que tu ferais de tête. Tu poseras l'autre. »" },
   'CE2-N3-P3-E4': { date: '2026-10-28T23:07:36Z', note: "Deux problèmes côte à côte (Mia, le libraire)" },
-  'CE2-N3-P3-E6': { date: '2026-10-28T23:07:36Z', note: "Six calculs sur deux colonnes" },
   'CE2-N4-P1-E4': { date: '2026-10-28T23:07:36Z', note: "À l'écran, la fraction se complète dans deux cases (numérateur et dénominateur)" },
   'CE2-N4-P2-E1': { date: '2026-10-28T23:07:36Z', note: "Quatre égalités sur deux colonnes" },
   'CE2-N4-P2-E2': { date: '2026-10-28T23:07:36Z', note: "Huit égalités sur deux colonnes" },
@@ -198,8 +184,6 @@ const RELECTURE_CHGT = {
   'CE2-N4-P2-E4': { date: '2026-10-28T23:07:36Z', note: "« identique » au lieu de « pareille » ; deux problèmes côte à côte (la tarte, les rubans)" },
   'CE2-N4-P2-E5': { date: '2026-10-28T23:07:36Z', note: "Maintenant l'exercice 6 : huit égalités sur deux colonnes" },
   // Build 1223 (30/10) : remarques du 30/10 (CE2-N3, CE2-N4, 5e-N7).
-  'CE2-N3-P2-E7': { date: '2026-10-30T19:40:00Z', note: "Déjà sur deux colonnes depuis le 28/10 (6 calculs). Pas d'ajout : la planche 2 est pleine, un calcul de plus la ferait passer sur une deuxième feuille" },
-  'CE2-N3-P3-E3': { date: '2026-10-30T19:40:00Z', note: "Huit calculs sur deux colonnes (deux de plus)" },
   'CE2-N4-P1-E1': { date: '2026-10-30T19:40:00Z', note: "Huit figures plus petites sur quatre colonnes, la fraction toujours sous sa figure ; à l'écran, chaque fraction s'écrit dans ses deux cases" },
   'CE2-N4-P1-E5': { date: '2026-10-30T19:40:00Z', note: "Les fractions des choix s'affichent bien à l'écran (depuis le 28/10) ; deux exemples de plus, sur deux colonnes" },
   '5e-N7-P1-E1': { date: '2026-10-30T19:40:00Z', note: "À l'écran, « 6 × 6 » est accepté, tapé avec la touche × du clavier, avec * ou avec x (la réponse attendue restait écrite en LaTeX) ; vaut pour toutes les planches" },

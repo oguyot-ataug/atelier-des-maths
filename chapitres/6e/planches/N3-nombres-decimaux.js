@@ -6,6 +6,8 @@
    Relecture du 03/11/2026 : « supprime les zéros inutiles » (P4-E2), intercaler sans parler de « milieu » (P4-E5), troncature et
    valeurs approchées par défaut et par excès en « pour aller plus loin » (P5-E7), comparer avec &lt;, &gt; ou = (P6-E3), division
    euclidienne pour les étagères (P6-E5).
+   Relecture du 05/11/2026 : tableau des arrondis en demi-largeur, aligné à gauche (P5-E3), avec la troncature en face (P5-E7) ;
+   P6-E5 présenté comme un retour sur la division euclidienne.
    ============================================================ */
 (() => {
 const B = n => plPointilles(n || 4), R = v => plRep(String(v)), F = cm1Frac, Fr = plFrac(), C = plCase();
@@ -13,7 +15,7 @@ const lt = '&lt;', gt = '&gt;';
 const ligne = (...h) => `<span style="display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap;">${h.join(' ')}</span>`;
 const ch = it => ({ eleve: plListe(it.map(([t, , m]) => `${t} <b>${m}</b>`)), corr: plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) });
 const suite = (n, l, sg) => '<div style="text-align:center;line-height:2.4;">' + (Array.isArray(n) ? n.map(R) : Array.from({ length: n }, () => B(l))).join(` ${sg} `) + '</div>';
-const tab = (ent, lignes) => `<table class="pl-tab"><tr>${ent.map(e => `<th>${e}</th>`).join('')}</tr>${lignes.map(l => `<tr>${l.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</table>`;
+const tab = (ent, lignes, g) => `<table class="pl-tab"${g ? ' style="margin:4px 0;"' : ''}><tr>${ent.map(e => `<th>${e}</th>`).join('')}</tr>${lignes.map(l => `<tr>${l.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</table>`;
 const dec = v => String(+v.toFixed(4)).replace('.', ',');
 // Demi-droite graduée à lire (points nommés) ; place : version « place les points » à l'écran (outil points).
 const axe = (min, max, pas, etiq, pts) => cm1Axe(min, max, pas, etiq, pts, { fmt: dec, alterne: true });
@@ -112,9 +114,11 @@ PLANCHES['6e|Nombres décimaux'] = [
       { etoiles: 1, col: 1, consigne: 'Encadre au dixième près.',
         eleve: plListe([`${B()} ${lt} 5,63 ${lt} ${B()}`, `${B()} ${lt} 0,418 ${lt} ${B()}`, `${B()} ${lt} 9,97 ${lt} ${B()}`]),
         corr: plListe([`${R('5,6')} ${lt} 5,63 ${lt} ${R('5,7')}`, `${R('0,4')} ${lt} 0,418 ${lt} ${R('0,5')}`, `${R('9,9')} ${lt} 9,97 ${lt} ${R(10)}`]) },
-      { etoiles: 2, consigne: 'Complète le tableau des arrondis.',
-        eleve: tab(['Nombre', 'à l\'unité', 'au dixième', 'au centième'], [['4,728', B(2), B(3), B(4)], ['15,0549', B(2), B(3), B(4)], ['0,996', B(2), B(3), B(4)]]),
-        corr: tab(['Nombre', 'à l\'unité', 'au dixième', 'au centième'], [['4,728', R(5), R('4,7'), R('4,73')], ['15,0549', R(15), R('15,1'), R('15,05')], ['0,996', R(1), R(1), R(1)]]) },
+      // Demi-largeur, tableau aligné à gauche (relecture du 05/11/2026 : « prend trop de place ; peut se faire sur la moitié de la
+      // largeur ») : l'autre moitié revient à l'exercice voisin.
+      { etoiles: 2, col: 1, consigne: 'Complète le tableau des arrondis.',
+        eleve: tab(['Nombre', 'à l\'unité', 'au dixième', 'au centième'], [['4,728', B(2), B(3), B(4)], ['15,0549', B(2), B(3), B(4)], ['0,996', B(2), B(3), B(4)]], 1),
+        corr: tab(['Nombre', 'à l\'unité', 'au dixième', 'au centième'], [['4,728', R(5), R('4,7'), R('4,73')], ['15,0549', R(15), R('15,1'), R('15,05')], ['0,996', R(1), R(1), R(1)]], 1) },
       { etoiles: 2, col: 1, consigne: 'Entoure l\'arrondi au dixième.',
         ...ch([['3,46 :', '3,5', '3,4 · 3,5 · 3,46'], ['12,04 :', '12', '12 · 12,1 · 12,04'], ['0,95 :', '1', '0,9 · 1 · 0,95']]) },
       { etoiles: 2, col: 1, consigne: 'Un paquet de 3 stylos coûte 4,79 €. Complète.',
@@ -124,9 +128,9 @@ PLANCHES['6e|Nombres décimaux'] = [
         corr: cm1Redac('Arrondis de π', { suite: ['à l\'unité : 3 ; au dixième : 3,1', 'au centième : 3,14 ; au millième : 3,142'] }, 'Pour le centième, je regarde le chiffre des millièmes (1) : il est inférieur à 5, donc j\'arrondis à 3,14.') },
       // Hors programme de 6e (le programme ne nomme que l'arrondi) : « pour aller plus loin » -- relecture 6e-N3-P5-E3 du
       // 03/11/2026 : « la troncature est-elle au programme également ? Et les arrondis par défaut ? par excès ».
-      { etoiles: 3, consigne: 'Pour aller plus loin : la troncature au dixième (valeur approchée par défaut) garde le chiffre des dixièmes et supprime les suivants ; la valeur approchée par excès est le dixième juste au-dessus. Complète.',
-        eleve: tab(['Nombre', 'par défaut (troncature)', 'par excès', 'arrondi'], [['4,728', B(3), B(3), B(3)], ['15,0549', B(3), B(3), B(3)], ['0,962', B(3), B(3), B(3)]]),
-        corr: tab(['Nombre', 'par défaut (troncature)', 'par excès', 'arrondi'], [['4,728', R('4,7'), R('4,8'), R('4,7')], ['15,0549', R('15'), R('15,1'), R('15,1')], ['0,962', R('0,9'), R(1), R(1)]]) },
+      { etoiles: 3, col: 1, consigne: 'Pour aller plus loin : la troncature au dixième (valeur approchée par défaut) garde le chiffre des dixièmes et supprime les suivants ; la valeur approchée par excès est le dixième juste au-dessus. Complète.',
+        eleve: tab(['Nombre', 'par défaut', 'par excès', 'arrondi'], [['4,728', B(3), B(3), B(3)], ['15,0549', B(3), B(3), B(3)], ['0,962', B(3), B(3), B(3)]], 1),
+        corr: tab(['Nombre', 'par défaut', 'par excès', 'arrondi'], [['4,728', R('4,7'), R('4,8'), R('4,7')], ['15,0549', R('15'), R('15,1'), R('15,1')], ['0,962', R('0,9'), R(1), R(1)]], 1) },
     ] },
   { titre: 'Problèmes avec des nombres décimaux', duree: '40 min',
     attendus: ['Utiliser les nombres décimaux dans les mesures (longueurs, masses, prix)', 'Comparer et ranger des mesures', 'Changer d\'unité à l\'aide des nombres décimaux'],
@@ -144,7 +148,7 @@ PLANCHES['6e|Nombres décimaux'] = [
       { etoiles: 2, col: 1, consigne: 'Voici les temps de quatre nageurs au 50 m : Ali 31,48 s ; Bea 31,5 s ; Cyril 31,09 s ; Dina 31,4 s. Complète.',
         eleve: plListe(['Le plus rapide est ' + B(), 'Le plus lent est ' + B(), 'Temps de Dina arrondi à la seconde : ' + B(2) + ' s']),
         corr: plListe(['Le plus rapide est ' + R('Cyril'), 'Le plus lent est ' + R('Bea'), 'Temps de Dina arrondi à la seconde : ' + R(31) + ' s']) },
-      { etoiles: 3, col: 1, cahier: true, consigne: 'Une planche mesure 2,4 m. Paul veut y découper des étagères de 0,75 m. Combien d\'étagères peut-il découper ? Quelle longueur reste-t-il ? Explique avec des centimètres.',
+      { etoiles: 3, col: 1, cahier: true, consigne: 'Retour sur la division euclidienne : une planche mesure 2,4 m. Paul veut y découper des étagères de 0,75 m. Combien d\'étagères peut-il découper ? Quelle longueur reste-t-il ? Convertis en centimètres, puis pose une division euclidienne.',
         // Relecture du 03/11/2026 : « il faut faire une division ici ! » (et non chercher à tâtons).
         corr: cm1Redac('En centimètres', { suite: ['2,4 m = 240 cm et 0,75 m = 75 cm.', 'On divise 240 par 75 (division euclidienne) :', '240 = 75 × 3 + 15, avec 15 &lt; 75', 'Quotient : 3 ; reste : 15'] }, 'Paul peut découper 3 étagères ; il reste 15 cm, soit 0,15 m.') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Un nombre a 2 chiffres après la virgule. Son arrondi au dixième est 4,6 et son chiffre des centièmes est 8. Quel est ce nombre ?',
