@@ -156,8 +156,10 @@ function cmOpEtapes(sa, op, sb){
   const gris = (row, orig, d) => { const z = ajout(orig, d); return row.map((c, i) => i > virg && virg >= 0 && i - virg - 1 >= orig.length && z ? `<span style="color:#A0A8B4;">${c}</span>` : c); };
   const rangs = j => j > virg && virg >= 0 ? CM_DECS[j - virg - 1] : CM_RANGS[(virg >= 0 ? virg : N) - 1 - j];
   const tableau = (colActive, fin) => [
-    { cells: ret, small: true, color: '#E35D3A' },
-    { cells: gris(ta, A.d, dA).map((c, i) => haut[i] ? `${c}` : c), annot: haut },
+    // Copies : chaque étape montre les retenues écrites JUSQU'ICI (signalé le 05/11/2026 : les retenues de toutes les colonnes
+    // s'affichaient dès la première étape, le tableau étant partagé par toutes les étapes).
+    { cells: ret.slice(), small: true, color: '#E35D3A' },
+    { cells: gris(ta, A.d, dA).map((c, i) => haut[i] ? `${c}` : c), annot: haut.slice() },
     { cells: gris(tb, B.d, dB).map((c, i) => bas[i] ? cm1opCompPrefixCm(c) : c), sign: op, bar: true },
     { cells: res.slice(), res: true, fin }
   ].map(r => Object.assign(r, { col: colActive }));
