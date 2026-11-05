@@ -118,7 +118,8 @@ fichier) ; la page est écrite par `tools/build-seo.js`.
 
 « Je préfère quand tu te comportes comme un fin pédagogue » :
 
-- **Animations** pour illustrer un maximum (lecteur commun `cmAnim`, `chapitres/cm1/_anims.js` ;
+- **Animations** pour illustrer un maximum (lecteur commun `cmAnim`, `chapitres/cm1/_anims.js`, avec curseur de vitesse
+  commun à toutes les animations, retenu sur l'appareil, `cmAnimVitesse` ;
   animations du CE2 dans `chapitres/ce2/_anims.js` : sauts sur une droite, schémas en barres, jetons,
   glisse-nombre, horloge, règle, partage, diagramme, compas, angle, balance, verres, fractions…).
 - **Jamais plusieurs calculs sur une même ligne** (une liste `cm1Liste`, ou `{ suite: [...] }`).

@@ -15,11 +15,24 @@ const cmPhase = (t, a, b) => cmBorne((t - a) / (b - a), 0, 1);           // avan
 const cmDoux = k => k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2; // départ et arrivée en douceur
 const cmNb = x => String(Math.round(x * 100) / 100).replace('.', ',');
 
+// Vitesse de lecture (demandé le 05/11/2026 : « ajouter un curseur de vitesse pour la lecture, c'est souvent trop rapide ») :
+// la même pour toutes les animations, retenue sur l'appareil. 1 = vitesse d'origine.
+const CM_VITESSES = { '0.25': 'très lent', '0.5': 'lent', '0.75': 'un peu lent', '1': 'normal', '1.25': 'un peu rapide', '1.5': 'rapide' };
+let cmVitesse = 1;
+try{ const v = parseFloat(localStorage.getItem('cmAnimVitesse')); if(v >= .25 && v <= 1.5) cmVitesse = v; }catch(e){}
+function cmVitesseTexte(v){ return CM_VITESSES[String(+v)] || ('× ' + String(+v).replace('.', ',')); }
+function cmAnimVitesse(v){
+  cmVitesse = Math.max(.25, Math.min(1.5, parseFloat(v) || 1));
+  try{ localStorage.setItem('cmAnimVitesse', String(cmVitesse)); }catch(e){}
+  document.querySelectorAll('.cma-vit').forEach(i => { if(+i.value !== cmVitesse) i.value = cmVitesse; });
+  document.querySelectorAll('.cma-vit-val').forEach(x => { x.textContent = cmVitesseTexte(cmVitesse); });
+}
 function cmAnim(id, o){
   CM_ANIMS[id] = Object.assign({ id, t: 0, anim: null, etat: {} }, o);
   return `<div class="figure-wrap cm-anim" data-anim="${id}"><div class="cma-ctrl"></div><div class="cma-scene"></div><div class="cma-texte"></div>
     <div class="cmp-barre"><button type="button" class="btn cma-jouer" onclick="cmAnimJouer('${id}')"><span class="gicon">play_arrow</span> Lecture</button>
-      <input type="range" min="0" max="1000" value="0" aria-label="Avancement" oninput="cmAnimT('${id}', this.value / 1000)"></div>
+      <input type="range" min="0" max="1000" value="0" aria-label="Avancement" oninput="cmAnimT('${id}', this.value / 1000)">
+      <label class="cma-vitesse" title="Vitesse de lecture"><span class="gicon">speed</span> Vitesse <input type="range" class="cma-vit" min="0.25" max="1.5" step="0.25" value="${cmVitesse}" aria-label="Vitesse de lecture" oninput="cmAnimVitesse(this.value)"> <span class="cma-vit-val">${cmVitesseTexte(cmVitesse)}</span></label></div>
     ${o.legende ? `<p class="hint" style="margin:4px 0 0;">${o.legende}</p>` : ''}</div>`;
 }
 function cmAnimDessiner(id, ctrl){
@@ -39,7 +52,7 @@ function cmAnimJouer(id){
   if(a.t >= 1) a.t = 0;
   const d = (typeof a.duree === 'function' ? a.duree(a) : a.duree) || 6000;
   let avant = performance.now();
-  const pas = now => { a.t = Math.min(1, a.t + (now - avant) / d); avant = now; a.anim = a.t < 1 ? requestAnimationFrame(pas) : null; cmAnimDessiner(id, false); };
+  const pas = now => { a.t = Math.min(1, a.t + (now - avant) * cmVitesse / d); avant = now; /* vitesse lue à chaque image : un changement agit tout de suite */ a.anim = a.t < 1 ? requestAnimationFrame(pas) : null; cmAnimDessiner(id, false); };
   a.anim = requestAnimationFrame(pas); cmAnimDessiner(id, false);
 }
 // Réglage changé par un bouton : nouvel état, retour au début, et lecture.
