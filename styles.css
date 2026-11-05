@@ -1887,7 +1887,7 @@ body.fig-proj #tbSvg{display:block;width:100vw !important;height:100vh !importan
 .cma-op{border-collapse:collapse;margin:8px auto;}
 .cma-op td{width:30px;height:30px;text-align:center;font:700 1.15rem 'JetBrains Mono',monospace;line-height:1;padding:2px 0;transition:background .3s;}
 .cma-op td.cma-sg{color:#E35D3A;width:26px;}
-.cma-op td.cma-ret{font-size:.72rem;color:#E35D3A;height:16px;}
+.cma-op td.cma-ret{font-size:.72rem;color:#E35D3A;height:13px;padding:0;vertical-align:bottom;} /* retenues juste au-dessus des chiffres (05/11/2026) */
 .cma-op td.cma-res{color:#2E9C6A;}
 .cma-op td.cma-fin{font-size:1.25rem;}
 .cma-op td.cma-lab{width:auto;padding-left:14px;text-align:left;font:500 .8rem Inter,sans-serif;color:#5B6472;white-space:nowrap;}

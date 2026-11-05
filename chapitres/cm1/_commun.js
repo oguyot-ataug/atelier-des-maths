@@ -303,6 +303,9 @@ function cm1Posee(lignes, retenues, opts){
   opts = opts || {};
   const larg = Math.max(...lignes.map(l => l[1].length), retenues ? retenues.length : 0);
   const virg = new Set(); lignes.forEach(([, n]) => n.padStart(larg).split('').forEach((c, j) => { if(c === ',') virg.add(j); }));
+  // Espace des classes (« 2 476 ») : une colonne étroite, pas une colonne vide entière entre 2 et 4 (signalé le 05/11/2026).
+  const esp = new Set(); lignes.forEach(([, n]) => { const p = n.padStart(larg); p.split('').forEach((c, j) => { if(c === ' ' && /\d/.test(p.slice(0, j)) && /\d/.test(p.slice(j + 1))) esp.add(j); }); });
+  [...esp].forEach(j => { if(lignes.some(([, n]) => /\d/.test(n.padStart(larg)[j]))) esp.delete(j); });
   const op = (lignes.find(l => /[+−×]/.test(l[0])) || [])[0], cases = opts.trous && opts.retenues !== false && !retenues;
   const M = opts.rep && !retenues ? cm1PoseeMarques(lignes, larg) : null;
   if(M && M.op === '+' && Object.keys(M.ret).length) retenues = Array.from({ length: larg }, (_, j) => M.ret[j] ? String(M.ret[j]) : ' ').join('');
@@ -311,11 +314,12 @@ function cm1Posee(lignes, retenues, opts){
   const caseRet = (k, j, st) => `<span class="pl-ret-case" data-plret="${k}" data-plcol="${rang(j)}" style="visibility:hidden;${st || ''}"></span>`;
   // res : ligne à remplir (n° de ligne + 1, pour l'ordre de saisie à l'écran). opts.cases : version papier, une case vide
   // dans chaque colonne des lignes à remplir (relecture 6e-N1-P4-E2 : « préparer des cases pour la réponse sur papier »).
-  const cell = (c, st, res, j, plus) => `<td${res && opts.trous && c !== ' ' ? ` data-plcol="${rang(j)}" data-plrow="${res}"` : ''} style="position:relative;width:${virg.has(j) ? 12 : 30}px;height:28px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:700;padding:2px 0;color:#1C1B2E;${st || ''}">${res && opts.cases && !virg.has(j) ? '<span style="display:inline-block;width:20px;height:23px;border:1px solid #A9A4BE;border-radius:3px;vertical-align:middle;"></span>' : c === ' ' ? '' : res && opts.trous && typeof plCase === 'function' ? '<span class="pl-case pl-case-seule" style="margin:0;width:18px;"></span>' : res && opts.rep && typeof plRep === 'function' ? plRep(c) : c}${plus || ''}</td>`;
+  const cell = (c, st, res, j, plus) => `<td${res && opts.trous && c !== ' ' ? ` data-plcol="${rang(j)}" data-plrow="${res}"` : ''} style="position:relative;width:${virg.has(j) ? 12 : esp.has(j) ? 7 : 30}px;height:28px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:700;padding:2px 0;color:#1C1B2E;${st || ''}">${res && opts.cases && !virg.has(j) && !esp.has(j) ? '<span style="display:inline-block;width:20px;height:23px;border:1px solid #A9A4BE;border-radius:3px;vertical-align:middle;"></span>' : c === ' ' ? '' : res && opts.trous && typeof plCase === 'function' ? '<span class="pl-case pl-case-seule" style="margin:0;width:18px;"></span>' : res && opts.rep && typeof plRep === 'function' ? plRep(c) : c}${plus || ''}</td>`;
   const marque = (t, ou) => `<span style="position:absolute;${ou};font-size:.68rem;line-height:1;color:#E35D3A;font-weight:700;">${t}</span>`;
   const sous = op === '−' && lignes.length === 3;
   let h = `<table style="border-collapse:collapse;margin:${sous && (cases || M) ? 10 : 5}px auto 5px;">`;
-  if(retenues) h += `<tr><td></td>${retenues.padStart(larg).split('').map(c => cell(c, 'font-size:.72rem;color:#FF8208;')).join('')}</tr>`;
+  // Retenues juste au-dessus des chiffres (demandé le 05/11/2026 : « les retenues plus près du nombre ») : ligne basse, chiffre en bas.
+  if(retenues) h += `<tr><td></td>${retenues.padStart(larg).split('').map((c, j) => cell(c, 'font-size:.72rem;color:#FF8208;height:13px;padding:0;line-height:1;vertical-align:bottom;', 0, j)).join('')}</tr>`;
   else if(cases && (op === '+' || op === '×')) h += `<tr><td></td>${Array.from({ length: larg }, (_, j) => `<td style="height:20px;padding:0;text-align:center;">${rang(j) > 0 && !virg.has(j) ? caseRet('a', j, 'display:inline-block;width:16px;height:16px;') : ''}</td>`).join('')}</tr>`;
   // Lignes à remplir : le résultat, et dans une multiplication les produits intermédiaires aussi (relecture 6e-N1-P4-E2 :
   // « en ligne, les produits ont déjà été réalisés »).
