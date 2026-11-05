@@ -4,6 +4,8 @@
    soustractions posées en colonnes avec des entiers jusqu'à 10 000 ; privilégier le calcul mental
    quand il est possible. Soustraction posée par compensation (« +10 » en haut, « +1 » en bas),
    comme au CM1 du site.
+   Encadré « Pourquoi ça marche ? » (05/11/2026) : l'écart ne change pas quand on ajoute 10 aux deux termes (animation
+   ce2AnimEcart, _anims.js), lien avec le « +10 » et le « +1 » de l'opération posée, transition avec le cassage du CE1.
    ============================================================ */
 cm1Chapitre({
   niveau: 'ce2', titre: 'Addition et soustraction posées', slug: 'addition-soustraction',
@@ -18,6 +20,13 @@ ${cm1Liste(['Unités : 6 + 8 = 14. J\'écris 4, je retiens 1.', 'Dizaines : 1 + 
 ${cm1AnimOperation('ce2-op-add', { a: '2476', op: '+', b: '1358', ops: ['+'], legende: 'Tape tes propres nombres (jusqu\'à 10 000), puis « Calculer » : l\'addition se déroule colonne par colonne.' })}
 
 ${cm1Lecon(3, 'Poser une soustraction')}
+${cm1Regle(`Pour calculer une différence, on peut <b>ajouter le même nombre aux deux termes</b> : la différence ne change pas. C'est l'idée de la soustraction posée par <b>compensation</b>.`, 'Pourquoi ça marche ?')}
+${ce2AnimEcart('ce2-as-ecart', { presets: [{ nom: '23 − 8', a: 23, b: 8, min: 0, max: 40, pas: 5 }, { nom: '52 − 17', a: 52, b: 17, min: 10, max: 70, pas: 10 }],
+  legende: 'Les deux nombres avancent ensemble de 10 : l\'écart entre eux reste le même.' })}
+<div class="figure-wrap" style="display:flex;flex-wrap:wrap;gap:8px 28px;align-items:center;justify-content:center;">
+${cm1Posee([[' ', '623'], ['−', '148'], [' ', '475']], '', { rep: true })}
+<div style="flex:1 1 320px;">${cm1Liste(['Dans 623 − 148, aux unités, 3 − 8 est impossible.', 'On ajoute <b>10 unités</b> au nombre du haut : 3 devient 13. C\'est le « +10 ».', 'On ajoute <b>1 dizaine</b> au nombre du bas, c\'est-à-dire 10 aussi : 4 dizaines deviennent 5. C\'est le « +1 ».', 'On a ajouté 10 aux deux nombres : la différence ne change pas.'])}</div></div>
+${cm1Rem('Au CE1, tu as appris à <b>casser une dizaine</b>. La compensation donne le même résultat, sans rien barrer : au lieu de transformer le nombre du haut, on ajoute 10 aux deux nombres.')}
 ${cm1Regle('On écrit <b>le plus grand nombre en haut</b>. On calcule colonne par colonne, de droite à gauche. Quand le chiffre du haut est trop petit, on ajoute <b>10 en haut</b> et on ajoute <b>1 en bas, dans la colonne suivante</b> : la différence ne change pas.')}
 ${cm1AnimOperation('ce2-op-as', { a: '623', op: '−', b: '148', ops: ['−', '+'], legende: 'Tape tes propres nombres (jusqu\'à 10 000), puis « Calculer » : le calcul se déroule colonne par colonne.' })}
 ${cm1Astuce('Pour vérifier une soustraction, on fait une addition : 475 + 148 doit redonner 623.')}

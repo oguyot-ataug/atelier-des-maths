@@ -71,6 +71,33 @@ function ce2AnimSauts(id, o){
       return { w: W, h: 190, scenes };
     } });
 }
+/* ---------------- Pourquoi la compensation marche : l'écart ne change pas ----------------
+   Demandé le 05/11/2026 (« fais l'encadré "Pourquoi ça marche ?" au CE2 ») : sur une droite graduée, les deux termes d'une
+   soustraction avancent ensemble de 10 ; l'accolade de l'écart les suit sans changer. o.presets : [{ nom, a, b, min, max, pas }]. */
+function ce2AnimEcart(id, o){
+  const P = o.presets;
+  return cmAnim(id, { etat: { p: 0 }, duree: o.duree || 9000, legende: o.legende, controles: a => ce2Choix(id, P, a),
+    dessin: (t, an) => {
+      const p = P[an.etat.p], W = 620, Y = 120, X = v => 40 + (v - p.min) / (p.max - p.min) * (W - 90), d = p.a - p.b;
+      const k = cmDoux(cmPhase(t, .22, .66)), dep = 10 * k, B = p.b + dep, A = p.a + dep;
+      let s = `<line x1="16" y1="${Y}" x2="${W - 14}" y2="${Y}" stroke="${CE2C.encre}" stroke-width="2"/><polygon points="${W - 14},${Y} ${W - 24},${Y - 5} ${W - 24},${Y + 5}" fill="${CE2C.encre}"/>`;
+      for(let v = p.min; v <= p.max; v++){ const g = v % p.pas === 0; s += `<line x1="${X(v)}" y1="${Y - (g ? 7 : 4)}" x2="${X(v)}" y2="${Y + (g ? 7 : 4)}" stroke="${CE2C.encre}" stroke-width="${g ? 1.6 : 1}"/>` + (g ? ce2T(X(v), Y + 24, ce2Nb(v), { t: 12, c: CE2C.gris, g: 500 }) : ''); }
+      // départ, en clair, une fois que les nombres ont bougé
+      if(t > .22) [[p.b, CE2C.bleu], [p.a, CE2C.rouge]].forEach(([v, c]) => { s += `<circle cx="${X(v)}" cy="${Y}" r="5" fill="${c}" fill-opacity=".3"/>`; });
+      // sauts de +10, en vert
+      if(k > 0) [p.b, p.a].forEach(v => { const x0 = X(v), x1 = X(v + dep), h = 10 + (x1 - x0) * .14;
+        s += `<path d="M${x0} ${Y - 8} Q${(x0 + x1) / 2} ${Y - 8 - 2 * h} ${x1} ${Y - 8}" fill="none" stroke="${CE2C.vert}" stroke-width="2.2"/>` + (k > .5 ? ce2T((x0 + x1) / 2, Y - 14 - h, '+ 10', { c: CE2C.vert, t: 13 }) : ''); });
+      // l'écart : accolade au-dessus des sauts, qui suit les deux nombres
+      const xb = X(B), xa = X(A), yA = Y - 66;
+      s += `<path d="M${xb} ${Y - 12} L${xb} ${yA} L${xa} ${yA} L${xa} ${Y - 12}" fill="none" stroke="${CE2C.violet}" stroke-width="2"/>` + ce2T((xb + xa) / 2, yA - 9, `écart : ${d}`, { c: CE2C.violet, t: 15 });
+      [[B, CE2C.bleu], [A, CE2C.rouge]].forEach(([v, c]) => { s += `<circle cx="${X(v)}" cy="${Y}" r="6" fill="${c}"/>`; });
+      s += ce2T(xb, Y + 44, ce2Nb(Math.round(B)), { c: CE2C.bleu, t: 16 }) + ce2T(xa, Y + 44, ce2Nb(Math.round(A)), { c: CE2C.rouge, t: 16 });
+      const texte = t < .22 ? `${ce2Nb(p.a)} − ${ce2Nb(p.b)}, c'est l'<b>écart</b> entre ${ce2Nb(p.b)} et ${ce2Nb(p.a)} : <b>${d}</b>.`
+        : t < .7 ? `On fait avancer <b>les deux nombres</b> de 10 : ${ce2Nb(p.b)} devient ${ce2Nb(p.b + 10)}, ${ce2Nb(p.a)} devient ${ce2Nb(p.a + 10)}…`
+        : `… l'écart n'a pas changé : ${ce2Nb(p.a + 10)} − ${ce2Nb(p.b + 10)} = <b>${d}</b>, comme ${ce2Nb(p.a)} − ${ce2Nb(p.b)}. <b>Si on ajoute le même nombre aux deux termes, la différence ne change pas.</b>`;
+      return { scene: `<svg viewBox="0 0 ${W} 200" class="cma-svg" style="max-width:${W}px;">${s}</svg>`, texte };
+    } });
+}
 // Formats utiles : minutes depuis minuit → « 16 h 05 » ; centimes → « 3,68 € ».
 const ce2Heure = m => `${Math.floor(m / 60)} h ${String(m % 60).padStart(2, '0')}`;
 const ce2Euros = c => `${Math.floor(c / 100)},${String(c % 100).padStart(2, '0')} €`;
