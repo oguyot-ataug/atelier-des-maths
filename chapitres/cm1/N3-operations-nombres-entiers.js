@@ -16,8 +16,8 @@
    multiplication, bien faire comprendre ce que représente chaque ligne". Aucun chiffre n'est
    jamais barré ici (signalé : "étrange tous ces chiffres barrés" -- voir la méthode de
    compensation utilisée pour la soustraction, qui ne modifie ni ne barre jamais les chiffres
-   d'origine, seulement une petite annotation "+10" au-dessus du chiffre du haut, et "1+" en
-   petit à gauche du chiffre du bas concerné -- voir cm1opCompPrefix ci-dessous). */
+   d'origine, seulement une petite annotation "+10" au-dessus du chiffre du haut, et "+1" en
+   indice collé à droite du chiffre du bas concerné -- voir cm1opCompPrefix ci-dessous). */
 function cm1opRowsTable(rows){
   const trs = rows.map(r=>{
     const fs = r.small ? '.72rem' : (r.big ? '1.2rem' : '1.1rem');
@@ -25,21 +25,23 @@ function cm1opRowsTable(rows){
     // petite) hérite de la hauteur de ligne par défaut du navigateur et flotte visiblement
     // au-dessus de la colonne qu'elle annote au lieu d'y rester collée -- signalé : "l'espace
     // entre la ligne des retenues et les chiffres en dessous est un peu généreux".
-    const vPad = r.small ? '1px' : '2px';
+    const vPad = r.small ? '0' : '2px';
     const signTd = `<td style="width:26px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:${fs};font-weight:700;line-height:1;padding:${vPad} 0;color:${r.signColor||'var(--accent-orange)'};${r.bar?'border-bottom:2.5px solid var(--ink);':''}">${r.sign||'&nbsp;'}</td>`;
-    const tds = r.cells.map(c=>`<td style="width:32px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:${fs};font-weight:700;line-height:1;padding:${vPad} 0;${r.color?`color:${r.color};`:''}${r.bar?'border-bottom:2.5px solid var(--ink);':''}">${(c!=null&&c!=='')?c:'&nbsp;'}</td>`).join('');
+    const tds = r.cells.map(c=>`<td style="width:32px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:${fs};font-weight:700;line-height:1;padding:${vPad} 0;${r.small?'height:13px;vertical-align:bottom;':''}${r.color?`color:${r.color};`:''}${r.bar?'border-bottom:2.5px solid var(--ink);':''}">${(c!=null&&c!=='')?c:'&nbsp;'}</td>`).join('');
     const labelTd = r.label ? `<td style="padding-left:14px;text-align:left;font-family:'Inter',sans-serif;font-size:.78rem;color:var(--ink-soft);white-space:nowrap;">${r.label}</td>` : '';
     return `<tr>${signTd}${tds}${labelTd}</tr>`;
   }).join('');
   return `<table style="border-collapse:collapse;margin:10px auto;">${trs}</table>`;
 }
-/* Petite annotation "1+" (compensation de soustraction) directement à gauche d'un chiffre, dans
+/* Petite annotation de la compensation de soustraction (autrefois « 1+ » à gauche, « +1 » en indice depuis le 05/11/2026), dans
    la même cellule -- signalé : "je préfère que le +1 sur le deuxième terme se note... à gauche
    du 2 en écrivant non pas +1 mais 1+ en petit". Réutilisée par soustractionPoseeHTML
    (outils-figures.js, chargé avant ce fichier -- appel sûr, seulement depuis l'intérieur d'une
    fonction, jamais au chargement). */
+// Depuis le 05/11/2026 : « +1 » en petit indice, collé en bas à droite du chiffre, sans le déplacer (même convention à tous
+// les niveaux : « le +1 doit être plus discret, comme un indice du chiffre sans décalage », « le coller davantage à son chiffre »).
 function cm1opCompPrefix(digit){
-  return `<span style="white-space:nowrap;"><span style="font-size:.55em;color:var(--accent-orange);vertical-align:top;">1+</span>${digit}</span>`;
+  return `<span style="position:relative;display:inline-block;">${digit}<span style="position:absolute;left:100%;bottom:-.1em;margin-left:-.05em;font-size:.5em;line-height:1;color:var(--accent-orange);white-space:nowrap;">+1</span></span>`;
 }
 
 document.getElementById('cours-demo-cm1-operations-nombres-entiers').innerHTML = `
@@ -309,7 +311,7 @@ const cm1opAdditionDemo = makeSingleStepDemo(CM1OP_ADDITION_STEPS, 'cm1op-additi
    suivante -- comme on ajoute la même quantité aux deux nombres, la différence ne change pas.
    Ni le nombre du haut ni celui du bas ne sont jamais modifiés ou barrés : seule une petite
    annotation "+10" apparaît au-dessus du chiffre du haut (comme les retenues de l'addition), et
-   "1+" en petit à gauche du chiffre du bas concerné, sur sa propre ligne. */
+   "+1" en indice collé à droite du chiffre du bas concerné. */
 const CM1OP_SOUSTRACTION_STEPS = [
   {expr: cm1opRowsTable([
       {cells:['','',''], small:true},

@@ -96,6 +96,8 @@ document.getElementById('histoire-demo-operations-ordre-grandeur-6e').innerHTML 
 `;
 
 /* ================= METHODE ================= */
+/* Opérations posées : retenues et « +10 » juste au-dessus des chiffres, « +1 » en indice collé à droite de son chiffre (même
+   convention à tous les niveaux, demandé le 05/11/2026). */
 /* ---- Soustraire des nombres décimaux par compensation (même méthode que la
    soustraction de durées, chapitre "Heures et durée") : quand une colonne du
    haut est trop petite, on lui ajoute 10 (affiché en vert au-dessus de son
@@ -221,18 +223,18 @@ document.getElementById('methode-demo-operations-ordre-grandeur-6e').innerHTML =
       <tr><th style="width:16px;"></th><th style="padding:4px;color:#6B7A8C;font-weight:400;font-size:.72rem;">unités</th><th style="padding:4px;"></th><th style="padding:4px;color:#6B7A8C;font-weight:400;font-size:.72rem;">dixièmes</th><th style="padding:4px;color:#6B7A8C;font-weight:400;font-size:.72rem;">centièmes</th></tr>
       <tr>
         <td style="vertical-align:top;"></td><td style="vertical-align:top;"></td><td style="vertical-align:top;"></td>
-        <td id="ogSubPlus10Dix" style="height:16px;color:#1E9E5A;font-size:.75rem;vertical-align:top;"></td>
-        <td id="ogSubPlus10Cent" style="height:16px;color:#1E9E5A;font-size:.75rem;vertical-align:top;"></td>
+        <td id="ogSubPlus10Dix" style="height:13px;color:#1E9E5A;font-size:.75rem;vertical-align:bottom;padding:0;line-height:1;"></td>
+        <td id="ogSubPlus10Cent" style="height:13px;color:#1E9E5A;font-size:.75rem;vertical-align:bottom;padding:0;line-height:1;"></td>
       </tr>
     </thead>
     <tbody>
       <tr><td style="vertical-align:top;"></td><td style="vertical-align:top;">8</td><td style="vertical-align:top;">,</td><td style="vertical-align:top;">3</td><td style="vertical-align:top;">0</td></tr>
       <tr>
-        <td style="vertical-align:top;">−<div style="height:12px;"></div></td>
-        <td style="vertical-align:top;">2<div id="ogSubCompUnite" style="color:#1E9E5A;font-weight:700;font-size:.65rem;height:12px;line-height:12px;"></div></td>
-        <td style="vertical-align:top;">,<div style="height:12px;"></div></td>
-        <td style="vertical-align:top;">5<div id="ogSubCompDix" style="color:#1E9E5A;font-weight:700;font-size:.65rem;height:12px;line-height:12px;"></div></td>
-        <td style="vertical-align:top;">6<div style="height:12px;"></div></td>
+        <td style="vertical-align:top;">−</td>
+        <td style="vertical-align:top;"><span style="position:relative;display:inline-block;">2<span id="ogSubCompUnite" style="position:absolute;left:100%;bottom:-.1em;margin-left:-.05em;color:#1E9E5A;font-weight:700;font-size:.6em;line-height:1;white-space:nowrap;"></span></span></td>
+        <td style="vertical-align:top;">,</td>
+        <td style="vertical-align:top;"><span style="position:relative;display:inline-block;">5<span id="ogSubCompDix" style="position:absolute;left:100%;bottom:-.1em;margin-left:-.05em;color:#1E9E5A;font-weight:700;font-size:.6em;line-height:1;white-space:nowrap;"></span></span></td>
+        <td style="vertical-align:top;">6</td>
       </tr>
     </tbody>
     <tfoot>

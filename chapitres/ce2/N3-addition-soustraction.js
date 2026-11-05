@@ -2,7 +2,7 @@
    CHAPITRE : Addition et soustraction posées (CE2, N3, période 1)
    Programme du cycle 2 (CE2) : mots « terme », « somme », « différence » ; additions et
    soustractions posées en colonnes avec des entiers jusqu'à 10 000 ; privilégier le calcul mental
-   quand il est possible. Soustraction posée par compensation (« +10 » en haut, « 1+ » en bas),
+   quand il est possible. Soustraction posée par compensation (« +10 » en haut, « +1 » en bas),
    comme au CM1 du site.
    ============================================================ */
 cm1Chapitre({

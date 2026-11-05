@@ -107,7 +107,7 @@ document.getElementById('methode-demo-heures-durees').innerHTML = `
       <table id="m2AddTable" style="width:100%;border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.95rem;text-align:center;">
         <thead>
           <tr><th style="width:16px;"></th><th style="padding:4px;color:#6B7A8C;font-weight:400;font-size:.72rem;">h</th><th style="padding:4px;color:#6B7A8C;font-weight:400;font-size:.72rem;">min</th><th style="padding:4px;color:#6B7A8C;font-weight:400;font-size:.72rem;">s</th></tr>
-          <tr><td style="vertical-align:top;"></td><td id="m2AddCarryH" style="height:16px;color:#E35D3A;font-size:.75rem;vertical-align:top;"></td><td id="m2AddCarryMin" style="height:16px;color:#E35D3A;font-size:.75rem;vertical-align:top;"></td><td style="vertical-align:top;"></td></tr>
+          <tr><td style="vertical-align:top;"></td><td id="m2AddCarryH" style="height:13px;color:#E35D3A;font-size:.75rem;vertical-align:bottom;padding:0;line-height:1;"></td><td id="m2AddCarryMin" style="height:13px;color:#E35D3A;font-size:.75rem;vertical-align:bottom;padding:0;line-height:1;"></td><td style="vertical-align:top;"></td></tr>
         </thead>
         <tbody>
           <tr><td style="vertical-align:top;"></td><td style="vertical-align:top;">2</td><td style="vertical-align:top;">47</td><td style="vertical-align:top;">38</td></tr>
@@ -131,15 +131,15 @@ document.getElementById('methode-demo-heures-durees').innerHTML = `
       <table id="m2SubTable" style="width:100%;border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.95rem;text-align:center;">
         <thead>
           <tr><th style="width:16px;"></th><th style="padding:4px;color:#6B7A8C;font-weight:400;font-size:.72rem;">h</th><th style="padding:4px;color:#6B7A8C;font-weight:400;font-size:.72rem;">min</th><th style="padding:4px;color:#6B7A8C;font-weight:400;font-size:.72rem;">s</th></tr>
-          <tr><td style="vertical-align:top;"></td><td style="vertical-align:top;"></td><td id="m2SubPlus60Min" style="height:16px;color:#1E9E5A;font-size:.75rem;vertical-align:top;"></td><td id="m2SubPlus60S" style="height:16px;color:#1E9E5A;font-size:.75rem;vertical-align:top;"></td></tr>
+          <tr><td style="vertical-align:top;"></td><td style="vertical-align:top;"></td><td id="m2SubPlus60Min" style="height:13px;color:#1E9E5A;font-size:.75rem;vertical-align:bottom;padding:0;line-height:1;"></td><td id="m2SubPlus60S" style="height:13px;color:#1E9E5A;font-size:.75rem;vertical-align:bottom;padding:0;line-height:1;"></td></tr>
         </thead>
         <tbody>
           <tr><td style="vertical-align:top;"></td><td style="vertical-align:top;">5</td><td style="vertical-align:top;">12</td><td style="vertical-align:top;">18</td></tr>
           <tr>
-            <td style="vertical-align:top;">−<div style="height:12px;"></div></td>
-            <td style="vertical-align:top;">2<div id="m2SubCompH" style="color:#1E9E5A;font-weight:700;font-size:.65rem;height:12px;line-height:12px;"></div></td>
-            <td style="vertical-align:top;">45<div id="m2SubCompMin" style="color:#1E9E5A;font-weight:700;font-size:.65rem;height:12px;line-height:12px;"></div></td>
-            <td style="vertical-align:top;">50<div style="height:12px;"></div></td>
+            <td style="vertical-align:top;">−</td>
+            <td style="vertical-align:top;"><span style="position:relative;display:inline-block;">2<span id="m2SubCompH" style="position:absolute;left:100%;bottom:-.1em;margin-left:-.05em;color:#1E9E5A;font-weight:700;font-size:.6em;line-height:1;white-space:nowrap;"></span></span></td>
+            <td style="vertical-align:top;"><span style="position:relative;display:inline-block;">45<span id="m2SubCompMin" style="position:absolute;left:100%;bottom:-.1em;margin-left:-.05em;color:#1E9E5A;font-weight:700;font-size:.6em;line-height:1;white-space:nowrap;"></span></span></td>
+            <td style="vertical-align:top;">50</td>
           </tr>
         </tbody>
         <tfoot>

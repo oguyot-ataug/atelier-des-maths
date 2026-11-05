@@ -136,6 +136,15 @@ fichier) ; la page est écrite par `tools/build-seo.js`.
   s'il tient, sinon « A = … » développé en colonne avec le résultat encadré ; puis une phrase de
   conclusion, systématiquement.
 
+## Opérations posées : même écriture à tous les niveaux (demandé le 05/11/2026)
+
+Cours, méthodes, exercices, corrigés, animations : les retenues de l'addition et le « +10 » de la soustraction par compensation
+s'écrivent JUSTE au-dessus de leur chiffre (« +10 » centré) ; le « +1 » de la compensation est un petit indice collé en bas à droite
+de son chiffre, sans le déplacer ni déborder sur la colonne voisine (plus de « 1+ » à gauche) ; l'espace entre les classes
+(« 2 476 ») est un petit écart, pas une colonne. Dessins concernés : `cm1Posee` (chapitres/cm1/_commun.js), `cm1opRowsTable` /
+`cm1opCompPrefix` (CM1 Opérations, aussi l'outil de correction), animations `cm1AnimOperation` (_anims.js), planches CE2-N3,
+démonstrations de 6e (décimaux, durées).
+
 ## Planches : jamais d'exercice seul en demi-largeur (demandé le 30/10/2026)
 
 « Je ne veux jamais voir ça dans aucun niveau » : un exercice `{ col: 1 }` (demi-largeur) resté seul laisse un trou à sa droite

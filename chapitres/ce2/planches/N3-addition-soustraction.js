@@ -2,7 +2,7 @@
    CE2 · Planches : Addition et soustraction posées (N3)
    Mots terme, somme, différence (au programme du CE2 : « La somme de 12 et de 25 est 37 ») ; additions
    de deux ou trois nombres et soustractions posées en colonnes (entiers jusqu'à 10 000), soustraction
-   par compensation (« +10 » en haut, « 1+ » en bas) ; calcul mental quand c'est possible.
+   par compensation (« +10 » en haut, « +1 » en bas) ; calcul mental quand c'est possible.
    Relecture CE2-N3 (28/10/2026) : corrigés posés (retenues, compensation, et cassage pour comparer),
    nombres de longueurs différentes, opérations à poser à l'écran case par case, plus d'exemples quand
    il reste de la place, deux problèmes côte à côte, choix sans répétition du calcul, tableau pour
@@ -28,14 +28,15 @@ function add(L, o){
 }
 // Soustraction posée sans marques (pour l'écran : cases du résultat).
 const sous = (a, b, o) => cm1Posee([[' ', String(a)], ['−', String(b)], [' ', String(a - b)]], '', o);
-// Soustraction par compensation : « 1 » rouge devant le chiffre du haut (+10), « +1 » rouge sous le chiffre du bas.
+// Soustraction par compensation : « +10 » rouge juste au-dessus du chiffre du haut, « +1 » rouge en indice collé au chiffre du
+// bas (même convention à tous les niveaux, demandé le 05/11/2026).
 function compens(a, b){
   const A = String(a).split('').map(Number), n = A.length, Bd = String(b).padStart(n, ' ').split('').map(c => c === ' ' ? null : +c);
   const haut = Array(n).fill(false), bas = Array(n).fill(false); let ret = 0;
   for(let j = n - 1; j >= 0; j--){ const y = (Bd[j] || 0) + ret; if(ret) bas[j] = true; if(A[j] < y){ haut[j] = true; ret = 1; } else ret = 0; }
   const r = String(a - b).padStart(n, ' ');
-  return `<table style="border-collapse:collapse;margin:5px auto;"><tr>${td('')}${A.map((d, j) => td(haut[j] ? `${d}<span style="position:absolute;left:2px;top:1px;color:${ROUGE};font-size:.68rem;line-height:1;">1</span>` : d)).join('')}</tr>`
-    + `<tr>${td('−', 'color:#FF8208;')}${Bd.map((d, j) => td(d == null && !bas[j] ? '' : `${d == null ? '' : d}${bas[j] ? `<span style="position:absolute;right:-4px;bottom:0;color:${ROUGE};font-size:.68rem;line-height:1;">+1</span>` : ''}`)).join('')}</tr>`
+  return `<table style="border-collapse:collapse;margin:5px auto;"><tr>${td('')}${A.map((d, j) => td(haut[j] ? `${d}<span style="position:absolute;left:50%;top:-5px;transform:translateX(-50%);color:${ROUGE};font-size:.68rem;line-height:1;white-space:nowrap;">+10</span>` : d)).join('')}</tr>`
+    + `<tr>${td('−', 'color:#FF8208;')}${Bd.map((d, j) => td(d == null && !bas[j] ? '' : `${d == null ? '' : d}${bas[j] ? `<span style="position:absolute;left:calc(50% + 5px);bottom:3px;color:${ROUGE};font-size:.6rem;line-height:1;white-space:nowrap;">+1</span>` : ''}`)).join('')}</tr>`
     + `<tr style="border-top:2px solid #1C1B2E;">${td('')}${r.split('').map(d => td(d === ' ' ? '' : d, 'color:#FF8208;font-size:1.2rem;')).join('')}</tr></table>`;
 }
 // Soustraction par cassage : les chiffres cassés sont barrés, la nouvelle valeur est écrite au-dessus.

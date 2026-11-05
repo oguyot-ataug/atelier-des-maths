@@ -11,7 +11,7 @@ function posee(lignes, retenues){
   const larg = Math.max(...lignes.map(l => l[1].length));
   const cell = (c, st) => `<td style="width:22px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:1.15rem;font-weight:700;padding:2px 0;${st || ''}">${c === ' ' ? '' : c}</td>`;
   let h = '<table style="border-collapse:collapse;margin:8px auto;">';
-  if(retenues) h += `<tr><td></td>${retenues.padStart(larg).split('').map(c => cell(c, 'font-size:.75rem;color:#E35D3A;')).join('')}</tr>`;
+  if(retenues) h += `<tr><td></td>${retenues.padStart(larg).split('').map(c => cell(c, 'font-size:.75rem;color:#E35D3A;height:13px;padding:0;line-height:1;vertical-align:bottom;')).join('')}</tr>`; // retenues juste au-dessus (05/11/2026)
   lignes.forEach(([s, n], i) => { const res = i === lignes.length - 1;
     h += `<tr style="${res ? 'border-top:2px solid #1F3A5C;' : ''}">${cell(s, 'color:#E35D3A;')}${n.padStart(larg).split('').map(c => cell(c, res ? 'color:#2E9C6A;' : '')).join('')}</tr>`; });
   return h + '</table>';

@@ -325,8 +325,8 @@ function cm1Posee(lignes, retenues, opts){
   // « en ligne, les produits ont déjà été réalisés »).
   lignes.forEach(([s, n, trait], i) => { const fin = i === lignes.length - 1, res = fin || (op === '×' && i >= 2 && (opts.trous || opts.rep || opts.cases)) ? i + 1 : 0, ch = n.padStart(larg).split('');
     // Soustraction : « 1 » devant le chiffre du haut (+10), « +1 » sous le chiffre du bas (compensation).
-    const plus = j => !sous || virg.has(j) ? '' : i === 0 ? (cases && rang(j) < larg - 1 ? caseRet('h', j, 'position:absolute;left:-5px;top:-7px;') : M && M.haut[j] ? marque('1', 'left:1px;top:0') : '')
-      : i === 1 ? (cases && rang(j) > 0 ? caseRet('b', j, 'position:absolute;right:-5px;bottom:-6px;') : M && M.bas[j] ? marque('+1', 'right:-3px;bottom:-1px') : '') : '';
+    const plus = j => !sous || virg.has(j) ? '' : i === 0 ? (cases && rang(j) < larg - 1 ? caseRet('h', j, 'position:absolute;left:-5px;top:-7px;') : M && M.haut[j] ? marque('+10', 'left:50%;top:-5px;transform:translateX(-50%);white-space:nowrap') : '') // « +10 » juste au-dessus du chiffre (05/11/2026)
+      : i === 1 ? (cases && rang(j) > 0 ? caseRet('b', j, 'position:absolute;right:-5px;bottom:-6px;') : M && M.bas[j] ? marque('+1', 'left:calc(50% + 5px);bottom:3px;font-size:.6rem;white-space:nowrap') : '') : ''; // « +1 » en indice collé à son chiffre
     h += `<tr style="${fin || trait ? 'border-top:2px solid #1C1B2E;' : ''}">${cell(s, 'width:26px;color:#FF8208;')}${ch.map((c, j) => cell(c, fin ? 'color:#FF8208;font-size:1.2rem;' : '', res, j, plus(j))).join('')}</tr>`; });
   return h + '</table>';
 }
