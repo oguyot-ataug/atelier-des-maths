@@ -45,8 +45,11 @@ async function getOrCreateInvitationToken(adminClient: any, userId: string): Pro
     .gt("expires_at", new Date().toISOString())
     .maybeSingle();
   if (existing) return existing.token;
+  // Un seul lien en attente par élève (index invitations_one_pending_per_user) : un lien expiré jamais utilisé est retiré.
+  await adminClient.from("invitations").delete().eq("user_id", userId).is("used_at", null);
   const token = crypto.randomUUID();
-  await adminClient.from("invitations").insert({ token, user_id: userId });
+  const { error } = await adminClient.from("invitations").insert({ token, user_id: userId });
+  if (error) throw new Error(error.message);
   return token;
 }
 
@@ -174,7 +177,8 @@ serve(async (req) => {
       // fermés. L'ancien mot de passe reste valable jusqu'à ce que l'élève en choisisse un nouveau.
       if (reinit) {
         const maintenant = new Date();
-        await adminClient.from("invitations").update({ expires_at: maintenant.toISOString() }).eq("user_id", userId).is("used_at", null);
+        // Un seul lien en attente par élève (index invitations_one_pending_per_user) : l'ancien lien non utilisé est retiré.
+        await adminClient.from("invitations").delete().eq("user_id", userId).is("used_at", null);
         const token = crypto.randomUUID();
         const { error: insErr } = await adminClient.from("invitations").insert({ token, user_id: userId, expires_at: new Date(maintenant.getTime() + 7 * 864e5).toISOString() });
         if (insErr) return json({ error: insErr.message }, 400);
