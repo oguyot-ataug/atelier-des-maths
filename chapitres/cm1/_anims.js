@@ -159,7 +159,9 @@ function cmOpEtapes(sa, op, sb){
     // Copies : chaque étape montre les retenues écrites JUSQU'ICI (signalé le 05/11/2026 : les retenues de toutes les colonnes
     // s'affichaient dès la première étape, le tableau étant partagé par toutes les étapes).
     { cells: ret.slice(), small: true, color: '#E35D3A' },
-    { cells: gris(ta, A.d, dA).map((c, i) => haut[i] ? `${c}` : c), annot: haut.slice() },
+    // « +10 » de la compensation posé juste au-dessus de son chiffre (demandé le 05/11/2026 : « le +10 juste au-dessus de son
+    // chiffre, moins d'espace ») ; la ligne des retenues, vide en soustraction, lui laisse la place.
+    { cells: gris(ta, A.d, dA).map((c, i) => haut[i] ? `<span style="position:relative;display:inline-block;">${c}<span style="position:absolute;left:50%;bottom:100%;transform:translateX(-50%);margin-bottom:.08em;font-size:.55em;line-height:1;color:#E35D3A;white-space:nowrap;">${haut[i]}</span></span>` : c), annot: haut.slice() },
     { cells: gris(tb, B.d, dB).map((c, i) => bas[i] ? cm1opCompPrefixCm(c) : c), sign: op, bar: true },
     { cells: res.slice(), res: true, fin }
   ].map(r => Object.assign(r, { col: colActive }));
@@ -178,7 +180,7 @@ function cmOpEtapes(sa, op, sb){
       if(!ta[j].trim() && !tb[j].trim()) continue;
       const yy = y + r; let txt;
       if(x < yy){
-        haut[j] = '+10'; ret[j] = '+10';
+        haut[j] = '+10';
         const k = j - 1 === virg ? j - 2 : j - 1; if(k >= 0) bas[k] = '1';
         res[j] = String(x + 10 - yy);
         txt = `Colonne des <b>${rangs(j)}</b> : ${r ? `en bas, ${y} + 1 (compensation) = ${yy} ; ` : ''}${x} &lt; ${yy}. J'ajoute <b>10</b> en haut (${x} devient ${x + 10}) et <b>1</b> en bas dans la colonne suivante (« +1 »). ${x + 10} − ${yy} = <b>${x + 10 - yy}</b>.`;
