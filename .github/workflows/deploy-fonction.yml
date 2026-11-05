@@ -43,9 +43,11 @@ jobs:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
           NOM: ${{ inputs.nom }}
           JWT: ${{ inputs.verifier_jwt }}
+        # --yes : depuis novembre 2026, l'outil Supabase demande une confirmation avant de déployer (« Confirmation required…
+        # Re-run with --yes ») ; sans terminal, il s'arrête sans rien changer.
         run: |
           [ -f supabase/config.toml ] || supabase init --force > /dev/null 2>&1 || true
-          if supabase functions deploy "$NOM" --project-ref tdsdwbsvduitgrrrfjrp --use-api $([ "$JWT" = non ] && echo --no-verify-jwt) > /tmp/d.log 2>&1; then
+          if supabase functions deploy "$NOM" --project-ref tdsdwbsvduitgrrrfjrp --use-api --yes $([ "$JWT" = non ] && echo --no-verify-jwt) > /tmp/d.log 2>&1; then
             echo "::notice title=Fonction::$NOM déployée (verify_jwt : $JWT)"
           else
             E=$(tail -5 /tmp/d.log | sed -E 's/"[^"]*"/"…"/g'); echo "::error title=Fonction::${E//$'\n'/'%0A'}"; exit 1
