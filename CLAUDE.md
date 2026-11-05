@@ -22,11 +22,12 @@ elle-même). Sans ce GRANT, la table se crée sans erreur mais devient inaccessi
 `supabase db reset` local. Source : mail Supabase du 23/09/2026.
 
 Project ID Supabase de ce dépôt : `tdsdwbsvduitgrrrfjrp` (projet « AtelierMaths_Paris », région Paris eu-west-3, depuis le
-29/10/2026). L'ancien projet de Dublin (`rngzubhnypmistjsumpz`, eu-west-1) ne sert plus : ne plus jamais l'utiliser (fonctionnement
-de Paris confirmé le 05/11/2026, suppression de Dublin par l'administrateur). Les scripts du déménagement (migration-paris.yml et
+29/10/2026). L'ancien projet de Dublin (`rngzubhnypmistjsumpz`, eu-west-1) a été SUPPRIMÉ le 05/11/2026 (fonctionnement de Paris
+confirmé avant) : il n'existe plus. Les scripts du déménagement (migration-paris.yml et
 .github/scripts/migration-*) ont été retirés du dépôt le 05/11/2026.
 Fonctions serveur : le code est dans `supabase/functions/<nom>/index.ts` ; la tâche GitHub « Déployer une fonction
-serveur » (`.github/workflows/deploy-fonction.yml`, secret SUPABASE_ACCESS_TOKEN) le déploie à Paris à l'identique.
+serveur » (`.github/workflows/deploy-fonction.yml`, secret SUPABASE_ACCESS_TOKEN, option `--yes` exigée par l'outil Supabase
+depuis novembre 2026) le déploie à Paris à l'identique.
 
 ## Comptes : identifiant et adresse de récupération (depuis le 30/10/2026, build 1200)
 
