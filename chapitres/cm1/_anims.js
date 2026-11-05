@@ -106,8 +106,8 @@ function cm1AnimFraction(id, o){
 
 /* ------------------------------ 2. Opération posée, pas à pas ------------------------------
    L'élève tape ses nombres. Addition et soustraction de décimaux (virgules alignées, zéros ajoutés
-   en gris), soustraction par compensation (« +10 » au-dessus du chiffre du haut, « 1+ » en petit à
-   gauche du chiffre du bas de la colonne suivante -- même convention que le chapitre Opérations),
+   en gris), soustraction par compensation (« +10 » au-dessus du chiffre du haut, « +1 » en indice à
+   droite du chiffre du bas de la colonne suivante, comme sur les planches imprimées du CE2),
    multiplication d'un nombre (entier ou décimal) par un entier (produits partiels, décalage). */
 const CM_RANGS = ['unités', 'dizaines', 'centaines', 'unités de mille', 'dizaines de mille', 'centaines de mille', 'unités de millions'];
 const CM_DECS = ['dixièmes', 'centièmes', 'millièmes', 'dix-millièmes'];
@@ -181,7 +181,7 @@ function cmOpEtapes(sa, op, sb){
         haut[j] = '+10'; ret[j] = '+10';
         const k = j - 1 === virg ? j - 2 : j - 1; if(k >= 0) bas[k] = '1';
         res[j] = String(x + 10 - yy);
-        txt = `Colonne des <b>${rangs(j)}</b> : ${r ? `en bas, ${y} + 1 (compensation) = ${yy} ; ` : ''}${x} &lt; ${yy}. J'ajoute <b>10</b> en haut (${x} devient ${x + 10}) et <b>1</b> en bas dans la colonne suivante (« 1+ »). ${x + 10} − ${yy} = <b>${x + 10 - yy}</b>.`;
+        txt = `Colonne des <b>${rangs(j)}</b> : ${r ? `en bas, ${y} + 1 (compensation) = ${yy} ; ` : ''}${x} &lt; ${yy}. J'ajoute <b>10</b> en haut (${x} devient ${x + 10}) et <b>1</b> en bas dans la colonne suivante (« +1 »). ${x + 10} − ${yy} = <b>${x + 10 - yy}</b>.`;
         r = 1;
       } else { res[j] = String(x - yy); txt = `Colonne des <b>${rangs(j)}</b> : ${x} − ${yy}${r ? ` (${y} + 1 de la compensation)` : ''} = <b>${x - yy}</b>.`; r = 0; }
       et.push({ rows: tableau(j), texte: txt });
@@ -194,7 +194,10 @@ function cmOpEtapes(sa, op, sb){
   et.push({ rows: tableau(null, true), texte: `${aff(sa)} ${op} ${aff(sb)} = <b>${fin.replace(/(,\d*?)0+$/, '$1').replace(/,$/, '')}</b>`, fin: true });
   return { etapes: et };
 }
-function cm1opCompPrefixCm(d){ return `<span style="white-space:nowrap;"><span style="font-size:.55em;color:#E35D3A;vertical-align:top;">1+</span>${d}</span>`; }
+// « +1 » de la compensation : petit indice en bas à droite du chiffre, collé à lui, sans le déplacer ni déborder sur la colonne
+// suivante (demandé le 05/11/2026 : « le +1 doit être plus discret, comme un indice du chiffre sans décalage », puis « le coller
+// davantage à son chiffre » ; même place que sur les planches imprimées du CE2).
+function cm1opCompPrefixCm(d){ return `<span style="position:relative;display:inline-block;">${d}<span style="position:absolute;left:100%;bottom:-.1em;margin-left:-.05em;font-size:.5em;line-height:1;color:#E35D3A;white-space:nowrap;">+1</span></span>`; }
 function cmOpTableHtml(rows){
   return `<table class="cma-op">${rows.map(r => `<tr>${`<td class="cma-sg">${r.sign || ''}</td>`}${r.cells.map((c, i) => {
     const st = (r.bar ? 'border-bottom:2.5px solid #1F3A5C;' : '') + (r.col === i ? 'background:rgba(255,193,7,.28);' : '');
