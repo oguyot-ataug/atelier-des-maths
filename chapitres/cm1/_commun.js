@@ -410,7 +410,7 @@ function cahierCaler(page){
   if(!cahierOn || !page.isConnected || !page.offsetParent) return;
   const blocs = [], voir = el => [...el.children].forEach(c => { if(c.classList.contains('cm-redac') || /^(UL|OL)$/.test(c.tagName)) voir(c); else if(getComputedStyle(c).display !== 'inline') blocs.push(c); });
   voir(page);
-  blocs.forEach(b => { b.style.removeProperty('--cal'); b.style.removeProperty('--calh'); });
+  blocs.forEach(b => { b.style.removeProperty('--cal'); b.style.removeProperty('--calh'); b.style.removeProperty('--calm'); });
   // Hauteurs en pixels de la page, pas de l'écran : la projection et le Manuel agrandissent par zoom (signalé le 07/11/2026 :
   // « Le texte est bien sur les lignes principales mais pas les nombres »).
   const k = page.offsetHeight ? page.getBoundingClientRect().height / page.offsetHeight : 1;
@@ -423,7 +423,14 @@ function cahierCaler(page){
     b.insertBefore(s, b.firstChild); const bl = (s.getBoundingClientRect().bottom - b.getBoundingClientRect().top) / (k || 1); s.remove();
     return Math.round((((CAHIER_B - bl) % 32 + 32) % 32) * 100) / 100; // sans arrondi au pixel : sinon un « = » sur deux décalé d'1 px
   });
-  blocs.forEach((b, i) => { if(haut[i]) b.style.setProperty('--calh', haut[i] + 'px'); });
+  // Deux lignes à fraction de suite (demandé le 07/11/2026 : « on peut remonter 2/5 × 240 d'un carreau ») : la seconde remonte
+  // d'un carreau quand son numérateur tient encore dans son propre carreau (sous le dénominateur de la ligne précédente).
+  const mont = blocs.map((b, i) => {
+    if(!fr[i] || !fr[i - 1] || haut[i] < 16 || !b.classList.contains('cm-redac-ligne') || b.previousElementSibling !== blocs[i - 1]) return 0;
+    const t = Math.min(...[...b.querySelectorAll('.katex-html')].map(e => e.getBoundingClientRect().top)), t0 = b.getBoundingClientRect().top;
+    return (t - t0) / (k || 1) + haut[i] - 32 >= -1 ? -32 : 0;
+  });
+  blocs.forEach((b, i) => { if(haut[i]) b.style.setProperty('--calh', haut[i] + 'px'); if(mont[i]) b.style.setProperty('--calm', mont[i] + 'px'); });
   const H = blocs.map(b => b.getBoundingClientRect().height / (k || 1));
   // Titre souligné SUR L'INTERLIGNE, la première ligne fine sous la ligne principale (demandé le 07/11/2026 : « Souligner : sur
   // l'interligne ! ») : trait dessiné à 8,5 px sous la ligne d'écriture (--soul, styles.css), continu sous les jambages.

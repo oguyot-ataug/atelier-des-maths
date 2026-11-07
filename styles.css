@@ -2398,6 +2398,10 @@ body.plp-ouvert .cahier-flottant{ top:56px; bottom:auto; left:16px; z-index:2147
     font-family:Caveat,'Comic Sans MS',cursive; font-size:23px; font-weight:600; line-height:32px; color:#1E3A8A;
   }
   body.cahier-on .cahier-actif > *, body.cahier-on .cahier-actif .cm-redac > *, body.cahier-on .cahier-actif li{ margin-top:0 !important; margin-bottom:0 !important; padding-top:var(--calh, 0px) !important; padding-bottom:var(--cal, 0px) !important; }
+  /* Raisonnements séparés d'une ligne vide (demandé le 07/11/2026 : « Il faut bien séparer les différents blocs de raisonnement ») ;
+     une ligne à fraction qui suit une autre ligne à fraction remonte d'un carreau (--calm négatif, cahierCaler). */
+  body.cahier-on .cahier-actif .cm-redac + .cm-redac{ margin-top:32px !important; }
+  body.cahier-on .cahier-actif .cm-redac > .cm-redac-ligne{ margin-top:var(--calm, 0px) !important; }
   /* Lignes avec une fraction (07/11/2026) : barre de fraction et signes centrés sur la ligne principale. KaTeX pose barre et signes sur
      son axe, 0,25 em au-dessus de la ligne d'écriture : on les descend de 0,25 em ; les signes écrits en texte (.cahier-op), de 0,3 em. */
   body.cahier-on .cahier-actif .katex:has(.mfrac) .base > .mord:has(> .mfrac),
