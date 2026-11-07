@@ -214,6 +214,11 @@ const RL_REMARQUES = [
   'Papier : mise en page (coupure, place pour répondre…)',
   'Écran : ne fonctionne pas bien',
   'Écran : devrait pouvoir se faire à l\'écran',
+  // Demandé le 07/11/2026 : « Dans les commentaires, ajouter une case à cocher "Ajouter autre version" "Ajouter fiche de
+  // répétition" » : l'exercice doit pouvoir être refait avec d'autres nombres (planches-variantes.js : bouton « Autre version »,
+  // et plusieurs versions imprimées sur une fiche de répétition).
+  'Ajouter autre version',
+  'Ajouter fiche de répétition',
 ];
 const RL_ETATS = { ok: ['check_circle', 'Validé'], non: ['radio_button_unchecked', 'Non examiné'], com: ['chat', 'Commenté'] };
 const rl = { lignes: null, filtre: '', beta: null, betaUid: null, retours: new Map(), etats: new Map() };

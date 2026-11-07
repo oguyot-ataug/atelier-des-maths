@@ -323,7 +323,9 @@ function cm1Posee(lignes, retenues, opts){
   const marque = (t, ou) => `<span style="position:absolute;${ou};font-size:.68rem;line-height:1;color:#E35D3A;font-weight:700;">${t}</span>`;
   const sous = op === '−' && lignes.length === 3;
   // « Dans mon cahier » (demandé le 07/11/2026) : la même opération sur une feuille Seyès, dessinée à la demande (cm1PoseeCahier).
-  const cahier = opts.trous || opts.cases ? '' : ` class="pose-ecran" data-cahier="${JSON.stringify({ l: lignes.map(([s, n, t]) => t ? [s, n, 1] : [s, n]), r: retenues || '', h: M ? Object.keys(M.haut).map(Number) : [], b: M ? Object.keys(M.bas).map(Number) : [] }).replace(/"/g, '&quot;')}"`;
+  // Opération à compléter (cases à remplir) : elle reste interactive ; en mode cahier, la feuille Seyès est dessinée en fond (classe
+  // pose-trous, styles.css) -- signalé le 07/11/2026 : « la fonctionnalité ne marche pas en plein écran ».
+  const cahier = opts.trous || opts.cases ? ' class="pose-trous"' : ` class="pose-ecran" data-cahier="${JSON.stringify({ l: lignes.map(([s, n, t]) => t ? [s, n, 1] : [s, n]), r: retenues || '', h: M ? Object.keys(M.haut).map(Number) : [], b: M ? Object.keys(M.bas).map(Number) : [] }).replace(/"/g, '&quot;')}"`;
   let h = `<table${cahier} style="border-collapse:collapse;margin:${sous && (cases || M) ? 10 : 5}px auto 5px;">`;
   // Retenues juste au-dessus des chiffres (demandé le 05/11/2026 : « les retenues plus près du nombre ») : ligne basse, chiffre en bas.
   if(retenues) h += `<tr><td></td>${retenues.padStart(larg).split('').map((c, j) => cell(c, 'font-size:.72rem;color:#FF8208;height:13px;padding:0;line-height:1;vertical-align:bottom;', 0, j)).join('')}</tr>`;
@@ -429,7 +431,7 @@ function cahierFlottantPlanifier(){ if(!cahierFlotT) cahierFlotT = setTimeout(()
 function cahierFlottantMaj(){
   if(!document.body) return;
   const H = window.innerHeight || 0, vu = e => { const r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0 && r.bottom > 0 && r.top < H; };
-  const contenu = [...document.querySelectorAll('.cahier-page, table.pose-ecran[data-cahier], svg.pose-cahier')].some(vu);
+  const contenu = [...document.querySelectorAll('.cahier-page, table.pose-ecran[data-cahier], table.pose-trous, svg.pose-cahier')].some(vu);
   const enTete = [...document.querySelectorAll('.cahier-barre .cahier-btn')].some(vu);
   let b = document.getElementById('cahierFlottant');
   if(!contenu || enTete){ if(b) b.hidden = true; return; }

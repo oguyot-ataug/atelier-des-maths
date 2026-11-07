@@ -152,8 +152,7 @@ Bouton « Dans mon cahier » (`cahierBouton`, chapitres/cm1/_commun.js) en tête
 qui ont des opérations `cm1Posee` : chaque tableau d'opération (classe `pose-ecran`, données `data-cahier`) reçoit à côté son dessin
 Seyès (`cm1PoseeCahier` : marge rouge, un chiffre par carreau sur une ligne principale, retenues et « +10 » dans l'interligne
 au-dessus, « +1 » en indice, police Caveat). Réglage retenu sur l'appareil (`cahierSeyes`), valable partout (classe `cahier-on` sur
-body, dessins ajoutés aussi au contenu affiché plus tard) ; l'impression garde toujours l'opération habituelle. Pas pour les opérations
-à compléter (`trous`, `cases`) ni pour les animations (`cmAnim`).
+body, dessins ajoutés aussi au contenu affiché plus tard) ; l'impression garde toujours l'opération habituelle. Pas pour les animations (`cmAnim`).
 Corrections des exercices faits dans le cahier (demandé le 07/11/2026) : `.cahier-page` (onglet Exercices des chapitres, `cm1Exos` ;
 exercices de planche `cahier: true` ou « dans/sur ton cahier », `plExoCorps`) : quand le mode est actif (classe `cahier-actif`, jamais
 dans `.pl-page` : Manuel, impression), la correction s'écrit sur la feuille (Caveat 23 px, ligne de base CAHIER_B = 23 px sous le haut
@@ -161,6 +160,8 @@ de chaque carreau de 32 px) ; `cahierCaler` allonge chaque bloc jusqu'au carreau
 y sont dessinées sans feuille propre (`cm1PoseeCahier(d, true)`), dans les carreaux de la page.
 Bouton flottant (`#cahierFlottant`, `cahierFlottantMaj`, demandé le 07/11/2026 : « accessible partout ») : en bas à gauche, dès qu'une
 opération posée ou une `.cahier-page` est à l'écran, masqué si le bouton d'en-tête d'onglet est visible ; jamais à l'impression.
+Opérations à compléter (`trous`, `cases`) : classe `pose-trous`, feuille Seyès dessinée en fond par la seule feuille de style
+(cases de 32 px, cases à remplir conservées, « Vérifier » inchangé) ; en projection le bouton flottant passe en haut à gauche.
 
 ## Planches : jamais d'exercice seul en demi-largeur (demandé le 30/10/2026)
 
