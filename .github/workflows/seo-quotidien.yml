@@ -1,0 +1,55 @@
+# Pages publiques (référencement) : régénérées UNE fois par jour -- demandé le 07/11/2026 : « On pourrait
+# programmer ça une seule fois dans la journée ? »
+# tools/build-seo.js ouvre le vrai site dans un navigateur sans écran et recopie le contenu de chaque chapitre
+# (environ 12 minutes). Il tourne ici chaque nuit (vers 4 h à Paris, après la tâche de relecture de minuit),
+# puis committe sur main les pages qui ont changé (cp/, ..., 3e/, professeurs/, programmes/, sitemap.xml,
+# robots.txt, tools/seo-manifest.json) et relance le déploiement. Rien à committer : rien n'est publié.
+# Lancement à la main possible : Actions › « Pages publiques (référencement) » › Run workflow.
+name: Pages publiques (référencement)
+
+on:
+  schedule:
+    - cron: '23 3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: seo-quotidien
+  cancel-in-progress: false
+
+jobs:
+  seo:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Outils (KaTeX, Playwright, Chromium)
+        run: |
+          cd tools
+          npm ci --no-audit --no-fund
+          npm install --no-save --no-audit --no-fund playwright@1.63.0
+          npx playwright install --with-deps chromium
+      - name: Régénération des pages publiques
+        run: node tools/build-seo.js
+      - name: Commit sur main et déploiement
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -- tools/package-lock.json tools/package.json 2>/dev/null || true
+          git add -A
+          if git diff --cached --quiet; then echo "Pages publiques inchangées : rien à publier."; exit 0; fi
+          git diff --cached --stat | tail -1
+          git commit -q -m "Pages publiques régénérées (référencement, tâche quotidienne)"
+          for i in 1 2 3; do git pull -q --rebase origin main && git push -q origin HEAD:main && break; sleep 5; done
+          # Un push fait avec le jeton du workflow ne relance pas les autres workflows : déploiement demandé ici.
+          gh workflow run deploy-pages.yml --ref main

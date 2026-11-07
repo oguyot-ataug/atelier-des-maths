@@ -20,7 +20,8 @@
                                                 modification (lastmod) qui ne change que si
                                                 le contenu change vraiment
 
-   Utilisation (à relancer après toute modification d'un chapitre ou de la page professeurs) :
+   Utilisation : lancé chaque nuit par .github/workflows/seo-quotidien.yml (qui committe le résultat sur main) ;
+   à la main pour une publication immédiate :
      (cd tools && npm install)        -- une fois : KaTeX, pour rendre les formules
      NODE_PATH=/opt/node22/lib/node_modules node tools/build-seo.js
    Nécessite Playwright + Chromium (variable PW_CHROMIUM pour un autre chemin de navigateur).

@@ -45,15 +45,22 @@ Inscription d'un professeur : le profil « pending » est créé PAR LA BASE à 
 Les pages indexables par Google (`cp/<chapitre>/`, `ce1/<chapitre>/`, `ce2/<chapitre>/`, `cm1/<chapitre>/`, `cm2/<chapitre>/`, `6e/<chapitre>/`, `5e/<chapitre>/`, `4e/<chapitre>/`, `3e/<chapitre>/`, `cp/`, `ce1/`, `ce2/`, `cm1/`, `cm2/`, `6e/`, `5e/`, `4e/`, `3e/`,
 `professeurs/`, `programmes/`),
 `sitemap.xml` et `robots.txt` sont GÉNÉRÉES à partir du vrai contenu des chapitres par
-`tools/build-seo.js` (ne pas les modifier à la main). Après toute modification d'un fichier de
-`chapitres/`, d'un titre de chapitre (CHCM1/CHCM2/CH6/CH5/CH4/CH3 dans app.js) ou de la page professeurs, relancer :
+`tools/build-seo.js` (ne pas les modifier à la main).
+
+**Une seule fois par jour, automatiquement (demandé le 07/11/2026 : « On pourrait programmer ça une seule fois dans
+la journée ? »)** : le workflow `.github/workflows/seo-quotidien.yml` régénère les pages chaque nuit (03:23 UTC, après
+la tâche de relecture de minuit), committe sur main ce qui a changé et relance le déploiement. Ne plus lancer
+build-seo (environ 12 minutes) après chaque modification d'un chapitre : les pages publiques suivent le lendemain matin.
+Pour une publication immédiate (nouveau chapitre, titre changé, demande expresse) : Actions › « Pages publiques
+(référencement) » › Run workflow, ou à la main :
 
 ```
 (cd tools && npm install)   # une fois par session : KaTeX pour rendre les formules
 NODE_PATH=/opt/node22/lib/node_modules node tools/build-seo.js
 ```
 
-et committer les fichiers produits avec le reste. Un chapitre sans vrai cours (« Cours en
+Avant de pousser sur main, toujours ramener main (`git merge --ff-only origin/main`) : le workflow y committe chaque
+nuit. Un chapitre sans vrai cours (« Cours en
 construction ») n'a pas de page : elle apparaît automatiquement dès que son cours existe.
 
 Ne JAMAIS retirer de `index.html` la balise `<meta name="google-site-verification" ...>` : elle
