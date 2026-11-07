@@ -131,6 +131,10 @@ fichier) ; la page est écrite par `tools/build-seo.js`.
   animations du CE2 dans `chapitres/ce2/_anims.js` : sauts sur une droite, schémas en barres, jetons,
   glisse-nombre, horloge, règle, partage, diagramme, compas, angle, balance, verres, fractions…).
 - **Jamais plusieurs calculs sur une même ligne** (une liste `cm1Liste`, ou `{ suite: [...] }`).
+- **Jamais de français dans une ligne de calcul** (demandé le 07/11/2026 : « ne jamais mélanger calcul et "français", ici "de",
+  quelle horreur ! ») : pas de « 10 % de 40 », « la moitié de », « donc », « et », « soit » entre deux calculs. Les mots vont dans le
+  titre et la phrase de `cm1Redac` ; un pourcentage s'écrit en fraction (`F(10, 100) × 40 = F(400, 100) = 4`). Au collège comme au
+  primaire, décomposer : un `cm1Redac` par étape (« Augmentation » : la part ; « Prix après l'augmentation » : 40 + 4 = 44…).
 - **Pas de numérotation « 1. », « 2. »** devant les questions, surtout si elles commencent par un nombre
   ou un calcul (listes à puces ; le quiz affiche « Question 1 » au-dessus de l'énoncé).
 - **Nombres en lettres en orthographe rectifiée** (tous niveaux) : des traits d'union entre tous les mots du

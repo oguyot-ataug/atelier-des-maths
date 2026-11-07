@@ -1,5 +1,5 @@
 /* ============================================================
-   6e · Planches : Fractions : multiplication (N5)
+   6e · Planches : Fractions : multiplication (N5) -- pourcentages décomposés, sans mot dans les calculs (07/11/2026)
    ============================================================ */
 (() => {
 const B = n => plPointilles(n || 3), R = v => plRep(String(v)), F = cm1Frac, Fr = plFrac();
@@ -62,9 +62,9 @@ PLANCHES['6e|Fractions : multiplication'] = [
         eleve: plListe(['Nombre d\'externes : ' + B(), 'Pourcentage de non-externes : ' + B() + ' %', 'Nombre de non-externes : ' + B()]),
         corr: plListe(['Nombre d\'externes : ' + R(140), 'Pourcentage de non-externes : ' + R(65) + ' %', 'Nombre de non-externes : ' + R(260)]) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Un vélo coûte 250 €. Le magasin A propose 20 % de réduction ; le magasin B propose 45 € de réduction. Quel est le magasin le plus avantageux ?',
-        corr: cm1Redac('Magasin A', '20 % de 250 = 50 ; 250 − 50 = 200', 'Le vélo coûte 200 € chez A.') + cm1Redac('Magasin B', '250 − 45 = 205', 'Le vélo coûte 205 € chez B : le magasin A est le plus avantageux.') },
+        corr: cm1Redac('Réduction chez A', `${F(20, 100)} × 250 = ${F(5000, 100)} = 50`, 'La réduction est de 50 €.') + cm1Redac('Prix chez A', '250 − 50 = 200', 'Le vélo coûte 200 € chez A.') + cm1Redac('Prix chez B', '250 − 45 = 205', 'Le vélo coûte 205 € chez B : le magasin A est le plus avantageux.') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Un yaourt de 125 g contient 4 % de matières grasses. Quelle masse de matières grasses contient-il ? Et 6 yaourts ?',
-        corr: cm1Redac('Un yaourt', '4 % de 125 = 125 × 4 ÷ 100 = 5', 'Un yaourt contient 5 g de matières grasses.') + cm1Redac('Six yaourts', '6 × 5 = 30', 'Six yaourts en contiennent 30 g.') },
+        corr: cm1Redac('Matières grasses d\'un yaourt', `${F(4, 100)} × 125 = ${F(500, 100)} = 5`, 'Un yaourt contient 5 g de matières grasses.') + cm1Redac('Six yaourts', '6 × 5 = 30', 'Six yaourts en contiennent 30 g.') },
     ] },
   { titre: 'Fractions et pourcentages : problèmes', duree: '40 min',
     attendus: ['Choisir entre fraction, pourcentage et nombre décimal', 'Enchaîner plusieurs calculs', 'Rédiger une réponse complète'],
@@ -80,7 +80,8 @@ PLANCHES['6e|Fractions : multiplication'] = [
       { etoiles: 3, col: 1, cahier: true, consigne: `Un roman a 360 pages. Le premier jour, Sacha lit ${T(1, 4)} du livre ; le deuxième jour, ${T(1, 3)} du livre. Combien de pages lui reste-t-il à lire ? Quelle fraction du livre cela représente-t-il ?`,
         corr: cm1Redac('Pages lues', { suite: [`${F(1, 4)} × 360 = 90`, `${F(1, 3)} × 360 = 120`, '90 + 120 = 210'] }, 'Sacha a lu 210 pages.') + cm1Redac('Pages restantes', '360 − 210 = 150', `Il lui reste 150 pages, soit ${F(150, 360)} = ${F(5, 12)} du livre.`) },
       { etoiles: 3, cahier: true, consigne: 'Le prix d\'un jeu augmente de 10 %, puis baisse de 10 %. Revient-il à son prix de départ (40 €) ? Calcule.',
-        corr: cm1Redac('Augmentation', '40 + 10 % de 40 = 40 + 4 = 44', 'Après l\'augmentation : 44 €.') + cm1Redac('Baisse', '44 − 10 % de 44 = 44 − 4,40 = 39,60', 'Le jeu coûte 39,60 € : il ne revient pas à 40 €.') },
+        corr: cm1Redac('Augmentation', `${F(10, 100)} × 40 = ${F(400, 100)} = 4`, 'Le prix augmente de 4 €.') + cm1Redac('Prix après l\'augmentation', '40 + 4 = 44', 'Après l\'augmentation, le jeu coûte 44 €.')
+          + cm1Redac('Baisse', `${F(10, 100)} × 44 = ${F(440, 100)} = 4,40`, 'Le prix baisse de 4,40 €.') + cm1Redac('Prix après la baisse', '44 − 4,40 = 39,60', 'Le jeu coûte 39,60 € : il ne revient pas à 40 €.') },
     ] },
 ];
 })();
