@@ -415,9 +415,38 @@ function cahierMaj(){
     if(!cahierObs && typeof MutationObserver !== 'undefined'){ cahierObs = new MutationObserver(ms => ms.forEach(m => m.addedNodes.forEach(n => { if(n.nodeType === 1 && !n.classList.contains('pose-cahier')) cahierAppliquer(n); }))); cahierObs.observe(document.body, { childList: true, subtree: true }); }
   } else { if(cahierObs){ cahierObs.disconnect(); cahierObs = null; } if(cahierRO){ cahierRO.disconnect(); cahierRO = null; } document.querySelectorAll('.cahier-actif').forEach(p => p.classList.remove('cahier-actif')); }
 }
-function cahierBasculer(){ cahierOn = !cahierOn; try{ localStorage.setItem('cahierSeyes', cahierOn ? '1' : '0'); }catch(e){} cahierMaj(); }
+function cahierBasculer(){ cahierOn = !cahierOn; try{ localStorage.setItem('cahierSeyes', cahierOn ? '1' : '0'); }catch(e){} cahierMaj(); if(typeof cahierFlottantMaj === 'function') cahierFlottantMaj(); }
 function cahierBouton(){ return `<div class="cahier-barre"><button type="button" class="cahier-btn${cahierOn ? ' actif' : ''}" aria-pressed="${cahierOn}" onclick="cahierBasculer()" title="Voir les opérations posées comme dans le cahier, sur une feuille à grands carreaux"><span class="gicon">menu_book</span> Dans mon cahier</button></div>`; }
-if(typeof document !== 'undefined'){ if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', cahierMaj); else cahierMaj(); }
+/* Bouton flottant « Dans mon cahier » (demandé le 07/11/2026 : « Je préfère que le bouton "Dans mon cahier" soit accessible
+   partout, pas seulement dans le cours car il faut retourner sur le cours pour changer la version ») : en bas à gauche, dès
+   qu'une opération posée ou une correction « cahier » est à l'écran (exercices, corrections et vignettes de planches,
+   projection, Manuel…), sauf si le bouton en tête d'onglet est déjà visible. Jamais à l'impression. */
+let cahierFlotT = null;
+function cahierFlottantPlanifier(){ if(!cahierFlotT) cahierFlotT = setTimeout(() => { cahierFlotT = null; cahierFlottantMaj(); }, 180); }
+function cahierFlottantMaj(){
+  if(!document.body) return;
+  const H = window.innerHeight || 0, vu = e => { const r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0 && r.bottom > 0 && r.top < H; };
+  const contenu = [...document.querySelectorAll('.cahier-page, table.pose-ecran[data-cahier], svg.pose-cahier')].some(vu);
+  const enTete = [...document.querySelectorAll('.cahier-barre .cahier-btn')].some(vu);
+  let b = document.getElementById('cahierFlottant');
+  if(!contenu || enTete){ if(b) b.hidden = true; return; }
+  if(!b){
+    document.body.insertAdjacentHTML('beforeend', `<button type="button" id="cahierFlottant" class="cahier-btn cahier-flottant" onclick="cahierBasculer()" title="Voir les opérations et les corrections comme dans le cahier, sur une feuille à grands carreaux"><span class="gicon">menu_book</span> Dans mon cahier</button>`);
+    b = document.getElementById('cahierFlottant');
+  }
+  b.hidden = false; b.classList.toggle('actif', cahierOn); b.setAttribute('aria-pressed', cahierOn ? 'true' : 'false');
+}
+function cahierFlottantInit(){
+  window.addEventListener('scroll', cahierFlottantPlanifier, { passive: true, capture: true });
+  window.addEventListener('resize', cahierFlottantPlanifier);
+  if(typeof MutationObserver !== 'undefined') new MutationObserver(ms => { if(ms.some(m => !(m.target && m.target.id === 'cahierFlottant'))) cahierFlottantPlanifier(); })
+    .observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class', 'style', 'hidden', 'open'] });
+  cahierFlottantPlanifier();
+}
+if(typeof document !== 'undefined'){
+  const go = () => { cahierMaj(); cahierFlottantInit(); };
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', go); else go();
+}
 
 /* ---- Pliage animé d'un patron (cube, pavé) -- demandé : « animer un patron de cube en le pliant
    (avec choix des différents modèles) ». Un patron est une liste de faces rectangulaires [x, y, l, h]

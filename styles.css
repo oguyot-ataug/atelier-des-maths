@@ -2375,6 +2375,10 @@ body:not(.connecte) #navDropdownEntrainer .nav-dropdown-menu button[data-nav="le
 .cahier-btn{ display:inline-flex; align-items:center; gap:6px; padding:6px 12px; border-radius:999px; border:1.5px solid #8C93CF; background:#fff; color:#2B3A8C; font:600 .85rem 'Inter',sans-serif; cursor:pointer; }
 .cahier-btn .gicon{ font-size:18px; }
 .cahier-btn.actif{ background:#2B3A8C; border-color:#2B3A8C; color:#fff; }
+/* Bouton flottant (partout où il y a une opération posée ou une correction « cahier »), à côté du bouton rond du bas à gauche. */
+.cahier-flottant{ position:fixed; left:74px; bottom:22px; z-index:9790; box-shadow:0 4px 14px rgba(28,43,57,.18); }
+.cahier-flottant[hidden]{ display:none !important; }
+@media print{ .cahier-flottant{ display:none !important; } }
 @media screen{
   body.cahier-on table.pose-ecran{ display:none !important; }
   body.cahier-on svg.pose-cahier{ display:block !important; }

@@ -159,6 +159,8 @@ exercices de planche `cahier: true` ou « dans/sur ton cahier », `plExoCorps`) 
 dans `.pl-page` : Manuel, impression), la correction s'écrit sur la feuille (Caveat 23 px, ligne de base CAHIER_B = 23 px sous le haut
 de chaque carreau de 32 px) ; `cahierCaler` allonge chaque bloc jusqu'au carreau suivant ; les opérations posées dans `.cm-redac-pose`
 y sont dessinées sans feuille propre (`cm1PoseeCahier(d, true)`), dans les carreaux de la page.
+Bouton flottant (`#cahierFlottant`, `cahierFlottantMaj`, demandé le 07/11/2026 : « accessible partout ») : en bas à gauche, dès qu'une
+opération posée ou une `.cahier-page` est à l'écran, masqué si le bouton d'en-tête d'onglet est visible ; jamais à l'impression.
 
 ## Planches : jamais d'exercice seul en demi-largeur (demandé le 30/10/2026)
 
