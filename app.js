@@ -3849,6 +3849,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1326', date:'2026-11-07', items:['Outil de correction, « Ajouter au cahier » : l\'enregistrement en base ne peut plus être empêché par l\'affichage du cahier, et un exercice vide n\'est plus ignoré en silence (un message le dit) -- signalé : « J\'avais saisi l\'exercice 4 page 23 », jamais arrivé en base.'] },
   { version:'2026-08-19.1325', date:'2026-11-07', items:['Cahier et cahier de corrections : la vue par semaine perdait les derniers jours -- signalé : « Les pages se chargent sans donner le dernier jour », « il manque des exercices saisis », « je n\'arrive pas en chargeant sur la bonne semaine ». Aucune entrée n\'était perdue en base. Cause : au rechargement de la classe (choix de la classe, enregistrement…), le contenu en mémoire était remplacé mais les jours marqués « déjà chargés » restaient ; un jour chargé sans contenu disparaissait alors de la vue, avec ses exercices, et la page s\'ouvrait sur une semaine plus ancienne. Désormais, chaque rechargement repart de la liste des jours de la classe, un chargement en cours n\'est plus écrasé, un exercice retiré met la liste à jour, et un jour vide par erreur est rechargé au lieu d\'être masqué. Le bas de la page Correction suit aussi le dernier chargement.'] },
   { version:'2026-08-19.1324', date:'2026-11-07', items:['« Dans mon cahier » : les corrections des exercices faits dans le cahier s\'écrivent aussi sur la feuille Seyès -- demandé : « Quid des corrections des exercices à faire dans le cahier ? Peux-tu aussi mettre le même fond ? ». Onglet Exercices des chapitres (CP au CM2) et exercices de planche « Dans ton cahier ! » : écriture à la main posée sur les lignes principales, titre souligné en rouge, résultat encadré en rouge, opérations posées directement dans les carreaux de la page (retenues dans l\'interligne au-dessus). Jamais dans le Manuel ni à l\'impression.'] },
   { version:'2026-08-19.1323', date:'2026-11-07', items:['Nouveau bouton « Dans mon cahier » (cours, méthode et exercices des chapitres du CP au CM2) -- demandé : « mettre un fond type feuilles Seyès en respectant la marge et les lignes principales ». Les opérations posées s\'affichent sur une feuille à grands carreaux : marge rouge, un chiffre par carreau posé sur une ligne principale, retenues et « +10 » dans l\'interligne au-dessus du chiffre, « +1 » en indice, virgule sur le trait vertical. Réglage retenu sur l\'appareil et valable partout sur le site (corrections des planches de 6e comprises) ; l\'impression garde l\'opération habituelle.'] },
@@ -8294,7 +8295,9 @@ async function addToCahier(){
   const textareaVisible = document.getElementById('correctionInputWrap').style.display !== 'none';
   const raw = textareaVisible ? document.getElementById('correctionInput').value.trim() : '';
   const figureHtml = blocksRowsHTML('global', corRows, false, corCellBorders);
-  if(!raw && !(blocksStores['global']||[]).length) return; // rien à sauvegarder
+  // Rien à sauvegarder : le dire, au lieu de ne rien faire en silence (07/11/2026 : « J'avais saisi l'exercice 4 page 23 »,
+  // jamais arrivé en base).
+  if(!raw && !(blocksStores['global']||[]).length){ niceAlert("Rien à enregistrer : l'exercice est vide (texte, image ou figure). Ajoutez son contenu, puis enregistrez de nouveau."); return; }
   const entry = {
     niveau: document.getElementById('corNiveau').value,
     chapitre: document.getElementById('corChapitre').value,
@@ -8351,8 +8354,10 @@ async function addToCahier(){
   }
   sortCahierInPlace();
   saveCahier();
-  renderCahier();
-  clearCorrectionInput();
+  // L'affichage ne doit jamais empêcher l'enregistrement en base : une erreur ici laissait l'exercice seulement sur
+  // l'appareil, perdu au rechargement suivant (07/11/2026).
+  try{ renderCahier(); }catch(err){ console.error('renderCahier', err); }
+  try{ clearCorrectionInput(); }catch(err){ console.error('clearCorrectionInput', err); }
   if(isSyncEnabled()){
     if(oldServerId){
       entry.id = oldServerId;
