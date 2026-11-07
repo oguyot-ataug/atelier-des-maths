@@ -61,7 +61,7 @@ PLANCHES['5e|Proportionnalité'] = [
       { etoiles: 2, col: 1, consigne: 'Entoure la méthode la plus rapide pour trouver le prix de 15 objets si 5 objets coûtent 8 €.',
         ...ch([['Méthode :', 'multiplier par 3'], ['Prix de 15 objets :', '24 €']], 'multiplier par 3 · ajouter 10 · 24 € · 18 € · 40 €') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Une recette pour 4 personnes demande 300 g de farine, 3 œufs et 50 cL de lait. Calcule les quantités pour 10 personnes.',
-        corr: cm1Redac('Coefficient', '10 : 4 = 2,5', '') + cm1Redac('Quantités pour 10', { suite: ['Farine : 300 × 2,5 = 750 g', 'Œufs : 3 × 2,5 = 7,5, donc 7 ou 8 œufs', 'Lait : 50 × 2,5 = 125 cL'] }, 'Pour 10 personnes : 750 g de farine, 7 ou 8 œufs et 125 cL de lait.') },
+        corr: cm1Redac('Coefficient', '10 : 4 = 2,5', 'On multiplie toutes les quantités par 2,5.') + cm1Redac('Farine', '300 × 2,5 = 750', 'Il faut 750 g de farine.') + cm1Redac('Œufs', '3 × 2,5 = 7,5', 'On ne coupe pas un œuf : il faut 7 ou 8 œufs.') + cm1Redac('Lait', '50 × 2,5 = 125', 'Il faut 125 cL de lait.') },
     ] },
   { titre: 'Proportionnalité et graphique', duree: '35 min',
     attendus: ['Savoir qu\'une situation de proportionnalité se représente par des points alignés avec l\'origine', 'Lire des valeurs sur un graphique', 'Placer des points à partir d\'un tableau'],
@@ -119,9 +119,9 @@ PLANCHES['5e|Proportionnalité'] = [
       { etoiles: 1, col: 1, consigne: 'Vrai ou faux ? Entoure (situations de proportionnalité).',
         ...ch([['Si 2 kg coûtent 5 €, alors 6 kg coûtent 15 € :', 'vrai'], ['Si 4 pains coûtent 6 €, alors 5 pains coûtent 7 € :', 'faux'], ['Si 10 L pèsent 10 kg, alors 3 L pèsent 3 kg :', 'vrai']], 'vrai · faux') },
       { etoiles: 3, col: 1, cahier: true, consigne: illu(murPeinture, 'Pour repeindre 15 m² de mur, il faut 2 pots de peinture. Combien de pots faut-il pour 52,5 m² ? Un pot coûte 23 € : quel est le prix total ?'),
-        corr: cm1Redac('Pots', '52,5 : 15 = 3,5 et 3,5 × 2 = 7', 'Il faut 7 pots de peinture.') + cm1Redac('Prix', '7 × 23 = 161', 'Le prix total est 161 €.') },
+        corr: cm1Redac('Nombre de fois 15 m²', '52,5 : 15 = 3,5', '52,5 m², c\'est 3,5 fois 15 m².') + cm1Redac('Pots', '3,5 × 2 = 7', 'Il faut 7 pots de peinture.') + cm1Redac('Prix', '7 × 23 = 161', 'Le prix total est 161 €.') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Une imprimante imprime 45 pages en 3 minutes. Combien de pages en 20 minutes ? Combien de temps pour imprimer 420 pages ?',
-        corr: cm1Redac('Pages par minute', '45 : 3 = 15', '') + cm1Redac('Réponses', { suite: ['En 20 min : 20 × 15 = 300 pages.', 'Pour 420 pages : 420 : 15 = 28 minutes.'] }, 'Elle imprime 300 pages en 20 minutes et 420 pages en 28 minutes.') },
+        corr: cm1Redac('Pages par minute', '45 : 3 = 15', 'L\'imprimante imprime 15 pages par minute.') + cm1Redac('Pages en 20 minutes', '20 × 15 = 300', 'Elle imprime 300 pages en 20 minutes.') + cm1Redac('Durée pour 420 pages', '420 : 15 = 28', 'Il faut 28 minutes pour imprimer 420 pages.') },
     ] },
 ];
 })();

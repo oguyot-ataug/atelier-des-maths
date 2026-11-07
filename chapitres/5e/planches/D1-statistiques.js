@@ -42,7 +42,7 @@ PLANCHES['5e|Statistiques'] = [
       { etoiles: 2, col: 1, consigne: 'Notes d\'un contrôle : 12 ; 15 ; 9 ; 12 ; 18 ; 15 ; 12 ; 7 ; 15 ; 12. Complète.',
         ...rmp([['Effectif total : @', 10], ['Effectif de la note 12 : @', 4], ['Fréquence de la note 15 : @ %', 30], ['Fréquence des notes inférieures à 10 : @ %', 20]], 2) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Dans un collège de 480 élèves, 30 % sont en 6e et 25 % en 5e. Combien d\'élèves sont en 6e ? en 5e ? Quelle fréquence représentent les élèves de 4e et de 3e réunis ?',
-        corr: cm1Redac('Effectifs', { suite: ['6e : 480 × 30 : 100 = 144 élèves', '5e : 480 × 25 : 100 = 120 élèves'] }, '') + cm1Redac('4e et 3e', '100 % − 30 % − 25 % = 45 %', 'Les élèves de 4e et de 3e représentent 45 % des élèves.') },
+        corr: cm1Redac('Élèves de 6e', `${F(30, 100)} × 480 = 144`, 'Il y a 144 élèves en 6e.') + cm1Redac('Élèves de 5e', `${F(25, 100)} × 480 = 120`, 'Il y a 120 élèves en 5e.') + cm1Redac('4e et 3e', '100 % − 30 % − 25 % = 45 %', 'Les élèves de 4e et de 3e représentent 45 % des élèves.') },
     ] },
   { titre: 'Diagrammes en barres et circulaires', duree: '40 min',
     attendus: ['Lire un diagramme en barres ou circulaire', 'Compléter un diagramme en barres', 'Choisir le diagramme adapté'],
@@ -61,7 +61,7 @@ PLANCHES['5e|Statistiques'] = [
       { etoiles: 2, col: 1, consigne: 'Dans un diagramme circulaire, un disque entier = 360°. Calcule l\'angle de chaque secteur.',
         ...rmp([['50 % → @ °', 180], ['25 % → @ °', 90], ['10 % → @ °', 36], ['1 élève sur 30 → @ °', 12]], 2) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Sur 40 élèves, 18 ont un chat, 12 un chien et 10 aucun animal. Calcule l\'angle de chaque secteur d\'un diagramme circulaire, puis trace-le.',
-        corr: cm1Redac('Angles', { suite: ['Chat : 18 × 360 : 40 = 162°', 'Chien : 12 × 360 : 40 = 108°', 'Aucun : 10 × 360 : 40 = 90°'] }, 'Vérification : 162 + 108 + 90 = 360°.') },
+        corr: cm1Redac('Secteur « chat »', '18 × 360° : 40 = 162°', '') + cm1Redac('Secteur « chien »', '12 × 360° : 40 = 108°', '') + cm1Redac('Secteur « aucun animal »', '10 × 360° : 40 = 90°', '') + cm1Redac('Vérification', '162° + 108° + 90° = 360°', 'Les trois secteurs remplissent bien tout le disque.') },
     ] },
   { titre: 'La moyenne', duree: '40 min',
     attendus: ['Calculer la moyenne d\'une série de valeurs', 'Calculer une moyenne à partir d\'un tableau d\'effectifs', 'Interpréter une moyenne'],
@@ -96,7 +96,7 @@ PLANCHES['5e|Statistiques'] = [
       { etoiles: 1, col: 1, consigne: 'Durée de sommeil (en heures) de 6 élèves : 9 ; 8 ; 10 ; 7 ; 9 ; 11.',
         ...rmp([['Durée moyenne : @ h', 9], ['Nombre d\'élèves qui dorment plus que la moyenne : @', 2], ['Étendue : @ h', 4]], 2) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Deux élèves ont eu ces notes. Hugo : 10 ; 10 ; 10 ; 10. Inès : 4 ; 16 ; 6 ; 14. Calcule leurs moyennes. Que remarques-tu ? Qui est le plus régulier ?',
-        corr: cm1Redac('Moyennes', { suite: ['Hugo : 40 : 4 = 10', 'Inès : 40 : 4 = 10'] }, 'Ils ont la même moyenne, mais Hugo est plus régulier : ses notes sont toutes égales, celles d\'Inès sont très dispersées.') },
+        corr: cm1Redac('Moyenne de Hugo', { suite: ['10 + 10 + 10 + 10 = 40', '40 : 4 = 10'] }, '') + cm1Redac('Moyenne d\'Inès', { suite: ['4 + 16 + 6 + 14 = 40', '40 : 4 = 10'] }, 'Ils ont la même moyenne, mais Hugo est plus régulier : ses notes sont toutes égales, celles d\'Inès sont très dispersées.') },
     ] },
 ];
 })();

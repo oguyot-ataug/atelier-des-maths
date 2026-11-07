@@ -46,7 +46,7 @@ PLANCHES['5e|Puissances'] = [
     attendus: ['Utiliser le carré pour l\'aire d\'un carré et le cube pour le volume d\'un cube'],
     exos: [
       { etoiles: 1, consigne: 'Complète.', ...P3.rmp([['Carré de côté 8 cm : aire = @ cm²', 64], ['Carré de côté 5 cm : aire = @ cm²', 25], ['Carré de côté 12 m : aire = @ m²', 144], ['Cube d\'arête 4 cm : volume = @ cm³', 64], ['Cube d\'arête 3 cm : volume = @ cm³', 27], ['Cube d\'arête 5 cm : volume = @ cm³', 125]], 3) },
-      { etoiles: 2, cahier: true, consigne: 'Un carré a un périmètre de 36 m. Calcule son aire.', corr: cm1Redac('Aire du carré', { suite: [`Côté : ${T('36 : 4 = 9')} m`, `Aire : ${T('9^2 = 9 \\times 9 = 81')} m²`] }, 'L\'aire du carré est 81 m².') },
+      { etoiles: 2, cahier: true, consigne: 'Un carré a un périmètre de 36 m. Calcule son aire.', corr: cm1Redac('Côté du carré', T('36 : 4 = 9'), 'Le côté mesure 9 m.') + cm1Redac('Aire du carré', T('9^2 = 9 \\times 9 = 81'), 'L\'aire du carré est 81 m².') },
       { etoiles: 3, cahier: true, consigne: 'Un aquarium a la forme d\'un cube de 30 cm d\'arête. Combien de litres d\'eau peut-il contenir ? (1 L = 1 000 cm³)', corr: cm1Redac('Contenance de l\'aquarium', { suite: [T('30^3 = 30 \\times 30 \\times 30 = 27\\,000'), '27 000 cm³ = 27 L'] }, 'L\'aquarium peut contenir 27 L d\'eau.') },
     ] },
 ];

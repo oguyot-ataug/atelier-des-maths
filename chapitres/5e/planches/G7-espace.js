@@ -75,7 +75,7 @@ PLANCHES['5e|Représentation de l\'espace'] = [
       { etoiles: 2, col: 1, consigne: 'Observe ce prisme.',
         ...figs([[S(160, 110, prisme([[15, 100], [85, 100], [30, 45]], [55, -35], [0]), 150), [['Arêtes cachées : @', 3], ['Faces latérales : @', 3], ['Nombre de bases : @', 2]]]]) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Un prisme droit a 12 sommets. Combien a-t-il de faces et d\'arêtes ? Explique.',
-        corr: cm1Redac('Faces et arêtes', { suite: ['Chaque base a 12 : 2 = 6 sommets : c\'est un hexagone.', 'Faces : 2 bases + 6 faces latérales = 8', 'Arêtes : 6 + 6 + 6 = 18'] }, 'Le prisme a 8 faces et 18 arêtes.') },
+        corr: cm1Redac('Sommets d\'une base', '12 : 2 = 6', 'Chaque base a 6 sommets : c\'est un hexagone.') + cm1Redac('Nombre de faces', '2 + 6 = 8', 'Il y a 2 bases et 6 faces latérales : le prisme a 8 faces.') + cm1Redac('Nombre d\'arêtes', '6 + 6 + 6 = 18', '6 arêtes par base et 6 arêtes latérales : le prisme a 18 arêtes.') },
     ] },
   { titre: 'Perspective cavalière', duree: '35 min',
     attendus: ['Compléter un solide en perspective cavalière', 'Dessiner les arêtes cachées en pointillés', 'Savoir que des arêtes parallèles restent parallèles sur le dessin'],
@@ -106,7 +106,7 @@ PLANCHES['5e|Représentation de l\'espace'] = [
       { etoiles: 2, col: 1, consigne: 'Un prisme a une base à n côtés. Complète.',
         ...rmp([['Base à 4 côtés : @ faces', 6], ['Base à 4 côtés : @ sommets', 8], ['Base à 5 côtés : @ faces', 7], ['Base à 5 côtés : @ arêtes', 15]], 2) },
       { etoiles: 3, cahier: true, consigne: illu(etiquette, 'Une boîte cylindrique a un diamètre de 10 cm et une hauteur de 12 cm. Quelles sont les dimensions de l\'étiquette qui fait le tour de la boîte ?'),
-        corr: cm1Redac('Dimensions de l\'étiquette', { suite: ['Largeur : la hauteur, 12 cm.', 'Longueur : π × 10 ≈ 31,4'] }, 'L\'étiquette mesure environ 31,4 cm sur 12 cm.') },
+        corr: cm1Redac('Largeur de l\'étiquette', '', 'C\'est la hauteur de la boîte : 12 cm.') + cm1Redac('Longueur de l\'étiquette', 'π × 10 ≈ 31,4', 'C\'est le périmètre de la base. L\'étiquette mesure environ 31,4 cm sur 12 cm.') },
     ] },
   { titre: 'Volumes', duree: '45 min',
     attendus: ['Calculer le volume d\'un prisme droit : aire de la base × hauteur', 'Calculer le volume d\'un cylindre : π × r × r × h', 'Convertir des unités de volume et de contenance'],
@@ -124,7 +124,7 @@ PLANCHES['5e|Représentation de l\'espace'] = [
       { etoiles: 3, col: 1, cahier: true, consigne: illu(conserve, 'Une boîte de conserve est un cylindre de diamètre 8 cm et de hauteur 11 cm. Calcule son volume (arrondi au cm³), puis sa contenance en litres.'),
         corr: cm1Redac('Volume de la boîte', { suite: ['r = 8 : 2 = 4', 'V = π × 4 × 4 × 11 = 176π ≈ 553'] }, 'La boîte a un volume d\'environ 553 cm³, soit environ 0,55 L.') },
       { etoiles: 3, col: 1, cahier: true, consigne: illu(tente, 'Une tente est un prisme droit. Sa base est un triangle de base 2 m et de hauteur 1,5 m ; la tente est longue de 3 m. Calcule son volume.'),
-        corr: cm1Redac('Volume de la tente', { suite: ['Aire de la base : 2 × 1,5 : 2 = 1,5', 'V = 1,5 × 3 = 4,5'] }, 'La tente a un volume de 4,5 m³.') },
+        corr: cm1Redac('Aire de la base', '2 × 1,5 : 2 = 1,5', 'La base mesure 1,5 m².') + cm1Redac('Volume de la tente', 'V = 1,5 × 3 = 4,5', 'La tente a un volume de 4,5 m³.') },
     ] },
 ];
 })();

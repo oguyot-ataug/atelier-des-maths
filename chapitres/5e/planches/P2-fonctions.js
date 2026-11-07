@@ -77,7 +77,7 @@ PLANCHES['5e|Fonctions'] = [
       { etoiles: 3, cahier: true, consigne: 'Une agence loue des voitures 45 € par jour plus 0,20 € par kilomètre. Écris la formule du prix P pour 1 jour et k kilomètres. Calcule le prix pour 1 jour et 250 km.',
         corr: cm1Redac('Formule', 'P = 45 + 0,20 × k', '') + cm1Redac('Pour 250 km', '45 + 0,20 × 250 = 45 + 50 = 95', 'Le prix est de 95 €.') },
       { etoiles: 3, cahier: true, consigne: 'Deux forfaits de téléphone : A coûte 15 € par mois ; B coûte 5 € par mois plus 0,50 € par heure d\'appel. Écris la formule du prix de B en fonction du nombre d\'heures h. Pour combien d\'heures les deux forfaits coûtent-ils le même prix ?',
-        corr: cm1Redac('Formule de B', 'P = 5 + 0,5h', '') + cm1Redac('Même prix', '5 + 0,5h = 15 donc 0,5h = 10 et h = 20', 'Les deux forfaits coûtent le même prix pour 20 heures d\'appel.') },
+        corr: cm1Redac('Formule de B', 'P = 5 + 0,5h', 'Le prix de B est 5 + 0,5h euros.') + cm1Redac('Même prix', { suite: ['5 + 0,5h = 15', '0,5h = 10', 'h = 10 : 0,5', 'h = 20'] }, 'Les deux forfaits coûtent le même prix pour 20 heures d\'appel.') },
     ] },
   { titre: 'Construire un graphique', duree: '40 min',
     attendus: ['Placer dans un repère les points d\'un tableau de valeurs', 'Choisir et lire les unités des axes', 'Relier les points quand cela a un sens'],

@@ -125,7 +125,7 @@ PLANCHES['5e|Angles et parallélisme'] = [
                 { op: 'mark_angle', vertex: 'O', points: ['B', 'C'] }, { op: 'mark_angle', vertex: 'O', points: ['C', 'D'] }, { op: 'mark_angle', vertex: 'O', points: ['D', 'A'] }],
               depart: [{ seg: [P(V, 0, 100), P(V, 180, 100)] }, { seg: [P(V, 35, 76), P(V, 215, 76)] },
                 { svg: arc(V, 0, 35, 20, Ro, '35°') + arc(V, 35, 180, 26, Bl, '145°') + arc(V, 180, 215, 20, Ro, '35°') + arc(V, 215, 360, 26, Bl, '145°') + T([V[0] + 8, V[1] + 18], 'O', K) }] }); })()}</div>`
-          + cm1Redac('Mesures', { suite: ['L\'angle opposé par le sommet mesure aussi 35°.', 'Les deux autres sont supplémentaires de 35° : 180° − 35° = 145°.'] }, 'Les quatre angles mesurent 35°, 145°, 35° et 145°.') },
+          + cm1Redac('Angle opposé par le sommet', '', 'Il mesure aussi 35°.') + cm1Redac('Les deux autres angles', '180° − 35° = 145°', 'Ils sont supplémentaires de l\'angle de 35° : les quatre angles mesurent 35°, 145°, 35° et 145°.') },
     ] },
   { titre: 'Angles alternes-internes et correspondants', duree: '40 min',
     attendus: ['Repérer deux angles alternes-internes formés par deux droites et une sécante', 'Repérer deux angles correspondants', 'Utiliser les bons mots pour décrire une figure'],
@@ -182,7 +182,7 @@ PLANCHES['5e|Angles et parallélisme'] = [
           `2 × ${W('ACB')} = 180° − 48° = 132°`, `${W('ACB')} = 132° : 2 = 66°`] }, `Les angles ${W('ABC')} et ${W('ACB')} mesurent 66° chacun.`) },
       // Relecture du 03/11/2026 : « jamais entendu le terme obtusangle ; prends des valeurs qui donnent un triangle isocèle ».
       { etoiles: 3, cahier: true, consigne: 'Un triangle a un angle de 36° ; le deuxième angle est le triple du premier. Quel est le troisième angle ? Quelle est la nature du triangle ?',
-        corr: cm1Redac('Troisième angle', { suite: ['Deuxième angle : 3 × 36° = 108°', 'Troisième angle : 180° − 36° − 108° = 36°'] }, 'Le troisième angle mesure 36°. Le triangle a deux angles de même mesure (36° et 36°) : il est isocèle.') },
+        corr: cm1Redac('Deuxième angle', '3 × 36° = 108°', 'Le deuxième angle mesure 108°.') + cm1Redac('Troisième angle', '180° − 36° − 108° = 36°', 'Le troisième angle mesure 36°. Le triangle a deux angles de même mesure (36° et 36°) : il est isocèle.') },
     ] },
   // Hors programme de 5e (BO 2026 ; en 6e, BO 2025, seul « supplémentaires » est nommé) -- demandé le 02/11/2026 :
   // « pour aller plus loin ».
@@ -270,11 +270,10 @@ PLANCHES['5e|Angles et parallélisme'] = [
         ...(() => { const V = [100, 92], Q = [90, 18, -54, -126, 162].map(a => P(V, a, 72)), nm = ['A', 'B', 'C', 'D', 'E'];
           const base = Q.map((q, i) => L(q, Q[(i + 1) % 5])).join('') + L(Q[0], Q[2], Bl) + L(Q[0], Q[3], Bl) + Q.map((q, i) => T(P(V, [90, 18, -54, -126, 162][i], 85), nm[i], K)).join('');
           const f = S(200, 180, base, 190), fc = S(200, 180, base + arc(Q[0], 216, 252, 40, Ro, '36°') + arc(Q[0], 252, 288, 46, Ve, '36°') + arc(Q[0], 288, 324, 40, Ro, '36°'), 190);
-          return { eleve: `<div style="text-align:center;">${f}</div>`, corr: `<div style="text-align:center;">${fc}</div>` + cm1Redac('Angles en A', { suite: [
-            'Chaque angle du pentagone régulier mesure (5 − 2) × 180° : 5 = 540° : 5 = 108°.',
-            `Le triangle ABC est isocèle en B (BA = BC) et ${W('ABC')} = 108° : ${W('BAC')} = (180° − 108°) : 2 = 36°`,
-            `De même, le triangle AED est isocèle en E : ${W('DAE')} = 36°`,
-            `${W('CAD')} = ${W('BAE')} − ${W('BAC')} − ${W('DAE')} = 108° − 36° − 36° = 36°`] }, 'Les deux diagonales partagent l\'angle en A en trois angles égaux de 36°.') }; })() },
+          return { eleve: `<div style="text-align:center;">${f}</div>`, corr: `<div style="text-align:center;">${fc}</div>` + cm1Redac('Angle du pentagone régulier', { suite: ['(5 − 2) × 180° = 540°', '540° : 5 = 108°'] }, 'Chaque angle du pentagone régulier mesure 108°.')
+            + cm1Redac('Angle ' + W('BAC'), '(180° − 108°) : 2 = 36°', 'Le triangle ABC est isocèle en B (BA = BC) et ' + W('ABC') + ' = 108°.')
+            + cm1Redac('Angle ' + W('DAE'), '', 'De même, le triangle AED est isocèle en E : ' + W('DAE') + ' = 36°.')
+            + cm1Redac('Angle ' + W('CAD'), '108° − 36° − 36° = 36°', 'Les deux diagonales partagent l\'angle en A en trois angles égaux de 36°.') }; })() },
     ] },
 ];
 })();

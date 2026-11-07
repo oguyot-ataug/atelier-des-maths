@@ -76,7 +76,7 @@ PLANCHES['5e|Parallélogrammes'] = [
       { etoiles: 1, col: 1, consigne: 'Entoure la propriété utilisée.',
         ...chx([['Les angles opposés…', 'ont la même mesure', 'ont la même mesure · sont supplémentaires'], ['Deux angles consécutifs…', 'sont supplémentaires', 'ont la même mesure · sont supplémentaires']]) },
       { etoiles: 3, cahier: true, consigne: 'Dans le parallélogramme ABCD, l\'angle B mesure le double de l\'angle A. Calcule les quatre angles.',
-        corr: cm1Redac('Angles', { suite: ['Deux angles consécutifs sont supplémentaires : A + B = 180°, avec B = 2 × A.', 'Donc 3 × A = 180°, A = 60° et B = 120°.'] }, 'Les angles mesurent 60°, 120°, 60° et 120°.') },
+        corr: cm1Redac('Angle A', { suite: ['A + B = 180°', 'A + 2 × A = 180°', '3 × A = 180°', 'A = 180° : 3', 'A = 60°'] }, 'Deux angles consécutifs d\'un parallélogramme sont supplémentaires, et B = 2 × A.') + cm1Redac('Angle B', '2 × 60° = 120°', 'Les angles mesurent 60°, 120°, 60° et 120°.') },
     ] },
   { titre: 'Reconnaître un parallélogramme', duree: '40 min',
     attendus: ['Utiliser une propriété réciproque pour prouver qu\'un quadrilatère est un parallélogramme', 'Lire les codages d\'une figure', 'Rédiger une justification'],
