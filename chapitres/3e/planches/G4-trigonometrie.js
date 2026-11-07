@@ -66,7 +66,7 @@ PLANCHES['3e|Trigonométrie'] = [
       { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.',
         ...ch([['Le cosinus d\'un angle aigu est compris entre 0 et 1.', 'vrai'], ['tan x = sin x : cos x', 'vrai'], ['sin 30° est la moitié de sin 60°.', 'faux'], ['(cos x)² + (sin x)² = 1', 'vrai']], 'vrai · faux') },
       { etoiles: 3, cahier: true, consigne: 'Prouve que, dans un triangle rectangle, (cos Â)² + (sin Â)² = 1. (Utilise le théorème de Pythagore.)',
-        corr: cm1Redac('Preuve', { suite: [`(cos Â)² + (sin Â)² = ${cm1Frac('AB²', 'AC²')} + ${cm1Frac('BC²', 'AC²')} = ${cm1Frac('AB² + BC²', 'AC²')}`, 'Pythagore : AB² + BC² = AC²'] }, 'Donc (cos Â)² + (sin Â)² = 1.') },
+        corr: cm1Redac('Preuve', { suite: [`(cos Â)² + (sin Â)² = ${cm1Frac('AB²', 'AC²')} + ${cm1Frac('BC²', 'AC²')}`, `(cos Â)² + (sin Â)² = ${cm1Frac('AB² + BC²', 'AC²')}`] }, '') + cm1Redac('Théorème de Pythagore', 'AB² + BC² = AC²', 'Donc (cos Â)² + (sin Â)² = 1.') },
     ] },
   { titre: 'Calculer une longueur', duree: '40 min',
     attendus: ['Choisir la bonne relation trigonométrique', 'Calculer une longueur dans un triangle rectangle', 'Rédiger le calcul'],
@@ -116,11 +116,11 @@ PLANCHES['3e|Trigonométrie'] = [
       { etoiles: 2, col: 1, cahier: true, consigne: illu(avion, 'Un avion décolle en ligne droite avec un angle de 15°. Quelle est son altitude après avoir parcouru 2 km ?'),
         corr: cm1Redac('Sinus', '2 000 × sin 15° ≈ 518', 'Son altitude est d\'environ 518 m.') },
       { etoiles: 2, col: 1, cahier: true, consigne: illu(phareBateau, 'Du haut d\'un phare de 40 m, on voit un bateau 8° sous l\'horizontale. À quelle distance du pied du phare est-il ?'),
-        corr: cm1Redac('Tangente', { suite: ['L\'angle au bateau mesure aussi 8° (angles alternes-internes).', 'd = 40 : tan 8° ≈ 285'] }, 'Le bateau est à environ 285 m du phare.') },
+        corr: cm1Redac('Tangente', { suite: ['d = 40 : tan 8° ≈ 285'] }, 'L\'angle au bateau mesure aussi 8° (angles alternes-internes) : le bateau est à environ 285 m du phare.') },
       { etoiles: 2, col: 1, cahier: true, consigne: illu(coteBateau, 'A et B sont deux points d\'une côte, à 500 m l\'un de l\'autre. Un bateau S est tel que l\'angle BAS est droit et l\'angle ABS mesure 60°. Quelle est la distance AS ?'),
         corr: cm1Redac('Tangente', 'AS = 500 × tan 60° ≈ 866', 'Le bateau est à environ 866 m de A.') },
       { etoiles: 3, cahier: true, consigne: illu(tour3045, 'D\'un point A, on voit le sommet d\'une tour sous un angle de 30°. En avançant de 20 m vers la tour, on le voit sous un angle de 45°. Quelle est la hauteur de la tour ?'),
-        corr: cm1Redac('Mise en équation', { suite: ['À 45°, la hauteur h est égale à la distance d au pied de la tour : h = d.', 'Depuis A : tan 30° = h : (d + 20)', 'd = (d + 20) × tan 30°, donc d × (1 − tan 30°) = 20 × tan 30°', 'd = 20 × tan 30° : (1 − tan 30°) ≈ 27,3'] }, 'La tour mesure environ 27,3 m.') },
+        corr: cm1Redac('Depuis B, à 45°', 'h = d', 'À 45°, la hauteur h est égale à la distance d au pied de la tour.') + cm1Redac('Depuis A', { suite: ['tan 30° = h : (d + 20)', 'd = (d + 20) × tan 30°', 'd × (1 − tan 30°) = 20 × tan 30°', 'd = 20 × tan 30° : (1 − tan 30°) ≈ 27,3'] }, 'La tour mesure environ 27,3 m.') },
     ] },
   { titre: 'Trigonométrie', duree: '45 min', brevet: true,
     attendus: ['Automatismes : formules, valeurs, triangle rectangle', 'Étudier une tyrolienne : longueur, angle, durée', 'Vérifier la conformité d\'une rampe d\'accès'],
@@ -132,7 +132,7 @@ PLANCHES['3e|Trigonométrie'] = [
           + cm1Redac('Angle DAE', { suite: ['tan DAE = 12 : 45 ≈ 0,267', 'DAE ≈ 15°'] }, '') + cm1Redac('Conformité', '5° &lt; 15° &lt; 25°', 'La tyrolienne est conforme.')
           + cm1Redac('Durée', { suite: ['18 km/h = 18 000 m : 3 600 s = 5 m/s', '46,57 : 5 ≈ 9,3'] }, 'La descente dure environ 9 secondes.') },
       { etoiles: 2, cahier: true, pts: 4, consigne: '<span>Une rampe [AB] de 4,5 m relie le trottoir au seuil d\'une porte situé 0,35 m plus haut.</span>' + cote(rampe, qs(['Calculer l\'angle que fait la rampe avec le sol, au dixième de degré.', 'Calculer la longueur horizontale AH, au centimètre près.', 'La réglementation impose une pente (hauteur : longueur horizontale) d\'au plus 5 %. La rampe est-elle conforme ?'])),
-        corr: cm1Redac('Angle', { suite: ['sin Â = 0,35 : 4,5 ≈ 0,078', 'Â ≈ 4,5°'] }, '') + cm1Redac('Longueur horizontale', 'AH² = 4,5² − 0,35² = 20,127 5 ; AH ≈ 4,49 m', '')
+        corr: cm1Redac('Angle', { suite: ['sin Â = 0,35 : 4,5 ≈ 0,078', 'Â ≈ 4,5°'] }, '') + cm1Redac('Longueur horizontale', { suite: ['AH² = 4,5² − 0,35² = 20,127 5', 'AH ≈ 4,49'] }, 'La longueur horizontale mesure environ 4,49 m.')
           + cm1Redac('Pente', '0,35 : 4,49 ≈ 0,078 = 7,8 %', 'La pente dépasse 5 % : la rampe n\'est pas conforme (il faudrait 7 m à l\'horizontale).') },
     ] },
 ];

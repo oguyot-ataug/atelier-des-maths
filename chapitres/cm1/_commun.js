@@ -279,7 +279,8 @@ function cm1RegleGraduee(mm, nom, opts){
 // Fraction écrite en LaTeX (demandé : « ne pas écrire les fractions a/b mais toujours en LaTeX ») :
 // rendue par KaTeX (renderStaticMath) à l'ouverture du chapitre, dans les étapes des méthodes,
 // les quiz et le texte des animations.
-function cm1Frac(a, b){ return `<span class="tex">\\dfrac{${a}}{${b}}</span>`; }
+// Virgule décimale sans espace dans KaTeX : « 1,2 » et non « 1, 2 » (07/11/2026).
+function cm1Frac(a, b){ const v = x => String(x).replace(/(\d),(?=\d)/g, '$1{,}'); return `<span class="tex">\\dfrac{${v(a)}}{${v(b)}}</span>`; }
 // Formule LaTeX quelconque dans le cours (ex. cm1Tex('\\dfrac{1}{2} = \\dfrac{5}{10}')).
 function cm1Tex(src){ return `<span class="tex">${src}</span>`; }
 // Opération posée alignée sur la virgule : lignes = [[signe, 'chiffres']], la dernière est le résultat ;

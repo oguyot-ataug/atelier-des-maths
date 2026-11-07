@@ -39,11 +39,11 @@ PLANCHES['3e|Probabilités'] = [
       { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.',
         ...ch([['Avec deux dés, une somme de 7 est plus probable qu\'une somme de 2.', 'vrai'], ['Après cinq « pile », « face » est plus probable.', 'faux'], ['Une probabilité peut valoir 1,2.', 'faux'], ['La somme des probabilités de toutes les issues vaut 1.', 'vrai']], 'vrai · faux') },
       { etoiles: 2, col: 1, cahier: true, consigne: 'Une urne contient 2 boules rouges et 1 bleue. On tire une boule, on la remet, puis on en tire une deuxième. Fais un arbre, puis calcule P(deux rouges) et P(deux couleurs différentes).',
-        corr: cm1Redac('Arbre', { suite: [`Premier tirage : rouge (${F(2, 3)}) ou bleue (${F(1, 3)}) ; de même pour le second.`, `P(deux rouges) = ${F(2, 3)} × ${F(2, 3)} = ${F(4, 9)}`, `P(couleurs différentes) = ${F(2, 3)} × ${F(1, 3)} + ${F(1, 3)} × ${F(2, 3)} = ${F(4, 9)}`] }, '') },
+        corr: cm1Redac('Arbre', '', `À chaque tirage, la bille est rouge avec la probabilité ${F(2, 3)}, bleue avec la probabilité ${F(1, 3)}.`) + cm1Redac('Deux rouges', `P = ${F(2, 3)} × ${F(2, 3)} = ${F(4, 9)}`, '') + cm1Redac('Couleurs différentes', `P = ${F(2, 3)} × ${F(1, 3)} + ${F(1, 3)} × ${F(2, 3)} = ${F(4, 9)}`, '') },
       { etoiles: 2, col: 1, cahier: true, consigne: 'Une boîte contient 3 chocolats noirs et 2 au lait. On en prend un au hasard, on le mange, puis on en prend un deuxième. Quelle est la probabilité d\'avoir mangé deux chocolats noirs ?',
         corr: cm1Redac('Sans remise', `${F(3, 5)} × ${F(2, 4)} = ${F(6, 20)} = ${F(3, 10)}`, `La probabilité est ${F(3, 10)}.`) },
       { etoiles: 3, cahier: true, consigne: 'On lance deux dés et on multiplie les résultats. On gagne si le produit est pair. Ce jeu est-il favorable au joueur ?',
-        corr: cm1Redac('Produit impair', `Il faut deux nombres impairs : 3 × 3 = 9 issues sur 36, soit ${F(1, 4)}.`, '') + cm1Redac('Produit pair', `1 − ${F(1, 4)} = ${F(3, 4)}`, 'Le jeu est favorable : on gagne trois fois sur quatre en moyenne.') },
+        corr: cm1Redac('Produit impair', { suite: ['3 × 3 = 9', `${F(9, 36)} = ${F(1, 4)}`] }, 'Il faut deux nombres impairs : 9 issues sur 36.') + cm1Redac('Produit pair', `1 − ${F(1, 4)} = ${F(3, 4)}`, 'Le jeu est favorable : on gagne trois fois sur quatre en moyenne.') },
     ] },
   { titre: 'Des fréquences aux probabilités', duree: '35 min',
     attendus: ['Calculer une fréquence observée', 'Comprendre que la fréquence se rapproche de la probabilité quand on répète l\'expérience', 'Estimer une probabilité par une simulation'],
@@ -75,7 +75,7 @@ PLANCHES['3e|Probabilités'] = [
       { etoiles: 2, col: 1, cahier: true, consigne: 'Un cadenas a un code de 3 chiffres (de 000 à 999). Quelle est la probabilité de trouver le code du premier coup ? Et avec un code de 4 chiffres ?',
         corr: cm1Redac('Trois chiffres', `1 000 codes : ${F(1, 1000)}`, '') + cm1Redac('Quatre chiffres', `10 000 codes : ${F(1, 10000)}`, 'La probabilité est divisée par 10.') },
       { etoiles: 2, col: 1, cahier: true, consigne: 'On lance un dé à 4 faces (1 à 4) et un dé à 6 faces. Quelle est la probabilité que la somme soit égale à 5 ?',
-        corr: cm1Redac('Dénombrement', { suite: ['4 × 6 = 24 issues', 'Somme 5 : (1 ; 4), (2 ; 3), (3 ; 2), (4 ; 1)'] }, `P(somme 5) = ${F(4, 24)} = ${F(1, 6)}.`) },
+        corr: cm1Redac('Nombre d\'issues', '4 × 6 = 24', '') + cm1Redac('Somme égale à 5', '(1 ; 4), (2 ; 3), (3 ; 2), (4 ; 1)', '4 issues sur 24.') + cm1Redac('Probabilité', `${F(4, 24)} = ${F(1, 6)}`, `La probabilité d'obtenir une somme de 5 est ${F(1, 6)}.`) },
       { etoiles: 2, col: 1, cahier: true, consigne: 'Dans une classe de 25 élèves, il y a 14 filles ; 6 filles et 4 garçons portent des lunettes. On choisit un élève au hasard. Calcule P(porter des lunettes) et P(fille sans lunettes).',
         corr: cm1Redac('Lunettes', `${F(10, 25)} = ${F(2, 5)}`, '') + cm1Redac('Fille sans lunettes', `14 − 6 = 8 : ${F(8, 25)}`, '') },
       { etoiles: 3, cahier: true, consigne: `Une urne contient n boules, dont 3 noires. On ajoute 2 boules noires : la probabilité de tirer une boule noire devient ${T(1, 2)}. Trouve n.`,
@@ -92,7 +92,7 @@ PLANCHES['3e|Probabilités'] = [
           + cm1Redac('Au moins un jaune', { suite: [`P(aucun jaune) = ${F(1, 2)} × ${F(1, 2)} = ${F(1, 4)}`, `P(au moins un jaune) = 1 − ${F(1, 4)} = ${F(3, 4)}`] }, `Il a raison : ${F(3, 4)} &gt; ${F(1, 2)}.`) },
       { etoiles: 2, cahier: true, pts: 4, consigne: 'On a simulé avec un tableur 1 000 lancers de deux dés et additionné les résultats : la somme 7 est apparue 171 fois.'
           + qs(['Calculer la fréquence d\'apparition de la somme 7.', 'Calculer la probabilité d\'obtenir une somme de 7 (on pourra faire un tableau).', 'La fréquence et la probabilité sont-elles égales ? Comment l\'expliquer ?', 'Que peut-on attendre si l\'on simule 100 000 lancers ?']),
-        corr: cm1Redac('Fréquence', '171 : 1 000 = 0,171', '') + cm1Redac('Probabilité', `6 issues sur 36 : ${F(6, 36)} = ${F(1, 6)} ≈ 0,167`, '')
+        corr: cm1Redac('Fréquence', '171 : 1 000 = 0,171', '') + cm1Redac('Probabilité', `${F(6, 36)} = ${F(1, 6)} ≈ 0,167`, 'Il y a 6 issues sur 36.')
           + cm1Redac('Comparaison', '', 'Elles sont proches mais pas égales : une fréquence observée varie d\'une simulation à l\'autre.') + cm1Redac('100 000 lancers', '', 'La fréquence devrait être encore plus proche de 0,167 (environ 16 700 sommes égales à 7).') },
     ] },
 ];

@@ -39,9 +39,9 @@ PLANCHES['3e|Homothétie'] = [
       { etoiles: 2, col: 1, cahier: true, consigne: 'Reproduis la figure, puis construis l\'image du triangle ABC par l\'homothétie de centre O et de rapport 2.',
         eleve: `<div style="text-align:center;">${quad(false)}</div>`, corr: `<div style="text-align:center;">${quad(true)}</div>` },
       { etoiles: 2, col: 1, cahier: true, consigne: 'Un rectangle de 4 cm sur 6 cm est agrandi par une homothétie de rapport 1,5. Donne les dimensions et l\'aire de l\'image. Par combien l\'aire a-t-elle été multipliée ?',
-        corr: cm1Redac('Dimensions', '4 × 1,5 = 6 et 6 × 1,5 = 9', 'L\'image mesure 6 cm sur 9 cm.') + cm1Redac('Aires', { suite: ['4 × 6 = 24 cm² et 6 × 9 = 54 cm²', '54 : 24 = 2,25 = 1,5²'] }, 'L\'aire est multipliée par 2,25.') },
+        corr: cm1Redac('Dimensions', { suite: ['4 × 1,5 = 6', '6 × 1,5 = 9'] }, 'L\'image mesure 6 cm sur 9 cm.') + cm1Redac('Aires', { suite: ['4 × 6 = 24', '6 × 9 = 54', '54 : 24 = 2,25 = 1,5²'] }, 'Les aires passent de 24 cm² à 54 cm² : l\'aire est multipliée par 2,25.') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Une photo de 10 cm sur 15 cm est agrandie en 20 cm sur 30 cm. Le prix du tirage est proportionnel à l\'aire : la petite coûte 0,20 €. Combien coûte la grande ?',
-        corr: cm1Redac('Raisonnement', { suite: ['Rapport d\'agrandissement : 2', 'L\'aire est multipliée par 2² = 4', '0,20 × 4 = 0,80'] }, 'La grande photo coûte 0,80 €.') },
+        corr: cm1Redac('Coefficient des aires', '2² = 4', 'Le rapport d\'agrandissement est 2 : l\'aire est multipliée par 4.') + cm1Redac('Prix', '0,20 × 4 = 0,80', 'La grande photo coûte 0,80 €.') },
     ] },
   { titre: 'Longueurs, aires et volumes', duree: '35 min',
     attendus: ['Savoir qu\'un rapport k multiplie les longueurs par |k|, les aires par k² et les volumes par |k|³', 'Calculer une aire ou un volume après agrandissement ou réduction', 'Retrouver un rapport'],
@@ -57,7 +57,7 @@ PLANCHES['3e|Homothétie'] = [
       { etoiles: 2, col: 1, cahier: true, consigne: 'La maquette d\'un immeuble est à l\'échelle 1/100. Elle mesure 45 cm de haut et a un volume de 0,03 m³. Quelle est la hauteur réelle ? Le volume réel ?',
         corr: cm1Redac('Hauteur', '45 × 100 = 4 500 cm', 'L\'immeuble mesure 45 m.') + cm1Redac('Volume', '0,03 × 100³ = 0,03 × 1 000 000 = 30 000', 'Le volume réel est 30 000 m³.') },
       { etoiles: 2, col: 1, cahier: true, consigne: illu(pizzas, 'Une pizza de 30 cm de diamètre, ou deux pizzas de 20 cm de même épaisseur : où y a-t-il le plus à manger ?'),
-        corr: cm1Redac('Aires', { suite: ['Grande : π × 15² = 225π', 'Deux petites : 2 × π × 10² = 200π'] }, 'La grande pizza est plus copieuse.') },
+        corr: cm1Redac('Aire de la grande pizza', 'π × 15² = 225π', '') + cm1Redac('Aire des deux petites', '2 × π × 10² = 200π', 'La grande pizza est plus copieuse.') },
       { etoiles: 3, cahier: true, consigne: illu(verreTiers, 'Un verre conique est rempli d\'eau jusqu\'au tiers de sa hauteur (en partant de la pointe). Quelle fraction du volume du verre contient-il ?'),
         corr: cm1Redac('Réduction', 'Le cône d\'eau est une réduction de rapport 1/3 du verre : volume multiplié par (1/3)³ = 1/27', 'Le verre ne contient que 1/27 de son volume, moins de 4 % !') },
     ] },
@@ -69,15 +69,15 @@ PLANCHES['3e|Homothétie'] = [
       { etoiles: 2, col: 1, consigne: 'Entoure le rapport de l\'homothétie de centre C qui envoie A sur A\'.',
         ...chx([['C est entre A et A\', et CA\' = 2 CA :', '−2', '2 · −2 · 0,5'], ['A\' est sur [CA] et CA\' = CA : 4 :', '0,25', '4 · −4 · 0,25'], ['A\' = A :', '1', '0 · 1 · −1']]) },
       { etoiles: 2, col: 1, cahier: true, consigne: 'M ∈ [AB], N ∈ [AC] et (MN) // (BC), avec AM = 3 et AB = 7,5. Quelle homothétie transforme le triangle ABC en AMN ? Calcule MN si BC = 10.',
-        corr: cm1Redac('Homothétie', 'Centre A, rapport AM : AB = 3 : 7,5 = 0,4', '') + cm1Redac('Longueur MN', 'MN = 0,4 × 10 = 4', 'MN = 4.') },
+        corr: cm1Redac('Rapport de l\'homothétie de centre A', 'AM : AB = 3 : 7,5 = 0,4', '') + cm1Redac('Longueur MN', 'MN = 0,4 × 10 = 4', 'MN = 4.') },
       { etoiles: 2, col: 1, cahier: true, consigne: 'Un projecteur agrandit une diapositive de 3,6 cm de large en une image de 2,4 m de large. Quel est le rapport ? Quelle est la hauteur de l\'image si la diapositive mesure 2,4 cm de haut ?',
         corr: cm1Redac('Rapport', '240 : 3,6 ≈ 66,7', '') + cm1Redac('Hauteur', '2,4 × 240 : 3,6 = 160', 'L\'image mesure 160 cm, soit 1,6 m de haut.') },
       { etoiles: 2, col: 1, cahier: true, consigne: illu(lampeOmbre, 'Une lampe éclaire une main de 15 cm placée à 1 m d\'elle. L\'écran est à 4 m de la lampe. Quelle est la taille de l\'ombre ?'),
-        corr: cm1Redac('Homothétie', { suite: ['Centre : la lampe ; rapport 4 : 1 = 4', '15 × 4 = 60'] }, 'L\'ombre mesure 60 cm.') },
+        corr: cm1Redac('Rapport', '4 : 1 = 4', 'C\'est une homothétie de centre la lampe et de rapport 4.') + cm1Redac('Ombre', '15 × 4 = 60', 'L\'ombre mesure 60 cm.') },
       { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.',
         ...ch([['Le centre d\'une homothétie est sa propre image.', 'vrai'], ['A, A\' et le centre sont toujours alignés.', 'vrai'], ['Une homothétie de rapport 1 ne bouge aucun point.', 'vrai']], 'vrai · faux') },
       { etoiles: 3, cahier: true, consigne: 'On applique l\'homothétie de centre O et de rapport 2, puis celle de même centre et de rapport −3. Quelle transformation obtient-on ?',
-        corr: cm1Redac('Composition', 'OA\' = 2 OA dans le même sens, puis OA" = 3 OA\' dans le sens opposé : 2 × (−3) = −6', 'On obtient l\'homothétie de centre O et de rapport −6.') },
+        corr: cm1Redac('Composition', '2 × (−3) = −6', 'OA\' = 2 OA dans le même sens, puis OA" = 3 OA\' dans le sens opposé : on obtient l\'homothétie de centre O et de rapport −6.') },
     ] },
   { titre: 'Homothétie', duree: '45 min', brevet: true,
     attendus: ['Automatismes : homothétie, agrandissement, aires et volumes', 'Agrandir une figure et calculer des aires', 'Utiliser une homothétie dans une situation concrète'],
@@ -85,13 +85,13 @@ PLANCHES['3e|Homothétie'] = [
       { etoiles: 1, auto: true, pts: 3, consigne: 'Automatismes (sans calculatrice) : écris ou entoure la réponse. Aucune justification n\'est demandée.',
         ...auto([['Homothétie de rapport 2 : un segment de 3 cm devient (en cm)', 6], ['Rapport 3 : les aires sont multipliées par', '9', ['3', '6', '9']], ['Homothétie de rapport −1 :', 'symétrie centrale', ['symétrie centrale', 'symétrie axiale', 'translation']], ['Rapport 0,5 : c\'est', 'une réduction', ['un agrandissement', 'une réduction']], ['OA = 4 cm, rapport 1,5 : OA\' = (en cm)', 6], ['Cube de 2 cm d\'arête, rapport 3 : volume de l\'image (en cm³)', 216]]) },
       { etoiles: 2, cahier: true, pts: 5, consigne: `<span>Le logo d'un club est un triangle ABC avec AB = 4 cm, AC = 3 cm et BC = 5 cm. Pour une affiche, on l'agrandit par l'homothétie de centre A et de rapport 2,5.</span>` + cote(logo, qs(['Montrer que le triangle ABC est rectangle en A.', 'Calculer les longueurs des côtés du triangle agrandi.', 'Calculer l\'aire du triangle ABC, puis celle du triangle agrandi.', 'Le graphiste veut un logo de 150 cm². Quel rapport doit-il choisir ?'])),
-        corr: cm1Redac('ABC rectangle', '5² = 25 et 4² + 3² = 16 + 9 = 25', 'D\'après la réciproque du théorème de Pythagore, ABC est rectangle en A.')
-          + cm1Redac('Côtés agrandis', '4 × 2,5 = 10 ; 3 × 2,5 = 7,5 ; 5 × 2,5 = 12,5', 'Le triangle agrandi mesure 10 cm, 7,5 cm et 12,5 cm.')
-          + cm1Redac('Aires', { suite: ['ABC : 4 × 3 : 2 = 6 cm²', 'Agrandi : 6 × 2,5² = 6 × 6,25 = 37,5 cm²'] }, '')
-          + cm1Redac('Aire de 150 cm²', { suite: ['150 : 6 = 25', 'k² = 25, donc k = 5'] }, 'Il doit choisir le rapport 5.') },
+        corr: cm1Redac('ABC rectangle', { suite: ['5² = 25', '4² + 3² = 16 + 9 = 25'] }, 'D\'après la réciproque du théorème de Pythagore, ABC est rectangle en A.')
+          + cm1Redac('Côtés agrandis', { suite: ['4 × 2,5 = 10', '3 × 2,5 = 7,5', '5 × 2,5 = 12,5'] }, 'Le triangle agrandi mesure 10 cm, 7,5 cm et 12,5 cm.')
+          + cm1Redac('Aire de ABC', '4 × 3 : 2 = 6', '') + cm1Redac('Aire du triangle agrandi', '6 × 2,5² = 6 × 6,25 = 37,5', 'Les aires valent 6 cm² et 37,5 cm².')
+          + cm1Redac('Aire de 150 cm²', { suite: ['150 : 6 = 25', 'k² = 25', 'k = 5'] }, 'Il doit choisir le rapport 5.') },
       { etoiles: 2, cahier: true, pts: 4, consigne: `<span>Pour un spectacle d'ombres, une lampe L éclaire une figurine [MN] de 12 cm, placée à 50 cm de la lampe. L'écran est à 2 m de la lampe ; l'ombre est [M'N'].</span>` + cote(ombre, qs(['Quel est le rapport de l\'homothétie de centre L qui transforme [MN] en [M\'N\'] ?', 'Quelle est la taille de l\'ombre ?', 'À quelle distance de la lampe faut-il placer la figurine pour obtenir une ombre de 1,20 m ?'])),
         corr: cm1Redac('Rapport', '200 : 50 = 4', 'Le rapport est 4.') + cm1Redac('Taille de l\'ombre', '12 × 4 = 48', 'L\'ombre mesure 48 cm.')
-          + cm1Redac('Ombre de 1,20 m', { suite: ['120 : 12 = 10 : il faut un rapport 10.', '200 : 10 = 20'] }, 'Il faut placer la figurine à 20 cm de la lampe.') },
+          + cm1Redac('Ombre de 1,20 m', { suite: ['120 : 12 = 10', '200 : 10 = 20'] }, 'Il faut un rapport 10 : la figurine est à placer à 20 cm de la lampe.') },
     ] },
 ];
 })();

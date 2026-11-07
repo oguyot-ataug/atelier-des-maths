@@ -49,7 +49,7 @@ PLANCHES['3e|Généralités sur les fonctions'] = [
       { etoiles: 2, col: 1, consigne: 'Le point appartient-il à la courbe de f(x) = 2x − 1 ? Entoure.',
         ...ch([['A(2 ; 3) :', 'oui'], ['B(0 ; 1) :', 'non'], ['C(−1 ; −3) :', 'oui'], ['D(3 ; 4) :', 'non']], 'oui · non') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'f(x) = x² et g(x) = x + 2. Montre que leurs courbes se coupent aux points d\'abscisses −1 et 2.',
-        corr: cm1Redac('Vérification', { suite: ['f(−1) = 1 et g(−1) = −1 + 2 = 1', 'f(2) = 4 et g(2) = 2 + 2 = 4'] }, 'Les courbes passent toutes les deux par (−1 ; 1) et par (2 ; 4).') },
+        corr: cm1Redac('Pour x = −1', { suite: ['f(−1) = 1', 'g(−1) = −1 + 2 = 1'] }, '') + cm1Redac('Pour x = 2', { suite: ['f(2) = 4', 'g(2) = 2 + 2 = 4'] }, 'Les courbes passent toutes les deux par (−1 ; 1) et par (2 ; 4).') },
     ] },
   { titre: 'Modéliser une situation par une fonction', duree: '40 min',
     attendus: ['Traduire une situation par une formule', 'Utiliser la fonction pour répondre à une question', 'Écrire une formule dans un tableur'],
@@ -63,9 +63,9 @@ PLANCHES['3e|Généralités sur les fonctions'] = [
       { etoiles: 2, col: 1, consigne: 'Location de vélo : 5 € de forfait, puis 2 € par heure.',
         ...rmp([['Prix pour h heures : f(h) = @', '5+2h'], ['f(3) = @ €', 11], ['Avec 21 €, on peut louer le vélo @ heures.', 8]], 5) },
       { etoiles: 2, col: 1, cahier: true, consigne: 'On lâche un objet d\'une hauteur de 80 m. Sa hauteur au bout de t secondes est h(t) = 80 − 5t² (en m). Calcule h(2) et h(3). Au bout de combien de temps touche-t-il le sol ?',
-        corr: cm1Redac('Hauteurs', { suite: ['h(2) = 80 − 5 × 4 = 60', 'h(3) = 80 − 5 × 9 = 35'] }, '') + cm1Redac('Arrivée au sol', { suite: ['80 − 5t² = 0', 't² = 16 et t &gt; 0'] }, 'L\'objet touche le sol au bout de 4 s.') },
+        corr: cm1Redac('Hauteurs', { suite: ['h(2) = 80 − 5 × 4 = 60', 'h(3) = 80 − 5 × 9 = 35'] }, '') + cm1Redac('Arrivée au sol', { suite: ['80 − 5t² = 0', 't² = 16', 't = 4'] }, 'Une durée est positive : l\'objet touche le sol au bout de 4 s.') },
       { etoiles: 2, col: 1, cahier: true, consigne: 'Un rectangle a un périmètre de 20 cm. On note x sa largeur. Montre que son aire est A(x) = x(10 − x), puis calcule A(3) et A(5).',
-        corr: cm1Redac('Aire', { suite: ['Longueur + largeur = 20 : 2 = 10, donc la longueur vaut 10 − x.', 'A(x) = x(10 − x)'] }, '') + cm1Redac('Valeurs', { suite: ['A(3) = 3 × 7 = 21', 'A(5) = 5 × 5 = 25'] }, 'A(3) = 21 cm² et A(5) = 25 cm².') },
+        corr: cm1Redac('Longueur + largeur', '20 : 2 = 10', 'La longueur vaut 10 − x.') + cm1Redac('Aire', 'A(x) = x(10 − x)', '') + cm1Redac('Valeurs', { suite: ['A(3) = 3 × 7 = 21', 'A(5) = 5 × 5 = 25'] }, 'A(3) = 21 cm² et A(5) = 25 cm².') },
       { etoiles: 3, cahier: true, consigne: 'Avec le rectangle de l\'exercice précédent, quelle largeur donne la plus grande aire ? Fais un tableau de valeurs et conjecture.',
         corr: tab([['x', 1, 2, 3, 4, 5, 6, 7], ['A(x)', 9, 16, 21, 24, 25, 24, 21]]) + cm1Redac('Conjecture', '', 'La plus grande aire semble être 25 cm², pour x = 5 : le rectangle est alors un carré de 5 cm de côté.') },
     ] },
@@ -86,7 +86,7 @@ PLANCHES['3e|Généralités sur les fonctions'] = [
       { etoiles: 2, col: 1, cahier: true, consigne: 'La courbe de l\'exercice 3 est celle de f(x) = −x² + 4x. Vérifie par le calcul les lectures f(1), f(3) et f(4).',
         corr: cm1Redac('Calculs', { suite: ['f(1) = −1 + 4 = 3', 'f(3) = −9 + 12 = 3', 'f(4) = −16 + 16 = 0'] }, 'Les calculs confirment les lectures graphiques.') },
       { etoiles: 3, cahier: true, consigne: 'Montre que les courbes de f(x) = x² et de g(x) = 4x − 4 n\'ont qu\'un seul point commun.',
-        corr: cm1Redac('Raisonnement', { suite: ['x² = 4x − 4', 'x² − 4x + 4 = 0', '(x − 2)² = 0, donc x = 2', 'f(2) = g(2) = 4'] }, 'Le seul point commun est (2 ; 4) : la droite touche la courbe sans la traverser.') },
+        corr: cm1Redac('Raisonnement', { suite: ['x² = 4x − 4', 'x² − 4x + 4 = 0', '(x − 2)² = 0', 'x = 2', 'f(2) = g(2) = 4'] }, 'Le seul point commun est (2 ; 4) : la droite touche la courbe sans la traverser.') },
     ] },
   { titre: 'Généralités sur les fonctions', duree: '45 min', brevet: true,
     attendus: ['Automatismes : image, antécédent, point d\'une courbe', 'Lire et interpréter une courbe dans une situation concrète', 'Utiliser une formule de tableur'],
@@ -95,9 +95,9 @@ PLANCHES['3e|Généralités sur les fonctions'] = [
         ...auto([['f(x) = 2x − 3 ; f(4) =', 5], ['g(x) = x² ; image de −3 :', 9], ['f(x) = 5x ; antécédent de 20 :', 4], ['f(2) = 7 signifie :', '2 a pour image 7', ['7 a pour image 2', '2 a pour image 7', 'f vaut 2']], ['Le point (1 ; 4) est sur la courbe de :', 'f(x) = x + 3', ['f(x) = x + 3', 'f(x) = 4x + 1', 'f(x) = x²']], ['h(x) = 10 − x² ; h(3) =', 1]]) },
       { etoiles: 2, cahier: true, pts: 5, consigne: `<span>On lance une balle vers le haut. La courbe donne sa hauteur h (en m) en fonction du temps t (en s).</span><div style="text-align:center;margin:4px 0;">${gBalle}</div>`
           + qs(['Quelle est la hauteur de la balle au bout de 1 s ?', 'À quels instants la balle est-elle à 8 m de hauteur ?', 'Quelle est la hauteur maximale atteinte, et à quel instant ?', 'On admet que h(t) = −t² + 6t. Calculer la hauteur au bout de 2,5 s.', 'Au bout de combien de temps la balle retombe-t-elle au sol ? Justifier par le calcul.']),
-        corr: cm1Redac('Lectures graphiques', { suite: ['Au bout de 1 s, la balle est à 5 m.', 'Elle est à 8 m aux instants 2 s et 4 s.', 'Hauteur maximale : 9 m, à l\'instant 3 s.'] }, '')
+        corr: cm1Redac('Lectures graphiques', '', 'Au bout de 1 s, la balle est à 5 m. Elle est à 8 m aux instants 2 s et 4 s. Sa hauteur maximale est 9 m, à l\'instant 3 s.')
           + cm1Redac('h(2,5)', '−2,5² + 6 × 2,5 = −6,25 + 15 = 8,75', 'Au bout de 2,5 s, la balle est à 8,75 m.')
-          + cm1Redac('Retour au sol', { suite: ['−t² + 6t = 0', 't(6 − t) = 0', 't = 0 (lancer) ou t = 6'] }, 'La balle retombe au sol au bout de 6 s.') },
+          + cm1Redac('Retour au sol', { suite: ['−t² + 6t = 0', 't(6 − t) = 0', 't = 0', 't = 6'] }, 'L\'instant 0 est le lancer : la balle retombe au sol au bout de 6 s.') },
       { etoiles: 2, cahier: true, pts: 4, consigne: 'On a calculé avec un tableur des valeurs de la fonction f(x) = 3x² − 5x + 1.'
           + tab([['', 'A', 'B', 'C', 'D', 'E', 'F'], ['1', 'x', '−2', '−1', '0', '1', '2'], ['2', 'f(x)', '23', '…', '1', '−1', '…']])
           + qs(['Quelle formule a-t-on saisie dans la cellule B2, avant de l\'étirer vers la droite ?', 'Calculer les valeurs manquantes en C2 et F2.', 'Donner un antécédent de 1 par f.']),

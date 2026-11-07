@@ -26,7 +26,7 @@ PLANCHES['3e|Grandeurs composées'] = [
       { etoiles: 2, col: 1, cahier: true, consigne: 'Un randonneur part à 9 h 15 et marche à 4,5 km/h. Il parcourt 15,75 km. À quelle heure arrive-t-il ?',
         corr: cm1Redac('Durée', { suite: ['15,75 : 4,5 = 3,5 h', '3,5 h = 3 h 30 min'] }, '') + cm1Redac('Heure d\'arrivée', '9 h 15 min + 3 h 30 min = 12 h 45 min', 'Il arrive à 12 h 45.') },
       { etoiles: 3, cahier: true, consigne: 'Léa fait 120 km à l\'aller à 60 km/h, puis revient par la même route à 40 km/h. Quelle est sa vitesse moyenne sur l\'aller-retour ?',
-        corr: cm1Redac('Durées', { suite: ['Aller : 120 : 60 = 2 h', 'Retour : 120 : 40 = 3 h'] }, '') + cm1Redac('Vitesse moyenne', '240 : 5 = 48', 'Sa vitesse moyenne est 48 km/h, et non 50 km/h.') },
+        corr: cm1Redac('Durée de l\'aller', '120 : 60 = 2', 'L\'aller dure 2 h.') + cm1Redac('Durée du retour', '120 : 40 = 3', 'Le retour dure 3 h.') + cm1Redac('Vitesse moyenne', '240 : 5 = 48', 'Sa vitesse moyenne est 48 km/h, et non 50 km/h.') },
     ] },
   { titre: 'Débit, masse volumique et autres quotients', duree: '35 min',
     attendus: ['Calculer une grandeur quotient (débit, masse volumique, densité, consommation)', 'Utiliser une grandeur quotient pour calculer une quantité', 'Convertir les unités composées'],
@@ -42,9 +42,9 @@ PLANCHES['3e|Grandeurs composées'] = [
       { etoiles: 2, col: 1, cahier: true, consigne: illu(piscinePave, 'Une piscine de 10 m sur 5 m, profonde de 1,6 m, est remplie avec un débit de 20 m³/h. Combien de temps faut-il pour la remplir ?'),
         corr: cm1Redac('Volume', '10 × 5 × 1,6 = 80', 'La piscine contient 80 m³.') + cm1Redac('Durée', '80 : 20 = 4', 'Il faut 4 heures.') },
       { etoiles: 2, col: 1, cahier: true, consigne: 'Un robinet fuit : une goutte par seconde, et 20 gouttes font 1 mL. Quel volume d\'eau perd-on en un an (365 jours) ?',
-        corr: cm1Redac('Nombre de gouttes', '365 × 24 × 3 600 = 31 536 000', '') + cm1Redac('Volume', { suite: ['31 536 000 : 20 = 1 576 800 mL', '1 576 800 mL ≈ 1 577 L'] }, 'On perd environ 1 577 L, soit près de 1,6 m³ d\'eau par an.') },
+        corr: cm1Redac('Nombre de gouttes', '365 × 24 × 3 600 = 31 536 000', '') + cm1Redac('Volume', { suite: ['31 536 000 : 20 = 1 576 800', '1 576 800 mL ≈ 1 577 L'] }, 'On perd environ 1 577 L, soit près de 1,6 m³ d\'eau par an.') },
       { etoiles: 3, cahier: true, consigne: 'La France compte 68 millions d\'habitants pour 552 000 km² ; Monaco, 38 000 habitants pour 2 km². Combien de fois Monaco est-il plus densément peuplé ?',
-        corr: cm1Redac('Densités', { suite: ['France : 68 000 000 : 552 000 ≈ 123 hab./km²', 'Monaco : 38 000 : 2 = 19 000 hab./km²'] }, '') + cm1Redac('Comparaison', '19 000 : 123 ≈ 154', 'Monaco est environ 150 fois plus densément peuplé que la France.') },
+        corr: cm1Redac('Densité de la France', '68 000 000 : 552 000 ≈ 123', 'Environ 123 hab./km².') + cm1Redac('Densité de Monaco', '38 000 : 2 = 19 000', '19 000 hab./km².') + cm1Redac('Comparaison', '19 000 : 123 ≈ 154', 'Monaco est environ 150 fois plus densément peuplé que la France.') },
     ] },
   { titre: 'Les grandeurs produits : l\'énergie', duree: '35 min',
     attendus: ['Calculer une énergie en kWh (puissance × durée)', 'Calculer le coût d\'une consommation', 'Utiliser d\'autres grandeurs produits'],
@@ -90,7 +90,7 @@ PLANCHES['3e|Grandeurs composées'] = [
       { etoiles: 2, cahier: true, pts: 5, consigne: 'Inès participe à un trail de 42 km. Elle part à 7 h 45. Elle parcourt les 30 premiers kilomètres en 3 h 45 min, puis les 12 derniers à la vitesse moyenne de 9 km/h.'
           + qs(['Calculer sa vitesse moyenne sur les 30 premiers kilomètres.', 'Combien de temps met-elle pour les 12 derniers kilomètres ?', 'À quelle heure franchit-elle la ligne d\'arrivée ?', 'Calculer sa vitesse moyenne sur l\'ensemble du trail, arrondie au dixième de km/h.']),
         corr: cm1Redac('Premiers 30 km', { suite: ['3 h 45 min = 3,75 h', '30 : 3,75 = 8'] }, 'Elle court à 8 km/h en moyenne.') + cm1Redac('Derniers 12 km', { suite: ['12 : 9 ≈ 1,333 h', '0,333 h × 60 = 20 min'] }, 'Elle met 1 h 20 min.')
-          + cm1Redac('Heure d\'arrivée', '7 h 45 + 3 h 45 + 1 h 20 = 12 h 50', 'Elle arrive à 12 h 50.') + cm1Redac('Vitesse moyenne', { suite: ['Durée totale : 5 h 05 min ≈ 5,083 h', '42 : 5,083 ≈ 8,3'] }, 'Sa vitesse moyenne est d\'environ 8,3 km/h.') },
+          + cm1Redac('Heure d\'arrivée', '7 h 45 + 3 h 45 + 1 h 20 = 12 h 50', 'Elle arrive à 12 h 50.') + cm1Redac('Durée totale', '5 h 05 min ≈ 5,083 h', '') + cm1Redac('Vitesse moyenne', '42 : 5,083 ≈ 8,3', 'Sa vitesse moyenne est d\'environ 8,3 km/h.') },
       { etoiles: 2, cahier: true, pts: 4, consigne: 'Un ordinateur de 65 W est allumé 6 h par jour, 220 jours par an. Le kWh coûte 0,25 €.'
           + qs(['Calculer l\'énergie consommée en un an, en kWh.', 'Calculer le coût annuel de cette consommation.', 'Le collège compte 150 ordinateurs identiques. Quel est le coût annuel total ?']),
         corr: cm1Redac('Énergie', '0,065 × 6 × 220 = 85,8', 'L\'ordinateur consomme 85,8 kWh par an.') + cm1Redac('Coût', '85,8 × 0,25 = 21,45', 'Cela coûte 21,45 € par an.') + cm1Redac('150 ordinateurs', '21,45 × 150 = 3 217,5', 'Le coût total est de 3 217,50 € par an.') },

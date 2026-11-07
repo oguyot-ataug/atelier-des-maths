@@ -48,13 +48,13 @@ PLANCHES['3e|Rotation'] = [
       { etoiles: 2, col: 1, consigne: 'De quel angle tourne une aiguille de montre ?',
         ...rmp([['La grande aiguille en 15 min : @°', 90], ['La grande aiguille en 20 min : @°', 120], ['La grande aiguille en 10 min : @°', 60], ['La petite aiguille en 1 h : @°', 30]]) },
       { etoiles: 2, col: 1, cahier: true, consigne: 'Quel angle les deux aiguilles d\'une horloge forment-elles à 3 h ? À 4 h ? À 9 h 30 ?',
-        corr: cm1Redac('Angles', { suite: ['3 h : 3 × 30 = 90°', '4 h : 4 × 30 = 120°', '9 h 30 : la petite aiguille est entre 9 et 10, la grande sur le 6 : 3,5 × 30 = 105°'] }, '') },
+        corr: cm1Redac('À 3 h', '3 × 30° = 90°', '') + cm1Redac('À 4 h', '4 × 30° = 120°', '') + cm1Redac('À 9 h 30', '3,5 × 30° = 105°', 'La petite aiguille est entre 9 et 10, la grande sur le 6.') },
       { etoiles: 2, col: 1, cahier: true, consigne: 'ABCD est un carré de centre O. Quelle rotation transforme A en B, B en C, C en D et D en A ? Quelle est l\'image de la diagonale [AC] ?',
         corr: cm1Redac('Rotation', '', 'C\'est la rotation de centre O et d\'angle 90° (dans le sens A → B). L\'image de [AC] est [BD].') },
       { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.',
         ...ch([['Un rectangle (non carré) se superpose à lui-même par une rotation de 90°.', 'faux'], ['Un rectangle se superpose à lui-même par une rotation de 180°.', 'vrai'], ['Un cercle se superpose à lui-même par toute rotation de centre son centre.', 'vrai']], 'vrai · faux') },
       { etoiles: 3, cahier: true, consigne: illu(roues2050, 'Une roue dentée de 20 dents entraîne une roue de 50 dents. La petite roue fait un tour complet (360°). De quel angle tourne la grande roue ?'),
-        corr: cm1Redac('Raisonnement', { suite: ['20 dents passent : 20 / 50 = 0,4 tour', '0,4 × 360 = 144'] }, 'La grande roue tourne de 144°.') },
+        corr: cm1Redac('Fraction de tour', '20 : 50 = 0,4', '20 dents passent : la grande roue fait 0,4 tour.') + cm1Redac('Angle', '0,4 × 360° = 144°', 'La grande roue tourne de 144°.') },
     ] },
   { titre: 'Les transformations du plan', duree: '40 min',
     attendus: ['Distinguer symétries, translation, rotation et homothétie', 'Calculer des coordonnées d\'images', 'Composer deux transformations'],
@@ -66,13 +66,13 @@ PLANCHES['3e|Rotation'] = [
       { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.',
         ...ch([['La symétrie axiale conserve les longueurs.', 'vrai'], ['L\'homothétie de rapport 2 conserve les longueurs.', 'faux'], ['Toutes ces transformations conservent les angles.', 'vrai'], ['Une rotation de 180° est une symétrie centrale.', 'vrai']], 'vrai · faux') },
       { etoiles: 2, col: 1, cahier: true, consigne: 'Une transformation envoie A(1 ; 0) sur A\'(0 ; 1) et B(0 ; 1) sur B\'(−1 ; 0), et ne bouge pas O. Laquelle ?',
-        corr: cm1Redac('Raisonnement', 'OA = OA\' = 1 et l\'angle AOA\' est droit ; de même pour B.', 'C\'est la rotation de centre O et d\'angle 90°, dans le sens inverse des aiguilles d\'une montre.') },
+        corr: cm1Redac('Raisonnement', '', 'OA = OA\' = 1 et l\'angle AOA\' est droit ; de même pour B. ') + cm1Redac('Conclusion', '', 'C\'est la rotation de centre O et d\'angle 90°, dans le sens inverse des aiguilles d\'une montre.') },
       { etoiles: 2, col: 1, consigne: 'Une rotation de centre O et d\'angle 120° est appliquée 3 fois de suite.',
         ...rmp([['Angle total : @°', 360], ['La figure revient-elle à sa position de départ ? @', 'oui']]) },
       { etoiles: 2, col: 1, cahier: true, consigne: 'Un motif de 3 cm de large est reproduit par des translations de 3 cm pour faire une frise de 30 cm. Combien de motifs y a-t-il ?',
         corr: cm1Redac('Nombre de motifs', '30 : 3 = 10', 'La frise compte 10 motifs.') },
       { etoiles: 3, cahier: true, consigne: 'On applique à A(2 ; 1) la symétrie d\'axe (Ox), puis la symétrie d\'axe (Oy). Quelle transformation unique donne le même résultat ?',
-        corr: cm1Redac('Images', { suite: ['Symétrie d\'axe (Ox) : (2 ; −1)', 'Puis symétrie d\'axe (Oy) : (−2 ; −1)'] }, 'On obtient le symétrique de A par rapport à O : c\'est la symétrie centrale de centre O (rotation de 180°).') },
+        corr: cm1Redac('Image par la symétrie d\'axe (Ox)', '(2 ; −1)', '') + cm1Redac('Puis par la symétrie d\'axe (Oy)', '(−2 ; −1)', 'On obtient le symétrique de A par rapport à O : c\'est la symétrie centrale de centre O (rotation de 180°).') },
     ] },
   { titre: 'Rotation et transformations', duree: '45 min', brevet: true,
     attendus: ['Automatismes : transformations, angles, coordonnées', 'Analyser un programme qui dessine une rosace', 'Utiliser une rotation dans un repère'],
@@ -84,9 +84,9 @@ PLANCHES['3e|Rotation'] = [
         corr: cm1Redac('Transformation', '', 'La rotation de centre le point de départ et d\'angle 60°.') + cm1Redac('6 répétitions', '6 × 60 = 360', 'Après 6 rotations, on a fait un tour complet.')
           + cm1Redac('Figure', '6 × 50 = 300', 'Les 6 triangles forment un hexagone régulier de côté 50 pas : son périmètre est 300 pas.') + cm1Redac('8 motifs', '360 : 8 = 45', 'Il faudrait tourner de 45°.') },
       { etoiles: 2, cahier: true, pts: 4, consigne: '<span>Dans un repère, A(1 ; 2), B(4 ; 2) et C(1 ; 5).</span>' + cote(brevetRep, qs(['Quelle est la nature du triangle ABC ? Justifier.', 'Donner les coordonnées de A\', B\' et C\', images de A, B et C par la rotation de centre O et d\'angle 90° (sens inverse des aiguilles d\'une montre).', 'Quelle est l\'aire du triangle A\'B\'C\' ? Justifier sans calcul de longueur supplémentaire.'])),
-        corr: cm1Redac('Nature de ABC', 'AB = 3 (horizontal) et AC = 3 (vertical)', 'ABC est rectangle et isocèle en A.')
+        corr: cm1Redac('Nature de ABC', { suite: ['AB = 3', 'AC = 3'] }, '[AB] est horizontal et [AC] vertical : ABC est rectangle et isocèle en A.')
           + cm1Redac('Images', { suite: ['La rotation de 90° envoie (x ; y) sur (−y ; x).', 'A\'(−2 ; 1), B\'(−2 ; 4), C\'(−5 ; 1)'] }, '')
-          + cm1Redac('Aire', 'Aire de ABC : 3 × 3 : 2 = 4,5', 'Une rotation conserve les aires : l\'aire de A\'B\'C\' est 4,5 unités d\'aire.') },
+          + cm1Redac('Aire de ABC', '3 × 3 : 2 = 4,5', 'Une rotation conserve les aires : l\'aire de A\'B\'C\' est 4,5 unités d\'aire.') },
     ] },
 ];
 })();

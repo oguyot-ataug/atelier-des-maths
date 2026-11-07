@@ -62,7 +62,7 @@ PLANCHES['3e|Théorème de Thalès'] = [
       { etoiles: 2, col: 1, consigne: 'Peut-on utiliser le théorème de Thalès ? Entoure.',
         ...ch([['M ∈ [AB], N ∈ [AC] et (MN) // (BC) :', 'oui'], ['M ∈ [AB], N ∈ [AC], sans droites parallèles :', 'non'], ['Deux droites sécantes en C coupées par deux droites parallèles :', 'oui']], 'oui · non') },
       { etoiles: 2, col: 1, cahier: true, consigne: 'A, M, B sont alignés, ainsi que A, N, C ; (MN) // (BC). AM = 2,4 cm, MB = 3,6 cm et MN = 3 cm. Calcule BC.',
-        corr: cm1Redac('Thalès', { suite: ['AB = 2,4 + 3,6 = 6 cm', `(MN) // (BC) : ${cm1Frac('AM', 'AB')} = ${cm1Frac('MN', 'BC')}, soit ${cm1Frac('2,4', 6)} = ${cm1Frac(3, 'BC')}`, 'BC = 3 × 6 : 2,4 = 7,5'] }, 'BC = 7,5 cm.') },
+        corr: cm1Redac('Thalès', { suite: ['AB = 2,4 + 3,6 = 6', '(MN) // (BC) : d\'après le théorème de Thalès,', `${cm1Frac('AM', 'AB')} = ${cm1Frac('MN', 'BC')}`, `${cm1Frac('2,4', 6)} = ${cm1Frac(3, 'BC')}`, 'BC = 3 × 6 : 2,4', 'BC = 7,5'] }, 'BC = 7,5 cm.') },
       { etoiles: 2, col: 1, cahier: true, consigne: illu(ombreArbre, 'Un bâton vertical de 1,5 m a une ombre de 2 m. Au même moment, l\'ombre d\'un arbre mesure 12 m. Quelle est la hauteur de l\'arbre ?'),
         corr: cm1Redac('Thalès', { suite: ['Les rayons du soleil sont parallèles.', `${cm1Frac('h', '1,5')} = ${cm1Frac(12, 2)}`, 'h = 1,5 × 12 : 2 = 9'] }, 'L\'arbre mesure 9 m.') },
       { etoiles: 3, cahier: true, consigne: 'Pour mesurer la largeur AB d\'une rivière, on utilise une figure en papillon : (AB) // (DE), C est le point d\'intersection de (AD) et (BE). CA = 12 m, CD = 4 m et DE = 5 m. Calcule AB.',
@@ -82,9 +82,9 @@ PLANCHES['3e|Théorème de Thalès'] = [
       { etoiles: 2, col: 1, cahier: true, consigne: 'Les droites (AB) et (MN) sont sécantes en O, avec M ∈ [OA] et N ∈ [OB]. OM = 5, OA = 8, ON = 4 et OB = 6,5. (MN) et (AB) sont-elles parallèles ?',
         corr: cm1Redac('Rapports', { suite: [`${cm1Frac('OM', 'OA')} = ${cm1Frac(5, 8)} = 0,625`, `${cm1Frac('ON', 'OB')} = ${cm1Frac(4, '6,5')} ≈ 0,615`] }, 'Les rapports ne sont pas égaux : si les droites étaient parallèles, ils le seraient (théorème de Thalès). Donc (MN) et (AB) ne sont pas parallèles.') },
       { etoiles: 2, col: 1, cahier: true, consigne: 'Dans le triangle ABC, AB = 4, AC = 5 et BC = 6. On place D sur [AB) et E sur [AC) avec AD = 10 et AE = 12,5. Montre que (DE) // (BC), puis calcule DE.',
-        corr: cm1Redac('Parallèles', `${cm1Frac('AB', 'AD')} = ${cm1Frac(4, 10)} = 0,4 et ${cm1Frac('AC', 'AE')} = ${cm1Frac(5, '12,5')} = 0,4`, 'D\'après la réciproque du théorème de Thalès, (DE) // (BC).') + cm1Redac('Longueur DE', 'DE = BC : 0,4 = 6 : 0,4 = 15', 'DE = 15.') },
+        corr: cm1Redac('Parallèles', { suite: [`${cm1Frac('AB', 'AD')} = ${cm1Frac(4, 10)} = 0,4`, `${cm1Frac('AC', 'AE')} = ${cm1Frac(5, '12,5')} = 0,4`] }, 'D\'après la réciproque du théorème de Thalès, (DE) // (BC).') + cm1Redac('Longueur DE', { suite: ['DE = BC : 0,4', 'DE = 6 : 0,4', 'DE = 15'] }, 'DE = 15.') },
       { etoiles: 3, cahier: true, consigne: 'Les points A, O, C sont alignés dans cet ordre, ainsi que B, O, D. OA = 3, OC = 4,5, OB = 4 et OD = 6. Les droites (AB) et (CD) sont-elles parallèles ?',
-        corr: cm1Redac('Rapports', `${cm1Frac('OA', 'OC')} = ${cm1Frac(3, '4,5')} = ${cm1Frac(2, 3)} et ${cm1Frac('OB', 'OD')} = ${cm1Frac(4, 6)} = ${cm1Frac(2, 3)}`, 'Les rapports sont égaux et les points sont alignés dans le même ordre (configuration papillon) : (AB) // (CD).') },
+        corr: cm1Redac('Rapports', { suite: [`${cm1Frac('OA', 'OC')} = ${cm1Frac(3, '4,5')} = ${cm1Frac(2, 3)}`, `${cm1Frac('OB', 'OD')} = ${cm1Frac(4, 6)} = ${cm1Frac(2, 3)}`] }, 'Les rapports sont égaux et les points sont alignés dans le même ordre (configuration papillon) : (AB) // (CD).') },
     ] },
   { titre: 'Thalès et Pythagore', duree: '40 min',
     attendus: ['Calculer une longueur avec le théorème de Pythagore', 'Prouver qu\'un triangle est rectangle (réciproque)', 'Enchaîner Pythagore et Thalès'],
@@ -98,7 +98,7 @@ PLANCHES['3e|Théorème de Thalès'] = [
       { etoiles: 2, col: 1, cahier: true, consigne: illu(echelleMur, 'Une échelle de 5 m est appuyée contre un mur vertical ; son pied est à 1,4 m du mur. À quelle hauteur arrive-t-elle ?'),
         corr: cm1Redac('Pythagore', { suite: ['h² + 1,4² = 5²', 'h² = 25 − 1,96 = 23,04', 'h = √23,04 = 4,8'] }, 'L\'échelle arrive à 4,8 m de hauteur.') },
       { etoiles: 2, cahier: true, consigne: `<span>ABC est rectangle en B, AB = 8 cm et BC = 6 cm. M ∈ [AB] avec AM = 2 cm, N ∈ [AC] et (MN) // (BC). Calcule AC, puis MN et AN.</span><div style="text-align:center;">${rectT}</div>`,
-        corr: cm1Redac('AC (Pythagore)', 'AC² = 8² + 6² = 100, donc AC = 10', '') + cm1Redac('MN et AN (Thalès)', { suite: [`${cm1Frac('AM', 'AB')} = ${cm1Frac('AN', 'AC')} = ${cm1Frac('MN', 'BC')}, soit ${cm1Frac(2, 8)} = ${cm1Frac('AN', 10)} = ${cm1Frac('MN', 6)}`, 'MN = 6 × 2 : 8 = 1,5', 'AN = 10 × 2 : 8 = 2,5'] }, 'AC = 10 cm, MN = 1,5 cm et AN = 2,5 cm.') },
+        corr: cm1Redac('AC (Pythagore)', { suite: ['AC² = 8² + 6² = 100', 'AC = 10'] }, '') + cm1Redac('MN et AN (Thalès)', { suite: [`${cm1Frac('AM', 'AB')} = ${cm1Frac('AN', 'AC')} = ${cm1Frac('MN', 'BC')}`, `${cm1Frac(2, 8)} = ${cm1Frac('AN', 10)} = ${cm1Frac('MN', 6)}`, 'MN = 6 × 2 : 8 = 1,5', 'AN = 10 × 2 : 8 = 2,5'] }, 'AC = 10 cm, MN = 1,5 cm et AN = 2,5 cm.') },
       { etoiles: 3, cahier: true, consigne: illu(rampeAcces, 'Une rampe d\'accès doit avoir une pente d\'au plus 5 % (hauteur : longueur horizontale). Pour monter de 0,4 m, quelle longueur horizontale faut-il au minimum ? Quelle est alors la longueur de la rampe ?'),
         corr: cm1Redac('Longueur horizontale', '0,4 : 0,05 = 8', 'Il faut au moins 8 m.') + cm1Redac('Longueur de la rampe', 'L² = 8² + 0,4² = 64,16 ; L ≈ 8,01', 'La rampe mesure environ 8,01 m.') },
     ] },
@@ -112,13 +112,13 @@ PLANCHES['3e|Théorème de Thalès'] = [
       { etoiles: 2, col: 1, cahier: true, consigne: illu(ombreImmeuble, 'Un poteau de 2 m projette une ombre de 3 m. Au même moment, l\'ombre d\'un immeuble mesure 36 m. Quelle est la hauteur de l\'immeuble ?'),
         corr: cm1Redac('Thalès', { suite: [`${cm1Frac('h', 2)} = ${cm1Frac(36, 3)}`, 'h = 2 × 12 = 24'] }, 'L\'immeuble mesure 24 m.') },
       { etoiles: 2, col: 1, cahier: true, consigne: illu(escabeau, 'Les montants [AB] et [AC] d\'un escabeau mesurent 2 m. Une barre [MN] parallèle au sol est fixée à 0,5 m du sommet A sur chaque montant. L\'écartement au sol est BC = 1,2 m. Quelle est la longueur de la barre ?'),
-        corr: cm1Redac('Thalès', { suite: [`${cm1Frac('AM', 'AB')} = ${cm1Frac('MN', 'BC')}, soit ${cm1Frac('0,5', 2)} = ${cm1Frac('MN', '1,2')}`, 'MN = 1,2 × 0,5 : 2 = 0,3'] }, 'La barre mesure 0,3 m, soit 30 cm.') },
+        corr: cm1Redac('Thalès', { suite: [`${cm1Frac('AM', 'AB')} = ${cm1Frac('MN', 'BC')}`, `${cm1Frac('0,5', 2)} = ${cm1Frac('MN', '1,2')}`, 'MN = 1,2 × 0,5 : 2 = 0,3'] }, 'La barre mesure 0,3 m, soit 30 cm.') },
       { etoiles: 2, col: 1, cahier: true, consigne: illu(regleOeil, 'Une règle de 30 cm, tenue verticalement à 60 cm de l\'œil, cache exactement un arbre situé à 40 m. Quelle est la hauteur de l\'arbre ?'),
         corr: cm1Redac('Thalès', { suite: [`${cm1Frac('h', '0,3')} = ${cm1Frac(40, '0,6')}`, 'h = 0,3 × 40 : 0,6 = 20'] }, 'L\'arbre mesure environ 20 m.') },
       { etoiles: 2, col: 1, cahier: true, consigne: illu(charpente, 'La charpente d\'une cabane est un triangle ABC. Une poutre [MN] est parallèle à [BC], avec M ∈ [AB], AM = 1,2 m et AB = 3 m. Sachant que BC = 4 m, calcule MN.'),
         corr: cm1Redac('Thalès', 'MN = 4 × 1,2 : 3 = 1,6', 'La poutre mesure 1,6 m.') },
       { etoiles: 3, cahier: true, consigne: 'Dans le triangle ABC, AB = 9 cm ; M ∈ [AB], N ∈ [AC] et (MN) // (BC). Où placer M pour que MN soit le tiers de BC ? Et pour que l\'aire de AMN soit le quart de celle de ABC ?',
-        corr: cm1Redac('MN = BC : 3', 'Le coefficient de réduction est 1/3 : AM = 9 : 3 = 3', 'Il faut AM = 3 cm.') + cm1Redac('Aire divisée par 4', 'Les aires sont multipliées par k² : k² = 1/4, donc k = 1/2', 'Il faut AM = 4,5 cm.') },
+        corr: cm1Redac('MN = BC : 3', 'AM = 9 : 3 = 3', 'Le coefficient de réduction est le tiers : il faut AM = 3 cm.') + cm1Redac('Aire divisée par 4', { suite: [`k² = ${cm1Frac(1, 4)}`, `k = ${cm1Frac(1, 2)}`, 'AM = 9 : 2 = 4,5'] }, 'Les aires sont multipliées par k² : il faut AM = 4,5 cm.') },
     ] },
   { titre: 'Théorème de Thalès', duree: '45 min', brevet: true,
     attendus: ['Automatismes : Pythagore, Thalès, agrandissements', 'Enchaîner réciproque de Pythagore et théorème de Thalès', 'Prouver un parallélisme et calculer une distance'],
@@ -128,10 +128,10 @@ PLANCHES['3e|Théorème de Thalès'] = [
       { etoiles: 2, cahier: true, pts: 5, consigne: `<span>Voici le profil d'une rampe de skate. Les points A, B, C sont alignés, ainsi que A, E, D. AB = 1,2 m, BE = 0,9 m, AE = 1,5 m et BC = 2,8 m. Le triangle ACD est rectangle en C.</span>` + cote(skate, qs(['Montrer que le triangle ABE est rectangle en B.', 'En déduire que les droites (BE) et (CD) sont parallèles.', 'Calculer la hauteur CD de la rampe.', 'Calculer la longueur AD, puis le périmètre du triangle ACD.'])),
         corr: cm1Redac('ABE rectangle', { suite: ['AE² = 1,5² = 2,25', 'AB² + BE² = 1,44 + 0,81 = 2,25'] }, 'AE² = AB² + BE² : d\'après la réciproque du théorème de Pythagore, ABE est rectangle en B.')
           + cm1Redac('Parallèles', '(BE) et (CD) sont toutes les deux perpendiculaires à (AC).', 'Donc (BE) // (CD).')
-          + cm1Redac('Hauteur CD (Thalès)', { suite: ['AC = 1,2 + 2,8 = 4 m', `${cm1Frac('AB', 'AC')} = ${cm1Frac('BE', 'CD')}, soit ${cm1Frac('1,2', 4)} = ${cm1Frac('0,9', 'CD')}`, 'CD = 0,9 × 4 : 1,2 = 3'] }, 'La rampe mesure 3 m de haut.')
-          + cm1Redac('AD et périmètre', { suite: ['AD = 1,5 × 4 : 1,2 = 5 m', '4 + 3 + 5 = 12'] }, 'Le périmètre du triangle ACD est 12 m.') },
+          + cm1Redac('Hauteur CD (Thalès)', { suite: ['AC = 1,2 + 2,8 = 4', `${cm1Frac('AB', 'AC')} = ${cm1Frac('BE', 'CD')}`, `${cm1Frac('1,2', 4)} = ${cm1Frac('0,9', 'CD')}`, 'CD = 0,9 × 4 : 1,2 = 3'] }, 'La rampe mesure 3 m de haut.')
+          + cm1Redac('AD et périmètre', { suite: ['AD = 1,5 × 4 : 1,2 = 5', '4 + 3 + 5 = 12'] }, 'Le périmètre du triangle ACD est 12 m.') },
       { etoiles: 2, cahier: true, pts: 4, consigne: `<span>Pour estimer la largeur d'une rivière, on a planté des piquets A, B, C, D et O. Les points A, O, D sont alignés, ainsi que B, O, C. OA = 30 m, OD = 12 m, OB = 35 m, OC = 14 m et CD = 10 m.</span>` + cote(riviere, qs(['Montrer que les droites (AB) et (CD) sont parallèles.', 'Calculer la longueur AB.', 'Un nageur traverse en suivant [AB] à 1,2 m/s. Combien de temps met-il ?'])),
-        corr: cm1Redac('Parallèles', `${cm1Frac('OA', 'OD')} = ${cm1Frac(30, 12)} = 2,5 et ${cm1Frac('OB', 'OC')} = ${cm1Frac(35, 14)} = 2,5`, 'Les rapports sont égaux et les points sont alignés dans le même ordre : d\'après la réciproque du théorème de Thalès, (AB) // (CD).')
+        corr: cm1Redac('Parallèles', { suite: [`${cm1Frac('OA', 'OD')} = ${cm1Frac(30, 12)} = 2,5`, `${cm1Frac('OB', 'OC')} = ${cm1Frac(35, 14)} = 2,5`] }, 'Les rapports sont égaux et les points sont alignés dans le même ordre : d\'après la réciproque du théorème de Thalès, (AB) // (CD).')
           + cm1Redac('Longueur AB', 'AB = 2,5 × CD = 2,5 × 10 = 25', 'AB = 25 m.') + cm1Redac('Durée', '25 : 1,2 ≈ 20,8', 'Le nageur met environ 21 s.') },
     ] },
 ];

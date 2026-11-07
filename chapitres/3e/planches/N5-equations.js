@@ -35,11 +35,11 @@ PLANCHES['3e|Équations'] = [
       { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.',
         ...ch([['Si a × b = 0, alors a = 0 ou b = 0.', 'vrai'], ['L\'équation (x − 1)(x + 1) = 0 a deux solutions.', 'vrai'], ['L\'équation x(x + 3) = 0 a une seule solution : −3.', 'faux'], ['Si a × b = 6, alors a = 6 ou b = 6.', 'faux']], 'vrai · faux') },
       { etoiles: 2, col: 1, cahier: true, consigne: 'Résous (4x − 1)(2x + 3) = 0.',
-        corr: cm1Redac('Équation produit', { suite: ['Un produit est nul si l\'un de ses facteurs est nul.', `4x − 1 = 0 donc x = ${F(1, 4)}`, `2x + 3 = 0 donc x = −${F(3, 2)}`] }, `Les solutions sont ${F(1, 4)} et −${F(3, 2)}.`) },
+        corr: cm1Redac('Premier facteur nul', { suite: ['4x − 1 = 0', '4x = 1', `x = ${F(1, 4)}`] }, '') + cm1Redac('Second facteur nul', { suite: ['2x + 3 = 0', '2x = −3', `x = −${F(3, 2)}`] }, `Un produit est nul si l'un de ses facteurs est nul : les solutions sont ${F(1, 4)} et −${F(3, 2)}.`) },
       { etoiles: 2, col: 1, cahier: true, consigne: 'Factorise, puis résous : x² − 5x = 0, puis (x + 2)(x − 1) + (x + 2)(3x + 4) = 0.',
-        corr: cm1Redac('x² − 5x = 0', { suite: ['x(x − 5) = 0', 'x = 0 ou x − 5 = 0'] }, 'Les solutions sont 0 et 5.') + cm1Redac('(x + 2)(x − 1) + (x + 2)(3x + 4) = 0', { suite: ['(x + 2)(x − 1 + 3x + 4) = 0', '(x + 2)(4x + 3) = 0'] }, `Les solutions sont −2 et −${F(3, 4)}.`) },
+        corr: cm1Redac('x² − 5x = 0', { suite: ['x(x − 5) = 0', 'x = 0', 'x − 5 = 0', 'x = 5'] }, 'Un produit est nul si l\'un de ses facteurs est nul : les solutions sont 0 et 5.') + cm1Redac('(x + 2)(x − 1) + (x + 2)(3x + 4) = 0', { suite: ['(x + 2)(x − 1 + 3x + 4) = 0', '(x + 2)(4x + 3) = 0'] }, `Les solutions sont −2 et −${F(3, 4)}.`) },
       { etoiles: 2, cahier: true, consigne: 'Le double du carré d\'un nombre, diminué de 8 fois ce nombre, est nul. Quel peut être ce nombre ?',
-        corr: cm1Redac('Mise en équation', { suite: ['2x² − 8x = 0', '2x(x − 4) = 0', 'x = 0 ou x = 4'] }, 'Ce nombre est 0 ou 4.') },
+        corr: cm1Redac('Mise en équation', { suite: ['2x² − 8x = 0', '2x(x − 4) = 0', 'x = 0', 'x = 4'] }, 'Un produit est nul si l\'un de ses facteurs est nul : ce nombre est 0 ou 4.') },
       { etoiles: 3, cahier: true, consigne: 'Résous (2x + 1)² − 16 = 0 en factorisant.',
         corr: cm1Redac('Factorisation', { suite: ['(2x + 1 − 4)(2x + 1 + 4) = 0', '(2x − 3)(2x + 5) = 0'] }, `Les solutions sont ${F(3, 2)} et −${F(5, 2)}.`) },
     ] },
@@ -57,9 +57,9 @@ PLANCHES['3e|Équations'] = [
       { etoiles: 2, col: 1, cahier: true, consigne: 'Résous : 3x² = 48 ; x² + 9 = 0 ; 2x² − 5 = 13.',
         corr: cm1Redac('3x² = 48', 'x² = 16', 'Les solutions sont 4 et −4.') + cm1Redac('x² + 9 = 0', 'x² = −9', 'Pas de solution : un carré n\'est jamais négatif.') + cm1Redac('2x² − 5 = 13', { suite: ['2x² = 18', 'x² = 9'] }, 'Les solutions sont 3 et −3.') },
       { etoiles: 2, col: 1, cahier: true, consigne: 'Un carré a la même aire qu\'un rectangle de 18 cm sur 8 cm. Quel est le côté du carré ?',
-        corr: cm1Redac('Côté du carré', { suite: ['18 × 8 = 144', 'c² = 144 et c &gt; 0'] }, 'Le côté du carré mesure 12 cm.') },
+        corr: cm1Redac('Aire du rectangle', '18 × 8 = 144', 'Le carré a la même aire : 144 cm².') + cm1Redac('Côté du carré', { suite: ['c² = 144', 'c = 12'] }, 'Une longueur est positive : le côté du carré mesure 12 cm.') },
       { etoiles: 3, cahier: true, consigne: 'Résous (x − 3)² = 25.',
-        corr: cm1Redac('Raisonnement', { suite: ['x − 3 = 5 ou x − 3 = −5', 'x = 8 ou x = −2'] }, 'Les solutions sont 8 et −2.') },
+        corr: cm1Redac('Premier cas', { suite: ['x − 3 = 5', 'x = 8'] }, '') + cm1Redac('Second cas', { suite: ['x − 3 = −5', 'x = −2'] }, 'Les nombres dont le carré vaut 25 sont 5 et −5 : les solutions sont 8 et −2.') },
     ] },
   { titre: 'Mettre un problème en équation', duree: '40 min',
     attendus: ['Choisir l\'inconnue', 'Traduire l\'énoncé par une équation', 'Résoudre et conclure par une phrase'],
@@ -67,15 +67,15 @@ PLANCHES['3e|Équations'] = [
       { etoiles: 1, col: 1, consigne: 'Entoure l\'équation qui traduit la phrase (x désigne le nombre).',
         ...chx([['Le double d\'un nombre, augmenté de 5, vaut 17 :', '2x + 5 = 17', '2(x + 5) = 17 · 2x + 5 = 17 · x + 10 = 17'], ['Le triple de la somme d\'un nombre et de 4 vaut 30 :', '3(x + 4) = 30', '3x + 4 = 30 · 3(x + 4) = 30 · x + 12 = 30']]) },
       { etoiles: 2, col: 1, cahier: true, consigne: 'Le périmètre d\'un rectangle est 54 cm. Sa longueur mesure 7 cm de plus que sa largeur. Calcule ses dimensions.',
-        corr: cm1Redac('Mise en équation', { suite: ['Largeur : ℓ ; longueur : ℓ + 7', '2(ℓ + ℓ + 7) = 54', '4ℓ + 14 = 54', 'ℓ = 10'] }, 'Le rectangle mesure 17 cm sur 10 cm.') },
+        corr: cm1Redac('Mise en équation', { suite: ['2(ℓ + ℓ + 7) = 54', '4ℓ + 14 = 54', '4ℓ = 40', 'ℓ = 10'] }, 'La largeur est ℓ et la longueur ℓ + 7 : le rectangle mesure 17 cm sur 10 cm.') },
       { etoiles: 2, col: 1, cahier: true, consigne: 'Marc a trois fois l\'âge de sa fille. Dans 12 ans, il aura le double de son âge. Quel âge ont-ils ?',
-        corr: cm1Redac('Mise en équation', { suite: ['Âge de la fille : x ; âge de Marc : 3x', '3x + 12 = 2(x + 12)', '3x + 12 = 2x + 24', 'x = 12'] }, 'La fille a 12 ans et Marc 36 ans.') },
+        corr: cm1Redac('Mise en équation', { suite: ['3x + 12 = 2(x + 12)', '3x + 12 = 2x + 24', 'x = 12'] }, 'La fille a x ans et Marc 3x ans : la fille a 12 ans et Marc 36 ans.') },
       { etoiles: 2, col: 1, cahier: true, consigne: 'Piscine : tarif A, 4,50 € l\'entrée ; tarif B, abonnement de 30 € puis 2 € l\'entrée. À partir de combien d\'entrées le tarif B est-il plus avantageux ?',
         corr: cm1Redac('Même prix', { suite: ['4,5x = 30 + 2x', '2,5x = 30', 'x = 12'] }, 'Pour 12 entrées, les deux tarifs coûtent 54 € : le tarif B est plus avantageux à partir de 13 entrées.') },
       { etoiles: 2, col: 1, cahier: true, consigne: 'Les angles d\'un triangle mesurent x, 2x et 3x degrés. Calcule-les.',
         corr: cm1Redac('Somme des angles', { suite: ['x + 2x + 3x = 180', '6x = 180', 'x = 30'] }, 'Les angles mesurent 30°, 60° et 90° : le triangle est rectangle.') },
       { etoiles: 2, col: 1, cahier: true, consigne: 'Dans une ferme, il y a des poules et des lapins : 35 têtes et 94 pattes. Combien y a-t-il de lapins ?',
-        corr: cm1Redac('Mise en équation', { suite: ['Lapins : x ; poules : 35 − x', '4x + 2(35 − x) = 94', '2x + 70 = 94', 'x = 12'] }, 'Il y a 12 lapins (et 23 poules).') },
+        corr: cm1Redac('Mise en équation', { suite: ['4x + 2(35 − x) = 94', '2x + 70 = 94', '2x = 24', 'x = 12'] }, 'Avec x lapins, il y a 35 − x poules : il y a 12 lapins (et 23 poules).') },
       { etoiles: 3, cahier: true, consigne: 'Si on augmente de 3 cm le côté d\'un carré, son aire augmente de 51 cm². Quel est le côté du carré ?',
         corr: cm1Redac('Mise en équation', { suite: ['(x + 3)² − x² = 51', 'x² + 6x + 9 − x² = 51', '6x = 42', 'x = 7'] }, 'Le côté du carré mesure 7 cm.') },
     ] },
@@ -86,13 +86,13 @@ PLANCHES['3e|Équations'] = [
         ...auto([['2x + 3 = 11 : x =', 4], ['Solutions de x² = 36 :', '6 et −6', ['6', '−6', '6 et −6']], ['Solutions de (x − 2)(x + 3) = 0 :', '2 et −3', ['2 et 3', '−2 et 3', '2 et −3']], ['−3 est-il solution de x² + 2x = 3 ?', 'oui', ['oui', 'non']], ['5x = 2 : x =', '0,4', ['0,4', '2,5', '−3']], ['x − 7 = −2 : x =', 5]]) },
       { etoiles: 2, cahier: true, pts: 5, consigne: 'Un cinéma propose trois tarifs. Tarif A : 9 € la séance. Tarif B : une carte annuelle à 30 €, puis 6 € la séance. Tarif C : un abonnement illimité à 200 € par an.'
           + qs(['Calculer le prix de 8 séances avec chaque tarif.', 'On note x le nombre de séances. Exprimer en fonction de x le prix payé avec le tarif A, puis avec le tarif B.', 'Résoudre l\'équation 9x = 30 + 6x. Interpréter le résultat.', 'À partir de combien de séances le tarif C devient-il le plus avantageux ?']),
-        corr: cm1Redac('8 séances', { suite: ['A : 8 × 9 = 72 €', 'B : 30 + 8 × 6 = 78 €', 'C : 200 €'] }, '') + cm1Redac('Expressions', { suite: ['Tarif A : 9x', 'Tarif B : 30 + 6x'] }, '')
+        corr: cm1Redac('Tarif A pour 8 séances', '8 × 9 = 72', '') + cm1Redac('Tarif B pour 8 séances', '30 + 8 × 6 = 78', 'Pour 8 séances : 72 € avec A, 78 € avec B, 200 € avec C.') + cm1Redac('Expression du tarif A', '9x', '') + cm1Redac('Expression du tarif B', '30 + 6x', '')
           + cm1Redac('Équation', { suite: ['9x − 6x = 30', '3x = 30', 'x = 10'] }, 'Pour 10 séances, les tarifs A et B coûtent le même prix : 90 €.')
-          + cm1Redac('Tarif C', { suite: ['B devient plus cher que C quand 30 + 6x &gt; 200, soit x &gt; 28,3.', 'Avec 28 séances : B coûte 198 € ; avec 29 séances : B coûte 204 €.'] }, 'Le tarif C est le plus avantageux à partir de 29 séances.') },
+          + cm1Redac('B plus cher que C', { suite: ['30 + 6x &gt; 200', '6x &gt; 170', 'x &gt; 28,3'] }, '') + cm1Redac('Vérification', { suite: ['30 + 6 × 28 = 198', '30 + 6 × 29 = 204'] }, 'Avec 28 séances, B coûte 198 € ; avec 29 séances, 204 € : le tarif C est le plus avantageux à partir de 29 séances.') },
       { etoiles: 2, cahier: true, pts: 4, consigne: 'On considère l\'expression E = (2x − 3)² − 25.'
           + qs(['Développer et réduire E.', 'Factoriser E.', 'Résoudre l\'équation E = 0.', 'Calculer E pour x = 0.']),
         corr: cm1Redac('Développement', { nom: 'E', lignes: ['4x² − 12x + 9 − 25', '4x² − 12x − 16'] }, '') + cm1Redac('Factorisation', '(2x − 3 − 5)(2x − 3 + 5) = (2x − 8)(2x + 2)', '')
-          + cm1Redac('E = 0', { suite: ['2x − 8 = 0 donc x = 4', '2x + 2 = 0 donc x = −1'] }, 'Les solutions sont 4 et −1.') + cm1Redac('Pour x = 0', '(−3)² − 25 = 9 − 25 = −16', 'E = −16.') },
+          + cm1Redac('Premier facteur nul', { suite: ['2x − 8 = 0', '2x = 8', 'x = 4'] }, '') + cm1Redac('Second facteur nul', { suite: ['2x + 2 = 0', '2x = −2', 'x = −1'] }, 'Les solutions de E = 0 sont 4 et −1.') + cm1Redac('Pour x = 0', '(−3)² − 25 = 9 − 25 = −16', 'E = −16.') },
     ] },
 ];
 })();

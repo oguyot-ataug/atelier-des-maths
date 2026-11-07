@@ -22,9 +22,9 @@ PLANCHES['3e|Puissances'] = [
       { etoiles: 2, col: 1, consigne: 'Compare : entoure &lt;, = ou &gt;.',
         ...ch([['2⁵ … 5²', '&gt;'], ['3⁴ … 9²', '='], ['(−2)³ … (−3)²', '&lt;'], ['10² … 2¹⁰', '&lt;']], cmp) },
       { etoiles: 2, col: 1, cahier: true, consigne: 'Une feuille de papier a une épaisseur de 0,1 mm. On la plie en deux, 10 fois de suite. Quelle épaisseur obtient-on ?',
-        corr: cm1Redac('Épaisseur', { suite: ['À chaque pliage, l\'épaisseur double : 0,1 × 2¹⁰', '2¹⁰ = 1 024', '0,1 × 1 024 = 102,4'] }, 'On obtient 102,4 mm, soit environ 10 cm.') },
+        corr: cm1Redac('Épaisseur', { suite: ['0,1 × 2¹⁰', '2¹⁰ = 1 024', '0,1 × 1 024 = 102,4'] }, 'À chaque pliage, l\'épaisseur double : on obtient 102,4 mm, soit environ 10 cm.') },
       { etoiles: 3, cahier: true, consigne: 'Une bactérie se divise en deux toutes les 20 minutes. Combien de bactéries obtient-on au bout de 4 heures, en partant d\'une seule ?',
-        corr: cm1Redac('Nombre de bactéries', { suite: ['4 h = 240 min ; 240 : 20 = 12 divisions', '2¹² = 4 096'] }, 'On obtient 4 096 bactéries.') },
+        corr: cm1Redac('Nombre de divisions', { suite: ['4 h = 240 min', '240 : 20 = 12'] }, 'Les bactéries se divisent 12 fois.') + cm1Redac('Nombre de bactéries', '2¹² = 4 096', 'On obtient 4 096 bactéries.') },
     ] },
   { titre: 'Les puissances de 10', duree: '35 min',
     attendus: ['Passer de 10ⁿ à l\'écriture décimale et inversement', 'Calculer avec les puissances de 10', 'Connaître les préfixes (kilo, méga, giga, milli, micro, nano)'],
@@ -78,7 +78,7 @@ PLANCHES['3e|Puissances'] = [
       { etoiles: 2, col: 1, consigne: 'Un atome de carbone a un diamètre d\'environ 1,4 × 10⁻¹⁰ m. Combien d\'atomes faut-il aligner pour faire 1 mm ?',
         ...rmp([['1 mm = 10<sup>@</sup> m', '−3'], ['Environ @ × 10<sup>@</sup> atomes (arrondi au dixième)', '7,1', 6]], 3) },
       { etoiles: 3, cahier: true, consigne: 'Légende de l\'échiquier : 1 grain de riz sur la 1re case, 2 sur la 2e, 4 sur la 3e, et ainsi de suite en doublant. Combien de grains sur la 64e case ? Donne un ordre de grandeur, sachant que 2¹⁰ ≈ 10³.',
-        corr: cm1Redac('Raisonnement', { suite: ['Sur la case n, il y a 2ⁿ⁻¹ grains : 2⁶³ sur la 64e case.', '2⁶³ = 2³ × (2¹⁰)⁶ ≈ 8 × (10³)⁶ = 8 × 10¹⁸'] }, 'Il y a environ 8 × 10¹⁸ grains sur la dernière case : des milliards de milliards !') },
+        corr: cm1Redac('Raisonnement', { suite: ['2⁶⁴⁻¹ = 2⁶³', '2⁶³ = 2³ × (2¹⁰)⁶ ≈ 8 × (10³)⁶ = 8 × 10¹⁸'] }, 'Sur la case n, il y a 2ⁿ⁻¹ grains : il y a environ 8 × 10¹⁸ grains sur la 64e case, des milliards de milliards !') },
     ] },
   { titre: 'Puissances', duree: '45 min', brevet: true,
     attendus: ['Automatismes : puissances, puissances de 10, écriture scientifique', 'Calculer avec de très grands ou très petits nombres', 'Convertir et comparer des grandeurs'],
@@ -89,7 +89,7 @@ PLANCHES['3e|Puissances'] = [
           + qs(['Écrire la capacité de la mémoire en octets, en écriture scientifique.', 'Combien de photos pourrait-on stocker si la mémoire était vide ?', 'Le système occupe 22 Go et Léa a déjà 9 000 photos. Combien de minutes de vidéo 4K peut-elle encore filmer ?']),
         corr: cm1Redac('Capacité', '128 × 10⁹ = 1,28 × 10¹¹', 'La mémoire contient 1,28 × 10¹¹ octets.')
           + cm1Redac('Nombre de photos', '1,28 × 10¹¹ : (3,2 × 10⁶) = 0,4 × 10⁵ = 40 000', 'On pourrait stocker 40 000 photos.')
-          + cm1Redac('Vidéo', { suite: ['128 − 22 = 106 Go = 106 000 Mo', '9 000 × 3,2 = 28 800 Mo de photos', '106 000 − 28 800 = 77 200 Mo libres', '77 200 : 350 ≈ 220,6'] }, 'Léa peut encore filmer 220 minutes, soit 3 h 40 min de vidéo 4K.') },
+          + cm1Redac('Vidéo', { suite: ['128 Go − 22 Go = 106 Go', '106 Go = 106 000 Mo', '9 000 × 3,2 Mo = 28 800 Mo', '106 000 Mo − 28 800 Mo = 77 200 Mo', '77 200 : 350 ≈ 220,6'] }, 'Léa peut encore filmer 220 minutes, soit 3 h 40 min de vidéo 4K.') },
       { etoiles: 2, cahier: true, pts: 4, consigne: 'Mars est à environ 2,28 × 10⁸ km du Soleil et la Terre à 1,5 × 10⁸ km. La lumière, comme les ondes radio, parcourt 3 × 10⁵ km par seconde.'
           + qs(['Combien de temps la lumière du Soleil met-elle pour atteindre Mars ? Donner le résultat en minutes et secondes.', 'Quand la Terre et Mars sont alignées du même côté du Soleil, quelle distance les sépare ?', 'Combien de temps met alors un message radio envoyé de la Terre à un robot sur Mars ?']),
         corr: cm1Redac('Soleil → Mars', { suite: ['2,28 × 10⁸ : (3 × 10⁵) = 0,76 × 10³ = 760 s', '760 s = 12 × 60 s + 40 s'] }, 'La lumière met 12 min 40 s.')
