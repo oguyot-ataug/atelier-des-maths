@@ -64,7 +64,7 @@ PLANCHES['4e|Proportionnalité'] = [
       { etoiles: 2, cahier: true, consigne: illu(cuve, 'Une cuve de 1 200 L est remplie par un robinet qui débite 16 L par minute. Combien de temps faut-il pour la remplir ? Donne la réponse en heures et minutes.'),
         corr: cm1Redac('Durée', { suite: ['1 200 : 16 = 75 min', '75 min = 1 h 15 min'] }, 'Il faut 1 h 15 min pour remplir la cuve.') },
       { etoiles: 3, cahier: true, consigne: 'Le kWh coûte 0,25 €. Un radiateur de 1 500 W fonctionne 6 h par jour pendant 30 jours. Combien coûte son utilisation ?',
-        corr: cm1Redac('Énergie consommée', { suite: ['1 500 W = 1,5 kW', '1,5 × 6 × 30 = 270 kWh'] }, 'Le radiateur consomme 270 kWh.') + cm1Redac('Coût', '270 × 0,25 = 67,5', 'Son utilisation coûte 67,50 €.') },
+        corr: cm1Redac('Puissance en kilowatts', '1 500 W = 1,5 kW', '') + cm1Redac('Énergie consommée', '1,5 × 6 × 30 = 270', 'Le radiateur consomme 270 kWh.') + cm1Redac('Coût', '270 × 0,25 = 67,5', 'Son utilisation coûte 67,50 €.') },
       { etoiles: 1, col: 1, consigne: 'Complète.', ...P3.rmp([['1 kWh = @ Wh', '1 000'], ['un appareil de 2 000 W pendant 3 h : @ kWh', 6]], 3) },
       { etoiles: 2, col: 1, consigne: 'Entoure l\'unité qui convient.', ...P3.chx([['une vitesse', 'km/h', 'km/h · km · h'], ['une énergie consommée', 'kWh', 'kW · kWh']]) },
     ] },

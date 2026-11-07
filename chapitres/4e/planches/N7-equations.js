@@ -73,7 +73,7 @@ PLANCHES['4e|Équations'] = [
       { etoiles: 3, cahier: true, consigne: 'Un cinéma vend des places à 9 € (plein tarif) et à 6 € (tarif réduit). Pour une séance, 120 places ont été vendues pour 930 €. Combien de places au tarif réduit ont été vendues ?',
         corr: cm1Redac('Mise en équation', { suite: ['Soit x le nombre de places à tarif réduit ; il y a 120 − x places plein tarif.', '6x + 9(120 − x) = 930', '6x + 1 080 − 9x = 930', '−3x = −150', 'x = 50'] }, '50 places ont été vendues au tarif réduit, et 70 au plein tarif.') },
       { etoiles: 3, cahier: true, consigne: 'Je pense à un nombre. Je le multiplie par 5, j\'enlève 8, puis je trouve le même résultat qu\'en ajoutant 16 au nombre de départ. Quel est ce nombre ?',
-        corr: cm1Redac('Mise en équation', { suite: ['5x − 8 = x + 16', '4x = 24', 'x = 6'] }, 'Le nombre est 6 (vérification : 5 × 6 − 8 = 22 et 6 + 16 = 22).') },
+        corr: cm1Redac('Mise en équation', { suite: ['5x − 8 = x + 16', '4x = 24', 'x = 6'] }, 'Le nombre est 6.') + cm1Redac('Vérification', { suite: ['5 × 6 − 8 = 22', '6 + 16 = 22'] }, 'Les deux membres sont égaux.') },
     ] },
 ];
 })();

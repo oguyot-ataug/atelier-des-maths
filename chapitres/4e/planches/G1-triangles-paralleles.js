@@ -49,7 +49,7 @@ PLANCHES['4e|Triangles et parallèles'] = [
       { etoiles: 2, col: 1, consigne: 'Entoure le bon calcul de MN, sachant que (MN) // (BC), AM = 2, AB = 8 et BC = 6.',
         ...chx([['MN =', '6 × 2 : 8', '6 × 2 : 8 · 6 × 8 : 2 · 8 × 2 : 6']]) },
       { etoiles: 3, cahier: true, consigne: 'Dans le triangle RST, U ∈ [RS] et V ∈ [RT], avec (UV) // (ST). RU = 6 cm, RS = 9 cm et UV = 4 cm. Calcule ST. Rédige.',
-        corr: cm1Redac('Thalès', { suite: [`U ∈ [RS], V ∈ [RT] et (UV) // (ST), donc ${F('RU', 'RS')} = ${F('RV', 'RT')} = ${F('UV', 'ST')}`, `${F(6, 9)} = ${F(4, 'ST')}`, 'ST = 9 × 4 : 6 = 6'] }, 'ST mesure 6 cm.') },
+        corr: cm1Redac('Thalès', { suite: ['U ∈ [RS], V ∈ [RT] et (UV) // (ST) : d\'après la propriété de Thalès,', `${F('RU', 'RS')} = ${F('RV', 'RT')} = ${F('UV', 'ST')}`, `${F(6, 9)} = ${F(4, 'ST')}`, 'ST = 9 × 4 : 6', 'ST = 6'] }, 'ST mesure 6 cm.') },
     ] },
   { titre: 'Droites parallèles ou non', duree: '35 min',
     attendus: ['Comparer deux rapports', 'Utiliser la réciproque du théorème de Thalès', 'Prouver que deux droites ne sont pas parallèles'],
@@ -74,9 +74,9 @@ PLANCHES['4e|Triangles et parallèles'] = [
       { etoiles: 2, cahier: true, consigne: illu(ombre, 'Au même moment, un bâton vertical de 1 m a une ombre de 1,5 m et un poteau électrique a une ombre de 9 m. Les rayons du soleil sont parallèles. Quelle est la hauteur du poteau ?'),
         corr: cm1Redac('Thalès', { suite: [`${F('h', 1)} = ${F(9, '1{,}5')}`, 'h = 9 : 1,5 = 6'] }, 'Le poteau mesure 6 m de haut.') },
       { etoiles: 3, cahier: true, consigne: illu(toboggan, 'Sur ce toboggan, le montant [AB] est vertical et le sol (BC) horizontal. Une barre de renfort [MN] est parallèle au sol. AB = 2,5 m, BC = 4 m et AM = 1,5 m. Calcule la longueur de la barre MN.'),
-        corr: cm1Redac('Thalès', { suite: [`M ∈ [AB], N ∈ [AC] et (MN) // (BC), donc ${F('AM', 'AB')} = ${F('MN', 'BC')}`, `${F('1{,}5', '2{,}5')} = ${F('MN', 4)}`, 'MN = 4 × 1,5 : 2,5 = 2,4'] }, 'La barre mesure 2,4 m.') },
+        corr: cm1Redac('Thalès', { suite: ['M ∈ [AB], N ∈ [AC] et (MN) // (BC) : d\'après la propriété de Thalès,', `${F('AM', 'AB')} = ${F('MN', 'BC')}`, `${F('1{,}5', '2{,}5')} = ${F('MN', 4)}`, 'MN = 4 × 1,5 : 2,5', 'MN = 2,4'] }, 'La barre mesure 2,4 m.') },
       { etoiles: 3, cahier: true, consigne: 'Pour estimer la largeur d\'une route, Lina repère les points A, M, B alignés sur un bord, et A, N, C alignés, avec (MN) // (BC). AM = 4 m, MB = 6 m et MN = 3 m. Calcule BC.',
-        corr: cm1Redac('Thalès', { suite: ['AB = AM + MB = 4 + 6 = 10 m', `${F('AM', 'AB')} = ${F('MN', 'BC')}, soit ${F(4, 10)} = ${F(3, 'BC')}`, 'BC = 10 × 3 : 4 = 7,5'] }, 'BC mesure 7,5 m.') },
+        corr: cm1Redac('Longueur AB', 'AB = AM + MB = 4 + 6 = 10', 'AB mesure 10 m.') + cm1Redac('Thalès', { suite: [`${F('AM', 'AB')} = ${F('MN', 'BC')}`, `${F(4, 10)} = ${F(3, 'BC')}`, 'BC = 10 × 3 : 4', 'BC = 7,5'] }, 'BC mesure 7,5 m.') },
     ] },
 ];
 })();

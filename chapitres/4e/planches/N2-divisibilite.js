@@ -40,7 +40,7 @@ PLANCHES['4e|Divisibilité'] = [
       { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.',
         ...ch([['La somme de deux nombres premiers est toujours paire.', 'faux'], ['Un nombre premier a exactement deux diviseurs.', 'vrai'], ['Tous les nombres impairs sont premiers.', 'faux'], ['1 est un nombre premier.', 'faux']], 'vrai · faux') },
       { etoiles: 2, cahier: true, consigne: '97 est-il un nombre premier ? Explique ta méthode.',
-        corr: cm1Redac('Divisions à tester', { suite: ['97 n\'est divisible ni par 2, ni par 3, ni par 5, ni par 7.', 'Inutile d\'aller plus loin : 11 × 11 = 121 dépasse 97.'] }, '97 n\'a que deux diviseurs, 1 et 97 : c\'est un nombre premier.') },
+        corr: cm1Redac('Divisions à tester', '', '97 n\'est divisible ni par 2, ni par 3, ni par 5, ni par 7.') + cm1Redac('Fin de la recherche', '11 × 11 = 121', '121 dépasse 97 : inutile d\'aller plus loin. 97 n\'a que deux diviseurs, 1 et 97 : c\'est un nombre premier.') },
       { etoiles: 3, cahier: true, consigne: 'Deux nombres premiers « jumeaux » ont un écart de 2 (comme 11 et 13). Trouve tous les couples de nombres premiers jumeaux inférieurs à 50.',
         corr: cm1Redac('Couples jumeaux', '3 et 5 ; 5 et 7 ; 11 et 13 ; 17 et 19 ; 29 et 31 ; 41 et 43', 'Il y a 6 couples de nombres premiers jumeaux inférieurs à 50.') },
     ] },
@@ -72,11 +72,11 @@ PLANCHES['4e|Divisibilité'] = [
         eleve: plListe([ligne(F('2 × 3 × 7', '3 × 5 × 7'), '=', Fr), ligne(F('2 × 2 × 3 × 5', '2 × 3 × 3 × 5'), '=', Fr)]),
         corr: plListe([ligne(F('2 × 3 × 7', '3 × 5 × 7'), '=', R(F(2, 5))), ligne(F('2 × 2 × 3 × 5', '2 × 3 × 3 × 5'), '=', R(F(2, 3)))]) },
       { etoiles: 2, cahier: true, consigne: 'Un pâtissier a 60 macarons et 84 chocolats. Il veut préparer le plus grand nombre possible de boîtes identiques, en utilisant tout. Combien de boîtes ? Que contient chacune ?',
-        corr: cm1Redac('Diviseurs communs', { suite: ['60 = 2 × 2 × 3 × 5 et 84 = 2 × 2 × 3 × 7', 'Plus grand diviseur commun : 2 × 2 × 3 = 12', '60 : 12 = 5 et 84 : 12 = 7'] }, 'Il peut préparer 12 boîtes, contenant chacune 5 macarons et 7 chocolats.') },
+        corr: cm1Redac('Décompositions', { suite: ['60 = 2 × 2 × 3 × 5', '84 = 2 × 2 × 3 × 7'] }, '') + cm1Redac('Plus grand diviseur commun', '2 × 2 × 3 = 12', 'Il peut préparer 12 boîtes.') + cm1Redac('Contenu d\'une boîte', { suite: ['60 : 12 = 5', '84 : 12 = 7'] }, 'Chaque boîte contient 5 macarons et 7 chocolats.') },
       { etoiles: 3, cahier: true, consigne: 'Deux bus partent ensemble de la gare à 7 h. L\'un repasse toutes les 12 minutes, l\'autre toutes les 18 minutes. À quelle heure repartiront-ils de nouveau ensemble ?',
-        corr: cm1Redac('Multiples communs', { suite: ['Multiples de 12 : 12 ; 24 ; 36 ; 48…', 'Multiples de 18 : 18 ; 36 ; 54…', 'Le plus petit multiple commun est 36.'] }, 'Ils repartiront ensemble 36 minutes plus tard, à 7 h 36.') },
+        corr: cm1Redac('Multiples de 12', '12 ; 24 ; 36 ; 48…', '') + cm1Redac('Multiples de 18', '18 ; 36 ; 54…', 'Le plus petit multiple commun est 36 : ils repartiront ensemble 36 minutes plus tard, à 7 h 36.') },
       { etoiles: 3, cahier: true, consigne: illu(piece, 'Une pièce rectangulaire mesure 360 cm sur 270 cm. On veut la carreler avec des carreaux carrés tous identiques, les plus grands possible, sans en découper. Quel est le côté d\'un carreau ? Combien en faut-il ?'),
-        corr: cm1Redac('Côté du carreau', { suite: ['360 = 2 × 2 × 2 × 3 × 3 × 5 et 270 = 2 × 3 × 3 × 3 × 5', 'Plus grand diviseur commun : 2 × 3 × 3 × 5 = 90'] }, 'Le côté d\'un carreau mesure 90 cm.') + cm1Redac('Nombre de carreaux', { suite: ['360 : 90 = 4 et 270 : 90 = 3', '4 × 3 = 12'] }, 'Il faut 12 carreaux.') },
+        corr: cm1Redac('Décompositions', { suite: ['360 = 2 × 2 × 2 × 3 × 3 × 5', '270 = 2 × 3 × 3 × 3 × 5'] }, '') + cm1Redac('Côté du carreau', '2 × 3 × 3 × 5 = 90', 'C\'est le plus grand diviseur commun : le côté d\'un carreau mesure 90 cm.') + cm1Redac('Nombre de carreaux', { suite: ['360 : 90 = 4', '270 : 90 = 3', '4 × 3 = 12'] }, 'Il faut 12 carreaux.') },
     ] },
 ];
 })();

@@ -43,7 +43,7 @@ PLANCHES['4e|Probabilités'] = [
       { etoiles: 2, consigne: 'Complète.',
         ...rmp([['Si P(A) = 0,3, alors P(non A) = @', '0,7'], ['Si P(A) = 45 %, alors P(non A) = @ %', 55], ['Une probabilité de 0,25 s\'écrit aussi @ %', 25], ['Si P(A) = 0,62, alors P(non A) = @', '0,38'], ['Si P(A) = 12 %, alors P(non A) = @ %', 88], ['Une probabilité de 0,6 s\'écrit aussi @ %', 60]]) },
       { etoiles: 3, cahier: true, consigne: 'Dans un jeu de 32 cartes, on tire une carte au hasard. Quelle est la probabilité de tirer un as ? un cœur ? une carte qui n\'est pas un cœur ?',
-        corr: cm1Redac('Un as', `4 as sur 32 cartes : ${F(4, 32)} = ${F(1, 8)}`, `La probabilité de tirer un as est ${F(1, 8)}.`) + cm1Redac('Un cœur', `8 cœurs sur 32 cartes : ${F(8, 32)} = ${F(1, 4)}`, `La probabilité de tirer un cœur est ${F(1, 4)}.`) + cm1Redac('Pas un cœur', `1 − ${F(1, 4)} = ${F(3, 4)}`, `La probabilité de ne pas tirer un cœur est ${F(3, 4)}.`) },
+        corr: cm1Redac('Un as', `${F(4, 32)} = ${F(1, 8)}`, `Il y a 4 as sur 32 cartes : la probabilité de tirer un as est ${F(1, 8)}.`) + cm1Redac('Un cœur', `${F(8, 32)} = ${F(1, 4)}`, `Il y a 8 cœurs sur 32 cartes : la probabilité de tirer un cœur est ${F(1, 4)}.`) + cm1Redac('Pas un cœur', `1 − ${F(1, 4)} = ${F(3, 4)}`, `La probabilité de ne pas tirer un cœur est ${F(3, 4)}.`) },
     ] },
   { titre: 'Des fréquences aux probabilités', duree: '30 min',
     attendus: ['Calculer une fréquence', 'Comprendre que la fréquence se rapproche de la probabilité quand on répète l\'expérience', 'Estimer une probabilité inconnue'],
@@ -69,7 +69,7 @@ PLANCHES['4e|Probabilités'] = [
       { etoiles: 3, cahier: true, consigne: illu(roue, 'À la fête foraine, on gagne si la roue s\'arrête sur un nombre premier. Léo dit : « J\'ai plus d\'une chance sur deux de gagner. » A-t-il raison ?'),
         corr: cm1Redac('Issues gagnantes', 'Nombres premiers de 1 à 8 : 2 ; 3 ; 5 ; 7', '4 issues gagnantes sur 8.') + cm1Redac('Probabilité', `${F(4, 8)} = ${F(1, 2)}`, 'Léo a exactement une chance sur deux de gagner, pas plus : il a tort.') },
       { etoiles: 3, cahier: true, consigne: 'Une urne contient 5 boules rouges, 3 vertes et 2 bleues. Combien de boules bleues faut-il ajouter pour que la probabilité de tirer une boule bleue soit 0,5 ?',
-        corr: cm1Redac('Mise en équation', { suite: ['Avec x boules ajoutées : 2 + x bleues sur 10 + x boules.', 'Il faut autant de bleues que d\'autres boules : 2 + x = 8', 'x = 6'] }, 'Il faut ajouter 6 boules bleues (8 bleues sur 16 boules).') },
+        corr: cm1Redac('Inconnue', '', 'Avec x boules bleues ajoutées, il y a 2 + x boules bleues sur 10 + x boules. Il faut autant de bleues que d\'autres boules (8).') + cm1Redac('Mise en équation', { suite: ['2 + x = 8', 'x = 8 − 2', 'x = 6'] }, 'Il faut ajouter 6 boules bleues (8 bleues sur 16 boules).') },
     ] },
 ];
 })();

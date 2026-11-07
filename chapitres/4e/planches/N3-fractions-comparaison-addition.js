@@ -43,7 +43,7 @@ PLANCHES['4e|Fractions : comparaison et addition'] = [
       { etoiles: 3, cahier: true, consigne: `En 4e A, ${T(5, 8)} des élèves sont externes ; en 4e B, ${T(13, 20)} des élèves. Dans quelle classe la proportion d'externes est-elle la plus grande ?`,
         corr: cm1Redac('Même dénominateur', { suite: [`${F(5, 8)} = ${F(25, 40)}`, `${F(13, 20)} = ${F(26, 40)}`, `${F(25, 40)} ${lt} ${F(26, 40)}`] }, 'La proportion d\'externes est la plus grande en 4e B.') },
       { etoiles: 3, cahier: true, consigne: `Trouve une fraction comprise entre ${T(2, 5)} et ${T(3, 5)}. Explique ta méthode.`,
-        corr: cm1Redac('Dénominateur 10', { suite: [`${F(2, 5)} = ${F(4, 10)} et ${F(3, 5)} = ${F(6, 10)}`, `${F(4, 10)} ${lt} ${F(5, 10)} ${lt} ${F(6, 10)}`] }, `${F(5, 10)}, c'est-à-dire ${F(1, 2)}, est comprise entre ${F(2, 5)} et ${F(3, 5)}.`) },
+        corr: cm1Redac('Dénominateur 10', { suite: [`${F(2, 5)} = ${F(4, 10)}`, `${F(3, 5)} = ${F(6, 10)}`, `${F(4, 10)} ${lt} ${F(5, 10)} ${lt} ${F(6, 10)}`] }, `${F(5, 10)}, c'est-à-dire ${F(1, 2)}, est comprise entre ${F(2, 5)} et ${F(3, 5)}.`) },
     ] },
   { titre: 'Additionner et soustraire des fractions', duree: '35 min',
     attendus: ['Additionner et soustraire des fractions de même dénominateur', 'Additionner et soustraire des fractions de dénominateurs différents', 'Calculer avec un entier'],

@@ -39,7 +39,7 @@ PLANCHES['4e|Puissances'] = [
       { etoiles: 2, col: 1, consigne: 'Complète.',
         ...rmp([['5 km = 5 × @ m', p(10, 3)], ['3 mg = 3 × @ g', p(10, '−3')], ['2 Go = 2 × @ octets', p(10, 9)], ['7 µm = 7 × @ m', p(10, '−6')]]) },
       { etoiles: 2, cahier: true, consigne: 'Un disque dur contient 2 To (téraoctets, 1 To = 10<sup>12</sup> octets). Une photo occupe 4 Mo. Combien de photos peut-on y ranger ?',
-        corr: cm1Redac('Nombre de photos', { suite: [`2 To = 2 × ${p(10, 12)} octets et 4 Mo = 4 × ${p(10, 6)} octets`, `(2 × ${p(10, 12)}) : (4 × ${p(10, 6)}) = 0,5 × ${p(10, 6)}`, '0,5 × 1 000 000 = 500 000'] }, 'On peut y ranger 500 000 photos.') },
+        corr: cm1Redac('Nombre de photos', { suite: [`2 To = 2 × ${p(10, 12)} octets`, `4 Mo = 4 × ${p(10, 6)} octets`, `(2 × ${p(10, 12)}) : (4 × ${p(10, 6)}) = 0,5 × ${p(10, 6)}`, '0,5 × 1 000 000 = 500 000'] }, 'On peut y ranger 500 000 photos.') },
     ] },
   { titre: 'Calculer avec des puissances de 10', duree: '35 min',
     attendus: ['Multiplier et diviser des puissances de 10', 'Multiplier un nombre par une puissance de 10', 'Calculer une expression avec des puissances de 10'],
@@ -71,7 +71,7 @@ PLANCHES['4e|Puissances'] = [
       { etoiles: 2, cahier: true, consigne: illu(terreSoleil, 'La distance entre la Terre et le Soleil est d\'environ 150 000 000 km. La lumière parcourt 3 × 10<sup>5</sup> km par seconde. Écris la distance en écriture scientifique, puis calcule le temps mis par la lumière du Soleil pour nous parvenir.'),
         corr: cm1Redac('Écriture scientifique', '150 000 000 = 1,5 × 10<sup>8</sup>', 'La distance est de 1,5 × 10<sup>8</sup> km.') + cm1Redac('Durée du trajet', { suite: [`(1,5 × ${p(10, 8)}) : (3 × ${p(10, 5)}) = 0,5 × ${p(10, 3)}`, '0,5 × 1 000 = 500 s', '500 s = 8 min 20 s'] }, 'La lumière du Soleil met environ 8 minutes et 20 secondes pour nous parvenir.') },
       { etoiles: 3, cahier: true, consigne: 'Un virus mesure environ 0,000 000 1 m. Combien de virus faudrait-il aligner pour atteindre 1 cm ? Utilise l\'écriture scientifique.',
-        corr: cm1Redac('Nombre de virus', { suite: [`0,000 000 1 m = ${p(10, '−7')} m et 1 cm = ${p(10, '−2')} m`, `${p(10, '−2')} : ${p(10, '−7')} = ${p(10, 5)}`] }, 'Il faudrait aligner 10<sup>5</sup>, soit 100 000 virus.') },
+        corr: cm1Redac('Nombre de virus', { suite: [`0,000 000 1 m = ${p(10, '−7')} m`, `1 cm = ${p(10, '−2')} m`, `${p(10, '−2')} : ${p(10, '−7')} = ${p(10, 5)}`] }, 'Il faudrait aligner 10<sup>5</sup>, soit 100 000 virus.') },
     ] },
 ];
 })();

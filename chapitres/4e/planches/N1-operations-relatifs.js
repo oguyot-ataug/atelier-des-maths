@@ -81,7 +81,7 @@ PLANCHES['4e|Opérations sur les nombres relatifs'] = [
       { etoiles: 3, cahier: true, consigne: 'Max a 12 points. Il perd 5 points quatre fois, puis gagne 3 points six fois. Combien de points a-t-il ? Écris un seul calcul.',
         corr: cm1Redac('Points de Max', { nom: 'P', lignes: ['12 + 4 × (−5) + 6 × 3', '12 − 20 + 18', '10'] }, 'Max a 10 points.') },
       { etoiles: 3, cahier: true, consigne: 'Défi : trouve deux nombres relatifs dont la somme est −2 et le produit −15. Explique ta recherche.',
-        corr: cm1Redac('Recherche', { suite: ['Le produit est négatif : les deux nombres sont de signes contraires.', 'Les produits égaux à 15 : 1 × 15 et 3 × 5.', '3 + (−5) = −2 et 3 × (−5) = −15'] }, 'Les deux nombres sont 3 et −5.') },
+        corr: cm1Redac('Signes', '', 'Le produit est négatif : les deux nombres sont de signes contraires.') + cm1Redac('Produits égaux à 15', { suite: ['1 × 15 = 15', '3 × 5 = 15'] }, '') + cm1Redac('Vérification avec 3 et −5', { suite: ['3 + (−5) = −2', '3 × (−5) = −15'] }, 'Les deux nombres sont 3 et −5.') },
     ] },
 ];
 })();
