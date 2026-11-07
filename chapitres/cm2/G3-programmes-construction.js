@@ -56,7 +56,7 @@ ${cm1Demo('c2-pc-ecrire', 'Écrire le programme d\'un triangle isocèle', 'Écri
   ],
   exos: cm1Exos('c2pc', [
     [`Suis ce programme, puis réponds : que remarques-tu pour le point S ?${cm1Liste(['Trace un segment [RS] de 6 cm.', 'Place le milieu M du segment [RS].', 'Trace le cercle de centre M qui passe par R.'])}`,
-      cm1Redac('Rayon du cercle', '6 ÷ 2 = 3', 'Le cercle a un rayon de 3 cm. Il passe aussi par S, car S est à 3 cm de M : le segment [RS] est un diamètre du cercle.')],
+      cm1Redac('Rayon du cercle', '6 : 2 = 3', 'Le cercle a un rayon de 3 cm. Il passe aussi par S, car S est à 3 cm de M : le segment [RS] est un diamètre du cercle.')],
     [`Suis ce programme, puis observe le cercle.${cm1Liste(['Trace un carré ABCD de 4 cm de côté.', 'Trace ses diagonales ; elles se coupent en O.', 'Trace le cercle de centre O qui passe par A.'])}`,
       cm1Redac('Observation', '', 'Le cercle passe par les 4 sommets du carré, car les diagonales ont la même longueur et se coupent en leur milieu O.')],
     [`Ce programme est-il complet ?${cm1Liste(['Trace un segment [AB].', 'Trace un cercle de centre A.'])}`,

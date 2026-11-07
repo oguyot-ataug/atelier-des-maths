@@ -24,7 +24,7 @@ const CEB_OPS = [
   {sym:'+', label:'+'},
   {sym:'-', label:'−'},
   {sym:'×', label:'×'},
-  {sym:'÷', label:'÷'},
+  {sym:':', label:':'},
 ];
 
 function cebShuffle(arr){
@@ -42,16 +42,16 @@ function cebDrawNumbers(nLarge){
 /* ---- Construction d'expression à parenthésage minimal ----
    Chaque nœud porte : value (résultat), expr (écriture LaTeX/texte),
    prec (3 = nombre isolé ou fraction déjà auto-délimitée par sa barre,
-   2 = ×/÷, 1 = +/−). On ne parenthèse un enfant que si c'est
+   2 = ×/:, 1 = +/−). On ne parenthèse un enfant que si c'est
    nécessaire pour préserver le résultat :
    - jamais si l'enfant est de précédence strictement supérieure ;
    - jamais à gauche si même précédence (lecture naturelle gauche→droite) ;
    - à droite, seulement si l'opérateur n'est pas commutatif dans ce
-     sens (− ou ÷) et que l'enfant a la même précédence. */
+     sens (− ou :) et que l'enfant a la même précédence. */
 function cebWrap(node, parentPrec, isRight, parentOp){
   if(node.prec >= 3) return node.expr;
   if(node.prec < parentPrec) return `(${node.expr})`;
-  if(node.prec === parentPrec && isRight && (parentOp==='-' || parentOp==='÷')) return `(${node.expr})`;
+  if(node.prec === parentPrec && isRight && (parentOp==='-' || parentOp===':')) return `(${node.expr})`;
   return node.expr;
 }
 
@@ -72,7 +72,7 @@ function cebMakeExpr(a, b, op){
     const l=cebWrap(a,2,false,op), r=cebWrap(b,2,true,op);
     return {value:a.value*b.value, expr:`${l} \\times ${r}`, prec:2};
   }
-  if(op==='÷'){
+  if(op===':'){
     let x=a,y=b;
     if(!(b.value>1 && a.value%b.value===0)){
       if(a.value>1 && b.value%a.value===0){ x=b; y=a; }
@@ -87,10 +87,10 @@ function cebMakeExpr(a, b, op){
 /* ---- Solveur : recherche exhaustive, même moteur d'expression que le joueur ---- */
 function cebCombine(a, b){
   const out = [];
-  ['+','-','×','÷'].forEach(op=>{
+  ['+','-','×',':'].forEach(op=>{
     const r = cebMakeExpr(a,b,op);
     if(r) out.push(r);
-    if(op==='÷'){
+    if(op===':'){
       const r2 = cebMakeExpr(b,a,op);
       if(r2 && (!r || r2.expr!==r.expr)) out.push(r2);
     }

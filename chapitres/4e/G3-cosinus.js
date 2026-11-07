@@ -86,7 +86,7 @@ ${co4Deux(co4Tri({ M: [30, 125], N: [190, 125], P: [190, -9] }, 'N', 'M', { cote
   [co4Tex('\\cos ' + co4Ang('NMP') + ' = \\dfrac{MN}{MP}'), 'On écrit le cosinus de l\'angle connu.'],
   [co4Tex('\\cos 40° = \\dfrac{4{,}5}{MP}'), ''],
   [co4Tex('MP = \\dfrac{4{,}5}{\\cos 40°}'), 'Produit en croix : MP × cos 40° = 4,5.'],
-  ['MP ≈ 5,9 cm', 'Calculatrice : 4,5 ÷ cos(40) ≈ 5,874.'],
+  ['MP ≈ 5,9 cm', 'Calculatrice : 4,5 : cos(40) ≈ 5,874.'],
 ]))}
 
 <div class="sub-header"><span class="letter">C</span><h4>Calculer la mesure d'un angle</h4></div>
@@ -94,7 +94,7 @@ ${co4Deux(co4Tri({ M: [30, 125], N: [190, 125], P: [190, -9] }, 'N', 'M', { cote
 ${co4Deux(co4Tri({ R: [30, 125], S: [205, 125], T: [205, -54] }, 'S', 'R', { cotes: [['R', 'S', '7 cm', CO4_VERT], ['R', 'T', '10 cm', CO4_ORANGE]], vb: '0 -70 280 227' }), r4Ex('', [
   ['Le triangle RST est rectangle en S.', ''],
   [co4Tex('\\cos ' + co4Ang('SRT') + ' = \\dfrac{RS}{RT} = \\dfrac{7}{10}'), 'On écrit le cosinus de l\'angle cherché et on remplace.'],
-  [co4Tex(co4Ang('SRT') + ' \\approx 46°'), 'Calculatrice : Arccos(7 ÷ 10), ou cos⁻¹(0,7), donne 45,57…'],
+  [co4Tex(co4Ang('SRT') + ' \\approx 46°'), 'Calculatrice : Arccos(7 : 10), ou cos⁻¹(0,7), donne 45,57…'],
 ]))}
 <div class="redaction-note" ${R4_REM}>À la calculatrice : vérifiez qu'elle est en mode <b>degrés</b> (D ou DEG). Pour retrouver un angle à partir de son cosinus, on utilise la touche <b>Arccos</b> (ou <b>cos⁻¹</b>, souvent avec la touche « seconde » ou « shift »).</div>
 `;
@@ -116,7 +116,7 @@ document.getElementById('methode-demo-cosinus-4e').innerHTML = `
 
 <div class="sub-header"><span class="letter">M</span><h4>Méthode 2 : le cosinus ne dépend que de l'angle</h4></div>
 <div class="figure-wrap" style="margin-top:20px;">
-  <p class="interaction-hint" style="margin:6px 0;">Faites varier l'angle, puis la taille du triangle : le rapport côté adjacent ÷ hypoténuse change avec l'angle, mais pas avec la taille.</p>
+  <p class="interaction-hint" style="margin:6px 0;">Faites varier l'angle, puis la taille du triangle : le rapport côté adjacent : hypoténuse change avec l'angle, mais pas avec la taille.</p>
   <svg id="co4-exSvg" viewBox="0 -14 520 268" style="width:100%;max-width:560px;display:block;margin:8px auto;"></svg>
   <div style="display:flex;gap:14px;flex-wrap:wrap;justify-content:center;align-items:center;">
     <label>Angle : <input id="co4-exA" type="range" min="5" max="85" step="1" value="35" style="width:170px;" oninput="co4Explorer()"></label>
@@ -182,10 +182,10 @@ document.getElementById('exos-demo-cosinus-4e').innerHTML = `
   ${co4Exo(5, 'DEF est rectangle en D, avec DE = 3 cm et ' + co4Tex(co4Ang('DEF') + ' = 72°') + '. Calcule EF, au dixième près.', [
     'DEF est rectangle en D : ' + co4Tex('\\cos ' + co4Ang('DEF') + ' = \\dfrac{DE}{EF}') + ', donc ' + co4Tex('EF = \\dfrac{3}{\\cos 72°}') + ' ≈ 9,7 cm.'])}
   ${co4Exo(6, 'PQR est rectangle en Q, avec PQ = 5 cm et PR = 13 cm. Calcule l\'angle ' + co4Tex(co4Ang('QPR')) + ', au degré près.', [
-    'PQR est rectangle en Q : ' + co4Tex('\\cos ' + co4Ang('QPR') + ' = \\dfrac{PQ}{PR} = \\dfrac{5}{13}') + ', donc ' + co4Tex(co4Ang('QPR') + ' \\approx 67°') + ' (Arccos(5 ÷ 13) ≈ 67,38).'])}
+    'PQR est rectangle en Q : ' + co4Tex('\\cos ' + co4Ang('QPR') + ' = \\dfrac{PQ}{PR} = \\dfrac{5}{13}') + ', donc ' + co4Tex(co4Ang('QPR') + ' \\approx 67°') + ' (Arccos(5 : 13) ≈ 67,38).'])}
   ${co4Exo(7, 'Une échelle de 4 m est appuyée contre un mur ; son pied est à 1,2 m du mur. Pour être stable, elle doit faire avec le sol un angle compris entre 65° et 75°. Est-ce le cas ?', [
     'Le mur est perpendiculaire au sol : l\'échelle, le sol et le mur forment un triangle rectangle, d\'hypoténuse l\'échelle.',
-    'cos(angle) = 1,2 ÷ 4 = 0,3, donc angle ≈ 73° (Arccos(0,3) ≈ 72,5). L\'angle est bien entre 65° et 75° : l\'échelle est stable.'])}
+    'cos(angle) = 1,2 : 4 = 0,3, donc angle ≈ 73° (Arccos(0,3) ≈ 72,5). L\'angle est bien entre 65° et 75° : l\'échelle est stable.'])}
   ${co4Exo(8, 'a) Le cosinus d\'un angle aigu peut-il valoir 1,2 ? b) Tom tape « cos 50 » et obtient 0,964 966… au lieu de 0,642 787… Que s\'est-il passé ?', [
     'a) Non : le côté adjacent est toujours plus court que l\'hypoténuse, donc le cosinus est compris entre 0 et 1.',
     'b) Sa calculatrice n\'était pas en mode <b>degrés</b> (elle a calculé avec une autre unité d\'angle, le radian). En degrés, cos 50° ≈ 0,643.'])}
@@ -198,7 +198,7 @@ const CO4_ID_NOTES = [
   'L\'hypoténuse est le côté opposé à l\'angle droit : c\'est [AC], le plus grand côté.',
   'On s\'intéresse à l\'angle aigu BAC, de sommet A.',
   'Le côté adjacent à BAC relie son sommet A au sommet B de l\'angle droit : c\'est [AB]. ([BC] n\'est pas adjacent à cet angle : il ne passe pas par A.)',
-  'On peut écrire le cosinus : cos BAC = côté adjacent ÷ hypoténuse = AB ÷ AC.',
+  'On peut écrire le cosinus : cos BAC = côté adjacent : hypoténuse = AB : AC.',
 ];
 const co4IdN = () => 1;
 function co4IdDessin(i, prog){
@@ -246,7 +246,7 @@ function co4Explorer(){
   const A = [30, 215], B = [30 + h * Math.cos(r) * k, 215], C = [B[0], 215 - h * Math.sin(r) * k];
   let s = co4Tri({ A, B, C }, 'B', 'A', { brut: true, valAngle: a + '°', cotes: [['A', 'B', co4N(h * Math.cos(r)) + ' cm', CO4_VERT], ['A', 'C', co4N(h, 1) + ' cm', CO4_ORANGE]] });
   const X = 300, c = Math.cos(r);
-  s += `<text x="${X}" y="40" font-size="15" fill="${CO4_ENCRE}">côté adjacent ÷ hypoténuse</text><text x="${X}" y="68" font-size="17" font-weight="700"><tspan fill="${CO4_VERT}">${co4N(h * c)}</tspan> ÷ <tspan fill="${CO4_ORANGE}">${co4N(h, 1)}</tspan> ≈ ${co4N(c, 3)}</text>`;
+  s += `<text x="${X}" y="40" font-size="15" fill="${CO4_ENCRE}">côté adjacent : hypoténuse</text><text x="${X}" y="68" font-size="17" font-weight="700"><tspan fill="${CO4_VERT}">${co4N(h * c)}</tspan> : <tspan fill="${CO4_ORANGE}">${co4N(h, 1)}</tspan> ≈ ${co4N(c, 3)}</text>`;
   s += `<text x="${X}" y="104" font-size="18" font-weight="700" fill="#8E44AD">cos ${a}° ≈ ${co4N(c, 3)}</text>`;
   // Réglette de 0 à 1.
   s += `<line x1="${X}" y1="140" x2="${X + 200}" y2="140" stroke="${CO4_ENCRE}" stroke-width="2"/>` + [0, .5, 1].map(v => `<line x1="${X + 200 * v}" y1="134" x2="${X + 200 * v}" y2="146" stroke="${CO4_ENCRE}"/><text x="${X + 200 * v}" y="162" text-anchor="middle" font-size="12" fill="#4E5665">${co4N(v)}</text>`).join('') + `<circle cx="${X + 200 * c}" cy="140" r="7" fill="#8E44AD"/>`;
@@ -275,12 +275,12 @@ function co4Calcul(){
   } else if(ch === 'hyp'){
     if(v2 >= 90) return err('Un angle aigu mesure moins de 90°.');
     AB = v1; a = v2; AC = AB / Math.cos(a * Math.PI / 180);
-    lignes.push([co4Tex(`\\cos ${ang} = \\dfrac{AB}{AC}`), 'On écrit le cosinus de l\'angle connu.'], [co4Tex(`\\cos ${T(a)}° = \\dfrac{${T(AB)}}{AC}`), ''], [co4Tex(`AC = \\dfrac{${T(AB)}}{\\cos ${T(a)}°}`), 'Produit en croix : AC × cos = AB.'], [`AC ${eg(AC)} <b>${co4N(AC, 1)} cm</b>`, `Calculatrice en degrés : ${co4N(AB, 4)} ÷ cos(${co4N(a, 4)}) ≈ ${co4N(AC, 3)}.`]);
+    lignes.push([co4Tex(`\\cos ${ang} = \\dfrac{AB}{AC}`), 'On écrit le cosinus de l\'angle connu.'], [co4Tex(`\\cos ${T(a)}° = \\dfrac{${T(AB)}}{AC}`), ''], [co4Tex(`AC = \\dfrac{${T(AB)}}{\\cos ${T(a)}°}`), 'Produit en croix : AC × cos = AB.'], [`AC ${eg(AC)} <b>${co4N(AC, 1)} cm</b>`, `Calculatrice en degrés : ${co4N(AB, 4)} : cos(${co4N(a, 4)}) ≈ ${co4N(AC, 3)}.`]);
   } else {
     AB = v1; AC = v2;
     if(AB >= AC) return err('L\'hypoténuse AC doit être plus longue que le côté AB.');
     a = Math.acos(AB / AC) * 180 / Math.PI;
-    lignes.push([co4Tex(`\\cos ${ang} = \\dfrac{AB}{AC} = \\dfrac{${T(AB)}}{${T(AC)}}`), 'On écrit le cosinus de l\'angle cherché et on remplace.'], [co4Tex(`${ang} \\approx ${Math.round(a)}°`), `Calculatrice : Arccos(${co4N(AB, 4)} ÷ ${co4N(AC, 4)}) ≈ ${co4N(a, 2)} ; on arrondit au degré.`]);
+    lignes.push([co4Tex(`\\cos ${ang} = \\dfrac{AB}{AC} = \\dfrac{${T(AB)}}{${T(AC)}}`), 'On écrit le cosinus de l\'angle cherché et on remplace.'], [co4Tex(`${ang} \\approx ${Math.round(a)}°`), `Calculatrice : Arccos(${co4N(AB, 4)} : ${co4N(AC, 4)}) ≈ ${co4N(a, 2)} ; on arrondit au degré.`]);
   }
   // Figure à l'échelle.
   const r = a * Math.PI / 180, k = Math.min(200 / (AC * Math.cos(r)), 110 / (AC * Math.sin(r)));
@@ -313,7 +313,7 @@ DEMO_REGISTRY['4e|Cosinus'] = {
 
 DEMO_QUIZZES['4e|Cosinus'] = [
   { q: 'ABC est rectangle en A. Le côté adjacent à l\'angle ABC est...', opts: ['[AB]', '[BC]', '[AC]'], correct: 0 },
-  { q: 'Dans un triangle rectangle, le cosinus d\'un angle aigu est égal à...', opts: ['côté opposé ÷ hypoténuse', 'côté adjacent ÷ hypoténuse', 'côté adjacent ÷ côté opposé'], correct: 1 },
+  { q: 'Dans un triangle rectangle, le cosinus d\'un angle aigu est égal à...', opts: ['côté opposé : hypoténuse', 'côté adjacent : hypoténuse', 'côté adjacent : côté opposé'], correct: 1 },
   { q: 'Un angle aigu d\'un triangle rectangle mesure 40°. L\'autre angle aigu mesure...', opts: ['40°', '50°', '140°'], correct: 1 },
   { q: 'Le cosinus d\'un angle aigu peut valoir...', opts: ['1,3', '0,8', '−2'], correct: 1 },
   { q: 'Hypoténuse 10 cm, angle 60° : le côté adjacent à cet angle mesure...', opts: ['5 cm', '8,66 cm', '20 cm'], correct: 0 },

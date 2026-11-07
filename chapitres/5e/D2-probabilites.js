@@ -156,7 +156,7 @@ document.getElementById('exos-demo-probabilites-5e').innerHTML = `
   <div class="redaction-template">
     <div class="we-row"><span class="we-expr" style="font-family:inherit;">On lance un dé équilibré à 6 faces : les 6 issues sont équiprobables.</span><span class="we-comment">1. On justifie l'équiprobabilité.</span></div>
     <div class="we-row"><span class="we-expr" style="font-family:inherit;">« Obtenir un nombre supérieur à 4 » est réalisé par 5 et 6 : 2 issues favorables.</span><span class="we-comment">2. On liste les issues favorables.</span></div>
-    <div class="we-row"><span class="we-expr" style="font-family:inherit;"><span class="tex">P = \\dfrac{2}{6} = \\dfrac{1}{3}</span></span><span class="we-comment">3. Issues favorables ÷ issues au total, puis on simplifie.</span></div>
+    <div class="we-row"><span class="we-expr" style="font-family:inherit;"><span class="tex">P = \\dfrac{2}{6} = \\dfrac{1}{3}</span></span><span class="we-comment">3. Issues favorables : issues au total, puis on simplifie.</span></div>
   </div>
 </div>
 <div class="redaction-block">
@@ -223,7 +223,7 @@ function pbTourner(){
 const PB_REDAC_STEPS = [
   { expr: 'M – A – T – H – É – M – A – T – I – Q – U – E – S', note: 'Les 13 cartons sont identiques : chacun a la même chance d\'être tiré. Il y a 13 issues.' },
   { expr: 'Voyelles : A, É, A, I, U, E', note: 'On compte les issues favorables, en comptant chaque lettre autant de fois qu\'elle apparaît : 6.' },
-  { expr: '<span class="tex">P(\\text{voyelle}) = \\dfrac{6}{13}</span>', note: 'Nombre d\'issues favorables ÷ nombre total d\'issues. La fraction ne se simplifie pas.' },
+  { expr: '<span class="tex">P(\\text{voyelle}) = \\dfrac{6}{13}</span>', note: 'Nombre d\'issues favorables : nombre total d\'issues. La fraction ne se simplifie pas.' },
   { expr: '<span class="tex">P(\\text{voyelle}) \\approx 0{,}46</span>', note: 'Soit environ 46 % : un peu moins d\'une chance sur deux.' },
 ];
 const pbRedacDemo = makeStepDemo(PB_REDAC_STEPS, 'pb-redacDisplay');
@@ -250,7 +250,7 @@ function pbDeDessin(){
   document.getElementById('pb-deGraph').innerHTML = `<svg viewBox="0 0 ${W} ${H + 4}" style="width:100%;display:block;">${h}</svg>`;
   document.getElementById('pb-de').innerHTML = pbFaceDe(pbDernier);
   const ecart = N ? Math.max(...pbEff.map(e => Math.abs(e / N - 1 / 6))) : 0;
-  document.getElementById('pb-deInfo').innerHTML = N ? `<b>${N.toLocaleString('fr-FR')}</b> lancer${N > 1 ? 's' : ''} · fréquences observées (effectif ÷ nombre de lancers) · plus grand écart avec 1/6 : ${pbNum(Math.round(ecart * 100) / 100)}` : 'Aucun lancer pour l\'instant.';
+  document.getElementById('pb-deInfo').innerHTML = N ? `<b>${N.toLocaleString('fr-FR')}</b> lancer${N > 1 ? 's' : ''} · fréquences observées (effectif : nombre de lancers) · plus grand écart avec 1/6 : ${pbNum(Math.round(ecart * 100) / 100)}` : 'Aucun lancer pour l\'instant.';
 }
 function pbLancer(n){ for(let i = 0; i < n; i++){ pbDernier = 1 + Math.floor(Math.random() * 6); pbEff[pbDernier - 1]++; } pbDeDessin(); }
 function pbDeReset(){ pbEff = [0, 0, 0, 0, 0, 0]; pbDernier = null; pbDeDessin(); }

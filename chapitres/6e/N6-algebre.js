@@ -33,7 +33,7 @@ function alBarres(k){
     if(k === 1) s += bloc(x0 + 3 * u, yy, 52, '+ 25', AL_VERT) + bloc(x0 + 3 * u + 52, yy, 42, '− 10', AL_ROUGE, 0.15) + `<text x="${x0 + 3 * u + 104}" y="${yy + 20}" font-family="Inter" font-size="13.5" font-weight="700" fill="${AL_ENCRE}">= 150</text>`;
     if(k === 2) s += `<text x="${x0 + 3 * u + 10}" y="${yy + 20}" font-family="Inter" font-size="13.5" font-weight="700" fill="${AL_ENCRE}">= 150 − 15 = 135</text>`;
     if(k >= 3) s += `<text x="${x0 + 3 * u + 10}" y="${yy + 20}" font-family="Inter" font-size="13.5" font-weight="700" fill="${AL_ENCRE}">= 135</text>`;
-    if(k >= 3) s += `<text x="${x0 + 1.5 * u}" y="${yy + 56}" text-anchor="middle" font-family="Inter" font-size="12.5" fill="#4E5665">135 ÷ 3 = 45 : une barre vaut 45 billes</text>`;
+    if(k >= 3) s += `<text x="${x0 + 1.5 * u}" y="${yy + 56}" text-anchor="middle" font-family="Inter" font-size="12.5" fill="#4E5665">135 : 3 = 45 : une barre vaut 45 billes</text>`;
     if(k === 4) s += `<text x="${x0 + 1.5 * u}" y="${yy + 80}" text-anchor="middle" font-family="Inter" font-size="13" font-weight="700" fill="${AL_VERT}">Léa : 45 · Tom : 45 + 25 = 70 · Sam : 45 − 10 = 35</text>`;
   }
   return s;
@@ -42,7 +42,7 @@ const AL_BARRES_NOTES = [
   'On représente la part de Léa par une barre « ? ». Tom a la même barre plus 25 billes ; Sam a la même barre moins 10 billes. En tout : 150 billes.',
   'On met les trois barres bout à bout : trois barres « ? », plus 25, moins 10, font 150.',
   '+ 25 puis − 10, c\'est + 15 en tout. Sans ces 15 billes, les trois barres valent 150 − 15 = 135.',
-  'Les trois barres sont égales : chacune vaut 135 ÷ 3 = 45.',
+  'Les trois barres sont égales : chacune vaut 135 : 3 = 45.',
   'Léa a 45 billes, Tom 70 et Sam 35. Vérification : 45 + 70 + 35 = 150.',
 ];
 
@@ -133,7 +133,7 @@ document.getElementById('cours-demo-algebre-6e').innerHTML = `
 ${alEx('', [
   ['3 barres + 25 − 10 = 150', 'On met les barres bout à bout : + 25 − 10, c\'est + 15.'],
   ['3 barres = 150 − 15 = 135', 'On retire les 15 billes « en trop ».'],
-  ['1 barre = 135 ÷ 3 = 45', 'Les trois barres sont égales : on partage en 3.'],
+  ['1 barre = 135 : 3 = 45', 'Les trois barres sont égales : on partage en 3.'],
   ['Léa : 45 billes ; Tom : 45 + 25 = 70 billes ; Sam : 45 − 10 = 35 billes.', 'On calcule chaque part, et on vérifie : 45 + 70 + 35 = 150.'],
 ])}
 
@@ -217,11 +217,11 @@ document.getElementById('exos-demo-algebre-6e').innerHTML = `
   ${alExo(3, 'La somme de trois nombres entiers qui se suivent est 72. Quels sont ces nombres ?', [
     'Le plus petit : 1 barre ; les suivants : 1 barre + 1 et 1 barre + 2.', '3 barres + 3 = 72, donc 3 barres = 69 et 1 barre = 23.', 'Les nombres sont 23, 24 et 25.'])}
   ${alExo(4, 'Sur une balance en équilibre, il y a 3 boîtes identiques et un poids de 2 kg d\'un côté, et un poids de 11 kg de l\'autre. Quelle est la masse d\'une boîte ?', [
-    'On retire 2 kg des deux côtés : 3 boîtes = 9 kg.', 'Une boîte pèse 9 ÷ 3 = 3 kg.'])}
+    'On retire 2 kg des deux côtés : 3 boîtes = 9 kg.', 'Une boîte pèse 9 : 3 = 3 kg.'])}
   ${alExo(5, 'Deux pesées : 2 cubes et 1 boule pèsent 10 kg ; 3 cubes et 1 boule pèsent 13 kg. Quelle est la masse d\'un cube ? d\'une boule ?', [
     'La 2e pesée a juste un cube de plus : 1 cube = 13 − 10 = 3 kg.', '1 boule = 10 − 2 × 3 = 4 kg.'])}
   ${alExo(6, 'Je pense à un nombre. Je le multiplie par 5, puis je retire 8. J\'obtiens 37. Quel est mon nombre ?', [
-    'On fait le chemin à l\'envers : 37 + 8 = 45, puis 45 ÷ 5 = 9.', 'Le nombre est 9 (vérification : 9 × 5 − 8 = 37).'])}
+    'On fait le chemin à l\'envers : 37 + 8 = 45, puis 45 : 5 = 9.', 'Le nombre est 9 (vérification : 9 × 5 − 8 = 37).'])}
   ${alExo(7, 'Un rectangle a un périmètre de 30 cm. Sa longueur mesure 3 cm de plus que sa largeur. Quelles sont ses dimensions ?', [
     'Une longueur + une largeur = la moitié du périmètre : 15 cm.', '2 barres + 3 = 15, donc 1 barre = 6 : largeur 6 cm, longueur 9 cm.'])}
   ${alExo(8, 'Inès, Zoé et Lina se partagent 90 €. Zoé reçoit 10 € de plus qu\'Inès, et Lina reçoit le double de ce que reçoit Inès. Combien reçoit chacune ?', [

@@ -100,7 +100,7 @@ PLANCHES['6e|Distance et cercles'] = [
         corr: plListe(['AI = ' + R(5) + ' cm', 'IJ = ' + R('2,5') + ' cm', 'AJ = 5 + 2,5 = ' + R('7,5') + ' cm', 'J est-il le milieu de [AB] ? ' + plEntoure('non')]) },
       { etoiles: 2, col: 1, consigne: `Les points sont alignés et la figure est codée. On sait que AE = 12 cm. Complète.<div style="text-align:center;">${S(250, 60, L([10, 35], [240, 35], K, 2.2) + [[10, 'A'], [67.5, 'B'], [125, 'C'], [182.5, 'D'], [240, 'E']].map(([x, n]) => P([x, 35], n, -4, -10)).join('') + cd([10, 35], [67.5, 35], 1) + cd([67.5, 35], [125, 35], 1) + cd([125, 35], [182.5, 35], 1) + cd([182.5, 35], [240, 35], 1), 230)}</div>`,
         eleve: plListe(['AB = ' + B() + ' cm', 'AC = ' + B() + ' cm', 'BD = ' + B() + ' cm', 'Le milieu de [AE] est le point ' + B(1)]),
-        corr: plListe(['AB = 12 ÷ 4 = ' + R(3) + ' cm', 'AC = ' + R(6) + ' cm', 'BD = ' + R(6) + ' cm', 'Le milieu de [AE] est le point ' + R('C')]) },
+        corr: plListe(['AB = 12 : 4 = ' + R(3) + ' cm', 'AC = ' + R(6) + ' cm', 'BD = ' + R(6) + ' cm', 'Le milieu de [AE] est le point ' + R('C')]) },
       // La phrase se termine par des pointillés, les propositions sont à part, en dessous (relecture 6e-G1-P2-E5 : « la première
       // proposition est trop collée au texte. Terminer la partie manquante par des pointillés »).
       { etoiles: 2, col: 1, consigne: 'Entoure la bonne réponse.',
@@ -112,7 +112,7 @@ PLANCHES['6e|Distance et cercles'] = [
       // Milieu placé à la règle graduée : la construction au compas (médiatrice) ne vient qu'avec la symétrie axiale
       // (relecture 6e-G1-P2-E6).
       { etoiles: 3, cahier: true, consigne: 'Trace un segment [AB] de 7 cm. Place son milieu I avec la règle graduée. Explique comment tu as trouvé où placer I, puis vérifie en mesurant IB.',
-        corr: cm1Redac('Position de I', '7 cm ÷ 2 = 3,5 cm', 'Je place I sur [AB], à 3,5 cm de A. Je vérifie : IB = 3,5 cm, donc AI = IB et I est bien le milieu de [AB].') },
+        corr: cm1Redac('Position de I', '7 cm : 2 = 3,5 cm', 'Je place I sur [AB], à 3,5 cm de A. Je vérifie : IB = 3,5 cm, donc AI = IB et I est bien le milieu de [AB].') },
     ] },
   { titre: 'Le cercle', duree: '35 min',
     attendus: ['Utiliser le vocabulaire du cercle : centre, rayon, diamètre, corde', 'Savoir que les points d\'un cercle sont tous à la même distance du centre', 'Tracer un cercle au compas'],

@@ -12,8 +12,8 @@ cm1Chapitre({
   cours: `
 ${cm1Lecon(1, 'Chercher le tout ou une part')}
 ${cm1Regle('Quand on connaît <b>le nombre de parts</b> et <b>la valeur d\'une part</b>, on trouve le tout par une <b>multiplication</b>. Quand on connaît le tout et le nombre de parts égales, on trouve une part par une <b>division</b> (en s\'aidant des tables).')}
-${cm1Exemple('Exemples :', ['8 paquets de 125 feuilles : 8 × 125 = <b>1 000 feuilles</b>.', '6 dictionnaires coûtent 72 € : 72 ÷ 6 = <b>12 €</b> chacun.', 'On vérifie : 6 × 12 = 72.'])}
-${ce2AnimPartage('ce2-pm-partage', { legende: 'Un jeton = 1 €. On distribue les 72 € un par un entre les 6 dictionnaires.', presets: [{ nom: '72 € pour 6 dictionnaires', total: 72, parts: 6, etiq: 'livre', objets: 'euros', fin: 'Chaque dictionnaire reçoit 12 jetons : il coûte <b>12 €</b>, car 72 ÷ 6 = 12.' }] })}
+${cm1Exemple('Exemples :', ['8 paquets de 125 feuilles : 8 × 125 = <b>1 000 feuilles</b>.', '6 dictionnaires coûtent 72 € : 72 : 6 = <b>12 €</b> chacun.', 'On vérifie : 6 × 12 = 72.'])}
+${ce2AnimPartage('ce2-pm-partage', { legende: 'Un jeton = 1 €. On distribue les 72 € un par un entre les 6 dictionnaires.', presets: [{ nom: '72 € pour 6 dictionnaires', total: 72, parts: 6, etiq: 'livre', objets: 'euros', fin: 'Chaque dictionnaire reçoit 12 jetons : il coûte <b>12 €</b>, car 72 : 6 = 12.' }] })}
 
 ${cm1Lecon(2, '« Fois plus », « fois moins »')}
 ${cm1Regle('« <b>4 fois plus</b> cher » : on <b>multiplie</b> par 4. « <b>4 fois moins</b> cher » : on <b>divise</b> par 4. Ne pas confondre avec « 4 € <b>de plus</b> » (on ajoute 4) !')}
@@ -36,7 +36,7 @@ ${cm1Demo('ce2-pm-tableau', 'Compter des menus avec un tableau', 'À la cantine,
     ['ce2-pm-moins', [
       { expr: '« 8 fois moins cher » : on divise par 8.', note: 'Le vélo vaut 8 fois le prix du ballon.' },
       { expr: '8 × 30 = 240', note: 'Je cherche « 8 fois combien font 240 ? »' },
-      { expr: '240 ÷ 8 = 30', note: '' },
+      { expr: '240 : 8 = 30', note: '' },
       { expr: 'Le ballon coûte 30 €.', note: 'Vérification : 8 × 30 = 240 ✔' },
     ]],
     ['ce2-pm-tableau', [
@@ -51,7 +51,7 @@ ${cm1Demo('ce2-pm-tableau', 'Compter des menus avec un tableau', 'À la cantine,
     ['Paul a 9 ans. Son grand-père a 7 fois plus. Quel âge a son grand-père ?',
       cm1Redac('Âge du grand-père', '9 × 7 = 63', 'Le grand-père de Paul a 63 ans.')],
     ['Un livre coûte 18 €. Un magazine coûte 3 fois moins cher. Combien coûte le magazine ?',
-      cm1Redac('Prix du magazine', { suite: ['3 × 6 = 18', '18 ÷ 3 = 6'] }, 'Le magazine coûte 6 €.')],
+      cm1Redac('Prix du magazine', { suite: ['3 × 6 = 18', '18 : 3 = 6'] }, 'Le magazine coûte 6 €.')],
     ['Léa a 12 billes. Tom en a 3 de plus. Hugo en a 3 fois plus que Léa. Combien de billes ont Tom et Hugo ?',
       cm1Redac('Billes de Tom', '12 + 3 = 15', 'Tom a 15 billes.') + cm1Redac('Billes de Hugo', '12 × 3 = 36', 'Hugo a 36 billes.')],
     ['On a 4 sortes de pain et 5 sortes de fromage. Combien de sandwichs différents peut-on faire avec un pain et un fromage ?',

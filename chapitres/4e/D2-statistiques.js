@@ -97,14 +97,14 @@ ${r4Ex('Autre exemple : une moyenne de notes avec des coefficients.', [
 ${st4Puces(ST4_TEMPS)}
 ${r4Ex('', [
   ['35 ; 36 ; 38 ; 39 ; ' + R4_BLEU('40') + ' ; 41 ; 42 ; 44 ; 47', 'On range les valeurs dans l\'ordre croissant.'],
-  ['L\'effectif total est 9 (impair) : la médiane est la 5e valeur.', '(9 + 1) ÷ 2 = 5 : il y a 4 valeurs avant et 4 valeurs après.'],
+  ['L\'effectif total est 9 (impair) : la médiane est la 5e valeur.', '(9 + 1) : 2 = 5 : il y a 4 valeurs avant et 4 valeurs après.'],
   ['La médiane de la série est 40 s.', 'Au moins la moitié des nageurs ont mis 40 s ou moins.'],
 ])}
 <p class="example-title">Exemple 2 (effectif pair) : on reprend les livres lus par les 24 élèves de la 4e A.</p>
 ${st4Moities([...ST4_LIVRES].sort((a, b) => a - b))}
 ${r4Ex('', [
-  ['L\'effectif total est 24 (pair) : les valeurs centrales sont la 12e et la 13e.', '24 ÷ 2 = 12 : on prend la 12e et la 13e valeur de la série rangée.'],
-  ['12e valeur : 2 ; 13e valeur : 3. Médiane = (2 + 3) ÷ 2 = 2,5.', 'Le tableau des effectifs aide à compter : 2 + 4 + 6 = 12 élèves ont lu 2 livres ou moins.'],
+  ['L\'effectif total est 24 (pair) : les valeurs centrales sont la 12e et la 13e.', '24 : 2 = 12 : on prend la 12e et la 13e valeur de la série rangée.'],
+  ['12e valeur : 2 ; 13e valeur : 3. Médiane = (2 + 3) : 2 = 2,5.', 'Le tableau des effectifs aide à compter : 2 + 4 + 6 = 12 élèves ont lu 2 livres ou moins.'],
   ['La médiane de la série est 2,5 livres : la moitié des élèves ont lu 2 livres ou moins, l\'autre moitié 3 livres ou plus.', 'On conclut par une phrase.'],
 ])}
 <div class="redaction-note" ${R4_REM}>Remarques : la médiane n'est pas toujours une valeur de la série (ici 2,5). Elle est <b>peu sensible aux valeurs extrêmes</b> : si le nageur le plus lent avait mis 80 s au lieu de 47 s, la médiane serait toujours 40 s, alors que la moyenne passerait d'environ 40,2 s à environ 43,9 s.</div>
@@ -116,7 +116,7 @@ ${st4Camembert('st4-cam')}
 <span class="prop-badge">Méthode</span>
 <div class="def-box">Pour construire le diagramme, on calcule l'angle de chaque secteur avec un tableau de proportionnalité :
 ${st4Tab([['Âge (ans)', '11', '13', '14', '15', 'Total'], ['Effectif', '5', '20', '9', '2', '36'], ['Angle (°)', '50', '200', '90', '20', '360']], 2)}
-Ici, 36 adhérents correspondent à 360° : un adhérent correspond à <span class="tex">360 \\div 36 = 10</span>°. Puis on trace chaque angle au rapporteur, à la suite les uns des autres.</div>
+Ici, 36 adhérents correspondent à 360° : un adhérent correspond à <span class="tex">360 : 36 = 10</span>°. Puis on trace chaque angle au rapporteur, à la suite les uns des autres.</div>
 <p class="example-title">Lire un diagramme circulaire :</p>
 <ul class="example-list"><li>Le secteur des 13 ans occupe plus de la moitié du disque (200° &gt; 180°) : plus de la moitié des adhérents ont 13 ans.</li><li>Un quart de disque (90°) représente un quart de l'effectif : les 14 ans sont 9 sur 36.</li></ul>
 `;
@@ -183,8 +183,8 @@ document.getElementById('exos-demo-statistiques-4e').innerHTML = `
   <div class="redaction-template">
     <div class="we-row"><span class="we-expr" style="font-family:inherit;">Série : 15 ; 22 ; 18 ; 30 ; 25 ; 12 ; 20 ; 27</span><span class="we-comment">Temps (en min) de 8 trajets.</span></div>
     <div class="we-row"><span class="we-expr" style="font-family:inherit;">12 ; 15 ; 18 ; <b>20</b> ; <b>22</b> ; 25 ; 27 ; 30</span><span class="we-comment">On range les valeurs dans l'ordre croissant.</span></div>
-    <div class="we-row"><span class="we-expr" style="font-family:inherit;">L'effectif total est 8 (pair) : les valeurs centrales sont la 4e et la 5e.</span><span class="we-comment">8 ÷ 2 = 4 : 4e et 5e valeurs.</span></div>
-    <div class="we-row"><span class="we-expr" style="font-family:inherit;">Médiane = (20 + 22) ÷ 2 = 21</span><span class="we-comment">On fait la moyenne des deux valeurs centrales.</span></div>
+    <div class="we-row"><span class="we-expr" style="font-family:inherit;">L'effectif total est 8 (pair) : les valeurs centrales sont la 4e et la 5e.</span><span class="we-comment">8 : 2 = 4 : 4e et 5e valeurs.</span></div>
+    <div class="we-row"><span class="we-expr" style="font-family:inherit;">Médiane = (20 + 22) : 2 = 21</span><span class="we-comment">On fait la moyenne des deux valeurs centrales.</span></div>
     <div class="we-row"><span class="we-expr" style="font-family:inherit;">La médiane est 21 min : la moitié des trajets durent 21 min ou moins.</span><span class="we-comment">On conclut par une phrase.</span></div>
   </div>
 </div>
@@ -207,15 +207,15 @@ document.getElementById('exos-demo-statistiques-4e').innerHTML = `
     'Pour avoir 13 de moyenne sur 4 contrôles, la somme des notes doit valoir 13 × 4 = 52.',
     'Il a déjà 12 + 9 + 15 = 36 points : il doit obtenir 52 − 36 = <b>16</b>.'])}
   ${st4Exo(6, 'Voici les salaires mensuels (en €) des 9 employés d\'une petite entreprise : 1 600 ; 1 650 ; 1 700 ; 1 700 ; 1 800 ; 1 900 ; 2 000 ; 2 100 ; 9 000. a) Calcule le salaire moyen (arrondi à l\'euro) et le salaire médian. b) Lequel des deux représente le mieux les salaires de cette entreprise ?', [
-    'a) Somme : 23 450 €. Salaire moyen : 23 450 ÷ 9 ≈ 2 606 €. La série est rangée et compte 9 valeurs : le salaire médian est la 5e valeur, 1 800 €.',
+    'a) Somme : 23 450 €. Salaire moyen : 23 450 : 9 ≈ 2 606 €. La série est rangée et compte 9 valeurs : le salaire médian est la 5e valeur, 1 800 €.',
     'b) Un seul salaire (9 000 €) fait fortement monter la moyenne : 8 employés sur 9 gagnent moins que la moyenne ! La médiane représente mieux les salaires de l\'entreprise.'])}
   ${st4Exo(7, 'Vrai ou faux ? Justifie. a) « La médiane d\'une série est toujours une des valeurs de la série. » b) « Dans une série, il y a toujours autant de valeurs au-dessus de la moyenne qu\'en dessous. »', [
     'a) Faux : la série 12 ; 15 ; 18 ; 20 ; 22 ; 25 ; 27 ; 30 a pour médiane 21, qui n\'est pas une valeur de la série.',
     'b) Faux : c\'est la propriété de la médiane, pas de la moyenne. Dans l\'exercice 6, un seul salaire sur 9 est au-dessus de la moyenne.'])}
   ${st4Exo(8, 'Dans une classe de 4e, la moyenne des 12 filles à un contrôle est 13 et celle des 15 garçons est 11,2. Quelle est la moyenne de la classe ?', [
     'La somme des notes des filles est 12 × 13 = 156, celle des garçons 15 × 11,2 = 168.',
-    'Moyenne de la classe : (156 + 168) ÷ (12 + 15) = 324 ÷ 27 = <b>12</b>.',
-    'Attention : ce n\'est pas (13 + 11,2) ÷ 2 = 12,1 ! Il faut pondérer chaque moyenne par l\'effectif de son groupe.'])}
+    'Moyenne de la classe : (156 + 168) : (12 + 15) = 324 : 27 = <b>12</b>.',
+    'Attention : ce n\'est pas (13 + 11,2) : 2 = 12,1 ! Il faut pondérer chaque moyenne par l\'effectif de son groupe.'])}
 </div>
 `;
 
@@ -310,10 +310,10 @@ function st4Analyser(){
   const lignes = [
     [tri.map((x, i) => { const c = N % 2 ? i === (N - 1) / 2 : i === N / 2 - 1 || i === N / 2; return c ? R4_BLEU(f(x)) : f(x); }).join(' ; '), 'On range les valeurs dans l\'ordre croissant.'],
     [`Effectif total : N = ${N}.`, N % 2 ? 'N est impair.' : 'N est pair.'],
-    [`Moyenne : ${sommeTxt}, puis ${f(somme)} ÷ ${N} ${st4Arr(somme / N, 2)}.`, 'On additionne toutes les valeurs, puis on divise par l\'effectif total (arrondi au centième).'],
+    [`Moyenne : ${sommeTxt}, puis ${f(somme)} : ${N} ${st4Arr(somme / N, 2)}.`, 'On additionne toutes les valeurs, puis on divise par l\'effectif total (arrondi au centième).'],
   ];
-  if(N % 2){ const r = (N + 1) / 2; lignes.push([`Médiane : la ${r}${r > 1 ? 'e' : 're'} valeur, soit <b>${f(tri[r - 1])}</b>.`, `(${N} + 1) ÷ 2 = ${r} : il y a ${r - 1} valeur${r > 2 ? 's' : ''} avant et ${r - 1} après.`]); }
-  else { const r = N / 2, a = tri[r - 1], b = tri[r]; lignes.push([`Médiane : (${f(a)} + ${f(b)}) ÷ 2 = <b>${f((a + b) / 2)}</b>.`, `${N} ÷ 2 = ${r} : on fait la moyenne de la ${r}${r > 1 ? 'e' : 're'} et de la ${r + 1}e valeur.`]); }
+  if(N % 2){ const r = (N + 1) / 2; lignes.push([`Médiane : la ${r}${r > 1 ? 'e' : 're'} valeur, soit <b>${f(tri[r - 1])}</b>.`, `(${N} + 1) : 2 = ${r} : il y a ${r - 1} valeur${r > 2 ? 's' : ''} avant et ${r - 1} après.`]); }
+  else { const r = N / 2, a = tri[r - 1], b = tri[r]; lignes.push([`Médiane : (${f(a)} + ${f(b)}) : 2 = <b>${f((a + b) / 2)}</b>.`, `${N} : 2 = ${r} : on fait la moyenne de la ${r}${r > 1 ? 'e' : 're'} et de la ${r + 1}e valeur.`]); }
   out.innerHTML = r4Ex('', lignes);
 }
 

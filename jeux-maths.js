@@ -65,7 +65,7 @@ function jxCarreMonter(el){
   }
   $('[data-a="indice"]').onclick = () => jxDire(el, rel
     ? `<div class="jx-etapes"><div>La somme de tous les nombres : (−4) + (−3) + … + 3 + 4 = 0.</div><div>Elle se partage entre 3 lignes : chaque ligne vaut donc <b>0</b>.</div><div>Le nombre du milieu appartient à 4 lignes : c'est <b>0</b>.</div><div>Chaque nombre a son opposé de l'autre côté du centre.</div></div>`
-    : `<div class="jx-etapes"><div>La somme de tous les nombres : 1 + 2 + … + 9 = 45.</div><div>Elle se partage entre 3 lignes : 45 ÷ 3 = <b>15</b>.</div><div>Le nombre du milieu appartient à 4 lignes : c'est <b>5</b>.</div><div>Les nombres pairs vont dans les coins.</div></div>`);
+    : `<div class="jx-etapes"><div>La somme de tous les nombres : 1 + 2 + … + 9 = 45.</div><div>Elle se partage entre 3 lignes : 45 : 3 = <b>15</b>.</div><div>Le nombre du milieu appartient à 4 lignes : c'est <b>5</b>.</div><div>Les nombres pairs vont dans les coins.</div></div>`);
   $('[data-a="effacer"]').onclick = () => { st.g = Array(9).fill(null); st.sel = null; rendre(); jxDire(el, ''); };
   $('[data-a="solution"]').onclick = () => { st.g = [4, 9, 2, 3, 5, 7, 8, 1, 6].map(v => rel ? v - 5 : v); st.sel = null; rendre(); bilan(); };
   rendre(); jxDire(el, 'Les sommes apparaissent quand une ligne est complète.');

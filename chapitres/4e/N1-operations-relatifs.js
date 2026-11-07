@@ -32,7 +32,7 @@ function r4Colonne(html){
   if(parts.length < 3) return null;
   const nom = parts[0].trim();
   const sommeCarres = /^[A-Z]{2}\^2 \+ [A-Z]{2}\^2$/.test(nom); // « MN² + NP² = … » (Pythagore)
-  if(!nom || !sommeCarres && /[+\-]|\\times|\\div|frac|\\cdot|\\,|\s[a-z]{3,}/.test(nom.replace(/^\\(cos|mathcal|widehat|overline)\b/, ''))) return null;
+  if(!nom || !sommeCarres && /[+\-]|\\times|:|frac|\\cdot|\\,|\s[a-z]{3,}/.test(nom.replace(/^\\(cos|mathcal|widehat|overline)\b/, ''))) return null;
   return parts.slice(1).map((e, k) => `<span class="tex"${m[1]}>${nom} ${ops[k]} ${e.trim()}</span>`);
 }
 // Exemple rédigé : une ligne de calcul à gauche, ce qu'on fait à droite (comme les flèches du manuel).
@@ -177,8 +177,8 @@ ${r4Ex('Exemple 2 :', [
   </ul>
 </div>
 ${r4Ex('Exemple 1 :', [
-  ['K = (−72) ÷ 8', "On détermine d'abord le signe du quotient : signes contraires."],
-  ['K = −(72 ÷ 8)', 'Le quotient est négatif : on divise les distances à zéro.'],
+  ['K = (−72) : 8', "On détermine d'abord le signe du quotient : signes contraires."],
+  ['K = −(72 : 8)', 'Le quotient est négatif : on divise les distances à zéro.'],
   ['K = −9', 'On calcule.'],
 ])}
 ${r4Ex('Exemple 2 :', [
@@ -190,7 +190,7 @@ ${r4Ex('Exemple 2 :', [
   <ul style="margin:6px 0 0;padding-left:20px;line-height:1.8;">
     <li>La règle des signes est la <b>même</b> pour la division que pour la multiplication.</li>
     <li>Le quotient de 0 par un nombre non nul est égal à 0 : pour tout nombre relatif <i>a</i> non nul, <span class="tex">\\dfrac{0}{a} = 0</span>. En revanche, on ne divise <b>jamais par 0</b>.</li>
-    <li>Diviser par un nombre non nul revient à <b>multiplier par son inverse</b> : (−3) ÷ 0,5 = (−3) × 2 = −6.</li>
+    <li>Diviser par un nombre non nul revient à <b>multiplier par son inverse</b> : (−3) : 0,5 = (−3) × 2 = −6.</li>
   </ul>
 </div>
 
@@ -211,7 +211,7 @@ ${r4Ex('Exemple 1 :', [
   ['M = 15', ''],
 ])}
 ${r4Ex('Exemple 2 :', [
-  [`N = ${R4_BLEU('(−18) ÷ (−3)')} − ${R4_BLEU('2 × (−4)')} + (−7)`, 'Pas de parenthèse de calcul : on commence par la division et la multiplication.'],
+  [`N = ${R4_BLEU('(−18) : (−3)')} − ${R4_BLEU('2 × (−4)')} + (−7)`, 'Pas de parenthèse de calcul : on commence par la division et la multiplication.'],
   ['N = 6 − (−8) + (−7)', "On transforme les soustractions en additions de l'opposé."],
   ['N = 6 + 8 − 7', 'Somme algébrique : on calcule de gauche à droite.'],
   ['N = 7', ''],
@@ -303,11 +303,11 @@ document.getElementById('exos-demo-operations-relatifs-4e').innerHTML = `
   ${r4Exo(5, 'Donne l\'inverse de chaque nombre : 2 ; −0,5 ; 10 ; −4.', [
     "L'inverse de 2 est 0,5 car 2 × 0,5 = 1.", "L'inverse de −0,5 est −2 car (−0,5) × (−2) = 1.",
     "L'inverse de 10 est 0,1 car 10 × 0,1 = 1.", "L'inverse de −4 est −0,25 car (−4) × (−0,25) = 1."])}
-  ${r4Exo(6, 'Calcule : I = (−56) ÷ (−7) &nbsp;&nbsp; J = 4,8 ÷ (−1,2) &nbsp;&nbsp; K = (−0,9) ÷ 0,3', [
-    'I = 56 ÷ 7 = 8', 'J = −(4,8 ÷ 1,2) = −4', 'K = −(0,9 ÷ 0,3) = −3'])}
+  ${r4Exo(6, 'Calcule : I = (−56) : (−7) &nbsp;&nbsp; J = 4,8 : (−1,2) &nbsp;&nbsp; K = (−0,9) : 0,3', [
+    'I = 56 : 7 = 8', 'J = −(4,8 : 1,2) = −4', 'K = −(0,9 : 0,3) = −3'])}
   ${r4Exo(7, 'Calcule en respectant les priorités : L = −2 + 5 × (−3 − 1)', [
     'L = −2 + 5 × (−4)', 'L = −2 + (−20)', 'L = −22'])}
-  ${r4Exo(8, 'Calcule en respectant les priorités : M = (−24) ÷ (−6) − 3 × (−2,5) − 10', [
+  ${r4Exo(8, 'Calcule en respectant les priorités : M = (−24) : (−6) − 3 × (−2,5) − 10', [
     'M = 4 − (−7,5) − 10', 'M = 4 + 7,5 − 10', 'M = 11,5 − 10', 'M = 1,5'])}
 </div>
 `;
@@ -324,20 +324,20 @@ const r4SommeDemo = makeStepDemo(R4_SOMME_STEPS, 'r4-sommeDisplay');
 
 /* ---- Méthode 3 : quotient ---- */
 const R4_QUOTIENT_STEPS = [
-  { expr: 'Q = (−6,3) ÷ (−0,9)', note: 'On veut diviser deux nombres relatifs.' },
+  { expr: 'Q = (−6,3) : (−0,9)', note: 'On veut diviser deux nombres relatifs.' },
   { expr: 'Les deux nombres sont négatifs : même signe.', note: 'On détermine d\'abord le signe du quotient, avec la même règle que pour un produit.' },
   { expr: 'Donc Q est positif.', note: 'Même signe : quotient positif. Signes contraires : quotient négatif.' },
-  { expr: 'Q = 6,3 ÷ 0,9', note: 'On divise ensuite les distances à zéro.' },
+  { expr: 'Q = 6,3 : 0,9', note: 'On divise ensuite les distances à zéro.' },
   { expr: 'Q = 7', note: 'On termine le calcul : 0,9 × 7 = 6,3.' },
 ];
 const r4QuotientDemo = makeStepDemo(R4_QUOTIENT_STEPS, 'r4-quotientDisplay');
 
 /* ---- Méthode 4 : priorités ---- */
 const R4_PRIORITES_STEPS = [
-  { expr: `T = 10 − 2 × ${R4_BLEU('(1 − 6)')} ÷ (−5)`, note: 'On repère le calcul prioritaire : la parenthèse.' },
-  { expr: `T = 10 − ${R4_BLEU('2 × (−5)')} ÷ (−5)`, note: 'Plus de parenthèse : multiplications et divisions, de gauche à droite.' },
-  { expr: `T = 10 − ${R4_BLEU('(−10) ÷ (−5)')}`, note: '2 × (−5) = −10 (signes contraires : négatif). On effectue maintenant la division.' },
-  { expr: 'T = 10 − 2', note: '(−10) ÷ (−5) = 2 (même signe : positif). Il ne reste qu\'une soustraction.' },
+  { expr: `T = 10 − 2 × ${R4_BLEU('(1 − 6)')} : (−5)`, note: 'On repère le calcul prioritaire : la parenthèse.' },
+  { expr: `T = 10 − ${R4_BLEU('2 × (−5)')} : (−5)`, note: 'Plus de parenthèse : multiplications et divisions, de gauche à droite.' },
+  { expr: `T = 10 − ${R4_BLEU('(−10) : (−5)')}`, note: '2 × (−5) = −10 (signes contraires : négatif). On effectue maintenant la division.' },
+  { expr: 'T = 10 − 2', note: '(−10) : (−5) = 2 (même signe : positif). Il ne reste qu\'une soustraction.' },
   { expr: 'T = 8', note: 'On termine le calcul.' },
 ];
 const r4PrioritesDemo = makeStepDemo(R4_PRIORITES_STEPS, 'r4-prioritesDisplay');
@@ -398,6 +398,6 @@ DEMO_QUIZZES['4e|Opérations sur les nombres relatifs'] = [
   { q: '(−7) × (−4) est égal à...', opts: ['−28', '+28', '−11'], correct: 1 },
   { q: 'Un produit de 5 facteurs dont 3 sont négatifs est...', opts: ['positif', 'négatif', 'nul'], correct: 1 },
   { q: "L'inverse de −4 est...", opts: ['4', '−0,25', '0,25'], correct: 1 },
-  { q: '(−36) ÷ 9 est égal à...', opts: ['−4', '4', '−27'], correct: 0 },
+  { q: '(−36) : 9 est égal à...', opts: ['−4', '4', '−27'], correct: 0 },
   { q: 'Que vaut 2 − 3 × (−4) ?', opts: ['4', '14', '−10'], correct: 1 },
 ];

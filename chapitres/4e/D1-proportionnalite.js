@@ -38,7 +38,7 @@ ${r4Ex('Exemple 2 : un fichier de 360 Mo est téléchargé en 48 secondes. Combi
   [po4Tex('x = \\dfrac{1\\,500 \\times 48}{360} = 200'), '200 s = 3 × 60 s + 20 s.'],
   ['Il faut 200 s, soit 3 min 20 s.', ''],
 ])}
-<div class="redaction-note" ${R4_REM}>Remarque : dans l'exemple 1, on peut aussi passer par l'unité : 9,80 ÷ 4 = 2,45 € le kilogramme, puis 2,45 × 7 = 17,15 €. Dans l'exemple 2, le « passage à l'unité » donne 48 ÷ 360 = 0,133 3… s par Mo, un nombre peu pratique : le calcul direct de la quatrième proportionnelle est alors bien plus efficace.</div>
+<div class="redaction-note" ${R4_REM}>Remarque : dans l'exemple 1, on peut aussi passer par l'unité : 9,80 : 4 = 2,45 € le kilogramme, puis 2,45 × 7 = 17,15 €. Dans l'exemple 2, le « passage à l'unité » donne 48 : 360 = 0,133 3… s par Mo, un nombre peu pratique : le calcul direct de la quatrième proportionnelle est alors bien plus efficace.</div>
 
 <div class="lesson-header"><span class="num">2</span><h3>Utiliser la proportionnalité</h3></div>
 
@@ -112,7 +112,7 @@ document.getElementById('methode-demo-proportionnalite-4e').innerHTML = `
 
 <div class="sub-header"><span class="letter">M</span><h4>Méthode 3 : remplir une cuve (le débit)</h4></div>
 <div class="figure-wrap" style="margin-top:20px;">
-  <p class="interaction-hint" style="margin:6px 0;">Choisissez le volume de la cuve et le débit du robinet, puis ouvrez-le : la durée de remplissage est calculée avec t = V ÷ débit.</p>
+  <p class="interaction-hint" style="margin:6px 0;">Choisissez le volume de la cuve et le débit du robinet, puis ouvrez-le : la durée de remplissage est calculée avec t = V : débit.</p>
   <div style="display:flex;gap:14px;flex-wrap:wrap;justify-content:center;align-items:center;">
     <label>Volume : <input id="po4-cV" type="range" min="100" max="3000" step="50" value="1200" style="width:150px;" oninput="po4Cuve()"> <b id="po4-cVa"></b></label>
     <label>Débit : <input id="po4-cQ" type="range" min="2" max="60" step="1" value="16" style="width:150px;" oninput="po4Cuve()"> <b id="po4-cQa"></b></label>
@@ -150,7 +150,7 @@ document.getElementById('exos-demo-proportionnalite-4e').innerHTML = `
   <p style="margin:0 0 8px;">Léo court 10 km en 50 minutes. Quelle est sa vitesse moyenne en km/h ?</p>
   <div class="redaction-template">
     <div class="we-row"><span class="we-expr" style="font-family:inherit;">d = 10 km et t = 50 min = ${po4Tex('\\dfrac{50}{60}')} h = ${po4Tex('\\dfrac{5}{6}')} h.</span><span class="we-comment">On veut des km/h : on convertit la durée en heures.</span></div>
-    <div class="we-row"><span class="we-expr">${po4Tex('v = \\dfrac{d}{t} = 10 \\div \\dfrac{5}{6} = 10 \\times \\dfrac{6}{5} = 12')}</span><span class="we-comment">On applique la formule (diviser par 5/6, c'est multiplier par 6/5).</span></div>
+    <div class="we-row"><span class="we-expr">${po4Tex('v = \\dfrac{d}{t} = 10 : \\dfrac{5}{6} = 10 \\times \\dfrac{6}{5} = 12')}</span><span class="we-comment">On applique la formule (diviser par 5/6, c'est multiplier par 6/5).</span></div>
     <div class="we-row"><span class="we-expr" style="font-family:inherit;">La vitesse moyenne de Léo est de 12 km/h.</span><span class="we-comment">On conclut avec l'unité.</span></div>
   </div>
 </div>
@@ -169,7 +169,7 @@ document.getElementById('exos-demo-proportionnalite-4e').innerHTML = `
     'a) 2 h 15 min = 2,25 h ; ' + po4Tex('d = 80 \\times 2{,}25 = 180') + ' km.',
     'b) ' + po4Tex('t = \\dfrac{100}{80} = 1{,}25') + ' h, soit 1 h 15 min (0,25 h = 15 min).'])}
   ${po4Exo(6, 'Convertis : 72 km/h en m/s ; 15 m/s en km/h.', [
-    '72 km/h = 72 000 m en 3 600 s : ' + po4Tex('\\dfrac{72\\,000}{3\\,600} = 20') + ' m/s (ou 72 ÷ 3,6).', '15 m/s = 15 × 3,6 = 54 km/h.'])}
+    '72 km/h = 72 000 m en 3 600 s : ' + po4Tex('\\dfrac{72\\,000}{3\\,600} = 20') + ' m/s (ou 72 : 3,6).', '15 m/s = 15 × 3,6 = 54 km/h.'])}
   ${po4Exo(7, 'Un tuyau d\'arrosage débite 24 L par minute. Combien de temps faut-il pour remplir une piscine gonflable de 3 000 L ?', [
     po4Tex('t = \\dfrac{3\\,000}{24} = 125') + ' min, soit 2 h 05 min.'])}
   ${po4Exo(8, 'Le fer a une masse volumique de 7,9 kg/dm³. Combien pèse un cube de fer de 2 dm d\'arête ? Flotte-t-il sur l\'eau ?', [
@@ -199,7 +199,7 @@ function po4Quatrieme(){
   out.innerHTML = r4Ex('', [
     [po4Tex(`x \\times ${t(opp)} = ${t(diag[0])} \\times ${t(diag[1])}`), 'Les produits en croix sont égaux : x est sur la même diagonale que le nombre en orange.'],
     [po4Tex(`x = \\dfrac{${t(diag[0])} \\times ${t(diag[1])}}{${t(opp)}}`), 'On multiplie les deux nombres de l\'autre diagonale (en vert) et on divise par le troisième (en orange).'],
-    [po4Tex(`x ${Math.abs(res * 100 - Math.round(res * 100)) < 1e-9 ? '=' : '\\approx'} ${po4T(res, 2)}`), `Calcul : ${n(diag[0])} × ${n(diag[1])} ÷ ${n(opp)}.`],
+    [po4Tex(`x ${Math.abs(res * 100 - Math.round(res * 100)) < 1e-9 ? '=' : '\\approx'} ${po4T(res, 2)}`), `Calcul : ${n(diag[0])} × ${n(diag[1])} : ${n(opp)}.`],
   ]);
   renderStaticMath(out);
   // Diagonale verte (produit) et flèche vers x, tracées d'après la position des cases.
@@ -233,8 +233,8 @@ function po4Trajet(){
   const H = Math.floor(t + 1e-9), dec = t - H;
   const out = document.getElementById('po4-tRes');
   out.innerHTML = r4Ex('', [
-    [po4Tex(`t = \\dfrac{d}{v} = \\dfrac{${d}}{${v}} ${Math.abs(t * 1000 - Math.round(t * 1000)) < 1e-9 ? '=' : '\\approx'} ${po4T(t, 3)} \\text{ h}`), 'Durée = distance ÷ vitesse, en heures.'],
-    [dec < 1e-9 ? `${H} h exactement.` : (H === 0 ? `En minutes : ${d} ÷ ${v} × 60 ${Math.abs(t * 60 - Math.round(t * 60)) < 1e-6 ? '=' : '≈'} <b>${po4Hmin(t)}</b>` : `${po4N(t, 3)} h = ${H} h + ${po4N(dec, 3)} × 60 min ${Math.abs(dec * 60 - Math.round(dec * 60)) < 1e-6 ? '=' : '≈'} <b>${po4Hmin(t)}</b>`), H === 0 ? 'Moins d\'une heure : on multiplie par 60 pour avoir des minutes.' : 'On convertit la partie décimale des heures en minutes (× 60).'],
+    [po4Tex(`t = \\dfrac{d}{v} = \\dfrac{${d}}{${v}} ${Math.abs(t * 1000 - Math.round(t * 1000)) < 1e-9 ? '=' : '\\approx'} ${po4T(t, 3)} \\text{ h}`), 'Durée = distance : vitesse, en heures.'],
+    [dec < 1e-9 ? `${H} h exactement.` : (H === 0 ? `En minutes : ${d} : ${v} × 60 ${Math.abs(t * 60 - Math.round(t * 60)) < 1e-6 ? '=' : '≈'} <b>${po4Hmin(t)}</b>` : `${po4N(t, 3)} h = ${H} h + ${po4N(dec, 3)} × 60 min ${Math.abs(dec * 60 - Math.round(dec * 60)) < 1e-6 ? '=' : '≈'} <b>${po4Hmin(t)}</b>`), H === 0 ? 'Moins d\'une heure : on multiplie par 60 pour avoir des minutes.' : 'On convertit la partie décimale des heures en minutes (× 60).'],
   ]);
   renderStaticMath(out);
   const b = document.getElementById('po4-tBtn'); if(b) b.disabled = false;
@@ -285,9 +285,9 @@ function po4Remplir(){
 const PO4_CONV_STEPS = [
   { expr: 'v = 300 km/h : le train parcourt 300 km en 1 h.', note: 'On traduit la vitesse en une distance parcourue pendant une durée.' },
   { expr: '300 km = 300 000 m et 1 h = 3 600 s.', note: 'On convertit la distance en mètres et la durée en secondes.' },
-  { expr: po4Tex('v = \\dfrac{300\\,000 \\text{ m}}{3\\,600 \\text{ s}}'), note: 'Vitesse = distance ÷ durée, dans les nouvelles unités.' },
+  { expr: po4Tex('v = \\dfrac{300\\,000 \\text{ m}}{3\\,600 \\text{ s}}'), note: 'Vitesse = distance : durée, dans les nouvelles unités.' },
   { expr: po4Tex('v \\approx 83{,}3 \\text{ m/s}'), note: 'Le TGV parcourt plus de 83 mètres chaque seconde !' },
-  { expr: 'Raccourci : 300 ÷ 3,6 ≈ 83,3.', note: 'Comme 1 m/s = 3,6 km/h, on divise par 3,6 pour passer des km/h aux m/s (et on multiplie par 3,6 dans l\'autre sens).' },
+  { expr: 'Raccourci : 300 : 3,6 ≈ 83,3.', note: 'Comme 1 m/s = 3,6 km/h, on divise par 3,6 pour passer des km/h aux m/s (et on multiplie par 3,6 dans l\'autre sens).' },
 ];
 const po4ConvDemo = makeStepDemo(PO4_CONV_STEPS, 'po4-convDisplay');
 

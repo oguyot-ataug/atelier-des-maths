@@ -47,7 +47,7 @@ ${cm1Regle('Une égalité ressemble à une <b>balance en équilibre</b> : les de
 
 ${cm1Lecon(5, 'Les programmes de calcul')}
 ${cm1Def('Un <b>programme de calcul</b> est une suite d\'instructions à appliquer à un nombre de départ.')}
-${cm1Exemple('Programme : « Choisis un nombre → multiplie-le par 2 → ajoute 3 ».', ['Avec 5 : 5 × 2 = 10,', 'puis 10 + 3 = <b>13</b>.', 'On a obtenu 17 : quel était le nombre de départ ? On <b>remonte</b> le programme :', '17 − 3 = 14,', 'puis 14 ÷ 2 = <b>7</b>.'])}
+${cm1Exemple('Programme : « Choisis un nombre → multiplie-le par 2 → ajoute 3 ».', ['Avec 5 : 5 × 2 = 10,', 'puis 10 + 3 = <b>13</b>.', 'On a obtenu 17 : quel était le nombre de départ ? On <b>remonte</b> le programme :', '17 − 3 = 14,', 'puis 14 : 2 = <b>7</b>.'])}
 `,
   methode: `
 ${cm1Demo('al-suite', 'Trouver le 10e terme d\'une suite', 'Suite : 3 ; 8 ; 13 ; 18 ; … Quel est le 10<sup>e</sup> nombre ?')}
@@ -62,7 +62,7 @@ ${cm1Demo('al-remonter', 'Remonter un programme de calcul', 'Programme : « Choi
     ]],
     ['al-remonter', [
       { expr: 'départ → + 4 → × 3 → 30', note: 'On écrit le programme sous forme de chaîne.' },
-      { expr: '30 ÷ 3 = 10', note: 'On remonte en partant de la fin : l\'inverse de « × 3 » est « ÷ 3 ».' },
+      { expr: '30 : 3 = 10', note: 'On remonte en partant de la fin : l\'inverse de « × 3 » est « : 3 ».' },
       { expr: '10 − 4 = 6', note: 'L\'inverse de « + 4 » est « − 4 ».' },
       { expr: 'Le nombre de départ était 6.', note: 'Vérification : 6 + 4 = 10, 10 × 3 = 30. ✔' },
     ]],
@@ -77,8 +77,8 @@ ${cm1Demo('al-remonter', 'Remonter un programme de calcul', 'Programme : « Choi
     ['Avec la suite des allumettes du cours, combien faut-il d\'allumettes pour l\'étape 6 ? pour l\'étape 20 ?',
       cm1Redac('Étape 6', ['1 + 6 × 3', '1 + 18', '19'], 'Il faut 19 allumettes pour l\'étape 6.')
       + cm1Redac('Étape 20', { nom: 'B', lignes: ['1 + 20 × 3', '1 + 60', '61'] }, 'Il faut 61 allumettes pour l\'étape 20.')],
-    [`Trouve le nombre caché.${cm1Liste([`25 + ${Q} = 40`, `${Q} − 12 = 30`, `7 × ${Q} = 56`, `${Q} ÷ 4 = 9`])}`,
-      cm1Redac('Nombres cachés', { suite: ['25 + 15 = 40', '42 − 12 = 30', '7 × 8 = 56', '36 ÷ 4 = 9'] }, 'Les nombres cachés sont 15, 42, 8 et 36.')],
+    [`Trouve le nombre caché.${cm1Liste([`25 + ${Q} = 40`, `${Q} − 12 = 30`, `7 × ${Q} = 56`, `${Q} : 4 = 9`])}`,
+      cm1Redac('Nombres cachés', { suite: ['25 + 15 = 40', '42 − 12 = 30', '7 × 8 = 56', '36 : 4 = 9'] }, 'Les nombres cachés sont 15, 42, 8 et 36.')],
     [`Vrai ou faux ?${cm1Liste(['6 + 4 = 5 + 5', '3 × 4 = 4 + 3', '20 = 4 × 5'])}`,
       cm1Redac('Première égalité', { suite: ['6 + 4 = 10', '5 + 5 = 10'] }, 'Les deux côtés valent 10 : c\'est vrai.')
       + cm1Redac('Deuxième égalité', { suite: ['3 × 4 = 12', '4 + 3 = 7'] }, '12 et 7 ne sont pas égaux : c\'est faux.')
@@ -87,9 +87,9 @@ ${cm1Demo('al-remonter', 'Remonter un programme de calcul', 'Programme : « Choi
       cm1Redac('Avec 4', ['4 × 5 − 2', '20 − 2', '18'], 'Avec 4, le programme donne 18.')
       + cm1Redac('Avec 10', { nom: 'B', lignes: ['10 × 5 − 2', '50 − 2', '48'] }, 'Avec 10, le programme donne 48.')],
     ['Avec le même programme, on a obtenu 33. Quel était le nombre de départ ?',
-      cm1Redac('On remonte le programme', { suite: ['33 + 2 = 35', '35 ÷ 5 = 7'] }, 'Le nombre de départ était 7. Vérification : 7 × 5 − 2 = 33.')],
+      cm1Redac('On remonte le programme', { suite: ['33 + 2 = 35', '35 : 5 = 7'] }, 'Le nombre de départ était 7. Vérification : 7 × 5 − 2 = 33.')],
     ['Sur une balance en équilibre, il y a 2 boîtes identiques et 5 kg d\'un côté, et 17 kg de l\'autre. Combien pèse une boîte ?',
-      cm1Redac('Masse des 2 boîtes', '17 − 5 = 12', 'On enlève 5 kg de chaque côté : 2 boîtes pèsent 12 kg.') + cm1Redac('Masse d\'une boîte', '12 ÷ 2 = 6', 'Une boîte pèse 6 kg.')],
+      cm1Redac('Masse des 2 boîtes', '17 − 5 = 12', 'On enlève 5 kg de chaque côté : 2 boîtes pèsent 12 kg.') + cm1Redac('Masse d\'une boîte', '12 : 2 = 6', 'Une boîte pèse 6 kg.')],
   ], { titre: 'Rédaction type : « Nombre caché »', lignes: [['■ + 18 = 50', 'Je cherche le nombre qui, ajouté à 18, donne 50.'], ['■ = 50 − 18 = 32', 'J\'utilise l\'opération inverse.'], ['Vérification : 32 + 18 = 50', 'Je vérifie.']] }),
   histoire: cm1Histoire('Un peu d\'histoire : al-Khwârizmî et le mot « algèbre »', [
     'Au IX<sup>e</sup> siècle, à Bagdad, le savant <b>al-Khwârizmî</b> écrit un livre pour résoudre des problèmes de partage d\'héritage et de commerce. Il y explique comment trouver un nombre inconnu en « équilibrant » les deux côtés, comme une balance.',
@@ -128,7 +128,7 @@ PLANCHES['cm1|Algèbre'] = [
       { etoiles: 3, col: 1, cahier: true, consigne: 'Une suite : 2 ; 5 ; 8 ; 11… Quel est le 10e nombre ? Explique sans tout écrire.',
         corr: cm1Redac('10e nombre', ['2 + 9 × 3', '2 + 27', '29'], 'Du 1er au 10e nombre, on ajoute 3 neuf fois : le 10e nombre est 29.') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Avec 25 allumettes, combien de carrés peut-on faire dans la rangée de l\'exercice 3 ?',
-        corr: cm1Redac('Nombre de carrés', { suite: ['1 carré : 4 allumettes, puis 3 de plus par carré', '25 − 4 = 21 et 21 ÷ 3 = 7'] }, 'On fait 1 + 7 = 8 carrés, avec exactement 25 allumettes.') },
+        corr: cm1Redac('Nombre de carrés', { suite: ['1 carré : 4 allumettes, puis 3 de plus par carré', '25 − 4 = 21 et 21 : 3 = 7'] }, 'On fait 1 + 7 = 8 carrés, avec exactement 25 allumettes.') },
     ] },
   { titre: 'Égalités, balances et programmes de calcul', duree: '30 min',
     attendus: ['Comprendre le signe = comme une égalité', 'Trouver le nombre caché (égalité à trou, balance)', 'Appliquer un programme de calcul'],
@@ -143,7 +143,7 @@ PLANCHES['cm1|Algèbre'] = [
       { etoiles: 2, col: 1, consigne: 'Programme : choisis un nombre, ajoute 3, puis multiplie par 2.', ...ex([['Je choisis 5 : j\'obtiens …', 16], ['Je choisis 0 : j\'obtiens …', 6], ['Je choisis 10 : j\'obtiens …', 26]]) },
       { etoiles: 2, col: 1, consigne: 'Programme : choisis un nombre, multiplie-le par 4, puis enlève 1.', ...ex([['Je choisis 3 : j\'obtiens …', 11], ['Je choisis 10 : j\'obtiens …', 39], ['Je choisis 25 : j\'obtiens …', 99]]) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Avec le programme « ajoute 3, puis multiplie par 2 », Zoé obtient 20. Quel nombre a-t-elle choisi ?',
-        corr: cm1Redac('On remonte le programme', { suite: ['20 ÷ 2 = 10 (on défait « multiplier par 2 »)', '10 − 3 = 7 (on défait « ajouter 3 »)'] }, 'Zoé a choisi 7. Vérification : 7 + 3 = 10 et 10 × 2 = 20.') },
+        corr: cm1Redac('On remonte le programme', { suite: ['20 : 2 = 10 (on défait « multiplier par 2 »)', '10 − 3 = 7 (on défait « ajouter 3 »)'] }, 'Zoé a choisi 7. Vérification : 7 + 3 = 10 et 10 × 2 = 20.') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Complète pour que l\'égalité soit vraie, de deux façons différentes : 6 + 9 = … + … .',
         corr: cm1Redac('Deux égalités vraies', { suite: ['6 + 9 = 10 + 5', '6 + 9 = 7 + 8'] }, 'Les deux côtés valent 15 : il y a beaucoup d\'autres réponses possibles.') },
     ] },

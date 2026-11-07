@@ -3,7 +3,7 @@
    Programme du cycle 2 (BO n° 41 du 31 octobre 2024), partie CE1 : résoudre des problèmes de partage
    équitable (combien pour chacun ?) et de groupement (combien de groupes ?), par la manipulation, le
    dessin, l'addition ou la soustraction répétée et les tables de multiplication ; repérer qu'il peut
-   rester des objets ; pas de division posée ni de signe ÷.
+   rester des objets ; pas de division posée ni de signe :.
    Pensé pour être projeté : la distribution « un pour toi, un pour moi », les paquets qui se forment.
    ============================================================ */
 (() => {

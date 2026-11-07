@@ -50,7 +50,7 @@ ${cm1Exemple('Lecture :', [`A est 3 petits écarts après 0 : A correspond à ${
 ${cm1Lecon(5, 'Prendre une fraction d\'une quantité')}
 ${cm1Regle(`Pour calculer ${F(1, 4)} de 12 billes, on partage 12 en 4 parts égales. Pour ${F(3, 4)} de 12 billes, on prend 3 de ces parts.`)}
 ${ce2AnimPartage('cm1-fr-partage', { presets: [{ nom: '12 billes en 4', total: 12, parts: 4, objets: 'billes', fin: `Chaque part a 3 billes : ${F(1, 4)} de 12 billes, c'est <b>3 billes</b>. En prenant 3 parts : ${F(3, 4)} de 12 billes, c'est <b>9 billes</b>.` }] })}
-${cm1Redac(`${F(1, 4)} de 12 billes`, '12 ÷ 4 = 3', `${F(1, 4)} de 12 billes, c'est 3 billes.`)}
+${cm1Redac(`${F(1, 4)} de 12 billes`, '12 : 4 = 3', `${F(1, 4)} de 12 billes, c'est 3 billes.`)}
 ${cm1Redac(`${F(3, 4)} de 12 billes`, '3 × 3 = 9', `${F(3, 4)} de 12 billes, c'est 9 billes.`)}
 `,
   methode: `
@@ -72,7 +72,7 @@ ${cm1Demo('fr-quantite', 'Calculer une fraction d\'une quantité', `Dans une cla
       { expr: `3 &lt; ${F(11, 3)} &lt; 4`, note: 'La fraction est comprise entre les deux entiers consécutifs 3 et 4.' },
     ]],
     ['fr-quantite', [
-      { expr: '24 ÷ 3 = 8', note: 'Le dénominateur est 3 : on partage les 24 élèves en 3 parts égales. Un tiers, c\'est 8 élèves.' },
+      { expr: '24 : 3 = 8', note: 'Le dénominateur est 3 : on partage les 24 élèves en 3 parts égales. Un tiers, c\'est 8 élèves.' },
       { expr: '2 × 8 = 16', note: 'Le numérateur est 2 : on prend 2 parts.' },
       { expr: `${F(2, 3)} de 24, c'est 16.`, note: 'Réponse : 16 élèves sont demi-pensionnaires.' },
     ]],
@@ -93,13 +93,13 @@ ${cm1Demo('fr-quantite', 'Calculer une fraction d\'une quantité', `Dans une cla
       cm1Redac('Valeur d\'un petit écart', 'Chaque unité est partagée en 3.', `Un petit écart vaut ${F(1, 3)}.`)
       + cm1Redac('Points D et E', { suite: [`D : 2 petits écarts, ${F(2, 3)}`, `E : 5 petits écarts, ${F(5, 3)}`] }, `D correspond à ${F(2, 3)} et E à ${F(5, 3)}, c'est-à-dire 1 + ${F(2, 3)}.`)],
     [`Calcule ${F(1, 5)} de 30 €, puis ${F(3, 5)} de 30 €.`,
-      cm1Redac(`${F(1, 5)} de 30 €`, '30 ÷ 5 = 6', `${F(1, 5)} de 30 €, c'est 6 €.`)
+      cm1Redac(`${F(1, 5)} de 30 €`, '30 : 5 = 6', `${F(1, 5)} de 30 €, c'est 6 €.`)
       + cm1Redac(`${F(3, 5)} de 30 €`, '3 × 6 = 18', `${F(3, 5)} de 30 €, c'est 18 €.`)],
     [`Léa a lu ${F(3, 4)} d'un livre de 80 pages. Combien de pages a-t-elle lues ? Combien lui en reste-t-il ?`,
-      cm1Redac('Un quart du livre', '80 ÷ 4 = 20', 'Un quart du livre, c\'est 20 pages.')
+      cm1Redac('Un quart du livre', '80 : 4 = 20', 'Un quart du livre, c\'est 20 pages.')
       + cm1Redac('Pages lues', '3 × 20 = 60', 'Léa a lu 60 pages.')
       + cm1Redac('Pages restantes', '80 − 60 = 20', 'Il lui reste 20 pages à lire.')],
-  ], { titre: 'Rédaction type : « Calculer une fraction d\'une quantité »', lignes: [[`${F(3, 4)} de 20`, 'Je partage 20 en 4 parts égales : 20 ÷ 4 = 5.'], ['3 × 5 = 15', 'Je prends 3 parts.'], [`${F(3, 4)} de 20 = 15`, 'Je conclus par une phrase.']] }),
+  ], { titre: 'Rédaction type : « Calculer une fraction d\'une quantité »', lignes: [[`${F(3, 4)} de 20`, 'Je partage 20 en 4 parts égales : 20 : 4 = 5.'], ['3 × 5 = 15', 'Je prends 3 parts.'], [`${F(3, 4)} de 20 = 15`, 'Je conclus par une phrase.']] }),
   histoire: cm1Histoire('Un peu d\'histoire : les fractions de l\'Œil d\'Horus', [
     'Il y a plus de 3 500 ans, les <b>Égyptiens</b> utilisaient déjà des fractions pour partager le grain, la bière ou les terres. Ils écrivaient presque uniquement des fractions de numérateur 1 : un demi, un tiers, un quart…',
     'Pour mesurer les céréales, les scribes utilisaient les morceaux d\'un dessin célèbre, l\'<b>Œil d\'Horus</b> : chaque partie de l\'œil valait une fraction (un demi, un quart, un huitième, un seizième, un trente-deuxième et un soixante-quatrième).',

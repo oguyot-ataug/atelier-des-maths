@@ -99,7 +99,7 @@ ${cm1Liste(['34 × 3 = 102', '34 × 20 = 680', '102 + 680 = 782'])}<p class="hin
 <div class="lesson-header"><span class="num">5</span><h3>La division euclidienne posée</h3></div>
 <span class="prop-badge">Méthode</span>
 <div class="def-box">On prend les chiffres du dividende un par un (en partant de la gauche), et on cherche à chaque étape combien de fois le diviseur y « rentre ». On écrit ce nombre de fois au quotient, on soustrait, et on abaisse le chiffre suivant du dividende.</div>
-<p class="example-title">Exemple : 587 ÷ 9</p>
+<p class="example-title">Exemple : 587 : 9</p>
 ${divisionPoseeHTML(computeDivisionPosee(587,9))}
 
 <div class="lesson-header"><span class="num">6</span><h3>Multiples et diviseurs</h3></div>
@@ -173,7 +173,7 @@ document.getElementById('methode-demo-cm1-operations-nombres-entiers').innerHTML
 
 <div class="sub-header"><span class="letter">M</span><h4>Comment poser une division euclidienne ?</h4></div>
 <div class="figure-wrap">
-  <p class="hint interaction-hint" style="margin-top:6px;">587 ÷ 9 : clique sur « Étape suivante » pour dérouler la division, chiffre par chiffre.</p>
+  <p class="hint interaction-hint" style="margin-top:6px;">587 : 9 : clique sur « Étape suivante » pour dérouler la division, chiffre par chiffre.</p>
   <div id="cm1op-divisionDisplay"></div>
   <div class="figure-toolbar">
     <button class="btn" onclick="cm1opDivisionNext()">Étape suivante →</button>
@@ -186,7 +186,7 @@ document.getElementById('exos-demo-cm1-operations-nombres-entiers').innerHTML = 
 <div class="redaction-block">
   <h3>Rédaction type : « Poser et effectuer une division euclidienne »</h3>
   <div class="redaction-template">
-    <div class="we-row"><span class="we-expr">438 ÷ 6</span><span class="we-comment">Je pose la division : 438 est le dividende, 6 est le diviseur.</span></div>
+    <div class="we-row"><span class="we-expr">438 : 6</span><span class="we-comment">Je pose la division : 438 est le dividende, 6 est le diviseur.</span></div>
     <div class="we-row"><span class="we-expr">438 = 6 × 73 + 0</span><span class="we-comment">Je vérifie : 6 × 73 = 438, et le reste (0) est bien inférieur à 6.</span></div>
   </div>
 </div>
@@ -262,7 +262,7 @@ document.getElementById('exos-demo-cm1-operations-nombres-entiers').innerHTML = 
 
 document.getElementById('histoire-demo-cm1-operations-nombres-entiers').innerHTML = `
 <div class="history-box">
-  <div class="history-title"><span class=gicon>history_edu</span> Un peu d'histoire : d'où viennent les signes +, −, × et ÷ ?</div>
+  <div class="history-title"><span class=gicon>history_edu</span> Un peu d'histoire : d'où viennent les signes +, −, × et : ?</div>
   Les quatre signes que tu utilises tous les jours en calcul n'ont pas toujours existé ! Pendant très longtemps, on écrivait les opérations en toutes lettres, ce qui prenait beaucoup de place et rendait les calculs difficiles à lire.<br><br>
   Les signes <b>+</b> et <b>−</b> apparaissent pour la première fois dans des documents de marchands allemands, à la fin du XVe siècle : le <b>+</b> (qui vient du mot latin « et », signifiant « et ») servait à noter un surplus de marchandises, et le <b>−</b> un manque. Un mathématicien allemand, Johannes Widmann, les utilise dans un livre imprimé en 1489 -- c'est l'une des toutes premières fois qu'on les voit sous cette forme.<br><br>
   Le signe <b>×</b> a été inventé bien plus tard, en 1631, par un mathématicien anglais nommé William Oughtred : une croix inclinée, facile à distinguer de la lettre « x ». Le signe <b>÷</b> (deux points séparés par un trait, qu'on appelle un « obélus ») a été proposé encore plus tard, en 1659, par le mathématicien suisse Johann Rahn.<br><br>
@@ -379,9 +379,9 @@ const CM1OP_MULTIPLICATION_STEPS = [
 ];
 const cm1opMultiplicationDemo = makeSingleStepDemo(CM1OP_MULTIPLICATION_STEPS, 'cm1op-multiplicationDisplay');
 
-/* ---- Méthode animée : division euclidienne (587 ÷ 9) -- réutilise directement le moteur
+/* ---- Méthode animée : division euclidienne (587 : 9) -- réutilise directement le moteur
    existant (computeDivisionPosee/buildDivisionStages/dpRenderDivisionTable) au lieu de
-   redévelopper une table pas à pas, même principe que les démos 823÷14 (6e) et 758÷12 (5e). */
+   redévelopper une table pas à pas, même principe que les démos 823:14 (6e) et 758:12 (5e). */
 const CM1OP_DIVISION_RES = computeDivisionPosee(587, 9);
 const CM1OP_DIVISION_STAGES = buildDivisionStages(CM1OP_DIVISION_RES);
 let cm1opDivisionIdx = 0;
@@ -507,7 +507,7 @@ PLANCHES['cm1|Opérations sur les nombres entiers'] = [
         eleve: plListe(['35 est un multiple de 5. <b>vrai · faux</b>', '6 est un diviseur de 24. <b>vrai · faux</b>', '48 est divisible par 10. <b>vrai · faux</b>', '72 est un multiple de 8. <b>vrai · faux</b>']),
         corr: plListe([['35 est un multiple de 5. ', 'vrai'], ['6 est un diviseur de 24. ', 'vrai'], ['48 est divisible par 10. ', 'faux'], ['72 est un multiple de 8. ', 'vrai']].map(([t, r]) => t + plEntoure(r))) },
       { etoiles: 2, consigne: 'Pose et calcule ces divisions. Écris le quotient et le reste.',
-        eleve: duo([`<span style="text-align:center;">857 ÷ 6<br>${grille(10, 8)}<br>quotient : ${B(3)} reste : ${B(2)}</span>`, `<span style="text-align:center;">639 ÷ 4<br>${grille(10, 8)}<br>quotient : ${B(3)} reste : ${B(2)}</span>`, `<span style="text-align:center;">1 250 ÷ 7<br>${grille(10, 8)}<br>quotient : ${B(3)} reste : ${B(2)}</span>`]),
+        eleve: duo([`<span style="text-align:center;">857 : 6<br>${grille(10, 8)}<br>quotient : ${B(3)} reste : ${B(2)}</span>`, `<span style="text-align:center;">639 : 4<br>${grille(10, 8)}<br>quotient : ${B(3)} reste : ${B(2)}</span>`, `<span style="text-align:center;">1 250 : 7<br>${grille(10, 8)}<br>quotient : ${B(3)} reste : ${B(2)}</span>`]),
         corr: duo([`<span style="text-align:center;">${div(857, 6)}quotient : ${R(142)} reste : ${R(5)}</span>`, `<span style="text-align:center;">${div(639, 4)}quotient : ${R(159)} reste : ${R(3)}</span>`, `<span style="text-align:center;">${div(1250, 7)}quotient : ${R(178)} reste : ${R(4)}</span>`]),
         // À l'écran : la potence à compléter case par case (avec les soustractions, puis sans).
         ecran: { eleve: duo([[857, 6, 1], [639, 4, 1], [1250, 7, 0]].map(([a, d, df]) => `<span style="text-align:center;">${plDivision(a, d, { mode: 'trous', diff: !!df })}<br>quotient : ${B(3)} reste : ${B(2)}</span>`)),

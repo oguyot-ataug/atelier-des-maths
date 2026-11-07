@@ -85,7 +85,7 @@ function scOrageMonter(el){
   function verifier(){
     const d = 340 * st.t, g = parseFloat($('[data-a="d"]').value), ok = isFinite(g) && Math.abs(g - d) <= Math.max(10, d * .02);
     const calc = niv === '3e'
-      ? `<div>Le son va à v = 340 m/s, pendant t = ${tTxt(st.t)}.</div><div>d = v × t = 340 × ${scN(st.t, 1)} = <b>${scN(d, 0)} m</b>.</div><div>En km/h, le son va à 340 × 3 600 ÷ 1 000 = 1 224 km/h.</div>`
+      ? `<div>Le son va à v = 340 m/s, pendant t = ${tTxt(st.t)}.</div><div>d = v × t = 340 × ${scN(st.t, 1)} = <b>${scN(d, 0)} m</b>.</div><div>En km/h, le son va à 340 × 3 600 : 1 000 = 1 224 km/h.</div>`
       : `<div>En 1 seconde, le son parcourt 340 m.</div><div>En ${tTxt(st.t)} : 340 × ${scN(st.t, 1)} = <b>${scN(d, 0)} m</b>.</div><div>C'est ${Math.abs(d / 100 - Math.round(d / 100)) < 1e-9 ? '' : 'environ '}<b>${scN(d / 1000, 1)} km</b>.</div>`;
     scDire(el, `${ok ? '<span class="gicon">celebration</span> Exact !' : '<span class="gicon">info</span> Voici le calcul :'}<div class="sc-etapes">${calc}</div>
       Astuce : le son parcourt à peu près 1 km en 3 secondes. Divise le nombre de secondes par 3 et tu as la distance en kilomètres. ${d < 2000 ? 'Ici, l\'orage est tout près : on rentre à l\'abri !' : ''}`, ok ? 'ok' : 'ko');
@@ -157,7 +157,7 @@ function scEprouvetteMonter(el){
     const o = st.o, v1 = st.v0 + o.v, g = parseFloat($('[data-a="v"]').value), m = Math.round(o.v * o.rho * 10) / 10, rho = m / o.v;
     const okV = g === o.v, gr = trois ? parseFloat(String($('[data-a="r"]').value).replace(',', '.')) : 0, okR = !trois || Math.abs(gr - rho) < .02;
     let h = `<div class="sc-etapes"><div>Avant : ${st.v0} mL.</div><div>Après : ${v1} mL.</div><div>Volume de l'objet : ${v1} − ${st.v0} = <b>${o.v} mL</b>.</div>${niv !== 'cm' ? `<div>Comme 1 mL = 1 cm³, le volume est <b>${o.v} cm³</b>.</div>` : ''}`;
-    if(trois) h += `<div>Masse volumique : ρ = m ÷ V = ${scN(m, 1)} ÷ ${o.v} ≈ <b>${scN(rho, 2)} g/cm³</b>.</div>`;
+    if(trois) h += `<div>Masse volumique : ρ = m : V = ${scN(m, 1)} : ${o.v} ≈ <b>${scN(rho, 2)} g/cm³</b>.</div>`;
     h += '</div>';
     if(trois) h += `L'eau a une masse volumique de 1 g/cm³ : ${o.nom} est <b>${rho < 1 ? 'moins dense que l\'eau, il flotte' : 'plus dense que l\'eau, il coule'}</b>${rho < 1 ? ` (et ${scN(rho * 100, 0)} % de son volume reste sous l'eau, comme pour un iceberg)` : ''}.`;
     scDire(el, (okV && okR ? '<span class="gicon">celebration</span> Bravo !' : '<span class="gicon">info</span> Voici comment faire :') + h, okV && okR ? 'ok' : 'ko');

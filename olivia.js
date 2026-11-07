@@ -130,8 +130,9 @@ function oliviaEsc(s){ return String(s == null ? '' : s).replace(/&/g, '&amp;').
 // renderMathText ici : sa règle des « variables isolées » mettait en italique le t de « t'aider ».
 function oliviaFormat(t){
   const maths = [];
-  let h = oliviaEsc(String(t)).replace(/\$([^$\n]+)\$/g, (m, e) => {
-    const brut = e.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+  // Division écrite « : », jamais « ÷ » (demandé le 07/11/2026 : « partout « : » à la place de ÷ »).
+  let h = oliviaEsc(String(t).replace(/÷/g, ':')).replace(/\$([^$\n]+)\$/g, (m, e) => {
+    const brut = e.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&').replace(/\\div(?![a-zA-Z])/g, ':');
     let r; try{ r = typeof katexSpan === 'function' ? katexSpan(brut) : e; }catch(err){ r = e; }
     maths.push(r === brut ? e : r); return '\u0000' + (maths.length - 1) + '\u0000';
   });

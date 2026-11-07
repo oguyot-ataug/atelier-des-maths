@@ -53,7 +53,7 @@ ${pcTab([
   ['On prend…', 'la moitié', 'le quart', 'les trois quarts', 'le dixième', 'le centième'],
 ])}
 <p class="example-title">Exemple :</p>
-<ul class="example-list"><li>25 % de 64, c'est le quart de 64 : 64 ÷ 4 = 16.</li></ul>
+<ul class="example-list"><li>25 % de 64, c'est le quart de 64 : 64 : 4 = 16.</li></ul>
 
 <div class="lesson-header"><span class="num">2</span><h3>Exprimer une proportion en pourcentage</h3></div>
 <span class="prop-badge">Règle</span>
@@ -68,7 +68,7 @@ ${pcEx('Exemple 1 : dans un club de 250 adhérents, 90 sont mineurs. Quel pource
 <p class="example-title">Exemple 2 : avec un tableau de proportionnalité.</p>
 <p style="margin:4px 0;">Le pourcentage est l'effectif qu'on aurait si le total était 100 :</p>
 ${pcTab([['Adhérents mineurs', '90', '<b>?</b>'], ['Total des adhérents', '250', '100']])}
-<ul class="example-list"><li>Le coefficient pour passer de 250 à 100 est 100 ÷ 250 = 0,4, donc ? = 90 × 0,4 = <b>36</b> : on retrouve 36 %.</li></ul>
+<ul class="example-list"><li>Le coefficient pour passer de 250 à 100 est 100 : 250 = 0,4, donc ? = 90 × 0,4 = <b>36</b> : on retrouve 36 %.</li></ul>
 ${pcEx('Exemple 3 : Nina a réussi 12 exercices sur 20.', [
   ['<span class="tex">\\dfrac{12}{20} = \\dfrac{12 \\times 5}{20 \\times 5} = \\dfrac{60}{100}</span>', 'Ici, on obtient directement le dénominateur 100 en multipliant par 5.'],
   ['Nina a réussi 60 % des exercices.', ''],
@@ -139,21 +139,21 @@ document.getElementById('exos-demo-pourcentages-5e').innerHTML = `
 <div class="redaction-block">
   <h3>Exercices</h3>
   ${pcExo(1, 'Calcule : a) 20 % de 150 ; b) 75 % de 48 ; c) 12 % de 250.', [
-    'a) 150 × 0,2 = 30', 'b) 75 % = les trois quarts : 48 ÷ 4 × 3 = 36', 'c) 250 × 0,12 = 30'])}
+    'a) 150 × 0,2 = 30', 'b) 75 % = les trois quarts ; 48 : 4 × 3 = 36', 'c) 250 × 0,12 = 30'])}
   ${pcExo(2, 'Calcule de tête : 50 % de 86 ; 25 % de 120 ; 10 % de 4 500 ; 1 % de 700.', [
     'La moitié de 86 : 43', 'Le quart de 120 : 30', 'Le dixième de 4 500 : 450', 'Le centième de 700 : 7'])}
   ${pcExo(3, 'Un vélo coûte 240 €. Pendant les soldes, son prix baisse de 15 %. Calcule le montant de la réduction, puis le nouveau prix.', [
     'Réduction : 240 × 0,15 = 36 €', 'Nouveau prix : 240 − 36 = 204 €'])}
   ${pcExo(4, 'Dans un sachet de 400 g de céréales, il y a 60 g de sucre. Quel est le pourcentage de sucre ?', [
-    '60 ÷ 400 = 0,15 = 15/100', 'Ces céréales contiennent 15 % de sucre.'])}
+    '60 : 400 = 0,15 = 15/100', 'Ces céréales contiennent 15 % de sucre.'])}
   ${pcExo(5, 'Un collège compte 640 élèves, dont 45 % sont demi-pensionnaires. Combien d\'élèves sont demi-pensionnaires ? Combien ne le sont pas ?', [
     '640 × 0,45 = 288 élèves sont demi-pensionnaires.', '640 − 288 = 352 élèves ne le sont pas (soit 55 %).'])}
   ${pcExo(6, 'Lors d\'un match, une basketteuse a réussi 14 tirs sur 20. Quel est son pourcentage de réussite ?', [
     '<span class="tex">\\dfrac{14}{20} = \\dfrac{70}{100}</span>', 'Elle a réussi 70 % de ses tirs.'])}
   ${pcExo(7, 'Complète le tableau de proportionnalité pour trouver quel pourcentage représentent 27 filles sur 60 élèves.', [
-    'Filles : 27 → ? ; Total : 60 → 100', 'Coefficient : 100 ÷ 60 ; ? = 27 × 100 ÷ 60 = 45', 'Les filles représentent 45 % des élèves.'])}
+    'Filles : 27 → ? ; Total : 60 → 100', 'Coefficient : 100 : 60 ; ? = 27 × 100 : 60 = 45', 'Les filles représentent 45 % des élèves.'])}
   ${pcExo(8, 'Tom affirme : « 10 % de 80, c\'est la même chose que 80 % de 10 ». A-t-il raison ?', [
-    '10 % de 80 = 80 × 0,1 = 8 et 80 % de 10 = 10 × 0,8 = 8.', 'Oui, il a raison : dans les deux cas, on calcule 80 × 10 ÷ 100.'])}
+    '10 % de 80 = 80 × 0,1 = 8 et 80 % de 10 = 10 × 0,8 = 8.', 'Oui, il a raison : dans les deux cas, on calcule 80 × 10 : 100.'])}
 </div>
 `;
 
@@ -177,7 +177,7 @@ function pcDeterminer(){
 }
 const PC_TETE_STEPS = [
   { expr: '10 % de 340 = 34', note: '10 %, c\'est le dixième : on divise par 10.' },
-  { expr: '5 % de 340 = 34 ÷ 2 = 17', note: '5 %, c\'est la moitié de 10 %.' },
+  { expr: '5 % de 340 = 34 : 2 = 17', note: '5 %, c\'est la moitié de 10 %.' },
   { expr: '15 % = 10 % + 5 %', note: 'On décompose 15 % à l\'aide des pourcentages faciles.' },
   { expr: '15 % de 340 = 34 + 17 = 51', note: 'On additionne : 15 % de 340, c\'est 51. (Vérification : 340 × 0,15 = 51.)' },
 ];

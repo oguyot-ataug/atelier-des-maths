@@ -11,7 +11,7 @@ cm1Chapitre({
   niveau: 'cm2', titre: 'Fractions : comparer et calculer', slug: 'fractions-calculs',
   cours: `
 ${cm1Lecon(1, 'Fractions égales')}
-${cm1Regle(`On obtient une fraction égale en <b>multipliant</b> (ou en divisant) le numérateur et le dénominateur <b>par le même nombre</b> :${cm1Liste([`${F(2, 3)} = ${F('2 × 4', '3 × 4')} = ${F(8, 12)}`, `${F(15, 20)} = ${F('15 ÷ 5', '20 ÷ 5')} = ${F(3, 4)}`])}`)}
+${cm1Regle(`On obtient une fraction égale en <b>multipliant</b> (ou en divisant) le numérateur et le dénominateur <b>par le même nombre</b> :${cm1Liste([`${F(2, 3)} = ${F('2 × 4', '3 × 4')} = ${F(8, 12)}`, `${F(15, 20)} = ${F('15 : 5', '20 : 5')} = ${F(3, 4)}`])}`)}
 ${ce2AnimFracEgales('c2-fc-egales', { presets: [{ nom: 'Deux tiers', n: 3, k: 2, f: 4 }, { nom: 'Trois quarts', n: 4, k: 3, f: 3 }] })}
 <div class="figure-wrap" style="text-align:left;"><div style="display:flex;align-items:center;gap:12px;margin:3px 0;"><span style="min-width:40px;">${F(2, 3)}</span>${cm1Bande(3, 2)}</div><div style="display:flex;align-items:center;gap:12px;margin:3px 0;"><span style="min-width:40px;">${F(8, 12)}</span>${cm1Bande(12, 8)}</div></div>
 
@@ -32,7 +32,7 @@ ${cm1Regle(`Multiplier une fraction par un entier, c'est l'ajouter plusieurs foi
 
 ${cm1Lecon(5, 'Fraction d\'une quantité')}
 ${cm1Regle(`Pour prendre les ${F(3, 4)} de 100 m, on cherche d'abord ${F(1, 4)} de 100 m.`)}
-${cm1Redac(`${F(1, 4)} de 100 m`, '100 ÷ 4 = 25', `${F(1, 4)} de 100 m, c'est 25 m.`)}
+${cm1Redac(`${F(1, 4)} de 100 m`, '100 : 4 = 25', `${F(1, 4)} de 100 m, c'est 25 m.`)}
 ${cm1Redac(`${F(3, 4)} de 100 m`, '3 × 25 = 75', `${F(3, 4)} de 100 m, c'est 75 m.`)}
 
 ${cm1Lecon(6, 'Fractions usuelles et nombres décimaux')}
@@ -58,7 +58,7 @@ ${cm1Demo('c2-fc-comp', 'Comparer deux fractions', `Range dans l'ordre croissant
   ],
   exos: cm1Exos('c2fc', [
     [`Complète.${cm1Liste([`${F(3, 5)} = ${F('…', 20)}`, `${F(1, 6)} = ${F('…', 36)}`, `${F(12, 16)} = ${F(3, '…')}`])}`,
-      cm1Redac('Fractions égales', { suite: [`${F(3, 5)} = ${F('3 × 4', '5 × 4')} = ${F(12, 20)}`, `${F(1, 6)} = ${F('1 × 6', '6 × 6')} = ${F(6, 36)}`, `${F(12, 16)} = ${F('12 ÷ 4', '16 ÷ 4')} = ${F(3, 4)}`] }, 'On multiplie (ou on divise) le numérateur et le dénominateur par le même nombre.')],
+      cm1Redac('Fractions égales', { suite: [`${F(3, 5)} = ${F('3 × 4', '5 × 4')} = ${F(12, 20)}`, `${F(1, 6)} = ${F('1 × 6', '6 × 6')} = ${F(6, 36)}`, `${F(12, 16)} = ${F('12 : 4', '16 : 4')} = ${F(3, 4)}`] }, 'On multiplie (ou on divise) le numérateur et le dénominateur par le même nombre.')],
     [`Compare avec &lt;, &gt; ou =.${cm1Liste([`${F(5, 7)} … ${F(4, 7)}`, `${F(2, 9)} … ${F(2, 5)}`, `${F(3, 4)} … ${F(9, 12)}`, `${F(5, 6)} … ${F(7, 12)}`])}`,
       cm1Redac('Comparaisons', { suite: [`${F(5, 7)} &gt; ${F(4, 7)}`, `${F(2, 9)} &lt; ${F(2, 5)}`, `${F(3, 4)} = ${F(9, 12)}`, `${F(5, 6)} = ${F(10, 12)} &gt; ${F(7, 12)}`] }, 'Même dénominateur : on compare les numérateurs ; même numérateur : la plus grande a le plus petit dénominateur.')],
     [`Calcule.${cm1Liste([`${F(3, 10)} + ${F(9, 10)}`, `${F(11, 15)} − ${F(4, 15)}`, `${F(1, 2)} + ${F(3, 8)}`])}`,
@@ -72,9 +72,9 @@ ${cm1Demo('c2-fc-comp', 'Comparer deux fractions', `Range dans l'ordre croissant
     [`Calcule.${cm1Liste([`3 × ${F(2, 9)}`, `5 × ${F(3, 4)}`, `6 × ${F(1, 6)}`])}`,
       cm1Redac('Produits', { suite: [`3 × ${F(2, 9)} = ${F(6, 9)}`, `5 × ${F(3, 4)} = ${F(15, 4)}`, `6 × ${F(1, 6)} = ${F(6, 6)} = 1`] }, 'On multiplie le numérateur par l\'entier et on garde le dénominateur.')],
     [`Calcule.${cm1Liste([`les ${F(2, 3)} de 12 €`, `les ${F(3, 5)} de 1 km, en mètres`, `les ${F(7, 10)} de 60 min`])}`,
-      cm1Redac(`${F(2, 3)} de 12 €`, { suite: ['12 ÷ 3 = 4', '2 × 4 = 8'] }, `Les ${F(2, 3)} de 12 €, c'est 8 €.`)
-      + cm1Redac(`${F(3, 5)} de 1 000 m`, { suite: ['1 000 ÷ 5 = 200', '3 × 200 = 600'] }, `Les ${F(3, 5)} de 1 km, c'est 600 m.`)
-      + cm1Redac(`${F(7, 10)} de 60 min`, { suite: ['60 ÷ 10 = 6', '7 × 6 = 42'] }, `Les ${F(7, 10)} de 60 min, c'est 42 min.`)],
+      cm1Redac(`${F(2, 3)} de 12 €`, { suite: ['12 : 3 = 4', '2 × 4 = 8'] }, `Les ${F(2, 3)} de 12 €, c'est 8 €.`)
+      + cm1Redac(`${F(3, 5)} de 1 000 m`, { suite: ['1 000 : 5 = 200', '3 × 200 = 600'] }, `Les ${F(3, 5)} de 1 km, c'est 600 m.`)
+      + cm1Redac(`${F(7, 10)} de 60 min`, { suite: ['60 : 10 = 6', '7 × 6 = 42'] }, `Les ${F(7, 10)} de 60 min, c'est 42 min.`)],
     [`Écris ces fractions avec une virgule.${cm1Liste([F(1, 4), F(3, 4), F(1, 2), F(1, 5), F(5, 2)])}`,
       cm1Redac('Écritures décimales', { suite: [`${F(1, 4)} = 0,25`, `${F(3, 4)} = 0,75`, `${F(1, 2)} = 0,5`, `${F(1, 5)} = 0,2`, `${F(5, 2)} = 2,5`] }, 'Ce sont des fractions usuelles à connaître par cœur.')],
     [`Tom a mangé ${F(1, 4)} d'une pizza et Zoé ${F(3, 8)}. Quelle fraction de la pizza reste-t-il ?`,

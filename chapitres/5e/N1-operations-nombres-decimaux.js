@@ -11,7 +11,7 @@ document.getElementById('cours-demo-decimaux').innerHTML = `
           <li>Le résultat de l'<b>addition</b> 25 + 6 est la <b>somme</b> des <b>termes</b> 25 et 6.</li>
           <li>Le résultat de la <b>soustraction</b> 25 − 6 est la <b>différence</b> des <b>termes</b> 25 et 6.</li>
           <li>Le résultat de la <b>multiplication</b> 25 × 6 est le <b>produit</b> des <b>facteurs</b> 25 et 6.</li>
-          <li>Le résultat de la <b>division</b> 25 ÷ 6 est le <b>quotient</b> de 25 par 6.</li>
+          <li>Le résultat de la <b>division</b> 25 : 6 est le <b>quotient</b> de 25 par 6.</li>
         </ul>
       </div>
 
@@ -201,7 +201,7 @@ document.getElementById('methode-demo-decimaux').innerHTML = `
         <b>Le produit</b> de a par b, c'est a × b.<br>
         <b>La somme</b> de a et b, c'est a + b.<br>
         <b>La différence</b> de a et b, c'est a − b.<br>
-        <b>Le quotient</b> de a par b, c'est a ÷ b.
+        <b>Le quotient</b> de a par b, c'est a : b.
       </div>
       <div class="figure-wrap">
         <p class="hint interaction-hint" style="margin-top:6px;">Phrase à traduire : "C'est la somme du produit de 3 par 4 et du quotient de 8 par 2." Cliquez sur "Étape suivante".</p>
@@ -318,8 +318,8 @@ document.getElementById('exos-demo-decimaux').innerHTML = `
           <button type="button" class="exo-correction-toggle" data-target="od-correction-5" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
           <div class="exo-correction" id="od-correction-5">
             <div class="redaction-template">
-              <div class="we-row"><span class="we-expr">F = (15 + 9) ÷ 4</span></div>
-              <div class="we-row"><span class="we-expr">F = 24 ÷ 4</span></div>
+              <div class="we-row"><span class="we-expr">F = (15 + 9) : 4</span></div>
+              <div class="we-row"><span class="we-expr">F = 24 : 4</span></div>
               <div class="we-row"><span class="we-expr">F = 6</span></div>
             </div>
           </div>
@@ -476,9 +476,9 @@ const OD_PHRASE_A_STEPS = [
   {expr:`le <b style="${OD_GREEN}">quotient</b> de 8 <b style="${OD_GREEN}">par</b> 2`+OD_SKEL('3 × 4 + <span style="'+OD_ORANGE+'">…</span>'),
    note:"Je m'intéresse maintenant à la partie orange : « quotient de 8 par 2 ». C'est un quotient, de mot-lien « par »."},
   {expr:`le quotient de <span style="${OD_BLUE}${OD_U_BLUE}">8</span> <b style="${OD_GREEN}">par</b> <span style="${OD_ORANGE}${OD_U_ORANGE}">2</span>`+
-    OD_SKEL(`3 × 4 + <span style="${OD_BLUE}">8</span> ÷ <span style="${OD_ORANGE}">2</span>`),
+    OD_SKEL(`3 × 4 + <span style="${OD_BLUE}">8</span> : <span style="${OD_ORANGE}">2</span>`),
    note:"Je souligne 8 en bleu, 2 en orange -- et je complète le squelette."},
-  {expr:'F = 3 × 4 + 8 ÷ 2', note:"8 et 2 sont déjà des nombres : l'expression est maintenant complète !"},
+  {expr:'F = 3 × 4 + 8 : 2', note:"8 et 2 sont déjà des nombres : l'expression est maintenant complète !"},
 ];
 const odPhraseADemo = makeSingleStepDemo(OD_PHRASE_A_STEPS, 'od-phraseADisplay');
 
@@ -515,7 +515,7 @@ const OD_OP_INFO = {
   produit:    {article:'le', noun:'produit',     connectorB:'par'},
   quotient:   {article:'le', noun:'quotient',    connectorB:'par'},
 };
-const OD_OP_SYMBOL = {somme:'+', difference:'−', produit:'×', quotient:'÷'};
+const OD_OP_SYMBOL = {somme:'+', difference:'−', produit:'×', quotient:':'};
 
 // Introduit un nœud enfant par une préposition ('de' ou 'par'), avec contraction de "de"
 // selon le genre du mot qui suit (de+le=du, de+la=de la) -- "par" ne se contracte jamais.

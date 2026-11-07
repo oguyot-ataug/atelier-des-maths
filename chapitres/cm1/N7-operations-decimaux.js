@@ -37,10 +37,10 @@ ${cm1Exemple('On peut calculer sans poser en décomposant :', ['2,5 + 1,5 = 2 + 
 
 ${cm1Lecon(4, 'Multiplier et diviser par 10')}
 ${cm1Regle(`Multiplier par 10, c'est rendre le nombre <b>10 fois plus grand</b>. Diviser par 10, c'est le rendre <b>10 fois plus petit</b>.<br>
-Pour écrire le résultat, on repère le <b>chiffre des unités</b> : c'est lui qui nous intéresse.${cm1Liste(['× 10 : il devient le <b>chiffre des dizaines</b>.', '÷ 10 : il devient le <b>chiffre des dixièmes</b>.'])}Les autres chiffres le suivent, dans le même ordre, et on complète avec des zéros si besoin.`)}
-${cmAnimGlisseDec('cm1-od-glisse', { presets: [{ nom: '4,27 × 10', n: '4,27', f: 10, op: '×' }, { nom: '42,7 ÷ 10', n: '42,7', f: 10, op: '÷' }, { nom: '3 ÷ 10', n: '3', f: 10, op: '÷' }, { nom: '0,56 × 10', n: '0,56', f: 10, op: '×' }] })}
+Pour écrire le résultat, on repère le <b>chiffre des unités</b> : c'est lui qui nous intéresse.${cm1Liste(['× 10 : il devient le <b>chiffre des dizaines</b>.', ': 10 : il devient le <b>chiffre des dixièmes</b>.'])}Les autres chiffres le suivent, dans le même ordre, et on complète avec des zéros si besoin.`)}
+${cmAnimGlisseDec('cm1-od-glisse', { presets: [{ nom: '4,27 × 10', n: '4,27', f: 10, op: '×' }, { nom: '42,7 : 10', n: '42,7', f: 10, op: ':' }, { nom: '3 : 10', n: '3', f: 10, op: ':' }, { nom: '0,56 × 10', n: '0,56', f: 10, op: '×' }] })}
 ${cm1Tableau(['Dizaines', 'Unités', ',', 'Dixièmes', 'Centièmes'], [['', U('4'), ',', '2', '7'], ['4', U('2'), ',', '7', '']])}
-${cm1Exemple('Lecture :', [`4,27 × 10 = <b>42,7</b> : le chiffre 4 était aux unités, il passe aux dizaines.`, `42,7 ÷ 10 = <b>4,27</b> : le chiffre 2 était aux unités, il passe aux dixièmes.`, `3 ÷ 10 = <b>0,3</b> : 3 unités deviennent 3 dixièmes.`])}
+${cm1Exemple('Lecture :', [`4,27 × 10 = <b>42,7</b> : le chiffre 4 était aux unités, il passe aux dizaines.`, `42,7 : 10 = <b>4,27</b> : le chiffre 2 était aux unités, il passe aux dixièmes.`, `3 : 10 = <b>0,3</b> : 3 unités deviennent 3 dixièmes.`])}
 ${cm1Astuce('Repère le <b>chiffre des unités</b> (en rouge) : c\'est lui qu\'on suit, les autres chiffres viennent avec lui. Tu peux t\'entraîner avec l\'outil <b>Convertisseur → Glisse-nombre</b> du menu S\'entraîner.')}
 
 ${cm1Lecon(5, 'Vérifier avec un ordre de grandeur')}
@@ -80,8 +80,8 @@ ${cm1Demo('od-dix', 'Multiplier un nombre décimal par 10', 'Calcule 0,56 × 10.
       cm1Redac('Distance parcourue', { pose: posee([[' ', '45,70'], ['+', '12,85'], [' ', '58,55']], ' 1   ') }, 'Le randonneur a parcouru 58,55 km.')],
     ['Une corde mesure 36,5 m. On en coupe 14,28 m. Quelle longueur reste-t-il ?',
       cm1Redac('Longueur restante', { pose: posee([[' ', '36,50'], ['−', '14,28'], [' ', '22,22']]) }, 'Il reste 22,22 m de corde.')],
-    [`Calcule.${cm1Liste(['3,4 × 10', '0,7 × 10', '58 ÷ 10', '6,2 ÷ 10'])}`,
-      cm1Redac('Multiplier et diviser par 10', { suite: ['3,4 × 10 = 34', '0,7 × 10 = 7', '58 ÷ 10 = 5,8', '6,2 ÷ 10 = 0,62'] }, 'Le chiffre des unités devient le chiffre des dizaines pour × 10, le chiffre des dixièmes pour ÷ 10 ; les autres chiffres le suivent.')],
+    [`Calcule.${cm1Liste(['3,4 × 10', '0,7 × 10', '58 : 10', '6,2 : 10'])}`,
+      cm1Redac('Multiplier et diviser par 10', { suite: ['3,4 × 10 = 34', '0,7 × 10 = 7', '58 : 10 = 5,8', '6,2 : 10 = 0,62'] }, 'Le chiffre des unités devient le chiffre des dizaines pour × 10, le chiffre des dixièmes pour : 10 ; les autres chiffres le suivent.')],
     ['Donne un ordre de grandeur de 19,8 + 30,15, puis calcule.',
       cm1Redac('Ordre de grandeur', '20 + 30 = 50', 'Le résultat doit être proche de 50.') + cm1Redac('Calcul exact', '19,8 + 30,15 = 49,95', '19,8 + 30,15 donne 49,95, très proche de 50 : c\'est plausible.')],
     ['Maïa mesure 1,38 m. Son frère mesure 0,25 m de plus. Quelle est la taille de son frère ?',
@@ -150,19 +150,19 @@ PLANCHES['cm1|Opérations sur les nombres décimaux'] = [
         eleve: plListe(['4,27 × 10 = ' + B(), '0,56 × 10 = ' + B(), '12,5 × 10 = ' + B(), '0,8 × 10 = ' + B()]),
         corr: plListe(['4,27 × 10 = ' + R('42,7'), '0,56 × 10 = ' + R('5,6'), '12,5 × 10 = ' + R(125), '0,8 × 10 = ' + R(8)]) },
       { etoiles: 1, col: 1, consigne: 'Divise par 10 : le chiffre des unités devient le chiffre des dixièmes.',
-        eleve: plListe(['42,7 ÷ 10 = ' + B(), '3 ÷ 10 = ' + B(), '56 ÷ 10 = ' + B(), '0,9 ÷ 10 = ' + B()]),
-        corr: plListe(['42,7 ÷ 10 = ' + R('4,27'), '3 ÷ 10 = ' + R('0,3'), '56 ÷ 10 = ' + R('5,6'), '0,9 ÷ 10 = ' + R('0,09')]) },
+        eleve: plListe(['42,7 : 10 = ' + B(), '3 : 10 = ' + B(), '56 : 10 = ' + B(), '0,9 : 10 = ' + B()]),
+        corr: plListe(['42,7 : 10 = ' + R('4,27'), '3 : 10 = ' + R('0,3'), '56 : 10 = ' + R('5,6'), '0,9 : 10 = ' + R('0,09')]) },
       { etoiles: 2, consigne: 'Complète le tableau.',
-        eleve: tab(['Nombre', '2,4', '0,7', '15', '30,6'], [['× 10', B(3), B(3), B(3), B(3)], ['÷ 10', B(3), B(3), B(3), B(3)]]),
-        corr: tab(['Nombre', '2,4', '0,7', '15', '30,6'], [['× 10', R(24), R(7), R(150), R(306)], ['÷ 10', R('0,24'), R('0,07'), R('1,5'), R('3,06')]]) },
+        eleve: tab(['Nombre', '2,4', '0,7', '15', '30,6'], [['× 10', B(3), B(3), B(3), B(3)], [': 10', B(3), B(3), B(3), B(3)]]),
+        corr: tab(['Nombre', '2,4', '0,7', '15', '30,6'], [['× 10', R(24), R(7), R(150), R(306)], [': 10', R('0,24'), R('0,07'), R('1,5'), R('3,06')]]) },
       { etoiles: 2, col: 1, consigne: 'Complète.',
-        eleve: plListe([B(3) + ' × 10 = 35', B(3) + ' ÷ 10 = 0,7', '6,4 × ' + B(3) + ' = 64', '81 ÷ ' + B(3) + ' = 8,1']),
-        corr: plListe([R('3,5') + ' × 10 = 35', R(7) + ' ÷ 10 = 0,7', '6,4 × ' + R(10) + ' = 64', '81 ÷ ' + R(10) + ' = 8,1']) },
+        eleve: plListe([B(3) + ' × 10 = 35', B(3) + ' : 10 = 0,7', '6,4 × ' + B(3) + ' = 64', '81 : ' + B(3) + ' = 8,1']),
+        corr: plListe([R('3,5') + ' × 10 = 35', R(7) + ' : 10 = 0,7', '6,4 × ' + R(10) + ' = 64', '81 : ' + R(10) + ' = 8,1']) },
       { etoiles: 2, col: 1, consigne: 'Sans calculer exactement, entoure l\'ordre de grandeur du résultat.',
         eleve: plListe(['19,8 + 30,4 : <b>5 · 50 · 500</b>', '99,5 − 48,9 : <b>5 · 50 · 150</b>', '7,1 + 2,95 : <b>1 · 10 · 100</b>', '201,3 − 0,9 : <b>2 · 20 · 200</b>']),
         corr: plListe([['19,8 + 30,4 : ', '50'], ['99,5 − 48,9 : ', '50'], ['7,1 + 2,95 : ', '10'], ['201,3 − 0,9 : ', '200']].map(([t, r]) => t + plEntoure(r))) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Un paquet de 10 cahiers coûte 18,50 €. Combien coûte un cahier ?',
-        corr: cm1Redac('Prix d\'un cahier', '18,50 € ÷ 10 = 1,85 €', 'Un cahier coûte 1,85 €.') },
+        corr: cm1Redac('Prix d\'un cahier', '18,50 € : 10 = 1,85 €', 'Un cahier coûte 1,85 €.') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Une ficelle mesure 2,5 m. Combien mesurent 10 ficelles mises bout à bout ? Écris le résultat en mètres, puis en centimètres.',
         corr: cm1Redac('Longueur de 10 ficelles', '2,5 m × 10 = 25 m', '10 ficelles mesurent 25 m.') + cm1Redac('En centimètres', '1 m = 100 cm, donc 25 m = 2 500 cm', '10 ficelles mesurent 2 500 cm.') },
     ] },

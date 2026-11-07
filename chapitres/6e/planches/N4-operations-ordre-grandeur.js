@@ -81,7 +81,7 @@ PLANCHES['6e|Opérations et ordre de grandeur'] = [
       { etoiles: 3, col: 1, cahier: true, consigne: 'Mila a 3 billets de 5 € et 2,60 € en pièces. Elle achète un jeu à 11,95 €. Combien lui reste-t-il ? Peut-elle encore acheter une boisson à 5,80 € ?',
         corr: cm1Redac('Argent de Mila', '15 + 2,60 = 17,60', 'Mila a 17,60 €.') + cm1Redac('Après l\'achat', '17,60 − 11,95 = 5,65', 'Il lui reste 5,65 € : elle ne peut pas acheter la boisson (5,65 &lt; 5,80).') },
       { etoiles: 3, cahier: true, consigne: 'Trouve deux nombres décimaux dont la somme est 10 et la différence 2,6.',
-        corr: cm1Redac('Le plus grand nombre', { suite: ['10 + 2,6 = 12,6', '12,6 ÷ 2 = 6,3'] }, 'Le plus grand nombre est la moitié de la somme et de la différence ajoutées : c\'est 6,3.') + cm1Redac('Le plus petit nombre', '10 − 6,3 = 3,7', 'Le plus petit nombre est 3,7.') + cm1Redac('Vérification', { suite: ['6,3 + 3,7 = 10', '6,3 − 3,7 = 2,6'] }, 'Les nombres sont 6,3 et 3,7.') },
+        corr: cm1Redac('Le plus grand nombre', { suite: ['10 + 2,6 = 12,6', '12,6 : 2 = 6,3'] }, 'Le plus grand nombre est la moitié de la somme et de la différence ajoutées : c\'est 6,3.') + cm1Redac('Le plus petit nombre', '10 − 6,3 = 3,7', 'Le plus petit nombre est 3,7.') + cm1Redac('Vérification', { suite: ['6,3 + 3,7 = 10', '6,3 − 3,7 = 2,6'] }, 'Les nombres sont 6,3 et 3,7.') },
     ] },
 ];
 })();

@@ -1093,14 +1093,14 @@
 "p": "Un produit est nul si et seulement si l'un des facteurs est nul (équation produit, 3e)."
 },
  {
-"m": "÷",
+"m": ":",
 "n": "ce2",
 "nv": 0,
 "d": "N",
 "t": "Opérations et calcul posé",
 "e": "Le signe de la division : on partage ou on cherche combien de fois un nombre « va » dans un autre.",
-"x": "20 ÷ 4 = 5.",
-"p": "Deux sens : partage (combien dans chaque part) et groupement (combien de parts) ; au collège, on note aussi la division par une barre de fraction."
+"x": "20 : 4 = 5.",
+"p": "Deux sens : partage (combien dans chaque part) et groupement (combien de parts) ; au collège, on note aussi la division par une barre de fraction. Le signe ÷ des calculatrices n'est pas utilisé à l'écrit (demandé le 07/11/2026)."
 },
  {
 "m": "décimètre (dm)",
@@ -1280,7 +1280,7 @@
 "t": "Polygones et cercles",
 "e": "Un segment qui relie le centre d'un cercle à un point du cercle ; c'est aussi sa longueur.",
 "x": "Un cercle de rayon 3 cm.",
-"p": "« Un » rayon (le segment) et « le » rayon (la longueur) ; rayon = diamètre ÷ 2."
+"p": "« Un » rayon (le segment) et « le » rayon (la longueur) ; rayon = diamètre : 2."
 },
  {
 "m": "diamètre",
@@ -1330,7 +1330,7 @@
 "t": "Solides et représentations",
 "e": "La face sur laquelle on pose un solide comme une pyramide ou un prisme.",
 "x": "La base d'une pyramide peut être un carré.",
-"p": "Base d'un solide ; aussi « base » d'un triangle pour l'aire (base × hauteur ÷ 2) et base d'une puissance (4e)."
+"p": "Base d'un solide ; aussi « base » d'un triangle pour l'aire (base × hauteur : 2) et base d'une puissance (4e)."
 },
  {
 "m": "dizaine de milliers",
@@ -1640,7 +1640,7 @@
 "t": "Probabilités",
 "e": "Quand toutes les issues ont la même chance d'arriver.",
 "x": "Avec un dé bien équilibré, chaque face a la même chance de sortir.",
-"p": "En situation d'équiprobabilité : probabilité = nombre d'issues favorables ÷ nombre d'issues."
+"p": "En situation d'équiprobabilité : probabilité = nombre d'issues favorables : nombre d'issues."
 },
  {
 "m": "proportionnalité",
@@ -1699,7 +1699,7 @@
 "d": "N",
 "t": "Opérations et calcul posé",
 "e": "Une division où l'on continue après la virgule pour obtenir un quotient à virgule.",
-"x": "7 ÷ 4 = 1,75.",
+"x": "7 : 4 = 1,75.",
 "p": "Division d'un décimal par un entier, quotient décimal exact ou approché."
 },
  {
@@ -1709,7 +1709,7 @@
 "d": "N",
 "t": "Opérations et calcul posé",
 "e": "Dans une division, le nombre qu'on partage.",
-"x": "Dans 17 ÷ 5, le dividende est 17.",
+"x": "Dans 17 : 5, le dividende est 17.",
 "p": "Dividende = diviseur × quotient + reste."
 },
  {
@@ -2120,7 +2120,7 @@
 "t": "Probabilités",
 "e": "Un nombre entre 0 et 1 qui mesure la chance qu'un évènement arrive.",
 "x": "Avec un dé, la probabilité d'obtenir 6 est $\\frac{1}{6}$.",
-"p": "En situation d'équiprobabilité : nombre d'issues favorables ÷ nombre total d'issues."
+"p": "En situation d'équiprobabilité : nombre d'issues favorables : nombre total d'issues."
 },
  {
 "m": "quadruple",
@@ -2140,7 +2140,7 @@
 "t": "Proportionnalité, pourcentages, échelles",
 "e": "Une des trois parts égales d'une quantité.",
 "x": "Le tiers de 12 est 4. Un tiers, c'est $\\frac{1}{3}$.",
-"p": "Lien fraction-division : le tiers de a est a ÷ 3 = $\\frac{a}{3}$."
+"p": "Lien fraction-division : le tiers de a est a : 3 = $\\frac{a}{3}$."
 },
  {
 "m": "4 fois plus grand",
@@ -2190,7 +2190,7 @@
 "t": "Proportionnalité, pourcentages, échelles",
 "e": "La part d'un tout, exprimée par une fraction, un nombre décimal ou un pourcentage.",
 "x": "12 filles sur 24 élèves : la proportion de filles est $\\frac{1}{2}$, soit 50 %.",
-"p": "Proportion = effectif de la partie ÷ effectif total ; nombre entre 0 et 1."
+"p": "Proportion = effectif de la partie : effectif total ; nombre entre 0 et 1."
 },
  {
 "m": "instruction",
@@ -2279,7 +2279,7 @@
 "d": "N",
 "t": "Fractions",
 "e": "Un nombre qui s'écrit $\\frac{a}{b}$ : c'est le quotient de a par b (b n'est jamais 0).",
-"x": "$\\frac{3}{4}$ = 3 ÷ 4 = 0,75.",
+"x": "$\\frac{3}{4}$ = 3 : 4 = 0,75.",
 "p": "En 5e : égalité de fractions ($\\frac{a}{b} = \\frac{a \\times k}{b \\times k}$), comparaison, addition et soustraction ; produit en 4e."
 },
  {
@@ -2500,7 +2500,7 @@
 "t": "Grandeurs composées",
 "e": "La distance parcourue divisée par la durée du trajet.",
 "x": "150 km en 2 h : vitesse moyenne de 75 km/h.",
-"p": "Grandeur quotient : v = d ÷ t ; attention aux durées non décimales (1 h 30 = 1,5 h)."
+"p": "Grandeur quotient : v = d : t ; attention aux durées non décimales (1 h 30 = 1,5 h)."
 },
  {
 "m": "coordonnées",
@@ -2569,7 +2569,7 @@
 "d": "E",
 "t": "Triangles et grands théorèmes",
 "e": "Dans un triangle, la droite qui passe par un sommet et est perpendiculaire au côté opposé.",
-"x": "Aire du triangle = base × hauteur ÷ 2.",
+"x": "Aire du triangle = base × hauteur : 2.",
 "p": "« La hauteur » désigne aussi la longueur du segment ; les trois hauteurs sont concourantes."
 },
  {
@@ -2649,7 +2649,7 @@
 "d": "D",
 "t": "Données et statistiques",
 "e": "La somme de toutes les valeurs divisée par le nombre de valeurs.",
-"x": "La moyenne de 12, 15 et 18 est (12 + 15 + 18) ÷ 3 = 15.",
+"x": "La moyenne de 12, 15 et 18 est (12 + 15 + 18) : 3 = 15.",
 "p": "Moyenne pondérée (4e) avec les effectifs comme coefficients ; sensible aux valeurs extrêmes."
 },
  {
@@ -2949,7 +2949,7 @@
 "d": "E",
 "t": "Triangles et grands théorèmes",
 "e": "Dans un triangle, la droite qui passe par les milieux de deux côtés est parallèle au troisième côté.",
-"x": "Si I et J sont les milieux de [AB] et [AC], alors (IJ) // (BC) et IJ = BC ÷ 2.",
+"x": "Si I et J sont les milieux de [AB] et [AC], alors (IJ) // (BC) et IJ = BC : 2.",
 "p": "Nouveau programme du cycle 4 (4e à la rentrée 2027) ; cas particulier de Thalès."
 },
  {
@@ -2999,7 +2999,7 @@
 "d": "D",
 "t": "Données et statistiques",
 "e": "Une moyenne où chaque valeur compte autant de fois que son effectif (ou son coefficient).",
-"x": "Notes 12 (coefficient 2) et 15 (coefficient 1) : (12 × 2 + 15) ÷ 3 = 13.",
+"x": "Notes 12 (coefficient 2) et 15 (coefficient 1) : (12 × 2 + 15) : 3 = 13.",
 "p": "Nouveau programme du cycle 4 (4e en 2027) ; déjà pratiquée avec les effectifs."
 },
  {
@@ -3109,7 +3109,7 @@
 "d": "P",
 "t": "Proportionnalité, pourcentages, échelles",
 "e": "Le quotient de deux quantités de même nature.",
-"x": "Le rapport des longueurs 6 cm et 2 cm est 6 ÷ 2 = 3.",
+"x": "Le rapport des longueurs 6 cm et 2 cm est 6 : 2 = 3.",
 "p": "Rapport d'agrandissement, rapport d'une homothétie (3e) ; nouveau programme : rapport et ratio."
 },
  {
@@ -3460,7 +3460,7 @@
 "t": "Proportionnalité, pourcentages, échelles",
 "e": "Le pourcentage dont une quantité augmente ou diminue.",
 "x": "Un prix passe de 50 € à 60 € : il augmente de 20 %.",
-"p": "Taux d'évolution = (valeur finale − valeur initiale) ÷ valeur initiale ; coefficient multiplicateur 1 + t."
+"p": "Taux d'évolution = (valeur finale − valeur initiale) : valeur initiale ; coefficient multiplicateur 1 + t."
 },
  {
 "m": "fonction",

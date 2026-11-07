@@ -228,7 +228,7 @@ document.getElementById('exos-demo-puissances-4e').innerHTML = `
     '25 µm = ' + pw4Tex('25 \\times 10^{-6}') + ' m = ' + pw4Tex('2{,}5 \\times 10^{-5}') + ' m.',
     '4 800 kW = 4 800 × 10³ W = ' + pw4Tex('4{,}8 \\times 10^6') + ' W = 4,8 MW.'])}
   ${pw4Exo(8, 'La lumière parcourt environ ' + pw4Tex('3 \\times 10^5') + ' km par seconde, et la distance de la Terre au Soleil est d\'environ ' + pw4Tex('1{,}5 \\times 10^8') + ' km. Combien de temps la lumière du Soleil met-elle pour nous parvenir ?', [
-    'Durée = distance ÷ vitesse, en secondes :', pw4Tex('t = \\dfrac{1{,}5 \\times 10^8}{3 \\times 10^5} = \\dfrac{1{,}5}{3} \\times 10^{8-5} = 0{,}5 \\times 10^3 = 500'),
+    'Durée = distance : vitesse, en secondes :', pw4Tex('t = \\dfrac{1{,}5 \\times 10^8}{3 \\times 10^5} = \\dfrac{1{,}5}{3} \\times 10^{8-5} = 0{,}5 \\times 10^3 = 500'),
     '500 s = 8 min 20 s : la lumière que nous voyons a quitté le Soleil il y a plus de 8 minutes !'])}
 </div>
 `;

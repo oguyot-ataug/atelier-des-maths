@@ -207,7 +207,7 @@ document.getElementById('exos-demo-statistiques-5e').innerHTML = `
   <h3>Rédaction type : « Calculer une fréquence et une moyenne »</h3>
   <div class="redaction-template">
     <div class="we-row"><span class="we-expr" style="font-family:inherit;">Effectif total : 3 + 7 + 6 + 4 = 20 élèves.</span><span class="we-comment">1. On calcule l'effectif total.</span></div>
-    <div class="we-row"><span class="we-expr" style="font-family:inherit;">Fréquence de la note 15 : <span class="tex">\\dfrac{6}{20} = 0{,}3 = 30\\ \\%</span>.</span><span class="we-comment">2. Effectif de la valeur ÷ effectif total.</span></div>
+    <div class="we-row"><span class="we-expr" style="font-family:inherit;">Fréquence de la note 15 : <span class="tex">\\dfrac{6}{20} = 0{,}3 = 30\\ \\%</span>.</span><span class="we-comment">2. Effectif de la valeur : effectif total.</span></div>
     <div class="we-row"><span class="we-expr" style="font-family:inherit;">Somme des notes : 3 × 8 + 7 × 12 + 6 × 15 + 4 × 18 = 270.</span><span class="we-comment">3. Chaque valeur compte autant de fois que son effectif.</span></div>
     <div class="we-row"><span class="we-expr" style="font-family:inherit;">Moyenne : <span class="tex">\\dfrac{270}{20} = 13{,}5</span>. La moyenne de la classe est 13,5.</span><span class="we-comment">4. On divise par l'effectif total et on conclut.</span></div>
   </div>
@@ -220,11 +220,11 @@ document.getElementById('exos-demo-statistiques-5e').innerHTML = `
   ${s5Exo(2, 'Voici les pointures de 20 élèves : 36 – 38 – 37 – 38 – 39 – 36 – 38 – 40 – 37 – 38 – 39 – 38 – 37 – 36 – 38 – 39 – 40 – 38 – 37 – 38. Construis le tableau des effectifs.', [
     'Pointure : 36 | 37 | 38 | 39 | 40', 'Effectif : 3 | 4 | 8 | 3 | 2', 'Vérification : 3 + 4 + 8 + 3 + 2 = 20.'])}
   ${s5Exo(3, 'Dans une classe de 25 élèves, 10 préfèrent le bleu, 5 le rouge, 6 le vert et 4 le noir. Calcule la fréquence de chaque couleur, en nombre décimal puis en pourcentage.', [
-    'Bleu : 10 ÷ 25 = 0,4 = 40 %', 'Rouge : 5 ÷ 25 = 0,2 = 20 %', 'Vert : 6 ÷ 25 = 0,24 = 24 %', 'Noir : 4 ÷ 25 = 0,16 = 16 % (total : 100 %)'])}
+    'Bleu : 10 : 25 = 0,4 = 40 %', 'Rouge : 5 : 25 = 0,2 = 20 %', 'Vert : 6 : 25 = 0,24 = 24 %', 'Noir : 4 : 25 = 0,16 = 16 % (total : 100 %)'])}
   ${s5Exo(4, 'Calcule la moyenne des notes suivantes : 11 ; 14 ; 8 ; 17 ; 15.', [
-    '11 + 14 + 8 + 17 + 15 = 65', 'M = 65 ÷ 5 = 13'])}
+    '11 + 14 + 8 + 17 + 15 = 65', 'M = 65 : 5 = 13'])}
   ${s5Exo(5, 'Voici les températures relevées à midi pendant une semaine : 12 °C ; 15 °C ; 14 °C ; 9 °C ; 11 °C ; 13 °C ; 17 °C. Quelle est la température moyenne ?', [
-    '12 + 15 + 14 + 9 + 11 + 13 + 17 = 91', 'M = 91 ÷ 7 = 13 : la température moyenne est 13 °C.'])}
+    '12 + 15 + 14 + 9 + 11 + 13 + 17 = 91', 'M = 91 : 7 = 13 : la température moyenne est 13 °C.'])}
   ${s5Exo(6, 'Dans un club de 45 adhérents, 18 sont des filles. Donne la fréquence des filles sous forme de fraction simplifiée, de nombre décimal et de pourcentage.', [
     '<span class="tex">f = \\dfrac{18}{45} = \\dfrac{2}{5}</span>', 'f = 0,4 = 40 %'])}
   ${s5Exo(7, 'Lina a obtenu 12, 9 et 15 à ses trois premiers contrôles. Quelle note doit-elle avoir au quatrième pour obtenir exactement 13 de moyenne ?', [
@@ -237,9 +237,9 @@ document.getElementById('exos-demo-statistiques-5e').innerHTML = `
 /* ---- Méthodes pas à pas ---- */
 const S5_FREQUENCE_STEPS = [
   { expr: 'Effectif de la valeur « Football » : 12. Effectif total : 40.', note: 'On repère les deux effectifs dans le tableau.' },
-  { expr: '<span class="tex">f = \\dfrac{12}{40}</span>', note: 'Fréquence = effectif de la valeur ÷ effectif total.' },
+  { expr: '<span class="tex">f = \\dfrac{12}{40}</span>', note: 'Fréquence = effectif de la valeur : effectif total.' },
   { expr: '<span class="tex">f = \\dfrac{3}{10}</span>', note: 'On peut simplifier la fraction (par 4).' },
-  { expr: 'f = 0,3', note: 'Écriture décimale : 3 ÷ 10 = 0,3.' },
+  { expr: 'f = 0,3', note: 'Écriture décimale : 3 : 10 = 0,3.' },
   { expr: 'f = 30 %', note: 'En pourcentage : 0,3 × 100 = 30. 30 % des élèves préfèrent le football.' },
 ];
 const s5FrequenceDemo = makeStepDemo(S5_FREQUENCE_STEPS, 's5-frequenceDisplay');

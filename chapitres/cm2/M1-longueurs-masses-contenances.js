@@ -20,8 +20,8 @@ ${cm1Rem('Ce tableau sert à <b>présenter</b> les unités, pas à convertir. Le
 ${cm1Lecon(2, 'Convertir en raisonnant')}
 ${cm1Regle('On part d\'une relation connue entre les deux unités et on multiplie ou on divise.')}
 ${cm1Redac('3,5 m en cm', { suite: ['1 m = 100 cm', '3,5 × 100 = 350'] }, '3,5 m, c\'est 350 cm.')}
-${cm1Redac('850 m en km', { suite: ['1 000 m = 1 km', '850 ÷ 1 000 = 0,85'] }, '850 m, c\'est 0,85 km.')}
-${cmAnimGlisseDec('c2-lmc-glisse', { presets: [{ nom: '3,5 × 100', n: '3,5', f: 100, op: '×' }, { nom: '2,4 × 1 000', n: '2,4', f: 1000, op: '×' }, { nom: '850 ÷ 1 000', n: '850', f: 1000, op: '÷' }, { nom: '75 ÷ 100', n: '75', f: 100, op: '÷' }] })}
+${cm1Redac('850 m en km', { suite: ['1 000 m = 1 km', '850 : 1 000 = 0,85'] }, '850 m, c\'est 0,85 km.')}
+${cmAnimGlisseDec('c2-lmc-glisse', { presets: [{ nom: '3,5 × 100', n: '3,5', f: 100, op: '×' }, { nom: '2,4 × 1 000', n: '2,4', f: 1000, op: '×' }, { nom: '850 : 1 000', n: '850', f: 1000, op: ':' }, { nom: '75 : 100', n: '75', f: 100, op: ':' }] })}
 ${cm1Exemple('Autres exemples :', ['2,4 kg, c\'est 2 400 g, car 1 kg vaut 1 000 g ;', '75 cL, c\'est 0,75 L : 75 centièmes de litre, car 1 L vaut 100 cL ;', '1,2 t, c\'est 1 200 kg, car 1 t vaut 1 000 kg ;', '500 mg, c\'est 0,5 g, car 1 g vaut 1 000 mg.'])}
 ${cm1Astuce('Pour vérifier, on se demande si le résultat est logique : une unité plus petite donne un nombre plus grand. 3,5 m → 350 cm : le nombre augmente, car le centimètre est plus petit que le mètre.')}
 
@@ -43,7 +43,7 @@ ${cm1Demo('c2-lmc-pb', 'Résoudre un problème de contenance', 'Une bouteille co
       { expr: '1 m = 100 cm', note: 'Relation connue.' },
       { expr: '4,08 m = 4,08 × 100 cm = 408 cm', note: 'Multiplier par 100 : le chiffre des unités, 4, devient le chiffre des centaines ; les autres chiffres le suivent.' },
       { expr: '1 000 m = 1 km, donc 1 m = 0,001 km', note: 'Pour passer à une unité plus grande, on divise.' },
-      { expr: '625 m = 625 ÷ 1 000 km = 0,625 km', note: 'Diviser par 1 000 : le chiffre des unités, 5, devient le chiffre des millièmes ; les autres chiffres le suivent.' },
+      { expr: '625 m = 625 : 1 000 km = 0,625 km', note: 'Diviser par 1 000 : le chiffre des unités, 5, devient le chiffre des millièmes ; les autres chiffres le suivent.' },
     ]],
     ['c2-lmc-pb', [
       { expr: '1,5 L = 150 cL', note: 'Même unité que les verres : 1 L = 100 cL.' },
@@ -55,16 +55,16 @@ ${cm1Demo('c2-lmc-pb', 'Résoudre un problème de contenance', 'Une bouteille co
     [`Convertis.${cm1Liste(['2,5 km en m', '0,7 m en cm', '45 mm en cm', '3 m 8 cm en m'])}`,
       cm1Redac('2,5 km en m', { suite: ['1 km = 1 000 m', '2,5 × 1 000 = 2 500'] }, '2,5 km, c\'est 2 500 m.')
       + cm1Redac('0,7 m en cm', { suite: ['1 m = 100 cm', '0,7 × 100 = 70'] }, '0,7 m, c\'est 70 cm.')
-      + cm1Redac('45 mm en cm', { suite: ['10 mm = 1 cm', '45 ÷ 10 = 4,5'] }, '45 mm, c\'est 4,5 cm.')
+      + cm1Redac('45 mm en cm', { suite: ['10 mm = 1 cm', '45 : 10 = 4,5'] }, '45 mm, c\'est 4,5 cm.')
       + cm1Redac('3 m 8 cm en m', { suite: ['8 cm = 0,08 m', '3 + 0,08 = 3,08'] }, '3 m 8 cm, c\'est 3,08 m.')],
     [`Convertis.${cm1Liste(['1,25 kg en g', '800 g en kg', '3 500 kg en t', '2 g en mg'])}`,
       cm1Redac('1,25 kg en g', '1,25 × 1 000 = 1 250', '1,25 kg, c\'est 1 250 g.')
-      + cm1Redac('800 g en kg', '800 ÷ 1 000 = 0,8', '800 g, c\'est 0,8 kg.')
-      + cm1Redac('3 500 kg en t', '3 500 ÷ 1 000 = 3,5', '3 500 kg, c\'est 3,5 t.')
+      + cm1Redac('800 g en kg', '800 : 1 000 = 0,8', '800 g, c\'est 0,8 kg.')
+      + cm1Redac('3 500 kg en t', '3 500 : 1 000 = 3,5', '3 500 kg, c\'est 3,5 t.')
       + cm1Redac('2 g en mg', '2 × 1 000 = 2 000', '2 g, c\'est 2 000 mg.')],
     [`Convertis.${cm1Liste(['0,5 L en cL', '330 mL en L', '2,4 L en mL'])}`,
       cm1Redac('0,5 L en cL', '0,5 × 100 = 50', '0,5 L, c\'est 50 cL.')
-      + cm1Redac('330 mL en L', '330 ÷ 1 000 = 0,33', '330 mL, c\'est 0,33 L.')
+      + cm1Redac('330 mL en L', '330 : 1 000 = 0,33', '330 mL, c\'est 0,33 L.')
       + cm1Redac('2,4 L en mL', '2,4 × 1 000 = 2 400', '2,4 L, c\'est 2 400 mL.')],
     [`Quelle unité choisir ?${cm1Liste(['la masse d\'un camion', 'la contenance d\'une cuillère', 'l\'épaisseur d\'une pièce', 'la masse d\'un comprimé'])}`,
       cm1Redac('Unités adaptées', '', 'Le camion se pèse en tonnes, la cuillère contient quelques millilitres, l\'épaisseur d\'une pièce se mesure en millimètres et un comprimé pèse quelques milligrammes.')],
@@ -75,7 +75,7 @@ ${cm1Demo('c2-lmc-pb', 'Résoudre un problème de contenance', 'Une bouteille co
     ['Un sac contient 2,5 kg de pommes de terre. On en utilise 800 g. Quelle masse reste-t-il ?',
       cm1Redac('Masse restante', { suite: ['2,5 kg = 2 500 g', '2 500 − 800 = 1 700'] }, 'Il reste 1 700 g de pommes de terre, c\'est-à-dire 1,7 kg.')],
     ['Un ruban mesure 3,6 m. On le coupe en 4 morceaux de même longueur. Longueur d\'un morceau en cm ?',
-      cm1Redac('Longueur d\'un morceau', { suite: ['3,6 m = 360 cm', '360 ÷ 4 = 90'] }, 'Chaque morceau mesure 90 cm.')],
+      cm1Redac('Longueur d\'un morceau', { suite: ['3,6 m = 360 cm', '360 : 4 = 90'] }, 'Chaque morceau mesure 90 cm.')],
   ], { titre: 'Rédaction type : « Convertir »', lignes: [['1 kg = 1 000 g', 'J\'écris la relation connue.'], ['2,4 × 1 000 = 2 400, donc 2,4 kg = 2 400 g', 'Je calcule.'], ['Le nombre a augmenté : c\'est logique, le gramme est plus petit.', 'Je vérifie.']] }),
   histoire: cm1Histoire('Un peu d\'histoire : le kilogramme de platine', [
     'En 1799, on fabrique à Paris un cylindre de platine qui pèse exactement <b>un kilogramme</b> : c\'est le « kilogramme étalon ». Pendant plus de 200 ans, toutes les balances du monde ont été réglées à partir de lui !',

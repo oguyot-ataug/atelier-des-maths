@@ -60,7 +60,7 @@ PLANCHES['6e|Propriétés des triangles'] = [
       { etoiles: 3, col: 1, cahier: true, consigne: 'ABC est un triangle rectangle en A tel que ' + W('ABC') + ' = 2 × ' + W('ACB') + '. Calcule les angles.',
         corr: cm1Redac('Calcul', { suite: [W('ABC') + ' + ' + W('ACB') + ' = 90° et ' + W('ABC') + ' = 2 × ' + W('ACB') + '.', '3 × ' + W('ACB') + ' = 90°, donc ' + W('ACB') + ' = 30°.'] }, W('ACB') + ' = 30° et ' + W('ABC') + ' = 60°.') },
       { etoiles: 3, cahier: true, consigne: 'Le triangle EFG est isocèle en E et ' + W('EFG') + ' = 72°. Le point H est sur [FG] et [EH] est la bissectrice de ' + W('FEG') + '. Calcule ' + W('FEH') + '.',
-        corr: cm1Redac('Angle ' + W('EGF'), W('EGF') + ' = 72°', 'Les angles à la base d\'un triangle isocèle sont égaux.') + cm1Redac('Angle ' + W('FEG'), '180° − 72° − 72° = 36°', W('FEG') + ' mesure 36°.') + cm1Redac('Angle ' + W('FEH'), '36° ÷ 2 = 18°', W('FEH') + ' mesure 18°.') },
+        corr: cm1Redac('Angle ' + W('EGF'), W('EGF') + ' = 72°', 'Les angles à la base d\'un triangle isocèle sont égaux.') + cm1Redac('Angle ' + W('FEG'), '180° − 72° − 72° = 36°', W('FEG') + ' mesure 36°.') + cm1Redac('Angle ' + W('FEH'), '36° : 2 = 18°', W('FEH') + ' mesure 18°.') },
     ] },
   { titre: 'Cercle circonscrit à un triangle', duree: '40 min',
     attendus: ['Savoir que les trois médiatrices d\'un triangle se coupent en un point', 'Construire le cercle circonscrit à un triangle', 'Cas du triangle rectangle : le centre est le milieu de l\'hypoténuse'],
@@ -86,11 +86,11 @@ PLANCHES['6e|Propriétés des triangles'] = [
         ...ch([['angles 45°, 45°, 90° :', 'rectangle isocèle'], ['angles 60°, 60°, 60° :', 'équilatéral'], ['angles 30°, 60°, 90° :', 'rectangle']], 'rectangle · équilatéral · rectangle isocèle') },
       { etoiles: 2, col: 1, consigne: 'Dans un triangle ABC, ' + W('BAC') + ' = 2 × ' + W('ABC') + ' et ' + W('ACB') + ' = 3 × ' + W('ABC') + '. Complète.',
         eleve: plListe([W('ABC') + ' = ' + B() + ' °', W('BAC') + ' = ' + B() + ' °', W('ACB') + ' = ' + B() + ' °']),
-        corr: plListe([W('ABC') + ' = 180 ÷ 6 = ' + R(30) + ' °', W('BAC') + ' = ' + R(60) + ' °', W('ACB') + ' = ' + R(90) + ' °']) },
+        corr: plListe([W('ABC') + ' = 180 : 6 = ' + R(30) + ' °', W('BAC') + ' = ' + R(60) + ' °', W('ACB') + ' = ' + R(90) + ' °']) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Construis un triangle ABC rectangle en A tel que BC = 8 cm et ' + W('ABC') + ' = 40°. Trace son cercle circonscrit. Où est son centre ?',
         corr: cm1Redac('Construction', { suite: ['Je trace [BC] de 8 cm et le cercle de diamètre [BC].', 'En B, je construis un angle de 40° : sa demi-droite coupe le cercle en A.'] }, 'Le centre du cercle circonscrit est le milieu de l\'hypoténuse [BC] ; le rayon est 4 cm.') },
       { etoiles: 3, cahier: true, consigne: 'Un triangle isocèle a un angle de 40°. Combien mesurent ses autres angles ? (Attention : il y a deux possibilités.)',
-        corr: cm1Redac('Premier cas : 40° est l\'angle principal', '(180° − 40°) ÷ 2 = 70°', 'Les angles mesurent 40°, 70° et 70°.') + cm1Redac('Second cas : 40° est un angle à la base', '180° − 40° − 40° = 100°', 'Les angles mesurent 40°, 40° et 100°. Il y a deux triangles possibles.') },
+        corr: cm1Redac('Premier cas : 40° est l\'angle principal', '(180° − 40°) : 2 = 70°', 'Les angles mesurent 40°, 70° et 70°.') + cm1Redac('Second cas : 40° est un angle à la base', '180° − 40° − 40° = 100°', 'Les angles mesurent 40°, 40° et 100°. Il y a deux triangles possibles.') },
     ] },
 ];
 })();

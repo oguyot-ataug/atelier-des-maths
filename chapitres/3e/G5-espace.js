@@ -185,7 +185,7 @@ document.getElementById('cours-demo-espace-3e').innerHTML = `
 <div class="def-box">Le volume ${es3Tex('\\mathcal{V}')} d'une boule de rayon <i>r</i> est donné par la formule : ${es3Tex('\\mathcal{V} = \\dfrac{4}{3} \\times \\pi \\times r^3')}.</div>
 ${r4Ex('Exemple : calculer le volume d\'une boule de rayon 6 cm (valeur exacte, puis valeur approchée au dixième).', [
   [es3Tex('\\mathcal{V} = \\dfrac{4}{3} \\times \\pi \\times 6^3'), 'On applique la formule avec r = 6.'],
-  [es3Tex('\\mathcal{V} = \\dfrac{4}{3} \\times \\pi \\times 216 = 288\\pi') + ' cm³', 'Valeur exacte (216 × 4 ÷ 3 = 288).'],
+  [es3Tex('\\mathcal{V} = \\dfrac{4}{3} \\times \\pi \\times 216 = 288\\pi') + ' cm³', 'Valeur exacte (216 × 4 : 3 = 288).'],
   [es3Tex('\\mathcal{V} \\approx 904{,}8') + ' cm³', 'Valeur approchée au dixième.'],
 ])}
 
@@ -290,16 +290,16 @@ document.getElementById('exos-demo-espace-3e').innerHTML = `
   ${es3Exo(4, 'Calcule le volume d\'une boule de rayon 3 cm. Donne la valeur exacte, puis une valeur arrondie au dixième.', [
     es3Tex('\\mathcal{V} = \\dfrac{4}{3} \\times \\pi \\times 3^3 = \\dfrac{4}{3} \\times \\pi \\times 27 = 36\\pi') + ' cm³.', es3Tex('\\mathcal{V} \\approx 113{,}1') + ' cm³.'])}
   ${es3Exo(5, 'Un ballon de basket a un diamètre de 22 cm. Calcule son volume, arrondi au cm³, puis en litres (1 L = 1 dm³ = 1 000 cm³).', [
-    'Le rayon vaut 22 ÷ 2 = 11 cm.', es3Tex('\\mathcal{V} = \\dfrac{4}{3} \\times \\pi \\times 11^3 \\approx 5\\,575') + ' cm³, soit environ 5,6 L.'])}
+    'Le rayon vaut 22 : 2 = 11 cm.', es3Tex('\\mathcal{V} = \\dfrac{4}{3} \\times \\pi \\times 11^3 \\approx 5\\,575') + ' cm³, soit environ 5,6 L.'])}
   ${es3Exo(6, 'Donne les coordonnées géographiques des points A, B et C placés sur le globe (les parallèles et les méridiens sont tracés tous les 30°).', [
     'A est à 30° au Nord de l\'équateur et à 60° à l\'Est de Greenwich : A (30° N ; 60° E).', 'B est sur l\'équateur, à 30° à l\'Ouest de Greenwich : B (0° ; 30° O).', 'C (30° S ; 30° E).'],
     `<svg viewBox="0 0 300 280" style="width:100%;max-width:280px;display:block;margin:8px auto;">${es3Globe({ id: 'x', centre: false, phi0: 20, lam0: 15, pts: [{ lat: 30, lon: 60, nom: 'A' }, { lat: 0, lon: -30, nom: 'B' }, { lat: -30, lon: 30, nom: 'C' }] })}</svg>`)}
   ${es3Exo(7, 'Un saladier a la forme d\'une demi-boule de rayon intérieur 9 cm. Quelle est sa contenance, arrondie au dixième de litre ?', [
     'Le volume d\'une demi-boule est la moitié de celui de la boule : ' + es3Tex('\\dfrac{1}{2} \\times \\dfrac{4}{3} \\times \\pi \\times 9^3 = 486\\pi') + ' cm³.', es3Tex('486\\pi \\approx 1\\,527') + ' cm³, soit environ 1,5 L.'])}
   ${es3Exo(8, 'Une pyramide de hauteur 15 cm a une base d\'aire 81 cm² et un volume de 405 cm³. On la réduit avec le rapport ' + es3Tex('k = \\dfrac{1}{3}') + '. Donne la hauteur, l\'aire de la base et le volume de la pyramide réduite.', [
-    'Hauteur : ' + es3Tex('15 \\times \\dfrac{1}{3} = 5') + ' cm.', 'Aire de la base : ' + es3Tex('81 \\times \\left(\\dfrac{1}{3}\\right)^2 = \\dfrac{81}{9} = 9') + ' cm².', 'Volume : ' + es3Tex('405 \\times \\left(\\dfrac{1}{3}\\right)^3 = \\dfrac{405}{27} = 15') + ' cm³ (on vérifie : 9 × 5 ÷ 3 = 15).'])}
+    'Hauteur : ' + es3Tex('15 \\times \\dfrac{1}{3} = 5') + ' cm.', 'Aire de la base : ' + es3Tex('81 \\times \\left(\\dfrac{1}{3}\\right)^2 = \\dfrac{81}{9} = 9') + ' cm².', 'Volume : ' + es3Tex('405 \\times \\left(\\dfrac{1}{3}\\right)^3 = \\dfrac{405}{27} = 15') + ' cm³ (on vérifie : 9 × 5 : 3 = 15).'])}
   ${es3Exo(9, 'Le rayon de la Lune est environ 0,27 fois celui de la Terre. Combien de « Lunes » faudrait-il, environ, pour obtenir le volume de la Terre ?', [
-    'La Lune est (presque) une réduction de la Terre de rapport k = 0,27 : son volume est celui de la Terre multiplié par ' + es3Tex('0{,}27^3 \\approx 0{,}0197') + '.', es3Tex('1 \\div 0{,}0197 \\approx 51') + ' : il faudrait environ 50 Lunes pour obtenir le volume de la Terre.'])}
+    'La Lune est (presque) une réduction de la Terre de rapport k = 0,27 : son volume est celui de la Terre multiplié par ' + es3Tex('0{,}27^3 \\approx 0{,}0197') + '.', es3Tex('1 : 0{,}0197 \\approx 51') + ' : il faudrait environ 50 Lunes pour obtenir le volume de la Terre.'])}
 </div>
 `;
 
@@ -329,7 +329,7 @@ function es3Ville(lat, lon, nom){ document.getElementById('es3-lat').value = lat
 
 /* ---- Méthode 3 : volume ---- */
 const ES3_VOL_STEPS = [
-  { expr: 'Le rayon est la moitié du diamètre : ' + es3Tex('r = 9 \\div 2 = 4{,}5') + ' cm.', note: 'Attention : la formule utilise le rayon, pas le diamètre !' },
+  { expr: 'Le rayon est la moitié du diamètre : ' + es3Tex('r = 9 : 2 = 4{,}5') + ' cm.', note: 'Attention : la formule utilise le rayon, pas le diamètre !' },
   { expr: es3Tex('\\mathcal{V} = \\dfrac{4}{3} \\times \\pi \\times r^3 = \\dfrac{4}{3} \\times \\pi \\times 4{,}5^3'), note: 'On écrit la formule, puis on remplace r par 4,5.' },
   { expr: es3Tex('4{,}5^3 = 4{,}5 \\times 4{,}5 \\times 4{,}5 = 91{,}125'), note: 'On calcule d\'abord le cube (priorité de la puissance).' },
   { expr: es3Tex('\\mathcal{V} = \\dfrac{4 \\times 91{,}125}{3} \\times \\pi = 121{,}5\\pi') + ' cm³', note: 'Valeur exacte.' },

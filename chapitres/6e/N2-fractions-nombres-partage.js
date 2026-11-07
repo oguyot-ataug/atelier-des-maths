@@ -173,7 +173,7 @@ document.getElementById('exos-demo-fractions-partage').innerHTML = `
     <div class="num">Exercice 1</div>
     Dans quel ensemble de nombres se trouve chacune des fractions <span class="tex">\\dfrac{36}{4}</span>, <span class="tex">\\dfrac{5}{2}</span> et <span class="tex">\\dfrac{2}{7}</span> ? Rédige tes réponses.
     <button type="button" class="exo-correction-toggle" data-target="c6-n2-c1" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
-    <div class="exo-correction" id="c6-n2-c1"><div><p style="margin:0 0 6px;"><span class="tex">\\dfrac{36}{4}</span> = 36 ÷ 4 = 9 : <b>c'est un nombre entier</b> (donc aussi un nombre décimal).</p><p style="margin:0 0 6px;"><span class="tex">\\dfrac{5}{2}</span> = 5 ÷ 2 = 2,5 : <b>c'est un nombre décimal</b> (non entier).</p><p style="margin:0 0 6px;"><span class="tex">\\dfrac{2}{7}</span> = 2 ÷ 7 ≈ 0,2857… : la division ne s'arrête jamais ; <b>ce n'est pas un nombre décimal</b>, il ne s'écrit qu'en écriture fractionnaire.</p></div></div>
+    <div class="exo-correction" id="c6-n2-c1"><div><p style="margin:0 0 6px;"><span class="tex">\\dfrac{36}{4}</span> = 36 : 4 = 9 : <b>c'est un nombre entier</b> (donc aussi un nombre décimal).</p><p style="margin:0 0 6px;"><span class="tex">\\dfrac{5}{2}</span> = 5 : 2 = 2,5 : <b>c'est un nombre décimal</b> (non entier).</p><p style="margin:0 0 6px;"><span class="tex">\\dfrac{2}{7}</span> = 2 : 7 ≈ 0,2857… : la division ne s'arrête jamais ; <b>ce n'est pas un nombre décimal</b>, il ne s'écrit qu'en écriture fractionnaire.</p></div></div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 2</div>

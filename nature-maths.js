@@ -161,7 +161,7 @@ function naEtangMonter(el){
     const est = st.c1 * st.c2 / st.m;
     return `<b>Le raisonnement :</b> les poissons se sont bien mélangés, donc la <b>proportion</b> de poissons marqués est (à peu près) la même dans la pêche 2 que dans tout l'étang.
       <table class="na-tab"><tr><th></th><th>poissons marqués</th><th>poissons en tout</th></tr><tr><th>pêche 2</th><td>${st.m}</td><td>${st.c2}</td></tr><tr><th>étang</th><td>${st.c1}</td><td><b>N</b></td></tr></table>
-      C'est une situation de proportionnalité : N = ${st.c1} × ${st.c2} ÷ ${st.m} ≈ <b>${naN(est, 0)}</b> poissons.`;
+      C'est une situation de proportionnalité : N = ${st.c1} × ${st.c2} : ${st.m} ≈ <b>${naN(est, 0)}</b> poissons.`;
   }
   function action(a){
     if(a === 'peche1'){ st.prise = tirage(st.c1); dessiner(); setTimeout(() => { st.prise.forEach(i => { st.poissons[i].marque = true; }); dessiner(); naDire(el, `${st.c1} poissons pêchés ont reçu une <b>marque orange</b>.`); st.etape = 1; etapes(); }, 700); }

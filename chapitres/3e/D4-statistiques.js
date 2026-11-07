@@ -253,7 +253,7 @@ function sa3BalReset(){ sa3Bal = SA3_BAL0.slice(); sa3BalDessin(); }
 /* ---- Méthode 3 : médiane et effectifs cumulés ---- */
 const SA3_MED_STEPS = [
   { expr: 'N = 31', note: 'L\'effectif total est la dernière valeur de la ligne des effectifs cumulés.' },
-  { expr: '31 est impair : la médiane est la 16e valeur.', note: '(31 + 1) ÷ 2 = 16 : il y a 15 valeurs avant, 15 après.' },
+  { expr: '31 est impair : la médiane est la 16e valeur.', note: '(31 + 1) : 2 = 16 : il y a 15 valeurs avant, 15 après.' },
   { expr: 'Effectifs cumulés : 12 élèves jusqu\'à la pointure 38, 19 jusqu\'à la pointure 39.', note: 'On cherche la première colonne dont l\'effectif cumulé atteint 16.' },
   { expr: 'Les valeurs de rang 13 à 19 sont 39 : la 16e aussi.', note: '' },
   { expr: 'La pointure médiane est 39.', note: 'Au moins la moitié des élèves chausse du 39 ou moins, et au moins la moitié du 39 ou plus.' },

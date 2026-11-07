@@ -30,7 +30,7 @@ const DEMOS = {
   },
   compte: {
     titre: 'Objectif Nombre', icone: 'calculate', video: 'demo-objectif-nombre',
-    texte: "Six nombres tirés au sort, un compte à atteindre : on combine +, −, × et ÷ pour tomber pile dessus, ou s'en approcher le plus possible.",
+    texte: "Six nombres tirés au sort, un compte à atteindre : on combine +, −, × et : pour tomber pile dessus, ou s'en approcher le plus possible.",
     points: ['Chaque tirage est garanti réalisable', 'Chronomètre, records et solution détaillée', 'Donné en devoir par le professeur, corrigé tout seul'],
   },
   geometrie: {

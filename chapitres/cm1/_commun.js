@@ -393,7 +393,7 @@ let cahierOn = false; try{ cahierOn = localStorage.getItem('cahierSeyes') === '1
 let cahierRO = null;
 /* Lignes avec une fraction (demandé le 07/11/2026 : « La barre de fraction doit être posée sur la ligne principale. Le signe = a
    comme axe de symétrie la ligne principale et les opérations s'alignent sur la ligne principale (- posé dessus, et + barre
-   horizontale au même niveau que la barre de fraction) ») : la barre de fraction et les signes = + − × ÷ < > sont centrés sur la ligne
+   horizontale au même niveau que la barre de fraction) ») : la barre de fraction et les signes = + − × : < > sont centrés sur la ligne
    principale (styles.css, .cahier-op et .katex:has(.mfrac)) ; numérateur dans le carreau du dessus, dénominateur dans celui du
    dessous. Les signes écrits en texte entre deux fractions sont enveloppés ici (cahierOps) pour être descendus de même. */
 const CAHIER_OP = /^\s*[=+\u2212\-×÷:<>≈≠≤≥]\s*$/;

@@ -329,7 +329,7 @@ document.getElementById('exos-demo-aire-perimetre').innerHTML = `
     <div class="num">Exercice 5</div>
     Convertis 2,8 dm² en cm², puis 540 cm² en dm².
     <button type="button" class="exo-correction-toggle" data-target="c6-m1-c5" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
-    <div class="exo-correction" id="c6-m1-c5"><div><p style="margin:0 0 6px;">1 dm² = 100 cm², donc 2,8 dm² = 2,8 × 100 = <b>280 cm²</b>.</p><p style="margin:0 0 6px;">540 cm² = 540 ÷ 100 = <b>5,4 dm²</b>.</p></div></div>
+    <div class="exo-correction" id="c6-m1-c5"><div><p style="margin:0 0 6px;">1 dm² = 100 cm², donc 2,8 dm² = 2,8 × 100 = <b>280 cm²</b>.</p><p style="margin:0 0 6px;">540 cm² = 540 : 100 = <b>5,4 dm²</b>.</p></div></div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 6</div>

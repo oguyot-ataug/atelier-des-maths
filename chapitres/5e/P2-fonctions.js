@@ -170,8 +170,8 @@ document.getElementById('exos-demo-fonctions-5e').innerHTML = `
     'Pour h = 3 : P = 5 + 6 = 11, donc (3 ; 11) est sur le graphique.', 'Pour h = 4 : P = 13 ≠ 12, donc (4 ; 12) n\'est pas sur le graphique.'])}
   ${fnExo(7, 'Avec le taxi du cours (P = 4 + 1,5 × d), combien coûte une course de 20 km ? Et de 0 km ?', [
     '20 km : P = 4 + 30 = 34 €', '0 km : P = 4 € (seulement la prise en charge)'])}
-  ${fnExo(8, 'Sur route sèche, la distance de freinage d (en m) d\'une voiture roulant à la vitesse v (en km/h) est environ d = v × v ÷ 200. Calcule d pour v = 50 km/h et v = 100 km/h. Que remarques-tu ?', [
-    'v = 50 : d = 2 500 ÷ 200 = 12,5 m', 'v = 100 : d = 10 000 ÷ 200 = 50 m', 'Quand la vitesse double, la distance de freinage est multipliée par 4 : ce n\'est pas une situation de proportionnalité.'])}
+  ${fnExo(8, 'Sur route sèche, la distance de freinage d (en m) d\'une voiture roulant à la vitesse v (en km/h) est environ d = v × v : 200. Calcule d pour v = 50 km/h et v = 100 km/h. Que remarques-tu ?', [
+    'v = 50 : d = 2 500 : 200 = 12,5 m', 'v = 100 : d = 10 000 : 200 = 50 m', 'Quand la vitesse double, la distance de freinage est multipliée par 4 : ce n\'est pas une situation de proportionnalité.'])}
 </div>
 `;
 
@@ -234,7 +234,7 @@ const FN_FORMULES = [
   { nom: 'Carré : A = c × c', x: 'c', y: 'A', f: x => x * x, vals: '1 2 3 4 5 6' },
   { nom: 'Taxi : P = 4 + 1,5 × d', x: 'd', y: 'P', f: x => 4 + 1.5 * x, vals: '2 5 10 12 20' },
   { nom: 'Pavé : V = 16 × h', x: 'h', y: 'V', f: x => 16 * x, vals: '1 2 2,5 3 5' },
-  { nom: 'Freinage : d = v × v ÷ 200', x: 'v', y: 'd', f: x => x * x / 200, vals: '30 50 70 90 110 130' },
+  { nom: 'Freinage : d = v × v : 200', x: 'v', y: 'd', f: x => x * x / 200, vals: '30 50 70 90 110 130' },
 ];
 function fnTableau(nouvelle){
   const sel = document.getElementById('fn-form');

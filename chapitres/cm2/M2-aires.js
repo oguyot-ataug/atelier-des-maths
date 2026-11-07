@@ -30,7 +30,7 @@ ${cm1Lecon(2, 'Convertir des aires en raisonnant')}
 ${cm1Regle(cm1Liste(['<b>1 dm² = 100 cm²</b>', '<b>1 m² = 100 dm²</b>', '<b>1 m² = 10 000 cm²</b>']), 'À retenir')}
 ${cm1Redac('3 dm² en cm²', '3 × 100 = 300', '3 dm², c\'est 300 cm².')}
 ${cm1Redac('2,5 m² en dm²', '2,5 × 100 = 250', '2,5 m², c\'est 250 dm².')}
-${cm1Redac('700 cm² en dm²', '700 ÷ 100 = 7', '700 cm², c\'est 7 dm².')}
+${cm1Redac('700 cm² en dm²', '700 : 100 = 7', '700 cm², c\'est 7 dm².')}
 ${cm1Rem('Attention : 1 dm = 10 cm, mais 1 dm² = 100 cm² ! Pour les aires, on passe d\'une unité à la suivante en multipliant par <b>100</b>.')}
 
 ${cm1Lecon(3, 'Aire du rectangle et du carré')}
@@ -69,18 +69,18 @@ ${cm1Demo('c2-ai-L', 'Calculer l\'aire d\'une figure en L', 'Une figure en L est
       + cm1Redac('Aire du carré de 7 cm de côté', '7 × 7 = 49', 'Son aire est 49 cm².')
       + cm1Redac('Aire du rectangle de 2,5 m sur 4 m', '2,5 × 4 = 10', 'Son aire est 10 m².')],
     [`Convertis.${cm1Liste(['5 dm² en cm²', '3 m² en dm²', '600 cm² en dm²', '1,5 m² en dm²'])}`,
-      cm1Redac('Conversions', { suite: ['5 × 100 = 500', '3 × 100 = 300', '600 ÷ 100 = 6', '1,5 × 100 = 150'] }, '5 dm², c\'est 500 cm² ; 3 m², c\'est 300 dm² ; 600 cm², c\'est 6 dm² ; 1,5 m², c\'est 150 dm².')],
+      cm1Redac('Conversions', { suite: ['5 × 100 = 500', '3 × 100 = 300', '600 : 100 = 6', '1,5 × 100 = 150'] }, '5 dm², c\'est 500 cm² ; 3 m², c\'est 300 dm² ; 600 cm², c\'est 6 dm² ; 1,5 m², c\'est 150 dm².')],
     [`Quelle unité choisir (cm², dm², m²) ?${cm1Liste(['l\'aire d\'un timbre', 'l\'aire d\'une salle de classe', 'l\'aire d\'une feuille de cahier'])}`,
       cm1Redac('Unités adaptées', '', 'Un timbre se mesure en cm², une salle de classe en m², une feuille de cahier en dm² (environ 6 dm², c\'est-à-dire environ 620 cm²).')],
     ['Un carré a une aire de 36 cm². Combien mesure son côté ? Quel est son périmètre ?',
       cm1Redac('Côté du carré', '6 × 6 = 36', 'Le côté mesure 6 cm.') + cm1Redac('Périmètre du carré', '4 × 6 = 24', 'Son périmètre est 24 cm.')],
     ['Un rectangle a une aire de 24 cm² et une longueur de 8 cm. Quelle est sa largeur ?',
-      cm1Redac('Largeur du rectangle', { suite: ['8 × 3 = 24', '24 ÷ 8 = 3'] }, 'Sa largeur est 3 cm.')],
+      cm1Redac('Largeur du rectangle', { suite: ['8 × 3 = 24', '24 : 8 = 3'] }, 'Sa largeur est 3 cm.')],
     ['Trouve deux rectangles de même aire (24 cm²) mais de périmètres différents.',
       cm1Redac('Rectangle de 6 cm sur 4 cm', { suite: ['6 × 4 = 24', '6 + 4 + 6 + 4 = 20'] }, 'Son aire est 24 cm² et son périmètre 20 cm.')
       + cm1Redac('Rectangle de 12 cm sur 2 cm', { suite: ['12 × 2 = 24', '12 + 2 + 12 + 2 = 28'] }, 'Son aire est aussi 24 cm², mais son périmètre est 28 cm.')],
     ['Une pièce de 5 m sur 4 m doit être carrelée. Une boîte de carrelage couvre 2 m². Combien de boîtes faut-il ?',
-      cm1Redac('Aire de la pièce', '5 × 4 = 20', 'La pièce a une aire de 20 m².') + cm1Redac('Nombre de boîtes', '20 ÷ 2 = 10', 'Il faut 10 boîtes de carrelage.')],
+      cm1Redac('Aire de la pièce', '5 × 4 = 20', 'La pièce a une aire de 20 m².') + cm1Redac('Nombre de boîtes', '20 : 2 = 10', 'Il faut 10 boîtes de carrelage.')],
   ], { titre: 'Rédaction type : « Aire d\'un rectangle »', lignes: [['A = L × l', 'J\'écris la règle.'], ['A = 9 × 4 = 36', 'Je remplace et je calcule.'], ['L\'aire est 36 cm².', 'Je conclus avec l\'unité d\'aire.']] }),
   histoire: cm1Histoire('Un peu d\'histoire : l\'are et l\'hectare', [
     'Quand le système métrique est créé en 1795, on invente aussi une unité pour mesurer les terrains : l\'<b>are</b>, l\'aire d\'un carré de 10 m de côté (100 m²). L\'<b>hectare</b> vaut 100 ares : c\'est à peu près la surface d\'un terrain de football et demi.',

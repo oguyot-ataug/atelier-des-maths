@@ -124,8 +124,8 @@ function arAffaireMonter(el){
     if(ok) st.score++;
     el.querySelectorAll('[data-o]').forEach((x, k) => x.classList.add(k === best ? 'gagne' : 'perd'));
     const ligne = (o, l) => o.unite
-      ? `<div>Offre ${l} : un kilogramme coûte ${arE(Math.round(o.prix))} × 1 000 ÷ ${arN(o.q)} = <b>${arE(Math.round(o.u))}</b>.</div>`
-      : `<div>Offre ${l} : un ${o.un} coûte ${arE(o.prix)} ÷ ${o.q} = <b>${arE(o.u)}</b>.</div>`;
+      ? `<div>Offre ${l} : un kilogramme coûte ${arE(Math.round(o.prix))} × 1 000 : ${arN(o.q)} = <b>${arE(Math.round(o.u))}</b>.</div>`
+      : `<div>Offre ${l} : un ${o.un} coûte ${arE(o.prix)} : ${o.q} = <b>${arE(o.u)}</b>.</div>`;
     arDire(el, `${ok ? '<span class="gicon">celebration</span> Bien vu ! ' : '<span class="gicon">info</span> Pas cette fois. '}Pour comparer, on calcule le prix ${a.unite ? 'd\'un kilogramme' : 'd\'un seul ' + a.un} dans chaque offre :
       <div class="ar-etapes">${ligne(a, 'A')}${ligne(b, 'B')}</div>L'offre ${best ? 'B' : 'A'} est la moins chère, même si ${st.offres[best].prix > st.offres[1 - best].prix ? 'son prix affiché est plus grand' : 'les deux prix affichés sont proches'}.`, ok ? 'ok' : 'ko');
     $('.ar-score').textContent = `Score : ${st.score} sur ${st.tour}`;
@@ -154,7 +154,7 @@ function arSoldesMonter(el){
     const r = st.prix * st.p / 100, n = st.prix - r;
     $('.ar-v-prix').textContent = arN(st.prix) + ' €'; $('.ar-v-p').textContent = st.p + ' %';
     $('.ar-solde').innerHTML = `<span class="ar-avant">${arN(st.prix)} €</span><span class="ar-badge">−${st.p} %</span><span class="ar-apres">${arN(n)} €</span>`;
-    $('.ar-calc').innerHTML = `<div>Réduction : ${st.p} % de ${arN(st.prix)} €, c'est ${arN(st.prix)} × ${st.p} ÷ 100 = <b>${arN(r)} €</b>.</div>
+    $('.ar-calc').innerHTML = `<div>Réduction : ${st.p} % de ${arN(st.prix)} €, c'est ${arN(st.prix)} × ${st.p} : 100 = <b>${arN(r)} €</b>.</div>
       <div>Prix soldé : ${arN(st.prix)} − ${arN(r)} = <b>${arN(n)} €</b>.</div>`
       + (coef ? `<div class="ar-autre">Plus rapide : enlever ${st.p} %, c'est garder ${100 - st.p} %, donc <b>multiplier par ${arN(1 - st.p / 100)}</b> : ${arN(st.prix)} × ${arN(1 - st.p / 100)} = ${arN(n)} €.</div>` : '');
   }
@@ -174,7 +174,7 @@ function arSoldesMonter(el){
   function expliquer(q){
     const ok = q === 'moins';
     arDire(el, `${ok ? '<span class="gicon">celebration</span> Exact : c\'est moins !' : '<span class="gicon">info</span> Eh non : c\'est moins que 50 % !'} Prenons un article à 100 € :
-      <div class="ar-etapes"><div>−20 % : 100 − 20 = <b>80 €</b>.</div><div>−30 % de 80 €, c'est 80 × 30 ÷ 100 = 24 €.</div><div>Nouveau prix : 80 − 24 = <b>56 €</b>.</div></div>
+      <div class="ar-etapes"><div>−20 % : 100 − 20 = <b>80 €</b>.</div><div>−30 % de 80 €, c'est 80 × 30 : 100 = 24 €.</div><div>Nouveau prix : 80 − 24 = <b>56 €</b>.</div></div>
       On paie 56 € au lieu de 100 € : la réduction totale est de <b>44 %</b>, pas 50 %. La deuxième réduction se calcule sur un prix déjà plus petit.`
       + (coef ? `<div class="ar-autre">Avec les coefficients : × 0,8 puis × 0,7, c'est multiplier par 0,8 × 0,7 = <b>0,56</b>.${el.dataset.niv === '3e' ? ' Le prix soldé est une <b>fonction linéaire</b> du prix de départ : f(x) = 0,56x.' : ''}</div>` : ''), ok ? 'ok' : 'ko');
   }
@@ -220,7 +220,7 @@ function arInteretsMonter(el){
   function doubler(){
     let k = 0; while(compose(k) < 2 * C) k++;
     arDire(el, `À ${st.t} % par an, en intérêts composés, l'argent double en <b>${k} ans</b> (1 000 × ${arN(1 + st.t / 100, 2)}<sup>${k}</sup> ≈ ${arN(compose(k), 0)} €). En intérêts simples, il faut ${arN(100 / st.t, 1)} ans.
-      <div class="ar-autre"><b>La règle de 72</b>, connue des marchands italiens depuis 1494 : le temps de doublement est à peu près 72 ÷ ${st.t} ≈ <b>${arN(72 / st.t, 1)} ans</b>.</div>`, 'ok');
+      <div class="ar-autre"><b>La règle de 72</b>, connue des marchands italiens depuis 1494 : le temps de doublement est à peu près 72 : ${st.t} ≈ <b>${arN(72 / st.t, 1)} ans</b>.</div>`, 'ok');
   }
   el.querySelectorAll('[data-r]').forEach(r => r.oninput = () => { st[r.dataset.r] = +r.value; dessiner(); arDire(el, ''); });
   $('[data-a="double"]').onclick = doubler;

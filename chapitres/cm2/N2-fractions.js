@@ -43,7 +43,7 @@ ${cm1Exemple('Chaque unité est partagée en 6 : un petit écart vaut un sixièm
 ${cm1Lecon(5, 'Fraction d\'une quantité')}
 ${cm1Regle(`Pour calculer les ${F(2, 3)} de 12 €, on cherche d'abord un tiers, puis on en prend deux.`)}
 ${ce2AnimPartage('c2-fr-partage', { legende: 'Un jeton = 1 €. On partage 12 € en 3 parts égales.', presets: [{ nom: '12 € en 3', total: 12, parts: 3, objets: 'euros', fin: `Chaque part vaut 4 € : un tiers de 12 €, c'est 4 €. Deux tiers : 2 × 4 = <b>8 €</b>.` }] })}
-${cm1Redac(`Un tiers de 12 €`, '12 ÷ 3 = 4', `${F(1, 3)} de 12 €, c'est 4 €.`)}
+${cm1Redac(`Un tiers de 12 €`, '12 : 3 = 4', `${F(1, 3)} de 12 €, c'est 4 €.`)}
 ${cm1Redac(`Deux tiers de 12 €`, '2 × 4 = 8', `${F(2, 3)} de 12 €, c'est 8 €.`)}
 `,
   methode: `
@@ -81,12 +81,12 @@ ${cm1Demo('c2-fr-une', 'Écrire un entier plus une fraction comme une seule frac
     [`Quelles fractions correspondent aux points D et E ?${cm1Graduation(2, 5, [[3 / 5, 'D', '#E35D3A'], [8 / 5, 'E', '#2EA8C9']], { unite: 200 })}`,
       cm1Redac('Points D et E', { suite: ['un petit écart : un cinquième', `D : 3 petits écarts, ${F(3, 5)}`, `E : 8 petits écarts, ${F(8, 5)}`] }, `D correspond à ${F(3, 5)} et E à ${F(8, 5)}, c'est-à-dire 1 + ${F(3, 5)}.`)],
     [`Calcule.${cm1Liste([`les ${F(3, 4)} de 100 m`, `les ${F(2, 5)} de 35 €`, `les ${F(5, 6)} de 42 élèves`])}`,
-      cm1Redac(`${F(3, 4)} de 100 m`, { suite: ['100 ÷ 4 = 25', '3 × 25 = 75'] }, `Les ${F(3, 4)} de 100 m, c'est 75 m.`)
-      + cm1Redac(`${F(2, 5)} de 35 €`, { suite: ['35 ÷ 5 = 7', '2 × 7 = 14'] }, `Les ${F(2, 5)} de 35 €, c'est 14 €.`)
-      + cm1Redac(`${F(5, 6)} de 42 élèves`, { suite: ['42 ÷ 6 = 7', '5 × 7 = 35'] }, `Les ${F(5, 6)} de 42 élèves, c'est 35 élèves.`)],
+      cm1Redac(`${F(3, 4)} de 100 m`, { suite: ['100 : 4 = 25', '3 × 25 = 75'] }, `Les ${F(3, 4)} de 100 m, c'est 75 m.`)
+      + cm1Redac(`${F(2, 5)} de 35 €`, { suite: ['35 : 5 = 7', '2 × 7 = 14'] }, `Les ${F(2, 5)} de 35 €, c'est 14 €.`)
+      + cm1Redac(`${F(5, 6)} de 42 élèves`, { suite: ['42 : 6 = 7', '5 × 7 = 35'] }, `Les ${F(5, 6)} de 42 élèves, c'est 35 élèves.`)],
     ['L\'unité u est partagée en 3. Un segment mesure 11 tiers de u. Écris sa mesure de deux façons.',
       cm1Redac('Mesure du segment', `${F(11, 3)} u = ${F(9, 3)} u + ${F(2, 3)} u = 3 u + ${F(2, 3)} u`, `Le segment mesure ${F(11, 3)} u, c'est-à-dire 3 u et ${F(2, 3)} de u.`)],
-  ], { titre: 'Rédaction type : « Fraction d\'une quantité »', lignes: [[`${F(3, 5)} de 40 €`, 'Je cherche d\'abord un cinquième.'], ['40 ÷ 5 = 8', 'Un cinquième vaut 8 €.'], ['3 × 8 = 24', 'Trois cinquièmes valent 24 €.'], [`${F(3, 5)} de 40 € = 24 €`, 'Je conclus.']] }),
+  ], { titre: 'Rédaction type : « Fraction d\'une quantité »', lignes: [[`${F(3, 5)} de 40 €`, 'Je cherche d\'abord un cinquième.'], ['40 : 5 = 8', 'Un cinquième vaut 8 €.'], ['3 × 8 = 24', 'Trois cinquièmes valent 24 €.'], [`${F(3, 5)} de 40 € = 24 €`, 'Je conclus.']] }),
   histoire: cm1Histoire('Un peu d\'histoire : les fractions des Babyloniens', [
     'Il y a 4 000 ans, les <b>Babyloniens</b> comptaient en base 60. Ils écrivaient leurs fractions avec des dénominateurs 60, 3 600… comme nos minutes et nos secondes : une demi-heure, c\'est 30 soixantièmes d\'heure !',
     'C\'est pour cela que 60 est si pratique : il se partage en 2, 3, 4, 5, 6, 10, 12, 15, 20 et 30 parts égales. Au CM2, tu rencontreras des fractions jusqu\'à des soixantièmes.',

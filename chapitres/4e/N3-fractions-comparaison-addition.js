@@ -23,12 +23,12 @@ document.getElementById('cours-demo-fractions-comp-4e').innerHTML = `
 <div class="def-box"><ul style="margin:0;padding-left:20px;line-height:1.9;">
   <li>Un quotient de deux nombres relatifs <b>ne change pas</b> quand on <b>multiplie</b> son numérateur et son dénominateur par un <b>même nombre relatif non nul</b>.</li>
   <li>Un quotient de deux nombres relatifs <b>ne change pas</b> quand on <b>divise</b> son numérateur et son dénominateur par un <b>même nombre relatif non nul</b>.</li>
-  <li>Autrement dit, pour tous nombres <i>a</i>, <i>b</i> et <i>k</i> avec <i>b</i> ≠ 0 et <i>k</i> ≠ 0 : ${f4Tex('\\dfrac{a}{b} = \\dfrac{a \\times k}{b \\times k}')} et ${f4Tex('\\dfrac{a}{b} = \\dfrac{a \\div k}{b \\div k}')}.</li>
+  <li>Autrement dit, pour tous nombres <i>a</i>, <i>b</i> et <i>k</i> avec <i>b</i> ≠ 0 et <i>k</i> ≠ 0 : ${f4Tex('\\dfrac{a}{b} = \\dfrac{a \\times k}{b \\times k}')} et ${f4Tex('\\dfrac{a}{b} = \\dfrac{a : k}{b : k}')}.</li>
 </ul></div>
 ${r4Ex('Exemples :', [
   [f4Tex('\\dfrac{-18}{24} = \\dfrac{-3 \\times \\mathbf{6}}{4 \\times \\mathbf{6}} = \\dfrac{-3}{4}'), 'On a reconnu le facteur commun 6 : on simplifie par 6.'],
   [f4Tex('\\dfrac{-56}{-42} = \\dfrac{4 \\times (\\mathbf{-14})}{3 \\times (\\mathbf{-14})} = \\dfrac{4}{3}'), 'On simplifie par −14 : le résultat est positif.'],
-  [f4Tex('\\dfrac{20}{-12} = \\dfrac{20 \\div (\\mathbf{-4})}{-12 \\div (\\mathbf{-4})} = \\dfrac{-5}{3} = -\\dfrac{5}{3}'), 'On divise par −4 pour avoir un dénominateur positif.'],
+  [f4Tex('\\dfrac{20}{-12} = \\dfrac{20 : (\\mathbf{-4})}{-12 : (\\mathbf{-4})} = \\dfrac{-5}{3} = -\\dfrac{5}{3}'), 'On divise par −4 pour avoir un dénominateur positif.'],
 ])}
 <div class="redaction-note" ${R4_REM}>Remarque : grâce à cette propriété, on peut toujours écrire un quotient avec un <b>dénominateur positif</b> : ${f4Tex('\\dfrac{a}{-b} = \\dfrac{-a}{b} = -\\dfrac{a}{b}')} et ${f4Tex('\\dfrac{-a}{-b} = \\dfrac{a}{b}')}.</div>
 
@@ -195,8 +195,8 @@ document.getElementById('exos-demo-fractions-comp-4e').innerHTML = `
 <div class="redaction-block">
   <h3>Exercices</h3>
   ${f4Exo(1, 'Complète les égalités : ' + f4Tex('\\dfrac{-21}{35} = \\dfrac{\\ldots}{5}') + ' ; ' + f4Tex('\\dfrac{16}{-24} = \\dfrac{-2}{\\ldots}') + ' ; ' + f4Tex('\\dfrac{4}{-9} = \\dfrac{\\ldots}{27}') + '.', [
-    f4Tex('\\dfrac{-21}{35} = \\dfrac{-21 \\div 7}{35 \\div 7} = \\dfrac{-3}{5}'),
-    f4Tex('\\dfrac{16}{-24} = \\dfrac{16 \\div (-8)}{-24 \\div (-8)} = \\dfrac{-2}{3}'),
+    f4Tex('\\dfrac{-21}{35} = \\dfrac{-21 : 7}{35 : 7} = \\dfrac{-3}{5}'),
+    f4Tex('\\dfrac{16}{-24} = \\dfrac{16 : (-8)}{-24 : (-8)} = \\dfrac{-2}{3}'),
     f4Tex('\\dfrac{4}{-9} = \\dfrac{4 \\times (-3)}{-9 \\times (-3)} = \\dfrac{-12}{27}')])}
   ${f4Exo(2, 'Réduis au même dénominateur : a) ' + f4Tex('\\dfrac{3}{8}') + ' et ' + f4Tex('\\dfrac{5}{24}') + ' ; b) ' + f4Tex('\\dfrac{2}{9}') + ' et ' + f4Tex('\\dfrac{5}{6}') + ' ; c) ' + f4Tex('\\dfrac{-7}{10}') + ' et ' + f4Tex('\\dfrac{4}{15}') + '.', [
     'a) 24 = 8 × 3 : ' + f4Tex('\\dfrac{3}{8} = \\dfrac{9}{24}') + ' et ' + f4Tex('\\dfrac{5}{24}') + '.',
@@ -219,7 +219,7 @@ document.getElementById('exos-demo-fractions-comp-4e').innerHTML = `
     f4Tex('F = \\dfrac{-12}{6} + \\dfrac{5}{6} = -\\dfrac{7}{6}')])}
   ${f4Exo(7, 'Dans un collège, ' + f4Tex('\\dfrac{3}{8}') + ' des élèves viennent en bus, ' + f4Tex('\\dfrac{1}{3}') + ' à pied et les autres en voiture. a) Quelle fraction des élèves vient en voiture ? b) Le collège compte 480 élèves : combien viennent en voiture ?', [
     'a) On calcule la fraction des élèves qui viennent en voiture :', f4Tex('V = 1 - \\dfrac{3}{8} - \\dfrac{1}{3} = \\dfrac{24}{24} - \\dfrac{9}{24} - \\dfrac{8}{24} = \\dfrac{7}{24}'), 'Les ' + f4Tex('\\dfrac{7}{24}') + ' des élèves viennent en voiture.',
-    'b) 480 ÷ 24 = 20 et 20 × 7 = 140 : <b>140 élèves</b> viennent en voiture.'])}
+    'b) 480 : 24 = 20 et 20 × 7 = 140 : <b>140 élèves</b> viennent en voiture.'])}
   ${f4Exo(8, 'Tom a écrit : ' + f4Tex('\\dfrac{2}{3} + \\dfrac{1}{4} = \\dfrac{3}{7}') + '. Explique son erreur et corrige-la.', [
     'Tom a additionné les numérateurs <b>et</b> les dénominateurs : c\'est faux. D\'ailleurs ' + f4Tex('\\dfrac{3}{7}') + ' est plus petit que ' + f4Tex('\\dfrac{2}{3}') + ', alors qu\'on a ajouté un nombre positif !',
     'Correction :', f4Tex('T = \\dfrac{2}{3} + \\dfrac{1}{4} = \\dfrac{8}{12} + \\dfrac{3}{12} = \\dfrac{11}{12}')])}
@@ -350,7 +350,7 @@ function f4Calculer(){
     lignes.push([f4Tex(`A = \\dfrac{${A} ${op} ${C < 0 ? '(' + C + ')' : C}}{${m}}`), op === '+' ? 'On additionne les numérateurs et on garde le dénominateur.' : 'On soustrait les numérateurs et on garde le dénominateur.']);
     const g = f4Pgcd(R, m) || 1;
     if(R === 0) lignes.push([f4Tex('A = 0'), 'Le résultat est nul.']);
-    else if(g > 1){ lignes.push([f4Tex(`A = ${fr(R, m)}`), '']); lignes.push([f4Tex(`A = \\dfrac{${R} \\div ${g}}{${m} \\div ${g}}`), `On simplifie par ${g}.`]); lignes.push([f4Tex(`A = ${f4T(R / g, m / g)}`), 'Le résultat est irréductible.']); }
+    else if(g > 1){ lignes.push([f4Tex(`A = ${fr(R, m)}`), '']); lignes.push([f4Tex(`A = \\dfrac{${R} : ${g}}{${m} : ${g}}`), `On simplifie par ${g}.`]); lignes.push([f4Tex(`A = ${f4T(R / g, m / g)}`), 'Le résultat est irréductible.']); }
     else lignes.push([f4Tex(`A = ${f4T(R, m)}`), `${f4Moins(R)} et ${m} n'ont pas de diviseur commun : la fraction est irréductible.`]);
   }
   out.innerHTML = r4Ex('', lignes) + conclusion;

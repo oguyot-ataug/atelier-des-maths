@@ -341,9 +341,9 @@ function hiKheopsMonter(el){
   }
   const ETAPES = [
     { q: 'Aire de la base carrée (en m²) :', r: C * C, tol: 0, e: `<div>Aire de la base : B = 230 × 230 = <b>52 900 m²</b>.</div>` },
-    { q: 'Volume de la pyramide (en m³, arrondi à l\'unité) :', r: Math.round(C * C * H / 3), tol: 2, e: `<div>V = <span class="tex">\\dfrac{1}{3}</span> × B × h = 52 900 × 146 ÷ 3 ≈ <b>2 574 467 m³</b>.</div>` },
-    { q: 'Un bloc de pierre mesure en moyenne 1,1 m³. Nombre de blocs (en millions, au dixième près) :', r: 2.3, tol: .051, dec: true, e: `<div>2 574 467 ÷ 1,1 ≈ 2 340 424, soit environ <b>2,3 millions de blocs</b>.</div>` },
-    { q: 'Le chantier a duré environ 20 ans, à 300 jours par an et 10 heures par jour. Combien de blocs fallait-il poser chaque heure (à l\'unité près) ?', r: 39, tol: 1, e: `<div>Heures de travail : 20 × 300 × 10 = 60 000 h.</div><div>2 340 424 ÷ 60 000 ≈ <b>39 blocs par heure</b> : plus d'un bloc toutes les deux minutes, jour après jour, pendant 20 ans !</div>` }];
+    { q: 'Volume de la pyramide (en m³, arrondi à l\'unité) :', r: Math.round(C * C * H / 3), tol: 2, e: `<div>V = <span class="tex">\\dfrac{1}{3}</span> × B × h = 52 900 × 146 : 3 ≈ <b>2 574 467 m³</b>.</div>` },
+    { q: 'Un bloc de pierre mesure en moyenne 1,1 m³. Nombre de blocs (en millions, au dixième près) :', r: 2.3, tol: .051, dec: true, e: `<div>2 574 467 : 1,1 ≈ 2 340 424, soit environ <b>2,3 millions de blocs</b>.</div>` },
+    { q: 'Le chantier a duré environ 20 ans, à 300 jours par an et 10 heures par jour. Combien de blocs fallait-il poser chaque heure (à l\'unité près) ?', r: 39, tol: 1, e: `<div>Heures de travail : 20 × 300 × 10 = 60 000 h.</div><div>2 340 424 : 60 000 ≈ <b>39 blocs par heure</b> : plus d'un bloc toutes les deux minutes, jour après jour, pendant 20 ans !</div>` }];
   function etape(){
     const E = ETAPES[st.etape];
     if(!E){ $('.hi-etapes-q').innerHTML = ''; return; }
@@ -402,7 +402,7 @@ function hiThalesMonter(el){
   $('[data-a="verif"]').onclick = () => {
     const o = ombres(), L = o.p + DEMI, h = BATON * L / o.b, g = parseFloat(String($('[data-a="h"]').value).replace(',', '.')), ok = Math.abs(g - h) <= 2;
     hiDire(el, `${ok ? '<span class="gicon">celebration</span> Bravo, comme Thalès !' : '<span class="gicon">info</span> Voici le raisonnement :'}
-      <div class="hi-etapes"><div>Les rayons du Soleil sont parallèles. Plante le bâton pour que le bout de son ombre tombe au même point que le bout de l'ombre de la pyramide : le même rayon passe par le sommet de la pyramide et par le haut du bâton.</div><div>Le petit triangle (bâton, son ombre) est alors dans le grand (hauteur, ombre depuis le centre), et le bâton est <b>parallèle</b> à la hauteur : tous deux sont verticaux. C'est la configuration du chapitre, les longueurs sont <b>proportionnelles</b> : h ÷ ${hiN(L, 1)} = ${hiN(BATON, 1)} ÷ ${hiN(o.b, 2)}.</div><div>h = ${hiN(BATON, 1)} × ${hiN(L, 1)} ÷ ${hiN(o.b, 2)} ≈ <b>${hiN(h, 0)} m</b>.</div></div>Change la hauteur du Soleil : les ombres changent, mais la hauteur trouvée reste la même. On raconte aussi que Thalès attendit le moment où l'ombre du bâton était égale à sa longueur : à cet instant, l'ombre de la pyramide est égale à sa hauteur !`, ok ? 'ok' : 'ko');
+      <div class="hi-etapes"><div>Les rayons du Soleil sont parallèles. Plante le bâton pour que le bout de son ombre tombe au même point que le bout de l'ombre de la pyramide : le même rayon passe par le sommet de la pyramide et par le haut du bâton.</div><div>Le petit triangle (bâton, son ombre) est alors dans le grand (hauteur, ombre depuis le centre), et le bâton est <b>parallèle</b> à la hauteur : tous deux sont verticaux. C'est la configuration du chapitre, les longueurs sont <b>proportionnelles</b> : h : ${hiN(L, 1)} = ${hiN(BATON, 1)} : ${hiN(o.b, 2)}.</div><div>h = ${hiN(BATON, 1)} × ${hiN(L, 1)} : ${hiN(o.b, 2)} ≈ <b>${hiN(h, 0)} m</b>.</div></div>Change la hauteur du Soleil : les ombres changent, mais la hauteur trouvée reste la même. On raconte aussi que Thalès attendit le moment où l'ombre du bâton était égale à sa longueur : à cet instant, l'ombre de la pyramide est égale à sa hauteur !`, ok ? 'ok' : 'ko');
   };
   $('[data-r="ang"]').oninput = e => { st.ang = +e.target.value; dessiner(); hiDire(el, ''); };
   dessiner();

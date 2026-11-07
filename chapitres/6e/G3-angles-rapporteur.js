@@ -730,7 +730,7 @@ const AR_BIS_STEPS = [
   {note:"On veut tracer la bissectrice de l'angle MON."},
   {note:"On place le centre du rapporteur sur le sommet O, aligné sur le côté [ON)."},
   {note:`On mesure l'angle : il mesure ${AR_BIS_ANGLE}°.`},
-  {note:`On calcule la moitié de cette mesure : ${AR_BIS_ANGLE}° ÷ 2 = ${AR_BIS_ANGLE/2}°.`},
+  {note:`On calcule la moitié de cette mesure : ${AR_BIS_ANGLE}° : 2 = ${AR_BIS_ANGLE/2}°.`},
   {note:`On place la pointe du crayon sur le bord du rapporteur, à la graduation ${AR_BIS_ANGLE/2}°.`},
   {note:"On trace un petit trait dans le prolongement de cette lecture : c'est le trait-repère."},
   {note:"On retire le rapporteur (et le crayon) : seul le trait-repère reste."},
@@ -1216,7 +1216,7 @@ document.getElementById('exos-demo-angles-rapporteur-6e').innerHTML = `
     <div class="num">Exercice 4</div>
     Construis un angle de 75°, puis trace sa bissectrice à l'aide d'un rapporteur.
     <button type="button" class="exo-correction-toggle" data-target="c6-g3-c4" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
-    <div class="exo-correction" id="c6-g3-c4"><div><p style="margin:0 0 6px;">La bissectrice partage l'angle en deux angles de même mesure : 75° ÷ 2 = 37,5°.</p><ol style="margin:0 0 6px;padding-left:20px;"><li>Je trace un angle <span class="tex">\\widehat{xOy}</span> de 75° au rapporteur.</li><li>Je place de nouveau le rapporteur sur O, le 0 sur [Ox), et je marque 37,5°.</li><li>Je trace la demi-droite [Oz) : c'est la bissectrice. Je code les deux angles égaux.</li></ol></div></div>
+    <div class="exo-correction" id="c6-g3-c4"><div><p style="margin:0 0 6px;">La bissectrice partage l'angle en deux angles de même mesure : 75° : 2 = 37,5°.</p><ol style="margin:0 0 6px;padding-left:20px;"><li>Je trace un angle <span class="tex">\\widehat{xOy}</span> de 75° au rapporteur.</li><li>Je place de nouveau le rapporteur sur O, le 0 sur [Ox), et je marque 37,5°.</li><li>Je trace la demi-droite [Oz) : c'est la bissectrice. Je code les deux angles égaux.</li></ol></div></div>
   </div>
 </div>
 `;

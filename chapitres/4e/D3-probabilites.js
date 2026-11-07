@@ -226,7 +226,7 @@ document.getElementById('exos-demo-probabilites-4e').innerHTML = `
     'Fréquence : ' + pr4Tex('\\dfrac{180}{500} = 0{,}36') + '. Sur un grand nombre d\'essais, on estime que la probabilité vaut environ 0,36.',
     'Les issues ne sont pas équiprobables : sinon, la fréquence serait proche de 0,5.'])}
   ${pr4Exo(8, 'Une urne contient des boules rouges et des boules bleues. La probabilité de tirer une rouge est ' + pr4Tex('\\dfrac{3}{8}') + ', et il y a 15 boules rouges. Combien y a-t-il de boules bleues ?', [
-    'Les ' + pr4Tex('\\dfrac{3}{8}') + ' des boules sont rouges : ' + pr4Tex('\\dfrac{1}{8}') + ' des boules représente 15 ÷ 3 = 5 boules, donc il y a 8 × 5 = 40 boules.',
+    'Les ' + pr4Tex('\\dfrac{3}{8}') + ' des boules sont rouges : ' + pr4Tex('\\dfrac{1}{8}') + ' des boules représente 15 : 3 = 5 boules, donc il y a 8 × 5 = 40 boules.',
     'Il y a donc 40 − 15 = <b>25 boules bleues</b>.'])}
 </div>
 `;

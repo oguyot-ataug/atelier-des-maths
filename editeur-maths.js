@@ -43,7 +43,7 @@ const MX_PALETTE = [
     ['a^{2}', '#@^2', 'Au carré'],
     ['\\sqrt{a}', '\\sqrt{#?}', 'Racine carrée (taper « racine »)'],
     ['\\times', '\\times', 'Multiplier (touche *)'],
-    ['\\div', '\\div', 'Diviser'],
+    [':', ':', 'Diviser'], // « : », jamais « ÷ » (demandé le 07/11/2026)
     ['\\pm', '\\pm', 'Plus ou moins'],
     ['(\\;)', '\\left(#?\\right)', 'Parenthèses'],
     ['\\pi', '\\pi', 'Pi (taper « pi »)'],

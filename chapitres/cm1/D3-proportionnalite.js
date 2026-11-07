@@ -19,7 +19,7 @@ ${cm1Lecon(2, 'Raisonner avec « fois plus »')}
 ${cm1Regle('Si une quantité est <b>2 fois, 3 fois, 10 fois plus grande</b>, l\'autre aussi est 2 fois, 3 fois, 10 fois plus grande.')}
 ${cm1Exemple('Pour faire 4 crêpes, il faut 1 œuf. Combien d\'œufs faut-il pour 12 crêpes ?', [`12 crêpes, c'est ${fl('3 fois plus')} que 4 crêpes (3 × 4 = 12).`, `Il faut donc ${fl('3 fois plus')} d'œufs : 3 × 1 = <b>3 œufs</b>.`])}
 ${ce2AnimBarres('cm1-pp-fois', { unite: 1, lignes: [['Crêpes', [[90, '4 crêpes', '#E9C46A', '4 crêpes demandent 1 œuf.'], [90, '4 crêpes', '#E9C46A', 'Encore 4 crêpes…'], [90, '4 crêpes', '#E9C46A', '… et encore 4 : 12 crêpes, c\'est 3 fois 4 crêpes.']]], ['Œufs', [[90, '1 œuf', '#2EA8C9', 'Pour chaque paquet de 4 crêpes, il faut 1 œuf.'], [90, '1 œuf', '#2EA8C9', ''], [90, '1 œuf', '#2EA8C9', '3 fois plus de crêpes, 3 fois plus d\'œufs : il faut <b>3 œufs</b>.']]]] })}
-${cm1Regle('Cela marche aussi pour « fois moins » : 10 stylos coûtent 20 €, donc 5 stylos (2 fois moins) coûtent 2 fois moins : 20 ÷ 2 = <b>10 €</b>.', 'Et aussi')}
+${cm1Regle('Cela marche aussi pour « fois moins » : 10 stylos coûtent 20 €, donc 5 stylos (2 fois moins) coûtent 2 fois moins : 20 : 2 = <b>10 €</b>.', 'Et aussi')}
 
 ${cm1Lecon(3, 'Raisonner en additionnant')}
 ${cm1Regle('Si on connaît les valeurs pour deux quantités, on connaît la valeur pour leur <b>somme</b> : on additionne.')}
@@ -27,7 +27,7 @@ ${cm1Exemple('3 cahiers coûtent 6 € et 2 cahiers coûtent 4 €. Combien coû
 
 ${cm1Lecon(4, 'Passer par l\'unité')}
 ${cm1Regle('Quand les « fois plus » ne sont pas simples, on cherche d\'abord la valeur pour <b>1</b>, puis on multiplie.')}
-${cm1Exemple('4 places de cinéma coûtent 28 €. Combien coûtent 7 places ?', ['1 place coûte 4 fois moins que 4 places : 28 ÷ 4 = 7 €.', '7 places coûtent 7 fois plus qu\'une place : 7 × 7 = <b>49 €</b>.'])}
+${cm1Exemple('4 places de cinéma coûtent 28 €. Combien coûtent 7 places ?', ['1 place coûte 4 fois moins que 4 places : 28 : 4 = 7 €.', '7 places coûtent 7 fois plus qu\'une place : 7 × 7 = <b>49 €</b>.'])}
 
 ${cm1Lecon(5, 'Attention : tout n\'est pas proportionnel !')}
 ${cm1Astuce('À 10 ans, Hugo mesure 1,40 m. À 20 ans, mesurera-t-il 2,80 m ? Non ! La taille n\'est <b>pas proportionnelle</b> à l\'âge. Avant de raisonner, on se demande toujours si la situation est vraiment proportionnelle.')}
@@ -41,14 +41,14 @@ ${cm1Demo('pp-unite', 'Passer par l\'unité', '5 baguettes coûtent 6 €. Combi
     ['pp-recette', [
       { expr: '18 personnes = 3 × 6 personnes', note: 'On compare le nombre de personnes : 18, c\'est 3 fois plus que 6.' },
       { expr: '3 × 150 g = 450 g', note: 'Il faut 3 fois plus de sucre : 450 g pour 18 personnes.' },
-      { expr: '150 g ÷ 2 = 75 g', note: 'Pour 9 personnes, on cherche d\'abord pour 3 personnes : 2 fois moins que 6 personnes.' },
+      { expr: '150 g : 2 = 75 g', note: 'Pour 9 personnes, on cherche d\'abord pour 3 personnes : 2 fois moins que 6 personnes.' },
       { expr: '150 g + 75 g = 225 g', note: '9 personnes, c\'est 6 personnes + 3 personnes : on additionne les quantités de sucre.' },
       { expr: '450 g pour 18 personnes ; 225 g pour 9 personnes', note: 'Chaque étape est expliquée par une phrase.' },
     ]],
     ['pp-unite', [
       { expr: '8 n\'est pas un nombre de « fois » simple de 5', note: 'On ne peut pas passer facilement de 5 à 8 en multipliant : on passe par 1 baguette.' },
       { expr: '6 € = 600 centimes', note: 'On compte en centimes pour diviser facilement.' },
-      { expr: '600 ÷ 5 = 120', note: 'Une baguette coûte 5 fois moins : 120 centimes, c\'est-à-dire 1,20 €.' },
+      { expr: '600 : 5 = 120', note: 'Une baguette coûte 5 fois moins : 120 centimes, c\'est-à-dire 1,20 €.' },
       { expr: '8 × 1,20 € = 9,60 €', note: '8 baguettes coûtent 8 fois plus qu\'une baguette.' },
       { expr: '8 baguettes coûtent 9,60 €.', note: 'Phrase réponse.' },
     ]],
@@ -59,11 +59,11 @@ ${cm1Demo('pp-unite', 'Passer par l\'unité', '5 baguettes coûtent 6 €. Combi
     ['Pour 2 personnes, il faut 250 g de pâtes. Combien en faut-il pour 6 personnes ?',
       cm1Redac('Pâtes pour 6 personnes', { suite: ['6 = 3 × 2', '3 × 250 g = 750 g'] }, '6 personnes, c\'est 3 fois plus que 2 personnes : il faut 750 g de pâtes.')],
     ['8 cahiers coûtent 12 €. Combien coûtent 4 cahiers ? et 12 cahiers ?',
-      cm1Redac('Prix de 4 cahiers', '12 € ÷ 2 = 6 €', '4 cahiers, c\'est 2 fois moins que 8 : ils coûtent 6 €.') + cm1Redac('Prix de 12 cahiers', '12 € + 6 € = 18 €', '12 cahiers, c\'est 8 cahiers et 4 cahiers : ils coûtent 18 €.')],
+      cm1Redac('Prix de 4 cahiers', '12 € : 2 = 6 €', '4 cahiers, c\'est 2 fois moins que 8 : ils coûtent 6 €.') + cm1Redac('Prix de 12 cahiers', '12 € + 6 € = 18 €', '12 cahiers, c\'est 8 cahiers et 4 cahiers : ils coûtent 18 €.')],
     ['Une voiture consomme 6 L d\'essence pour 100 km. Combien consomme-t-elle pour 300 km ? pour 50 km ?',
-      cm1Redac('Pour 300 km', '3 × 6 L = 18 L', '300 km, c\'est 3 fois plus : la voiture consomme 18 L.') + cm1Redac('Pour 50 km', '6 L ÷ 2 = 3 L', '50 km, c\'est 2 fois moins : elle consomme 3 L.')],
+      cm1Redac('Pour 300 km', '3 × 6 L = 18 L', '300 km, c\'est 3 fois plus : la voiture consomme 18 L.') + cm1Redac('Pour 50 km', '6 L : 2 = 3 L', '50 km, c\'est 2 fois moins : elle consomme 3 L.')],
     ['3 kg d\'oranges coûtent 6 €. Combien coûtent 7 kg ?',
-      cm1Redac('Prix de 1 kg', '6 € ÷ 3 = 2 €', '1 kg d\'oranges coûte 2 €.') + cm1Redac('Prix de 7 kg', '7 × 2 € = 14 €', '7 kg d\'oranges coûtent 14 €.')],
+      cm1Redac('Prix de 1 kg', '6 € : 3 = 2 €', '1 kg d\'oranges coûte 2 €.') + cm1Redac('Prix de 7 kg', '7 × 2 € = 14 €', '7 kg d\'oranges coûtent 14 €.')],
     [`Est-ce une situation de proportionnalité ?${cm1Liste(['le prix de timbres identiques et leur nombre', 'la pointure et l\'âge d\'un enfant', 'la distance parcourue à vitesse constante et la durée'])}`,
       cm1Redac('Timbres', '2 fois plus de timbres coûtent 2 fois plus cher.', 'Oui, c\'est proportionnel.') + cm1Redac('Pointure et âge', 'À 20 ans, on ne chausse pas 2 fois plus grand qu\'à 10 ans.', 'Non, ce n\'est pas proportionnel.') + cm1Redac('Distance et durée', 'En 2 fois plus de temps, on parcourt 2 fois plus de distance.', 'Oui, c\'est proportionnel.')],
     ['Pour 4 crêpes, il faut 100 g de farine. Léo dit : « Pour 8 crêpes, il faut 104 g de farine, car j\'ai ajouté 4. » Qu\'en penses-tu ?',
@@ -98,7 +98,7 @@ PLANCHES['cm1|Proportionnalité'] = [
       { etoiles: 2, col: 1, consigne: 'Un robinet remplit 12 L d\'eau en 2 minutes.', ...ex([['En 4 minutes : … L', 24], ['En 1 minute : … L', 6], ['En 5 minutes : … L', 30]]) },
       { etoiles: 2, col: 1, consigne: 'Sur une carte, 1 cm représente 5 km.', ...ex([['3 cm représentent … km', 15], ['10 cm représentent … km', 50], ['… cm représentent 20 km', 4]]) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Une recette pour 4 personnes : 200 g de pâtes et 2 œufs. Quelles quantités faut-il pour 6 personnes ?',
-        corr: cm1Redac('Pour 2 personnes', { suite: ['200 g ÷ 2 = 100 g', '2 œufs ÷ 2 = 1 œuf'] }, 'Pour 2 personnes : 100 g de pâtes et 1 œuf.') + cm1Redac('Pour 6 personnes (4 + 2)', { suite: ['200 g + 100 g = 300 g', '2 œufs + 1 œuf = 3 œufs'] }, 'Pour 6 personnes, il faut 300 g de pâtes et 3 œufs.') },
+        corr: cm1Redac('Pour 2 personnes', { suite: ['200 g : 2 = 100 g', '2 œufs : 2 = 1 œuf'] }, 'Pour 2 personnes : 100 g de pâtes et 1 œuf.') + cm1Redac('Pour 6 personnes (4 + 2)', { suite: ['200 g + 100 g = 300 g', '2 œufs + 1 œuf = 3 œufs'] }, 'Pour 6 personnes, il faut 300 g de pâtes et 3 œufs.') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Léo mesure 1,30 m à 10 ans. Il dit : « À 20 ans, je mesurerai 2,60 m ! » A-t-il raison ?',
         corr: cm1Redac('Âge et taille', '20 ans, c\'est 2 fois 10 ans, mais la taille ne double pas.', 'Léo a tort : la taille n\'est pas proportionnelle à l\'âge. On grandit de moins en moins, puis on arrête de grandir.') },
     ] },

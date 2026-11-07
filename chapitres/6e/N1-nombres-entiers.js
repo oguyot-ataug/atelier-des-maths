@@ -280,7 +280,7 @@ document.getElementById('exos-demo-nombres-entiers').innerHTML = `
 </div>
 `;
 
-/* ---- Division euclidienne posée : 823 ÷ 14 ---- */
+/* ---- Division euclidienne posée : 823 : 14 ---- */
 const NE_DP_ROW_823 = '&nbsp;&nbsp;823';
 const NE_DP_ROW_70  = '−&nbsp;70&nbsp;';
 const NE_DP_ROW_123 = '&nbsp;&nbsp;123';
@@ -388,7 +388,7 @@ const neChiffreNombreDemo = makeStepDemo(NE_CHIFFRE_NOMBRE_STEPS, 'ne-chiffreNom
    sachant que je n'ai plus de billets de 100 pour faire 347 ? Et plusieurs questions du même
    type." Chaque question demande le NOMBRE de billets d'une certaine valeur nécessaires,
    SANS utiliser de billets de valeur supérieure -- exactement le concept de "nombre de
-   dizaines/centaines/milliers", rendu concret. Vérifié arithmétiquement (347÷10=34 etc.)
+   dizaines/centaines/milliers", rendu concret. Vérifié arithmétiquement (347:10=34 etc.)
    avant intégration. */
 const NE_EUCLIDE_QUESTIONS = [
   {nombre:347, denom:10, denomSup:100, reponse:34},

@@ -129,7 +129,7 @@ ${cm1Sous('A', 'Atelier : programme le livreur')}
       + cm1Redac('Avec 5', { suite: ['5 × 3 = 15', '15 + 4 = 19', '19 × 2 = 38'] }, 'Avec 5, on obtient 38.')
       + cm1Redac('Avec 10', { suite: ['10 × 3 = 30', '30 + 4 = 34', '34 × 2 = 68'] }, 'Avec 10, on obtient 68.')],
     ['Avec ce même programme, quel nombre a été choisi si on obtient 50 ?',
-      cm1Redac('Nombre choisi', { suite: ['50 ÷ 2 = 25', '25 − 4 = 21', '21 ÷ 3 = 7'] }, 'On remonte le programme avec les opérations inverses : le nombre choisi était 7.')],
+      cm1Redac('Nombre choisi', { suite: ['50 : 2 = 25', '25 − 4 = 21', '21 : 3 = 7'] }, 'On remonte le programme avec les opérations inverses : le nombre choisi était 7.')],
     ['Suite dans un tableur : A1 = 2 et « = A1 × 3 » recopiée vers le bas. Écris les 5 premiers termes.',
       cm1Redac('Termes de la suite', { suite: ['2 × 3 = 6', '6 × 3 = 18', '18 × 3 = 54', '54 × 3 = 162'] }, 'Les 5 premiers termes sont 2 ; 6 ; 18 ; 54 et 162.')],
     ['Dans l\'atelier, réussis les 4 défis. Pour le défi 4, écris un programme de 3 blocs.',

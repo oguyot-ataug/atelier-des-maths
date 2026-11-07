@@ -388,7 +388,7 @@ function ndAxeFig(o){
 const ND_PL0 = { n: 30, lab: { 0: '0', 10: '1', 20: '2', 30: '3' } };
 const ND_PLACER0_STEPS = [
   { expr: 'Placer le point A d\'abscisse 1,7.', note: "L'axe commence à 0 : c'est l'origine. On repère d'abord les nombres écrits sous l'axe.", fig: ndAxeFig(ND_PL0) },
-  { expr: 'Une unité (de 0 à 1) est partagée en 10 : une graduation vaut 1 ÷ 10 = 0,1.', note: "On compte les intervalles (les « sauts ») entre 0 et 1, pas les traits : il y en a 10.", fig: ndAxeFig(Object.assign({ acc: [0, 10, '10 sauts : 1 unité'], gras: [0, 10] }, ND_PL0)) },
+  { expr: 'Une unité (de 0 à 1) est partagée en 10 : une graduation vaut 1 : 10 = 0,1.', note: "On compte les intervalles (les « sauts ») entre 0 et 1, pas les traits : il y en a 10.", fig: ndAxeFig(Object.assign({ acc: [0, 10, '10 sauts : 1 unité'], gras: [0, 10] }, ND_PL0)) },
   { expr: '1,7 = 1 + 0,7 = 1 + 7 × 0,1', note: "On décompose l'abscisse : la partie entière 1, puis 7 dixièmes.", fig: ndAxeFig(Object.assign({ hl: [10] }, ND_PL0)) },
   { expr: 'On part de 1 et on avance de 7 graduations.', note: "Chaque saut vaut 0,1 : 1,1 ; 1,2 ; … ; 1,7.", fig: ndAxeFig(Object.assign({ hl: [10], sauts: [10, 17] }, ND_PL0)) },
   { expr: 'On place le point A : A(1,7).', note: "On marque le point d'une croix et on écrit son nom. On vérifie : A est entre 1 et 2, plus près de 2.", fig: ndAxeFig(Object.assign({ pt: [17, 'A', '1,7'] }, ND_PL0)) },
@@ -399,7 +399,7 @@ const ND_PLS = { n: 20, lab: { 0: '2,4', 10: '2,5', 20: '2,6' }, origine: '0 n\'
 const ND_PLACERSANS0_STEPS = [
   { expr: 'Placer le point B d\'abscisse 2,47.', note: "Ici, l'axe ne commence pas à 0 : on ne peut pas compter depuis l'origine.", fig: ndAxeFig(ND_PLS) },
   { expr: 'On repère deux nombres écrits qui se suivent : 2,4 et 2,5.', note: "Ce sont eux qui donnent la valeur d'une graduation.", fig: ndAxeFig(Object.assign({ hl: [0, 10] }, ND_PLS)) },
-  { expr: 'Écart : 2,5 − 2,4 = 0,1, partagé en 10 sauts : une graduation vaut 0,1 ÷ 10 = 0,01.', note: "Valeur d'une graduation = écart entre deux nombres écrits ÷ nombre de sauts entre eux.", fig: ndAxeFig(Object.assign({ hl: [0, 10], acc: [0, 10, '10 sauts : 0,1'] }, ND_PLS)) },
+  { expr: 'Écart : 2,5 − 2,4 = 0,1, partagé en 10 sauts : une graduation vaut 0,1 : 10 = 0,01.', note: "Valeur d'une graduation = écart entre deux nombres écrits : nombre de sauts entre eux.", fig: ndAxeFig(Object.assign({ hl: [0, 10], acc: [0, 10, '10 sauts : 0,1'] }, ND_PLS)) },
   { expr: '2,47 = 2,4 + 0,07 = 2,4 + 7 × 0,01', note: "On part du nombre écrit juste avant 2,47 : c'est 2,4.", fig: ndAxeFig(Object.assign({ hl: [0] }, ND_PLS)) },
   { expr: 'On part de 2,4 et on avance de 7 graduations.', note: "2,41 ; 2,42 ; … ; 2,47.", fig: ndAxeFig(Object.assign({ hl: [0], sauts: [0, 7] }, ND_PLS)) },
   { expr: 'On place le point B : B(2,47).', note: "Vérification : B est entre 2,4 et 2,5, plus près de 2,5 (2,47 est proche de 2,5).", fig: ndAxeFig(Object.assign({ pt: [7, 'B', '2,47'] }, ND_PLS)) },
@@ -409,7 +409,7 @@ const ndPlacerSans0Demo = makeStepDemo(ND_PLACERSANS0_STEPS, 'ndPlacerSans0Displ
 const ND_L0 = { n: 10, lab: { 0: '0', 5: '1', 10: '2' } };
 const ND_LIRE0_STEPS = [
   { expr: 'Quelle est l\'abscisse du point C ?', note: "L'axe commence à 0. On cherche d'abord la valeur d'une graduation.", fig: ndAxeFig(Object.assign({ pt: [7, 'C'] }, ND_L0)) },
-  { expr: 'De 0 à 1, il y a 5 sauts : une graduation vaut 1 ÷ 5 = 0,2.', note: "Attention : ici, une graduation ne vaut pas 0,1 ! On compte toujours les sauts dans une unité.", fig: ndAxeFig(Object.assign({ pt: [7, 'C'], acc: [0, 5, '5 sauts : 1 unité'], gras: [0, 5] }, ND_L0)) },
+  { expr: 'De 0 à 1, il y a 5 sauts : une graduation vaut 1 : 5 = 0,2.', note: "Attention : ici, une graduation ne vaut pas 0,1 ! On compte toujours les sauts dans une unité.", fig: ndAxeFig(Object.assign({ pt: [7, 'C'], acc: [0, 5, '5 sauts : 1 unité'], gras: [0, 5] }, ND_L0)) },
   { expr: 'C est 2 graduations après 1.', note: "On part du nombre écrit le plus proche avant C : 1.", fig: ndAxeFig(Object.assign({ pt: [7, 'C'], hl: [5], sauts: [5, 7] }, ND_L0)) },
   { expr: '1 + 2 × 0,2 = 1 + 0,4 = 1,4', note: "On ajoute la valeur des sauts au nombre de départ.", fig: ndAxeFig(Object.assign({ pt: [7, 'C', '1,4'], hl: [5], sauts: [5, 7] }, ND_L0)) },
   { expr: 'L\'abscisse de C est 1,4 : C(1,4).', note: "On écrit le nom du point, puis son abscisse entre parenthèses.", fig: ndAxeFig(Object.assign({ pt: [7, 'C', '1,4'] }, ND_L0)) },
@@ -420,7 +420,7 @@ const ND_LS = { n: 10, lab: { 0: '7,5', 5: '8', 10: '8,5' }, origine: '0 n\'est 
 const ND_LIRESANS0_STEPS = [
   { expr: 'Quelle est l\'abscisse du point D ?', note: "Il n'y a pas de 0 sur l'axe : on ne compte pas depuis le début de l'axe.", fig: ndAxeFig(Object.assign({ pt: [8, 'D'] }, ND_LS)) },
   { expr: 'On repère deux nombres écrits : 7,5 et 8.', note: "Ils se suivent sur l'axe.", fig: ndAxeFig(Object.assign({ pt: [8, 'D'], hl: [0, 5] }, ND_LS)) },
-  { expr: 'Écart : 8 − 7,5 = 0,5, partagé en 5 sauts : une graduation vaut 0,5 ÷ 5 = 0,1.', note: "Valeur d'une graduation = écart ÷ nombre de sauts.", fig: ndAxeFig(Object.assign({ pt: [8, 'D'], hl: [0, 5], acc: [0, 5, '5 sauts : 0,5'] }, ND_LS)) },
+  { expr: 'Écart : 8 − 7,5 = 0,5, partagé en 5 sauts : une graduation vaut 0,5 : 5 = 0,1.', note: "Valeur d'une graduation = écart : nombre de sauts.", fig: ndAxeFig(Object.assign({ pt: [8, 'D'], hl: [0, 5], acc: [0, 5, '5 sauts : 0,5'] }, ND_LS)) },
   { expr: 'D est 3 graduations après 8.', note: "On part du nombre écrit le plus proche avant D : 8.", fig: ndAxeFig(Object.assign({ pt: [8, 'D'], hl: [5], sauts: [5, 8] }, ND_LS)) },
   { expr: '8 + 3 × 0,1 = 8 + 0,3 = 8,3', note: "On ajoute la valeur des sauts au nombre de départ.", fig: ndAxeFig(Object.assign({ pt: [8, 'D', '8,3'], hl: [5], sauts: [5, 8] }, ND_LS)) },
   { expr: 'L\'abscisse de D est 8,3 : D(8,3).', note: "Vérification : D est entre 8 et 8,5 ; 8,3 aussi.", fig: ndAxeFig(Object.assign({ pt: [8, 'D', '8,3'] }, ND_LS)) },

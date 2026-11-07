@@ -15,7 +15,7 @@
    à chaque étape.
    ============================================================ */
 
-/* ---- Division posée décimale : 57 ÷ 8 = 7,125 (exacte) ----
+/* ---- Division posée décimale : 57 : 8 = 7,125 (exacte) ----
    Colonnes ABSOLUES en valeur de position (pas une boîte à largeur fixe par
    ligne) : le reste d'une soustraction reste dans la colonne qu'il occupait
    (unités, dixièmes...), et chaque chiffre abaissé prend la colonne suivante
@@ -51,15 +51,15 @@ function ogShift(map){ const r={}; for(const k in map) r[(+k)+2]=map[k]; return 
 const OG_57s=ogShift(OG_DP_57), OG_M56s=ogShift(OG_DP_M56), OG_10s=ogShift(OG_DP_10), OG_M8s=ogShift(OG_DP_M8),
       OG_20s=ogShift(OG_DP_20), OG_M16s=ogShift(OG_DP_M16), OG_40s=ogShift(OG_DP_40), OG_M40s=ogShift(OG_DP_M40), OG_0s=ogShift(OG_DP_0);
 const OG_DIVISION_POSEE_STEPS = [
-  {rows:[{t:OG_57s}], quotient:'', note:"57 ÷ 8 : 8 × 7 = 56 est le plus proche de 57 sans le dépasser."},
+  {rows:[{t:OG_57s}], quotient:'', note:"57 : 8 : 8 × 7 = 56 est le plus proche de 57 sans le dépasser."},
   {rows:[{t:OG_57s},{t:OG_M56s,sub:true}], quotient:'7', note:"57 − 56 = 1. Le 1 reste sous la colonne des unités. Le reste n'est pas nul : la division continue."},
   {rows:[{t:OG_57s},{t:OG_M56s,sub:true},{t:OG_10s}], quotient:'7,', note:"On abaisse un chiffre des dixièmes (0) : dès cet instant, on place la virgule au quotient. Le reste 1 (unités) et le 0 abaissé (dixièmes) forment 10."},
-  {rows:[{t:OG_57s},{t:OG_M56s,sub:true},{t:OG_10s},{t:OG_M8s,sub:true}], quotient:'7,1', note:"10 ÷ 8 : 8 × 1 = 8 est le plus proche de 10 sans le dépasser. 10 − 8 = 2 (colonne des dixièmes)."},
+  {rows:[{t:OG_57s},{t:OG_M56s,sub:true},{t:OG_10s},{t:OG_M8s,sub:true}], quotient:'7,1', note:"10 : 8 : 8 × 1 = 8 est le plus proche de 10 sans le dépasser. 10 − 8 = 2 (colonne des dixièmes)."},
   {rows:[{t:OG_57s},{t:OG_M56s,sub:true},{t:OG_10s},{t:OG_M8s,sub:true},{t:OG_20s}], quotient:'7,1', note:"On abaisse un nouveau 0 (colonne des centièmes) : le reste 2 devient 20."},
-  {rows:[{t:OG_57s},{t:OG_M56s,sub:true},{t:OG_10s},{t:OG_M8s,sub:true},{t:OG_20s},{t:OG_M16s,sub:true}], quotient:'7,12', note:"20 ÷ 8 : 8 × 2 = 16 est le plus proche de 20 sans le dépasser. 20 − 16 = 4 (colonne des centièmes)."},
+  {rows:[{t:OG_57s},{t:OG_M56s,sub:true},{t:OG_10s},{t:OG_M8s,sub:true},{t:OG_20s},{t:OG_M16s,sub:true}], quotient:'7,12', note:"20 : 8 : 8 × 2 = 16 est le plus proche de 20 sans le dépasser. 20 − 16 = 4 (colonne des centièmes)."},
   {rows:[{t:OG_57s},{t:OG_M56s,sub:true},{t:OG_10s},{t:OG_M8s,sub:true},{t:OG_20s},{t:OG_M16s,sub:true},{t:OG_40s}], quotient:'7,12', note:"On abaisse un nouveau 0 (colonne des millièmes) : le reste 4 devient 40."},
-  {rows:[{t:OG_57s},{t:OG_M56s,sub:true},{t:OG_10s},{t:OG_M8s,sub:true},{t:OG_20s},{t:OG_M16s,sub:true},{t:OG_40s},{t:OG_M40s,sub:true}], quotient:'7,125', note:"40 ÷ 8 = 5 exactement (8 × 5 = 40). 40 − 40 = 0."},
-  {rows:[{t:OG_57s},{t:OG_M56s,sub:true},{t:OG_10s},{t:OG_M8s,sub:true},{t:OG_20s},{t:OG_M16s,sub:true},{t:OG_40s},{t:OG_M40s,sub:true},{t:OG_0s}], quotient:'7,125', note:"Le reste est 0 : la division est terminée. 57 ÷ 8 = 7,125 (valeur exacte)."},
+  {rows:[{t:OG_57s},{t:OG_M56s,sub:true},{t:OG_10s},{t:OG_M8s,sub:true},{t:OG_20s},{t:OG_M16s,sub:true},{t:OG_40s},{t:OG_M40s,sub:true}], quotient:'7,125', note:"40 : 8 = 5 exactement (8 × 5 = 40). 40 − 40 = 0."},
+  {rows:[{t:OG_57s},{t:OG_M56s,sub:true},{t:OG_10s},{t:OG_M8s,sub:true},{t:OG_20s},{t:OG_M16s,sub:true},{t:OG_40s},{t:OG_M40s,sub:true},{t:OG_0s}], quotient:'7,125', note:"Le reste est 0 : la division est terminée. 57 : 8 = 7,125 (valeur exacte)."},
 ];
 let ogDivisionPoseeIdx = 0;
 function ogRenderDivisionPosee(){
@@ -98,9 +98,9 @@ document.getElementById('cours-demo-multiplication-division-6e').innerHTML = `
   </table>
   <div>
     <p style="margin:0 0 4px;"><b>Exemples</b> :</p>
-    <p style="margin:2px 0;">84 ÷ 10 = 84,0 ÷ 10 = 8,4</p>
-    <p style="margin:2px 0;">305,2 ÷ 100 = 3,052</p>
-    <p style="margin:2px 0;">9 ÷ 1 000 = 0009 ÷ 1 000 = 0,009</p>
+    <p style="margin:2px 0;">84 : 10 = 84,0 : 10 = 8,4</p>
+    <p style="margin:2px 0;">305,2 : 100 = 3,052</p>
+    <p style="margin:2px 0;">9 : 1 000 = 0009 : 1 000 = 0,009</p>
   </div>
 </div>
 
@@ -162,18 +162,18 @@ document.getElementById('cours-demo-multiplication-division-6e').innerHTML = `
     <button class="btn secondary" onclick="ogDivisionPoseeReset()">Recommencer</button>
   </div>
 </div>
-<p class="hint" style="margin:8px 0 0;">57 est la <b>valeur exacte</b> du dividende : 57 ÷ 8 = 7,125 exactement (le reste finit par tomber à 0).</p>
+<p class="hint" style="margin:8px 0 0;">57 est la <b>valeur exacte</b> du dividende : 57 : 8 = 7,125 exactement (le reste finit par tomber à 0).</p>
 
 <p style="margin:18px 0 8px;"><b>Exemple 2</b> : effectue la division de 5,3 par 9.</p>
 <p style="margin:2px 0;">On pose la division comme précédemment. Le quotient commence par 0, puis 5, puis 8, puis 8, puis 8… Les chiffres 8 se répètent indéfiniment : cette division ne s'arrête jamais.</p>
-<p style="margin:2px 0;">On donne alors une <b>valeur approchée</b> du quotient, à la précision demandée. Au millième, 5,3 ÷ 9 ≈ 0,589.</p>
+<p style="margin:2px 0;">On donne alors une <b>valeur approchée</b> du quotient, à la précision demandée. Au millième, 5,3 : 9 ≈ 0,589.</p>
 <div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">
-  Remarque : l'algorithme de certaines divisions posées ne s'arrête jamais, comme pour 5,3 ÷ 9.
+  Remarque : l'algorithme de certaines divisions posées ne s'arrête jamais, comme pour 5,3 : 9.
 </div>
 
 <p style="margin:18px 0 8px;"><b>Exemple 3</b> : Farid a payé 42,50 € pour 25 L d'essence. Quel est le prix d'un litre d'essence ?</p>
 <p style="margin:2px 0;">Pour résoudre ce genre de problème, on peut utiliser la calculatrice.</p>
-<p style="margin:2px 0;">On tape sur la calculatrice : <span style="font-family:'JetBrains Mono',monospace;background:rgba(28,43,57,.06);padding:2px 6px;border-radius:4px;">4 2 . 5 0 ÷ 2 5 =</span> et on lit <b>1,7</b>. Un litre d'essence coûte donc 1,70 €.</p>
+<p style="margin:2px 0;">On tape sur la calculatrice : <span style="font-family:'JetBrains Mono',monospace;background:rgba(28,43,57,.06);padding:2px 6px;border-radius:4px;">4 2 . 5 0 : 2 5 =</span> et on lit <b>1,7</b>. Un litre d'essence coûte donc 1,70 €.</p>
 `;
 
 /* ================= METHODE ================= */
@@ -293,9 +293,9 @@ document.getElementById('exos-demo-multiplication-division-6e').innerHTML = `
   <h3>Exercices</h3>
   <div class="exo-card">
     <div class="num">Exercice 1</div>
-    Calcule sans poser d'opération : 7,3 &times; 100 ; 512 ÷ 1 000 ; 9,4 &times; 0,01 ; 6 &times; 0,1.
+    Calcule sans poser d'opération : 7,3 &times; 100 ; 512 : 1 000 ; 9,4 &times; 0,01 ; 6 &times; 0,1.
     <button type="button" class="exo-correction-toggle" data-target="c6-n4m-c1" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
-    <div class="exo-correction" id="c6-n4m-c1"><div><p style="margin:0 0 6px;">7,3 × 100 = <b>730</b> (la virgule se décale de deux rangs vers la droite)</p><p style="margin:0 0 6px;">512 ÷ 1 000 = <b>0,512</b> (trois rangs vers la gauche)</p><p style="margin:0 0 6px;">9,4 × 0,01 = <b>0,094</b> (multiplier par 0,01, c'est diviser par 100)</p><p style="margin:0 0 6px;">6 × 0,1 = <b>0,6</b> (multiplier par 0,1, c'est diviser par 10)</p></div></div>
+    <div class="exo-correction" id="c6-n4m-c1"><div><p style="margin:0 0 6px;">7,3 × 100 = <b>730</b> (la virgule se décale de deux rangs vers la droite)</p><p style="margin:0 0 6px;">512 : 1 000 = <b>0,512</b> (trois rangs vers la gauche)</p><p style="margin:0 0 6px;">9,4 × 0,01 = <b>0,094</b> (multiplier par 0,01, c'est diviser par 100)</p><p style="margin:0 0 6px;">6 × 0,1 = <b>0,6</b> (multiplier par 0,1, c'est diviser par 10)</p></div></div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 2</div>
@@ -313,13 +313,13 @@ document.getElementById('exos-demo-multiplication-division-6e').innerHTML = `
     <div class="num">Exercice 4</div>
     Pose et effectue la division de 63 par 4. Donne la valeur exacte du quotient.
     <button type="button" class="exo-correction-toggle" data-target="c6-n4m-c4" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
-    <div class="exo-correction" id="c6-n4m-c4"><div><p style="margin:0 0 6px;">63 ÷ 4 : en 6 dizaines, 1 fois 4, reste 2 ; en 23, 5 fois 4, reste 3 : quotient 15, reste 3.</p><p style="margin:0 0 6px;">On continue après la virgule : 30 dixièmes ÷ 4 = 7, reste 2 ; 20 centièmes ÷ 4 = 5, reste 0.</p><p style="margin:0 0 6px;"><b>63 ÷ 4 = 15,75</b> (valeur exacte : le reste est nul).</p></div></div>
+    <div class="exo-correction" id="c6-n4m-c4"><div><p style="margin:0 0 6px;">63 : 4 : en 6 dizaines, 1 fois 4, reste 2 ; en 23, 5 fois 4, reste 3 : quotient 15, reste 3.</p><p style="margin:0 0 6px;">On continue après la virgule : 30 dixièmes : 4 = 7, reste 2 ; 20 centièmes : 4 = 5, reste 0.</p><p style="margin:0 0 6px;"><b>63 : 4 = 15,75</b> (valeur exacte : le reste est nul).</p></div></div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 5</div>
     Pose et effectue la division de 7,1 par 6. Donne une valeur approchée du quotient au centième.
     <button type="button" class="exo-correction-toggle" data-target="c6-n4m-c5" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
-    <div class="exo-correction" id="c6-n4m-c5"><div><p style="margin:0 0 6px;">7,1 ÷ 6 : 7 ÷ 6 = 1, reste 1 ; 11 dixièmes ÷ 6 = 1, reste 5 ; 50 centièmes ÷ 6 = 8, reste 2 ; 20 millièmes ÷ 6 = 3, reste 2… : 7,1 ÷ 6 = 1,183…</p><p style="margin:0 0 6px;">La division ne s'arrête pas (le reste 2 revient sans fin).</p><p style="margin:0 0 6px;"><b>Valeur approchée au centième : 1,18.</b></p></div></div>
+    <div class="exo-correction" id="c6-n4m-c5"><div><p style="margin:0 0 6px;">7,1 : 6 : 7 : 6 = 1, reste 1 ; 11 dixièmes : 6 = 1, reste 5 ; 50 centièmes : 6 = 8, reste 2 ; 20 millièmes : 6 = 3, reste 2… : 7,1 : 6 = 1,183…</p><p style="margin:0 0 6px;">La division ne s'arrête pas (le reste 2 revient sans fin).</p><p style="margin:0 0 6px;"><b>Valeur approchée au centième : 1,18.</b></p></div></div>
   </div>
 </div>
 `;
@@ -363,7 +363,7 @@ DEMO_QUIZZES['6e|Multiplication et division'] = [
    opts:["Le nombre de chiffres du plus grand facteur","Le nombre total de chiffres après la virgule des deux facteurs","Toujours 2 chiffres après la virgule"], correct:1},
   {q:"Dans une division posée, on place la virgule au quotient...",
    opts:["Dès le début du calcul","Dès qu'on abaisse le premier chiffre des dixièmes du dividende","Seulement à la toute fin"], correct:1},
-  {q:"84 ÷ 10 = ...",
+  {q:"84 : 10 = ...",
    opts:["0,84","8,4","840"], correct:1},
   {q:"Pour diviser par 100, le chiffre des unités devient...",
    opts:["le chiffre des dizaines","le chiffre des centièmes","le chiffre des centaines"], correct:1},

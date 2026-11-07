@@ -55,7 +55,7 @@ ${cm1Demo('c2-do-pts', 'Placer un point dans un repère', 'Place le point qui co
   demos: [
     ['c2-do-circ', [
       { expr: 'Le disque entier = 200 élèves', note: 'Le disque représente le total.' },
-      { expr: 'un quart : 200 ÷ 4 = 50', note: 'On calcule d\'abord un quart du total.' },
+      { expr: 'un quart : 200 : 4 = 50', note: 'On calcule d\'abord un quart du total.' },
       { expr: 'trois quarts : 3 × 50 = 150', note: 'Le secteur occupe trois quarts du disque.' },
       { expr: '150 élèves mangent à la cantine.', note: 'Phrase réponse.' },
     ]],

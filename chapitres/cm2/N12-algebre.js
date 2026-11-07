@@ -34,10 +34,10 @@ ${cm1Rem('La même écriture sert pour <b>n\'importe quel</b> nombre de t-shirts
 ${cm1Lecon(3, 'Résoudre un problème algébrique')}
 ${cm1Exemple('2 paires de ciseaux et 3 stylos coûtent 20 €. Une paire de ciseaux coûte 4 €. Combien coûte un stylo ?', ['On note C le prix d\'une paire de ciseaux et S celui d\'un stylo : (2 × C) + (3 × S) = 20.'])}
 ${cm1Redac('Prix des 3 stylos', { suite: ['2 × 4 = 8', '20 − 8 = 12'] }, 'Les 3 stylos coûtent 12 €.')}
-${cm1Redac('Prix d\'un stylo', '12 ÷ 3 = 4', 'Un stylo coûte 4 €. On vérifie : 8 + 12 donne bien 20.')}
+${cm1Redac('Prix d\'un stylo', '12 : 3 = 4', 'Un stylo coûte 4 €. On vérifie : 8 + 12 donne bien 20.')}
 ${cm1Exemple('Deux nombres ont pour somme 50 ; l\'un vaut 8 de plus que l\'autre. Quels sont-ils ?')}
 ${ce2AnimBarres('c2-al-barres', { unite: 2, lignes: [['Petit', [[60, '?', '#2EA8C9', 'Le petit nombre : on ne le connaît pas.']]], ['Grand', [[60, '?', '#2EA8C9', 'Le grand nombre, c\'est le petit…'], [24, '8', '#E9C46A', '… et encore 8.']]]], total: '50', totalTexte: 'En tout, 50. Sans les 8, il reste 50 − 8 = 42, soit deux fois le petit nombre : le petit vaut <b>21</b>, le grand <b>29</b>.' })}
-${cm1Redac('Les deux nombres', { suite: ['50 − 8 = 42', '42 ÷ 2 = 21', '21 + 8 = 29'] }, 'Les deux nombres sont 21 et 29.')}
+${cm1Redac('Les deux nombres', { suite: ['50 − 8 = 42', '42 : 2 = 21', '21 + 8 = 29'] }, 'Les deux nombres sont 21 et 29.')}
 
 ${cm1Lecon(4, 'Suites évolutives')}
 ${cm1Exemple('Suite de nombres : 7 ; 15 ; 31 ; 63 ; 127 ; …', ['Règle : on multiplie par 2 et on ajoute 1.'])}
@@ -50,7 +50,7 @@ ${cm1Lecon(5, 'Programmes de calcul')}
 ${cm1Exemple(`Programme :${cm1Liste(['choisir un nombre', 'ajouter 2', 'multiplier le résultat par 4', 'retirer 3'])}`)}
 ${cm1Redac('Avec 5', { suite: ['5 + 2 = 7', '7 × 4 = 28', '28 − 3 = 25'] }, 'Avec 5, le programme donne 25.')}
 ${cm1Rem('En une seule écriture : ((5 + 2) × 4) − 3. Avec une lettre n : ((n + 2) × 4) − 3.')}
-${cm1Redac('Nombre choisi si on obtient 37', { suite: ['37 + 3 = 40', '40 ÷ 4 = 10', '10 − 2 = 8'] }, 'On remonte le programme en faisant les opérations inverses : le nombre choisi était 8.')}
+${cm1Redac('Nombre choisi si on obtient 37', { suite: ['37 + 3 = 40', '40 : 4 = 10', '10 − 2 = 8'] }, 'On remonte le programme en faisant les opérations inverses : le nombre choisi était 8.')}
 `,
   methode: `
 ${cm1Demo('c2-al-trou', 'Trouver le nombre manquant', 'Complète : 250 − … = 9 × 12.')}
@@ -73,12 +73,12 @@ ${cm1Demo('c2-al-balance', 'Raisonner avec deux inconnues simples', '3 cahiers e
   exos: cm1Exos('c2al', [
     [`Trouve le nombre manquant.${cm1Liste([`45 + ${Q} = 8 × 9`, `${Q} × 7 = 100 − 16`, `300 − ${Q} = 25 × 4`])}`,
       cm1Redac(`45 + ${Q} = 8 × 9`, { suite: ['8 × 9 = 72', `${Q} = 72 − 45`, `${Q} = 27`] }, 'Le nombre manquant est 27.')
-      + cm1Redac(`${Q} × 7 = 100 − 16`, { suite: ['100 − 16 = 84', `${Q} = 84 ÷ 7`, `${Q} = 12`] }, 'Le nombre manquant est 12.')
+      + cm1Redac(`${Q} × 7 = 100 − 16`, { suite: ['100 − 16 = 84', `${Q} = 84 : 7`, `${Q} = 12`] }, 'Le nombre manquant est 12.')
       + cm1Redac(`300 − ${Q} = 25 × 4`, { suite: ['25 × 4 = 100', `${Q} = 300 − 100`, `${Q} = 200`] }, 'Le nombre manquant est 200.')],
-    [`Vrai ou faux ?${cm1Liste(['15 + 25 = 50 − 10', '6 × 7 = 40 + 3', '100 ÷ 4 = 5 × 5'])}`,
+    [`Vrai ou faux ?${cm1Liste(['15 + 25 = 50 − 10', '6 × 7 = 40 + 3', '100 : 4 = 5 × 5'])}`,
       cm1Redac('15 + 25 = 50 − 10', { suite: ['15 + 25 = 40', '50 − 10 = 40'] }, 'C\'est vrai : les deux membres valent 40.')
       + cm1Redac('6 × 7 = 40 + 3', { suite: ['6 × 7 = 42', '40 + 3 = 43'] }, 'C\'est faux : 42 et 43 sont différents.')
-      + cm1Redac('100 ÷ 4 = 5 × 5', { suite: ['100 ÷ 4 = 25', '5 × 5 = 25'] }, 'C\'est vrai : les deux membres valent 25.')],
+      + cm1Redac('100 : 4 = 5 × 5', { suite: ['100 : 4 = 25', '5 × 5 = 25'] }, 'C\'est vrai : les deux membres valent 25.')],
     ['Un taxi coûte 4 € de prise en charge plus 2 € par km. Écris le prix pour K km. Combien pour 15 km ?',
       cm1Redac('Prix pour K km', '(K × 2) + 4', 'Le prix en euros est (K × 2) + 4.')
       + cm1Redac('Prix pour 15 km', ['(15 × 2) + 4', '30 + 4', '34'], 'Pour 15 km, on paie 34 €.')],
@@ -90,9 +90,9 @@ ${cm1Demo('c2-al-balance', 'Raisonner avec deux inconnues simples', '3 cahiers e
       + cm1Redac('Étape à 144 carrés', '12 × 12 = 144', 'Il y a 144 carrés à l\'étape 12.')],
     [`Programme de calcul :${cm1Liste(['choisir un nombre', 'le multiplier par 3', 'ajouter 5', 'multiplier par 2'])}Que donne-t-il avec 4 ? Quel nombre a été choisi si on obtient 52 ?`,
       cm1Redac('Avec 4', { suite: ['4 × 3 = 12', '12 + 5 = 17', '17 × 2 = 34'] }, 'Avec 4, le programme donne 34.')
-      + cm1Redac('Nombre choisi pour obtenir 52', { suite: ['52 ÷ 2 = 26', '26 − 5 = 21', '21 ÷ 3 = 7'] }, 'En remontant le programme, on trouve que le nombre choisi était 7.')],
+      + cm1Redac('Nombre choisi pour obtenir 52', { suite: ['52 : 2 = 26', '26 − 5 = 21', '21 : 3 = 7'] }, 'En remontant le programme, on trouve que le nombre choisi était 7.')],
     ['La somme de deux nombres est 100 ; l\'un vaut 3 fois l\'autre. Quels sont-ils ?',
-      cm1Redac('Les deux nombres', { suite: ['1 + 3 = 4 parts égales', '100 ÷ 4 = 25', '25 × 3 = 75'] }, 'Les deux nombres sont 25 et 75.')],
+      cm1Redac('Les deux nombres', { suite: ['1 + 3 = 4 parts égales', '100 : 4 = 25', '25 × 3 = 75'] }, 'Les deux nombres sont 25 et 75.')],
     ['Un sac de billes et 3 billes pèsent autant que 45 billes (le sac est plein, toutes les billes identiques). Combien de billes dans le sac ?',
       cm1Redac('Billes dans le sac', '45 − 3 = 42', 'Le sac contient 42 billes.')],
   ], { titre: 'Rédaction type : « Égalité à trou »', lignes: [['6 × 8 = 48', 'Je calcule le membre complet.'], ['■ = 178 − 48 = 130', 'Je cherche le nombre manquant.'], ['178 − 130 = 48 ✔', 'Je vérifie.']] }),

@@ -73,7 +73,7 @@ PLANCHES['5e|Parallélogrammes particuliers'] = [
         corr: cm1Redac('Méthode', { suite: ['Je trace une diagonale de 6 cm et son milieu O.', 'Je trace la perpendiculaire en O et je reporte 3 cm de chaque côté.'] }, 'Diagonales de même longueur, perpendiculaires et de même milieu : c\'est un carré.') },
       { etoiles: 2, col: 1, consigne: 'Place D pour que ABCD soit un carré (carré « penché »).', ...quatrieme([1, 3], [4, 1], [6, 4], 8, 7) },
       { etoiles: 2, cahier: true, consigne: 'Un carré a un périmètre de 28 cm. Calcule la longueur de son côté puis son aire.',
-        corr: cm1Redac('Côté et aire du carré', { suite: ['c = 28 ÷ 4 = 7', 'A = 7 × 7 = 49'] }, 'Le côté mesure 7 cm et l\'aire vaut 49 cm².') },
+        corr: cm1Redac('Côté et aire du carré', { suite: ['c = 28 : 4 = 7', 'A = 7 × 7 = 49'] }, 'Le côté mesure 7 cm et l\'aire vaut 49 cm².') },
     ] },
   { titre: 'Reconnaître et justifier', duree: '40 min',
     attendus: ['Identifier un quadrilatère à partir de ses codages', 'Choisir la propriété qui justifie la nature d\'un quadrilatère', 'Rédiger une démonstration courte'],

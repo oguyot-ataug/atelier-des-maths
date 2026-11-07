@@ -223,7 +223,7 @@ document.getElementById('exos-demo-arithmetique-3e').innerHTML = `
   ${ar3Exo(7, 'Un collège organise une sortie avec 168 élèves de 4e et 120 élèves de 3e. On veut former des groupes, tous avec le même nombre d\'élèves de 4e et le même nombre d\'élèves de 3e, en répartissant tous les élèves. Quel est le plus grand nombre de groupes possible ? Combien d\'élèves de chaque niveau par groupe ?', [
     '168 = ' + ar3Tex('2^3 \\times 3 \\times 7') + ' et 120 = ' + ar3Tex('2^3 \\times 3 \\times 5') + '.',
     'Le nombre de groupes doit diviser 168 et 120. Le plus grand diviseur commun est formé des facteurs communs : ' + ar3Tex('2^3 \\times 3 = 24') + '.',
-    'On peut faire 24 groupes, avec 168 ÷ 24 = 7 élèves de 4e et 120 ÷ 24 = 5 élèves de 3e par groupe.'])}
+    'On peut faire 24 groupes, avec 168 : 24 = 7 élèves de 4e et 120 : 24 = 5 élèves de 3e par groupe.'])}
   ${ar3Exo(8, 'Vrai ou faux ? Justifie. a) Le produit de deux nombres premiers est un nombre premier. b) Un nombre divisible par 2 et par 3 est divisible par 6. c) Un nombre divisible par 4 et par 6 est divisible par 24.', [
     'a) Faux : 3 et 5 sont premiers, mais 3 × 5 = 15 est divisible par 3 et par 5.',
     'b) Vrai : 2 et 3 apparaissent tous les deux dans sa décomposition, donc 2 × 3 = 6 est un de ses diviseurs.',
@@ -243,7 +243,7 @@ function ar3PremierTester(){
     if(r === 0){ div = d; break; }
     if(essais.length > 60) break;
   }
-  const lignes = essais.map(([d, r]) => `<div style="display:flex;gap:10px;justify-content:center;font-family:'JetBrains Mono',monospace;"><span>${ar3N(n)} ÷ ${d}</span><span style="color:${r ? '#8A919C' : AR3_ROUGE};">${r ? 'reste ' + r : '= ' + ar3N(n / d) + ' tombe juste'}</span></div>`).join('');
+  const lignes = essais.map(([d, r]) => `<div style="display:flex;gap:10px;justify-content:center;font-family:'JetBrains Mono',monospace;"><span>${ar3N(n)} : ${d}</span><span style="color:${r ? '#8A919C' : AR3_ROUGE};">${r ? 'reste ' + r : '= ' + ar3N(n / d) + ' tombe juste'}</span></div>`).join('');
   const dern = essais.length ? essais[essais.length - 1][0] : 1;
   let conclu;
   if(div) conclu = `<b style="color:${AR3_ROUGE};">${ar3N(n)} n'est pas premier</b> : ${ar3N(n)} = ${div} × ${ar3N(n / div)}.`;
@@ -297,7 +297,7 @@ const AR3_PARTAGE_STEPS = [
   { expr: '126 = 2 × 3 × 3 × 7 = ' + ar3Tex('2 \\times 3^2 \\times 7'), note: 'On décompose 126.' },
   { expr: '90 = 2 × 3 × 3 × 5 = ' + ar3Tex('2 \\times 3^2 \\times 5'), note: 'On décompose 90.' },
   { expr: 'Facteurs communs : 2 × 3 × 3 = 18', note: 'Le plus grand diviseur commun est le produit des facteurs premiers communs.' },
-  { expr: '18 bouquets, avec 126 ÷ 18 = 7 roses et 90 ÷ 18 = 5 tulipes chacun.', note: 'On conclut en répondant à la question.' },
+  { expr: '18 bouquets, avec 126 : 18 = 7 roses et 90 : 18 = 5 tulipes chacun.', note: 'On conclut en répondant à la question.' },
 ];
 const ar3PartageDemo = makeStepDemo(AR3_PARTAGE_STEPS, 'ar3-partageDisplay');
 

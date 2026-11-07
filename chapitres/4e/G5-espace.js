@@ -131,7 +131,7 @@ ${es4Deux(r4Ex('Exemple : patron d\'un cône de rayon 2 cm et de génératrice 6
   ['Le patron est formé d\'un <b>disque</b> de rayon 2 cm et d\'un <b>secteur de disque</b> de rayon 6 cm (la génératrice).', ''],
   ['La longueur de l\'arc du secteur est égale au périmètre de la base : 2 × π × 2 = 4π cm.', 'Quand on enroule le secteur, son arc fait le tour de la base.'],
   ['L\'angle du secteur est proportionnel à la longueur de son arc : un tour complet (360°) correspondrait à 2 × π × 6 = 12π cm.', ''],
-  [es4Tex('\\text{angle} = \\dfrac{360 \\times 4\\pi}{12\\pi} = 120°'), 'Raccourci : angle = 360° × rayon ÷ génératrice.'],
+  [es4Tex('\\text{angle} = \\dfrac{360 \\times 4\\pi}{12\\pi} = 120°'), 'Raccourci : angle = 360° × rayon : génératrice.'],
 ]), es4PatronCone(2, 6, 17))}
 
 <div class="lesson-header"><span class="num">3</span><h3>Le volume d'une pyramide et d'un cône</h3></div>
@@ -266,7 +266,7 @@ document.getElementById('exos-demo-espace-4e').innerHTML = `
   <div class="redaction-template">
     <div class="we-row"><span class="we-expr">${es4Tex('\\mathcal{A}_{\\text{base}} = \\pi \\times 3^2 = 9\\pi') + ' cm²'}</span><span class="we-comment">La base est un disque de rayon 3 cm.</span></div>
     <div class="we-row"><span class="we-expr">${es4Tex('\\mathcal{V} = \\dfrac{\\mathcal{A}_{\\text{base}} \\times h}{3} = \\dfrac{9\\pi \\times 7}{3}')}</span><span class="we-comment">On écrit la formule et on remplace.</span></div>
-    <div class="we-row"><span class="we-expr">${es4Tex('\\mathcal{V} = 21\\pi') + ' cm³'}</span><span class="we-comment">Valeur exacte : 9 × 7 ÷ 3 = 21.</span></div>
+    <div class="we-row"><span class="we-expr">${es4Tex('\\mathcal{V} = 21\\pi') + ' cm³'}</span><span class="we-comment">Valeur exacte : 9 × 7 : 3 = 21.</span></div>
     <div class="we-row"><span class="we-expr" style="font-family:inherit;">Le volume du cône est 21π cm³, soit environ 66 cm³.</span><span class="we-comment">21 × π ≈ 65,97.</span></div>
   </div>
 </div>
@@ -282,7 +282,7 @@ document.getElementById('exos-demo-espace-4e').innerHTML = `
   ${es4Exo(4, 'Calcule le volume d\'un cône de rayon 4 cm et de hauteur 9 cm (valeur exacte, puis arrondie au dixième).', [
     'Aire de la base : ' + es4Tex('\\pi \\times 4^2 = 16\\pi') + ' cm². ' + es4Tex('\\mathcal{V} = \\dfrac{16\\pi \\times 9}{3} = 48\\pi') + ' cm³ ≈ 150,8 cm³.'])}
   ${es4Exo(5, 'Quel est l\'angle du secteur dans le patron d\'un cône de rayon 3 cm et de génératrice 9 cm ?', [
-    'Angle = 360° × 3 ÷ 9 = <b>120°</b> (l\'arc mesure 2π × 3 = 6π cm, et le cercle entier de rayon 9 cm mesurerait 18π cm : 6π est le tiers de 18π).'])}
+    'Angle = 360° × 3 : 9 = <b>120°</b> (l\'arc mesure 2π × 3 = 6π cm, et le cercle entier de rayon 9 cm mesurerait 18π cm : 6π est le tiers de 18π).'])}
   ${es4Exo(6, 'Une pyramide a un volume de 50 cm³ et une base d\'aire 15 cm². Quelle est sa hauteur ?', [
     es4Tex('\\dfrac{15 \\times h}{3} = 50') + ', donc ' + es4Tex('15 \\times h = 150') + ' et ' + es4Tex('h = 10') + ' cm.'])}
   ${es4Exo(7, 'La pyramide du Louvre est une pyramide régulière à base carrée d\'environ 35 m de côté et 21,6 m de hauteur. Calcule son volume.', [
@@ -359,7 +359,7 @@ let es4CubeRaf = null;
 function es4Cube(){
   const t = Number(document.getElementById('es4-cube').value) / 100, s = document.getElementById('es4-cubeSvg'); if(!s) return;
   s.innerHTML = e5DessinPolys(es4CubePolys(t), -0.62, 0.42, 38 - 8 * t, 150, 125);
-  document.getElementById('es4-cubeRes').innerHTML = t < 0.02 ? 'Le cube, de côté <i>a</i>, a pour volume <i>a</i> × <i>a</i> × <i>a</i> = <i>a</i>³.' : `Chaque pyramide a pour base une face du cube (aire <i>a</i>²) et pour hauteur <i>a</i> : les 3 sont identiques, donc chacune a pour volume <b>${es4Tex('\\dfrac{a^3}{3} = \\dfrac{a^2 \\times a}{3}')}</b> = aire de la base × hauteur ÷ 3.`;
+  document.getElementById('es4-cubeRes').innerHTML = t < 0.02 ? 'Le cube, de côté <i>a</i>, a pour volume <i>a</i> × <i>a</i> × <i>a</i> = <i>a</i>³.' : `Chaque pyramide a pour base une face du cube (aire <i>a</i>²) et pour hauteur <i>a</i> : les 3 sont identiques, donc chacune a pour volume <b>${es4Tex('\\dfrac{a^3}{3} = \\dfrac{a^2 \\times a}{3}')}</b> = aire de la base × hauteur : 3.`;
   renderStaticMath(document.getElementById('es4-cubeRes'));
 }
 function es4CubeAnimer(cible){
@@ -409,7 +409,7 @@ DEMO_REGISTRY['4e|Espace'] = {
 DEMO_QUIZZES['4e|Espace'] = [
   { q: 'Une pyramide à base hexagonale a combien de faces latérales ?', opts: ['4', '6', '7'], correct: 1 },
   { q: 'La base d\'un cône de révolution est...', opts: ['un disque', 'un triangle', 'un rectangle'], correct: 0 },
-  { q: 'Le volume d\'une pyramide est égal à...', opts: ['aire de la base × hauteur', 'aire de la base × hauteur ÷ 3', 'aire de la base × hauteur ÷ 2'], correct: 1 },
+  { q: 'Le volume d\'une pyramide est égal à...', opts: ['aire de la base × hauteur', 'aire de la base × hauteur : 3', 'aire de la base × hauteur : 2'], correct: 1 },
   { q: 'Une génératrice d\'un cône relie...', opts: ['le sommet à un point du cercle de base', 'le centre de la base au sommet', 'deux points du cercle de base'], correct: 0 },
   { q: 'Une pyramide a une base de 9 cm² et une hauteur de 4 cm. Son volume est...', opts: ['36 cm³', '12 cm³', '13 cm³'], correct: 1 },
   { q: 'Un tétraèdre a...', opts: ['3 faces', '4 faces', '6 faces'], correct: 1 },

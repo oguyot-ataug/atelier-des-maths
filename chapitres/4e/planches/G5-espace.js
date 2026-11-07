@@ -72,7 +72,7 @@ PLANCHES['4e|Espace'] = [
       { etoiles: 3, cahier: true, consigne: 'Une maison a la forme d\'un pavé de 10 m sur 8 m et de 6 m de haut, surmonté d\'un toit en pyramide de 3 m de haut. Calcule le volume total.',
         corr: cm1Redac('Pavé', '10 × 8 × 6 = 480', 'Le pavé a un volume de 480 m³.') + cm1Redac('Toit', '10 × 8 × 3 : 3 = 80', 'Le toit a un volume de 80 m³.') + cm1Redac('Total', '480 + 80 = 560', 'La maison a un volume de 560 m³.') },
       { etoiles: 1, col: 1, consigne: 'Convertis.', ...P3.rmp([['1 m³ = @ dm³', '1 000'], ['1 dm³ = @ L', 1], ['2 500 cm³ = @ L', '2,5']], 3) },
-      { etoiles: 2, consigne: 'Volume d\'une pyramide : (aire de la base × hauteur) ÷ 3.', ...P3.rmp([['base 9 m², hauteur 4 m : @ m³', 12], ['base 30 cm², hauteur 10 cm : @ cm³', 100], ['base 12 cm², hauteur 5 cm : @ cm³', 20], ['base 6 m², hauteur 7 m : @ m³', 14]], 2) },
+      { etoiles: 2, consigne: 'Volume d\'une pyramide : (aire de la base × hauteur) : 3.', ...P3.rmp([['base 9 m², hauteur 4 m : @ m³', 12], ['base 30 cm², hauteur 10 cm : @ cm³', 100], ['base 12 cm², hauteur 5 cm : @ cm³', 20], ['base 6 m², hauteur 7 m : @ m³', 14]], 2) },
     ] },
 ];
 })();

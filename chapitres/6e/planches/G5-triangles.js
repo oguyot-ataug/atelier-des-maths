@@ -78,7 +78,7 @@ PLANCHES['6e|Construction de triangles'] = [
       { etoiles: 3, col: 1, cahier: true, consigne: 'Construis un triangle EFG avec EF = 6 cm et FG = 6 cm, dont le périmètre est 16 cm. Quelle est sa nature ?',
         corr: cm1Redac('Longueur EG', '16 − 6 − 6 = 4', 'EG = 4 cm ; EF = FG : le triangle EFG est isocèle en F.') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Combien de triangles différents (côtés entiers en cm) ont un périmètre de 9 cm ? Cite-les.',
-        corr: cm1Redac('Plus grand côté', '9 ÷ 2 = 4,5', 'Le plus grand côté doit être plus petit que la somme des deux autres, donc plus petit que la moitié du périmètre : il mesure au plus 4 cm.') + cm1Redac('Triangles possibles', { suite: ['1 + 4 + 4 = 9', '2 + 3 + 4 = 9', '3 + 3 + 3 = 9'] }, 'Il y a 3 triangles : (1 ; 4 ; 4), (2 ; 3 ; 4) et (3 ; 3 ; 3).') },
+        corr: cm1Redac('Plus grand côté', '9 : 2 = 4,5', 'Le plus grand côté doit être plus petit que la somme des deux autres, donc plus petit que la moitié du périmètre : il mesure au plus 4 cm.') + cm1Redac('Triangles possibles', { suite: ['1 + 4 + 4 = 9', '2 + 3 + 4 = 9', '3 + 3 + 3 = 9'] }, 'Il y a 3 triangles : (1 ; 4 ; 4), (2 ; 3 ; 4) et (3 ; 3 ; 3).') },
       { etoiles: 3, cahier: true, consigne: 'Sur le dessin, un triangle semble isocèle, mais il n\'y a aucun codage. Peut-on affirmer qu\'il est isocèle ? Comment le vérifier ?',
         corr: cm1Redac('Réponse', 'On ne conclut jamais d\'après l\'aspect du dessin.', 'On vérifie en mesurant (ou au compas) que deux côtés ont la même longueur ; sinon, on ne peut rien affirmer.') },
     ] },

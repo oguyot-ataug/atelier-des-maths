@@ -76,7 +76,7 @@ ${cm1Demo('dec-comparer', 'Comparer deux nombres décimaux', 'Qui a sauté le pl
     [`Encadre chaque nombre entre deux entiers consécutifs.${cm1Liste(['7,6', '0,38', '15,02'])}`,
       cm1Redac('Encadrements', { suite: ['7 &lt; 7,6 &lt; 8', '0 &lt; 0,38 &lt; 1', '15 &lt; 15,02 &lt; 16'] }, 'On regarde la partie entière : le nombre est compris entre elle et l\'entier suivant.')],
     [`Quels nombres correspondent aux points C et D ?${cm1Graduation(2, 10, [[0.9, 'C', '#E35D3A'], [1.3, 'D', '#2EA8C9']], { unite: 210 })}`,
-      cm1Redac('Valeur d\'un petit écart', '1 ÷ 10 = 0,1', 'Un petit écart vaut 0,1.') + cm1Redac('Points C et D', { suite: ['C : 9 petits écarts après 0', 'D : 3 petits écarts après 1'] }, 'C correspond à 0,9 et D à 1,3.')],
+      cm1Redac('Valeur d\'un petit écart', '1 : 10 = 0,1', 'Un petit écart vaut 0,1.') + cm1Redac('Points C et D', { suite: ['C : 9 petits écarts après 0', 'D : 3 petits écarts après 1'] }, 'C correspond à 0,9 et D à 1,3.')],
   ], { titre: 'Rédaction type : « Comparer deux nombres décimaux »', lignes: [['6,4 et 6,38', 'Même partie entière (6).'], ['4 dixièmes &gt; 3 dixièmes', 'Je compare les dixièmes.'], ['donc 6,4 &gt; 6,38', 'Je conclus.']] }),
   histoire: cm1Histoire('Un peu d\'histoire : Simon Stevin et la virgule', [
     'Pendant longtemps, on n\'écrivait les parties d\'unité qu\'avec des fractions. En 1585, le savant flamand <b>Simon Stevin</b> publie un petit livre, <i>La Disme</i>, où il explique comment calculer très simplement avec des dixièmes, des centièmes, des millièmes.',

@@ -73,7 +73,7 @@ ${arEx('Exemple 1 : quelle est l\'aire d\'un disque de rayon 5 cm ? On donne la 
   ['<span class="tex">\\mathcal{A} \\approx 78{,}54</span> cm²', 'Avec la touche π de la calculatrice : la <b>valeur arrondie au centième</b>.'],
 ])}
 ${arEx('Exemple 2 : quelle est l\'aire d\'un disque de diamètre 12 m ?', [
-  ['r = 12 ÷ 2 = 6 m', 'Attention : la formule utilise le <b>rayon</b>, moitié du diamètre.'],
+  ['r = 12 : 2 = 6 m', 'Attention : la formule utilise le <b>rayon</b>, moitié du diamètre.'],
   ['<span class="tex">\\mathcal{A} = \\pi \\times 6^2 = 36\\pi</span> m²', 'Valeur exacte.'],
   ['<span class="tex">\\mathcal{A} \\approx 113{,}10</span> m²', 'Valeur arrondie au centième.'],
 ])}
@@ -86,7 +86,7 @@ ${arEx('Exemple 2 : quelle est l\'aire d\'un disque de diamètre 12 m ?', [
 ${arFigMaison()}
 ${arEx('', [
   ['<span class="tex">\\mathcal{A}_{ABCD} = 6 \\times 4 = 24</span> cm²', 'Aire du rectangle : L × ℓ.'],
-  ['<span class="tex">\\mathcal{A}_{ABE} = \\dfrac{6 \\times 2{,}5}{2} = 7{,}5</span> cm²', 'Aire du triangle : base × hauteur ÷ 2.'],
+  ['<span class="tex">\\mathcal{A}_{ABE} = \\dfrac{6 \\times 2{,}5}{2} = 7{,}5</span> cm²', 'Aire du triangle : base × hauteur : 2.'],
   ['<span class="tex">\\mathcal{A}_{ABCDE} = 24 + 7{,}5 = 31{,}5</span> cm²', 'On additionne les deux aires.'],
 ])}
 ${arEx('Exemple 2 : un carré de côté 10 cm est percé d\'un trou circulaire de rayon 3 cm. Quelle est l\'aire restante ?', [
@@ -114,7 +114,7 @@ document.getElementById('methode-demo-aires-5e').innerHTML = `
   </div>
 </div>
 
-<div class="sub-header"><span class="letter">M</span><h4>Méthode 2 : pourquoi l'aire d'un triangle est (b × h) ÷ 2</h4></div>
+<div class="sub-header"><span class="letter">M</span><h4>Méthode 2 : pourquoi l'aire d'un triangle est (b × h) : 2</h4></div>
 <div class="figure-wrap" style="margin-top:20px;">
   <svg id="ar-triSvg" viewBox="20 30 240 145" style="width:100%;max-width:440px;display:block;margin:8px auto;"></svg>
   <div id="ar-triNote" class="step-note" style="text-align:center;min-height:2.4em;"></div>
@@ -181,17 +181,17 @@ document.getElementById('exos-demo-aires-5e').innerHTML = `
   ${arExo(1, 'Calcule l\'aire d\'un rectangle de longueur 7,5 cm et de largeur 4 cm, puis celle d\'un carré de côté 9 cm.', [
     'Rectangle : 7,5 × 4 = 30 cm²', 'Carré : 9 × 9 = 81 cm²'])}
   ${arExo(2, 'Calcule l\'aire d\'un triangle de base 8 cm et de hauteur associée 5 cm.', [
-    '(8 × 5) ÷ 2 = 20 cm²'])}
+    '(8 × 5) : 2 = 20 cm²'])}
   ${arExo(3, 'Calcule l\'aire d\'un triangle rectangle dont les côtés de l\'angle droit mesurent 6 cm et 4,5 cm.', [
-    '(6 × 4,5) ÷ 2 = 13,5 cm²'])}
+    '(6 × 4,5) : 2 = 13,5 cm²'])}
   ${arExo(4, 'Calcule l\'aire d\'un parallélogramme de base 7 cm et de hauteur associée 3,2 cm.', [
     '7 × 3,2 = 22,4 cm²'])}
   ${arExo(5, 'Donne la valeur exacte, puis la valeur arrondie au centième, de l\'aire d\'un disque de rayon 3 cm, puis d\'un disque de diamètre 10 cm.', [
     'Rayon 3 cm : π × 3² = 9π ≈ 28,27 cm²', 'Diamètre 10 cm, donc rayon 5 cm : π × 5² = 25π ≈ 78,54 cm²'])}
   ${arExo(6, 'Un terrain est formé d\'un rectangle de 20 m sur 12 m et d\'un demi-disque de diamètre 12 m. Calcule son aire, arrondie au centième.', [
-    'Rectangle : 20 × 12 = 240 m²', 'Demi-disque de rayon 6 m : (π × 6²) ÷ 2 = 18π ≈ 56,55 m²', 'Total : 240 + 18π ≈ 296,55 m²'])}
+    'Rectangle : 20 × 12 = 240 m²', 'Demi-disque de rayon 6 m : (π × 6²) : 2 = 18π ≈ 56,55 m²', 'Total : 240 + 18π ≈ 296,55 m²'])}
   ${arExo(7, 'Un triangle de base 6 cm et de hauteur 4 cm, et un rectangle de 3 cm sur 4 cm : lequel a la plus grande aire ?', [
-    'Triangle : (6 × 4) ÷ 2 = 12 cm² ; rectangle : 3 × 4 = 12 cm².', 'Ils ont la même aire !'])}
+    'Triangle : (6 × 4) : 2 = 12 cm² ; rectangle : 3 × 4 = 12 cm².', 'Ils ont la même aire !'])}
   ${arExo(8, 'Léo calcule l\'aire d\'un rectangle de 2 m sur 35 cm et trouve 70. Quelle est son erreur ? Donne la bonne réponse.', [
     'Il a multiplié des longueurs dans des unités différentes (2 m et 35 cm).', '2 m = 200 cm, donc l\'aire est 200 × 35 = 7 000 cm² (soit 0,7 m²).'])}
 </div>
@@ -234,7 +234,7 @@ function arTriJouer(){
   cancelAnimationFrame(arRaf.t);
   const s = document.getElementById('ar-triSvg'), n = document.getElementById('ar-triNote'), t0 = performance.now();
   n.textContent = 'On recopie chaque moitié du triangle et on la fait pivoter…';
-  const f = now => { const t = Math.max(0, Math.min(1, (now - t0) / 1800)); s.innerHTML = arTriDessin(t); if(t < 1) arRaf.t = requestAnimationFrame(f); else n.textContent = 'Les deux copies remplissent le reste du rectangle : le triangle en occupe exactement la moitié. Aire = (b × h) ÷ 2.'; };
+  const f = now => { const t = Math.max(0, Math.min(1, (now - t0) / 1800)); s.innerHTML = arTriDessin(t); if(t < 1) arRaf.t = requestAnimationFrame(f); else n.textContent = 'Les deux copies remplissent le reste du rectangle : le triangle en occupe exactement la moitié. Aire = (b × h) : 2.'; };
   arRaf.t = requestAnimationFrame(f);
 }
 
@@ -363,7 +363,7 @@ function arCalc(nouveauChoix){
 const AR_COMPOSE_STEPS = [
   { expr: 'Figure = rectangle + demi-disque', note: 'On découpe la figure en figures usuelles.' },
   { expr: '<span class="tex">\\mathcal{A}_{\\text{rectangle}} = 20 \\times 12 = 240</span> m²', note: 'Aire du rectangle : L × ℓ.' },
-  { expr: 'Rayon du demi-disque : 12 ÷ 2 = 6 m', note: 'Le diamètre est le côté de 12 m.' },
+  { expr: 'Rayon du demi-disque : 12 : 2 = 6 m', note: 'Le diamètre est le côté de 12 m.' },
   { expr: '<span class="tex">\\mathcal{A}_{\\text{demi-disque}} = \\dfrac{\\pi \\times 6^2}{2} = 18\\pi</span> m²', note: 'Un demi-disque, c\'est la moitié de l\'aire du disque.' },
   { expr: '<span class="tex">\\mathcal{A} = 240 + 18\\pi \\approx 296{,}55</span> m²', note: 'On additionne : valeur exacte 240 + 18π, valeur arrondie au centième 296,55 m².' },
 ];
@@ -382,7 +382,7 @@ DEMO_REGISTRY['5e|Aires'] = {
 DEMO_QUIZZES['5e|Aires'] = [
   { q: 'L\'aire d\'un rectangle de 8 cm sur 3 cm est...', opts: ['11 cm²', '24 cm²', '22 cm²'], correct: 1 },
   { q: 'L\'aire d\'un triangle de base 10 cm et de hauteur 4 cm est...', opts: ['40 cm²', '20 cm²', '14 cm²'], correct: 1 },
-  { q: 'L\'aire d\'un parallélogramme se calcule avec...', opts: ['b × h', '(b × h) ÷ 2', 'la somme des côtés'], correct: 0 },
+  { q: 'L\'aire d\'un parallélogramme se calcule avec...', opts: ['b × h', '(b × h) : 2', 'la somme des côtés'], correct: 0 },
   { q: 'La formule de l\'aire d\'un disque de rayon r est...', opts: ['2 × π × r', 'π × r²', 'π × d'], correct: 1 },
   { q: 'Un disque a un diamètre de 8 cm. Son aire exacte est...', opts: ['64π cm²', '16π cm²', '8π cm²'], correct: 1 },
   { q: 'La valeur exacte de l\'aire d\'un disque de rayon 5 cm est...', opts: ['25π cm²', '78,54 cm²', '10π cm²'], correct: 0 },

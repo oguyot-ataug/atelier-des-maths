@@ -133,15 +133,15 @@ PLANCHES['6e|Nombres entiers'] = [
         corr: cm1Redac('Nombre de fauteuils', '24 × 36 = 864', 'Le cinéma a 864 fauteuils.') + cm1Redac('Fauteuils libres', '864 − 785 = 79', '79 fauteuils restent libres.') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Trouve le chiffre caché : 3■7 × 4 = 1 508.',
         // Raisonnement sur la multiplication posée, puis la division en autre méthode (relecture 6e-N1-P4-E6).
-        corr: cm1Redac('Unités', '4 × 7 = 28', 'On écrit 8 et on retient 2.') + cm1Redac('Retenue venue des dizaines', { suite: ['4 × 3 = 12', '15 − 12 = 3'] }, 'Aux centaines, on lit 15 et non 12 : la retenue venue des dizaines est 3. Comme on lit 0 aux dizaines, le calcul des dizaines donne 30.') + cm1Redac('Chiffre caché', { suite: ['4 × ■ + 2 = 30', '4 × ■ = 28', '■ = 28 ÷ 4', '■ = 7'] }, 'Le chiffre caché est 7.')
-          + cm1Redac('Autre méthode', '1 508 ÷ 4 = 377', 'On retrouve 377 : le chiffre caché est 7.') },
+        corr: cm1Redac('Unités', '4 × 7 = 28', 'On écrit 8 et on retient 2.') + cm1Redac('Retenue venue des dizaines', { suite: ['4 × 3 = 12', '15 − 12 = 3'] }, 'Aux centaines, on lit 15 et non 12 : la retenue venue des dizaines est 3. Comme on lit 0 aux dizaines, le calcul des dizaines donne 30.') + cm1Redac('Chiffre caché', { suite: ['4 × ■ + 2 = 30', '4 × ■ = 28', '■ = 28 : 4', '■ = 7'] }, 'Le chiffre caché est 7.')
+          + cm1Redac('Autre méthode', '1 508 : 4 = 377', 'On retrouve 377 : le chiffre caché est 7.') },
     ] },
   { titre: 'Calcul mental et problèmes', duree: '35 min',
     attendus: ['Multiplier et diviser par 10, 100, 1 000', 'Calculer astucieusement en regroupant les facteurs', 'Résoudre un problème en plusieurs étapes', 'Pour aller plus loin (5e) : multiplier par 99 ou par 101'],
     exos: [
       { etoiles: 1, col: 1, consigne: 'Calcule.',
-        eleve: plListe(['47 × 100 = ' + B(), '305 × 1 000 = ' + B(7), '4 500 ÷ 100 = ' + B(), '72 000 ÷ 1 000 = ' + B()]),
-        corr: plListe(['47 × 100 = ' + R('4 700'), '305 × 1 000 = ' + R('305 000'), '4 500 ÷ 100 = ' + R(45), '72 000 ÷ 1 000 = ' + R(72)]) },
+        eleve: plListe(['47 × 100 = ' + B(), '305 × 1 000 = ' + B(7), '4 500 : 100 = ' + B(), '72 000 : 1 000 = ' + B()]),
+        corr: plListe(['47 × 100 = ' + R('4 700'), '305 × 1 000 = ' + R('305 000'), '4 500 : 100 = ' + R(45), '72 000 : 1 000 = ' + R(72)]) },
       { etoiles: 1, col: 1, consigne: 'Calcule astucieusement en regroupant les facteurs.',
         eleve: plListe(['25 × 37 × 4 = ' + B(), '2 × 498 × 5 = ' + B(), '50 × 26 × 2 = ' + B(), '125 × 13 × 8 = ' + B(7)]),
         corr: plListe(['25 × 37 × 4 = 100 × 37 = ' + R('3 700'), '2 × 498 × 5 = 10 × 498 = ' + R('4 980'), '50 × 26 × 2 = 100 × 26 = ' + R('2 600'), '125 × 13 × 8 = 1 000 × 13 = ' + R('13 000')]) },
@@ -174,15 +174,15 @@ PLANCHES['6e|Nombres entiers'] = [
       { etoiles: 2, consigne: 'Pose et calcule ces divisions euclidiennes. Écris l\'égalité qui les traduit.',
         // Grille plus haute : toute la division y tient, soustractions comprises (relecture 6e-N1-P6-E3 : « laisser plus de
         // place pour la division (hauteur) »).
-        eleve: duo([`<span style="text-align:center;">1 285 ÷ 7<br>${grille(11, 11)}<br>1 285 = 7 × ${B(3)} + ${B(2)}</span>`, `<span style="text-align:center;">2 034 ÷ 15<br>${grille(11, 11)}<br>2 034 = 15 × ${B(3)} + ${B(2)}</span>`]),
+        eleve: duo([`<span style="text-align:center;">1 285 : 7<br>${grille(11, 11)}<br>1 285 = 7 × ${B(3)} + ${B(2)}</span>`, `<span style="text-align:center;">2 034 : 15<br>${grille(11, 11)}<br>2 034 = 15 × ${B(3)} + ${B(2)}</span>`]),
         corr: duo([`<span style="text-align:center;">${div(1285, 7)}1 285 = 7 × ${R(183)} + ${R(4)}</span>`, `<span style="text-align:center;">${div(2034, 15)}2 034 = 15 × ${R(135)} + ${R(9)}</span>`]),
         ecran: { eleve: duo([`<span style="text-align:center;"><b>avec les soustractions</b><br>${plDivision(1285, 7, { mode: 'trous' })}<br>1 285 = 7 × ${B(3)} + ${B(2)}</span>`, `<span style="text-align:center;"><b>sans les soustractions</b><br>${plDivision(2034, 15, { mode: 'trous', diff: false })}<br>2 034 = 15 × ${B(3)} + ${B(2)}</span>`]),
           corr: duo([`<span style="text-align:center;"><b>avec les soustractions</b><br>${plDivision(1285, 7, { mode: 'rep' })}<br>1 285 = 7 × ${R(183)} + ${R(4)}</span>`, `<span style="text-align:center;"><b>sans les soustractions</b><br>${plDivision(2034, 15, { mode: 'rep', diff: false })}<br>2 034 = 15 × ${R(135)} + ${R(9)}</span>`]) } },
       { etoiles: 3, col: 1, cahier: true, consigne: 'On range 1 000 œufs dans des boîtes de 12. Combien de boîtes pleines obtient-on ? Combien d\'œufs restent ?',
         corr: cm1Redac('Division euclidienne de 1 000 par 12', '1 000 = 12 × 83 + 4', 'On remplit 83 boîtes et il reste 4 œufs (4 &lt; 12).') },
       { etoiles: 2, col: 1, consigne: 'Donne le quotient et le reste de chaque division euclidienne.',
-        eleve: plListe(['75 ÷ 8 : quotient ' + B(2) + ', reste ' + B(2), '100 ÷ 12 : quotient ' + B(2) + ', reste ' + B(2), '58 ÷ 6 : quotient ' + B(2) + ', reste ' + B(2)].map(ligne)),
-        corr: plListe(['75 ÷ 8 : quotient ' + R(9) + ', reste ' + R(3), '100 ÷ 12 : quotient ' + R(8) + ', reste ' + R(4), '58 ÷ 6 : quotient ' + R(9) + ', reste ' + R(4)].map(ligne)) },
+        eleve: plListe(['75 : 8 : quotient ' + B(2) + ', reste ' + B(2), '100 : 12 : quotient ' + B(2) + ', reste ' + B(2), '58 : 6 : quotient ' + B(2) + ', reste ' + B(2)].map(ligne)),
+        corr: plListe(['75 : 8 : quotient ' + R(9) + ', reste ' + R(3), '100 : 12 : quotient ' + R(8) + ', reste ' + R(4), '58 : 6 : quotient ' + R(9) + ', reste ' + R(4)].map(ligne)) },
     ] },
   { titre: 'Multiples, diviseurs et critères de divisibilité', duree: '35 min',
     attendus: ['Reconnaître multiples et diviseurs', 'Utiliser les critères de divisibilité par 2, 5 et 10', 'Pour aller plus loin (5e) : critères de divisibilité par 3 et par 9'],

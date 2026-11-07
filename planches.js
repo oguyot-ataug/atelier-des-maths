@@ -705,7 +705,7 @@ const PL_DOMAINES = { N: ['Nombres et calcul', '#2E6FD8', '#E8F0FD'], G: ['Espac
 const plDom = c => PL_DOMAINES[c.cat] || PL_DOMAINES[String(c.code || '')[0]] || PL_DOMAINES.N;
 function plCouvDeco(){
   // Petits symboles de maths, en couleur, autour de la page de garde.
-  const f = [['+', 8, 12, '#2E6FD8', 40, -10], ['×', 86, 9, '#E35D3A', 44, 12], ['÷', 92, 44, '#2E9E5B', 36, 0], ['=', 5, 52, '#E8862E', 40, 0], ['π', 88, 78, '#8E44AD', 34, -8], ['%', 9, 84, '#2EA8C9', 32, 10]];
+  const f = [['+', 8, 12, '#2E6FD8', 40, -10], ['×', 86, 9, '#E35D3A', 44, 12], [':', 92, 44, '#2E9E5B', 36, 0], ['=', 5, 52, '#E8862E', 40, 0], ['π', 88, 78, '#8E44AD', 34, -8], ['%', 9, 84, '#2EA8C9', 32, 10]];
   const formes = `<svg class="pl-couv-formes" viewBox="0 0 100 100" preserveAspectRatio="none">
     <polygon points="14,30 22,30 18,23" fill="#F6C343" opacity=".75"/><circle cx="80" cy="28" r="3.4" fill="#2EA8C9" opacity=".55"/>
     <rect x="76" y="62" width="7" height="5" fill="#9CCB6B" opacity=".7" transform="rotate(12 79 64)"/><circle cx="20" cy="70" r="2.6" fill="#E35D3A" opacity=".5"/></svg>`;

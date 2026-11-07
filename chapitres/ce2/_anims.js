@@ -254,7 +254,7 @@ function ce2AnimPartage(id, o){
       }
       const tour = Math.floor(arrives / n);
       const texte = t < .06 ? `${p.total} ${p.objets || 'jetons'} à partager en ${n} parts égales.` : t < .9 ? `Tour ${Math.min(q, tour + 1)} : chaque part reçoit un jeton. Déjà ${tour} jeton${tour > 1 ? 's' : ''} par part.`
-        : (p.fin || `Chaque part a <b>${q}</b> jetons${r ? ` et il en reste <b>${r}</b> (pas assez pour un autre tour)` : ''} : ${p.total} ÷ ${n} = ${q}${r ? ', reste ' + r : ''}.`);
+        : (p.fin || `Chaque part a <b>${q}</b> jetons${r ? ` et il en reste <b>${r}</b> (pas assez pour un autre tour)` : ''} : ${p.total} : ${n} = ${q}${r ? ', reste ' + r : ''}.`);
       const H = Math.max(170, 80 + (Math.ceil(q / 4) + 1) * 20 + 20, 40 + Math.ceil(p.total / cols) * 18);
       return { scene: `<svg viewBox="0 0 ${W} ${H}" class="cma-svg" style="max-width:${W}px;">${s}</svg>`, texte };
     } });
@@ -527,22 +527,22 @@ function ce2AnimReport(id, o){
     } });
 }
 
-/* ---------------- Glisse-nombre avec virgule : × ou ÷ 10, 100, 1 000 (CM1, CM2) ----------------
-   presets : [{ nom, n: '4,27', f: 10, op: '×' | '÷' }]. Demandé (méthode « moins recette de cuisine ») :
+/* ---------------- Glisse-nombre avec virgule : × ou : 10, 100, 1 000 (CM1, CM2) ----------------
+   presets : [{ nom, n: '4,27', f: 10, op: '×' | ':' }]. Demandé (méthode « moins recette de cuisine ») :
    on repère le chiffre des unités du nombre de départ (en rouge) ; c'est lui qui nous intéresse : il
    devient le chiffre des dizaines, des centaines, des milliers (×) ou des dixièmes, centièmes,
-   millièmes (÷). Il part seul vers son nouveau rang, les autres chiffres le suivent, puis on complète
+   millièmes (:). Il part seul vers son nouveau rang, les autres chiffres le suivent, puis on complète
    avec des zéros si besoin (en bleu) ; un zéro inutile tout à gauche s'efface. La virgule ne bouge pas. */
 function cmAnimGlisseDec(id, o){
   const P = o.presets, RANGS = [3, 2, 1, 0, -1, -2, -3], NOMS = { 3: 'milliers', 2: 'centaines', 1: 'dizaines', 0: 'unités', '-1': 'dixièmes', '-2': 'centièmes', '-3': 'millièmes' };
   return ce2Film(id, { duree: 9000, legende: o.legende || 'On suit le chiffre des unités (en rouge) : il change de rang, les autres chiffres le suivent, la virgule ne bouge pas.', controles: a => ce2Choix(id, P, a),
     film: a => {
-      const p = P[a.etat.p], [e0, d = ''] = String(p.n).split(','), dec = Math.round(Math.log10(p.f)), sh = p.op === '÷' ? -dec : dec;
+      const p = P[a.etat.p], [e0, d = ''] = String(p.n).split(','), dec = Math.round(Math.log10(p.f)), sh = p.op === ':' ? -dec : dec;
       const e = e0.replace(/^0+(?=\d)/, '');
       const chiffres = [...e].map((c, i) => ({ c, r: e.length - 1 - i })).concat([...d].map((c, i) => ({ c, r: -1 - i })));
       const CW = 70, X0 = 14, VG = 18, colX = r => X0 + (3 - r) * CW + CW / 2 + (r < 0 ? VG : 0), W = X0 * 2 + 7 * CW + VG;
       // Après le déplacement, un zéro tout à gauche (avant les unités) ou tout à droite (après la virgule) ne
-      // sert à rien : il s'efface (0,56 × 10 = 5,6 ; 380 ÷ 1 000 = 0,38).
+      // sert à rien : il s'efface (0,56 × 10 = 5,6 ; 380 : 1 000 = 0,38).
       const nz = chiffres.filter(x => x.c !== '0').map(x => x.r + sh), hautUtile = Math.max(0, ...nz), basUtile = Math.min(0, ...nz);
       chiffres.forEach(x => { x.inutile = x.c === '0' && (x.r + sh > hautUtile ? 'gauche' : x.r + sh < basUtile ? 'droite' : false); });
       const efface = [...new Set(chiffres.map(x => x.inutile).filter(Boolean))].map(c => c === 'gauche' ? 'le zéro tout à gauche ne sert plus' : 'le zéro tout à droite, après la virgule, ne sert plus').join(' ; ');
@@ -565,7 +565,7 @@ function cmAnimGlisseDec(id, o){
             chiffres.forEach(x => { const op = x.inutile ? 1 - cmPhase(t, .68, .78) : 1; s += ce2T(pos(x, t), 90, x.c, { t: 32, g: 700, c: x.r === 0 && t >= .1 ? CE2C.rouge : CE2C.encre, op }); });
             return s; } },
         { de: .1, texte: `On repère le <b style="color:${CE2C.rouge}">chiffre des unités</b> : <b>${u.c}</b>. C'est lui qui nous intéresse.` },
-        { de: .24, texte: `${p.op === '÷' ? 'On divise' : 'On multiplie'} par ${ce2Nb(p.f)} : le chiffre des unités devient le <b>chiffre des ${nouveau}</b>.` },
+        { de: .24, texte: `${p.op === ':' ? 'On divise' : 'On multiplie'} par ${ce2Nb(p.f)} : le chiffre des unités devient le <b>chiffre des ${nouveau}</b>.` },
         { de: .48, texte: chiffres.length > 1 ? 'Les autres chiffres <b>le suivent</b> : ils restent à côté de lui, dans le même ordre.' : 'Il n\'y a pas d\'autre chiffre à déplacer.' },
         { de: .68, a: .8, dessin: k => zeros.map(r => ce2T(colX(r), 90, '0', { t: 32, g: 700, c: CE2C.bleu, op: k })).join(''),
           texte: zeros.length ? `On complète avec ${zeros.length > 1 ? 'des zéros' : 'un zéro'} (en bleu)${efface ? ` ; ${efface} : on l'efface` : ''}.` : efface ? `${efface[0].toUpperCase() + efface.slice(1)} : on l'efface.` : 'Pas besoin de zéro ici.' },

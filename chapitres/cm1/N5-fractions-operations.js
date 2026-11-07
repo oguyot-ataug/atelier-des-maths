@@ -130,7 +130,7 @@ PLANCHES['cm1|Fractions (comparaison et opérations)'] = [
       { etoiles: 3, col: 1, cahier: true, consigne: `Une bouteille contient 1 L d\'eau. Le matin, on en boit ${F(2, 10)} ; le midi, ${F(5, 10)}. Quelle fraction de la bouteille a été bue ? Quelle fraction reste-t-il ?`,
         corr: cm1Redac('Eau bue', `${F(2, 10)} + ${F(5, 10)} = ${F(7, 10)}`, `On a bu ${F(7, 10)} de la bouteille.`, cm1Bande(10, 7, { largeur: 140 })) + cm1Redac('Eau restante', `${F(10, 10)} − ${F(7, 10)} = ${F(3, 10)}`, `Il reste ${F(3, 10)} de la bouteille.`) },
       { etoiles: 3, col: 1, cahier: true, consigne: `Un chemin mesure 1 km, c\'est-à-dire 1 000 m. Zoé a parcouru ${F(3, 4)} du chemin. Quelle fraction du chemin lui reste-t-il ? Combien de mètres ?`,
-        corr: cm1Redac('Fraction restante', `${F(4, 4)} − ${F(3, 4)} = ${F(1, 4)}`, `Il reste ${F(1, 4)} du chemin.`) + cm1Redac('Distance restante', '1 000 m ÷ 4 = 250 m', 'Il reste 250 m à parcourir.', cm1Bande(4, 3, { largeur: 140 })) },
+        corr: cm1Redac('Fraction restante', `${F(4, 4)} − ${F(3, 4)} = ${F(1, 4)}`, `Il reste ${F(1, 4)} du chemin.`) + cm1Redac('Distance restante', '1 000 m : 4 = 250 m', 'Il reste 250 m à parcourir.', cm1Bande(4, 3, { largeur: 140 })) },
     ] },
 ];
 })();

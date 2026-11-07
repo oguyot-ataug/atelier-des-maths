@@ -65,7 +65,7 @@ PLANCHES['3e|Généralités sur les fonctions'] = [
       { etoiles: 2, col: 1, cahier: true, consigne: 'On lâche un objet d\'une hauteur de 80 m. Sa hauteur au bout de t secondes est h(t) = 80 − 5t² (en m). Calcule h(2) et h(3). Au bout de combien de temps touche-t-il le sol ?',
         corr: cm1Redac('Hauteurs', { suite: ['h(2) = 80 − 5 × 4 = 60', 'h(3) = 80 − 5 × 9 = 35'] }, '') + cm1Redac('Arrivée au sol', { suite: ['80 − 5t² = 0', 't² = 16 et t &gt; 0'] }, 'L\'objet touche le sol au bout de 4 s.') },
       { etoiles: 2, col: 1, cahier: true, consigne: 'Un rectangle a un périmètre de 20 cm. On note x sa largeur. Montre que son aire est A(x) = x(10 − x), puis calcule A(3) et A(5).',
-        corr: cm1Redac('Aire', { suite: ['Longueur + largeur = 20 ÷ 2 = 10, donc la longueur vaut 10 − x.', 'A(x) = x(10 − x)'] }, '') + cm1Redac('Valeurs', { suite: ['A(3) = 3 × 7 = 21', 'A(5) = 5 × 5 = 25'] }, 'A(3) = 21 cm² et A(5) = 25 cm².') },
+        corr: cm1Redac('Aire', { suite: ['Longueur + largeur = 20 : 2 = 10, donc la longueur vaut 10 − x.', 'A(x) = x(10 − x)'] }, '') + cm1Redac('Valeurs', { suite: ['A(3) = 3 × 7 = 21', 'A(5) = 5 × 5 = 25'] }, 'A(3) = 21 cm² et A(5) = 25 cm².') },
       { etoiles: 3, cahier: true, consigne: 'Avec le rectangle de l\'exercice précédent, quelle largeur donne la plus grande aire ? Fais un tableau de valeurs et conjecture.',
         corr: tab([['x', 1, 2, 3, 4, 5, 6, 7], ['A(x)', 9, 16, 21, 24, 25, 24, 21]]) + cm1Redac('Conjecture', '', 'La plus grande aire semble être 25 cm², pour x = 5 : le rectangle est alors un carré de 5 cm de côté.') },
     ] },

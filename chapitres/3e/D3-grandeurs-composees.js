@@ -170,7 +170,7 @@ document.getElementById('exos-demo-grandeurs-composees-3e').innerHTML = `
   ${gc3Exo(8, 'En 2009, Usain Bolt a couru le 100 m en 9,58 s. Calcule sa vitesse moyenne en m/s, puis en km/h (arrondis au dixième). Un guépard peut atteindre 100 km/h : qui est le plus rapide ?', [
     gc3Tex('v = \\dfrac{100}{9{,}58} \\approx 10{,}44') + ' m/s.', '10,44 × 3,6 ≈ 37,6 km/h.', 'Le guépard est bien plus rapide : 100 km/h > 37,6 km/h.'])}
   ${gc3Exo(9, 'Léo fait l\'aller Paris – Orléans (120 km) à 60 km/h, et le retour à 40 km/h. Il dit : « Ma vitesse moyenne sur l\'aller-retour est de 50 km/h ». A-t-il raison ?', [
-    'Aller : t = 120 ÷ 60 = 2 h. Retour : t = 120 ÷ 40 = 3 h.', 'Aller-retour : 240 km en 5 h, donc ' + gc3Tex('v = \\dfrac{240}{5} = 48') + ' km/h.',
+    'Aller : t = 120 : 60 = 2 h. Retour : t = 120 : 40 = 3 h.', 'Aller-retour : 240 km en 5 h, donc ' + gc3Tex('v = \\dfrac{240}{5} = 48') + ' km/h.',
     'Léo a tort : la vitesse moyenne n\'est pas la moyenne des deux vitesses, car il roule plus longtemps à 40 km/h.'])}
 </div>
 `;
@@ -217,7 +217,7 @@ function gc3Convertir(){
   if(sens === 'kmh'){
     const r = v / 3.6;
     out.innerHTML = gc3Tex(`${gc3T(v, 4)}\\text{ km/h} = \\dfrac{${gc3T(v * 1000, 4)}\\text{ m}}{3\\,600\\text{ s}} ${approx(r)} ${gc3T(r, 2)}\\text{ m/s}`)
-      + `<br><span class="hint" style="margin:0;">Raccourci : ${gc3N(v, 4)} ÷ 3,6 ${approx(r) === '=' ? '=' : '≈'} ${gc3N(r, 2)}</span>`;
+      + `<br><span class="hint" style="margin:0;">Raccourci : ${gc3N(v, 4)} : 3,6 ${approx(r) === '=' ? '=' : '≈'} ${gc3N(r, 2)}</span>`;
   } else {
     const r = v * 3.6;
     out.innerHTML = `En 1 h = 3 600 s, on parcourt ${gc3N(v, 4)} × 3 600 = ${gc3N(v * 3600, 2)} m, soit ${gc3N(r, 4)} km.<br>`

@@ -41,13 +41,13 @@ ${nc3Encadre(`<ol style="margin:0;padding-left:22px;line-height:1.8;">
 ${cm1Redac('Aire du terrain', { nom: 'A', lignes: [nc3Tex('48 \\times 25'), nc3Tex('1\\,200')] }, 'Le terrain a une aire de 1 200 m².')}
 ${cm1Redac('Aire de la cabane', { nom: 'C', lignes: [nc3Tex('12 \\times 12'), nc3Tex('144')] }, 'La cabane occupe 144 m².')}
 ${cm1Redac('Surface à semer', { nom: 'S', lignes: [nc3Tex('A - C'), nc3Tex('1\\,200 - 144'), nc3Tex('1\\,056')] }, 'Il reste 1 056 m² à semer.')}
-${cm1Redac('Nombre de sachets', { nom: 'N', lignes: [nc3Tex('1\\,056 \\div 40'), nc3Tex('26{,}4')] }, '26 sachets ne suffisent pas : il faut acheter 27 sachets.')}
+${cm1Redac('Nombre de sachets', { nom: 'N', lignes: [nc3Tex('1\\,056 : 40'), nc3Tex('26{,}4')] }, '26 sachets ne suffisent pas : il faut acheter 27 sachets.')}
 ${cm1Redac('Coût des graines', { nom: 'P', lignes: [nc3Tex('27 \\times 6{,}50'), nc3Tex('175{,}50')] }, 'Les graines coûtent 175,50 €.')}
 <p style="margin:10px 0 6px;"><b>Rédaction plus courte</b> : on regroupe les calculs d'aires en un seul.</p>
 ${cm1Redac('Surface à semer', { nom: 'S', lignes: [nc3Tex('48 \\times 25 - 12 \\times 12'), nc3Tex('1\\,200 - 144'), nc3Tex('1\\,056')] }, 'Il reste 1 056 m² à semer.')}
-${cm1Redac('Nombre de sachets', { nom: 'N', lignes: [nc3Tex('1\\,056 \\div 40'), nc3Tex('26{,}4')] }, 'Il faut acheter 27 sachets (26 ne suffisent pas).')}
+${cm1Redac('Nombre de sachets', { nom: 'N', lignes: [nc3Tex('1\\,056 : 40'), nc3Tex('26{,}4')] }, 'Il faut acheter 27 sachets (26 ne suffisent pas).')}
 ${cm1Redac('Coût des graines', { nom: 'P', lignes: [nc3Tex('27 \\times 6{,}50'), nc3Tex('175{,}50')] }, 'Les graines coûtent 175,50 €.')}
-<div class="redaction-note" ${R4_REM}><b>Attention</b> : on ne peut pas tout écrire en une seule formule ici. ${nc3Tex('(48 \\times 25 - 12 \\times 12) \\div 40 \\times 6{,}50')} donne 171,60 €, le prix de 26,4 sachets ; or on n'achète que des sachets entiers. <b>Contrôle</b> : environ 1 000 m², soit 25 sachets à 7 € : environ 175 €. Le résultat est cohérent.</div>
+<div class="redaction-note" ${R4_REM}><b>Attention</b> : on ne peut pas tout écrire en une seule formule ici. ${nc3Tex('(48 \\times 25 - 12 \\times 12) : 40 \\times 6{,}50')} donne 171,60 €, le prix de 26,4 sachets ; or on n'achète que des sachets entiers. <b>Contrôle</b> : environ 1 000 m², soit 25 sachets à 7 € : environ 175 €. Le résultat est cohérent.</div>
 
 <div class="sub-header"><span class="letter">B</span><h4>Vrai ou faux : justifier une affirmation</h4></div>
 <span class="prop-badge">Propriétés</span>
@@ -80,9 +80,9 @@ ${r4Ex('', [
 <span class="prop-badge">Rappel</span>
 ${nc3Encadre(`On effectue <b>dans l'ordre</b> : les calculs entre <b>parenthèses</b> (les plus intérieures d'abord), puis les <b>puissances</b>, puis les <b>multiplications et divisions</b>, enfin les <b>additions et soustractions</b>. À priorité égale, on calcule de gauche à droite.`)}
 ${r4Ex('Exemple :', [
-  [`D = 5 + 3 × 2² − ${R4_BLEU('(7 − 1)')} ÷ 3`, 'On commence par la parenthèse.'],
-  [`D = 5 + 3 × ${R4_BLEU('2²')} − 6 ÷ 3`, 'Puis la puissance.'],
-  [`D = 5 + ${R4_BLEU('3 × 4')} − ${R4_BLEU('6 ÷ 3')}`, 'Puis la multiplication et la division.'],
+  [`D = 5 + 3 × 2² − ${R4_BLEU('(7 − 1)')} : 3`, 'On commence par la parenthèse.'],
+  [`D = 5 + 3 × ${R4_BLEU('2²')} − 6 : 3`, 'Puis la puissance.'],
+  [`D = 5 + ${R4_BLEU('3 × 4')} − ${R4_BLEU('6 : 3')}`, 'Puis la multiplication et la division.'],
   ['D = 5 + 12 − 2', 'On termine de gauche à droite.'],
   ['D = 15', ''],
 ])}
@@ -92,7 +92,7 @@ ${r4Ex('Exemple :', [
 ${nc3Encadre(`<ul style="margin:0;padding-left:20px;line-height:1.9;">
   <li>Pour <b>additionner ou soustraire</b>, on met les fractions au <b>même dénominateur</b>, puis on ajoute les numérateurs.</li>
   <li>Pour <b>multiplier</b>, on multiplie les numérateurs entre eux et les dénominateurs entre eux : ${nc3Tex('\\dfrac{a}{b} \\times \\dfrac{c}{d} = \\dfrac{a \\times c}{b \\times d}')}.</li>
-  <li><b>Diviser</b> par une fraction non nulle, c'est <b>multiplier par son inverse</b> : ${nc3Tex('\\dfrac{a}{b} \\div \\dfrac{c}{d} = \\dfrac{a}{b} \\times \\dfrac{d}{c}')}.</li>
+  <li><b>Diviser</b> par une fraction non nulle, c'est <b>multiplier par son inverse</b> : ${nc3Tex('\\dfrac{a}{b} : \\dfrac{c}{d} = \\dfrac{a}{b} \\times \\dfrac{d}{c}')}.</li>
   <li>Prendre une <b>fraction d'une quantité</b> (ou d'une autre fraction), c'est <b>multiplier</b>.</li>
 </ul>`)}
 ${r4Ex('Exemple 1 :', [
@@ -104,7 +104,7 @@ ${r4Ex('Exemple 2 :', [
   [nc3Tex('F = \\dfrac{10}{6} - \\dfrac{1}{6} = \\dfrac{9}{6} = \\dfrac{3}{2}'), 'Même dénominateur, puis on simplifie par 3.'],
 ])}
 ${r4Ex('Exemple 3 :', [
-  [nc3Tex('G = \\dfrac{2}{3} \\div \\dfrac{4}{9} = \\dfrac{2}{3} \\times \\dfrac{9}{4} = \\dfrac{18}{12} = \\dfrac{3}{2}'), 'On multiplie par l\'inverse de 4/9, puis on simplifie par 6.'],
+  [nc3Tex('G = \\dfrac{2}{3} : \\dfrac{4}{9} = \\dfrac{2}{3} \\times \\dfrac{9}{4} = \\dfrac{18}{12} = \\dfrac{3}{2}'), 'On multiplie par l\'inverse de 4/9, puis on simplifie par 6.'],
 ])}
 <p class="example-title">Exemple 4 : la fraction d'une fraction.</p>
 <p style="margin:0 0 8px;">Dans une association, ${nc3Tex('\\dfrac{2}{5}')} des membres sont bénévoles, et les ${nc3Tex('\\dfrac{3}{4}')} des bénévoles sont des femmes. Quelle proportion des membres sont des femmes bénévoles ?</p>
@@ -145,7 +145,7 @@ ${nc3Encadre(`<ul style="margin:0;padding-left:20px;line-height:1.9;">
   <li>En informatique, 1 ko = 10³ octets, 1 Mo = 10⁶ octets, 1 Go = 10⁹ octets : donc 1 Go = 1 000 Mo.</li>
 </ul>
 ${r4Ex('Exemple : combien de photos de 4 Mo peut-on stocker sur une clé de 64 Go ?', [
-  [nc3Tex('N = \\dfrac{64 \\times 10^9}{4 \\times 10^6} = 16 \\times 10^{3} = 16\\,000'), 'On convertit en octets, puis 64 ÷ 4 = 16 et 10⁹ ÷ 10⁶ = 10³.'],
+  [nc3Tex('N = \\dfrac{64 \\times 10^9}{4 \\times 10^6} = 16 \\times 10^{3} = 16\\,000'), 'On convertit en octets, puis 64 : 4 = 16 et 10⁹ : 10⁶ = 10³.'],
   ['On peut stocker 16 000 photos.', 'On conclut.'],
 ])}
 
@@ -176,8 +176,8 @@ ${nc3Encadre('Quand le résultat doit être un <b>nombre entier</b> (paquets, po
 <p class="example-title">Exemples :</p>
 <ul class="example-list">
   <li>Il faut 2,3 pots de peinture : on achète <b>3 pots</b>.</li>
-  <li>Avec 10 L de jus, on remplit des bouteilles de 0,7 L : 10 ÷ 0,7 ≈ 14,3, donc <b>14 bouteilles pleines</b>.</li>
-  <li>215 élèves partent en sortie dans des cars de 50 places : 215 ÷ 50 = 4,3, donc il faut <b>5 cars</b>.</li>
+  <li>Avec 10 L de jus, on remplit des bouteilles de 0,7 L : 10 : 0,7 ≈ 14,3, donc <b>14 bouteilles pleines</b>.</li>
+  <li>215 élèves partent en sortie dans des cars de 50 places : 215 : 50 = 4,3, donc il faut <b>5 cars</b>.</li>
 </ul>
 
 <div class="sub-header"><span class="letter">B</span><h4>Estimer un ordre de grandeur</h4></div>
@@ -287,11 +287,11 @@ document.getElementById('exos-demo-nombres-calculs-3e').innerHTML = `
   <h3>Exercices</h3>
   ${nc3Exo(1, 'Un éleveur dispose d\'un pré rectangulaire de 120 m sur 45 m, dans lequel il construit une bergerie de 300 m². Pour obtenir un label, il doit prévoir au moins 1,5 m² par brebis dans la bergerie et au moins 20 m² par brebis à l\'extérieur. a) Quelle est l\'aire de la partie extérieure ? b) Combien de brebis peut-il élever au maximum ?', [
     'a) On retire l\'aire de la bergerie à celle du pré (en m²) :', nc3Tex('A = 120 \\times 45 - 300 = 5\\,400 - 300 = 5\\,100'), 'La partie extérieure mesure 5 100 m².',
-    'b) Bergerie : 300 ÷ 1,5 = 200 brebis au plus. Extérieur : 5 100 ÷ 20 = 255 brebis au plus.',
+    'b) Bergerie : 300 : 1,5 = 200 brebis au plus. Extérieur : 5 100 : 20 = 255 brebis au plus.',
     'Les deux règles doivent être respectées : il peut élever au maximum <b>200 brebis</b>.'])}
   ${nc3Exo(2, 'Une terrasse rectangulaire mesure 6 m sur 4,5 m. Le vendeur conseille de commander 8 % de carrelage en plus pour les découpes. Un paquet couvre 1,35 m² et coûte 42 €. a) Quelle surface faut-il commander ? b) Combien de paquets faut-il acheter ? c) Quel est le coût du carrelage ?', [
     'a) Aire de la terrasse augmentée de 8 % (coefficient 1,08), en m² :', nc3Tex('S = 6 \\times 4{,}5 \\times 1{,}08 = 27 \\times 1{,}08 = 29{,}16'), 'Il faut commander 29,16 m².',
-    'b) 29,16 ÷ 1,35 = 21,6 : il faut acheter <b>22 paquets</b> (arrondi au-dessus).',
+    'b) 29,16 : 1,35 = 21,6 : il faut acheter <b>22 paquets</b> (arrondi au-dessus).',
     'c) Coût, en euros :', nc3Tex('P = 22 \\times 42 = 924'), 'Le carrelage coûte 924 €.'])}
   ${nc3Exo(3, 'Un terrain de sport est arrosé par 8 circuits de 5 arroseurs. Chaque arroseur a un débit de 0,3 m³ d\'eau par heure. L\'arrosage se déclenche deux fois par jour, pendant 20 minutes. Combien de litres d\'eau sont consommés pendant le mois de juin (30 jours) ? On rappelle que 1 m³ = 1 000 L.', [
     'Nombre d\'arroseurs : 8 × 5 = 40. Débit total : 40 × 0,3 = 12 m³ par heure.',
@@ -343,7 +343,7 @@ function nc3Carrelage(){
   out.innerHTML = r4Ex('', [
     [nc3Tex(`A = ${nc3T(L, 1)} \\times ${nc3T(l, 1)} = ${nc3T(A, 2)}`), 'Aire de la pièce, en m².'],
     [nc3Tex(`S = ${nc3T(A, 2)} \\times ${nc3T(1 + p / 100, 2)} ${nc3Exact(S, 2) ? '=' : '\\approx'} ${nc3T(S, 2)}`), p ? `Pertes de ${p} % : on multiplie par 1 + ${p}/100 = ${nc3N(1 + p / 100, 2)}.` : 'Sans pertes, on commande exactement l\'aire de la pièce.'],
-    [nc3Tex(`N = ${nc3T(S, 2)} \\div ${nc3T(s, 2)} ${nc3Exact(N, 2) ? '=' : '\\approx'} ${nc3T(N, 2)}`), 'Nombre de paquets nécessaires.'],
+    [nc3Tex(`N = ${nc3T(S, 2)} : ${nc3T(s, 2)} ${nc3Exact(N, 2) ? '=' : '\\approx'} ${nc3T(N, 2)}`), 'Nombre de paquets nécessaires.'],
     [`Il faut acheter <b>${n} paquet${n > 1 ? 's' : ''}</b>.`, N % 1 > 1e-9 ? `On arrondit au-dessus : avec ${n - 1} paquet${n - 1 > 1 ? 's' : ''}, il manquerait du carrelage.` : 'Le résultat tombe juste : pas besoin d\'arrondir.'],
   ]);
   renderStaticMath(out);
@@ -363,7 +363,7 @@ const NC3_VF = [
   { a: 'Diviser un nombre par 0,5 revient à le multiplier par 2.', v: true, j: 'Diviser par un nombre, c\'est multiplier par son inverse ; l\'inverse de 0,5 est 2 car 0,5 × 2 = 1.' },
   { a: 'La somme de trois nombres entiers consécutifs est toujours un multiple de 3.', v: true, j: 'Avec n le plus petit : n + (n + 1) + (n + 2) = 3n + 3 = 3(n + 1), qui est un multiple de 3 pour tout entier n.' },
   { a: 'Baisser un prix de 20 %, c\'est le multiplier par 0,8.', v: true, j: 'Le coefficient multiplicateur d\'une baisse de 20 % est 1 − 20/100 = 0,8.' },
-  { a: `${nc3Tex('\\dfrac{5}{8}')} est plus grand que 0,6.`, v: true, j: `${nc3Tex('\\dfrac{5}{8}')} = 5 ÷ 8 = 0,625, et 0,625 &gt; 0,6.` },
+  { a: `${nc3Tex('\\dfrac{5}{8}')} est plus grand que 0,6.`, v: true, j: `${nc3Tex('\\dfrac{5}{8}')} = 5 : 8 = 0,625, et 0,625 &gt; 0,6.` },
   { a: '−3² = 9', v: false, j: 'Le carré ne porte que sur 3 : −3² = −(3 × 3) = <b>−9</b>. En revanche, (−3)² = 9.' },
 ];
 let nc3VfOrdre = [], nc3VfI = 0, nc3VfRep = false, nc3VfOk = 0, nc3VfTot = 0;
@@ -493,7 +493,7 @@ function nc3Lacher(){
 /* ---- Méthode 5 : ranger des nombres ---- */
 const NC3_RANGER_STEPS = [
   { expr: `Ranger : ${nc3Tex('\\dfrac{7}{20}')} ; 3,6 × 10⁻¹ ; 34 % ; ${nc3Tex('\\sqrt{0{,}09}')} ; 0,351`, note: 'Cinq nombres écrits sous cinq formes différentes : on ne peut pas les comparer directement.' },
-  { expr: `${nc3Tex('\\dfrac{7}{20}')} = 7 ÷ 20 = 0,35`, note: 'Une fraction : on divise le numérateur par le dénominateur.' },
+  { expr: `${nc3Tex('\\dfrac{7}{20}')} = 7 : 20 = 0,35`, note: 'Une fraction : on divise le numérateur par le dénominateur.' },
   { expr: '3,6 × 10⁻¹ = 0,36', note: 'Multiplier par 10⁻¹, c\'est diviser par 10 : la virgule recule d\'un rang.' },
   { expr: '34 % = 34/100 = 0,34', note: 'Un pourcentage est une fraction de dénominateur 100.' },
   { expr: `${nc3Tex('\\sqrt{0{,}09}')} = 0,3`, note: 'Car 0,3² = 0,09 (et 0,3 est positif).' },

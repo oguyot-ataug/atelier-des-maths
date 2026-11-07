@@ -209,7 +209,7 @@ document.getElementById('exos-demo-trigonometrie-3e').innerHTML = `
   ${tr3Exo(5, 'Le triangle GHI est rectangle en H, GH = 6 cm et GI = 10 cm. Calcule la mesure de l\'angle ' + tr3Tex('\\widehat{HGI}') + ', arrondie au degré.', [
     tr3Tex('\\cos \\widehat{HGI} = \\dfrac{GH}{GI} = \\dfrac{6}{10} = 0{,}6'), 'À la calculatrice : arccos(0,6) ≈ 53,13, donc ' + tr3Tex('\\widehat{HGI} \\approx 53°') + '.'])}
   ${tr3Exo(6, 'Dans un triangle rectangle, le côté opposé à un angle mesure 3 cm et l\'hypoténuse 7 cm. Quelle est la mesure de cet angle, arrondie au degré ?', [
-    tr3Tex('\\sin \\alpha = \\dfrac{3}{7} \\approx 0{,}4286'), 'arcsin(3 ÷ 7) ≈ 25,4 : l\'angle mesure environ 25°.'])}
+    tr3Tex('\\sin \\alpha = \\dfrac{3}{7} \\approx 0{,}4286'), 'arcsin(3 : 7) ≈ 25,4 : l\'angle mesure environ 25°.'])}
   ${tr3Exo(7, 'Une échelle de 5 m est appuyée contre un mur vertical. Elle fait un angle de 70° avec le sol horizontal. À quelle hauteur touche-t-elle le mur (au centimètre près) ?', [
     'Le mur, le sol et l\'échelle forment un triangle rectangle ; l\'échelle est l\'hypoténuse, la hauteur est le côté opposé à l\'angle de 70°.', tr3Tex('h = 5 \\times \\sin 70° \\approx 4{,}70') + ' m.'])}
   ${tr3Exo(8, 'On sait que ' + tr3Tex('\\sin \\widehat{B} = 0{,}6') + ' (angle aigu). Calcule ' + tr3Tex('\\cos \\widehat{B}') + ' et ' + tr3Tex('\\tan \\widehat{B}') + '.', [

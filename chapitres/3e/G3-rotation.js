@@ -202,7 +202,7 @@ document.getElementById('exos-demo-rotation-3e').innerHTML = `
     'a) En tournant de 90° autour de O, A (3 à droite, 1 en haut) arrive 3 en haut et 1 à gauche : c\'est le point B.',
     'b) Un demi-tour (symétrie centrale de centre O) envoie A sur le point C.', 'c) L\'image de B par la rotation de 90° est C.'], ro3FigQuadrillage())}
   ${ro3Exo(2, 'ABCDEF est un hexagone régulier de centre O (sommets nommés dans le sens inverse des aiguilles d\'une montre). a) Quelle est l\'image de A par la rotation de centre O et d\'angle 60° ? b) Par quelle rotation de centre O le triangle OAB a-t-il pour image le triangle OCD ?', [
-    'a) Les six angles au centre sont égaux : 360° ÷ 6 = 60°. La rotation de centre O et d\'angle 60° envoie A sur B.',
+    'a) Les six angles au centre sont égaux : 360° : 6 = 60°. La rotation de centre O et d\'angle 60° envoie A sur B.',
     'b) A va en C et B en D : il faut tourner de deux « crans », soit la rotation de centre O et d\'angle 120°.'], ro3FigHexagone(true))}
   ${ro3Exo(3, 'Le triangle RST a pour côtés RS = 5 cm, ST = 4 cm et RT = 6 cm, et l\'angle ' + ro3Tex('\\widehat{RST}') + ' mesure 82°. Son aire est d\'environ 9,9 cm². On construit son image R′S′T′ par une rotation. Que peut-on dire de R′S′, de l\'angle ' + ro3Tex('\\widehat{R\'S\'T\'}') + ' et de l\'aire de R′S′T′ ?', [
     'La rotation conserve les longueurs : R′S′ = RS = 5 cm.', 'Elle conserve les angles : ' + ro3Tex('\\widehat{R\'S\'T\'} = \\widehat{RST} = 82°') + '.', 'Elle conserve les aires : l\'aire de R′S′T′ est aussi d\'environ 9,9 cm².'])}
@@ -211,9 +211,9 @@ document.getElementById('exos-demo-rotation-3e').innerHTML = `
   ${ro3Exo(5, 'La rotation de centre O et d\'angle 180° a un autre nom. Lequel ? Où se trouve l\'image M′ d\'un point M par cette rotation ?', [
     'C\'est la symétrie centrale de centre O (un demi-tour).', 'O est le milieu du segment [MM′].'])}
   ${ro3Exo(6, 'Une rosace a 5 pétales identiques régulièrement répartis autour de son centre O. Quel est le plus petit angle d\'une rotation de centre O qui la laisse inchangée ? Cite trois autres angles qui conviennent.', [
-    '360° ÷ 5 = 72° : la rotation de centre O et d\'angle 72° envoie chaque pétale sur le suivant.', 'Les angles 144°, 216° et 288° conviennent aussi (2, 3 et 4 crans), ainsi que 360° (un tour complet).'])}
+    '360° : 5 = 72° : la rotation de centre O et d\'angle 72° envoie chaque pétale sur le suivant.', 'Les angles 144°, 216° et 288° conviennent aussi (2, 3 et 4 crans), ainsi que 360° (un tour complet).'])}
   ${ro3Exo(7, 'De quel angle tourne la grande aiguille d\'une montre en 15 minutes ? en 20 minutes ? Dans quel sens tourne-t-elle ?', [
-    'En 60 minutes, elle fait un tour complet : 360°. En 1 minute : 360° ÷ 60 = 6°.', 'En 15 minutes : 15 × 6° = 90°. En 20 minutes : 20 × 6° = 120°.',
+    'En 60 minutes, elle fait un tour complet : 360°. En 1 minute : 360° : 60 = 6°.', 'En 15 minutes : 15 × 6° = 90°. En 20 minutes : 20 × 6° = 120°.',
     'Elle tourne dans le sens des aiguilles d\'une montre, c\'est-à-dire dans le sens inverse du sens trigonométrique utilisé dans ce chapitre.'])}
   ${ro3Exo(8, 'Vrai ou faux ? Justifie. a) Le centre d\'une rotation est sa propre image. b) L\'image d\'un carré par une rotation est un carré de même aire. c) Par une rotation d\'angle 90°, un segment et son image sont parallèles.', [
     'a) Vrai : le centre ne bouge pas quand on tourne autour de lui.',
@@ -299,7 +299,7 @@ function ro3ConstrReset(){ ro3CEtape = 0; ro3ConstrDessin(0); }
 /* ---- Méthode 3 : hexagone ---- */
 const RO3_HEX_STEPS = [
   { expr: 'Les six triangles OAB, OBC, … sont équilatéraux et identiques.', note: 'Dans un hexagone régulier, les angles au centre sont égaux.' },
-  { expr: '360° ÷ 6 = 60°', note: 'Les six angles au centre font un tour complet.' },
+  { expr: '360° : 6 = 60°', note: 'Les six angles au centre font un tour complet.' },
   { expr: 'OA = OB et ' + ro3Tex('\\widehat{AOB} = 60°'), note: 'On tourne de A vers B dans le sens inverse des aiguilles d\'une montre.' },
   { expr: 'B est l\'image de A par la rotation de centre O et d\'angle 60°.', note: 'Chaque sommet va sur le suivant.' },
   { expr: 'A va en C et B va en D : rotation de centre O et d\'angle 2 × 60° = 120°.', note: 'Le triangle OAB a pour image le triangle OCD (O est sa propre image).' },

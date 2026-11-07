@@ -93,7 +93,7 @@ ${cm1Demo('pe-unite', 'Calculer un périmètre avec des unités différentes', '
     ['Un hexagone a ses 6 côtés de 5 cm. Quel est son périmètre ?',
       cm1Redac('Périmètre de l\'hexagone', '6 × 5 cm = 30 cm', 'Le périmètre de l\'hexagone est 30 cm.')],
     ['Un carré a un périmètre de 28 cm. Combien mesure son côté ?',
-      cm1Redac('Côté du carré', { suite: ['4 × 7 = 28', '28 ÷ 4 = 7'] }, 'Le côté du carré mesure 7 cm.', cm1Paquets([[7, '?'], [7, '?'], [7, '?'], [7, '?']], { uni: true, L: 300, accolade: 'P = 28 cm' }))],
+      cm1Redac('Côté du carré', { suite: ['4 × 7 = 28', '28 : 4 = 7'] }, 'Le côté du carré mesure 7 cm.', cm1Paquets([[7, '?'], [7, '?'], [7, '?'], [7, '?']], { uni: true, L: 300, accolade: 'P = 28 cm' }))],
     ['Calcule le périmètre d\'un rectangle de 2 m de long et 60 cm de large.',
       cm1Redac('Longueur en cm', '2 m = 200 cm', 'On met les deux longueurs dans la même unité.')
       + cm1Redac('Périmètre du rectangle', { nom: 'P', lignes: ['2 × 200 cm + 2 × 60 cm', '400 cm + 120 cm', '520 cm'] }, 'Le périmètre est 520 cm, c\'est-à-dire 5 m 20 cm.', rectFig(200, 60, '2 m = 200 cm', '60 cm', { largeur: 230 }))],
@@ -150,7 +150,7 @@ ${cm1Demo('pe-unite', 'Calculer un périmètre avec des unités différentes', '
         { etoiles: 3, col: 1, cahier: true, consigne: 'Un cadre photo rectangulaire mesure 30 cm sur 20 cm. Une baguette de bois de 1 m suffit-elle pour en faire le tour ?',
           corr: cm1Redac('Périmètre du cadre', '2 × 30 cm + 2 × 20 cm = 100 cm', 'Le périmètre est 100 cm = 1 m : la baguette suffit, tout juste.', cm1Paquets([[30, '30 cm'], [20, '20', '', '#FBE0D6'], [30, '30 cm'], [20, '20', '', '#FBE0D6']], { L: 280, accolade: '100 cm = 1 m' })) },
         { etoiles: 3, col: 1, cahier: true, consigne: 'Un rectangle a un périmètre de 40 cm. Sa longueur mesure 12 cm. Combien mesure sa largeur ?',
-          corr: cm1Redac('Largeur du rectangle', { suite: ['2 × 12 cm = 24 cm', '40 cm − 24 cm = 16 cm', '16 cm ÷ 2 = 8 cm'] }, 'La largeur du rectangle mesure 8 cm.', cm1Paquets([[12, '12 cm'], [8, '?', '', '#FBE0D6'], [12, '12 cm'], [8, '?', '', '#FBE0D6']], { L: 280, accolade: 'P = 40 cm' })) },
+          corr: cm1Redac('Largeur du rectangle', { suite: ['2 × 12 cm = 24 cm', '40 cm − 24 cm = 16 cm', '16 cm : 2 = 8 cm'] }, 'La largeur du rectangle mesure 8 cm.', cm1Paquets([[12, '12 cm'], [8, '?', '', '#FBE0D6'], [12, '12 cm'], [8, '?', '', '#FBE0D6']], { L: 280, accolade: 'P = 40 cm' })) },
       ] },
   ],
   quiz: [

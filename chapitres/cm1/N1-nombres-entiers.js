@@ -72,7 +72,7 @@ ${cm1Demo('ne-graduer', 'Trouver le nombre qui correspond à un point sur une de
     ]],
     ['ne-graduer', [
       { expr: '3 000 − 2 000 = 1 000', note: 'On calcule l\'écart entre les deux nombres écrits : 1 000.' },
-      { expr: '1 000 ÷ 10 = 100', note: 'Cet écart est partagé en 10 écarts égaux : chaque écart vaut 100.' },
+      { expr: '1 000 : 10 = 100', note: 'Cet écart est partagé en 10 écarts égaux : chaque écart vaut 100.' },
       { expr: '7 × 100 = 700', note: 'Le point C est 7 écarts après 2 000.' },
       { expr: '2 000 + 700 = 2 700', note: 'Le point C est à 2 700.' },
     ]],
@@ -96,7 +96,7 @@ ${cm1Demo('ne-graduer', 'Trouver le nombre qui correspond à un point sur une de
     ['Range dans l\'ordre décroissant : 1 570 ; 1 507 ; 7 015 ; 157 ; 5 170.',
       cm1Redac('Ordre décroissant', '7 015 &gt; 5 170 &gt; 1 570 &gt; 1 507 &gt; 157', 'Le plus grand nombre est 7 015 et le plus petit est 157.')],
     ['Sur une demi-droite graduée, 4 000 et 5 000 sont séparés par 10 écarts égaux. Quel nombre correspond à la 6<sup>e</sup> graduation après 4 000 ?',
-      cm1Redac('Valeur d\'un écart', '1 000 ÷ 10 = 100', 'Un écart vaut 100.')
+      cm1Redac('Valeur d\'un écart', '1 000 : 10 = 100', 'Un écart vaut 100.')
       + cm1Redac('Nombre de la 6<sup>e</sup> graduation', ['4 000 + 6 × 100', '4 000 + 600', '4 600'], 'La 6<sup>e</sup> graduation après 4 000 correspond à 4 600.')],
   ], { titre: 'Rédaction type : « Décomposer un nombre »', lignes: [['6 358', 'Je repère le chiffre de chaque rang : 6 mille, 3 centaines, 5 dizaines, 8 unités.'], ['= 6 000 + 300 + 50 + 8', 'J\'écris la valeur de chaque chiffre.']] }),
   histoire: cm1Histoire('Un peu d\'histoire : l\'invention du zéro', [

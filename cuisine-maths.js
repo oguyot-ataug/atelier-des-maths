@@ -52,12 +52,12 @@ function cuRecetteMonter(el){
     if(cm){ // passage par l'unité, une opération par ligne
       const [nom, q, u] = r.ingr[0];
       return `<b>Méthode : on passe par ${r.qui === 'personnes' ? 'une personne' : r.qui === 'cookies' ? 'un cookie' : 'une part'}.</b>
-        <ul class="cu-liste"><li>${nom} pour 1 : ${q} ÷ ${r.pour} = ${cuN(q / r.pour, 3)}${u ? ' ' + u : ''}</li><li>${nom} pour ${n} : ${cuN(q / r.pour, 3)} × ${n} = ${cuQte(q * k, u)}</li></ul>
+        <ul class="cu-liste"><li>${nom} pour 1 : ${q} : ${r.pour} = ${cuN(q / r.pour, 3)}${u ? ' ' + u : ''}</li><li>${nom} pour ${n} : ${cuN(q / r.pour, 3)} × ${n} = ${cuQte(q * k, u)}</li></ul>
         On fait de même pour chaque ingrédient.${Number.isInteger(k) ? ` Ici, c'est plus rapide : ${n} = ${r.pour} × ${k}, donc on multiplie chaque quantité par ${k}.` : ''}`;
     }
-    // Coefficient décimal (exact) ou, sinon, écrit comme une fraction (8 ÷ 6 n'est pas égal à 1,333).
+    // Coefficient décimal (exact) ou, sinon, écrit comme une fraction (8 : 6 n'est pas égal à 1,333).
     const coef = cuExact(k, 3) ? cuN(k, 3) : `<span class="tex">\\dfrac{${n}}{${r.pour}}</span>`;
-    return `<b>Tableau de proportionnalité</b> : on passe de la première colonne à la seconde en multipliant par le même nombre, le <b>coefficient</b> ${r.pour === n ? '1' : `${n} ÷ ${r.pour} = ${coef}`}.
+    return `<b>Tableau de proportionnalité</b> : on passe de la première colonne à la seconde en multipliant par le même nombre, le <b>coefficient</b> ${r.pour === n ? '1' : `${n} : ${r.pour} = ${coef}`}.
       <table class="cu-tab"><tr><th>${r.qui}</th><td>${r.pour}</td><td>${n}</td><td rowspan="${r.ingr.length + 1}" class="cu-coef">× ${coef}</td></tr>${r.ingr.map(([nm, q, u]) => `<tr><th>${nm}${u ? ' (' + u + ')' : ''}</th><td>${cuN(q)}</td><td><b>${cuEnv(q * k, 2)}${cuN(q * k)}</b></td></tr>`).join('')}</table>${cuExact(k, 3) ? '' : '<p class="hint" style="margin:6px 0 0;">« ≈ » : la valeur est arrondie au centième.</p>'}`;
   }
   function rendre(){
@@ -168,14 +168,14 @@ function cuPizzaMonter(el){
    ===================================================================== */
 const cuC = f => (f - 32) * 5 / 9;
 const CU_FOUR_Q = [
-  { q: 'La recette de cookies dit : « cuire à <b>350 °F</b> ». Quelle température régler sur un four en °C ?', rep: cuC(350), tol: 1.5, u: '°C', corr: '(350 − 32) × 5 ÷ 9 ≈ 176,7 °C, soit environ 180 °C (thermostat 6).' },
-  { q: 'Pour des muffins : <b>400 °F</b>. Combien en °C ?', rep: cuC(400), tol: 1.5, u: '°C', corr: '(400 − 32) × 5 ÷ 9 ≈ 204,4 °C, soit environ 200 °C.' },
-  { q: 'L\'eau bout à <b>100 °C</b>. Combien cela fait-il en °F ? (Cherche le nombre de °F qui donne 100 °C.)', rep: 212, tol: 1, u: '°F', corr: 'On résout (F − 32) × 5 ÷ 9 = 100 : F − 32 = 180, donc F = 212 °F.' },
-  { q: 'À quelle température les deux thermomètres affichent-ils <b>le même nombre</b> ?', rep: -40, tol: 1, u: '', corr: 'On résout (x − 32) × 5 ÷ 9 = x : 5x − 160 = 9x, donc x = −40. −40 °F = −40 °C : sur le graphique, c\'est là que la droite coupe la droite d\'équation y = x.' }];
+  { q: 'La recette de cookies dit : « cuire à <b>350 °F</b> ». Quelle température régler sur un four en °C ?', rep: cuC(350), tol: 1.5, u: '°C', corr: '(350 − 32) × 5 : 9 ≈ 176,7 °C, soit environ 180 °C (thermostat 6).' },
+  { q: 'Pour des muffins : <b>400 °F</b>. Combien en °C ?', rep: cuC(400), tol: 1.5, u: '°C', corr: '(400 − 32) × 5 : 9 ≈ 204,4 °C, soit environ 200 °C.' },
+  { q: 'L\'eau bout à <b>100 °C</b>. Combien cela fait-il en °F ? (Cherche le nombre de °F qui donne 100 °C.)', rep: 212, tol: 1, u: '°F', corr: 'On résout (F − 32) × 5 : 9 = 100 : F − 32 = 180, donc F = 212 °F.' },
+  { q: 'À quelle température les deux thermomètres affichent-ils <b>le même nombre</b> ?', rep: -40, tol: 1, u: '', corr: 'On résout (x − 32) × 5 : 9 = x : 5x − 160 = 9x, donc x = −40. −40 °F = −40 °C : sur le graphique, c\'est là que la droite coupe la droite d\'équation y = x.' }];
 function cuFourMonter(el){
   const st = { F: 350, q: 0, score: 0, faits: new Set() };
   el.innerHTML = `<div class="cu-box">
-    <div class="cu-consigne">Les recettes américaines donnent la température du four en <b>degrés Fahrenheit</b> (°F). Pour convertir en degrés Celsius : <b>°C = (°F − 32) × 5 ÷ 9</b>. C'est une <b>fonction affine</b> : ${cuTexS('f(x) = \\dfrac{5}{9}x - \\dfrac{160}{9}')}. Fais glisser le curseur.</div>
+    <div class="cu-consigne">Les recettes américaines donnent la température du four en <b>degrés Fahrenheit</b> (°F). Pour convertir en degrés Celsius : <b>°C = (°F − 32) × 5 : 9</b>. C'est une <b>fonction affine</b> : ${cuTexS('f(x) = \\dfrac{5}{9}x - \\dfrac{160}{9}')}. Fais glisser le curseur.</div>
     <div class="cu-curseur"><input type="range" min="-60" max="480" step="1" value="350" aria-label="Température en degrés Fahrenheit"><span class="cu-lect"></span></div>
     <svg class="cu-svg" viewBox="0 0 640 300"></svg>
     <div class="cu-quiz"></div>
@@ -196,7 +196,7 @@ function cuFourMonter(el){
     const F = st.F, C = cuC(F);
     h += `<line x1="${cuF(X(F))}" y1="${gy}" x2="${cuF(X(F))}" y2="${cuF(Y(C))}" stroke="#2F6FB3" stroke-dasharray="4 3"/><line x1="${gx}" y1="${cuF(Y(C))}" x2="${cuF(X(F))}" y2="${cuF(Y(C))}" stroke="#2F6FB3" stroke-dasharray="4 3"/><circle cx="${cuF(X(F))}" cy="${cuF(Y(C))}" r="6" fill="#2F6FB3" stroke="#fff" stroke-width="2"/>`;
     svg.innerHTML = h;
-    $('.cu-lect').innerHTML = `${F} °F → (${F} − 32) × 5 ÷ 9 ≈ <b>${cuN(C, 1)} °C</b>${C >= 30 && C <= 300 ? ` · thermostat ≈ ${cuN(C / 30, 1)}` : ''}`;
+    $('.cu-lect').innerHTML = `${F} °F → (${F} − 32) × 5 : 9 ≈ <b>${cuN(C, 1)} °C</b>${C >= 30 && C <= 300 ? ` · thermostat ≈ ${cuN(C / 30, 1)}` : ''}`;
   }
   function question(){
     const Q = CU_FOUR_Q[st.q];

@@ -74,7 +74,7 @@ PLANCHES['6e|Solides et volumes'] = [
         eleve: plListe(['1 L = ' + B() + ' dm³', '1 dm³ = ' + B() + ' cm³', '1 m³ = ' + B() + ' dm³', '250 cm³ = ' + B() + ' L']),
         corr: plListe(['1 L = ' + R(1) + ' dm³', '1 dm³ = ' + R('1 000') + ' cm³', '1 m³ = ' + R('1 000') + ' dm³', '250 cm³ = ' + R('0,25') + ' L']) },
       { etoiles: 3, cahier: true, consigne: 'Une boîte en forme de pavé mesure 20 cm × 10 cm × 10 cm. Combien de cubes de 5 cm d\'arête peut-on y ranger ?',
-        corr: cm1Redac('Cubes en longueur', '20 ÷ 5 = 4', 'On range 4 cubes en longueur.') + cm1Redac('Cubes en largeur', '10 ÷ 5 = 2', 'On range 2 cubes en largeur.') + cm1Redac('Cubes en hauteur', '10 ÷ 5 = 2', 'On range 2 cubes en hauteur.') + cm1Redac('Nombre de cubes', '4 × 2 × 2 = 16', 'On peut ranger 16 cubes.') },
+        corr: cm1Redac('Cubes en longueur', '20 : 5 = 4', 'On range 4 cubes en longueur.') + cm1Redac('Cubes en largeur', '10 : 5 = 2', 'On range 2 cubes en largeur.') + cm1Redac('Cubes en hauteur', '10 : 5 = 2', 'On range 2 cubes en hauteur.') + cm1Redac('Nombre de cubes', '4 × 2 × 2 = 16', 'On peut ranger 16 cubes.') },
     ] },
   { titre: 'Patrons de solides', duree: '35 min',
     attendus: ['Reconnaître un patron de cube', 'Associer un patron à un pavé droit', 'Construire un patron'],

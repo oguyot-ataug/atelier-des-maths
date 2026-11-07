@@ -181,7 +181,7 @@ document.getElementById('exos-demo-distance-cercles').innerHTML = `
     <div class="num">Exercice 1</div>
     Trace un segment [PQ] de longueur 8 cm, puis construis son milieu à la règle.
     <button type="button" class="exo-correction-toggle" data-target="c6-g1-c1" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
-    <div class="exo-correction" id="c6-g1-c1"><div><ol style="margin:0 0 6px;padding-left:20px;"><li>Je trace le segment [PQ] de 8 cm à la règle.</li><li>Le milieu est à égale distance de P et de Q : 8 ÷ 2 = 4 cm.</li><li>Je place le point I sur [PQ] à 4 cm de P et je code PI = IQ (deux petits traits identiques).</li></ol></div></div>
+    <div class="exo-correction" id="c6-g1-c1"><div><ol style="margin:0 0 6px;padding-left:20px;"><li>Je trace le segment [PQ] de 8 cm à la règle.</li><li>Le milieu est à égale distance de P et de Q : 8 : 2 = 4 cm.</li><li>Je place le point I sur [PQ] à 4 cm de P et je code PI = IQ (deux petits traits identiques).</li></ol></div></div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 2</div>

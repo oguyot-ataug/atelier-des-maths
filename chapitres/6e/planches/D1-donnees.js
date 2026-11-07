@@ -74,7 +74,7 @@ PLANCHES['6e|Gestion de données'] = [
     exos: [
       { etoiles: 1, col: 1, consigne: `Ce diagramme montre comment 40 élèves viennent au collège.${ctr(camembert([['bus', 1 / 2, GC[0]], ['à pied', 1 / 4, GC[2]], ['vélo', 1 / 8, GC[3]], ['voiture', 1 / 8, GC[4]]], true))}`,
         eleve: plListe([ligne('Proportion d\'élèves en bus :', Fr), ligne('Proportion d\'élèves à pied :', Fr), 'Nombre d\'élèves en bus : ' + B(2), 'Nombre d\'élèves à vélo : ' + B(2)]),
-        corr: plListe([ligne('Proportion d\'élèves en bus :', R(F(1, 2))), ligne('Proportion d\'élèves à pied :', R(F(1, 4))), 'Nombre d\'élèves en bus : ' + R(20), 'Nombre d\'élèves à vélo : 40 ÷ 8 = ' + R(5)]) },
+        corr: plListe([ligne('Proportion d\'élèves en bus :', R(F(1, 2))), ligne('Proportion d\'élèves à pied :', R(F(1, 4))), 'Nombre d\'élèves en bus : ' + R(20), 'Nombre d\'élèves à vélo : 40 : 8 = ' + R(5)]) },
       { etoiles: 2, col: 1, consigne: `Ce diagramme montre la composition d'un repas (en %).${ctr(camembert([['féculents', .5, GC[3]], ['légumes', .25, GC[2]], ['laitages', .15, GC[0]], ['viande', .1, GC[1]]]))}`,
         eleve: plListe(['Part des légumes : ' + B(2) + ' %', 'Part de la viande : ' + B(2) + ' %', 'Pour un repas de 600 g, masse de féculents : ' + B() + ' g']),
         corr: plListe(['Part des légumes : ' + R(25) + ' %', 'Part de la viande : ' + R(10) + ' %', 'Pour un repas de 600 g, masse de féculents : ' + R(300) + ' g']) },
@@ -82,7 +82,7 @@ PLANCHES['6e|Gestion de données'] = [
         eleve: plListe(['Son angle mesure ' + B() + ' °', 'Il représente ' + B() + ' %', 'Un secteur d\'angle 180° représente ' + B() + ' %']),
         corr: plListe(['Son angle mesure ' + R(90) + ' °', 'Il représente ' + R(25) + ' %', 'Un secteur d\'angle 180° représente ' + R(50) + ' %']) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Sur 24 élèves, 12 ont un chat, 6 un chien et 6 aucun animal. Construis un diagramme circulaire. Quel angle donnes-tu à chaque secteur ?',
-        corr: cm1Redac('Secteur « chat »', '360° ÷ 2 = 180°', '12 élèves sur 24, c\'est la moitié : le secteur mesure 180°.') + cm1Redac('Secteur « chien »', '360° ÷ 4 = 90°', '6 élèves sur 24, c\'est un quart : le secteur mesure 90°.') + cm1Redac('Secteur « aucun animal »', '360° ÷ 4 = 90°', 'Le secteur mesure aussi 90°.') + cm1Redac('Vérification', '180° + 90° + 90° = 360°', 'On trace les secteurs au rapporteur.') },
+        corr: cm1Redac('Secteur « chat »', '360° : 2 = 180°', '12 élèves sur 24, c\'est la moitié : le secteur mesure 180°.') + cm1Redac('Secteur « chien »', '360° : 4 = 90°', '6 élèves sur 24, c\'est un quart : le secteur mesure 90°.') + cm1Redac('Secteur « aucun animal »', '360° : 4 = 90°', 'Le secteur mesure aussi 90°.') + cm1Redac('Vérification', '180° + 90° + 90° = 360°', 'On trace les secteurs au rapporteur.') },
     ] },
   { titre: 'Graphiques et courbes', duree: '35 min',
     attendus: ['Lire un graphique : abscisse, ordonnée', 'Repérer un maximum, un minimum, une évolution', 'Interpréter un graphique en phrases'],

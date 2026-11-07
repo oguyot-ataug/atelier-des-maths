@@ -31,11 +31,11 @@ ${cm1Astuce('Ne choisis jamais l\'opération à cause d\'un mot ! « Léa a 45 �
 
 ${cm1Lecon(2, 'Comparaison multiplicative : « fois plus », « fois moins »')}
 ${cm1Exemple('Un vélo coûte 240 €. Une trottinette coûte 4 fois moins cher. Quel est le prix de la trottinette ?')}
-${ce2AnimBarres('c2-rp-fois', { unite: 1, lignes: [['Vélo', [[80, '60 €', '#2EA8C9', 'Le prix du vélo, 240 €, partagé en 4 parts égales…'], [80, '60 €', '#2EA8C9', ''], [80, '60 €', '#2EA8C9', ''], [80, '60 €', '#2EA8C9', '… chaque part vaut 240 ÷ 4 = 60 €.']]], ['Trottinette', [[80, '?', '#E9C46A', 'La trottinette coûte 4 fois moins : une seule part.']]]], solution: { ligne: 1, part: 0, texte: '60 €', phrase: 'La trottinette coûte <b>60 €</b>.' } })}
-<ul class="example-list"><li>« 4 fois moins » : on partage 240 en 4. 240 ÷ 4 = <b>60 €</b>.</li><li>À l'inverse, « le vélo coûte 4 fois plus que la trottinette » : 60 × 4 = 240.</li></ul>
+${ce2AnimBarres('c2-rp-fois', { unite: 1, lignes: [['Vélo', [[80, '60 €', '#2EA8C9', 'Le prix du vélo, 240 €, partagé en 4 parts égales…'], [80, '60 €', '#2EA8C9', ''], [80, '60 €', '#2EA8C9', ''], [80, '60 €', '#2EA8C9', '… chaque part vaut 240 : 4 = 60 €.']]], ['Trottinette', [[80, '?', '#E9C46A', 'La trottinette coûte 4 fois moins : une seule part.']]]], solution: { ligne: 1, part: 0, texte: '60 €', phrase: 'La trottinette coûte <b>60 €</b>.' } })}
+<ul class="example-list"><li>« 4 fois moins » : on partage 240 en 4. 240 : 4 = <b>60 €</b>.</li><li>À l'inverse, « le vélo coûte 4 fois plus que la trottinette » : 60 × 4 = 240.</li></ul>
 
 ${cm1Lecon(3, 'Problèmes « parties-tout » multiplicatifs')}
-${cm1Exemple('Une salle a 18 rangées de 24 fauteuils. Combien de fauteuils ?', ['Le tout est formé de 18 parties égales de 24 : 18 × 24 = <b>432 fauteuils</b>.', 'Question inverse : « 432 fauteuils en 18 rangées égales » → 432 ÷ 18 = 24 fauteuils par rangée.'])}
+${cm1Exemple('Une salle a 18 rangées de 24 fauteuils. Combien de fauteuils ?', ['Le tout est formé de 18 parties égales de 24 : 18 × 24 = <b>432 fauteuils</b>.', 'Question inverse : « 432 fauteuils en 18 rangées égales » → 432 : 18 = 24 fauteuils par rangée.'])}
 
 ${cm1Lecon(4, 'Problèmes à plusieurs étapes')}
 ${cm1Exemple('Un club achète 12 ballons à 15,50 € et 3 filets à 42 €. Il paie avec 7 billets de 50 €. Combien lui rend-on ?')}
@@ -62,7 +62,7 @@ ${cm1Demo('c2-rp-algo', 'Chercher toutes les solutions', 'De combien de façons 
     ['c2-rp-comp', [
       { expr: 'Julie : 36 = 3 fois Hugo', note: 'Comprendre : c\'est Julie qui en a le plus. « 3 fois plus que Hugo ».' },
       { expr: schema([[['Julie : 36', 100, B]], [['Hugo ?', 33.3, 'x']]]), note: 'Modéliser : la barre de Julie contient 3 barres de Hugo.' },
-      { expr: '36 ÷ 3 = 12', note: 'Calculer : on partage en 3.' },
+      { expr: '36 : 3 = 12', note: 'Calculer : on partage en 3.' },
       { expr: 'Hugo a 12 billes.', note: 'Répondre et vérifier : 12 × 3 = 36 ✔ (et Hugo en a moins que Julie : plausible).' },
     ]],
     ['c2-rp-algo', [
@@ -76,11 +76,11 @@ ${cm1Demo('c2-rp-algo', 'Chercher toutes les solutions', 'De combien de façons 
     ['Un paquet de 6 yaourts coûte 3,30 €. Combien coûtent 5 paquets ? Combien y a-t-il de yaourts ?',
       cm1Redac('Prix de 5 paquets', '5 × 3,30 = 16,50', '5 paquets coûtent 16,50 €.') + cm1Redac('Nombre de yaourts', '5 × 6 = 30', 'Il y a 30 yaourts.')],
     ['La tour Eiffel mesure 330 m. Une maison mesure 10 m. Combien de fois la tour est-elle plus haute ?',
-      cm1Redac('Comparaison', '330 ÷ 10 = 33', 'La tour Eiffel est 33 fois plus haute que la maison.')],
+      cm1Redac('Comparaison', '330 : 10 = 33', 'La tour Eiffel est 33 fois plus haute que la maison.')],
     ['Paul pèse 38 kg ; il pèse 7 kg de plus que sa sœur. Combien pèse sa sœur ?',
       cm1Redac('Masse de la sœur', '38 − 7 = 31', 'C\'est Paul le plus lourd : sa sœur pèse 31 kg.')],
     ['Une école de 336 élèves a 14 classes de même effectif. Combien y a-t-il d\'élèves par classe ?',
-      cm1Redac('Élèves par classe', '336 ÷ 14 = 24', 'Il y a 24 élèves par classe.')],
+      cm1Redac('Élèves par classe', '336 : 14 = 24', 'Il y a 24 élèves par classe.')],
     ['Avec 3 tee-shirts (rouge, bleu, vert) et 2 shorts (noir, blanc), combien de tenues différentes peut-on faire ?',
       cm1Redac('Nombre de tenues', '3 × 2 = 6', 'On peut faire 6 tenues différentes.')],
     ['Au cinéma, la place coûte 8 €, ou la carte de 10 places 65 €. Quel est le prix le plus bas pour 13 places ?',
@@ -89,10 +89,10 @@ ${cm1Demo('c2-rp-algo', 'Chercher toutes les solutions', 'De combien de façons 
     ['Un fermier a des poules et des lapins : 10 têtes et 32 pattes. Combien a-t-il de lapins ?',
       cm1Redac('Si les 10 animaux étaient des poules', '10 × 2 = 20', 'Il y aurait 20 pattes.')
       + cm1Redac('Pattes qui manquent', '32 − 20 = 12', 'Il manque 12 pattes ; chaque lapin a 2 pattes de plus qu\'une poule.')
-      + cm1Redac('Nombre de lapins', '12 ÷ 2 = 6', 'Il y a 6 lapins (et 4 poules). Vérification : 6 × 4 + 4 × 2 = 32.')],
+      + cm1Redac('Nombre de lapins', '12 : 2 = 6', 'Il y a 6 lapins (et 4 poules). Vérification : 6 × 4 + 4 × 2 = 32.')],
     ['Pour une sortie, 5 accompagnateurs et 142 élèves prennent des cars de 50 places. Combien faut-il de cars ?',
       cm1Redac('Nombre de personnes', '142 + 5 = 147', 'Il y a 147 personnes.') + cm1Redac('Nombre de cars', '147 = (50 × 2) + 47', '2 cars ne suffisent pas, il reste 47 personnes : il faut 3 cars.')],
-  ], { titre: 'Rédaction type', lignes: [['Je cherche le prix de la trottinette.', 'Comprendre.'], ['240 ÷ 4 = 60', 'Modéliser et calculer.'], ['La trottinette coûte 60 €.', 'Répondre ; 60 &lt; 240 : plausible.']] }),
+  ], { titre: 'Rédaction type', lignes: [['Je cherche le prix de la trottinette.', 'Comprendre.'], ['240 : 4 = 60', 'Modéliser et calculer.'], ['La trottinette coûte 60 €.', 'Répondre ; 60 &lt; 240 : plausible.']] }),
   histoire: cm1Histoire('Un peu d\'histoire : les problèmes de récréation', [
     'Au VIII<sup>e</sup> siècle, le savant <b>Alcuin</b>, conseiller de Charlemagne, écrit des « problèmes pour aiguiser l\'esprit des jeunes ». Le plus célèbre : comment faire traverser une rivière à un loup, une chèvre et un chou, sans jamais laisser le loup seul avec la chèvre, ni la chèvre avec le chou ?',
     'Le problème des poules et des lapins (têtes et pattes) vient d\'un vieux livre chinois, écrit il y a environ 1 500 ans !',

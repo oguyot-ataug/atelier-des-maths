@@ -51,9 +51,9 @@ ${schema([[['24', 16, BL], ['24', 16, BL], ['24', 16, BL], ['24', 16, BL], ['24'
 <ul class="example-list"><li>6 fois 24 : <b>multiplication</b>. 6 × 24 = 144. Il y a 144 crayons.</li></ul>
 ${cm1Exemple('Partage : on partage 96 billes entre 4 enfants. Combien chacun en reçoit-il ?')}
 ${schema([[['?', 24, 'x'], ['?', 24, 'x'], ['?', 24, 'x'], ['?', 24, 'x']]], '96 billes', 96)}
-<ul class="example-list"><li>On cherche la valeur d'une part : <b>division</b>. 96 ÷ 4 = 24. Chacun reçoit 24 billes.</li></ul>
-${ce2AnimPartage('cm1-rp-partage', { legende: 'Un partage équitable, avec de plus petits nombres : 24 billes entre 4 enfants.', presets: [{ nom: '24 billes, 4 enfants', total: 24, parts: 4, etiq: 'enfant', objets: 'billes', fin: 'Chaque enfant reçoit <b>6 billes</b> : 24 ÷ 4 = 6.' }] })}
-${cm1Exemple('Groupement : 150 œufs à ranger dans des boîtes de 6. Combien de boîtes ?', ['On cherche combien de fois 6 il y a dans 150 : <b>division</b>. 150 ÷ 6 = 25. Il faut 25 boîtes.'])}
+<ul class="example-list"><li>On cherche la valeur d'une part : <b>division</b>. 96 : 4 = 24. Chacun reçoit 24 billes.</li></ul>
+${ce2AnimPartage('cm1-rp-partage', { legende: 'Un partage équitable, avec de plus petits nombres : 24 billes entre 4 enfants.', presets: [{ nom: '24 billes, 4 enfants', total: 24, parts: 4, etiq: 'enfant', objets: 'billes', fin: 'Chaque enfant reçoit <b>6 billes</b> : 24 : 4 = 6.' }] })}
+${cm1Exemple('Groupement : 150 œufs à ranger dans des boîtes de 6. Combien de boîtes ?', ['On cherche combien de fois 6 il y a dans 150 : <b>division</b>. 150 : 6 = 25. Il faut 25 boîtes.'])}
 
 ${cm1Lecon(5, 'Problèmes à plusieurs étapes')}
 ${cm1Regle('Certains problèmes demandent <b>plusieurs calculs</b>. On cherche d\'abord une <b>question intermédiaire</b> utile, puis on répond à la question posée.')}
@@ -82,7 +82,7 @@ ${cm1Demo('rp-division', 'Division avec reste : interpréter le résultat', '100
       { expr: '445 adhérents font du tennis.', note: 'Vérification : 480 + 325 + 445 = 1 250. ✔' },
     ]],
     ['rp-division', [
-      { expr: '100 ÷ 8', note: 'On cherche combien de groupes de 8 on peut faire avec 100 élèves : c\'est une division.' },
+      { expr: '100 : 8', note: 'On cherche combien de groupes de 8 on peut faire avec 100 élèves : c\'est une division.' },
       { expr: '100 = 8 × 12 + 4', note: '12 minibus transportent 96 élèves ; il reste 4 élèves.' },
       { expr: '12 + 1 = 13', note: 'Les 4 élèves restants ont besoin d\'un minibus de plus !' },
       { expr: 'Il faut 13 minibus.', note: 'Le reste de la division change la réponse : il faut toujours relire la question.' },
@@ -98,9 +98,9 @@ ${cm1Demo('rp-division', 'Division avec reste : interpréter le résultat', '100
     ['Une boîte contient 12 œufs. Combien d\'œufs y a-t-il dans 25 boîtes ?',
       cm1Redac('Nombre d\'œufs', '25 × 12 = 300', 'Il y a 300 œufs dans 25 boîtes.')],
     ['On range 84 livres sur 7 étagères, autant sur chacune. Combien de livres y a-t-il par étagère ?',
-      cm1Redac('Livres par étagère', '84 ÷ 7 = 12', 'Il y a 12 livres sur chaque étagère.')],
+      cm1Redac('Livres par étagère', '84 : 7 = 12', 'Il y a 12 livres sur chaque étagère.')],
     ['Pour une fête, on prévoit 3 gâteaux pour 8 personnes. Il y a 40 invités. Combien de gâteaux faut-il ?',
-      cm1Redac('Groupes de 8 personnes', '40 ÷ 8 = 5', '40 personnes, c\'est 5 groupes de 8 personnes.') + cm1Redac('Nombre de gâteaux', '5 × 3 = 15', 'Il faut 15 gâteaux.')],
+      cm1Redac('Groupes de 8 personnes', '40 : 8 = 5', '40 personnes, c\'est 5 groupes de 8 personnes.') + cm1Redac('Nombre de gâteaux', '5 × 3 = 15', 'Il faut 15 gâteaux.')],
     ['Au cinéma, une place adulte coûte 9 € et une place enfant 6 €. Combien paie une famille de 2 adultes et 3 enfants ?',
       cm1Redac('Prix total', ['2 × 9 + 3 × 6', '18 + 18', '36'], 'La famille paie 36 €.')],
     ['On a 75 photos à coller dans un album, 6 par page. Combien de pages faut-il ?',
@@ -126,7 +126,7 @@ ${cm1Demo('rp-division', 'Division avec reste : interpréter le résultat', '100
 /* ---- Planches d'exercices imprimables (planches.js) ---- */
 (() => {
 const B = n => plPointilles(n || 4), R = v => plRep(String(v));
-const OPS = '+ · − · × · ÷';
+const OPS = '+ · − · × · :';
 const op = items => ({ eleve: '<div class="pl-col1">' + plListe(items.map(([t]) => `${t} <b>${OPS}</b>`)) + '</div>', corr: plListe(items.map(([t, r]) => `${t} ${plEntoure(r)}`)) });
 const P = (parts, o) => cm1Paquets(parts, Object.assign({ L: 260, xt: 70 }, o || {}));
 const petit = h => `<div style="max-width:240px;">${h}</div>`;
@@ -136,7 +136,7 @@ PLANCHES['cm1|Résolution de problèmes'] = [
     attendus: ['Comprendre l\'énoncé et choisir l\'opération', 'Représenter un problème par un schéma en barres', 'Rédiger la réponse : calcul et phrase'],
     exos: [
       { etoiles: 1, consigne: 'Entoure l\'opération qui permet de répondre.',
-        ...op([['J\'ai 45 billes, j\'en gagne 18. Combien en ai-je ?', '+'], ['Le car a 52 places ; 37 sont occupées. Combien sont libres ?', '−'], ['6 boîtes de 12 œufs. Combien d\'œufs ?', '×'], ['48 bonbons pour 6 enfants. Combien chacun ?', '÷']]) },
+        ...op([['J\'ai 45 billes, j\'en gagne 18. Combien en ai-je ?', '+'], ['Le car a 52 places ; 37 sont occupées. Combien sont libres ?', '−'], ['6 boîtes de 12 œufs. Combien d\'œufs ?', '×'], ['48 bonbons pour 6 enfants. Combien chacun ?', ':']]) },
       { etoiles: 2, consigne: `Quel schéma va avec chaque problème ?
         <div class="pl-col1">${plListe(['<b>Problème 1</b> : Léo a 35 €. Il dépense 12 €. Combien lui reste-t-il ?', '<b>Problème 2</b> : Léa a 12 € de plus que Léo, qui a 35 €. Combien a Léa ?', '<b>Problème 3</b> : Léo a 12 € et Léa a 35 €. Combien ont-ils ensemble ?'])}</div>
         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px 12px;align-items:start;"><div>${lettre('A') + petit(P([[12, '12'], [35, '35']], { titre: '?', L: 160, xt: 34 }))}</div><div>${lettre('B') + petit(P([[12, '12'], [23, '?']], { titre: '35', L: 160, xt: 34, echelle: 47 }))}</div><div>${lettre('C') + petit(P([[35, '35']], { titre: 'Léo', L: 160, xt: 34, echelle: 47 }) + P([[35, '35'], [12, '12']], { titre: 'Léa', L: 160, xt: 34, echelle: 47 }))}</div></div>`,
@@ -156,13 +156,13 @@ PLANCHES['cm1|Résolution de problèmes'] = [
     attendus: ['Résoudre des problèmes de multiplication et de division', 'Résoudre un problème à plusieurs étapes', 'Trier les informations utiles'],
     exos: [
       { etoiles: 1, col: 1, consigne: 'Entoure l\'opération qui permet de répondre.',
-        ...op([['5 paquets de 8 gâteaux. Combien de gâteaux ?', '×'], ['72 élèves en équipes de 6. Combien d\'équipes ?', '÷'], ['Une place coûte 9 € ; on en achète 7. Prix ?', '×'], ['On partage 96 cartes entre 4 joueurs.', '÷']]) },
+        ...op([['5 paquets de 8 gâteaux. Combien de gâteaux ?', '×'], ['72 élèves en équipes de 6. Combien d\'équipes ?', ':'], ['Une place coûte 9 € ; on en achète 7. Prix ?', '×'], ['On partage 96 cartes entre 4 joueurs.', ':']]) },
       { etoiles: 1, col: 1, consigne: 'Barre l\'information qui ne sert à rien pour répondre.',
         eleve: plListe(['Jeanne a 9 ans. Elle achète 4 cahiers à 3 € chacun. Combien paie-t-elle ?', 'Le train part à 8 h avec 120 voyageurs. À la gare, 35 voyageurs descendent. Combien en reste-t-il ?']),
         corr: plListe([plBarre('Jeanne a 9 ans.') + ' Elle achète 4 cahiers à 3 € chacun. Combien paie-t-elle ?', 'Le train part ' + plBarre('à 8 h') + ' avec 120 voyageurs. À la gare, 35 voyageurs descendent. Combien en reste-t-il ?']) },
       { etoiles: 2, consigne: 'Complète chaque schéma, puis le calcul.',
-        eleve: `<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;"><div>${P([[8, '8'], [8, '8'], [8, '8'], [8, '8'], [8, '8']], { titre: '?', L: 220, xt: 30 })}<div>5 paquets de 8 : 5 × 8 = ${B(3)}</div></div><div>${P([[1, '?'], [1, '?'], [1, '?'], [1, '?']], { titre: '36', L: 220, xt: 30 })}<div>36 partagé en 4 : 36 ÷ 4 = ${B(3)}</div></div></div>`,
-        corr: `<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;"><div>${P([[8, '8'], [8, '8'], [8, '8'], [8, '8'], [8, '8']], { titre: '40', L: 220, xt: 30 })}<div>5 paquets de 8 : 5 × 8 = ${R(40)}</div></div><div>${P([[1, '9'], [1, '9'], [1, '9'], [1, '9']], { titre: '36', L: 220, xt: 30 })}<div>36 partagé en 4 : 36 ÷ 4 = ${R(9)}</div></div></div>` },
+        eleve: `<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;"><div>${P([[8, '8'], [8, '8'], [8, '8'], [8, '8'], [8, '8']], { titre: '?', L: 220, xt: 30 })}<div>5 paquets de 8 : 5 × 8 = ${B(3)}</div></div><div>${P([[1, '?'], [1, '?'], [1, '?'], [1, '?']], { titre: '36', L: 220, xt: 30 })}<div>36 partagé en 4 : 36 : 4 = ${B(3)}</div></div></div>`,
+        corr: `<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;"><div>${P([[8, '8'], [8, '8'], [8, '8'], [8, '8'], [8, '8']], { titre: '40', L: 220, xt: 30 })}<div>5 paquets de 8 : 5 × 8 = ${R(40)}</div></div><div>${P([[1, '9'], [1, '9'], [1, '9'], [1, '9']], { titre: '36', L: 220, xt: 30 })}<div>36 partagé en 4 : 36 : 4 = ${R(9)}</div></div></div>` },
       { etoiles: 2, col: 1, cahier: true, consigne: 'Une place de cinéma coûte 8 €. Combien paie l\'école pour 27 élèves ?',
         corr: cm1Redac('Prix des places', '27 × 8 € = 216 €', 'L\'école paie 216 €.') },
       { etoiles: 2, col: 1, cahier: true, consigne: 'Un fleuriste fait des bouquets de 7 roses. Il a 85 roses. Combien de bouquets fait-il ? Combien de roses restent ?',

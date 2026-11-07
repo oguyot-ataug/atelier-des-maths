@@ -43,9 +43,9 @@ PLANCHES['ce2|Problèmes en plusieurs étapes'] = [
       { etoiles: 3, cahier: true, consigne: 'Une école commande 6 cartons de 120 cahiers. Elle en distribue 450. Combien en reste-t-il ? Vérifie que ta réponse est plus petite que le nombre de cahiers commandés.',
         corr: cm1Redac('Cahiers commandés', '6 × 120 = 720', 'L\'école a commandé 720 cahiers.') + cm1Redac('Cahiers restants', '720 − 450 = 270', 'Il reste 270 cahiers ; 270 est bien plus petit que 720.') },
       { etoiles: 3, cahier: true, consigne: 'Un fermier ramasse 48 œufs. Il les range par boîtes de 6, et vend chaque boîte 3 €. Combien gagne-t-il s\'il vend toutes les boîtes ?',
-        corr: cm1Redac('Nombre de boîtes', '48 ÷ 6 = 8', 'Car 6 × 8 = 48 : il remplit 8 boîtes.') + cm1Redac('Gain', '8 × 3 = 24', 'Il gagne 24 €.') },
+        corr: cm1Redac('Nombre de boîtes', '48 : 6 = 8', 'Car 6 × 8 = 48 : il remplit 8 boîtes.') + cm1Redac('Gain', '8 × 3 = 24', 'Il gagne 24 €.') },
       { etoiles: 1, col: 1, consigne: 'Calcule les étapes du problème des cahiers.', ...P3.rmp([['6 × 120 = @', 720], ['720 − 450 = @', 270]], 2) },
-      { etoiles: 2, consigne: 'Calcule les étapes du problème des œufs.', ...P3.rmp([['48 ÷ 6 = @', 8], ['8 × 3 = @', 24]], 2) },
+      { etoiles: 2, consigne: 'Calcule les étapes du problème des œufs.', ...P3.rmp([['48 : 6 = @', 8], ['8 × 3 = @', 24]], 2) },
     ] },
 ];
 })();

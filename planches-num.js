@@ -49,7 +49,7 @@ function plNumClassesOk(s){
 // le fois du clavier virtuel) en ligne est compté faux » (la réponse attendue restait écrite en LaTeX).
 function plNumTexPlat(s){
   const SUP = { 0: '⁰', 1: '¹', 2: '²', 3: '³', 4: '⁴', 5: '⁵', 6: '⁶', 7: '⁷', 8: '⁸', 9: '⁹', '-': '⁻' };
-  return String(s).replace(/\\(times|cdot)/g, ' × ').replace(/\\div/g, ' ÷ ').replace(/\{,\}/g, ',').replace(/\\[,;!: ]/g, ' ')
+  return String(s).replace(/\\(times|cdot)/g, ' × ').replace(/:/g, ' : ').replace(/\{,\}/g, ',').replace(/\\[,;!: ]/g, ' ')
     .replace(/\\d?frac\{([^{}]*)\}\{([^{}]*)\}/g, '$1/$2').replace(/\^\{?(-?\d+)\}?/g, (m, e) => [...e].map(x => SUP[x]).join(''))
     .replace(/\\[a-zA-Z]+/g, '').replace(/[{}]/g, '');
 }
@@ -98,7 +98,7 @@ function plNumAnalyser(x){
     const bascules = [];
     itE.forEach((ei, n) => {
       const ci = itC[n], mk = ci.querySelectorAll('.pl-entoure, .pl-barre-rep');
-      const b = [...ei.querySelectorAll('b')].find(z => /^\s*[^·]+(·[^·]+)+$/.test(z.textContent)); // deux mots ou plus : « vrai · faux », « + · − · × · ÷ »
+      const b = [...ei.querySelectorAll('b')].find(z => /^\s*[^·]+(·[^·]+)+$/.test(z.textContent)); // deux mots ou plus : « vrai · faux », « + · − · × · : »
       if(b){
         if(mk.length !== 1) return; vues++;
         const mots = b.textContent.split('·').map(s => s.trim()), id = 'ch' + cibles.length;

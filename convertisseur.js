@@ -9,7 +9,7 @@
    la gauche). On peut le faire en s'adaptant au niveau de classe. Les tuiles de conversions simples pour
    les unités (au choix m, L...) : on a les préfixes en couleur. Conversions aire, conversions volumes. »
 
-   - Tuile « × et ÷ par 10, 100, 1000 » : tableau de numération, virgule FIXE ; le nombre glisse avec
+   - Tuile « × et : par 10, 100, 1000 » : tableau de numération, virgule FIXE ; le nombre glisse avec
      les flèches (ou les touches ← →). Le chiffre des unités du nombre de départ est en rouge : pour
      « × 100 », on l'amène dans la colonne des centaines. Les zéros à ajouter apparaissent en orange,
      les zéros devenus inutiles s'estompent.
@@ -70,7 +70,7 @@ function cvNombreAlea(max, dec){
 
 /* ----------------------------------------- Page ----------------------------------------- */
 const CV_OUTILS = [
-  { id: 'glisse', titre: '× et ÷ par 10, 100, 1000', icone: 'swap_horiz', coul: '#D32F2F', des: 'Le chiffre des unités est en rouge : fais glisser le nombre pour l\'amener sur la dizaine, la centaine…', des6: true, des2: 'CM1' },
+  { id: 'glisse', titre: '× et : par 10, 100, 1000', icone: 'swap_horiz', coul: '#D32F2F', des: 'Le chiffre des unités est en rouge : fais glisser le nombre pour l\'amener sur la dizaine, la centaine…', des6: true, des2: 'CM1' },
   { id: 'unites', titre: 'Unités : m, g, L', icone: 'straighten', coul: '#0C5BA0', des: 'Longueurs, masses, contenances. Au CM : on part de la relation entre les unités (1 m = 100 cm). Au collège : on déplace la virgule dans le tableau.', des2: 'CM1' },
   { id: 'aires', titre: 'Aires', icone: 'crop_square', coul: '#1F7A4D', des: 'm², cm², ha… Deux colonnes par unité : la virgule saute de deux en deux.', des2: '6e' },
   { id: 'volumes', titre: 'Volumes', icone: 'view_in_ar', coul: '#7B3FA0', des: 'm³, dm³, cm³ et les litres. Trois colonnes par unité.', des2: '5e' },
@@ -131,19 +131,19 @@ function cvOuvrir(id){
   document.getElementById('convertisseurRoot')?.scrollIntoView({ block: 'start', behavior: 'smooth' });
 }
 
-/* ------------------------- Outil 1 : × et ÷ par 10, 100, 1000 (le nombre glisse) ------------------------- */
+/* ------------------------- Outil 1 : × et : par 10, 100, 1000 (le nombre glisse) ------------------------- */
 const GA_PMAX = 5, GA_PMIN = -4, GA_W = 62;
 const GA_RANGS = { 5: ['CM', 'centaines de mille'], 4: ['DM', 'dizaines de mille'], 3: ['UM', 'unités de mille'], 2: ['C', 'centaines'], 1: ['D', 'dizaines'], 0: ['U', 'unités'],
   '-1': ['d', 'dixièmes'], '-2': ['c', 'centièmes'], '-3': ['m', 'millièmes'], '-4': ['dm', 'dix-millièmes'] };
 // Programme du cycle 3 (BO) : CM1 « multiplier un nombre entier par 10, 100 ou 1 000, multiplier un
-// nombre décimal par 10, diviser un nombre décimal par 10 » ; CM2 : × et ÷ par 10, 100, 1 000 des
+// nombre décimal par 10, diviser un nombre décimal par 10 » ; CM2 : × et : par 10, 100, 1 000 des
 // décimaux ; 6e : « multiplier par 0,1, par 0,01 et par 0,001 ».
 function gaOps(){
-  const l = [1, 2, 3].map(k => ({ k, txt: '× ' + '1' + '0'.repeat(k) })).concat((cvRang() === 0 ? [1] : [1, 2, 3]).map(k => ({ k: -k, txt: '÷ ' + '1' + '0'.repeat(k) })));
+  const l = [1, 2, 3].map(k => ({ k, txt: '× ' + '1' + '0'.repeat(k) })).concat((cvRang() === 0 ? [1] : [1, 2, 3]).map(k => ({ k: -k, txt: ': ' + '1' + '0'.repeat(k) })));
   if(cvRang() >= 2) [1, 2, 3].forEach(k => l.push({ k: -k, txt: '× 0,' + '0'.repeat(k - 1) + '1', mul: true }));
   return l;
 }
-function gaOpTxt(g){ return g.op ? g.op.txt : (g.k > 0 ? '× 1' + '0'.repeat(g.k) : '÷ 1' + '0'.repeat(-g.k)); }
+function gaOpTxt(g){ return g.op ? g.op.txt : (g.k > 0 ? '× 1' + '0'.repeat(g.k) : ': 1' + '0'.repeat(-g.k)); }
 function gaCol(p){ return GA_PMAX - p; }
 function gaTient(n, s){ return cvChiffres(n).every(t => t.p + s <= GA_PMAX && t.p + s >= GA_PMIN); }
 function gaRendre(){
@@ -159,7 +159,7 @@ function gaRendre(){
     <p class="cv-consigne" id="gaConsigne"></p>
     <div class="cv-glisse"><button type="button" class="cv-fleche" onclick="gaBouger(1)" title="Faire glisser vers la gauche (× 10)" aria-label="Glisser à gauche">◀</button>
       <div class="cv-defil"><div class="cv-ga-tab" id="gaTab" style="width:${(GA_PMAX - GA_PMIN + 1) * GA_W}px"></div></div>
-      <button type="button" class="cv-fleche" onclick="gaBouger(-1)" title="Faire glisser vers la droite (÷ 10)" aria-label="Glisser à droite">▶</button></div>
+      <button type="button" class="cv-fleche" onclick="gaBouger(-1)" title="Faire glisser vers la droite (: 10)" aria-label="Glisser à droite">▶</button></div>
     <p class="cv-aide">Flèches ◀ ▶ (ou touches ← → du clavier) : le nombre glisse d'une colonne. La virgule, elle, ne bouge jamais.</p>
     <div class="cv-res" id="gaRes"></div>
     ${ex && !g.embed ? `<div class="cv-rep"><label>${cvEcrire(g.n)} ${gaOpTxt(g)} = <input type="text" inputmode="decimal" id="gaRep" style="width:140px;" onkeydown="if(event.key==='Enter')gaVerifier()" ${ex.fait ? 'disabled' : ''}></label>
@@ -224,7 +224,7 @@ function gaExercice(){
   const g = cv.ga, r = cvRang();
   for(let essai = 0; essai < 50; essai++){
     const op = cvPioche(gaOps());
-    // CM1 : × 10, 100, 1 000 sur des entiers ; × 10 et ÷ 10 aussi sur des décimaux (un chiffre après la virgule).
+    // CM1 : × 10, 100, 1 000 sur des entiers ; × 10 et : 10 aussi sur des décimaux (un chiffre après la virgule).
     const n = r === 0 ? (op.k > 1 ? cvNombreAlea(999, 0) : cvNombreAlea(99, 1)) : r === 1 ? cvNombreAlea(999, 2) : cvNombreAlea(9999, 3);
     if(n.d === '0' || !gaTient(n, 0) || !gaTient(n, op.k) || !cvDecOk(n) || !cvDecOk(cvDecaler(n, op.k))) continue;
     Object.assign(g, { n, k: op.k, op, s: 0, ex: { fait: false } });
@@ -295,7 +295,7 @@ function tcRelation(){
   if(k === 0) return { k, html: 'Les deux unités sont les mêmes.' };
   return { k, html: k > 0
     ? `<b>1 ${cvUniteHtml(tc.src)} = ${P(p)} ${cvUniteHtml(tc.tgt)}</b>, donc ${cvEcrire(tc.n)} ${cvUniteHtml(tc.src)} = ${cvEcrire(tc.n)} × ${P(p)} ${cvUniteHtml(tc.tgt)}.`
-    : `<b>${P(p)} ${cvUniteHtml(tc.src)} = 1 ${cvUniteHtml(tc.tgt)}</b>, donc ${cvEcrire(tc.n)} ${cvUniteHtml(tc.src)} = ${cvEcrire(tc.n)} ÷ ${P(p)} ${cvUniteHtml(tc.tgt)}.` };
+    : `<b>${P(p)} ${cvUniteHtml(tc.src)} = 1 ${cvUniteHtml(tc.tgt)}</b>, donc ${cvEcrire(tc.n)} ${cvUniteHtml(tc.src)} = ${cvEcrire(tc.n)} : ${P(p)} ${cvUniteHtml(tc.tgt)}.` };
 }
 function tcRendreCM(){
   const box = document.getElementById('cvOutil'); if(!box) return;
@@ -320,7 +320,7 @@ function tcRendreCM(){
   if(rel.k){
     const src = tc.src, tgt = tc.tgt, n = tc.n;
     cv.ga = { embed: true, n, k: rel.k, s: 0, ex: null, score: [0, 0], cache: !!(ex && !ex.fait),
-      op: { k: rel.k, txt: (rel.k > 0 ? '× 1' : '÷ 1') + '0'.repeat(Math.abs(rel.k)) },
+      op: { k: rel.k, txt: (rel.k > 0 ? '× 1' : ': 1') + '0'.repeat(Math.abs(rel.k)) },
       suite: v => `, donc ${cvEcrire(n)} ${cvUniteHtml(src)} = <b>${cvEcrire(v)}</b> ${cvUniteHtml(tgt)}` };
     if(gaTient(n, 0) && gaTient(n, rel.k)) gaRendre();
     else document.getElementById('tcGlisse').innerHTML = `<div class="cv-res ok">${cvEcrire(n)} ${cvUniteHtml(src)} = <b>${cvEcrire(cvDecaler(n, rel.k))}</b> ${cvUniteHtml(tgt)}</div>`;

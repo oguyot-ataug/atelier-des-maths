@@ -45,7 +45,7 @@ PLANCHES['ce2|Procédures de calcul mental'] = [
       { etoiles: 2, col: 1, consigne: 'Calcule.',
         ...rmp([['7 × 30 = @', 210], ['4 × 60 = @', 240], ['9 × 20 = @', 180], ['5 × 80 = @', 400]], 3) },
       { etoiles: 1, col: 1, consigne: 'Calcule.', ...P3.rmp([['400 + 300 = @', 700], ['1 200 + 800 = @', '2 000'], ['5 000 − 300 = @', '4 700']], 3) },
-      { etoiles: 2, col: 1, consigne: 'Calcule.', ...P3.rmp([['70 × 3 = @', 210], ['600 ÷ 2 = @', 300], ['80 × 5 = @', 400]], 2) },
+      { etoiles: 2, col: 1, consigne: 'Calcule.', ...P3.rmp([['70 × 3 = @', 210], ['600 : 2 = @', 300], ['80 × 5 = @', 400]], 2) },
       { etoiles: 2, col: 1, consigne: 'Trouve le nombre manquant.', ...P3.rmp([['@ + 250 = 1 000', 750], ['2 000 − @ = 1 400', 600]], 3) },
       { etoiles: 3, consigne: 'Entoure le résultat le plus proche.', ...P3.chx2([['398 + 503 : environ', '900', '800 · 900 · 1 000'], ['1 990 − 610 : environ', '1 400', '1 200 · 1 400 · 1 600'], ['702 + 296 : environ', '1 000', '900 · 1 000 · 1 100'], ['2 510 − 1 490 : environ', '1 000', '900 · 1 000 · 1 500']]) },
     ] },

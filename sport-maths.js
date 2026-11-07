@@ -162,8 +162,8 @@ function spBoltMonter(el){
     st.raf = requestAnimationFrame(pas);
   }
   function calculs(){
-    return `Vitesse moyenne = distance ÷ durée. Pour passer des <b>m/s</b> aux <b>km/h</b>, on multiplie par 3,6 (en 1 h = 3 600 s, on parcourt 3 600 fois plus, soit 3 600 m = 3,6 km pour chaque mètre par seconde).
-      <table class="sp-tab"><tr><th>coureur</th><th>temps au 100 m</th><th>vitesse (m/s)</th><th>vitesse (km/h)</th></tr>${liste().map(c => `<tr><td style="color:${c.c};font-weight:700;">${c.nom}</td><td>${spV(c.t)} s</td><td>100 ÷ ${spV(c.t)} ≈ <b>${spV(100 / c.t)}</b></td><td>${spV(100 / c.t)} × 3,6 ≈ <b>${spV(360 / c.t, 1)}</b></td></tr>`).join('')}</table>
+    return `Vitesse moyenne = distance : durée. Pour passer des <b>m/s</b> aux <b>km/h</b>, on multiplie par 3,6 (en 1 h = 3 600 s, on parcourt 3 600 fois plus, soit 3 600 m = 3,6 km pour chaque mètre par seconde).
+      <table class="sp-tab"><tr><th>coureur</th><th>temps au 100 m</th><th>vitesse (m/s)</th><th>vitesse (km/h)</th></tr>${liste().map(c => `<tr><td style="color:${c.c};font-weight:700;">${c.nom}</td><td>${spV(c.t)} s</td><td>100 : ${spV(c.t)} ≈ <b>${spV(100 / c.t)}</b></td><td>${spV(100 / c.t)} × 3,6 ≈ <b>${spV(360 / c.t, 1)}</b></td></tr>`).join('')}</table>
       En pointe (entre 60 et 80 m), Usain Bolt a atteint environ 12,4 m/s, soit près de 45 km/h.`;
   }
   el.querySelectorAll('.sp-coureurs input[type=checkbox]').forEach(c => c.onchange = () => { if(c.checked) st.choix.add(c.value); else st.choix.delete(c.value); cancelAnimationFrame(st.raf); dessiner(0); if(!$('.sp-calc').hidden) $('.sp-calc').innerHTML = calculs(); });
@@ -191,9 +191,9 @@ const SP_CRITERES = {
   max: { titre: 'Finale du concours', q: 'En finale, <b>seul le meilleur saut compte</b>. Qui envoyer pour avoir le plus de chances de gagner ?', val: l => Math.max(...l), nom: 'meilleur saut', mieux: 'grand',
     calc: a => `meilleur saut : <b>${spM(Math.max(...a.sauts))} m</b>` },
   moyenne: { titre: 'Épreuve par équipes', q: 'Dans l\'épreuve par équipes, on <b>additionne les six sauts</b> de chaque athlète. Qui sélectionner ?', val: spMoy, nom: 'moyenne', mieux: 'grand',
-    calc: a => `moyenne : (${a.sauts.map(v => spM(v)).join(' + ')}) ÷ 6 ≈ <b>${spM(spMoy(a.sauts))} m</b>` },
+    calc: a => `moyenne : (${a.sauts.map(v => spM(v)).join(' + ')}) : 6 ≈ <b>${spM(spMoy(a.sauts))} m</b>` },
   mediane: { titre: 'Qualification', q: 'Pour être qualifié, <b>au moins la moitié des sauts</b> doivent atteindre 6,20 m. Qui est qualifié ?', val: spMed, nom: 'médiane', mieux: 'grand',
-    calc: a => { const s = spTri(a.sauts); return `sauts rangés : ${s.map(v => spM(v)).join(' ; ')} → médiane = (${spM(s[2])} + ${spM(s[3])}) ÷ 2 = <b>${spM(spMed(a.sauts))} m</b>`; } },
+    calc: a => { const s = spTri(a.sauts); return `sauts rangés : ${s.map(v => spM(v)).join(' ; ')} → médiane = (${spM(s[2])} + ${spM(s[3])}) : 2 = <b>${spM(spMed(a.sauts))} m</b>`; } },
   etendue: { titre: 'Le plus régulier', q: 'L\'entraîneur cherche l\'athlète <b>le plus régulier</b>, celui dont les sauts sont les plus proches les uns des autres. Qui choisir ?', val: l => Math.max(...l) - Math.min(...l), nom: 'étendue', mieux: 'petit',
     calc: a => `étendue : ${spM(Math.max(...a.sauts))} − ${spM(Math.min(...a.sauts))} = <b>${spM(Math.max(...a.sauts) - Math.min(...a.sauts))} m</b>` } };
 function spStatsMonter(el){

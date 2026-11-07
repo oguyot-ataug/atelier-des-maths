@@ -95,7 +95,7 @@ const PROG_DEFIS = PROG_DEFIS_CM1.concat([
     tests: [[6, 4], [10, 2.5], [3, 3]], attendu: ([L, l]) => 2 * (L + l) },
   { id: 'hexagone', niveau: '5e', titre: 'L\'hexagone régulier', blocs: PROG_BLOCS_TRACE, exige: ['sc_repeter'],
     enonce: 'Trace un <b>hexagone régulier de côté 60</b> (6 côtés égaux), avec le bloc <b>répéter</b>.',
-    aide: 'Le lutin fait un tour complet (360°) en 6 fois : à chaque sommet, il tourne de 360 ÷ 6.',
+    aide: 'Le lutin fait un tour complet (360°) en 6 fois : à chaque sommet, il tourne de 360 : 6.',
     trace: PROG_POLY(6, 60) },
   { id: 'etoile', niveau: '5e', titre: 'L\'étoile', blocs: PROG_BLOCS_TRACE, exige: ['sc_repeter'],
     enonce: 'Trace une <b>étoile à 5 branches</b> : 5 segments de <b>150 pas</b>, en tournant de <b>144°</b> à chaque pointe.',
@@ -107,7 +107,7 @@ const PROG_DEFIS = PROG_DEFIS_CM1.concat([
     trace: t => { for(let k = 0; k < 5; k++){ PROG_POLY(4, 30)(t); t.haut().av(45); } } },
   { id: 'polygone', niveau: '5e', titre: 'Le polygone à la demande', blocs: PROG_BLOCS_TRACE.concat(['sc_demander', 'sc_reponse', 'sc_div', 'variables']),
     enonce: 'Le lutin <b>demande un nombre de côtés</b>, puis trace le <b>polygone régulier</b> qui a ce nombre de côtés, de <b>côté 50</b>.',
-    aide: 'Répéter « réponse » fois : avancer de 50, tourner de 360 ÷ réponse.',
+    aide: 'Répéter « réponse » fois : avancer de 50, tourner de 360 : réponse.',
     tests: [[5], [8]], trace: (t, [n]) => PROG_POLY(n, 50)(t) },
   { id: 'majeur', niveau: '5e', titre: 'Majeur ou mineur ?', blocs: PROG_BLOCS_CALCUL.concat(['sc_si', 'sc_si_sinon', 'sc_inf', 'sc_sup', 'sc_egal', 'sc_ou', 'sc_et', 'sc_non']),
     enonce: 'Le lutin <b>demande l\'âge</b>. S\'il est de <b>18 ans ou plus</b>, il dit <b>majeur</b>, sinon il dit <b>mineur</b>.',
@@ -115,7 +115,7 @@ const PROG_DEFIS = PROG_DEFIS_CM1.concat([
     tests: [[20], [18], [12], [17]], attendu: ([a]) => a >= 18 ? 'majeur' : 'mineur' },
   { id: 'pair', niveau: '5e', titre: 'Pair ou impair ?', blocs: PROG_BLOCS_CALCUL.concat(['sc_si', 'sc_si_sinon', 'sc_egal', 'sc_modulo']),
     enonce: 'Le lutin demande un <b>nombre entier</b> et dit <b>pair</b> ou <b>impair</b>.',
-    aide: 'Un nombre est pair quand le reste de sa division par 2 vaut 0 (bloc « reste de … ÷ … »).',
+    aide: 'Un nombre est pair quand le reste de sa division par 2 vaut 0 (bloc « reste de … : … »).',
     tests: [[4], [7], [0], [13]], attendu: ([n]) => n % 2 === 0 ? 'pair' : 'impair' },
   { id: 'somme', niveau: '5e', titre: 'La somme de 1 à 100', blocs: PROG_BLOCS_CALCUL.concat(['sc_repeter', 'sc_jusqua', 'sc_sup', 'sc_inf', 'sc_egal']), exige: ['sc_var_change', ['sc_repeter', 'sc_jusqua']],
     enonce: 'Avec une <b>variable</b> et une <b>boucle</b>, calcule 1 + 2 + 3 + … + 100, puis fais <b>dire le résultat</b>.',
@@ -439,7 +439,7 @@ function progQuitterDevoir(){ if(prog){ if(prog.ds && typeof dsEnd === 'function
    devoirs de programmation). Un programme possible par défi, écrit dans une petite notation :
    instructions ['av', n] ['td', n] ['tg', n] ['bas'] ['haut'] ['rep', n, [...]] ['demander', 'texte']
    ['dire', e] ['set', 'variable', e] ['ajouter', e, 'variable'] ['si', condition, [...], [...]] ;
-   valeurs : nombre, texte, ['réponse'], ['var', 'nom'], [opérateur, a, b] avec + − × ÷ > < = reste.
+   valeurs : nombre, texte, ['réponse'], ['var', 'nom'], [opérateur, a, b] avec + − × : > < = reste.
    progSolutionHtml : les blocs dessinés (progBlocsHtml, styles en ligne : ils s'impriment dans le cahier) ;
    progSolutionJson : le même programme pour Blockly (vérifié automatiquement : chaque correction réussit son défi).
    --------------------------------------------------------------------- */
@@ -458,10 +458,10 @@ const PROG_SOLUTIONS = {
   'deux-carres': [['bas'], ['rep', 4, [['av', 60], ['td', 90]]], ['haut'], ['av', 100], ['bas'], ['rep', 4, [['av', 60], ['td', 90]]]],
   calcul: [['demander', 'Choisis un nombre'], ['dire', ['+', ['×', ['réponse'], 3], 5]]],
   perimetre: [['demander', 'Longueur ?'], ['set', 'longueur', ['réponse']], ['demander', 'Largeur ?'], ['set', 'largeur', ['réponse']], ['dire', ['×', 2, ['+', ['var', 'longueur'], ['var', 'largeur']]]]],
-  hexagone: [['bas'], ['rep', 6, [['av', 60], ['td', ['÷', 360, 6]]]]],
+  hexagone: [['bas'], ['rep', 6, [['av', 60], ['td', [':', 360, 6]]]]],
   etoile: [['bas'], ['rep', 5, [['av', 150], ['td', 144]]]],
   frise: [['rep', 5, [['bas'], ['rep', 4, [['av', 30], ['td', 90]]], ['haut'], ['av', 45]]]],
-  polygone: [['demander', 'Combien de côtés ?'], ['bas'], ['rep', ['réponse'], [['av', 50], ['td', ['÷', 360, ['réponse']]]]]],
+  polygone: [['demander', 'Combien de côtés ?'], ['bas'], ['rep', ['réponse'], [['av', 50], ['td', [':', 360, ['réponse']]]]]],
   majeur: [['demander', 'Quel est ton âge ?'], ['si', ['>', ['réponse'], 17], [['dire', 'majeur']], [['dire', 'mineur']]]],
   pair: [['demander', 'Donne un nombre entier'], ['si', ['=', ['reste', ['réponse'], 2], 0], [['dire', 'pair']], [['dire', 'impair']]]],
   somme: [['set', 'nombre', 1], ['set', 'somme', 0], ['rep', 100, [['ajouter', ['var', 'nombre'], 'somme'], ['ajouter', 1, 'nombre']]], ['dire', ['var', 'somme']]],
@@ -477,9 +477,9 @@ const PROG_BLOCS_LIB = {
   sc_stylo_taille: ['stylo', 'mettre la taille du stylo à {N}'], sc_effacer: ['stylo', 'effacer tout'], sc_dire: ['apparence', 'dire {T}'], sc_dire_sec: ['apparence', 'dire {T} pendant {N} secondes'],
   sc_attendre: ['controle', 'attendre {N} secondes'], sc_repeter: ['controle', 'répéter {N} fois'], sc_toujours: ['controle', 'répéter indéfiniment'], sc_si: ['controle', 'si {C} alors'],
   sc_si_sinon: ['controle', 'si {C} alors'], sc_jusqua: ['controle', 'répéter jusqu\'à ce que {C}'], sc_demander: ['capteurs', 'demander {T} et attendre'], sc_reponse: ['capteurs', 'réponse'],
-  sc_plus: ['operateurs', '{A} + {B}'], sc_moins: ['operateurs', '{A} − {B}'], sc_fois: ['operateurs', '{A} × {B}'], sc_div: ['operateurs', '{A} ÷ {B}'],
+  sc_plus: ['operateurs', '{A} + {B}'], sc_moins: ['operateurs', '{A} − {B}'], sc_fois: ['operateurs', '{A} × {B}'], sc_div: ['operateurs', '{A} : {B}'],
   sc_hasard: ['operateurs', 'nombre aléatoire entre {A} et {B}'], sc_inf: ['operateurs', '{A} < {B}'], sc_egal: ['operateurs', '{A} = {B}'], sc_sup: ['operateurs', '{A} > {B}'],
-  sc_et: ['operateurs', '{A} et {B}'], sc_ou: ['operateurs', '{A} ou {B}'], sc_non: ['operateurs', 'non {A}'], sc_modulo: ['operateurs', 'reste de {A} ÷ {B}'],
+  sc_et: ['operateurs', '{A} et {B}'], sc_ou: ['operateurs', '{A} ou {B}'], sc_non: ['operateurs', 'non {A}'], sc_modulo: ['operateurs', 'reste de {A} : {B}'],
   sc_arrondi: ['operateurs', 'arrondi de {A}'], sc_regrouper: ['operateurs', 'regrouper {A} et {B}'], sc_var_set: ['variables', 'mettre {VAR} à {V}'], sc_var_change: ['variables', 'ajouter {V} à {VAR}'] };
 function progBlocsHtml(json){
   if(!json || !json.blocks) return '';
@@ -523,7 +523,7 @@ function progSolutionHtml(sol){ return progBlocsHtml(progSolutionJson(sol)); }
 function progSolutionJson(sol){
   const vars = {}, vid = n => (vars[n] = vars[n] || 'v_' + n);
   const num = v => ({ shadow: { type: 'math_number', fields: { NUM: v } } }), txt = v => ({ shadow: { type: 'text', fields: { TEXT: v } } });
-  const OPS = { '+': 'sc_plus', '−': 'sc_moins', '×': 'sc_fois', '÷': 'sc_div', '>': 'sc_sup', '<': 'sc_inf', '=': 'sc_egal', reste: 'sc_modulo' };
+  const OPS = { '+': 'sc_plus', '−': 'sc_moins', '×': 'sc_fois', ':': 'sc_div', '>': 'sc_sup', '<': 'sc_inf', '=': 'sc_egal', reste: 'sc_modulo' };
   const ex = e => {
     if(typeof e === 'number') return num(e);
     if(typeof e === 'string') return txt(e);

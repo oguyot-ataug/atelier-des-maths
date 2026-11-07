@@ -80,12 +80,12 @@ ${r4Ex('Pourquoi ? Soit une fraction ' + mu4Tex('\\dfrac{a}{b}') + ', avec <i>a<
 <span class="prop-badge">Propriété</span>
 <div class="def-box"><b>Diviser</b> par une fraction non nulle revient à <b>multiplier par son inverse</b>.<br>
 Pour tous nombres <i>a</i>, <i>b</i>, <i>c</i> et <i>d</i>, avec <i>b</i>, <i>c</i> et <i>d</i> non nuls :
-<div style="text-align:center;margin:8px 0 4px;">${mu4Tex('\\dfrac{a}{b} \\div \\dfrac{c}{d} = \\dfrac{a}{b} \\times \\dfrac{d}{c}')}</div>
+<div style="text-align:center;margin:8px 0 4px;">${mu4Tex('\\dfrac{a}{b} : \\dfrac{c}{d} = \\dfrac{a}{b} \\times \\dfrac{d}{c}')}</div>
 <div style="text-align:center;">ou encore, avec une fraction « à étages » :</div>
 <div style="text-align:center;margin:10px 0 2px;">${mu4Tex('\\dfrac{\\;\\dfrac{a}{b}\\;}{\\dfrac{c}{d}} = \\dfrac{a}{b} \\times \\dfrac{d}{c}')}</div></div>
 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:0 18px;">
 <div>${r4Ex('Exemple 1 :', [
-  [mu4Tex('B = \\dfrac{9}{10} \\div \\dfrac{3}{4}'), ''],
+  [mu4Tex('B = \\dfrac{9}{10} : \\dfrac{3}{4}'), ''],
   [mu4Tex('B = \\dfrac{9}{10} \\times \\dfrac{4}{3}'), 'On multiplie par l\'inverse.'],
   [mu4Tex('B = \\dfrac{3 \\times \\mathbf{3} \\times \\mathbf{2} \\times 2}{\\mathbf{2} \\times 5 \\times \\mathbf{3}}'), 'On décompose et on simplifie.'],
   [mu4Tex('B = \\dfrac{6}{5}'), ''],
@@ -97,7 +97,7 @@ Pour tous nombres <i>a</i>, <i>b</i>, <i>c</i> et <i>d</i>, avec <i>b</i>, <i>c<
   [mu4Tex('C = -\\dfrac{4}{9}'), ''],
 ])}</div>
 <div>${r4Ex('Exemple 3 :', [
-  [mu4Tex('D = 12 \\div \\dfrac{3}{5}'), ''],
+  [mu4Tex('D = 12 : \\dfrac{3}{5}'), ''],
   [mu4Tex('D = 12 \\times \\dfrac{5}{3}'), 'On multiplie par l\'inverse.'],
   [mu4Tex('D = \\dfrac{\\mathbf{3} \\times 4 \\times 5}{\\mathbf{3}}'), '12 = 3 × 4.'],
   [mu4Tex('D = 20'), ''],
@@ -139,10 +139,10 @@ document.getElementById('methode-demo-fractions-mult-4e').innerHTML = `
 
 <div class="sub-header"><span class="letter">M</span><h4>Méthode 4 : multiplier ou diviser deux fractions, rédaction complète</h4></div>
 <div class="figure-wrap" style="margin-top:20px;">
-  <p class="interaction-hint" style="margin:6px 0;">Écrivez deux fractions (entiers relatifs d'au plus 3 chiffres), choisissez × ou ÷ : le calcul est rédigé, avec la simplification par les facteurs premiers.</p>
+  <p class="interaction-hint" style="margin:6px 0;">Écrivez deux fractions (entiers relatifs d'au plus 3 chiffres), choisissez « × » ou « : » ; le calcul est rédigé, avec la simplification par les facteurs premiers.</p>
   <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;align-items:center;margin:10px 0;">
     ${mu4Saisie('mu4-cA', -26, 'mu4-cB', 45, 'mu4Calculer()')}
-    <select id="mu4-cOp" onchange="mu4Calculer()" style="padding:7px 8px;border-radius:8px;border:1px solid #C9D6E6;font-size:1.1rem;"><option value="x">×</option><option value="d">÷</option></select>
+    <select id="mu4-cOp" onchange="mu4Calculer()" style="padding:7px 8px;border-radius:8px;border:1px solid #C9D6E6;font-size:1.1rem;"><option value="x">×</option><option value="d">:</option></select>
     ${mu4Saisie('mu4-cC', 27, 'mu4-cD', 65, 'mu4Calculer()')}
     <button class="btn" onclick="mu4Calculer()">Rédiger</button>
   </div>
@@ -182,7 +182,7 @@ document.getElementById('exos-demo-fractions-mult-4e').innerHTML = `
 <div class="redaction-block">
   <h3>Rédaction type : « Calculer un quotient de fractions »</h3>
   <div class="redaction-template">
-    <div class="we-row"><span class="we-expr">${mu4Tex('F = -\\dfrac{8}{15} \\div \\dfrac{4}{-9}')}</span><span class="we-comment">On veut le résultat sous forme irréductible.</span></div>
+    <div class="we-row"><span class="we-expr">${mu4Tex('F = -\\dfrac{8}{15} : \\dfrac{4}{-9}')}</span><span class="we-comment">On veut le résultat sous forme irréductible.</span></div>
     <div class="we-row"><span class="we-expr">${mu4Tex('F = -\\dfrac{8}{15} \\times \\dfrac{-9}{4}')}</span><span class="we-comment">On multiplie par l'inverse de la deuxième fraction.</span></div>
     <div class="we-row"><span class="we-expr">${mu4Tex('F = \\dfrac{8 \\times 9}{15 \\times 4}')}</span><span class="we-comment">Deux facteurs négatifs : le résultat est positif.</span></div>
     <div class="we-row"><span class="we-expr">${mu4Tex('F = \\dfrac{2 \\times \\cancel{4} \\times \\cancel{3} \\times 3}{\\cancel{3} \\times 5 \\times \\cancel{4}}')}</span><span class="we-comment">On décompose et on simplifie par 4 et par 3.</span></div>
@@ -201,7 +201,7 @@ document.getElementById('exos-demo-fractions-mult-4e').innerHTML = `
   ${mu4Exo(3, 'Donne l\'inverse de chacun de ces nombres : 7 ; ' + mu4Tex('-\\dfrac{3}{8}') + ' ; 0,25 ; −1. Lequel est égal à son inverse ?', [
     'Inverse de 7 : ' + mu4Tex('\\dfrac{1}{7}') + ' ; inverse de ' + mu4Tex('-\\dfrac{3}{8}') + ' : ' + mu4Tex('-\\dfrac{8}{3}') + '.',
     '0,25 = ' + mu4Tex('\\dfrac{1}{4}') + ', son inverse est 4. L\'inverse de −1 est −1 : −1 est égal à son inverse (comme 1).'])}
-  ${mu4Exo(4, 'Calcule et donne le résultat sous forme irréductible : ' + mu4Tex('D = \\dfrac{5}{6} \\div \\dfrac{10}{9}') + ' ; ' + mu4Tex('E = -12 \\div \\dfrac{4}{7}') + ' ; ' + mu4Tex('F = \\dfrac{7}{-8} \\div \\dfrac{-21}{16}') + '.', [
+  ${mu4Exo(4, 'Calcule et donne le résultat sous forme irréductible : ' + mu4Tex('D = \\dfrac{5}{6} : \\dfrac{10}{9}') + ' ; ' + mu4Tex('E = -12 : \\dfrac{4}{7}') + ' ; ' + mu4Tex('F = \\dfrac{7}{-8} : \\dfrac{-21}{16}') + '.', [
     mu4Tex('D = \\dfrac{5}{6} \\times \\dfrac{9}{10} = \\dfrac{5 \\times 3 \\times 3}{2 \\times 3 \\times 2 \\times 5} = \\dfrac{3}{4}'),
     mu4Tex('E = -12 \\times \\dfrac{7}{4} = -\\dfrac{4 \\times 3 \\times 7}{4} = -21'),
     mu4Tex('F = \\dfrac{7}{-8} \\times \\dfrac{16}{-21} = \\dfrac{7 \\times 2 \\times 8}{8 \\times 3 \\times 7} = \\dfrac{2}{3}')])}
@@ -295,12 +295,12 @@ const MU4_SIMPL_STEPS = [
 ];
 const mu4SimplDemo = makeStepDemo(MU4_SIMPL_STEPS, 'mu4-simplDisplay');
 
-/* ---- Méthode 3 : 3 ÷ 1/4 et 3 ÷ 3/4 sur une barre ---- */
+/* ---- Méthode 3 : 3 : 1/4 et 3 : 3/4 sur une barre ---- */
 const MU4_DIV_NOTES = [
   'Diviser 3 par un nombre, c\'est chercher « combien de fois » ce nombre est contenu dans 3. Voici 3 unités.',
-  'On coupe chaque unité en quarts : il y a 3 × 4 = 12 quarts dans 3. Donc 3 ÷ 1/4 = 12, c\'est-à-dire 3 × 4 : diviser par 1/4, c\'est multiplier par 4.',
+  'On coupe chaque unité en quarts : il y a 3 × 4 = 12 quarts dans 3. Donc 3 : 1/4 = 12, c\'est-à-dire 3 × 4 : diviser par 1/4, c\'est multiplier par 4.',
   'On regroupe les quarts par paquets de 3 : chaque paquet vaut 3/4. On obtient 4 paquets.',
-  'Donc 3 ÷ 3/4 = 4. Et 3 × 4/3 = 12/3 = 4 : diviser par 3/4, c\'est bien multiplier par son inverse 4/3.',
+  'Donc 3 : 3/4 = 4. Et 3 × 4/3 = 12/3 = 4 : diviser par 3/4, c\'est bien multiplier par son inverse 4/3.',
 ];
 const mu4DivN = i => i === 1 ? 12 : i === 2 ? 4 : 1;
 function mu4DivDessin(i, prog){
@@ -323,8 +323,8 @@ function mu4DivDessin(i, prog){
   for(let k = 1; k < 3; k++) s += `<line x1="${X + k * u}" y1="${Y - 6}" x2="${X + k * u}" y2="${Y + H + 6}" stroke="${MU4_ENCRE}" stroke-width="2.4"/>`;
   s += `<rect x="${X}" y="${Y}" width="${W}" height="${H}" fill="none" stroke="${MU4_ENCRE}" stroke-width="2.4"/>`;
   for(let k = 0; k <= 3; k++) s += `<text x="${X + k * u}" y="${Y - 12}" text-anchor="middle" font-size="16" fill="#4E5665">${k}</text>`;
-  if(i === 1 && quarts >= 12) s += `<text x="260" y="${Y + H + 36}" text-anchor="middle" font-size="18" font-weight="700" fill="${MU4_BLEU}">12 quarts : 3 ÷ 1/4 = 12 = 3 × 4</text>`;
-  if(i === 3) s += `<text x="260" y="178" text-anchor="middle" font-size="19" font-weight="700" fill="${MU4_VERT}">3 ÷ 3/4 = 4 paquets = 3 × 4/3</text>`;
+  if(i === 1 && quarts >= 12) s += `<text x="260" y="${Y + H + 36}" text-anchor="middle" font-size="18" font-weight="700" fill="${MU4_BLEU}">12 quarts, donc 3 : 1/4 = 12 = 3 × 4</text>`;
+  if(i === 3) s += `<text x="260" y="178" text-anchor="middle" font-size="19" font-weight="700" fill="${MU4_VERT}">3 : 3/4 = 4 paquets = 3 × 4/3</text>`;
   return s;
 }
 const mu4DivDemo = mu4Etapes('mu4-divSvg', 'mu4-divSteps', 'mu4-divNext', MU4_DIV_NOTES, mu4DivDessin, mu4DivN, MU4_VB_DIV);
@@ -340,7 +340,7 @@ function mu4Calculer(){
   if(op === 'd' && c0 === 0){ out.innerHTML = '<p class="hint" style="text-align:center;color:#a83c1f;">On ne peut pas diviser par 0 : la fraction 0/' + d0 + ' n\'a pas d\'inverse.</p>'; return; }
   const fr = (n, d) => `\\dfrac{${n}}{${d}}`, par = (n, d) => (n < 0 || d < 0) ? `\\left(${fr(n, d)}\\right)` : fr(n, d);
   // Le calcul est nommé A et écrit en colonne : jamais de « = » en début de ligne.
-  const lignes = [[mu4Tex(`A = ${fr(a, b)} ${op === 'x' ? '\\times' : '\\div'} ${par(c0, d0)}`), op === 'x' ? 'On veut calculer ce produit.' : 'On veut calculer ce quotient.']];
+  const lignes = [[mu4Tex(`A = ${fr(a, b)} ${op === 'x' ? '\\times' : ':'} ${par(c0, d0)}`), op === 'x' ? 'On veut calculer ce produit.' : 'On veut calculer ce quotient.']];
   let c = c0, d = d0;
   if(op === 'd'){ c = d0; d = c0; lignes.push([mu4Tex(`A = ${fr(a, b)} \\times ${par(c, d)}`), `On multiplie par l'inverse de ${mu4Moins(c0)}/${mu4Moins(d0)}, qui est ${mu4Moins(c)}/${mu4Moins(d)}.`]); }
   if(a === 0 || c === 0){ lignes.push([mu4Tex('A = 0'), 'Un des facteurs est nul : le produit est nul.']); out.innerHTML = r4Ex('', lignes); renderStaticMath(out); return; }
@@ -396,7 +396,7 @@ function mu4Croix(){
       const dec = Math.round(x * 1e6) / 1e6, exact = Math.abs(dec - x) < 1e-12 && String(dec).split('.')[1]?.length <= 4 || Number.isInteger(x);
       let res = n(dec);
       if(!exact && Number.isInteger(produit) && Number.isInteger(coef)){ const g = mu4Pgcd(produit, coef), s = (produit < 0) !== (coef < 0) ? '−' : ''; res = `${s}${Math.abs(produit) / g}/${Math.abs(coef) / g} (≈ ${n(Math.round(x * 100) / 100)})`; }
-      lignes.push([`x = ${n(Math.round(produit * 1e6) / 1e6)} ÷ ${n(coef)} = <b>${res}</b>`, 'On divise par le nombre qui multiplie x.']);
+      lignes.push([`x = ${n(Math.round(produit * 1e6) / 1e6)} : ${n(coef)} = <b>${res}</b>`, 'On divise par le nombre qui multiplie x.']);
       if(i === 1 || i === 3){ if(Math.abs(x) < 1e-12) lignes.push(['Mais x est un dénominateur : il ne peut pas être nul. Pas de solution.', '']); }
     }
   }
@@ -417,7 +417,7 @@ DEMO_REGISTRY['4e|Fractions : multiplication et division'] = {
 DEMO_QUIZZES['4e|Fractions : multiplication et division'] = [
   { q: '2/3 × 9/4 = ...', opts: ['18/7', '3/2', '11/7'], correct: 1 },
   { q: 'L\'inverse de −5/2 est...', opts: ['5/2', '−2/5', '2/5'], correct: 1 },
-  { q: '3/4 ÷ 3/8 = ...', opts: ['9/32', '2', '1/2'], correct: 1 },
+  { q: '3/4 : 3/8 = ...', opts: ['9/32', '2', '1/2'], correct: 1 },
   { q: 'Les 2/5 de 35 valent...', opts: ['14', '7', '87,5'], correct: 0 },
   { q: 'Si x/6 = 10/15, alors x = ...', opts: ['4', '9', '25'], correct: 0 },
   { q: 'L\'inverse de 0...', opts: ['est 0', 'n\'existe pas', 'est 1'], correct: 1 },

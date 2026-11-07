@@ -3,9 +3,9 @@
    travaillées toute l'année ; ce chapitre les rassemble et les explicite)
    Programme du cycle 3 (CM2) : faits numériques (moitié des impairs jusqu'à 15, relations entre
    fractions usuelles, écriture décimale des fractions usuelles) ; ajouter/soustraire un entier à
-   un décimal ; × et ÷ 10, 100, 1 000 un décimal ; ajouter deux décimaux < 10 (un chiffre après
+   un décimal ; × et : 10, 100, 1 000 un décimal ; ajouter deux décimaux < 10 (un chiffre après
    la virgule) ; ± 8, 9, 18, 19…, 98, 99 ; (dizaines/centaines/milliers) × (dizaines/…) ;
-   distributivité ; double et moitié d'un décimal ; ÷ 4, ÷ 8 ; × 5 et × 50 d'un décimal.
+   distributivité ; double et moitié d'un décimal ; : 4, : 8 ; × 5 et × 50 d'un décimal.
    Atelier : séries de 10 calculs par procédure.
    ============================================================ */
 (() => {
@@ -15,11 +15,11 @@ const sep = s => s.replace(/^(\d+)(\d{3})(?=$|,)/, '$1 $2');
 const TYPES = {
   moities: ['Moitiés et doubles', () => { const r = Math.random(); if(r < .35){ const a = ri(2, 8) * 2 - 1; return [`moitié de ${a}`, a / 2]; } if(r < .7){ const a = ri(12, 98) / 10; return [`double de ${fmt(a)}`, a * 2]; } const a = ri(6, 49) * 2 / 10; return [`moitié de ${fmt(a)}`, a / 2]; }],
   fractions: ['Fractions usuelles', () => { const f = [['1/2', .5], ['1/4', .25], ['3/4', .75], ['1/5', .2], ['1/10', .1], ['3/2', 1.5], ['2/5', .4], ['1/100', .01]][ri(0, 7)]; return [`${f[0]} en écriture décimale`, f[1]]; }],
-  dixcent: ['× et ÷ 10, 100, 1 000', () => { const x = ri(12, 9999) / 100, k = [10, 100, 1000][ri(0, 2)]; return Math.random() < .5 ? [`${fmt(x)} × ${k === 1000 ? '1 000' : k}`, x * k] : [`${fmt(x)} ÷ ${k === 1000 ? '1 000' : k}`, x / k]; }],
+  dixcent: ['× et : 10, 100, 1 000', () => { const x = ri(12, 9999) / 100, k = [10, 100, 1000][ri(0, 2)]; return Math.random() < .5 ? [`${fmt(x)} × ${k === 1000 ? '1 000' : k}`, x * k] : [`${fmt(x)} : ${k === 1000 ? '1 000' : k}`, x / k]; }],
   plus99: ['± 9, 19, 99…', () => { const a = ri(120, 950), k = [8, 9, 18, 19, 28, 29, 98, 99][ri(0, 7)]; return Math.random() < .5 ? [`${a} + ${k}`, a + k] : [`${a} − ${k}`, a - k]; }],
   deci: ['Décimaux + entiers', () => { const a = ri(11, 99) / 10, b = ri(11, 89) / 10; return Math.random() < .5 ? [`${fmt(a)} + ${fmt(b)}`, a + b] : [`${fmt(a + 10)} + ${ri(2, 9)}`, null]; }],
   grands: ['30 × 400…', () => { const a = ri(2, 9) * [10, 100, 1000][ri(0, 1)], b = ri(2, 9) * [10, 100][ri(0, 1)]; return [`${sep(String(a))} × ${sep(String(b))}`, a * b]; }],
-  fois5: ['× 5, × 50, ÷ 4, ÷ 8', () => { const r = ri(0, 3); if(r === 0){ const x = ri(12, 96) / 10; return [`${fmt(x)} × 5`, x * 5]; } if(r === 1){ const x = ri(12, 48) / 10; return [`${fmt(x)} × 50`, x * 50]; } if(r === 2){ const a = ri(6, 50) * 4; return [`${a} ÷ 4`, a / 4]; } const a = ri(3, 25) * 8; return [`${a} ÷ 8`, a / 8]; }],
+  fois5: ['× 5, × 50, : 4, : 8', () => { const r = ri(0, 3); if(r === 0){ const x = ri(12, 96) / 10; return [`${fmt(x)} × 5`, x * 5]; } if(r === 1){ const x = ri(12, 48) / 10; return [`${fmt(x)} × 50`, x * 50]; } if(r === 2){ const a = ri(6, 50) * 4; return [`${a} : 4`, a / 4]; } const a = ri(3, 25) * 8; return [`${a} : 8`, a / 8]; }],
 };
 // Calcul « décimal + entier » : résultat calculé à la volée depuis le texte.
 function tirer(t){ const q = TYPES[t][1](); if(q[1] === null){ const [a, b] = q[0].split(' + ').map(v => parseFloat(v.replace(',', '.'))); q[1] = a + b; } return q; }
@@ -46,8 +46,8 @@ ${cm1Lecon(1, 'Faits numériques à connaître')}
 ${cm1Regle(`Moitiés des nombres impairs :${cm1Liste(['la moitié de 7 est 3,5', 'la moitié de 9 est 4,5', 'la moitié de 15 est 7,5'])}Fractions usuelles :${cm1Liste([`${cm1Frac(1, 2)} = 0,5`, `${cm1Frac(1, 4)} = 0,25`, `${cm1Frac(3, 4)} = 0,75`, `${cm1Frac(1, 5)} = 0,2`, `${cm1Frac(1, 10)} = 0,1`, `${cm1Frac(1, 100)} = 0,01`])}Relations :${cm1Liste([`${cm1Frac(1, 2)} = ${cm1Frac(2, 4)} = ${cm1Frac(5, 10)}`, `${cm1Frac(1, 4)} = ${cm1Frac(25, 100)}`, 'deux quarts font un demi'])}`, 'À savoir par cœur')}
 
 ${cm1Lecon(2, 'Décimaux et numération')}
-${cm1Exemple('Exemples :', ['4,6 + 3 = 7,6 : on ne change que les unités ;', '12,35 − 2 = 10,35 ;', '8,7 + 5 = 13,7 ;', '2,4 + 3,8 = 5 + 1,2 = 6,2 : les unités ensemble, les dixièmes ensemble ;', '3,25 × 100 = 325 : le chiffre des unités, 3, devient le chiffre des centaines ;', '48 ÷ 1 000 = 0,048.'])}
-${cmAnimGlisseDec('c2-cm-glisse', { presets: [{ nom: '3,25 × 100', n: '3,25', f: 100, op: '×' }, { nom: '48 ÷ 1 000', n: '48', f: 1000, op: '÷' }] })}
+${cm1Exemple('Exemples :', ['4,6 + 3 = 7,6 : on ne change que les unités ;', '12,35 − 2 = 10,35 ;', '8,7 + 5 = 13,7 ;', '2,4 + 3,8 = 5 + 1,2 = 6,2 : les unités ensemble, les dixièmes ensemble ;', '3,25 × 100 = 325 : le chiffre des unités, 3, devient le chiffre des centaines ;', '48 : 1 000 = 0,048.'])}
+${cmAnimGlisseDec('c2-cm-glisse', { presets: [{ nom: '3,25 × 100', n: '3,25', f: 100, op: '×' }, { nom: '48 : 1 000', n: '48', f: 1000, op: ':' }] })}
 
 ${cm1Lecon(3, 'Ajouter ou soustraire 9, 19, 99…')}
 ${cm1Regle(`On ajoute ou on soustrait la dizaine ou la centaine proche, puis on corrige :${cm1Liste(['+ 99, c\'est + 100 puis − 1', '− 19, c\'est − 20 puis + 1', '+ 28, c\'est + 30 puis − 2'])}`)}
@@ -60,8 +60,8 @@ ${cm1Regle(`Pour 30 × 400, on multiplie les chiffres, puis on écrit tous les z
 ${cm1Lecon(5, 'Décomposer : la distributivité')}
 ${cm1Exemple('Exemples :', ['7 × 26 = 7 × 20 + 7 × 6 = 140 + 42 = <b>182</b>', '15 × 99 = 15 × 100 − 15 = <b>1 485</b>', '2,5 × 12 = 2,5 × 10 + 2,5 × 2 = 25 + 5 = <b>30</b>'])}
 
-${cm1Lecon(6, 'Doubles, moitiés, × 5, × 50, ÷ 4, ÷ 8')}
-${cm1Regle(cm1Liste(['le double de 3,6 est 7,2 ;', 'la moitié de 5,4 est 2,7 (la moitié de 5 est 2,5, la moitié de 0,4 est 0,2) ;', '<b>× 5</b> = × 10 puis la moitié : 4,6 × 5 → 46 → <b>23</b> ;', '<b>× 50</b> = × 100 puis la moitié : 1,8 × 50 → 180 → <b>90</b> ;', '<b>÷ 4</b> = la moitié de la moitié : 148 ÷ 4 → 74 → <b>37</b> ;', '<b>÷ 8</b> = trois fois la moitié : 200 ÷ 8 → 100 → 50 → <b>25</b>.']))}
+${cm1Lecon(6, 'Doubles, moitiés, × 5, × 50, : 4, : 8')}
+${cm1Regle(cm1Liste(['le double de 3,6 est 7,2 ;', 'la moitié de 5,4 est 2,7 (la moitié de 5 est 2,5, la moitié de 0,4 est 0,2) ;', '<b>× 5</b> = × 10 puis la moitié : 4,6 × 5 → 46 → <b>23</b> ;', '<b>× 50</b> = × 100 puis la moitié : 1,8 × 50 → 180 → <b>90</b> ;', '<b>: 4</b> = la moitié de la moitié : 148 : 4 → 74 → <b>37</b> ;', '<b>: 8</b> = trois fois la moitié : 200 : 8 → 100 → 50 → <b>25</b>.']))}
 `,
   methode: `
 ${cm1Demo('c2-cm-50', 'Multiplier un décimal par 50', 'Calcule 3,4 × 50.')}
@@ -70,7 +70,7 @@ ${cm1Sous('A', 'Atelier : 10 calculs pour t\'entraîner')}
 `,
   demos: [
     ['c2-cm-50', [
-      { expr: '50 = 100 ÷ 2', note: 'Multiplier par 50, c\'est multiplier par 100 puis prendre la moitié.' },
+      { expr: '50 = 100 : 2', note: 'Multiplier par 50, c\'est multiplier par 100 puis prendre la moitié.' },
       { expr: '3,4 × 100 = 340', note: 'Le chiffre des unités, 3, devient le chiffre des centaines ; le 4 le suit, et on complète avec un 0.' },
       { expr: 'moitié de 340 = 170', note: 'Moitié de 300 = 150, moitié de 40 = 20.' },
       { expr: '3,4 × 50 = 170', note: 'Résultat.' },
@@ -88,8 +88,8 @@ ${cm1Sous('A', 'Atelier : 10 calculs pour t\'entraîner')}
       + cm1Redac('1 000 − 29', { nom: 'D', lignes: ['1 000 − 30 + 1', '970 + 1', '971'] }, '1 000 − 29 donne 971.')],
     [`Calcule.${cm1Liste(['60 × 300', '400 × 500', '8 × 7 000', '90 × 90'])}`,
       cm1Redac('Produits de nombres « ronds »', { suite: ['6 × 3 = 18, et 3 zéros : 60 × 300 = 18 000', '4 × 5 = 20, et 4 zéros : 400 × 500 = 200 000', '8 × 7 = 56, et 3 zéros : 8 × 7 000 = 56 000', '9 × 9 = 81, et 2 zéros : 90 × 90 = 8 100'] }, 'On multiplie les chiffres, puis on écrit tous les zéros.')],
-    [`Calcule.${cm1Liste(['6,2 × 5', '2,4 × 50', '96 ÷ 4', '320 ÷ 8'])}`,
-      cm1Redac('6,2 × 5', '6,2 × 10 = 62, puis la moitié', '6,2 × 5 donne 31.') + cm1Redac('2,4 × 50', '2,4 × 100 = 240, puis la moitié', '2,4 × 50 donne 120.') + cm1Redac('96 ÷ 4', '96 → 48 → 24', '96 ÷ 4 donne 24.') + cm1Redac('320 ÷ 8', '320 → 160 → 80 → 40', '320 ÷ 8 donne 40.')],
+    [`Calcule.${cm1Liste(['6,2 × 5', '2,4 × 50', '96 : 4', '320 : 8'])}`,
+      cm1Redac('6,2 × 5', '6,2 × 10 = 62, puis la moitié', '6,2 × 5 donne 31.') + cm1Redac('2,4 × 50', '2,4 × 100 = 240, puis la moitié', '2,4 × 50 donne 120.') + cm1Redac('96 : 4', '96 → 48 → 24', '96 : 4 donne 24.') + cm1Redac('320 : 8', '320 → 160 → 80 → 40', '320 : 8 donne 40.')],
     [`Calcule en décomposant.${cm1Liste(['8 × 45', '12 × 25', '3,5 × 4'])}`,
       cm1Redac('8 × 45', ['8 × 40 + 8 × 5', '320 + 40', '360'], '8 × 45 donne 360.')
       + cm1Redac('12 × 25', { nom: 'B', lignes: ['10 × 25 + 2 × 25', '250 + 50', '300'] }, '12 × 25 donne 300.')

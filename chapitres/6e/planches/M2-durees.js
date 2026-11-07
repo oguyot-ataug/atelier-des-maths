@@ -74,7 +74,7 @@ PLANCHES['6e|Heures et durée'] = [
       { etoiles: 3, col: 1, cahier: true, consigne: 'Un cours de 55 min commence à 8 h 05. Il est suivi de 5 min de pause, puis d\'un cours de 55 min. À quelle heure finit le deuxième cours ?',
         corr: cm1Redac('Calcul', { suite: ['8 h 05 + 55 min = 9 h', '9 h + 5 min = 9 h 05', '9 h 05 + 55 min = 10 h'] }, 'Le deuxième cours finit à 10 h.') },
       { etoiles: 3, cahier: true, consigne: 'Un marathonien court 42 km en 3 h 30 min. Combien de minutes met-il, en moyenne, pour parcourir 1 km ?',
-        corr: cm1Redac('Calcul', { suite: ['3 h 30 min = 210 min', '210 ÷ 42 = 5'] }, 'Il met en moyenne 5 minutes par kilomètre.') },
+        corr: cm1Redac('Calcul', { suite: ['3 h 30 min = 210 min', '210 : 42 = 5'] }, 'Il met en moyenne 5 minutes par kilomètre.') },
     ] },
 ];
 })();

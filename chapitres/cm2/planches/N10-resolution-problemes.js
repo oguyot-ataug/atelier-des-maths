@@ -35,7 +35,7 @@ PLANCHES['cm2|Résolution de problèmes'] = [
       { etoiles: 3, cahier: true, consigne: 'Dans une classe de 28 élèves, il y a 3 fois plus de filles que de garçons. Combien y a-t-il de garçons ? de filles ?',
         corr: cm1Redac('Une part', { suite: ['1 + 3 = 4', '28 : 4 = 7'] }, 'Il y a 7 garçons.') + cm1Redac('Nombre de filles', '7 × 3 = 21', 'Il y a 21 filles.') },
       { etoiles: 1, col: 1, consigne: 'Complète.', ...P3.rmp([['3 fois plus que 45 : @', 135], ['4 fois moins que 60 : @', 15], ['le triple de 2,5 : @', '7,5']], 2) },
-      { etoiles: 3, col: 1, consigne: '28 élèves, 3 fois plus de filles que de garçons. Complète.', ...P3.rmp([['28 ÷ 4 = @ garçons', 7], ['3 × 7 = @ filles', 21]], 2) },
+      { etoiles: 3, col: 1, consigne: '28 élèves, 3 fois plus de filles que de garçons. Complète.', ...P3.rmp([['28 : 4 = @ garçons', 7], ['3 × 7 = @ filles', 21]], 2) },
     ] },
   { titre: 'Problèmes à étapes', duree: '35 min',
     attendus: ['Organiser la résolution d\'un problème en plusieurs étapes', 'Trouver les questions intermédiaires', 'Rédiger une solution complète'],

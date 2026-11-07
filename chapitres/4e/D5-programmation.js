@@ -63,7 +63,7 @@ cm1Chapitre({
 ${cm1Lecon(1, 'Répéter une séquence : la boucle')}
 ${prTortue('pr4-carre', { presets: [{ nom: 'Carré', pas: prPoly(4, 100), x: -50, y: 50, fin: 'Le lutin a tourné 4 fois de 90° : 4 × 90 = 360°, il est revenu à son point de départ.' }, { nom: 'Triangle équilatéral', pas: prPoly(3, 120), x: -60, y: 50, fin: 'Il tourne 3 fois de 120° (et non 60° !) : 3 × 120 = 360°.' }, { nom: 'Hexagone', pas: prPoly(6, 60), x: -30, y: 55, fin: '6 côtés : il tourne de 360 : 6 = 60° à chaque sommet.' }] })}
 ${cm1Def(`${carre}${P('La boucle « <b>répéter 4 fois</b> » exécute 4 fois les deux instructions qu\'elle contient : le lutin trace un carré de côté 100.')}`, 'La boucle « répéter … fois »')}
-${cm1Regle(`Pour tracer un polygone régulier à ${T('n')} côtés, on répète ${T('n')} fois « avancer, tourner de ${T('360 \\div n')} degrés ». Pour le triangle équilatéral : 360 : 3 = 120°.${P(triangle)}`, 'Polygones réguliers')}
+${cm1Regle(`Pour tracer un polygone régulier à ${T('n')} côtés, on répète ${T('n')} fois « avancer, tourner de ${T('360 : n')} degrés ». Pour le triangle équilatéral : 360 : 3 = 120°.${P(triangle)}`, 'Polygones réguliers')}
 ${cm1Astuce('Avant de programmer, on peut « jouer » l\'algorithme sans ordinateur : un élève fait le lutin dans la cour, un autre lit les instructions. C\'est l\'algorithmique débranchée.')}
 
 ${cm1Lecon(2, 'Choisir : « si … alors … sinon »')}
@@ -100,7 +100,7 @@ ${cm1Demo('pr4-m-ecrire', 'Écrire le programme d\'un rectangle', 'Écris un pro
     ['Quel polygone trace le programme : répéter 5 fois [avancer de 80 ; tourner de 72 degrés] ?',
       cm1Redac('Le polygone', T('5 \\times 72 = 360'), 'Il trace un pentagone régulier de côté 80 : 5 côtés, et 5 virages de 72° font un tour complet.')],
     ['Quel angle faut-il pour tracer un octogone régulier (8 côtés) ?',
-      cm1Redac('L\'angle', T('360 \\div 8 = 45'), 'Il faut tourner de 45 degrés à chaque sommet.')],
+      cm1Redac('L\'angle', T('360 : 8 = 45'), 'Il faut tourner de 45 degrés à chaque sommet.')],
     ['Un programme demande un nombre, puis : si le nombre est pair, il dit « pair », sinon il dit « impair ». Que dit-il pour 17 ?',
       cm1Redac('Réponse du programme', '', '17 n\'est pas pair : la condition est fausse, le programme dit « impair ».')],
     ['mettre x à 2 ; répéter 4 fois : mettre x à x × 3 ; dire x. Que dit le programme ?',

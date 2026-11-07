@@ -409,7 +409,7 @@ document.getElementById('exos-demo-proportionnalite-6e').innerHTML = `
     <div class="num">Exercice 4</div>
     Pour 4 personnes, une recette demande 200 g de farine. Quelle masse de farine faut-il pour 10 personnes ? Rédige ta réponse.
     <button type="button" class="exo-correction-toggle" data-target="c6-d3-c4" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
-    <div class="exo-correction" id="c6-d3-c4"><div><p style="margin:0 0 6px;">La masse de farine est proportionnelle au nombre de personnes.</p><p style="margin:0 0 6px;">Pour 1 personne : 200 ÷ 4 = 50 g.</p><p style="margin:0 0 6px;">Pour 10 personnes : 50 × 10 = 500 g.</p><p style="margin:0 0 6px;"><b>Il faut 500 g de farine pour 10 personnes.</b></p></div></div>
+    <div class="exo-correction" id="c6-d3-c4"><div><p style="margin:0 0 6px;">La masse de farine est proportionnelle au nombre de personnes.</p><p style="margin:0 0 6px;">Pour 1 personne : 200 : 4 = 50 g.</p><p style="margin:0 0 6px;">Pour 10 personnes : 50 × 10 = 500 g.</p><p style="margin:0 0 6px;"><b>Il faut 500 g de farine pour 10 personnes.</b></p></div></div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 5</div>

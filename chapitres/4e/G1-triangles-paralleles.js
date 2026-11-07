@@ -169,7 +169,7 @@ ${r4Ex('', [
 <p class="example-title">Exemple 2 (avec un tableau de proportionnalité) : dans le triangle RST, U ∈ [RS], V ∈ [RT] et (UV) // (ST). On sait que RU = 2 cm, RV = 2,5 cm, UV = 3 cm et RS = 6 cm. On cherche RT et ST.</p>
 <ul class="example-list"><li>D'après le théorème de Thalès, les longueurs du triangle RST sont proportionnelles à celles du triangle RUV :</li></ul>
 ${G4_TAB([['Triangle RUV', 'RU = 2 cm', 'RV = 2,5 cm', 'UV = 3 cm'], ['Triangle RST', 'RS = 6 cm', 'RT = 2,5 × 3 = <b>7,5 cm</b>', 'ST = 3 × 3 = <b>9 cm</b>']])}
-<ul class="example-list"><li>Le coefficient est 6 ÷ 2 = 3 : le triangle RST est un <b>agrandissement</b> de rapport 3 du triangle RUV.</li></ul>
+<ul class="example-list"><li>Le coefficient est 6 : 2 = 3 : le triangle RST est un <b>agrandissement</b> de rapport 3 du triangle RUV.</li></ul>
 
 <div class="sub-header"><span class="letter">D</span><h4>Prouver que deux droites ne sont pas parallèles</h4></div>
 <span class="prop-badge">Conséquence</span>
@@ -294,7 +294,7 @@ document.getElementById('exos-demo-triangles-paralleles-4e').innerHTML = `
     '<span class="tex">AN = \\dfrac{4 \\times 12}{10} = 4{,}8</span> cm', '<span class="tex">BC = \\dfrac{10 \\times 3}{4} = 7{,}5</span> cm'])}
   ${g4Exo(5, 'Dans le triangle EFG, R ∈ [EF], S ∈ [EG] et (RS) // (FG). On sait que ER = 2,1 cm, EF = 3,5 cm, ES = 1,8 cm et FG = 5 cm. Calcule EG et RS.', [
     'D\'après le théorème de Thalès : <span class="tex">\\dfrac{2{,}1}{3{,}5} = \\dfrac{1{,}8}{EG} = \\dfrac{RS}{5}</span>, et <span class="tex">\\dfrac{2{,}1}{3{,}5} = 0{,}6</span>.',
-    'EG = 1,8 ÷ 0,6 = 3 cm', 'RS = 0,6 × 5 = 3 cm'])}
+    'EG = 1,8 : 0,6 = 3 cm', 'RS = 0,6 × 5 = 3 cm'])}
   ${g4Exo(6, 'Dans le triangle ABC, M ∈ [AB] et N ∈ [AC], avec AM = 3 cm, AB = 8 cm, AN = 4 cm et AC = 10 cm. Les droites (MN) et (BC) sont-elles parallèles ?', [
     '<span class="tex">\\dfrac{AM}{AB} = \\dfrac{3}{8} = 0{,}375</span> et <span class="tex">\\dfrac{AN}{AC} = \\dfrac{4}{10} = 0{,}4</span>.', 'Les rapports sont différents, donc, d\'après le théorème de Thalès, les droites (MN) et (BC) ne sont pas parallèles.'])}
   ${g4Exo(7, 'Dans le triangle ABC, M ∈ [AB] et N ∈ [AC], avec AM = 4,5 cm, AB = 7,5 cm, AN = 3 cm et AC = 5 cm. Montre que (MN) // (BC).', [

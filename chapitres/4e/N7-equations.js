@@ -104,7 +104,7 @@ ${r4Ex('Exemple 3 : résoudre ' + eq4Tex('-4x + 9 = 23') + '.', [
   [eq4Tex('-4x + 9 ' + eq4Op('- 9') + ' = 23 ' + eq4Op('- 9')), 'On soustrait 9 aux deux membres (propriété 1).'],
   [eq4Tex('-4x = 14'), 'On réduit.'],
   [eq4Tex('\\dfrac{-4x}{' + eq4Op('-4') + '} = \\dfrac{14}{' + eq4Op('-4') + '}'), 'On divise par −4 (propriété 2) : attention au signe !'],
-  [eq4Tex('x = -3{,}5'), '14 ÷ (−4) = −3,5 : la solution est −3,5.'],
+  [eq4Tex('x = -3{,}5'), '14 : (−4) = −3,5 : la solution est −3,5.'],
 ])}
 <div class="redaction-note" ${R4_REM}>Vérification (toujours prudente !) : on remplace <i>x</i> par −3,5 dans le membre de gauche : ${eq4Tex('A = -4 \\times (-3{,}5) + 9 = 14 + 9 = 23')}. On obtient bien le membre de droite : −3,5 est la solution.</div>
 ${r4Ex('Exemple 4 : quand l\'inconnue est dans les deux membres, ' + eq4Tex('5x - 3 = 2x + 9') + '.', [
@@ -206,7 +206,7 @@ document.getElementById('exos-demo-equations-4e').innerHTML = `
     'Pour <i>x</i> = 4 : 3 × 4 − 5 = 7 et 2 × 4 − 1 = 7 : oui, 4 est solution.',
     'Pour <i>x</i> = −2 : 3 × (−2) − 5 = −11 et 2 × (−2) − 1 = −5 : non, −2 n\'est pas solution.'])}
   ${eq4Exo(2, 'Résous : ' + eq4Tex('x + 9 = 4') + ' ; ' + eq4Tex('x - 3{,}2 = 1{,}8') + ' ; ' + eq4Tex('7x = -42') + ' ; ' + eq4Tex('\\dfrac{x}{5} = 1{,}2') + '.', [
-    eq4Tex('x = 4 - 9 = -5') + ' ; ' + eq4Tex('x = 1{,}8 + 3{,}2 = 5') + ' ; ' + eq4Tex('x = -42 \\div 7 = -6') + ' ; ' + eq4Tex('x = 1{,}2 \\times 5 = 6') + '.'])}
+    eq4Tex('x = 4 - 9 = -5') + ' ; ' + eq4Tex('x = 1{,}8 + 3{,}2 = 5') + ' ; ' + eq4Tex('x = -42 : 7 = -6') + ' ; ' + eq4Tex('x = 1{,}2 \\times 5 = 6') + '.'])}
   ${eq4Exo(3, 'Résous : ' + eq4Tex('2x + 7 = 19') + ' ; ' + eq4Tex('-5x + 3 = 23') + ' ; ' + eq4Tex('4 - 3x = 13') + '.', [
     eq4Tex('2x = 12') + ', ' + eq4Tex('x = 6') + ' ; ' + eq4Tex('-5x = 20') + ', ' + eq4Tex('x = -4') + ' ; ' + eq4Tex('-3x = 9') + ', ' + eq4Tex('x = -3') + '.'])}
   ${eq4Exo(4, 'Résous et donne la solution sous forme de fraction : ' + eq4Tex('6x - 1 = 3') + ' ; ' + eq4Tex('-9x + 2 = 7') + '.', [
