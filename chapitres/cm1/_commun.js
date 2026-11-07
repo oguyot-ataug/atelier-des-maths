@@ -99,6 +99,11 @@ function cm1Chapitre(o){
     init: () => {
       ['cours', 'methode', 'exos', 'histoire'].forEach(k => { const el = document.getElementById(id(k)); if(el && typeof renderStaticMath === 'function') renderStaticMath(el); });
       ['cours', 'methode'].forEach(k => { const el = document.getElementById(id(k)); if(el && typeof injectCourseAddButtons === 'function') injectCourseAddButtons(el); });
+      // Bouton « Dans mon cahier » en tête des onglets qui ont des opérations posées (07/11/2026).
+      // Méthode : les opérations n'apparaissent qu'au fil des étapes (makeStepDemo), on les cherche donc dans les étapes.
+      const etapesPosees = (o.demos || []).some(([, steps]) => { try{ return JSON.stringify(steps).includes('pose-ecran'); }catch(e){ return false; } });
+      ['cours', 'methode', 'exos'].forEach(k => { const el = document.getElementById(id(k)); if(el && !el.querySelector(':scope > .cahier-barre') && (el.querySelector('table.pose-ecran[data-cahier]') || (k === 'methode' && etapesPosees))) el.insertAdjacentHTML('afterbegin', cahierBouton()); });
+      cahierMaj();
       (o.demos || []).forEach(([k]) => CM1_DEMOS[k].reset());
       ['cours', 'methode', 'exos'].forEach(k => { const el = document.getElementById(id(k)); if(el) el.querySelectorAll('.cm-pliage').forEach(b => cmPliageDessiner(b.dataset.pliage)); if(typeof cmAnimDessiner === 'function') el.querySelectorAll('.cm-anim').forEach(b => cmAnimDessiner(b.dataset.anim)); });
       if(o.init) o.init();
@@ -317,7 +322,9 @@ function cm1Posee(lignes, retenues, opts){
   const cell = (c, st, res, j, plus) => `<td${res && opts.trous && c !== ' ' ? ` data-plcol="${rang(j)}" data-plrow="${res}"` : ''} style="position:relative;width:${virg.has(j) ? 12 : esp.has(j) ? 7 : 30}px;height:28px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:700;padding:2px 0;color:#1C1B2E;${st || ''}">${res && opts.cases && !virg.has(j) && !esp.has(j) ? '<span style="display:inline-block;width:20px;height:23px;border:1px solid #A9A4BE;border-radius:3px;vertical-align:middle;"></span>' : c === ' ' ? '' : res && opts.trous && typeof plCase === 'function' ? '<span class="pl-case pl-case-seule" style="margin:0;width:18px;"></span>' : res && opts.rep && typeof plRep === 'function' ? plRep(c) : c}${plus || ''}</td>`;
   const marque = (t, ou) => `<span style="position:absolute;${ou};font-size:.68rem;line-height:1;color:#E35D3A;font-weight:700;">${t}</span>`;
   const sous = op === '−' && lignes.length === 3;
-  let h = `<table style="border-collapse:collapse;margin:${sous && (cases || M) ? 10 : 5}px auto 5px;">`;
+  // « Dans mon cahier » (demandé le 07/11/2026) : la même opération sur une feuille Seyès, dessinée à la demande (cm1PoseeCahier).
+  const cahier = opts.trous || opts.cases ? '' : ` class="pose-ecran" data-cahier="${JSON.stringify({ l: lignes.map(([s, n, t]) => t ? [s, n, 1] : [s, n]), r: retenues || '', h: M ? Object.keys(M.haut).map(Number) : [], b: M ? Object.keys(M.bas).map(Number) : [] }).replace(/"/g, '&quot;')}"`;
+  let h = `<table${cahier} style="border-collapse:collapse;margin:${sous && (cases || M) ? 10 : 5}px auto 5px;">`;
   // Retenues juste au-dessus des chiffres (demandé le 05/11/2026 : « les retenues plus près du nombre ») : ligne basse, chiffre en bas.
   if(retenues) h += `<tr><td></td>${retenues.padStart(larg).split('').map((c, j) => cell(c, 'font-size:.72rem;color:#FF8208;height:13px;padding:0;line-height:1;vertical-align:bottom;', 0, j)).join('')}</tr>`;
   else if(cases && (op === '+' || op === '×')) h += `<tr><td></td>${Array.from({ length: larg }, (_, j) => `<td style="height:20px;padding:0;text-align:center;">${rang(j) > 0 && !virg.has(j) ? caseRet('a', j, 'display:inline-block;width:16px;height:16px;') : ''}</td>`).join('')}</tr>`;
@@ -330,6 +337,61 @@ function cm1Posee(lignes, retenues, opts){
     h += `<tr style="${fin || trait ? 'border-top:2px solid #1C1B2E;' : ''}">${cell(s, 'width:26px;color:#FF8208;')}${ch.map((c, j) => cell(c, fin ? 'color:#FF8208;font-size:1.2rem;' : '', res, j, plus(j))).join('')}</tr>`; });
   return h + '</table>';
 }
+
+/* ---- « Dans mon cahier » : opérations posées sur une feuille Seyès (demandé le 07/11/2026 : « mettre un fond type feuilles
+   Seyès en respectant la marge et les lignes principales […] un bouton "dans mon cahier" »). Un chiffre par carreau, chaque
+   nombre posé sur une ligne principale et haut de deux interlignes ; retenues et « +10 » dans l'interligne au-dessus du chiffre,
+   « +1 » en indice ; virgule sur le trait vertical ; trait de l'opération sur la première ligne fine sous le nombre.
+   Mode retenu sur l'appareil (cahierSeyes), pour tout le site : chaque tableau d'opération (cm1Posee, data-cahier) reçoit à
+   côté son dessin, et l'écran montre l'un ou l'autre (classe cahier-on) ; l'impression garde toujours l'opération habituelle. ---- */
+function cm1PoseeCahier(d){
+  const C = 32, MG = 40, l = d.l, larg = Math.max(...l.map(x => x[1].length), (d.r || '').length), P = l.map(x => x[1].padStart(larg));
+  const virg = new Set(), esp = new Set();
+  P.forEach(n => n.split('').forEach((c, j) => { if(c === ',') virg.add(j); if(c === ' ' && /\d/.test(n.slice(0, j)) && /\d/.test(n.slice(j + 1))) esp.add(j); }));
+  [...esp, ...virg].forEach(j => { if(P.some(n => /\d/.test(n[j]))){ esp.delete(j); virg.delete(j); } }); // nombres mal alignés : la colonne reste un carreau
+  const col = {}; let k = 0; for(let j = 0; j < larg; j++) if(!virg.has(j) && !esp.has(j)) col[j] = k++;
+  let prem = k; P.forEach(n => n.split('').forEach((c, j) => { if(/\d/.test(c)) prem = Math.min(prem, col[j]); }));
+  const x = c => MG + C * (2 + c - prem), yb = i => 16 + C * (1 + i), dern = l.length - 1, W = x(k) + C, H = yb(dern) + 24;
+  const ENCRE = '#1E3A8A', ROUGE = '#E35D3A', RES = '#E8590C';
+  let g = `<rect width="${W}" height="${H}" fill="#fff"/>`;
+  for(let y = 0; y <= H; y += 8) if((y - 16) % 32) g += `<line x1="0" y1="${y}" x2="${W}" y2="${y}" stroke="#CDD2EE" stroke-width=".7"/>`;
+  for(let x1 = MG + C; x1 < W; x1 += C) g += `<line x1="${x1}" y1="0" x2="${x1}" y2="${H}" stroke="#CDD2EE" stroke-width=".7"/>`;
+  for(let y = 16; y <= H; y += 32) g += `<line x1="0" y1="${y}" x2="${W}" y2="${y}" stroke="#8C93CF" stroke-width="1.1"/>`;
+  g += `<line x1="${MG}" y1="0" x2="${MG}" y2="${H}" stroke="#E2626E" stroke-width="1.5"/>`;
+  const txt = (t, x1, y, taille, coul, ancre) => `<text x="${x1}" y="${y}" font-size="${taille}" fill="${coul}" text-anchor="${ancre || 'middle'}">${t}</text>`;
+  l.forEach(([s, n, trait], i) => {
+    const ch = P[i].split(''), coul = i === dern ? RES : ENCRE;
+    if((i === dern || trait) && i > 0) g += `<line x1="${x(prem - 1) + 4}" y1="${yb(i - 1) + 8}" x2="${x(k) - 3}" y2="${yb(i - 1) + 8}" stroke="${ENCRE}" stroke-width="1.6" stroke-linecap="round"/>`;
+    if(s && s.trim()) g += txt(s, x(prem - 1) + C / 2, yb(i) - 1, 26, '#F08C00');
+    ch.forEach((c, j) => {
+      if(/\d/.test(c)) g += txt(c, x(col[j]) + C / 2, yb(i), 27, coul);
+      else if(c === ',' && virg.has(j)) { const g0 = Object.keys(col).map(Number).filter(m => m < j).pop(); g += txt(',', x(col[g0]) + C, yb(i) + 1, 27, coul); }
+    });
+  });
+  (d.r || '').padStart(larg).split('').forEach((c, j) => { if(/\d/.test(c) && col[j] != null) g += txt(c, x(col[j]) + C / 2, yb(0) - 19, 15, ROUGE); });
+  (d.h || []).forEach(j => { if(col[j] != null) g += txt('+10', x(col[j]) + C / 2, yb(0) - 19, 13, ROUGE); });
+  (d.b || []).forEach(j => { if(col[j] != null) g += txt('+1', x(col[j]) + C / 2 + 6, yb(1) + 5, 10, ROUGE, 'start'); });
+  return `<svg class="pose-cahier" data-geo-garde aria-hidden="true" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" style="display:none;max-width:100%;height:auto;margin:6px auto;font-family:Caveat,'Comic Sans MS',cursive;font-weight:700;border:1px solid #E1E4F2;border-radius:4px;">${g}</svg>`;
+}
+let cahierOn = false; try{ cahierOn = localStorage.getItem('cahierSeyes') === '1'; }catch(e){}
+function cahierAppliquer(racine){
+  if(!cahierOn || !racine || !racine.querySelectorAll) return;
+  const T = racine.matches && racine.matches('table.pose-ecran[data-cahier]') ? [racine] : racine.querySelectorAll('table.pose-ecran[data-cahier]');
+  T.forEach(t => { const s = t.nextElementSibling; if(s && s.classList.contains('pose-cahier')) return;
+    try{ t.insertAdjacentHTML('afterend', cm1PoseeCahier(JSON.parse(t.dataset.cahier))); }catch(e){} });
+}
+let cahierObs = null;
+function cahierMaj(){
+  if(!document.body) return;
+  document.body.classList.toggle('cahier-on', cahierOn);
+  document.querySelectorAll('.cahier-btn').forEach(b => { b.setAttribute('aria-pressed', cahierOn ? 'true' : 'false'); b.classList.toggle('actif', cahierOn); });
+  if(cahierOn){ cahierAppliquer(document.body);
+    if(!cahierObs && typeof MutationObserver !== 'undefined'){ cahierObs = new MutationObserver(ms => ms.forEach(m => m.addedNodes.forEach(n => { if(n.nodeType === 1 && !n.classList.contains('pose-cahier')) cahierAppliquer(n); }))); cahierObs.observe(document.body, { childList: true, subtree: true }); }
+  } else if(cahierObs){ cahierObs.disconnect(); cahierObs = null; }
+}
+function cahierBasculer(){ cahierOn = !cahierOn; try{ localStorage.setItem('cahierSeyes', cahierOn ? '1' : '0'); }catch(e){} cahierMaj(); }
+function cahierBouton(){ return `<div class="cahier-barre"><button type="button" class="cahier-btn${cahierOn ? ' actif' : ''}" aria-pressed="${cahierOn}" onclick="cahierBasculer()" title="Voir les opérations posées comme dans le cahier, sur une feuille à grands carreaux"><span class="gicon">menu_book</span> Dans mon cahier</button></div>`; }
+if(typeof document !== 'undefined'){ if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', cahierMaj); else cahierMaj(); }
 
 /* ---- Pliage animé d'un patron (cube, pavé) -- demandé : « animer un patron de cube en le pliant
    (avec choix des différents modèles) ». Un patron est une liste de faces rectangulaires [x, y, l, h]

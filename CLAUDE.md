@@ -146,6 +146,15 @@ de son chiffre, sans le déplacer ni déborder sur la colonne voisine (plus de �
 `cm1opCompPrefix` (CM1 Opérations, aussi l'outil de correction), animations `cm1AnimOperation` (_anims.js), planches CE2-N3,
 démonstrations de 6e (décimaux, durées).
 
+## « Dans mon cahier » : opérations posées sur feuille Seyès (demandé le 07/11/2026)
+
+Bouton « Dans mon cahier » (`cahierBouton`, chapitres/cm1/_commun.js) en tête des onglets Cours, Méthode, Exercices des chapitres
+qui ont des opérations `cm1Posee` : chaque tableau d'opération (classe `pose-ecran`, données `data-cahier`) reçoit à côté son dessin
+Seyès (`cm1PoseeCahier` : marge rouge, un chiffre par carreau sur une ligne principale, retenues et « +10 » dans l'interligne
+au-dessus, « +1 » en indice, police Caveat). Réglage retenu sur l'appareil (`cahierSeyes`), valable partout (classe `cahier-on` sur
+body, dessins ajoutés aussi au contenu affiché plus tard) ; l'impression garde toujours l'opération habituelle. Pas pour les opérations
+à compléter (`trous`, `cases`) ni pour les animations (`cmAnim`).
+
 ## Planches : jamais d'exercice seul en demi-largeur (demandé le 30/10/2026)
 
 « Je ne veux jamais voir ça dans aucun niveau » : un exercice `{ col: 1 }` (demi-largeur) resté seul laisse un trou à sa droite

@@ -2368,3 +2368,14 @@ body:not(.connecte) #navDropdownEntrainer .nav-dropdown-menu button[data-nav="le
 .cmp-barre .cma-vitesse input[type=range]{ width:110px; }
 .cmp-barre .cma-vit-val{ min-width:6.5em; font-weight:600; color:#1F3A5C; }
 @media print{ .cmp-barre .cma-vitesse{ display:none; } }
+
+/* « Dans mon cahier » (07/11/2026) : opérations posées sur une feuille Seyès (cm1PoseeCahier, chapitres/cm1/_commun.js).
+   À l'écran seulement : l'impression garde toujours l'opération habituelle. */
+.cahier-barre{ display:flex; justify-content:flex-end; margin:0 0 8px; }
+.cahier-btn{ display:inline-flex; align-items:center; gap:6px; padding:6px 12px; border-radius:999px; border:1.5px solid #8C93CF; background:#fff; color:#2B3A8C; font:600 .85rem 'Inter',sans-serif; cursor:pointer; }
+.cahier-btn .gicon{ font-size:18px; }
+.cahier-btn.actif{ background:#2B3A8C; border-color:#2B3A8C; color:#fff; }
+@media screen{
+  body.cahier-on table.pose-ecran{ display:none !important; }
+  body.cahier-on svg.pose-cahier{ display:block !important; }
+}
