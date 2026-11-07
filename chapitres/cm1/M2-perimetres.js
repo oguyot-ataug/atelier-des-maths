@@ -128,7 +128,7 @@ ${cm1Demo('pe-unite', 'Calculer un périmètre avec des unités différentes', '
         { etoiles: 3, col: 1, cahier: true, consigne: 'Un jardin carré a 9 m de côté. On l\'entoure d\'une clôture, en laissant un portail de 1 m. Quelle longueur de clôture faut-il ?',
           corr: cm1Redac('Périmètre du jardin', '4 × 9 m = 36 m', '') + cm1Redac('Longueur de clôture', '36 m − 1 m = 35 m', 'Il faut 35 m de clôture.', jardin()) },
         { etoiles: 3, col: 1, cahier: true, consigne: 'Sur ton cahier, dessine deux figures différentes qui ont chacune un périmètre de 12 carreaux.',
-          corr: cm1Redac('Deux figures de périmètre 12', { suite: ['rectangle de 4 sur 2 : 4 + 2 + 4 + 2 = 12', 'carré de 3 sur 3 : 3 + 3 + 3 + 3 = 12'] }, 'Les deux figures ont un périmètre de 12 carreaux.', cm1Quad(11, 5, cm1Rect(1, 1, 4, 2).concat(cm1Rect(7, 1, 3, 3)), { k: 14, contour: '#E35D3A' })) },
+          corr: cm1Redac('Deux figures de périmètre 12', { suite: ['4 + 2 + 4 + 2 = 12', '3 + 3 + 3 + 3 = 12'] }, 'Le rectangle de 4 sur 2 et le carré de 3 sur 3 ont tous les deux un périmètre de 12 carreaux.', cm1Quad(11, 5, cm1Rect(1, 1, 4, 2).concat(cm1Rect(7, 1, 3, 3)), { k: 14, contour: '#E35D3A' })) },
       ] },
     { titre: 'Périmètre du carré et du rectangle', duree: '35 min',
       attendus: ['Calculer le périmètre d\'un carré et d\'un rectangle', 'Exprimer les longueurs dans la même unité avant de calculer'],

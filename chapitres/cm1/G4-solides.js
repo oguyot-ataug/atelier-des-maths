@@ -83,7 +83,7 @@ ${cm1Demo('so-patron', 'Vérifier qu\'une figure est un patron de cube', 'La fig
   ],
   exos: cm1Exos('so', [
     [`Combien de cubes faut-il pour construire cet assemblage ?${'<div style="text-align:center;">' + cmCubes([[0, 0, 0], [1, 0, 0], [2, 0, 0], [0, 0, 1], [1, 0, 1], [2, 0, 1], [0, 1, 1]], 150) + '</div>'}`,
-      cm1Redac('Nombre de cubes', { suite: ['étage du bas : 3 + 3 = 6', 'étage du haut : 1'] }, 'Il faut 6 + 1 = 7 cubes.')],
+      cm1Redac('Étage du bas', '3 + 3 = 6', 'Il y a 6 cubes en bas et 1 cube en haut.') + cm1Redac('Nombre de cubes', '6 + 1 = 7', 'Il faut 7 cubes.')],
     [`Nomme le solide qui a la forme de chacun de ces objets.${cm1Liste(['une brique', 'un rouleau d\'essuie-tout', 'une balle de tennis', 'un chapeau pointu d\'anniversaire'])}`,
       cm1Redac('Noms des solides', { suite: ['une brique : un pavé droit', 'un rouleau d\'essuie-tout : un cylindre', 'une balle de tennis : une boule', 'un chapeau pointu : un cône'] }, 'Seul le pavé droit n\'a que des faces planes : les trois autres peuvent rouler.')],
     ['Combien de faces, d\'arêtes et de sommets a un cube ?',
@@ -147,7 +147,7 @@ PLANCHES['cm1|Solides'] = [
         eleve: plListe(['J\'ai 6 faces, toutes carrées : ' + B(), 'Je roule ; j\'ai 2 faces planes en forme de disque : ' + B(), 'J\'ai une base carrée et 4 faces triangulaires : ' + B()]),
         corr: plListe(['J\'ai 6 faces, toutes carrées : ' + R('cube'), 'Je roule ; j\'ai 2 faces planes en forme de disque : ' + R('cylindre'), 'J\'ai une base carrée et 4 faces triangulaires : ' + R('pyramide')]) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Combien de faces, d\'arêtes et de sommets a une pyramide à base triangulaire ?',
-        corr: cm1Redac('Pyramide à base triangulaire', { suite: ['faces : 1 base + 3 triangles = 4', 'arêtes : 3 autour de la base + 3 vers le sommet = 6', 'sommets : 3 + 1 = 4'] }, 'Elle a 4 faces, 6 arêtes et 4 sommets.') },
+        corr: cm1Redac('Faces', '1 + 3 = 4', '1 base et 3 triangles : 4 faces.') + cm1Redac('Arêtes', '3 + 3 = 6', '3 arêtes autour de la base et 3 vers le sommet : 6 arêtes.') + cm1Redac('Sommets', '3 + 1 = 4', 'La pyramide à base triangulaire a 4 faces, 6 arêtes et 4 sommets.') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Léo dit : « Un cube est un pavé droit particulier. » A-t-il raison ? Explique.',
         corr: cm1Redac('Cube et pavé droit', { suite: ['Un pavé droit a 6 faces rectangulaires.', 'Un carré est un rectangle particulier.'] }, 'Léo a raison : le cube est un pavé droit dont les 6 faces sont des carrés.') },
     ] },

@@ -53,7 +53,7 @@ ${cm1Demo('ce2-pet-courses', 'Un problème de courses en trois étapes', 'Inès 
       cm1Redac('Argent restant', { pose: cm1Posee([[' ', '50,00'], ['−', '23,75'], [' ', '26,25']]) }, 'Il me reste 26,25 €.')],
     ['Un car a 48 places. 3 classes de 25 élèves partent en sortie. Combien faut-il de cars ? Combien restera-t-il de places vides ?',
       cm1Redac('Nombre d\'élèves', '3 × 25 = 75', 'Il y a 75 élèves.')
-      + cm1Redac('Nombre de cars', { suite: ['1 car : 48 places, pas assez', '2 cars : 48 + 48 = 96 places'] }, 'Il faut 2 cars.')
+      + cm1Redac('Nombre de cars', '48 + 48 = 96', '1 car n\'a que 48 places, ce n\'est pas assez ; 2 cars ont 96 places : il faut 2 cars.')
       + cm1Redac('Places vides', '96 − 75 = 21', 'Il restera 21 places vides.')],
     ['Tom a 35 €. Il achète 2 livres à 9 € et un jeu à 12 €. Combien lui reste-t-il ?',
       cm1Redac('Dépense de Tom', ['2 × 9 + 12', '18 + 12', '30'], 'Tom dépense 30 €.')

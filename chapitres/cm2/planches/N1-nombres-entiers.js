@@ -56,7 +56,7 @@ PLANCHES['cm2|Nombres entiers (révisions jusqu\'à 999 999)'] = [
       { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.',
         ...ch([['Dans 456 789, le chiffre 6 vaut 6 000.', 'vrai'], ['100 000 c\'est 100 milliers.', 'vrai'], ['Le plus grand nombre de 5 chiffres est 99 990.', 'faux']], 'vrai · faux') },
       { etoiles: 3, cahier: true, consigne: 'Devinette : je suis un nombre de six chiffres. Mon chiffre des centaines de mille est 3, mon chiffre des unités est le double de celui-ci, tous mes autres chiffres sont des 0, sauf mon chiffre des milliers qui vaut 5. Qui suis-je ?',
-        corr: cm1Redac('Chiffre par chiffre', { suite: ['centaines de mille : 3', 'milliers : 5', 'unités : 3 × 2 = 6', 'les autres chiffres : 0'] }, 'Je suis 305 006.') },
+        corr: cm1Redac('Chiffre des unités', '3 × 2 = 6', 'Le chiffre des unités est 6.') + cm1Redac('Le nombre', '300 000 + 5 000 + 6 = 305 006', '3 centaines de mille, 5 milliers, 6 unités et des 0 ailleurs : je suis 305 006.') },
       { etoiles: 1, col: 1, consigne: 'Complète la suite.', ...P3.rmp([['99 998 ; 99 999 ; @', '100 000'], ['250 000 ; 300 000 ; @ ; @', '350 000', '400 000']], 4) },
       { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['10 000 de plus que 995 000 : @', '1 005 000'], ['1 000 de moins que 100 000 : @', '99 000']], 4) },
     ] },

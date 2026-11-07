@@ -43,7 +43,7 @@ PLANCHES['ce1|Les nombres jusqu\'à 1 000'] = [
       { etoiles: 1, col: 1, consigne: 'Complète.', ...P3.rmp([['635 = (6 × 100) + (@ × 10) + (5 × 1)', 3], ['472 = (@ × 100) + (7 × 10) + (2 × 1)', 4], ['908 = (9 × 100) + (@ × 1)', 8]], 2) },
       { etoiles: 2, col: 1, consigne: 'Écris le nombre en chiffres.', ...P3.rmp([['(3 × 100) + (5 × 10) + (8 × 1) = @', 358], ['63 dizaines et 5 unités = @', 635], ['3 dizaines et 6 centaines et 5 unités = @', 635]], 3) },
       { etoiles: 2, consigne: 'Combien cela fait-il ?', ...P3.rmp([['17 unités, 8 dizaines et 2 centaines : @', 297], ['9 dizaines, 23 unités et 4 centaines : @', 513], ['2 centaines, 27 dizaines et 14 unités : @', 484], ['6 unités, 12 dizaines et 3 centaines : @', 426], ['15 dizaines, 8 unités et 1 centaine : @', 258], ['3 centaines, 16 unités et 5 dizaines : @', 366]], 3) },
-      { etoiles: 3, cahier: true, consigne: 'Il faut 235 timbres. On les vend par plaques de 100, par carnets de 10 ou à l\'unité. Propose deux commandes différentes.', corr: cm1Redac('Commandes de timbres', { suite: ['2 plaques, 3 carnets, 5 timbres : 200 + 30 + 5 = 235', '1 plaque, 13 carnets, 5 timbres : 100 + 130 + 5 = 235'] }, 'Par exemple : 2 plaques, 3 carnets et 5 timbres ; ou 1 plaque, 13 carnets et 5 timbres.') },
+      { etoiles: 3, cahier: true, consigne: 'Il faut 235 timbres. On les vend par plaques de 100, par carnets de 10 ou à l\'unité. Propose deux commandes différentes.', corr: cm1Redac('Première commande', '200 + 30 + 5 = 235', '2 plaques, 3 carnets et 5 timbres.') + cm1Redac('Deuxième commande', '100 + 130 + 5 = 235', '1 plaque, 13 carnets et 5 timbres.') },
     ] },
 ];
 })();

@@ -92,7 +92,7 @@ ${cm1Demo('c2-al-balance', 'Raisonner avec deux inconnues simples', '3 cahiers e
       cm1Redac('Avec 4', { suite: ['4 × 3 = 12', '12 + 5 = 17', '17 × 2 = 34'] }, 'Avec 4, le programme donne 34.')
       + cm1Redac('Nombre choisi pour obtenir 52', { suite: ['52 : 2 = 26', '26 − 5 = 21', '21 : 3 = 7'] }, 'En remontant le programme, on trouve que le nombre choisi était 7.')],
     ['La somme de deux nombres est 100 ; l\'un vaut 3 fois l\'autre. Quels sont-ils ?',
-      cm1Redac('Les deux nombres', { suite: ['1 + 3 = 4 parts égales', '100 : 4 = 25', '25 × 3 = 75'] }, 'Les deux nombres sont 25 et 75.')],
+      cm1Redac('Les deux nombres', { suite: ['1 + 3 = 4', '100 : 4 = 25', '25 × 3 = 75'] }, 'On partage 100 en 4 parts égales : les deux nombres sont 25 et 75.')],
     ['Un sac de billes et 3 billes pèsent autant que 45 billes (le sac est plein, toutes les billes identiques). Combien de billes dans le sac ?',
       cm1Redac('Billes dans le sac', '45 − 3 = 42', 'Le sac contient 42 billes.')],
   ], { titre: 'Rédaction type : « Égalité à trou »', lignes: [['6 × 8 = 48', 'Je calcule le membre complet.'], ['■ = 178 − 48 = 130', 'Je cherche le nombre manquant.'], ['178 − 130 = 48 ✔', 'Je vérifie.']] }),

@@ -22,7 +22,7 @@ PLANCHES['cm2|Fractions'] = [
       { etoiles: 2, col: 1, consigne: 'Une bande unité mesure 12 cm. Complète.',
         ...rmp([[`${F(1, 4)} de la bande mesure @ cm`, 3], [`${F(3, 4)} de la bande mesurent @ cm`, 9], [`${F(5, 6)} de la bande mesurent @ cm`, 10]]) },
       { etoiles: 3, cahier: true, consigne: `Une tablette de chocolat a 24 carrés. Léa en mange ${F(1, 4)} et Tom ${F(1, 3)}. Combien de carrés chacun a-t-il mangés ? Combien en reste-t-il ?`,
-        corr: cm1Redac('Carrés de Léa', `${F(1, 4)} de 24 = 24 : 4 = 6`, 'Léa a mangé 6 carrés.') + cm1Redac('Carrés de Tom', `${F(1, 3)} de 24 = 24 : 3 = 8`, 'Tom a mangé 8 carrés.') + cm1Redac('Carrés restants', { suite: ['6 + 8 = 14', '24 − 14 = 10'] }, 'Il reste 10 carrés.') },
+        corr: cm1Redac('Carrés de Léa', '24 : 4 = 6', `Prendre ${F(1, 4)} de 24, c'est partager 24 en 4 : Léa a mangé 6 carrés.`) + cm1Redac('Carrés de Tom', '24 : 3 = 8', `Prendre ${F(1, 3)} de 24, c'est partager 24 en 3 : Tom a mangé 8 carrés.`) + cm1Redac('Carrés restants', { suite: ['6 + 8 = 14', '24 − 14 = 10'] }, 'Il reste 10 carrés.') },
       { etoiles: 2, consigne: 'Une bande unité mesure 12 cm. Complète.', ...P3.rmp([[`${cm1Frac(1, 4)} de la bande : @ cm`, 3], [`${cm1Frac(3, 4)} de la bande : @ cm`, 9], [`${cm1Frac(1, 2)} de la bande : @ cm`, 6], [`${cm1Frac(1, 3)} de la bande : @ cm`, 4]], 2) },
     ] },
   // Lire et colorier des fractions de figures (fractions-figures.js) -- demandé : « Reconnaître les parts

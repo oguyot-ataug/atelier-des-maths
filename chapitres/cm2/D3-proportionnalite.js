@@ -70,7 +70,7 @@ ${cm1Demo('c2-pp-vitesse', 'Distance et durée', 'Un train roule toujours à la 
       cm1Redac('Masse de 4 stylos', '180 : 3 = 60', '4 stylos, c\'est 3 fois moins : ils pèsent 60 g.')
       + cm1Redac('Masse de 20 stylos', '5 × 60 = 300', '20 stylos, c\'est 5 fois 4 stylos : ils pèsent 300 g.')],
     ['Maxime dit : « Pour 2 gâteaux il faut 4 œufs, donc pour 5 gâteaux il en faut 7, car j\'ajoute 3. » A-t-il raison ?',
-      cm1Redac('Œufs pour 5 gâteaux', { suite: ['1 gâteau : 4 : 2 = 2 œufs', '5 gâteaux : 5 × 2 = 10 œufs'] }, 'Maxime a tort : il faut 10 œufs. On ne raisonne pas en ajoutant le même nombre aux deux grandeurs.')],
+      cm1Redac('Œufs pour 1 gâteau', '4 : 2 = 2', 'Pour 1 gâteau, il faut 2 œufs.') + cm1Redac('Œufs pour 5 gâteaux', '5 × 2 = 10', 'Maxime a tort : il faut 10 œufs. On ne raisonne pas en ajoutant le même nombre aux deux grandeurs.')],
   ], { titre: 'Rédaction type', lignes: [['15 kg, c\'est 3 fois plus que 5 kg.', 'Je compare les quantités.'], ['Je paie 3 fois plus : 3 × 12 = 36.', 'J\'applique à l\'autre grandeur.'], ['15 kg de pommes coûtent 36 €.', 'Je conclus.']] }),
   histoire: cm1Histoire('Un peu d\'histoire : Thalès et la pyramide', [
     'On raconte que le savant grec <b>Thalès</b> a mesuré la hauteur de la grande pyramide d\'Égypte grâce à la proportionnalité : il a planté un bâton et attendu le moment où l\'ombre du bâton était aussi longue que le bâton. À cet instant, l\'ombre de la pyramide était aussi longue que sa hauteur !',

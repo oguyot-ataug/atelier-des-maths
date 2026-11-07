@@ -88,7 +88,7 @@ ${cm1Demo('ce1-m2-m-rendre', 'Rendre la monnaie', 'Une glace coûte 4 €. Je pa
     ['Lucie achète un pain à 1,20 € et un croissant à 90 c. Combien dépense-t-elle ?',
       cm1Redac('Dépense de Lucie', { suite: ['1,20 € = 120 c', '120 + 90 = 210', '210 c = 2,10 €'] }, 'Lucie dépense 2,10 €.')],
     ['Qui a le plus d\'argent : Zoé a 3 billets de 5 €, Lucas a 1 billet de 10 € et 3 pièces de 2 € ?',
-      cm1Redac('Qui a le plus', { suite: ['Zoé : 5 + 5 + 5 = 15', 'Lucas : 10 + 2 + 2 + 2 = 16'] }, 'Lucas a 16 € et Zoé 15 € : c\'est Lucas qui a le plus d\'argent.')],
+      cm1Redac('Argent de Zoé', '5 + 5 + 5 = 15', 'Zoé a 15 €.') + cm1Redac('Argent de Lucas', '10 + 2 + 2 + 2 = 16', 'Lucas a 16 € : c\'est Lucas qui a le plus d\'argent.')],
   ]),
   histoire: cm1Histoire('Un peu d\'histoire : les pièces de l\'euro', [
     'Les pièces en euros ont une face commune à tous les pays et une face différente selon le pays. Sur les pièces françaises de 1 € et 2 €, on voit un arbre ; sur les centimes, Marianne ou la Semeuse.',

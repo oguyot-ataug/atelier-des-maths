@@ -87,7 +87,7 @@ ${cm1Demo('c2-so-patron', 'Vérifier un patron de pavé', 'Le patron du cours fo
   exos: cm1Exos('c2so', [
     ['Combien de faces, d\'arêtes, de sommets a un prisme droit à base triangulaire ? Quelle est la nature de ses faces ?',
       cm1Redac('Nombre de faces', '2 + 3 = 5', 'Le prisme a 5 faces : 2 triangles (les bases) et 3 rectangles.')
-      + cm1Redac('Arêtes et sommets', { suite: ['3 + 3 + 3 = 9 arêtes', '3 + 3 = 6 sommets'] }, 'Il a 9 arêtes et 6 sommets.')],
+      + cm1Redac('Nombre d\'arêtes', '3 + 3 + 3 = 9', 'Il a 9 arêtes.') + cm1Redac('Nombre de sommets', '3 + 3 = 6', 'Il a 6 sommets.')],
     ['Je suis un polyèdre à 5 sommets ; une de mes faces est un carré et les autres sont des triangles. Qui suis-je ?',
       cm1Redac('Devinette', '', 'C\'est une pyramide à base carrée.')],
     ['Pourquoi un cylindre n\'est-il pas un polyèdre ?',

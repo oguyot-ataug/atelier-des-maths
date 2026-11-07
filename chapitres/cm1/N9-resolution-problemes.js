@@ -108,7 +108,7 @@ ${cm1Demo('rp-division', 'Division avec reste : interpréter le résultat', '100
     ['On lance une pièce (pile ou face) et un dé à quatre faces (1, 2, 3 ou 4). Combien de résultats différents ?',
       cm1Redac('Nombre de résultats', '2 × 4 = 8', 'Il y a 8 résultats : P1, P2, P3, P4, F1, F2, F3, F4.')],
     ['Un car peut transporter 50 élèves, un minibus 15. Comment transporter 80 élèves avec le moins de véhicules possible ?',
-      cm1Redac('Les véhicules', { suite: ['1 car et 2 minibus : 50 + 15 + 15 = 80 places, 3 véhicules', '2 cars : 50 + 50 = 100 places, 2 véhicules', '1 véhicule ne suffit pas : 50 places au plus'] }, 'Le moins de véhicules possible : 2 cars.')],
+      cm1Redac('1 car et 2 minibus', '50 + 15 + 15 = 80', '80 places avec 3 véhicules.') + cm1Redac('2 cars', '50 + 50 = 100', '100 places avec 2 véhicules ; 1 véhicule ne suffit pas (50 places au plus). Le moins de véhicules possible : 2 cars.')],
   ], { titre: 'Rédaction type d\'un problème', lignes: [['Je cherche…', 'J\'écris ce que je cherche.'], ['Calcul : 6 × 24 = 144', 'J\'écris l\'opération et son résultat.'], ['Il y a 144 crayons.', 'Je réponds par une phrase, avec l\'unité.']] }),
   histoire: cm1Histoire('Un peu d\'histoire : Polya et l\'art de résoudre', [
     'Les plus anciens problèmes de mathématiques connus ont près de 4 000 ans : ils sont écrits sur des tablettes d\'argile en Mésopotamie et sur des papyrus en Égypte. On y partage du pain, on calcule des récoltes, on mesure des champs.',

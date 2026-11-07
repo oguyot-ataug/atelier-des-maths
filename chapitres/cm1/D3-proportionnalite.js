@@ -98,7 +98,7 @@ PLANCHES['cm1|Proportionnalité'] = [
       { etoiles: 2, col: 1, consigne: 'Un robinet remplit 12 L d\'eau en 2 minutes.', ...ex([['En 4 minutes : … L', 24], ['En 1 minute : … L', 6], ['En 5 minutes : … L', 30]]) },
       { etoiles: 2, col: 1, consigne: 'Sur une carte, 1 cm représente 5 km.', ...ex([['3 cm représentent … km', 15], ['10 cm représentent … km', 50], ['… cm représentent 20 km', 4]]) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Une recette pour 4 personnes : 200 g de pâtes et 2 œufs. Quelles quantités faut-il pour 6 personnes ?',
-        corr: cm1Redac('Pour 2 personnes', { suite: ['200 g : 2 = 100 g', '2 œufs : 2 = 1 œuf'] }, 'Pour 2 personnes : 100 g de pâtes et 1 œuf.') + cm1Redac('Pour 6 personnes (4 + 2)', { suite: ['200 g + 100 g = 300 g', '2 œufs + 1 œuf = 3 œufs'] }, 'Pour 6 personnes, il faut 300 g de pâtes et 3 œufs.') },
+        corr: cm1Redac('Pâtes pour 2 personnes', '200 g : 2 = 100 g', '') + cm1Redac('Œufs pour 2 personnes', '2 : 2 = 1', 'Pour 2 personnes : 100 g de pâtes et 1 œuf.') + cm1Redac('Pâtes pour 6 personnes (4 + 2)', '200 g + 100 g = 300 g', '') + cm1Redac('Œufs pour 6 personnes', '2 + 1 = 3', 'Pour 6 personnes, il faut 300 g de pâtes et 3 œufs.') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Léo mesure 1,30 m à 10 ans. Il dit : « À 20 ans, je mesurerai 2,60 m ! » A-t-il raison ?',
         corr: cm1Redac('Âge et taille', '20 ans, c\'est 2 fois 10 ans, mais la taille ne double pas.', 'Léo a tort : la taille n\'est pas proportionnelle à l\'âge. On grandit de moins en moins, puis on arrête de grandir.') },
     ] },

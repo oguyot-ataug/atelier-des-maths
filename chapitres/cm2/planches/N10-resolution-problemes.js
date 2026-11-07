@@ -59,7 +59,7 @@ PLANCHES['cm2|Résolution de problèmes'] = [
       { etoiles: 2, cahier: true, consigne: 'Un cadenas a un code de 3 chiffres. On utilise une seule fois chacun des chiffres 1, 2 et 3. Écris tous les codes possibles.',
         corr: cm1Redac('Codes possibles', { suite: ['123 ; 132', '213 ; 231', '312 ; 321'] }, 'Il y a 6 codes possibles.') },
       { etoiles: 2, cahier: true, consigne: 'Une boîte de 6 œufs coûte 2 € et une boîte de 12 œufs coûte 3,50 €. On veut exactement 30 œufs. Quelle est la façon la moins chère ?',
-        corr: cm1Redac('Comparaison des prix', { suite: ['Cinq boîtes de 6 : 2 × 5 = 10 €', 'Une boîte de 12 et trois de 6 : 3,50 + 6 = 9,50 €', 'Deux boîtes de 12 et une de 6 : 7 + 2 = 9 €'] }, 'La façon la moins chère : deux boîtes de 12 et une boîte de 6, pour 9 €.') },
+        corr: cm1Redac('Cinq boîtes de 6', '2 × 5 = 10', 'Cela coûte 10 €.') + cm1Redac('Une boîte de 12 et trois boîtes de 6', '3,50 + 6 = 9,50', 'Cela coûte 9,50 €.') + cm1Redac('Deux boîtes de 12 et une boîte de 6', '7 + 2 = 9', 'La façon la moins chère : deux boîtes de 12 et une boîte de 6, pour 9 €.') },
       { etoiles: 3, cahier: true, consigne: illu(motifs, 'Avec des allumettes, on forme des carrés alignés. Combien faut-il d\'allumettes pour 10 carrés ?'),
         corr: cm1Redac('Régularité', { suite: ['1 carré : 4 allumettes', '2 carrés : 7 allumettes', '3 carrés : 10 allumettes'] }, 'Chaque nouveau carré demande 3 allumettes de plus.') + cm1Redac('Pour 10 carrés', '4 + 3 × 9 = 31', 'Il faut 31 allumettes.') },
       { etoiles: 1, col: 1, consigne: 'Complète.', ...P3.rmp([['3 entrées et 4 plats : @ menus', 12], ['avec un dessert parmi 3 en plus : @ menus', 36]], 2) },

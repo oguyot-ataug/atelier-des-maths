@@ -22,7 +22,7 @@ PLANCHES['cm2|Algèbre'] = [
       { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.',
         ...ch([['3 + 5 = 8 + 2', 'faux'], ['12 + 8 = 10 + 10', 'vrai'], ['4 × 5 = 2 × 10', 'vrai'], ['30 : 3 = 30 − 3', 'faux']], 'vrai · faux') },
       { etoiles: 3, cahier: true, consigne: 'Un élève écrit : 6 + 4 = 10 + 5 = 15. Pourquoi est-ce faux ? Écris correctement le calcul de 6 + 4 + 5.',
-        corr: cm1Redac('Erreur', '6 + 4 = 10 mais 6 + 4 n\'est pas égal à 15.', 'Le signe = doit relier deux écritures du même nombre.') + cm1Redac('Écriture correcte', { suite: ['6 + 4 = 10', '10 + 5 = 15'] }, 'Donc 6 + 4 + 5 = 15.') },
+        corr: cm1Redac('Erreur', '6 + 4 = 10', '6 + 4 n\'est pas égal à 15 : le signe = doit relier deux écritures du même nombre.') + cm1Redac('Écriture correcte', { suite: ['6 + 4 = 10', '10 + 5 = 15'] }, 'Donc 6 + 4 + 5 = 15.') },
       { etoiles: 1, col: 1, consigne: 'Complète.', ...P3.rmp([['8 + @ = 15', 7], ['@ − 12 = 30', 42], ['4 × @ = 36', 9]], 2) },
       { etoiles: 2, col: 1, consigne: 'Complète pour que l\'égalité soit vraie.', ...P3.rmp([['7 + 5 = @ + 8', 4], ['20 − 6 = 10 + @', 4]], 2) },
       { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.', ...P3.chx([['3 + 4 = 7', 'vrai', 'vrai · faux'], ['10 = 6 + 4', 'vrai', 'vrai · faux'], ['5 + 2 = 7 + 1', 'faux', 'vrai · faux']]) },

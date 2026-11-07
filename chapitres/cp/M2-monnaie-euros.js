@@ -66,7 +66,7 @@ ${cm1Demo('cp-m2-m-payer', 'Payer 16 € de deux façons', 'Trouve deux façons 
     ['Mia a 10 €. Elle achète un livre à 7 €. Combien lui reste-t-il ?',
       cm1Redac('Argent qui reste', '10 − 7 = 3', 'Il reste 3 € à Mia.')],
     [`Qui a le plus d'argent ?${lig(`<span>Sam : ${cpArgent([5, 5], { px: 150 })}</span>`, `<span>Inès : ${cpArgent([2, 2, 2, 2, 1], { px: 220 })}</span>`)}`,
-      cm1Redac('Qui a le plus', { suite: ['Sam : 5 + 5 = 10', 'Inès : 2 + 2 + 2 + 2 + 1 = 9'] }, 'Sam a 10 € et Inès a 9 € : c\'est Sam qui a le plus d\'argent, même s\'il a moins de billets et de pièces.')],
+      cm1Redac('Argent de Sam', '5 + 5 = 10', 'Sam a 10 €.') + cm1Redac('Argent d\'Inès', '2 + 2 + 2 + 2 + 1 = 9', 'Inès a 9 € : c\'est Sam qui a le plus d\'argent, même s\'il a moins de billets et de pièces.')],
   ]),
   histoire: cm1Histoire('Un peu d\'histoire : avant l\'euro', [
     'Il y a très longtemps, on n\'avait pas d\'argent : on faisait du <b>troc</b>, on échangeait des choses (un sac de blé contre une poule…). Puis on a inventé les pièces de métal, il y a plus de 2 600 ans.',

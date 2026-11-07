@@ -87,9 +87,9 @@ ${cm1Sous('A', 'Atelier : 10 calculs pour t\'entraîner')}
       + cm1Redac('257 + 19', { nom: 'C', lignes: ['257 + 20 − 1', '277 − 1', '276'] }, '257 + 19 donne 276.')
       + cm1Redac('1 000 − 29', { nom: 'D', lignes: ['1 000 − 30 + 1', '970 + 1', '971'] }, '1 000 − 29 donne 971.')],
     [`Calcule.${cm1Liste(['60 × 300', '400 × 500', '8 × 7 000', '90 × 90'])}`,
-      cm1Redac('Produits de nombres « ronds »', { suite: ['6 × 3 = 18, et 3 zéros : 60 × 300 = 18 000', '4 × 5 = 20, et 4 zéros : 400 × 500 = 200 000', '8 × 7 = 56, et 3 zéros : 8 × 7 000 = 56 000', '9 × 9 = 81, et 2 zéros : 90 × 90 = 8 100'] }, 'On multiplie les chiffres, puis on écrit tous les zéros.')],
+      cm1Redac('60 × 300', { suite: ['6 × 3 = 18', '60 × 300 = 18 000'] }, 'On écrit les 3 zéros.') + cm1Redac('400 × 500', { suite: ['4 × 5 = 20', '400 × 500 = 200 000'] }, 'On écrit les 4 zéros.') + cm1Redac('8 × 7 000', { suite: ['8 × 7 = 56', '8 × 7 000 = 56 000'] }, 'On écrit les 3 zéros.') + cm1Redac('90 × 90', { suite: ['9 × 9 = 81', '90 × 90 = 8 100'] }, 'On multiplie les chiffres, puis on écrit tous les zéros.')],
     [`Calcule.${cm1Liste(['6,2 × 5', '2,4 × 50', '96 : 4', '320 : 8'])}`,
-      cm1Redac('6,2 × 5', '6,2 × 10 = 62, puis la moitié', '6,2 × 5 donne 31.') + cm1Redac('2,4 × 50', '2,4 × 100 = 240, puis la moitié', '2,4 × 50 donne 120.') + cm1Redac('96 : 4', '96 → 48 → 24', '96 : 4 donne 24.') + cm1Redac('320 : 8', '320 → 160 → 80 → 40', '320 : 8 donne 40.')],
+      cm1Redac('6,2 × 5', { suite: ['6,2 × 10 = 62', '62 : 2 = 31'] }, 'On multiplie par 10, puis on prend la moitié : 6,2 × 5 donne 31.') + cm1Redac('2,4 × 50', { suite: ['2,4 × 100 = 240', '240 : 2 = 120'] }, 'On multiplie par 100, puis on prend la moitié : 2,4 × 50 donne 120.') + cm1Redac('96 : 4', '96 → 48 → 24', '96 : 4 donne 24.') + cm1Redac('320 : 8', '320 → 160 → 80 → 40', '320 : 8 donne 40.')],
     [`Calcule en décomposant.${cm1Liste(['8 × 45', '12 × 25', '3,5 × 4'])}`,
       cm1Redac('8 × 45', ['8 × 40 + 8 × 5', '320 + 40', '360'], '8 × 45 donne 360.')
       + cm1Redac('12 × 25', { nom: 'B', lignes: ['10 × 25 + 2 × 25', '250 + 50', '300'] }, '12 × 25 donne 300.')

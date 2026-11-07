@@ -61,7 +61,7 @@ ${cm1Demo('c2-mu-pb', 'Résoudre un problème', 'Un croissant coûte 1,35 €. C
       cm1Redac('356 × 47', { pose: Po([[' ', '356'], ['×', '47'], [' ', '2492', true], ['+', '14240'], [' ', '16732']]) }, '356 × 47 donne 16 732.')
       + cm1Redac('1 208 × 305', { pose: Po([[' ', '1208'], ['×', '305'], [' ', '6040', true], ['+', '362400'], [' ', '368440']]) }, '1 208 × 305 donne 368 440 (le 0 des dizaines de 305 ne donne pas de ligne).')],
     [`Pose et calcule.${cm1Liste(['7,25 × 8', '16,4 × 35', '0,125 × 12'])}`,
-      cm1Redac('7,25 × 8', { suite: ['sans la virgule : 725 × 8 = 5 800', 'deux chiffres après la virgule : 58,00'] }, '7,25 × 8 donne 58.')
+      cm1Redac('7,25 × 8', { suite: ['725 × 8 = 5 800', '7,25 × 8 = 58,00'] }, 'On calcule sans la virgule, puis on place deux chiffres après la virgule : 7,25 × 8 donne 58.')
       + cm1Redac('16,4 × 35', { pose: Po([[' ', '164'], ['×', '35'], [' ', '820', true], ['+', '4920'], [' ', '5740']]) }, 'Un chiffre après la virgule dans 16,4 : 16,4 × 35 = 574,0, c\'est-à-dire 574.')
       + cm1Redac('0,125 × 12', { suite: ['sans la virgule : 125 × 12 = 1 500', 'trois chiffres après la virgule : 1,500'] }, '0,125 × 12 donne 1,5.')],
     ['Estime 19,8 × 21, puis choisis le bon résultat : 41,58 ; 415,8 ; 4 158.',
