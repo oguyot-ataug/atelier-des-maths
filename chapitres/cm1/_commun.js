@@ -58,14 +58,17 @@ function cm1Exos(slug, liste, redaction){
 // fig (facultatif) : un dessin qui montre la correction (frise, schéma en barres, figure…), placé
 // sous le titre, avant les calculs -- demandé : « mieux représenter la correction par des dessins ».
 // Le titre est souligné jusqu'à sa dernière lettre, jamais les deux-points (demandé : « on ne souligne jamais les ":" »).
+// Division écrite « : » dans les rédactions, jamais « ÷ » (demandé le 07/11/2026 : « Dans les rédactions d'exercices, il est
+// aussi préférable d'utiliser : pour la division et non ÷ ») : texte et formules LaTeX (\div) des lignes de calcul.
+function cm1Deux(x){ return typeof x === 'string' ? x.replace(/÷/g, ':').replace(/\\div(?![a-zA-Z])/g, ':') : x; }
 function cm1Redac(titre, calc, phrase, fig){
   const un = x => {
     if(x == null || x === '') return '';
-    if(typeof x === 'string') return `<div class="cm-redac-ligne">${x}</div>`;
-    if(x.suite) return x.suite.map(l => `<div class="cm-redac-ligne">${l}</div>`).join(''); // plusieurs calculs, un par ligne
+    if(typeof x === 'string') return `<div class="cm-redac-ligne">${cm1Deux(x)}</div>`;
+    if(x.suite) return x.suite.map(l => `<div class="cm-redac-ligne">${cm1Deux(l)}</div>`).join(''); // plusieurs calculs, un par ligne
     const lignes = Array.isArray(x) ? x : (x.lignes || []), nom = (!Array.isArray(x) && x.nom) || 'A';
     return (x.pose ? `<div class="cm-redac-pose">${x.pose}</div>` : '')
-      + (lignes.length ? `<table class="cm-redac-col">${lignes.map((l, i) => `<tr><td>${nom}</td><td>=</td><td>${i === lignes.length - 1 ? `<span class="cm-encadre">${l}</span>` : l}</td></tr>`).join('')}</table>` : '');
+      + (lignes.length ? `<table class="cm-redac-col">${lignes.map((l, i) => `<tr><td>${nom}</td><td>=</td><td>${i === lignes.length - 1 ? `<span class="cm-encadre">${cm1Deux(l)}</span>` : cm1Deux(l)}</td></tr>`).join('')}</table>` : '');
   };
   const calcs = Array.isArray(calc) && calc.some(x => typeof x === 'object' && x !== null) ? calc : [calc];
   return `<div class="cm-redac"><div class="cm-redac-titre"><span class="cm-redac-sou">${titre}</span> :</div>${fig ? `<div class="cm-redac-fig">${fig}</div>` : ''}${calcs.map(un).join('')}${phrase ? `<p class="cm-redac-phrase">${phrase}</p>` : ''}</div>`;
@@ -393,13 +396,15 @@ let cahierRO = null;
    horizontale au même niveau que la barre de fraction) ») : la barre de fraction et les signes = + − × ÷ < > sont centrés sur la ligne
    principale (styles.css, .cahier-op et .katex:has(.mfrac)) ; numérateur dans le carreau du dessus, dénominateur dans celui du
    dessous. Les signes écrits en texte entre deux fractions sont enveloppés ici (cahierOps) pour être descendus de même. */
-const CAHIER_OP = /^\s*[=+\u2212\-×÷<>≈≠≤≥]\s*$/;
+const CAHIER_OP = /^\s*[=+\u2212\-×÷:<>≈≠≤≥]\s*$/;
 function cahierOps(bloc){
+  // « : » de la division (rédactions) : seulement dans une ligne de calcul, jamais dans une phrase (« Prix : … »).
+  const deux = bloc.matches('.cm-redac-ligne, .cm-redac-col, .cm-redac-col *') ? ':' : '';
   const w = document.createTreeWalker(bloc, NodeFilter.SHOW_TEXT, { acceptNode: n => n.parentElement.closest('.katex, .cahier-op') ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT });
   const L = []; for(let n = w.nextNode(); n; n = w.nextNode()) L.push(n);
   L.forEach(n => {
-    const t = n.nodeValue; if(!/[=+\u2212\-×÷<>≈≠≤≥]/.test(t)) return;
-    const parts = t.split(/(\s[=+\u2212\-×÷<>≈≠≤≥]\s|^[=+\u2212\-×÷<>≈≠≤≥]\s|\s[=+\u2212\-×÷<>≈≠≤≥]$)/);
+    const S = `[=+\\u2212\\-×÷<>≈≠≤≥${deux}]`, t = n.nodeValue; if(!new RegExp(S).test(t)) return;
+    const parts = t.split(new RegExp(`(\\s${S}\\s|^${S}\\s|\\s${S}$)`));
     if(parts.length < 2) return;
     const f = document.createDocumentFragment();
     parts.forEach(x => { if(!x) return; if(CAHIER_OP.test(x)){ const sp = document.createElement('span'); sp.className = 'cahier-op'; sp.textContent = x; f.appendChild(sp); } else f.appendChild(document.createTextNode(x)); });

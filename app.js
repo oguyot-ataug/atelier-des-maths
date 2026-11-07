@@ -2284,8 +2284,21 @@ function katexSpan(expr){
 /* Rend en LaTeX (via KaTeX) tout élément statique du cours marqué class="tex",
    son contenu texte étant la source LaTeX à afficher (ex. \frac{3}{4}).
    Réutilisable pour n'importe quel chapitre. */
+// Division écrite « : » dans les rédactions types (.we-expr), jamais « ÷ » (demandé le 07/11/2026 : « Dans les rédactions
+// d'exercices, il est aussi préférable d'utiliser : pour la division et non ÷ ») ; cm1Redac le fait dès l'écriture (cm1Deux).
+function redacDeuxPoints(container){
+  if(!container || !container.querySelectorAll) return;
+  container.querySelectorAll('.we-expr').forEach(e => {
+    const w = document.createTreeWalker(e, NodeFilter.SHOW_TEXT, { acceptNode: n => n.parentElement.closest('.tex[data-rendered], .katex') ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT });
+    for(let n = w.nextNode(); n; n = w.nextNode()){
+      const t = n.parentElement.closest('.tex') ? n.nodeValue.replace(/\\div(?![a-zA-Z])/g, ':') : n.nodeValue;
+      const u = t.replace(/÷/g, ':'); if(u !== n.nodeValue) n.nodeValue = u;
+    }
+  });
+}
 function renderStaticMath(container){
   if(!container) return;
+  redacDeuxPoints(container);
   container.querySelectorAll('.tex').forEach(el=>{
     if(el.dataset.rendered) return;
     el.dataset.texSource = el.textContent; // conserve la source brute (lecture vocale, voir toggleReadAloud)
@@ -3849,6 +3862,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1340', date:'2026-11-07', items:['Rédactions des exercices : la division s\'écrit « : » et non plus « ÷ », à tous les niveaux -- demandé : « Dans les rédactions d\'exercices, il est aussi préférable d\'utiliser : pour la division et non ÷ ». Corrections rédigées (titre, calcul, phrase) et « Rédaction type » des chapitres du collège ; les énoncés ne changent pas. Dans le cahier, le « : » est centré sur la ligne principale comme les autres signes.'] },
   { version:'2026-08-19.1339', date:'2026-11-07', items:['6e Fractions : multiplication, corrections des exercices de pourcentages décomposées, sans aucun mot dans les calculs -- demandé : « ne jamais mélanger calcul et "français" ». Augmentation puis baisse de 10 % : la part (fraction sur 100 × prix), puis le prix après l\'augmentation, et ainsi de suite ; même rédaction pour le vélo (réduction de 20 %) et le yaourt (4 % de matières grasses).'] },
   { version:'2026-08-19.1338', date:'2026-11-07', items:['« Dans mon cahier » : les raisonnements sont séparés d\'une ligne vide (« Pages lues », puis « Pages restantes »…) -- demandé : « Il faut bien séparer les différents blocs de raisonnement ». Deux lignes de calcul avec des fractions se suivent sans carreau vide entre elles.'] },
   { version:'2026-08-19.1337', date:'2026-11-07', items:['Fiche de répétition revue -- demandé : « une seule élève qui s\'entraîne. Ne pas redonner les mêmes exemples ! ». La consigne est écrite une seule fois en tête de fiche, à la place de « Je travaille » ; chaque cadre « Version 1, 2… » ne contient que les calculs, et 8 versions tiennent sur une page (le corrigé aussi). Aucun calcul n\'est redonné : une version qui reprend un calcul déjà sur la fiche ou dans l\'exercice du manuel est sautée. Titre court : « Planche 3 · Exercice 1 — 8 versions ».', 'Collège, sur le papier : fraction à compléter redessinée, deux pointillés de la largeur d\'une barre fine ; le numérateur s\'écrit un peu au-dessus de la barre, le dénominateur entre la barre et ses pointillés.'] },
