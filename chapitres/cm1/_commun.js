@@ -391,7 +391,10 @@ function cahierCaler(page){
   const blocs = [], voir = el => [...el.children].forEach(c => { if(c.classList.contains('cm-redac')) voir(c); else if(getComputedStyle(c).display !== 'inline') blocs.push(c); });
   voir(page);
   blocs.forEach(b => b.style.removeProperty('--cal'));
-  const H = blocs.map(b => b.getBoundingClientRect().height);
+  // Hauteurs en pixels de la page, pas de l'écran : la projection et le Manuel agrandissent par zoom (signalé le 07/11/2026 :
+  // « Le texte est bien sur les lignes principales mais pas les nombres »).
+  const k = page.offsetHeight ? page.getBoundingClientRect().height / page.offsetHeight : 1;
+  const H = blocs.map(b => b.getBoundingClientRect().height / (k || 1));
   blocs.forEach((b, i) => { const r = (32 - Math.round(H[i]) % 32) % 32; if(r) b.style.setProperty('--cal', r + 'px'); });
 }
 function cahierAppliquer(racine){
