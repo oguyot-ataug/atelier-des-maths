@@ -388,16 +388,45 @@ function cm1PoseeCahier(d, nu){
 const CAHIER_B = 23; // ligne principale : 23 px sous le haut de chaque carreau de 32 px (ligne de base de l'écriture)
 let cahierOn = false; try{ cahierOn = localStorage.getItem('cahierSeyes') === '1'; }catch(e){}
 let cahierRO = null;
+/* Lignes avec une fraction (demandé le 07/11/2026 : « La barre de fraction doit être posée sur la ligne principale. Le signe = a
+   comme axe de symétrie la ligne principale et les opérations s'alignent sur la ligne principale (- posé dessus, et + barre
+   horizontale au même niveau que la barre de fraction) ») : la barre de fraction et les signes = + − × ÷ < > sont centrés sur la ligne
+   principale (styles.css, .cahier-op et .katex:has(.mfrac)) ; numérateur dans le carreau du dessus, dénominateur dans celui du
+   dessous. Les signes écrits en texte entre deux fractions sont enveloppés ici (cahierOps) pour être descendus de même. */
+const CAHIER_OP = /^\s*[=+\u2212\-×÷<>≈≠≤≥]\s*$/;
+function cahierOps(bloc){
+  const w = document.createTreeWalker(bloc, NodeFilter.SHOW_TEXT, { acceptNode: n => n.parentElement.closest('.katex, .cahier-op') ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT });
+  const L = []; for(let n = w.nextNode(); n; n = w.nextNode()) L.push(n);
+  L.forEach(n => {
+    const t = n.nodeValue; if(!/[=+\u2212\-×÷<>≈≠≤≥]/.test(t)) return;
+    const parts = t.split(/(\s[=+\u2212\-×÷<>≈≠≤≥]\s|^[=+\u2212\-×÷<>≈≠≤≥]\s|\s[=+\u2212\-×÷<>≈≠≤≥]$)/);
+    if(parts.length < 2) return;
+    const f = document.createDocumentFragment();
+    parts.forEach(x => { if(!x) return; if(CAHIER_OP.test(x)){ const sp = document.createElement('span'); sp.className = 'cahier-op'; sp.textContent = x; f.appendChild(sp); } else f.appendChild(document.createTextNode(x)); });
+    n.parentNode.replaceChild(f, n);
+  });
+}
 function cahierCaler(page){
   if(!cahierOn || !page.isConnected || !page.offsetParent) return;
-  const blocs = [], voir = el => [...el.children].forEach(c => { if(c.classList.contains('cm-redac')) voir(c); else if(getComputedStyle(c).display !== 'inline') blocs.push(c); });
+  const blocs = [], voir = el => [...el.children].forEach(c => { if(c.classList.contains('cm-redac') || /^(UL|OL)$/.test(c.tagName)) voir(c); else if(getComputedStyle(c).display !== 'inline') blocs.push(c); });
   voir(page);
-  blocs.forEach(b => b.style.removeProperty('--cal'));
+  blocs.forEach(b => { b.style.removeProperty('--cal'); b.style.removeProperty('--calh'); });
   // Hauteurs en pixels de la page, pas de l'écran : la projection et le Manuel agrandissent par zoom (signalé le 07/11/2026 :
   // « Le texte est bien sur les lignes principales mais pas les nombres »).
   const k = page.offsetHeight ? page.getBoundingClientRect().height / page.offsetHeight : 1;
+  // Ligne avec une fraction : la ligne d'écriture (donc la barre de fraction) est descendue jusqu'à une ligne principale.
+  const fr = blocs.map(b => !!b.querySelector('.mfrac'));
+  blocs.forEach((b, i) => { if(fr[i]) cahierOps(b); });
+  const haut = blocs.map((b, i) => {
+    if(!fr[i]) return 0;
+    const s = document.createElement('span'); s.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline;';
+    b.insertBefore(s, b.firstChild); const bl = (s.getBoundingClientRect().bottom - b.getBoundingClientRect().top) / (k || 1); s.remove();
+    return Math.round((((CAHIER_B - bl) % 32 + 32) % 32) * 100) / 100; // sans arrondi au pixel : sinon un « = » sur deux décalé d'1 px
+  });
+  blocs.forEach((b, i) => { if(haut[i]) b.style.setProperty('--calh', haut[i] + 'px'); });
   const H = blocs.map(b => b.getBoundingClientRect().height / (k || 1));
-  blocs.forEach((b, i) => { const r = (32 - Math.round(H[i]) % 32) % 32; if(r) b.style.setProperty('--cal', r + 'px'); });
+  // Un dépassement de moins d'un pixel ne vaut pas un carreau de plus.
+  blocs.forEach((b, i) => { const m = H[i] % 32, r = m < 1 ? 0 : Math.round((32 - m) * 100) / 100; if(r > .01) b.style.setProperty('--cal', r + 'px'); });
 }
 function cahierAppliquer(racine){
   if(!cahierOn || !racine || !racine.querySelectorAll) return;

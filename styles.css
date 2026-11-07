@@ -2397,7 +2397,13 @@ body.plp-ouvert .cahier-flottant{ top:56px; bottom:auto; left:16px; z-index:2147
     background-position:0 0, 0 0, 0 0, 0 0, 40px 0;
     font-family:Caveat,'Comic Sans MS',cursive; font-size:23px; font-weight:600; line-height:32px; color:#1E3A8A;
   }
-  body.cahier-on .cahier-actif > *, body.cahier-on .cahier-actif .cm-redac > *{ margin-top:0 !important; margin-bottom:0 !important; padding-bottom:var(--cal, 0px) !important; }
+  body.cahier-on .cahier-actif > *, body.cahier-on .cahier-actif .cm-redac > *, body.cahier-on .cahier-actif li{ margin-top:0 !important; margin-bottom:0 !important; padding-top:var(--calh, 0px) !important; padding-bottom:var(--cal, 0px) !important; }
+  /* Lignes avec une fraction (07/11/2026) : barre de fraction et signes centrés sur la ligne principale. KaTeX pose barre et signes sur
+     son axe, 0,25 em au-dessus de la ligne d'écriture : on les descend de 0,25 em ; les signes écrits en texte (.cahier-op), de 0,3 em. */
+  body.cahier-on .cahier-actif .katex:has(.mfrac) .base > .mord:has(> .mfrac),
+  body.cahier-on .cahier-actif .katex:has(.mfrac) .base > .mrel,
+  body.cahier-on .cahier-actif .katex:has(.mfrac) .base > .mbin{ position:relative; top:calc(.25em + 1px); } /* + 1 px : la barre chevauche la ligne principale au lieu de la surmonter */
+  body.cahier-on .cahier-actif .cahier-op{ position:relative; top:.27em; font-size:1.2em; line-height:0; } /* milieu du « = » manuscrit (6,5 px au-dessus de la ligne d'écriture à 27,6 px) posé sur la ligne principale */
   body.cahier-on .cahier-actif .cm-redac{ margin:0; line-height:32px; }
   body.cahier-on .cahier-actif .cm-redac-titre{ font-weight:700; }
   body.cahier-on .cahier-actif .cm-redac-sou{ text-decoration-color:#E35D3A; text-underline-offset:4px; }

@@ -51,7 +51,7 @@ const RELECTURE_CHGT = {
   '6e-N3-P4-E5': { date: '2026-11-04T23:14:51Z', note: "Plus de « milieu » : « Intercale entre les deux nombres le nombre qui a un chiffre de plus après la virgule et qui se termine par 5 » (réponse unique)" },
   '6e-N3-P6-E3': { date: '2026-11-04T23:14:51Z', note: "« Complète avec <, > ou = » dans une case (1,5 m et 145 cm, 0,8 kg et 790 g, 2,05 € et 2 € 50 c, 3,2 m et 320 cm)" },
   'CE2-N1-P4-E2': { date: '2026-11-04T23:14:51Z', note: "Graduation de 100 en 100 (au lieu de 50 en 50), comme l'exercice précédent : placer 7 400, 7 700 et 7 900" },
-  'CE2-N3-P1-E2': { date: '2026-11-04T23:14:51Z', note: "« Dans 12 + 25 = 37, les nombres 12 et 25 sont les … » (et de même pour 60 et 37)" },
+  'CE2-N3-P1-E2': { date: '2026-11-07T12:08:02Z', note: "Bêta : à l'écran, la case de réponse reste sur la ligne de sa phrase (sa largeur est comptée dans la largeur de l'exercice)" },
   'CE2-N3-P1-E3': { date: '2026-11-04T23:14:51Z', note: "À l'écran, l'élève pose lui-même chaque addition écrite en ligne, dans une grille vide plus large que nécessaire (deux colonnes en plus) ; les cases en trop doivent rester vides (une case remplie à tort est comptée fausse)" },
   'CE2-N3-P1-E7': { date: '2026-11-04T23:14:51Z', note: "À l'écran, les calculs restent sur deux colonnes comme sur le papier (tous les exercices pleine largeur)" },
   'CE2-N3-P2-E2': { date: '2026-11-04T23:14:51Z', note: "Corrigé : le « 1 » et le « +1 » de la compensation ne décalent plus les chiffres, les colonnes restent alignées" },
@@ -131,10 +131,10 @@ const RELECTURE_CHGT = {
   '6e-N1-P3-E7': { date: '2026-11-01T09:31:51Z', note: "Corrigé : le signe > seulement entre les nombres (58 989 749 > 48 619 695 > 11 822 592 > 8 921 981), puis les pays séparés par « ; » : Italie ; Espagne ; Belgique ; Suisse. Arrondis sur une ligne chacun" },
   '6e-N1-P4-E4': { date: '2026-11-01T09:31:51Z', note: "Propositions en tableau, à distance du calcul, alignées en colonnes" },
   '6e-N1-P4-E6': { date: '2026-11-01T09:31:51Z', note: "Corrigé raisonné sur la multiplication posée : 4 × 7 = 28 (on retient 2) ; on lit 15 au lieu de 12, donc 3 de retenue ; 4 × ■ + 2 = 30, 4 × ■ = 28, ■ = 7. La division 1 508 ÷ 4 = 377 reste en « autre méthode »" },
-  '6e-N1-P5-E4': { date: '2026-11-01T09:31:51Z', note: "× 99 et × 101 retirés (la distributivité est au programme de 5e) : remplacés par 356 + 99 et 725 − 98. Les produits par 99 et 101 sont dans un nouvel exercice « Pour aller plus loin (5e) » à la fin de la planche, avec un exemple rédigé" },
+  '6e-N1-P5-E4': { date: '2026-11-07T12:08:02Z', note: "Bêta : la consigne dit la méthode (« ajouter 99, c'est ajouter 100 puis enlever 1 ; enlever 98, c'est enlever 100 puis ajouter 2 ») et les quatre calculs l'utilisent : 1 000 − 457 remplacé par 634 − 199" },
   // Version 1246 (31/10, fin d'après-midi).
   '6e-N1-P2-E2': { date: '2026-10-31T16:08:00Z', note: "La décomposition s'écrit avec les puissances de 10, comme dans le reste de la planche : 5 040 008 = 5 × 1 000 000 + 4 × 10 000 + 8 ; 12 000 300 = 1 × 10 000 000 + 2 × 1 000 000 + 3 × 100. Place agrandie sur papier et à l'écran (case à la longueur de la décomposition, « * » ou « x » acceptés pour ×)" },
-  '6e-N1-P3-E6': { date: '2026-10-31T16:08:00Z', note: "Six encadrements présentés en deux colonnes de trois" },
+  '6e-N1-P3-E6': { date: '2026-11-07T12:08:02Z', note: "Bêta : à l'écran, les six encadrements passent sur une seule colonne quand ils ne tiennent pas sur deux (plus de chevauchement) ; l'exercice se fait à l'écran (cases à remplir, « Vérifier »)" },
   // Version 1244 (31/10) : remarques du 31/10 sur 6e-N1, CP-N3, CE2-N2.
   'CP-N3-P1-E2': { date: '2026-10-31T12:50:00Z', note: "Les cubes sont dessinés en barres de dix bien droites, les unités en colonnes alignées à côté, le tout posé sur la même ligne de base (avant : cubes en vrac). À l'écran, les cases gardent la taille de la réponse" },
   '6e-N1-P1-E2': { date: '2026-10-31T15:58:00Z', note: "À l'écran, la saisie n'est plus coupée à 24 caractères : on peut écrire toute la réponse, même longue (deux milliards cinq-cents millions). Sur papier, les pointillés partent sous chaque nombre et vont jusqu'au bord droit. À l'écran, la case est à la longueur du nombre en lettres attendu (jusqu'à toute la largeur). Orthographe : « million » et « milliard » sont des noms, sans trait d'union (trois millions quatre-cents) ; les deux écritures sont acceptées à l'écran. Même correction dans tout le chapitre, le cours de 6e et le cours de CM2 sur les grands nombres" },
@@ -200,6 +200,7 @@ const RELECTURE_CHGT = {
   '5e-N7-P3-E4': { date: '2026-10-30T21:40:00Z', note: "Corrigé : chaque calcul commence par le calcul demandé (C = (5 + 4)², D = 5² + 4²), résultats encadrés ; la phrase réponse reste, la question en demande une" },
   '5e-N7-P4-E1': { date: '2026-10-30T22:40:00Z', note: "Six questions sur deux colonnes, 3 et 3 (trois aires de carrés, trois volumes de cubes), formulées plus court pour tenir sur une ligne ; dans le Manuel aussi, les listes des exercices pleine largeur sont sur deux colonnes, comme sur la feuille" },
   '5e-N7-P4-E2': { date: '2026-10-30T21:40:00Z', note: "Exercice remplacé : « Un carré a un périmètre de 36 m. Calcule son aire. » La réponse vient de deux calculs (36 ÷ 4 = 9, puis 9² = 81) ; retrouver un côté à partir de l'aire (racine carrée) est au programme de 4e" },
+  '6e-N2-P3-E1': { date: '2026-11-07T12:08:02Z', note: "Bêta : « Autre version » et fiche de répétition : trois quotients avec d'autres nombres, fraction déjà simplifiée (réponse unique), corrigé recalculé" },
 };
 
 const RL_REMARQUES = [

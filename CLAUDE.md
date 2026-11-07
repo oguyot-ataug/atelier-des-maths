@@ -159,6 +159,10 @@ exercices de planche `cahier: true` ou « dans/sur ton cahier », `plExoCorps`) 
 dans `.pl-page` : Manuel, impression), la correction s'écrit sur la feuille (Caveat 23 px, ligne de base CAHIER_B = 23 px sous le haut
 de chaque carreau de 32 px) ; `cahierCaler` allonge chaque bloc jusqu'au carreau suivant ; les opérations posées dans `.cm-redac-pose`
 y sont dessinées sans feuille propre (`cm1PoseeCahier(d, true)`), dans les carreaux de la page.
+Lignes avec une fraction (demandé le 07/11/2026, validé sur images) : barre de fraction CHEVAUCHANT la ligne principale, « = » et
+signes (− + × ÷ < >) centrés dessus (un trait de chaque côté) ; dans KaTeX, `.mord` de la fraction, `.mrel`, `.mbin` descendus de
+0,25 em + 1 px ; signes écrits en texte enveloppés par `cahierOps` (`.cahier-op`, 1,2 em, descendus de 0,27 em) ; `cahierCaler` cale
+la ligne d'écriture du bloc sur une ligne principale (padding-top `--calh`), sans arrondi au pixel.
 Bouton flottant (`#cahierFlottant`, `cahierFlottantMaj`, demandé le 07/11/2026 : « accessible partout ») : en bas à gauche, dès qu'une
 opération posée ou une `.cahier-page` est à l'écran, masqué si le bouton d'en-tête d'onglet est visible ; jamais à l'impression.
 Opérations à compléter (`trous`, `cases`) : classe `pose-trous`, feuille Seyès dessinée en fond par la seule feuille de style

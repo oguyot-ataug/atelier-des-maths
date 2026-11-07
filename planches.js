@@ -853,6 +853,9 @@ function plProjAjuster(){
   const W = corps.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight), H = corps.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
   // Figures côte à côte (plusieurs quadrillages…) : boîte plus large, sinon elles s'empilent ; texte seul : 760 px, lignes courtes.
   boite.style.zoom = 1; boite.style.width = ''; boite.style.maxWidth = etroit ? Math.max(260, W) + 'px' : boite.querySelectorAll('svg.pn-trace, .pl-libre').length > 1 ? '1040px' : '';
+  // Une question dont la case de réponse passe à la ligne : boîte élargie (relecture bêta CE2-N3-P1-E2 du 07/11/2026 : « À l'écran,
+  // pourquoi la réponse est sur la ligne du dessous ? »).
+  if(!etroit && !boite.style.maxWidth && [...boite.querySelectorAll('.pl-liste > li')].some(li => { const lh = parseFloat(getComputedStyle(li).lineHeight) || 24; return li.getBoundingClientRect().height > lh * 1.9; })) boite.style.maxWidth = '1040px';
   const r = boite.getBoundingClientRect();
   // Largeur gardée telle quelle une fois agrandie : sinon, avec moins de place, les figures côte à côte passent à la ligne.
   if(!etroit) boite.style.width = Math.ceil(r.width) + 1 + 'px';

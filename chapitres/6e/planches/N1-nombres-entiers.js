@@ -10,6 +10,8 @@
    pointillés jusqu'au bord (P1-E2), 4e encadrement (P3-E6), produits intermédiaires à remplir (P4-E2), grille plus haute (P6-E3).
    Relecture du 01/11/2026 : étiquettes de la droite graduée entières (P3-E3), « ; » entre les noms rangés (P3-E7), ordres de
    grandeur en tableau (P4-E4), chiffre caché raisonné sur la multiplication (P4-E6), × 99 et × 101 en « Pour aller plus loin » (P5).
+   Relecture bêta du 07/11/2026 : consigne qui dit la méthode et 634 − 199 au lieu de 1 000 − 457 (P5-E4) ; à l'écran, les
+   encadrements sur une seule colonne quand ils ne tiennent pas sur deux (P3-E6, planches-num.js).
    ============================================================ */
 (() => {
 const BL = '<span class="pl-pts" style="display:block;min-width:0;height:1.5em;margin-bottom:2px;"></span>'; // pointillés jusqu'au bord droit
@@ -146,11 +148,12 @@ PLANCHES['6e|Nombres entiers'] = [
       { etoiles: 2, col: 1, consigne: 'Complète.',
         eleve: plListe(['1 000 − ' + B(4) + ' = 653', B(4) + ' + 2 450 = 10 000', '12 × ' + B(3) + ' = 96', B(3) + ' × 25 = 1 000']),
         corr: plListe(['1 000 − ' + R(347) + ' = 653', R('7 550') + ' + 2 450 = 10 000', '12 × ' + R(8) + ' = 96', R(40) + ' × 25 = 1 000']) },
-      { etoiles: 2, col: 1, consigne: 'Calcule en ligne : pense à 100 ou à 200.',
+      { etoiles: 2, col: 1, consigne: 'Calcule de tête. Ajouter 99, c\'est ajouter 100 puis enlever 1 ; enlever 98, c\'est enlever 100 puis ajouter 2.',
         // Sans × 99 ni × 101 : ils demandent la distributivité, au programme de 5e (relecture 6e-N1-P5-E4) ; ils sont en
-        // « Pour aller plus loin » à la fin de la planche.
-        eleve: plListe(['356 + 99 = ' + B(), '725 − 98 = ' + B(), '48 + 199 = ' + B(), '1 000 − 457 = ' + B()]),
-        corr: plListe(['356 + 99 = 356 + 100 − 1 = ' + R(455), '725 − 98 = 725 − 100 + 2 = ' + R(627), '48 + 199 = 48 + 200 − 1 = ' + R(247), '1 000 − 457 = ' + R(543)]) },
+        // « Pour aller plus loin » à la fin de la planche. Bêta 07/11/2026 (« l'énoncé ne convient pas ») : la consigne dit la
+        // méthode, et les quatre calculs l'utilisent (1 000 − 457 remplacé par 634 − 199).
+        eleve: plListe(['356 + 99 = ' + B(), '725 − 98 = ' + B(), '48 + 199 = ' + B(), '634 − 199 = ' + B()]),
+        corr: plListe(['356 + 99 = 356 + 100 − 1 = ' + R(455), '725 − 98 = 725 − 100 + 2 = ' + R(627), '48 + 199 = 48 + 200 − 1 = ' + R(247), '634 − 199 = 634 − 200 + 1 = ' + R(435)]) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Une salle de spectacle a 1 200 places. Un soir, 875 places sont vendues à 15 € chacune. Quelle est la recette de la soirée ? Combien de places restent vides ?',
         corr: cm1Redac('Recette', '875 × 15 = 13 125', 'La recette est de 13 125 €.') + cm1Redac('Places vides', '1 200 − 875 = 325', '325 places restent vides.') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Un avion fait l\'aller-retour Paris-Tokyo (9 715 km dans chaque sens) 3 fois par semaine. Quelle distance parcourt-il en une semaine ? En 4 semaines ?',

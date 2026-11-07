@@ -153,7 +153,9 @@ function plNumAnalyser(x){
       const largeur = expo ? 0 : base ? Math.max(30, lg * 11 + 18) : Math.max(46, lg * 12 + 26);
       // Réponse en lettres : case à la longueur de la phrase attendue, jusqu'à toute la largeur (relecture 6e-N1-P1-E2 :
       // « sur écran, la case n'est pas assez grande pour écrire le résultat »).
-      tr.outerHTML = `<button type="button" class="pn-case${large ? ' pn-large' : ''}${base ? ' pn-base' : ''}${tr.classList.contains('pl-case-seule') ? ' pn-signe' : ''}" data-pn="${id}" data-pnv="${id}"${tr.dataset.plchoix ? ` data-pnchoix="${tr.dataset.plchoix.replace(/"/g, '&quot;')}" style="min-width:${Math.max(...tr.dataset.plchoix.split('|').map(t => t.length)) * 11 + 26}px"` : ''}${tr.classList.contains('pl-case-seule') ? '' : large ? ` style="min-width:min(100%, ${Math.max(120, lg * 11 + 30)}px)"` : largeur ? ` style="min-width:${largeur > 320 ? `min(100%, ${largeur}px)` : largeur + 'px'}"` : ''}></button>`;
+      // width en plus de min-width : un min-width en pourcentage compte pour 0 dans la largeur naturelle de la boîte, et la case passait
+      // à la ligne en projection (relecture bêta CE2-N3-P1-E2 du 07/11/2026 : « pourquoi la réponse est sur la ligne du dessous ? »).
+      tr.outerHTML = `<button type="button" class="pn-case${large ? ' pn-large' : ''}${base ? ' pn-base' : ''}${tr.classList.contains('pl-case-seule') ? ' pn-signe' : ''}" data-pn="${id}" data-pnv="${id}"${tr.dataset.plchoix ? ` data-pnchoix="${tr.dataset.plchoix.replace(/"/g, '&quot;')}" style="min-width:${Math.max(...tr.dataset.plchoix.split('|').map(t => t.length)) * 11 + 26}px"` : ''}${tr.classList.contains('pl-case-seule') ? '' : large ? ` style="min-width:min(100%, ${Math.max(120, lg * 11 + 30)}px);width:${Math.max(120, lg * 11 + 30)}px;max-width:100%"` : largeur ? ` style="min-width:${largeur > 320 ? `min(100%, ${largeur}px)` : largeur + 'px'}"` : ''}></button>`;
       // classes : la réponse attendue contient un grand nombre écrit par classes, l'élève doit l'écrire ainsi.
       const brut = r.textContent.replace(/[\u00a0\u202f]/g, ' '), classes = /\d{1,3}(?: \d{3})+/.test(brut) && plNumClassesOk(brut);
       cibles.push({ type: 'txt', id, rep, classes, maj: /^[(\[]?[A-ZÉÈ]/.test(r.textContent.trim()), perm: r.dataset.perm || '' }); // réponse en majuscule (nom de point…) : clavier en majuscules
@@ -229,6 +231,12 @@ function plNum(root, x, o){
   // format en colonne à l'écran »).
   root.classList.toggle('pn-plein', !x.col && !x.uneLigne);
   root.innerHTML = M.html;
+  // Liste sur deux colonnes dont une ligne ne tient pas dans sa colonne (encadrements, cases larges) : une seule colonne, sinon la
+  // colonne de droite chevauche celle de gauche (relecture bêta 6e-N1-P3-E6 du 07/11/2026 : « Les éléments se chevauchent »).
+  if(!x.col && !x.uneLigne) requestAnimationFrame(() => root.querySelectorAll('.pl-liste').forEach(ul => {
+    if(getComputedStyle(ul).columnCount !== '2') return;
+    if([...ul.children].some(li => li.scrollWidth > li.clientWidth + 2)) ul.style.columns = '1';
+  }));
   if(typeof plSepNoeuds === 'function') plSepNoeuds(root); // « 6 102 · 6 210 » : grand espace au lieu du point central
   if(typeof plChoixCols === 'function') plChoixCols(root, null, !x.col && !x.uneLigne); // « vrai · faux » en colonne, à part de l'énoncé
   const NS = 'http://www.w3.org/2000/svg';

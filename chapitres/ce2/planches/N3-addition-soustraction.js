@@ -12,6 +12,7 @@
    Relecture du 03/11/2026 : à l'écran, l'élève pose lui-même les additions dans une grille plus large (P1-E3) ; « les nombres
    12 et 25 sont… » (P1-E2) ; marques de compensation qui ne décalent plus les chiffres, compensation et cassage alignés par le
    bas (P2-E2, P2-E4, P2-E5) ; calculs posés dans le corrigé (P3-E2) ; listes en colonnes à l'écran (planches-num.js).
+   Relecture bêta du 07/11/2026 : à l'écran, la case de réponse reste sur la ligne de sa phrase (P1-E2, planches-num.js).
    ============================================================ */
 (() => {
 const { rmp } = P3, B = P3.B, R = P3.R;

@@ -3,7 +3,8 @@
    ============================================================ */
 /* Réorganisation (31/10/2026) -- « vérifie la cohérence des thèmes des exercices dans tous les chapitres » : chaque exercice dans
    la planche de son thème (« quelle fraction est coloriée ? » en planche 1, la droite graduée en planche 4, les égalités de
-   fractions en planche 3) ; deux doublons retirés (« encadre 17/5 » et un second « complète les égalités »). */
+   fractions en planche 3) ; deux doublons retirés (« encadre 17/5 » et un second « complète les égalités »).
+   Relecture bêta du 07/11/2026 : autres versions et fiche de répétition pour « le quotient de 7 par 4 » (P3-E1, générateur gen). */
 (() => {
 const B = n => plPointilles(n || 3), R = v => plRep(String(v)), F = cm1Frac, Fr = plFrac(), C = plCase();
 const T = (a, b) => cm1Tex(`\\dfrac{${a}}{${b}}`);
@@ -52,7 +53,16 @@ PLANCHES['6e|Fractions : nombres et partage'] = [
     exos: [
       { etoiles: 1, col: 1, consigne: `Le quotient de 7 par 4 est le nombre ${T(7, 4)} : c'est le nombre qui, multiplié par 4, donne 7. Complète.`,
         eleve: plListe([ligne('4 ×', Fr, '= 7'), ligne('5 ×', Fr, '= 2'), ligne('3 ×', Fr, '= 10')]),
-        corr: plListe([ligne('4 ×', R(F(7, 4)), '= 7'), ligne('5 ×', R(F(2, 5)), '= 2'), ligne('3 ×', R(F(10, 3)), '= 10')]) },
+        corr: plListe([ligne('4 ×', R(F(7, 4)), '= 7'), ligne('5 ×', R(F(2, 5)), '= 2'), ligne('3 ×', R(F(10, 3)), '= 10')]),
+        // Autres versions et fiche de répétition (relecture bêta 6e-N2-P3-E1 du 07/11/2026, « Ajouter autre version », « Ajouter
+        // fiche de répétition ») : trois quotients b × … = a, fraction a/b déjà simplifiée et non entière (comme 7/4, 2/5, 10/3 :
+        // la réponse attendue est unique), jamais 7 et 4.
+        gen: alea => {
+          const L = [], pgcd = (x, y) => y ? pgcd(y, x % y) : x;
+          while(L.length < 3){ const b = 2 + Math.floor(alea() * 8), a = 1 + Math.floor(alea() * 12);
+            if(pgcd(a, b) !== 1 || (a === 7 && b === 4) || L.some(([x, y]) => x === a || y === b)) continue; L.push([a, b]); }
+          return { eleve: plListe(L.map(([a, b]) => ligne(b + ' ×', Fr, '= ' + a))), corr: plListe(L.map(([a, b]) => ligne(b + ' ×', R(F(a, b)), '= ' + a))) };
+        } },
       { etoiles: 2, col: 1, consigne: 'Complète les égalités.',
         eleve: plListe([ligne(F(2, 3), '=', Fr, '(dénominateur 12)'), ligne(F(15, 20), '=', Fr, '(numérateur 3)'), ligne(F(7, 5), '=', Fr, '(numérateur 21)'), ligne('1 =', Fr, '(dénominateur 9)')]),
         corr: plListe([ligne(F(2, 3), '=', R(F(8, 12))), ligne(F(15, 20), '=', R(F(3, 4))), ligne(F(7, 5), '=', R(F(21, 15))), ligne('1 =', R(F(9, 9)))]) },
