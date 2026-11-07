@@ -3849,6 +3849,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1325', date:'2026-11-07', items:['Cahier et cahier de corrections : la vue par semaine perdait les derniers jours -- signalé : « Les pages se chargent sans donner le dernier jour », « il manque des exercices saisis », « je n\'arrive pas en chargeant sur la bonne semaine ». Aucune entrée n\'était perdue en base. Cause : au rechargement de la classe (choix de la classe, enregistrement…), le contenu en mémoire était remplacé mais les jours marqués « déjà chargés » restaient ; un jour chargé sans contenu disparaissait alors de la vue, avec ses exercices, et la page s\'ouvrait sur une semaine plus ancienne. Désormais, chaque rechargement repart de la liste des jours de la classe, un chargement en cours n\'est plus écrasé, un exercice retiré met la liste à jour, et un jour vide par erreur est rechargé au lieu d\'être masqué. Le bas de la page Correction suit aussi le dernier chargement.'] },
   { version:'2026-08-19.1324', date:'2026-11-07', items:['« Dans mon cahier » : les corrections des exercices faits dans le cahier s\'écrivent aussi sur la feuille Seyès -- demandé : « Quid des corrections des exercices à faire dans le cahier ? Peux-tu aussi mettre le même fond ? ». Onglet Exercices des chapitres (CP au CM2) et exercices de planche « Dans ton cahier ! » : écriture à la main posée sur les lignes principales, titre souligné en rouge, résultat encadré en rouge, opérations posées directement dans les carreaux de la page (retenues dans l\'interligne au-dessus). Jamais dans le Manuel ni à l\'impression.'] },
   { version:'2026-08-19.1323', date:'2026-11-07', items:['Nouveau bouton « Dans mon cahier » (cours, méthode et exercices des chapitres du CP au CM2) -- demandé : « mettre un fond type feuilles Seyès en respectant la marge et les lignes principales ». Les opérations posées s\'affichent sur une feuille à grands carreaux : marge rouge, un chiffre par carreau posé sur une ligne principale, retenues et « +10 » dans l\'interligne au-dessus du chiffre, « +1 » en indice, virgule sur le trait vertical. Réglage retenu sur l\'appareil et valable partout sur le site (corrections des planches de 6e comprises) ; l\'impression garde l\'opération habituelle.'] },
   { version:'2026-08-19.1322', date:'2026-11-05', items:['Professeur, « Réinitialiser le mot de passe » d\'un élève : nouveau bouton « Créer un lien pour choisir un nouveau mot de passe » -- demandé : « peut-il réinitialiser le mot de passe avec un lien direct vers une création de nouveau mot de passe ? ». L\'élève choisit lui-même son mot de passe et se retrouve connecté ; lien valable 7 jours, une seule fois (les liens précédents sont fermés) ; l\'ancien mot de passe marche jusque-là. Message prêt à envoyer : « Tu as oublié ton mot de passe ? Clique sur ce lien pour en choisir un nouveau », avec l\'identifiant rappelé.'] },
@@ -7327,12 +7328,17 @@ async function applyClassSelection(){
     // Population initiale légère (juste aujourd'hui) -- suffisant pour la liste prof par
     // défaut) ; renderCahierEleve() affine ensuite avec son
     // propre chargement paresseux par jour pour la vue accordéon.
-    const remote = await fetchCahierEntriesForDate(todayISO());
+    // Signalé le 07/11/2026 (« je n'arrive pas en chargeant sur la bonne semaine », « il manque des exercices saisis ») :
+    // la liste des jours et les jours « déjà chargés » restaient ceux d'avant ; un jour marqué chargé mais absent du
+    // nouveau contenu disparaissait alors de la vue par semaine. On repart donc d'un état propre, pour cette classe.
+    const [remote, jours] = await Promise.all([fetchCahierEntriesForDate(todayISO()), fetchCahierDatesList()]);
     cahier = remote || [];
+    cahierDatesList = jours || [];
+    cahierLoadedDates = new Set(remote ? [todayISO()] : []);
     sortCahierInPlace();
     saveCahier();
   } else {
-    cahier = [];
+    cahier = []; cahierDatesList = []; cahierLoadedDates = new Set();
   }
   if(document.getElementById('cahierList')) renderCahier();
   if(document.getElementById('cahierEleveContent')) renderCahierEleve();
@@ -8471,7 +8477,7 @@ async function removeCahierEntry(i){
     const res = await syncRemoveEntry(entry.id);
     if(!res.ok){ await niceAlert("Échec de la suppression sur le serveur : "+(res.error||'erreur inconnue')); return; }
   }
-  cahier.splice(i,1); saveCahier(); renderCahier();
+  cahier.splice(i,1); if(entry) cahierJourRetirer(entry.date); saveCahier(); renderCahier();
 }
 function clearCahier(btn){
   if(!cahier.length) return;
@@ -8483,7 +8489,7 @@ function clearCahier(btn){
     setTimeout(()=>{ if(btn.isConnected){ btn.dataset.armed=''; btn.textContent=original; btn.style.background=''; } }, 2500);
     return;
   }
-  cahier=[]; editingEntryId=null; saveCahier(); renderCahier();
+  cahier=[]; cahierLoadedDates = new Set(); editingEntryId=null; saveCahier(); renderCahier();
 }
 
 // Vignettes « travaillé » et « support » d'une entrée (cliquables) ; réécrites seules après un clic, dans toutes
@@ -8928,6 +8934,7 @@ async function removeCahierEntryFromNotebook(i, btn){
     }
   }
   cahier.splice(i,1);
+  if(entry) cahierJourRetirer(entry.date);
   saveCahier();
   renderCahierEleve();
   if(document.getElementById('cahierList')) renderCahier();
@@ -8966,7 +8973,7 @@ async function renderCahierEleve(){
       if(cahierDatesList.length){
         const plusRecent = cahierDatesList[cahierDatesList.length-1].date;
         const entries = await fetchCahierEntriesForDate(plusRecent);
-        if(entries){ cahier = entries; sortCahierInPlace(); cahierLoadedDates.add(plusRecent); }
+        if(entries){ const ids = new Set(cahier.map(e=>e.id)); entries.forEach(e=>{ if(!ids.has(e.id)){ cahier.push(e); ids.add(e.id); } }); sortCahierInPlace(); cahierLoadedDates.add(plusRecent); }
         else warning = '<p class="hint"><span class=gicon>warning</span> Impossible de joindre le cahier partagé, affichage de la dernière copie connue sur cet appareil.</p>';
       }
       saveCahier();
@@ -8975,6 +8982,7 @@ async function renderCahierEleve(){
       const remote = await syncFetchAll(cahierFilterFrom, cahierFilterTo);
       if(remote){
         cahier = remote;
+        cahierLoadedDates = new Set(remote.map(e=>e.date).filter(Boolean));
         saveCahier();
         populateCahierChapitreFilter();
       } else {
@@ -8983,6 +8991,8 @@ async function renderCahierEleve(){
     }
   }
   renderCahierEleveLocal(warning);
+  // Le bas de la page Correction lit les mêmes données : il suit le dernier chargement.
+  if(document.getElementById('cahierList')) renderCahier();
 }
 /* Réaffiche le cahier depuis le tableau LOCAL déjà en mémoire, SANS re-synchroniser depuis le
    serveur -- utilisée après une action qui a déjà mis à jour ce tableau localement (ex.
@@ -9019,13 +9029,22 @@ function nbLundi(iso){ const d = new Date(iso+'T12:00:00'), k = (d.getDay()+6)%7
 function nbPlus(iso, n){ const d = new Date(iso+'T12:00:00'); d.setDate(d.getDate()+n); return nbIso(d); }
 // Jours du cahier (dates, nombre d'entrées, cours) : la liste légère du serveur, complétée par le
 // cahier local (un exercice qu'on vient d'ajouter à une nouvelle date a tout de suite sa vignette).
+// Un exercice retiré du cahier : un de moins dans la liste des jours (le jour disparaît s'il n'en reste plus).
+function cahierJourRetirer(date){
+  if(!date) return;
+  const g = (cahierDatesList || []).find(x=>x.date===date); if(!g) return;
+  g.count--; if(g.count <= 0) cahierDatesList = cahierDatesList.filter(x=>x.date!==date);
+}
 function nbJours(){
   const loc = new Map();
   cahier.filter(e=>e.date).forEach(e=>{ const g = loc.get(e.date) || { date: e.date, count: 0, cours: false }; g.count++; if(e.exo==='Cours') g.cours = true; loc.set(e.date, g); });
   const m = new Map(loc);
   (cahierDatesList||[]).forEach(g=>{
     const l = loc.get(g.date), charge = cahierLoadedDates.has(g.date) || !isSyncEnabled();
-    if(charge){ if(!l) m.delete(g.date); return; } // jour chargé : le local fait foi (entrées retirées)
+    // Jour chargé : le local fait foi. S'il n'y a plus rien en mémoire alors que la liste du serveur en compte (contenu
+    // remplacé entre-temps), le jour est rechargé au lieu de disparaître (07/11/2026) ; un retrait met la liste à jour.
+    if(charge && !l && isSyncEnabled() && g.count > 0){ cahierLoadedDates.delete(g.date); m.set(g.date, { date: g.date, count: g.count, cours: !!g.cours }); return; }
+    if(charge){ if(!l) m.delete(g.date); return; }
     m.set(g.date, { date: g.date, count: Math.max(g.count, l ? l.count : 0), cours: !!g.cours || !!(l && l.cours) });
   });
   return [...m.values()].sort((a,b)=>a.date.localeCompare(b.date));
