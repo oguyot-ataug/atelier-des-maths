@@ -2378,4 +2378,31 @@ body:not(.connecte) #navDropdownEntrainer .nav-dropdown-menu button[data-nav="le
 @media screen{
   body.cahier-on table.pose-ecran{ display:none !important; }
   body.cahier-on svg.pose-cahier{ display:block !important; }
+  /* Correction d'un exercice fait dans le cahier : feuille Seyès, écriture à la main posée sur les lignes principales
+     (23 px sous le haut de chaque carreau de 32 px : CAHIER_B), marge rouge, texte à un carreau de la marge. */
+  body.cahier-on .cahier-page.cahier-actif{
+    padding:0 12px 0 72px; margin:4px 0; border:1px solid #E1E4F2; border-radius:4px; overflow-x:auto;
+    background-color:#fff;
+    background-image:
+      linear-gradient(to right, transparent 39px, #E2626E 39px, #E2626E 41px, transparent 41px),
+      repeating-linear-gradient(to bottom, transparent 0 23px, #8C93CF 23px 24px, transparent 24px 32px),
+      repeating-linear-gradient(to bottom, transparent 0 7px, #D9DDF2 7px 8px),
+      linear-gradient(to right, #fff 40px, transparent 40px),
+      repeating-linear-gradient(to right, transparent 0 31px, #D9DDF2 31px 32px);
+    background-position:0 0, 0 0, 0 0, 0 0, 40px 0;
+    font-family:Caveat,'Comic Sans MS',cursive; font-size:23px; font-weight:600; line-height:32px; color:#1E3A8A;
+  }
+  body.cahier-on .cahier-actif > *, body.cahier-on .cahier-actif .cm-redac > *{ margin-top:0 !important; margin-bottom:0 !important; padding-bottom:var(--cal, 0px) !important; }
+  body.cahier-on .cahier-actif .cm-redac{ margin:0; line-height:32px; }
+  body.cahier-on .cahier-actif .cm-redac-titre{ font-weight:700; }
+  body.cahier-on .cahier-actif .cm-redac-sou{ text-decoration-color:#E35D3A; text-underline-offset:4px; }
+  body.cahier-on .cahier-actif .cm-redac-ligne, body.cahier-on .cahier-actif .cm-redac-col, body.cahier-on .cahier-actif .cm-redac-fig{ margin-left:32px !important; }
+  body.cahier-on .cahier-actif .cm-redac-col td{ padding:0 6px 0 0; line-height:32px; height:32px; }
+  body.cahier-on .cahier-actif .cm-redac-pose{ display:block; margin-left:0 !important; }
+  body.cahier-on .cahier-actif .cm-encadre{ border-color:#E35D3A; padding:0 6px; line-height:24px; }
+  body.cahier-on .cahier-actif .cm-redac-phrase{ font-weight:600; }
+  body.cahier-on .cahier-actif ul, body.cahier-on .cahier-actif ol{ margin:0; padding-left:24px; }
+  body.cahier-on .cahier-actif li, body.cahier-on .cahier-actif p{ line-height:32px; margin:0; }
+  body.cahier-on .cahier-actif .katex{ font-size:.82em; }
+  body.cahier-on .cahier-actif svg.pose-cahier.nu{ margin:0 0 0 32px !important; border:0 !important; border-radius:0 !important; }
 }

@@ -43,7 +43,7 @@ function cm1Exos(slug, liste, redaction){
   return (redaction ? `<div class="redaction-block"><h3>${redaction.titre}</h3><div class="redaction-template">${redaction.lignes.map(([e, c]) => `<div class="we-row"><span class="we-expr">${e}</span><span class="we-comment">${c}</span></div>`).join('')}</div></div>` : '')
     + `<div class="redaction-block"><h3>Exercices</h3>${liste.map(([e, c], i) => `<div class="exo-card"><div class="num">Exercice ${i + 1}</div>${e}
       <button type="button" class="exo-correction-toggle" data-target="cm1-${slug}-c${i + 1}" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
-      <div class="exo-correction" id="cm1-${slug}-c${i + 1}"><div>${c}</div></div></div>`).join('')}</div>`;
+      <div class="exo-correction" id="cm1-${slug}-c${i + 1}"><div class="cahier-page">${c}</div></div></div>`).join('')}</div>`;
 }
 /* Rédaction d'une réponse -- demandé : « Commencer par un titre qui reprend la demande de l'énoncé
    (" Âge de mamie : ") souligné. Puis un calcul. Si le calcul tient sur une ligne, on peut le garder
@@ -344,20 +344,25 @@ function cm1Posee(lignes, retenues, opts){
    « +1 » en indice ; virgule sur le trait vertical ; trait de l'opération sur la première ligne fine sous le nombre.
    Mode retenu sur l'appareil (cahierSeyes), pour tout le site : chaque tableau d'opération (cm1Posee, data-cahier) reçoit à
    côté son dessin, et l'écran montre l'un ou l'autre (classe cahier-on) ; l'impression garde toujours l'opération habituelle. ---- */
-function cm1PoseeCahier(d){
-  const C = 32, MG = 40, l = d.l, larg = Math.max(...l.map(x => x[1].length), (d.r || '').length), P = l.map(x => x[1].padStart(larg));
+function cm1PoseeCahier(d, nu){
+  const C = 32, MG = nu ? -C : 40, l = d.l, larg = Math.max(...l.map(x => x[1].length), (d.r || '').length), P = l.map(x => x[1].padStart(larg));
   const virg = new Set(), esp = new Set();
   P.forEach(n => n.split('').forEach((c, j) => { if(c === ',') virg.add(j); if(c === ' ' && /\d/.test(n.slice(0, j)) && /\d/.test(n.slice(j + 1))) esp.add(j); }));
   [...esp, ...virg].forEach(j => { if(P.some(n => /\d/.test(n[j]))){ esp.delete(j); virg.delete(j); } }); // nombres mal alignés : la colonne reste un carreau
   const col = {}; let k = 0; for(let j = 0; j < larg; j++) if(!virg.has(j) && !esp.has(j)) col[j] = k++;
   let prem = k; P.forEach(n => n.split('').forEach((c, j) => { if(/\d/.test(c)) prem = Math.min(prem, col[j]); }));
-  const x = c => MG + C * (2 + c - prem), yb = i => 16 + C * (1 + i), dern = l.length - 1, W = x(k) + C, H = yb(dern) + 24;
+  // nu : posée sur la page d'une correction « cahier » (cahier-page) : pas de feuille à soi, mais les lignes de la page :
+  // chiffres sur les lignes principales (CAHIER_B sous le haut de chaque carreau), colonnes sur les traits verticaux.
+  // Retenues, « +10 » : un carreau de plus au-dessus, pour les écrire dans son interligne du haut.
+  const haut = nu && (/\d/.test(d.r || '') || (d.h || []).length) ? 1 : 0;
+  const x = c => MG + C * (2 + c - prem), yb = i => nu ? CAHIER_B + C * (i + haut) : 16 + C * (1 + i), dern = l.length - 1, W = x(k) + (nu ? 4 : C), H = nu ? C * (l.length + haut) : yb(dern) + 24;
   const ENCRE = '#1E3A8A', ROUGE = '#E35D3A', RES = '#E8590C';
-  let g = `<rect width="${W}" height="${H}" fill="#fff"/>`;
+  let g = nu ? '' : `<rect width="${W}" height="${H}" fill="#fff"/>`;
+  if(!nu){
   for(let y = 0; y <= H; y += 8) if((y - 16) % 32) g += `<line x1="0" y1="${y}" x2="${W}" y2="${y}" stroke="#CDD2EE" stroke-width=".7"/>`;
   for(let x1 = MG + C; x1 < W; x1 += C) g += `<line x1="${x1}" y1="0" x2="${x1}" y2="${H}" stroke="#CDD2EE" stroke-width=".7"/>`;
   for(let y = 16; y <= H; y += 32) g += `<line x1="0" y1="${y}" x2="${W}" y2="${y}" stroke="#8C93CF" stroke-width="1.1"/>`;
-  g += `<line x1="${MG}" y1="0" x2="${MG}" y2="${H}" stroke="#E2626E" stroke-width="1.5"/>`;
+  g += `<line x1="${MG}" y1="0" x2="${MG}" y2="${H}" stroke="#E2626E" stroke-width="1.5"/>`; }
   const txt = (t, x1, y, taille, coul, ancre) => `<text x="${x1}" y="${y}" font-size="${taille}" fill="${coul}" text-anchor="${ancre || 'middle'}">${t}</text>`;
   l.forEach(([s, n, trait], i) => {
     const ch = P[i].split(''), coul = i === dern ? RES : ENCRE;
@@ -371,15 +376,36 @@ function cm1PoseeCahier(d){
   (d.r || '').padStart(larg).split('').forEach((c, j) => { if(/\d/.test(c) && col[j] != null) g += txt(c, x(col[j]) + C / 2, yb(0) - 19, 15, ROUGE); });
   (d.h || []).forEach(j => { if(col[j] != null) g += txt('+10', x(col[j]) + C / 2, yb(0) - 19, 13, ROUGE); });
   (d.b || []).forEach(j => { if(col[j] != null) g += txt('+1', x(col[j]) + C / 2 + 6, yb(1) + 5, 10, ROUGE, 'start'); });
-  return `<svg class="pose-cahier" data-geo-garde aria-hidden="true" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" style="display:none;max-width:100%;height:auto;margin:6px auto;font-family:Caveat,'Comic Sans MS',cursive;font-weight:700;border:1px solid #E1E4F2;border-radius:4px;">${g}</svg>`;
+  return `<svg class="pose-cahier${nu ? ' nu' : ''}" data-geo-garde aria-hidden="true" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" style="display:none;max-width:100%;height:auto;margin:6px auto;font-family:Caveat,'Comic Sans MS',cursive;font-weight:700;border:1px solid #E1E4F2;border-radius:4px;">${g}</svg>`;
 }
+/* Corrections des exercices faits dans le cahier (demandé le 07/11/2026 : « Quid des corrections des exercices à faire dans le
+   cahier ? Peux-tu aussi mettre le même fond ? ») : la correction (.cahier-page : onglet Exercices des chapitres, exercices de
+   planche « cahier » ou « dans ton cahier ») s'écrit sur la feuille Seyès, à la main, chaque ligne posée sur une ligne principale.
+   Chaque bloc (titre, ligne de calcul, phrase…) est allongé jusqu'au carreau suivant (cahierCaler) pour que la suite reste sur les
+   lignes. Jamais dans les pages du Manuel ni à l'impression (.pl-page). */
+const CAHIER_B = 23; // ligne principale : 23 px sous le haut de chaque carreau de 32 px (ligne de base de l'écriture)
 let cahierOn = false; try{ cahierOn = localStorage.getItem('cahierSeyes') === '1'; }catch(e){}
+let cahierRO = null;
+function cahierCaler(page){
+  if(!cahierOn || !page.isConnected || !page.offsetParent) return;
+  const blocs = [], voir = el => [...el.children].forEach(c => { if(c.classList.contains('cm-redac')) voir(c); else if(getComputedStyle(c).display !== 'inline') blocs.push(c); });
+  voir(page);
+  blocs.forEach(b => b.style.removeProperty('--cal'));
+  const H = blocs.map(b => b.getBoundingClientRect().height);
+  blocs.forEach((b, i) => { const r = (32 - Math.round(H[i]) % 32) % 32; if(r) b.style.setProperty('--cal', r + 'px'); });
+}
 function cahierAppliquer(racine){
   if(!cahierOn || !racine || !racine.querySelectorAll) return;
+  const P = [...(racine.matches && racine.matches('.cahier-page') ? [racine] : []), ...racine.querySelectorAll('.cahier-page')];
+  P.forEach(p => { if(p.closest('.pl-page') || p.classList.contains('cahier-actif')) return; p.classList.add('cahier-actif');
+    if(!cahierRO && typeof ResizeObserver !== 'undefined') cahierRO = new ResizeObserver(es => es.forEach(e => cahierCaler(e.target)));
+    if(cahierRO) cahierRO.observe(p); });
   const T = racine.matches && racine.matches('table.pose-ecran[data-cahier]') ? [racine] : racine.querySelectorAll('table.pose-ecran[data-cahier]');
   T.forEach(t => { const s = t.nextElementSibling; if(s && s.classList.contains('pose-cahier')) return;
-    try{ t.insertAdjacentHTML('afterend', cm1PoseeCahier(JSON.parse(t.dataset.cahier))); }catch(e){} });
+    try{ t.insertAdjacentHTML('afterend', cm1PoseeCahier(JSON.parse(t.dataset.cahier), !!t.closest('.cahier-actif .cm-redac-pose'))); }catch(e){} });
+  P.forEach(p => { if(p.classList.contains('cahier-actif')) cahierCaler(p); });
 }
+if(typeof document !== 'undefined' && document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if(cahierOn) document.querySelectorAll('.cahier-actif').forEach(cahierCaler); });
 let cahierObs = null;
 function cahierMaj(){
   if(!document.body) return;
@@ -387,7 +413,7 @@ function cahierMaj(){
   document.querySelectorAll('.cahier-btn').forEach(b => { b.setAttribute('aria-pressed', cahierOn ? 'true' : 'false'); b.classList.toggle('actif', cahierOn); });
   if(cahierOn){ cahierAppliquer(document.body);
     if(!cahierObs && typeof MutationObserver !== 'undefined'){ cahierObs = new MutationObserver(ms => ms.forEach(m => m.addedNodes.forEach(n => { if(n.nodeType === 1 && !n.classList.contains('pose-cahier')) cahierAppliquer(n); }))); cahierObs.observe(document.body, { childList: true, subtree: true }); }
-  } else if(cahierObs){ cahierObs.disconnect(); cahierObs = null; }
+  } else { if(cahierObs){ cahierObs.disconnect(); cahierObs = null; } if(cahierRO){ cahierRO.disconnect(); cahierRO = null; } document.querySelectorAll('.cahier-actif').forEach(p => p.classList.remove('cahier-actif')); }
 }
 function cahierBasculer(){ cahierOn = !cahierOn; try{ localStorage.setItem('cahierSeyes', cahierOn ? '1' : '0'); }catch(e){} cahierMaj(); }
 function cahierBouton(){ return `<div class="cahier-barre"><button type="button" class="cahier-btn${cahierOn ? ' actif' : ''}" aria-pressed="${cahierOn}" onclick="cahierBasculer()" title="Voir les opérations posées comme dans le cahier, sur une feuille à grands carreaux"><span class="gicon">menu_book</span> Dans mon cahier</button></div>`; }

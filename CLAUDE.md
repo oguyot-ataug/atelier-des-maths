@@ -154,6 +154,11 @@ Seyès (`cm1PoseeCahier` : marge rouge, un chiffre par carreau sur une ligne pri
 au-dessus, « +1 » en indice, police Caveat). Réglage retenu sur l'appareil (`cahierSeyes`), valable partout (classe `cahier-on` sur
 body, dessins ajoutés aussi au contenu affiché plus tard) ; l'impression garde toujours l'opération habituelle. Pas pour les opérations
 à compléter (`trous`, `cases`) ni pour les animations (`cmAnim`).
+Corrections des exercices faits dans le cahier (demandé le 07/11/2026) : `.cahier-page` (onglet Exercices des chapitres, `cm1Exos` ;
+exercices de planche `cahier: true` ou « dans/sur ton cahier », `plExoCorps`) : quand le mode est actif (classe `cahier-actif`, jamais
+dans `.pl-page` : Manuel, impression), la correction s'écrit sur la feuille (Caveat 23 px, ligne de base CAHIER_B = 23 px sous le haut
+de chaque carreau de 32 px) ; `cahierCaler` allonge chaque bloc jusqu'au carreau suivant ; les opérations posées dans `.cm-redac-pose`
+y sont dessinées sans feuille propre (`cm1PoseeCahier(d, true)`), dans les carreaux de la page.
 
 ## Planches : jamais d'exercice seul en demi-largeur (demandé le 30/10/2026)
 

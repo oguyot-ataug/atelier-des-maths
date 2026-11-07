@@ -470,7 +470,9 @@ function plMarque(lvl, x){
 }
 function plCahierHtml(){ return `<div class="pl-cahier"><span class="pl-oliv">${plOliv('savoir')}</span><span class="pl-bulle">Dans ton cahier !</span></div>`; }
 function plExoCorps(x, corr){ const h = plSepAeres(corr ? (x.corr || x.eleve || '') : (plTrousAjustes(x) + (x.cahier ? plCahierHtml() : '')));
-  return plChoixColHtml(h, corr && x.corr ? x.eleve : null, !x.col && !x.uneLigne); }
+  const r = plChoixColHtml(h, corr && x.corr ? x.eleve : null, !x.col && !x.uneLigne);
+  // Exercice fait dans le cahier : sa correction peut s'afficher sur une feuille Seyès (« Dans mon cahier », chapitres/cm1/_commun.js).
+  return corr && (x.cahier || /(dans|sur) ton cahier/i.test(x.consigne || '')) ? `<div class="cahier-page">${r}</div>` : r; }
 /* Propositions à entourer en fin de question (« vrai · faux », « oui · non »…) : rangées dans une colonne à part, plus loin
    de l'énoncé, alignées les unes sous les autres -- relecture 6e-G1-P1-E4 (01/11/2026) : « les vrai faux, en tabulation
    plus loin de l'énoncé et alignés en colonne quand c'est possible ». Automatique : une liste dont CHAQUE ligne se termine
