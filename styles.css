@@ -2412,10 +2412,12 @@ body.plp-ouvert .cahier-flottant{ top:56px; bottom:auto; left:16px; z-index:2147
   /* Opération à compléter (pose-trous) : même feuille en fond, un chiffre par carreau de 32 px, chiffres posés sur la ligne
      principale (23 px sous le haut du carreau), trait de l'opération sur le bord du carreau ; les cases restent cliquables. */
   body.cahier-on table.pose-trous{
-    border:1px solid #E1E4F2 !important; border-collapse:collapse !important; margin:8px auto !important; background-color:#fff;
+    /* contour (outline) plutôt que bordure : une bordure décalait les rangées d'un demi-pixel par rapport aux lignes (07/11/2026,
+       « Les chiffres ne sont pas posés sur les lignes principales ») ; ligne principale à 24 px, sur la ligne d'écriture mesurée. */
+    border:0 !important; outline:1px solid #E1E4F2; border-collapse:collapse !important; margin:8px auto !important; background-color:#fff;
     background-image:
-      repeating-linear-gradient(to bottom, transparent 0 22px, #8C93CF 22px 23px, transparent 23px 32px),
-      repeating-linear-gradient(to bottom, transparent 0 6px, #D9DDF2 6px 7px, transparent 7px 8px),
+      repeating-linear-gradient(to bottom, transparent 0 24px, #8C93CF 24px 25px, transparent 25px 32px),
+      repeating-linear-gradient(to bottom, #D9DDF2 0 1px, transparent 1px 8px, #D9DDF2 8px 9px, transparent 9px 16px, #D9DDF2 16px 17px, transparent 17px 32px),
       repeating-linear-gradient(to right, transparent 0 31px, #D9DDF2 31px 32px);
   }
   body.cahier-on table.pose-trous tr{ border:0 !important; }
