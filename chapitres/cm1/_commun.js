@@ -358,7 +358,7 @@ function cm1PoseeCahier(d, nu){
   // Retenues, « +10 » : un carreau de plus au-dessus, pour les écrire dans son interligne du haut.
   const haut = nu && (/\d/.test(d.r || '') || (d.h || []).length) ? 1 : 0;
   const x = c => MG + C * (2 + c - prem), yb = i => nu ? CAHIER_B + C * (i + haut) : 16 + C * (1 + i), dern = l.length - 1, W = x(k) + (nu ? 4 : C), H = nu ? C * (l.length + haut) : yb(dern) + 24;
-  const ENCRE = '#1E3A8A', ROUGE = '#E35D3A', RES = '#E8590C';
+  const ENCRE = '#1E3A8A', ROUGE = '#E35D3A', RES = '#15803D'; // résultat en vert (demandé le 07/11/2026 : « du vert pour souligner et pour les résultats »)
   let g = nu ? '' : `<rect width="${W}" height="${H}" fill="#fff"/>`;
   if(!nu){
   for(let y = 0; y <= H; y += 8) if((y - 16) % 32) g += `<line x1="0" y1="${y}" x2="${W}" y2="${y}" stroke="#CDD2EE" stroke-width=".7"/>`;
@@ -425,6 +425,13 @@ function cahierCaler(page){
   });
   blocs.forEach((b, i) => { if(haut[i]) b.style.setProperty('--calh', haut[i] + 'px'); });
   const H = blocs.map(b => b.getBoundingClientRect().height / (k || 1));
+  // Titre souligné SUR L'INTERLIGNE, la première ligne fine sous la ligne principale (demandé le 07/11/2026 : « Souligner : sur
+  // l'interligne ! ») : trait dessiné à 8,5 px sous la ligne d'écriture (--soul, styles.css), continu sous les jambages.
+  page.querySelectorAll('.cm-redac-sou').forEach(u => {
+    const s = document.createElement('span'); s.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline;';
+    u.insertBefore(s, u.firstChild); const bl = (s.getBoundingClientRect().bottom - u.getBoundingClientRect().top) / (k || 1); s.remove();
+    u.style.setProperty('--soul', (Math.round((bl + 9.25) * 100) / 100) + 'px');
+  });
   // Un dépassement de moins d'un pixel ne vaut pas un carreau de plus.
   blocs.forEach((b, i) => { const m = H[i] % 32, r = m < 1 ? 0 : Math.round((32 - m) * 100) / 100; if(r > .01) b.style.setProperty('--cal', r + 'px'); });
 }

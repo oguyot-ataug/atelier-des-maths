@@ -2406,11 +2406,11 @@ body.plp-ouvert .cahier-flottant{ top:56px; bottom:auto; left:16px; z-index:2147
   body.cahier-on .cahier-actif .cahier-op{ position:relative; top:.27em; font-size:1.2em; line-height:0; } /* milieu du « = » manuscrit (6,5 px au-dessus de la ligne d'écriture à 27,6 px) posé sur la ligne principale */
   body.cahier-on .cahier-actif .cm-redac{ margin:0; line-height:32px; }
   body.cahier-on .cahier-actif .cm-redac-titre{ font-weight:700; }
-  body.cahier-on .cahier-actif .cm-redac-sou{ text-decoration-color:#E35D3A; text-underline-offset:4px; }
+  body.cahier-on .cahier-actif .cm-redac-sou{ text-decoration:none; padding-bottom:12px; background-image:linear-gradient(#15803D, #15803D); background-repeat:no-repeat; background-size:100% 2px; background-position:0 var(--soul, 30px); }
   body.cahier-on .cahier-actif .cm-redac-ligne, body.cahier-on .cahier-actif .cm-redac-col, body.cahier-on .cahier-actif .cm-redac-fig{ margin-left:32px !important; }
   body.cahier-on .cahier-actif .cm-redac-col td{ padding:0 6px 0 0; line-height:32px; height:32px; }
   body.cahier-on .cahier-actif .cm-redac-pose{ display:block; margin-left:0 !important; }
-  body.cahier-on .cahier-actif .cm-encadre{ border-color:#E35D3A; padding:0 6px; line-height:24px; }
+  body.cahier-on .cahier-actif .cm-encadre{ border-color:#15803D; color:#15803D; padding:0 6px; line-height:24px; }
   body.cahier-on .cahier-actif .cm-redac-phrase{ font-weight:600; }
   body.cahier-on .cahier-actif ul, body.cahier-on .cahier-actif ol{ margin:0; padding-left:24px; }
   body.cahier-on .cahier-actif li, body.cahier-on .cahier-actif p{ line-height:32px; margin:0; }
@@ -2437,7 +2437,7 @@ body.plp-ouvert .cahier-flottant{ top:56px; bottom:auto; left:16px; z-index:2147
   body.cahier-on table.pose-trous tr[style*="border-top"] td{ box-shadow:inset 0 2px 0 #1E3A8A; }
   body.cahier-on table.pose-trous .pn-case, body.cahier-on table.pose-trous .pl-case{
     display:block !important; width:24px !important; height:24px !important; min-width:0 !important; min-height:0 !important; margin:2px auto 0 !important; padding:0 !important;
-    font:700 22px/22px Caveat,'Comic Sans MS',cursive !important; color:#E8590C !important; vertical-align:top !important; box-sizing:border-box;
+    font:700 22px/22px Caveat,'Comic Sans MS',cursive !important; color:#15803D !important; vertical-align:top !important; box-sizing:border-box;
   }
   body.cahier-on table.pose-trous .pn-ret, body.cahier-on table.pose-trous .pl-ret-case{
     display:block !important; width:16px !important; height:16px !important; margin:14px auto 0 !important; font:700 14px/14px Caveat,'Comic Sans MS',cursive !important; color:#E35D3A !important;
@@ -2458,7 +2458,7 @@ body.plp-ouvert .cahier-flottant{ top:56px; bottom:auto; left:16px; z-index:2147
   }
   body.cahier-on table.cma-op td.cma-sg{ color:#F08C00 !important; }
   body.cahier-on table.cma-op td.cma-ret{ font-size:15px !important; line-height:16px !important; padding-top:14px !important; color:#E35D3A !important; }
-  body.cahier-on table.cma-op td.cma-res{ color:#E8590C !important; }
+  body.cahier-on table.cma-op td.cma-res{ color:#15803D !important; } /* résultats en vert dans le cahier (07/11/2026) */
   body.cahier-on table.cma-op td[style*="border-bottom"]{ border-bottom:0 !important; box-shadow:inset 0 -2px 0 #1E3A8A; }
   body.cahier-on table.cma-op td.cma-lab{ font-family:Caveat,'Comic Sans MS',cursive !important; font-size:20px !important; line-height:32px !important; height:32px; padding:0 0 0 14px !important; vertical-align:top; }
   /* Cases en blocs : jamais une rangée de plus de 32 px (la rangée des retenues faisait 37 px dans les vignettes, 07/11/2026). */

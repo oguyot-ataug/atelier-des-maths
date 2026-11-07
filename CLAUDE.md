@@ -163,6 +163,10 @@ Lignes avec une fraction (demandé le 07/11/2026, validé sur images) : barre de
 signes (− + × ÷ < >) centrés dessus (un trait de chaque côté) ; dans KaTeX, `.mord` de la fraction, `.mrel`, `.mbin` descendus de
 0,25 em + 1 px ; signes écrits en texte enveloppés par `cahierOps` (`.cahier-op`, 1,2 em, descendus de 0,27 em) ; `cahierCaler` cale
 la ligne d'écriture du bloc sur une ligne principale (padding-top `--calh`), sans arrondi au pixel.
+Titre de rédaction (`.cm-redac-sou`) souligné SUR L'INTERLIGNE (première ligne fine sous la ligne principale, demandé le 07/11/2026) :
+trait dessiné en fond à 9,25 px sous la ligne d'écriture (`--soul`, calculé dans `cahierCaler`), continu sous les jambages.
+Couleurs du cahier (07/11/2026) : écriture bleu encre #1E3A8A ; soulignement et résultats en VERT #15803D (demandé : « du vert pour souligner
+et pour les résultats à la place du rouge ») ; retenues, « +10 », « +1 » en rouge #E35D3A ; signes opératoires orange.
 Bouton flottant (`#cahierFlottant`, `cahierFlottantMaj`, demandé le 07/11/2026 : « accessible partout ») : en bas à gauche, dès qu'une
 opération posée ou une `.cahier-page` est à l'écran, masqué si le bouton d'en-tête d'onglet est visible ; jamais à l'impression.
 Opérations à compléter (`trous`, `cases`) : classe `pose-trous`, feuille Seyès dessinée en fond par la seule feuille de style

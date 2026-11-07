@@ -280,8 +280,19 @@ async function plRepetition(lvl, c, i, k){
   const r = await nicePrompt('Combien de versions de cet exercice sur la fiche ? (de 2 à 8)', '4');
   if(r === null) return;
   const n = Math.max(2, Math.min(8, parseInt(r, 10) || 4)), p = plDe(lvl, c.t)[i], x = p.exos[k], v0 = plTdV[plTdCle(lvl, c, i, k)] || 0;
-  const exos = Array.from({ length: n }, (_, j) => Object.assign({}, plVariante(x, v0 + j + 1), { etoiles: x.etoiles }));
-  const fiche = { titre: `${p.titre} · exercice ${k + 1} en ${n} versions`, attendus: p.attendus, duree: '', exos };
+  /* Présentation revue le 07/11/2026 (« une seule élève qui s'entraîne. Ne pas redonner les mêmes exemples ! ») : la consigne une
+     seule fois en tête, des cadres « Version 1, 2… » avec les seuls calculs, un titre court ; une version qui redonne un calcul déjà
+     vu (sur la fiche ou dans l'exercice du manuel) est sautée. */
+  const items = y => { const d = document.createElement('div'); d.innerHTML = y.eleve || ''; const li = [...d.querySelectorAll('li')];
+    return (li.length ? li : [d]).map(e => e.textContent.replace(/\s+/g, ' ').trim()).filter(Boolean); };
+  const vus = new Set(items(x)), exos = [];
+  for(let v = v0 + 1, essais = 0; exos.length < n && essais < 400; v++, essais++){
+    const y = plVariante(x, v), it = items(y);
+    if(essais < 300 && it.some(t => vus.has(t))) continue;
+    it.forEach(t => vus.add(t));
+    exos.push(Object.assign({}, y, { etoiles: x.etoiles, consigne: '', etiquette: `Version ${exos.length + 1}` }));
+  }
+  const fiche = { titre: `${p.titre} · exercice ${k + 1}`, h1: `Planche ${i + 1} · Exercice ${k + 1} — ${n} versions`, consigne: plVariante(x, v0 + 1).consigne || x.consigne, attendus: null, duree: '', exos };
   plImprimer(lvl, [{ c, planches: [{ p: fiche, i }] }], 'les2', { titre: `${plRef(lvl, plCode(lvl, c), i)} · exercice ${k + 1} · répétition` });
 }
 // Énoncé (et correction) d'un exercice en HTML autonome, formules rendues : pour le cahier et les sessions.
@@ -573,11 +584,11 @@ function plPageHtml(lvl, c, p, i, n, mode, pr, logo){
         : pr.identite === 'prenom' ? '<span>Prénom : <span class="pl-pts" style="min-width:13em;"></span></span>' : ''}${pr.date ? '<span>Date : <span class="pl-pts" style="min-width:7em;"></span></span>' : ''}</div>` : '';
   return `<section class="pl-page pl-planche${corr ? ' pl-corrige' : ''}${plCollege(lvl) ? ' pl-college' : ''}" data-ref="${ref}${corr ? '-c' : ''}">
     <header class="pl-tete">${logo ? `<img class="pl-logo" src="${logo}" alt="L'Atelier des Maths">` : '<span class="pl-site">L\'Atelier des Maths</span>'}<span class="pl-site">${niv} · ${escapeHtml(c.t)}</span><span class="pl-ref">${ref}${corr ? ' · CORRIGÉ' : ''}</span></header>
-    <div class="pl-titre"><h1>${p.brevet ? '<span class="pl-brevet">Objectif Brevet</span> ' : ''}Planche ${i + 1} : ${escapeHtml(p.titre)}</h1>${corr ? '' : `<span class="pl-oliv-tete"><span class="pl-oliv">${plOliv(p.brevet ? 'savoir' : 'muscle')}</span><span class="pl-bulle">${p.brevet ? 'Objectif Brevet !' : 'Muscle ton jeu !'}</span></span>`}</div>
+    <div class="pl-titre"><h1>${p.brevet ? '<span class="pl-brevet">Objectif Brevet</span> ' : ''}${p.h1 ? escapeHtml(p.h1) : `Planche ${i + 1} : ${escapeHtml(p.titre)}`}</h1>${corr ? '' : `<span class="pl-oliv-tete"><span class="pl-oliv">${plOliv(p.brevet ? 'savoir' : 'muscle')}</span><span class="pl-bulle">${p.brevet ? 'Objectif Brevet !' : 'Muscle ton jeu !'}</span></span>`}</div>
     ${ident}
-    <div class="pl-attendus"><b>Je travaille :</b> ${(p.attendus || []).map(a => escapeHtml(a)).join(' ; ')}</div>
-    <div class="pl-exos">${p.exos.map((x, k) => `<div class="pl-exo${x.col === 1 ? ' pl-demi' : ''}${x.uneLigne ? ' pl-une-ligne' : ''}"><div class="pl-exo-tete"><span class="pl-num">Exercice ${k + 1}</span>${plMarque(lvl, x)}<span class="pl-et">${plEtoiles(x.etoiles || 1)}</span></div>
-      <div class="pl-consigne">${x.consigne}</div><div class="pl-corps">${plExoCorps(x, corr)}</div></div>`).join('')}</div>
+    ${p.consigne ? `<div class="pl-attendus pl-consigne-fiche"><b>Consigne :</b> ${p.consigne}</div>` : `<div class="pl-attendus"><b>Je travaille :</b> ${(p.attendus || []).map(a => escapeHtml(a)).join(' ; ')}</div>`}
+    <div class="pl-exos">${p.exos.map((x, k) => `<div class="pl-exo${x.col === 1 ? ' pl-demi' : ''}${x.uneLigne ? ' pl-une-ligne' : ''}"><div class="pl-exo-tete"><span class="pl-num">${x.etiquette || `Exercice ${k + 1}`}</span>${plMarque(lvl, x)}<span class="pl-et">${plEtoiles(x.etoiles || 1)}</span></div>
+      ${x.consigne ? `<div class="pl-consigne">${x.consigne}</div>` : ''}<div class="pl-corps">${plExoCorps(x, corr)}</div></div>`).join('')}</div>
     ${corr ? '' : plPointHtml(p)}
     <footer class="pl-pied">${ref} · Planche ${i + 1} sur ${n} · ${niv} · ${escapeHtml(c.t)} · ${p.duree ? 'environ ' + escapeHtml(p.duree) + ' · ' : ''}L'Atelier des Maths</footer>
   </section>`;
@@ -915,7 +926,11 @@ const PL_CSS = `
   /* Collège : sur le papier, des pointillés au lieu des cases (demandé le 01/11/2026 : « Dans les exercices de collèges,
      remplacer les cases par des pointillés sur le papier »). */
   .pl-college .pl-case{ border:0; border-bottom:1.5px dotted #6F7A89; border-radius:0; background:transparent; width:2.6em; height:1.15em; }
-  .pl-college .pl-frac .pl-case{ width:2em; height:1.35em; margin:1px 0 3px; } .pl-college .pl-case-seule{ width:1.8em; }
+  .pl-college .pl-frac .pl-case{ width:2.4em; height:1.25em; margin:0; } .pl-college .pl-case-seule{ width:1.8em; }
+  /* Fraction à compléter (07/11/2026, fiche de répétition) : les deux pointillés de la largeur de la barre, serrés autour d'une barre fine. */
+  .pl-college .pl-frac{ gap:0; } .pl-college .pl-frac .pl-barre{ width:2.4em; border-top-width:1.5px; }
+  .pl-college .pl-frac .pl-case:first-child{ height:1.1em; margin-bottom:.3em; } /* numérateur écrit sur ses pointillés, un peu au-dessus de la barre */
+  .pl-college .pl-frac .pl-case:last-child{ height:1.4em; } /* dénominateur écrit entre la barre et ses pointillés */
   .pl-case-seule{ vertical-align:middle; margin:0 4px; }
   .pl-barre{ display:block; width:28px; height:0; border-top:2px solid #1C2B39; }
   .pl-pts{ display:inline-block; border-bottom:1.5px dotted #8A93A3; height:1.1em; vertical-align:baseline; }
