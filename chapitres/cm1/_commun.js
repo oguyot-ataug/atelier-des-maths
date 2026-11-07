@@ -431,7 +431,7 @@ function cahierFlottantPlanifier(){ if(!cahierFlotT) cahierFlotT = setTimeout(()
 function cahierFlottantMaj(){
   if(!document.body) return;
   const H = window.innerHeight || 0, vu = e => { const r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0 && r.bottom > 0 && r.top < H; };
-  const contenu = [...document.querySelectorAll('.cahier-page, table.pose-ecran[data-cahier], table.pose-trous, svg.pose-cahier')].some(vu);
+  const contenu = [...document.querySelectorAll('.cahier-page, table.pose-ecran[data-cahier], table.pose-trous, table.cma-op, svg.pose-cahier')].some(vu);
   const enTete = [...document.querySelectorAll('.cahier-barre .cahier-btn')].some(vu);
   let b = document.getElementById('cahierFlottant');
   if(!contenu || enTete){ if(b) b.hidden = true; return; }

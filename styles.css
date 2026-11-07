@@ -2436,6 +2436,25 @@ body.plp-ouvert .cahier-flottant{ top:56px; bottom:auto; left:16px; z-index:2147
   body.cahier-on table.pose-trous .pn-ret, body.cahier-on table.pose-trous .pl-ret-case{
     display:block !important; width:16px !important; height:16px !important; margin:14px auto 0 !important; font:700 14px/14px Caveat,'Comic Sans MS',cursive !important; color:#E35D3A !important;
   }
+  /* Méthodes animées (cmAnim, table .cma-op) : la même feuille Seyès en fond (demandé le 07/11/2026 : « Et les méthodes animées
+     aussi ! ») -- un chiffre par carreau, chiffres sur la ligne principale, retenues dans le carreau au-dessus. */
+  body.cahier-on table.cma-op{
+    border:0 !important; outline:1px solid #E1E4F2; border-collapse:collapse !important; background-color:#fff;
+    background-image:
+      repeating-linear-gradient(to bottom, transparent 0 24px, #8C93CF 24px 25px, transparent 25px 32px),
+      repeating-linear-gradient(to bottom, #D9DDF2 0 1px, transparent 1px 8px, #D9DDF2 8px 9px, transparent 9px 16px, #D9DDF2 16px 17px, transparent 17px 32px),
+      repeating-linear-gradient(to right, transparent 0 31px, #D9DDF2 31px 32px);
+  }
+  body.cahier-on table.cma-op tr{ height:32px !important; }
+  body.cahier-on table.cma-op td:not(.cma-lab){
+    width:32px !important; min-width:32px !important; max-width:32px !important; height:32px !important; padding:0 !important; box-sizing:border-box;
+    line-height:32px !important; vertical-align:top !important; font:700 27px/32px Caveat,'Comic Sans MS',cursive !important; color:#1E3A8A;
+  }
+  body.cahier-on table.cma-op td.cma-sg{ color:#F08C00 !important; }
+  body.cahier-on table.cma-op td.cma-ret{ font-size:15px !important; line-height:16px !important; padding-top:14px !important; color:#E35D3A !important; }
+  body.cahier-on table.cma-op td.cma-res{ color:#E8590C !important; }
+  body.cahier-on table.cma-op td[style*="border-bottom"]{ border-bottom:0 !important; box-shadow:inset 0 -2px 0 #1E3A8A; }
+  body.cahier-on table.cma-op td.cma-lab{ font-family:Caveat,'Comic Sans MS',cursive !important; font-size:20px !important; line-height:32px !important; height:32px; padding:0 0 0 14px !important; vertical-align:top; }
   /* Cases en blocs : jamais une rangée de plus de 32 px (la rangée des retenues faisait 37 px dans les vignettes, 07/11/2026). */
   body.cahier-on table.pose-trous tr{ height:32px !important; }
   body.cahier-on .cahier-actif svg.pose-cahier.nu{ margin:0 0 0 32px !important; border:0 !important; border-radius:0 !important; }

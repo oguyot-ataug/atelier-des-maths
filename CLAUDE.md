@@ -152,7 +152,8 @@ Bouton « Dans mon cahier » (`cahierBouton`, chapitres/cm1/_commun.js) en tête
 qui ont des opérations `cm1Posee` : chaque tableau d'opération (classe `pose-ecran`, données `data-cahier`) reçoit à côté son dessin
 Seyès (`cm1PoseeCahier` : marge rouge, un chiffre par carreau sur une ligne principale, retenues et « +10 » dans l'interligne
 au-dessus, « +1 » en indice, police Caveat). Réglage retenu sur l'appareil (`cahierSeyes`), valable partout (classe `cahier-on` sur
-body, dessins ajoutés aussi au contenu affiché plus tard) ; l'impression garde toujours l'opération habituelle. Pas pour les animations (`cmAnim`).
+body, dessins ajoutés aussi au contenu affiché plus tard) ; l'impression garde toujours l'opération habituelle. Méthodes animées (table `.cma-op` de `cmOpTableHtml`, _anims.js) : même feuille
+en fond par la feuille de style (07/11/2026).
 Corrections des exercices faits dans le cahier (demandé le 07/11/2026) : `.cahier-page` (onglet Exercices des chapitres, `cm1Exos` ;
 exercices de planche `cahier: true` ou « dans/sur ton cahier », `plExoCorps`) : quand le mode est actif (classe `cahier-actif`, jamais
 dans `.pl-page` : Manuel, impression), la correction s'écrit sur la feuille (Caveat 23 px, ligne de base CAHIER_B = 23 px sous le haut
