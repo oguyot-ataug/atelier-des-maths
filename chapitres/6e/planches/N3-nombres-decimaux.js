@@ -80,10 +80,10 @@ PLANCHES['6e|Nombres décimaux'] = [
       // La demi-droite graduée tracée dans le corrigé (relecture 6e-N3-P3-E5) : pleine largeur pour la lire, et l'exercice
       // suivant aussi (jamais un exercice seul en demi-largeur).
       { etoiles: 3, cahier: true, consigne: 'Trace une demi-droite graduée où 1 unité mesure 10 cm. Place les points d\'abscisses 0,4 ; 0,45 ; 0,5 et 0,62. Explique combien mesure un centième.',
-        corr: cm1Redac('Graduation', { suite: ['1 unité = 10 cm, donc 1 dixième = 1 cm et 1 centième = 1 mm.', 'A(0,4) est à 4 cm de l\'origine.', 'B(0,45) est à 4,5 cm de l\'origine.', 'C(0,5) est à 5 cm de l\'origine.', 'D(0,62) est à 6,2 cm de l\'origine.'] }, 'Un centième de l\'unité mesure 1 mm.')
+        corr: cm1Redac('Longueur d\'un dixième', '10 cm ÷ 10 = 1 cm', 'Un dixième de l\'unité mesure 1 cm.') + cm1Redac('Longueur d\'un centième', '1 cm ÷ 10 = 1 mm', 'Un centième de l\'unité mesure 1 mm.') + cm1Redac('Points à placer', { suite: ['0,4 × 10 cm = 4 cm', '0,45 × 10 cm = 4,5 cm', '0,5 × 10 cm = 5 cm', '0,62 × 10 cm = 6,2 cm'] }, 'A, B, C et D sont à 4 cm, 4,5 cm, 5 cm et 6,2 cm de l\'origine.')
           + cm1Axe(0, .7, .01, .1, [[.4, 'A'], [.45, 'B'], [.5, 'C'], [.62, 'D']], { fmt: dec, alterne: true, L: 560 }) + '<div class="pl-petit" style="text-align:center;">Figure réduite : sur le cahier, 1 dixième = 1 cm et 1 centième = 1 mm.</div>' },
       { etoiles: 3, cahier: true, consigne: 'Sur une demi-droite graduée, le point A a pour abscisse 2,3 et le point B a pour abscisse 2,4. Cite trois nombres dont le point serait entre A et B.',
-        corr: cm1Redac('Nombres entre 2,3 et 2,4', '2,3 = 2,30 et 2,4 = 2,40', 'Par exemple 2,31 ; 2,35 et 2,38 (il y en a une infinité : 2,301 ; 2,3005…).') },
+        corr: cm1Redac('Nombres entre 2,3 et 2,4', { suite: ['2,3 = 2,30', '2,4 = 2,40', '2,30 &lt; 2,31 &lt; 2,35 &lt; 2,38 &lt; 2,40'] }, 'Par exemple 2,31 ; 2,35 et 2,38 (il y en a une infinité : 2,301 ; 2,3005…).') },
     ] },
   { titre: 'Comparer et ranger des nombres décimaux', duree: '35 min',
     attendus: ['Comparer deux nombres décimaux', 'Ranger des nombres décimaux dans l\'ordre croissant ou décroissant', 'Intercaler un nombre décimal entre deux autres'],
@@ -103,7 +103,7 @@ PLANCHES['6e|Nombres décimaux'] = [
         eleve: plListe([`4 ${lt} ${B()} ${lt} 5`, `2,3 ${lt} ${B()} ${lt} 2,4`, `0,15 ${lt} ${B()} ${lt} 0,16`]),
         corr: plListe([`4 ${lt} ${R('4,5')} ${lt} 5`, `2,3 ${lt} ${R('2,35')} ${lt} 2,4`, `0,15 ${lt} ${R('0,155')} ${lt} 0,16`]) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Au saut en longueur, Inès a sauté 3,8 m, Hugo 3,75 m, Léa 3,805 m et Sami 3,08 m. Établis le classement, du premier au dernier. Explique ta méthode.',
-        corr: cm1Redac('Comparaison', { suite: ['On écrit tous les nombres avec trois chiffres après la virgule : 3,800 ; 3,750 ; 3,805 ; 3,080.', 'On compare : 3,805 &gt; 3,800 &gt; 3,750 &gt; 3,080.'] }, 'Classement : 1re Léa, 2e Inès, 3e Hugo, 4e Sami.') },
+        corr: cm1Redac('Trois chiffres après la virgule', { suite: ['3,8 = 3,800', '3,75 = 3,750', '3,08 = 3,080'] }, 'On écrit tous les nombres avec trois chiffres après la virgule.') + cm1Redac('Comparaison', '3,805 &gt; 3,800 &gt; 3,750 &gt; 3,080', 'Classement : 1re Léa, 2e Inès, 3e Hugo, 4e Sami.') },
     ] },
   { titre: 'Encadrer et arrondir', duree: '35 min',
     attendus: ['Encadrer un nombre décimal à l\'unité, au dixième, au centième', 'Arrondir un nombre décimal', 'Donner une valeur approchée'],
@@ -125,7 +125,7 @@ PLANCHES['6e|Nombres décimaux'] = [
         eleve: plListe(['Arrondi du prix à l\'euro : ' + B(2) + ' €', 'Encadrement à l\'euro : ' + B(2) + ' € &lt; 4,79 € &lt; ' + B(2) + ' €', 'Avec 5 €, peut-on acheter le paquet ? <b>oui · non</b>']),
         corr: plListe(['Arrondi du prix à l\'euro : ' + R(5) + ' €', 'Encadrement à l\'euro : ' + R(4) + ' € &lt; 4,79 € &lt; ' + R(5) + ' €', 'Avec 5 €, peut-on acheter le paquet ? ' + plEntoure('oui')]) },
       { etoiles: 3, cahier: true, consigne: 'Le nombre π vaut environ 3,14159. Donne son arrondi à l\'unité, au dixième, au centième et au millième. Explique ta méthode pour le centième.',
-        corr: cm1Redac('Arrondis de π', { suite: ['à l\'unité : 3 ; au dixième : 3,1', 'au centième : 3,14 ; au millième : 3,142'] }, 'Pour le centième, je regarde le chiffre des millièmes (1) : il est inférieur à 5, donc j\'arrondis à 3,14.') },
+        corr: cm1Redac('Arrondis de π', { suite: ['π ≈ 3', 'π ≈ 3,1', 'π ≈ 3,14', 'π ≈ 3,142'] }, 'Ce sont les arrondis à l\'unité, au dixième, au centième et au millième. Pour le centième, je regarde le chiffre des millièmes (1) : il est inférieur à 5, donc j\'arrondis à 3,14.') },
       // Hors programme de 6e (le programme ne nomme que l'arrondi) : « pour aller plus loin » -- relecture 6e-N3-P5-E3 du
       // 03/11/2026 : « la troncature est-elle au programme également ? Et les arrondis par défaut ? par excès ».
       { etoiles: 3, col: 1, consigne: 'Pour aller plus loin : la troncature au dixième (valeur approchée par défaut) garde le chiffre des dixièmes et supprime les suivants ; la valeur approchée par excès est le dixième juste au-dessus. Complète.',
@@ -150,9 +150,9 @@ PLANCHES['6e|Nombres décimaux'] = [
         corr: plListe(['Le plus rapide est ' + R('Cyril'), 'Le plus lent est ' + R('Bea'), 'Temps de Dina arrondi à la seconde : ' + R(31) + ' s']) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Retour sur la division euclidienne : une planche mesure 2,4 m. Paul veut y découper des étagères de 0,75 m. Combien d\'étagères peut-il découper ? Quelle longueur reste-t-il ? Convertis en centimètres, puis pose une division euclidienne.',
         // Relecture du 03/11/2026 : « il faut faire une division ici ! » (et non chercher à tâtons).
-        corr: cm1Redac('En centimètres', { suite: ['2,4 m = 240 cm et 0,75 m = 75 cm.', 'On divise 240 par 75 (division euclidienne) :', '240 = 75 × 3 + 15, avec 15 &lt; 75', 'Quotient : 3 ; reste : 15'] }, 'Paul peut découper 3 étagères ; il reste 15 cm, soit 0,15 m.') },
+        corr: cm1Redac('En centimètres', { suite: ['2,4 m = 240 cm', '0,75 m = 75 cm'] }, 'On travaille en centimètres pour diviser des nombres entiers.') + cm1Redac('Division euclidienne de 240 par 75', { suite: ['240 = 75 × 3 + 15', '15 &lt; 75'] }, 'Le quotient est 3 et le reste 15 : Paul peut découper 3 étagères ; il reste 15 cm, soit 0,15 m.') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Un nombre a 2 chiffres après la virgule. Son arrondi au dixième est 4,6 et son chiffre des centièmes est 8. Quel est ce nombre ?',
-        corr: cm1Redac('Recherche', { suite: ['Le nombre s\'écrit 4,?8 et son arrondi au dixième est 4,6.', 'Avec 8 centièmes, on arrondit au dixième supérieur : 4,58 → 4,6.'] }, 'Le nombre est 4,58.') },
+        corr: cm1Redac('Recherche', '4,58 ≈ 4,6', 'Le nombre s\'écrit 4,?8. Avec 8 centièmes, on arrondit au dixième supérieur : pour obtenir 4,6, le chiffre des dixièmes est 5. Le nombre est 4,58.') },
     ] },
 ];
 })();

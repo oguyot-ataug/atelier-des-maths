@@ -83,7 +83,7 @@ PLANCHES['6e|Nombres entiers'] = [
         eleve: plListe(['6 000 000 = 6 × ' + B(8), '300 000 = 3 × ' + B(7), '90 000 000 = 9 × ' + B(8), '4 000 000 000 = 4 × ' + B(10)].map(ligne)),
         corr: plListe(['6 000 000 = 6 × ' + R('1 000 000'), '300 000 = 3 × ' + R('100 000'), '90 000 000 = 9 × ' + R('10 000 000'), '4 000 000 000 = 4 × ' + R('1 000 000 000')].map(ligne)) },
       { etoiles: 3, cahier: true, consigne: 'Qui suis-je ? « J\'ai 7 chiffres. Mon chiffre des millions est 3. Mon chiffre des centaines de mille est le double de celui des millions. Mon chiffre des unités est 9 et tous mes autres chiffres sont des 0. »',
-        corr: cm1Redac('Le nombre mystère', { suite: ['Chiffre des millions : 3.', 'Chiffre des centaines de mille : 3 × 2 = 6.', 'Chiffre des unités : 9 ; les autres chiffres : 0.'] }, 'Le nombre mystère est 3 600 009.') },
+        corr: cm1Redac('Chiffre des centaines de mille', '3 × 2 = 6', 'Le chiffre des centaines de mille est 6.') + cm1Redac('Nombre mystère', '3 000 000 + 600 000 + 9 = 3 600 009', 'Avec 3 millions, 6 centaines de mille, 9 unités et des 0 partout ailleurs, le nombre mystère est 3 600 009.') },
     ] },
   { titre: 'Comparer, ranger, encadrer, arrondir', duree: '35 min',
     attendus: ['Comparer et ranger des grands nombres', 'Repérer un grand nombre sur une droite graduée', 'Encadrer et arrondir un grand nombre'],
@@ -133,7 +133,7 @@ PLANCHES['6e|Nombres entiers'] = [
         corr: cm1Redac('Nombre de fauteuils', '24 × 36 = 864', 'Le cinéma a 864 fauteuils.') + cm1Redac('Fauteuils libres', '864 − 785 = 79', '79 fauteuils restent libres.') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Trouve le chiffre caché : 3■7 × 4 = 1 508.',
         // Raisonnement sur la multiplication posée, puis la division en autre méthode (relecture 6e-N1-P4-E6).
-        corr: cm1Redac('Chiffre caché', { suite: ['Unités : 4 × 7 = 28 ; on écrit 8, on retient 2.', 'Centaines : 4 × 3 = 12, mais on lit 15 : la retenue venue des dizaines est 3.', 'Dizaines : 4 × ■ + 2 donne 30 (on lit 0, on retient 3).', '4 × ■ = 28, donc ■ = 7.'] }, 'Le chiffre caché est 7 : 377 × 4 = 1 508.')
+        corr: cm1Redac('Unités', '4 × 7 = 28', 'On écrit 8 et on retient 2.') + cm1Redac('Retenue venue des dizaines', { suite: ['4 × 3 = 12', '15 − 12 = 3'] }, 'Aux centaines, on lit 15 et non 12 : la retenue venue des dizaines est 3. Comme on lit 0 aux dizaines, le calcul des dizaines donne 30.') + cm1Redac('Chiffre caché', { suite: ['4 × ■ + 2 = 30', '4 × ■ = 28', '■ = 28 ÷ 4', '■ = 7'] }, 'Le chiffre caché est 7.')
           + cm1Redac('Autre méthode', '1 508 ÷ 4 = 377', 'On retrouve 377 : le chiffre caché est 7.') },
     ] },
   { titre: 'Calcul mental et problèmes', duree: '35 min',
