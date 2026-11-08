@@ -432,7 +432,7 @@ function cahierCaler(page){
   // Deux lignes à fraction de suite (demandé le 07/11/2026 : « on peut remonter 2/5 × 240 d'un carreau ») : la seconde remonte
   // d'un carreau quand son numérateur tient encore dans son propre carreau (sous le dénominateur de la ligne précédente).
   const mont = blocs.map((b, i) => {
-    if(!fr[i] || !fr[i - 1] || haut[i] < 16 || !(b.classList.contains('cm-redac-ligne') || b.classList.contains('we-row')) || b.previousElementSibling !== blocs[i - 1]) return 0;
+    if(!fr[i] || !fr[i - 1] || haut[i] < 16 || !(b.classList.contains('cm-redac-ligne') || b.classList.contains('cm-redac-phrase') || b.classList.contains('we-row')) || b.previousElementSibling !== blocs[i - 1]) return 0;
     const t = Math.min(...[...b.querySelectorAll('.katex-html')].map(e => e.getBoundingClientRect().top)), t0 = b.getBoundingClientRect().top;
     return (t - t0) / (k || 1) + haut[i] - 32 >= -1 ? -32 : 0;
   });
@@ -445,6 +445,11 @@ function cahierCaler(page){
     u.insertBefore(s, u.firstChild); const bl = (s.getBoundingClientRect().bottom - u.getBoundingClientRect().top) / (k || 1); s.remove();
     u.style.setProperty('--soul', (Math.round((bl + 9.25) * 100) / 100) + 'px');
   });
+  // Un seul carreau entre un résultat et le titre suivant (demandé le 08/11/2026 : « ne passer qu'un seul carreau entre un résultat
+  // et un nouveau titre ») : quand le raisonnement précédent finit par une ligne à fraction, son dénominateur occupe déjà ce carreau.
+  page.querySelectorAll('.cm-redac').forEach(r => { const p = r.previousElementSibling;
+    const fin = p && p.classList.contains('cm-redac') ? [...p.children].filter(c => c.offsetHeight).pop() : null;
+    if(fin && fin.querySelector('.mfrac')) r.style.setProperty('--redm', '0px'); else r.style.removeProperty('--redm'); });
   // Un dépassement de moins d'un pixel ne vaut pas un carreau de plus.
   blocs.forEach((b, i) => { const m = H[i] % 32, r = m < 1 ? 0 : Math.round((32 - m) * 100) / 100; if(r > .01) b.style.setProperty('--cal', r + 'px'); });
 }

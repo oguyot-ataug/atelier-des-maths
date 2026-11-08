@@ -194,7 +194,8 @@ la ligne d'écriture du bloc sur une ligne principale (padding-top `--calh`), sa
 Titre de rédaction (`.cm-redac-sou`) souligné SUR L'INTERLIGNE (première ligne fine sous la ligne principale, demandé le 07/11/2026) :
 trait dessiné en fond à 9,25 px sous la ligne d'écriture (`--soul`, calculé dans `cahierCaler`), continu sous les jambages.
 Raisonnements (`.cm-redac`) séparés d'une ligne vide ; deux lignes à fraction qui se suivent sans carreau vide entre elles
-(`--calm`, cahierCaler ; demandé le 07/11/2026).
+(`--calm`, cahierCaler ; demandé le 07/11/2026), phrase de conclusion comprise ; un seul carreau entre un résultat et le titre suivant :
+si le raisonnement finit par une fraction, son dénominateur occupe ce carreau (`--redm` 0, cahierCaler ; demandé le 08/11/2026).
 Couleurs du cahier (07/11/2026) : écriture bleu encre #1E3A8A ; soulignement et résultats en VERT #15803D (demandé : « du vert pour souligner
 et pour les résultats à la place du rouge ») ; retenues, « +10 », « +1 » en rouge #E35D3A ; signes opératoires orange.
 Bouton flottant (`#cahierFlottant`, `cahierFlottantMaj`, demandé le 07/11/2026 : « accessible partout ») : en bas à gauche, dès qu'une
