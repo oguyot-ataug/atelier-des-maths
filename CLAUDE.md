@@ -193,7 +193,8 @@ dans `.pl-page` : Manuel, impression), la correction s'écrit sur la feuille (Ca
 de chaque carreau de 32 px) ; `cahierCaler` allonge chaque bloc jusqu'au carreau suivant ; les opérations posées dans `.cm-redac-pose`
 y sont dessinées sans feuille propre (`cm1PoseeCahier(d, true)`), dans les carreaux de la page ; depuis le 08/11/2026 (relecture CE2-N3-P1-E3 :
 « ça fait mal aux yeux ! ») TOUTE opération posée d'une page de cahier est dessinée ainsi, puis calée par cahierCaler (classe `pose-cale`,
-`--psl`/`--pst` au pixel entier : haut sur un carreau, colonnes sur les traits verticaux).
+`--psl`/`--pst` au pixel entier : haut sur un carreau, colonnes sur les traits verticaux). Opérations côte à côte (même groupe) : si l'une a des retenues,
+toutes réservent cette ligne (`cm1PoseeCahier(d, nu, hautForce)`), pour rester alignées (relecture « Non alignés ! »).
 Lignes avec une fraction (demandé le 07/11/2026, validé sur images) : barre de fraction CHEVAUCHANT la ligne principale, « = » et
 signes (− + × ÷ : < >) centrés dessus (un trait de chaque côté) -- UNIQUEMENT dans une ligne qui a une fraction (rappelé le 07/11/2026 ;
 ailleurs les signes restent posés sur la ligne d'écriture ; « : » centré seulement dans une ligne de calcul) ; dans KaTeX, `.mord` de la fraction, `.mrel`, `.mbin` descendus de

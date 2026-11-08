@@ -350,7 +350,7 @@ function cm1Posee(lignes, retenues, opts){
    « +1 » en indice ; virgule sur le trait vertical ; trait de l'opération sur la première ligne fine sous le nombre.
    Mode retenu sur l'appareil (cahierSeyes), pour tout le site : chaque tableau d'opération (cm1Posee, data-cahier) reçoit à
    côté son dessin, et l'écran montre l'un ou l'autre (classe cahier-on) ; l'impression garde toujours l'opération habituelle. ---- */
-function cm1PoseeCahier(d, nu){
+function cm1PoseeCahier(d, nu, hautForce){
   const C = 32, MG = nu ? -C : 40, l = d.l, larg = Math.max(...l.map(x => x[1].length), (d.r || '').length), P = l.map(x => x[1].padStart(larg));
   const virg = new Set(), esp = new Set();
   P.forEach(n => n.split('').forEach((c, j) => { if(c === ',') virg.add(j); if(c === ' ' && /\d/.test(n.slice(0, j)) && /\d/.test(n.slice(j + 1))) esp.add(j); }));
@@ -360,7 +360,7 @@ function cm1PoseeCahier(d, nu){
   // nu : posée sur la page d'une correction « cahier » (cahier-page) : pas de feuille à soi, mais les lignes de la page :
   // chiffres sur les lignes principales (CAHIER_B sous le haut de chaque carreau), colonnes sur les traits verticaux.
   // Retenues, « +10 » : un carreau de plus au-dessus, pour les écrire dans son interligne du haut.
-  const haut = nu && (/\d/.test(d.r || '') || (d.h || []).length) ? 1 : 0;
+  const haut = nu && (hautForce || /\d/.test(d.r || '') || (d.h || []).length) ? 1 : 0;
   const x = c => MG + C * (2 + c - prem), yb = i => nu ? CAHIER_B + C * (i + haut) : 16 + C * (1 + i), dern = l.length - 1, W = x(k) + (nu ? 4 : C), H = nu ? C * (l.length + haut) : yb(dern) + 24;
   const ENCRE = '#1E3A8A', ROUGE = '#E35D3A', RES = '#15803D'; // résultat en vert (demandé le 07/11/2026 : « du vert pour souligner et pour les résultats »)
   let g = nu ? '' : `<rect width="${W}" height="${H}" fill="#fff"/>`;
@@ -547,8 +547,13 @@ function cahierAppliquer(racine){
     if(!cahierRO && typeof ResizeObserver !== 'undefined') cahierRO = new ResizeObserver(es => es.forEach(e => cahierCaler(e.target)));
     if(cahierRO) cahierRO.observe(p); });
   const T = racine.matches && racine.matches('table.pose-ecran[data-cahier]') ? [racine] : racine.querySelectorAll('table.pose-ecran[data-cahier]');
+  // Opérations côte à côte dans une page (relecture CE2-N3-P1-E3 du 08/11/2026 : « Non alignés ! ») : si l'une a des retenues, toutes
+  // réservent leur ligne, pour que leurs nombres et leurs résultats soient sur les mêmes lignes.
+  const ret = d => /\d/.test(d.r || '') || (d.h || []).length > 0, grp = t => { const q = t.parentElement; return q && q.parentElement; };
   T.forEach(t => { const s = t.nextElementSibling; if(s && s.classList.contains('pose-cahier')) return;
-    try{ t.insertAdjacentHTML('afterend', cm1PoseeCahier(JSON.parse(t.dataset.cahier), !!t.closest('.cahier-actif'))); }catch(e){} });
+    try{ const d = JSON.parse(t.dataset.cahier), nu = !!t.closest('.cahier-actif'), g = nu && grp(t);
+      const haut = !!(g && [...g.querySelectorAll('table.pose-ecran[data-cahier]')].some(u => { try{ return ret(JSON.parse(u.dataset.cahier)); }catch(e){ return false; } }));
+      t.insertAdjacentHTML('afterend', cm1PoseeCahier(d, nu, haut)); }catch(e){} });
   P.forEach(p => { if(p.classList.contains('cahier-actif')) cahierCaler(p); });
 }
 if(typeof document !== 'undefined' && document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if(cahierOn) document.querySelectorAll('.cahier-actif').forEach(cahierCaler); });
