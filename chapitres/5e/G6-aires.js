@@ -181,9 +181,9 @@ document.getElementById('exos-demo-aires-5e').innerHTML = `
   ${arExo(1, 'Calcule l\'aire d\'un rectangle de longueur 7,5 cm et de largeur 4 cm, puis celle d\'un carré de côté 9 cm.', [
     'Rectangle : 7,5 × 4 = 30 cm²', 'Carré : 9 × 9 = 81 cm²'])}
   ${arExo(2, 'Calcule l\'aire d\'un triangle de base 8 cm et de hauteur associée 5 cm.', [
-    '(8 × 5) : 2 = 20 cm²'])}
+    '<span class="tex">\\dfrac{8 \\times 5}{2} = 20</span> cm²'])}
   ${arExo(3, 'Calcule l\'aire d\'un triangle rectangle dont les côtés de l\'angle droit mesurent 6 cm et 4,5 cm.', [
-    '(6 × 4,5) : 2 = 13,5 cm²'])}
+    '<span class="tex">\\dfrac{6 \\times 4{,}5}{2} = 13{,}5</span> cm²'])}
   ${arExo(4, 'Calcule l\'aire d\'un parallélogramme de base 7 cm et de hauteur associée 3,2 cm.', [
     '7 × 3,2 = 22,4 cm²'])}
   ${arExo(5, 'Donne la valeur exacte, puis la valeur arrondie au centième, de l\'aire d\'un disque de rayon 3 cm, puis d\'un disque de diamètre 10 cm.', [
@@ -191,7 +191,7 @@ document.getElementById('exos-demo-aires-5e').innerHTML = `
   ${arExo(6, 'Un terrain est formé d\'un rectangle de 20 m sur 12 m et d\'un demi-disque de diamètre 12 m. Calcule son aire, arrondie au centième.', [
     'Rectangle : 20 × 12 = 240 m²', 'Demi-disque de rayon 6 m : (π × 6²) : 2 = 18π ≈ 56,55 m²', 'Total : 240 + 18π ≈ 296,55 m²'])}
   ${arExo(7, 'Un triangle de base 6 cm et de hauteur 4 cm, et un rectangle de 3 cm sur 4 cm : lequel a la plus grande aire ?', [
-    'Triangle : (6 × 4) : 2 = 12 cm² ; rectangle : 3 × 4 = 12 cm².', 'Ils ont la même aire !'])}
+    'Triangle : <span class="tex">\\dfrac{6 \\times 4}{2} = 12</span> cm².', 'Rectangle : 3 × 4 = 12 cm².', 'Ils ont la même aire !'])}
   ${arExo(8, 'Léo calcule l\'aire d\'un rectangle de 2 m sur 35 cm et trouve 70. Quelle est son erreur ? Donne la bonne réponse.', [
     'Il a multiplié des longueurs dans des unités différentes (2 m et 35 cm).', '2 m = 200 cm, donc l\'aire est 200 × 35 = 7 000 cm² (soit 0,7 m²).'])}
 </div>

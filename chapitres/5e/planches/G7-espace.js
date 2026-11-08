@@ -124,7 +124,7 @@ PLANCHES['5e|Représentation de l\'espace'] = [
       { etoiles: 3, col: 1, cahier: true, consigne: illu(conserve, 'Une boîte de conserve est un cylindre de diamètre 8 cm et de hauteur 11 cm. Calcule son volume (arrondi au cm³), puis sa contenance en litres.'),
         corr: cm1Redac('Volume de la boîte', { suite: ['r = 8 : 2 = 4', 'V = π × 4 × 4 × 11 = 176π ≈ 553'] }, 'La boîte a un volume d\'environ 553 cm³, soit environ 0,55 L.') },
       { etoiles: 3, col: 1, cahier: true, consigne: illu(tente, 'Une tente est un prisme droit. Sa base est un triangle de base 2 m et de hauteur 1,5 m ; la tente est longue de 3 m. Calcule son volume.'),
-        corr: cm1Redac('Aire de la base', '2 × 1,5 : 2 = 1,5', 'La base mesure 1,5 m².') + cm1Redac('Volume de la tente', 'V = 1,5 × 3 = 4,5', 'La tente a un volume de 4,5 m³.') },
+        corr: cm1Redac('Aire de la base', cm1Frac('2 \\times 1,5', 2) + ' = 1,5', 'La base mesure 1,5 m².') + cm1Redac('Volume de la tente', 'V = 1,5 × 3 = 4,5', 'La tente a un volume de 4,5 m³.') },
     ] },
 ];
 })();

@@ -147,6 +147,12 @@ fichier) ; la page est écrite par `tools/build-seo.js`.
   sécurité : `cm1Deux` (cm1Redac), `redacDeuxPoints` (rédactions types), `oliviaFormat` (Oliv'IA, dont la consigne le demande aussi) ;
   la lecture à voix haute dit « divisé par » pour « 12 : 3 ». Éviter deux « : » ambigus sur une ligne (« Calcul : 12 : 3 » va,
   mais pas « 12 quarts : 3 : 1/4 »).
+- **Au collège, on garde les écritures fractionnaires, y compris pour symboliser les divisions** (demandé le 08/11/2026) :
+  fraction d'une quantité, pourcentage, quatrième proportionnelle (Thalès, échelles), aire du triangle, volume de la pyramide,
+  moyenne : `F('2 \\times 35', 5)`, `2 × F(35, 5)`, `F(21, 4) = 5,25`, jamais « (2 × 35) : 5 », « 2 × (35 : 5) », « 9 × 4 : 6 ».
+  Les trois méthodes de a/b × c (6e N5), dans cet ordre : Méthode 1 `2/5 × 35 = 0,4 × 35 = 14` ; Méthode 2
+  `2/5 × 35 = 2 × 35/5 = 2 × 7 = 14` ; Méthode 3 `2/5 × 35 = (2 × 35)/5 = 70/5 = 14`. Le « : » reste pour une division seule
+  (« 22 : 2 = 11 »), au primaire, en programmation et dans les exercices sur les priorités.
 - **Pas de numérotation « 1. », « 2. »** devant les questions, surtout si elles commencent par un nombre
   ou un calcul (listes à puces ; le quiz affiche « Question 1 » au-dessus de l'énoncé).
 - **Nombres en lettres en orthographe rectifiée** (tous niveaux) : des traits d'union entre tous les mots du
@@ -196,6 +202,9 @@ trait dessiné en fond à 9,25 px sous la ligne d'écriture (`--soul`, calculé 
 Raisonnements (`.cm-redac`) séparés d'une ligne vide ; deux lignes à fraction qui se suivent sans carreau vide entre elles
 (`--calm`, cahierCaler ; demandé le 07/11/2026), phrase de conclusion comprise ; un seul carreau entre un résultat et le titre suivant :
 si le raisonnement finit par une fraction, son dénominateur occupe ce carreau (`--redm` 0, cahierCaler ; demandé le 08/11/2026).
+Titre avec une fraction : soulignement passé sous le dénominateur, et titre remonté d'un carreau quand l'encre le permet (`--redm` −32 px,
+mesure des glyphes par `cahierEncre`) ; exposants sans interligne propre. Contrôle des deux règles sur toutes les corrections (scratchpad
+regles.js) : 0 écart le 08/11/2026.
 Couleurs du cahier (07/11/2026) : écriture bleu encre #1E3A8A ; soulignement et résultats en VERT #15803D (demandé : « du vert pour souligner
 et pour les résultats à la place du rouge ») ; retenues, « +10 », « +1 » en rouge #E35D3A ; signes opératoires orange.
 Bouton flottant (`#cahierFlottant`, `cahierFlottantMaj`, demandé le 07/11/2026 : « accessible partout ») : en bas à gauche, dès qu'une

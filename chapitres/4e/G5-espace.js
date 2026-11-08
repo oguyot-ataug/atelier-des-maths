@@ -266,7 +266,7 @@ document.getElementById('exos-demo-espace-4e').innerHTML = `
   <div class="redaction-template">
     <div class="we-row"><span class="we-expr">${es4Tex('\\mathcal{A}_{\\text{base}} = \\pi \\times 3^2 = 9\\pi') + ' cm²'}</span><span class="we-comment">La base est un disque de rayon 3 cm.</span></div>
     <div class="we-row"><span class="we-expr">${es4Tex('\\mathcal{V} = \\dfrac{\\mathcal{A}_{\\text{base}} \\times h}{3} = \\dfrac{9\\pi \\times 7}{3}')}</span><span class="we-comment">On écrit la formule et on remplace.</span></div>
-    <div class="we-row"><span class="we-expr">${es4Tex('\\mathcal{V} = 21\\pi') + ' cm³'}</span><span class="we-comment">Valeur exacte : 9 × 7 : 3 = 21.</span></div>
+    <div class="we-row"><span class="we-expr">${es4Tex('\\mathcal{V} = 21\\pi') + ' cm³'}</span><span class="we-comment">Valeur exacte : ${es4Tex('\\dfrac{9 \\times 7}{3} = 21')}.</span></div>
     <div class="we-row"><span class="we-expr" style="font-family:inherit;">Le volume du cône est 21π cm³, soit environ 66 cm³.</span><span class="we-comment">21 × π ≈ 65,97.</span></div>
   </div>
 </div>

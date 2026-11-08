@@ -31,7 +31,7 @@ PLANCHES['5e|Pourcentages'] = [
       { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.',
         ...ch([['20 % de 50 = 50 % de 20 :', 'vrai'], ['10 % de 90 = 90 :', 'faux'], ['200 % d\'une quantité, c\'est son double :', 'vrai'], ['1 % de 300 = 3 :', 'vrai']], 'vrai · faux') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Un collège compte 640 élèves ; 35 % sont demi-pensionnaires. Combien d\'élèves sont demi-pensionnaires ? Combien ne le sont pas ?',
-        corr: cm1Redac('Nombre d\'élèves demi-pensionnaires', '640 × 35 : 100 = 224', '224 élèves sont demi-pensionnaires.') + cm1Redac('Élèves qui ne sont pas demi-pensionnaires', '640 − 224 = 416', '416 élèves ne sont pas demi-pensionnaires.') },
+        corr: cm1Redac('Nombre d\'élèves demi-pensionnaires', F('640 \\times 35', 100) + ' = 224', '224 élèves sont demi-pensionnaires.') + cm1Redac('Élèves qui ne sont pas demi-pensionnaires', '640 − 224 = 416', '416 élèves ne sont pas demi-pensionnaires.') },
     ] },
   { titre: 'Exprimer une proportion en pourcentage', duree: '35 min',
     attendus: ['Écrire une proportion sous forme de fraction', 'Transformer une fraction en pourcentage (dénominateur 100)', 'Comparer des proportions grâce aux pourcentages'],
@@ -78,7 +78,8 @@ PLANCHES['5e|Pourcentages'] = [
       { etoiles: 2, col: 1, consigne: 'Élection de délégués (150 votants).',
         ...rmp([['Anna obtient 42 % des voix : @ voix', 63], ['Bilal obtient 38 % des voix : @ voix', 57], ['Les autres voix (votes blancs) : @ %', 20], ['Soit @ voix', 30]], 3) },
       { etoiles: 2, col: 1, consigne: 'Quel calcul permet de répondre ? Entoure.',
-        ...chx([['15 % de 80 :', '80 × 15 : 100', '80 × 15 : 100 · 15 : 80 × 100'], ['Pourcentage que représentent 15 sur 80 :', '15 : 80 × 100', '80 × 15 : 100 · 15 : 80 × 100'], ['Prix de 80 € après 15 % de remise :', '80 − 80 × 15 : 100', '80 − 15 · 80 − 80 × 15 : 100']]) },
+        ...(() => { const a = F('80 \\times 15', 100), b = F(15, 80) + ' × 100';
+          return chx([['15 % de 80 :', a, a + ' · ' + b], ['Pourcentage que représentent 15 sur 80 :', b, a + ' · ' + b], ['Prix de 80 € après 15 % de remise :', '80 − ' + a, '80 − 15 · 80 − ' + a]]); })() },
       { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.',
         ...ch([['Baisser un prix de 50 % puis encore de 50 %, c\'est le rendre gratuit :', 'faux'], ['30 % de 200 = 60 :', 'vrai'], ['Si 40 % des élèves sont des garçons, 60 % sont des filles :', 'vrai']], 'vrai · faux') },
       { etoiles: 2, col: 1, consigne: 'Une gourde de 75 cL est remplie à 60 %.',
@@ -86,9 +87,9 @@ PLANCHES['5e|Pourcentages'] = [
       { etoiles: 1, col: 1, consigne: 'Calcule mentalement 10 %, puis déduis.',
         ...rmp([['10 % de 240 = @', 24], ['Donc 20 % de 240 = @', 48], ['Et 5 % de 240 = @', 12], ['Et 15 % de 240 = @', 36]], 2) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Dans un sondage auprès de 400 collégiens, 55 % lisent des mangas et, parmi eux, 20 % en lisent tous les jours. Combien de collégiens lisent des mangas tous les jours ?',
-        corr: cm1Redac('Lecteurs de mangas', '400 × 55 : 100 = 220', '220 collégiens lisent des mangas.') + cm1Redac('Tous les jours', '220 × 20 : 100 = 44', '44 collégiens lisent des mangas tous les jours.') },
+        corr: cm1Redac('Lecteurs de mangas', F('400 \\times 55', 100) + ' = 220', '220 collégiens lisent des mangas.') + cm1Redac('Tous les jours', F('220 \\times 20', 100) + ' = 44', '44 collégiens lisent des mangas tous les jours.') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Une classe de 28 élèves part en voyage ; 25 % des élèves ne peuvent pas venir. Le car a 25 places pour les élèves. Y a-t-il assez de places ?',
-        corr: cm1Redac('Nombre d\'élèves absents', '28 × 25 : 100 = 7', '7 élèves ne viennent pas.') + cm1Redac('Nombre d\'élèves présents', '28 − 7 = 21', '21 élèves partent : les 25 places suffisent.') },
+        corr: cm1Redac('Nombre d\'élèves absents', F('28 \\times 25', 100) + ' = 7', '7 élèves ne viennent pas.') + cm1Redac('Nombre d\'élèves présents', '28 − 7 = 21', '21 élèves partent : les 25 places suffisent.') },
     ] },
 ];
 })();

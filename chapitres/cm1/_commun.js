@@ -412,6 +412,10 @@ function cahierOps(bloc){
     n.parentNode.replaceChild(f, n);
   });
 }
+// Haut et bas de l'encre d'un élément (texte et formules), d'après les glyphes eux-mêmes.
+function cahierEncre(el){ const L = [], w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+  for(let n = w.nextNode(); n; n = w.nextNode()){ if(!n.nodeValue.trim()) continue; const g = document.createRange(); g.selectNodeContents(n); L.push(...[...g.getClientRects()].filter(x => x.height > 2 && x.width > 0)); }
+  return L.length ? { t: Math.min(...L.map(x => x.top)), b: Math.max(...L.map(x => x.bottom)) } : null; }
 function cahierCaler(page){
   if(!cahierOn || !page.isConnected || !page.offsetParent) return;
   const blocs = [], voir = el => [...el.children].forEach(c => { if(c.classList.contains('cm-redac') || c.classList.contains('redaction-template') || /^(UL|OL)$/.test(c.tagName) || (c.tagName === 'DIV' && !c.attributes.length && c.children.length && [...c.children].every(x => getComputedStyle(x).display !== 'inline'))) voir(c); else if(getComputedStyle(c).display !== 'inline') blocs.push(c); });
@@ -443,15 +447,24 @@ function cahierCaler(page){
   page.querySelectorAll('.cm-redac-sou').forEach(u => {
     const s = document.createElement('span'); s.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline;';
     u.insertBefore(s, u.firstChild); const bl = (s.getBoundingClientRect().bottom - u.getBoundingClientRect().top) / (k || 1); s.remove();
-    u.style.setProperty('--soul', (Math.round((bl + 9.25) * 100) / 100) + 'px');
+    // Titre avec une fraction : le trait passe sous le dénominateur, sur la ligne fine suivante (jamais à travers le chiffre).
+    let so = bl + 9.25; const kx = u.querySelector('.mfrac') ? cahierEncre(u) : null;
+    const kb = kx ? (kx.b - u.getBoundingClientRect().top) / (k || 1) : 0; if(kb > so - 1) so += 8 * Math.ceil((kb + 1 - so) / 8);
+    u.style.setProperty('--soul', (Math.round(so * 100) / 100) + 'px');
   });
+  // Un dépassement de moins d'un pixel ne vaut pas un carreau de plus.
+  blocs.forEach((b, i) => { const m = H[i] % 32, r = m < 1 ? 0 : Math.round((32 - m) * 100) / 100; if(r > .01) b.style.setProperty('--cal', r + 'px'); });
   // Un seul carreau entre un résultat et le titre suivant (demandé le 08/11/2026 : « ne passer qu'un seul carreau entre un résultat
   // et un nouveau titre ») : quand le raisonnement précédent finit par une ligne à fraction, son dénominateur occupe déjà ce carreau.
   page.querySelectorAll('.cm-redac').forEach(r => { const p = r.previousElementSibling;
     const fin = p && p.classList.contains('cm-redac') ? [...p.children].filter(c => c.offsetHeight).pop() : null;
-    if(fin && fin.querySelector('.mfrac')) r.style.setProperty('--redm', '0px'); else r.style.removeProperty('--redm'); });
-  // Un dépassement de moins d'un pixel ne vaut pas un carreau de plus.
-  blocs.forEach((b, i) => { const m = H[i] % 32, r = m < 1 ? 0 : Math.round((32 - m) * 100) / 100; if(r > .01) b.style.setProperty('--cal', r + 'px'); });
+    // Titre qui contient une fraction : son numérateur occupe le carreau au-dessus de sa ligne, qui sert de carreau d'écart.
+    const titreFr = r.firstElementChild && r.firstElementChild.querySelector('.mfrac');
+    if(p && p.classList.contains('cm-redac') && ((fin && fin.querySelector('.mfrac')) || titreFr)) r.style.setProperty('--redm', '0px'); else r.style.removeProperty('--redm');
+    // Le numérateur du titre déborde un peu au-dessus de son carreau : on remonte le titre d'un carreau si la place est libre
+    // (sous le dénominateur du résultat précédent), plutôt que de laisser un carreau vide.
+    const ef = titreFr && fin ? cahierEncre(fin) : null, et = ef ? cahierEncre(r.firstElementChild) : null;
+    if(ef && et && (et.t - ef.b) / (k || 1) >= 33) r.style.setProperty('--redm', '-32px'); });
 }
 function cahierAppliquer(racine){
   if(!cahierOn || !racine || !racine.querySelectorAll) return;

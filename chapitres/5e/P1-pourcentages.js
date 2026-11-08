@@ -139,21 +139,21 @@ document.getElementById('exos-demo-pourcentages-5e').innerHTML = `
 <div class="redaction-block">
   <h3>Exercices</h3>
   ${pcExo(1, 'Calcule : a) 20 % de 150 ; b) 75 % de 48 ; c) 12 % de 250.', [
-    'a) 150 × 0,2 = 30', 'b) 75 % = les trois quarts ; 48 : 4 × 3 = 36', 'c) 250 × 0,12 = 30'])}
+    'a) 150 × 0,2 = 30', 'b) <span class="tex">\\dfrac{75}{100} \\times 48 = \\dfrac{3}{4} \\times 48 = 3 \\times \\dfrac{48}{4} = 3 \\times 12 = 36</span>', 'c) 250 × 0,12 = 30'])}
   ${pcExo(2, 'Calcule de tête : 50 % de 86 ; 25 % de 120 ; 10 % de 4 500 ; 1 % de 700.', [
     'La moitié de 86 : 43', 'Le quart de 120 : 30', 'Le dixième de 4 500 : 450', 'Le centième de 700 : 7'])}
   ${pcExo(3, 'Un vélo coûte 240 €. Pendant les soldes, son prix baisse de 15 %. Calcule le montant de la réduction, puis le nouveau prix.', [
     'Réduction : 240 × 0,15 = 36 €', 'Nouveau prix : 240 − 36 = 204 €'])}
   ${pcExo(4, 'Dans un sachet de 400 g de céréales, il y a 60 g de sucre. Quel est le pourcentage de sucre ?', [
-    '60 : 400 = 0,15 = 15/100', 'Ces céréales contiennent 15 % de sucre.'])}
+    '<span class="tex">\\dfrac{60}{400} = 0{,}15 = \\dfrac{15}{100}</span>', 'Ces céréales contiennent 15 % de sucre.'])}
   ${pcExo(5, 'Un collège compte 640 élèves, dont 45 % sont demi-pensionnaires. Combien d\'élèves sont demi-pensionnaires ? Combien ne le sont pas ?', [
     '640 × 0,45 = 288 élèves sont demi-pensionnaires.', '640 − 288 = 352 élèves ne le sont pas (soit 55 %).'])}
   ${pcExo(6, 'Lors d\'un match, une basketteuse a réussi 14 tirs sur 20. Quel est son pourcentage de réussite ?', [
     '<span class="tex">\\dfrac{14}{20} = \\dfrac{70}{100}</span>', 'Elle a réussi 70 % de ses tirs.'])}
   ${pcExo(7, 'Complète le tableau de proportionnalité pour trouver quel pourcentage représentent 27 filles sur 60 élèves.', [
-    'Filles : 27 → ? ; Total : 60 → 100', 'Coefficient : 100 : 60 ; ? = 27 × 100 : 60 = 45', 'Les filles représentent 45 % des élèves.'])}
+    'Filles : 27 → ? ; Total : 60 → 100', 'Pourcentage de filles : <span class="tex">\\dfrac{27 \\times 100}{60} = \\dfrac{2\\,700}{60} = 45</span>', 'Les filles représentent 45 % des élèves.'])}
   ${pcExo(8, 'Tom affirme : « 10 % de 80, c\'est la même chose que 80 % de 10 ». A-t-il raison ?', [
-    '10 % de 80 = 80 × 0,1 = 8 et 80 % de 10 = 10 × 0,8 = 8.', 'Oui, il a raison : dans les deux cas, on calcule 80 × 10 : 100.'])}
+    '10 % de 80 = 80 × 0,1 = 8 et 80 % de 10 = 10 × 0,8 = 8.', 'Oui, il a raison : dans les deux cas, on calcule <span class="tex">\\dfrac{80 \\times 10}{100}</span>.'])}
 </div>
 `;
 

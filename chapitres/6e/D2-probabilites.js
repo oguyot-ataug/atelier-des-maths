@@ -139,7 +139,7 @@ document.getElementById('exos-demo-probabilites').innerHTML = `
     <div class="num">Exercice 5</div>
     Un sac contient des billes rouges et des billes bleues, indiscernables au toucher, 12 en tout. La probabilité de tirer une bille rouge est <span class="tex">\\dfrac{1}{4}</span>. Combien y a-t-il de billes rouges dans le sac ? Rédige ta réponse.
     <button type="button" class="exo-correction-toggle" data-target="c6-d2-c5" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
-    <div class="exo-correction" id="c6-d2-c5"><div><p style="margin:0 0 6px;">La probabilité de tirer une bille rouge est <span class="tex">\\dfrac{1}{4}</span> : le quart des billes sont rouges.</p><p style="margin:0 0 6px;">Le quart de 12, c'est 12 : 4 = 3.</p><p style="margin:0 0 6px;"><b>Il y a 3 billes rouges dans le sac</b> (et 9 bleues).</p></div></div>
+    <div class="exo-correction" id="c6-d2-c5"><div><p style="margin:0 0 6px;">La probabilité de tirer une bille rouge est <span class="tex">\\dfrac{1}{4}</span> : le quart des billes sont rouges.</p><p style="margin:0 0 6px;">Le quart de 12 : <span class="tex">\\dfrac{1}{4} \\times 12 = \\dfrac{12}{4} = 3</span>.</p><p style="margin:0 0 6px;"><b>Il y a 3 billes rouges dans le sac</b> (et 9 bleues).</p></div></div>
   </div>
 </div>
 `;

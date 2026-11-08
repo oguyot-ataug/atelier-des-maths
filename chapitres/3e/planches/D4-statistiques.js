@@ -24,7 +24,7 @@ PLANCHES['3e|Statistiques'] = [
       { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.',
         ...ch([['La moyenne est toujours l\'une des valeurs de la série.', 'faux'], ['Si on ajoute 2 à toutes les valeurs, la moyenne augmente de 2.', 'vrai'], ['Une seule valeur très grande peut beaucoup changer la moyenne.', 'vrai']], 'vrai · faux') },
       { etoiles: 2, col: 1, cahier: true, consigne: 'Temps de trajet de 20 élèves : 6 élèves entre 0 et 10 min ; 10 entre 10 et 20 min ; 4 entre 20 et 30 min. Estime le temps de trajet moyen, en prenant le centre de chaque classe.',
-        corr: cm1Redac('Moyenne estimée', '(5 × 6 + 15 × 10 + 25 × 4) : 20 = 280 : 20 = 14', 'Le temps de trajet moyen est d\'environ 14 min.') },
+        corr: cm1Redac('Moyenne estimée', cm1Frac('5 \\times 6 + 15 \\times 10 + 25 \\times 4', 20) + ' = ' + cm1Frac(280, 20) + ' = 14', 'Le temps de trajet moyen est d\'environ 14 min.') },
       { etoiles: 3, cahier: true, consigne: 'Dans une classe, la moyenne des 25 élèves est 11,2. Cinq nouveaux élèves arrivent, avec une moyenne de 14. Quelle est la nouvelle moyenne de la classe ?',
         corr: cm1Redac('Sommes des notes', { suite: ['25 × 11,2 = 280', '5 × 14 = 70'] }, '') + cm1Redac('Nouvelle moyenne', '(280 + 70) : 30 ≈ 11,67', 'La nouvelle moyenne est d\'environ 11,7.') },
     ] },
@@ -94,7 +94,7 @@ PLANCHES['3e|Statistiques'] = [
       { etoiles: 2, cahier: true, pts: 4, consigne: `On a demandé à 120 élèves leur durée de sommeil un soir de semaine. Voici les résultats.<div style="text-align:center;margin:4px 0;">${hSommeil}</div>`
           + qs(['Combien d\'élèves dorment au moins 8 h ?', 'Quel pourcentage des élèves cela représente-t-il ?', 'Estimer la durée moyenne de sommeil, en utilisant le centre de chaque classe.', 'Les médecins recommandent au moins 8 h de sommeil. « Plus de la moitié des élèves dort assez. » Est-ce vrai ?']),
         corr: cm1Redac('Élèves qui dorment au moins 8 h', '48 + 15 = 63', '63 élèves dorment au moins 8 h.') + cm1Redac('Pourcentage d\'élèves qui dorment au moins 8 h', '63 : 120 = 0,525', 'Cela représente 52,5 % des élèves.')
-          + cm1Redac('Moyenne estimée', '(6,5 × 15 + 7,5 × 42 + 8,5 × 48 + 9,5 × 15) : 120 = 963 : 120 ≈ 8,03', 'Les élèves dorment en moyenne environ 8 h.') + cm1Redac('L\'affirmation est-elle vraie ?', '52,5 % &gt; 50 %', 'C\'est vrai, mais de peu.') },
+          + cm1Redac('Moyenne estimée', cm1Frac('6,5 \\times 15 + 7,5 \\times 42 + 8,5 \\times 48 + 9,5 \\times 15', 120) + ' = ' + cm1Frac(963, 120) + ' ≈ 8,03', 'Les élèves dorment en moyenne environ 8 h.') + cm1Redac('L\'affirmation est-elle vraie ?', '52,5 % &gt; 50 %', 'C\'est vrai, mais de peu.') },
     ] },
 ];
 })();

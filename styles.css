@@ -2494,6 +2494,7 @@ body.plp-ouvert .cahier-flottant{ top:56px; bottom:auto; left:16px; z-index:2147
   body.cahier-on .cahier-actif ul, body.cahier-on .cahier-actif ol{ margin:0; padding-left:24px; }
   body.cahier-on .cahier-actif li, body.cahier-on .cahier-actif p{ line-height:32px; margin:0; }
   body.cahier-on .cahier-actif .katex{ font-size:.82em; }
+  body.cahier-on .cahier-actif sup, body.cahier-on .cahier-actif sub{ line-height:0; } /* un exposant (XXIᵉ, 10⁸) ne fait pas déborder la ligne sur le carreau suivant */
   /* Rédactions types du collège (.redaction-template, .we-row) dans une correction : une ligne par ligne du cahier, sans cadre
      (08/11/2026, mode cahier étendu au collège) ; la dernière ligne (le résultat) en vert. */
   body.cahier-on .cahier-actif .redaction-template{ background:none; border:0; border-radius:0; padding:0; margin:0; font-size:inherit; line-height:32px; }

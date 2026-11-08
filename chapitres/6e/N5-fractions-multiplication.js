@@ -9,6 +9,7 @@
 
 const FM_REM = 'style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;"';
 const FM_VERT = '#1E7B34', FM_VIOLET = '#9E1F5E', FM_ORANGE = '#E07B00', FM_ENCRE = '#1C1B2E';
+const FM_F = cm1Frac;
 const fmNum = v => String(Math.round(v * 1000) / 1000).replace('.', ',');
 const fmTex = v => fmNum(v).replace(',', '{,}');
 function fmEx(titre, lignes){
@@ -36,16 +37,16 @@ document.getElementById('cours-demo-fractions-mult-6e').innerHTML = `
 <span class="prop-badge">Règle</span>
 <div class="def-box">Pour multiplier une fraction <span class="tex">\\dfrac{a}{b}</span> (avec <i>b</i> non nul) par un nombre entier <i>c</i>, on peut, au choix :
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px;margin-top:8px;">
-    <div style="background:#fff;border-radius:8px;padding:8px 10px;"><b>Méthode 1</b><br>calculer le quotient de <i>a</i> par <i>b</i>, puis multiplier le résultat par <i>c</i>.</div>
-    <div style="background:#fff;border-radius:8px;padding:8px 10px;"><b>Méthode 2</b><br>calculer le produit de <i>a</i> par <i>c</i>, puis diviser le résultat par <i>b</i>.</div>
-    <div style="background:#fff;border-radius:8px;padding:8px 10px;"><b>Méthode 3</b><br>calculer le quotient de <i>c</i> par <i>b</i>, puis multiplier le résultat par <i>a</i>.</div>
+    <div style="background:#fff;border-radius:8px;padding:8px 10px;"><b>Méthode 1</b><br>écrire la fraction <span class="tex">\\dfrac{a}{b}</span> sous forme décimale, puis multiplier le résultat par <i>c</i>.</div>
+    <div style="background:#fff;border-radius:8px;padding:8px 10px;"><b>Méthode 2</b><br>calculer le quotient <span class="tex">\\dfrac{c}{b}</span>, puis multiplier le résultat par <i>a</i>.</div>
+    <div style="background:#fff;border-radius:8px;padding:8px 10px;"><b>Méthode 3</b><br>calculer le produit <i>a</i> × <i>c</i>, puis le quotient <span class="tex">\\dfrac{a \\times c}{b}</span>.</div>
   </div>
 </div>
-<div class="redaction-note" ${FM_REM}>Remarque : quelle que soit la méthode, on divise toujours par le <b>dénominateur</b> de la fraction, et on multiplie par son <b>numérateur</b>.</div>
+<div class="redaction-note" ${FM_REM}>Remarque : quelle que soit la méthode, on divise toujours par le <b>dénominateur</b> de la fraction, et on multiplie par son <b>numérateur</b>. On garde l'écriture fractionnaire pour écrire ces divisions : <span class="tex">\\dfrac{36}{4}</span> plutôt que 36 : 4.</div>
 ${fmEx('Exemple : calcule <span class="tex">\\dfrac{3}{4} \\times 36</span>.', [
-  ['<span class="tex">\\dfrac{3}{4} \\times 36 = (3 : 4) \\times 36 = 0{,}75 \\times 36 = 27</span>', '<b>Méthode 1</b> : intéressante quand la fraction est un nombre décimal simple.'],
-  ['<span class="tex">\\dfrac{3}{4} \\times 36 = \\dfrac{3 \\times 36}{4} = \\dfrac{108}{4} = 108 : 4 = 27</span>', '<b>Méthode 2</b> : elle marche toujours, mais les nombres deviennent grands.'],
-  ['<span class="tex">\\dfrac{3}{4} \\times 36 = 3 \\times (36 : 4) = 3 \\times 9 = 27</span>', '<b>Méthode 3</b> : la plus rapide ici, car 36 : 4 tombe juste.'],
+  ['<span class="tex">\\dfrac{3}{4} \\times 36 = 0{,}75 \\times 36 = 27</span>', '<b>Méthode 1</b> : intéressante quand la fraction est un nombre décimal simple.'],
+  ['<span class="tex">\\dfrac{3}{4} \\times 36 = 3 \\times \\dfrac{36}{4} = 3 \\times 9 = 27</span>', '<b>Méthode 2</b> : la plus rapide ici, car <span class="tex">\\dfrac{36}{4}</span> tombe juste.'],
+  ['<span class="tex">\\dfrac{3}{4} \\times 36 = \\dfrac{3 \\times 36}{4} = \\dfrac{108}{4} = 27</span>', '<b>Méthode 3</b> : elle marche toujours, mais les nombres deviennent grands.'],
 ])}
 <div class="redaction-note" ${FM_REM}>Attention : le résultat n'est pas toujours un nombre décimal. Par exemple, <span class="tex">\\dfrac{2}{3} \\times 5 = \\dfrac{2 \\times 5}{3} = \\dfrac{10}{3}</span> : on garde alors l'écriture fractionnaire.</div>
 
@@ -55,7 +56,7 @@ ${fmEx('Exemple : calcule <span class="tex">\\dfrac{3}{4} \\times 36</span>.', [
 <p class="example-title">Exemple : Léo a lu les trois huitièmes d'un livre de 240 pages. Combien de pages a-t-il lues ?</p>
 ${fmBarre(3, 8, 240, 'pages')}
 ${fmEx('', [
-  ['<span class="tex">\\dfrac{3}{8} \\times 240 = 3 \\times (240 : 8) = 3 \\times 30 = 90</span>', 'On partage 240 en 8 parts de 30 pages, et on en prend 3 (méthode 3).'],
+  ['<span class="tex">\\dfrac{3}{8} \\times 240 = 3 \\times \\dfrac{240}{8} = 3 \\times 30 = 90</span>', 'On partage 240 en 8 parts de 30 pages, et on en prend 3 (méthode 2).'],
   ['Léo a lu 90 pages.', 'On conclut par une phrase.'],
 ])}
 
@@ -63,7 +64,7 @@ ${fmEx('', [
 <span class="prop-badge">Règle</span>
 <div class="def-box">Pour calculer <b><i>t</i> %</b> d'une quantité, on la multiplie par <span class="tex">\\dfrac{t}{100}</span> : « 30 % de 90 », c'est <span class="tex">\\dfrac{30}{100} \\times 90</span>.</div>
 ${fmEx('Exemple : calcule 30 % de 90 €.', [
-  ['<span class="tex">\\dfrac{30}{100} \\times 90 = \\dfrac{30 \\times 90}{100} = \\dfrac{2\\,700}{100} = 27</span>', 'Méthode 2 : le plus simple ici, car diviser par 100 est facile.'],
+  ['<span class="tex">\\dfrac{30}{100} \\times 90 = \\dfrac{30 \\times 90}{100} = \\dfrac{2\\,700}{100} = 27</span>', 'Méthode 3 : la plus simple ici, car diviser par 100 est facile.'],
   ['30 % de 90 € valent 27 €.', ''],
 ])}
 <div class="redaction-note" ${FM_REM}>Remarque : <span class="tex">\\dfrac{30}{100} = 0{,}3</span>, donc on peut aussi calculer 0,3 × 90 = 27.</div>
@@ -117,7 +118,7 @@ function fmExo(n, enonce, lignes){
     ${enonce}
     <button type="button" class="exo-correction-toggle" data-target="fm-correction-${n}" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
     <div class="exo-correction" id="fm-correction-${n}">
-      <div class="redaction-template">${lignes.map(l => `<div class="we-row"><span class="we-expr" style="font-family:inherit;">${l}</span></div>`).join('')}</div>
+      ${Array.isArray(lignes) ? `<div class="redaction-template">${lignes.map(l => `<div class="we-row"><span class="we-expr" style="font-family:inherit;">${l}</span></div>`).join('')}</div>` : lignes}
     </div>
   </div>`;
 }
@@ -126,28 +127,36 @@ document.getElementById('exos-demo-fractions-mult-6e').innerHTML = `
   <h3>Rédaction type : « Calculer une fraction d'une quantité »</h3>
   <div class="redaction-template">
     <div class="we-row"><span class="we-expr" style="font-family:inherit;">Les trois quarts des 28 élèves de la classe sont demi-pensionnaires.</span><span class="we-comment">1. On repère la fraction et la quantité.</span></div>
-    <div class="we-row"><span class="we-expr" style="font-family:inherit;"><span class="tex">\\dfrac{3}{4} \\times 28 = 3 \\times (28 : 4) = 3 \\times 7 = 21</span></span><span class="we-comment">2. On multiplie la fraction par la quantité (méthode 3 : 28 : 4 tombe juste).</span></div>
+    <div class="we-row"><span class="we-expr" style="font-family:inherit;"><span class="tex">\\dfrac{3}{4} \\times 28 = 3 \\times \\dfrac{28}{4} = 3 \\times 7 = 21</span></span><span class="we-comment">2. On multiplie la fraction par la quantité (méthode 2 : <span class="tex">\\dfrac{28}{4}</span> tombe juste).</span></div>
     <div class="we-row"><span class="we-expr" style="font-family:inherit;">21 élèves sont demi-pensionnaires.</span><span class="we-comment">3. On conclut par une phrase.</span></div>
   </div>
 </div>
 <div class="redaction-block">
   <h3>Exercices</h3>
-  ${fmExo(1, 'Calcule <span class="tex">\\dfrac{2}{5} \\times 35</span> de trois façons différentes.', [
-    'Méthode 1 : 0,4 × 35 = 14', 'Méthode 2 : (2 × 35) : 5 = 70 : 5 = 14', 'Méthode 3 : 2 × (35 : 5) = 2 × 7 = 14'])}
-  ${fmExo(2, 'Calcule, avec la méthode la plus rapide : <span class="tex">\\dfrac{5}{6} \\times 42</span> et <span class="tex">\\dfrac{7}{10} \\times 23</span>.', [
-    '5 × (42 : 6) = 5 × 7 = 35', '0,7 × 23 = 16,1 (méthode 1 : 7/10 = 0,7)'])}
-  ${fmExo(3, 'Calcule <span class="tex">\\dfrac{4}{3} \\times 5</span>. Le résultat est-il un nombre décimal ?', [
-    '<span class="tex">\\dfrac{4 \\times 5}{3} = \\dfrac{20}{3}</span>', 'Non : 20 : 3 ne tombe pas juste, on garde l\'écriture 20/3.'])}
-  ${fmExo(4, 'Un réservoir de 60 L est rempli aux deux tiers. Combien de litres contient-il ?', [
-    '<span class="tex">\\dfrac{2}{3} \\times 60 = 2 \\times (60 : 3) = 2 \\times 20 = 40</span>', 'Le réservoir contient 40 L.'])}
-  ${fmExo(5, 'Dans un collège de 540 élèves, les cinq neuvièmes sont des filles. Combien y a-t-il de filles ?', [
-    '5 × (540 : 9) = 5 × 60 = 300', 'Il y a 300 filles.'])}
-  ${fmExo(6, 'Calcule 25 % de 48 et 10 % de 350.', [
-    '25 % de 48 : (25 × 48) : 100 = 1 200 : 100 = 12 (c\'est aussi le quart de 48)', '10 % de 350 : 350 : 10 = 35'])}
-  ${fmExo(7, 'Un pull coûte 40 €. Pendant les soldes, son prix baisse de 30 %. De combien baisse-t-il ? Quel est son nouveau prix ?', [
-    '30 % de 40 € : 0,3 × 40 = 12 €', 'Nouveau prix : 40 − 12 = 28 €'])}
-  ${fmExo(8, 'Emma dit : « Les trois quarts de 20, c\'est plus que les deux tiers de 18. » A-t-elle raison ?', [
-    'Trois quarts de 20 : 3 × (20 : 4) = 15', 'Deux tiers de 18 : 2 × (18 : 3) = 12', 'Oui, 15 > 12 : elle a raison.'])}
+  ${fmExo(1, 'Calcule <span class="tex">\\dfrac{2}{5} \\times 35</span> de trois façons différentes.',
+    cm1Redac('Méthode 1', `${FM_F(2, 5)} × 35 = 0,4 × 35 = 14`, '')
+    + cm1Redac('Méthode 2', `${FM_F(2, 5)} × 35 = 2 × ${FM_F(35, 5)} = 2 × 7 = 14`, '')
+    + cm1Redac('Méthode 3', `${FM_F(2, 5)} × 35 = ${FM_F('2 \\times 35', 5)} = ${FM_F(70, 5)} = 14`, 'Les trois méthodes donnent le même résultat : 14.'))}
+  ${fmExo(2, 'Calcule, avec la méthode la plus rapide : <span class="tex">\\dfrac{5}{6} \\times 42</span> et <span class="tex">\\dfrac{7}{10} \\times 23</span>.',
+    cm1Redac(`Valeur de ${FM_F(5, 6)} × 42`, `${FM_F(5, 6)} × 42 = 5 × ${FM_F(42, 6)} = 5 × 7 = 35`, `Méthode 2 : ${FM_F(42, 6)} tombe juste, le calcul se fait de tête.`)
+    + cm1Redac(`Valeur de ${FM_F(7, 10)} × 23`, `${FM_F(7, 10)} × 23 = 0,7 × 23 = 16,1`, `Méthode 1 : la fraction ${FM_F(7, 10)} s'écrit 0,7.`))}
+  ${fmExo(3, 'Calcule <span class="tex">\\dfrac{4}{3} \\times 5</span>. Le résultat est-il un nombre décimal ?',
+    cm1Redac(`Valeur de ${FM_F(4, 3)} × 5`, `${FM_F(4, 3)} × 5 = ${FM_F('4 \\times 5', 3)} = ${FM_F(20, 3)}`, '')
+    + cm1Redac('Le résultat est-il un nombre décimal ?', `${FM_F(20, 3)} = 6,666…`, `Non : la division de 20 par 3 ne s'arrête jamais, on garde l'écriture fractionnaire ${FM_F(20, 3)}.`))}
+  ${fmExo(4, 'Un réservoir de 60 L est rempli aux deux tiers. Combien de litres contient-il ?',
+    cm1Redac('Contenu du réservoir', `${FM_F(2, 3)} × 60 = 2 × ${FM_F(60, 3)} = 2 × 20 = 40`, 'Le réservoir contient 40 L.'))}
+  ${fmExo(5, 'Dans un collège de 540 élèves, les cinq neuvièmes sont des filles. Combien y a-t-il de filles ?',
+    cm1Redac('Nombre de filles', `${FM_F(5, 9)} × 540 = 5 × ${FM_F(540, 9)} = 5 × 60 = 300`, 'Il y a 300 filles.'))}
+  ${fmExo(6, 'Calcule 25 % de 48 et 10 % de 350.',
+    cm1Redac('25 % de 48', `${FM_F(25, 100)} × 48 = ${FM_F('25 \\times 48', 100)} = ${FM_F('1\\,200', 100)} = 12`, '25 % de 48, c\'est 12 : c\'est aussi le quart de 48.')
+    + cm1Redac('10 % de 350', `${FM_F(10, 100)} × 350 = ${FM_F('10 \\times 350', 100)} = ${FM_F('3\\,500', 100)} = 35`, '10 % de 350, c\'est 35.'))}
+  ${fmExo(7, 'Un pull coûte 40 €. Pendant les soldes, son prix baisse de 30 %. De combien baisse-t-il ? Quel est son nouveau prix ?',
+    cm1Redac('Baisse du prix', `${FM_F(30, 100)} × 40 = ${FM_F('30 \\times 40', 100)} = ${FM_F('1\\,200', 100)} = 12`, 'Le prix baisse de 12 €.')
+    + cm1Redac('Nouveau prix du pull', '40 − 12 = 28', 'Pendant les soldes, le pull coûte 28 €.'))}
+  ${fmExo(8, 'Emma dit : « Les trois quarts de 20, c\'est plus que les deux tiers de 18. » A-t-elle raison ?',
+    cm1Redac('Trois quarts de 20', `${FM_F(3, 4)} × 20 = 3 × ${FM_F(20, 4)} = 3 × 5 = 15`, '')
+    + cm1Redac('Deux tiers de 18', `${FM_F(2, 3)} × 18 = 2 × ${FM_F(18, 3)} = 2 × 6 = 12`, '')
+    + cm1Redac('Emma a-t-elle raison ?', '15 > 12', 'Oui, elle a raison : les trois quarts de 20 valent plus que les deux tiers de 18.'))}
 </div>
 `;
 
@@ -159,18 +168,18 @@ function fmBarreMaj(){
   document.getElementById('fm-barre').innerHTML = fmBarre(n, d, q, '');
   const part = q / d, res = n * q / d, dec = Math.abs(Math.round(part * 1000) / 1000 - part) < 1e-9;
   const calc = document.getElementById('fm-calc');
-  calc.innerHTML = `<span class="tex">\\dfrac{${n}}{${d}} \\times ${fmTex(q)} = ${n} \\times (${fmTex(q)} : ${d}) ${dec ? '=' : '\\approx'} ${n} \\times ${fmTex(part)} ${dec ? '=' : '\\approx'} ${fmTex(res)}</span>`
-    + (dec ? '' : `<br><span class="hint">${fmNum(q)} : ${d} ne tombe pas juste : on peut écrire le résultat exact <span class="tex">\\dfrac{${fmTex(n * q)}}{${d}}</span>.</span>`)
+  calc.innerHTML = `<span class="tex">\\dfrac{${n}}{${d}} \\times ${fmTex(q)} = ${n} \\times \\dfrac{${fmTex(q)}}{${d}} ${dec ? '=' : '\\approx'} ${n} \\times ${fmTex(part)} ${dec ? '=' : '\\approx'} ${fmTex(res)}</span>`
+    + (dec ? '' : `<br><span class="hint">La division de ${fmNum(q)} par ${d} ne tombe pas juste : on peut écrire le résultat exact <span class="tex">\\dfrac{${fmTex(n * q)}}{${d}}</span>.</span>`)
     + (n > d ? '' : `<br><span class="hint">On partage ${fmNum(q)} en ${d} parts égales de ${fmNum(part)}${dec ? '' : ' environ'}, et on en prend ${n}.</span>`);
   renderStaticMath(calc);
 }
 /* ---- Méthode 2 : choisir la méthode ---- */
 const FM_METHODE_STEPS = [
-  { expr: '<span class="tex">\\dfrac{5}{6} \\times 42</span>', note: 'Quelle méthode choisir ? On regarde si 5 : 6 ou 42 : 6 tombe juste.' },
-  { expr: 'Méthode 1 ? 5 : 6 = 0,8333… : non', note: 'La fraction n\'est pas un nombre décimal : la méthode 1 ne convient pas.' },
-  { expr: 'Méthode 2 ? 5 × 42 = 210, puis 210 : 6 = 35', note: 'Elle marche, mais il faut diviser 210 par 6 : pas facile de tête.' },
-  { expr: 'Méthode 3 ? 42 : 6 = 7 : oui !', note: '42 est dans la table de 6 : la division tombe juste.' },
-  { expr: '<span class="tex">\\dfrac{5}{6} \\times 42 = 5 \\times 7 = 35</span>', note: 'Avec la méthode 3, le calcul se fait de tête.' },
+  { expr: '<span class="tex">\\dfrac{5}{6} \\times 42</span>', note: 'Quelle méthode choisir ? On regarde si <span class="tex">\\dfrac{5}{6}</span> ou <span class="tex">\\dfrac{42}{6}</span> tombe juste.' },
+  { expr: '<span class="tex">\\dfrac{5}{6} = 0{,}8333…</span>', note: 'Méthode 1 : la fraction n\'est pas un nombre décimal, elle ne convient pas.' },
+  { expr: '<span class="tex">\\dfrac{5}{6} \\times 42 = \\dfrac{5 \\times 42}{6} = \\dfrac{210}{6} = 35</span>', note: 'Méthode 3 : elle marche, mais il faut diviser 210 par 6 : pas facile de tête.' },
+  { expr: '<span class="tex">\\dfrac{42}{6} = 7</span>', note: 'Méthode 2 : 42 est dans la table de 6, la division tombe juste.' },
+  { expr: '<span class="tex">\\dfrac{5}{6} \\times 42 = 5 \\times \\dfrac{42}{6} = 5 \\times 7 = 35</span>', note: 'Avec la méthode 2, le calcul se fait de tête.' },
 ];
 const fmMethodeDemo = makeStepDemo(FM_METHODE_STEPS, 'fm-methodeDisplay');
 /* ---- Méthode 3 : échelle de pourcentage ---- */
@@ -179,7 +188,8 @@ function fmPourcent(){
   document.getElementById('fm-ptVal').textContent = t + ' %';
   document.getElementById('fm-pBarre').innerHTML = fmBarre(t / 10, 10, q, '', FM_VIOLET);
   const c = document.getElementById('fm-pCalc');
-  c.innerHTML = `10 % de ${fmNum(q)}, c'est <span class="tex">\\dfrac{1}{10}</span> de ${fmNum(q)} : ${fmNum(q / 10)}. &nbsp; Donc ${t} % de ${fmNum(q)} = ${t / 10} × ${fmNum(q / 10)} = <b>${fmNum(q * t / 100)}</b>`;
+  c.innerHTML = `Une part de 10 % : <span class="tex">\\dfrac{10}{100} \\times ${fmTex(q)} = \\dfrac{${fmTex(q)}}{10} = ${fmTex(q / 10)}</span>`
+    + `<br>${t} %, c'est ${t / 10} part${t > 10 ? 's' : ''} de 10 % : <span class="tex">${t / 10} \\times ${fmTex(q / 10)} = ${fmTex(q * t / 100)}</span>`;
   renderStaticMath(c);
 }
 
@@ -195,7 +205,7 @@ DEMO_REGISTRY['6e|Fractions : multiplication'] = {
 
 DEMO_QUIZZES['6e|Fractions : multiplication'] = [
   { q: 'Que vaut 3/5 × 20 ?', opts: ['12', '15', '60'], correct: 0 },
-  { q: 'Pour calculer 2/7 × 21 de tête, le plus rapide est de calculer d\'abord...', opts: ['2 : 7', '21 : 7', '2 × 21'], correct: 1 },
+  { q: 'Pour calculer 2/7 × 21 de tête, le plus rapide est de calculer d\'abord...', opts: ['2/7', '21/7', '2 × 21'], correct: 1 },
   { q: 'Les trois quarts de 40, c\'est...', opts: ['30', '10', '120'], correct: 0 },
   { q: '2/3 × 4 est égal à...', opts: ['8/3', '8/12', '6/3'], correct: 0 },
   { q: '20 % de 50, c\'est...', opts: ['10', '20', '2,5'], correct: 0 },

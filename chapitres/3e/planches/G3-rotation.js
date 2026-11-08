@@ -86,7 +86,7 @@ PLANCHES['3e|Rotation'] = [
       { etoiles: 2, cahier: true, pts: 4, consigne: '<span>Dans un repère, A(1 ; 2), B(4 ; 2) et C(1 ; 5).</span>' + cote(brevetRep, qs(['Quelle est la nature du triangle ABC ? Justifier.', 'Donner les coordonnées de A\', B\' et C\', images de A, B et C par la rotation de centre O et d\'angle 90° (sens inverse des aiguilles d\'une montre).', 'Quelle est l\'aire du triangle A\'B\'C\' ? Justifier sans calcul de longueur supplémentaire.'])),
         corr: cm1Redac('Nature de ABC', { suite: ['AB = 3', 'AC = 3'] }, '[AB] est horizontal et [AC] vertical : ABC est rectangle et isocèle en A.')
           + cm1Redac('Coordonnées des images', { suite: ['La rotation de 90° envoie (x ; y) sur (−y ; x).', 'A\'(−2 ; 1), B\'(−2 ; 4), C\'(−5 ; 1)'] }, '')
-          + cm1Redac('Aire de ABC', '3 × 3 : 2 = 4,5', 'Une rotation conserve les aires : l\'aire de A\'B\'C\' est 4,5 unités d\'aire.') },
+          + cm1Redac('Aire de ABC', cm1Frac('3 \\times 3', 2) + ' = 4,5', 'Une rotation conserve les aires : l\'aire de A\'B\'C\' est 4,5 unités d\'aire.') },
     ] },
 ];
 })();

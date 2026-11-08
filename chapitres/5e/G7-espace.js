@@ -282,7 +282,7 @@ document.getElementById('exos-demo-espace-5e').innerHTML = `
   ${e5Exo(4, 'Calcule le volume d\'un cube d\'arête 4 cm, puis celui d\'un pavé droit de 12 cm sur 5 cm sur 3 cm.', [
     'Cube : 4 × 4 × 4 = 64 cm³', 'Pavé : 12 × 5 × 3 = 180 cm³'])}
   ${e5Exo(5, 'Un prisme droit a pour base un triangle rectangle dont les côtés de l\'angle droit mesurent 6 cm et 8 cm. Sa hauteur est 10 cm. Calcule son volume.', [
-    'Aire de la base : (6 × 8) : 2 = 24 cm²', 'Volume : 24 × 10 = 240 cm³'])}
+    'Aire de la base : <span class="tex">\\dfrac{6 \\times 8}{2} = 24</span> cm²', 'Volume : 24 × 10 = 240 cm³'])}
   ${e5Exo(6, 'Une boîte de conserve cylindrique a un rayon de 5 cm et une hauteur de 20 cm. Calcule son volume, puis sa contenance en litres.', [
     'V = π × 5² × 20 = 500π ≈ 1 570,80 cm³', 'Soit environ 1,57 L.'])}
   ${e5Exo(7, 'Un aquarium a la forme d\'un pavé droit de 60 cm sur 30 cm sur 40 cm. Combien de litres d\'eau peut-il contenir ?', [

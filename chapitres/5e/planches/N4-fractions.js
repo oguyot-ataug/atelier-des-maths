@@ -117,7 +117,7 @@ PLANCHES['5e|Fractions'] = [
       { etoiles: 3, col: 1, cahier: true, consigne: illu(reservoir, `Un réservoir de 60 L est rempli aux ${T(3, 4)}. On utilise ${T(1, 3)} de sa contenance totale. Combien de litres reste-t-il ?`),
         corr: cm1Redac('Litres restants', { suite: [`${F(3, 4)} de 60 L = 45 L`, `${F(1, 3)} de 60 L = 20 L`, '45 − 20 = 25'] }, 'Il reste 25 L dans le réservoir.') },
       { etoiles: 3, col: 1, cahier: true, consigne: `Lina dépense ${T(2, 5)} de son argent de poche en livres et ${T(1, 4)} en sorties. Quelle fraction de son argent lui reste-t-il ? Elle avait 40 € : combien lui reste-t-il ?`,
-        corr: cm1Redac('Fraction restante', `1 − ${F(2, 5)} − ${F(1, 4)} = ${F(20, 20)} − ${F(8, 20)} − ${F(5, 20)} = ${F(7, 20)}`, `Il lui reste les ${F(7, 20)} de son argent.`) + cm1Redac('Somme restante', `${F(7, 20)} de 40 € = 40 : 20 × 7 = 14 €`, 'Il lui reste 14 €.') },
+        corr: cm1Redac('Fraction restante', `1 − ${F(2, 5)} − ${F(1, 4)} = ${F(20, 20)} − ${F(8, 20)} − ${F(5, 20)} = ${F(7, 20)}`, `Il lui reste les ${F(7, 20)} de son argent.`) + cm1Redac('Somme restante', `${F(7, 20)} × 40 = 7 × ${F(40, 20)} = 7 × 2 = 14`, 'Il lui reste 14 €.') },
       { etoiles: 3, cahier: true, consigne: illu(gateau12, `Un gâteau est coupé en 12 parts égales. Paul en mange ${T(1, 4)}, Léa ${T(1, 3)} et Sam ${T(1, 6)}. Reste-t-il du gâteau ? Si oui, combien de parts ?`),
         corr: cm1Redac('Parts mangées', `${F(3, 12)} + ${F(4, 12)} + ${F(2, 12)} = ${F(9, 12)}`, 'Ils ont mangé 9 parts sur 12 : il reste 3 parts.') },
     ] },

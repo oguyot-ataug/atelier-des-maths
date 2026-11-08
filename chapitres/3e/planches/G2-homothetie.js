@@ -71,7 +71,7 @@ PLANCHES['3e|Homothétie'] = [
       { etoiles: 2, col: 1, cahier: true, consigne: 'M ∈ [AB], N ∈ [AC] et (MN) // (BC), avec AM = 3 et AB = 7,5. Quelle homothétie transforme le triangle ABC en AMN ? Calcule MN si BC = 10.',
         corr: cm1Redac('Rapport de l\'homothétie de centre A', 'AM : AB = 3 : 7,5 = 0,4', '') + cm1Redac('Longueur MN', 'MN = 0,4 × 10 = 4', 'MN = 4.') },
       { etoiles: 2, col: 1, cahier: true, consigne: 'Un projecteur agrandit une diapositive de 3,6 cm de large en une image de 2,4 m de large. Quel est le rapport ? Quelle est la hauteur de l\'image si la diapositive mesure 2,4 cm de haut ?',
-        corr: cm1Redac('Rapport de l\'agrandissement', '240 : 3,6 ≈ 66,7', '') + cm1Redac('Hauteur de l\'image', '2,4 × 240 : 3,6 = 160', 'L\'image mesure 160 cm, soit 1,6 m de haut.') },
+        corr: cm1Redac('Rapport de l\'agrandissement', '240 : 3,6 ≈ 66,7', '') + cm1Redac('Hauteur de l\'image', cm1Frac('2,4 \\times 240', '3,6') + ' = 160', 'L\'image mesure 160 cm, soit 1,6 m de haut.') },
       { etoiles: 2, col: 1, cahier: true, consigne: illu(lampeOmbre, 'Une lampe éclaire une main de 15 cm placée à 1 m d\'elle. L\'écran est à 4 m de la lampe. Quelle est la taille de l\'ombre ?'),
         corr: cm1Redac('Rapport de l\'homothétie', '4 : 1 = 4', 'C\'est une homothétie de centre la lampe et de rapport 4.') + cm1Redac('Taille de l\'ombre', '15 × 4 = 60', 'L\'ombre mesure 60 cm.') },
       { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.',
@@ -87,7 +87,7 @@ PLANCHES['3e|Homothétie'] = [
       { etoiles: 2, cahier: true, pts: 5, consigne: `<span>Le logo d'un club est un triangle ABC avec AB = 4 cm, AC = 3 cm et BC = 5 cm. Pour une affiche, on l'agrandit par l'homothétie de centre A et de rapport 2,5.</span>` + cote(logo, qs(['Montrer que le triangle ABC est rectangle en A.', 'Calculer les longueurs des côtés du triangle agrandi.', 'Calculer l\'aire du triangle ABC, puis celle du triangle agrandi.', 'Le graphiste veut un logo de 150 cm². Quel rapport doit-il choisir ?'])),
         corr: cm1Redac('ABC rectangle', { suite: ['5² = 25', '4² + 3² = 16 + 9 = 25'] }, 'D\'après la réciproque du théorème de Pythagore, ABC est rectangle en A.')
           + cm1Redac('Côtés agrandis', { suite: ['4 × 2,5 = 10', '3 × 2,5 = 7,5', '5 × 2,5 = 12,5'] }, 'Le triangle agrandi mesure 10 cm, 7,5 cm et 12,5 cm.')
-          + cm1Redac('Aire de ABC', '4 × 3 : 2 = 6', '') + cm1Redac('Aire du triangle agrandi', '6 × 2,5² = 6 × 6,25 = 37,5', 'Les aires valent 6 cm² et 37,5 cm².')
+          + cm1Redac('Aire de ABC', cm1Frac('4 \\times 3', 2) + ' = 6', '') + cm1Redac('Aire du triangle agrandi', '6 × 2,5² = 6 × 6,25 = 37,5', 'Les aires valent 6 cm² et 37,5 cm².')
           + cm1Redac('Aire de 150 cm²', { suite: ['150 : 6 = 25', 'k² = 25', 'k = 5'] }, 'Il doit choisir le rapport 5.') },
       { etoiles: 2, cahier: true, pts: 4, consigne: `<span>Pour un spectacle d'ombres, une lampe L éclaire une figurine [MN] de 12 cm, placée à 50 cm de la lampe. L'écran est à 2 m de la lampe ; l'ombre est [M'N'].</span>` + cote(ombre, qs(['Quel est le rapport de l\'homothétie de centre L qui transforme [MN] en [M\'N\'] ?', 'Quelle est la taille de l\'ombre ?', 'À quelle distance de la lampe faut-il placer la figurine pour obtenir une ombre de 1,20 m ?'])),
         corr: cm1Redac('Rapport de l\'homothétie', '200 : 50 = 4', 'Le rapport est 4.') + cm1Redac('Taille de l\'ombre', '12 × 4 = 48', 'L\'ombre mesure 48 cm.')

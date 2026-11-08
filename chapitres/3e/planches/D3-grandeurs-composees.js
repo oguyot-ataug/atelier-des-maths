@@ -76,7 +76,7 @@ PLANCHES['3e|Grandeurs composées'] = [
       { etoiles: 2, col: 1, cahier: true, consigne: 'Une rivière a un débit de 35 m³/s. Quel volume d\'eau s\'écoule en un jour ? Donne-le en écriture scientifique.',
         corr: cm1Redac('Volume d\'eau écoulé en un jour', { suite: ['1 jour = 24 × 3 600 = 86 400 s', '35 × 86 400 = 3 024 000'] }, 'Il s\'écoule 3,024 × 10⁶ m³ d\'eau par jour.') },
       { etoiles: 2, col: 1, cahier: true, consigne: 'Une voiture électrique a une batterie de 60 kWh, rechargée sur une borne de 7 kW. Combien de temps dure une recharge complète ? Elle consomme 15 kWh aux 100 km : quelle est son autonomie ?',
-        corr: cm1Redac('Durée de la recharge', { suite: ['60 : 7 ≈ 8,57 h', '0,57 h × 60 ≈ 34 min'] }, 'La recharge dure environ 8 h 34 min.') + cm1Redac('Autonomie de la voiture', '60 : 15 × 100 = 400', 'L\'autonomie est de 400 km.') },
+        corr: cm1Redac('Durée de la recharge', { suite: ['60 : 7 ≈ 8,57 h', '0,57 h × 60 ≈ 34 min'] }, 'La recharge dure environ 8 h 34 min.') + cm1Redac('Autonomie de la voiture', cm1Frac(60, 15) + ' × 100 = 4 × 100 = 400', 'L\'autonomie est de 400 km.') },
       { etoiles: 2, col: 1, cahier: true, consigne: 'Une connexion internet télécharge 50 Mo par seconde. Combien de temps faut-il pour un film de 4,5 Go (1 Go = 1 000 Mo) ?',
         corr: cm1Redac('Durée de téléchargement du film', '4 500 : 50 = 90', 'Il faut 90 s, soit 1 min 30 s.') },
       { etoiles: 3, cahier: true, consigne: 'Il tombe 12 mm de pluie sur un toit de 80 m². Combien de litres d\'eau peut-on récupérer ?',

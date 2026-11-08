@@ -68,7 +68,7 @@ PLANCHES['5e|Aires'] = [
       { etoiles: 3, col: 1, cahier: true, consigne: 'Un parallélogramme a une base de 8 cm et une aire de 36 cm². Calcule sa hauteur.',
         corr: cm1Redac('Hauteur du parallélogramme', { suite: ['b × h = 36', '8 × h = 36', 'h = 36 : 8', 'h = 4,5'] }, 'La hauteur mesure 4,5 cm.') },
       { etoiles: 3, col: 1, cahier: true, consigne: illu(triHauteur, 'Dans le triangle ABC, AB = 10 cm et la hauteur issue de C mesure 6 cm. BC = 12 cm. Calcule l\'aire de ABC, puis la hauteur issue de A.'),
-        corr: cm1Redac('Aire de ABC', 'A = 10 × 6 : 2 = 30', 'L\'aire vaut 30 cm².') + cm1Redac('Hauteur issue de A', { suite: ['BC × h : 2 = 30', '12 × h = 60', 'h = 60 : 12', 'h = 5'] }, 'La hauteur issue de A mesure 5 cm.') },
+        corr: cm1Redac('Aire de ABC', 'A = ' + cm1Frac('10 \\times 6', 2) + ' = 30', 'L\'aire vaut 30 cm².') + cm1Redac('Hauteur issue de A', { suite: [cm1Frac('BC \\times h', 2) + ' = 30', '12 × h = 60', 'h = ' + cm1Frac(60, 12), 'h = 5'] }, 'La hauteur issue de A mesure 5 cm.') },
     ] },
   { titre: 'Aire d\'un disque', duree: '40 min',
     attendus: ['Calculer l\'aire d\'un disque : π × r × r', 'Donner une valeur exacte (avec π) et une valeur arrondie', 'Ne pas confondre aire du disque et périmètre du cercle'],
@@ -122,7 +122,7 @@ PLANCHES['5e|Aires'] = [
       { etoiles: 3, col: 1, cahier: true, consigne: illu(carrelage, 'Une pièce de 5 m sur 4 m est carrelée avec des carreaux carrés de 50 cm de côté. Combien faut-il de carreaux ?'),
         corr: cm1Redac('Aire de la pièce', '5 × 4 = 20', 'La pièce mesure 20 m².') + cm1Redac('Aire d\'un carreau', '0,5 × 0,5 = 0,25', 'Un carreau mesure 0,25 m².') + cm1Redac('Nombre de carreaux', '20 : 0,25 = 80', 'Il faut 80 carreaux.') },
       { etoiles: 3, col: 1, cahier: true, consigne: illu(champ, 'Un champ triangulaire a une base de 150 m et une hauteur de 80 m. Calcule son aire en m², puis en hectares.'),
-        corr: cm1Redac('Aire du champ', { suite: ['A = 150 × 80 : 2 = 6 000 m²', '6 000 m² = 0,6 ha'] }, 'Le champ mesure 6 000 m², soit 0,6 ha.') },
+        corr: cm1Redac('Aire du champ', { suite: ['A = ' + cm1Frac('150 \\times 80', 2) + ' = 6 000 m²', '6 000 m² = 0,6 ha'] }, 'Le champ mesure 6 000 m², soit 0,6 ha.') },
     ] },
 ];
 })();
