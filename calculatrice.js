@@ -409,12 +409,13 @@ function calcCss(){
   .calc-dispo button{ border:0; background:transparent; color:#DCE6F2; font:600 .72rem 'Space Grotesk',Arial,sans-serif; padding:4px 9px; border-radius:999px; cursor:pointer; }
   .calc-dispo button.on{ background:#fff; color:#1F3A5C; }
   .calc-x{ border:0; background:rgba(255,255,255,.14); color:#fff; width:28px; height:28px; border-radius:50%; cursor:pointer; font-size:16px; line-height:28px; padding:0; }
-  .calc-ecran{ background:#E9F0E4; color:#1C2B39; border-radius:10px; padding:6px 10px 6px; min-height:96px; display:flex; flex-direction:column; justify-content:space-between; box-shadow:inset 0 2px 6px rgba(0,0,0,.25); }
+  .calc-ecran{ background:#E9F0E4; color:#1C2B39; border-radius:10px; padding:6px 10px 6px; height:142px; box-sizing:border-box; display:flex; flex-direction:column; justify-content:space-between; box-shadow:inset 0 2px 6px rgba(0,0,0,.25); }
   #calcPanneau.ti .calc-ecran{ background:#DDE3E8; }
   .calc-etat{ display:flex; gap:8px; font:700 .62rem 'JetBrains Mono',monospace; color:#5B6472; min-height:12px; }
   .calc-etat .on{ color:#C2410C; }
-  .calc-expr{ font-size:1.05rem; min-height:34px; overflow-x:auto; overflow-y:hidden; white-space:nowrap; padding:2px 0; }
-  .calc-res{ font-size:1.25rem; text-align:right; min-height:34px; overflow-x:auto; overflow-y:hidden; white-space:nowrap; font-weight:600; }
+  .calc-expr{ font-size:1.05rem; height:56px; flex:0 0 56px; display:flex; align-items:center; overflow-x:auto; overflow-y:auto; white-space:nowrap; padding:0; scrollbar-width:none; } /* hauteurs fixes : l'écran ne change plus de taille entre une fraction et un décimal */
+  .calc-res{ font-size:1.25rem; height:62px; flex:0 0 62px; display:flex; align-items:center; justify-content:flex-end; overflow-x:auto; overflow-y:auto; white-space:nowrap; font-weight:600; scrollbar-width:none; }
+  .calc-expr::-webkit-scrollbar, .calc-res::-webkit-scrollbar{ display:none; }
   .calc-res.err{ color:#B91C1C; font:700 .95rem 'Space Grotesk',Arial,sans-serif; }
   .calc-montre-bande{ margin:8px 0 0; padding:6px 8px; background:rgba(255,255,255,.1); border-radius:10px; font-size:.78rem; line-height:1.9; }
   .calc-montre-bande .k{ display:inline-block; min-width:22px; text-align:center; padding:0 6px; margin:0 2px; border-radius:6px; background:#fff; color:#1C2B39; font-weight:700; line-height:20px; }
@@ -442,7 +443,7 @@ function calcCss(){
   .calc-tab td, .calc-tab th{ border:1px solid #DDE2EA; padding:2px 6px; text-align:center; }
   .calc-tab-corps{ max-height:180px; overflow:auto; }
   .calc-hist{ margin-top:8px; font-size:.75rem; color:#DCE6F2; max-height:90px; overflow:auto; }
-  .calc-hist div{ display:flex; justify-content:space-between; gap:8px; padding:1px 0; border-bottom:1px solid rgba(255,255,255,.1); cursor:pointer; }
+  .calc-hist div{ display:flex; justify-content:space-between; align-items:center; gap:8px; padding:3px 0; border-bottom:1px solid rgba(255,255,255,.1); cursor:pointer; }
   .calc-aide{ font-size:.68rem; color:#B9C7D8; margin:8px 2px 0; line-height:1.35; }
   #calcFlottant{ position:fixed; left:18px; bottom:72px; z-index:9790; width:44px; height:44px; border-radius:50%; border:0; background:#1F3A5C; color:#fff; cursor:pointer;
     box-shadow:0 4px 14px rgba(28,43,57,.25); display:none; align-items:center; justify-content:center; }
@@ -487,7 +488,7 @@ function calcAfficher(){
     tab.innerHTML = `<div>Tableau de valeurs de l'expression écrite (avec la touche <b>x</b>).</div>
       <div style="margin-top:4px;"><label>Début <input id="calcTabD" value="-3"></label><label>Fin <input id="calcTabF" value="3"></label><label>Pas <input id="calcTabP" value="1"></label>
       <button type="button" class="calc-montre" style="margin:4px 0 0;" onclick="calcTableau()">Calculer</button></div><div class="calc-tab-corps"></div>`; }
-  p.querySelector('.calc-hist').innerHTML = CALC.hist.slice(0, 6).map((h, k) => `<div onclick="calcReprendre(${k})" title="Reprendre ce résultat (Ans)"><span>${calcTexte(h.e)}</span><span>${calcTexte(h.r)}</span></div>`).join('');
+  p.querySelector('.calc-hist').innerHTML = CALC.hist.slice(0, 6).map((h, k) => `<div onclick="calcReprendre(${k})" title="Reprendre ce résultat (Ans)"><span>${calcTexte(h.e.replace(/\\dfrac/g, '\\tfrac'))}</span><span>${calcTexte(h.r.replace(/\\dfrac/g, '\\tfrac'))}</span></div>`).join('');
   const e = p.querySelector('.calc-expr'); e.scrollLeft = e.scrollWidth;
 }
 function calcReprendre(k){ const h = CALC.hist[k]; if(!h) return; CALC.racine.length = 0; CALC.racine.push({ t: 'c', v: 'Ans' }); CALC.L = CALC.racine; CALC.i = 1; CALC.fini = false; CALC.res = null; calcAfficher(); }
