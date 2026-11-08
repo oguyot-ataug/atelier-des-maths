@@ -344,7 +344,7 @@ Lecture : émojis jamais lus, unités en toutes lettres (`speechUnites`, `voixPr
 machine du commerce), panneau flottant déplaçable (menu L'Atelier › Calculatrice ; bouton rond `#calcFlottant` dans les chapitres
 6e-3e). Deux dispositions (« Type Casio », « Type TI » : ordre et noms des touches), retenue sur l'appareil (`calcDispo`). Écriture
 naturelle à gabarits (fraction, racine, puissance, cos( )) ; calcul exact (fractions BigInt, a√b, valeurs remarquables de la
-trigonométrie en degrés), sinon 10 chiffres ; S⇔D / ◄► ; ÷R (quotient, reste), FACT (facteurs premiers), %, ×10ˣ, Ans, tableau de
+trigonométrie en degrés, sommes de fractions et de racines affichées en une fraction : (3 + 8√3)/4), sinon 10 chiffres ; S⇔D / ◄► ; ÷R (quotient, reste), FACT (facteurs premiers), %, ×10ˣ, Ans, tableau de
 valeurs (touche Tableau / table, expression en x). L'écran garde « ÷ » (exception des calculatrices). « Montre-moi les touches » :
 `calcBouton(touches, libellé)` dans un cours, `calcMontrer(touches, titre)` (identifiants : chiffres, ',', '+', '-', '*', '/', '(',
 ')', frac, sqrt, sq, pow, neg, cos, sin, tan, shift, pi, pct, divr, fact, sd, ans, e10, x, left, right, up, down, del, ac, exe).

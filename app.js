@@ -3872,6 +3872,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1375', date:'2026-11-08', items:['Calculatrice : résultats exacts qui mêlent fractions et racines (3/4 + √12 = (3 + 8√3)/4, (1 + √2)² = 3 + 2√2, 1/(1 + √2) = −1 + √2, cos 30 + sin 30 = (1 + √3)/2).'] },
   { version:'2026-08-19.1374', date:'2026-11-08', items:['Calculatrice : l\'écran garde la même taille, que le résultat soit une fraction ou un nombre décimal ; fractions plus petites dans l\'historique.'] },
   { version:'2026-08-19.1373', date:'2026-11-08', items:['Nouveau : la Calculatrice collège (menu L\'Atelier, et bouton rond dans les chapitres de la 6e à la 3e). Écriture naturelle (fractions, puissances, racines), résultats exacts ou décimaux, trigonométrie en degrés, division euclidienne, facteurs premiers, tableau de valeurs ; touches « type Casio » ou « type TI ».', 'Boutons « Montre-moi les touches » dans les cours (3e Trigonométrie ; 4e Cosinus, Pythagore, Puissances ; 5e Fractions) : la calculatrice tape le calcul touche par touche.'] },
   { version:'2026-08-19.1372', date:'2026-11-08', items:['Proportionnalité : définition « les valeurs de l\'une s\'obtiennent en multipliant ou divisant les valeurs de l\'autre par un même nombre non nul » (lexique, cours et quiz de 6e).'] },

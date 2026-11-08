@@ -50,29 +50,60 @@ function cR(n, d, r){
   if(q.n === 0n) return q;
   return { k: 'r', n: q.n, d: q.d, r };
 }
+/* Sommes exactes (demandé le 08/11/2026 : « Oui », pour 3/4 + √12 = 3/4 + 2√3) : { k:'s', t:[{ n, d, r }] }, somme de termes
+   n/d × √r (r = 1 : partie rationnelle), au plus 6 termes, r croissants ; un seul terme redevient 'q' ou 'r'. */
+function cTermes(x){ return x.k === 's' ? x.t : [{ n: x.n, d: x.d, r: x.k === 'r' ? x.r : 1n }]; }
+function cDeTermes(L){
+  const m = new Map();
+  L.forEach(u => { const k = u.r.toString(), v = m.get(k); m.set(k, v ? { n: v.n * u.d + u.n * v.d, d: v.d * u.d, r: u.r } : { n: u.n, d: u.d, r: u.r }); });
+  const t = [];
+  for(const u of m.values()){ const q = cQ(u.n, u.d); if(q.k !== 'q') return null; if(q.n !== 0n) t.push({ n: q.n, d: q.d, r: u.r }); }
+  t.sort((x, y) => (x.r < y.r ? -1 : x.r > y.r ? 1 : 0));
+  if(!t.length) return cQ(0n);
+  if(t.length === 1) return t[0].r === 1n ? cQ(t[0].n, t[0].d) : cR(t[0].n, t[0].d, t[0].r);
+  return t.length > 6 ? null : { k: 's', t };
+}
 function cF(x){
   if(x.k === 'f') return x.v;
+  if(x.k === 's') return x.t.reduce((v, u) => v + Number(u.n) / Number(u.d) * Math.sqrt(Number(u.r)), 0);
   const v = Number(x.n) / Number(x.d);
   return x.k === 'r' ? v * Math.sqrt(Number(x.r)) : v;
 }
 const cFl = v => { if(!isFinite(v)) throw new Error('Erreur math'); return { k: 'f', v }; };
-function cNeg(a){ return a.k === 'f' ? cFl(-a.v) : Object.assign({}, a, { n: -a.n }); }
-function cAdd(a, b){
-  if(a.k === 'q' && b.k === 'q') return cQ(a.n * b.d + b.n * a.d, a.d * b.d);
-  if(a.k === 'r' && b.k === 'r' && a.r === b.r) return cR(a.n * b.d + b.n * a.d, a.d * b.d, a.r);
-  if(a.k !== 'f' && a.n === 0n) return b;
-  if(b.k !== 'f' && b.n === 0n) return a;
-  return cFl(cF(a) + cF(b));
+function cNeg(a){
+  if(a.k === 'f') return cFl(-a.v);
+  if(a.k === 's') return { k: 's', t: a.t.map(u => Object.assign({}, u, { n: -u.n })) };
+  return Object.assign({}, a, { n: -a.n });
 }
-function cMul(a, b){
-  if(a.k === 'f' || b.k === 'f') return cFl(cF(a) * cF(b));
+function cAdd(a, b){
+  if(a.k === 'f' || b.k === 'f') return cFl(cF(a) + cF(b));
+  return cDeTermes(cTermes(a).concat(cTermes(b))) || cFl(cF(a) + cF(b));
+}
+// Produit de deux termes n/d √r.
+function cMul1(a, b){
   const ra = a.k === 'r' ? a.r : 1n, rb = b.k === 'r' ? b.r : 1n;
   if(ra === 1n || rb === 1n) return cR(a.n * b.n, a.d * b.d, ra * rb);
   const c = cCarre(ra * rb); if(!c) return cFl(cF(a) * cF(b));
   return cR(a.n * b.n * c.s, a.d * b.d, c.r);
 }
+function cMul(a, b){
+  if(a.k === 'f' || b.k === 'f') return cFl(cF(a) * cF(b));
+  if(a.k !== 's' && b.k !== 's') return cMul1(a, b);
+  const un = u => u.r === 1n ? cQ(u.n, u.d) : cR(u.n, u.d, u.r), L = [];
+  for(const u of cTermes(a)) for(const v of cTermes(b)){ const p = cMul1(un(u), un(v)); if(p.k === 'f') return cFl(cF(a) * cF(b)); if(p.n !== 0n) L.push(...cTermes(p)); }
+  return cDeTermes(L) || cFl(cF(a) * cF(b));
+}
 function cInv(a){
   if(a.k === 'f'){ if(a.v === 0) throw new Error('Erreur math'); return cFl(1 / a.v); }
+  if(a.k === 's'){
+    // a + b√r : on multiplie par la quantité conjuguée, (a − b√r) / (a² − b² r) ; sinon valeur approchée.
+    if(a.t.length === 2 && a.t[0].r === 1n){
+      const x = cQ(a.t[0].n, a.t[0].d), y = a.t[1], conj = cDeTermes([a.t[0], { n: -y.n, d: y.d, r: y.r }]);
+      const den = cAdd(cMul(x, x), cQ(-(y.n * y.n * y.r), y.d * y.d));
+      if(conj && den.k === 'q' && den.n !== 0n) return cMul(conj, cInv(den));
+    }
+    const v = cF(a); if(v === 0) throw new Error('Erreur math'); return cFl(1 / v);
+  }
   if(a.n === 0n) throw new Error('Erreur math');
   if(a.k === 'q') return cQ(a.d, a.n);
   return cR(a.d, a.n * a.r, a.r); // 1 / (c√r) = √r / (c × r)
@@ -151,6 +182,13 @@ function calcDecimalTex(x){
 function calcValeurTex(x, decimal){
   if(x.k === 'f') return calcFlottantTex(x.v);
   if(decimal) return calcDecimalTex(x);
+  if(x.k === 's'){ // une seule fraction : (3 + 8√3) / 4, comme les calculatrices collège
+    const D = x.t.reduce((m, u) => m / cPgcd(m, u.d) * u.d, 1n);
+    let num = '';
+    x.t.forEach((u, j) => { const c = u.n * (D / u.d), a = cAbs(c);
+      num += (c < 0n ? '-' : j ? '+' : '') + (u.r === 1n ? String(a) : `${a === 1n ? '' : a}\\sqrt{${u.r}}`); });
+    return D === 1n ? num : `\\dfrac{${num}}{${D}}`;
+  }
   const neg = x.n < 0n, n = cAbs(x.n), sg = neg ? '-' : '';
   if(x.k === 'q') return x.d === 1n ? sg + n : `${sg}\\dfrac{${n}}{${x.d}}`;
   const rac = `${n === 1n ? '' : n}\\sqrt{${x.r}}`;
