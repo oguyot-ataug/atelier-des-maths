@@ -200,7 +200,7 @@ ce format horizontal »), à la taille des carreaux (flex-shrink 0) ; projection
 Corrigés imprimés « fond Seyès » (demandé le 08/11/2026 : « Dans les corrigés papiers, ajouter l'option "fond seyes" pour certains exercices ») :
 case des réglages des planches (`plPrefs().seyes`) ; les corrigés des exercices « dans ton cahier » (.cahier-page) s'impriment comme « Dans mon
 cahier » : `plSeyesPreparer` (classes, opérations nu), `plCssSeyes` (règles .cahier-actif / pose-cahier de styles.css recopiées dans la fenêtre
-d'impression, police Caveat), `plSeyesCaler` (cahierCaler sur la fenêtre d'impression, juste avant d'imprimer) ; à l'impression les opérations
+d'impression, police Caveat), `plSeyesCaler` (cahierCaler sur la fenêtre d'impression, juste avant d'imprimer) ; l'impression attend la police Caveat (`fonts.load` explicite, sinon le PDF part avec la police de secours) ; à l'impression les opérations
 côte à côte peuvent passer à la ligne.
 Lignes avec une fraction (demandé le 07/11/2026, validé sur images) : barre de fraction CHEVAUCHANT la ligne principale, « = » et
 signes (− + × ÷ : < >) centrés dessus (un trait de chaque côté) -- UNIQUEMENT dans une ligne qui a une fraction (rappelé le 07/11/2026 ;

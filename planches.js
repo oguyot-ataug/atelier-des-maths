@@ -768,7 +768,14 @@ async function plImprimer(lvl, blocs, mode, opts){
     <button type="button" class="pl-bouton-imp" onclick="window.print()">Imprimer / Enregistrer en PDF</button>${corps}</body></html>`);
   w.document.close();
   const lancer = () => setTimeout(() => { try{ if(typeof geoPoints === 'function') geoPoints(w.document); }catch(e){} if(seyes) try{ plSeyesCaler(w.document); }catch(e){ console.warn(e); } try{ plRemplirPages(w.document); }catch(e){ console.warn(e); } w.focus(); w.print(); }, 300);
-  let parti = false; const pret = () => { if(parti) return; parti = true; const f = w.document.fonts && w.document.fonts.ready; Promise.race([f || Promise.resolve(), new Promise(ok => setTimeout(ok, 2000))]).then(lancer); };
+  // La police manuscrite (Caveat) ne se télécharge que lorsqu'elle sert : fonts.ready seul n'attendait rien et l'impression partait avec la
+  // police de secours (relecture : « je n'ai pas le même rendu du pdf à l'écran »). On la demande explicitement, puis on attend.
+  const caveat = async () => { const fs = w.document.fonts; if(!seyes || !fs || !fs.load) return;
+    const l = w.document.querySelector('link[href*="family=Caveat"]'); // feuille de Google Fonts : attendre qu'elle soit là
+    if(l && !l.sheet) await new Promise(ok => { l.addEventListener('load', ok); l.addEventListener('error', ok); setTimeout(ok, 3000); });
+    await Promise.all(['400 23px Caveat', '600 23px Caveat', '700 27px Caveat'].map(f => fs.load(f).catch(() => null))); };
+  let parti = false; const pret = () => { if(parti) return; parti = true; const f = w.document.fonts && w.document.fonts.ready;
+    Promise.race([caveat().then(() => f || null), new Promise(ok => setTimeout(ok, seyes ? 6000 : 2000))]).then(lancer); };
   w.onload = pret; if(w.document.readyState === 'complete') pret(); setTimeout(pret, 2500);
 }
 
