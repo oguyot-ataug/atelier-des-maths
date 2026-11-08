@@ -3868,6 +3868,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1369', date:'2026-11-08', items:['Feuilles imprimées : cadres des exercices plus épais et plus foncés.'] },
   { version:'2026-08-19.1368', date:'2026-11-08', items:['Corrigés imprimés « fond Seyès » : lignes de la feuille dessinées en traits nets (interlignes réguliers dans le PDF, plus de traits manquants ou flous).'] },
   { version:'2026-08-19.1367', date:'2026-11-08', items:['Corrigés imprimés « fond Seyès » : la police manuscrite du cahier est chargée avant l\'impression (le PDF partait avec une police de secours, différent de l\'écran).'] },
   { version:'2026-08-19.1366', date:'2026-11-08', items:['Corrigés imprimés « fond Seyès » -- relecture du corrigé CE2-N3-P1 en PDF (« bof ») : la feuille Seyès remplit maintenant tout le cadre de l\'exercice, sans bande blanche en dessous.'] },

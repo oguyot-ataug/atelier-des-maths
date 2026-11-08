@@ -1056,6 +1056,7 @@ const PL_CSS = `
   .pl-pour-prof{ margin:0 0 8px; color:#1F7A4D; font-weight:700; }
   .pl-attendus{ font-size:9.5pt; background:#F3F5F8; border-radius:8px; padding:3px 10px; margin-bottom:6px; }
   .pl-exo{ border:1px solid #CBD2DC; border-radius:10px; padding:5px 11px 7px; margin:0 0 6px; break-inside:avoid; page-break-inside:avoid; }
+  @media print{ .pl-exo{ border:1.8px solid #7A8494; } } /* sur papier, cadre plus épais et plus foncé (relecture : « trop fins et trop clairs » ; la page peut être resserrée jusqu'à 30 %) */
   .pl-exo-tete{ display:flex; justify-content:space-between; align-items:center; margin-bottom:2px; }
   .pl-brevet{ display:inline-block; background:#1F3A5C; color:#fff; font:700 .78em 'Space Grotesk',Arial,sans-serif; letter-spacing:.04em; text-transform:uppercase; padding:2px 8px; border-radius:6px; vertical-align:middle; margin-right:4px; }
   .pl-marque-b{ display:inline-flex; gap:5px; margin-left:8px; margin-right:auto; } .pl-auto, .pl-bareme{ font:700 8.5pt 'Space Grotesk',Arial,sans-serif; border-radius:10px; padding:0 7px; white-space:nowrap; }
