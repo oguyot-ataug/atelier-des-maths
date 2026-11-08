@@ -64,7 +64,7 @@ function olivPoseSvg(p, teinte){
     visage = `<path d="M40 54 L52 57 M80 54 L68 57" stroke="#2C3A1A" stroke-width="3" stroke-linecap="round"/>` + yeux(false) + joues + bouche;
     extra = `<path d="M44 92 h32 l-4 10 h-24 Z" fill="#F5C518" stroke="#C99A00" stroke-width="1.5"/><text x="60" y="101" font-size="9" font-weight="800" fill="#7A2E2E" font-family="Arial" text-anchor="middle">D</text>`;
     return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">${cape}${tete}${corps}${bras}${visage}${extra}</svg>`;
-  } else if(['globe', 'musique', 'arts', 'sport', 'cuisine', 'nature', 'argent', 'jeux', 'sciences', 'geo', 'savante', 'regle', 'equerre', 'tableau', 'blocs', 'correction', 'evaluation', 'devoirs', 'interro', 'classe', 'session', 'calendrier', 'outils', 'simulateur', 'programmes', 'lexique', 'couronne', 'ia', 'cle', 'bug', 'aurevoir'].includes(p)){
+  } else if(['globe', 'musique', 'arts', 'sport', 'cuisine', 'nature', 'argent', 'jeux', 'sciences', 'geo', 'savante', 'regle', 'equerre', 'tableau', 'blocs', 'correction', 'evaluation', 'devoirs', 'interro', 'classe', 'session', 'calendrier', 'outils', 'simulateur', 'programmes', 'lexique', 'calculatrice', 'couronne', 'ia', 'cle', 'bug', 'aurevoir'].includes(p)){
     // Maths & la vie (la globe-trotteuse et une pose par thème) et page Histoire des maths (la savante grecque) --
     // demandé : « insérer des logos d'Oliv'IA dans les pages Maths & la vie et dans le menu histoire », choix :
     // « globe-trotteuse, vignettes par thème et savante grecque ». La main droite tient l'objet du thème.
@@ -138,6 +138,12 @@ function olivPoseSvg(p, teinte){
         + `<rect x="94" y="14" width="3" height="40" fill="#6E1F1F" opacity=".5"/><rect x="99" y="21" width="20" height="12" rx="1.5" fill="#F6E7C1"/>`
         + `<text x="109" y="30.5" font-size="8.5" font-weight="800" fill="#6E1F1F" font-family="Arial" text-anchor="middle">A-Z</text>`
         + `<path d="M99 40 h18 M99 45 h14" stroke="#F6E7C1" stroke-width="2"/></g>`;
+    } else if(p === 'calculatrice'){ // Calculatrice collège : elle tient la calculatrice bleue du site -- demandé le 08/11/2026
+      visage = yeux(false) + joues + bouche;
+      const touches = [0, 1, 2].map(l => [0, 1, 2].map(c => `<rect x="${95 + c * 8}" y="${31 + l * 6.5}" width="6" height="4.6" rx="1.2" fill="${l === 2 && c === 2 ? '#E35D3A' : '#F3F5F8'}"/>`).join('')).join('');
+      extra = `<g transform="rotate(-8 106 34)"><rect x="90" y="10" width="32" height="46" rx="5" fill="#1F3A5C" stroke="#0F2238" stroke-width="2"/>`
+        + `<rect x="94" y="14" width="24" height="13" rx="2" fill="#E9F0E4"/><text x="115.5" y="24.5" font-size="8.5" font-weight="800" fill="#1C2B39" font-family="Arial" text-anchor="end">42</text>`
+        + touches + `</g><circle cx="104" cy="56" r="4.8" fill="${E}"/>`;
     } else if(p === 'programmes'){ // Programmes officiels : le Bulletin officiel (B.O.) ouvert -- demandé le 02/11/2026
       visage = yeux(false) + joues + bouche;
       extra = `<g transform="rotate(-10 106 34)"><rect x="90" y="14" width="32" height="40" rx="2.5" fill="#1F4E8C" stroke="#123058" stroke-width="2"/>`
@@ -179,7 +185,7 @@ const OLIV_POSES = ['savoir', 'methode', 'muscle', 'histoire', 'quiz', 'cm2', 'd
 // Menu « L'Atelier du prof » : mêmes Oliv'IA sans lunettes, en olives de couleurs variées ; le sous-menu
 // « Évaluations » reste sans vignette (choix : « sans icône pour les sous-menus »).
 // Couleurs variées aussi dans le menu L'Atelier -- demandé : « varie aussi les couleurs dans le menu L'Atelier ».
-const OLIV_MENU = { cm: ['muscle', 'verte'], compte: ['jeux', 'noire'], convertisseur: ['regle', 'doree'], 'figure-sandbox': ['equerre', 'cuivree'], tableau: ['tableau', 'verte'], programmation: ['blocs', 'noire'], 'histoire-maths': ['savante', 'doree'], lexique: ['lexique', 'cuivree'],
+const OLIV_MENU = { cm: ['muscle', 'verte'], compte: ['jeux', 'noire'], convertisseur: ['regle', 'doree'], 'figure-sandbox': ['equerre', 'cuivree'], tableau: ['tableau', 'verte'], programmation: ['blocs', 'noire'], 'histoire-maths': ['savante', 'doree'], lexique: ['lexique', 'cuivree'], calculatrice: ['calculatrice', 'verte'],
   correction: ['correction', 'verte'], evaluation: ['evaluation', 'noire'], devoirsprof: ['devoirs', 'doree'], questionnaires: ['interro', 'cuivree'], supervision: ['classe', 'verte'],
   sessions: ['session', 'noire'], progression: ['calendrier', 'doree'], classe: ['outils', 'cuivree'], simulateur: ['simulateur', 'verte'], programmes: ['programmes', 'noire'] };
 function olivMenu(){

@@ -2326,7 +2326,7 @@ select:not([multiple]):not([size]){
 .lex-ex{margin:0 0 6px;font-size:.92rem;color:#3B4656;line-height:1.45;}
 .lex-prof{margin:6px 0 0;padding:6px 8px;border-radius:8px;background:#F3EEFA;color:#4B3A6B;font-size:.85rem;line-height:1.4;}
 /* Lexique : ouvert aux visiteurs, sans le cadenas des outils réservés (demo.js) */
-body:not(.connecte) #navDropdownEntrainer .nav-dropdown-menu button[data-nav="lexique"]::after{content:none;}
+body:not(.connecte) #navDropdownEntrainer .nav-dropdown-menu button[data-nav="lexique"]::after, body:not(.connecte) #navDropdownEntrainer .nav-dropdown-menu button[data-nav="calculatrice"]::after{content:none;} /* ouverts à tous : pas de cadenas */
 
 /* Bandeau défilant des professeurs en essai (bandeauEssaiMaj, app.js ; demandé le 03/11/2026). */
 .bandeau-essai{ display:flex; align-items:center; gap:10px; padding:7px 12px 7px 16px; background:linear-gradient(90deg,#0C5BA0,#1F3A5C); color:#fff; font-size:.92rem; }
