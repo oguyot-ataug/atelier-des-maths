@@ -1206,11 +1206,22 @@ const AR_CONS_128 = (() => { const O = [150, 128], e = (r, a) => arP(O, r, a), R
       { texte: 'Je trace la demi-droite [Oy) qui passe par ce point, et je code l\'angle.', el: [{ seg: [O, e(118, 128)] }, { txt: e(112, 136), t: 'y' }, { arc: [O, 24, 0, 128], c: R }, { txt: e(42, 64), t: '128°', c: R, fs: 12 }] }] }); })();
 // Exercice 2 : figure à main levée, droites (AB) et (CD) sécantes en O, angle AOC = 38°.
 const AR_MAIN_LEVEE = (() => { const O = [130, 78], K = '#1F3A5C', R = '#E35D3A';
-  const trait = (a, b, k) => { const u = arP(O, 112, a), v = arP(O, 112, b), m = [(u[0] + v[0]) / 2 + k, (u[1] + v[1]) / 2 - k];
-    return `<path d="M${u[0].toFixed(1)},${u[1].toFixed(1)} Q${m[0].toFixed(1)},${m[1].toFixed(1)} ${v[0].toFixed(1)},${v[1].toFixed(1)}" fill="none" stroke="${K}" stroke-width="1.7" stroke-linecap="round"/>`; };
-  return `<svg viewBox="0 0 260 160" style="width:100%;max-width:290px;display:block;margin:6px auto;" data-geo-garde>${trait(190, 10, 3) + trait(152, 332, -4)
+  // Trait à main levée (légère courbe) de la direction a à la direction b ; points nommés sur les demi-droites, marqués d'un petit
+  // trait perpendiculaire, pas au bout (relecture du 08/11/2026 : « Placer quand même les points A, B, C et D avec des petits traits
+  // sur les demi-droites ! (et pas au bout !!) »).
+  const courbe = (a, b, k) => { const u = arP(O, 112, a), v = arP(O, 112, b), m = [(u[0] + v[0]) / 2 + k, (u[1] + v[1]) / 2 - k];
+    const B = t => [0, 1].map(i => (1 - t) ** 2 * u[i] + 2 * t * (1 - t) * m[i] + t * t * v[i]), D = t => [0, 1].map(i => 2 * (1 - t) * (m[i] - u[i]) + 2 * t * (v[i] - m[i]));
+    return { u, v, m, B, D }; };
+  const trait = c => `<path d="M${c.u[0].toFixed(1)},${c.u[1].toFixed(1)} Q${c.m[0].toFixed(1)},${c.m[1].toFixed(1)} ${c.v[0].toFixed(1)},${c.v[1].toFixed(1)}" fill="none" stroke="${K}" stroke-width="1.7" stroke-linecap="round"/>`;
+  const point = (c, t, nom, autre) => { const P = c.B(t), d = c.D(t), l = Math.hypot(d[0], d[1]), n = [-d[1] / l, d[0] / l];
+    // le nom du côté opposé à l'autre droite
+    const loin = q => Math.hypot(q[0] - autre[0], q[1] - autre[1]), s = loin([P[0] + n[0], P[1] + n[1]]) >= loin([P[0] - n[0], P[1] - n[1]]) ? 1 : -1;
+    return `<line x1="${(P[0] - n[0] * 5).toFixed(1)}" y1="${(P[1] - n[1] * 5).toFixed(1)}" x2="${(P[0] + n[0] * 5).toFixed(1)}" y2="${(P[1] + n[1] * 5).toFixed(1)}" stroke="${K}" stroke-width="1.7" stroke-linecap="round"/>`
+      + arxTxt([P[0] + n[0] * 14 * s, P[1] + n[1] * 14 * s], nom); };
+  const ab = courbe(190, 10, 3), cd = courbe(152, 332, -4);
+  return `<svg viewBox="0 0 260 160" style="width:100%;max-width:290px;display:block;margin:6px auto;" data-geo-garde>${trait(ab) + trait(cd)
     + arArc(O, 24, 152, 190, R, 2) + arxTxt(arP(O, 42, 171), '38°', R, 12)
-    + arxTxt(arP(O, 122, 192), 'A') + arxTxt(arP(O, 122, 8), 'B') + arxTxt(arP(O, 122, 150), 'C') + arxTxt(arP(O, 122, 334), 'D') + arxTxt([O[0] + 2, O[1] + 18], 'O')
+    + point(ab, .2, 'A', cd.B(.2)) + point(ab, .8, 'B', cd.B(.8)) + point(cd, .2, 'C', ab.B(.2)) + point(cd, .8, 'D', ab.B(.8)) + arxTxt([O[0] + 2, O[1] + 18], 'O')
     + arxTxt([200, 150], 'figure à main levée', '#7A8494', 10, true)}</svg>`; })();
 // Exercice 4 : angle xOy de 78°, bissectrice [Oz) au rapporteur (39°).
 const AR_CONS_BISS = (() => { const O = [40, 152], e = (r, a) => arP(O, r, a), R = '#E35D3A';
