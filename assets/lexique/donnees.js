@@ -1648,7 +1648,7 @@
 "nv": 0,
 "d": "P",
 "t": "Proportionnalité, pourcentages, échelles",
-"e": "Deux quantités sont proportionnelles quand on passe de l'une à l'autre en multipliant toujours par le même nombre.",
+"e": "Deux grandeurs sont proportionnelles quand on passe de l'une à l'autre en multipliant toujours par le même nombre non nul.",
 "x": "1 baguette coûte 1 €, 3 baguettes coûtent 3 € : le prix est proportionnel au nombre de baguettes.",
 "p": "Au CM, procédures sans tableau (propriétés de linéarité, passage à l'unité) ; coefficient de proportionnalité nommé en 5e."
 },
@@ -2668,7 +2668,7 @@
 "nv": 0,
 "d": "P",
 "t": "Proportionnalité, pourcentages, échelles",
-"e": "Le nombre par lequel on multiplie toujours une quantité pour obtenir l'autre, quand elles sont proportionnelles.",
+"e": "Le nombre non nul par lequel on multiplie toujours une grandeur pour obtenir l'autre, quand elles sont proportionnelles.",
 "x": "Prix = 1,5 × masse : le coefficient de proportionnalité est 1,5.",
 "p": "Lien avec la fonction linéaire (3e) : f(x) = ax."
 },
