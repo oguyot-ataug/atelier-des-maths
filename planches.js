@@ -735,6 +735,7 @@ function plCssSeyes(){
     body.cahier-on .cahier-page.cahier-actif{ -webkit-print-color-adjust:exact; print-color-adjust:exact; margin:4px 0 !important; overflow:visible !important; }
     body.cahier-on .cahier-actif .pl-poses-auto{ display:flex !important; }
     body.cahier-on .cahier-actif svg.pose-cahier.nu, body.cahier-on .cahier-actif svg.cahier-axe{ max-height:none !important; height:auto !important; }
+    body.pl-imp.cahier-on .pl-plein .pl-corps:has(.cahier-actif) > *:has(.cahier-actif), body.pl-imp.cahier-on .pl-plein .pl-corps > .cahier-actif{ flex:1 1 auto; display:flex; flex-direction:column; } body.pl-imp.cahier-on .pl-plein .pl-corps .cahier-actif{ flex:1 1 auto; margin-bottom:0 !important; } /* la feuille descend jusqu'en bas du cadre de l'exercice (relecture du PDF : « bof ») */
     body.pl-imp.cahier-on .cahier-actif div:has(> svg.pose-cahier.nu), body.pl-imp.cahier-on .cahier-actif div:has(> div > svg.pose-cahier.nu){ flex-wrap:wrap !important; row-gap:0 !important; }`;
 }
 function plSeyesCaler(doc){
