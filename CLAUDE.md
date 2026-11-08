@@ -195,6 +195,13 @@ y sont dessinées sans feuille propre (`cm1PoseeCahier(d, true)`), dans les carr
 « ça fait mal aux yeux ! ») TOUTE opération posée d'une page de cahier est dessinée ainsi, puis calée par cahierCaler (classe `pose-cale`,
 `--psl`/`--pst` au pixel entier : haut sur un carreau, colonnes sur les traits verticaux). Opérations côte à côte (même groupe) : si l'une a des retenues,
 toutes réservent cette ligne (`cm1PoseeCahier(d, nu, hautForce)`), pour rester alignées (relecture « Non alignés ! »).
+Opérations côte à côte d'une page de cahier : toujours sur une ligne à l'écran (pas de retour à la ligne, la page défile ; demandé : « doit garder
+ce format horizontal »), à la taille des carreaux (flex-shrink 0) ; projection : opérations dessinées avant l'agrandissement (plProjRendre).
+Corrigés imprimés « fond Seyès » (demandé le 08/11/2026 : « Dans les corrigés papiers, ajouter l'option "fond seyes" pour certains exercices ») :
+case des réglages des planches (`plPrefs().seyes`) ; les corrigés des exercices « dans ton cahier » (.cahier-page) s'impriment comme « Dans mon
+cahier » : `plSeyesPreparer` (classes, opérations nu), `plCssSeyes` (règles .cahier-actif / pose-cahier de styles.css recopiées dans la fenêtre
+d'impression, police Caveat), `plSeyesCaler` (cahierCaler sur la fenêtre d'impression, juste avant d'imprimer) ; à l'impression les opérations
+côte à côte peuvent passer à la ligne.
 Lignes avec une fraction (demandé le 07/11/2026, validé sur images) : barre de fraction CHEVAUCHANT la ligne principale, « = » et
 signes (− + × ÷ : < >) centrés dessus (un trait de chaque côté) -- UNIQUEMENT dans une ligne qui a une fraction (rappelé le 07/11/2026 ;
 ailleurs les signes restent posés sur la ligne d'écriture ; « : » centré seulement dans une ligne de calcul) ; dans KaTeX, `.mord` de la fraction, `.mrel`, `.mbin` descendus de

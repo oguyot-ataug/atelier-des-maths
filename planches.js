@@ -142,7 +142,7 @@ const PL_POLICES = {
   lexend: { nom: 'Lexend (lisibilité)', css: "'Lexend', Arial, sans-serif", gf: 'Lexend:wght@400;600;700' },
   atkinson: { nom: 'Atkinson Hyperlegible', css: "'Atkinson Hyperlegible', Arial, sans-serif", gf: 'Atkinson+Hyperlegible:wght@400;700' },
 };
-const PL_DEFAUT = { identite: 'prenom', date: true, police: 'standard', taille: 'normale', interligne: 'normal', espace: 'normal' };
+const PL_DEFAUT = { identite: 'prenom', date: true, police: 'standard', taille: 'normale', interligne: 'normal', espace: 'normal', seyes: false };
 function plPrefs(){ try{ return Object.assign({}, PL_DEFAUT, JSON.parse(localStorage.getItem('plPrefs') || '{}')); }catch(e){ return Object.assign({}, PL_DEFAUT); } }
 function plPrefsSauver(p){ try{ localStorage.setItem('plPrefs', JSON.stringify(p)); }catch(e){} }
 function plCssReglages(p){
@@ -442,6 +442,7 @@ function plOuvrir(lvl, c){
         <label>Taille du texte ${sel('taille', [['normale', 'Normale'], ['grande', 'Grande'], ['tres', 'Très grande']], p.taille)}</label>
         <label>Interligne ${sel('interligne', [['normal', 'Normal'], ['aere', 'Aéré'], ['tres', 'Très aéré']], p.interligne)}</label>
         <label>Espacement ${sel('espace', [['normal', 'Normal'], ['large', 'Lettres et mots espacés']], p.espace)}</label>
+        <label class="pl-reg-case" title="Corrigés imprimés : les exercices à faire dans le cahier sont corrigés sur une feuille Seyès, à la main, comme à l'écran avec « Dans mon cahier »"><input type="checkbox" data-pref="seyes" ${p.seyes ? 'checked' : ''}> Corrigés : fond Seyès (exercices « dans ton cahier »)</label>
       </div>
       <p class="hint" style="margin:6px 0 0;">Avec une grande taille ou un interligne aéré, une planche peut tenir sur deux pages. Ces réglages restent mémorisés sur cet appareil.</p></details>
     <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px;flex-wrap:wrap;">
@@ -713,6 +714,33 @@ function plFiligraneSvg(t){
   for(let y = -60; y < 380; y += 62) for(let x = -120; x < 260; x += 205) l += `<text x="${x + (y / 62 % 2 ? 100 : 0)}" y="${y}">${e}</text>`;
   return `<svg class="pl-filigrane" viewBox="0 0 210 297" preserveAspectRatio="xMidYMid slice" aria-hidden="true" data-geo-garde="1"><g transform="rotate(-32 105 148)" font-family="Inter, Arial, sans-serif" font-size="8.5" font-weight="700" fill="#5B6472" fill-opacity=".11">${l}</g></svg>`;
 }
+/* ---------- Corrigés imprimés sur fond Seyès (option des réglages, plPrefs().seyes) ----------
+   Les pages de cahier des corrigés reçoivent la mise en forme de « Dans mon cahier » : les règles .cahier-actif / pose-cahier de la
+   feuille de style du site, recopiées dans la fenêtre d'impression ; opérations posées dessinées dans les carreaux (cm1PoseeCahier nu) ;
+   chaque ligne calée sur une ligne principale par cahierCaler (le même calage qu'à l'écran), juste avant d'imprimer. */
+function plSeyesPreparer(racine){
+  racine.querySelectorAll('.pl-corrige .cahier-page').forEach(pg => pg.classList.add('cahier-actif'));
+  const ret = d => /\d/.test(d.r || '') || (d.h || []).length > 0;
+  racine.querySelectorAll('.pl-corrige .cahier-actif table.pose-ecran[data-cahier]').forEach(t => { try{
+    const g = t.parentElement && t.parentElement.parentElement, haut = !!(g && [...g.querySelectorAll('table.pose-ecran[data-cahier]')].some(u => { try{ return ret(JSON.parse(u.dataset.cahier)); }catch(e){ return false; } }));
+    t.insertAdjacentHTML('afterend', cm1PoseeCahier(JSON.parse(t.dataset.cahier), true, haut)); }catch(e){} });
+}
+let plCssSeyesCache = null;
+function plCssSeyes(){
+  if(plCssSeyesCache != null) return plCssSeyesCache;
+  const L = [], voir = regles => [...regles].forEach(r => { if(r.cssRules && !r.selectorText) voir(r.cssRules); else if(r.selectorText && /cahier-actif|pose-cahier/.test(r.selectorText)) L.push(r.cssText); });
+  [...document.styleSheets].forEach(f => { try{ voir(f.cssRules); }catch(e){} });
+  return plCssSeyesCache = L.join('\n') + `
+    body.cahier-on .cahier-actif table.pose-ecran[data-cahier]{ display:none !important; }
+    body.cahier-on .cahier-page.cahier-actif{ -webkit-print-color-adjust:exact; print-color-adjust:exact; margin:4px 0 !important; overflow:visible !important; }
+    body.cahier-on .cahier-actif .pl-poses-auto{ display:flex !important; }
+    body.cahier-on .cahier-actif svg.pose-cahier.nu, body.cahier-on .cahier-actif svg.cahier-axe{ max-height:none !important; height:auto !important; }
+    body.pl-imp.cahier-on .cahier-actif div:has(> svg.pose-cahier.nu), body.pl-imp.cahier-on .cahier-actif div:has(> div > svg.pose-cahier.nu){ flex-wrap:wrap !important; row-gap:0 !important; }`;
+}
+function plSeyesCaler(doc){
+  const avant = cahierOn; cahierOn = true;
+  try{ doc.querySelectorAll('.cahier-page.cahier-actif').forEach(pg => { try{ cahierCaler(pg); }catch(e){ console.warn(e); } }); } finally{ cahierOn = avant; }
+}
 async function plImprimer(lvl, blocs, mode, opts){
   opts = opts || {};
   const pr = plPrefs(), logo = await plLogo();
@@ -723,6 +751,10 @@ async function plImprimer(lvl, blocs, mode, opts){
   document.body.appendChild(tmp);
   if(opts.filigrane) tmp.querySelectorAll('.pl-page').forEach(pg => pg.insertAdjacentHTML('afterbegin', plFiligraneSvg(opts.filigrane)));
   plFigerMaths(tmp);
+  // Option « fond Seyès » des corrigés (demandé le 08/11/2026 : « Dans les corrigés papiers, ajouter l'option "fond seyes" pour certains
+  // exercices ») : les corrigés des exercices « dans ton cahier » (.cahier-page) s'impriment sur la feuille, comme « Dans mon cahier ».
+  const seyes = !!pr.seyes && mode !== 'eleve' && !(mode === 'livre' && opts.sansCorriges) && typeof cm1PoseeCahier === 'function' && typeof cahierCaler === 'function';
+  if(seyes) plSeyesPreparer(tmp);
   const corps = tmp.innerHTML + (tmp.innerHTML.includes('#plRapporteur') ? plDefsImages(await plRappDataUrl()) : ''); tmp.remove();
   const w = window.open('', '_blank', 'width=900,height=1000');
   if(!w){ await niceAlert('La fenêtre n\'a pas pu s\'ouvrir : autorisez les fenêtres (pop-up) pour ce site.'); return; }
@@ -730,10 +762,11 @@ async function plImprimer(lvl, blocs, mode, opts){
   w.document.open();
   w.document.write(`<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><title>${escapeHtml(titre)}</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">${plFontsLien(pr)}
-    <style>${PL_CSS}${plCssReglages(pr)}${mode === 'livre' ? PL_CSS_LIVRE : ''}</style></head><body class="pl-imp">
+    ${seyes ? '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&display=swap">' : ''}
+    <style>${PL_CSS}${plCssReglages(pr)}${mode === 'livre' ? PL_CSS_LIVRE : ''}${seyes ? plCssSeyes() : ''}</style></head><body class="pl-imp${seyes ? ' cahier-on' : ''}">
     <button type="button" class="pl-bouton-imp" onclick="window.print()">Imprimer / Enregistrer en PDF</button>${corps}</body></html>`);
   w.document.close();
-  const lancer = () => setTimeout(() => { try{ if(typeof geoPoints === 'function') geoPoints(w.document); }catch(e){} try{ plRemplirPages(w.document); }catch(e){ console.warn(e); } w.focus(); w.print(); }, 300);
+  const lancer = () => setTimeout(() => { try{ if(typeof geoPoints === 'function') geoPoints(w.document); }catch(e){} if(seyes) try{ plSeyesCaler(w.document); }catch(e){ console.warn(e); } try{ plRemplirPages(w.document); }catch(e){ console.warn(e); } w.focus(); w.print(); }, 300);
   let parti = false; const pret = () => { if(parti) return; parti = true; const f = w.document.fonts && w.document.fonts.ready; Promise.race([f || Promise.resolve(), new Promise(ok => setTimeout(ok, 2000))]).then(lancer); };
   w.onload = pret; if(w.document.readyState === 'complete') pret(); setTimeout(pret, 2500);
 }
@@ -938,6 +971,9 @@ function plProjRendre(){
     plProj.pn = plNum(document.getElementById('plpRep'), x, { etat: plProj.etat, res: plProj.res, onChange: e => { plProj.etat = e; const b = document.getElementById('plpBilan'); if(b && plProj.res){ plProj.res = null; b.innerHTML = ''; } } });
     if(plProj.res) plProjVerifier();
   } else if(typeof renderStaticMath === 'function') renderStaticMath(v);
+  // Mode cahier : les opérations posées sur la feuille sont dessinées tout de suite, pour que l'agrandissement tienne compte de leur
+  // largeur (sinon la boîte était mesurée sans elles et la ligne d'opérations débordait).
+  if(typeof cahierOn !== 'undefined' && cahierOn && typeof cahierAppliquer === 'function') try{ cahierAppliquer(v); }catch(e){}
   plProjAjuster();
 }
 // L'exercice est centré et agrandi pour remplir l'écran (élève au tableau, fond de classe).
@@ -1213,7 +1249,7 @@ const PL_CSS_LIVRE = `
     .plp-pos{ margin-left:auto; font-weight:700; } .plp-tete .pl-et{ color:#F4C04E; letter-spacing:2px; } .plp-tete .pl-et-off{ color:rgba(255,255,255,.3); }
     .plp-fermer{ border:0; background:rgba(255,255,255,.15); color:#fff; border-radius:8px; cursor:pointer; display:flex; padding:4px; }
     .plp-corps{ flex:1; overflow:auto; padding:16px 24px; display:flex; align-items:center; justify-content:center; min-height:0; }
-    .plp-boite{ width:max-content; max-width:760px; font-size:13px; line-height:1.45; color:#1C2B39; margin:auto; } .plp-boite:has(.pl-chxtab){ max-width:980px; } /* tableau de propositions à côté d'une figure (6e-G2-P1-E2) : la place de tout mettre sur une ligne */
+    .plp-boite{ width:max-content; max-width:760px; font-size:13px; line-height:1.45; color:#1C2B39; margin:auto; } .plp-boite:has(.pl-chxtab), body.cahier-on .plp-boite:has(svg.pose-cahier.nu){ max-width:980px; } /* tableau de propositions à côté d'une figure (6e-G2-P1-E2) : la place de tout mettre sur une ligne */
     /* place du bilan réservée dès le départ : « Vérifier » ne fait plus remonter l'exercice (relecture CP-N3-P2-E7, « décalage en projection ») */ .plp-pied .pn-bilan{ flex-basis:100%; margin:0; font-size:1.15rem; min-height:1.45em; line-height:1.45; }
     body.plp-ouvert #plClavier{ left:auto; right:16px; transform:none; bottom:84px; }
     @media (max-width:700px){ body.plp-ouvert #plClavier{ left:8px; right:8px; bottom:8px; width:auto; } .plp-corps{ padding:10px 12px; } .plp-tete{ padding:6px 12px; gap:8px; } .plp-tete b{ font-size:1rem; flex-basis:100%; order:5; } .plp-pied{ gap:6px !important; padding:8px !important; } .plp-pied .btn{ padding:8px 12px; font-size:.95rem; } }
