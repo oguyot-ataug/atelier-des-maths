@@ -345,7 +345,8 @@ machine du commerce), panneau flottant déplaçable (menu L'Atelier › Calculat
 6e-3e). Une seule disposition, aux couleurs du site (« Type Casio » / « Type TI » retirés le 08/11/2026 : « ne garder que le modèle
 bleu ») ; touches fraction, racine, puissances dessinées (`CALC_ICONES`) ; tout s'affiche DANS l'écran (tableau de valeurs, calculs
 précédents par ▲ ▼), jamais sous les touches (« c'est étrange de voir s'afficher des données en dessous ») ; écran de taille FIXE, assez grand dès
-le départ (236 px), qui ne s'agrandit jamais (tableau compris) ; séquence de « Montre-moi les touches » dans une carte à part sous la
+le départ (236 px), qui ne s'agrandit jamais (tableau compris) ; tableau de valeurs : 4 lignes à la fois, défilement avec ▲ ▼ seulement (pas au doigt,
+« comme une vraie calculatrice »), toute autre touche revient à l'écriture de l'expression ; séquence de « Montre-moi les touches » dans une carte à part sous la
 calculatrice (`#calcBande`, `calcPlacerBande` : au-dessus ou à côté si la place manque). Écriture
 naturelle à gabarits (fraction, racine, puissance, cos( )) ; calcul exact (fractions BigInt, a√b, valeurs remarquables de la
 trigonométrie en degrés, sommes de fractions et de racines affichées en une fraction : (3 + 8√3)/4), sinon 10 chiffres ; S⇔D / ◄► ; ÷R (quotient, reste), FACT (facteurs premiers), %, ×10ˣ, Ans, tableau de

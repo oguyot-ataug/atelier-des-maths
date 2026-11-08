@@ -225,7 +225,7 @@ const calcIcone = id => CALC_ICONES[id] || calcLib(id);
 
 /* ------------------------------ État ------------------------------ */
 const CALC = { racine: [], L: null, i: 0, seconde: false, res: null, resTex: '', decimal: false, ans: cQ(0n), fini: false, err: '',
-  tableau: false, tabHtml: '', montre: null, hist: [], hi: -1 };
+  tableau: false, tabHtml: '', tabLignes: null, tabPos: 0, montre: null, hist: [], hi: -1 };
 CALC.L = CALC.racine;
 
 /* ------------------------------ Éditeur à gabarits ------------------------------
@@ -403,7 +403,12 @@ function calcClic(id){
   const b = document.getElementById('calcBande'); if(CALC.montre || (b && !b.hidden)){ calcMontreStop(); if(b) b.hidden = true; }
   calcTouche(id);
 }
+const CALC_TAB_VUES = 4; // lignes du tableau visibles à la fois
 function calcTouche(id){
+  if(CALC.tableau && CALC.tabLignes){
+    if(id === 'up' || id === 'down'){ CALC.tabPos = Math.max(0, Math.min(CALC.tabLignes.length - CALC_TAB_VUES, CALC.tabPos + (id === 'up' ? -1 : 1))); calcAfficher(); return; }
+    if(!/^(shift|mode|exe)$/.test(id)) CALC.tabLignes = null; // on revient à l'écriture de l'expression
+  }
   const sec = CALC.seconde; if(id !== 'shift') CALC.seconde = false;
   if(sec && CALC_SECONDE[id]) id = CALC_SECONDE[id];
   const C = v => calcInserer({ t: 'c', v });
@@ -485,10 +490,11 @@ function calcCss(){
   .calc-tabzone[hidden], .calc-res[hidden]{ display:none; }
   .calc-tabpar{ display:flex; gap:8px; align-items:center; font:700 .68rem 'JetBrains Mono',monospace; color:#3B4A5C; padding:2px 0 4px; border-bottom:1px dashed #9AA8A0; }
   .calc-tabpar input{ width:44px; padding:1px 3px; border:1px solid #9AA8A0; border-radius:4px; background:rgba(255,255,255,.55); font:700 .72rem 'JetBrains Mono',monospace; color:#1C2B39; }
-  .calc-tab-corps{ flex:1 1 auto; overflow:auto; min-height:0; scrollbar-width:thin; }
+  .calc-tab-corps{ flex:1 1 auto; overflow:hidden; min-height:0; position:relative; } /* comme une calculatrice : on fait défiler avec ▲ ▼, pas au doigt */
   .calc-tab-corps table{ border-collapse:collapse; width:100%; }
-  .calc-tab-corps td, .calc-tab-corps th{ border-bottom:1px solid #C9D4C4; padding:1px 6px; text-align:center; font-weight:600; }
-  .calc-tab-corps th{ position:sticky; top:0; z-index:2; background:#E9F0E4; box-shadow:0 1px 0 #9AA8A0; } /* au-dessus des valeurs qui défilent (KaTeX place ses formules en position relative) */
+  .calc-tab-corps td, .calc-tab-corps th{ border-bottom:1px solid #C9D4C4; padding:0 6px; height:25px; text-align:center; font-weight:600; }
+  .calc-tab-corps th{ border-bottom:1px dashed #9AA8A0; height:22px; }
+  .calc-tab-fl{ position:absolute; right:2px; font:700 .62rem 'JetBrains Mono',monospace; color:#C2410C; }
   .calc-tab-corps p{ margin:6px 0 0; color:#5B6472; }
   .calc-k .ci{ font:italic 600 1.08rem 'Times New Roman',Georgia,serif; }
   .calc-k sup{ font-size:.7em; line-height:0; position:relative; top:-.5em; margin-left:1px; }
@@ -534,7 +540,10 @@ function calcAfficher(){
   r.hidden = CALC.tableau; z.hidden = !CALC.tableau;
   r.classList.toggle('err', !!CALC.err);
   r.innerHTML = CALC.err ? CALC.err : CALC.fini && CALC.res ? calcTexte(calcResultatTex(CALC.res)) : '';
-  if(CALC.tableau) z.querySelector('.calc-tab-corps').innerHTML = CALC.tabHtml || '<p>Écris l\'expression avec la touche <i>x</i>, puis EXE.</p>';
+  if(CALC.tableau){ const T = CALC.tabLignes, V = CALC_TAB_VUES;
+    z.querySelector('.calc-tab-corps').innerHTML = T ? `<table><tr><th>${calcTexte('x')}</th><th>${calcTexte('f(x)')}</th></tr>${T.slice(CALC.tabPos, CALC.tabPos + V).join('')}</table>`
+        + (CALC.tabPos > 0 ? '<span class="calc-tab-fl" style="top:28px;">▲</span>' : '') + (CALC.tabPos + V < T.length ? '<span class="calc-tab-fl" style="bottom:2px;">▼</span>' : '')
+      : CALC.tabHtml || '<p>Écris l\'expression avec la touche <i>x</i>, puis EXE.</p>'; }
   const e = p.querySelector('.calc-expr'); e.scrollLeft = e.scrollWidth;
 }
 function calcTableau(){
@@ -545,12 +554,12 @@ function calcTableau(){
     if(P <= 0 || F < D) throw new Error('pas');
     const n = Math.floor((F - D) / P + 1e-9) + 1; if(n > 60) throw new Error('trop');
     const enQ = v => { const s = String(+v.toFixed(10)); const [e, d = ''] = s.replace('-', '').split('.'); const q = cQ(BigInt(e + d), 10n ** BigInt(d.length)); return s[0] === '-' ? cNeg(q) : q; };
-    let lignes = '';
+    const lignes = [];
     for(let k = 0; k < n; k++){ const x = enQ(D + k * P); let y;
       try{ y = calcTexte(calcValeurTex(calcEvaluer(CALC.racine, x), false).replace(/\\dfrac/g, '\\tfrac')); }catch(e){ y = 'Erreur'; }
-      lignes += `<tr><td>${calcTexte(calcValeurTex(x, true))}</td><td>${y}</td></tr>`; }
-    corps.innerHTML = `<table><tr><th>${calcTexte('x')}</th><th>${calcTexte('f(x)')}</th></tr>${lignes}</table>`;
-  }catch(e){ corps.innerHTML = `<p style="color:#B91C1C;">${e.message === 'trop' ? 'Au plus 60 valeurs : augmente le pas.' : 'Vérifie le début, la fin et le pas (pas positif, fin après le début).'}</p>`; }
+      lignes.push(`<tr><td>${calcTexte(calcValeurTex(x, true))}</td><td>${y}</td></tr>`); }
+    CALC.tabLignes = lignes; CALC.tabPos = 0; corps.innerHTML = '';
+  }catch(e){ CALC.tabLignes = null; corps.innerHTML = `<p style="color:#B91C1C;">${e.message === 'trop' ? 'Au plus 60 valeurs : augmente le pas.' : 'Vérifie le début, la fin et le pas (pas positif, fin après le début).'}</p>`; }
   calcAfficher();
 }
 function calcDeplacable(p){
