@@ -129,7 +129,10 @@ async function profilConfirmerDepuisLien(){
   history.replaceState(null, '', location.pathname + (location.hash || '#/'));
   try{
     const r = await profilAppel({ action: 'confirmer', jeton: decodeURIComponent(m[1]) });
-    alert('Merci ! L\'adresse ' + r.email + ' est confirmée : elle recevra le lien si vous oubliez votre mot de passe.');
+    // Élève jamais connecté (adresse saisie par son professeur, 08/11/2026) : il choisit tout de suite son mot de passe.
+    if(r.invitation){ alert('Merci ! Ton adresse ' + r.email + ' est confirmée. Choisis maintenant ton mot de passe.'); location.href = '/invitation.html?invite=' + encodeURIComponent(r.invitation); return; }
+    alert(r.eleve ? 'Merci ! Ton adresse ' + r.email + ' est confirmée : si tu oublies ton mot de passe, le lien arrivera ici.'
+      : 'Merci ! L\'adresse ' + r.email + ' est confirmée : elle recevra le lien si vous oubliez votre mot de passe.');
     if(currentUser && document.getElementById('view-profil')?.classList.contains('active')) renderProfil();
   }catch(e){ alert(e.message); }
 }

@@ -33,7 +33,13 @@ depuis novembre 2026) le déploie à Paris à l'identique.
 
 On se connecte par identifiant (adresse fictive `identifiant@mathcollege.local`). Les adultes enregistrent une adresse
 e-mail de récupération dans « Mon profil » (`profil.js`, table `profil_contact`, fonction `profil`) ; « Mot de passe
-oublié » envoie le lien à cette adresse confirmée. Jamais d'adresse pour les élèves (mineurs).
+oublié » envoie le lien à cette adresse confirmée.
+Élèves (demandé le 08/11/2026, « option email ») : UNIQUEMENT une adresse fournie par l'établissement, d'un domaine déclaré
+(`etablissements.domaines_eleves`, jamais une messagerie publique : liste WEBMAIL de la fonction `profil`), saisie par le
+PROFESSEUR (Mes classes › Élèves › « Adresses e-mail », `emails-eleves.js`, actions `domaines`, `eleves-emails`, `eleve-email`),
+active seulement après confirmation par l'élève (lien 48 h ; élève jamais connecté : la confirmation ouvre sa première
+connexion, invitation.html). « Mot de passe oublié » d'un élève : lien à son adresse confirmée, sinon lien de 7 jours envoyé à
+ses professeurs (adresse « Mon profil » ou de connexion), au plus toutes les 10 min. Jamais d'adresse personnelle d'élève.
 
 Inscription d'un professeur : le profil « pending » est créé PAR LA BASE à la confirmation de l'adresse (déclencheur
 `inscription_prof_auto` sur auth.users, `supabase/sql/2026-10-30-inscription-prof-auto.sql`), qui prévient aussi l'administrateur
