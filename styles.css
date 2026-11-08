@@ -2485,6 +2485,7 @@ body.plp-ouvert .cahier-flottant{ top:56px; bottom:auto; left:16px; z-index:2147
   body.cahier-on .cahier-actif .cahier-op{ position:relative; top:.27em; font-size:1.2em; line-height:0; }
   body.cahier-on .cahier-actif .cahier-op-fin{ font-size:1em; font-weight:400; } /* ≈ ≠ ≤ ≥ : absents de Caveat, la police de secours écrite en gras et agrandie était trop épaisse */
   body.cahier-on .cahier-actif .cahier-fr2{ line-height:64px !important; }
+  body.cahier-on .cahier-actif > div:not([class]){ display:flow-root; } /* une marge intérieure (figure : margin:6px auto) ne sort plus du bloc : la suite reste calée sur les carreaux */
   body.cahier-on .cahier-actif svg.cahier-axe{ width:var(--axw, 100%) !important; min-width:0 !important; max-width:none !important; margin-left:var(--axl, 0px) !important; margin-top:var(--axt, 0px) !important; } /* droite graduée calée sur la feuille (cahierCaler) */ /* phrase à fraction sur plusieurs lignes : chaque ligne sur une ligne principale (cahierCaler) */ /* milieu du « = » manuscrit (6,5 px au-dessus de la ligne d'écriture à 27,6 px) posé sur la ligne principale */
   body.cahier-on .cahier-actif .cm-redac{ margin:0; line-height:32px; }
   body.cahier-on .cahier-actif .cm-redac-titre{ font-weight:700; }
