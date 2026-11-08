@@ -56,10 +56,10 @@ ${cm1Demo('c2-dv-dec', 'Partager une somme d\'argent', 'Quatre amis se partagent
     ]],
   ],
   exos: cm1Exos('c2dv', [
-    [`Pose et effectue la division euclidienne.${cm1Liste(['745 : 6', '1 208 : 7'])}`,
+    [`Pose et effectue dans ton cahier la division euclidienne.${cm1Liste(['745 : 6', '1 208 : 7'])}`,
       cm1Redac('745 : 6', { pose: eucl(745, 6) }, 'Le quotient est 124 et le reste est 1 : 745 = (6 × 124) + 1.')
       + cm1Redac('1 208 : 7', { pose: eucl(1208, 7) }, 'Le quotient est 172 et le reste est 4 : 1 208 = (7 × 172) + 4.')],
-    [`Pose et effectue la division décimale.${cm1Liste(['23 : 4, jusqu\'aux centièmes', '9 : 8, jusqu\'aux millièmes', '37,2 : 3'])}`,
+    [`Pose et effectue dans ton cahier la division décimale.${cm1Liste(['23 : 4, jusqu\'aux centièmes', '9 : 8, jusqu\'aux millièmes', '37,2 : 3'])}`,
       cm1Redac('23 : 4', { pose: deci(23, 4, 2) }, '23 divisé par 4 donne 5,75.') + cm1Redac('9 : 8', { pose: deci(9, 8, 3) }, '9 divisé par 8 donne 1,125.') + cm1Redac('37,2 : 3', { pose: deci('37,2', 3, 1) }, '37,2 divisé par 3 donne 12,4.')],
     [`Calcule.${cm1Liste(['56 : 10', '3,4 : 10', '250 : 100', '8 : 1 000'])}`,
       cm1Redac('Diviser par 10, 100, 1 000', { suite: ['56 : 10 = 5,6', '3,4 : 10 = 0,34', '250 : 100 = 2,5', '8 : 1 000 = 0,008'] }, 'Le chiffre des unités devient le chiffre des dixièmes, des centièmes ou des millièmes ; les autres chiffres le suivent.')],

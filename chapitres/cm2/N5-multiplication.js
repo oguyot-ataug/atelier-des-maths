@@ -57,10 +57,10 @@ ${cm1Demo('c2-mu-pb', 'Résoudre un problème', 'Un croissant coûte 1,35 €. C
       cm1Redac('Multiplier par 10, 100, 1 000', { suite: ['4,7 × 10 = 47', '0,36 × 100 = 36', '5,2 × 1 000 = 5 200', '0,008 × 1 000 = 8'] }, 'Le chiffre des unités devient le chiffre des dizaines, des centaines ou des milliers ; les autres chiffres le suivent.')],
     [`Calcule mentalement.${cm1Liste(['20 × 300', '40 × 50', '600 × 7 000'])}`,
       cm1Redac('20 × 300', '2 × 3 × 1 000 = 6 000', '20 × 300 donne 6 000.') + cm1Redac('40 × 50', '4 × 5 × 100 = 2 000', '40 × 50 donne 2 000.') + cm1Redac('600 × 7 000', '6 × 7 × 100 000 = 4 200 000', '600 × 7 000 donne 4 200 000.')],
-    [`Pose et calcule.${cm1Liste(['356 × 47', '1 208 × 305'])}`,
+    [`Pose et calcule dans ton cahier.${cm1Liste(['356 × 47', '1 208 × 305'])}`,
       cm1Redac('356 × 47', { pose: Po([[' ', '356'], ['×', '47'], [' ', '2492', true], ['+', '14240'], [' ', '16732']]) }, '356 × 47 donne 16 732.')
       + cm1Redac('1 208 × 305', { pose: Po([[' ', '1208'], ['×', '305'], [' ', '6040', true], ['+', '362400'], [' ', '368440']]) }, '1 208 × 305 donne 368 440 (le 0 des dizaines de 305 ne donne pas de ligne).')],
-    [`Pose et calcule.${cm1Liste(['7,25 × 8', '16,4 × 35', '0,125 × 12'])}`,
+    [`Pose et calcule dans ton cahier.${cm1Liste(['7,25 × 8', '16,4 × 35', '0,125 × 12'])}`,
       cm1Redac('7,25 × 8', { suite: ['725 × 8 = 5 800', '7,25 × 8 = 58,00'] }, 'On calcule sans la virgule, puis on place deux chiffres après la virgule : 7,25 × 8 donne 58.')
       + cm1Redac('16,4 × 35', { pose: Po([[' ', '164'], ['×', '35'], [' ', '820', true], ['+', '4920'], [' ', '5740']]) }, 'Un chiffre après la virgule dans 16,4 : 16,4 × 35 = 574,0, c\'est-à-dire 574.')
       + cm1Redac('0,125 × 12', { suite: ['sans la virgule : 125 × 12 = 1 500', 'trois chiffres après la virgule : 1,500'] }, '0,125 × 12 donne 1,5.')],

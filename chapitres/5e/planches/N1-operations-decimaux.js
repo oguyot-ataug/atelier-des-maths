@@ -87,7 +87,7 @@ PLANCHES['5e|Opérations sur les nombres décimaux'] = [
       { etoiles: 1, col: 1, consigne: 'Calcule mentalement.', ...calc([['3,7 × 10', 37], ['0,45 × 100', 45], ['52 × 0,1', '5,2'], ['806 × 0,01', '8,06'], ['7,2 : 10', '0,72']]) },
       { etoiles: 1, col: 1, consigne: 'Entoure l\'ordre de grandeur du résultat.',
         ...ch([['49,8 × 3,1 :', '150'], ['198,5 + 401,2 :', '600'], ['8,9 × 21 :', '180'], ['999 : 9,9 :', '100']], '15 · 100 · 150 · 180 · 600 · 1 500') },
-      { etoiles: 2, col: 1, consigne: 'Calcule (pose l\'opération si besoin).', ...calc([['12,5 × 0,8', 10], ['4,05 + 17,9', '21,95'], ['30 − 7,46', '22,54'], ['6,4 × 2,5', 16], ['1,2 × 3 + 0,4', 4]]) },
+      { etoiles: 2, col: 1, consigne: 'Calcule (pose l\'opération dans ton cahier si besoin).', ...calc([['12,5 × 0,8', 10], ['4,05 + 17,9', '21,95'], ['30 − 7,46', '22,54'], ['6,4 × 2,5', 16], ['1,2 × 3 + 0,4', 4]]) },
       { etoiles: 2, col: 1, consigne: 'Complète.',
         ...rmp([['2,5 × @ = 25', 10], ['@ × 100 = 3,8', '0,038'], ['0,6 × @ = 6', 10], ['4 × @ = 1', '0,25']], 3) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Tom achète 2,5 kg de pommes à 2,40 € le kg et 3 baguettes à 1,10 €. Il paie avec un billet de 20 €. Combien lui rend-on ? Écris un seul calcul.',

@@ -103,7 +103,7 @@ PLANCHES['ce2|Addition et soustraction posées'] = [
     exos: [
       { etoiles: 1, consigne: 'Pose et calcule dans ton cahier, puis écris le résultat. Attention à bien aligner les unités !',
         ...aPoser([[876, '−', 452], [5638, '−', 415], [9087, '−', 3064], [1249, '−', 37]], compens) },
-      { etoiles: 2, consigne: 'Pose et calcule (il y a des compensations).',
+      { etoiles: 2, consigne: 'Pose et calcule dans ton cahier, puis écris le résultat (il y a des compensations).',
         ...aPoser([[752, '−', 386], [4305, '−', 1678], [6000, '−', 2345], [3021, '−', 456]], compens) },
       { etoiles: 2, consigne: 'Vérifie chaque soustraction par une addition, puis entoure si elle est juste ou fausse.',
         ...verif([[835, 267, 568], [4000, 1250, 3850], [1503, 728, 775]]) },

@@ -37,7 +37,7 @@ PLANCHES['cp|L\'addition posée'] = [
         eleve: lig(vide(35, 42)) + lig('Ils ont ' + B(2) + ' billes.'), corr: lig(pose(35, 42)) + lig('Ils ont ' + R(77) + ' billes.') },
       { etoiles: 2, col: 1, consigne: 'Dans le train, il y a 46 voyageurs. 28 voyageurs montent. Combien sont-ils ?',
         eleve: lig(vide(46, 28)) + lig('Ils sont ' + B(2) + '.'), corr: lig(pose(46, 28, '1 ')) + lig('Ils sont ' + R(74) + '.') },
-      { etoiles: 3, consigne: 'Tom lit un livre de 39 pages, puis un livre de 45 pages. Combien de pages a-t-il lues ? Pose l\'addition.',
+      { etoiles: 3, consigne: 'Tom lit un livre de 39 pages, puis un livre de 45 pages. Combien de pages a-t-il lues ? Pose l\'addition dans ton cahier.',
         eleve: cadre(80) + lig('Il a lu ' + B(2) + ' pages.'), corr: lig(pose(39, 45, '1 ')) + lig('Il a lu ' + R(84) + ' pages.') },
     ] },
 ];

@@ -59,7 +59,7 @@ ${cm1Demo('c2-as-par', 'Calculer avec des parenthèses', 'Calcule 72 − (18,5 +
       + cm1Redac('Nombre d\'habitants', { pose: Po([[' ', '238 605'], ['+', ' 94 870'], [' ', '333 475']]) }, 'Les deux villes comptent 333 475 habitants, proche de l\'estimation.')],
     ['Trois colis pèsent 45,8 kg, 7,265 kg et 120,05 kg. Quelle est leur masse totale ?',
       cm1Redac('Masse totale', { pose: Po([[' ', ' 45,800'], ['+', '  7,265'], ['+', '120,050'], [' ', '173,115']]) }, 'Les trois colis pèsent 173,115 kg.')],
-    [`Pose et calcule.${cm1Liste(['600 000 − 158 347', '18,4 − 9,625'])}`,
+    [`Pose et calcule dans ton cahier.${cm1Liste(['600 000 − 158 347', '18,4 − 9,625'])}`,
       cm1Redac('Première différence', { pose: Po([[' ', '600 000'], ['−', '158 347'], [' ', '441 653']]) }, '600 000 − 158 347 donne 441 653.')
       + cm1Redac('Deuxième différence', { pose: Po([[' ', '18,400'], ['−', ' 9,625'], [' ', ' 8,775']]) }, '18,4 − 9,625 donne 8,775.')],
     [`Calcule.${cm1Liste(['(35 + 15) − (20 − 8)', '100 − (45 − (12 + 8))'])}`,

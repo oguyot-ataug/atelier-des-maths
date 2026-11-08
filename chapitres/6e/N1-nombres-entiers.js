@@ -232,7 +232,7 @@ document.getElementById('exos-demo-nombres-entiers').innerHTML = `
   </div>
   <div class="exo-card">
     <div class="num">Exercice 5</div>
-    Pose la division euclidienne de 946 par 15, puis vérifie ton résultat avec l'égalité dividende = (diviseur × quotient) + reste.
+    Pose dans ton cahier la division euclidienne de 946 par 15, puis vérifie ton résultat avec l'égalité dividende = (diviseur × quotient) + reste.
     <button type="button" class="exo-correction-toggle" data-target="ne-correction-5" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
     <div class="exo-correction" id="ne-correction-5">
       <div class="dp-boite" style="display:flex;justify-content:center;align-items:stretch;gap:0;font-family:'JetBrains Mono',monospace;font-size:1.15rem;padding:16px 10px;background:var(--white);border-radius:8px;border:1px solid rgba(28,43,57,.1);margin-bottom:10px;">

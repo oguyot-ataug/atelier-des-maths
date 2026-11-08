@@ -238,6 +238,8 @@ une `.cahier-page` (plExoCorps) ; pour « Pose (et calcule) dans ton cahier », 
 opération posée, lue dans `x.calc` (P3.rmp) et vérifiée : `cm1Posee` (addition, soustraction, multiplication entière), `plMulDecimale`,
 `plDivEuclide`, `plDivDecimale` (tableaux .cma-op) ; à l'écran seulement (`.pl-poses-auto` masqué dans `.pl-page` et à l'impression).
 Repère invisible `.pl-cahier-m` dans l'énoncé : le bouton flottant apparaît dès l'énoncé.
+Consigne « Pose (et calcule / et effectue) » sans place pour poser (ni quadrillage, ni opération à compléter) : toujours « dans ton cahier »
+(demandé le 08/11/2026 : « il n'y a pas la place pour poser. Il faut donc leur demander de le faire dans le cahier »).
 Opérations à compléter (`trous`, `cases`) : classe `pose-trous`, feuille Seyès dessinée en fond par la seule feuille de style
 (cases de 32 px, cases à remplir conservées, « Vérifier » inchangé) ; en projection le bouton flottant passe en haut à gauche.
 

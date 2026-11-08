@@ -311,13 +311,13 @@ document.getElementById('exos-demo-multiplication-division-6e').innerHTML = `
   </div>
   <div class="exo-card">
     <div class="num">Exercice 4</div>
-    Pose et effectue la division de 63 par 4. Donne la valeur exacte du quotient.
+    Pose et effectue dans ton cahier la division de 63 par 4. Donne la valeur exacte du quotient.
     <button type="button" class="exo-correction-toggle" data-target="c6-n4m-c4" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
     <div class="exo-correction" id="c6-n4m-c4"><div><p style="margin:0 0 6px;">63 : 4 : en 6 dizaines, 1 fois 4, reste 2 ; en 23, 5 fois 4, reste 3 : quotient 15, reste 3.</p><p style="margin:0 0 6px;">On continue après la virgule : 30 dixièmes : 4 = 7, reste 2 ; 20 centièmes : 4 = 5, reste 0.</p><p style="margin:0 0 6px;"><b>63 : 4 = 15,75</b> (valeur exacte : le reste est nul).</p></div></div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 5</div>
-    Pose et effectue la division de 7,1 par 6. Donne une valeur approchée du quotient au centième.
+    Pose et effectue dans ton cahier la division de 7,1 par 6. Donne une valeur approchée du quotient au centième.
     <button type="button" class="exo-correction-toggle" data-target="c6-n4m-c5" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
     <div class="exo-correction" id="c6-n4m-c5"><div><p style="margin:0 0 6px;">7,1 : 6 : 7 : 6 = 1, reste 1 ; 11 dixièmes : 6 = 1, reste 5 ; 50 centièmes : 6 = 8, reste 2 ; 20 millièmes : 6 = 3, reste 2… : 7,1 : 6 = 1,183…</p><p style="margin:0 0 6px;">La division ne s'arrête pas (le reste 2 revient sans fin).</p><p style="margin:0 0 6px;"><b>Valeur approchée au centième : 1,18.</b></p></div></div>
   </div>
