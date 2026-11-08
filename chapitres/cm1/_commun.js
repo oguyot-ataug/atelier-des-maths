@@ -499,6 +499,10 @@ function cahierChapitre(demo){
     // Correction animée ou interactive (construction pas à pas, boutons, saisie) : elle garde sa présentation.
     if(c.querySelector('button, input, select, textarea, canvas, .figure-toolbar')) return;
     const els = [...c.children];
+    // Division posée (.dp-boite, dessinée sur sa propre feuille comme dans le cours) : elle reste hors de la page, le texte qui
+    // la suit forme la page de cahier (relecture du 08/11/2026 : division de 946 par 15 déformée dans la page).
+    if(els.some(e => e.classList.contains('dp-boite'))){ const reste = els.filter(e => !e.classList.contains('dp-boite'));
+      if(reste.length){ const d = document.createElement('div'); d.className = 'cahier-page'; reste[0].before(d); reste.forEach(e => d.appendChild(e)); } return; }
     if(els.length === 1 && els[0].tagName === 'DIV' && !els[0].className) els[0].classList.add('cahier-page');
     else if(els.length){ const d = document.createElement('div'); d.className = 'cahier-page'; while(c.firstChild) d.appendChild(c.firstChild); c.appendChild(d); }
   });

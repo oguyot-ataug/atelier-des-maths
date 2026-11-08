@@ -287,23 +287,23 @@ document.getElementById('exos-demo-decimaux').innerHTML = `
           Pose la division euclidienne de 537 par 23, puis vérifie ton résultat avec l'égalité dividende = (diviseur × quotient) + reste.
           <button type="button" class="exo-correction-toggle" data-target="od-correction-4" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
           <div class="exo-correction" id="od-correction-4">
-            <div style="display:flex;justify-content:center;align-items:stretch;gap:0;font-family:'JetBrains Mono',monospace;font-size:1.15rem;padding:16px 10px;background:var(--white);border-radius:8px;border:1px solid rgba(28,43,57,.1);margin-bottom:10px;">
+            <div class="dp-boite" style="display:flex;justify-content:center;align-items:stretch;gap:0;font-family:'JetBrains Mono',monospace;font-size:1.15rem;padding:16px 10px;background:var(--white);border-radius:8px;border:1px solid rgba(28,43,57,.1);margin-bottom:10px;">
               <div style="text-align:right;padding-right:16px;">
                 <div class="dp-tag" style="color:var(--accent);">dividende</div>
-                <div style="text-align:right;line-height:2;min-width:70px;">
-                  <div>&nbsp;&nbsp;537</div>
-                  <div><span class="dp-sub-inner">−&nbsp;46&nbsp;</span></div>
-                  <div>&nbsp;&nbsp;&nbsp;77</div>
-                  <div><span class="dp-sub-inner">−&nbsp;69</span></div>
-                  <div>&nbsp;&nbsp;&nbsp;&nbsp;8</div>
+                <div id="od-c4-dpLeft" style="text-align:right;line-height:2;min-width:70px;">
+                  <div><span class="dp-c">&nbsp;</span><span class="dp-c">&nbsp;</span><span class="dp-c">5</span><span class="dp-c">3</span><span class="dp-c">7</span></div>
+                  <div><span class="dp-sub-inner"><span class="dp-c">−</span><span class="dp-c">&nbsp;</span><span class="dp-c">4</span><span class="dp-c">6</span><span class="dp-c">&nbsp;</span></span></div>
+                  <div><span class="dp-c">&nbsp;</span><span class="dp-c">&nbsp;</span><span class="dp-c">&nbsp;</span><span class="dp-c">7</span><span class="dp-c">7</span></div>
+                  <div><span class="dp-sub-inner"><span class="dp-c">−</span><span class="dp-c">&nbsp;</span><span class="dp-c">6</span><span class="dp-c">9</span></span></div>
+                  <div><span class="dp-c">&nbsp;</span><span class="dp-c">&nbsp;</span><span class="dp-c">&nbsp;</span><span class="dp-c">&nbsp;</span><span class="dp-c">8</span></div>
                 </div>
                 <div class="dp-tag" style="color:#9E1F5E;">↑ reste</div>
               </div>
               <div style="border-left:2px solid #1C1B2E;padding-left:16px;">
                 <div class="dp-tag" style="color:var(--accent-orange);">diviseur</div>
-                <div style="line-height:2;border-bottom:1.5px solid #1C1B2E;padding-bottom:2px;margin-left:-16px;padding-left:16px;">23</div>
-                <div style="display:flex;align-items:baseline;gap:8px;line-height:2;margin-top:6px;">
-                  <div style="font-weight:700;">23</div>
+                <div class="dp-div" style="line-height:2;border-bottom:1.5px solid #1C1B2E;padding-bottom:2px;margin-left:-16px;padding-left:16px;">23</div>
+                <div class="dp-quot" style="display:flex;align-items:baseline;gap:8px;line-height:2;margin-top:6px;">
+                  <div id="od-c4-dpQuotient" style="font-weight:700;">23</div>
                   <span class="dp-tag" style="color:#1F6B3A;white-space:nowrap;">← quotient</span>
                 </div>
               </div>

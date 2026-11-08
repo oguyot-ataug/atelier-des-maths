@@ -758,6 +758,7 @@ function plClavierPhysique(e){
     .pn-ex .pn-bascule.pn-entoure.on{ border:2.5px solid #1F3A5C; } .pn-lecture .pn-bascule, .pn-lecture .pn-mot{ border-color:transparent; }
     .pn-ex .pn-bascule.pn-barre.on::after{ content:''; position:absolute; left:2px; right:2px; top:50%; border-top:3px solid #C0392B; transform:rotate(-20deg); }
     .pn-ex .pn-choix{ display:inline-flex; flex-wrap:wrap; justify-content:center; max-width:100%; gap:4px 18px; align-items:center; } /* relecture bêta 6e-G2-P1-E1 : choix sous une petite figure, à la ligne au lieu de se superposer */ .pn-ex .pn-sep{ color:#8A93A3; margin:0 2px; }
+    .pn-ex .pl-chxtab .pn-choix{ flex-wrap:nowrap; justify-content:flex-start; gap:4px 10px; } .pn-ex .pl-chxtab .pn-sep{ display:none; } .pn-ex div:has(> table.pl-chxtab){ min-width:max-content !important; } /* propositions d'un tableau (P3.chxTab) : toujours sur une ligne, alignées (relecture 6e-G2-P1-E2, 08/11/2026) */
     .pn-ex .pn-mot{ border:2px dashed rgba(58,110,165,.3); background:none; border-radius:999px; padding:1px 8px; font:700 1em inherit; color:#1F3A5C; cursor:pointer; }
     .pn-ex .pn-note-classes{ display:inline-block; margin:0 6px; padding:1px 8px; border-radius:8px; background:#FDECEF; color:#9E1F5E; font-size:.8em; font-weight:700; white-space:nowrap; } .pn-lecture .pn-note-classes{ display:none; }
     .pn-ex .pn-mot.on{ border:2.5px solid #1F3A5C; background:#EEF3F9; }
