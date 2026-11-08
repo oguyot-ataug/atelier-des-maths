@@ -2500,8 +2500,9 @@ body.plp-ouvert .cahier-flottant{ top:56px; bottom:auto; left:16px; z-index:2147
   body.cahier-on .cahier-actif .redaction-template{ background:none; border:0; border-radius:0; padding:0; margin:0; font-size:inherit; line-height:32px; }
   body.cahier-on .cahier-actif .we-row{ display:block; padding-left:0 !important; padding-right:0 !important; }
   body.cahier-on .cahier-actif .we-expr{ font-family:inherit !important; font-size:inherit; }
+  body.cahier-on .cahier-actif .we-expr > span[style*="display:block"]{ display:inline !important; overflow:visible !important; padding:0 !important; } /* formule longue (cl4Long, st4Long…) : sur la ligne, commentaire à la suite */
   body.cahier-on .cahier-actif .we-row:last-child .we-expr{ color:#15803D; font-weight:700; }
-  body.cahier-on .cahier-actif .we-comment{ display:inline; margin-left:16px; font-size:.75em; color:#5B6472; }
+  body.cahier-on .cahier-actif .we-comment{ display:inline; margin-left:16px; font-size:.75em; color:#5B6472; line-height:0; } /* commentaire plus petit : il ne doit pas agrandir la ligne */
   body.cahier-on .cahier-actif table{ font-family:inherit; }
   /* Opération à compléter (pose-trous) : même feuille en fond, un chiffre par carreau de 32 px, chiffres posés sur la ligne
      principale (23 px sous le haut du carreau), trait de l'opération sur le bord du carreau ; les cases restent cliquables. */

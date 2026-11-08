@@ -212,7 +212,9 @@ opération posée ou une `.cahier-page` est à l'écran, masqué si le bouton d'
 Tous les chapitres, collège compris (demandé le 08/11/2026 : « étends-le au collège et aux 4 chapitres de CM1 ») : `cahierChapitre(demo)`
 (_commun.js, appelé par openChapitre) fait de chaque `.exo-correction` de l'onglet Exercices une `.cahier-page` (sauf correction
 interactive : boutons, saisie) et ajoute le bouton en tête des onglets ; rédactions types `.redaction-template`/`.we-row` une ligne par
-carreau. Opérations des cours du collège : tableaux `table.cma-op` (soustraction de décimaux, durées, `ogAddBlock`, `cm1opRowsTable` du
+carreau. Exemples rédigés des cours, méthodes et rédactions types (demandé le 08/11/2026 : « Ces exemples aussi doivent être placés sur
+papier seyes ») : chaque `.redaction-template` hors correction et non interactif est enveloppé dans une `.cahier-page.cahier-exemple`
+(cahierChapitre) ; commentaire `.we-comment` à la suite, sans agrandir la ligne ; formule longue (`cl4Long`…) sur la ligne. Opérations des cours du collège : tableaux `table.cma-op` (soustraction de décimaux, durées, `ogAddBlock`, `cm1opRowsTable` du
 CM1) et divisions posées `.dp-boite` (6e N1, 6e N4, 5e N1 ; un caractère par case `dpCases`, app.js) dessinées sur la feuille par la
 feuille de style. Toute nouvelle opération posée d'un cours du collège : `cm1Posee`, ou ces classes.
 Exercices « dans ton cahier » (demandé le 08/11/2026 : « Tous les exercices "dans ton cahier" doivent avoir cet outil ! ») : corrigé dans

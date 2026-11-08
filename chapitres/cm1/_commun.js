@@ -502,8 +502,14 @@ function cahierChapitre(demo){
     if(els.length === 1 && els[0].tagName === 'DIV' && !els[0].className) els[0].classList.add('cahier-page');
     else if(els.length){ const d = document.createElement('div'); d.className = 'cahier-page'; while(c.firstChild) d.appendChild(c.firstChild); c.appendChild(d); }
   });
+  // Exemples rédigés des cours, méthodes et rédactions types (demandé le 08/11/2026 : « Ces exemples aussi doivent être placés sur
+  // papier seyes ») : chaque .redaction-template hors correction devient une page de cahier, sauf s'il est interactif.
+  ['cours', 'methode', 'exos'].forEach(k => { const el = document.getElementById(demo[k]); if(!el) return;
+    el.querySelectorAll('.redaction-template').forEach(t => {
+      if(t.closest('.cahier-page, .exo-correction') || t.querySelector('button, input, select, textarea, canvas')) return;
+      const d = document.createElement('div'); d.className = 'cahier-page cahier-exemple'; t.replaceWith(d); d.appendChild(t); }); });
   ['cours', 'methode', 'exos'].forEach(k => { const el = document.getElementById(demo[k]); if(!el || el.querySelector(':scope > .cahier-barre')) return;
-    if(el.querySelector('table.pose-ecran[data-cahier], table.cma-op, .dp-boite') || (k === 'exos' && el.querySelector('.cahier-page'))) el.insertAdjacentHTML('afterbegin', cahierBouton()); });
+    if(el.querySelector('table.pose-ecran[data-cahier], table.cma-op, .dp-boite, .cahier-page')) el.insertAdjacentHTML('afterbegin', cahierBouton()); });
   cahierMaj();
 }
 function cahierBasculer(){ cahierOn = !cahierOn; try{ localStorage.setItem('cahierSeyes', cahierOn ? '1' : '0'); }catch(e){} cahierMaj(); if(typeof cahierFlottantMaj === 'function') cahierFlottantMaj(); }
