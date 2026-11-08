@@ -3872,6 +3872,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1382', date:'2026-11-08', items:['Prendre rendez-vous : une Oliv\'IA (olive dorée qui tient une page d\'agenda cochée et un petit réveil) sur les boutons du menu du compte et dans le titre de la page.'] },
   { version:'2026-08-19.1381', date:'2026-11-08', items:['Menu L\'Atelier : une Oliv\'IA calculatrice (elle tient la calculatrice bleue du site) devant « Calculatrice », ouverte à tous, sans cadenas pour les visiteurs.'] },
   { version:'2026-08-19.1380', date:'2026-11-08', items:['Calculatrice : les deux colonnes du tableau de valeurs gardent la même place quand on le fait défiler.'] },
   { version:'2026-08-19.1379', date:'2026-11-08', items:['Calculatrice : le tableau de valeurs défile avec les flèches ▲ ▼, comme sur une vraie calculatrice (quatre lignes à la fois, petites flèches quand il reste des valeurs) ; pointillés sous les en-têtes.'] },

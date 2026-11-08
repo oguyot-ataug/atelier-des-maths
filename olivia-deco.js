@@ -64,7 +64,7 @@ function olivPoseSvg(p, teinte){
     visage = `<path d="M40 54 L52 57 M80 54 L68 57" stroke="#2C3A1A" stroke-width="3" stroke-linecap="round"/>` + yeux(false) + joues + bouche;
     extra = `<path d="M44 92 h32 l-4 10 h-24 Z" fill="#F5C518" stroke="#C99A00" stroke-width="1.5"/><text x="60" y="101" font-size="9" font-weight="800" fill="#7A2E2E" font-family="Arial" text-anchor="middle">D</text>`;
     return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">${cape}${tete}${corps}${bras}${visage}${extra}</svg>`;
-  } else if(['globe', 'musique', 'arts', 'sport', 'cuisine', 'nature', 'argent', 'jeux', 'sciences', 'geo', 'savante', 'regle', 'equerre', 'tableau', 'blocs', 'correction', 'evaluation', 'devoirs', 'interro', 'classe', 'session', 'calendrier', 'outils', 'simulateur', 'programmes', 'lexique', 'calculatrice', 'couronne', 'ia', 'cle', 'bug', 'aurevoir'].includes(p)){
+  } else if(['globe', 'musique', 'arts', 'sport', 'cuisine', 'nature', 'argent', 'jeux', 'sciences', 'geo', 'savante', 'regle', 'equerre', 'tableau', 'blocs', 'correction', 'evaluation', 'devoirs', 'interro', 'classe', 'session', 'calendrier', 'outils', 'simulateur', 'programmes', 'lexique', 'calculatrice', 'rendezvous', 'couronne', 'ia', 'cle', 'bug', 'aurevoir'].includes(p)){
     // Maths & la vie (la globe-trotteuse et une pose par thème) et page Histoire des maths (la savante grecque) --
     // demandé : « insérer des logos d'Oliv'IA dans les pages Maths & la vie et dans le menu histoire », choix :
     // « globe-trotteuse, vignettes par thème et savante grecque ». La main droite tient l'objet du thème.
@@ -144,6 +144,14 @@ function olivPoseSvg(p, teinte){
       extra = `<g transform="rotate(-8 106 34)"><rect x="90" y="10" width="32" height="46" rx="5" fill="#1F3A5C" stroke="#0F2238" stroke-width="2"/>`
         + `<rect x="94" y="14" width="24" height="13" rx="2" fill="#E9F0E4"/><text x="115.5" y="24.5" font-size="8.5" font-weight="800" fill="#1C2B39" font-family="Arial" text-anchor="end">42</text>`
         + touches + `</g><circle cx="104" cy="56" r="4.8" fill="${E}"/>`;
+    } else if(p === 'rendezvous'){ // Prendre rendez-vous : une page d'agenda cochée et un petit réveil -- demandé le 08/11/2026
+      visage = yeux(false) + joues + bouche;
+      extra = `<g transform="rotate(-8 106 32)"><rect x="89" y="12" width="32" height="34" rx="3.5" fill="#fff" stroke="#1F3A5C" stroke-width="2"/>`
+        + `<rect x="89" y="12" width="32" height="10" rx="3.5" fill="#0C5BA0"/><rect x="89" y="18" width="32" height="4" fill="#0C5BA0"/>`
+        + `<path d="M97 8 v8 M113 8 v8" stroke="#1F3A5C" stroke-width="2.6" stroke-linecap="round"/>`
+        + `<path d="M97 33 l5.5 5.5 l10 -11" stroke="#1E8A6E" stroke-width="3.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>`
+        + `<circle cx="117" cy="47" r="7.5" fill="#F5C518" stroke="#C99A00" stroke-width="1.8"/><path d="M117 42.5 V47 L120 49" stroke="#5B3A1A" stroke-width="1.8" fill="none" stroke-linecap="round"/>`
+        + `<circle cx="104" cy="56" r="4.8" fill="${E}"/>`;
     } else if(p === 'programmes'){ // Programmes officiels : le Bulletin officiel (B.O.) ouvert -- demandé le 02/11/2026
       visage = yeux(false) + joues + bouche;
       extra = `<g transform="rotate(-10 106 34)"><rect x="90" y="14" width="32" height="40" rx="2.5" fill="#1F4E8C" stroke="#123058" stroke-width="2"/>`
@@ -185,7 +193,7 @@ const OLIV_POSES = ['savoir', 'methode', 'muscle', 'histoire', 'quiz', 'cm2', 'd
 // Menu « L'Atelier du prof » : mêmes Oliv'IA sans lunettes, en olives de couleurs variées ; le sous-menu
 // « Évaluations » reste sans vignette (choix : « sans icône pour les sous-menus »).
 // Couleurs variées aussi dans le menu L'Atelier -- demandé : « varie aussi les couleurs dans le menu L'Atelier ».
-const OLIV_MENU = { cm: ['muscle', 'verte'], compte: ['jeux', 'noire'], convertisseur: ['regle', 'doree'], 'figure-sandbox': ['equerre', 'cuivree'], tableau: ['tableau', 'verte'], programmation: ['blocs', 'noire'], 'histoire-maths': ['savante', 'doree'], lexique: ['lexique', 'cuivree'], calculatrice: ['calculatrice', 'verte'],
+const OLIV_MENU = { cm: ['muscle', 'verte'], compte: ['jeux', 'noire'], convertisseur: ['regle', 'doree'], 'figure-sandbox': ['equerre', 'cuivree'], tableau: ['tableau', 'verte'], programmation: ['blocs', 'noire'], 'histoire-maths': ['savante', 'doree'], lexique: ['lexique', 'cuivree'], calculatrice: ['calculatrice', 'verte'], 'rendez-vous': ['rendezvous', 'doree'],
   correction: ['correction', 'verte'], evaluation: ['evaluation', 'noire'], devoirsprof: ['devoirs', 'doree'], questionnaires: ['interro', 'cuivree'], supervision: ['classe', 'verte'],
   sessions: ['session', 'noire'], progression: ['calendrier', 'doree'], classe: ['outils', 'cuivree'], simulateur: ['simulateur', 'verte'], programmes: ['programmes', 'noire'] };
 function olivMenu(){
@@ -204,13 +212,19 @@ function olivCompte(){
     const o = document.createElement('span'); o.className = 'oliv-compte'; o.setAttribute('aria-hidden', 'true'); o.style.backgroundImage = olivPoseUrl(m[1], m[2]);
     const g = b.querySelector(':scope > .gicon'); if(g) g.replaceWith(o); else b.prepend(o);
   });
+  // « Prendre rendez-vous » (menu du compte, connecté ou non) -- demandé le 08/11/2026 : « Faire une olive aussi pour la prise de rendez-vous »
+  document.querySelectorAll('#accountLoggedIn button[data-nav="rendez-vous"], #authSignupBlock button[data-nav="rendez-vous"]').forEach(b => {
+    if(b.querySelector('.oliv-compte')) return;
+    const o = document.createElement('span'); o.className = 'oliv-compte'; o.setAttribute('aria-hidden', 'true'); o.style.backgroundImage = olivPoseUrl('rendezvous', 'doree');
+    const g = b.querySelector(':scope > .gicon'); if(g) g.replaceWith(o); else b.prepend(o);
+  });
 }
 if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => { olivMenu(); olivCompte(); }); else { olivMenu(); olivCompte(); }
 // La même Oliv'IA dans le titre de la page ouverte par le menu -- demandé : « Reprends aussi les Oliv'IA des menus
 // sur les pages correspondantes ».
 const OLIV_PAGES = { 'view-cm': 'cm', 'view-compte': 'compte', 'view-convertisseur': 'convertisseur', 'view-tableau': 'tableau', 'view-programmation': 'programmation',
   'view-frise': 'histoire-maths', 'view-lexique': 'lexique', 'view-correction': 'correction', 'view-evaluation': 'evaluation', 'view-devoirs-prof': 'devoirsprof', 'view-qz-banque': 'questionnaires',
-  'view-supervision': 'supervision', 'view-sessions': 'sessions', 'view-progression': 'progression', 'view-classe': 'classe', 'view-simulateur': 'simulateur', 'view-programmes': 'programmes' };
+  'view-supervision': 'supervision', 'view-sessions': 'sessions', 'view-progression': 'progression', 'view-classe': 'classe', 'view-simulateur': 'simulateur', 'view-programmes': 'programmes', 'view-rdv': 'rendez-vous' };
 function olivTitre(id){
   const m = OLIV_MENU[OLIV_PAGES[id]], v = document.getElementById(id); if(!m || !v) return;
   const h = v.querySelector('h1, h2'); if(!h || h.querySelector('.oliv-titre')) return;
