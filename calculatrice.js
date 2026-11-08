@@ -400,7 +400,7 @@ function calcExe(){
 const calcContientX = L => L.some(n => n.t === 'c' ? n.v === 'x' : calcSlots(n).some(calcContientX));
 // Touche pressée par l'utilisateur (souris, doigt) : la démonstration en cours s'arrête et sa bande disparaît.
 function calcClic(id){
-  if(CALC.montre || !document.querySelector('#calcPanneau .calc-montre-bande[hidden]')){ calcMontreStop(); const b = document.querySelector('#calcPanneau .calc-montre-bande'); if(b) b.hidden = true; }
+  const b = document.getElementById('calcBande'); if(CALC.montre || (b && !b.hidden)){ calcMontreStop(); if(b) b.hidden = true; }
   calcTouche(id);
 }
 function calcTouche(id){
@@ -429,7 +429,7 @@ function calcTouche(id){
   else if(id === 'up') calcHautBas(true);
   else if(id === 'down') calcHautBas(false);
   else if(id === 'del') calcSuppr();
-  else if(id === 'ac'){ CALC.racine.length = 0; CALC.L = CALC.racine; CALC.i = 0; CALC.res = null; CALC.err = ''; CALC.fini = false; }
+  else if(id === 'ac'){ CALC.decimal = false; CALC.racine.length = 0; CALC.L = CALC.racine; CALC.i = 0; CALC.res = null; CALC.err = ''; CALC.fini = false; }
   else if(id === 'exe'){ if(CALC.tableau && calcContientX(CALC.racine)) calcTableau(); else calcExe(); }
   else if(id === 'shift') CALC.seconde = !sec;
   else if(id === 'mode'){ CALC.tableau = !CALC.tableau; }
@@ -455,14 +455,16 @@ function calcCss(){
   .calc-tete{ display:flex; align-items:center; gap:6px; cursor:move; user-select:none; margin-bottom:8px; }
   .calc-tete b{ flex:1; font-size:.95rem; letter-spacing:.02em; }
   .calc-x{ border:0; background:rgba(255,255,255,.14); color:#fff; width:28px; height:28px; border-radius:50%; cursor:pointer; font-size:16px; line-height:28px; padding:0; }
-  .calc-ecran{ background:#E9F0E4; color:#1C2B39; border-radius:10px; padding:6px 10px 6px; height:142px; box-sizing:border-box; display:flex; flex-direction:column; justify-content:space-between; box-shadow:inset 0 2px 6px rgba(0,0,0,.25); }
+  .calc-ecran{ background:#E9F0E4; color:#1C2B39; border-radius:10px; padding:6px 10px 6px; height:236px; box-sizing:border-box; display:flex; flex-direction:column; justify-content:flex-start; box-shadow:inset 0 2px 6px rgba(0,0,0,.25); }
   .calc-etat{ display:flex; gap:8px; font:700 .62rem 'JetBrains Mono',monospace; color:#5B6472; min-height:12px; }
   .calc-etat .on{ color:#C2410C; }
   .calc-expr{ font-size:1.05rem; height:56px; flex:0 0 56px; display:flex; align-items:center; overflow-x:auto; overflow-y:auto; white-space:nowrap; padding:0; scrollbar-width:none; } /* hauteurs fixes : l'écran ne change plus de taille entre une fraction et un décimal */
-  .calc-res{ font-size:1.25rem; height:62px; flex:0 0 62px; display:flex; align-items:center; justify-content:flex-end; overflow-x:auto; overflow-y:auto; white-space:nowrap; font-weight:600; scrollbar-width:none; }
+  .calc-res{ font-size:1.25rem; height:62px; flex:0 0 62px; margin-top:auto; display:flex; align-items:center; justify-content:flex-end; overflow-x:auto; overflow-y:auto; white-space:nowrap; font-weight:600; scrollbar-width:none; }
   .calc-expr::-webkit-scrollbar, .calc-res::-webkit-scrollbar{ display:none; }
   .calc-res.err{ color:#B91C1C; font:700 .95rem 'Space Grotesk',Arial,sans-serif; }
-  .calc-montre-bande{ margin:8px 0 0; padding:6px 8px; background:rgba(255,255,255,.1); border-radius:10px; font-size:.78rem; line-height:1.9; }
+  .calc-montre-bande{ position:fixed; z-index:9851; box-sizing:border-box; padding:8px 12px; background:#1F3A5C; color:#fff; border-radius:16px; font:500 .8rem 'Space Grotesk',Arial,sans-serif; line-height:1.9;
+    box-shadow:0 12px 34px rgba(15,30,50,.32); }
+  .calc-montre-bande[hidden]{ display:none; }
   .calc-montre-bande .k{ display:inline-block; min-width:22px; text-align:center; padding:0 6px; margin:0 2px; border-radius:6px; background:#fff; color:#1C2B39; font-weight:700; line-height:20px; }
   .calc-montre-bande .k.fait{ background:#F59E0B; color:#fff; }
   .calc-nav{ display:grid; grid-template-columns:1.6fr 1.3fr repeat(5, 1fr); gap:5px; margin:10px 0 6px; }
@@ -479,7 +481,6 @@ function calcCss(){
   .calc-k small{ position:absolute; top:1px; left:0; right:0; font:600 .55rem 'Space Grotesk',Arial,sans-serif; color:#FCD34D; }
   .calc-k:active, .calc-k.appui{ transform:translateY(2px); box-shadow:none; outline:3px solid #F59E0B; outline-offset:1px; }
   .calc-seconde .calc-k[data-k="cos"], .calc-seconde .calc-k[data-k="sin"], .calc-seconde .calc-k[data-k="tan"]{ outline:2px dashed #F59E0B; }
-  .calc-ecran.tab{ height:250px; }
   .calc-tabzone{ flex:1 1 auto; display:flex; flex-direction:column; min-height:0; font-size:.78rem; }
   .calc-tabzone[hidden], .calc-res[hidden]{ display:none; }
   .calc-tabpar{ display:flex; gap:8px; align-items:center; font:700 .68rem 'JetBrains Mono',monospace; color:#3B4A5C; padding:2px 0 4px; border-bottom:1px dashed #9AA8A0; }
@@ -503,7 +504,7 @@ function calcCss(){
   .calc-montre{ display:inline-flex; align-items:center; gap:6px; border:1.5px solid #1F3A5C; background:#fff; color:#1F3A5C; border-radius:999px; padding:4px 12px;
     font:600 .82rem 'Inter',sans-serif; cursor:pointer; margin:4px 0; }
   .calc-montre .gicon{ font-size:18px; }
-  @media print{ #calcPanneau, #calcFlottant, .calc-montre{ display:none !important; } }`;
+  @media print{ #calcPanneau, #calcFlottant, .calc-montre, .calc-montre-bande{ display:none !important; } }`;
   document.head.appendChild(st);
 }
 function calcTexte(tex){ try{ return katex.renderToString(tex, { throwOnError: false, trust: false }); }catch(e){ return tex; } }
@@ -518,7 +519,6 @@ function calcConstruire(){
       <button type="button" class="calc-x" onclick="calcFermerPanneau()" aria-label="Fermer la calculatrice">×</button></div>
     <div class="calc-ecran"><div class="calc-etat"></div><div class="calc-expr"></div><div class="calc-res" aria-live="polite"></div>
       <div class="calc-tabzone" hidden><div class="calc-tabpar">Début <input id="calcTabD" value="-3" inputmode="decimal"> Fin <input id="calcTabF" value="3" inputmode="decimal"> Pas <input id="calcTabP" value="1" inputmode="decimal"></div><div class="calc-tab-corps"></div></div></div>
-    <div class="calc-montre-bande" hidden></div>
     <div class="calc-nav">${d.nav.map(k => touche(k, true)).join('')}</div>
     <div class="calc-clav">${d.rangs.flat().map(k => touche(k)).join('')}</div>`;
   calcAfficher();
@@ -556,11 +556,11 @@ function calcTableau(){
 function calcDeplacable(p){
   let dx = 0, dy = 0, en = false;
   p.addEventListener('pointerdown', e => { if(!e.target.closest('.calc-tete') || e.target.closest('button')) return; en = true; const r = p.getBoundingClientRect(); dx = e.clientX - r.left; dy = e.clientY - r.top; p.setPointerCapture(e.pointerId); });
-  p.addEventListener('pointermove', e => { if(!en) return; p.style.left = Math.max(0, Math.min(innerWidth - 80, e.clientX - dx)) + 'px'; p.style.top = Math.max(0, Math.min(innerHeight - 60, e.clientY - dy)) + 'px'; p.style.right = 'auto'; });
+  p.addEventListener('pointermove', e => { if(!en) return; p.style.left = Math.max(0, Math.min(innerWidth - 80, e.clientX - dx)) + 'px'; p.style.top = Math.max(0, Math.min(innerHeight - 60, e.clientY - dy)) + 'px'; p.style.right = 'auto'; calcPlacerBande(); });
   p.addEventListener('pointerup', () => { en = false; });
 }
 function calcOuvrir(){ calcConstruire(); document.getElementById('calcPanneau').hidden = false; }
-function calcFermerPanneau(){ const p = document.getElementById('calcPanneau'); if(p) p.hidden = true; calcMontreStop(); }
+function calcFermerPanneau(){ const p = document.getElementById('calcPanneau'); if(p) p.hidden = true; calcMontreStop(); const b = document.getElementById('calcBande'); if(b) b.hidden = true; }
 // Clavier de l'ordinateur, quand le panneau est ouvert et que l'on n'écrit pas ailleurs.
 document.addEventListener('keydown', e => {
   const p = document.getElementById('calcPanneau'); if(!p || p.hidden || e.ctrlKey || e.metaKey || e.altKey) return;
@@ -573,11 +573,28 @@ document.addEventListener('keydown', e => {
 
 /* ------------------------------ « Montre-moi les touches » ------------------------------ */
 function calcMontreBande(touches, k, titre){
-  const b = document.querySelector('#calcPanneau .calc-montre-bande'); if(!b) return;
+  let b = document.getElementById('calcBande');
+  if(!b){ b = document.createElement('div'); b.id = 'calcBande'; b.className = 'calc-montre-bande'; b.setAttribute('aria-live', 'polite'); document.body.appendChild(b); }
   b.hidden = false;
   b.innerHTML = `${titre ? `<b>${titre}</b><br>` : ''}Touches : ${touches.map((t, j) => `<span class="k${j < k ? ' fait' : ''}">${calcIcone(t)}</span>`).join('')}
     <div style="font-size:.68rem;color:#B9C7D8;margin-top:2px;">Sur ta calculatrice, le nom ou la place d'une touche peut être un peu différent.</div>`;
+  calcPlacerBande();
 }
+// La séquence de touches : une carte à part, sous la calculatrice (demandé le 08/11/2026 : « la séquence de touches peut se mettre sous
+// la calculatrice mais indépendant ») ; au-dessus, ou à côté, quand la place manque sous elle.
+function calcPlacerBande(){
+  const b = document.getElementById('calcBande'), p = document.getElementById('calcPanneau'); if(!b || b.hidden || !p || p.hidden) return;
+  const r = p.getBoundingClientRect(), m = 8; b.style.width = r.width + 'px';
+  const h = b.offsetHeight; let x = r.left, y = r.bottom + m;
+  if(y + h > innerHeight - m){
+    if(r.top - m - h >= m) y = r.top - m - h;
+    else if(r.left - m - r.width >= m){ x = r.left - m - r.width; y = Math.max(m, r.bottom - h); }
+    else if(r.right + m + r.width <= innerWidth - m){ x = r.right + m; y = Math.max(m, r.bottom - h); }
+    else y = innerHeight - m - h;
+  }
+  b.style.left = Math.max(m, x) + 'px'; b.style.top = Math.max(m, y) + 'px';
+}
+addEventListener('resize', () => calcPlacerBande());
 function calcMontreStop(){ if(CALC.montre){ clearTimeout(CALC.montre.t); CALC.montre = null; } document.querySelectorAll('#calcPanneau .calc-k.appui').forEach(x => x.classList.remove('appui')); }
 function calcMontrer(touches, titre){
   calcMontreStop(); calcOuvrir(); calcTouche('ac');
