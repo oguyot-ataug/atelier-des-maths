@@ -480,10 +480,103 @@ function plMarque(lvl, x){
   return '';
 }
 function plCahierHtml(){ return `<div class="pl-cahier"><span class="pl-oliv">${plOliv('savoir')}</span><span class="pl-bulle">Dans ton cahier !</span></div>`; }
-function plExoCorps(x, corr){ const h = plSepAeres(corr ? (x.corr || x.eleve || '') : (plTrousAjustes(x) + (x.cahier ? plCahierHtml() : '')));
+// Énoncé d'un exercice « dans ton cahier » sans la vignette : un repère invisible (.pl-cahier-m) fait apparaître le bouton « Dans mon
+// cahier » à l'écran (cahierFlottantMaj) ; rien sur le papier.
+function plExoCorps(x, corr){ const h = plSepAeres(corr ? (x.corr || x.eleve || '') : (plTrousAjustes(x) + (x.cahier ? plCahierHtml() : /(dans|sur) ton cahier/i.test(x.consigne || '') ? '<span class="pl-cahier-m" aria-hidden="true"></span>' : '')));
   const r = plChoixColHtml(h, corr && x.corr ? x.eleve : null, !x.col && !x.uneLigne);
   // Exercice fait dans le cahier : sa correction peut s'afficher sur une feuille Seyès (« Dans mon cahier », chapitres/cm1/_commun.js).
-  return corr && (x.cahier || /(dans|sur) ton cahier/i.test(x.consigne || '')) ? `<div class="cahier-page">${r}</div>` : r; }
+  return corr && (x.cahier || /(dans|sur) ton cahier/i.test(x.consigne || '')) ? `<div class="cahier-page">${r}${plPoseesAuto(x)}</div>` : r; }
+/* Exercice « Pose (et calcule) dans ton cahier » : le corrigé montre aussi chaque opération posée (demandé le 08/11/2026 : « Tous
+   les exercices "dans ton cahier" doivent avoir cet outil ! ») -- sur la feuille Seyès en mode « Dans mon cahier », dans les
+   carreaux de la correction. Calculs lus dans x.calc (P3.rmp) : additions et soustractions (virgules alignées, zéros ajoutés),
+   multiplications (produits partiels), divisions euclidiennes (plDivision) et décimales. Chaque opération est vérifiée avant
+   d'être posée ; un calcul non reconnu reste seulement dans la liste. À l'écran seulement : le papier (Manuel, impression) ne
+   change pas (.pl-poses-auto masqué dans .pl-page et à l'impression). */
+function plPoseesAuto(x){
+  if(!x.calc || x.ecran || !/\bpos/i.test(String(x.consigne || '').replace(/<[^>]+>/g, ''))) return '';
+  const nb = v => String(v).replace(/€/g, '').replace(/[\s\u00a0\u202f]/g, '');
+  const dec = v => (nb(v).split(',')[1] || '').length;
+  const val = v => Number(nb(v).replace(',', '.'));
+  const cl = e => e.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  const ecr = (v, d) => { const [e, f = ''] = nb(v).split(','); return cl(e) + (d ? ',' + f.padEnd(d, '0') : ''); };
+  const proche = (a, b) => Math.abs(a - b) < 1e-9;
+  const N = '(\\d[\\d ]*(?:,\\d+)?)';
+  const ops = []; let div = false;
+  x.calc.forEach(([t, ...r]) => {
+    let i = 0; const s = String(t).replace(/<[^>]+>/g, '').replace(/@/g, () => String(r[i++] == null ? '' : r[i - 1] && r[i - 1].ex || r[i - 1])).replace(/€/g, '').replace(/[\u00a0\u202f]/g, ' ').replace(/\s+/g, ' ').trim();
+    let m = s.match(new RegExp(`^${N}((?: ?[+−-] ?${N})+) ?= ?${N}$`));
+    if(m){
+      const termes = [[' ', m[1]]]; (m[2].match(new RegExp(`[+−-] ?${N}`, 'g')) || []).forEach(z => termes.push([z[0] === '+' ? '+' : '−', z.slice(1).trim()]));
+      const res = m[m.length - 1], signes = termes.slice(1).map(z => z[0]);
+      if(!(signes.every(g => g === '+') || (signes.length === 1 && signes[0] === '−'))) return;
+      const calc = termes.reduce((a, [g, v]) => g === '−' ? a - val(v) : a + val(v), 0);
+      if(!proche(calc, val(res))) return;
+      const D = Math.max(...termes.map(([, v]) => dec(v)), dec(res));
+      ops.push(cm1Posee(termes.map(([g, v]) => [g, ecr(v, D)]).concat([[' ', ecr(res, D)]]), '', { rep: true }));
+      return;
+    }
+    m = s.match(new RegExp(`^${N} ?× ?${N} ?= ?${N}$`));
+    if(m){
+      const [a, b, res] = [m[1], m[2], m[3]], da = dec(a), db = dec(b), A = nb(a).replace(',', ''), B = nb(b).replace(',', '');
+      if(!proche(val(a) * val(b), val(res))) return;
+      const P = String(BigInt(A) * BigInt(B)), prod = da ? P.padStart(da + 1, '0').slice(0, -da) + ',' + P.slice(-da) : P;
+      if(B.length === 1 && !db){ ops.push(cm1Posee([[' ', da ? nb(a) : A], ['×', B], [' ', prod]], '', { rep: true })); return; }
+      if(da || db){ ops.push(plMulDecimale(A, da, B, db)); return; } // nombres alignés à droite, virgule écrite après son chiffre
+      const parts = B.split('').reverse().map((c, k) => String(BigInt(A) * BigInt(c)) + '0'.repeat(k)).map(v => /^0+$/.test(v) ? '0' : v);
+      ops.push(cm1Posee([[' ', A], ['×', B], ...parts.map((v, k) => [k === parts.length - 1 ? '+' : ' ', v, k === 0]), [' ', P]], '', { rep: true }));
+      return;
+    }
+    m = s.match(/^(\d[\d ]*) ?: ?(\d+) ?→ ?quotient (\d+),? reste (\d+)/);
+    if(m){ const a = +nb(m[1]), b = +m[2];
+      if(Math.floor(a / b) === +m[3] && a % b === +m[4]){ const h = plDivEuclide(a, b); if(h){ ops.push(h); div = true; } } return; }
+    m = s.match(new RegExp(`^${N} ?: ?(\\d+) ?= ?${N}$`));
+    if(m){ const d = dec(m[3]); if(!d || !proche(val(m[1]) / +m[2], val(m[3]))) return;
+      const h = plDivDecimale(nb(m[1]), +m[2], d); if(h){ ops.push(h); div = true; } }
+  });
+  // Opérations côte à côte : résultats sur la même ligne (alignées par le bas) ; divisions alignées par le haut.
+  return ops.length ? `<div class="pl-poses-auto${div ? ' pl-poses-div' : ''}">${ops.map(o => `<div>${o}</div>`).join('')}</div>` : '';
+}
+/* Multiplication de décimaux posée (« on calcule sans les virgules, puis on place la virgule ») : nombres alignés à droite, chaque
+   virgule écrite juste après son chiffre (elle ne prend pas de colonne), produits partiels, produit avec da + db décimales. */
+function plMulDecimale(A, da, B, db){
+  const P = String(BigInt(A) * BigInt(B)), d = da + db, Pp = P.padStart(d + 1, '0');
+  const parts = B.length > 1 ? B.split('').reverse().map((c, k) => { const v = String(BigInt(A) * BigInt(c)) + '0'.repeat(k); return /^0+$/.test(v) ? '0' : v; }) : [];
+  const lignes = [{ s: '', t: A, v: da }, { s: '×', t: B, v: db }, ...parts.map((t, k) => ({ s: k === parts.length - 1 && k ? '+' : '', t, trait: k === 0 })), { s: '', t: Pp, v: d, res: true, trait: true }];
+  const n = Math.max(...lignes.map(l => l.t.length)), T = '2px solid #1C1B2E';
+  return `<table class="cma-op pl-mulc" style="margin:4px 0;">${lignes.map((l, i) => { const ch = l.t.padStart(n, ' ').split(''), k = l.v ? n - 1 - l.v : -1;
+    const bord = l.trait ? ` style="border-top:${T};"` : '';
+    return `<tr${bord}><td class="cma-sg">${l.s}</td>${ch.map((c, j) => `<td${l.res ? ' class="cma-res"' : ''}>${c === ' ' ? '' : c}${j === k ? ',' : ''}</td>`).join('')}</tr>`; }).join('')}</table>`;
+}
+/* Division posée en tableau .cma-op (comme les opérations des cours) : sur la feuille Seyès en mode « Dans mon cahier », un chiffre
+   par carreau ; diviseur et quotient dans la colonne de droite, derrière le trait de la potence. rows : [{ cells, sign, underline,
+   endCol, bold }] (même forme que dpRenderDivisionTable, outils-figures.js). */
+function plDivTable(rows, divisor, quotient, commaCol){
+  const T = '2px solid #1C1B2E';
+  return `<table class="cma-op pl-divc" style="margin:4px 0;">${rows.map((r, i) => `<tr><td class="cma-sg"${r.underline ? ` style="border-bottom:${T};"` : ''}>${r.sign ? '−' : ''}</td>${r.cells.map((c, ci) =>
+    `<td style="${r.underline && (r.endCol == null || ci <= r.endCol) ? `border-bottom:${T};` : ''}${commaCol != null && ci === commaCol ? 'border-right:1px dashed rgba(28,43,57,.45);' : ''}${r.bold ? 'font-weight:700;' : ''}">${c}</td>`).join('')}<td class="cma-lab pl-divd${i === 1 ? ' cma-res' : ''}" style="border-left:${T};${i === 0 ? `border-bottom:${T};` : ''}font:700 1.1rem 'JetBrains Mono',monospace;color:${i === 1 ? '#2E9C6A' : '#1C1B2E'};padding-left:12px;min-width:56px;">${i === 0 ? divisor : i === 1 ? quotient : ''}</td></tr>`).join('')}</table>`;
+}
+function plDivEuclide(a, b){
+  if(typeof computeDivisionPosee !== 'function' || typeof dpAlignedCells !== 'function') return '';
+  const res = computeDivisionPosee(a, b); if(!res) return '';
+  const N = String(a).length, al = (str, end) => dpAlignedCells(String(str), end, N), rows = [{ cells: al(a, N - 1), bold: true }];
+  let premier = true, fin = -1;
+  res.steps.forEach((st, i) => { if(st.sub === null) return;
+    if(!premier) rows.push({ cells: al(st.value, i) }); premier = false;
+    rows.push({ cells: al(st.sub, i), sign: true, underline: true, endCol: i }); fin = i;
+    if(i === N - 1) rows.push({ cells: al(res.remainder, i) }); });
+  if(fin < N - 1) rows.push({ cells: al(res.remainder, N - 1) });
+  return plDivTable(rows, b, res.quotient);
+}
+function plDivDecimale(a, b, d){
+  if(typeof computeDivisionDecimale !== 'function' || typeof dpAlignedCells !== 'function') return '';
+  const res = computeDivisionDecimale(a, b, d); if(!res) return '';
+  const D = res.digits.join(''), n = Math.max(D.length, ...res.steps.map(s => s.col + 1)), rows = [{ cells: dpAlignedCells(D, D.length - 1, n), bold: true }];
+  res.steps.forEach((s, i) => { rows.push({ cells: dpAlignedCells(String(s.sub), s.col, n), sign: true, underline: true, endCol: s.col });
+    const nx = res.steps[i + 1]; rows.push({ cells: dpAlignedCells(String(nx ? nx.before : s.after), nx ? nx.col : s.col, n) }); });
+  const cc = res.givenCommaPos != null ? res.givenCommaPos - 1 : undefined;
+  if(cc != null && rows[0].cells[cc]) rows[0].cells[cc] += ','; // la virgule du dividende reste écrite
+  return plDivTable(rows, b, res.quotient + (res.repeating ? '…' : ''), cc);
+}
 /* Propositions à entourer en fin de question (« vrai · faux », « oui · non »…) : rangées dans une colonne à part, plus loin
    de l'énoncé, alignées les unes sous les autres -- relecture 6e-G1-P1-E4 (01/11/2026) : « les vrai faux, en tabulation
    plus loin de l'énoncé et alignés en colonne quand c'est possible ». Automatique : une liste dont CHAQUE ligne se termine

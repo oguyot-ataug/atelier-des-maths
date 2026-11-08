@@ -456,7 +456,7 @@ function cahierAppliquer(racine){
     if(cahierRO) cahierRO.observe(p); });
   const T = racine.matches && racine.matches('table.pose-ecran[data-cahier]') ? [racine] : racine.querySelectorAll('table.pose-ecran[data-cahier]');
   T.forEach(t => { const s = t.nextElementSibling; if(s && s.classList.contains('pose-cahier')) return;
-    try{ t.insertAdjacentHTML('afterend', cm1PoseeCahier(JSON.parse(t.dataset.cahier), !!t.closest('.cahier-actif .cm-redac-pose'))); }catch(e){} });
+    try{ t.insertAdjacentHTML('afterend', cm1PoseeCahier(JSON.parse(t.dataset.cahier), !!t.closest('.cahier-actif .cm-redac-pose, .cahier-actif .pl-poses-auto'))); }catch(e){} });
   P.forEach(p => { if(p.classList.contains('cahier-actif')) cahierCaler(p); });
 }
 if(typeof document !== 'undefined' && document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if(cahierOn) document.querySelectorAll('.cahier-actif').forEach(cahierCaler); });
@@ -499,7 +499,9 @@ function cahierFlottantPlanifier(){ if(!cahierFlotT) cahierFlotT = setTimeout(()
 function cahierFlottantMaj(){
   if(!document.body) return;
   const H = window.innerHeight || 0, vu = e => { const r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0 && r.bottom > 0 && r.top < H; };
-  const contenu = [...document.querySelectorAll('.cahier-page, table.pose-ecran[data-cahier], table.pose-trous, table.cma-op, .dp-boite, svg.pose-cahier')].some(vu);
+  // Exercice de planche « Dans ton cahier ! » (.pl-cahier) : le bouton est là dès l'énoncé (08/11/2026 : « Tous les exercices "dans ton
+  // cahier" doivent avoir cet outil ! »), sauf dans les pages du Manuel, qui ne changent pas.
+  const contenu = [...document.querySelectorAll('.cahier-page, table.pose-ecran[data-cahier], table.pose-trous, table.cma-op, .dp-boite, svg.pose-cahier, .pl-cahier, .pl-cahier-m')].some(e => vu(e) && !(/pl-cahier/.test(e.className) && e.closest('.pl-page')));
   const enTete = [...document.querySelectorAll('.cahier-barre .cahier-btn')].some(vu);
   let b = document.getElementById('cahierFlottant');
   if(!contenu || enTete){ if(b) b.hidden = true; return; }

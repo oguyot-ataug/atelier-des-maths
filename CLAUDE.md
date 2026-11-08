@@ -201,6 +201,11 @@ interactive : boutons, saisie) et ajoute le bouton en tête des onglets ; rédac
 carreau. Opérations des cours du collège : tableaux `table.cma-op` (soustraction de décimaux, durées, `ogAddBlock`, `cm1opRowsTable` du
 CM1) et divisions posées `.dp-boite` (6e N1, 6e N4, 5e N1 ; un caractère par case `dpCases`, app.js) dessinées sur la feuille par la
 feuille de style. Toute nouvelle opération posée d'un cours du collège : `cm1Posee`, ou ces classes.
+Exercices « dans ton cahier » (demandé le 08/11/2026 : « Tous les exercices "dans ton cahier" doivent avoir cet outil ! ») : corrigé dans
+une `.cahier-page` (plExoCorps) ; pour « Pose (et calcule) dans ton cahier », `plPoseesAuto` (planches.js) ajoute au corrigé chaque
+opération posée, lue dans `x.calc` (P3.rmp) et vérifiée : `cm1Posee` (addition, soustraction, multiplication entière), `plMulDecimale`,
+`plDivEuclide`, `plDivDecimale` (tableaux .cma-op) ; à l'écran seulement (`.pl-poses-auto` masqué dans `.pl-page` et à l'impression).
+Repère invisible `.pl-cahier-m` dans l'énoncé : le bouton flottant apparaît dès l'énoncé.
 Opérations à compléter (`trous`, `cases`) : classe `pose-trous`, feuille Seyès dessinée en fond par la seule feuille de style
 (cases de 32 px, cases à remplir conservées, « Vérifier » inchangé) ; en projection le bouton flottant passe en haut à gauche.
 

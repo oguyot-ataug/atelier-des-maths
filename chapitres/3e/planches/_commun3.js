@@ -23,7 +23,8 @@ const P3 = {
   // la ligne dans une inégalité ») : la partie après « : » (ou toute la ligne) reste d'un seul tenant.
   ineg: t => { if(!/ [<>≤≥] /.test(t)) return t; const k = t.lastIndexOf(' : '), d = k < 0 ? 0 : k + 3;
     return t.slice(0, d) + '<span class="pl-ineg" style="white-space:nowrap;">' + t.slice(d) + '</span>'; },
-  rmp: (l, n) => ({ eleve: plListe(l.map(([t]) => P3.ineg(t).split('@').join(P3.B(n || 3)))), corr: plListe(l.map(([t, ...r]) => { let i = 0; return P3.ineg(t).replace(/@/g, () => P3.R(r[i++])) + (r.some(v => v && v.entre) ? ' <small>(ou un autre nombre qui convient)</small>' : ''); })) }),
+  // calc : les lignes brutes, pour poser les opérations dans le corrigé d'un exercice « Pose dans ton cahier » (plPoseesAuto, planches.js).
+  rmp: (l, n) => ({ calc: l, eleve: plListe(l.map(([t]) => P3.ineg(t).split('@').join(P3.B(n || 3)))), corr: plListe(l.map(([t, ...r]) => { let i = 0; return P3.ineg(t).replace(/@/g, () => P3.R(r[i++])) + (r.some(v => v && v.entre) ? ' <small>(ou un autre nombre qui convient)</small>' : ''); })) }),
   // Choix à entourer : [['question', 'bonne réponse'], …], m = les choix proposés (« a · b · c »).
   ch: (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${P3.entoureParmi(m, r)}`)) + '</div>' }),
   // Choix différents pour chaque question : [['question', 'bonne réponse', 'a · b · c'], …].
