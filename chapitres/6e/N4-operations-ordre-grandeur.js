@@ -36,8 +36,10 @@ function ogAddRow(map, topline){
   const border = topline ? 'border-top:1.5px solid #1C1B2E;padding-top:2px;' : '';
   return `<div style="width:${OG_CELL_W*OG_ADD_NCOLS}px;${border}">${ogAddCells(map)}</div>`;
 }
+// Tableau .cma-op (08/11/2026) : « Dans mon cahier » le pose sur la feuille Seyès, un chiffre par carreau (styles.css).
 function ogAddBlock(rows){
-  return `<div style="font-family:'JetBrains Mono',monospace;font-size:1.15rem;">${rows.map(r=>ogAddRow(r.m, r.top)).join('')}</div>`;
+  const td = (c, i, res) => `<td${i === 0 ? ' class="cma-sg"' : res ? ' class="cma-res"' : ''} style="width:${i === 3 ? 12 : 20}px;">${c || ''}</td>`;
+  return `<table class="cma-op" style="margin:8px 0;">${rows.map(r => `<tr${r.top ? ' style="border-top:1.5px solid #1C1B2E;"' : ''}>${Array.from({ length: OG_ADD_NCOLS }, (_, i) => td(r.m[i], i, r.top)).join('')}</tr>`).join('')}</table>`;
 }
 const OG_ADD_WELL = [
   {m:{2:'9', 3:',', 4:'4'}},
@@ -71,7 +73,7 @@ document.getElementById('cours-demo-operations-ordre-grandeur-6e').innerHTML = `
     <p class="hint" style="text-align:center;margin:2px 0;">Addition bien posée</p>
   </div>
   <div>
-    <div style="color:#9E1F5E;">${ogAddBlock(OG_ADD_BAD)}</div>
+    <div class="og-mal" style="color:#9E1F5E;">${ogAddBlock(OG_ADD_BAD)}</div>
     <p class="hint" style="text-align:center;margin:2px 0;color:#9E1F5E;">Addition mal posée (virgules non alignées)</p>
   </div>
 </div>
@@ -218,19 +220,19 @@ document.getElementById('methode-demo-operations-ordre-grandeur-6e').innerHTML =
 <p style="margin:0 0 14px;">Même principe que pour soustraire des durées (voir le chapitre « Heures et durée ») : quand une colonne est trop petite pour soustraire, on lui ajoute 10 (au lieu de 60 pour les durées), et on compense en ajoutant 1 à la colonne suivante du second terme.</p>
 <p style="margin:0 0 8px;"><b>Exemple</b> : calcule 8,30 − 2,56.</p>
 <div class="figure-wrap" style="max-width:320px;margin:8px 0;">
-  <table id="ogSubTable" style="width:100%;border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.95rem;text-align:center;">
+  <table id="ogSubTable" class="cma-op" style="width:100%;border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.95rem;text-align:center;">
     <thead>
-      <tr><th style="width:16px;"></th><th style="padding:4px;color:#6B7A8C;font-weight:400;font-size:.72rem;">unités</th><th style="padding:4px;"></th><th style="padding:4px;color:#6B7A8C;font-weight:400;font-size:.72rem;">dixièmes</th><th style="padding:4px;color:#6B7A8C;font-weight:400;font-size:.72rem;">centièmes</th></tr>
+      <tr><th style="width:16px;"></th><th style="padding:4px;color:#6B7A8C;font-weight:400;font-size:.72rem;" data-abr="U">unités</th><th style="padding:4px;"></th><th style="padding:4px;color:#6B7A8C;font-weight:400;font-size:.72rem;" data-abr="d">dixièmes</th><th style="padding:4px;color:#6B7A8C;font-weight:400;font-size:.72rem;" data-abr="c">centièmes</th></tr>
       <tr>
         <td style="vertical-align:top;"></td><td style="vertical-align:top;"></td><td style="vertical-align:top;"></td>
-        <td id="ogSubPlus10Dix" style="height:13px;color:#1E9E5A;font-size:.75rem;vertical-align:bottom;padding:0;line-height:1;"></td>
-        <td id="ogSubPlus10Cent" style="height:13px;color:#1E9E5A;font-size:.75rem;vertical-align:bottom;padding:0;line-height:1;"></td>
+        <td id="ogSubPlus10Dix" class="cma-ret" style="height:13px;color:#1E9E5A;font-size:.75rem;vertical-align:bottom;padding:0;line-height:1;"></td>
+        <td id="ogSubPlus10Cent" class="cma-ret" style="height:13px;color:#1E9E5A;font-size:.75rem;vertical-align:bottom;padding:0;line-height:1;"></td>
       </tr>
     </thead>
     <tbody>
       <tr><td style="vertical-align:top;"></td><td style="vertical-align:top;">8</td><td style="vertical-align:top;">,</td><td style="vertical-align:top;">3</td><td style="vertical-align:top;">0</td></tr>
       <tr>
-        <td style="vertical-align:top;">−</td>
+        <td class="cma-sg" style="vertical-align:top;">−</td>
         <td style="vertical-align:top;"><span style="position:relative;display:inline-block;">2<span id="ogSubCompUnite" style="position:absolute;left:100%;bottom:-.1em;margin-left:-.05em;color:#1E9E5A;font-weight:700;font-size:.6em;line-height:1;white-space:nowrap;"></span></span></td>
         <td style="vertical-align:top;">,</td>
         <td style="vertical-align:top;"><span style="position:relative;display:inline-block;">5<span id="ogSubCompDix" style="position:absolute;left:100%;bottom:-.1em;margin-left:-.05em;color:#1E9E5A;font-weight:700;font-size:.6em;line-height:1;white-space:nowrap;"></span></span></td>
@@ -240,10 +242,10 @@ document.getElementById('methode-demo-operations-ordre-grandeur-6e').innerHTML =
     <tfoot>
       <tr style="border-top:2px solid #1C1B2E;">
         <td style="vertical-align:top;"></td>
-        <td id="ogSubResUnite" style="padding-top:6px;font-weight:700;vertical-align:top;"></td>
+        <td id="ogSubResUnite" class="cma-res" style="padding-top:6px;font-weight:700;vertical-align:top;"></td>
         <td style="padding-top:6px;font-weight:700;vertical-align:top;">,</td>
-        <td id="ogSubResDix" style="padding-top:6px;font-weight:700;vertical-align:top;"></td>
-        <td id="ogSubResCent" style="padding-top:6px;font-weight:700;vertical-align:top;"></td>
+        <td id="ogSubResDix" class="cma-res" style="padding-top:6px;font-weight:700;vertical-align:top;"></td>
+        <td id="ogSubResCent" class="cma-res" style="padding-top:6px;font-weight:700;vertical-align:top;"></td>
       </tr>
     </tfoot>
   </table>

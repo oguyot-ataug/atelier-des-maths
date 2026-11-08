@@ -26,12 +26,13 @@ function cm1opRowsTable(rows){
     // au-dessus de la colonne qu'elle annote au lieu d'y rester collée -- signalé : "l'espace
     // entre la ligne des retenues et les chiffres en dessous est un peu généreux".
     const vPad = r.small ? '0' : '2px';
-    const signTd = `<td style="width:26px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:${fs};font-weight:700;line-height:1;padding:${vPad} 0;color:${r.signColor||'var(--accent-orange)'};${r.bar?'border-bottom:2.5px solid var(--ink);':''}">${r.sign||'&nbsp;'}</td>`;
-    const tds = r.cells.map(c=>`<td style="width:32px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:${fs};font-weight:700;line-height:1;padding:${vPad} 0;${r.small?'height:13px;vertical-align:bottom;':''}${r.color?`color:${r.color};`:''}${r.bar?'border-bottom:2.5px solid var(--ink);':''}">${(c!=null&&c!=='')?c:'&nbsp;'}</td>`).join('');
-    const labelTd = r.label ? `<td style="padding-left:14px;text-align:left;font-family:'Inter',sans-serif;font-size:.78rem;color:var(--ink-soft);white-space:nowrap;">${r.label}</td>` : '';
+    const signTd = `<td class="cma-sg" style="width:26px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:${fs};font-weight:700;line-height:1;padding:${vPad} 0;color:${r.signColor||'var(--accent-orange)'};${r.bar?'border-bottom:2.5px solid var(--ink);':''}">${r.sign||'&nbsp;'}</td>`;
+    const tds = r.cells.map(c=>`<td${r.small ? ' class="cma-ret"' : r.color ? ' class="cma-res"' : ''} style="width:32px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:${fs};font-weight:700;line-height:1;padding:${vPad} 0;${r.small?'height:13px;vertical-align:bottom;':''}${r.color?`color:${r.color};`:''}${r.bar?'border-bottom:2.5px solid var(--ink);':''}">${(c!=null&&c!=='')?c:'&nbsp;'}</td>`).join('');
+    const labelTd = r.label ? `<td class="cma-lab" style="padding-left:14px;text-align:left;font-family:'Inter',sans-serif;font-size:.78rem;color:var(--ink-soft);white-space:nowrap;">${r.label}</td>` : '';
     return `<tr>${signTd}${tds}${labelTd}</tr>`;
   }).join('');
-  return `<table style="border-collapse:collapse;margin:10px auto;">${trs}</table>`;
+  // cma-op : « Dans mon cahier », même feuille Seyès que les méthodes animées (styles.css ; 08/11/2026).
+  return `<table class="cma-op" style="border-collapse:collapse;margin:10px auto;">${trs}</table>`;
 }
 /* Petite annotation de la compensation de soustraction (autrefois « 1+ » à gauche, « +1 » en indice depuis le 05/11/2026), dans
    la même cellule -- signalé : "je préfère que le +1 sur le deuxième terme se note... à gauche

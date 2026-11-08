@@ -104,17 +104,17 @@ document.getElementById('methode-demo-heures-durees').innerHTML = `
   <div style="flex:1 1 300px;min-width:260px;">
     <p class="example-title" style="margin-top:0;">Addition : 2 h 47 min 38 s + 1 h 26 min 45 s</p>
     <div class="figure-wrap" style="max-width:320px;margin:8px 0;">
-      <table id="m2AddTable" style="width:100%;border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.95rem;text-align:center;">
+      <table id="m2AddTable" class="cma-op" style="width:100%;border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.95rem;text-align:center;">
         <thead>
           <tr><th style="width:16px;"></th><th style="padding:4px;color:#6B7A8C;font-weight:400;font-size:.72rem;">h</th><th style="padding:4px;color:#6B7A8C;font-weight:400;font-size:.72rem;">min</th><th style="padding:4px;color:#6B7A8C;font-weight:400;font-size:.72rem;">s</th></tr>
-          <tr><td style="vertical-align:top;"></td><td id="m2AddCarryH" style="height:13px;color:#E35D3A;font-size:.75rem;vertical-align:bottom;padding:0;line-height:1;"></td><td id="m2AddCarryMin" style="height:13px;color:#E35D3A;font-size:.75rem;vertical-align:bottom;padding:0;line-height:1;"></td><td style="vertical-align:top;"></td></tr>
+          <tr><td style="vertical-align:top;"></td><td id="m2AddCarryH" class="cma-ret" style="height:13px;color:#E35D3A;font-size:.75rem;vertical-align:bottom;padding:0;line-height:1;"></td><td id="m2AddCarryMin" class="cma-ret" style="height:13px;color:#E35D3A;font-size:.75rem;vertical-align:bottom;padding:0;line-height:1;"></td><td style="vertical-align:top;"></td></tr>
         </thead>
         <tbody>
           <tr><td style="vertical-align:top;"></td><td style="vertical-align:top;">2</td><td style="vertical-align:top;">47</td><td style="vertical-align:top;">38</td></tr>
-          <tr><td style="vertical-align:top;">+</td><td style="vertical-align:top;">1</td><td style="vertical-align:top;">26</td><td style="vertical-align:top;">45</td></tr>
+          <tr><td class="cma-sg" style="vertical-align:top;">+</td><td style="vertical-align:top;">1</td><td style="vertical-align:top;">26</td><td style="vertical-align:top;">45</td></tr>
         </tbody>
         <tfoot>
-          <tr style="border-top:2px solid #1C1B2E;"><td style="vertical-align:top;"></td><td id="m2AddResH" style="padding-top:6px;font-weight:700;vertical-align:top;"></td><td id="m2AddResMin" style="padding-top:6px;font-weight:700;vertical-align:top;"></td><td id="m2AddResS" style="padding-top:6px;font-weight:700;vertical-align:top;"></td></tr>
+          <tr style="border-top:2px solid #1C1B2E;"><td style="vertical-align:top;"></td><td id="m2AddResH" class="cma-res" style="padding-top:6px;font-weight:700;vertical-align:top;"></td><td id="m2AddResMin" class="cma-res" style="padding-top:6px;font-weight:700;vertical-align:top;"></td><td id="m2AddResS" class="cma-res" style="padding-top:6px;font-weight:700;vertical-align:top;"></td></tr>
         </tfoot>
       </table>
       <p class="hint" id="m2AddText" style="min-height:48px;margin:10px 0 0;">Clique sur « Étape suivante » pour commencer.</p>
@@ -128,22 +128,22 @@ document.getElementById('methode-demo-heures-durees').innerHTML = `
   <div style="flex:1 1 300px;min-width:260px;">
     <p class="example-title" style="margin-top:0;">Soustraction : 5 h 12 min 18 s − 2 h 45 min 50 s</p>
     <div class="figure-wrap" style="max-width:320px;margin:8px 0;">
-      <table id="m2SubTable" style="width:100%;border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.95rem;text-align:center;">
+      <table id="m2SubTable" class="cma-op" style="width:100%;border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.95rem;text-align:center;">
         <thead>
           <tr><th style="width:16px;"></th><th style="padding:4px;color:#6B7A8C;font-weight:400;font-size:.72rem;">h</th><th style="padding:4px;color:#6B7A8C;font-weight:400;font-size:.72rem;">min</th><th style="padding:4px;color:#6B7A8C;font-weight:400;font-size:.72rem;">s</th></tr>
-          <tr><td style="vertical-align:top;"></td><td style="vertical-align:top;"></td><td id="m2SubPlus60Min" style="height:13px;color:#1E9E5A;font-size:.75rem;vertical-align:bottom;padding:0;line-height:1;"></td><td id="m2SubPlus60S" style="height:13px;color:#1E9E5A;font-size:.75rem;vertical-align:bottom;padding:0;line-height:1;"></td></tr>
+          <tr><td style="vertical-align:top;"></td><td style="vertical-align:top;"></td><td id="m2SubPlus60Min" class="cma-ret" style="height:13px;color:#1E9E5A;font-size:.75rem;vertical-align:bottom;padding:0;line-height:1;"></td><td id="m2SubPlus60S" class="cma-ret" style="height:13px;color:#1E9E5A;font-size:.75rem;vertical-align:bottom;padding:0;line-height:1;"></td></tr>
         </thead>
         <tbody>
           <tr><td style="vertical-align:top;"></td><td style="vertical-align:top;">5</td><td style="vertical-align:top;">12</td><td style="vertical-align:top;">18</td></tr>
           <tr>
-            <td style="vertical-align:top;">−</td>
+            <td class="cma-sg" style="vertical-align:top;">−</td>
             <td style="vertical-align:top;"><span style="position:relative;display:inline-block;">2<span id="m2SubCompH" style="position:absolute;left:100%;bottom:-.1em;margin-left:-.05em;color:#1E9E5A;font-weight:700;font-size:.6em;line-height:1;white-space:nowrap;"></span></span></td>
             <td style="vertical-align:top;"><span style="position:relative;display:inline-block;">45<span id="m2SubCompMin" style="position:absolute;left:100%;bottom:-.1em;margin-left:-.05em;color:#1E9E5A;font-weight:700;font-size:.6em;line-height:1;white-space:nowrap;"></span></span></td>
             <td style="vertical-align:top;">50</td>
           </tr>
         </tbody>
         <tfoot>
-          <tr style="border-top:2px solid #1C1B2E;"><td style="vertical-align:top;"></td><td id="m2SubResH" style="padding-top:6px;font-weight:700;vertical-align:top;"></td><td id="m2SubResMin" style="padding-top:6px;font-weight:700;vertical-align:top;"></td><td id="m2SubResS" style="padding-top:6px;font-weight:700;vertical-align:top;"></td></tr>
+          <tr style="border-top:2px solid #1C1B2E;"><td style="vertical-align:top;"></td><td id="m2SubResH" class="cma-res" style="padding-top:6px;font-weight:700;vertical-align:top;"></td><td id="m2SubResMin" class="cma-res" style="padding-top:6px;font-weight:700;vertical-align:top;"></td><td id="m2SubResS" class="cma-res" style="padding-top:6px;font-weight:700;vertical-align:top;"></td></tr>
         </tfoot>
       </table>
       <p class="hint" id="m2SubText" style="min-height:64px;margin:10px 0 0;">Clique sur « Étape suivante » pour commencer.</p>

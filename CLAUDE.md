@@ -195,6 +195,12 @@ Couleurs du cahier (07/11/2026) : écriture bleu encre #1E3A8A ; soulignement et
 et pour les résultats à la place du rouge ») ; retenues, « +10 », « +1 » en rouge #E35D3A ; signes opératoires orange.
 Bouton flottant (`#cahierFlottant`, `cahierFlottantMaj`, demandé le 07/11/2026 : « accessible partout ») : en bas à gauche, dès qu'une
 opération posée ou une `.cahier-page` est à l'écran, masqué si le bouton d'en-tête d'onglet est visible ; jamais à l'impression.
+Tous les chapitres, collège compris (demandé le 08/11/2026 : « étends-le au collège et aux 4 chapitres de CM1 ») : `cahierChapitre(demo)`
+(_commun.js, appelé par openChapitre) fait de chaque `.exo-correction` de l'onglet Exercices une `.cahier-page` (sauf correction
+interactive : boutons, saisie) et ajoute le bouton en tête des onglets ; rédactions types `.redaction-template`/`.we-row` une ligne par
+carreau. Opérations des cours du collège : tableaux `table.cma-op` (soustraction de décimaux, durées, `ogAddBlock`, `cm1opRowsTable` du
+CM1) et divisions posées `.dp-boite` (6e N1, 6e N4, 5e N1 ; un caractère par case `dpCases`, app.js) dessinées sur la feuille par la
+feuille de style. Toute nouvelle opération posée d'un cours du collège : `cm1Posee`, ou ces classes.
 Opérations à compléter (`trous`, `cases`) : classe `pose-trous`, feuille Seyès dessinée en fond par la seule feuille de style
 (cases de 32 px, cases à remplir conservées, « Vérifier » inchangé) ; en projection le bouton flottant passe en haut à gauche.
 

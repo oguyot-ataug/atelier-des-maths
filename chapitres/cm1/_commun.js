@@ -414,7 +414,7 @@ function cahierOps(bloc){
 }
 function cahierCaler(page){
   if(!cahierOn || !page.isConnected || !page.offsetParent) return;
-  const blocs = [], voir = el => [...el.children].forEach(c => { if(c.classList.contains('cm-redac') || /^(UL|OL)$/.test(c.tagName)) voir(c); else if(getComputedStyle(c).display !== 'inline') blocs.push(c); });
+  const blocs = [], voir = el => [...el.children].forEach(c => { if(c.classList.contains('cm-redac') || c.classList.contains('redaction-template') || /^(UL|OL)$/.test(c.tagName) || (c.tagName === 'DIV' && !c.attributes.length && c.children.length && [...c.children].every(x => getComputedStyle(x).display !== 'inline'))) voir(c); else if(getComputedStyle(c).display !== 'inline') blocs.push(c); });
   voir(page);
   blocs.forEach(b => { b.style.removeProperty('--cal'); b.style.removeProperty('--calh'); b.style.removeProperty('--calm'); });
   // Hauteurs en pixels de la page, pas de l'écran : la projection et le Manuel agrandissent par zoom (signalé le 07/11/2026 :
@@ -432,7 +432,7 @@ function cahierCaler(page){
   // Deux lignes à fraction de suite (demandé le 07/11/2026 : « on peut remonter 2/5 × 240 d'un carreau ») : la seconde remonte
   // d'un carreau quand son numérateur tient encore dans son propre carreau (sous le dénominateur de la ligne précédente).
   const mont = blocs.map((b, i) => {
-    if(!fr[i] || !fr[i - 1] || haut[i] < 16 || !b.classList.contains('cm-redac-ligne') || b.previousElementSibling !== blocs[i - 1]) return 0;
+    if(!fr[i] || !fr[i - 1] || haut[i] < 16 || !(b.classList.contains('cm-redac-ligne') || b.classList.contains('we-row')) || b.previousElementSibling !== blocs[i - 1]) return 0;
     const t = Math.min(...[...b.querySelectorAll('.katex-html')].map(e => e.getBoundingClientRect().top)), t0 = b.getBoundingClientRect().top;
     return (t - t0) / (k || 1) + haut[i] - 32 >= -1 ? -32 : 0;
   });
@@ -469,6 +469,25 @@ function cahierMaj(){
     if(!cahierObs && typeof MutationObserver !== 'undefined'){ cahierObs = new MutationObserver(ms => ms.forEach(m => m.addedNodes.forEach(n => { if(n.nodeType === 1 && !n.classList.contains('pose-cahier')) cahierAppliquer(n); }))); cahierObs.observe(document.body, { childList: true, subtree: true }); }
   } else { if(cahierObs){ cahierObs.disconnect(); cahierObs = null; } if(cahierRO){ cahierRO.disconnect(); cahierRO = null; } document.querySelectorAll('.cahier-actif').forEach(p => p.classList.remove('cahier-actif')); }
 }
+/* Tous les chapitres (demandé le 08/11/2026 : « étends-le au collège et aux 4 chapitres de CM1 ») : à l'ouverture d'un chapitre
+   (openChapitre, app.js), chaque correction de l'onglet Exercices devient une page de cahier (.cahier-page) et le bouton
+   « Dans mon cahier » est ajouté en tête des onglets qui ont une opération posée, une opération animée sur feuille (table.cma-op, division .dp-boite)
+   ou des corrections. Les chapitres du primaire faits avec cm1Chapitre ont déjà leurs pages : rien n'est enveloppé deux fois. */
+function cahierChapitre(demo){
+  if(!demo || typeof document === 'undefined') return;
+  const ex = document.getElementById(demo.exos);
+  if(ex) ex.querySelectorAll('.exo-correction').forEach(c => {
+    if(c.querySelector('.cahier-page') || c.closest('.cahier-page')) return;
+    // Correction animée ou interactive (construction pas à pas, boutons, saisie) : elle garde sa présentation.
+    if(c.querySelector('button, input, select, textarea, canvas, .figure-toolbar')) return;
+    const els = [...c.children];
+    if(els.length === 1 && els[0].tagName === 'DIV' && !els[0].className) els[0].classList.add('cahier-page');
+    else if(els.length){ const d = document.createElement('div'); d.className = 'cahier-page'; while(c.firstChild) d.appendChild(c.firstChild); c.appendChild(d); }
+  });
+  ['cours', 'methode', 'exos'].forEach(k => { const el = document.getElementById(demo[k]); if(!el || el.querySelector(':scope > .cahier-barre')) return;
+    if(el.querySelector('table.pose-ecran[data-cahier], table.cma-op, .dp-boite') || (k === 'exos' && el.querySelector('.cahier-page'))) el.insertAdjacentHTML('afterbegin', cahierBouton()); });
+  cahierMaj();
+}
 function cahierBasculer(){ cahierOn = !cahierOn; try{ localStorage.setItem('cahierSeyes', cahierOn ? '1' : '0'); }catch(e){} cahierMaj(); if(typeof cahierFlottantMaj === 'function') cahierFlottantMaj(); }
 function cahierBouton(){ return `<div class="cahier-barre"><button type="button" class="cahier-btn${cahierOn ? ' actif' : ''}" aria-pressed="${cahierOn}" onclick="cahierBasculer()" title="Voir les opérations posées comme dans le cahier, sur une feuille à grands carreaux"><span class="gicon">menu_book</span> Dans mon cahier</button></div>`; }
 /* Bouton flottant « Dans mon cahier » (demandé le 07/11/2026 : « Je préfère que le bouton "Dans mon cahier" soit accessible
@@ -480,7 +499,7 @@ function cahierFlottantPlanifier(){ if(!cahierFlotT) cahierFlotT = setTimeout(()
 function cahierFlottantMaj(){
   if(!document.body) return;
   const H = window.innerHeight || 0, vu = e => { const r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0 && r.bottom > 0 && r.top < H; };
-  const contenu = [...document.querySelectorAll('.cahier-page, table.pose-ecran[data-cahier], table.pose-trous, table.cma-op, svg.pose-cahier')].some(vu);
+  const contenu = [...document.querySelectorAll('.cahier-page, table.pose-ecran[data-cahier], table.pose-trous, table.cma-op, .dp-boite, svg.pose-cahier')].some(vu);
   const enTete = [...document.querySelectorAll('.cahier-barre .cahier-btn')].some(vu);
   let b = document.getElementById('cahierFlottant');
   if(!contenu || enTete){ if(b) b.hidden = true; return; }

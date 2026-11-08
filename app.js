@@ -1308,6 +1308,8 @@ let currentChapterLevel = null;
 
 // opts.silencieux : chapitre préparé sans être affiché (session COURS, cours-exos.js : ses parties y
 // sont montrées vivantes, animations comprises) ; renvoie la fin du chargement du cours personnalisé.
+// Divisions posées des cours (6e, 5e) : un caractère par case (.dp-c) ; « Dans mon cahier » met chaque case sur un carreau (08/11/2026).
+function dpCases(t){ return String(t).replace(/&nbsp;/g, ' ').split('').map(c => `<span class="dp-c">${c === ' ' ? '&nbsp;' : c}</span>`).join(''); }
 function openChapitre(c, tab, lvlOverride, opts){
   const lvl = lvlOverride || currentLevel;
   const silencieux = !!(opts && opts.silencieux);
@@ -1367,6 +1369,8 @@ function openChapitre(c, tab, lvlOverride, opts){
 
   document.getElementById('quizArea').innerHTML='';
   if(demo) demo.init();
+  // « Dans mon cahier » dans tous les chapitres, collège compris (chapitres/cm1/_commun.js ; demandé le 08/11/2026).
+  if(demo && typeof cahierChapitre==='function') cahierChapitre(demo);
   // Loupe plein écran sur les exercices -- jusqu'ici, injectCourseAddButtons (qui l'injecte)
   // n'était appelée que sur les conteneurs cours/méthode par chaque chapitre, jamais sur les
   // exercices. Fix universel ici, au lieu de modifier chaque fichier de chapitre un par un.
@@ -3864,6 +3868,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1349', date:'2026-11-08', items:['« Dans mon cahier » étendu au collège et aux 4 derniers chapitres de CM1 -- demandé : « Oui, étends-le au collège et aux 4 chapitres de CM1 ». Onglet Exercices de tous les chapitres (6e à 3e, CM1 droites, constructions, opérations, grands nombres) : les corrections s\'écrivent sur la feuille Seyès (rédactions types ligne par ligne, résultat en vert, fractions sur les lignes principales), avec le bouton en tête d\'onglet. Opérations posées des cours et des méthodes : divisions posées (6e nombres entiers, 6e division décimale, 5e), additions et soustractions de décimaux (6e, avec U, d, c), additions et soustractions de durées (6e), opérations du cours de CM1 -- un chiffre par carreau, retenues et « +10 » au-dessus, « +1 » en indice. Les constructions pas à pas gardent leur présentation ; l\'affichage habituel et l\'impression ne changent pas.'] },
   { version:'2026-08-19.1348', date:'2026-11-08', items:['Bandeaux d\'information -- demandé : « une option "bandeau" qui permet à l\'administrateur de placer un bandeau d\'information (destination à définir sous chips à cocher), un référent établissement et un professeur pour une ou plusieurs classes ». Administration › Bandeaux : message, couleur (information, important, alerte, bonne nouvelle), destinataires à cocher (visiteurs, élèves, professeurs, parents, référents), niveaux et établissements facultatifs, lien, dates de début et de fin, texte qui défile, possibilité de le masquer, aperçu. Mon établissement › Bandeaux (référent) : professeurs et/ou élèves de l\'établissement, niveaux facultatifs. Mes classes › « Bandeau d\'information » (professeur) : élèves (et, au choix, collègues) d\'une ou plusieurs de ses classes. Les bandeaux s\'affichent en haut de toutes les pages, avec le nom de qui parle ; un bandeau masqué ne revient que s\'il est modifié. Mise en pause, modification, suppression ; les droits sont vérifiés par la base (un professeur ne peut viser que ses classes, un référent que son établissement).'] },
   { version:'2026-08-19.1347', date:'2026-11-08', items:['Adresses e-mail des élèves -- demandé : « Pour les élèves, il serait intéressant d\'avoir une "option email" […] les emails de l\'établissement […] celui de l\'enseignant […] envoi direct des mots de passes oubliés ». Mes classes › Élèves › « Adresses e-mail » : le professeur déclare le domaine des adresses de l\'établissement (messagerie, ENT, Google Workspace for Education… ; jamais Gmail ni une autre adresse personnelle) puis saisit l\'adresse de chaque élève, ou colle une liste. L\'élève reçoit un lien pour confirmer son adresse ; s\'il ne s\'est jamais connecté, il choisit aussitôt son mot de passe (identifiants à la création).', '« Mot de passe oublié » pour les élèves : le lien part à l\'adresse confirmée de l\'élève ; sinon, son professeur reçoit par e-mail (adresse de « Mon profil ») un lien de 7 jours à lui transmettre. Politique de confidentialité mise à jour.'] },
   { version:'2026-08-19.1346', date:'2026-11-07', items:['CM2, CM1, CE2, CE1 et CP : plus aucun mot dans les lignes de calcul des rédactions (une trentaine d\'exercices, onglet Exercices et planches) -- « Sam : 5 + 5 = 10 » devient « Argent de Sam : », « 5 + 5 = 10 », « Sam a 10 €. » ; calcul mental (produits de nombres ronds, × 5 et × 50) décomposé ligne par ligne ; « 1 gâteau : 4 : 2 » réécrit sans double « : ». Le nettoyage est terminé du CP à la 3e.'] },

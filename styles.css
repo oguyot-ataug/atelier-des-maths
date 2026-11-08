@@ -467,6 +467,7 @@ main{max-width:1080px;margin:0 auto;padding:40px 24px 100px;}
 .step-column > div:last-child{margin-bottom:0;}
 .step-final{font-weight:700;color:var(--accent-orange);}
 .dp-sub-inner{display:inline-block;border-bottom:1.5px solid #1C1B2E;padding-bottom:2px;}
+.dp-c{display:inline-block;width:1ch;text-align:center;}
 .dp-tag{font-family:'Space Grotesk',sans-serif;font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.03em;}
 .we-row{display:flex;justify-content:space-between;align-items:baseline;gap:20px;flex-wrap:wrap;padding:3px 0;}
 .we-expr{font-family:'JetBrains Mono',monospace;font-size:1.05rem;max-width:100%;min-width:0;} /* une formule trop large défile dans son bloc (st4Long…) au lieu d'élargir la page */
@@ -2462,11 +2463,11 @@ body.plp-ouvert .cahier-flottant{ top:56px; bottom:auto; left:16px; z-index:2147
     background-position:0 0, 0 0, 0 0, 0 0, 40px 0;
     font-family:Caveat,'Comic Sans MS',cursive; font-size:23px; font-weight:600; line-height:32px; color:#1E3A8A;
   }
-  body.cahier-on .cahier-actif > *, body.cahier-on .cahier-actif .cm-redac > *, body.cahier-on .cahier-actif li{ margin-top:0 !important; margin-bottom:0 !important; padding-top:var(--calh, 0px) !important; padding-bottom:var(--cal, 0px) !important; }
+  body.cahier-on .cahier-actif > *, body.cahier-on .cahier-actif .cm-redac > *, body.cahier-on .cahier-actif .redaction-template > *, body.cahier-on .cahier-actif > div:not([class]):not([style]) > *, body.cahier-on .cahier-actif li{ margin-top:0 !important; margin-bottom:0 !important; padding-top:var(--calh, 0px) !important; padding-bottom:var(--cal, 0px) !important; }
   /* Raisonnements séparés d'une ligne vide (demandé le 07/11/2026 : « Il faut bien séparer les différents blocs de raisonnement ») ;
      une ligne à fraction qui suit une autre ligne à fraction remonte d'un carreau (--calm négatif, cahierCaler). */
   body.cahier-on .cahier-actif .cm-redac + .cm-redac{ margin-top:32px !important; }
-  body.cahier-on .cahier-actif .cm-redac > .cm-redac-ligne{ margin-top:var(--calm, 0px) !important; }
+  body.cahier-on .cahier-actif .cm-redac > .cm-redac-ligne, body.cahier-on .cahier-actif .redaction-template > .we-row{ margin-top:var(--calm, 0px) !important; }
   /* Lignes avec une fraction (07/11/2026) : barre de fraction et signes centrés sur la ligne principale. KaTeX pose barre et signes sur
      son axe, 0,25 em au-dessus de la ligne d'écriture : on les descend de 0,25 em ; les signes écrits en texte (.cahier-op), de 0,3 em. */
   body.cahier-on .cahier-actif .katex:has(.mfrac) .base > .mord:has(> .mfrac),
@@ -2484,6 +2485,14 @@ body.plp-ouvert .cahier-flottant{ top:56px; bottom:auto; left:16px; z-index:2147
   body.cahier-on .cahier-actif ul, body.cahier-on .cahier-actif ol{ margin:0; padding-left:24px; }
   body.cahier-on .cahier-actif li, body.cahier-on .cahier-actif p{ line-height:32px; margin:0; }
   body.cahier-on .cahier-actif .katex{ font-size:.82em; }
+  /* Rédactions types du collège (.redaction-template, .we-row) dans une correction : une ligne par ligne du cahier, sans cadre
+     (08/11/2026, mode cahier étendu au collège) ; la dernière ligne (le résultat) en vert. */
+  body.cahier-on .cahier-actif .redaction-template{ background:none; border:0; border-radius:0; padding:0; margin:0; font-size:inherit; line-height:32px; }
+  body.cahier-on .cahier-actif .we-row{ display:block; padding-left:0 !important; padding-right:0 !important; }
+  body.cahier-on .cahier-actif .we-expr{ font-family:inherit !important; font-size:inherit; }
+  body.cahier-on .cahier-actif .we-row:last-child .we-expr{ color:#15803D; font-weight:700; }
+  body.cahier-on .cahier-actif .we-comment{ display:inline; margin-left:16px; font-size:.75em; color:#5B6472; }
+  body.cahier-on .cahier-actif table{ font-family:inherit; }
   /* Opération à compléter (pose-trous) : même feuille en fond, un chiffre par carreau de 32 px, chiffres posés sur la ligne
      principale (23 px sous le haut du carreau), trait de l'opération sur le bord du carreau ; les cases restent cliquables. */
   body.cahier-on table.pose-trous{
@@ -2521,6 +2530,38 @@ body.plp-ouvert .cahier-flottant{ top:56px; bottom:auto; left:16px; z-index:2147
       repeating-linear-gradient(to right, transparent 0 31px, #D9DDF2 31px 32px);
   }
   body.cahier-on table.cma-op tr{ height:32px !important; }
+  /* Opérations des cours et méthodes du collège et du CM1 « Opérations » (08/11/2026) : tableaux à largeur fixe, en-têtes (h, min, s,
+     unités…) en petit dans leur carreau, trait de l'opération au-dessus de la ligne du résultat. */
+  body.cahier-on table.cma-op{ width:auto !important; margin-left:auto; margin-right:auto; }
+  body.cahier-on table.cma-op th{ height:32px !important; padding:0 !important; font:600 14px/32px Caveat,'Comic Sans MS',cursive !important; color:#5B6472 !important; vertical-align:top; }
+  body.cahier-on table.cma-op th[data-abr]{ font-size:0 !important; } /* « unités, dixièmes… » trop longs pour un carreau : U, d, c */
+  body.cahier-on table.cma-op th[data-abr]::after{ content:attr(data-abr); font:600 16px/32px Caveat,'Comic Sans MS',cursive; }
+  body.cahier-on table.cma-op tr[style*="border-top"]{ border-top:0 !important; }
+  body.cahier-on table.cma-op tr[style*="border-top"] td{ box-shadow:inset 0 2px 0 #1E3A8A; }
+  body.cahier-on table.cma-op td span[id]{ font-size:15px !important; color:#E35D3A !important; }
+  body.cahier-on .og-mal table.cma-op td{ color:#C2361F !important; }
+  /* Divisions posées des cours (6e N1, 6e N4, 5e N1) : potence sur la feuille, un chiffre par carreau, chaque ligne sur une ligne
+     principale, traits des soustractions sur le bord du carreau (08/11/2026). */
+  body.cahier-on .dp-boite{
+    border:0 !important; outline:1px solid #E1E4F2; border-radius:0 !important; background-color:#fff !important;
+    background-image:
+      repeating-linear-gradient(to bottom, transparent 0 24px, #8C93CF 24px 25px, transparent 25px 32px),
+      repeating-linear-gradient(to bottom, #D9DDF2 0 1px, transparent 1px 8px, #D9DDF2 8px 9px, transparent 9px 16px, #D9DDF2 16px 17px, transparent 17px 32px),
+      repeating-linear-gradient(to right, transparent 0 31px, #D9DDF2 31px 32px) !important;
+    font:700 27px/32px Caveat,'Comic Sans MS',cursive !important; color:#1E3A8A;
+  }
+  body.cahier-on .dp-boite{ justify-content:flex-start !important; padding:0 64px !important; } /* colonnes du dividende sur les carreaux */
+  body.cahier-on .dp-boite > div{ padding-left:0 !important; padding-right:0 !important; }
+  body.cahier-on .dp-boite > div:first-child .dp-tag{ padding-right:6px; }
+  body.cahier-on .dp-boite > div + div{ border-left-color:#1E3A8A !important; padding-left:8px !important; }
+  body.cahier-on .dp-boite .dp-tag{ height:32px; min-height:32px !important; line-height:32px !important; font:600 15px/32px Caveat,'Comic Sans MS',cursive !important; text-transform:none; letter-spacing:0; }
+  body.cahier-on .dp-boite [id$="dpLeft"]{ line-height:32px !important; min-width:0 !important; }
+  body.cahier-on .dp-boite [id$="dpLeft"] > div{ width:auto !important; height:32px; padding-bottom:0 !important; }
+  body.cahier-on .dp-boite .dp-c{ width:32px !important; }
+  body.cahier-on .dp-boite .dp-sub-inner, body.cahier-on .dp-boite [id$="dpLeft"] div[style*="border-bottom"]{ border-bottom:0 !important; padding-bottom:0 !important; height:32px; box-shadow:inset 0 -2px 0 #1E3A8A; }
+  body.cahier-on .dp-boite .dp-div{ height:32px; line-height:32px !important; border-bottom:0 !important; padding-bottom:0 !important; margin-left:-8px !important; padding-left:8px !important; box-shadow:inset 0 -2px 0 #1E3A8A; }
+  body.cahier-on .dp-boite .dp-quot{ height:32px; line-height:32px !important; margin-top:0 !important; }
+  body.cahier-on .dp-boite [id$="dpQuotient"]{ color:#15803D; }
   body.cahier-on table.cma-op td:not(.cma-lab){
     width:32px !important; min-width:32px !important; max-width:32px !important; height:32px !important; padding:0 !important; box-sizing:border-box;
     line-height:32px !important; vertical-align:top !important; font:700 27px/32px Caveat,'Comic Sans MS',cursive !important; color:#1E3A8A;

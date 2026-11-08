@@ -95,7 +95,7 @@ document.getElementById('cours-demo-nombres-entiers').innerHTML = `
 <div class="figure-wrap">
   <strong style="font-family:'Space Grotesk',sans-serif;">Exemple posé : la division de 823 par 14</strong>
   <p class="hint interaction-hint" style="margin-top:6px;">Cliquez sur "Étape suivante" pour dérouler la division posée.</p>
-  <div style="display:flex;justify-content:center;align-items:stretch;gap:0;font-family:'JetBrains Mono',monospace;font-size:1.25rem;padding:20px 10px;background:var(--white);border-radius:8px;border:1px solid rgba(28,43,57,.1);">
+  <div class="dp-boite" style="display:flex;justify-content:center;align-items:stretch;gap:0;font-family:'JetBrains Mono',monospace;font-size:1.25rem;padding:20px 10px;background:var(--white);border-radius:8px;border:1px solid rgba(28,43,57,.1);">
     <div style="text-align:right;padding-right:16px;">
       <div class="dp-tag" style="color:var(--accent);">dividende</div>
       <div id="ne-dpLeft" style="text-align:right;line-height:2;min-width:70px;"></div>
@@ -103,8 +103,8 @@ document.getElementById('cours-demo-nombres-entiers').innerHTML = `
     </div>
     <div style="border-left:2px solid #1C1B2E;padding-left:16px;">
       <div class="dp-tag" style="color:var(--accent-orange);">diviseur</div>
-      <div style="line-height:2;border-bottom:1.5px solid #1C1B2E;padding-bottom:2px;margin-left:-16px;padding-left:16px;">14</div>
-      <div style="display:flex;align-items:baseline;gap:8px;line-height:2;margin-top:6px;">
+      <div class="dp-div" style="line-height:2;border-bottom:1.5px solid #1C1B2E;padding-bottom:2px;margin-left:-16px;padding-left:16px;">14</div>
+      <div class="dp-quot" style="display:flex;align-items:baseline;gap:8px;line-height:2;margin-top:6px;">
         <div id="ne-dpQuotient" style="font-weight:700;"></div>
         <span class="dp-tag" style="color:#1F6B3A;white-space:nowrap;">← quotient</span>
       </div>
@@ -299,7 +299,7 @@ let neDivisionPoseeIdx = 0;
 function neRenderDivisionPosee(){
   const s = NE_DIVISION_POSEE_STEPS[neDivisionPoseeIdx];
   document.getElementById('ne-dpLeft').innerHTML = s.rows.map(r=>
-    r.sub ? `<div><span class="dp-sub-inner">${r.t}</span></div>` : `<div>${r.t}</div>`
+    r.sub ? `<div><span class="dp-sub-inner">${dpCases(r.t)}</span></div>` : `<div>${dpCases(r.t)}</div>`
   ).join('');
   document.getElementById('ne-dpQuotient').innerHTML = s.quotient;
   document.getElementById('ne-dpNote').textContent = s.note;
