@@ -78,7 +78,7 @@ ${cm1Sous('A', 'Atelier : 10 calculs pour t\'entraîner')}
   ],
   exos: cm1Exos('c2cm', [
     [`Donne la moitié de chaque nombre.${cm1Liste(['13', '11', '7,4', '9,6'])}`,
-      cm1Redac('Moitiés', { suite: ['6,5 + 6,5 = 13', '5,5 + 5,5 = 11', '3,7 + 3,7 = 7,4', '4,8 + 4,8 = 9,6'] }, 'Les moitiés sont 6,5 ; 5,5 ; 3,7 et 4,8.')],
+      cm1Redac('Moitié de chaque nombre', { suite: ['6,5 + 6,5 = 13', '5,5 + 5,5 = 11', '3,7 + 3,7 = 7,4', '4,8 + 4,8 = 9,6'] }, 'Les moitiés sont 6,5 ; 5,5 ; 3,7 et 4,8.')],
     [`Écris ces fractions en écriture décimale.${cm1Liste([cm1Frac(3, 4), cm1Frac(1, 5), cm1Frac(3, 10), cm1Frac(7, 100), cm1Frac(5, 2)])}`,
       cm1Redac('Écritures décimales', { suite: [`${cm1Frac(3, 4)} = 0,75`, `${cm1Frac(1, 5)} = 0,2`, `${cm1Frac(3, 10)} = 0,3`, `${cm1Frac(7, 100)} = 0,07`, `${cm1Frac(5, 2)} = 2,5`] }, 'Ce sont des égalités à connaître par cœur.')],
     [`Calcule de tête.${cm1Liste(['578 + 99', '634 − 98', '257 + 19', '1 000 − 29'])}`,

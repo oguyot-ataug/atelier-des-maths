@@ -34,8 +34,8 @@ PLANCHES['ce1|Problèmes : ajouter, retirer, comparer'] = [
     attendus: ['Résoudre des problèmes de comparaison (de plus, de moins, écart)'],
     exos: [
       { etoiles: 1, cahier: true, consigne: 'Léo a 48 cartes. Inès en a 20 de plus. Combien Inès a-t-elle de cartes ?', corr: cm1Redac('Cartes d\'Inès', '48 + 20 = 68', 'Inès a 68 cartes.') },
-      { etoiles: 2, cahier: true, consigne: 'Un arbre mesure 450 cm. Un autre mesure 100 cm de moins. Combien mesure-t-il ?', corr: cm1Redac('Le deuxième arbre', '450 − 100 = 350', 'Il mesure 350 cm.') },
-      { etoiles: 3, cahier: true, consigne: 'Sam a 57 €, sa sœur 92 €. Combien sa sœur a-t-elle de plus ?', corr: cm1Redac('Écart', { suite: ['57 + 3 = 60', '60 + 32 = 92', '3 + 32 = 35'] }, 'Sa sœur a 35 € de plus que Sam.') },
+      { etoiles: 2, cahier: true, consigne: 'Un arbre mesure 450 cm. Un autre mesure 100 cm de moins. Combien mesure-t-il ?', corr: cm1Redac('Hauteur du deuxième arbre', '450 − 100 = 350', 'Il mesure 350 cm.') },
+      { etoiles: 3, cahier: true, consigne: 'Sam a 57 €, sa sœur 92 €. Combien sa sœur a-t-elle de plus ?', corr: cm1Redac('Argent en plus de la sœur', { suite: ['57 + 3 = 60', '60 + 32 = 92', '3 + 32 = 35'] }, 'Sa sœur a 35 € de plus que Sam.') },
       { etoiles: 1, consigne: 'Compte les cubes. Combien Lina a-t-elle de cubes de plus que Tom ?',
         eleve: plListe(['Tom : ' + cpBarres(23, { q: 6 }), 'Lina : ' + cpBarres(31, { q: 6 })]) + lig('Lina a ' + B(2) + ' cubes de plus.'),
         corr: plListe(['Tom : ' + cpBarres(23, { q: 6 }) + ' ' + R(23), 'Lina : ' + cpBarres(31, { q: 6 }) + ' ' + R(31)]) + lig('Lina a ' + R(8) + ' cubes de plus.') },

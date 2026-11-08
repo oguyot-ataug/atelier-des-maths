@@ -55,7 +55,7 @@ ${cm1Demo('ce1-n12-m-quatre', 'Retrouver 4 × 7', 'Retrouve 4 × 7 avec le doubl
     ['Complète : 4 × … = 36.',
       cm1Redac('4 × … = 36', '4 × 9 = 36', 'Il faut 9.')],
     [`Combien de jetons ?${lig(ce1Rangees(4, 6, { p: 20 }))}`,
-      cm1Redac('Les jetons', '4 × 6 = 24', '4 rangées de 6 : 24 jetons.')],
+      cm1Redac('Nombre de jetons', '4 × 6 = 24', '4 rangées de 6 : 24 jetons.')],
     ['Un trèfle a 3 feuilles. Combien de feuilles ont 7 trèfles ?',
       cm1Redac('Feuilles de trèfle', '7 × 3 = 21', '7 trèfles ont 21 feuilles.')],
     ['Une place de cinéma coûte 4 €. Combien coûtent 9 places ?',

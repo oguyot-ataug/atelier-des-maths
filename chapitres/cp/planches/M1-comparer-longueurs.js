@@ -47,7 +47,7 @@ PLANCHES['cp|Comparer des longueurs'] = [
       { etoiles: 1, consigne: 'Combien de trombones mesure chaque ruban ?',
         ...PCP.compte([[ruban(5), 5], [ruban(7, '#F2A93B'), 7]], 2) },
       { etoiles: 2, cahier: true, consigne: 'Le ruban rouge mesure 6 trombones. Le ruban bleu mesure 9 trombones. Lequel est le plus long ? De combien de trombones ?',
-        corr: cm1Redac('Le ruban le plus long', '6 + 3 = 9', 'Le ruban bleu est le plus long, de 3 trombones.') },
+        corr: cm1Redac('Ruban le plus long', '6 + 3 = 9', 'Le ruban bleu est le plus long, de 3 trombones.') },
       { etoiles: 1, consigne: 'Combien de trombones mesure chaque ruban ?',
         ...PCP.compte([[ruban(4, '#2EA8C9'), 4], [ruban(8, '#E35D3A'), 8]], 2) },
       { etoiles: 2, consigne: 'Entoure le ruban le plus long.',

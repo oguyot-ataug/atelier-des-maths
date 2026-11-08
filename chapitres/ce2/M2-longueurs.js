@@ -75,7 +75,7 @@ ${cm1Demo('ce2-lo-comp', 'Comparer des longueurs', 'Qui a sauté le plus loin : 
     [`Quelle unité choisir pour mesurer chacune de ces longueurs ?${cm1Liste(['la longueur d\'un stylo', 'la longueur de la cour de l\'école', 'le trajet de Paris à Lyon', 'la longueur d\'une fourmi'])}`,
       cm1Redac('Choix des unités', { suite: ['un stylo : le centimètre (cm)', 'la cour : le mètre (m)', 'Paris-Lyon : le kilomètre (km)', 'une fourmi : le millimètre (mm)'] }, 'On choisit l\'unité qui donne un nombre facile à dire.')],
     ['Range ces longueurs de la plus courte à la plus longue : 1 m ; 95 cm ; 1 020 mm ; 9 dm.',
-      cm1Redac('Les longueurs en cm', { suite: ['1 m = 100 cm', '1 020 mm = 102 cm', '9 dm = 90 cm'] }, 'Du plus court au plus long : 9 dm, 95 cm, 1 m, 1 020 mm.')],
+      cm1Redac('Longueurs en centimètres', { suite: ['1 m = 100 cm', '1 020 mm = 102 cm', '9 dm = 90 cm'] }, 'Du plus court au plus long : 9 dm, 95 cm, 1 m, 1 020 mm.')],
     ['Trace un segment de 7 cm et 4 mm. Combien mesure-t-il en millimètres ?',
       cm1Redac('Longueur du segment en mm', ['70 mm + 4 mm', '74 mm'], 'Le segment mesure 74 mm. On pose le 0 sur le premier point et on s\'arrête au 4<sup>e</sup> petit trait après le 7.')],
     ['Tom marche 3 km le matin et 750 m l\'après-midi. Quelle distance a-t-il parcourue en mètres ?',

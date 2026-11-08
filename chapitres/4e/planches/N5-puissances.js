@@ -55,7 +55,7 @@ PLANCHES['4e|Puissances'] = [
       { etoiles: 2, consigne: 'Vrai ou faux ? Entoure.',
         ...ch([[`${p(10, 2)} + ${p(10, 3)} = ${p(10, 5)}`, 'faux'], [`${p(10, 2)} × ${p(10, 3)} = ${p(10, 5)}`, 'vrai'], [`${p(10, '−2')} est un nombre négatif.`, 'faux']], 'vrai · faux') },
       { etoiles: 3, cahier: true, consigne: `Calcule A = ${p(10, 5)} × 3 × ${p(10, '−2')} : (6 × ${p(10, 2)}). Donne le résultat en écriture décimale.`,
-        corr: cm1Redac('Calcul', { suite: [`A = (3 : 6) × ${p(10, 5)} × ${p(10, '−2')} : ${p(10, 2)}`, `A = 0,5 × ${p(10, 1)}`, 'A = 5'] }, 'A est égal à 5.') },
+        corr: cm1Redac('Valeur de A', { suite: [`A = (3 : 6) × ${p(10, 5)} × ${p(10, '−2')} : ${p(10, 2)}`, `A = 0,5 × ${p(10, 1)}`, 'A = 5'] }, 'A est égal à 5.') },
     ] },
   { titre: 'L\'écriture scientifique', duree: '40 min',
     attendus: ['Donner l\'écriture scientifique d\'un nombre', 'Comparer des nombres en écriture scientifique', 'Utiliser l\'écriture scientifique dans un problème'],

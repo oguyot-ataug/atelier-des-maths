@@ -42,7 +42,7 @@ PLANCHES['cm2|Droites, segments et cercles'] = [
       { etoiles: 2, col: 1, consigne: 'Trace la droite perpendiculaire à la droite (d) passant par le point M.', eleve: perpQ(false), corr: perpQ(true) },
       { etoiles: 2, col: 1, consigne: 'Trace la droite parallèle à la droite (d) passant par le point N.', eleve: paraQ(false), corr: paraQ(true) },
       { etoiles: 3, cahier: true, consigne: 'Sur une feuille blanche, trace une droite (d) et place un point A qui n\'est pas sur (d). Trace la perpendiculaire à (d) passant par A, puis la parallèle à (d) passant par A. Que remarques-tu ?',
-        corr: cm1Redac('Construction', { suite: ['Je place l\'équerre le long de (d), un côté de l\'angle droit passant par A : je trace la perpendiculaire.', 'Je fais glisser la règle le long de l\'équerre pour tracer la parallèle passant par A.'] }, 'Les deux droites tracées passent par A et sont perpendiculaires.') },
+        corr: cm1Redac('Construction de la perpendiculaire et de la parallèle', { suite: ['Je place l\'équerre le long de (d), un côté de l\'angle droit passant par A : je trace la perpendiculaire.', 'Je fais glisser la règle le long de l\'équerre pour tracer la parallèle passant par A.'] }, 'Les deux droites tracées passent par A et sont perpendiculaires.') },
     ] },
   { titre: 'Cercle et disque', duree: '30 min',
     attendus: ['Connaître le centre, le rayon et le diamètre d\'un cercle', 'Relier rayon et diamètre', 'Tracer un cercle au compas'],

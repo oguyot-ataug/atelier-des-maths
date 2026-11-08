@@ -112,7 +112,7 @@ PLANCHES['3e|Trigonométrie'] = [
       { etoiles: 2, col: 1, consigne: 'ABC est rectangle en A, AB = 7 cm et Ĉ = 30°.',
         ...rmp([['BC = @ cm', 14], ['AC ≈ @ cm (au dixième)', '12,1']]) },
       { etoiles: 2, col: 1, cahier: true, consigne: illu(toitMaison, 'Le toit symétrique d\'une maison de 8 m de large a une pente de 35°. Calcule la hauteur du toit et la longueur d\'un pan (au centième).'),
-        corr: cm1Redac('Hauteur', 'h = 4 × tan 35° ≈ 2,80', 'Le toit mesure environ 2,80 m de haut.') + cm1Redac('Longueur d\'un pan', 'L = 4 : cos 35° ≈ 4,88', 'Un pan mesure environ 4,88 m.') },
+        corr: cm1Redac('Hauteur du toit', 'h = 4 × tan 35° ≈ 2,80', 'Le toit mesure environ 2,80 m de haut.') + cm1Redac('Longueur d\'un pan', 'L = 4 : cos 35° ≈ 4,88', 'Un pan mesure environ 4,88 m.') },
       { etoiles: 2, col: 1, cahier: true, consigne: illu(avion, 'Un avion décolle en ligne droite avec un angle de 15°. Quelle est son altitude après avoir parcouru 2 km ?'),
         corr: cm1Redac('Sinus', '2 000 × sin 15° ≈ 518', 'Son altitude est d\'environ 518 m.') },
       { etoiles: 2, col: 1, cahier: true, consigne: illu(phareBateau, 'Du haut d\'un phare de 40 m, on voit un bateau 8° sous l\'horizontale. À quelle distance du pied du phare est-il ?'),
@@ -129,11 +129,11 @@ PLANCHES['3e|Trigonométrie'] = [
         ...auto([['ABC rectangle en B : cos Â =', T('AB', 'AC'), [T('AB', 'AC'), T('BC', 'AC'), T('AB', 'BC')]], ['cos 60° =', '0,5'], ['tan 45° =', 1], ['Hypoténuse d\'un triangle rectangle de côtés 6 et 8 :', 10], ['Un angle aigu d\'un triangle rectangle mesure 35°. L\'autre mesure (en degrés)', 55], ['sin x = 0,5 et x est aigu : x =', '30°', ['30°', '45°', '60°']]]) },
       { etoiles: 2, cahier: true, pts: 5, consigne: '<span>Une tyrolienne relie le sommet D d\'une tour de 12 m de haut à un point A du sol, situé à 45 m du pied E de la tour. Le câble [AD] est supposé tendu.</span>' + cote(tyro, qs(['Calculer la longueur du câble AD, au centimètre près.', 'Calculer l\'angle DAE, au degré près.', 'Pour la sécurité, cet angle doit être compris entre 5° et 25°. La tyrolienne est-elle conforme ?', 'On descend à 18 km/h en moyenne. Combien de temps dure la descente ?'])),
         corr: cm1Redac('Longueur du câble (Pythagore)', { suite: ['AD² = 45² + 12² = 2 025 + 144 = 2 169', 'AD = √2 169 ≈ 46,57'] }, 'Le câble mesure environ 46,57 m.')
-          + cm1Redac('Angle DAE', { suite: ['tan DAE = 12 : 45 ≈ 0,267', 'DAE ≈ 15°'] }, '') + cm1Redac('Conformité', '5° &lt; 15° &lt; 25°', 'La tyrolienne est conforme.')
-          + cm1Redac('Durée', { suite: ['18 km/h = 18 000 m : 3 600 s = 5 m/s', '46,57 : 5 ≈ 9,3'] }, 'La descente dure environ 9 secondes.') },
+          + cm1Redac('Angle DAE', { suite: ['tan DAE = 12 : 45 ≈ 0,267', 'DAE ≈ 15°'] }, '') + cm1Redac('La tyrolienne est-elle conforme ?', '5° &lt; 15° &lt; 25°', 'La tyrolienne est conforme.')
+          + cm1Redac('Durée de la descente', { suite: ['18 km/h = 18 000 m : 3 600 s = 5 m/s', '46,57 : 5 ≈ 9,3'] }, 'La descente dure environ 9 secondes.') },
       { etoiles: 2, cahier: true, pts: 4, consigne: '<span>Une rampe [AB] de 4,5 m relie le trottoir au seuil d\'une porte situé 0,35 m plus haut.</span>' + cote(rampe, qs(['Calculer l\'angle que fait la rampe avec le sol, au dixième de degré.', 'Calculer la longueur horizontale AH, au centimètre près.', 'La réglementation impose une pente (hauteur : longueur horizontale) d\'au plus 5 %. La rampe est-elle conforme ?'])),
-        corr: cm1Redac('Angle', { suite: ['sin Â = 0,35 : 4,5 ≈ 0,078', 'Â ≈ 4,5°'] }, '') + cm1Redac('Longueur horizontale', { suite: ['AH² = 4,5² − 0,35² = 20,127 5', 'AH ≈ 4,49'] }, 'La longueur horizontale mesure environ 4,49 m.')
-          + cm1Redac('Pente', '0,35 : 4,49 ≈ 0,078 = 7,8 %', 'La pente dépasse 5 % : la rampe n\'est pas conforme (il faudrait 7 m à l\'horizontale).') },
+        corr: cm1Redac('Angle de la rampe avec le sol', { suite: ['sin Â = 0,35 : 4,5 ≈ 0,078', 'Â ≈ 4,5°'] }, '') + cm1Redac('Longueur horizontale', { suite: ['AH² = 4,5² − 0,35² = 20,127 5', 'AH ≈ 4,49'] }, 'La longueur horizontale mesure environ 4,49 m.')
+          + cm1Redac('Pente de la rampe', '0,35 : 4,49 ≈ 0,078 = 7,8 %', 'La pente dépasse 5 % : la rampe n\'est pas conforme (il faudrait 7 m à l\'horizontale).') },
     ] },
 ];
 })();

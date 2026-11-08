@@ -53,7 +53,7 @@ ${cm1Demo('c2-gn-ranger', 'Comparer deux grands nombres', 'Compare 708 650 000 e
       cm1Redac('7 450 000 en lettres', '7 | 450 | 000', 'On écrit : sept millions quatre-cent-cinquante-mille.')
       + cm1Redac('230 008 015 en lettres', '230 | 008 | 015', 'On écrit : deux-cent-trente millions huit-mille-quinze.')],
     [`Écris ces nombres en chiffres.${cm1Liste(['six-cents millions', 'douze millions quatre-vingt-mille-deux', 'neuf-cent-mille-neuf'])}`,
-      cm1Redac('Les nombres en chiffres', { suite: ['600 | 000 | 000', '12 | 080 | 002', '900 | 009'] }, 'Ces nombres s\'écrivent 600 000 000, 12 080 002 et 900 009.')],
+      cm1Redac('Nombres en chiffres', { suite: ['600 | 000 | 000', '12 | 080 | 002', '900 | 009'] }, 'Ces nombres s\'écrivent 600 000 000, 12 080 002 et 900 009.')],
     [`Réponds aux questions sur le nombre 614 507 392.${cm1Liste(['Quel est son chiffre des dizaines de millions ?', 'Quel est son nombre de millions ?', 'Quel est son chiffre des centaines de mille ?'])}`,
       cm1Redac('Chiffre des dizaines de millions', '6<b>1</b>4 507 392', 'Le chiffre des dizaines de millions est 1.')
       + cm1Redac('Nombre de millions', '614 507 392 = 614 millions et 507 392 unités', 'Le nombre de millions est 614.')
@@ -63,11 +63,11 @@ ${cm1Demo('c2-gn-ranger', 'Comparer deux grands nombres', 'Compare 708 650 000 e
     ['Range dans l\'ordre décroissant : 99 999 999 ; 100 000 100 ; 100 001 000 ; 9 999 999.',
       cm1Redac('Ordre décroissant', '100 001 000 &gt; 100 000 100 &gt; 99 999 999 &gt; 9 999 999', 'Les nombres à 9 chiffres sont les plus grands ; le plus petit, 9 999 999, n\'a que 7 chiffres.')],
     ['Encadre 67 348 125 entre deux millions consécutifs, puis arrondis-le au million.',
-      cm1Redac('Encadrement', '67 000 000 &lt; 67 348 125 &lt; 68 000 000', '67 348 125 est compris entre 67 millions et 68 millions.')
-      + cm1Redac('Arrondi', '67 348 125 &lt; 67 500 000', 'Il est avant le milieu : arrondi au million, il vaut 67 000 000.')],
+      cm1Redac('Encadrement de 67 348 125', '67 000 000 &lt; 67 348 125 &lt; 68 000 000', '67 348 125 est compris entre 67 millions et 68 millions.')
+      + cm1Redac('Arrondi de 67 348 125', '67 348 125 &lt; 67 500 000', 'Il est avant le milieu : arrondi au million, il vaut 67 000 000.')],
     ['La Terre est à environ 149 600 000 km du Soleil. Écris ce nombre en lettres et arrondis-le à la dizaine de millions.',
-      cm1Redac('En lettres', '149 | 600 | 000', 'On écrit : cent-quarante-neuf millions six-cent-mille.')
-      + cm1Redac('Arrondi', '149 600 000 &gt; 145 000 000', 'Il est après le milieu entre 140 et 150 millions : arrondi, la distance est de 150 000 000 km.')],
+      cm1Redac('Distance écrite en lettres', '149 | 600 | 000', 'On écrit : cent-quarante-neuf millions six-cent-mille.')
+      + cm1Redac('Distance arrondie à la dizaine de millions', '149 600 000 &gt; 145 000 000', 'Il est après le milieu entre 140 et 150 millions : arrondi, la distance est de 150 000 000 km.')],
   ]),
   histoire: cm1Histoire('Un peu d\'histoire : le mot « million »', [
     'Le mot <b>million</b> vient de l\'italien <i>millione</i>, « un grand millier ». Il apparaît en Italie au XIII<sup>e</sup> siècle, à l\'époque de Marco Polo, qui racontait les richesses immenses de la Chine.',

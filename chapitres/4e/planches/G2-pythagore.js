@@ -69,7 +69,7 @@ PLANCHES['4e|Théorème de Pythagore'] = [
       { etoiles: 2, cahier: true, consigne: illu(echelle, 'Une échelle de 4 m est appuyée contre un mur vertical. Son pied est à 1,2 m du mur. À quelle hauteur arrive-t-elle ? Arrondis au centimètre.'),
         corr: cm1Redac('Pythagore', { suite: ['h² + 1,2² = 4²', 'h² = 16 − 1,44 = 14,56', 'h = √14,56 ≈ 3,82'] }, 'L\'échelle arrive à environ 3,82 m de hauteur.') },
       { etoiles: 2, cahier: true, consigne: illu(ecran, 'La taille d\'un écran est la longueur de sa diagonale, exprimée en pouces (1 pouce ≈ 2,54 cm). Un écran mesure 88 cm de large et 49,5 cm de haut. Quelle est sa taille en pouces ?'),
-        corr: cm1Redac('Diagonale', { suite: ['d² = 88² + 49,5² = 7 744 + 2 450,25 = 10 194,25', 'd = √10 194,25 ≈ 101 cm'] }, 'La diagonale mesure environ 101 cm.') + cm1Redac('En pouces', '101 : 2,54 ≈ 40', 'C\'est un écran d\'environ 40 pouces.') },
+        corr: cm1Redac('Diagonale de l\'écran', { suite: ['d² = 88² + 49,5² = 7 744 + 2 450,25 = 10 194,25', 'd = √10 194,25 ≈ 101 cm'] }, 'La diagonale mesure environ 101 cm.') + cm1Redac('Taille de l\'écran en pouces', '101 : 2,54 ≈ 40', 'C\'est un écran d\'environ 40 pouces.') },
       { etoiles: 3, cahier: true, consigne: 'Un menuisier vérifie qu\'un cadre de porte est bien rectangulaire. Les montants mesurent 2,1 m, la traverse 0,72 m, et la diagonale 2,22 m. Le coin est-il un angle droit ?',
         corr: cm1Redac('Réciproque de Pythagore', { suite: ['2,22² = 4,928 4', '2,1² + 0,72² = 4,41 + 0,518 4 = 4,928 4'] }, 'Les deux résultats sont égaux : d\'après la réciproque du théorème de Pythagore, le coin est un angle droit.') },
     ] },

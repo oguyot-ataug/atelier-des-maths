@@ -53,7 +53,7 @@ PLANCHES['cm2|Fractions'] = [
         eleve: cm1Graduation(3, 4, [[0.75, 'A'], [1.5, 'B'], [2.25, 'C']], { unite: 140 }) + plGrille([`A : ${Fr}`, `B : ${Fr}`, `C : ${Fr}`], 3),
         corr: cm1Graduation(3, 4, [[0.75, 'A'], [1.5, 'B'], [2.25, 'C']], { unite: 140 }) + plGrille([`A : ${R(F(3, 4))}`, `B : ${R(F(6, 4))}`, `C : ${R(F(9, 4))}`], 3) },
       { etoiles: 3, cahier: true, consigne: `Une course mesure 1 km. Ali a parcouru ${F(5, 8)} de la course et Zoé ${F(3, 4)}. Qui est le plus avancé ? Explique.`,
-        corr: cm1Redac('Même partage', `${F(3, 4)} = ${F(6, 8)}`, `Zoé a parcouru ${F(6, 8)} de la course.`) + cm1Redac('Comparaison', `${F(6, 8)} est plus grand que ${F(5, 8)}.`, 'Zoé est la plus avancée.') },
+        corr: cm1Redac('Même partage', `${F(3, 4)} = ${F(6, 8)}`, `Zoé a parcouru ${F(6, 8)} de la course.`) + cm1Redac('Qui est le plus avancé ?', `${F(6, 8)} est plus grand que ${F(5, 8)}.`, 'Zoé est la plus avancée.') },
       { etoiles: 2, consigne: 'Plus grand que 1 ? Entoure.', ...P3.chx2([[cm1Frac(7, 4), 'oui', 'oui · non'], [cm1Frac(4, 7), 'non', 'oui · non'], [cm1Frac(9, 9), 'non', 'oui · non'], [cm1Frac(10, 3), 'oui', 'oui · non'], [cm1Frac(5, 6), 'non', 'oui · non'], [cm1Frac(12, 10), 'oui', 'oui · non']]) },
     ] },
   { titre: 'Fraction d\'une quantité', duree: '30 min',

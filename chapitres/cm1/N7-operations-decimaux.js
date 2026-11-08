@@ -87,7 +87,7 @@ ${cm1Demo('od-dix', 'Multiplier un nombre décimal par 10', 'Calcule 0,56 × 10.
     ['Maïa mesure 1,38 m. Son frère mesure 0,25 m de plus. Quelle est la taille de son frère ?',
       cm1Redac('Taille du frère', '1,38 + 0,25 = 1,63', 'Le frère de Maïa mesure 1,63 m.')],
     ['Au marché, j\'achète des pommes pour 3,60 € et du fromage pour 5,85 €. Je paie avec un billet de 10 €. Combien me rend-on ?',
-      cm1Redac('Dépense', ['3,60 + 5,85', '9,45'], 'Je dépense 9,45 €.') + cm1Redac('Monnaie rendue', { nom: 'B', lignes: ['10 − 9,45', '0,55'] }, 'On me rend 0,55 €.')],
+      cm1Redac('Somme dépensée', ['3,60 + 5,85', '9,45'], 'Je dépense 9,45 €.') + cm1Redac('Monnaie rendue', { nom: 'B', lignes: ['10 − 9,45', '0,55'] }, 'On me rend 0,55 €.')],
   ], { titre: 'Rédaction type : « Poser une soustraction décimale »', lignes: [['12 − 3,6 ≈ 12 − 4 = 8', 'J\'estime le résultat.'], ['12,0 − 3,6 = 8,4', 'J\'aligne les virgules et je complète par un 0.'], ['Vérification : 8,4 + 3,6 = 12', 'Je vérifie avec une addition.']] }),
   histoire: cm1Histoire('Un peu d\'histoire : l\'euro et ses centimes', [
     'Quand tu paies 12,45 €, tu utilises des nombres décimaux sans y penser : 45 centimes, ce sont 45 <b>centièmes</b> d\'euro.',
@@ -164,7 +164,7 @@ PLANCHES['cm1|Opérations sur les nombres décimaux'] = [
       { etoiles: 3, col: 1, cahier: true, consigne: 'Un paquet de 10 cahiers coûte 18,50 €. Combien coûte un cahier ?',
         corr: cm1Redac('Prix d\'un cahier', '18,50 € : 10 = 1,85 €', 'Un cahier coûte 1,85 €.') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Une ficelle mesure 2,5 m. Combien mesurent 10 ficelles mises bout à bout ? Écris le résultat en mètres, puis en centimètres.',
-        corr: cm1Redac('Longueur de 10 ficelles', '2,5 m × 10 = 25 m', '10 ficelles mesurent 25 m.') + cm1Redac('En centimètres', '1 m = 100 cm, donc 25 m = 2 500 cm', '10 ficelles mesurent 2 500 cm.') },
+        corr: cm1Redac('Longueur de 10 ficelles', '2,5 m × 10 = 25 m', '10 ficelles mesurent 25 m.') + cm1Redac('Longueur des 10 ficelles en centimètres', '25 m = 2 500 cm', '10 ficelles mesurent 2 500 cm.') },
     ] },
 ];
 })();

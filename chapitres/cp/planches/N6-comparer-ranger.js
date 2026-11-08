@@ -31,7 +31,7 @@ PLANCHES['cp|Comparer et ranger les nombres'] = [
       { etoiles: 2, uneLigne: true, consigne: 'Range du plus grand au plus petit.',
         ...P3.rmp([['33 · 53 · 35 · 50 : @ > @ > @ > @', '53', '50', '35', '33']], 3) },
       { etoiles: 3, cahier: true, consigne: 'Léa a 34 images, Hugo 43, Malo 29. Range-les de celui qui a le moins d\'images à celui qui en a le plus.',
-        corr: cm1Redac('Du moins au plus', '29 < 34 < 43', 'Malo (29), puis Léa (34), puis Hugo (43).') },
+        corr: cm1Redac('Enfants du moins d\'images au plus d\'images', '29 < 34 < 43', 'Malo (29), puis Léa (34), puis Hugo (43).') },
       { etoiles: 2, consigne: 'Range du plus petit au plus grand.',
         ...P3.rmp([['5 · 50 · 15 : @ < @ < @', '5', '15', '50'], ['27 · 72 · 22 : @ < @ < @', '22', '27', '72']], 3) },
       { etoiles: 2, consigne: 'Colorie sur la bande les cases 23, 27 et 30.',

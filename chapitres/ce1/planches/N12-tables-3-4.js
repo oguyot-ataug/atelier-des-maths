@@ -30,9 +30,9 @@ PLANCHES['ce1|Tables de multiplication de 3 et 4'] = [
   { titre: 'Problèmes', duree: '20 min',
     attendus: ['Résoudre des problèmes avec les tables de 3 et 4'],
     exos: [
-      { etoiles: 1, cahier: true, consigne: 'Un trèfle a 3 feuilles. Combien de feuilles ont 8 trèfles ?', corr: cm1Redac('Feuilles', '8 × 3 = 24', '8 trèfles ont 24 feuilles.') },
+      { etoiles: 1, cahier: true, consigne: 'Un trèfle a 3 feuilles. Combien de feuilles ont 8 trèfles ?', corr: cm1Redac('Nombre de feuilles', '8 × 3 = 24', '8 trèfles ont 24 feuilles.') },
       { etoiles: 2, cahier: true, consigne: 'Une place de cinéma coûte 4 €. Combien coûtent 7 places ?', corr: cm1Redac('Prix des places', '7 × 4 = 28', '7 places coûtent 28 €.') },
-      { etoiles: 3, cahier: true, consigne: 'On range 36 œufs dans des boîtes de 4. Combien de boîtes ?', corr: cm1Redac('Boîtes', '9 × 4 = 36', 'Il faut 9 boîtes.') },
+      { etoiles: 3, cahier: true, consigne: 'On range 36 œufs dans des boîtes de 4. Combien de boîtes ?', corr: cm1Redac('Nombre de boîtes', '9 × 4 = 36', 'Il faut 9 boîtes.') },
       { etoiles: 1, col: 1, consigne: 'Complète.', ...P3.rmp([['5 tabourets à 3 pieds : @ pieds', 15], ['6 chats : @ pattes', 24], ['9 tricycles : @ roues', 27]], 2) },
       { etoiles: 2, col: 1, consigne: 'Complète le tableau.',
         eleve: cm1Tableau(['×', '2', '5', '7', '9'], [['<b>3</b>', '', '', '', ''], ['<b>4</b>', '', '', '', '']]),

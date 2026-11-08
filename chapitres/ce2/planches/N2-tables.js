@@ -42,7 +42,7 @@ PLANCHES['ce2|Tables d\'addition et de multiplication'] = [
       { etoiles: 2, col: 1, consigne: 'Trouve le nombre manquant.',
         ...rmp([['8 × @ = 56', 7], ['@ × 6 = 54', 9], ['35 = 7 × @', 5], ['72 = @ × 9', 8], ['6 × @ = 36', 6], ['@ × 4 = 28', 7]], 2) },
       { etoiles: 3, cahier: true, consigne: 'Lina a oublié 7 × 8. Explique deux façons de le retrouver à partir de résultats qu\'elle connaît.',
-        corr: cm1Redac('Avec 7 × 4', { suite: ['7 × 4 = 28', '7 × 8 = 28 + 28', '7 × 8 = 56'] }, '8, c\'est le double de 4 : on double 28.') + cm1Redac('Avec 7 × 10', { suite: ['7 × 10 = 70', '7 × 2 = 14', '70 − 14 = 56'] }, '8 fois 7, c\'est 10 fois 7 moins 2 fois 7 : 7 × 8 = 56.') },
+        corr: cm1Redac('7 × 8 à partir de 7 × 4', { suite: ['7 × 4 = 28', '7 × 8 = 28 + 28', '7 × 8 = 56'] }, '8, c\'est le double de 4 : on double 28.') + cm1Redac('7 × 8 à partir de 7 × 10', { suite: ['7 × 10 = 70', '7 × 2 = 14', '70 − 14 = 56'] }, '8 fois 7, c\'est 10 fois 7 moins 2 fois 7 : 7 × 8 = 56.') },
       { etoiles: 1, col: 1, consigne: 'Calcule.', ...P3.rmp([['6 × 7 = @', 42], ['8 × 9 = @', 72], ['7 × 7 = @', 49], ['9 × 6 = @', 54]], 2) },
       { etoiles: 2, col: 1, consigne: 'Trouve le nombre manquant.', ...P3.rmp([['@ × 8 = 48', 6], ['7 × @ = 63', 9], ['@ × 6 = 36', 6]], 2) },
     ] },

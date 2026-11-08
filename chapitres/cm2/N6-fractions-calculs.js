@@ -60,10 +60,10 @@ ${cm1Demo('c2-fc-comp', 'Comparer deux fractions', `Range dans l'ordre croissant
     [`Complète.${cm1Liste([`${F(3, 5)} = ${F('…', 20)}`, `${F(1, 6)} = ${F('…', 36)}`, `${F(12, 16)} = ${F(3, '…')}`])}`,
       cm1Redac('Fractions égales', { suite: [`${F(3, 5)} = ${F('3 × 4', '5 × 4')} = ${F(12, 20)}`, `${F(1, 6)} = ${F('1 × 6', '6 × 6')} = ${F(6, 36)}`, `${F(12, 16)} = ${F('12 : 4', '16 : 4')} = ${F(3, 4)}`] }, 'On multiplie (ou on divise) le numérateur et le dénominateur par le même nombre.')],
     [`Compare avec &lt;, &gt; ou =.${cm1Liste([`${F(5, 7)} … ${F(4, 7)}`, `${F(2, 9)} … ${F(2, 5)}`, `${F(3, 4)} … ${F(9, 12)}`, `${F(5, 6)} … ${F(7, 12)}`])}`,
-      cm1Redac('Comparaisons', { suite: [`${F(5, 7)} &gt; ${F(4, 7)}`, `${F(2, 9)} &lt; ${F(2, 5)}`, `${F(3, 4)} = ${F(9, 12)}`, `${F(5, 6)} = ${F(10, 12)} &gt; ${F(7, 12)}`] }, 'Même dénominateur : on compare les numérateurs ; même numérateur : la plus grande a le plus petit dénominateur.')],
+      cm1Redac('Comparaison des fractions', { suite: [`${F(5, 7)} &gt; ${F(4, 7)}`, `${F(2, 9)} &lt; ${F(2, 5)}`, `${F(3, 4)} = ${F(9, 12)}`, `${F(5, 6)} = ${F(10, 12)} &gt; ${F(7, 12)}`] }, 'Même dénominateur : on compare les numérateurs ; même numérateur : la plus grande a le plus petit dénominateur.')],
     [`Calcule.${cm1Liste([`${F(3, 10)} + ${F(9, 10)}`, `${F(11, 15)} − ${F(4, 15)}`, `${F(1, 2)} + ${F(3, 8)}`])}`,
       cm1Redac('Première somme', `${F(3, 10)} + ${F(9, 10)} = ${F(12, 10)}`, `Le résultat est ${F(12, 10)}.`)
-      + cm1Redac('Différence', `${F(11, 15)} − ${F(4, 15)} = ${F(7, 15)}`, `Le résultat est ${F(7, 15)}.`)
+      + cm1Redac('Différence des deux fractions', `${F(11, 15)} − ${F(4, 15)} = ${F(7, 15)}`, `Le résultat est ${F(7, 15)}.`)
       + cm1Redac('Deuxième somme', [`${F(4, 8)} + ${F(3, 8)}`, F(7, 8)], `Le résultat est ${F(7, 8)}.`)],
     [`Calcule.${cm1Liste([`1 − ${F(5, 12)}`, `3 − ${F(1, 4)}`, `${F(7, 10)} − ${F(1, 5)}`])}`,
       cm1Redac(`1 − ${F(5, 12)}`, [`${F(12, 12)} − ${F(5, 12)}`, F(7, 12)], `Le résultat est ${F(7, 12)}.`)

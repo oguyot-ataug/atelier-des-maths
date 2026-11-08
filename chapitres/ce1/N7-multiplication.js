@@ -48,9 +48,9 @@ ${cm1Demo('ce1-n7-m-pb', 'Résoudre un problème', 'Un vélo a 2 roues. Combien 
   ],
   exos: cm1Exos('ce1-n7', [
     ['Écris avec le signe × : 3 + 3 + 3 + 3 + 3.',
-      cm1Redac('Avec le signe ×', '5 × 3 = 15', 'On ajoute 5 fois le nombre 3 : 5 × 3 = 15.')],
+      cm1Redac('Addition écrite avec le signe ×', '5 × 3 = 15', 'On ajoute 5 fois le nombre 3 : 5 × 3 = 15.')],
     [`Écris la multiplication qui donne le nombre de jetons.${lig(ce1Rangees(4, 6, { p: 22 }))}`,
-      cm1Redac('Les jetons', '4 × 6 = 24', '4 rangées de 6 jetons : il y a 24 jetons.')],
+      cm1Redac('Nombre de jetons', '4 × 6 = 24', '4 rangées de 6 jetons : il y a 24 jetons.')],
     ['Calcule : 2 × 9.',
       cm1Redac('2 × 9', '9 + 9 = 18', '2 × 9 = 18, c\'est le double de 9.')],
     ['Calcule : 10 × 6.',
@@ -60,7 +60,7 @@ ${cm1Demo('ce1-n7-m-pb', 'Résoudre un problème', 'Un vélo a 2 roues. Combien 
     ['Une table a 4 pieds. Combien de pieds ont 6 tables ?',
       cm1Redac('Pieds des tables', '6 × 4 = 24', '6 tables ont 24 pieds.')],
     ['Dans un jardin, il y a 3 rangées de 10 salades. Combien de salades en tout ?',
-      cm1Redac('Les salades', '3 × 10 = 30', 'Il y a 30 salades.')],
+      cm1Redac('Nombre de salades', '3 × 10 = 30', 'Il y a 30 salades.')],
   ]),
   histoire: cm1Histoire('Un peu d\'histoire : le signe ×', [
     'Le signe <b>×</b> a été utilisé pour la première fois dans un livre de l\'Anglais <b>William Oughtred</b>, en 1631. Avant, on écrivait la multiplication avec des mots.',

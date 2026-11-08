@@ -19,7 +19,7 @@ PLANCHES['ce1|Partager et faire des groupes'] = [
     attendus: ['Résoudre un problème de groupement (combien de groupes ?)'],
     exos: [
       { etoiles: 1, col: 1, consigne: 'Combien de groupes ?', ...P3.rmp([['24 élèves, équipes de 4 : @ équipes', 6], ['40 œufs, boîtes de 10 : @ boîtes', 4], ['16 roues, vélos de 2 roues : @ vélos', 8]], 2) },
-      { etoiles: 2, cahier: true, consigne: 'On range 35 crayons par paquets de 5. Combien de paquets ?', corr: cm1Redac('Paquets', '7 × 5 = 35', 'Il y a 7 paquets.') },
+      { etoiles: 2, cahier: true, consigne: 'On range 35 crayons par paquets de 5. Combien de paquets ?', corr: cm1Redac('Nombre de paquets', '7 × 5 = 35', 'Il y a 7 paquets.') },
       { etoiles: 1, consigne: 'Fais des paquets de 4 jetons : entoure-les. Combien de paquets ?',
         eleve: lig(cpJetons(12)) + lig(B(2) + ' paquets'), corr: lig(cpJetons(12, 0, [...Array(4).fill(CPC.jeton), ...Array(4).fill(CPC.jeton2), ...Array(4).fill('#2E9C6A')])) + lig(R(3) + ' paquets') },
       { etoiles: 2, col: 1, consigne: 'Combien de groupes ?', ...P3.rmp([['30 élèves, équipes de 5 : @ équipes', 6], ['20 chaussettes, des paires : @ paires', 10], ['60 minutes, des demi-heures : @', 2]], 2) },
@@ -30,7 +30,7 @@ PLANCHES['ce1|Partager et faire des groupes'] = [
     attendus: ['Trouver ce qui reste après un partage ou un groupement'],
     exos: [
       { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['13 billes pour 2 enfants : @ chacun, il en reste @', 6, 1], ['17 cartes pour 5 joueurs : @ chacun, il en reste @', 3, 2]], 2) },
-      { etoiles: 3, cahier: true, consigne: '26 enfants vont au zoo. Une voiture peut emmener 4 enfants. Combien faut-il de voitures ?', corr: cm1Redac('Les voitures', { suite: ['6 × 4 = 24', '26 − 24 = 2'] }, '6 voitures ne suffisent pas : il reste 2 enfants. Il faut 7 voitures.') },
+      { etoiles: 3, cahier: true, consigne: '26 enfants vont au zoo. Une voiture peut emmener 4 enfants. Combien faut-il de voitures ?', corr: cm1Redac('Nombre de voitures', { suite: ['6 × 4 = 24', '26 − 24 = 2'] }, '6 voitures ne suffisent pas : il reste 2 enfants. Il faut 7 voitures.') },
       { etoiles: 1, consigne: 'Partage 14 jetons dans 4 sachets : dessine-les. Combien en reste-t-il ?', eleve: lig(sachets(4, 0)) + lig(B(2) + ' par sachet, il en reste ' + B(2)), corr: lig(sachets(4, 3)) + lig(R(3) + ' par sachet, il en reste ' + R(2)) },
       { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['11 bonbons pour 3 enfants : @ chacun, il en reste @', 3, 2], ['22 billes en sacs de 5 : @ sacs, il en reste @', 4, 2]], 2) },
       { etoiles: 3, col: 1, consigne: 'Combien de boîtes de 6 œufs faut-il ?', ...P3.rmp([['pour 18 œufs : @ boîtes', 3], ['pour 20 œufs : @ boîtes (la dernière n\'est pas pleine)', 4]], 2) },

@@ -38,7 +38,7 @@ PLANCHES['ce1|Polygones et angle droit'] = [
     attendus: ['Tracer un carré et un rectangle sur quadrillage'],
     exos: [
       { etoiles: 2, consigne: 'Trace un carré de 3 carreaux de côté et un rectangle de 5 carreaux sur 2.', eleve: lig(cpQuadFig(12, 5, [], { px: 300 })), corr: lig(cpQuadFig(12, 5, [[[[1, 1], [4, 1], [4, 4], [1, 4]], '#2EA8C9'], [[[6, 1], [11, 1], [11, 3], [6, 3]], '#2E9C6A']], { px: 300 })) },
-      { etoiles: 3, cahier: true, consigne: 'J\'ai 4 côtés. J\'ai 4 angles droits mais mes 4 côtés n\'ont pas tous la même longueur. Qui suis-je ?', corr: cm1Redac('Devinette', '', 'Je suis un rectangle.') },
+      { etoiles: 3, cahier: true, consigne: 'J\'ai 4 côtés. J\'ai 4 angles droits mais mes 4 côtés n\'ont pas tous la même longueur. Qui suis-je ?', corr: cm1Redac('Figure mystère', '', 'Je suis un rectangle.') },
       { etoiles: 2, consigne: 'Termine le rectangle et le carré.',
         eleve: lig(cpQuadFig(12, 5, [[[[1, 1], [6, 1], [6, 3]], CPC.bord, false], [[[8, 1], [8, 4]], CPC.bord, false]], { px: 300 })),
         corr: lig(cpQuadFig(12, 5, [[[[1, 1], [6, 1], [6, 3], [1, 3]], '#2E9C6A'], [[[8, 1], [11, 1], [11, 4], [8, 4]], '#2EA8C9']], { px: 300 })) },

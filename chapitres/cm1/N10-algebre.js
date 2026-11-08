@@ -84,10 +84,10 @@ ${cm1Demo('al-remonter', 'Remonter un programme de calcul', 'Programme : « Choi
       + cm1Redac('Deuxième égalité', { suite: ['3 × 4 = 12', '4 + 3 = 7'] }, '12 et 7 ne sont pas égaux : c\'est faux.')
       + cm1Redac('Troisième égalité', '4 × 5 = 20', 'C\'est vrai.')],
     ['Programme : « Choisis un nombre → multiplie par 5 → enlève 2 ». Que donne-t-il avec 4 ? avec 10 ?',
-      cm1Redac('Avec 4', ['4 × 5 − 2', '20 − 2', '18'], 'Avec 4, le programme donne 18.')
-      + cm1Redac('Avec 10', { nom: 'B', lignes: ['10 × 5 − 2', '50 − 2', '48'] }, 'Avec 10, le programme donne 48.')],
+      cm1Redac('Résultat avec 4', ['4 × 5 − 2', '20 − 2', '18'], 'Avec 4, le programme donne 18.')
+      + cm1Redac('Résultat avec 10', { nom: 'B', lignes: ['10 × 5 − 2', '50 − 2', '48'] }, 'Avec 10, le programme donne 48.')],
     ['Avec le même programme, on a obtenu 33. Quel était le nombre de départ ?',
-      cm1Redac('On remonte le programme', { suite: ['33 + 2 = 35', '35 : 5 = 7'] }, 'Le nombre de départ était 7. Vérification : 7 × 5 − 2 = 33.')],
+      cm1Redac('Nombre de départ', { suite: ['33 + 2 = 35', '35 : 5 = 7'] }, 'Le nombre de départ était 7. Vérification : 7 × 5 − 2 = 33.')],
     ['Sur une balance en équilibre, il y a 2 boîtes identiques et 5 kg d\'un côté, et 17 kg de l\'autre. Combien pèse une boîte ?',
       cm1Redac('Masse des 2 boîtes', '17 − 5 = 12', 'On enlève 5 kg de chaque côté : 2 boîtes pèsent 12 kg.') + cm1Redac('Masse d\'une boîte', '12 : 2 = 6', 'Une boîte pèse 6 kg.')],
   ], { titre: 'Rédaction type : « Nombre caché »', lignes: [['■ + 18 = 50', 'Je cherche le nombre qui, ajouté à 18, donne 50.'], ['■ = 50 − 18 = 32', 'J\'utilise l\'opération inverse.'], ['Vérification : 32 + 18 = 50', 'Je vérifie.']] }),
@@ -143,7 +143,7 @@ PLANCHES['cm1|Algèbre'] = [
       { etoiles: 2, col: 1, consigne: 'Programme : choisis un nombre, ajoute 3, puis multiplie par 2.', ...ex([['Je choisis 5 : j\'obtiens …', 16], ['Je choisis 0 : j\'obtiens …', 6], ['Je choisis 10 : j\'obtiens …', 26]]) },
       { etoiles: 2, col: 1, consigne: 'Programme : choisis un nombre, multiplie-le par 4, puis enlève 1.', ...ex([['Je choisis 3 : j\'obtiens …', 11], ['Je choisis 10 : j\'obtiens …', 39], ['Je choisis 25 : j\'obtiens …', 99]]) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Avec le programme « ajoute 3, puis multiplie par 2 », Zoé obtient 20. Quel nombre a-t-elle choisi ?',
-        corr: cm1Redac('On défait « multiplier par 2 »', '20 : 2 = 10', '') + cm1Redac('On défait « ajouter 3 »', '10 − 3 = 7', 'Zoé a choisi 7.') + cm1Redac('Vérification', { suite: ['7 + 3 = 10', '10 × 2 = 20'] }, 'On retrouve bien 20.') },
+        corr: cm1Redac('Nombre avant « multiplier par 2 »', '20 : 2 = 10', '') + cm1Redac('Nombre choisi par Zoé', '10 − 3 = 7', 'Zoé a choisi 7.') + cm1Redac('Vérification', { suite: ['7 + 3 = 10', '10 × 2 = 20'] }, 'On retrouve bien 20.') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Complète pour que l\'égalité soit vraie, de deux façons différentes : 6 + 9 = … + … .',
         corr: cm1Redac('Deux égalités vraies', { suite: ['6 + 9 = 10 + 5', '6 + 9 = 7 + 8'] }, 'Les deux côtés valent 15 : il y a beaucoup d\'autres réponses possibles.') },
     ] },

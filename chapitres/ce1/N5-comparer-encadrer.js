@@ -71,7 +71,7 @@ ${cm1Demo('ce1-n5-m-encadrer', 'Encadrer 763', 'Encadre 763 entre deux dizaines,
     ['Écris trois nombres compris entre 590 et 600.',
       cm1Redac('Nombres compris entre 590 et 600', '591 ; 595 ; 598', 'Par exemple 591, 595 et 598 : ils sont supérieurs à 590 et inférieurs à 600.')],
     ['Le château A a 385 marches, le château B en a 358. Lequel en a le plus ?',
-      cm1Redac('Les marches', '385 &gt; 358', 'C\'est le château A qui a le plus de marches.')],
+      cm1Redac('Château qui a le plus de marches', '385 &gt; 358', 'C\'est le château A qui a le plus de marches.')],
   ]),
   histoire: cm1Histoire('Un peu d\'histoire : la tour Eiffel et ses marches', [
     'Le sommet de la <b>tour Eiffel</b>, construite pour 1889, est à plus de 300 mètres de haut. Pour monter au deuxième étage à pied, il faut gravir <b>674 marches</b> !',

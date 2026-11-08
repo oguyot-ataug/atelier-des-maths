@@ -28,9 +28,9 @@ PLANCHES['ce1|Tables de multiplication de 2, 5 et 10'] = [
   { titre: 'Utiliser les tables', duree: '20 min',
     attendus: ['Résoudre des problèmes avec les tables de 2, 5 et 10'],
     exos: [
-      { etoiles: 1, cahier: true, consigne: 'Un billet de 5 €. Combien valent 6 billets de 5 € ?', corr: cm1Redac('Les billets', '6 × 5 = 30', '6 billets de 5 € valent 30 €.') },
-      { etoiles: 2, cahier: true, consigne: 'Une boîte contient 10 œufs. Combien d\'œufs dans 8 boîtes ?', corr: cm1Redac('Les œufs', '8 × 10 = 80', 'Il y a 80 œufs.') },
-      { etoiles: 3, cahier: true, consigne: 'Dans un parc, il y a 7 vélos et 5 tricycles. Combien de roues en tout ? (un tricycle a 3 roues)', corr: cm1Redac('Les roues', { suite: ['7 × 2 = 14', '5 × 3 = 15', '14 + 15 = 29'] }, 'Il y a 29 roues en tout.') },
+      { etoiles: 1, cahier: true, consigne: 'Un billet de 5 €. Combien valent 6 billets de 5 € ?', corr: cm1Redac('Valeur des billets', '6 × 5 = 30', '6 billets de 5 € valent 30 €.') },
+      { etoiles: 2, cahier: true, consigne: 'Une boîte contient 10 œufs. Combien d\'œufs dans 8 boîtes ?', corr: cm1Redac('Nombre d\'œufs', '8 × 10 = 80', 'Il y a 80 œufs.') },
+      { etoiles: 3, cahier: true, consigne: 'Dans un parc, il y a 7 vélos et 5 tricycles. Combien de roues en tout ? (un tricycle a 3 roues)', corr: cm1Redac('Nombre de roues', { suite: ['7 × 2 = 14', '5 × 3 = 15', '14 + 15 = 29'] }, 'Il y a 29 roues en tout.') },
       { etoiles: 1, col: 1, consigne: 'Calcule.', ...P3.rmp([['2 × 8 = @', 16], ['5 × 5 = @', 25], ['10 × 10 = @', 100], ['5 × 9 = @', 45]], 2) },
       { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['6 mains : @ doigts', 30], ['9 paires : @ chaussures', 18], ['5 boîtes de 10 crayons : @ crayons', 50]], 2) },
       { etoiles: 2, consigne: 'Complète le tableau.',

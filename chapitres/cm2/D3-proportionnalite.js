@@ -65,7 +65,7 @@ ${cm1Demo('c2-pp-vitesse', 'Distance et durée', 'Un train roule toujours à la 
       cm1Redac('Distance pour 8 cm', '4 × 5 = 20', '8 cm, c\'est 4 fois plus que 2 cm : la distance réelle est 20 km.')
       + cm1Redac('Distance pour 3 cm', { suite: ['1 cm : 5 : 2 = 2,5 km', '3 cm : 5 + 2,5 = 7,5 km'] }, 'Pour 3 cm, la distance réelle est 7,5 km.')],
     [`Proportionnel ou non ?${cm1Liste(['a) le prix de l\'essence et le nombre de litres', 'b) la pointure et l\'âge', 'c) le nombre de roues et le nombre de vélos'])}`,
-      cm1Redac('Proportionnalité', '', 'a) Oui : chaque litre coûte le même prix. b) Non : la pointure ne grandit pas régulièrement avec l\'âge. c) Oui : il y a 2 roues par vélo.')],
+      cm1Redac('Situations proportionnelles ou non', '', 'a) Oui : chaque litre coûte le même prix. b) Non : la pointure ne grandit pas régulièrement avec l\'âge. c) Oui : il y a 2 roues par vélo.')],
     ['12 stylos pèsent 180 g. Combien pèsent 20 stylos ?',
       cm1Redac('Masse de 4 stylos', '180 : 3 = 60', '4 stylos, c\'est 3 fois moins : ils pèsent 60 g.')
       + cm1Redac('Masse de 20 stylos', '5 × 60 = 300', '20 stylos, c\'est 5 fois 4 stylos : ils pèsent 300 g.')],

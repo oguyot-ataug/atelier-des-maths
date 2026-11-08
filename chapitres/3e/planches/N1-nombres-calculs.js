@@ -64,7 +64,7 @@ PLANCHES['3e|Nombres et calculs'] = [
         corr: cm1Redac('Prix payé', { suite: ['120 × 0,7 = 84', '84 × 0,9 = 75,6'] }, 'On paie 75,60 €.') + cm1Redac('Prix avec 40 % de remise', '120 × 0,6 = 72', 'On paierait 72 € : ce n\'est pas une remise de 40 % (seulement 37 %).') },
       { etoiles: 3, cahier: true, consigne: illu(murPorte, 'Un mur rectangulaire mesure 6,5 m sur 2,6 m ; il a une porte de 0,9 m sur 2 m. On le peint en deux couches. Un pot de peinture couvre 10 m² et coûte 23,90 €. Combien de pots faut-il acheter, et pour quel prix ?'),
         corr: cm1Redac('Aire du mur', '6,5 × 2,6 = 16,9', 'Le mur mesure 16,9 m².') + cm1Redac('Aire de la porte', '0,9 × 2 = 1,8', 'La porte mesure 1,8 m².') + cm1Redac('Surface à peindre', { suite: ['16,9 − 1,8 = 15,1', '15,1 × 2 = 30,2'] }, 'Pour deux couches, il faut peindre 30,2 m².')
-          + cm1Redac('Nombre de pots', '30,2 : 10 = 3,02', '3 pots ne suffisent pas : il faut acheter 4 pots.') + cm1Redac('Prix', '4 × 23,90 = 95,6', 'Les pots coûtent 95,60 €.') },
+          + cm1Redac('Nombre de pots', '30,2 : 10 = 3,02', '3 pots ne suffisent pas : il faut acheter 4 pots.') + cm1Redac('Prix des pots', '4 × 23,90 = 95,6', 'Les pots coûtent 95,60 €.') },
     ] },
   { titre: 'Vrai ou faux : justifier', duree: '35 min',
     attendus: ['Prouver qu\'une affirmation est fausse avec un contre-exemple', 'Prouver qu\'une affirmation est vraie par un calcul ou un raisonnement', 'Rédiger une justification'],
@@ -76,7 +76,7 @@ PLANCHES['3e|Nombres et calculs'] = [
       { etoiles: 2, col: 1, consigne: 'Programme : choisir un nombre ; ajouter 3 ; multiplier par 2 ; soustraire 6.',
         ...rmp([['Avec 5, on obtient @', 10], ['Avec −4, on obtient @', '−8'], ['Avec 0,5, on obtient @', 1], ['On obtient toujours @ du nombre choisi.', 'le double']]) },
       { etoiles: 2, col: 1, cahier: true, consigne: '« Le produit de deux nombres entiers consécutifs est toujours pair. » Vrai ou faux ? Justifie.',
-        corr: cm1Redac('Exemples', { suite: ['7 × 8 = 56', '12 × 13 = 156'] }, '') + cm1Redac('Justification', '', 'Vrai : de deux entiers consécutifs, l\'un est pair, donc leur produit est pair.') },
+        corr: cm1Redac('Exemples de produits', { suite: ['7 × 8 = 56', '12 × 13 = 156'] }, '') + cm1Redac('Justification', '', 'Vrai : de deux entiers consécutifs, l\'un est pair, donc leur produit est pair.') },
       { etoiles: 2, col: 1, cahier: true, consigne: '« Augmenter un prix de 20 %, puis le baisser de 20 %, redonne le prix de départ. » Vrai ou faux ? Justifie.',
         corr: cm1Redac('Contre-exemple', { suite: ['100 × 1,2 = 120', '120 × 0,8 = 96'] }, 'Faux : un article à 100 € coûte 96 € à la fin, pas 100 €.') },
       { etoiles: 2, col: 1, cahier: true, consigne: '« La somme de trois nombres entiers consécutifs est toujours un multiple de 3. » Vrai ou faux ? Justifie.',

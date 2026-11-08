@@ -16,7 +16,7 @@ PLANCHES['ce1|Comparer, ajouter, retirer des fractions'] = [
         corr: lig(bd(2, 1)) + lig(bd(4, 1)) + lig(bd(8, 1)) + lig(R(F(1, 2))) },
       { etoiles: 2, col: 1, consigne: 'Écris &lt; ou &gt;.', eleve: plListe([C(F(1, 3), F(1, 6)), C(F(1, 10), F(1, 5)), C(F(1, 2), F(1, 4))]), corr: plListe([`${F(1, 3)} ${R('&gt;')} ${F(1, 6)}`, `${F(1, 10)} ${R('&lt;')} ${F(1, 5)}`, `${F(1, 2)} ${R('&gt;')} ${F(1, 4)}`]) },
       { etoiles: 2, consigne: 'Entoure la plus grande fraction.', ...P3.chx2([['', F(1, 3), `${F(1, 5)} · ${F(1, 3)} · ${F(1, 8)}`], ['', F(4, 6), `${F(1, 6)} · ${F(4, 6)} · ${F(3, 6)}`], ['', F(5, 8), `${F(5, 8)} · ${F(3, 8)} · ${F(1, 8)}`], ['', F(1, 2), `${F(1, 2)} · ${F(1, 4)} · ${F(1, 10)}`]]) },
-      { etoiles: 3, cahier: true, consigne: 'Léo mange un tiers d\'une tarte. Zoé mange un sixième de la même tarte. Qui en mange le plus ? Explique.', corr: cm1Redac('Le plus gourmand', `${F(1, 3)} &gt; ${F(1, 6)}`, 'Léo en mange le plus : en partageant en 3, les parts sont plus grosses qu\'en partageant en 6.', bd(3, 1, 150) + '<br>' + bd(6, 1, 150)) },
+      { etoiles: 3, cahier: true, consigne: 'Léo mange un tiers d\'une tarte. Zoé mange un sixième de la même tarte. Qui en mange le plus ? Explique.', corr: cm1Redac('Enfant qui mange le plus', `${F(1, 3)} &gt; ${F(1, 6)}`, 'Léo en mange le plus : en partageant en 3, les parts sont plus grosses qu\'en partageant en 6.', bd(3, 1, 150) + '<br>' + bd(6, 1, 150)) },
     ] },
   { titre: 'Ajouter et retirer des fractions', duree: '20 min',
     attendus: ['Additionner et soustraire des fractions de même dénominateur'],

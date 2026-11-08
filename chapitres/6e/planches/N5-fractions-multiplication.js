@@ -25,7 +25,7 @@ PLANCHES['6e|Fractions : multiplication'] = [
         eleve: plListe([ligne('3 ×', F(1, 4), '=', B()), ligne('7 ×', F(1, 10), '=', B()), ligne('5 ×', F(3, 2), '=', B())]),
         corr: plListe([ligne('3 ×', F(1, 4), '=', F(3, 4), '=', R('0,75')), ligne('7 ×', F(1, 10), '=', F(7, 10), '=', R('0,7')), ligne('5 ×', F(3, 2), '=', F(15, 2), '=', R('7,5'))]) },
       { etoiles: 3, cahier: true, consigne: `Chaque jour, Lina boit ${T(3, 4)} L de lait. Combien de litres boit-elle en une semaine ? Donne le résultat sous forme d'une fraction, puis d'un nombre décimal.`,
-        corr: cm1Redac('Une semaine', `7 × ${F(3, 4)} = ${F(21, 4)}`, `Lina boit ${F(21, 4)} L, soit 5,25 L.`) },
+        corr: cm1Redac('Quantité bue en une semaine', `7 × ${F(3, 4)} = ${F(21, 4)}`, `Lina boit ${F(21, 4)} L de lait en une semaine.`) + cm1Redac('Quantité bue en une semaine, en nombre décimal', '21 : 4 = 5,25', 'Lina boit 5,25 L de lait en une semaine.') },
     ] },
   { titre: 'Prendre une fraction d\'une quantité', duree: '35 min',
     attendus: ['Calculer une fraction d\'une quantité : diviser puis multiplier, ou multiplier puis diviser', 'Choisir la méthode la plus simple', 'Utiliser les fractions dans des problèmes de mesure'],
@@ -42,9 +42,9 @@ PLANCHES['6e|Fractions : multiplication'] = [
       { etoiles: 2, col: 1, consigne: 'Complète avec &lt;, &gt; ou =.',
         ...signe([[`${T(1, 4)} de 100`, `${T(1, 5)} de 100`, '>', '(25 et 20)'], [`${T(2, 3)} de 60`, `${T(3, 4)} de 60`, '<', '(40 et 45)'], [`${T(5, 10)} de 30`, `${T(1, 2)} de 30`, '=', '(15 et 15)']]) },
       { etoiles: 3, col: 1, cahier: true, consigne: `Une classe de 28 élèves part en sortie. ${T(3, 7)} des élèves vont au musée, les autres au parc. Combien d'élèves vont au parc ?`,
-        corr: cm1Redac('Au musée', `${F(3, 7)} × 28 = (28 : 7) × 3 = 12`, '12 élèves vont au musée.') + cm1Redac('Au parc', '28 − 12 = 16', '16 élèves vont au parc.') },
+        corr: cm1Redac('Nombre d\'élèves qui vont au musée', `${F(3, 7)} × 28 = (28 : 7) × 3 = 12`, '12 élèves vont au musée.') + cm1Redac('Nombre d\'élèves qui vont au parc', '28 − 12 = 16', '16 élèves vont au parc.') },
       { etoiles: 3, col: 1, cahier: true, consigne: `Un réservoir de 60 L est rempli aux ${T(2, 3)}. On utilise ${T(1, 4)} de son contenu. Combien de litres reste-t-il ?`,
-        corr: cm1Redac('Contenu', `${F(2, 3)} × 60 = 40`, 'Le réservoir contient 40 L.') + cm1Redac('Après utilisation', `${F(1, 4)} × 40 = 10 et 40 − 10 = 30`, 'Il reste 30 L.') },
+        corr: cm1Redac('Contenu du réservoir', `${F(2, 3)} × 60 = 40`, 'Le réservoir contient 40 L.') + cm1Redac('Quantité utilisée', `${F(1, 4)} × 40 = 10`, 'On utilise 10 L.') + cm1Redac('Quantité restante dans le réservoir', '40 − 10 = 30', 'Il reste 30 L.') },
     ] },
   { titre: 'Prendre un pourcentage d\'une quantité', duree: '35 min',
     attendus: ['Savoir que p % de a, c\'est p/100 × a', 'Calculer mentalement 10 %, 25 %, 50 %, 75 %', 'Calculer une réduction ou une augmentation'],
@@ -80,8 +80,8 @@ PLANCHES['6e|Fractions : multiplication'] = [
       { etoiles: 3, col: 1, cahier: true, consigne: `Un roman a 360 pages. Le premier jour, Sacha lit ${T(1, 4)} du livre ; le deuxième jour, ${T(1, 3)} du livre. Combien de pages lui reste-t-il à lire ? Quelle fraction du livre cela représente-t-il ?`,
         corr: cm1Redac('Pages lues', { suite: [`${F(1, 4)} × 360 = 90`, `${F(1, 3)} × 360 = 120`, '90 + 120 = 210'] }, 'Sacha a lu 210 pages.') + cm1Redac('Pages restantes', '360 − 210 = 150', `Il lui reste 150 pages, soit ${F(150, 360)} = ${F(5, 12)} du livre.`) },
       { etoiles: 3, cahier: true, consigne: 'Le prix d\'un jeu augmente de 10 %, puis baisse de 10 %. Revient-il à son prix de départ (40 €) ? Calcule.',
-        corr: cm1Redac('Augmentation', `${F(10, 100)} × 40 = ${F(400, 100)} = 4`, 'Le prix augmente de 4 €.') + cm1Redac('Prix après l\'augmentation', '40 + 4 = 44', 'Après l\'augmentation, le jeu coûte 44 €.')
-          + cm1Redac('Baisse', `${F(10, 100)} × 44 = ${F(440, 100)} = 4,40`, 'Le prix baisse de 4,40 €.') + cm1Redac('Prix après la baisse', '44 − 4,40 = 39,60', 'Le jeu coûte 39,60 € : il ne revient pas à 40 €.') },
+        corr: cm1Redac('Augmentation du prix', `${F(10, 100)} × 40 = ${F(400, 100)} = 4`, 'Le prix augmente de 4 €.') + cm1Redac('Prix après l\'augmentation', '40 + 4 = 44', 'Après l\'augmentation, le jeu coûte 44 €.')
+          + cm1Redac('Baisse du prix', `${F(10, 100)} × 44 = ${F(440, 100)} = 4,40`, 'Le prix baisse de 4,40 €.') + cm1Redac('Prix après la baisse', '44 − 4,40 = 39,60', 'Le jeu coûte 39,60 € : il ne revient pas à 40 €.') },
     ] },
 ];
 })();

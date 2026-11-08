@@ -55,7 +55,7 @@ ${cm1Demo('c2-as-par', 'Calculer avec des parenthèses', 'Calcule 72 − (18,5 +
     [`Calcule mentalement.${cm1Liste(['6,4 + 3', '15,82 − 5', '2,7 + 1,5', '10 − 0,3'])}`,
       cm1Redac('Calculs mentaux', { suite: ['6,4 + 3 = 9,4', '15,82 − 5 = 10,82', '2,7 + 1,5 = 4,2', '10 − 0,3 = 9,7'] }, 'On ajoute ou on enlève les unités aux unités, les dixièmes aux dixièmes.')],
     ['Une ville compte 238 605 habitants, une autre 94 870. Estime, puis calcule le nombre total d\'habitants.',
-      cm1Redac('Estimation', '239 000 + 95 000 = 334 000', 'Le total doit être proche de 334 000.')
+      cm1Redac('Estimation du nombre total d\'habitants', '239 000 + 95 000 = 334 000', 'Le total doit être proche de 334 000.')
       + cm1Redac('Nombre d\'habitants', { pose: Po([[' ', '238 605'], ['+', ' 94 870'], [' ', '333 475']]) }, 'Les deux villes comptent 333 475 habitants, proche de l\'estimation.')],
     ['Trois colis pèsent 45,8 kg, 7,265 kg et 120,05 kg. Quelle est leur masse totale ?',
       cm1Redac('Masse totale', { pose: Po([[' ', ' 45,800'], ['+', '  7,265'], ['+', '120,050'], [' ', '173,115']]) }, 'Les trois colis pèsent 173,115 kg.')],

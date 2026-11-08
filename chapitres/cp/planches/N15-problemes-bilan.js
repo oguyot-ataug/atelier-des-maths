@@ -5,7 +5,7 @@ PLANCHES['cp|Problèmes : bilan de l\'année'] = [
   { titre: 'Ajouter, retirer', duree: '25 min',
     attendus: ['Résoudre des problèmes additifs et soustractifs', 'Répondre par une phrase'],
     exos: [
-      { etoiles: 1, cahier: true, consigne: 'Il y a 14 filles et 13 garçons dans la classe. Combien d\'élèves ?', corr: cm1Redac('Élèves', '14 + 13 = 27', 'Il y a 27 élèves dans la classe.') },
+      { etoiles: 1, cahier: true, consigne: 'Il y a 14 filles et 13 garçons dans la classe. Combien d\'élèves ?', corr: cm1Redac('Nombre d\'élèves', '14 + 13 = 27', 'Il y a 27 élèves dans la classe.') },
       { etoiles: 1, cahier: true, consigne: 'Maman a 30 œufs. Elle en utilise 12. Combien lui en reste-t-il ?', corr: cm1Redac('Œufs qui restent', { suite: ['30 − 10 = 20', '20 − 2 = 18'] }, 'Il reste 18 œufs.') },
       { etoiles: 2, cahier: true, consigne: 'Léo a 20 €. Il veut un jeu à 35 €. Combien lui manque-t-il ?', corr: cm1Redac('Argent qui manque', '20 + 15 = 35', 'Il manque 15 € à Léo.') },
       { etoiles: 1, consigne: 'Complète le schéma : combien d\'élèves dans la classe ?',

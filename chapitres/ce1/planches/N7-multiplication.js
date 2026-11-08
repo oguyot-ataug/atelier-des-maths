@@ -34,7 +34,7 @@ PLANCHES['ce1|La multiplication : le signe ×'] = [
     exos: [
       { etoiles: 1, col: 1, consigne: 'Calcule.', ...P3.rmp([['2 × 7 = @', 14], ['10 × 4 = @', 40], ['1 × 9 = @', 9], ['5 × 2 = @', 10]], 2) },
       { etoiles: 2, cahier: true, consigne: 'Une table a 4 pieds. Combien de pieds ont 5 tables ?', corr: cm1Redac('Pieds des tables', '5 × 4 = 20', '5 tables ont 20 pieds.') },
-      { etoiles: 3, cahier: true, consigne: 'Un paquet contient 10 gâteaux. Maman achète 3 paquets et papa 2 paquets. Combien de gâteaux en tout ?', corr: cm1Redac('Gâteaux', { suite: ['3 + 2 = 5', '5 × 10 = 50'] }, 'Il y a 50 gâteaux.') },
+      { etoiles: 3, cahier: true, consigne: 'Un paquet contient 10 gâteaux. Maman achète 3 paquets et papa 2 paquets. Combien de gâteaux en tout ?', corr: cm1Redac('Nombre de gâteaux', { suite: ['3 + 2 = 5', '5 × 10 = 50'] }, 'Il y a 50 gâteaux.') },
       { etoiles: 2, col: 1, consigne: 'Calcule.', ...P3.rmp([['3 × 10 = @', 30], ['4 × 2 = @', 8], ['2 × 9 = @', 18], ['10 × 6 = @', 60]], 2) },
       { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['4 mains : @ doigts', 20], ['6 paires de chaussettes : @ chaussettes', 12], ['3 trèfles à 4 feuilles : @ feuilles', 12]], 2) },
       { etoiles: 3, col: 1, consigne: 'Écris la multiplication.', ...P3.rmp([['3 paquets de 5 cartes : @', '3 × 5 = 15'], ['4 boîtes de 2 crayons : @', '4 × 2 = 8']], 6) },

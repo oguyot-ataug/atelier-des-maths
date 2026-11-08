@@ -48,7 +48,7 @@ ${cm1Redac('Carrés à l\'étape 10', '10 × 10 = 100', 'À l\'étape 10, il y a
 
 ${cm1Lecon(5, 'Programmes de calcul')}
 ${cm1Exemple(`Programme :${cm1Liste(['choisir un nombre', 'ajouter 2', 'multiplier le résultat par 4', 'retirer 3'])}`)}
-${cm1Redac('Avec 5', { suite: ['5 + 2 = 7', '7 × 4 = 28', '28 − 3 = 25'] }, 'Avec 5, le programme donne 25.')}
+${cm1Redac('Résultat avec 5', { suite: ['5 + 2 = 7', '7 × 4 = 28', '28 − 3 = 25'] }, 'Avec 5, le programme donne 25.')}
 ${cm1Rem('En une seule écriture : ((5 + 2) × 4) − 3. Avec une lettre n : ((n + 2) × 4) − 3.')}
 ${cm1Redac('Nombre choisi si on obtient 37', { suite: ['37 + 3 = 40', '40 : 4 = 10', '10 − 2 = 8'] }, 'On remonte le programme en faisant les opérations inverses : le nombre choisi était 8.')}
 `,
@@ -83,13 +83,13 @@ ${cm1Demo('c2-al-balance', 'Raisonner avec deux inconnues simples', '3 cahiers e
       cm1Redac('Prix pour K km', '(K × 2) + 4', 'Le prix en euros est (K × 2) + 4.')
       + cm1Redac('Prix pour 15 km', ['(15 × 2) + 4', '30 + 4', '34'], 'Pour 15 km, on paie 34 €.')],
     ['Suite : 3 ; 7 ; 15 ; 31 ; … Trouve la règle et les deux termes suivants.',
-      cm1Redac('Règle', { suite: ['3 × 2 + 1 = 7', '7 × 2 + 1 = 15'] }, 'On multiplie par 2 et on ajoute 1.')
+      cm1Redac('Règle de la suite', { suite: ['3 × 2 + 1 = 7', '7 × 2 + 1 = 15'] }, 'On multiplie par 2 et on ajoute 1.')
       + cm1Redac('Termes suivants', { suite: ['31 × 2 + 1 = 63', '63 × 2 + 1 = 127'] }, 'Les deux termes suivants sont 63 et 127.')],
     ['Avec la pyramide de carrés du cours, combien de carrés à l\'étape 7 ? À quelle étape y a-t-il 144 carrés ?',
       cm1Redac('Carrés à l\'étape 7', '7 × 7 = 49', 'À l\'étape 7, il y a 49 carrés.')
       + cm1Redac('Étape à 144 carrés', '12 × 12 = 144', 'Il y a 144 carrés à l\'étape 12.')],
     [`Programme de calcul :${cm1Liste(['choisir un nombre', 'le multiplier par 3', 'ajouter 5', 'multiplier par 2'])}Que donne-t-il avec 4 ? Quel nombre a été choisi si on obtient 52 ?`,
-      cm1Redac('Avec 4', { suite: ['4 × 3 = 12', '12 + 5 = 17', '17 × 2 = 34'] }, 'Avec 4, le programme donne 34.')
+      cm1Redac('Résultat avec 4', { suite: ['4 × 3 = 12', '12 + 5 = 17', '17 × 2 = 34'] }, 'Avec 4, le programme donne 34.')
       + cm1Redac('Nombre choisi pour obtenir 52', { suite: ['52 : 2 = 26', '26 − 5 = 21', '21 : 3 = 7'] }, 'En remontant le programme, on trouve que le nombre choisi était 7.')],
     ['La somme de deux nombres est 100 ; l\'un vaut 3 fois l\'autre. Quels sont-ils ?',
       cm1Redac('Les deux nombres', { suite: ['1 + 3 = 4', '100 : 4 = 25', '25 × 3 = 75'] }, 'On partage 100 en 4 parts égales : les deux nombres sont 25 et 75.')],

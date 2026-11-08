@@ -92,7 +92,7 @@ PLANCHES['3e|Équations'] = [
       { etoiles: 2, cahier: true, pts: 4, consigne: 'On considère l\'expression E = (2x − 3)² − 25.'
           + qs(['Développer et réduire E.', 'Factoriser E.', 'Résoudre l\'équation E = 0.', 'Calculer E pour x = 0.']),
         corr: cm1Redac('Développement', { nom: 'E', lignes: ['4x² − 12x + 9 − 25', '4x² − 12x − 16'] }, '') + cm1Redac('Factorisation', '(2x − 3 − 5)(2x − 3 + 5) = (2x − 8)(2x + 2)', '')
-          + cm1Redac('Premier facteur nul', { suite: ['2x − 8 = 0', '2x = 8', 'x = 4'] }, '') + cm1Redac('Second facteur nul', { suite: ['2x + 2 = 0', '2x = −2', 'x = −1'] }, 'Les solutions de E = 0 sont 4 et −1.') + cm1Redac('Pour x = 0', '(−3)² − 25 = 9 − 25 = −16', 'E = −16.') },
+          + cm1Redac('Premier facteur nul', { suite: ['2x − 8 = 0', '2x = 8', 'x = 4'] }, '') + cm1Redac('Second facteur nul', { suite: ['2x + 2 = 0', '2x = −2', 'x = −1'] }, 'Les solutions de E = 0 sont 4 et −1.') + cm1Redac('Valeur de E pour x = 0', '(−3)² − 25 = 9 − 25 = −16', 'E = −16.') },
     ] },
 ];
 })();

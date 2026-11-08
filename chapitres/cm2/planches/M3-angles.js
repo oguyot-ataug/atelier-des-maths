@@ -54,7 +54,7 @@ PLANCHES['cm2|Angles'] = [
       { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.',
         ...ch([['Un angle de 100° est obtus.', 'vrai'], ['Si on allonge les côtés d\'un angle, il devient plus grand.', 'faux'], ['La moitié d\'un angle obtus est toujours un angle aigu.', 'vrai']], 'vrai · faux') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Comment obtenir un angle de 45° avec une feuille de papier, sans instrument ?',
-        corr: cm1Redac('Par pliage', { suite: ['Je plie la feuille en deux, puis encore en deux : j\'obtiens un angle droit (90°).', 'Je plie cet angle droit en deux, bord contre bord.'] }, 'J\'obtiens un angle de 45°, la moitié d\'un angle droit.') },
+        corr: cm1Redac('Angle de 45° par pliage', { suite: ['Je plie la feuille en deux, puis encore en deux : j\'obtiens un angle droit (90°).', 'Je plie cet angle droit en deux, bord contre bord.'] }, 'J\'obtiens un angle de 45°, la moitié d\'un angle droit.') },
       { etoiles: 1, col: 1, consigne: 'Quel angle forment les aiguilles ?', ...P3.rmp([['à 3 h : @°', 90], ['à 6 h : @°', 180], ['à 2 h : @°', 60], ['à 4 h : @°', 120]], 2) },
       { etoiles: 2, col: 1, consigne: 'De combien de degrés tourne la grande aiguille ?', ...P3.rmp([['en 15 min : @°', 90], ['en 5 min : @°', 30], ['en 1 h : @°', 360]], 2) },
       { etoiles: 2, col: 1, consigne: 'À 9 h, les aiguilles forment un angle… Entoure.', ...P3.chx([['', 'droit', 'aigu · droit · obtus']]) },

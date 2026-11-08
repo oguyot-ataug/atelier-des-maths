@@ -55,9 +55,9 @@ PLANCHES['ce2|Fractions égales'] = [
             d = P3.chxTab([[`${F(1, 3)} = ${F(2, 6)}`, 'vraie', V], [`${F(2, 5)} = ${F(4, 5)}`, 'fausse', V], [`${F(4, 12)} = ${F(1, 3)}`, 'vraie', V]]);
           return { eleve: deux(g.eleve, d.eleve), corr: deux(g.corr, d.corr) }; })() },
       { etoiles: 3, col: 1, cahier: true, consigne: `Léo a mangé ${F(2, 6)} d'une tarte, Inès ${F(1, 3)} d'une tarte identique. Qui a mangé le plus ? Explique avec un dessin.`,
-        corr: cm1Redac('Comparer', `${F(1, 3)} = ${F(2, 6)}`, 'Si on coupe chaque tiers en deux, on obtient 2 sixièmes : Léo et Inès ont mangé autant de tarte.', bande(3, 1) + '<br>' + bande(6, 2)) },
+        corr: cm1Redac('Qui a mangé le plus de tarte ?', `${F(1, 3)} = ${F(2, 6)}`, 'Si on coupe chaque tiers en deux, on obtient 2 sixièmes : Léo et Inès ont mangé autant de tarte.', bande(3, 1) + '<br>' + bande(6, 2)) },
       { etoiles: 3, col: 1, cahier: true, consigne: `Deux rubans identiques. Sami colorie ${F(3, 4)} du sien, Jade colorie ${F(6, 8)} du sien. Qui a colorié le plus ? Explique avec un dessin.`,
-        corr: cm1Redac('Comparer', `${F(3, 4)} = ${F(6, 8)}`, 'Si on coupe chaque quart en deux, 3 quarts deviennent 6 huitièmes : Sami et Jade ont colorié autant de ruban.', bande(4, 3) + '<br>' + bande(8, 6)) },
+        corr: cm1Redac('Qui a colorié le plus ?', `${F(3, 4)} = ${F(6, 8)}`, 'Si on coupe chaque quart en deux, 3 quarts deviennent 6 huitièmes : Sami et Jade ont colorié autant de ruban.', bande(4, 3) + '<br>' + bande(8, 6)) },
       { etoiles: 2, consigne: 'Complète.', ...P3.rmp([['Un demi = @ quarts', 2], ['Un tiers = @ sixièmes', 2], ['Deux quarts = @ huitièmes', 4], ['Un demi = @ dixièmes', 5], ['Deux tiers = @ sixièmes', 4], ['Un quart = @ huitièmes', 2], ['Un cinquième = @ dixièmes', 2], ['Trois quarts = @ douzièmes', 9]], 2) },
     ] },
   { titre: 'Les fractions égales à un demi', duree: '25 min',

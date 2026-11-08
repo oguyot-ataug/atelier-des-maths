@@ -72,7 +72,7 @@ ${cm1Demo('cp-n1-m-plus', 'Savoir qui en a le plus', 'Léa a ces billes, Tom a c
     [`Combien de doigts sont levés ?${lig(cpDoigts(7, { px: 150 }))}`,
       cm1Redac('Doigts levés', 'Une main, c\'est 5, et encore 2 : c\'est 7.', '7 doigts sont levés.')],
     ['Écris ces nombres en chiffres : quatre, neuf, six.',
-      cm1Redac('En chiffres', { suite: ['quatre : 4', 'neuf : 9', 'six : 6'] }, 'Quatre s\'écrit 4, neuf s\'écrit 9, six s\'écrit 6.')],
+      cm1Redac('Nombres écrits en chiffres', { suite: ['quatre : 4', 'neuf : 9', 'six : 6'] }, 'Quatre s\'écrit 4, neuf s\'écrit 9, six s\'écrit 6.')],
     ['Quel nombre vient juste après 7 ? Et juste avant 7 ?',
       cm1Redac('Juste après 7', '7, puis 8', 'Le nombre qui vient juste après 7, c\'est 8.')
       + cm1Redac('Juste avant 7', '6, puis 7', 'Le nombre qui vient juste avant 7, c\'est 6.')],

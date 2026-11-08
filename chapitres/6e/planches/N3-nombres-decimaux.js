@@ -68,7 +68,7 @@ PLANCHES['6e|Nombres décimaux'] = [
       { etoiles: 2, col: 1, consigne: 'Ces écritures désignent-elles le nombre 4,07 ? Entoure.',
         ...ch([['4 + ' + F(7, 100) + ' :', 'oui', 'oui · non'], ['4 + ' + F(7, 10) + ' :', 'non', 'oui · non'], [F(407, 100) + ' :', 'oui', 'oui · non'], ['4,070 :', 'oui', 'oui · non'], ['4,7 :', 'non', 'oui · non']]) },
       { etoiles: 3, cahier: true, consigne: 'Écris tous les nombres décimaux qui ont deux chiffres après la virgule, en utilisant une seule fois chacun des chiffres 3, 0 et 5, avec un seul chiffre avant la virgule. Range-les dans l\'ordre croissant.',
-        corr: cm1Redac('Les six nombres', { suite: ['0,35 ; 0,53 ; 3,05 ; 3,50 ; 5,03 ; 5,30'] }, 'Dans l\'ordre croissant : 0,35 &lt; 0,53 &lt; 3,05 &lt; 3,50 &lt; 5,03 &lt; 5,30.') },
+        corr: cm1Redac('Nombres possibles', { suite: ['0,35 ; 0,53 ; 3,05 ; 3,50 ; 5,03 ; 5,30'] }, 'Dans l\'ordre croissant : 0,35 &lt; 0,53 &lt; 3,05 &lt; 3,50 &lt; 5,03 &lt; 5,30.') },
     ] },
   { titre: 'Repérage sur une demi-droite graduée', duree: '35 min',
     attendus: ['Lire l\'abscisse d\'un point sur une demi-droite graduée', 'Placer un nombre décimal sur une demi-droite graduée', 'Choisir la bonne graduation : dixièmes, centièmes'],
@@ -103,7 +103,7 @@ PLANCHES['6e|Nombres décimaux'] = [
         eleve: plListe([`4 ${lt} ${B()} ${lt} 5`, `2,3 ${lt} ${B()} ${lt} 2,4`, `0,15 ${lt} ${B()} ${lt} 0,16`]),
         corr: plListe([`4 ${lt} ${R('4,5')} ${lt} 5`, `2,3 ${lt} ${R('2,35')} ${lt} 2,4`, `0,15 ${lt} ${R('0,155')} ${lt} 0,16`]) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Au saut en longueur, Inès a sauté 3,8 m, Hugo 3,75 m, Léa 3,805 m et Sami 3,08 m. Établis le classement, du premier au dernier. Explique ta méthode.',
-        corr: cm1Redac('Trois chiffres après la virgule', { suite: ['3,8 = 3,800', '3,75 = 3,750', '3,08 = 3,080'] }, 'On écrit tous les nombres avec trois chiffres après la virgule.') + cm1Redac('Comparaison', '3,805 &gt; 3,800 &gt; 3,750 &gt; 3,080', 'Classement : 1re Léa, 2e Inès, 3e Hugo, 4e Sami.') },
+        corr: cm1Redac('Trois chiffres après la virgule', { suite: ['3,8 = 3,800', '3,75 = 3,750', '3,08 = 3,080'] }, 'On écrit tous les nombres avec trois chiffres après la virgule.') + cm1Redac('Classement du saut en longueur', '3,805 &gt; 3,800 &gt; 3,750 &gt; 3,080', 'Classement : 1re Léa, 2e Inès, 3e Hugo, 4e Sami.') },
     ] },
   { titre: 'Encadrer et arrondir', duree: '35 min',
     attendus: ['Encadrer un nombre décimal à l\'unité, au dixième, au centième', 'Arrondir un nombre décimal', 'Donner une valeur approchée'],
@@ -150,9 +150,9 @@ PLANCHES['6e|Nombres décimaux'] = [
         corr: plListe(['Le plus rapide est ' + R('Cyril'), 'Le plus lent est ' + R('Bea'), 'Temps de Dina arrondi à la seconde : ' + R(31) + ' s']) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Retour sur la division euclidienne : une planche mesure 2,4 m. Paul veut y découper des étagères de 0,75 m. Combien d\'étagères peut-il découper ? Quelle longueur reste-t-il ? Convertis en centimètres, puis pose une division euclidienne.',
         // Relecture du 03/11/2026 : « il faut faire une division ici ! » (et non chercher à tâtons).
-        corr: cm1Redac('En centimètres', { suite: ['2,4 m = 240 cm', '0,75 m = 75 cm'] }, 'On travaille en centimètres pour diviser des nombres entiers.') + cm1Redac('Division euclidienne de 240 par 75', { suite: ['240 = 75 × 3 + 15', '15 &lt; 75'] }, 'Le quotient est 3 et le reste 15 : Paul peut découper 3 étagères ; il reste 15 cm, soit 0,15 m.') },
+        corr: cm1Redac('Longueurs en centimètres', { suite: ['2,4 m = 240 cm', '0,75 m = 75 cm'] }, 'On travaille en centimètres pour diviser des nombres entiers.') + cm1Redac('Division euclidienne de 240 par 75', { suite: ['240 = 75 × 3 + 15', '15 &lt; 75'] }, 'Le quotient est 3 et le reste 15 : Paul peut découper 3 étagères ; il reste 15 cm, soit 0,15 m.') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Un nombre a 2 chiffres après la virgule. Son arrondi au dixième est 4,6 et son chiffre des centièmes est 8. Quel est ce nombre ?',
-        corr: cm1Redac('Recherche', '4,58 ≈ 4,6', 'Le nombre s\'écrit 4,?8. Avec 8 centièmes, on arrondit au dixième supérieur : pour obtenir 4,6, le chiffre des dixièmes est 5. Le nombre est 4,58.') },
+        corr: cm1Redac('Nombre cherché', '4,58 ≈ 4,6', 'Le nombre s\'écrit 4,?8. Avec 8 centièmes, on arrondit au dixième supérieur : pour obtenir 4,6, le chiffre des dixièmes est 5. Le nombre est 4,58.') },
     ] },
 ];
 })();

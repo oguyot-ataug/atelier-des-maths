@@ -65,7 +65,7 @@ ${cm1Demo('c2-mu-pb', 'Résoudre un problème', 'Un croissant coûte 1,35 €. C
       + cm1Redac('16,4 × 35', { pose: Po([[' ', '164'], ['×', '35'], [' ', '820', true], ['+', '4920'], [' ', '5740']]) }, 'Un chiffre après la virgule dans 16,4 : 16,4 × 35 = 574,0, c\'est-à-dire 574.')
       + cm1Redac('0,125 × 12', { suite: ['sans la virgule : 125 × 12 = 1 500', 'trois chiffres après la virgule : 1,500'] }, '0,125 × 12 donne 1,5.')],
     ['Estime 19,8 × 21, puis choisis le bon résultat : 41,58 ; 415,8 ; 4 158.',
-      cm1Redac('Estimation', '20 × 21 = 420', 'Le bon résultat est le plus proche de 420 : c\'est 415,8.')],
+      cm1Redac('Estimation de 19,8 × 21', '20 × 21 = 420', 'Le bon résultat est le plus proche de 420 : c\'est 415,8.')],
     [`Calcule en décomposant.${cm1Liste(['34 × 11', '26 × 9', '15 × 12'])}`,
       cm1Redac('34 × 11', ['34 × 10 + 34', '340 + 34', '374'], '34 × 11 donne 374.')
       + cm1Redac('26 × 9', { nom: 'B', lignes: ['26 × 10 − 26', '260 − 26', '234'] }, '26 × 9 donne 234.')

@@ -101,7 +101,7 @@ ${cm1Demo('fg4-m-lire', 'Lire une valeur sur un graphique', 'Quelle est la temp�
     ['Sur le graphique du four, au bout de combien de temps la température atteint-elle 90 °C ?',
       cm1Redac('Lecture graphique', '', 'On part de 90 sur l\'axe des ordonnées, on rejoint la courbe, on descend : environ 5 min.', four(260))],
     ['Le périmètre p d\'un carré de côté c est p = 4c. Le graphique est-il une droite passant par l\'origine ?',
-      cm1Redac('Le graphique', '', 'Oui : le périmètre est proportionnel au côté (on multiplie toujours par 4), les points sont alignés avec l\'origine.')],
+      cm1Redac('Nature du graphique', '', 'Oui : le périmètre est proportionnel au côté (on multiplie toujours par 4), les points sont alignés avec l\'origine.')],
     ['L\'aire d\'un disque de rayon r est A = πr². Calcule A pour r = 3 cm (arrondi au cm²).',
       cm1Redac('Aire du disque', T('A = \\pi \\times 3^2 = 9\\pi \\approx 28'), 'L\'aire est environ 28 cm².')],
     ['Une bougie de 20 cm diminue de 2 cm par heure. Exprime sa hauteur h en fonction du temps t (en heures).',

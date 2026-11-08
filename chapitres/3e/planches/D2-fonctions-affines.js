@@ -22,9 +22,9 @@ PLANCHES['3e|Fonctions linéaires et affines'] = [
         ...rmp([['Augmenter de 15 % : x ↦ @x', '1,15'], ['Diminuer de 40 % : x ↦ @x', '0,6'], ['Après une hausse de 15 %, un prix est de 46 €. Avant : @ €', 40]]) },
       { etoiles: 2, col: 1, consigne: 'La droite (d) représente une fonction linéaire f.', ...fig(gLin, [['Coefficient de f : @', '1,5'], ['f(4) = @', 6], ['Antécédent de −3 : @', '−2']]) },
       { etoiles: 2, col: 1, cahier: true, consigne: 'Le prix de l\'essence est proportionnel au volume : 50 L coûtent 89 €. Exprime le prix p(v) de v litres, puis calcule p(35).',
-        corr: cm1Redac('Coefficient', '89 : 50 = 1,78', 'p(v) = 1,78v.') + cm1Redac('Prix de 35 L', '1,78 × 35 = 62,3', '35 L coûtent 62,30 €.') },
+        corr: cm1Redac('Coefficient de la fonction p', '89 : 50 = 1,78', 'p(v) = 1,78v.') + cm1Redac('Prix de 35 L', '1,78 × 35 = 62,3', '35 L coûtent 62,30 €.') },
       { etoiles: 3, cahier: true, consigne: 'Un prix augmente de 20 %, puis baisse de 20 %. Montre, avec des fonctions linéaires, que le prix final est 96 % du prix de départ.',
-        corr: cm1Redac('Hausse de 20 %', 'x ↦ 1,2x', '') + cm1Redac('Baisse de 20 %', 'x ↦ 0,8x', '') + cm1Redac('Les deux à la suite', '0,8 × 1,2x = 0,96x', 'Le prix final est 96 % du prix de départ : il a baissé de 4 %.') },
+        corr: cm1Redac('Hausse de 20 %', 'x ↦ 1,2x', '') + cm1Redac('Baisse de 20 %', 'x ↦ 0,8x', '') + cm1Redac('Hausse puis baisse de 20 %', '0,8 × 1,2x = 0,96x', 'Le prix final est 96 % du prix de départ : il a baissé de 4 %.') },
     ] },
   { titre: 'Les fonctions affines', duree: '40 min',
     attendus: ['Calculer avec une fonction affine f(x) = ax + b', 'Lire et utiliser coefficient directeur et ordonnée à l\'origine', 'Trouver une fonction affine à partir de deux valeurs'],
@@ -40,9 +40,9 @@ PLANCHES['3e|Fonctions linéaires et affines'] = [
         ...ch([['A(1 ; 1) :', 'oui'], ['B(2 ; 5) :', 'non'], ['C(0 ; −2) :', 'oui'], ['D(−1 ; −4) :', 'non']], 'oui · non') },
       { etoiles: 2, col: 1, cahier: true, consigne: 'Trace dans un même repère les droites qui représentent f(x) = 2x − 1 et g(x) = −x + 5. Lis, puis calcule, les coordonnées de leur point d\'intersection.',
         corr: `<div style="text-align:center;">${repere({ x: [-1, 5], y: [-2, 6], u: 18, px: 150, fns: [{ f: x => 2 * x - 1, de: -0.5, a: 3.5, t: 'f', tx: 3.4 }, { f: x => -x + 5, c: '#E35D3A', de: -1, a: 5, t: 'g', tx: 4.9 }], pts: [{ x: 2, y: 3, t: '(2 ; 3)' }] })}</div>`
-          + cm1Redac('Calcul', { suite: ['2x − 1 = −x + 5', '3x = 6', 'x = 2', 'f(2) = 3'] }, 'Le point d\'intersection est (2 ; 3).') },
+          + cm1Redac('Coordonnées du point d\'intersection', { suite: ['2x − 1 = −x + 5', '3x = 6', 'x = 2', 'f(2) = 3'] }, 'Le point d\'intersection est (2 ; 3).') },
       { etoiles: 3, cahier: true, consigne: 'Taxi A : 4 € de prise en charge, puis 1,50 € par km. Taxi B : 2 € par km. Pour quelle distance les deux taxis coûtent-ils le même prix ? Lequel choisir pour 12 km ?',
-        corr: cm1Redac('Même prix', { suite: ['4 + 1,5d = 2d', '0,5d = 4', 'd = 8'] }, 'Pour 8 km, les deux taxis coûtent 16 €.') + cm1Redac('Pour 12 km', { suite: ['A : 4 + 1,5 × 12 = 22', 'B : 2 × 12 = 24'] }, 'Pour 12 km, il vaut mieux prendre le taxi A.') },
+        corr: cm1Redac('Même prix', { suite: ['4 + 1,5d = 2d', '0,5d = 4', 'd = 8'] }, 'Pour 8 km, les deux taxis coûtent 16 €.') + cm1Redac('Prix des deux taxis pour 12 km', { suite: ['A : 4 + 1,5 × 12 = 22', 'B : 2 × 12 = 24'] }, 'Pour 12 km, il vaut mieux prendre le taxi A.') },
     ] },
   { titre: 'Pourcentages et évolutions', duree: '35 min',
     attendus: ['Associer une évolution en pourcentage à un coefficient multiplicateur', 'Retrouver une valeur de départ', 'Calculer un taux d\'évolution, des évolutions successives'],
@@ -60,7 +60,7 @@ PLANCHES['3e|Fonctions linéaires et affines'] = [
       { etoiles: 2, col: 1, cahier: true, consigne: 'Un prix augmente de 10 %, puis de 20 %. Quelle est l\'augmentation globale ?',
         corr: cm1Redac('Coefficient global', '1,1 × 1,2 = 1,32', 'L\'augmentation globale est de 32 % (et non 30 %).') },
       { etoiles: 3, cahier: true, consigne: 'Un article baisse de 25 %. De quel pourcentage doit-il augmenter pour revenir à son prix initial ?',
-        corr: cm1Redac('Après la baisse', '0,75x', '') + cm1Redac('Coefficient pour revenir au prix de départ', { suite: ['0,75 × k = 1', 'k = 1 : 0,75 ≈ 1,333'] }, 'Il doit augmenter d\'environ 33,3 % (un tiers).') },
+        corr: cm1Redac('Prix après la baisse de 25 %', '0,75x', '') + cm1Redac('Coefficient pour revenir au prix de départ', { suite: ['0,75 × k = 1', 'k = 1 : 0,75 ≈ 1,333'] }, 'Il doit augmenter d\'environ 33,3 % (un tiers).') },
     ] },
   { titre: 'Fonctions affines en situation', duree: '40 min',
     attendus: ['Modéliser une situation par une fonction affine', 'Résoudre un problème de comparaison de tarifs', 'Trouver la fonction affine à partir de deux valeurs'],
@@ -72,13 +72,13 @@ PLANCHES['3e|Fonctions linéaires et affines'] = [
       { etoiles: 2, col: 1, consigne: 'Température en degrés Fahrenheit : F = 1,8 × C + 32 (C en degrés Celsius).',
         ...rmp([['20 °C = @ °F', 68], ['100 °C = @ °F', 212], ['−40 °C = @ °F', '−40'], ['86 °F = @ °C', 30]]) },
       { etoiles: 2, col: 1, cahier: true, consigne: 'Un réservoir de 60 L se vide à 4 L par minute. Exprime le volume V(t) au bout de t minutes. Quel volume reste-t-il après 6 min ? Quand est-il vide ?',
-        corr: cm1Redac('Fonction', 'V(t) = 60 − 4t', '') + cm1Redac('Après 6 min', '60 − 4 × 6 = 36', 'Il reste 36 L.') + cm1Redac('Réservoir vide', { suite: ['60 − 4t = 0', 't = 15'] }, 'Le réservoir est vide au bout de 15 min.') },
+        corr: cm1Redac('Expression du volume V(t)', 'V(t) = 60 − 4t', '') + cm1Redac('Volume restant après 6 min', '60 − 4 × 6 = 36', 'Il reste 36 L.') + cm1Redac('Réservoir vide', { suite: ['60 − 4t = 0', 't = 15'] }, 'Le réservoir est vide au bout de 15 min.') },
       { etoiles: 2, col: 1, cahier: true, consigne: 'Forfait A : 15 € par mois, appels illimités. Forfait B : 5 € par mois plus 0,10 € par minute. Pour quelle durée d\'appel les deux forfaits coûtent-ils le même prix ?',
         corr: cm1Redac('Même prix', { suite: ['5 + 0,1t = 15', '0,1t = 10', 't = 100'] }, 'Pour 100 minutes, les deux forfaits coûtent 15 € ; au-delà, A est plus avantageux.') },
       { etoiles: 2, col: 1, cahier: true, consigne: 'L\'eau coûte 3,50 € le m³, plus un abonnement annuel de 60 €. La facture annuelle de la famille Martin est de 508 €. Combien de m³ a-t-elle consommés ?',
         corr: cm1Redac('Mise en équation', { suite: ['60 + 3,5x = 508', '3,5x = 448', 'x = 128'] }, 'La famille Martin a consommé 128 m³.') },
       { etoiles: 3, cahier: true, consigne: 'Trouve la fonction affine f telle que f(2) = 1 et f(6) = 9, puis l\'antécédent de 0.',
-        corr: cm1Redac('Coefficient', '(9 − 1) : (6 − 2) = 2', '') + cm1Redac('Ordonnée à l\'origine', { suite: ['f(2) = 2 × 2 + b = 1', '4 + b = 1', 'b = −3'] }, 'f(x) = 2x − 3.') + cm1Redac('Antécédent de 0', { suite: ['2x − 3 = 0', '2x = 3', 'x = 1,5'] }, 'L\'antécédent de 0 est 1,5.') },
+        corr: cm1Redac('Coefficient de la fonction f', '(9 − 1) : (6 − 2) = 2', '') + cm1Redac('Ordonnée à l\'origine', { suite: ['f(2) = 2 × 2 + b = 1', '4 + b = 1', 'b = −3'] }, 'f(x) = 2x − 3.') + cm1Redac('Antécédent de 0', { suite: ['2x − 3 = 0', '2x = 3', 'x = 1,5'] }, 'L\'antécédent de 0 est 1,5.') },
     ] },
   { titre: 'Fonctions linéaires et affines', duree: '45 min', brevet: true,
     attendus: ['Automatismes : fonctions affines et pourcentages', 'Comparer des tarifs avec des fonctions affines', 'Étudier des évolutions successives'],
@@ -89,12 +89,12 @@ PLANCHES['3e|Fonctions linéaires et affines'] = [
           + tab([['Nombre de séances', 5, 10, 15], ['Prix formule 1 (€)', '', '', ''], ['Prix formule 2 (€)', '', '', '']])
           + qs(['Compléter le tableau.', 'Exprimer en fonction de x le prix f(x) avec la formule 1, puis g(x) avec la formule 2. Laquelle de ces fonctions est linéaire ?', 'Résoudre l\'équation 12x = 60 + 7x et interpréter le résultat.', 'Lucas a un budget de 200 €. Avec quelle formule peut-il faire le plus de séances ?']),
         corr: tab([['Nombre de séances', 5, 10, 15], ['Prix formule 1 (€)', 60, 120, 180], ['Prix formule 2 (€)', 95, 130, 165]])
-          + cm1Redac('Fonctions', { suite: ['f(x) = 12x', 'g(x) = 7x + 60'] }, 'f est linéaire, g est affine.') + cm1Redac('Équation', { suite: ['12x − 7x = 60', '5x = 60', 'x = 12'] }, 'Pour 12 séances, les deux formules coûtent le même prix : 144 €.')
+          + cm1Redac('Fonctions des deux formules', { suite: ['f(x) = 12x', 'g(x) = 7x + 60'] }, 'f est linéaire, g est affine.') + cm1Redac('Équation', { suite: ['12x − 7x = 60', '5x = 60', 'x = 12'] }, 'Pour 12 séances, les deux formules coûtent le même prix : 144 €.')
           + cm1Redac('Formule 1 avec 200 €', '200 : 12 ≈ 16,7', 'Avec la formule 1, Lucas fait 16 séances.') + cm1Redac('Formule 2 avec 200 €', '(200 − 60) : 7 = 20', 'Avec la formule 2, Lucas fait 20 séances.') },
       { etoiles: 2, cahier: true, pts: 4, consigne: 'Une console coûtait 450 €. Son prix a augmenté de 12 % en 2025, puis baissé de 12 % en 2026.'
           + qs(['Calculer son prix après la hausse.', 'Calculer son prix après la baisse.', 'Le vendeur affirme : « La console est revenue à son prix de départ. » A-t-il raison ?', 'Quel est le pourcentage d\'évolution global ?']),
-        corr: cm1Redac('Après la hausse', '450 × 1,12 = 504', 'La console coûte 504 €.') + cm1Redac('Après la baisse', '504 × 0,88 = 443,52', 'Elle coûte 443,52 €.')
-          + cm1Redac('Affirmation', '443,52 &lt; 450', 'Il a tort : la console coûte moins cher qu\'au départ.') + cm1Redac('Évolution globale', '1,12 × 0,88 = 0,985 6', 'C\'est une baisse de 1,44 %.') },
+        corr: cm1Redac('Prix après la hausse de 12 %', '450 × 1,12 = 504', 'La console coûte 504 €.') + cm1Redac('Prix après la baisse de 12 %', '504 × 0,88 = 443,52', 'Elle coûte 443,52 €.')
+          + cm1Redac('Le vendeur a-t-il raison ?', '443,52 &lt; 450', 'Il a tort : la console coûte moins cher qu\'au départ.') + cm1Redac('Évolution globale', '1,12 × 0,88 = 0,985 6', 'C\'est une baisse de 1,44 %.') },
     ] },
 ];
 })();

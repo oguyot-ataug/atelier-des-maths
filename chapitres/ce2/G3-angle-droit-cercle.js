@@ -71,7 +71,7 @@ ${cm1Demo('ce2-ac-tri', 'Construire un triangle rectangle', 'Construis un triang
     ['Un cercle a un diamètre de 8 cm. Quel écartement faut-il donner au compas pour le tracer ?',
       cm1Redac('Écartement du compas', '8 cm = 4 cm + 4 cm', 'L\'écartement est le rayon, la moitié du diamètre : il faut écarter le compas de 4 cm.')],
     ['Construis un carré de 6 cm de côté, puis un cercle de rayon 4 cm dont le centre est un sommet du carré.',
-      cm1Redac('Construction', { suite: ['Je trace un côté de 6 cm.', 'Je trace les angles droits avec l\'équerre, puis les autres côtés de 6 cm.', 'J\'écarte le compas de 4 cm, je pique sur un sommet et je trace le cercle.'] }, 'J\'obtiens un carré de 6 cm de côté et un cercle de rayon 4 cm centré sur un de ses sommets.')],
+      cm1Redac('Construction du carré et du cercle', { suite: ['Je trace un côté de 6 cm.', 'Je trace les angles droits avec l\'équerre, puis les autres côtés de 6 cm.', 'J\'écarte le compas de 4 cm, je pique sur un sommet et je trace le cercle.'] }, 'J\'obtiens un carré de 6 cm de côté et un cercle de rayon 4 cm centré sur un de ses sommets.')],
     ['Cherche dans la classe trois angles droits.',
       cm1Redac('Angles droits de la classe', '', 'Par exemple : le coin d\'une feuille, le coin d\'une table, le coin d\'une fenêtre. Je vérifie chacun avec l\'équerre.')],
   ]),

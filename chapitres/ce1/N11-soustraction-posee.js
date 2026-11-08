@@ -58,7 +58,7 @@ ${cm1Demo('ce1-n11-m-pb', 'Un problème de soustraction', 'Un livre a 254 pages.
     ['Pose et calcule : 725 − 263.',
       cm1Redac('725 − 263', { pose: ce1Sous(725, 263, 150) }, 'Je casse une centaine : 725 − 263 = 462.')],
     ['Vérifie par une addition : 81 − 46 = 35.',
-      cm1Redac('La preuve', { pose: add(35, 46, '1 ') }, '35 + 46 = 81 : le calcul était juste.')],
+      cm1Redac('Vérification par une addition', { pose: add(35, 46, '1 ') }, '35 + 46 = 81 : le calcul était juste.')],
     ['Dans un car de 52 places, 37 places sont occupées. Combien de places sont libres ?',
       cm1Redac('Places libres', { pose: ce1Sous(52, 37, 130) }, 'Il reste 15 places libres.')],
     ['Une école avait 465 livres. Elle en a donné 128. Combien lui en reste-t-il ?',

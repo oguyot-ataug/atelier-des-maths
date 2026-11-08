@@ -27,8 +27,8 @@ PLANCHES['ce1|Les masses : le gramme et le kilogramme'] = [
   { titre: 'Problèmes de masses', duree: '20 min',
     attendus: ['Ajouter et comparer des masses'],
     exos: [
-      { etoiles: 1, cahier: true, consigne: 'Un panier pèse 300 g. On y met 450 g de cerises. Combien pèse-t-il ?', corr: cm1Redac('Le panier', '300 g + 450 g = 750 g', 'Le panier pèse 750 g.') },
-      { etoiles: 2, cahier: true, consigne: 'Quel est le plus lourd : un paquet de 1 kg ou un sac de 850 g ? De combien ?', corr: cm1Redac('Le plus lourd', { suite: ['1 kg = 1 000 g', '850 + 150 = 1 000'] }, 'Le paquet de 1 kg est plus lourd, de 150 g.') },
+      { etoiles: 1, cahier: true, consigne: 'Un panier pèse 300 g. On y met 450 g de cerises. Combien pèse-t-il ?', corr: cm1Redac('Masse du panier', '300 g + 450 g = 750 g', 'Le panier pèse 750 g.') },
+      { etoiles: 2, cahier: true, consigne: 'Quel est le plus lourd : un paquet de 1 kg ou un sac de 850 g ? De combien ?', corr: cm1Redac('Paquet le plus lourd', { suite: ['1 kg = 1 000 g', '850 + 150 = 1 000'] }, 'Le paquet de 1 kg est plus lourd, de 150 g.') },
       { etoiles: 1, col: 1, consigne: 'Complète.', ...P3.rmp([['3 paquets de 200 g : @ g', 600], ['Une pomme de 150 g et une poire de 200 g : @ g', 350]], 2) },
       { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['1 kg − 300 g = @ g', 700], ['2 kg + 500 g = @ g', '2 500']], 3) },
       { etoiles: 2, consigne: 'Complète.', ...P3.rmp([['Un chiot pesait 2 kg. Il a pris 3 kg. Il pèse @ kg.', 5], ['Un sac de 1 kg de riz. On en utilise 400 g. Il reste @ g.', 600], ['Un melon de 900 g et une pomme de 100 g pèsent @ g.', 1000], ['Un sac de 2 kg de farine. On en utilise 1 kg. Il reste @ kg.', 1]], 2) },

@@ -53,7 +53,7 @@ ${cm1Demo('c2-ne-arrondi', 'Arrondir un nombre', 'Arrondis 186 540 au millier pr
       cm1Redac('305 060 en lettres', 'classe des mille : 305 ; classe des unités : 060', 'On écrit : trois-cent-cinq-mille-soixante.')
       + cm1Redac('780 900 en lettres', 'classe des mille : 780 ; classe des unités : 900', 'On écrit : sept-cent-quatre-vingt-mille-neuf-cents.')],
     [`Écris ces nombres en chiffres.${cm1Liste(['quatre-vingt-dix-mille-sept', 'deux-cent-mille-trois-cents'])}`,
-      cm1Redac('Quatre-vingt-dix-mille-sept', '90 | 007', 'Ce nombre s\'écrit 90 007.') + cm1Redac('Deux-cent-mille-trois-cents', '200 | 300', 'Ce nombre s\'écrit 200 300.')],
+      cm1Redac('Quatre-vingt-dix-mille-sept en chiffres', '90 | 007', 'Ce nombre s\'écrit 90 007.') + cm1Redac('Deux-cent-mille-trois-cents en chiffres', '200 | 300', 'Ce nombre s\'écrit 200 300.')],
     [`Réponds aux questions sur le nombre 652 418.${cm1Liste(['Quel est son chiffre des dizaines de mille ?', 'Quel est son nombre de milliers ?', 'Quel est son nombre de centaines ?'])}`,
       cm1Redac('Chiffre des dizaines de mille', '6<b>5</b>2 418', 'Le chiffre des dizaines de mille est 5.')
       + cm1Redac('Nombre de milliers', '652 418 = 652 milliers et 418 unités', 'Le nombre de milliers est 652.')
@@ -63,8 +63,8 @@ ${cm1Demo('c2-ne-arrondi', 'Arrondir un nombre', 'Arrondis 186 540 au millier pr
     ['Range dans l\'ordre croissant : 99 999 ; 100 010 ; 100 001 ; 90 999 ; 101 000.',
       cm1Redac('Ordre croissant', '90 999 &lt; 99 999 &lt; 100 001 &lt; 100 010 &lt; 101 000', 'Les nombres à 5 chiffres sont les plus petits ; le plus grand est 101 000.')],
     ['Encadre 473 280 entre deux dizaines de mille consécutives, puis arrondis-le à la dizaine de mille.',
-      cm1Redac('Encadrement', '470 000 &lt; 473 280 &lt; 480 000', '473 280 est compris entre 470 000 et 480 000.')
-      + cm1Redac('Arrondi', '473 280 &lt; 475 000', '473 280 est avant le milieu, 475 000 : l\'arrondi à la dizaine de mille est 470 000.')],
+      cm1Redac('Encadrement de 473 280', '470 000 &lt; 473 280 &lt; 480 000', '473 280 est compris entre 470 000 et 480 000.')
+      + cm1Redac('Arrondi de 473 280', '473 280 &lt; 475 000', '473 280 est avant le milieu, 475 000 : l\'arrondi à la dizaine de mille est 470 000.')],
     ['Quel nombre est 10 000 de plus que 395 600 ? Quel nombre est 1 000 de moins que 400 200 ?',
       cm1Redac('10 000 de plus que 395 600', '395 600 + 10 000 = 405 600', 'C\'est 405 600.') + cm1Redac('1 000 de moins que 400 200', '400 200 − 1 000 = 399 200', 'C\'est 399 200.')],
   ]),

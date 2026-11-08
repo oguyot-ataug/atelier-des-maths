@@ -41,9 +41,9 @@ PLANCHES['3e|Statistiques'] = [
       { etoiles: 2, col: 1, consigne: 'Entoure l\'interprétation correcte.',
         ...chx([['Le salaire médian d\'une entreprise est 2 000 € :', 'la moitié des salariés gagne au plus 2 000 €', 'tous gagnent 2 000 € · la moitié des salariés gagne au plus 2 000 € · la moyenne est 2 000 €'], ['L\'étendue d\'une série est 0 :', 'toutes les valeurs sont égales', 'la moyenne est 0 · toutes les valeurs sont égales · il n\'y a pas de valeur']]) },
       { etoiles: 2, col: 1, cahier: true, consigne: 'Deux classes ont la même moyenne, 11. L\'étendue des notes est 4 dans la classe A et 15 dans la classe B. Qu\'en penses-tu ?',
-        corr: cm1Redac('Comparaison', '', 'Les moyennes sont égales, mais les notes de la classe B sont beaucoup plus dispersées : la classe A est plus homogène.') },
+        corr: cm1Redac('Comparaison des deux classes', '', 'Les moyennes sont égales, mais les notes de la classe B sont beaucoup plus dispersées : la classe A est plus homogène.') },
       { etoiles: 2, col: 1, cahier: true, consigne: 'Série : 4 ; 8 ; 9 ; 10 ; 10 ; 11 ; 25. Calcule la moyenne et la médiane. Laquelle représente le mieux la série ?',
-        corr: cm1Redac('Moyenne', '77 : 7 = 11', '') + cm1Redac('Médiane', '', 'Il y a 7 valeurs : la médiane est la 4e valeur de la série rangée, 10.') + cm1Redac('Conclusion', '', 'La valeur 25 est exceptionnelle et tire la moyenne vers le haut : la médiane (10) représente mieux la série.') },
+        corr: cm1Redac('Moyenne de la série', '77 : 7 = 11', '') + cm1Redac('Médiane de la série', '', 'Il y a 7 valeurs : la médiane est la 4e valeur de la série rangée, 10.') + cm1Redac('Conclusion', '', 'La valeur 25 est exceptionnelle et tire la moyenne vers le haut : la médiane (10) représente mieux la série.') },
       { etoiles: 3, cahier: true, consigne: 'Trouve une série de 5 nombres entiers de médiane 10, de moyenne 12 et d\'étendue 8.',
         corr: cm1Redac('Somme des valeurs', '5 × 12 = 60', 'La plus petite valeur est a, la plus grande a + 8, la valeur du milieu 10.') + cm1Redac('Exemple avec a = 8', '8 + 10 + 10 + 16 + 16 = 60', 'La série 8 ; 10 ; 10 ; 16 ; 16 convient (d\'autres sont possibles).') },
     ] },
@@ -61,7 +61,7 @@ PLANCHES['3e|Statistiques'] = [
       { etoiles: 2, col: 1, cahier: true, consigne: 'Construis l\'histogramme des durées de sommeil d\'une classe : de 6 à 7 h : 4 élèves ; de 7 à 8 h : 9 ; de 8 à 9 h : 12 ; de 9 à 10 h : 5.',
         corr: `<div style="text-align:center;">${histo([[6, 7, 4], [7, 8, 9], [8, 9, 12], [9, 10, 5]], { u: 50, v: 9, gy: 2, nx: 'durée (h)', ny: 'effectif', px: 230 })}</div>` },
       { etoiles: 3, cahier: true, consigne: '40 % des 250 élèves d\'un collège font du sport en club ; 30 % d\'entre eux jouent au football. Combien d\'élèves jouent au football en club ? Quel pourcentage du collège ?',
-        corr: cm1Redac('Sportifs en club', '0,4 × 250 = 100', '') + cm1Redac('Footballeurs', '0,3 × 100 = 30', '30 élèves jouent au football en club.') + cm1Redac('Pourcentage', '30 : 250 = 0,12', 'Cela représente 12 % des élèves (0,4 × 0,3 = 0,12).') },
+        corr: cm1Redac('Sportifs en club', '0,4 × 250 = 100', '') + cm1Redac('Nombre de footballeurs en club', '0,3 × 100 = 30', '30 élèves jouent au football en club.') + cm1Redac('Pourcentage du collège qui joue au football', '30 : 250 = 0,12', 'Cela représente 12 % des élèves (0,4 × 0,3 = 0,12).') },
     ] },
   { titre: 'Comparer des séries', duree: '40 min',
     attendus: ['Comparer deux séries avec la moyenne, la médiane et l\'étendue', 'Calculer une moyenne de groupes réunis', 'Utiliser un tableur pour des statistiques'],
@@ -75,11 +75,11 @@ PLANCHES['3e|Statistiques'] = [
       { etoiles: 2, col: 1, cahier: true, consigne: 'Scores de deux joueurs sur 5 parties. Alex : 12 ; 15 ; 9 ; 18 ; 16. Sam : 14 ; 14 ; 13 ; 15 ; 14. Compare-les avec la moyenne, la médiane et l\'étendue.',
         corr: cm1Redac('Moyenne d\'Alex', '70 : 5 = 14', '') + cm1Redac('Médiane d\'Alex', '9 ; 12 ; 15 ; 16 ; 18', 'La valeur du milieu est 15.') + cm1Redac('Étendue d\'Alex', '18 − 9 = 9', '') + cm1Redac('Moyenne de Sam', '70 : 5 = 14', 'La médiane de Sam est 14.') + cm1Redac('Étendue de Sam', '15 − 13 = 2', 'Même moyenne ; Alex fait de plus grands scores, mais Sam est beaucoup plus régulier.') },
       { etoiles: 2, col: 1, cahier: true, consigne: 'Précipitations mensuelles d\'une ville (en mm) : 60 ; 52 ; 48 ; 55 ; 61 ; 40 ; 30 ; 35 ; 58 ; 75 ; 80 ; 70. Calcule la moyenne, la médiane et l\'étendue.',
-        corr: cm1Redac('Moyenne', '664 : 12 ≈ 55,3', '') + cm1Redac('Série rangée', '30 ; 35 ; 40 ; 48 ; 52 ; 55 ; 58 ; 60 ; 61 ; 70 ; 75 ; 80', 'Il y a 12 valeurs : la médiane est la moyenne de la 6e et de la 7e.') + cm1Redac('Médiane', '(55 + 58) : 2 = 56,5', '') + cm1Redac('Étendue', '80 − 30 = 50', 'Moyenne ≈ 55,3 mm, médiane 56,5 mm, étendue 50 mm.') },
+        corr: cm1Redac('Moyenne des précipitations', '664 : 12 ≈ 55,3', '') + cm1Redac('Série rangée', '30 ; 35 ; 40 ; 48 ; 52 ; 55 ; 58 ; 60 ; 61 ; 70 ; 75 ; 80', 'Il y a 12 valeurs : la médiane est la moyenne de la 6e et de la 7e.') + cm1Redac('Médiane des précipitations', '(55 + 58) : 2 = 56,5', '') + cm1Redac('Étendue des précipitations', '80 − 30 = 50', 'Moyenne ≈ 55,3 mm, médiane 56,5 mm, étendue 50 mm.') },
       { etoiles: 2, col: 1, cahier: true, consigne: 'Zoé a 13 de moyenne sur 4 contrôles. Elle veut 14 de moyenne après le 5e contrôle. Est-ce possible ?',
         corr: cm1Redac('Somme des 4 notes', '4 × 13 = 52', '') + cm1Redac('Somme visée', '5 × 14 = 70', '') + cm1Redac('Note nécessaire', '70 − 52 = 18', 'C\'est possible : il lui faut au moins 18 au 5e contrôle.') },
       { etoiles: 3, cahier: true, consigne: 'La médiane d\'une série de 9 nombres est 20. On ajoute le nombre 50. La médiane peut-elle valoir 30 ? Explique.',
-        corr: cm1Redac('Raisonnement', { suite: ['(20 + 40) : 2 = 30'] }, 'Avec 10 valeurs, la médiane est la moyenne des 5e et 6e valeurs rangées. La 5e reste 20, car on ajoute une valeur plus grande que la médiane : pour obtenir 30, il faut une 6e valeur de 40, par exemple avec 1 ; 2 ; 3 ; 4 ; 20 ; 40 ; 41 ; 42 ; 43 et 50.') },
+        corr: cm1Redac('La médiane peut-elle valoir 30 ?', { suite: ['(20 + 40) : 2 = 30'] }, 'Avec 10 valeurs, la médiane est la moyenne des 5e et 6e valeurs rangées. La 5e reste 20, car on ajoute une valeur plus grande que la médiane : pour obtenir 30, il faut une 6e valeur de 40, par exemple avec 1 ; 2 ; 3 ; 4 ; 20 ; 40 ; 41 ; 42 ; 43 et 50.') },
     ] },
   { titre: 'Statistiques', duree: '45 min', brevet: true,
     attendus: ['Automatismes : moyenne, médiane, étendue, pourcentages', 'Analyser une série issue d\'une situation réelle', 'Exploiter un histogramme'],
@@ -88,13 +88,13 @@ PLANCHES['3e|Statistiques'] = [
         ...auto([['Moyenne de 8 ; 12 ; 13 :', 11], ['Médiane de 4 ; 7 ; 9 ; 12 ; 20 :', 9], ['Étendue de 5 ; 17 ; 9 ; 11 :', 12], ['30 % de 200 :', 60], ['Une fréquence de 0,35 correspond à :', '35 %', ['0,35 %', '3,5 %', '35 %']], ['Médiane de 3 ; 6 ; 8 ; 10 :', '7', ['6', '7', '8']]]) },
       { etoiles: 2, cahier: true, pts: 5, consigne: 'Lors d\'une compétition d\'athlétisme handisport, voici le nombre de médailles remportées par les 8 athlètes d\'une équipe : 1 ; 3 ; 2 ; 1 ; 5 ; 2 ; 1 ; 1.'
           + qs(['Calculer le nombre moyen de médailles par athlète.', 'Déterminer la médiane et l\'étendue de cette série.', 'Quel pourcentage des athlètes a remporté au moins 2 médailles ?', 'Un journaliste écrit : « La moitié des athlètes de l\'équipe n\'ont remporté qu\'une seule médaille. » A-t-il raison ?']),
-        corr: cm1Redac('Moyenne', '(1 + 3 + 2 + 1 + 5 + 2 + 1 + 1) : 8 = 16 : 8 = 2', 'En moyenne, 2 médailles par athlète.')
-          + cm1Redac('Série rangée', '1 ; 1 ; 1 ; 1 ; 2 ; 2 ; 3 ; 5', '') + cm1Redac('Médiane', '(1 + 2) : 2 = 1,5', '') + cm1Redac('Étendue', '5 − 1 = 4', '')
-          + cm1Redac('Au moins 2 médailles', '4 athlètes sur 8 : 4 : 8 = 0,5', 'Cela fait 50 % des athlètes.') + cm1Redac('Affirmation', '4 athlètes sur 8 ont une seule médaille.', 'Il a raison.') },
+        corr: cm1Redac('Nombre moyen de médailles', '(1 + 3 + 2 + 1 + 5 + 2 + 1 + 1) : 8 = 16 : 8 = 2', 'En moyenne, 2 médailles par athlète.')
+          + cm1Redac('Série rangée', '1 ; 1 ; 1 ; 1 ; 2 ; 2 ; 3 ; 5', '') + cm1Redac('Médiane du nombre de médailles', '(1 + 2) : 2 = 1,5', '') + cm1Redac('Étendue du nombre de médailles', '5 − 1 = 4', '')
+          + cm1Redac('Athlètes qui ont au moins 2 médailles', '4 : 8 = 0,5', '4 athlètes sur 8 ont au moins 2 médailles : cela fait 50 % des athlètes.') + cm1Redac('L\'affirmation est-elle vraie ?', '4 athlètes sur 8 ont une seule médaille.', 'Il a raison.') },
       { etoiles: 2, cahier: true, pts: 4, consigne: `On a demandé à 120 élèves leur durée de sommeil un soir de semaine. Voici les résultats.<div style="text-align:center;margin:4px 0;">${hSommeil}</div>`
           + qs(['Combien d\'élèves dorment au moins 8 h ?', 'Quel pourcentage des élèves cela représente-t-il ?', 'Estimer la durée moyenne de sommeil, en utilisant le centre de chaque classe.', 'Les médecins recommandent au moins 8 h de sommeil. « Plus de la moitié des élèves dort assez. » Est-ce vrai ?']),
-        corr: cm1Redac('Au moins 8 h', '48 + 15 = 63', '63 élèves dorment au moins 8 h.') + cm1Redac('Pourcentage', '63 : 120 = 0,525', 'Cela représente 52,5 % des élèves.')
-          + cm1Redac('Moyenne estimée', '(6,5 × 15 + 7,5 × 42 + 8,5 × 48 + 9,5 × 15) : 120 = 963 : 120 ≈ 8,03', 'Les élèves dorment en moyenne environ 8 h.') + cm1Redac('Affirmation', '52,5 % &gt; 50 %', 'C\'est vrai, mais de peu.') },
+        corr: cm1Redac('Élèves qui dorment au moins 8 h', '48 + 15 = 63', '63 élèves dorment au moins 8 h.') + cm1Redac('Pourcentage d\'élèves qui dorment au moins 8 h', '63 : 120 = 0,525', 'Cela représente 52,5 % des élèves.')
+          + cm1Redac('Moyenne estimée', '(6,5 × 15 + 7,5 × 42 + 8,5 × 48 + 9,5 × 15) : 120 = 963 : 120 ≈ 8,03', 'Les élèves dorment en moyenne environ 8 h.') + cm1Redac('L\'affirmation est-elle vraie ?', '52,5 % &gt; 50 %', 'C\'est vrai, mais de peu.') },
     ] },
 ];
 })();

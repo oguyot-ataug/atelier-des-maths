@@ -65,7 +65,7 @@ ${cm1Demo('c2-fr-une', 'Écrire un entier plus une fraction comme une seule frac
   ],
   exos: cm1Exos('c2fr', [
     [`Écris ces fractions en lettres.${cm1Liste([F(4, 9), F(11, 12), F(3, 1000), F(25, 60)])}`,
-      cm1Redac('Les fractions en lettres', { suite: [`${F(4, 9)} : quatre neuvièmes`, `${F(11, 12)} : onze douzièmes`, `${F(3, 1000)} : trois millièmes`, `${F(25, 60)} : vingt-cinq soixantièmes`] }, 'On lit le numérateur, puis le dénominateur avec « ième ».')],
+      cm1Redac('Fractions écrites en lettres', { suite: [`${F(4, 9)} : quatre neuvièmes`, `${F(11, 12)} : onze douzièmes`, `${F(3, 1000)} : trois millièmes`, `${F(25, 60)} : vingt-cinq soixantièmes`] }, 'On lit le numérateur, puis le dénominateur avec « ième ».')],
     [`Quelle fraction de la bande est coloriée ?<div style="margin:6px 0;">${cm1Bande(8, 3)}</div>`,
       cm1Redac('Fraction coloriée', '3 parts coloriées sur 8 parts égales', `On a colorié ${F(3, 8)} de la bande.`)],
     [`Écris chaque fraction comme un entier plus une fraction inférieure à 1.${cm1Liste([F(13, 4), F(23, 5), F(50, 12)])}`,
@@ -77,7 +77,7 @@ ${cm1Demo('c2-fr-une', 'Écrire un entier plus une fraction comme une seule frac
       + cm1Redac(`5 + ${F(3, 4)}`, `${F(20, 4)} + ${F(3, 4)} = ${F(23, 4)}`, `5 + ${F(3, 4)} s'écrit ${F(23, 4)}.`)
       + cm1Redac(`1 + ${F(7, 10)}`, `${F(10, 10)} + ${F(7, 10)} = ${F(17, 10)}`, `1 + ${F(7, 10)} s'écrit ${F(17, 10)}.`)],
     [`Encadre chaque fraction entre deux entiers consécutifs.${cm1Liste([F(19, 6), F(40, 9), F(7, 8)])}`,
-      cm1Redac('Encadrements', { suite: [`3 &lt; ${F(19, 6)} &lt; 4`, `4 &lt; ${F(40, 9)} &lt; 5`, `0 &lt; ${F(7, 8)} &lt; 1`] }, `${F(19, 6)} = 3 + ${F(1, 6)}, ${F(40, 9)} = 4 + ${F(4, 9)}, et ${F(7, 8)} est inférieure à 1.`)],
+      cm1Redac('Encadrements des fractions', { suite: [`3 &lt; ${F(19, 6)} &lt; 4`, `4 &lt; ${F(40, 9)} &lt; 5`, `0 &lt; ${F(7, 8)} &lt; 1`] }, `${F(19, 6)} = 3 + ${F(1, 6)}, ${F(40, 9)} = 4 + ${F(4, 9)}, et ${F(7, 8)} est inférieure à 1.`)],
     [`Quelles fractions correspondent aux points D et E ?${cm1Graduation(2, 5, [[3 / 5, 'D', '#E35D3A'], [8 / 5, 'E', '#2EA8C9']], { unite: 200 })}`,
       cm1Redac('Points D et E', { suite: ['un petit écart : un cinquième', `D : 3 petits écarts, ${F(3, 5)}`, `E : 8 petits écarts, ${F(8, 5)}`] }, `D correspond à ${F(3, 5)} et E à ${F(8, 5)}, c'est-à-dire 1 + ${F(3, 5)}.`)],
     [`Calcule.${cm1Liste([`les ${F(3, 4)} de 100 m`, `les ${F(2, 5)} de 35 €`, `les ${F(5, 6)} de 42 élèves`])}`,

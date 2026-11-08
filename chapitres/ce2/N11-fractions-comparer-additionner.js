@@ -47,10 +47,10 @@ ${cm1Demo('ce2-fc-gateau', 'Résoudre un problème avec des fractions', 'Marc a 
       cm1Redac(`Comparaison de ${F(3, 9)} et ${F(7, 9)}`, `${F(3, 9)} &lt; ${F(7, 9)}`, 'Ce sont des neuvièmes : 3 parts, c\'est moins que 7 parts.')
       + cm1Redac(`Comparaison de ${F(4, 5)} et ${F(4, 10)}`, `${F(4, 5)} &gt; ${F(4, 10)}`, 'On prend 4 parts dans les deux cas, mais un cinquième est plus grand qu\'un dixième.')],
     [`Compare ${F(1, 2)} et ${F(3, 8)}.`,
-      cm1Redac('Un demi en huitièmes', `${F(1, 2)} = ${F(4, 8)}`, `${F(4, 8)} &gt; ${F(3, 8)}, donc ${F(1, 2)} est plus grand que ${F(3, 8)}.`)],
+      cm1Redac('Comparaison de un demi et trois huitièmes', `${F(1, 2)} = ${F(4, 8)}`, `${F(4, 8)} &gt; ${F(3, 8)}, donc ${F(1, 2)} est plus grand que ${F(3, 8)}.`)],
     [`Calcule.${cm1Liste([`${F(2, 7)} + ${F(4, 7)}`, `${F(5, 6)} − ${F(2, 6)}`])}`,
-      cm1Redac('Addition', `${F(2, 7)} + ${F(4, 7)} = ${F(6, 7)}`, '2 septièmes plus 4 septièmes font 6 septièmes.')
-      + cm1Redac('Soustraction', `${F(5, 6)} − ${F(2, 6)} = ${F(3, 6)}`, '5 sixièmes moins 2 sixièmes font 3 sixièmes.')],
+      cm1Redac('Somme des deux fractions', `${F(2, 7)} + ${F(4, 7)} = ${F(6, 7)}`, '2 septièmes plus 4 septièmes font 6 septièmes.')
+      + cm1Redac('Différence des deux fractions', `${F(5, 6)} − ${F(2, 6)} = ${F(3, 6)}`, '5 sixièmes moins 2 sixièmes font 3 sixièmes.')],
     [`Calcule ${F(1, 3)} + ${F(2, 6)}.`,
       cm1Redac(`Somme de ${F(1, 3)} et de ${F(2, 6)}`, [`${F(2, 6)} + ${F(2, 6)}`, F(4, 6)], `${F(1, 3)} = ${F(2, 6)} : la somme est ${F(4, 6)}.`)],
     [`Léa a lu ${F(3, 8)} de son livre lundi et ${F(2, 8)} mardi. Quelle fraction du livre a-t-elle lue ? Quelle fraction lui reste-t-il à lire ?`,

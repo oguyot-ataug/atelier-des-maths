@@ -98,7 +98,7 @@ PLANCHES['6e|Fractions : nombres et partage'] = [
         eleve: plListe([ligne(F(7, 8), plCase(), '1'), ligne(F(9, 8), plCase(), '1'), ligne(F(12, 12), plCase(), '1')]),
         corr: plListe([ligne(F(7, 8), R('&lt;'), '1', '<small>(7 &lt; 8)</small>'), ligne(F(9, 8), R('&gt;'), '1', '<small>(9 &gt; 8)</small>'), ligne(F(12, 12), R('='), '1')]) },
       { etoiles: 3, col: 1, cahier: true, consigne: `Trace une demi-droite graduée (l'unité mesure 6 côtés de carreau) et place-y les nombres ${T(1, 2)}, ${T(5, 3)}, ${T(7, 6)} et 2.`,
-        corr: cm1Redac('Placement', { suite: ['L\'unité mesure 6 côtés de carreau : un sixième mesure 1 côté de carreau.', `${F(1, 2)} = ${F(3, 6)} : à 3 côtés de carreau de l'origine.`, `${F(7, 6)} : à 7 côtés de carreau.`, `${F(5, 3)} = ${F(10, 6)} : à 10 côtés de carreau.`, `2 = ${F(12, 6)} : à 12 côtés de carreau.`] }, 'On compte les côtés de carreau depuis l\'origine pour placer chaque point.',
+        corr: cm1Redac('Placement des nombres sur la demi-droite', { suite: ['L\'unité mesure 6 côtés de carreau : un sixième mesure 1 côté de carreau.', `${F(1, 2)} = ${F(3, 6)} : à 3 côtés de carreau de l'origine.`, `${F(7, 6)} : à 7 côtés de carreau.`, `${F(5, 3)} = ${F(10, 6)} : à 10 côtés de carreau.`, `2 = ${F(12, 6)} : à 12 côtés de carreau.`] }, 'On compte les côtés de carreau depuis l\'origine pour placer chaque point.',
           // Le tracé sur papier quadrillé (relecture 6e-N2-P4-E7).
           (() => { const k = 14, x0 = k, y = 3 * k, w = 14 * k, h = 5 * k; let g = '';
             for(let i = 0; i <= 14; i++) g += `<line x1="${i * k}" y1="0" x2="${i * k}" y2="${h}" stroke="#D5E3EF" stroke-width="1"/>`;

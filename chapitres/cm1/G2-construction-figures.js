@@ -400,14 +400,14 @@ document.getElementById('exos-demo-cm1-construction-figures').innerHTML = `
 <div class="redaction-block">
   <h3>Exercices</h3>
   ${cf1Exo(1, `Observe la figure.${cm1Liste(['Comment s\'appelle le trait bleu ?', 'Comment s\'appelle le trait vert ?', 'Cite trois points alignés.', 'Le point K est-il sur la droite verte ?'])}`,
-    cm1Redac('Le trait bleu', 'Il s\'arrête en A et en B.', 'Le trait bleu est le segment [AB].')
-    + cm1Redac('Le trait vert', 'Il continue des deux côtés.', 'Le trait vert est une droite : on peut la nommer droite (EF), droite (EG) ou droite (FG).')
+    cm1Redac('Nature du trait bleu', 'Il s\'arrête en A et en B.', 'Le trait bleu est le segment [AB].')
+    + cm1Redac('Nature du trait vert', 'Il continue des deux côtés.', 'Le trait vert est une droite : on peut la nommer droite (EF), droite (EG) ou droite (FG).')
     + cm1Redac('Points alignés', 'E, F et G sont sur la même droite.', 'Les points E, F et G sont alignés.')
-    + cm1Redac('Le point K', 'K n\'est pas sur la droite verte.', 'Non : E, F et K ne sont pas alignés.'), cf1ExoFig1())}
+    + cm1Redac('E, F et K sont-ils alignés ?', 'K n\'est pas sur la droite verte.', 'Non : E, F et K ne sont pas alignés.'), cf1ExoFig1())}
   ${cf1Exo(2, `Voici un cercle de centre O.${cm1Liste(['Cite un rayon.', 'Cite un diamètre.', 'Cite une corde qui n\'est pas un diamètre.', 'Le rayon mesure 3 cm : combien mesure le diamètre [AB] ?'])}`,
-    cm1Redac('Un rayon', 'Le segment [OC] va du centre O à un point du cercle.', 'Le segment [OC] est un rayon.')
-    + cm1Redac('Un diamètre', 'Le segment [AB] relie deux points du cercle en passant par O.', 'Le segment [AB] est un diamètre.')
-    + cm1Redac('Une corde', 'Le segment [DE] relie deux points du cercle sans passer par O.', 'Le segment [DE] est une corde.')
+    cm1Redac('Nom du trait [OC]', 'Le segment [OC] va du centre O à un point du cercle.', 'Le segment [OC] est un rayon.')
+    + cm1Redac('Nom du trait [AB]', 'Le segment [AB] relie deux points du cercle en passant par O.', 'Le segment [AB] est un diamètre.')
+    + cm1Redac('Nom du trait [DE]', 'Le segment [DE] relie deux points du cercle sans passer par O.', 'Le segment [DE] est une corde.')
     + cm1Redac('Longueur du diamètre', '2 × 3 cm = 6 cm', 'Le diamètre mesure deux rayons : AB = 6 cm.'), cf1ExoFig2())}
   ${cf1Exo(3, `Complète.${cm1Liste(['Un cercle a un rayon de 7 cm : son diamètre mesure … cm.', 'Un cercle a un diamètre de 10 cm : son rayon mesure … cm.', 'Une roue de vélo a un diamètre de 60 cm : quel est son rayon ?'])}`,
     cm1Redac('Diamètre du premier cercle', '2 × 7 cm = 14 cm', 'Le diamètre mesure 14 cm.')
@@ -431,16 +431,16 @@ document.getElementById('exos-demo-cm1-construction-figures').innerHTML = `
     + cm1Redac('Figure 2', 'Quatre angles droits et quatre côtés codés pareil.', 'C\'est un carré.')
     + cm1Redac('Figure 3', 'Quatre angles droits.', 'C\'est un rectangle.'), cf1ExoFigNature(['losange', 'carré', 'rectangle'], [0, 20, 160], [CF1_BLEU, CF1_ORANGE, CF1_VERT]))}
   ${cf1Exo(8, `Vrai ou faux ?${cm1Liste(['Un carré est un rectangle.', 'Un rectangle est toujours un carré.', 'Un losange a toujours quatre angles droits.', 'Un triangle équilatéral est aussi isocèle.'])}`,
-    cm1Redac('Un carré est un rectangle', 'Un carré a quatre angles droits.', 'Vrai.')
-    + cm1Redac('Un rectangle est toujours un carré', 'Un rectangle de 5 cm sur 3 cm n\'a pas quatre côtés égaux.', 'Faux.')
-    + cm1Redac('Un losange a toujours quatre angles droits', 'Ses côtés sont égaux, mais ses angles ne sont pas forcément droits.', 'Faux (s\'il a quatre angles droits, c\'est un carré).')
-    + cm1Redac('Un triangle équilatéral est isocèle', 'Il a trois côtés égaux, donc au moins deux.', 'Vrai.'))}
+    cm1Redac('« Un carré est un rectangle »', 'Un carré a quatre angles droits.', 'Vrai.')
+    + cm1Redac('« Un rectangle est toujours un carré »', 'Un rectangle de 5 cm sur 3 cm n\'a pas quatre côtés égaux.', 'Faux.')
+    + cm1Redac('« Un losange a toujours quatre angles droits »', 'Ses côtés sont égaux, mais ses angles ne sont pas forcément droits.', 'Faux (s\'il a quatre angles droits, c\'est un carré).')
+    + cm1Redac('« Un triangle équilatéral est isocèle »', 'Il a trois côtés égaux, donc au moins deux.', 'Vrai.'))}
   ${cf1Exo(9, 'Léo a tracé un quadrilatère et l\'a nommé MNOP en faisant le tour. Parmi ces noms, lesquels désignent aussi son quadrilatère : NOPM, MOPN, PONM, OPMN ?',
     cm1Redac('Noms possibles', 'On cite les sommets dans l\'ordre du tour, dans un sens ou dans l\'autre.', 'NOPM, PONM et OPMN conviennent. MOPN ne convient pas : après M, on ne peut pas aller directement en O, car M est relié à N et à P.'))}
   ${cf1Exo(10, `Programme de construction : trace un segment [AB] de 6 cm et place son milieu M. Trace le cercle de centre M qui passe par A.${cm1Liste(['Quel est le rayon du cercle ?', 'Le cercle passe-t-il par B ?', 'Que représente le segment [AB] pour ce cercle ?'])}`,
     cm1Redac('Rayon du cercle', '6 cm : 2 = 3 cm', 'M est le milieu du segment [AB], donc le segment [MA] mesure 3 cm : le rayon du cercle est 3 cm.')
-    + cm1Redac('Le point B', 'MB = 3 cm', 'B est à 3 cm du centre : B est sur le cercle.')
-    + cm1Redac('Le segment [AB]', 'Il relie deux points du cercle en passant par le centre M.', 'Le segment [AB] est un diamètre du cercle : il mesure 6 cm, deux rayons.'), '', cf1ExoFig10())}
+    + cm1Redac('Position du point B', 'MB = 3 cm', 'B est à 3 cm du centre : B est sur le cercle.')
+    + cm1Redac('Nature du segment [AB]', 'Il relie deux points du cercle en passant par le centre M.', 'Le segment [AB] est un diamètre du cercle : il mesure 6 cm, deux rayons.'), '', cf1ExoFig10())}
 </div>
 `;
 
@@ -521,10 +521,10 @@ PLANCHES['cm1|Construction de figures'] = [
         eleve: duo([col(Q(6, 7, 17, maison(1, 1)), 'Le modèle'), col(plX(Q(8, 7, 17, g => P(g(2, 6), '', 0, 0, ROUGE)), { t: 'seg', k: 17, ox: 1, oy: 1, w: 8, h: 7, att: maisonSegs(2, 1) }), 'À toi !')]),
         corr: duo([col(Q(6, 7, 17, maison(1, 1)), 'Le modèle'), col(Q(8, 7, 17, g => maison(2, 1)(g) + P(g(2, 6), '', 0, 0, ROUGE)), 'La reproduction')]) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Trace un segment [AB] de 6 cm. Place son milieu M. Trace le cercle de centre M qui passe par A.',
-        corr: cm1Redac('Construction', { suite: ['Le milieu M est à 3 cm de A.', 'Compas piqué en M, ouvert jusqu\'à A.'] }, 'Le cercle passe aussi par B : le segment [AB] est un diamètre du cercle.',
+        corr: cm1Redac('Construction du cercle de centre M', { suite: ['Le milieu M est à 3 cm de A.', 'Compas piqué en M, ouvert jusqu\'à A.'] }, 'Le cercle passe aussi par B : le segment [AB] est un diamètre du cercle.',
           D(S(200, 110, Cx([100, 55], 48, VERT) + L([52, 55], [148, 55]) + tr([52, 55], [100, 55], 1) + tr([100, 55], [148, 55], 1) + P([52, 55], 'A', -12, 4) + P([148, 55], 'B', 6, 4) + P([100, 55], 'M', 0, -10), 180))) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Une rosace : trace un cercle de rayon 3 cm. Reporte six fois le rayon sur le cercle, puis relie les six points.',
-        corr: cm1Redac('Construction', { suite: ['Compas piqué sur le cercle, je trace un arc qui le coupe.', 'Je recommence depuis ce point, six fois.'] }, 'J\'obtiens un hexagone : ses six côtés mesurent 3 cm, comme le rayon.',
+        corr: cm1Redac('Construction de la rosace', { suite: ['Compas piqué sur le cercle, je trace un arc qui le coupe.', 'Je recommence depuis ce point, six fois.'] }, 'J\'obtiens un hexagone : ses six côtés mesurent 3 cm, comme le rayon.',
           D(S(130, 120, Cx([65, 60], 50, VERT) + Pg([0, 1, 2, 3, 4, 5].map(i => [65 + 50 * Math.cos(i * Math.PI / 3), 60 + 50 * Math.sin(i * Math.PI / 3)]), ROUGE) + P([65, 60], 'O', 0, 14), 120))) },
     ] },
   { titre: 'Triangles et quadrilatères particuliers', duree: '40 min',
@@ -553,10 +553,10 @@ PLANCHES['cm1|Construction de figures'] = [
           col(Q(7, 6, 17, g => Pg([g(1, 1), g(6, 1), g(6, 4), g(1, 4)], VERT) + P(g(1, 1), 'E', -8, -4) + P(g(6, 1), 'F', 6, -4) + P(g(6, 4), 'G', 6, 10) + P(g(1, 4), 'H', -8, 10, VERT)), 'le rectangle EFGH'),
           col(Q(6, 6, 17, g => Pg([g(3, 0), g(5, 3), g(3, 6), g(1, 3)], VERT) + P(g(3, 0), 'K', 8, 8) + P(g(5, 3), 'L', 8, 4) + P(g(3, 6), 'M', 8, 0) + P(g(1, 3), 'N', -10, 4, VERT)), 'le losange KLMN')]) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Construis un rectangle de 5 cm de longueur et 3 cm de largeur. Explique comment tu traces les angles droits.',
-        corr: cm1Redac('Construction', { suite: ['Je trace un côté de 5 cm.', 'À chaque bout, avec l\'équerre, un côté de 3 cm.'] }, 'Je relie les extrémités : le rectangle a 4 angles droits.',
+        corr: cm1Redac('Construction du rectangle', { suite: ['Je trace un côté de 5 cm.', 'À chaque bout, avec l\'équerre, un côté de 3 cm.'] }, 'Je relie les extrémités : le rectangle a 4 angles droits.',
           D(S(190, 100, Pg([[20, 15], [170, 15], [170, 85], [20, 85]], VERT) + ad([20, 85], [20, 15], [170, 85]) + ad([170, 85], [170, 15], [20, 85]) + cmT(95, 98, '5 cm', { fs: 11 }) + cmT(182, 54, '3 cm', { fs: 11, a: 'start' }), 170))) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Construis un triangle équilatéral de 4 cm de côté. Aide-toi de ton compas.',
-        corr: cm1Redac('Construction', { suite: ['Je trace le segment [AB] de 4 cm.', 'Compas ouvert de 4 cm : un arc depuis A, un arc depuis B.'] }, 'Les arcs se coupent en C : les trois côtés du triangle ABC mesurent 4 cm.',
+        corr: cm1Redac('Construction du triangle équilatéral', { suite: ['Je trace le segment [AB] de 4 cm.', 'Compas ouvert de 4 cm : un arc depuis A, un arc depuis B.'] }, 'Les arcs se coupent en C : les trois côtés du triangle ABC mesurent 4 cm.',
           D(S(170, 120, `<path d="M 98.5 45.5 A 80 80 0 0 0 69.7 28.9" fill="none" stroke="${BLEU}" stroke-width="1.4" stroke-dasharray="4 3"/><path d="M 100.3 28.9 A 80 80 0 0 0 71.5 45.5" fill="none" stroke="${BLEU}" stroke-width="1.4" stroke-dasharray="4 3"/>` + Pg([[45, 105], [125, 105], [85, 35.7]], VERT) + tr([45, 105], [125, 105], 1) + tr([125, 105], [85, 35.7], 1) + tr([85, 35.7], [45, 105], 1) + P([45, 105], 'A', -12, 4) + P([125, 105], 'B', 6, 4) + P([85, 35.7], 'C', 6, -6), 160))) },
       ]; })() },
 ];

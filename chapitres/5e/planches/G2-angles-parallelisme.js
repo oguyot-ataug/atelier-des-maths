@@ -125,7 +125,7 @@ PLANCHES['5e|Angles et parallélisme'] = [
                 { op: 'mark_angle', vertex: 'O', points: ['B', 'C'] }, { op: 'mark_angle', vertex: 'O', points: ['C', 'D'] }, { op: 'mark_angle', vertex: 'O', points: ['D', 'A'] }],
               depart: [{ seg: [P(V, 0, 100), P(V, 180, 100)] }, { seg: [P(V, 35, 76), P(V, 215, 76)] },
                 { svg: arc(V, 0, 35, 20, Ro, '35°') + arc(V, 35, 180, 26, Bl, '145°') + arc(V, 180, 215, 20, Ro, '35°') + arc(V, 215, 360, 26, Bl, '145°') + T([V[0] + 8, V[1] + 18], 'O', K) }] }); })()}</div>`
-          + cm1Redac('Angle opposé par le sommet', '', 'Il mesure aussi 35°.') + cm1Redac('Les deux autres angles', '180° − 35° = 145°', 'Ils sont supplémentaires de l\'angle de 35° : les quatre angles mesurent 35°, 145°, 35° et 145°.') },
+          + cm1Redac('Angle opposé par le sommet', '', 'Il mesure aussi 35°.') + cm1Redac('Mesures des deux autres angles', '180° − 35° = 145°', 'Ils sont supplémentaires de l\'angle de 35° : les quatre angles mesurent 35°, 145°, 35° et 145°.') },
     ] },
   { titre: 'Angles alternes-internes et correspondants', duree: '40 min',
     attendus: ['Repérer deux angles alternes-internes formés par deux droites et une sécante', 'Repérer deux angles correspondants', 'Utiliser les bons mots pour décrire une figure'],
@@ -141,7 +141,7 @@ PLANCHES['5e|Angles et parallélisme'] = [
         ...(() => { const l = ['1 et 5', '2 et 8', '3 et 7', '4 et 6', '4 et 8', '2 et 4'], ok = [0, 2, 4]; return { eleve: plGrille(l, 3), corr: plGrille(l.map((t, i) => ok.includes(i) ? plEntoure(t) : t), 3) }; })() },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Trace deux droites non parallèles et une sécante. Colorie en rouge deux angles alternes-internes et en vert deux angles correspondants. Ont-ils la même mesure ?',
         corr: `<div style="text-align:center;">${secante({ p1: 0, p2: 14, s: 62, w: 250, h: 165, num: false, marques: [[4, Ro, '118°'], [6, Ro, '132°'], [1, Ve, '62°'], [5, Ve, '48°']] })}</div>`
-          + cm1Redac('Observation', 'Quand les droites ne sont pas parallèles, les angles alternes-internes (ou correspondants) n\'ont pas la même mesure.', 'Ils ne sont égaux que si les deux droites sont parallèles.') },
+          + cm1Redac('Mesures des angles alternes-internes et correspondants', 'Quand les droites ne sont pas parallèles, les angles alternes-internes (ou correspondants) n\'ont pas la même mesure.', 'Ils ne sont égaux que si les deux droites sont parallèles.') },
     ] },
   { titre: 'Angles et droites parallèles', duree: '40 min',
     attendus: ['Si deux droites parallèles sont coupées par une sécante, alors les angles alternes-internes (et correspondants) sont égaux', 'Réciproque : des angles alternes-internes égaux prouvent le parallélisme', 'Calculer des angles et rédiger une justification'],
@@ -209,7 +209,7 @@ PLANCHES['5e|Angles et parallélisme'] = [
             return S(170, 116, ML(V, [160, 100], K, 2, 1) + ML(V, [30, 8], K, 2, -1) + ML(V, P(V, 30, 128), K, 2, 1)
               + `<polyline points="${V[0] + 10},${V[1]} ${V[0] + 10},${V[1] - 10} ${V[0]},${V[1] - 10}" fill="none" stroke="${Ro}" stroke-width="1.4"/>`
               + arc(V, 0, 30, 46, Bl, 'â') + arc(V, 30, 90, 34, Ve, '2â'), 170); })()}</div>`
-          + cm1Redac('Mesures', { suite: [`${W('a')} + 2${W('a')} = 90° (angles complémentaires)`, `3 × ${W('a')} = 90°`, `${W('a')} = 90° : 3 = 30°`, `2${W('a')} = 2 × 30° = 60°`] }, 'Les angles mesurent 30° et 60°.') },
+          + cm1Redac('Mesures des deux angles', { suite: [`${W('a')} + 2${W('a')} = 90° (angles complémentaires)`, `3 × ${W('a')} = 90°`, `${W('a')} = 90° : 3 = 30°`, `2${W('a')} = 2 × 30° = 60°`] }, 'Les angles mesurent 30° et 60°.') },
     ] },
   // Demandé le 03/11/2026 : « il manque des exercices plus complexes dans ces chapitres » -- problèmes qui enchaînent plusieurs
   // propriétés (alignement, parallélisme, triangles particuliers). Énoncés et figures originaux.
@@ -222,12 +222,12 @@ PLANCHES['5e|Angles et parallélisme'] = [
             + tk(A, D) + tk(D, Bp) + tk(D, E) + tk(Bp, E) + tk(E, C) + arc(D, 220, 320, 16, Ro, '100°') + arc(E, 260, 280, 30, Bl) + T([E[0] + 26, E[1] + 30], '20°', Bl, 11)
             + T([A[0] - 8, A[1] + 13], 'A', K) + T([Bp[0], Bp[1] + 15], 'B', K) + T([C[0] + 8, C[1] + 13], 'C', K) + T([D[0] - 10, D[1] - 6], 'D', K) + T([E[0] + 4, E[1] - 8], 'E', K), 280);
           return { eleve: `<div style="text-align:center;">${f}</div>`,
-            corr: `<div style="text-align:center;">${f}</div>` + cm1Redac('Les trois angles en B', { suite: [
+            corr: `<div style="text-align:center;">${f}</div>` + cm1Redac('Mesures des trois angles en B', { suite: [
               `Le triangle ABD est isocèle en D (DA = DB) : ses angles à la base ont la même mesure, et la somme de ses angles est 180°.`,
               `${W('ABD')} = (180° − 100°) : 2 = 80° : 2 = ${R('40°')}`,
               `Le triangle DBE est équilatéral : chacun de ses angles mesure 60°, donc ${W('DBE')} = ${R('60°')}`,
               `Le triangle BEC est isocèle en E (EB = EC) : ${W('EBC')} = (180° − 20°) : 2 = 160° : 2 = ${R('80°')}`] }, '')
-              + cm1Redac('Alignement', { suite: [`Les angles ${W('ABD')}, ${W('DBE')} et ${W('EBC')} sont adjacents deux à deux.`, `${W('ABD')} + ${W('DBE')} + ${W('EBC')} = 40° + 60° + 80° = 180°`, `L'angle ${W('ABC')} mesure donc 180° : c'est un angle plat.`] }, 'Les points A, B et C sont alignés.') }; })() },
+              + cm1Redac('Les points sont-ils alignés ?', { suite: [`Les angles ${W('ABD')}, ${W('DBE')} et ${W('EBC')} sont adjacents deux à deux.`, `${W('ABD')} + ${W('DBE')} + ${W('EBC')} = 40° + 60° + 80° = 180°`, `L'angle ${W('ABC')} mesure donc 180° : c'est un angle plat.`] }, 'Les points A, B et C sont alignés.') }; })() },
       { etoiles: 3, cahier: true, consigne: `ABC est un triangle isocèle en A tel que ${W('BAC')} = 50°. M est un point de [AB] et N un point de [AC] tels que AM = AN.<br>Démontre que les droites (MN) et (BC) sont parallèles.`,
         ...(() => { const A = [140, 22], Bp = [70, 172], C = [210, 172], M = [A[0] + .45 * (Bp[0] - A[0]), A[1] + .45 * (Bp[1] - A[1])], N = [A[0] + .45 * (C[0] - A[0]), A[1] + .45 * (C[1] - A[1])];
           const f = S(280, 192, L(A, Bp) + L(A, C) + L(Bp, C) + L(M, N, Bl) + tk(A, M) + tk(A, N) + tk(M, Bp, 2) + tk(N, C, 2) + arc(A, 245, 295, 20, Ro, '50°')

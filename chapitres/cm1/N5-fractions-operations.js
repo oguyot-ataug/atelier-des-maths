@@ -53,14 +53,14 @@ ${cm1Demo('fo-probleme', 'Résoudre un problème avec des fractions', `Lundi, Pa
     [`Complète ces égalités.${cm1Liste([`${F(1, 2)} = ${F('…', 6)}`, `${F(1, 4)} = ${F('…', 8)}`, `${F(4, 10)} = ${F('…', 100)}`])}`,
       cm1Redac('Fractions égales', { suite: [`${F(1, 2)} = ${F(3, 6)}`, `${F(1, 4)} = ${F(2, 8)}`, `${F(4, 10)} = ${F(40, 100)}`] }, 'Des parts plus petites, autant de fois plus de parts : la quantité ne change pas.')],
     [`Complète avec &lt;, &gt; ou =.${cm1Liste([`${F(3, 7)} … ${F(5, 7)}`, `${F(9, 4)} … ${F(6, 4)}`, `${F(8, 8)} … 1`])}`,
-      cm1Redac('Comparaisons', { suite: [`${F(3, 7)} &lt; ${F(5, 7)}`, `${F(9, 4)} &gt; ${F(6, 4)}`, `${F(8, 8)} = 1`] }, 'Avec le même dénominateur, la plus grande fraction a le plus grand numérateur.')],
+      cm1Redac('Comparaison des fractions', { suite: [`${F(3, 7)} &lt; ${F(5, 7)}`, `${F(9, 4)} &gt; ${F(6, 4)}`, `${F(8, 8)} = 1`] }, 'Avec le même dénominateur, la plus grande fraction a le plus grand numérateur.')],
     [`Range dans l'ordre croissant : ${F(7, 10)} ; ${F(3, 10)} ; ${F(11, 10)} ; ${F(10, 10)}.`,
       cm1Redac('Ordre croissant', `${F(3, 10)} &lt; ${F(7, 10)} &lt; ${F(10, 10)} &lt; ${F(11, 10)}`, 'Ce sont des dixièmes : on range les numérateurs du plus petit au plus grand.')],
     [`Compare sans calcul, en utilisant 1 : ${F(4, 5)} et ${F(9, 7)}.`,
       cm1Redac('Comparaison avec 1', { suite: [`${F(4, 5)} &lt; 1`, `${F(9, 7)} &gt; 1`] }, `Donc ${F(4, 5)} &lt; ${F(9, 7)}.`)],
     [`Calcule.${cm1Liste([`${F(3, 9)} + ${F(4, 9)}`, `${F(11, 12)} − ${F(5, 12)}`, `${F(6, 10)} + ${F(7, 10)}`])}`,
       cm1Redac('Première somme', `${F(3, 9)} + ${F(4, 9)} = ${F(7, 9)}`, '3 neuvièmes plus 4 neuvièmes font 7 neuvièmes.')
-      + cm1Redac('Différence', `${F(11, 12)} − ${F(5, 12)} = ${F(6, 12)}`, '11 douzièmes moins 5 douzièmes font 6 douzièmes.')
+      + cm1Redac('Différence des deux fractions', `${F(11, 12)} − ${F(5, 12)} = ${F(6, 12)}`, '11 douzièmes moins 5 douzièmes font 6 douzièmes.')
       + cm1Redac('Deuxième somme', [`${F(6, 10)} + ${F(7, 10)}`, F(13, 10)], `${F(13, 10)}, c'est 1 + ${F(3, 10)}.`)],
     [`Calcule.${cm1Liste([`1 − ${F(2, 5)}`, `2 − ${F(1, 3)}`])}`,
       cm1Redac(`1 − ${F(2, 5)}`, [`${F(5, 5)} − ${F(2, 5)}`, F(3, 5)], `1 − ${F(2, 5)} donne ${F(3, 5)}.`)
@@ -108,7 +108,7 @@ PLANCHES['cm1|Fractions (comparaison et opérations)'] = [
         eleve: `<p style="text-align:center;">${[Fr, Fr, Fr, Fr, Fr].join(' &lt; ')}</p>`,
         corr: `<p style="text-align:center;">${[[1, 4], [3, 4], [4, 4], [5, 4], [7, 4]].map(([a, b]) => R(F(a, b))).join(' &lt; ')}</p>` },
       { etoiles: 3, col: 1, cahier: true, consigne: `Tom a mangé ${F(3, 8)} d\'une pizza, Léa ${F(2, 4)} d\'une pizza de la même taille. Qui en a mangé le plus ?`,
-        corr: cm1Redac('Comparaison', { suite: [`${F(2, 4)} = ${F(4, 8)}`, `${F(4, 8)} &gt; ${F(3, 8)}`] }, 'Léa a mangé le plus de pizza.', `<span class="cm-fig-d">${cm1Disque(8, 3, { taille: 60 })} ${cm1Disque(4, 2, { taille: 60, coul: '#E35D3A' })}</span>`) },
+        corr: cm1Redac('Qui a mangé le plus de pizza ?', { suite: [`${F(2, 4)} = ${F(4, 8)}`, `${F(4, 8)} &gt; ${F(3, 8)}`] }, 'Léa a mangé le plus de pizza.', `<span class="cm-fig-d">${cm1Disque(8, 3, { taille: 60 })} ${cm1Disque(4, 2, { taille: 60, coul: '#E35D3A' })}</span>`) },
       { etoiles: 3, col: 1, cahier: true, consigne: `Trouve trois fractions égales à ${F(1, 2)}. Dessine-les avec des bandes.`,
         corr: cm1Redac('Fractions égales à un demi', { suite: [`${F(1, 2)} = ${F(2, 4)}`, `${F(1, 2)} = ${F(3, 6)}`, `${F(1, 2)} = ${F(5, 10)}`] }, 'Le numérateur est la moitié du dénominateur : la bande est coloriée à moitié.', `<span class="cm-fig-d" style="display:inline-flex;flex-direction:column;gap:2px;">${cm1Bande(4, 2, { largeur: 110 })}${cm1Bande(6, 3, { largeur: 110 })}${cm1Bande(10, 5, { largeur: 110 })}</span>`) },
     ] },

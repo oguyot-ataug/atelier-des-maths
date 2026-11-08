@@ -23,8 +23,8 @@ PLANCHES['ce1|Longueurs : centimètre, mètre, kilomètre'] = [
     attendus: ['Connaître la relation 1 m = 100 cm', 'Additionner et comparer des longueurs'],
     exos: [
       { etoiles: 1, col: 1, consigne: 'Complète.', ...P3.rmp([['1 m = @ cm', 100], ['2 m = @ cm', 200], ['1 m et 50 cm = @ cm', 150]], 3) },
-      { etoiles: 2, cahier: true, consigne: 'Une fourmi parcourt 3 cm, puis 5 cm, puis 4 cm. Quelle distance a-t-elle parcourue ?', corr: cm1Redac('Distance', '3 + 5 + 4 = 12', 'La fourmi a parcouru 12 cm.') },
-      { etoiles: 3, cahier: true, consigne: 'Une corde mesure 1 m. On en coupe 35 cm. Combien mesure le morceau qui reste ?', corr: cm1Redac('Le morceau', { suite: ['1 m = 100 cm', '100 − 35 = 65'] }, 'Il reste un morceau de 65 cm.') },
+      { etoiles: 2, cahier: true, consigne: 'Une fourmi parcourt 3 cm, puis 5 cm, puis 4 cm. Quelle distance a-t-elle parcourue ?', corr: cm1Redac('Distance parcourue par la fourmi', '3 + 5 + 4 = 12', 'La fourmi a parcouru 12 cm.') },
+      { etoiles: 3, cahier: true, consigne: 'Une corde mesure 1 m. On en coupe 35 cm. Combien mesure le morceau qui reste ?', corr: cm1Redac('Longueur du morceau qui reste', { suite: ['1 m = 100 cm', '100 − 35 = 65'] }, 'Il reste un morceau de 65 cm.') },
       { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['3 m = @ cm', 300], ['100 cm = @ m', 1], ['200 cm + 100 cm = @ m', 3]], 3) },
       { etoiles: 2, consigne: 'Écris <, > ou =.', ...P3.rmp([['1 m @ 90 cm', '>'], ['150 cm @ 2 m', '<'], ['100 cm @ 1 m', '='], ['2 m @ 200 cm', '='], ['80 cm @ 1 m', '<'], ['3 m @ 250 cm', '>']], 1) },
       { etoiles: 2, consigne: 'Mesure les deux segments. Combien le plus long mesure-t-il de plus ?',

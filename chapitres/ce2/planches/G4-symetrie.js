@@ -24,7 +24,7 @@ PLANCHES['ce2|La symétrie'] = [
       { etoiles: 2, col: 1, consigne: 'Entoure les figures qui ont au moins un axe de symétrie.',
         ...chx([['un carré', 'oui', 'oui · non'], ['un cœur', 'oui', 'oui · non'], ['la lettre S', 'non', 'oui · non'], ['un cercle', 'oui', 'oui · non']]) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Combien d\'axes de symétrie a un rectangle (qui n\'est pas un carré) ? Et un carré ? Dessine-les.',
-        corr: cm1Redac('Rectangle', 'un axe vertical et un axe horizontal', 'Un rectangle a 2 axes de symétrie (ses diagonales n\'en sont pas).') + cm1Redac('Carré', '2 axes au milieu des côtés et 2 diagonales', 'Un carré a 4 axes de symétrie.') },
+        corr: cm1Redac('Axes de symétrie du rectangle', 'un axe vertical et un axe horizontal', 'Un rectangle a 2 axes de symétrie (ses diagonales n\'en sont pas).') + cm1Redac('Axes de symétrie du carré', '2 axes au milieu des côtés et 2 diagonales', 'Un carré a 4 axes de symétrie.') },
       { etoiles: 1, col: 1, consigne: 'Combien d\'axes de symétrie ?', ...P3.rmp([['la lettre A : @', 1], ['la lettre H : @', 2], ['la lettre F : @', 0], ['le carré : @', 4]], 2) },
       { etoiles: 2, col: 1, consigne: 'A-t-il un axe de symétrie ? Entoure.', ...P3.chx([['un cœur', 'oui', 'oui · non'], ['la lettre S', 'non', 'oui · non'], ['un papillon', 'oui', 'oui · non']]) },
       { etoiles: 2, consigne: 'Trace en rouge l\'axe de symétrie de chaque figure.',

@@ -41,7 +41,7 @@ PLANCHES['5e|Parallélogrammes'] = [
       { etoiles: 2, col: 1, consigne: 'ABCD est un parallélogramme. Entoure.',
         ...chx([['Le côté opposé à [AB] :', '[CD]', '[BC] · [CD] · [AD]'], ['La droite parallèle à (AD) passant par B :', '(BC)', '(BC) · (BD) · (CD)'], ['Les diagonales sont…', '[AC] et [BD]', '[AB] et [CD] · [AC] et [BD]']]) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Construis à la règle et à l\'équerre un parallélogramme EFGH tel que EF = 6 cm, FG = 4 cm et l\'angle EFG = 70° (utilise aussi le rapporteur). Décris tes étapes.',
-        corr: cm1Redac('Étapes', { suite: ['Je trace [EF] de 6 cm, puis l\'angle de 70° en F et [FG] de 4 cm.', 'Je trace la parallèle à (EF) passant par G et la parallèle à (FG) passant par E : elles se coupent en H.'] }, 'EFGH est un parallélogramme : ses côtés opposés sont parallèles.') },
+        corr: cm1Redac('Étapes de construction de EFGH', { suite: ['Je trace [EF] de 6 cm, puis l\'angle de 70° en F et [FG] de 4 cm.', 'Je trace la parallèle à (EF) passant par G et la parallèle à (FG) passant par E : elles se coupent en H.'] }, 'EFGH est un parallélogramme : ses côtés opposés sont parallèles.') },
     ] },
   { titre: 'Côtés et diagonales', duree: '35 min',
     attendus: ['Savoir que les côtés opposés d\'un parallélogramme ont la même longueur', 'Savoir que ses diagonales se coupent en leur milieu', 'Savoir que le point d\'intersection des diagonales est son centre de symétrie'],
@@ -58,7 +58,7 @@ PLANCHES['5e|Parallélogrammes'] = [
       { etoiles: 1, col: 1, consigne: 'Entoure la bonne réponse (ABCD parallélogramme de centre O).',
         ...chx([['Le milieu de [BD] est…', 'O', 'A · O · C'], ['Si OB = 2,5 cm, alors BD =', '5 cm', '2,5 cm · 5 cm · 10 cm'], ['Le symétrique de [AD] par rapport à O est…', '[CB]', '[CB] · [AB] · [CD]']]) },
       { etoiles: 3, cahier: true, consigne: 'Construis un parallélogramme ABCD dont les diagonales mesurent AC = 8 cm et BD = 5 cm. Explique ta méthode.',
-        corr: cm1Redac('Méthode', { suite: ['Je trace [AC] de 8 cm et je place son milieu O.', 'Je trace une droite passant par O et je place B et D de part et d\'autre de O, à 2,5 cm.'] }, 'Les diagonales se coupent en leur milieu : ABCD est un parallélogramme.') },
+        corr: cm1Redac('Construction du parallélogramme ABCD', { suite: ['Je trace [AC] de 8 cm et je place son milieu O.', 'Je trace une droite passant par O et je place B et D de part et d\'autre de O, à 2,5 cm.'] }, 'Les diagonales se coupent en leur milieu : ABCD est un parallélogramme.') },
     ] },
   { titre: 'Angles d\'un parallélogramme', duree: '35 min',
     attendus: ['Savoir que les angles opposés d\'un parallélogramme ont la même mesure', 'Savoir que deux angles consécutifs sont supplémentaires', 'Calculer les angles d\'un parallélogramme'],
@@ -96,7 +96,7 @@ PLANCHES['5e|Parallélogrammes'] = [
       { etoiles: 3, col: 1, cahier: true, consigne: 'Soit ABC un triangle et I le milieu de [BC]. On place D, symétrique de A par rapport à I. Démontre que ABDC est un parallélogramme.',
         corr: cm1Redac('Démonstration', { suite: ['I est le milieu de [BC] (donnée) et le milieu de [AD] (D est le symétrique de A par rapport à I).', 'Les diagonales [AD] et [BC] du quadrilatère ABDC se coupent donc en leur milieu.'] }, 'ABDC est un parallélogramme.') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Un quadrilatère EFGH vérifie EF = GH = 5 cm et FG = HE = 3 cm. Est-ce forcément un parallélogramme ? Dessine pour vérifier.',
-        corr: cm1Redac('Réponse', 'Si EFGH n\'est pas croisé, ses côtés opposés ont la même longueur deux à deux : c\'est un parallélogramme.', 'Attention : un quadrilatère croisé peut aussi avoir ces longueurs sans être un parallélogramme.') },
+        corr: cm1Redac('EFGH est-il forcément un parallélogramme ?', 'Si EFGH n\'est pas croisé, ses côtés opposés ont la même longueur deux à deux : c\'est un parallélogramme.', 'Attention : un quadrilatère croisé peut aussi avoir ces longueurs sans être un parallélogramme.') },
     ] },
 ];
 })();

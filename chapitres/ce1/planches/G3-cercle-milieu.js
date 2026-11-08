@@ -29,7 +29,7 @@ PLANCHES['ce1|Cercle, milieu et points alignés'] = [
       { etoiles: 1, consigne: 'Plie ta feuille pour amener A sur B. Marque le milieu M du segment.', eleve: lig(seg(6, 220)), corr: lig(seg(6, 220, true)) },
       { etoiles: 1, consigne: 'M est le milieu de [AB]. Complète.', ...P3.rmp([['[AB] mesure 10 cm : [AM] mesure @ cm.', 5], ['[AB] mesure 6 cm : [MB] mesure @ cm.', 3], ['[AM] mesure 4 cm : [AB] mesure @ cm.', 8], ['[AB] mesure 12 cm : [AM] mesure @ cm.', 6], ['[MB] mesure 7 cm : [AB] mesure @ cm.', 14], ['[AB] mesure 20 cm : [MB] mesure @ cm.', 10]], 2) },
       { etoiles: 2, consigne: 'Le point M est-il le milieu du segment ? Vérifie avec ta règle et entoure.', ...PCP.entoure([[cpSvg(250, 50, `<line x1="20" y1="28" x2="220" y2="28" stroke="${Bd}" stroke-width="2.5"/>` + croix(20, 28, 'A') + croix(220, 28, 'B') + croix(120, 28, 'M', 0, -10, Rg), 200), true], [cpSvg(250, 50, `<line x1="20" y1="28" x2="220" y2="28" stroke="${Bd}" stroke-width="2.5"/>` + croix(20, 28, 'A') + croix(220, 28, 'B') + croix(150, 28, 'M', 0, -10, Rg), 200), false]], 2) },
-      { etoiles: 3, cahier: true, consigne: 'Trace un segment de 12 cm. Trouve son milieu par pliage, puis vérifie avec la règle.', corr: cm1Redac('Le milieu', '6 + 6 = 12', 'Le milieu est à 6 cm de chaque bout.') },
+      { etoiles: 3, cahier: true, consigne: 'Trace un segment de 12 cm. Trouve son milieu par pliage, puis vérifie avec la règle.', corr: cm1Redac('Position du milieu', '6 + 6 = 12', 'Le milieu est à 6 cm de chaque bout.') },
     ] },
   { titre: 'Le cercle', duree: '25 min',
     attendus: ['Tracer un cercle au compas', 'Tracer le cercle de centre O passant par A', 'Distinguer cercle et disque'],

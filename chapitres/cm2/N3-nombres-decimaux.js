@@ -57,7 +57,7 @@ ${cm1Demo('c2-dec-comp', 'Comparer deux nombres décimaux', 'Compare 7,09 et 7,1
     [`Écris ces nombres sous forme de fraction décimale.${cm1Liste(['2,4', '0,019', '12,305'])}`,
       cm1Redac('Fractions décimales', { suite: [`2,4 = ${F(24, 10)}`, `0,019 = ${F(19, 1000)}`, `12,305 = ${F(12305, 1000)}`] }, 'Le nombre de chiffres après la virgule donne le dénominateur : 10, 100 ou 1 000.')],
     ['Dans 58,642, quel est le chiffre des centièmes ? celui des millièmes ? Quelle est la partie entière ?',
-      cm1Redac('Les chiffres de 58,642', cm1Tableau(['D', 'U', ',', 'dixièmes', 'centièmes', 'millièmes'], [['5', '8', ',', '6', '4', '2']]), 'Le chiffre des centièmes est 4, celui des millièmes est 2, la partie entière est 58.')],
+      cm1Redac('Chiffres de 58,642', cm1Tableau(['D', 'U', ',', 'dixièmes', 'centièmes', 'millièmes'], [['5', '8', ',', '6', '4', '2']]), 'Le chiffre des centièmes est 4, celui des millièmes est 2, la partie entière est 58.')],
     [`Complète.${cm1Liste(['1 dixième = … millièmes', '3 centièmes = … millièmes', '2 unités = … centièmes'])}`,
       cm1Redac('Conversions', { suite: ['1 dixième = 100 millièmes', '3 centièmes = 3 × 10 = 30 millièmes', '2 unités = 2 × 100 = 200 centièmes'] }, 'Les nombres manquants sont 100, 30 et 200.')],
     [`Donne la partie entière puis l'arrondi à l'entier.${cm1Liste(['6,7', '15,28', '0,49', '9,5'])}`,
@@ -67,7 +67,7 @@ ${cm1Demo('c2-dec-comp', 'Comparer deux nombres décimaux', 'Compare 7,09 et 7,1
     ['Intercale un nombre entre 0,3 et 0,31, puis entre 2,999 et 3.',
       cm1Redac('Entre 0,3 et 0,31', '0,3 &lt; 0,305 &lt; 0,31', 'On peut intercaler 0,305.') + cm1Redac('Entre 2,999 et 3', '2,999 &lt; 2,9995 &lt; 3', 'On peut intercaler 2,9995.')],
     ['Lors d\'un 100 m, Léo a couru en 13,08 s, Nora en 13,1 s et Sam en 12,95 s. Qui a gagné ?',
-      cm1Redac('Le plus petit temps', '12,95 &lt; 13,08 &lt; 13,1', 'Le plus petit temps gagne : c\'est Sam qui a gagné.')],
+      cm1Redac('Gagnant de la course', '12,95 &lt; 13,08 &lt; 13,1', 'Le plus petit temps gagne : c\'est Sam qui a gagné.')],
   ]),
   histoire: cm1Histoire('Un peu d\'histoire : Simon Stevin et La Disme', [
     'En 1585, le Flamand <b>Simon Stevin</b> publie <i>La Disme</i> : il montre qu\'avec des dixièmes, centièmes et millièmes, tous les calculs des marchands et des ingénieurs deviennent aussi simples que ceux des nombres entiers.',

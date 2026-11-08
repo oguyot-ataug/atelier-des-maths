@@ -55,7 +55,7 @@ PLANCHES['6e|Nombres entiers'] = [
         eleve: plListe(['le plus grand nombre possible : ' + B(8), 'le plus petit nombre de 7 chiffres : ' + B(8), 'le plus grand nombre impair : ' + B(8)]),
         corr: plListe(['le plus grand nombre possible : ' + R('9 754 210'), 'le plus petit nombre de 7 chiffres : ' + R('1 024 579'), 'le plus grand nombre impair : ' + R('9 754 201')]) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'La population de la France est d\'environ 68 400 000 habitants, celle du Canada de 40 100 000. Écris ces nombres en lettres, puis calcule la différence.',
-        corr: cm1Redac('En lettres', { suite: ['68 400 000 : soixante-huit millions quatre-cent-mille', '40 100 000 : quarante millions cent-mille'] }, 'On écrit les classes des millions, puis des mille.') + cm1Redac('Différence', '68 400 000 − 40 100 000 = 28 300 000', 'La France compte environ 28 300 000 habitants de plus que le Canada.') },
+        corr: cm1Redac('Populations écrites en lettres', { suite: ['68 400 000 : soixante-huit millions quatre-cent-mille', '40 100 000 : quarante millions cent-mille'] }, 'On écrit les classes des millions, puis des mille.') + cm1Redac('Écart de population entre la France et le Canada', '68 400 000 − 40 100 000 = 28 300 000', 'La France compte environ 28 300 000 habitants de plus que le Canada.') },
     ] },
   { titre: 'Décomposer les grands nombres', duree: '35 min',
     attendus: ['Décomposer un nombre selon les puissances de 10', 'Passer d\'une décomposition au nombre', 'Utiliser les mots millions, milliers, unités'],
@@ -108,7 +108,7 @@ PLANCHES['6e|Nombres entiers'] = [
         corr: plListe([`${R('4 700 000')} &lt; 4 752 300 &lt; ${R('4 800 000')}`, `${R('19 000 000')} &lt; 19 080 000 &lt; ${R('19 100 000')}`, `${R('600 000')} &lt; 630 500 &lt; ${R('700 000')}`, `${R('7 200 000')} &lt; 7 251 900 &lt; ${R('7 300 000')}`, `${R('12 900 000')} &lt; 12 960 000 &lt; ${R('13 000 000')}`, `${R('2 000 000')} &lt; 2 049 999 &lt; ${R('2 100 000')}`].map(ligne)) },
       { etoiles: 3, cahier: true, consigne: `Voici la population de quatre pays (2024).${tab(['Espagne', 'Belgique', 'Italie', 'Suisse'], [['48 619 695', '11 822 592', '58 989 749', '8 921 981']])}Range ces pays du plus peuplé au moins peuplé, puis arrondis chaque population au million.`,
         // Le signe &gt; seulement entre des nombres ; les noms sont séparés par « ; » (relecture 6e-N1-P3-E7).
-        corr: cm1Redac('Rangement', { suite: ['58 989 749 &gt; 48 619 695 &gt; 11 822 592 &gt; 8 921 981'] }, 'Du plus peuplé au moins peuplé : Italie ; Espagne ; Belgique ; Suisse.')
+        corr: cm1Redac('Pays du plus peuplé au moins peuplé', { suite: ['58 989 749 &gt; 48 619 695 &gt; 11 822 592 &gt; 8 921 981'] }, 'Du plus peuplé au moins peuplé : Italie ; Espagne ; Belgique ; Suisse.')
           + cm1Redac('Arrondis au million', { suite: ['Italie : 59 000 000', 'Espagne : 49 000 000', 'Belgique : 12 000 000', 'Suisse : 9 000 000'] }, 'Chaque population est arrondie au million le plus proche.') },
     ] },
   { titre: 'Opérations posées', duree: '35 min',
@@ -133,7 +133,7 @@ PLANCHES['6e|Nombres entiers'] = [
         corr: cm1Redac('Nombre de fauteuils', '24 × 36 = 864', 'Le cinéma a 864 fauteuils.') + cm1Redac('Fauteuils libres', '864 − 785 = 79', '79 fauteuils restent libres.') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Trouve le chiffre caché : 3■7 × 4 = 1 508.',
         // Raisonnement sur la multiplication posée, puis la division en autre méthode (relecture 6e-N1-P4-E6).
-        corr: cm1Redac('Unités', '4 × 7 = 28', 'On écrit 8 et on retient 2.') + cm1Redac('Retenue venue des dizaines', { suite: ['4 × 3 = 12', '15 − 12 = 3'] }, 'Aux centaines, on lit 15 et non 12 : la retenue venue des dizaines est 3. Comme on lit 0 aux dizaines, le calcul des dizaines donne 30.') + cm1Redac('Chiffre caché', { suite: ['4 × ■ + 2 = 30', '4 × ■ = 28', '■ = 28 : 4', '■ = 7'] }, 'Le chiffre caché est 7.')
+        corr: cm1Redac('Chiffre des unités', '4 × 7 = 28', 'On écrit 8 et on retient 2.') + cm1Redac('Retenue venue des dizaines', { suite: ['4 × 3 = 12', '15 − 12 = 3'] }, 'Aux centaines, on lit 15 et non 12 : la retenue venue des dizaines est 3. Comme on lit 0 aux dizaines, le calcul des dizaines donne 30.') + cm1Redac('Chiffre caché', { suite: ['4 × ■ + 2 = 30', '4 × ■ = 28', '■ = 28 : 4', '■ = 7'] }, 'Le chiffre caché est 7.')
           + cm1Redac('Autre méthode', '1 508 : 4 = 377', 'On retrouve 377 : le chiffre caché est 7.') },
     ] },
   { titre: 'Calcul mental et problèmes', duree: '35 min',
@@ -155,9 +155,9 @@ PLANCHES['6e|Nombres entiers'] = [
         eleve: plListe(['356 + 99 = ' + B(), '725 − 98 = ' + B(), '48 + 199 = ' + B(), '634 − 199 = ' + B()]),
         corr: plListe(['356 + 99 = 356 + 100 − 1 = ' + R(455), '725 − 98 = 725 − 100 + 2 = ' + R(627), '48 + 199 = 48 + 200 − 1 = ' + R(247), '634 − 199 = 634 − 200 + 1 = ' + R(435)]) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Une salle de spectacle a 1 200 places. Un soir, 875 places sont vendues à 15 € chacune. Quelle est la recette de la soirée ? Combien de places restent vides ?',
-        corr: cm1Redac('Recette', '875 × 15 = 13 125', 'La recette est de 13 125 €.') + cm1Redac('Places vides', '1 200 − 875 = 325', '325 places restent vides.') },
+        corr: cm1Redac('Recette de la soirée', '875 × 15 = 13 125', 'La recette est de 13 125 €.') + cm1Redac('Places vides', '1 200 − 875 = 325', '325 places restent vides.') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Un avion fait l\'aller-retour Paris-Tokyo (9 715 km dans chaque sens) 3 fois par semaine. Quelle distance parcourt-il en une semaine ? En 4 semaines ?',
-        corr: cm1Redac('Un aller-retour', '9 715 × 2 = 19 430', 'Un aller-retour fait 19 430 km.') + cm1Redac('Distances', { suite: ['19 430 × 3 = 58 290', '58 290 × 4 = 233 160'] }, 'L\'avion parcourt 58 290 km par semaine et 233 160 km en 4 semaines.') },
+        corr: cm1Redac('Distance d\'un aller-retour', '9 715 × 2 = 19 430', 'Un aller-retour fait 19 430 km.') + cm1Redac('Distance parcourue en une semaine', '19 430 × 3 = 58 290', 'L\'avion parcourt 58 290 km par semaine.') + cm1Redac('Distance parcourue en 4 semaines', '58 290 × 4 = 233 160', 'L\'avion parcourt 233 160 km en 4 semaines.') },
       { etoiles: 3, consigne: 'Pour aller plus loin (5e) : multiplie par 99 ou par 101 comme dans l\'exemple. 99 × 7 = 100 × 7 − 7 = 700 − 7 = 693.',
         eleve: plListe(['99 × 12 = 100 × 12 − 12 = ' + B(), '99 × 25 = 100 × 25 − 25 = ' + B(), '101 × 15 = 100 × 15 + 15 = ' + B(), '101 × 43 = 100 × 43 + 43 = ' + B()].map(ligne)),
         corr: plListe(['99 × 12 = 100 × 12 − 12 = 1 200 − 12 = ' + R('1 188'), '99 × 25 = 100 × 25 − 25 = 2 500 − 25 = ' + R('2 475'), '101 × 15 = 100 × 15 + 15 = 1 500 + 15 = ' + R('1 515'), '101 × 43 = 100 × 43 + 43 = 4 300 + 43 = ' + R('4 343')].map(ligne)) },

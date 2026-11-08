@@ -154,6 +154,10 @@ fichier) ; la page est écrite par `tools/build-seo.js`.
   noms, sans trait d'union (« trois millions deux-cent-mille »).
 - **Fractions toujours en LaTeX**, jamais « a/b » : `cm1Frac(a, b)` dans les cours, quiz, corrections ;
   dans les dessins SVG, fraction en étage ; les questions flash « 3/4 » sont converties à l'affichage.
+- **Titre de rédaction = ce que demande l'énoncé** (demandé le 08/11/2026 : « Ici "Une semaine :" ne veut rien dire. Il faut dire
+  "Quantité bue en une semaine :" ») : la grandeur ou l'objet cherché, jamais un mot seul (« Calcul », « Total », « Volume »), un
+  complément de temps ou de lieu (« Une semaine », « Au parc », « Avec 5 ») ou un nom d'objet (« Les jetons ») ; seules les étapes de
+  raisonnement gardent leur nom (Vérification, Thalès, Pythagore, Démonstration…). Contrôle : scratchpad titres_vagues*.py.
 - **Tous les exercices de l'onglet Exercices ont une réponse rédigée** avec `cm1Redac(titre, calcul,
   phrase)` : un titre souligné qui reprend la question (« Âge de mamie : », souligné jusqu'à la dernière
   lettre du titre, jamais les deux-points) ; le calcul sur une ligne

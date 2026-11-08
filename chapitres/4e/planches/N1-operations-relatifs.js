@@ -63,7 +63,7 @@ PLANCHES['4e|Opérations sur les nombres relatifs'] = [
       { etoiles: 2, uneLigne: true, consigne: 'Tom s\'est trompé. Écris le bon résultat.',
         ...rmp([['−2 + 3 × (−4) = −4 ; le bon résultat est @', '−14'], ['(−20) : (−4) × (−2) = −2,5 ; le bon résultat est @', '−10'], ['15 − (−3) × 2 = 36 ; le bon résultat est @', 21]]) },
       { etoiles: 3, cahier: true, consigne: 'Programme de calcul : choisir un nombre ; le multiplier par −3 ; ajouter 12 ; diviser le résultat par −3. Applique-le à 5, puis à −2. Que remarques-tu ?',
-        corr: cm1Redac('Avec 5', { suite: ['5 × (−3) = −15', '−15 + 12 = −3', '−3 : (−3) = 1'] }, 'Avec 5, on obtient 1.') + cm1Redac('Avec −2', { suite: ['(−2) × (−3) = 6', '6 + 12 = 18', '18 : (−3) = −6'] }, 'Avec −2, on obtient −6. On remarque que le résultat est toujours le nombre choisi diminué de 4.') },
+        corr: cm1Redac('Résultat avec 5', { suite: ['5 × (−3) = −15', '−15 + 12 = −3', '−3 : (−3) = 1'] }, 'Avec 5, on obtient 1.') + cm1Redac('Résultat avec −2', { suite: ['(−2) × (−3) = 6', '6 + 12 = 18', '18 : (−3) = −6'] }, 'Avec −2, on obtient −6. On remarque que le résultat est toujours le nombre choisi diminué de 4.') },
     ] },
   { titre: 'Problèmes avec des nombres relatifs', duree: '40 min',
     attendus: ['Modéliser une situation avec des nombres relatifs', 'Calculer un écart, une moyenne', 'Rédiger la solution d\'un problème'],
@@ -77,11 +77,11 @@ PLANCHES['4e|Opérations sur les nombres relatifs'] = [
       { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.',
         ...ch([['La moyenne de −6 et 6 est 0.', 'vrai'], ['L\'écart entre −10 °C et −2 °C est de 12 degrés.', 'faux'], ['Si on perd 4 points 3 fois, on a perdu 12 points.', 'vrai']], 'vrai · faux') },
       { etoiles: 2, cahier: true, consigne: illu(avionSousMarin, 'Un avion vole à 10 500 m d\'altitude. Juste en dessous, un sous-marin est à 350 m sous le niveau de la mer. Quelle distance les sépare ?'),
-        corr: cm1Redac('Distance', { nom: 'D', lignes: ['10 500 − (−350)', '10 500 + 350', '10 850'] }, 'L\'avion et le sous-marin sont à 10 850 m l\'un de l\'autre.') },
+        corr: cm1Redac('Distance entre l\'avion et le sous-marin', { nom: 'D', lignes: ['10 500 − (−350)', '10 500 + 350', '10 850'] }, 'L\'avion et le sous-marin sont à 10 850 m l\'un de l\'autre.') },
       { etoiles: 3, cahier: true, consigne: 'Max a 12 points. Il perd 5 points quatre fois, puis gagne 3 points six fois. Combien de points a-t-il ? Écris un seul calcul.',
         corr: cm1Redac('Points de Max', { nom: 'P', lignes: ['12 + 4 × (−5) + 6 × 3', '12 − 20 + 18', '10'] }, 'Max a 10 points.') },
       { etoiles: 3, cahier: true, consigne: 'Défi : trouve deux nombres relatifs dont la somme est −2 et le produit −15. Explique ta recherche.',
-        corr: cm1Redac('Signes', '', 'Le produit est négatif : les deux nombres sont de signes contraires.') + cm1Redac('Produits égaux à 15', { suite: ['1 × 15 = 15', '3 × 5 = 15'] }, '') + cm1Redac('Vérification avec 3 et −5', { suite: ['3 + (−5) = −2', '3 × (−5) = −15'] }, 'Les deux nombres sont 3 et −5.') },
+        corr: cm1Redac('Signes des deux nombres', '', 'Le produit est négatif : les deux nombres sont de signes contraires.') + cm1Redac('Produits égaux à 15', { suite: ['1 × 15 = 15', '3 × 5 = 15'] }, '') + cm1Redac('Vérification avec 3 et −5', { suite: ['3 + (−5) = −2', '3 × (−5) = −15'] }, 'Les deux nombres sont 3 et −5.') },
     ] },
 ];
 })();

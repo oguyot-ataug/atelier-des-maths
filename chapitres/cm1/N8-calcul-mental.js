@@ -95,7 +95,7 @@ ${cm1Sous('A', 'Atelier : 10 calculs pour t\'entraîner')}
       + cm1Redac('73 − 19', { nom: 'C', lignes: ['73 − 20 + 1', '53 + 1', '54'] }, '73 − 19 donne 54.')
       + cm1Redac('250 − 21', { nom: 'D', lignes: ['250 − 20 − 1', '230 − 1', '229'] }, '250 − 21 donne 229.')],
     [`Complète.${cm1Liste(['38 + … = 100', '450 + … = 1 000', '6 + … = 10'])}`,
-      cm1Redac('Compléments', { suite: ['38 + 62 = 100', '450 + 550 = 1 000', '6 + 4 = 10'] }, 'Les nombres manquants sont 62, 550 et 4.')],
+      cm1Redac('Nombres manquants', { suite: ['38 + 62 = 100', '450 + 550 = 1 000', '6 + 4 = 10'] }, 'Les nombres manquants sont 62, 550 et 4.')],
     [`Calcule.${cm1Liste(['le double de 45', 'la moitié de 90', 'la moitié de 70', 'le double de 125'])}`,
       cm1Redac('Doubles et moitiés', { suite: ['45 + 45 = 90', '45 + 45 = 90', '35 + 35 = 70', '125 + 125 = 250'] }, 'Le double de 45 est 90, la moitié de 90 est 45, la moitié de 70 est 35 et le double de 125 est 250.')],
     ['Une boîte contient 52 crayons. Combien y a-t-il de crayons dans 10 boîtes ? dans 100 boîtes ?',

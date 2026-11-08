@@ -37,7 +37,7 @@ ${cm1Regle(`${cm1Liste(['Ce qu\'elle dépense : 8 + 3 = 11.', 'Ce qui reste : 20
 
 ${cm1Lecon(4, 'Bien rédiger')}
 ${cm1Regle(`Pour chaque étape, j'écris :${cm1Liste(['ce que je cherche (une petite question) ;', 'le calcul ;', 'et à la fin, la phrase réponse.'])}`)}
-${cm1Exemple('Exemple', [`Tom a 15 cartes. Il en gagne 6, puis il en donne 4 à sa sœur. Combien en a-t-il ?${cm1Redac('Après avoir gagné', '15 + 6 = 21', 'Tom a 21 cartes.') + cm1Redac('Après avoir donné', '21 − 4 = 17', 'Tom a 17 cartes.')}`])}
+${cm1Exemple('Exemple', [`Tom a 15 cartes. Il en gagne 6, puis il en donne 4 à sa sœur. Combien en a-t-il ?${cm1Redac('Cartes de Tom après avoir gagné', '15 + 6 = 21', 'Tom a 21 cartes.') + cm1Redac('Cartes de Tom après avoir donné', '21 − 4 = 17', 'Tom a 17 cartes.')}`])}
 `,
   methode: `
 ${cm1Demo('cp-n11-m-bus', 'Suivre un problème étape par étape', 'Dans un train, il y a 30 voyageurs. À la gare, 10 descendent, puis 7 montent. Combien y a-t-il de voyageurs ?')}

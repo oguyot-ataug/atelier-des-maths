@@ -27,7 +27,7 @@ ${ce2AnimBarres('ce1-n4-compare', { unite: 6, legende: 'Les deux barres partent 
 ${cm1Regle('« 15 de plus que 38 » : on ajoute, 38 + 15. « 15 de moins que 38 » : on enlève, 38 − 15. Pour trouver l\'<b>écart</b> entre deux nombres, on cherche ce qu\'il faut ajouter au plus petit pour obtenir le plus grand.', 'Comparer')}
 
 ${cm1Lecon(4, 'Problèmes à deux étapes')}
-${cm1Exemple('Exemple', [`Dans un bus, il y a 25 passagers. 12 montent, puis 8 descendent. Combien de passagers maintenant ?${cm1Redac('Passagers', { suite: ['25 + 12 = 37', '37 − 8 = 29'] }, 'Il y a 29 passagers dans le bus.')}`])}
+${cm1Exemple('Exemple', [`Dans un bus, il y a 25 passagers. 12 montent, puis 8 descendent. Combien de passagers maintenant ?${cm1Redac('Nombre de passagers', { suite: ['25 + 12 = 37', '37 − 8 = 29'] }, 'Il y a 29 passagers dans le bus.')}`])}
 ${cm1Astuce('Avant de calculer, on se pose la question : « Qu\'est-ce que je cherche d\'abord ? »')}
 `,
   methode: `
@@ -50,7 +50,7 @@ ${cm1Demo('ce1-n4-m-ecart', 'Chercher un écart', 'Tom mesure 125 cm, sa sœur 9
   ],
   exos: cm1Exos('ce1-n4', [
     ['Au cinéma, il y a 46 adultes et 38 enfants. Combien de spectateurs y a-t-il ?',
-      cm1Redac('Spectateurs', '46 + 38 = 84', 'Il y a 84 spectateurs.')],
+      cm1Redac('Nombre de spectateurs', '46 + 38 = 84', 'Il y a 84 spectateurs.')],
     ['Une classe a 90 € pour une sortie. Le car coûte 65 €. Combien reste-t-il ?',
       cm1Redac('Argent qui reste', '90 − 65 = 25', 'Il reste 25 €.')],
     ['Lina avait 54 perles. Elle en a donné. Il lui en reste 30. Combien en a-t-elle donné ?',
@@ -58,7 +58,7 @@ ${cm1Demo('ce1-n4-m-ecart', 'Chercher un écart', 'Tom mesure 125 cm, sa sœur 9
     ['Paul a 47 timbres. Son frère en a 18 de plus. Combien de timbres a son frère ?',
       cm1Redac('Timbres du frère', '47 + 18 = 65', 'Le frère de Paul a 65 timbres.')],
     ['Un arbre mesure 350 cm. Un autre mesure 200 cm de moins. Combien mesure le deuxième arbre ?',
-      cm1Redac('Le deuxième arbre', '350 − 200 = 150', 'Le deuxième arbre mesure 150 cm.')],
+      cm1Redac('Hauteur du deuxième arbre', '350 − 200 = 150', 'Le deuxième arbre mesure 150 cm.')],
     ['Hugo a 62 images, Inès en a 85. Combien Inès en a-t-elle de plus que Hugo ?',
       cm1Redac('Images de plus', { suite: ['62 + 8 = 70', '70 + 15 = 85', '8 + 15 = 23'] }, 'Inès a 23 images de plus que Hugo.')],
     ['Dans une bibliothèque, il y a 120 livres. On en prête 35, puis on en rend 20. Combien de livres y a-t-il maintenant ?',

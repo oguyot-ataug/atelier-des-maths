@@ -82,13 +82,13 @@ ${cm1Sous('A', 'Atelier : lancer deux dés')}
       + cm1Redac('Obtenir un multiple de 3', '', 'Les issues 3 et 6 conviennent : on a 2 chances sur 6.')
       + cm1Redac('Obtenir 7', '', 'Aucune issue ne convient : on a 0 chance sur 6, c\'est impossible.')],
     ['Une roue a 8 secteurs égaux : 4 bleus, 3 rouges, 1 vert. Quelle couleur est la plus probable ? Donne la probabilité de chaque couleur.',
-      cm1Redac('Probabilités', { suite: ['bleu : 4 chances sur 8', 'rouge : 3 chances sur 8', 'vert : 1 chance sur 8'] }, 'Le bleu est la couleur la plus probable.')],
+      cm1Redac('Probabilité de chaque couleur', { suite: ['bleu : 4 chances sur 8', 'rouge : 3 chances sur 8', 'vert : 1 chance sur 8'] }, 'Le bleu est la couleur la plus probable.')],
     ['Lina dit : « Demain, soit il pleut, soit il ne pleut pas : il y a une chance sur deux qu\'il pleuve. » A-t-elle raison ?',
       cm1Redac('Avis sur Lina', '', 'Non : il y a deux issues, mais elles n\'ont pas forcément la même chance de se produire.')],
     ['Après 5 « face » de suite, a-t-on plus de chances d\'obtenir « pile » au 6<sup>e</sup> lancer ?',
       cm1Redac('6<sup>e</sup> lancer', '', 'Non : on a toujours 1 chance sur 2, car la pièce ne se souvient pas des lancers précédents.')],
     ['On lance deux pièces. Avec un arbre, donne toutes les issues et la probabilité d\'obtenir deux « face ».',
-      cm1Redac('Issues', { suite: ['PP', 'PF', 'FP', 'FF'] }, 'Il y a 4 issues et une seule donne deux « face » : on a 1 chance sur 4.')],
+      cm1Redac('Issues du lancer de deux pièces', { suite: ['PP', 'PF', 'FP', 'FF'] }, 'Il y a 4 issues et une seule donne deux « face » : on a 1 chance sur 4.')],
     ['Avec le tableau des sommes de deux dés : probabilité d\'obtenir une somme de 10 ? une somme de 12 ?',
       cm1Redac('Somme 10', { suite: ['4 + 6', '5 + 5', '6 + 4'] }, 'La somme 10 apparaît 3 fois : on a 3 chances sur 36.')
       + cm1Redac('Somme 12', '6 + 6', 'La somme 12 n\'apparaît qu\'une fois : on a 1 chance sur 36.')],

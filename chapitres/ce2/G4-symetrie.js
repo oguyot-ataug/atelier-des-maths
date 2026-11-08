@@ -63,7 +63,7 @@ ${cm1Demo('ce2-sy-quad', 'Compléter une figure par symétrie (axe horizontal)',
     ['Les diagonales d\'un rectangle qui n\'est pas un carré sont-elles des axes de symétrie ?',
       cm1Redac('Diagonales du rectangle', 'Si on plie le long d\'une diagonale, les deux moitiés ne se superposent pas.', 'Non : un rectangle a seulement 2 axes de symétrie, qui passent par les milieux des côtés.')],
     ['Sur ton cahier, dessine la moitié d\'un papillon le long d\'un axe vertical, puis complète-le par symétrie.',
-      cm1Redac('Méthode', { suite: ['Je compte les carreaux entre chaque sommet et l\'axe.', 'Je place l\'image de l\'autre côté, à la même distance, sur la même ligne.', 'Je relie les images dans le même ordre.'] }, 'Mon papillon est symétrique : si je plie le long de l\'axe, les deux ailes se superposent.')],
+      cm1Redac('Tracé du symétrique', { suite: ['Je compte les carreaux entre chaque sommet et l\'axe.', 'Je place l\'image de l\'autre côté, à la même distance, sur la même ligne.', 'Je relie les images dans le même ordre.'] }, 'Mon papillon est symétrique : si je plie le long de l\'axe, les deux ailes se superposent.')],
   ]),
   histoire: cm1Histoire('Un peu d\'histoire : la symétrie dans la nature et l\'art', [
     'La <b>symétrie</b> est partout dans la nature : les ailes des papillons, les feuilles, le visage. Les architectes l\'utilisent depuis l\'Antiquité : la façade du château de <b>Versailles</b>, les temples grecs ou le <b>Taj Mahal</b> en Inde sont construits de part et d\'autre d\'un axe.',

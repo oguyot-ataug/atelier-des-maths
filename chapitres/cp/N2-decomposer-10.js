@@ -65,7 +65,7 @@ ${cm1Demo('cp-n2-m-maison', 'Remplir la maison du 4', 'Trouve toutes les façons
     [`Combien manque-t-il de jetons pour remplir la boîte ?${lig(cpBoiteDix(6, { c: 34 }))}`,
       cm1Redac('Jetons qui manquent', '6 + 4 = 10', 'Il manque 4 jetons pour faire 10.', cpBoiteDix(6, { c: 22, vides: [6, 7, 8, 9] }))],
     ['Complète la maison du 5 : écris toutes les façons de faire 5.',
-      cm1Redac('La maison du 5', { suite: ['5 = 5 + 0', '5 = 4 + 1', '5 = 3 + 2', '5 = 2 + 3', '5 = 1 + 4', '5 = 0 + 5'] }, 'Il y a 6 façons de faire 5 avec deux paquets.', maison(5))],
+      cm1Redac('Façons de faire 5', { suite: ['5 = 5 + 0', '5 = 4 + 1', '5 = 3 + 2', '5 = 2 + 3', '5 = 1 + 4', '5 = 0 + 5'] }, 'Il y a 6 façons de faire 5 avec deux paquets.', maison(5))],
     ['Tom lève 3 doigts sur une main et 4 doigts sur l\'autre. Combien de doigts lève-t-il ?',
       cm1Redac('Doigts levés', '3 + 4 = 7', 'Tom lève 7 doigts.')],
     ['Dans un sac, il y a 8 billes : 5 sont rouges, les autres sont bleues. Combien y a-t-il de billes bleues ?',

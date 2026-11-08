@@ -24,7 +24,7 @@ PLANCHES['ce2|Points, droites, segments'] = [
       { etoiles: 1, col: 1, consigne: 'Complète avec « segment », « droite » ou « point ».',
         ...rmp([['Un @ a deux extrémités.', 'segment'], ['Une @ n\'a pas de fin : on peut la prolonger.', 'droite'], ['On marque un @ par une petite croix.', 'point']], 8) },
       { etoiles: 2, col: 1, cahier: true, consigne: 'Place deux points R et S dans ton cahier. Trace le segment qui va de R à S, puis une droite qui passe par S mais pas par R.',
-        corr: cm1Redac('Construction', 'segment de R à S, puis une autre droite passant par S', 'Le segment s\'arrête en R et en S ; la droite passe par S et dépasse de chaque côté.', svg(200, 90, L([20, 70], [110, 30], '#1F3A5C', 2) + D([110, 30], [170, 75], '#2EA8C9', 2, 30) + X([20, 70], 'R', [-8, 4]) + X([110, 30], 'S', [0, -9]), 170)) },
+        corr: cm1Redac('Tracé du segment et de la droite', 'segment de R à S, puis une autre droite passant par S', 'Le segment s\'arrête en R et en S ; la droite passe par S et dépasse de chaque côté.', svg(200, 90, L([20, 70], [110, 30], '#1F3A5C', 2) + D([110, 30], [170, 75], '#2EA8C9', 2, 30) + X([20, 70], 'R', [-8, 4]) + X([110, 30], 'S', [0, -9]), 170)) },
       { etoiles: 1, col: 1, consigne: 'Vrai ou faux ? Entoure.', ...P3.chx([['Un segment a deux extrémités.', 'vrai', 'vrai · faux'], ['Une droite s\'arrête à ses extrémités.', 'faux', 'vrai · faux'], ['Par deux points, on peut tracer une seule droite.', 'vrai', 'vrai · faux']]) },
       { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['Un segment s\'arrête à ses deux @.', 'extrémités'], ['Une droite ne s\'arrête @.', 'jamais'], ['Des points sur une même droite sont @.', 'alignés']], 4) },
     ] },

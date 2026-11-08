@@ -72,7 +72,7 @@ ${cm1Demo('c2-dv-dec', 'Partager une somme d\'argent', 'Quatre amis se partagent
     ['On range 200 livres sur des étagères de 30 livres. Combien d\'étagères faut-il ? Combien de livres y aura-t-il sur la dernière ?',
       cm1Redac('Division de 200 par 30', '200 = (30 × 6) + 20', '6 étagères sont pleines et il reste 20 livres.') + cm1Redac('Nombre d\'étagères', '6 + 1 = 7', 'Il faut 7 étagères ; la dernière contient 20 livres.')],
     ['Trouve le nombre : si je le multiplie par 6, j\'obtiens 45.',
-      cm1Redac('Le nombre cherché', '45 : 6 = 7,5', 'Le nombre est 7,5. Vérification : 6 × 7,5 = 45.')],
+      cm1Redac('Nombre cherché', '45 : 6 = 7,5', 'Le nombre est 7,5. Vérification : 6 × 7,5 = 45.')],
   ], { titre: 'Rédaction type : « Division euclidienne »', lignes: [['587 = (9 × 65) + 2', 'J\'écris l\'égalité : dividende = (diviseur × quotient) + reste.'], ['2 &lt; 9', 'Je vérifie que le reste est plus petit que le diviseur.']] }),
   histoire: cm1Histoire('Un peu d\'histoire : la division « à la française »', [
     'La façon de poser la division a beaucoup varié selon les pays et les époques. En France, on place le diviseur à droite du dividende, avec une « potence » ; aux États-Unis, on écrit le diviseur à gauche, sous une sorte de toit !',

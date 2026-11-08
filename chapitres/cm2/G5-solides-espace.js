@@ -89,9 +89,9 @@ ${cm1Demo('c2-so-patron', 'Vérifier un patron de pavé', 'Le patron du cours fo
       cm1Redac('Nombre de faces', '2 + 3 = 5', 'Le prisme a 5 faces : 2 triangles (les bases) et 3 rectangles.')
       + cm1Redac('Nombre d\'arêtes', '3 + 3 + 3 = 9', 'Il a 9 arêtes.') + cm1Redac('Nombre de sommets', '3 + 3 = 6', 'Il a 6 sommets.')],
     ['Je suis un polyèdre à 5 sommets ; une de mes faces est un carré et les autres sont des triangles. Qui suis-je ?',
-      cm1Redac('Devinette', '', 'C\'est une pyramide à base carrée.')],
+      cm1Redac('Solide mystère', '', 'C\'est une pyramide à base carrée.')],
     ['Pourquoi un cylindre n\'est-il pas un polyèdre ?',
-      cm1Redac('Le cylindre', '', 'Un cylindre a une surface courbe : toutes ses faces ne sont pas des polygones, donc ce n\'est pas un polyèdre.')],
+      cm1Redac('Pourquoi le cylindre n\'est pas un polyèdre', '', 'Un cylindre a une surface courbe : toutes ses faces ne sont pas des polygones, donc ce n\'est pas un polyèdre.')],
     [`Combien de cubes dans cet assemblage ?<div style="margin:6px 0;">${cubes([[2, 2], [1, 0]], 120)}</div>`,
       cm1Redac('Nombre de cubes', '2 + 2 + 1 = 5', 'L\'assemblage compte 5 cubes.')],
     ['Combien de petits cubes faut-il pour construire un grand cube de 3 cubes de côté ?',

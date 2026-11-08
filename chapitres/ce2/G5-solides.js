@@ -72,7 +72,7 @@ ${cm1Demo('ce2-so-justifier', 'Justifier la nature d\'un solide', 'Un solide a 5
     ['Quelle est la nature des faces d\'un pavé ?',
       cm1Redac('Faces du pavé', '6 faces', 'Les 6 faces d\'un pavé sont des rectangles (parfois 2 d\'entre elles sont des carrés).')],
     ['Je suis un solide à 4 faces, toutes triangulaires. Qui suis-je ?',
-      cm1Redac('Le solide mystère', 'Des faces triangulaires qui ont un sommet commun : c\'est une pyramide.', 'Je suis une pyramide à base triangulaire.')],
+      cm1Redac('Solide mystère', 'Des faces triangulaires qui ont un sommet commun : c\'est une pyramide.', 'Je suis une pyramide à base triangulaire.')],
     [`Cette figure est-elle un patron de cube ?<div style="margin:6px 0;">${patron([[0, 0], [1, 0], [1, 1], [2, 1], [2, 2], [3, 2]], '#7A4FC0', 100)}</div>`,
       cm1Redac('Vérification', { suite: ['Il y a 6 carrés, comme les 6 faces du cube.', 'En pliant, chaque carré prend une face différente.'] }, 'Oui, c\'est un patron du cube : le patron « en escalier ».')],
   ]),

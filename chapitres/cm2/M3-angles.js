@@ -76,14 +76,14 @@ ${cm1Sous('A', 'Atelier : assemble des gabarits d\'angles')}
       + cm1Redac('Tiers d\'un angle droit', '90 : 3 = 30', 'Le tiers d\'un angle droit mesure 30°.')
       + cm1Redac('Un angle droit et demi', '90 + 45 = 135', 'Un angle droit et demi mesure 135°.')],
     [`Avec des gabarits de 30° et de 45°, comment obtenir ces angles ?${cm1Liste(['75°', '60°', '105°'])}`,
-      cm1Redac('Assemblages', { suite: ['45 + 30 = 75', '30 + 30 = 60', '45 + 30 + 30 = 105'] }, 'On place côte à côte un gabarit de 45° et un de 30° pour 75°, deux gabarits de 30° pour 60°, et un gabarit de 45° avec deux de 30° pour 105°.')],
+      cm1Redac('Angles obtenus avec les gabarits', { suite: ['45 + 30 = 75', '30 + 30 = 60', '45 + 30 + 30 = 105'] }, 'On place côte à côte un gabarit de 45° et un de 30° pour 75°, deux gabarits de 30° pour 60°, et un gabarit de 45° avec deux de 30° pour 105°.')],
     ['Quelle est la mesure de chaque angle d\'un triangle équilatéral ? d\'un rectangle ?',
-      cm1Redac('Angles', '', 'Chaque angle d\'un triangle équilatéral mesure 60°. Chaque angle d\'un rectangle est droit : il mesure 90°.')],
+      cm1Redac('Angles du triangle équilatéral et du rectangle', '', 'Chaque angle d\'un triangle équilatéral mesure 60°. Chaque angle d\'un rectangle est droit : il mesure 90°.')],
     ['Quel angle forment les aiguilles d\'une horloge à 3 h ? à 1 h ? à 5 h ?',
       cm1Redac('Angle pour une heure', '90 : 3 = 30', 'Entre deux nombres du cadran, il y a 30°, car 3 heures font un angle droit.')
       + cm1Redac('Angles des aiguilles', { suite: ['3 × 30 = 90', '1 × 30 = 30', '5 × 30 = 150'] }, 'À 3 h, l\'angle mesure 90° ; à 1 h, 30° ; à 5 h, 150°.')],
     ['Plie une feuille pour obtenir un angle de 45°, puis un angle de 22,5°.',
-      cm1Redac('Pliages', { suite: ['90 : 2 = 45', '45 : 2 = 22,5'] }, 'On plie le coin de la feuille (90°) en deux pour obtenir 45°, puis on replie encore en deux pour obtenir 22,5°.')],
+      cm1Redac('Angles obtenus par pliage', { suite: ['90 : 2 = 45', '45 : 2 = 22,5'] }, 'On plie le coin de la feuille (90°) en deux pour obtenir 45°, puis on replie encore en deux pour obtenir 22,5°.')],
   ]),
   histoire: cm1Histoire('Un peu d\'histoire : pourquoi 360 degrés ?', [
     'Les <b>Babyloniens</b> partageaient le tour complet en <b>360 degrés</b>. Pourquoi 360 ? Peut-être parce que l\'année compte environ 360 jours : le Soleil semble avancer d\'un degré par jour dans le ciel. Et 360 se partage en beaucoup de parts égales : 2, 3, 4, 5, 6, 8, 9, 10, 12…',

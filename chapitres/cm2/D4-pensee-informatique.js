@@ -125,9 +125,9 @@ ${cm1Sous('A', 'Atelier : programme le livreur')}
     [`Que trace ce programme ?${cm1Liste(['répéter 3 fois : avancer de 2, tourner à gauche, avancer de 2, tourner à droite'])}`,
       cm1Redac('Figure tracée', '', 'Il trace un escalier de 3 marches, qui monte vers la gauche du robot.')],
     [`Programme de calcul :${cm1Liste(['choisir un nombre', 'le multiplier par 3', 'ajouter 4', 'multiplier par 2'])}Exécute-le avec 1, 5 et 10.`,
-      cm1Redac('Avec 1', { suite: ['1 × 3 = 3', '3 + 4 = 7', '7 × 2 = 14'] }, 'Avec 1, on obtient 14.')
-      + cm1Redac('Avec 5', { suite: ['5 × 3 = 15', '15 + 4 = 19', '19 × 2 = 38'] }, 'Avec 5, on obtient 38.')
-      + cm1Redac('Avec 10', { suite: ['10 × 3 = 30', '30 + 4 = 34', '34 × 2 = 68'] }, 'Avec 10, on obtient 68.')],
+      cm1Redac('Résultat avec 1', { suite: ['1 × 3 = 3', '3 + 4 = 7', '7 × 2 = 14'] }, 'Avec 1, on obtient 14.')
+      + cm1Redac('Résultat avec 5', { suite: ['5 × 3 = 15', '15 + 4 = 19', '19 × 2 = 38'] }, 'Avec 5, on obtient 38.')
+      + cm1Redac('Résultat avec 10', { suite: ['10 × 3 = 30', '30 + 4 = 34', '34 × 2 = 68'] }, 'Avec 10, on obtient 68.')],
     ['Avec ce même programme, quel nombre a été choisi si on obtient 50 ?',
       cm1Redac('Nombre choisi', { suite: ['50 : 2 = 25', '25 − 4 = 21', '21 : 3 = 7'] }, 'On remonte le programme avec les opérations inverses : le nombre choisi était 7.')],
     ['Suite dans un tableur : A1 = 2 et « = A1 × 3 » recopiée vers le bas. Écris les 5 premiers termes.',

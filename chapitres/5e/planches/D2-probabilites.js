@@ -33,7 +33,7 @@ PLANCHES['5e|Probabilités'] = [
         ...(() => { const r = `<div style="text-align:center;">${roue([ROU, BLE, ROU, JAU, ROU, BLE, ROU, BLE])}</div>`, q = chx([['« Rouge » est…', 'aussi probable que « pas rouge »', 'plus probable que « pas rouge » · aussi probable que « pas rouge »'], ['« Vert » est…', 'impossible', 'impossible · peu probable']]);
           return { eleve: r + q.eleve, corr: r + q.corr }; })() },
       { etoiles: 3, cahier: true, consigne: 'On lance un dé à 6 faces. Donne un événement impossible, un événement certain, et un événement de probabilité 0,5.',
-        corr: cm1Redac('Exemples', { suite: ['Impossible : « obtenir 7 ».', 'Certain : « obtenir un nombre entre 1 et 6 ».', 'Probabilité 0,5 : « obtenir un nombre pair » (3 issues sur 6).'] }, 'Il existe d\'autres réponses justes.') },
+        corr: cm1Redac('Événements impossible, certain, de probabilité 0,5', { suite: ['Impossible : « obtenir 7 ».', 'Certain : « obtenir un nombre entre 1 et 6 ».', 'Probabilité 0,5 : « obtenir un nombre pair » (3 issues sur 6).'] }, 'Il existe d\'autres réponses justes.') },
     ] },
   { titre: 'Calculer une probabilité', duree: '40 min',
     attendus: ['Repérer une situation d\'équiprobabilité', 'Calculer : nombre d\'issues favorables : nombre d\'issues possibles', 'Écrire une probabilité sous forme de fraction, de décimal, de pourcentage'],
@@ -82,9 +82,9 @@ PLANCHES['5e|Probabilités'] = [
       { etoiles: 2, col: 1, consigne: 'Résultats de 50 lancers d\'une pièce : 28 « pile ». Complète.',
         ...(() => { const l = [['Nombre de « face » : @', 22], ['Fréquence de « pile » : @ %', 56], ['Fréquence de « face » : @ %', 44]]; return { eleve: plListe(l.map(([t]) => t.replace('@', B(1)))), corr: plListe(l.map(([t, r]) => t.replace('@', R(r)))) }; })() },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Jeu A : on gagne si on obtient 5 ou 6 avec un dé. Jeu B : on gagne si on tire une boule rouge dans une urne de 4 rouges et 6 bleues. Quel jeu choisir ?',
-        corr: cm1Redac('Probabilités', { suite: [`Jeu A : ${F(2, 6)} = ${F(1, 3)} ≈ 0,33`, `Jeu B : ${F(4, 10)} = 0,4`] }, 'Il vaut mieux choisir le jeu B.') },
+        corr: cm1Redac('Probabilité de gagner à chaque jeu', { suite: [`Jeu A : ${F(2, 6)} = ${F(1, 3)} ≈ 0,33`, `Jeu B : ${F(4, 10)} = 0,4`] }, 'Il vaut mieux choisir le jeu B.') },
       { etoiles: 3, cahier: true, consigne: 'Simule 20 lancers d\'une pièce (ou utilise une calculatrice). Calcule la fréquence de « face ». Compare avec la probabilité, puis avec les résultats de la classe.',
-        corr: cm1Redac('Observation', 'Sur 20 lancers, la fréquence de « face » peut s\'éloigner de 0,5.', 'Avec tous les lancers de la classe, elle se rapproche de 0,5 : c\'est la probabilité.') },
+        corr: cm1Redac('Fréquence de « face »', 'Sur 20 lancers, la fréquence de « face » peut s\'éloigner de 0,5.', 'Avec tous les lancers de la classe, elle se rapproche de 0,5 : c\'est la probabilité.') },
     ] },
 ];
 })();

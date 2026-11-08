@@ -79,13 +79,13 @@ ${cm1Demo('fr-quantite', 'Calculer une fraction d\'une quantité', `Dans une cla
   ],
   exos: cm1Exos('fr', [
     [`Écris ces fractions en lettres.${cm1Liste([F(5, 6), F(1, 4), F(3, 10), F(12, 100)])}`,
-      cm1Redac('Les fractions en lettres', { suite: [`${F(5, 6)} : cinq sixièmes`, `${F(1, 4)} : un quart`, `${F(3, 10)} : trois dixièmes`, `${F(12, 100)} : douze centièmes`] }, 'À partir de 5, on lit le dénominateur avec « ième » ; 4 se lit « quart ».')],
+      cm1Redac('Fractions écrites en lettres', { suite: [`${F(5, 6)} : cinq sixièmes`, `${F(1, 4)} : un quart`, `${F(3, 10)} : trois dixièmes`, `${F(12, 100)} : douze centièmes`] }, 'À partir de 5, on lit le dénominateur avec « ième » ; 4 se lit « quart ».')],
     [`Écris ces fractions en chiffres.${cm1Liste(['sept huitièmes', 'deux tiers', 'neuf demis'])}`,
-      cm1Redac('Les fractions en chiffres', { suite: [`sept huitièmes : ${F(7, 8)}`, `deux tiers : ${F(2, 3)}`, `neuf demis : ${F(9, 2)}`] }, 'Le dénominateur dit en combien de parts on partage, le numérateur combien on en prend.')],
+      cm1Redac('Fractions écrites en chiffres', { suite: [`sept huitièmes : ${F(7, 8)}`, `deux tiers : ${F(2, 3)}`, `neuf demis : ${F(9, 2)}`] }, 'Le dénominateur dit en combien de parts on partage, le numérateur combien on en prend.')],
     [`Quelle fraction de la bande est coloriée ?<div style="margin:6px 0;">${cm1Bande(5, 2)}</div>`,
       cm1Redac('Fraction coloriée', '2 parts coloriées sur 5 parts égales', `On a colorié ${F(2, 5)} de la bande (deux cinquièmes).`)],
     [`Classe ces fractions : inférieures à 1, égales à 1 ou supérieures à 1.${cm1Liste([F(6, 5), F(3, 8), F(9, 9), F(13, 10), F(1, 2)])}`,
-      cm1Redac('Classement', { suite: [`inférieures à 1 : ${F(3, 8)} et ${F(1, 2)}`, `égale à 1 : ${F(9, 9)}`, `supérieures à 1 : ${F(6, 5)} et ${F(13, 10)}`] }, 'On compare le numérateur et le dénominateur de chaque fraction.')],
+      cm1Redac('Classement des fractions', { suite: [`inférieures à 1 : ${F(3, 8)} et ${F(1, 2)}`, `égale à 1 : ${F(9, 9)}`, `supérieures à 1 : ${F(6, 5)} et ${F(13, 10)}`] }, 'On compare le numérateur et le dénominateur de chaque fraction.')],
     [`Décompose chaque fraction en un entier plus une fraction inférieure à 1, puis encadre-la entre deux entiers consécutifs.${cm1Liste([F(9, 4), F(17, 5)])}`,
       cm1Redac(`Décomposition de ${F(9, 4)}`, [`${F(8, 4)} + ${F(1, 4)}`, `2 + ${F(1, 4)}`], `Donc 2 &lt; ${F(9, 4)} &lt; 3.`)
       + cm1Redac(`Décomposition de ${F(17, 5)}`, { nom: 'B', lignes: [`${F(15, 5)} + ${F(2, 5)}`, `3 + ${F(2, 5)}`] }, `Donc 3 &lt; ${F(17, 5)} &lt; 4.`)],
@@ -96,7 +96,7 @@ ${cm1Demo('fr-quantite', 'Calculer une fraction d\'une quantité', `Dans une cla
       cm1Redac(`${F(1, 5)} de 30 €`, '30 : 5 = 6', `${F(1, 5)} de 30 €, c'est 6 €.`)
       + cm1Redac(`${F(3, 5)} de 30 €`, '3 × 6 = 18', `${F(3, 5)} de 30 €, c'est 18 €.`)],
     [`Léa a lu ${F(3, 4)} d'un livre de 80 pages. Combien de pages a-t-elle lues ? Combien lui en reste-t-il ?`,
-      cm1Redac('Un quart du livre', '80 : 4 = 20', 'Un quart du livre, c\'est 20 pages.')
+      cm1Redac('Pages lues', '80 : 4 = 20', 'Un quart du livre, c\'est 20 pages.')
       + cm1Redac('Pages lues', '3 × 20 = 60', 'Léa a lu 60 pages.')
       + cm1Redac('Pages restantes', '80 − 60 = 20', 'Il lui reste 20 pages à lire.')],
   ], { titre: 'Rédaction type : « Calculer une fraction d\'une quantité »', lignes: [[`${F(3, 4)} de 20`, 'Je partage 20 en 4 parts égales : 20 : 4 = 5.'], ['3 × 5 = 15', 'Je prends 3 parts.'], [`${F(3, 4)} de 20 = 15`, 'Je conclus par une phrase.']] }),
@@ -187,7 +187,7 @@ ${cm1Demo('fr-quantite', 'Calculer une fraction d\'une quantité', `Dans une cla
           corr: cm1Redac('Point R', cm1Tex('\\dfrac{9}{6} = 1 + \\dfrac{3}{6}'), `9 parts de sixièmes : le point R correspond à ${F(9, 6)}. C'est plus que 1, donc R est après 1.`) },
         { etoiles: 3, cahier: true, consigne: `Une course fait 1 km. Théo a parcouru ${T(3, 4)} de la course et Inès ${T(5, 8)}. Place T pour Théo et I pour Inès sur la demi-droite, puis explique qui est le plus avancé.`,
           eleve: cm1Graduation(1, 8, [], { unite: 400 }),
-          corr: cm1Graduation(1, 8, [[0.75, 'T', '#1F7A4D'], [0.625, 'I', '#1F7A4D']], { unite: 400 }) + cm1Redac('Le plus avancé', cm1Tex('\\dfrac{3}{4} = \\dfrac{6}{8}'), `Théo a parcouru ${F(6, 8)} de la course et Inès ${F(5, 8)} : Théo est le plus avancé.`) },
+          corr: cm1Graduation(1, 8, [[0.75, 'T', '#1F7A4D'], [0.625, 'I', '#1F7A4D']], { unite: 400 }) + cm1Redac('Coureur le plus avancé', cm1Tex('\\dfrac{3}{4} = \\dfrac{6}{8}'), `Théo a parcouru ${F(6, 8)} de la course et Inès ${F(5, 8)} : Théo est le plus avancé.`) },
       ] },
     { titre: 'Fractions de figures variées', duree: '30 min',
       attendus: ['Représenter une fraction par une partie d\'une figure partagée en parts égales', 'Reconnaître un partage en parts égales'],
@@ -206,7 +206,7 @@ ${cm1Demo('fr-quantite', 'Calculer une fraction d\'une quantité', `Dans une cla
           corr: plGrille([[3, 4, 9], [2, 3, 8], [5, 6, 10], [1, 2, 6]].map(([a, b, k]) => `${F(a, b)} ${cm1Bande(12, k, { largeur: 168 })}`), 1) },
         { etoiles: 3, col: 1, cahier: true, consigne: `Hugo a colorié une part de ce disque. Il dit : « J'ai colorié ${T(1, 4)} du disque, car c'est 1 part sur 4. » A-t-il raison ? Explique.`,
           eleve: plDisqueInegal([40, 100, 110, 110], 0),
-          corr: plDisqueInegal([40, 100, 110, 110], 0) + cm1Redac('Réponse', '', `Hugo a tort : les 4 parts ne sont pas égales, ce n'est pas un partage en quarts. La part coloriée est plus petite que ${F(1, 4)} du disque.`) },
+          corr: plDisqueInegal([40, 100, 110, 110], 0) + cm1Redac('Hugo a-t-il raison ?', '', `Hugo a tort : les 4 parts ne sont pas égales, ce n'est pas un partage en quarts. La part coloriée est plus petite que ${F(1, 4)} du disque.`) },
         { etoiles: 3, col: 1, cahier: true, consigne: `Dessine un rectangle de 4 carreaux sur 3 carreaux, puis colorie ${T(5, 12)} de ce rectangle. Explique comment tu as fait.`,
           corr: cm1Redac('Nombre de carreaux du rectangle', '4 × 3 = 12', `Le rectangle a 12 carreaux : on en colorie 5, c'est ${F(5, 12)} du rectangle.`) },
       ] },
@@ -230,7 +230,7 @@ ${cm1Demo('fr-quantite', 'Calculer une fraction d\'une quantité', `Dans une cla
         { etoiles: 3, col: 1, cahier: true, consigne: 'Un pâtissier coupe chaque tarte en 8 parts égales. Il a vendu 29 parts. Combien de tartes entières a-t-il vendues ? Écris le nombre de tartes vendues comme un entier plus une fraction.',
           corr: cm1Redac('Tartes vendues', { suite: ['8 × 3 = 24', '29 − 24 = 5'] }, `Il a vendu 3 tartes entières et ${F(5, 8)} d'une autre : ${F(29, 8)} = 3 + ${F(5, 8)}.`) },
         { etoiles: 3, col: 1, cahier: true, consigne: `Léa dit : « ${T(13, 4)}, c'est entre 3 et 4. » A-t-elle raison ? Explique.`,
-          corr: cm1Redac('Décomposition', cm1Tex('\\dfrac{13}{4} = 3 + \\dfrac{1}{4}'), `Léa a raison : ${F(13, 4)} est plus grand que 3 et plus petit que 4.`) },
+          corr: cm1Redac('Léa a-t-elle raison ?', cm1Tex('\\dfrac{13}{4} = 3 + \\dfrac{1}{4}'), `Léa a raison : ${F(13, 4)} est plus grand que 3 et plus petit que 4.`) },
       ] },
     { titre: 'Fractions d\'une longueur sur quadrillage', duree: '30 min',
       attendus: ['Construire une longueur égale à une fraction d\'une longueur unité', 'Exprimer une longueur par une fraction d\'une longueur unité'],

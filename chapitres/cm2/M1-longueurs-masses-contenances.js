@@ -71,7 +71,7 @@ ${cm1Demo('c2-lmc-pb', 'Résoudre un problème de contenance', 'Une bouteille co
     [`Range du plus léger au plus lourd.${cm1Liste(['1,2 kg', '1 150 g', '1 kg 30 g', '0,95 kg'])}`,
       cm1Redac('Masses en grammes', { suite: ['1,2 kg = 1 200 g', '1 kg 30 g = 1 030 g', '0,95 kg = 950 g'] }, 'Du plus léger au plus lourd : 0,95 kg ; 1 kg 30 g ; 1 150 g ; 1,2 kg.')],
     [`Est-ce plausible ?${cm1Liste(['une porte de 2 m', 'un chat de 40 kg', 'une piscine de 50 L', 'une randonnée de 12 km'])}`,
-      cm1Redac('Plausibilité', '', 'Une porte de 2 m et une randonnée de 12 km sont plausibles. Un chat de 40 kg ne l\'est pas : il pèse environ 4 kg. Une piscine de 50 L non plus : elle contient des milliers de litres.')],
+      cm1Redac('Mesures plausibles', '', 'Une porte de 2 m et une randonnée de 12 km sont plausibles. Un chat de 40 kg ne l\'est pas : il pèse environ 4 kg. Une piscine de 50 L non plus : elle contient des milliers de litres.')],
     ['Un sac contient 2,5 kg de pommes de terre. On en utilise 800 g. Quelle masse reste-t-il ?',
       cm1Redac('Masse restante', { suite: ['2,5 kg = 2 500 g', '2 500 − 800 = 1 700'] }, 'Il reste 1 700 g de pommes de terre, c\'est-à-dire 1,7 kg.')],
     ['Un ruban mesure 3,6 m. On le coupe en 4 morceaux de même longueur. Longueur d\'un morceau en cm ?',

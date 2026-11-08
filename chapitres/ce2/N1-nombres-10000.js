@@ -79,9 +79,9 @@ ${cm1Demo('ce2-ne-lots', 'Combien de paquets de cent ?', 'Une entreprise a besoi
   ],
   exos: cm1Exos('ce2-ne', [
     [`La maîtresse dicte trois nombres. Écris-les en chiffres.${cm1Liste(['trois-mille-cinq-cent-six', 'neuf-mille-quarante', 'huit-mille-huit'])}`,
-      cm1Redac('Trois-mille-cinq-cent-six', '3 milliers, 5 centaines, 0 dizaine et 6 unités', 'Ce nombre s\'écrit 3 506.')
-      + cm1Redac('Neuf-mille-quarante', '9 milliers, 0 centaine, 4 dizaines et 0 unité', 'Ce nombre s\'écrit 9 040.')
-      + cm1Redac('Huit-mille-huit', '8 milliers, 0 centaine, 0 dizaine et 8 unités', 'Ce nombre s\'écrit 8 008.')],
+      cm1Redac('Trois-mille-cinq-cent-six en chiffres', '3 milliers, 5 centaines, 0 dizaine et 6 unités', 'Ce nombre s\'écrit 3 506.')
+      + cm1Redac('Neuf-mille-quarante en chiffres', '9 milliers, 0 centaine, 4 dizaines et 0 unité', 'Ce nombre s\'écrit 9 040.')
+      + cm1Redac('Huit-mille-huit en chiffres', '8 milliers, 0 centaine, 0 dizaine et 8 unités', 'Ce nombre s\'écrit 8 008.')],
     [`Écris ces nombres en lettres.${cm1Liste(['2 450', '6 017'])}`,
       cm1Redac('2 450 en lettres', '2 milliers, 4 centaines et 5 dizaines', 'On écrit : deux-mille-quatre-cent-cinquante.')
       + cm1Redac('6 017 en lettres', '6 milliers et 17 unités', 'On écrit : six-mille-dix-sept.')],
@@ -92,7 +92,7 @@ ${cm1Demo('ce2-ne-lots', 'Combien de paquets de cent ?', 'Une entreprise a besoi
     ['Un jardinier a 2 sacs de 1 000 graines, 14 sachets de 100 graines et 6 graines toutes seules. Combien de graines a-t-il en tout ?',
       cm1Redac('Nombre de graines', ['2 000 + 1 400 + 6', '3 406'], 'Le jardinier a 3 406 graines en tout.')],
     ['Range ces nombres dans l\'ordre croissant : 4 302 ; 4 230 ; 4 032 ; 4 320 ; 3 999.',
-      cm1Redac('Les nombres dans l\'ordre croissant', '3 999 &lt; 4 032 &lt; 4 230 &lt; 4 302 &lt; 4 320', 'Le plus petit nombre est 3 999 et le plus grand est 4 320.')],
+      cm1Redac('Nombres dans l\'ordre croissant', '3 999 &lt; 4 032 &lt; 4 230 &lt; 4 302 &lt; 4 320', 'Le plus petit nombre est 3 999 et le plus grand est 4 320.')],
     ['Une école commande 2 460 crayons. Ils sont vendus par boîtes de 100. Combien de boîtes faut-il acheter ?',
       cm1Redac('Nombre de boîtes', '2 460 = 24 centaines et 60 unités', '24 boîtes ne suffisent pas, il manquerait 60 crayons : il faut acheter 25 boîtes.')],
     ['Encadre 6 748 entre deux milliers qui se suivent, puis entre deux centaines qui se suivent.',

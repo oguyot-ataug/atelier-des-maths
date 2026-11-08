@@ -70,12 +70,12 @@ ${cm1Demo('c2-fp-rect', 'Construire un rectangle', 'Construis le rectangle EFGH 
   ],
   exos: cm1Exos('c2fp', [
     ['Quel triangle a trois côtés de même longueur ? Quel quadrilatère a quatre côtés de même longueur mais pas d\'angle droit ?',
-      cm1Redac('Triangle', '', 'Le triangle qui a trois côtés de même longueur est le triangle équilatéral.')
-      + cm1Redac('Quadrilatère', '', 'Le quadrilatère qui a quatre côtés de même longueur sans angle droit est le losange.')],
+      cm1Redac('Triangle qui a trois côtés égaux', '', 'Le triangle qui a trois côtés de même longueur est le triangle équilatéral.')
+      + cm1Redac('Quadrilatère qui a quatre côtés égaux', '', 'Le quadrilatère qui a quatre côtés de même longueur sans angle droit est le losange.')],
     ['Je suis un quadrilatère avec 4 angles droits et 4 côtés égaux. Qui suis-je ?',
-      cm1Redac('Devinette', '', 'Avec 4 angles droits et 4 côtés égaux, c\'est un carré.')],
+      cm1Redac('Figure mystère', '', 'Avec 4 angles droits et 4 côtés égaux, c\'est un carré.')],
     ['Je suis un quadrilatère qui a seulement deux côtés parallèles et deux angles droits. Qui suis-je ?',
-      cm1Redac('Devinette', '', 'Deux côtés parallèles et deux angles droits : c\'est un trapèze rectangle.')],
+      cm1Redac('Figure mystère', '', 'Deux côtés parallèles et deux angles droits : c\'est un trapèze rectangle.')],
     ['Construis un triangle isocèle ABC tel que AB = AC = 5 cm et BC = 4 cm.',
       cm1Redac('Programme de construction', { suite: ['je trace le segment [BC] de 4 cm', 'arc de centre B, rayon 5 cm', 'arc de centre C, rayon 5 cm'] }, 'Le point A est à l\'intersection des deux arcs ; je trace les segments [AB] et [AC] et je code les côtés égaux.')],
     ['Construis un carré de 4,5 cm de côté et trace ses diagonales. Que remarques-tu ?',
@@ -83,8 +83,8 @@ ${cm1Demo('c2-fp-rect', 'Construire un rectangle', 'Construis le rectangle EFGH 
     ['Combien de côtés a un hexagone ? un pentagone ? Dessine-en un de chaque.',
       cm1Redac('Nombre de côtés', '', 'Un hexagone a 6 côtés et un pentagone a 5 côtés.')],
     ['Vrai ou faux ? « Un rectangle est un losange. » « Un carré est un rectangle. »',
-      cm1Redac('Un rectangle est un losange', '', 'C\'est faux : ses côtés ne sont pas tous égaux, sauf si c\'est un carré.')
-      + cm1Redac('Un carré est un rectangle', '', 'C\'est vrai : un carré a 4 angles droits.')],
+      cm1Redac('« Un rectangle est un losange »', '', 'C\'est faux : ses côtés ne sont pas tous égaux, sauf si c\'est un carré.')
+      + cm1Redac('« Un carré est un rectangle »', '', 'C\'est vrai : un carré a 4 angles droits.')],
   ]),
   histoire: cm1Histoire('Un peu d\'histoire : les pavages de l\'Alhambra', [
     'Au palais de l\'<b>Alhambra</b>, à Grenade en Espagne, construit au XIV<sup>e</sup> siècle, les murs sont couverts de mosaïques faites de triangles, de carrés, d\'hexagones et d\'étoiles qui s\'emboîtent sans laisser de trou.',

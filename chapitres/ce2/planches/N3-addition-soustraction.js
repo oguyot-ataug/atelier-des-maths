@@ -127,9 +127,9 @@ PLANCHES['ce2|Addition et soustraction posées'] = [
       { etoiles: 2, consigne: 'Complète.',
         ...rmp([['999 + @ = 1 000', 1], ['@ + 600 = 1 000', 400], ['7 500 + @ = 8 000', 500], ['@ − 1 000 = 4 500', '5 500'], ['2 750 + @ = 3 000', 250], ['@ + 90 = 1 000', 910], ['4 300 + @ = 5 000', 700], ['@ − 50 = 9 950', '10 000']], 4) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Mia a 1 000 points au jeu. Elle en perd 250, puis en gagne 600. Combien de points a-t-elle ?',
-        corr: cm1Redac('Après la perte', '1 000 − 250 = 750', 'Mia a 750 points.') + cm1Redac('Après le gain', '750 + 600 = 1 350', 'Mia a 1 350 points.') },
+        corr: cm1Redac('Points après la perte', '1 000 − 250 = 750', 'Mia a 750 points.') + cm1Redac('Points après le gain', '750 + 600 = 1 350', 'Mia a 1 350 points.') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Un libraire a 2 500 livres. Il en vend 500 le lundi et 1 000 le samedi. Combien lui en reste-t-il ?',
-        corr: cm1Redac('Après le lundi', '2 500 − 500 = 2 000', 'Il reste 2 000 livres.') + cm1Redac('Après le samedi', '2 000 − 1 000 = 1 000', 'Il reste 1 000 livres au libraire.') },
+        corr: cm1Redac('Livres restants après le lundi', '2 500 − 500 = 2 000', 'Il reste 2 000 livres.') + cm1Redac('Livres restants après le samedi', '2 000 − 1 000 = 1 000', 'Il reste 1 000 livres au libraire.') },
       { etoiles: 1, consigne: 'Calcule de tête.', ...rmp([['999 + 1 = @', '1 000'], ['2 500 + 500 = @', '3 000'], ['4 000 − 1 = @', '3 999'], ['1 200 + 800 = @', '2 000'], ['9 999 + 1 = @', '10 000'], ['6 000 − 10 = @', '5 990']], 3) },
     ] },
 ];

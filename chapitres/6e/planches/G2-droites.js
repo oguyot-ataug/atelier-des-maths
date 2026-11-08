@@ -194,7 +194,7 @@ PLANCHES['6e|Droites parallèles et perpendiculaires'] = [
           `<span class="cm-fig-d">${S(170, 110, L([6, 88], [164, 88], K, 2) + cmT(160, 82, '(d)', { fs: 10, a: 'end' }) + L([70, 4], [70, 106], Ro, 2) + cmT(76, 14, "(d')", { fs: 10, c: Ro, a: 'start' })
             + L([6, 36], [164, 36], Bl, 2) + cmT(160, 30, "(d'')", { fs: 10, c: Bl, a: 'end' }) + ad([70, 88], [1, 0], [0, -1]) + ad([70, 36], [1, 0], [0, 1], Bl) + P([70, 36], 'A', -14, -6), 160)}</span>`) },
       { etoiles: 3, col: 1, cahier: true, consigne: `Léo affirme : « Les droites (d1) et (d2) sont parallèles, puisqu'elles ne se coupent pas. » A-t-il raison ? Explique comment vérifier.<div style="text-align:center;">${S(240, 90, L([10, 15], [230, 40], K, 2) + L([10, 80], [230, 58], Ro, 2) + cmT(20, 32, '(d1)', { fs: 12, a: 'start' }) + cmT(20, 72, '(d2)', { fs: 12, c: Ro, a: 'start' }))}</div>`,
-        corr: cm1Redac('Réponse', { suite: ['Une droite est illimitée : je prolonge (d1) et (d2) vers la droite.', 'L\'écart entre les deux droites diminue : elles finissent par se couper.'] }, 'Léo a tort : (d1) et (d2) sont sécantes. Pour vérifier, on prolonge les droites, ou on mesure l\'écart entre elles en deux endroits.') },
+        corr: cm1Redac('Position des droites (d1) et (d2)', { suite: ['Une droite est illimitée : je prolonge (d1) et (d2) vers la droite.', 'L\'écart entre les deux droites diminue : elles finissent par se couper.'] }, 'Léo a tort : (d1) et (d2) sont sécantes. Pour vérifier, on prolonge les droites, ou on mesure l\'écart entre elles en deux endroits.') },
     ] },
   { titre: 'Médiatrice : définition et propriété', duree: '35 min',
     attendus: ['Connaître la définition de la médiatrice d\'un segment', 'Lire et utiliser les codages (milieu, angle droit)', 'Utiliser la propriété : un point de la médiatrice est à égale distance des extrémités'],
@@ -242,7 +242,7 @@ PLANCHES['6e|Droites parallèles et perpendiculaires'] = [
             + ad([90, 108], [1, 0], [0, -1], Ve) + cd([20, 108], [90, 108]) + cd([90, 108], [160, 108]) + P([20, 108], 'A', -12, 4) + P([160, 108], 'B', 6, 4) + P([90, 15], 'C', 6, -2) + P([90, 108], 'I', -12, 16)
             + cmT(48, 56, '5 cm', { fs: 10, c: Bl, a: 'end' }), 170)}</span>`) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Construis un carré ABCD de 4 cm de côté. Trace la médiatrice de [AB] et la médiatrice de [BC]. Que remarques-tu ?',
-        corr: cm1Redac('Observation', { suite: ['La médiatrice de [AB] passe aussi par le milieu de [CD].', 'La médiatrice de [BC] passe aussi par le milieu de [AD].'] }, 'Les deux médiatrices se coupent au centre du carré et le partagent en quatre petits carrés de 2 cm de côté.') },
+        corr: cm1Redac('Remarque sur les médiatrices', { suite: ['La médiatrice de [AB] passe aussi par le milieu de [CD].', 'La médiatrice de [BC] passe aussi par le milieu de [AD].'] }, 'Les deux médiatrices se coupent au centre du carré et le partagent en quatre petits carrés de 2 cm de côté.') },
     ] },
 ];
 })();

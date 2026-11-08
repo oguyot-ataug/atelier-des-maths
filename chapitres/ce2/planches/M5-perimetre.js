@@ -32,11 +32,11 @@ PLANCHES['ce2|Le périmètre'] = [
     attendus: ['Additionner les longueurs des côtés', 'Utiliser les côtés égaux du carré et du rectangle'],
     exos: [
       { etoiles: 1, cahier: true, consigne: `Calcule le périmètre de ce quadrilatère.<div style="text-align:center;">${fig1}</div>`,
-        corr: cm1Redac('Périmètre', '5 + 3 + 6 + 3 = 17', 'Le périmètre mesure 17 cm.') },
+        corr: cm1Redac('Périmètre du quadrilatère', '5 + 3 + 6 + 3 = 17', 'Le périmètre mesure 17 cm.') },
       { etoiles: 2, col: 1, consigne: 'Complète.',
         ...rmp([['Un carré de 4 cm de côté a un périmètre de @ cm.', 16], ['Un rectangle de 6 cm sur 2 cm a un périmètre de @ cm.', 16], ['Un triangle de côtés 3 cm, 4 cm, 5 cm a un périmètre de @ cm.', 12]], 3) },
       { etoiles: 3, col: 1, cahier: true, consigne: `Calcule le périmètre de cette figure en millimètres.<div style="text-align:center;">${fig2}</div>`,
-        corr: cm1Redac('En millimètres', { suite: ['40 + 20 + 20 + 15 + 20 + 35 = 150'] }, 'Le périmètre mesure 150 mm, soit 15 cm.') },
+        corr: cm1Redac('Périmètre de la figure en millimètres', { suite: ['40 + 20 + 20 + 15 + 20 + 35 = 150'] }, 'Le périmètre mesure 150 mm, soit 15 cm.') },
       { etoiles: 1, col: 1, consigne: 'Calcule le périmètre.', ...P3.rmp([['côtés 4 cm, 6 cm, 4 cm, 6 cm : @ cm', 20], ['côtés 25 mm, 30 mm, 45 mm : @ mm', 100]], 2) },
       { etoiles: 2, col: 1, consigne: 'Calcule le périmètre.', ...P3.rmp([['un carré de 9 cm de côté : @ cm', 36], ['un rectangle de 10 m sur 4 m : @ m', 28]], 2) },
     ] },

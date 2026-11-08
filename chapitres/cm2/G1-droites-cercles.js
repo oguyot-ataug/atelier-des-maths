@@ -68,7 +68,7 @@ ${cm1Demo('c2-g1-para', 'Tracer la parallèle à une droite passant par un point
   ],
   exos: cm1Exos('c2g1', [
     [`Écris avec les bons symboles.${cm1Liste(['la droite qui passe par E et F', 'le segment d\'extrémités E et F', 'la demi-droite d\'origine E qui passe par F', 'la longueur du segment d\'extrémités E et F'])}`,
-      cm1Redac('Notations', { suite: ['droite : (EF)', 'segment : [EF]', 'demi-droite : [EF)', 'longueur : EF'] }, 'Parenthèses pour la droite, crochets pour le segment, un crochet et une parenthèse pour la demi-droite, rien pour la longueur.')],
+      cm1Redac('Notations avec les bons symboles', { suite: ['droite : (EF)', 'segment : [EF]', 'demi-droite : [EF)', 'longueur : EF'] }, 'Parenthèses pour la droite, crochets pour le segment, un crochet et une parenthèse pour la demi-droite, rien pour la longueur.')],
     ['Place trois points R, S, T alignés, puis un point U qui n\'est pas sur la droite (RS).',
       cm1Redac('Points alignés', '', 'Je trace une droite à la règle et j\'y place R, S et T : ils sont alignés. Je place U en dehors de cette droite.')],
     ['Trace une droite (d), un point A hors de (d), puis la droite perpendiculaire à (d) passant par A.',

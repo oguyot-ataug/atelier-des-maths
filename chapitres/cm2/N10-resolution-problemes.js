@@ -42,8 +42,8 @@ ${cm1Exemple('Un club achète 12 ballons à 15,50 € et 3 filets à 42 €. Il 
 ${schema([[['ballons : 12 × 15,50', 60, B], ['filets : 3 × 42', 40, V]]], 'dépense ?')}
 ${cm1Redac('Prix des ballons', '12 × 15,50 = 186', 'Les ballons coûtent 186 €.')}
 ${cm1Redac('Prix des filets', '3 × 42 = 126', 'Les filets coûtent 126 €.')}
-${cm1Redac('Dépense', '186 + 126 = 312', 'Le club dépense 312 €.')}
-${cm1Redac('Paiement', '7 × 50 = 350', 'Le club donne 350 €.')}
+${cm1Redac('Somme dépensée par le club', '186 + 126 = 312', 'Le club dépense 312 €.')}
+${cm1Redac('Somme donnée par le club', '7 × 50 = 350', 'Le club donne 350 €.')}
 ${cm1Redac('Monnaie rendue', '350 − 312 = 38', 'On rend 38 € au club : c\'est plausible, moins que ce qu\'il a donné.')}
 ${cm1Rem('Vérifier la vraisemblance fait partie de la résolution : un rendu négatif, un nombre de personnes à virgule, une voiture de 400 m… doivent alerter.')}
 
@@ -76,7 +76,7 @@ ${cm1Demo('c2-rp-algo', 'Chercher toutes les solutions', 'De combien de façons 
     ['Un paquet de 6 yaourts coûte 3,30 €. Combien coûtent 5 paquets ? Combien y a-t-il de yaourts ?',
       cm1Redac('Prix de 5 paquets', '5 × 3,30 = 16,50', '5 paquets coûtent 16,50 €.') + cm1Redac('Nombre de yaourts', '5 × 6 = 30', 'Il y a 30 yaourts.')],
     ['La tour Eiffel mesure 330 m. Une maison mesure 10 m. Combien de fois la tour est-elle plus haute ?',
-      cm1Redac('Comparaison', '330 : 10 = 33', 'La tour Eiffel est 33 fois plus haute que la maison.')],
+      cm1Redac('Nombre de fois que la tour est plus haute', '330 : 10 = 33', 'La tour Eiffel est 33 fois plus haute que la maison.')],
     ['Paul pèse 38 kg ; il pèse 7 kg de plus que sa sœur. Combien pèse sa sœur ?',
       cm1Redac('Masse de la sœur', '38 − 7 = 31', 'C\'est Paul le plus lourd : sa sœur pèse 31 kg.')],
     ['Une école de 336 élèves a 14 classes de même effectif. Combien y a-t-il d\'élèves par classe ?',
@@ -85,9 +85,9 @@ ${cm1Demo('c2-rp-algo', 'Chercher toutes les solutions', 'De combien de façons 
       cm1Redac('Nombre de tenues', '3 × 2 = 6', 'On peut faire 6 tenues différentes.')],
     ['Au cinéma, la place coûte 8 €, ou la carte de 10 places 65 €. Quel est le prix le plus bas pour 13 places ?',
       cm1Redac('1 carte et 3 places', ['65 + 3 × 8', '65 + 24', '89'], 'Avec une carte et 3 places, on paie 89 €.')
-      + cm1Redac('Les autres possibilités', { suite: ['13 places à l\'unité : 13 × 8 = 104', '2 cartes : 2 × 65 = 130'] }, 'Le prix le plus bas est 89 €.')],
+      + cm1Redac('Prix des autres possibilités', { suite: ['13 × 8 = 104', '2 × 65 = 130'] }, '13 places à l\'unité coûtent 104 € et 2 cartes 130 € : le prix le plus bas est 89 €.')],
     ['Un fermier a des poules et des lapins : 10 têtes et 32 pattes. Combien a-t-il de lapins ?',
-      cm1Redac('Si les 10 animaux étaient des poules', '10 × 2 = 20', 'Il y aurait 20 pattes.')
+      cm1Redac('Pattes si les 10 animaux étaient des poules', '10 × 2 = 20', 'Il y aurait 20 pattes.')
       + cm1Redac('Pattes qui manquent', '32 − 20 = 12', 'Il manque 12 pattes ; chaque lapin a 2 pattes de plus qu\'une poule.')
       + cm1Redac('Nombre de lapins', '12 : 2 = 6', 'Il y a 6 lapins (et 4 poules). Vérification : 6 × 4 + 4 × 2 = 32.')],
     ['Pour une sortie, 5 accompagnateurs et 142 élèves prennent des cars de 50 places. Combien faut-il de cars ?',

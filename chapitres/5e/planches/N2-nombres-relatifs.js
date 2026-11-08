@@ -82,7 +82,7 @@ PLANCHES['5e|Nombres relatifs'] = [
         eleve: plListe(['compris strictement entre −3 et 1 : ' + B(2) + ' ; ' + B(2) + ' ; ' + B(2), 'compris strictement entre −6 et −2 : ' + B(2) + ' ; ' + B(2) + ' ; ' + B(2)]),
         corr: plListe(['compris strictement entre −3 et 1 : ' + R('−2') + ' ; ' + R('−1') + ' ; ' + R('0'), 'compris strictement entre −6 et −2 : ' + R('−5') + ' ; ' + R('−4') + ' ; ' + R('−3')]) },
       { etoiles: 3, cahier: true, consigne: 'Températures minimales d\'une semaine : lundi −4 °C, mardi −7 °C, mercredi 1 °C, jeudi −2 °C, vendredi 0 °C. Range-les de la plus froide à la plus douce. Quel jour a-t-il fait le plus froid ?',
-        corr: cm1Redac('Rangement', '−7 &lt; −4 &lt; −2 &lt; 0 &lt; 1', 'Le jour le plus froid est mardi (−7 °C).') },
+        corr: cm1Redac('Températures de la plus froide à la plus douce', '−7 &lt; −4 &lt; −2 &lt; 0 &lt; 1', 'Le jour le plus froid est mardi (−7 °C).') },
     ] },
   { titre: 'Se repérer dans le plan', duree: '40 min',
     attendus: ['Lire les coordonnées d\'un point dans un repère', 'Placer un point de coordonnées données', 'Connaître l\'abscisse et l\'ordonnée'],
@@ -120,7 +120,7 @@ PLANCHES['5e|Nombres relatifs'] = [
       { etoiles: 3, col: 1, cahier: true, consigne: 'À Moscou, il fait −18 °C ; à Paris, 25 degrés de plus ; à Madrid, 9 degrés de plus qu\'à Paris. Quelle température fait-il à Paris ? À Madrid ?',
         corr: cm1Redac('Température à Paris', '−18 + 25 = 7', 'Il fait 7 °C à Paris.') + cm1Redac('Température à Madrid', '7 + 9 = 16', 'Il fait 16 °C à Madrid.') },
       { etoiles: 3, cahier: true, consigne: 'Un jeu : on gagne 5 points par bonne réponse et on perd 3 points par erreur. Zoé part de 0, a 4 bonnes réponses et 9 erreurs. Quel est son score ?',
-        corr: cm1Redac('Score', '4 × 5 − 9 × 3 = 20 − 27 = −7', 'Le score de Zoé est −7 points.') },
+        corr: cm1Redac('Score de Zoé', '4 × 5 − 9 × 3 = 20 − 27 = −7', 'Le score de Zoé est −7 points.') },
     ] },
 ];
 })();

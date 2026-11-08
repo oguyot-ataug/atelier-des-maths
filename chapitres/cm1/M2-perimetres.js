@@ -100,8 +100,8 @@ ${cm1Demo('pe-unite', 'Calculer un périmètre avec des unités différentes', '
     ['On veut entourer un enclos rectangulaire de 25 m sur 18 m avec du grillage. Quelle longueur de grillage faut-il ?',
       cm1Redac('Longueur de grillage', { nom: 'P', lignes: ['2 × 25 m + 2 × 18 m', '50 m + 36 m', '86 m'] }, 'Il faut 86 m de grillage.', rectFig(150, 108, '25 m', '18 m', { largeur: 190, c: '#8DB84A' }))],
     ['Trace deux figures différentes ayant chacune un périmètre de 20 carreaux sur ton cahier.',
-      cm1Redac('Un carré', '5 + 5 + 5 + 5 = 20', 'Un carré de 5 carreaux de côté a un périmètre de 20 carreaux.', cm1Quad(17, 7, cm1Rect(1, 1, 5, 5).concat(cm1Rect(8, 2, 7, 3)), { k: 16, contour: '#E35D3A' }))
-      + cm1Redac('Un rectangle', '7 + 3 + 7 + 3 = 20', 'Un rectangle de 7 carreaux sur 3 carreaux a aussi un périmètre de 20 carreaux.')],
+      cm1Redac('Première figure : un carré', '5 + 5 + 5 + 5 = 20', 'Un carré de 5 carreaux de côté a un périmètre de 20 carreaux.', cm1Quad(17, 7, cm1Rect(1, 1, 5, 5).concat(cm1Rect(8, 2, 7, 3)), { k: 16, contour: '#E35D3A' }))
+      + cm1Redac('Deuxième figure : un rectangle', '7 + 3 + 7 + 3 = 20', 'Un rectangle de 7 carreaux sur 3 carreaux a aussi un périmètre de 20 carreaux.')],
   ], { titre: 'Rédaction type : « Périmètre d\'un rectangle »', lignes: [['P = 2 × 8 cm + 2 × 3 cm', 'J\'écris le calcul : 2 longueurs et 2 largeurs.'], ['P = 16 cm + 6 cm = 22 cm', 'Je calcule.'], ['Le périmètre est 22 cm.', 'Je conclus avec l\'unité.']] }),
   histoire: cm1Histoire('Un peu d\'histoire : les arpenteurs', [
     'Le mot <b>périmètre</b> vient du grec : <i>peri</i> veut dire « autour » et <i>metron</i> veut dire « mesure ». C\'est donc « la mesure autour ».',

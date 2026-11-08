@@ -71,7 +71,7 @@ ${cm1Sous('A', 'Atelier : ouvre l\'angle')}
     [`Les aiguilles d'une horloge forment-elles un angle aigu, droit ou obtus ?${cm1Liste(['à 3 h', 'à 5 h', 'à 2 h'])}`,
       cm1Redac('Angles des aiguilles', { suite: ['3 h : un quart de tour, angle droit', '5 h : plus qu\'un quart de tour, angle obtus', '2 h : moins qu\'un quart de tour, angle aigu'] }, 'À 3 h l\'angle est droit, à 5 h il est obtus, à 2 h il est aigu.')],
     ['Vrai ou faux ? « Si je prolonge les côtés d\'un angle, l\'angle devient plus grand. »',
-      cm1Redac('Réponse', 'La taille d\'un angle dépend seulement de l\'écartement de ses côtés.', 'Faux : prolonger les côtés ne change pas l\'angle.')],
+      cm1Redac('Vrai ou faux ?', 'La taille d\'un angle dépend seulement de l\'écartement de ses côtés.', 'Faux : prolonger les côtés ne change pas l\'angle.')],
   ]),
   histoire: cm1Histoire('Un peu d\'histoire : l\'équerre des bâtisseurs', [
     'Dès l\'Antiquité, les bâtisseurs avaient besoin d\'angles droits pour que les murs tiennent debout. Les Égyptiens utilisaient une corde à <b>13 nœuds</b> régulièrement espacés : en formant un triangle de côtés 3, 4 et 5 intervalles, ils obtenaient un angle droit parfait !',
@@ -116,9 +116,9 @@ PLANCHES['cm1|Angles'] = [
         eleve: plGrille(FIG.map(([n, f]) => col(S(110, 85, f, 100), `${n} : ${B(2)}`)), 4),
         corr: plGrille(FIG.map(([n, f, k, m]) => col(S(110, 85, f + m, 100), `${n} : ${R(k)}`)), 4) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Avec ta règle et ton équerre, trace un angle droit, un angle aigu, puis un angle obtus. Code l\'angle droit.',
-        corr: cm1Redac('Méthode', { suite: ['Angle droit : je trace le long des deux bords de l\'angle droit de l\'équerre.', 'Aigu : plus fermé que l\'équerre ; obtus : plus ouvert.'] }, 'Je code l\'angle droit avec un petit carré.', `<span class="cm-fig-d">${ang(90)}</span>`) },
+        corr: cm1Redac('Tracé des trois angles', { suite: ['Angle droit : je trace le long des deux bords de l\'angle droit de l\'équerre.', 'Aigu : plus fermé que l\'équerre ; obtus : plus ouvert.'] }, 'Je code l\'angle droit avec un petit carré.', `<span class="cm-fig-d">${ang(90)}</span>`) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'À 3 h, les aiguilles d\'une horloge forment un angle droit. Quel angle forment-elles à 2 h ? Et à 5 h ?',
-        corr: cm1Redac('À 2 h', 'les aiguilles sont plus proches qu\'à 3 h', 'À 2 h, l\'angle est aigu.') + cm1Redac('À 5 h', 'les aiguilles sont plus écartées qu\'à 3 h', 'À 5 h, l\'angle est obtus.') },
+        corr: cm1Redac('Angle des aiguilles à 2 h', 'les aiguilles sont plus proches qu\'à 3 h', 'À 2 h, l\'angle est aigu.') + cm1Redac('Angle des aiguilles à 5 h', 'les aiguilles sont plus écartées qu\'à 3 h', 'À 5 h, l\'angle est obtus.') },
     ] },
 ];
 }

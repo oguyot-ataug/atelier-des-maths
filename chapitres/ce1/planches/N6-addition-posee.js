@@ -25,9 +25,9 @@ PLANCHES['ce1|L\'addition posée'] = [
   { titre: 'Problèmes', duree: '25 min',
     attendus: ['Résoudre des problèmes avec l\'addition posée', 'Vérifier avec un ordre de grandeur'],
     exos: [
-      { etoiles: 1, cahier: true, consigne: 'Un fermier a 256 poules et 187 canards. Combien d\'animaux ?', corr: cm1Redac('Animaux', { pose: pose(256, 187, '11 ') }, 'Le fermier a 443 animaux.') },
+      { etoiles: 1, cahier: true, consigne: 'Un fermier a 256 poules et 187 canards. Combien d\'animaux ?', corr: cm1Redac('Nombre d\'animaux', { pose: pose(256, 187, '11 ') }, 'Le fermier a 443 animaux.') },
       { etoiles: 2, cahier: true, consigne: 'Un vélo coûte 329 € et un casque 48 €. Combien coûtent-ils ensemble ?', corr: cm1Redac('Prix total', { pose: pose(329, 48, ' 1 ') }, 'Ensemble, ils coûtent 377 €.') },
-      { etoiles: 3, cahier: true, consigne: 'Additionne 125, 248 et 307.', corr: cm1Redac('Somme', { pose: cm1Posee([[' ', '125'], ['+', '248'], ['+', '307'], [' ', '680']], ' 2 ') }, '125 + 248 + 307 = 680.') },
+      { etoiles: 3, cahier: true, consigne: 'Additionne 125, 248 et 307.', corr: cm1Redac('Résultat de l\'addition', { pose: cm1Posee([[' ', '125'], ['+', '248'], ['+', '307'], [' ', '680']], ' 2 ') }, '125 + 248 + 307 = 680.') },
       { etoiles: 1, col: 1, consigne: 'Il y a 148 filles et 136 garçons dans l\'école. Combien d\'élèves ?', eleve: PCP.lig(vide(148, 136)) + PCP.lig('Il y a ' + B(3) + ' élèves.'), corr: PCP.lig(pose(148, 136, ' 1 ')) + PCP.lig('Il y a ' + R(284) + ' élèves.') },
       { etoiles: 2, col: 1, consigne: 'Un livre a 215 pages, un autre 196. Combien de pages en tout ?', eleve: PCP.lig(vide(215, 196)) + PCP.lig('Il y a ' + B(3) + ' pages.'), corr: PCP.lig(pose(215, 196, '11 ')) + PCP.lig('Il y a ' + R(411) + ' pages.') },
       { etoiles: 2, consigne: 'Sans calculer, entoure le résultat le plus proche.', ...P3.chx([['198 + 305 : environ', '500', '300 · 500 · 800'], ['412 + 389 : environ', '800', '500 · 800 · 1 000'], ['99 + 99 : environ', '200', '100 · 200 · 1 000']]) },

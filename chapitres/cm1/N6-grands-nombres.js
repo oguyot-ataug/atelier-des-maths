@@ -150,7 +150,7 @@ document.getElementById('exos-demo-cm1-grands-nombres').innerHTML = `
     Écris en chiffres le nombre : quatre-cent-douze-mille-sept-cent-trois.
     <button type="button" class="exo-correction-toggle" data-target="cm1gn-correction-1" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
     <div class="exo-correction" id="cm1gn-correction-1">
-      ${cm1Redac('Le nombre en chiffres', { suite: ['classe des mille : quatre-cent-douze, 412', 'classe des unités : sept-cent-trois, 703'] }, 'Le nombre s\'écrit 412 703.')}
+      ${cm1Redac('Nombre en chiffres', { suite: ['classe des mille : quatre-cent-douze, 412', 'classe des unités : sept-cent-trois, 703'] }, 'Le nombre s\'écrit 412 703.')}
     </div>
   </div>
   <div class="exo-card">
@@ -182,7 +182,7 @@ document.getElementById('exos-demo-cm1-grands-nombres').innerHTML = `
     Attention au piège ! Compare 74 500 et 8 900 en expliquant ta méthode.
     <button type="button" class="exo-correction-toggle" data-target="cm1gn-correction-5" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
     <div class="exo-correction" id="cm1gn-correction-5">
-      ${cm1Redac('Comparaison', { suite: ['74 500 a 5 chiffres.', '8 900 a 4 chiffres.'] }, 'Donc 74 500 &gt; 8 900, même si 8 900 commence par un chiffre plus grand : on vérifie d\'abord le nombre de chiffres.')}
+      ${cm1Redac('Comparaison de 74 500 et 8 900', { suite: ['74 500 a 5 chiffres.', '8 900 a 4 chiffres.'] }, 'Donc 74 500 &gt; 8 900, même si 8 900 commence par un chiffre plus grand : on vérifie d\'abord le nombre de chiffres.')}
     </div>
   </div>
 </div>
@@ -254,9 +254,9 @@ PLANCHES['cm1|Grands nombres jusqu\'à 999 999'] = [
         eleve: plListe(['le chiffre des milliers ? ' + B(1), 'le nombre de milliers ? ' + B(2), 'le chiffre des centaines ? ' + B(1), 'le nombre de centaines ? ' + B(3)]),
         corr: plListe(['le chiffre des milliers ? ' + R(5), 'le nombre de milliers ? ' + R(485), 'le chiffre des centaines ? ' + R(2), 'le nombre de centaines ? ' + R('4 852')]) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Écris le plus grand nombre de 6 chiffres tous différents. Puis le plus petit.',
-        corr: cm1Redac('Le plus grand', 'Je prends les chiffres du plus grand au plus petit : 987 654', 'Le plus grand nombre est 987 654.') + cm1Redac('Le plus petit', 'Il ne commence pas par 0 : 102 345', 'Le plus petit nombre est 102 345.') },
+        corr: cm1Redac('Plus grand nombre', 'Je prends les chiffres du plus grand au plus petit : 987 654', 'Le plus grand nombre est 987 654.') + cm1Redac('Plus petit nombre', 'Il ne commence pas par 0 : 102 345', 'Le plus petit nombre est 102 345.') },
       { etoiles: 3, cahier: true, consigne: 'Un stade a 81 338 places. Écris ce nombre en lettres, puis donne son nombre de milliers.',
-        corr: cm1Redac('En lettres', '81 338', 'On écrit : quatre-vingt-un-mille-trois-cent-trente-huit.') + cm1Redac('Nombre de milliers', '81 338 = 81 milliers et 338 unités', 'Le nombre de milliers est 81.') },
+        corr: cm1Redac('Nombre écrit en lettres', '81 338', 'On écrit : quatre-vingt-un-mille-trois-cent-trente-huit.') + cm1Redac('Nombre de milliers', '81 338 = 81 milliers et 338 unités', 'Le nombre de milliers est 81.') },
     ] },
   { titre: 'Comparer, ranger et placer les grands nombres', duree: '30 min',
     attendus: ['Comparer et ranger des nombres jusqu\'à 999 999', 'Encadrer un nombre', 'Repérer un nombre sur une demi-droite graduée'],
@@ -277,9 +277,9 @@ PLANCHES['cm1|Grands nombres jusqu\'à 999 999'] = [
         eleve: plListe(['le nombre juste après 99 999 : ' + B(), '1 000 de plus que 245 600 : ' + B(), '10 000 de moins que 380 000 : ' + B(), '100 000 de plus que 900 000 : ' + B()]),
         corr: plListe(['le nombre juste après 99 999 : ' + R('100 000'), '1 000 de plus que 245 600 : ' + R('246 600'), '10 000 de moins que 380 000 : ' + R('370 000'), '100 000 de plus que 900 000 : ' + R('1 000 000')]) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Lyon compte environ 522 000 habitants, Marseille 873 000 et Toulouse 504 000. Range ces villes de la plus peuplée à la moins peuplée.',
-        corr: cm1Redac('Comparaison', '873 000 &gt; 522 000 &gt; 504 000', 'Marseille est la plus peuplée, puis Lyon, puis Toulouse.') },
+        corr: cm1Redac('Villes de la plus peuplée à la moins peuplée', '873 000 &gt; 522 000 &gt; 504 000', 'Marseille est la plus peuplée, puis Lyon, puis Toulouse.') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Je suis un nombre compris entre 600 000 et 700 000. Mon chiffre des unités de mille est 8 ; tous mes autres chiffres sont des 0, sauf celui des centaines de mille. Qui suis-je ?',
-        corr: cm1Redac('Le nombre mystère', { suite: ['Entre 600 000 et 700 000 : le chiffre des centaines de mille est 6.', 'Le chiffre des unités de mille est 8, les autres sont des 0.'] }, 'Je suis 608 000.') },
+        corr: cm1Redac('Nombre mystère', { suite: ['Entre 600 000 et 700 000 : le chiffre des centaines de mille est 6.', 'Le chiffre des unités de mille est 8, les autres sont des 0.'] }, 'Je suis 608 000.') },
     ] },
 ];
 })();

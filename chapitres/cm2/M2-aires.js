@@ -69,7 +69,7 @@ ${cm1Demo('c2-ai-L', 'Calculer l\'aire d\'une figure en L', 'Une figure en L est
       + cm1Redac('Aire du carré de 7 cm de côté', '7 × 7 = 49', 'Son aire est 49 cm².')
       + cm1Redac('Aire du rectangle de 2,5 m sur 4 m', '2,5 × 4 = 10', 'Son aire est 10 m².')],
     [`Convertis.${cm1Liste(['5 dm² en cm²', '3 m² en dm²', '600 cm² en dm²', '1,5 m² en dm²'])}`,
-      cm1Redac('Conversions', { suite: ['5 × 100 = 500', '3 × 100 = 300', '600 : 100 = 6', '1,5 × 100 = 150'] }, '5 dm², c\'est 500 cm² ; 3 m², c\'est 300 dm² ; 600 cm², c\'est 6 dm² ; 1,5 m², c\'est 150 dm².')],
+      cm1Redac('Conversions des aires', { suite: ['5 × 100 = 500', '3 × 100 = 300', '600 : 100 = 6', '1,5 × 100 = 150'] }, '5 dm², c\'est 500 cm² ; 3 m², c\'est 300 dm² ; 600 cm², c\'est 6 dm² ; 1,5 m², c\'est 150 dm².')],
     [`Quelle unité choisir (cm², dm², m²) ?${cm1Liste(['l\'aire d\'un timbre', 'l\'aire d\'une salle de classe', 'l\'aire d\'une feuille de cahier'])}`,
       cm1Redac('Unités adaptées', '', 'Un timbre se mesure en cm², une salle de classe en m², une feuille de cahier en dm² (environ 6 dm², c\'est-à-dire environ 620 cm²).')],
     ['Un carré a une aire de 36 cm². Combien mesure son côté ? Quel est son périmètre ?',

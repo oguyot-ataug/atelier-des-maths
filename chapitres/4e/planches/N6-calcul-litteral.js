@@ -26,7 +26,7 @@ PLANCHES['4e|Calcul littéral'] = [
       { etoiles: 2, col: 1, consigne: 'Entoure l\'expression qui traduit la phrase (x désigne un nombre).',
         ...chx([['Le double de x, augmenté de 3 :', '2x + 3', '2(x + 3) · 2x + 3 · x² + 3'], ['Le carré de la somme de x et de 1 :', '(x + 1)²', 'x² + 1 · (x + 1)² · 2(x + 1)'], ['Le triple de la différence de x et 4 :', '3(x − 4)', '3x − 4 · 3(x − 4) · x − 12']]) },
       { etoiles: 2, cahier: true, consigne: illu(rect('x + 3', '5'), 'Ce rectangle a pour longueur x + 3 et pour largeur 5 (en cm). Écris une expression de son périmètre et de son aire, puis calcule-les pour x = 4.'),
-        corr: cm1Redac('Périmètre', 'P = 2(x + 3) + 2 × 5', '') + cm1Redac('Périmètre pour x = 4', 'P = 2 × 7 + 10 = 24', 'Pour x = 4, le périmètre est de 24 cm.') + cm1Redac('Aire', 'A = 5(x + 3)', '') + cm1Redac('Aire pour x = 4', 'A = 5 × 7 = 35', 'Pour x = 4, l\'aire est de 35 cm².') },
+        corr: cm1Redac('Expression du périmètre', 'P = 2(x + 3) + 2 × 5', '') + cm1Redac('Périmètre pour x = 4', 'P = 2 × 7 + 10 = 24', 'Pour x = 4, le périmètre est de 24 cm.') + cm1Redac('Expression de l\'aire', 'A = 5(x + 3)', '') + cm1Redac('Aire pour x = 4', 'A = 5 × 7 = 35', 'Pour x = 4, l\'aire est de 35 cm².') },
     ] },
   { titre: 'Développer', duree: '30 min',
     attendus: ['Développer avec la distributivité simple', 'Gérer les signes en développant', 'Développer une expression du type x(x + a)'],
@@ -75,7 +75,7 @@ PLANCHES['4e|Calcul littéral'] = [
       { etoiles: 2, cahier: true, consigne: illu(figureL, 'Cette figure est un rectangle de 2x + 4 sur 6, dont on a retiré un rectangle de x sur 3 (en cm). Montre que son aire est égale à 9x + 24.'),
         corr: cm1Redac('Aire de la figure', { suite: ['A = 6(2x + 4) − 3x', 'A = 12x + 24 − 3x', 'A = 9x + 24'] }, 'L\'aire de la figure est bien égale à 9x + 24 (en cm²).') },
       { etoiles: 3, cahier: true, consigne: 'Programme : choisir un nombre ; ajouter 5 ; multiplier par 4 ; soustraire 20 ; soustraire le triple du nombre choisi. Prouve que l\'on obtient toujours le nombre de départ.',
-        corr: cm1Redac('Avec x', { nom: 'E', lignes: ['4(x + 5) − 20 − 3x', '4x + 20 − 20 − 3x', 'x'] }, 'On obtient toujours le nombre choisi au départ.') },
+        corr: cm1Redac('Résultat avec un nombre x', { nom: 'E', lignes: ['4(x + 5) − 20 − 3x', '4x + 20 − 20 − 3x', 'x'] }, 'On obtient toujours le nombre choisi au départ.') },
     ] },
 ];
 })();

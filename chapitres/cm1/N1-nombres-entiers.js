@@ -79,7 +79,7 @@ ${cm1Demo('ne-graduer', 'Trouver le nombre qui correspond à un point sur une de
   ],
   exos: cm1Exos('ne', [
     ['Écris en chiffres : cinq-mille-quarante-huit.',
-      cm1Redac('Cinq-mille-quarante-huit', '5 milliers, 0 centaine, 4 dizaines et 8 unités', 'Le nombre s\'écrit 5 048 : il n\'y a pas de centaines, on écrit 0 au rang des centaines.')],
+      cm1Redac('Cinq-mille-quarante-huit en chiffres', '5 milliers, 0 centaine, 4 dizaines et 8 unités', 'Le nombre s\'écrit 5 048 : il n\'y a pas de centaines, on écrit 0 au rang des centaines.')],
     ['Écris en lettres : 3 907.',
       cm1Redac('3 907 en lettres', '3 milliers, 9 centaines et 7 unités', 'On écrit : trois-mille-neuf-cent-sept.')],
     ['Décompose 8 506 de deux façons.',
@@ -89,7 +89,7 @@ ${cm1Demo('ne-graduer', 'Trouver le nombre qui correspond à un point sur une de
       + cm1Redac('Nombre de dizaines', '4 730 = 473 dizaines', 'Le nombre de dizaines de 4 730 est 473.')
       + cm1Redac('Nombre de centaines', '4 730 = 47 centaines et 30 unités', 'Le nombre de centaines de 4 730 est 47.')],
     [`Complète avec &lt;, &gt; ou =.${cm1Liste(['6 099 … 6 100', '870 … 1 002', '3 450 … 3 405'])}`,
-      cm1Redac('Comparaisons', { suite: ['6 099 &lt; 6 100', '870 &lt; 1 002', '3 450 &gt; 3 405'] }, '6 099 est plus petit que 6 100 ; 870 n\'a que 3 chiffres ; 3 450 a 5 dizaines contre 0 pour 3 405.')],
+      cm1Redac('Comparaison des nombres', { suite: ['6 099 &lt; 6 100', '870 &lt; 1 002', '3 450 &gt; 3 405'] }, '6 099 est plus petit que 6 100 ; 870 n\'a que 3 chiffres ; 3 450 a 5 dizaines contre 0 pour 3 405.')],
     ['Encadre 2 836 entre deux milliers, puis entre deux centaines consécutives.',
       cm1Redac('Encadrement au millier', '2 000 &lt; 2 836 &lt; 3 000', '2 836 est compris entre 2 000 et 3 000.')
       + cm1Redac('Encadrement à la centaine', '2 800 &lt; 2 836 &lt; 2 900', '2 836 est compris entre 2 800 et 2 900.')],
@@ -163,7 +163,7 @@ PLANCHES['cm1|Nombres entiers jusqu\'à 9 999'] = [
       { etoiles: 3, col: 1, cahier: true, consigne: 'Le mont Blanc mesure 4 806 m, le mont Rose 4 634 m et le Cervin 4 478 m. Range ces sommets du plus haut au plus bas. Explique comment tu compares.',
         corr: cm1Redac('Comparaison des hauteurs', { suite: ['Les trois nombres ont 4 milliers.', 'Je compare les centaines : 8 &gt; 6 &gt; 4.', '4 806 &gt; 4 634 &gt; 4 478'] }, 'Du plus haut au plus bas : le mont Blanc, le mont Rose, puis le Cervin.') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Trouve tous les nombres de 4 chiffres qui s\'écrivent avec deux chiffres 1 et deux chiffres 0.',
-        corr: cm1Redac('Les nombres possibles', { suite: ['Le premier chiffre ne peut pas être 0 : c\'est 1.', 'Il reste un 1 à placer : aux centaines, aux dizaines ou aux unités.', '1 100 ; 1 010 ; 1 001'] }, 'Il y a trois nombres : 1 100, 1 010 et 1 001.') },
+        corr: cm1Redac('Nombres possibles', { suite: ['Le premier chiffre ne peut pas être 0 : c\'est 1.', 'Il reste un 1 à placer : aux centaines, aux dizaines ou aux unités.', '1 100 ; 1 010 ; 1 001'] }, 'Il y a trois nombres : 1 100, 1 010 et 1 001.') },
     ] },
 ];
 })();

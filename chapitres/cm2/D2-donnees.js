@@ -67,8 +67,8 @@ ${cm1Demo('c2-do-pts', 'Placer un point dans un repère', 'Place le point qui co
   ],
   exos: cm1Exos('c2do', [
     ['Dans le diagramme circulaire du cours, quelle fraction de la classe vient en bus ? en voiture ?',
-      cm1Redac('En bus', `4 sur 24, c'est ${cm1Frac(4, 24)} = ${cm1Frac(1, 6)}`, 'Un sixième de la classe vient en bus.')
-      + cm1Redac('En voiture', `2 sur 24, c'est ${cm1Frac(2, 24)} = ${cm1Frac(1, 12)}`, 'Un douzième de la classe vient en voiture.')],
+      cm1Redac('Fraction de la classe qui vient en bus', `${cm1Frac(4, 24)} = ${cm1Frac(1, 6)}`, 'Un sixième de la classe vient en bus.')
+      + cm1Redac('Fraction de la classe qui vient en voiture', `${cm1Frac(2, 24)} = ${cm1Frac(1, 12)}`, 'Un douzième de la classe vient en voiture.')],
     ['Enquête sur les animaux : chat 9, chien 8, poisson 3, aucun 4. Fais un tableau et calcule le total. Quelle fraction des élèves a un chat ?',
       cm1Redac('Nombre d\'élèves', ['9 + 8 + 3 + 4', '17 + 7', '24'], 'Il y a 24 élèves en tout.')
       + cm1Redac('Élèves qui ont un chat', `${cm1Frac(9, 24)} = ${cm1Frac(3, 8)}`, 'Les trois huitièmes des élèves ont un chat.')],
@@ -78,9 +78,9 @@ ${cm1Demo('c2-do-pts', 'Placer un point dans un repère', 'Place le point qui co
       cm1Redac('Hauteur à la semaine 4', '', 'À la semaine 4, la plante mesurait 12 cm.')
       + cm1Redac('Plus forte croissance', '', 'Elle a le plus grandi, de 3 cm, entre les semaines 1 et 2, 2 et 3, et 4 et 5.')],
     [`Place dans un repère ces points.${cm1Liste(['(1 ; 5)', '(2 ; 8)', '(3 ; 8)', '(4 ; 12)'])}`,
-      cm1Redac('Méthode', '', 'Pour chaque point, on avance sur l\'axe horizontal jusqu\'au premier nombre, puis on monte jusqu\'au second.')],
+      cm1Redac('Placement des points', '', 'Pour chaque point, on avance sur l\'axe horizontal jusqu\'au premier nombre, puis on monte jusqu\'au second.')],
     [`Température moyenne en France :${cm1Liste(['1950 : 11,8 °C', '1980 : 12,0 °C', '2000 : 12,6 °C', '2020 : 13,4 °C'])}Que remarques-tu ? De combien la température a-t-elle augmenté entre 1950 et 2020 ?`,
-      cm1Redac('Évolution', '', 'La température augmente, et de plus en plus vite : c\'est le réchauffement climatique.')
+      cm1Redac('Évolution de la température', '', 'La température augmente, et de plus en plus vite : c\'est le réchauffement climatique.')
       + cm1Redac('Augmentation de 1950 à 2020', '13,4 − 11,8 = 1,6', 'La température moyenne a augmenté de 1,6 °C.')],
   ]),
   histoire: cm1Histoire('Un peu d\'histoire : le premier diagramme circulaire', [

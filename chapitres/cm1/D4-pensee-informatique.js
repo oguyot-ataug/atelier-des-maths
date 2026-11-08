@@ -173,7 +173,7 @@ PLANCHES['cm1|Initiation à la pensée informatique'] = [
         eleve: `<div style="max-width:300px;margin:0 auto;font-size:1.2em;">${plGrille('dhddbd'.split('').map(f => fl(f)), 6)}</div>`,
         corr: `<div style="max-width:300px;margin:0 auto;font-size:1.2em;">${plGrille('dhddbd'.split('').map((f, i) => i === 4 ? plEntoure(F[f]) : fl(f)), 6)}</div><div class="pl-petit">Il fallait ${fl('h')} : le robot doit monter de 2 cases pour atteindre l'étoile.</div>` },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Sur ton cahier, dessine un quadrillage de 5 × 5 avec un robot, une étoile et deux rochers. Écris le programme le plus court possible.',
-        corr: cm1Redac('Pour vérifier', { suite: ['Je suis le programme flèche par flèche, avec le doigt.', 'Le robot ne sort pas du quadrillage et ne touche aucun rocher.'] }, 'Le programme est juste si le robot arrive exactement sur l\'étoile.') },
+        corr: cm1Redac('Vérification du programme', { suite: ['Je suis le programme flèche par flèche, avec le doigt.', 'Le robot ne sort pas du quadrillage et ne touche aucun rocher.'] }, 'Le programme est juste si le robot arrive exactement sur l\'étoile.') },
     ] },
 ];
 }

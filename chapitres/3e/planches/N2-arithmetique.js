@@ -46,7 +46,7 @@ PLANCHES['3e|Arithmétique'] = [
       { etoiles: 2, col: 1, cahier: true, consigne: 'Décompose 360 en produit de facteurs premiers, par divisions successives.',
         corr: cm1Redac('Décomposition de 360', { suite: ['360 : 2 = 180 ; 180 : 2 = 90 ; 90 : 2 = 45', '45 : 3 = 15 ; 15 : 3 = 5 ; 5 : 5 = 1'] }, '360 = 2³ × 3² × 5.') },
       { etoiles: 3, cahier: true, consigne: 'Par quel plus petit nombre entier faut-il multiplier 90 pour obtenir le carré d\'un entier ?',
-        corr: cm1Redac('Décomposition', '90 = 2 × 3² × 5', 'Pour un carré, il faut des exposants pairs : on multiplie par 2 et par 5.') + cm1Redac('Nombre cherché', { suite: ['2 × 5 = 10', '90 × 10 = 900 = 30²'] }, 'Le plus petit nombre est 10 (on obtient 900, le carré de 30).') },
+        corr: cm1Redac('Décomposition de 90', '90 = 2 × 3² × 5', 'Pour un carré, il faut des exposants pairs : on multiplie par 2 et par 5.') + cm1Redac('Nombre cherché', { suite: ['2 × 5 = 10', '90 × 10 = 900 = 30²'] }, 'Le plus petit nombre est 10 (on obtient 900, le carré de 30).') },
     ] },
   { titre: 'Fractions irréductibles et diviseurs communs', duree: '35 min',
     attendus: ['Trouver les diviseurs communs à deux entiers', 'Rendre une fraction irréductible', 'Calculer avec des fractions et simplifier'],
@@ -61,15 +61,15 @@ PLANCHES['3e|Arithmétique'] = [
         eleve: plListe([ligne(F(5, 12), '+', F(7, 18), '=', Fr), ligne(F(7, 15), '×', F(25, 14), '=', Fr), ligne(F(11, 24), '−', F(5, 16), '=', Fr)]),
         corr: plListe([ligne(F(5, 12), '+', F(7, 18), '=', F(15, 36), '+', F(14, 36), '=', R(F(29, 36))), ligne(F(7, 15), '×', F(25, 14), '=', F(175, 210), '=', R(F(5, 6))), ligne(F(11, 24), '−', F(5, 16), '=', F(22, 48), '−', F(15, 48), '=', R(F(7, 48)))]) },
       { etoiles: 2, col: 1, cahier: true, consigne: `Rends ${T(1080, 1260)} irréductible en décomposant le numérateur et le dénominateur.`,
-        corr: cm1Redac('Simplification', { suite: ['1 080 = 2³ × 3³ × 5', '1 260 = 2² × 3² × 5 × 7', '2² × 3² × 5 = 180', '1 080 : 180 = 6', '1 260 : 180 = 7'] }, `${F(1080, 1260)} = ${F(6, 7)}`) },
+        corr: cm1Redac('Fraction irréductible', { suite: ['1 080 = 2³ × 3³ × 5', '1 260 = 2² × 3² × 5 × 7', '2² × 3² × 5 = 180', '1 080 : 180 = 6', '1 260 : 180 = 7'] }, `${F(1080, 1260)} = ${F(6, 7)}`) },
       { etoiles: 3, cahier: true, consigne: 'Un nombre s\'écrit 2ⁿ × 3 et il a exactement 10 diviseurs. Quel est ce nombre ?',
-        corr: cm1Redac('Nombre de diviseurs', '', 'Les diviseurs sont 2ᵏ ou 2ᵏ × 3, avec k de 0 à n : il y en a 2(n + 1).') + cm1Redac('Valeur de n', { suite: ['2(n + 1) = 10', 'n + 1 = 5', 'n = 4'] }, '') + cm1Redac('Le nombre', '2⁴ × 3 = 48', 'Le nombre est 48 (ses diviseurs : 1, 2, 3, 4, 6, 8, 12, 16, 24, 48).') },
+        corr: cm1Redac('Nombre de diviseurs', '', 'Les diviseurs sont 2ᵏ ou 2ᵏ × 3, avec k de 0 à n : il y en a 2(n + 1).') + cm1Redac('Valeur de n', { suite: ['2(n + 1) = 10', 'n + 1 = 5', 'n = 4'] }, '') + cm1Redac('Nombre qui a exactement 10 diviseurs', '2⁴ × 3 = 48', 'Le nombre est 48 (ses diviseurs : 1, 2, 3, 4, 6, 8, 12, 16, 24, 48).') },
     ] },
   { titre: 'Problèmes d\'arithmétique', duree: '40 min',
     attendus: ['Reconnaître un problème de partage en parts identiques', 'Utiliser les diviseurs ou les multiples communs', 'Rédiger la solution'],
     exos: [
       { etoiles: 2, col: 1, cahier: true, consigne: 'Un fleuriste a 84 roses et 120 tulipes. Il veut faire le plus grand nombre possible de bouquets identiques, en utilisant toutes les fleurs. Combien de bouquets ? Que contient chacun ?',
-        corr: cm1Redac('Nombre de bouquets', { suite: ['84 = 2² × 3 × 7', '120 = 2³ × 3 × 5', '2² × 3 = 12'] }, 'Le plus grand diviseur commun est 12 : il fera 12 bouquets.') + cm1Redac('Composition', { suite: ['84 : 12 = 7', '120 : 12 = 10'] }, 'Chaque bouquet contient 7 roses et 10 tulipes.') },
+        corr: cm1Redac('Nombre de bouquets', { suite: ['84 = 2² × 3 × 7', '120 = 2³ × 3 × 5', '2² × 3 = 12'] }, 'Le plus grand diviseur commun est 12 : il fera 12 bouquets.') + cm1Redac('Composition d\'un bouquet', { suite: ['84 : 12 = 7', '120 : 12 = 10'] }, 'Chaque bouquet contient 7 roses et 10 tulipes.') },
       { etoiles: 2, col: 1, cahier: true, consigne: 'Une pièce rectangulaire mesure 4,20 m sur 3 m. On la carrelle avec des carreaux carrés tous identiques, les plus grands possible, sans découpe. Quel est le côté d\'un carreau ? Combien en faut-il ?',
         corr: cm1Redac('Côté d\'un carreau', { suite: ['420 = 2² × 3 × 5 × 7', '300 = 2² × 3 × 5²', '2² × 3 × 5 = 60'] }, 'Le plus grand diviseur commun est 60 : le côté mesure 60 cm.') + cm1Redac('Nombre de carreaux', { suite: ['420 : 60 = 7', '300 : 60 = 5', '7 × 5 = 35'] }, 'Il faut 35 carreaux.') },
       { etoiles: 2, col: 1, cahier: true, consigne: 'Deux phares s\'allument ensemble à 20 h. L\'un s\'allume toutes les 12 secondes, l\'autre toutes les 18 secondes. À quelle heure s\'allumeront-ils de nouveau ensemble ?',
@@ -81,7 +81,7 @@ PLANCHES['3e|Arithmétique'] = [
       { etoiles: 2, col: 1, cahier: true, consigne: 'Le code d\'un cadenas est un nombre de trois chiffres. C\'est un nombre pair, multiple de 5 et de 9, et son chiffre des centaines est 7. Quel est ce code ?',
         corr: cm1Redac('Dernier chiffre', '', 'Le code est pair et multiple de 5 : il se termine par 0.') + cm1Redac('Chiffre du milieu', { suite: ['7 + ? + 0 = 9', '? = 2'] }, 'Le code 7?0 est un multiple de 9 : la somme de ses chiffres vaut 9 (18 est impossible avec un seul chiffre). Le code est 720.') },
       { etoiles: 3, cahier: true, consigne: 'Une espèce de cigales sort de terre tous les 13 ans, une autre tous les 17 ans. Elles sont sorties ensemble en 2024. En quelle année sortiront-elles de nouveau ensemble ?',
-        corr: cm1Redac('Plus petit multiple commun', '13 × 17 = 221', '13 et 17 sont premiers : leur plus petit multiple commun est 221.') + cm1Redac('Année', '2024 + 221 = 2245', 'Elles sortiront de nouveau ensemble en 2245.') },
+        corr: cm1Redac('Plus petit multiple commun', '13 × 17 = 221', '13 et 17 sont premiers : leur plus petit multiple commun est 221.') + cm1Redac('Année de la prochaine sortie commune', '2024 + 221 = 2245', 'Elles sortiront de nouveau ensemble en 2245.') },
     ] },
   { titre: 'Arithmétique', duree: '45 min', brevet: true,
     attendus: ['Automatismes : divisibilité, nombres premiers, fractions', 'Résoudre un problème de partage avec les diviseurs communs', 'Utiliser les multiples communs dans une situation concrète'],
@@ -90,12 +90,12 @@ PLANCHES['3e|Arithmétique'] = [
         ...auto([['2 028 est-il divisible par 3 ?', 'oui', ['oui', 'non']], ['Décomposition de 30 en facteurs premiers :', '2 × 3 × 5', ['2 × 15', '2 × 3 × 5', '6 × 5']], ['Un diviseur de 35 :', '7', ['3', '7', '70']], ['Le plus petit nombre premier supérieur à 20 :', 23], [`Fraction irréductible égale à ${T(18, 24)} :`, T(3, 4), [T(9, 12), T(3, 4), T(6, 8)]], ['Reste de la division euclidienne de 50 par 7 :', 1]]) },
       { etoiles: 2, cahier: true, pts: 5, consigne: 'Un club de randonnée prépare des sachets de ravitaillement. Il dispose de 312 barres de céréales et de 234 compotes. Tous les sachets doivent avoir la même composition, et tout doit être utilisé.'
           + qs(['Décomposer 312 et 234 en produits de facteurs premiers.', 'Le club peut-il faire 13 sachets ? Justifier.', 'Quel est le nombre maximal de sachets ?', 'Quelle est alors la composition de chaque sachet ?']),
-        corr: cm1Redac('Décompositions', { suite: ['312 = 2³ × 3 × 13', '234 = 2 × 3² × 13'] }, '') + cm1Redac('13 sachets ?', { suite: ['312 : 13 = 24', '234 : 13 = 18'] }, 'Oui : 13 divise 312 et 234 (24 barres et 18 compotes par sachet).')
-          + cm1Redac('Nombre maximal', '2 × 3 × 13 = 78', 'Le club peut faire au maximum 78 sachets.') + cm1Redac('Composition', { suite: ['312 : 78 = 4', '234 : 78 = 3'] }, 'Chaque sachet contient 4 barres et 3 compotes.') },
+        corr: cm1Redac('Décompositions de 312 et 234', { suite: ['312 = 2³ × 3 × 13', '234 = 2 × 3² × 13'] }, '') + cm1Redac('13 sachets ?', { suite: ['312 : 13 = 24', '234 : 13 = 18'] }, 'Oui : 13 divise 312 et 234 (24 barres et 18 compotes par sachet).')
+          + cm1Redac('Nombre maximal', '2 × 3 × 13 = 78', 'Le club peut faire au maximum 78 sachets.') + cm1Redac('Composition d\'un sachet', { suite: ['312 : 78 = 4', '234 : 78 = 3'] }, 'Chaque sachet contient 4 barres et 3 compotes.') },
       { etoiles: 2, cahier: true, pts: 4, consigne: 'Lucie va à la piscine tous les 6 jours, Karim tous les 8 jours. Ils y sont allés ensemble le lundi 1er septembre.'
           + qs(['Dans combien de jours y retourneront-ils ensemble pour la première fois ?', 'Quel jour de la semaine, et à quelle date ?', 'Combien de fois se retrouveront-ils à la piscine en septembre et en octobre, sans compter le 1er septembre ?']),
         corr: cm1Redac('Multiples de 6', '6, 12, 18, 24…', '') + cm1Redac('Multiples de 8', '8, 16, 24…', 'Ils se retrouveront dans 24 jours.')
-          + cm1Redac('Date', { suite: ['24 = 3 × 7 + 3 : trois semaines et trois jours après un lundi.', '1er septembre + 24 jours = 25 septembre'] }, 'Ce sera le jeudi 25 septembre.')
+          + cm1Redac('Date du prochain retour commun', { suite: ['24 = 3 × 7 + 3 : trois semaines et trois jours après un lundi.', '1er septembre + 24 jours = 25 septembre'] }, 'Ce sera le jeudi 25 septembre.')
           + cm1Redac('Septembre et octobre', { suite: ['25 septembre + 24 jours = 19 octobre', '19 octobre + 24 jours = 12 novembre'] }, 'Ils se retrouvent tous les 24 jours : 2 fois, le 25 septembre et le 19 octobre.') },
     ] },
 ];

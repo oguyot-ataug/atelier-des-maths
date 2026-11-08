@@ -29,7 +29,7 @@ PLANCHES['3e|Calcul littéral'] = [
       { etoiles: 2, col: 1, consigne: 'Entoure l\'expression égale.',
         ...chx([['3(x − 2) =', '3x − 6', '3x − 2 · 3x − 6 · x − 6'], ['−(x + 4) =', '−x − 4', '−x + 4 · −x − 4 · x − 4'], ['2x + 2x =', '4x', '4x · 4x² · 2x²'], ['x × x × 3 =', '3x²', '3x · x³ · 3x²']]) },
       { etoiles: 3, cahier: true, consigne: 'Un rectangle a pour longueur 2x + 3 et pour largeur x (en cm). Exprime son périmètre et son aire en fonction de x, sous forme développée et réduite.',
-        corr: cm1Redac('Périmètre', '2 × (2x + 3 + x) = 2 × (3x + 3) = 6x + 6', 'Le périmètre est 6x + 6 (en cm).') + cm1Redac('Aire', 'x(2x + 3) = 2x² + 3x', 'L\'aire est 2x² + 3x (en cm²).') },
+        corr: cm1Redac('Périmètre du rectangle en fonction de x', '2 × (2x + 3 + x) = 2 × (3x + 3) = 6x + 6', 'Le périmètre est 6x + 6 (en cm).') + cm1Redac('Aire du rectangle en fonction de x', 'x(2x + 3) = 2x² + 3x', 'L\'aire est 2x² + 3x (en cm²).') },
     ] },
   { titre: 'La double distributivité', duree: '40 min',
     attendus: ['Développer (a + b)(c + d)', 'Réduire le résultat', 'Vérifier un développement en testant une valeur'],
@@ -94,11 +94,11 @@ PLANCHES['3e|Calcul littéral'] = [
       { etoiles: 2, cahier: true, pts: 5, consigne: 'Voici deux programmes de calcul.<br><b>Programme A</b> : choisir un nombre ; soustraire 1 ; multiplier le résultat par 3 ; ajouter le triple du nombre choisi.<br><b>Programme B</b> : choisir un nombre ; ajouter 2 ; calculer le carré du résultat ; soustraire le carré du nombre choisi.'
           + qs(['Vérifier qu\'avec 4, le programme A donne 21.', 'Quel résultat donne le programme B avec 4 ?', 'On note x le nombre choisi. Exprimer en fonction de x, sous forme développée et réduite, le résultat de chaque programme.', 'Quel nombre faut-il choisir pour que les deux programmes donnent le même résultat ?']),
         corr: cm1Redac('Programme A avec 4', '(4 − 1) × 3 + 3 × 4 = 9 + 12 = 21', 'On obtient bien 21.') + cm1Redac('Programme B avec 4', '(4 + 2)² − 4² = 36 − 16 = 20', 'Le programme B donne 20.')
-          + cm1Redac('Expressions', { suite: ['A : 3(x − 1) + 3x = 3x − 3 + 3x = 6x − 3', 'B : (x + 2)² − x² = x² + 4x + 4 − x² = 4x + 4'] }, '')
+          + cm1Redac('Expressions des programmes A et B', { suite: ['A : 3(x − 1) + 3x = 3x − 3 + 3x = 6x − 3', 'B : (x + 2)² − x² = x² + 4x + 4 − x² = 4x + 4'] }, '')
           + cm1Redac('Même résultat', { suite: ['6x − 3 = 4x + 4', '2x = 7', 'x = 3,5'] }, 'Il faut choisir 3,5 (les deux programmes donnent alors 18).') },
       { etoiles: 2, cahier: true, pts: 4, consigne: 'Dans un carré de côté x + 3 (en cm, x &gt; 0), on retire un carré de côté 3 cm dans un coin.'
           + qs(['Montrer que l\'aire de la figure restante est x² + 6x.', 'Factoriser cette expression.', 'Calculer l\'aire restante pour x = 4.']),
-        corr: cm1Redac('Aire restante', '(x + 3)² − 3² = x² + 6x + 9 − 9 = x² + 6x', 'L\'aire restante est x² + 6x (en cm²).') + cm1Redac('Factorisation', 'x² + 6x = x(x + 6)', '') + cm1Redac('Pour x = 4', '4 × (4 + 6) = 40', 'L\'aire restante est 40 cm².') },
+        corr: cm1Redac('Aire restante', '(x + 3)² − 3² = x² + 6x + 9 − 9 = x² + 6x', 'L\'aire restante est x² + 6x (en cm²).') + cm1Redac('Factorisation', 'x² + 6x = x(x + 6)', '') + cm1Redac('Aire restante pour x = 4', '4 × (4 + 6) = 40', 'L\'aire restante est 40 cm².') },
     ] },
 ];
 })();

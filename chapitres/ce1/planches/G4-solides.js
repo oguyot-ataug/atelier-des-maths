@@ -28,8 +28,8 @@ PLANCHES['ce1|Les solides : faces, arêtes, sommets'] = [
     attendus: ['Compter les cubes d\'un assemblage dessiné en perspective', 'Reproduire un assemblage à partir d\'un modèle'],
     exos: [
       { etoiles: 1, consigne: 'Combien de cubes faut-il pour construire chaque assemblage ?', ...PCP.compte([[ce1Cubes([[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1]], 110), 4], [ce1Cubes([[0, 0, 0], [1, 0, 0], [2, 0, 0], [1, 1, 0], [2, 1, 0], [2, 2, 0]], 120), 6], [ce1Cubes([[0, 0, 0], [1, 0, 0], [2, 0, 0], [0, 1, 0]], 110), 4]], 3, 2) },
-      { etoiles: 2, cahier: true, consigne: 'Avec des cubes emboîtables, construis cet escalier de 3 marches. Combien de cubes as-tu utilisés ?', corr: cm1Redac('Escalier', '3 + 2 + 1 = 6', 'Il faut 6 cubes.', ce1Cubes([[0, 0, 0], [1, 0, 0], [2, 0, 0], [1, 1, 0], [2, 1, 0], [2, 2, 0]], 120)) },
-      { etoiles: 3, cahier: true, consigne: 'Paul construit un pavé avec 3 rangées de 4 cubes, sur 2 étages. Combien de cubes utilise-t-il ?', corr: cm1Redac('Cubes', { suite: ['3 × 4 = 12', '12 + 12 = 24'] }, 'Paul utilise 24 cubes.') },
+      { etoiles: 2, cahier: true, consigne: 'Avec des cubes emboîtables, construis cet escalier de 3 marches. Combien de cubes as-tu utilisés ?', corr: cm1Redac('Nombre de cubes de l\'escalier', '3 + 2 + 1 = 6', 'Il faut 6 cubes.', ce1Cubes([[0, 0, 0], [1, 0, 0], [2, 0, 0], [1, 1, 0], [2, 1, 0], [2, 2, 0]], 120)) },
+      { etoiles: 3, cahier: true, consigne: 'Paul construit un pavé avec 3 rangées de 4 cubes, sur 2 étages. Combien de cubes utilise-t-il ?', corr: cm1Redac('Nombre de cubes du pavé', { suite: ['3 × 4 = 12', '12 + 12 = 24'] }, 'Paul utilise 24 cubes.') },
       { etoiles: 3, consigne: 'Combien de petits cubes ?', ...P3.rmp([['2 rangées de 3 cubes, sur 2 étages : @', 12], ['un grand cube de 2 cubes de côté : @', 8], ['3 rangées de 2 cubes, sur 1 étage : @', 6], ['un grand cube de 3 cubes de côté : @', 27]], 2) },
     ] },
   { titre: 'Pour aller plus loin : le patron du cube', duree: '15 min',

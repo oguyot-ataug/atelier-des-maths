@@ -24,7 +24,7 @@ PLANCHES['4e|Fractions : comparaison et addition'] = [
       { etoiles: 2, consigne: 'Complète.',
         ...rmp([[`${T(3, 8)} = ${T('?', 24)} : numérateur : @`, 9], [`${T(5, 6)} = ${T(35, '?')} : dénominateur : @`, 42], [`${T(18, 27)} = ${T(2, '?')} : dénominateur : @`, 3], [`${T(4, 7)} = ${T('?', 28)} : numérateur : @`, 16], [`${T(2, 9)} = ${T(10, '?')} : dénominateur : @`, 45], [`${T(24, 36)} = ${T(2, '?')} : dénominateur : @`, 3]]) },
       { etoiles: 3, cahier: true, consigne: `Lina a mangé ${T(3, 8)} d'une pizza et Max ${T(6, 16)} d'une pizza identique. Ont-ils mangé la même quantité ? Justifie.`,
-        corr: cm1Redac('Comparaison', `${F(6, 16)} = ${F('6 : 2', '16 : 2')} = ${F(3, 8)}`, 'Les deux fractions sont égales : Lina et Max ont mangé la même quantité de pizza.') },
+        corr: cm1Redac('Ont-ils mangé la même quantité ?', `${F(6, 16)} = ${F('6 : 2', '16 : 2')} = ${F(3, 8)}`, 'Les deux fractions sont égales : Lina et Max ont mangé la même quantité de pizza.') },
     ] },
   { titre: 'Comparer des fractions', duree: '30 min',
     attendus: ['Comparer deux fractions de même dénominateur', 'Comparer deux fractions de dénominateurs différents', 'Ranger des fractions'],
@@ -77,7 +77,7 @@ PLANCHES['4e|Fractions : comparaison et addition'] = [
       { etoiles: 2, cahier: true, consigne: `Pour une recette, il faut ${T(3, 4)} L de lait. Paul a déjà versé ${T(1, 2)} L, puis ${T(1, 8)} L. Combien de lait doit-il encore ajouter ?`,
         corr: cm1Redac('Lait versé', `${F(1, 2)} + ${F(1, 8)} = ${F(4, 8)} + ${F(1, 8)} = ${F(5, 8)}`, `Paul a versé ${F(5, 8)} L.`) + cm1Redac('Lait à ajouter', `${F(3, 4)} − ${F(5, 8)} = ${F(6, 8)} − ${F(5, 8)} = ${F(1, 8)}`, `Il doit encore ajouter ${F(1, 8)} L de lait.`) },
       { etoiles: 3, cahier: true, consigne: `Une randonnée se fait en trois étapes : la première représente ${T(2, 5)} du parcours, la deuxième ${T(1, 3)}. Quelle fraction représente la troisième étape ? Quelle étape est la plus longue ?`,
-        corr: cm1Redac('Troisième étape', `1 − ${F(2, 5)} − ${F(1, 3)} = ${F(15, 15)} − ${F(6, 15)} − ${F(5, 15)} = ${F(4, 15)}`, `La troisième étape représente ${F(4, 15)} du parcours.`) + cm1Redac('Comparaison', `${F(2, 5)} = ${F(6, 15)} ; ${F(1, 3)} = ${F(5, 15)}`, 'La première étape est la plus longue.') },
+        corr: cm1Redac('Troisième étape', `1 − ${F(2, 5)} − ${F(1, 3)} = ${F(15, 15)} − ${F(6, 15)} − ${F(5, 15)} = ${F(4, 15)}`, `La troisième étape représente ${F(4, 15)} du parcours.`) + cm1Redac('Fraction de la troisième étape', `${F(2, 5)} = ${F(6, 15)} ; ${F(1, 3)} = ${F(5, 15)}`, 'La première étape est la plus longue.') },
     ] },
 ];
 })();

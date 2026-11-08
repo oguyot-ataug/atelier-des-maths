@@ -103,7 +103,7 @@ ${cm1Sous('A', 'Atelier : complète le dessin par symétrie')}
     ['Dans l\'atelier de l\'onglet Méthode, complète les trois dessins (sapin, papillon, maison) et vérifie.',
       cm1Redac('Vérification', { suite: ['Je compte les carreaux entre chaque case et l\'axe.', 'Je colorie la case à la même distance, de l\'autre côté.'] }, 'Le bouton « Vérifier » affiche en vert les cases justes, en rouge les cases en trop et en rose les cases oubliées.')],
     ['Vrai ou faux ? « La figure symétrique d\'un triangle est un triangle de même taille. »',
-      cm1Redac('Réponse', 'La symétrie conserve la forme et les longueurs.', 'Vrai : le symétrique d\'un triangle est un triangle de même taille.')],
+      cm1Redac('Vrai ou faux ?', 'La symétrie conserve la forme et les longueurs.', 'Vrai : le symétrique d\'un triangle est un triangle de même taille.')],
   ]),
   histoire: cm1Histoire('Un peu d\'histoire : la symétrie dans l\'art', [
     'Les hommes utilisent la symétrie depuis la Préhistoire : on la trouve sur des poteries, des tissus, des mosaïques. Les <b>Grecs</b> la considéraient comme un signe de beauté et d\'harmonie.',
@@ -177,9 +177,9 @@ PLANCHES['cm1|Symétrie axiale'] = [
         eleve: duo([demiX(DEMI1), demiX(DEMI2)]),
         corr: duo([demi(DEMI1, true), demi(DEMI2, true)]) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Trouve trois lettres majuscules qui ont un axe de symétrie vertical, et deux lettres qui ont un axe horizontal.',
-        corr: cm1Redac('Des lettres possibles', { suite: ['axe vertical : A, M, T (ou H, O, U, V…)', 'axe horizontal : B, E (ou C, D, K…)'] }, 'Si on plie la lettre le long de son axe, les deux moitiés se superposent.') },
+        corr: cm1Redac('Lettres qui ont un axe de symétrie', { suite: ['axe vertical : A, M, T (ou H, O, U, V…)', 'axe horizontal : B, E (ou C, D, K…)'] }, 'Si on plie la lettre le long de son axe, les deux moitiés se superposent.') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Dessine une figure qui a exactement 2 axes de symétrie. Trace ses axes en rouge.',
-        corr: cm1Redac('Une figure à deux axes', 'un rectangle (pas un carré) ou un losange', 'Le rectangle a deux axes : ils passent par les milieux de ses côtés opposés.', `<span class="cm-fig-d">${fig(FIGS[1], true)}</span>`) },
+        corr: cm1Redac('Figure à deux axes de symétrie', 'un rectangle (pas un carré) ou un losange', 'Le rectangle a deux axes : ils passent par les milieux de ses côtés opposés.', `<span class="cm-fig-d">${fig(FIGS[1], true)}</span>`) },
     ] },
   { titre: 'Compléter une figure sur quadrillage', duree: '35 min',
     attendus: ['Compléter une figure par symétrie sur quadrillage (axe vertical ou horizontal)', 'Placer le symétrique d\'un point'],
@@ -197,7 +197,7 @@ PLANCHES['cm1|Symétrie axiale'] = [
         eleve: plX(quad([[1, 1], [2, 1], [1, 2], [2, 3]], false), { t: 'cases', mode: 'entoure', k: 18, ox: 1, oy: 1, w: 8, h: 5, att: [[4, 3]] }).replace('</svg>', ['6,1', '5,1', '6,2', '4,3'].map(c => { const [x, y] = c.split(',').map(Number); return `<rect x="${1 + x * 18}" y="${1 + y * 18}" width="18" height="18" fill="#7A4FC0" fill-opacity=".6" stroke="#B9C7D6" stroke-width=".8"/>`; }).join('') + '</svg>'),
         corr: quad([[1, 1], [2, 1], [1, 2], [2, 3]], false).replace('</svg>', ['6,1', '5,1', '6,2', '4,3'].map(c => { const [x, y] = c.split(',').map(Number); return `<rect x="${1 + x * 18}" y="${1 + y * 18}" width="18" height="18" fill="#7A4FC0" fill-opacity=".6" stroke="#B9C7D6" stroke-width=".8"/>`; }).join('') + `<circle cx="${1 + 4.5 * 18}" cy="${1 + 3.5 * 18}" r="15" fill="none" stroke="${VERT}" stroke-width="2.4"/></svg>`) + '<div class="pl-petit">Le carreau symétrique de celui de la ligne du bas doit être dans la 6<sup>e</sup> colonne, pas la 5<sup>e</sup>.</div>' },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Sur ton cahier, dessine une figure sur le quadrillage, trace un axe vertical, puis échange avec ton voisin : il complète ta figure par symétrie.',
-        corr: cm1Redac('Pour vérifier', { suite: ['Chaque point et son symétrique sont à la même distance de l\'axe.', 'Ils sont sur la même ligne du quadrillage.'] }, 'Si on plie le long de l\'axe, les deux moitiés se superposent exactement.') },
+        corr: cm1Redac('Vérification de la figure', { suite: ['Chaque point et son symétrique sont à la même distance de l\'axe.', 'Ils sont sur la même ligne du quadrillage.'] }, 'Si on plie le long de l\'axe, les deux moitiés se superposent exactement.') },
     ] },
 ];
 })();

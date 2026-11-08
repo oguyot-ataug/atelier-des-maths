@@ -38,7 +38,7 @@ PLANCHES['cm2|Nombres décimaux jusqu\'aux millièmes'] = [
         eleve: cm1Axe(2.3, 2.4, 0.01, 0.1, [[2.32, 'D'], [2.37, 'E']], { fmt: v => v.toFixed(1).replace('.', ',') }) + `<div style="display:flex;gap:30px;justify-content:center;"><span>D : ${B()}</span><span>E : ${B()}</span></div>`,
         corr: cm1Axe(2.3, 2.4, 0.01, 0.1, [[2.32, 'D'], [2.37, 'E']], { fmt: v => v.toFixed(1).replace('.', ',') }) + `<div style="display:flex;gap:30px;justify-content:center;"><span>D : ${R('2,32')}</span><span>E : ${R('2,37')}</span></div>` },
       { etoiles: 3, cahier: true, consigne: 'Au saut en longueur, Inès a sauté 3,47 m, Paul 3,5 m et Lou 3,405 m. Arrondis chaque saut au dixième, puis donne le classement.',
-        corr: cm1Redac('Arrondis au dixième', { suite: ['3,47 → 3,5', '3,5 → 3,5', '3,405 → 3,4'] }, 'Inès et Paul ont sauté environ 3,5 m, Lou environ 3,4 m.') + cm1Redac('Classement', '3,5 > 3,47 > 3,405', 'Paul est premier, Inès deuxième et Lou troisième.') },
+        corr: cm1Redac('Arrondis au dixième', { suite: ['3,47 → 3,5', '3,5 → 3,5', '3,405 → 3,4'] }, 'Inès et Paul ont sauté environ 3,5 m, Lou environ 3,4 m.') + cm1Redac('Classement du saut en longueur', '3,5 > 3,47 > 3,405', 'Paul est premier, Inès deuxième et Lou troisième.') },
     ] },
   { titre: 'Comparer, encadrer, intercaler', duree: '35 min',
     attendus: ['Comparer deux nombres décimaux', 'Ranger des nombres décimaux', 'Encadrer et intercaler un nombre décimal'],

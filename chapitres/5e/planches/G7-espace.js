@@ -91,7 +91,7 @@ PLANCHES['5e|Représentation de l\'espace'] = [
       { etoiles: 2, col: 1, consigne: 'On dessine en perspective cavalière un pavé de 5 cm sur 3 cm sur 4 cm (face avant : 5 cm sur 3 cm). Les fuyantes sont réduites de moitié. Complète.',
         ...rmp([['Longueur de la face avant sur le dessin : @ cm', 5], ['Hauteur de la face avant sur le dessin : @ cm', 3], ['Longueur d\'une fuyante sur le dessin : @ cm', 2]], 2) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Dessine sur ton cahier un prisme droit à base triangulaire en perspective cavalière. Explique les étapes.',
-        corr: cm1Redac('Étapes', { suite: ['Je dessine la base avant en vraie grandeur.', 'Je trace des fuyantes parallèles et de même longueur depuis chaque sommet.', 'Je relie leurs extrémités, puis je repasse en pointillés les arêtes cachées.'] }, 'J\'obtiens un prisme droit en perspective cavalière.') },
+        corr: cm1Redac('Étapes du dessin du prisme', { suite: ['Je dessine la base avant en vraie grandeur.', 'Je trace des fuyantes parallèles et de même longueur depuis chaque sommet.', 'Je relie leurs extrémités, puis je repasse en pointillés les arêtes cachées.'] }, 'J\'obtiens un prisme droit en perspective cavalière.') },
     ] },
   { titre: 'Patrons', duree: '40 min',
     attendus: ['Reconnaître un patron de prisme droit ou de cylindre', 'Compléter un patron', 'Calculer la longueur du rectangle d\'un patron de cylindre'],
