@@ -733,6 +733,9 @@ function plCssSeyes(){
   return plCssSeyesCache = L.join('\n') + `
     body.cahier-on .cahier-actif table.pose-ecran[data-cahier]{ display:none !important; }
     body.cahier-on .cahier-page.cahier-actif{ -webkit-print-color-adjust:exact; print-color-adjust:exact; margin:4px 0 !important; overflow:visible !important; }
+    body.cahier-on .cahier-page.cahier-actif.cahier-fond-v{ background-image:none !important; position:relative; isolation:isolate; }
+    body.cahier-on .cahier-actif > .cahier-fond{ position:absolute !important; inset:0; z-index:-1; overflow:hidden; pointer-events:none; margin:0 !important; padding:0 !important; }
+    body.cahier-on .cahier-actif > .cahier-fond svg{ position:absolute; left:0; top:0; display:block; max-width:none !important; max-height:none !important; margin:0 !important; }
     body.cahier-on .cahier-actif .pl-poses-auto{ display:flex !important; }
     body.cahier-on .cahier-actif svg.pose-cahier.nu, body.cahier-on .cahier-actif svg.cahier-axe{ max-height:none !important; height:auto !important; }
     body.pl-imp.cahier-on .pl-plein .pl-corps:has(.cahier-actif) > *:has(.cahier-actif), body.pl-imp.cahier-on .pl-plein .pl-corps > .cahier-actif{ flex:1 1 auto; display:flex; flex-direction:column; } body.pl-imp.cahier-on .pl-plein .pl-corps .cahier-actif{ flex:1 1 auto; margin-bottom:0 !important; } /* la feuille descend jusqu'en bas du cadre de l'exercice (relecture du PDF : « bof ») */
@@ -741,6 +744,21 @@ function plCssSeyes(){
 function plSeyesCaler(doc){
   const avant = cahierOn; cahierOn = true;
   try{ doc.querySelectorAll('.cahier-page.cahier-actif').forEach(pg => { try{ cahierCaler(pg); }catch(e){ console.warn(e); } }); } finally{ cahierOn = avant; }
+  doc.querySelectorAll('.cahier-page.cahier-actif').forEach(plSeyesFond);
+}
+// Lignes de la feuille dessinées en vrai dessin vectoriel derrière le texte : le fond en dégradés répétés de l'écran est rastérisé dans le PDF
+// puis resserré par plRemplirPages, d'où des interlignes irréguliers et des traits manquants (relecture : « ce sont aussi les interlignes qui
+// sont étranges »). Mêmes positions qu'à l'écran : interlignes tous les 8 px (7 mod 8), ligne principale à 23 mod 32, marge rouge à 39-41 px,
+// lignes verticales à 71 mod 32 ; le cadre (overflow:hidden) coupe ce qui dépasse.
+function plSeyesFond(pg){
+  if(pg.querySelector(':scope > .cahier-fond')) return;
+  const W = Math.ceil(pg.clientWidth * 1.6 + 300), H = Math.ceil(pg.clientHeight * 1.6 + 400);
+  let r = '';
+  for(let y = 7; y < H; y += 8) r += `<rect x="0" y="${y}" width="${W}" height="1" fill="${y % 32 === 23 ? '#8C93CF' : '#D9DDF2'}"/>`;
+  for(let x = 71; x < W; x += 32) r += `<rect x="${x}" y="0" width="1" height="${H}" fill="#D9DDF2"/>`;
+  r += `<rect x="39" y="0" width="2" height="${H}" fill="#E2626E"/>`;
+  pg.insertAdjacentHTML('afterbegin', `<div class="cahier-fond" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" data-geo-garde>${r}</svg></div>`);
+  pg.classList.add('cahier-fond-v');
 }
 async function plImprimer(lvl, blocs, mode, opts){
   opts = opts || {};
