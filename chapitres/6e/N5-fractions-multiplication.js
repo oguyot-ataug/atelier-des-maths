@@ -139,7 +139,7 @@ document.getElementById('exos-demo-fractions-mult-6e').innerHTML = `
     + cm1Redac('Méthode 3', `${FM_F(2, 5)} × 35 = ${FM_F('2 \\times 35', 5)} = ${FM_F(70, 5)} = 14`, 'Les trois méthodes donnent le même résultat : 14.'))}
   ${fmExo(2, 'Calcule, avec la méthode la plus rapide : <span class="tex">\\dfrac{5}{6} \\times 42</span> et <span class="tex">\\dfrac{7}{10} \\times 23</span>.',
     cm1Redac(`Valeur de ${FM_F(5, 6)} × 42`, `${FM_F(5, 6)} × 42 = 5 × ${FM_F(42, 6)} = 5 × 7 = 35`, `Méthode 2 : ${FM_F(42, 6)} tombe juste, le calcul se fait de tête.`)
-    + cm1Redac(`Valeur de ${FM_F(7, 10)} × 23`, `${FM_F(7, 10)} × 23 = 0,7 × 23 = 16,1`, `Méthode 1 : la fraction ${FM_F(7, 10)} s'écrit 0,7.`))}
+    + cm1Redac(`Valeur de ${FM_F(7, 10)} × 23`, `${FM_F(7, 10)} × 23 = ${FM_F('7 \\times 23', 10)} = ${FM_F(161, 10)} = 16,1`, 'Méthode 3 : il ne reste qu\'à diviser 161 par 10.'))}
   ${fmExo(3, 'Calcule <span class="tex">\\dfrac{4}{3} \\times 5</span>. Le résultat est-il un nombre décimal ?',
     cm1Redac(`Valeur de ${FM_F(4, 3)} × 5`, `${FM_F(4, 3)} × 5 = ${FM_F('4 \\times 5', 3)} = ${FM_F(20, 3)}`, '')
     + cm1Redac('Le résultat est-il un nombre décimal ?', `${FM_F(20, 3)} = 6,666…`, `Non : la division de 20 par 3 ne s'arrête jamais, on garde l'écriture fractionnaire ${FM_F(20, 3)}.`))}
