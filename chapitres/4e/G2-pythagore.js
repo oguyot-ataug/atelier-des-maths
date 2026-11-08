@@ -72,7 +72,8 @@ ${py4Deux(`<div>
 <ul style="margin:4px 0 0;padding-left:20px;">
   <li>${py4Tex('\\sqrt{56{,}25} = 7{,}5')} : 7,5 est la <b>valeur exacte</b> de ${py4Tex('\\sqrt{56{,}25}')} (car 7,5 × 7,5 = 56,25) ;</li>
   <li>${py4Tex('\\sqrt{50} \\approx 7{,}1')} : 7,1 est une <b>valeur approchée</b> au dixième de ${py4Tex('\\sqrt{50}')} (la calculatrice affiche 7,071067…). On peut aussi l'<b>encadrer</b> : 49 < 50 < 64, donc 7 < ${py4Tex('\\sqrt{50}')} < 8.</li>
-</ul></div>
+</ul>
+<p style="margin:4px 0;">${calcBouton(['sqrt', '5', '0', 'exe', 'sd'], 'Montre-moi les touches : √50 (valeur exacte, puis valeur approchée)')}</p></div>
 
 <div class="lesson-header"><span class="num">2</span><h3>Le vocabulaire du triangle rectangle</h3></div>
 <span class="def-badge">Définitions</span>

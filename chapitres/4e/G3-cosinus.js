@@ -97,6 +97,7 @@ ${co4Deux(co4Tri({ R: [30, 125], S: [205, 125], T: [205, -54] }, 'S', 'R', { cot
   [co4Tex(co4Ang('SRT') + ' \\approx 46°'), 'Calculatrice : Arccos(7 : 10), ou cos⁻¹(0,7), donne 45,57…'],
 ]))}
 <div class="redaction-note" ${R4_REM}>À la calculatrice : vérifiez qu'elle est en mode <b>degrés</b> (D ou DEG). Pour retrouver un angle à partir de son cosinus, on utilise la touche <b>Arccos</b> (ou <b>cos⁻¹</b>, souvent avec la touche « seconde » ou « shift »).</div>
+<p style="margin:4px 0;display:flex;flex-wrap:wrap;gap:6px 12px;">${calcBouton(['8', '*', 'cos', '3', '5', ')', 'exe'], 'Montre-moi les touches : 8 × cos 35°')}${calcBouton(['shift', 'cos', '0', ',', '7', ')', 'exe'], 'Montre-moi les touches : cos⁻¹(0,7)')}</p>
 `;
 
 document.getElementById('histoire-demo-cosinus-4e').innerHTML = `

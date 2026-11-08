@@ -480,6 +480,7 @@ function showView(id){
   if(typeof FIG_PROJ!=='undefined' && FIG_PROJ && id!=='view-tableau') return; // fenêtre de projection : rien d'autre que le tableau
   if(typeof QZC_PROJ!=='undefined' && QZC_PROJ) return; // projection des Questions flash (cartes) : rien d'autre
   if(typeof oliviaMaj==='function') setTimeout(oliviaMaj, 30); // Oliv'IA : seulement sur les pages de cours
+  if(typeof calcMajBouton==='function') setTimeout(() => calcMajBouton(), 30); // bouton rond de la calculatrice : chapitres du collège
   if(id!=='view-cahier-eleve' && typeof cahierVivFin==='function') cahierVivFin(); // partie interactive du cahier : les blocs retournent au chapitre
   if(id!=='view-programmation' && document.body.classList.contains('prog-plein') && typeof progPleinEcran==='function') progPleinEcran(false); // programmation : on sort du plein écran
   if(id!=='view-classe' && typeof clBruit!=='undefined' && clBruit.actif && !(typeof clSurvol!=='undefined' && clSurvol.has('clBlocBruit'))) clBruitArreter(); // jauge de bruit : micro coupé en quittant la page (sauf jauge en survol)
@@ -581,6 +582,8 @@ document.querySelectorAll('[data-nav]').forEach(el=>{
     // Programmes officiels : la page publique /programmes/ affichée dans le site (cadre chargé à la première ouverture).
     if(nav==='programmes'){ if(el.tagName==='A') e.preventDefault(); programmesOuvrir(); return; }
     // Lexique : visible par tous (élèves, professeurs, visiteurs).
+    // Calculatrice collège (calculatrice.js) : un panneau flottant, visible par tous.
+    if(nav==='calculatrice'){ if(typeof calcOuvrir==='function') calcOuvrir(); return; }
     if(nav==='lexique'){ showView('view-lexique'); setActiveTopnav(null); if(typeof lexiqueOuvrir==='function') lexiqueOuvrir(); return; }
     if(nav==='niveau'){ if(!niveauVisible(el.getAttribute('data-lvl'))) return; currentLevel = el.getAttribute('data-lvl')||currentLevel; renderNiveau(currentLevel); showView('view-niveau'); setActiveTopnav(currentLevel); }
     // Visiteur non connecté : les outils de L'Atelier montrent leur page de présentation (demo.js).
@@ -1325,6 +1328,7 @@ function openChapitre(c, tab, lvlOverride, opts){
   chapView.classList.toggle('lvl-5e', lvl==='5e');
   chapView.classList.toggle('lvl-4e', lvl==='4e'); // 4e : sa propre couleur (bleu-vert), pour distinguer le niveau d'un coup d'œil
   chapView.classList.toggle('lvl-3e', lvl==='3e'); // 3e : violet prune
+  if(typeof calcMajBouton==='function') setTimeout(() => calcMajBouton(lvl), 40);
   const demo = DEMO_REGISTRY[lvl+'|'+c.t];
   currentChapterTitle = c.t;
   currentChapterCode = c.code;
@@ -3868,6 +3872,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1373', date:'2026-11-08', items:['Nouveau : la Calculatrice collège (menu L\'Atelier, et bouton rond dans les chapitres de la 6e à la 3e). Écriture naturelle (fractions, puissances, racines), résultats exacts ou décimaux, trigonométrie en degrés, division euclidienne, facteurs premiers, tableau de valeurs ; touches « type Casio » ou « type TI ».', 'Boutons « Montre-moi les touches » dans les cours (3e Trigonométrie ; 4e Cosinus, Pythagore, Puissances ; 5e Fractions) : la calculatrice tape le calcul touche par touche.'] },
   { version:'2026-08-19.1372', date:'2026-11-08', items:['Proportionnalité : définition « les valeurs de l\'une s\'obtiennent en multipliant ou divisant les valeurs de l\'autre par un même nombre non nul » (lexique, cours et quiz de 6e).'] },
   { version:'2026-08-19.1371', date:'2026-11-08', items:['Lexique : définition de « proportionnalité » (deux grandeurs, même nombre non nul) et de « coefficient de proportionnalité » accordée.'] },
   { version:'2026-08-19.1370', date:'2026-11-08', items:['CP : les commentaires des animations du cours sont lus à voix haute (« Regardez bien », « Combien en avez-vous vu ? »…), l\'animation attend la fin de chaque phrase ; bouton « Voix » pour couper le son.'] },

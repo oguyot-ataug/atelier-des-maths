@@ -96,6 +96,7 @@ document.getElementById('cours-demo-fractions-5e').innerHTML = `
   <li><span class="tex">\\begin{aligned} E &= \\dfrac{2}{3} + \\dfrac{8}{7} \\\\ E &= \\dfrac{2 \\times 7}{3 \\times 7} + \\dfrac{8 \\times 3}{7 \\times 3} \\\\ E &= \\dfrac{14}{21} + \\dfrac{24}{21} \\\\ E &= \\dfrac{38}{21} \\end{aligned}</span></li>
   <li><span class="tex">\\begin{aligned} F &= \\dfrac{10}{9} - \\dfrac{5}{6} \\\\ F &= \\dfrac{10 \\times 2}{9 \\times 2} - \\dfrac{5 \\times 3}{6 \\times 3} \\\\ F &= \\dfrac{20}{18} - \\dfrac{15}{18} \\\\ F &= \\dfrac{5}{18} \\end{aligned}</span></li>
 </ul>
+<p style="margin:4px 0;">Pour vérifier un résultat à la calculatrice (elle donne la fraction simplifiée) : ${calcBouton(['frac', '2', 'down', '3', 'right', '+', 'frac', '8', 'down', '7', 'right', 'exe'], 'Montre-moi les touches : 2/3 + 8/7')}</p>
 `;
 
 document.getElementById('histoire-demo-fractions-5e').innerHTML = `

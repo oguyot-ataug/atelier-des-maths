@@ -338,6 +338,18 @@ d'éveil `OLIV_EVEIL`, question dictée envoyée comme une question écrite, ré
 pour une question dictée. Reconnaissance vocale du navigateur (sur l'appareil si possible) ; rien d'autre n'est gardé ni envoyé.
 Lecture : émojis jamais lus, unités en toutes lettres (`speechUnites`, `voixPrononcer`, app.js), « Oliv'IA » dit « Olivia ».
 
+## Calculatrice collège (demandé le 08/11/2026 : « des émulateurs des calculatrices collège ? casio et texas instruments ? », puis « go sans mode algorithmique »)
+
+`calculatrice.js` : calculatrice ORIGINALE du site (jamais le programme interne, la façade, les logos ou les noms de modèles d'une
+machine du commerce), panneau flottant déplaçable (menu L'Atelier › Calculatrice ; bouton rond `#calcFlottant` dans les chapitres
+6e-3e). Deux dispositions (« Type Casio », « Type TI » : ordre et noms des touches), retenue sur l'appareil (`calcDispo`). Écriture
+naturelle à gabarits (fraction, racine, puissance, cos( )) ; calcul exact (fractions BigInt, a√b, valeurs remarquables de la
+trigonométrie en degrés), sinon 10 chiffres ; S⇔D / ◄► ; ÷R (quotient, reste), FACT (facteurs premiers), %, ×10ˣ, Ans, tableau de
+valeurs (touche Tableau / table, expression en x). L'écran garde « ÷ » (exception des calculatrices). « Montre-moi les touches » :
+`calcBouton(touches, libellé)` dans un cours, `calcMontrer(touches, titre)` (identifiants : chiffres, ',', '+', '-', '*', '/', '(',
+')', frac, sqrt, sq, pow, neg, cos, sin, tan, shift, pi, pct, divr, fact, sd, ans, e10, x, left, right, up, down, del, ac, exe).
+En place : 3e Trigonométrie, 4e Cosinus, Pythagore, Puissances, 5e Fractions. Pas de mode algorithmique.
+
 ## Conformité aux programmes : « Pour aller plus loin » (demandé le 28/10/2026)
 
 « Ce qui est hors programme peut être mis en "pour aller plus loin" » : une notion d'un niveau supérieur n'est

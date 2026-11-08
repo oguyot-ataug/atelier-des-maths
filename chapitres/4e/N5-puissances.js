@@ -123,6 +123,7 @@ ${r4Ex('Exemples :', [
   <li>Taille d'un virus : environ 0,000 000 1 m = ${pw4Tex('1 \\times 10^{-7}')} m.</li>
 </ul>
 <div class="redaction-note" ${R4_REM}>Attention : ${pw4Tex('72{,}5 \\times 10^3')} n'est pas une écriture scientifique (deux chiffres avant la virgule). On l'écrit ${pw4Tex('7{,}25 \\times 10^1 \\times 10^3 = 7{,}25 \\times 10^4')}.</div>
+<p style="margin:4px 0;">${calcBouton(['5', ',', '9', '7', '2', 'e10', '2', '4', 'exe'], 'Montre-moi les touches : 5,972 × 10²⁴')}</p>
 `;
 
 document.getElementById('histoire-demo-puissances-4e').innerHTML = `

@@ -75,6 +75,7 @@ ${r4Ex('', [
   [tr3Tex('\\sin \\widehat{BAC} = \\dfrac{' + tr3C(TR3_OPP, 'BC') + '}{' + tr3C(TR3_HYP, 'AC') + '}') + ', soit ' + tr3Tex('\\sin 35° = \\dfrac{BC}{7}'), 'La longueur cherchée apparaît dans le rapport.'],
   [tr3Tex('BC = 7 \\times \\sin 35° \\approx 4{,}0') + ' cm', 'Produit en croix ; à la calculatrice (en mode degrés) : 7 × sin(35).'],
 ])}
+<p style="margin:2px 0 6px;">${calcBouton(['7', '*', 'sin', '3', '5', ')', 'exe'], 'Montre-moi les touches : 7 × sin 35°')}</p>
 <p style="margin:6px 0;">Pour calculer AB, deux méthodes sont possibles :</p>
 <div style="display:flex;flex-wrap:wrap;gap:10px 20px;">
   <div style="flex:1 1 280px;">${r4Ex('Méthode 1 : le théorème de Pythagore', [
@@ -96,6 +97,7 @@ ${r4Ex('', [
   [tr3Tex('\\tan \\widehat{EDF} = \\dfrac{' + tr3C(TR3_OPP, 'EF') + '}{' + tr3C(TR3_ADJ, 'DE') + '} = \\dfrac{6{,}5}{4} = 1{,}625'), 'On écrit la tangente de l\'angle cherché.'],
   [tr3Tex('\\widehat{EDF} \\approx 58°'), 'À la calculatrice : touche « arctan » (ou tan⁻¹) de 1,625, puis on arrondit à l\'unité.'],
 ])}
+<p style="margin:2px 0 6px;">${calcBouton(['shift', 'tan', '1', ',', '6', '2', '5', ')', 'exe'], 'Montre-moi les touches : tan⁻¹(1,625)')}</p>
 
 <div class="lesson-header"><span class="num">2</span><h3>Les relations trigonométriques</h3></div>
 <span class="prop-badge">Propriétés</span>
