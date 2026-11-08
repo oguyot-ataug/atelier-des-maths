@@ -3872,6 +3872,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1383', date:'2026-11-08', items:['Relecture CE2-N3-P2-E2 : la correction de « Pose et calcule dans ton cahier » s\'écrit maintenant sur la feuille en mode « Dans mon cahier » (soustractions par compensation, +10 et +1) ; même chose pour P2-E1.'] },
   { version:'2026-08-19.1382', date:'2026-11-08', items:['Prendre rendez-vous : une Oliv\'IA (olive dorée qui tient une page d\'agenda cochée et un petit réveil) sur les boutons du menu du compte et dans le titre de la page.'] },
   { version:'2026-08-19.1381', date:'2026-11-08', items:['Menu L\'Atelier : une Oliv\'IA calculatrice (elle tient la calculatrice bleue du site) devant « Calculatrice », ouverte à tous, sans cadenas pour les visiteurs.'] },
   { version:'2026-08-19.1380', date:'2026-11-08', items:['Calculatrice : les deux colonnes du tableau de valeurs gardent la même place quand on le fait défiler.'] },

@@ -54,7 +54,7 @@ const RELECTURE_CHGT = {
   'CE2-N3-P1-E2': { date: '2026-11-07T12:08:02Z', note: "Bêta : à l'écran, la case de réponse reste sur la ligne de sa phrase (sa largeur est comptée dans la largeur de l'exercice)" },
   'CE2-N3-P1-E3': { date: '2026-11-04T23:14:51Z', note: "À l'écran, l'élève pose lui-même chaque addition écrite en ligne, dans une grille vide plus large que nécessaire (deux colonnes en plus) ; les cases en trop doivent rester vides (une case remplie à tort est comptée fausse)" },
   'CE2-N3-P1-E7': { date: '2026-11-04T23:14:51Z', note: "À l'écran, les calculs restent sur deux colonnes comme sur le papier (tous les exercices pleine largeur)" },
-  'CE2-N3-P2-E2': { date: '2026-11-04T23:14:51Z', note: "Corrigé : le « 1 » et le « +1 » de la compensation ne décalent plus les chiffres, les colonnes restent alignées" },
+  'CE2-N3-P2-E2': { date: '2026-11-08T23:07:26Z', note: "Consigne « dans ton cahier » ; corrigé posé avec l'opération commune : en mode cahier, il s'écrit sur la feuille (compensation +10 / +1, résultats en vert)" },
   'CE2-N3-P2-E4': { date: '2026-11-04T23:14:51Z', note: "Corrigé : les deux soustractions (compensation et cassage) alignées par le bas, résultats à la même hauteur ; chiffres alignés en colonnes" },
   'CE2-N3-P2-E5': { date: '2026-11-04T23:14:51Z', note: "Corrigé : les deux soustractions (compensation et cassage) alignées par le bas, résultats à la même hauteur ; chiffres alignés en colonnes" },
   'CE2-N3-P2-E6': { date: '2026-11-04T23:14:51Z', note: "À l'écran, les calculs restent sur deux colonnes comme sur le papier" },

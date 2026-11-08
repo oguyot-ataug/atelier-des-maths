@@ -13,6 +13,7 @@
    12 et 25 sont… » (P1-E2) ; marques de compensation qui ne décalent plus les chiffres, compensation et cassage alignés par le
    bas (P2-E2, P2-E4, P2-E5) ; calculs posés dans le corrigé (P3-E2) ; listes en colonnes à l'écran (planches-num.js).
    Relecture bêta du 07/11/2026 : à l'écran, la case de réponse reste sur la ligne de sa phrase (P1-E2, planches-num.js).
+   Relecture du 08/11/2026 : corrigés de P2-E1 et P2-E2 posés avec cm1Posee (compensation), écrits sur la feuille en mode cahier (P2-E2).
    ============================================================ */
 (() => {
 const { rmp } = P3, B = P3.B, R = P3.R;
@@ -40,6 +41,10 @@ function compens(a, b){
     + `<tr>${td('−', 'color:#FF8208;')}${Bd.map((d, j) => td(d == null && !bas[j] ? '' : `${d == null ? '' : d}${bas[j] ? `<span style="position:absolute;left:calc(50% + 5px);bottom:3px;color:${ROUGE};font-size:.6rem;line-height:1;white-space:nowrap;">+1</span>` : ''}`)).join('')}</tr>`
     + `<tr style="border-top:2px solid #1C1B2E;">${td('')}${r.split('').map(d => td(d === ' ' ? '' : d, 'color:#FF8208;font-size:1.2rem;')).join('')}</tr></table>`;
 }
+// Corrigé d'une soustraction « Pose et calcule dans ton cahier » : l'opération posée commune (cm1Posee, marques de compensation
+// calculées), que le mode « Dans mon cahier » sait récrire sur la feuille -- relecture CE2-N3-P2-E2 du 08/11/2026 : « La correction en
+// mode cahier ne fonctionne pas » (le tableau de compens() restait tapé, hors des carreaux).
+const compensPosee = (a, b) => sous(a, b, { rep: true });
 // Soustraction par cassage : les chiffres cassés sont barrés, la nouvelle valeur est écrite au-dessus.
 function cassage(a, b){
   const T = String(a).split('').map(Number), n = T.length, Bd = String(b).padStart(n, ' ').split('').map(c => c === ' ' ? 0 : +c), mod = Array(n).fill(false), cur = T.slice();
@@ -102,9 +107,9 @@ PLANCHES['ce2|Addition et soustraction posées'] = [
     attendus: ['Poser une soustraction en alignant les chiffres de même rang, même quand les nombres n\'ont pas le même nombre de chiffres', 'Calculer par compensation (+10 en haut, 1+ en bas)', 'Vérifier une soustraction par une addition'],
     exos: [
       { etoiles: 1, consigne: 'Pose et calcule dans ton cahier, puis écris le résultat. Attention à bien aligner les unités !',
-        ...aPoser([[876, '−', 452], [5638, '−', 415], [9087, '−', 3064], [1249, '−', 37]], compens) },
+        ...aPoser([[876, '−', 452], [5638, '−', 415], [9087, '−', 3064], [1249, '−', 37]], compensPosee) },
       { etoiles: 2, consigne: 'Pose et calcule dans ton cahier, puis écris le résultat (il y a des compensations).',
-        ...aPoser([[752, '−', 386], [4305, '−', 1678], [6000, '−', 2345], [3021, '−', 456]], compens) },
+        ...aPoser([[752, '−', 386], [4305, '−', 1678], [6000, '−', 2345], [3021, '−', 456]], compensPosee) },
       { etoiles: 2, consigne: 'Vérifie chaque soustraction par une addition, puis entoure si elle est juste ou fausse.',
         ...verif([[835, 267, 568], [4000, 1250, 3850], [1503, 728, 775]]) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Le mont Blanc mesure 4 806 m. Le puy de Dôme mesure 1 465 m. Quelle est la différence de hauteur entre ces deux sommets ?',
