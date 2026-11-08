@@ -443,11 +443,21 @@ function cahierCaler(page){
   // Deux lignes à fraction de suite (demandé le 07/11/2026 : « on peut remonter 2/5 × 240 d'un carreau ») : la seconde remonte
   // d'un carreau quand son numérateur tient encore dans son propre carreau (sous le dénominateur de la ligne précédente).
   const mont = blocs.map((b, i) => {
-    if(!fr[i] || !fr[i - 1] || haut[i] < 16 || !(b.classList.contains('cm-redac-ligne') || b.classList.contains('cm-redac-phrase') || b.classList.contains('we-row')) || b.previousElementSibling !== blocs[i - 1]) return 0;
+    if(!fr[i] || !fr[i - 1] || haut[i] < 16 || !b.matches('.cm-redac-ligne, .cm-redac-phrase, .we-row, p, li') || b.previousElementSibling !== blocs[i - 1]) return 0;
     const t = Math.min(...[...b.querySelectorAll('.katex-html')].map(e => e.getBoundingClientRect().top)), t0 = b.getBoundingClientRect().top;
     return (t - t0) / (k || 1) + haut[i] - 32 >= -1 ? -32 : 0;
   });
   blocs.forEach((b, i) => { if(haut[i]) b.style.setProperty('--calh', haut[i] + 'px'); if(mont[i]) b.style.setProperty('--calm', mont[i] + 'px'); });
+  // Droite graduée (fpAxeFig, data-axe ; relecture du 08/11/2026 : « l'axe doit être sur la ligne principale et on se sert des lignes
+  // verticales comme support de nos graduations ») : une graduation par carreau, chaque graduation sur une ligne verticale, l'axe sur une ligne principale.
+  page.querySelectorAll('svg[data-axe]').forEach(sv => { const [x0, w, y0, vw] = sv.dataset.axe.split(',').map(Number), e = 32 / w;
+    // Au pixel entier : un calage au centième de pixel relançait sans fin l'observateur de taille de la page.
+    const l0 = parseFloat(sv.style.getPropertyValue('--axl')) || 0, t0 = parseFloat(sv.style.getPropertyValue('--axt')) || 0;
+    sv.style.setProperty('--axw', (vw * e) + 'px');
+    const P = page.getBoundingClientRect(), R = sv.getBoundingClientRect();
+    const ax = (R.left - P.left) / (k || 1) - page.clientLeft - l0 + x0 * e, ay = (R.top - P.top) / (k || 1) - page.clientTop - t0 + y0 * e;
+    const l = Math.round(((71.5 - ax) % 32 + 32) % 32), t1 = Math.round(((23.5 - ay) % 32 + 32) % 32), t = t1 > 16 ? t1 - 32 : t1; // ligne principale la plus proche
+    if(l !== l0) sv.style.setProperty('--axl', l + 'px'); if(t !== t0) sv.style.setProperty('--axt', t + 'px'); });
   const H = blocs.map(b => b.getBoundingClientRect().height / (k || 1));
   // Titre souligné SUR L'INTERLIGNE, la première ligne fine sous la ligne principale (demandé le 07/11/2026 : « Souligner : sur
   // l'interligne ! ») : trait dessiné à 8,5 px sous la ligne d'écriture (--soul, styles.css), continu sous les jambages.

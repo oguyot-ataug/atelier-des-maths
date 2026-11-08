@@ -253,7 +253,7 @@ function fpAxeFig(o){
   if(o.sauts){ const [a, b] = o.sauts, d = a < b ? 1 : -1; for(let i = a, k = 1; i !== b; i += d, k++) g += `<path d="M${X(i)},${Y - 3} q${w / 2 * d},-16 ${w * d},0" fill="none" stroke="${OR}" stroke-width="1.5"/><text x="${X(i) + w / 2 * d}" y="${Y - 17}" font-size="11" font-weight="700" text-anchor="middle" fill="${OR}">${k}</text>`; }
   (o.pts || (o.pt ? [o.pt] : [])).forEach(([i, nom, t]) => { g += `<path d="M${X(i) - 5},${Y - 5} L${X(i) + 5},${Y + 5} M${X(i) - 5},${Y + 5} L${X(i) + 5},${Y - 5}" stroke="${OR}" stroke-width="2.6" stroke-linecap="round"/><text x="${X(i)}" y="${Y - 30}" font-size="17" font-weight="700" text-anchor="middle" fill="${OR}">${nom}</text>` + (t != null ? nb(X(i), t, OR) : ''); });
   if(o.origine) g += `<text x="12" y="${Y - 54}" font-size="12" fill="#7A4FC0">${o.origine}</text>`;
-  return `<svg viewBox="0 0 350 126" style="width:100%;min-width:300px;max-width:460px;display:block;">${g}</svg>`;
+  return `<svg viewBox="0 0 350 126" data-axe="22,${w},${Y},350" style="width:100%;min-width:300px;max-width:460px;display:block;">${g}</svg>`;
 }
 const fpTx = s => '<span class="tex">' + s + '</span>';
 // Placer A(7/4) : axe de 0 à 3, unité partagée en 4.

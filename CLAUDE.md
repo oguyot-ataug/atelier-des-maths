@@ -217,6 +217,10 @@ papier seyes ») : chaque `.redaction-template` hors correction et non interacti
 (cahierChapitre) ; commentaire `.we-comment` à la suite, sans agrandir la ligne ; formule longue (`cl4Long`…) sur la ligne.
 Phrase à fraction écrite sur plusieurs lignes : classe `cahier-fr2` (cahierCaler), une ligne tous les deux carreaux, chacune sur une
 ligne principale. Signes ≈ ≠ ≤ ≥ (absents de Caveat) : `.cahier-op-fin`, ni gras ni agrandis.
+Lignes à fraction qui se suivent : la remontée d'un carreau (`--calm`) vaut aussi pour les paragraphes `p` et les `li` d'une correction.
+Droite graduée (`fpAxeFig`, attribut `data-axe="x0,pas,y,largeur"` en unités du viewBox) : cahierCaler la met à l'échelle (une graduation
+par carreau) et la cale (`--axw`, `--axl`, `--axt`, au pixel entier) : axe sur une ligne principale, graduations sur les lignes verticales.
+Toute nouvelle droite graduée d'un corrigé : même attribut `data-axe`.
 Division posée dans une correction : `.dp-boite`, lignes dans un bloc `id="…-dpLeft"`, quotient `id="…-dpQuotient"`, chiffres `dpCases` ;
 elle garde sa propre feuille (hors de la `.cahier-page`, cahierChapitre). Opérations des cours du collège : tableaux `table.cma-op` (soustraction de décimaux, durées, `ogAddBlock`, `cm1opRowsTable` du
 CM1) et divisions posées `.dp-boite` (6e N1, 6e N4, 5e N1 ; un caractère par case `dpCases`, app.js) dessinées sur la feuille par la
