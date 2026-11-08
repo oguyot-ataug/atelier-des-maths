@@ -2482,7 +2482,9 @@ body.plp-ouvert .cahier-flottant{ top:56px; bottom:auto; left:16px; z-index:2147
   body.cahier-on .cahier-actif .katex:has(.mfrac) .base > .mord:has(> .mfrac),
   body.cahier-on .cahier-actif .katex:has(.mfrac) .base > .mrel,
   body.cahier-on .cahier-actif .katex:has(.mfrac) .base > .mbin{ position:relative; top:calc(.25em + 1px); } /* + 1 px : la barre chevauche la ligne principale au lieu de la surmonter */
-  body.cahier-on .cahier-actif .cahier-op{ position:relative; top:.27em; font-size:1.2em; line-height:0; } /* milieu du « = » manuscrit (6,5 px au-dessus de la ligne d'écriture à 27,6 px) posé sur la ligne principale */
+  body.cahier-on .cahier-actif .cahier-op{ position:relative; top:.27em; font-size:1.2em; line-height:0; }
+  body.cahier-on .cahier-actif .cahier-op-fin{ font-size:1em; font-weight:400; } /* ≈ ≠ ≤ ≥ : absents de Caveat, la police de secours écrite en gras et agrandie était trop épaisse */
+  body.cahier-on .cahier-actif .cahier-fr2{ line-height:64px !important; } /* phrase à fraction sur plusieurs lignes : chaque ligne sur une ligne principale (cahierCaler) */ /* milieu du « = » manuscrit (6,5 px au-dessus de la ligne d'écriture à 27,6 px) posé sur la ligne principale */
   body.cahier-on .cahier-actif .cm-redac{ margin:0; line-height:32px; }
   body.cahier-on .cahier-actif .cm-redac-titre{ font-weight:700; }
   body.cahier-on .cahier-actif .cm-redac-sou{ text-decoration:none; padding-bottom:12px; background-image:linear-gradient(#15803D, #15803D); background-repeat:no-repeat; background-size:100% 2px; background-position:0 var(--soul, 30px); }

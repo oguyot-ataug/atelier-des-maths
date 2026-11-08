@@ -215,6 +215,8 @@ interactive : boutons, saisie) et ajoute le bouton en tête des onglets ; rédac
 carreau. Exemples rédigés des cours, méthodes et rédactions types (demandé le 08/11/2026 : « Ces exemples aussi doivent être placés sur
 papier seyes ») : chaque `.redaction-template` hors correction et non interactif est enveloppé dans une `.cahier-page.cahier-exemple`
 (cahierChapitre) ; commentaire `.we-comment` à la suite, sans agrandir la ligne ; formule longue (`cl4Long`…) sur la ligne.
+Phrase à fraction écrite sur plusieurs lignes : classe `cahier-fr2` (cahierCaler), une ligne tous les deux carreaux, chacune sur une
+ligne principale. Signes ≈ ≠ ≤ ≥ (absents de Caveat) : `.cahier-op-fin`, ni gras ni agrandis.
 Division posée dans une correction : `.dp-boite`, lignes dans un bloc `id="…-dpLeft"`, quotient `id="…-dpQuotient"`, chiffres `dpCases` ;
 elle garde sa propre feuille (hors de la `.cahier-page`, cahierChapitre). Opérations des cours du collège : tableaux `table.cma-op` (soustraction de décimaux, durées, `ogAddBlock`, `cm1opRowsTable` du
 CM1) et divisions posées `.dp-boite` (6e N1, 6e N4, 5e N1 ; un caractère par case `dpCases`, app.js) dessinées sur la feuille par la

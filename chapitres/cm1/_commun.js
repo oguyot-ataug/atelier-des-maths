@@ -408,7 +408,7 @@ function cahierOps(bloc){
     const parts = t.split(new RegExp(`(\\s${S}\\s|^${S}\\s|\\s${S}$)`));
     if(parts.length < 2) return;
     const f = document.createDocumentFragment();
-    parts.forEach(x => { if(!x) return; if(CAHIER_OP.test(x)){ const sp = document.createElement('span'); sp.className = 'cahier-op'; sp.textContent = x; f.appendChild(sp); } else f.appendChild(document.createTextNode(x)); });
+    parts.forEach(x => { if(!x) return; if(CAHIER_OP.test(x)){ const sp = document.createElement('span'); sp.className = 'cahier-op' + (/[≈≠≤≥]/.test(x) ? ' cahier-op-fin' : ''); sp.textContent = x; f.appendChild(sp); } else f.appendChild(document.createTextNode(x)); });
     n.parentNode.replaceChild(f, n);
   });
 }
@@ -427,6 +427,13 @@ function cahierCaler(page){
   // Ligne avec une fraction : la ligne d'écriture (donc la barre de fraction) est descendue jusqu'à une ligne principale.
   const fr = blocs.map(b => !!b.querySelector('.mfrac'));
   blocs.forEach((b, i) => { if(fr[i]) cahierOps(b); });
+  // Phrase à fraction écrite sur plusieurs lignes (relecture du 08/11/2026 : « "écriture fractionnaire" n'est pas écrit sur la ligne
+  // principale ») : une ligne sur deux carreaux, le numérateur et le dénominateur gardent le leur, chaque ligne reste sur une ligne principale.
+  blocs.forEach((b, i) => { b.classList.remove('cahier-fr2'); if(!fr[i]) return;
+    const L = [], w = document.createTreeWalker(b, NodeFilter.SHOW_TEXT, { acceptNode: n => n.parentElement.closest('.katex, .cahier-op') ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT });
+    for(let n = w.nextNode(); n; n = w.nextNode()){ if(!n.nodeValue.trim()) continue; const g = document.createRange(); g.selectNodeContents(n);
+      [...g.getClientRects()].filter(r => r.height > 4 && r.width > 1).forEach(r => { if(!L.some(y => Math.abs(y - r.bottom) < 12 * (k || 1))) L.push(r.bottom); }); }
+    if(L.length > 1 && !b.matches('table, .cm-redac-col') && !b.querySelector('table, svg, .katex-display')) b.classList.add('cahier-fr2'); });
   const haut = blocs.map((b, i) => {
     if(!fr[i]) return 0;
     const s = document.createElement('span'); s.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline;';
