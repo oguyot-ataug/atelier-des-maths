@@ -24,7 +24,7 @@ document.getElementById('cours-demo-proportionnalite-6e').innerHTML = `
 
 <div class="sub-header"><span class="letter">A</span><h4>Grandeurs proportionnelles</h4></div>
 <span class="def-badge">Définition</span>
-<div class="def-box">On dit que deux grandeurs sont <b>proportionnelles</b> quand les valeurs prises par l'une s'obtiennent en multipliant celles prises par l'autre par un même nombre non nul, appelé <b>coefficient de proportionnalité</b>.</div>
+<div class="def-box">Deux grandeurs sont <b>proportionnelles</b> lorsque les valeurs de l'une s'obtiennent en multipliant ou divisant les valeurs de l'autre par un même nombre non nul. Le nombre par lequel on multiplie est appelé <b>coefficient de proportionnalité</b>.</div>
 
 <p class="example-title">Exemple : le côté et le périmètre d'un carré</p>
 <p style="margin:4px 0 12px;">La longueur du côté et le périmètre d'un carré sont des grandeurs proportionnelles : le périmètre d'un carré s'obtient en multipliant la longueur de son côté par 4. Le coefficient de proportionnalité est donc 4.</p>
@@ -438,7 +438,7 @@ DEMO_REGISTRY['6e|Proportionnalité'] = {
 
 DEMO_QUIZZES['6e|Proportionnalité'] = [
   {q:"Deux grandeurs sont proportionnelles quand...",
-   opts:["les valeurs de l'une s'obtiennent en multipliant celles de l'autre par un même nombre non nul","les valeurs de l'une sont toujours plus grandes que celles de l'autre","la somme des deux grandeurs est constante"], correct:0},
+   opts:["les valeurs de l'une s'obtiennent en multipliant ou divisant les valeurs de l'autre par un même nombre non nul","les valeurs de l'une sont toujours plus grandes que celles de l'autre","la somme des deux grandeurs est constante"], correct:0},
   {q:"Dans un tableau de proportionnalité, les nombres de la seconde ligne s'obtiennent en multipliant ceux de la première ligne par...",
    opts:["un nombre différent à chaque colonne","le coefficient de proportionnalité, toujours le même","100"], correct:1},
   {q:"Sur un plan à l'échelle 1/25, une longueur de 4 cm représente en réalité...",

@@ -1648,7 +1648,7 @@
 "nv": 0,
 "d": "P",
 "t": "Proportionnalité, pourcentages, échelles",
-"e": "Deux grandeurs sont proportionnelles quand on passe de l'une à l'autre en multipliant toujours par le même nombre non nul.",
+"e": "Deux grandeurs sont proportionnelles lorsque les valeurs de l'une s'obtiennent en multipliant ou divisant les valeurs de l'autre par un même nombre non nul.",
 "x": "1 baguette coûte 1 €, 3 baguettes coûtent 3 € : le prix est proportionnel au nombre de baguettes.",
 "p": "Au CM, procédures sans tableau (propriétés de linéarité, passage à l'unité) ; coefficient de proportionnalité nommé en 5e."
 },

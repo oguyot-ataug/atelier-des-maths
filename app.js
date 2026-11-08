@@ -3868,6 +3868,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1372', date:'2026-11-08', items:['Proportionnalité : définition « les valeurs de l\'une s\'obtiennent en multipliant ou divisant les valeurs de l\'autre par un même nombre non nul » (lexique, cours et quiz de 6e).'] },
   { version:'2026-08-19.1371', date:'2026-11-08', items:['Lexique : définition de « proportionnalité » (deux grandeurs, même nombre non nul) et de « coefficient de proportionnalité » accordée.'] },
   { version:'2026-08-19.1370', date:'2026-11-08', items:['CP : les commentaires des animations du cours sont lus à voix haute (« Regardez bien », « Combien en avez-vous vu ? »…), l\'animation attend la fin de chaque phrase ; bouton « Voix » pour couper le son.'] },
   { version:'2026-08-19.1369', date:'2026-11-08', items:['Feuilles imprimées : cadres des exercices plus épais et plus foncés.'] },
