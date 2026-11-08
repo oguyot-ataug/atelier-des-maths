@@ -2356,6 +2356,71 @@ body:not(.connecte) #navDropdownEntrainer .nav-dropdown-menu button[data-nav="le
 }
 @media print{ .bandeau-essai{ display:none !important; } }
 
+/* Bandeaux d'information (bandeaux.js ; demandé le 08/11/2026) : administrateur, référent, professeur. */
+.bandeau-info{ --bd-fond:#E8F1FB; --bd-bord:#0C5BA0; --bd-encre:#123B63; display:flex; align-items:center; gap:10px; padding:7px 12px 7px 14px;
+  background:var(--bd-fond); color:var(--bd-encre); border-bottom:1px solid rgba(0,0,0,.06); border-left:5px solid var(--bd-bord); font-size:.93rem; line-height:1.4; }
+.bandeau-info.bd-important{ --bd-fond:#FFF4D6; --bd-bord:#E0A100; --bd-encre:#5A4100; }
+.bandeau-info.bd-alerte{ --bd-fond:#FDE8E6; --bd-bord:#C2361F; --bd-encre:#6E1A0E; }
+.bandeau-info.bd-succes{ --bd-fond:#E4F5EA; --bd-bord:#1F7A4D; --bd-encre:#11452B; }
+.bandeau-info .bd-ico{ flex:none; color:var(--bd-bord); font-size:22px; }
+.bandeau-info .bd-origine{ flex:none; font:700 .78rem 'Space Grotesk',sans-serif; text-transform:uppercase; letter-spacing:.03em; color:var(--bd-bord); max-width:16em; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.bandeau-info .bd-origine:empty{ display:none; }
+.bandeau-info .bd-fixe{ flex:1; min-width:0; }
+.bandeau-info .bd-fenetre{ flex:1; min-width:0; overflow:hidden; -webkit-mask-image:linear-gradient(90deg,transparent,#000 20px,#000 calc(100% - 20px),transparent); mask-image:linear-gradient(90deg,transparent,#000 20px,#000 calc(100% - 20px),transparent); }
+.bandeau-info .bd-defile{ display:inline-flex; white-space:nowrap; animation:beDefile 40s linear infinite; }
+.bandeau-info .bd-txt{ padding-right:1em; }
+.bandeau-info .bd-sep{ color:var(--bd-bord); margin:0 .6em; }
+.bandeau-info:hover .bd-defile, .bandeau-info:focus-within .bd-defile{ animation-play-state:paused; }
+.bandeau-info .bd-lien{ flex:none; display:inline-flex; align-items:center; gap:4px; border:none; border-radius:999px; padding:5px 12px; background:var(--bd-bord); color:#fff; font:600 .85rem 'Space Grotesk',sans-serif; cursor:pointer; }
+.bandeau-info.bd-important .bd-lien{ color:#20242E; }
+.bandeau-info .bd-lien .gicon{ font-size:16px; }
+.bandeau-info .bd-fermer{ flex:none; border:none; background:transparent; color:var(--bd-encre); opacity:.6; font-size:1rem; width:28px; height:28px; border-radius:50%; cursor:pointer; }
+.bandeau-info .bd-fermer:hover{ opacity:1; background:rgba(0,0,0,.07); }
+@media (prefers-reduced-motion: reduce){
+  .bandeau-info .bd-defile{ animation:none; white-space:normal; display:block; }
+  .bandeau-info .bd-txt[aria-hidden]{ display:none; }
+}
+@media (max-width:640px){
+  .bandeau-info{ flex-wrap:wrap; font-size:.88rem; padding:6px 10px; }
+  .bandeau-info .bd-ico{ display:none; }
+  .bandeau-info .bd-origine{ flex:1; max-width:none; order:0; }
+  .bandeau-info .bd-fermer{ order:1; margin-left:auto; }
+  .bandeau-info .bd-fixe, .bandeau-info .bd-fenetre{ flex-basis:100%; order:2; }
+  .bandeau-info .bd-lien{ order:3; }
+}
+@media print{ .bandeaux-info{ display:none !important; } }
+/* Éditeur des bandeaux */
+.bd-form{ border:1px solid var(--line,#D6DEE8); border-radius:12px; padding:12px 14px; background:#FBFCFE; }
+.bd-form-titre{ font:700 1rem 'Space Grotesk',sans-serif; margin:0 0 8px; display:flex; align-items:center; gap:6px; }
+.bd-champ{ margin:0 0 10px; }
+.bd-champ > b{ display:inline-block; margin:0 0 4px; }
+.bd-chips{ display:flex; flex-wrap:wrap; gap:6px; margin-top:4px; }
+.bd-chip{ position:relative; cursor:pointer; }
+.bd-chip input{ position:absolute; opacity:0; pointer-events:none; }
+.bd-chip > span{ display:inline-flex; align-items:center; gap:4px; padding:5px 12px; border:1.5px solid #C9D3E0; border-radius:999px; background:#fff; font-size:.88rem; color:#3B4656; transition:background .15s, border-color .15s; }
+.bd-chip > span .gicon{ font-size:16px; }
+.bd-chip input:checked + span{ background:#0C5BA0; border-color:#0C5BA0; color:#fff; }
+.bd-chip input:checked + span::before{ content:'✓'; font-weight:700; }
+.bd-chip input:focus-visible + span{ outline:2px solid #0C5BA0; outline-offset:2px; }
+.bd-chip-important input:checked + span{ background:#E0A100; border-color:#E0A100; color:#20242E; }
+.bd-chip-alerte input:checked + span{ background:#C2361F; border-color:#C2361F; }
+.bd-chip-succes input:checked + span{ background:#1F7A4D; border-color:#1F7A4D; }
+.bd-ligne-champs{ display:flex; flex-wrap:wrap; gap:10px 16px; align-items:flex-end; }
+.bd-ligne-champs label{ display:flex; flex-direction:column; gap:3px; font-weight:600; font-size:.9rem; }
+.bd-ligne-champs label input[type=text]{ min-width:220px; }
+.bd-ligne-champs label .hint{ display:inline; font-weight:400; }
+.bd-form input[type=text], .bd-form input[type=date], .bd-form textarea{ padding:7px 10px; border:1px solid #C9D3E0; border-radius:8px; font:inherit; font-size:.92rem; background:#fff; box-sizing:border-box; }
+.bd-ligne-champs label.bd-coche{ flex-direction:row; align-items:center; gap:6px; font-weight:500; }
+#bdApercu{ border:1px dashed #C9D3E0; border-radius:8px; overflow:hidden; margin-top:4px; }
+.bd-ligne{ border:1px solid var(--line,#D6DEE8); border-radius:10px; overflow:hidden; margin:0 0 10px; background:#fff; }
+.bd-ligne-infos{ display:flex; flex-wrap:wrap; align-items:center; gap:6px 10px; padding:8px 12px; }
+.bd-ligne-actions{ margin-left:auto; display:flex; gap:6px; flex-wrap:wrap; }
+.bd-ligne-actions .btn{ font-size:.78rem; padding:4px 10px; }
+.bd-etat{ font-size:.78rem; font-weight:700; padding:2px 8px; border-radius:999px; }
+.bd-etat-on{ background:#E4F5EA; color:#1F7A4D; }
+.bd-etat-attente{ background:#FFF4D6; color:#8A6400; }
+.bd-etat-off{ background:#EEF1F5; color:#5B6472; }
+
 /* Activités de géométrie dynamique dans les cours (chapitres/5e/G2-angles-parallelisme.js ; demandé le 03/11/2026). */
 .dyn-activite{ margin:12px 0 16px; padding:10px 14px 12px; border:1.5px solid #CDBDEB; border-left:5px solid #7A4FC0; border-radius:10px; background:#FAF7FF; }
 .dyn-activite-titre{ margin:0 0 4px; font:700 1rem 'Space Grotesk',sans-serif; color:#5B3A99; display:flex; align-items:center; gap:6px; }

@@ -312,3 +312,12 @@ d'invitation Google (sendUpdates=none), le nom de l'administrateur n'apparaît n
 Google ne sont plus utilisés.
 Bandeau défilant des professeurs en essai (`#bandeauEssai`, `bandeauEssaiMaj`, app.js ; build 1308) : relecture en cours, invitation au
 rendez-vous et au bêta-test ; à chaque ouverture de page et connexion, jamais aux abonnés, licences établissement, bêta-testeurs, ni sur ADP.
+
+## Bandeaux d'information (demandé le 08/11/2026, build 1348)
+
+« Une option "bandeau" […] l'administrateur […] (destination à définir sous chips à cocher), un référent établissement et un professeur
+pour une ou plusieurs classes » : `bandeaux.js`, table `bandeaux` (`supabase/sql/2026-11-08-bandeaux.sql`, droits vérifiés par la base),
+affichage `#bandeauxInfo` sous `#bandeauEssai` par `bandeaux_pour_moi()` (refreshAuthUI ; jamais sur ADP ni à l'impression). Gestion :
+Administration › Bandeaux (site : visiteurs, élèves, professeurs, parents, référents ; niveaux et établissements facultatifs),
+Mon établissement › Bandeaux (référent : professeurs / élèves de l'établissement), Mes classes › « Bandeau d'information » (professeur :
+élèves / collègues de ses classes). Un bandeau masqué (✕) le reste sur l'appareil tant qu'il n'est pas modifié (localStorage).

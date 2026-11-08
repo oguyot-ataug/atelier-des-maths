@@ -3588,6 +3588,7 @@ async function refreshAuthUI(){
     const btnRdv = document.getElementById('btnRdv'); if(btnRdv) btnRdv.style.display = pasEleve ? 'block' : 'none';
     const footRdv = document.getElementById('footRdv'); if(footRdv) footRdv.style.display = pasEleve ? '' : 'none';
     bandeauEssaiMaj(profile); // professeur en essai : bandeau défilant (rendez-vous, bêta-test, relecture)
+    if(typeof bandeauxInfoMaj==='function') bandeauxInfoMaj(); // bandeaux d'information (bandeaux.js)
     const chapSuggestRow = document.getElementById('chapSuggestRow');
     if(chapSuggestRow) chapSuggestRow.style.display = isStaff ? 'block' : 'none';
     if(typeof cpOnAuthChange==='function') cpOnAuthChange();
@@ -3646,6 +3647,7 @@ async function refreshAuthUI(){
     loggedOutEl.style.display='block'; loggedInEl.style.display='none';
     isStaffGlobal = false;
     bandeauEssaiMaj(null);
+    if(typeof bandeauxInfoMaj==='function') bandeauxInfoMaj();
     const avatarBtnOut = document.getElementById('accountAvatar');
     // Déconnecté : un vrai bouton « Se connecter » au lieu de la pastille vide -- signalé le 02/11/2026 : « une fois qu'un prof
     // a saisi son mot de passe, il ne voit plus après où se connecter. La vignette avec la personne dedans n'est pas assez
@@ -3862,6 +3864,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1348', date:'2026-11-08', items:['Bandeaux d\'information -- demandé : « une option "bandeau" qui permet à l\'administrateur de placer un bandeau d\'information (destination à définir sous chips à cocher), un référent établissement et un professeur pour une ou plusieurs classes ». Administration › Bandeaux : message, couleur (information, important, alerte, bonne nouvelle), destinataires à cocher (visiteurs, élèves, professeurs, parents, référents), niveaux et établissements facultatifs, lien, dates de début et de fin, texte qui défile, possibilité de le masquer, aperçu. Mon établissement › Bandeaux (référent) : professeurs et/ou élèves de l\'établissement, niveaux facultatifs. Mes classes › « Bandeau d\'information » (professeur) : élèves (et, au choix, collègues) d\'une ou plusieurs de ses classes. Les bandeaux s\'affichent en haut de toutes les pages, avec le nom de qui parle ; un bandeau masqué ne revient que s\'il est modifié. Mise en pause, modification, suppression ; les droits sont vérifiés par la base (un professeur ne peut viser que ses classes, un référent que son établissement).'] },
   { version:'2026-08-19.1347', date:'2026-11-08', items:['Adresses e-mail des élèves -- demandé : « Pour les élèves, il serait intéressant d\'avoir une "option email" […] les emails de l\'établissement […] celui de l\'enseignant […] envoi direct des mots de passes oubliés ». Mes classes › Élèves › « Adresses e-mail » : le professeur déclare le domaine des adresses de l\'établissement (messagerie, ENT, Google Workspace for Education… ; jamais Gmail ni une autre adresse personnelle) puis saisit l\'adresse de chaque élève, ou colle une liste. L\'élève reçoit un lien pour confirmer son adresse ; s\'il ne s\'est jamais connecté, il choisit aussitôt son mot de passe (identifiants à la création).', '« Mot de passe oublié » pour les élèves : le lien part à l\'adresse confirmée de l\'élève ; sinon, son professeur reçoit par e-mail (adresse de « Mon profil ») un lien de 7 jours à lui transmettre. Politique de confidentialité mise à jour.'] },
   { version:'2026-08-19.1346', date:'2026-11-07', items:['CM2, CM1, CE2, CE1 et CP : plus aucun mot dans les lignes de calcul des rédactions (une trentaine d\'exercices, onglet Exercices et planches) -- « Sam : 5 + 5 = 10 » devient « Argent de Sam : », « 5 + 5 = 10 », « Sam a 10 €. » ; calcul mental (produits de nombres ronds, × 5 et × 50) décomposé ligne par ligne ; « 1 gâteau : 4 : 2 » réécrit sans double « : ». Le nettoyage est terminé du CP à la 3e.'] },
   { version:'2026-08-19.1345', date:'2026-11-07', items:['3e, corrections rédigées des planches : plus aucun mot dans les lignes de calcul (environ 80 exercices). Une étape par titre ; « donc », « soit », « et », « ou » remplacés par une ligne par égalité (équations produits : un facteur nul par étape) ; Thalès, Pythagore et trigonométrie avec la justification sur sa propre ligne ; fractions « 4/3 » écrites en fraction.', 'Fractions des cours et corrections : la virgule décimale ne laisse plus d\'espace (« 1,2 » et non « 1, 2 »), à tous les niveaux.'] },
