@@ -2591,6 +2591,7 @@ body.plp-ouvert .cahier-flottant{ top:56px; bottom:auto; left:16px; z-index:2147
   body.cahier-on .cahier-actif svg.pose-cahier.nu{ margin:0 0 0 32px !important; border:0 !important; border-radius:0 !important; }
   body.cahier-on .cahier-actif .pl-poses-auto{ gap:0 32px; margin-top:0 !important; }
   body.cahier-on .cahier-actif .pl-poses-auto svg.pose-cahier.nu{ margin:0 !important; }
+  body.cahier-on .cahier-actif svg.pose-cahier.nu.pose-cale{ margin:var(--pst, 0px) 0 0 var(--psl, 0px) !important; } /* calée sur les carreaux de la page (cahierCaler) */
   body.cahier-on .cahier-actif .pl-poses-auto > div:first-child{ margin-left:32px; }
   /* Divisions posées (plDivTable) : diviseur et quotient derrière le trait de la potence, quotient en vert. */
   body.cahier-on table.cma-op td.pl-divd{ font:700 27px/32px Caveat,'Comic Sans MS',cursive !important; padding:0 0 0 10px !important; border-left-color:#1E3A8A !important; color:#1E3A8A !important; }

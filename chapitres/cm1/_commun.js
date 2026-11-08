@@ -470,6 +470,15 @@ function cahierCaler(page){
     const ax = (R.left - P.left) / (k || 1) - page.clientLeft - l0 + x0 * e, ay = (R.top - P.top) / (k || 1) - page.clientTop - t0 + y0 * e;
     const l = Math.round(((71.5 - ax) % 32 + 32) % 32) % 32, t1 = Math.round(((23.5 - ay) % 32 + 32) % 32) % 32, t = t1 > 16 ? t1 - 32 : t1; // ligne principale la plus proche
     if(l !== l0) sv.style.setProperty('--axl', l + 'px'); if(t !== t0) sv.style.setProperty('--axt', t + 'px'); });
+  // Opérations posées dans une page de cahier (relecture CE2-N3-P1-E3 du 08/11/2026 : « Aie, ça fait mal aux yeux ! », feuille posée sur la
+  // feuille) : dessinées sans feuille à elles (cm1PoseeCahier nu), et calées sur les carreaux de la page (colonnes sur les traits verticaux,
+  // chiffres sur les lignes principales), au pixel entier.
+  page.querySelectorAll('svg.pose-cahier.nu').forEach(sv => { if(!sv.getBoundingClientRect().width) return; sv.classList.add('pose-cale');
+    const l0 = parseFloat(sv.style.getPropertyValue('--psl')) || 0, t0 = parseFloat(sv.style.getPropertyValue('--pst')) || 0;
+    const P = page.getBoundingClientRect(), R = sv.getBoundingClientRect();
+    const ax = (R.left - P.left) / (k || 1) - page.clientLeft - l0, ay = (R.top - P.top) / (k || 1) - page.clientTop - t0;
+    const l = Math.round(((8 - ax) % 32 + 32) % 32) % 32, t = Math.round(((0 - ay) % 32 + 32) % 32) % 32;
+    if(l !== l0) sv.style.setProperty('--psl', l + 'px'); if(t !== t0) sv.style.setProperty('--pst', t + 'px'); });
   const H = blocs.map(b => b.getBoundingClientRect().height / (k || 1));
   // Titre souligné SUR L'INTERLIGNE, la première ligne fine sous la ligne principale (demandé le 07/11/2026 : « Souligner : sur
   // l'interligne ! ») : trait dessiné à 8,5 px sous la ligne d'écriture (--soul, styles.css), continu sous les jambages.
@@ -539,7 +548,7 @@ function cahierAppliquer(racine){
     if(cahierRO) cahierRO.observe(p); });
   const T = racine.matches && racine.matches('table.pose-ecran[data-cahier]') ? [racine] : racine.querySelectorAll('table.pose-ecran[data-cahier]');
   T.forEach(t => { const s = t.nextElementSibling; if(s && s.classList.contains('pose-cahier')) return;
-    try{ t.insertAdjacentHTML('afterend', cm1PoseeCahier(JSON.parse(t.dataset.cahier), !!t.closest('.cahier-actif .cm-redac-pose, .cahier-actif .pl-poses-auto'))); }catch(e){} });
+    try{ t.insertAdjacentHTML('afterend', cm1PoseeCahier(JSON.parse(t.dataset.cahier), !!t.closest('.cahier-actif'))); }catch(e){} });
   P.forEach(p => { if(p.classList.contains('cahier-actif')) cahierCaler(p); });
 }
 if(typeof document !== 'undefined' && document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if(cahierOn) document.querySelectorAll('.cahier-actif').forEach(cahierCaler); });
