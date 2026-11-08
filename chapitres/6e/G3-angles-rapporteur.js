@@ -1182,10 +1182,51 @@ document.getElementById('methode-demo-angles-rapporteur-6e').innerHTML = `
 </div>
 `;
 
+/* ================= Figures des exercices (relecture du 08/11/2026) ================= */
+// « Il manque un énoncé avec une figure », « on veut voir le tracé se faire avec les instruments en correction »,
+// « au moins une figure à main levée pour traduire l'énoncé, et nommer les angles ».
+const AR_W = n => `<span class="tex">\\widehat{${n}}</span>`;
+const arP = (o, r, a) => [o[0] + r * Math.cos(a * Math.PI / 180), o[1] - r * Math.sin(a * Math.PI / 180)];
+const arArc = (o, r, a1, a2, c, ep) => { const u = arP(o, r, a1), v = arP(o, r, a2); return `<path d="M${u[0].toFixed(1)},${u[1].toFixed(1)} A${r},${r} 0 ${a2 - a1 > 180 ? 1 : 0} 0 ${v[0].toFixed(1)},${v[1].toFixed(1)}" fill="none" stroke="${c}" stroke-width="${ep || 1.8}"/>`; };
+const arxTxt = (p, t, c, fs, it) => `<text x="${p[0].toFixed(1)}" y="${p[1].toFixed(1)}" font-size="${fs || 13}" text-anchor="middle" dominant-baseline="middle" fill="${c || '#1F3A5C'}" font-family="Space Grotesk, Inter, Arial, sans-serif" font-weight="700"${it ? ' font-style="italic"' : ''}>${t}</text>`;
+// Rédaction type : (RR') et (TT') sécantes en S, angle RST = 62°.
+const AR_FIG_OPPOSES = (() => { const S = [150, 92], d = { R: 10, T: 72, Rp: 190, Tp: 252 }, K = '#1F3A5C';
+  const L = (a, b) => { const u = arP(S, 92, a), v = arP(S, 92, b); return `<line x1="${u[0].toFixed(1)}" y1="${u[1].toFixed(1)}" x2="${v[0].toFixed(1)}" y2="${v[1].toFixed(1)}" stroke="${K}" stroke-width="1.8"/>`; };
+  const X = (a, nom, dn) => { const p = arP(S, 70, a), q = arP(S, 70 + (dn || 10), a + 13); return `<path d="M${(p[0] - 4).toFixed(1)},${(p[1] - 4).toFixed(1)} l8,8 m0,-8 l-8,8" stroke="${K}" stroke-width="1.8"/>` + arxTxt(q, nom); };
+  return `<svg viewBox="0 0 300 184" style="width:100%;max-width:330px;display:block;margin:6px auto;">${L(d.R, d.Rp) + L(d.T, d.Tp)
+    + arArc(S, 26, d.R, d.T, '#E35D3A', 2.2) + arxTxt(arP(S, 44, 41), '62°', '#E35D3A', 12) + arArc(S, 26, d.Rp, d.Tp, '#1E7B34', 2.2) + arxTxt(arP(S, 44, 221), '?', '#1E7B34', 14)
+    + X(d.R, 'R') + X(d.T, 'T') + X(d.Rp, "R'") + X(d.Tp, "T'") + arxTxt([S[0] + 14, S[1] + 8], 'S')}</svg>`; })();
+// Exercice 1 : angle xOy de 128° au rapporteur (correction animée aux instruments du site).
+const AR_CONS_128 = (() => { const O = [150, 128], e = (r, a) => arP(O, r, a), R = '#E35D3A';
+  return plConstruction({ programme: [{"op": "point", "name": "O"}, {"op": "ray", "id": "ox", "from": "O", "direction": 0}, {"op": "label", "text": "x", "on": "ox"}, {"op": "point", "name": "A", "on": "ox", "at": 5}, {"op": "angle", "id": "oy", "vertex": "O", "from": "A", "degrees": 128, "side": "up"}, {"op": "label", "text": "y", "on": "oy"}],
+    outils: ['regle', 'rapporteur'], w: 250, h: 150, px: 250,
+    depart: [], etapes: [
+      { texte: 'Je trace une demi-droite [Ox).', el: [{ seg: [O, e(90, 0)] }, { pt: O, nom: 'O', dx: 2, dy: 16 }, { txt: e(86, -9), t: 'x' }] },
+      { texte: 'Je place le centre du rapporteur sur O et la graduation 0 sur [Ox) ; je marque 128°.', el: [{ pt: e(70, 128), c: R }] },
+      { texte: 'Je trace la demi-droite [Oy) qui passe par ce point, et je code l\'angle.', el: [{ seg: [O, e(118, 128)] }, { txt: e(112, 136), t: 'y' }, { arc: [O, 24, 0, 128], c: R }, { txt: e(42, 64), t: '128°', c: R, fs: 12 }] }] }); })();
+// Exercice 2 : figure à main levée, droites (AB) et (CD) sécantes en O, angle AOC = 38°.
+const AR_MAIN_LEVEE = (() => { const O = [130, 78], K = '#1F3A5C', R = '#E35D3A';
+  const trait = (a, b, k) => { const u = arP(O, 112, a), v = arP(O, 112, b), m = [(u[0] + v[0]) / 2 + k, (u[1] + v[1]) / 2 - k];
+    return `<path d="M${u[0].toFixed(1)},${u[1].toFixed(1)} Q${m[0].toFixed(1)},${m[1].toFixed(1)} ${v[0].toFixed(1)},${v[1].toFixed(1)}" fill="none" stroke="${K}" stroke-width="1.7" stroke-linecap="round"/>`; };
+  return `<svg viewBox="0 0 260 160" style="width:100%;max-width:290px;display:block;margin:6px auto;" data-geo-garde>${trait(190, 10, 3) + trait(152, 332, -4)
+    + arArc(O, 24, 152, 190, R, 2) + arxTxt(arP(O, 42, 171), '38°', R, 12)
+    + arxTxt(arP(O, 122, 192), 'A') + arxTxt(arP(O, 122, 8), 'B') + arxTxt(arP(O, 122, 150), 'C') + arxTxt(arP(O, 122, 334), 'D') + arxTxt([O[0] + 2, O[1] + 18], 'O')
+    + arxTxt([200, 150], 'figure à main levée', '#7A8494', 10, true)}</svg>`; })();
+// Exercice 4 : angle xOy de 78°, bissectrice [Oz) au rapporteur (39°).
+const AR_CONS_BISS = (() => { const O = [40, 152], e = (r, a) => arP(O, r, a), R = '#E35D3A';
+  return plConstruction({ programme: [{"op": "point", "name": "O"}, {"op": "ray", "id": "ox", "from": "O", "direction": 0}, {"op": "label", "text": "x", "on": "ox"}, {"op": "point", "name": "A", "on": "ox", "at": 5}, {"op": "angle", "id": "oy", "vertex": "O", "from": "A", "degrees": 78, "side": "up"}, {"op": "label", "text": "y", "on": "oy"}, {"op": "angle", "id": "oz", "vertex": "O", "from": "A", "degrees": 39, "side": "up"}, {"op": "label", "text": "z", "on": "oz"}],
+    outils: ['regle', 'rapporteur'], w: 250, h: 170, px: 260,
+    depart: [], etapes: [
+      { texte: 'Je trace une demi-droite [Ox), puis l\'angle xOy de 78° au rapporteur.', el: [{ seg: [O, e(200, 0)] }, { seg: [O, e(145, 78)] }, { pt: O, nom: 'O', dx: -10, dy: 12 }, { txt: e(196, -5), t: 'x' }, { txt: e(146, 84), t: 'y' }] },
+      { texte: 'Je replace le rapporteur sur O, le 0 sur [Ox), et je marque 39°.', el: [{ pt: e(120, 39), c: R }] },
+      { texte: 'Je trace la demi-droite [Oz) : c\'est la bissectrice. Je code les deux angles égaux.', el: [{ seg: [O, e(190, 39)], c: R }, { txt: e(194, 43), t: 'z', c: R }, { arc: [O, 40, 0, 39], c: R }, { arc: [O, 44, 39, 78], c: R }, { txt: e(66, 19.5), t: '39°', c: R, fs: 12 }, { txt: e(68, 60), t: '39°', c: R, fs: 12 }] }] }); })();
+
 /* ================= EXOS ================= */
 document.getElementById('exos-demo-angles-rapporteur-6e').innerHTML = `
 <div class="redaction-block">
   <h3>Rédaction type : « Utiliser les angles opposés par le sommet »</h3>
+  <p style="margin:0 0 6px;">Les droites (RR') et (TT') sont sécantes en S. On sait que ${AR_W('RST')} = 62°. Quelle est la mesure de l'angle ${AR_W("R'ST'")} ?</p>
+  ${AR_FIG_OPPOSES}
   <div class="redaction-template">
     <div class="we-row"><span class="we-expr">Les angles <span class="tex">\\widehat{RST}</span> et <span class="tex">\\widehat{R'ST'}</span> sont opposés par le sommet.</span><span class="we-comment">Ce que je sais.</span></div>
     <div class="we-row"><span class="we-expr"><span style="color:var(--accent-orange);font-weight:700;">Or,</span> deux angles opposés par le sommet ont la même mesure.</span><span class="we-comment">On énonce la propriété.</span></div>
@@ -1198,13 +1239,15 @@ document.getElementById('exos-demo-angles-rapporteur-6e').innerHTML = `
     <div class="num">Exercice 1</div>
     Trace un angle <span class="tex">\\widehat{xOy}</span> de 128° avec un rapporteur.
     <button type="button" class="exo-correction-toggle" data-target="c6-g3-c1" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
-    <div class="exo-correction" id="c6-g3-c1"><div><ol style="margin:0 0 6px;padding-left:20px;"><li>Je trace une demi-droite [Ox).</li><li>Je place le centre du rapporteur sur O et la graduation 0 sur [Ox).</li><li>Je lis 128° sur la graduation qui part de 0 (l'angle est obtus : plus grand qu'un angle droit) et je marque un point.</li><li>Je trace la demi-droite [Oy) qui passe par ce point, et je code l'angle.</li></ol></div></div>
+    <div class="exo-correction" id="c6-g3-c1"><div style="text-align:center;">${AR_CONS_128}</div><div><ul style="margin:6px 0;padding-left:20px;"><li>Je trace une demi-droite [Ox).</li><li>Je place le centre du rapporteur sur O et la graduation 0 sur [Ox).</li><li>Je lis 128° sur la graduation qui part de 0 (l'angle est obtus : plus grand qu'un angle droit) et je marque un point.</li><li>Je trace la demi-droite [Oy) qui passe par ce point, et je code l'angle.</li></ul></div></div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 2</div>
-    Deux droites sécantes en O forment quatre angles. L'un d'eux mesure 38°. Donne les mesures des trois autres.
+    Les droites (AB) et (CD) sont sécantes en O, et l'angle ${AR_W('AOC')} mesure 38°. Fais une figure à main levée, puis donne la mesure des trois autres angles : ${AR_W('COB')}, ${AR_W('BOD')} et ${AR_W('DOA')}.
     <button type="button" class="exo-correction-toggle" data-target="c6-g3-c2" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
-    <div class="exo-correction" id="c6-g3-c2"><div><p style="margin:0 0 6px;">Deux angles opposés par le sommet ont la même mesure : l'angle opposé à celui de 38° mesure <b>38°</b>.</p><p style="margin:0 0 6px;">Deux angles voisins forment un angle plat : 180° − 38° = 142°.</p><p style="margin:0 0 6px;"><b>Les trois autres angles mesurent 142°, 38° et 142°.</b></p></div></div>
+    <div class="exo-correction" id="c6-g3-c2"><div style="text-align:center;">${AR_MAIN_LEVEE}</div><div>${cm1Redac(`Mesure de l'angle ${AR_W('BOD')}`, '', `Les angles ${AR_W('AOC')} et ${AR_W('BOD')} sont opposés par le sommet. Or, deux angles opposés par le sommet ont la même mesure. Donc ${AR_W('BOD')} = 38°.`)
+      + cm1Redac(`Mesure de l'angle ${AR_W('COB')}`, `${AR_W('COB')} = 180° − 38° = 142°`, `Les angles ${AR_W('AOC')} et ${AR_W('COB')} sont adjacents et forment l'angle plat ${AR_W('AOB')} : ${AR_W('COB')} mesure 142°.`)
+      + cm1Redac(`Mesure de l'angle ${AR_W('DOA')}`, '', `Les angles ${AR_W('DOA')} et ${AR_W('COB')} sont opposés par le sommet, donc ils ont la même mesure : ${AR_W('DOA')} = 142°.`)}</div></div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 3</div>
@@ -1214,9 +1257,9 @@ document.getElementById('exos-demo-angles-rapporteur-6e').innerHTML = `
   </div>
   <div class="exo-card">
     <div class="num">Exercice 4</div>
-    Construis un angle de 75°, puis trace sa bissectrice à l'aide d'un rapporteur.
+    Construis un angle ${AR_W('xOy')} de 78°, puis trace sa bissectrice à l'aide d'un rapporteur.
     <button type="button" class="exo-correction-toggle" data-target="c6-g3-c4" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
-    <div class="exo-correction" id="c6-g3-c4"><div><p style="margin:0 0 6px;">La bissectrice partage l'angle en deux angles de même mesure : 75° : 2 = 37,5°.</p><ol style="margin:0 0 6px;padding-left:20px;"><li>Je trace un angle <span class="tex">\\widehat{xOy}</span> de 75° au rapporteur.</li><li>Je place de nouveau le rapporteur sur O, le 0 sur [Ox), et je marque 37,5°.</li><li>Je trace la demi-droite [Oz) : c'est la bissectrice. Je code les deux angles égaux.</li></ol></div></div>
+    <div class="exo-correction" id="c6-g3-c4"><div>${cm1Redac('Mesure de chacun des deux angles', '78° : 2 = 39°', 'La bissectrice partage l\'angle en deux angles de même mesure : 39° chacun.')}</div><div style="text-align:center;">${AR_CONS_BISS}</div><div><ul style="margin:6px 0;padding-left:20px;"><li>Je trace un angle ${AR_W('xOy')} de 78° au rapporteur.</li><li>Je place de nouveau le rapporteur sur O, le 0 sur [Ox), et je marque 39°.</li><li>Je trace la demi-droite [Oz) : c'est la bissectrice. Je code les deux angles égaux.</li></ul></div></div>
   </div>
 </div>
 `;

@@ -450,13 +450,25 @@ function cahierCaler(page){
   blocs.forEach((b, i) => { if(haut[i]) b.style.setProperty('--calh', haut[i] + 'px'); if(mont[i]) b.style.setProperty('--calm', mont[i] + 'px'); });
   // Droite graduée (fpAxeFig, data-axe ; relecture du 08/11/2026 : « l'axe doit être sur la ligne principale et on se sert des lignes
   // verticales comme support de nos graduations ») : une graduation par carreau, chaque graduation sur une ligne verticale, l'axe sur une ligne principale.
-  page.querySelectorAll('svg[data-axe]').forEach(sv => { const [x0, w, y0, vw] = sv.dataset.axe.split(',').map(Number), e = 32 / w;
+  // Toutes les droites graduées de la page (relecture du 08/11/2026 : « Cale dans tous les niveaux et les chapitres concernés ») :
+  // data-axe donné par la figure, sinon reconnue (ligne horizontale coupée par au moins 5 graduations régulières, cahierAxe).
+  const largeur = page.clientWidth - 84;
+  page.querySelectorAll('svg').forEach(sv => { const ax0 = cahierAxe(sv); if(!ax0) return; const [x0, w, y0, vw] = ax0;
+    // Une graduation par carreau ; la page défile si la droite est plus large (une correction peut dire « une unité de 10 carreaux ») ;
+    // seulement au-delà de deux largeurs de page, une graduation sur 2, 4, 5 ou 10 sur une ligne verticale.
+    // Échelle d'affichage d'origine (au moins 1,25 pour rester lisible à côté de l'écriture du cahier), gardée en hauteur.
+    if(sv.__s0 == null){ const r0 = sv.getBoundingClientRect().width / (k || 1) / vw; sv.__s0 = Math.max(1.25, r0 || 0); }
+    // Écart entre deux graduations : un nombre entier de carreaux, au plus près de l'écart d'origine (une droite aux graduations espacées
+    // n'est pas comprimée : nombres et bonds resteraient lisibles) ; un écart d'origine plus petit qu'un carreau devient un carreau.
+    const e = sv.__s0, p0 = w * e;
+    const S = p0 >= 32 ? 32 * Math.max(1, Math.round(p0 / 32)) : 32 / ([1, 2, 4, 5, 10].find(n => x0 * e + (vw - x0) * e * (32 / n) / p0 <= 2 * largeur) || 10);
+    sv.classList.add('cahier-axe'); const lw = cahierAxeEtire(sv, ax0, S / p0, e);
     // Au pixel entier : un calage au centième de pixel relançait sans fin l'observateur de taille de la page.
     const l0 = parseFloat(sv.style.getPropertyValue('--axl')) || 0, t0 = parseFloat(sv.style.getPropertyValue('--axt')) || 0;
-    sv.style.setProperty('--axw', (vw * e) + 'px');
+    sv.style.setProperty('--axw', (lw * e) + 'px');
     const P = page.getBoundingClientRect(), R = sv.getBoundingClientRect();
     const ax = (R.left - P.left) / (k || 1) - page.clientLeft - l0 + x0 * e, ay = (R.top - P.top) / (k || 1) - page.clientTop - t0 + y0 * e;
-    const l = Math.round(((71.5 - ax) % 32 + 32) % 32), t1 = Math.round(((23.5 - ay) % 32 + 32) % 32), t = t1 > 16 ? t1 - 32 : t1; // ligne principale la plus proche
+    const l = Math.round(((71.5 - ax) % 32 + 32) % 32) % 32, t1 = Math.round(((23.5 - ay) % 32 + 32) % 32) % 32, t = t1 > 16 ? t1 - 32 : t1; // ligne principale la plus proche
     if(l !== l0) sv.style.setProperty('--axl', l + 'px'); if(t !== t0) sv.style.setProperty('--axt', t + 'px'); });
   const H = blocs.map(b => b.getBoundingClientRect().height / (k || 1));
   // Titre souligné SUR L'INTERLIGNE, la première ligne fine sous la ligne principale (demandé le 07/11/2026 : « Souligner : sur
@@ -483,6 +495,42 @@ function cahierCaler(page){
     const ef = titreFr && fin ? cahierEncre(fin) : null, et = ef ? cahierEncre(r.firstElementChild) : null;
     if(ef && et && (et.t - ef.b) / (k || 1) >= 33) r.style.setProperty('--redm', '-32px'); });
 }
+// Droite graduée d'une figure SVG : [x0, pas, y, largeur du viewBox] en unités du viewBox, ou null. data-axe si la figure le donne ;
+// sinon une ligne horizontale de plus de 100 unités coupée par au moins 5 petits traits verticaux régulièrement espacés.
+function cahierAxe(sv){
+  if(sv.__axe !== undefined) return sv.__axe;
+  let r = null; const vb = (sv.getAttribute('viewBox') || '').split(/[\s,]+/).map(Number);
+  if(sv.dataset.axe) r = sv.dataset.axe.split(',').map(Number);
+  else if(vb.length === 4 && !sv.matches('.pose-cahier, .pl-constr') && !sv.closest('.cm-redac-pose, .pl-poses-auto') && !sv.querySelector('g[transform], use, image')){
+    const L = [...sv.querySelectorAll('line')].filter(l => !l.closest('[transform]')).map(l => ['x1', 'y1', 'x2', 'y2'].map(k => +l.getAttribute(k) || 0));
+    for(const [hx1, hy, hx2, hy2] of L){ if(Math.abs(hy - hy2) > .5 || Math.abs(hx2 - hx1) < 100) continue;
+      const V = [...new Set(L.filter(([x1, y1, x2, y2]) => Math.abs(x1 - x2) < .5 && Math.min(y1, y2) <= hy + .5 && Math.max(y1, y2) >= hy - .5 && Math.abs(y2 - y1) < 30).map(v => +v[0].toFixed(2)))].sort((a, b) => a - b);
+      if(V.length < 5) continue; const d = V.slice(1).map((x, i) => x - V[i]), pas = Math.min(...d);
+      if(pas > 1 && d.every(x => Math.abs(x / pas - Math.round(x / pas)) < .05)){ r = [V[0], pas, hy, vb[2]]; break; } }
+  }
+  sv.__axe = r; return r;
+}
+// Étire (ou resserre) la droite graduée en largeur seulement, d'un facteur k ; textes, points, flèches et écarts verticaux gardent
+// leur taille (un agrandissement de toute la figure grossissait les chiffres et éloignait les nombres de l'axe). Figure d'origine gardée (__orig).
+function cahierAxeEtire(sv, ax, k){
+  const [x0, pas] = ax, cle = k.toFixed(5);
+  if(sv.dataset.axeK === cle) return +sv.dataset.axeW;
+  if(sv.__orig == null){ sv.__orig = sv.innerHTML; sv.__vb = sv.getAttribute('viewBox'); }
+  sv.innerHTML = sv.__orig; const vb = sv.__vb.split(/[\s,]+/).map(Number), X = x => x0 + (x - x0) * k;
+  const num = (el, a, f) => { const v = el.getAttribute(a); if(v != null && v !== '' && !isNaN(+v)) el.setAttribute(a, +f(+v).toFixed(2)); };
+  sv.querySelectorAll('*').forEach(el => { const t = el.tagName.toLowerCase();
+    if(t === 'line'){ num(el, 'x1', X); num(el, 'x2', X); }
+    else if(t === 'circle' || t === 'ellipse') num(el, 'cx', X);
+    else if(t === 'text' || t === 'tspan') num(el, 'x', X);
+    else if(t === 'rect'){ const x = +el.getAttribute('x') || 0, w = +el.getAttribute('width') || 0;
+      if(w > 2 * pas){ el.setAttribute('x', +X(x).toFixed(2)); el.setAttribute('width', +(w * k).toFixed(2)); } else el.setAttribute('x', +(X(x + w / 2) - w / 2).toFixed(2)); }
+    else if(t === 'path' || t === 'polygon' || t === 'polyline'){ let b; try{ b = el.getBBox(); }catch(e){ return; } const tr = el.getAttribute('transform') || '';
+      if(b.width > 2 * pas) el.setAttribute('transform', `matrix(${k.toFixed(5)},0,0,1,${(x0 - x0 * k).toFixed(2)},0) ${tr}`.trim());
+      else { const c = b.x + b.width / 2; el.setAttribute('transform', `translate(${(X(c) - c).toFixed(2)},0) ${tr}`.trim()); } } });
+  const lw = +X(vb[0] + vb[2]).toFixed(2) - vb[0]; sv.setAttribute('viewBox', `${vb[0]} ${vb[1]} ${lw} ${vb[3]}`);
+  sv.dataset.axeK = cle; sv.dataset.axeW = lw; return lw;
+}
+function cahierAxesRendre(){ document.querySelectorAll('svg.cahier-axe').forEach(sv => { if(sv.__orig != null){ sv.innerHTML = sv.__orig; sv.setAttribute('viewBox', sv.__vb); delete sv.dataset.axeK; } }); }
 function cahierAppliquer(racine){
   if(!cahierOn || !racine || !racine.querySelectorAll) return;
   const P = [...(racine.matches && racine.matches('.cahier-page') ? [racine] : []), ...racine.querySelectorAll('.cahier-page')];
@@ -502,7 +550,7 @@ function cahierMaj(){
   document.querySelectorAll('.cahier-btn').forEach(b => { b.setAttribute('aria-pressed', cahierOn ? 'true' : 'false'); b.classList.toggle('actif', cahierOn); });
   if(cahierOn){ cahierAppliquer(document.body);
     if(!cahierObs && typeof MutationObserver !== 'undefined'){ cahierObs = new MutationObserver(ms => ms.forEach(m => m.addedNodes.forEach(n => { if(n.nodeType === 1 && !n.classList.contains('pose-cahier')) cahierAppliquer(n); }))); cahierObs.observe(document.body, { childList: true, subtree: true }); }
-  } else { if(cahierObs){ cahierObs.disconnect(); cahierObs = null; } if(cahierRO){ cahierRO.disconnect(); cahierRO = null; } document.querySelectorAll('.cahier-actif').forEach(p => p.classList.remove('cahier-actif')); }
+  } else { if(cahierObs){ cahierObs.disconnect(); cahierObs = null; } if(cahierRO){ cahierRO.disconnect(); cahierRO = null; } cahierAxesRendre(); document.querySelectorAll('.cahier-actif').forEach(p => p.classList.remove('cahier-actif')); }
 }
 /* Tous les chapitres (demandé le 08/11/2026 : « étends-le au collège et aux 4 chapitres de CM1 ») : à l'ouverture d'un chapitre
    (openChapitre, app.js), chaque correction de l'onglet Exercices devient une page de cahier (.cahier-page) et le bouton

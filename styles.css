@@ -2475,7 +2475,7 @@ body.plp-ouvert .cahier-flottant{ top:56px; bottom:auto; left:16px; z-index:2147
   body.cahier-on .cahier-actif > *, body.cahier-on .cahier-actif .cm-redac > *, body.cahier-on .cahier-actif .redaction-template > *, body.cahier-on .cahier-actif > div:not([class]):not([style]) > *, body.cahier-on .cahier-actif li{ margin-top:var(--calm, 0px) !important; margin-bottom:0 !important; padding-top:var(--calh, 0px) !important; padding-bottom:var(--cal, 0px) !important; }
   /* Raisonnements séparés d'une ligne vide (demandé le 07/11/2026 : « Il faut bien séparer les différents blocs de raisonnement ») ;
      une ligne à fraction qui suit une autre ligne à fraction remonte d'un carreau (--calm négatif, cahierCaler). */
-  body.cahier-on .cahier-actif .cm-redac + .cm-redac{ margin-top:var(--redm, 32px) !important; }
+  body.cahier-on .cahier-actif .cm-redac + .cm-redac, body.cahier-on .cahier-actif div:not([class]):not([style]) > .cm-redac + .cm-redac{ margin-top:var(--redm, 32px) !important; } /* 2e sélecteur : rédactions dans un bloc sans classe (6e Angles, exercice 2) */
   body.cahier-on .cahier-actif .cm-redac > .cm-redac-ligne, body.cahier-on .cahier-actif .cm-redac > .cm-redac-phrase, body.cahier-on .cahier-actif .redaction-template > .we-row{ margin-top:var(--calm, 0px) !important; }
   /* Lignes avec une fraction (07/11/2026) : barre de fraction et signes centrés sur la ligne principale. KaTeX pose barre et signes sur
      son axe, 0,25 em au-dessus de la ligne d'écriture : on les descend de 0,25 em ; les signes écrits en texte (.cahier-op), de 0,3 em. */
@@ -2485,7 +2485,7 @@ body.plp-ouvert .cahier-flottant{ top:56px; bottom:auto; left:16px; z-index:2147
   body.cahier-on .cahier-actif .cahier-op{ position:relative; top:.27em; font-size:1.2em; line-height:0; }
   body.cahier-on .cahier-actif .cahier-op-fin{ font-size:1em; font-weight:400; } /* ≈ ≠ ≤ ≥ : absents de Caveat, la police de secours écrite en gras et agrandie était trop épaisse */
   body.cahier-on .cahier-actif .cahier-fr2{ line-height:64px !important; }
-  body.cahier-on .cahier-actif svg[data-axe]{ width:var(--axw, 100%) !important; min-width:0 !important; max-width:none !important; margin-left:var(--axl, 0px) !important; margin-top:var(--axt, 0px) !important; } /* droite graduée calée sur la feuille (cahierCaler) */ /* phrase à fraction sur plusieurs lignes : chaque ligne sur une ligne principale (cahierCaler) */ /* milieu du « = » manuscrit (6,5 px au-dessus de la ligne d'écriture à 27,6 px) posé sur la ligne principale */
+  body.cahier-on .cahier-actif svg.cahier-axe{ width:var(--axw, 100%) !important; min-width:0 !important; max-width:none !important; margin-left:var(--axl, 0px) !important; margin-top:var(--axt, 0px) !important; } /* droite graduée calée sur la feuille (cahierCaler) */ /* phrase à fraction sur plusieurs lignes : chaque ligne sur une ligne principale (cahierCaler) */ /* milieu du « = » manuscrit (6,5 px au-dessus de la ligne d'écriture à 27,6 px) posé sur la ligne principale */
   body.cahier-on .cahier-actif .cm-redac{ margin:0; line-height:32px; }
   body.cahier-on .cahier-actif .cm-redac-titre{ font-weight:700; }
   body.cahier-on .cahier-actif .cm-redac-sou{ text-decoration:none; padding-bottom:12px; background-image:linear-gradient(#15803D, #15803D); background-repeat:no-repeat; background-size:100% 2px; background-position:0 var(--soul, 30px); }

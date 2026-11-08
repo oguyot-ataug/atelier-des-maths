@@ -218,9 +218,13 @@ papier seyes ») : chaque `.redaction-template` hors correction et non interacti
 Phrase à fraction écrite sur plusieurs lignes : classe `cahier-fr2` (cahierCaler), une ligne tous les deux carreaux, chacune sur une
 ligne principale. Signes ≈ ≠ ≤ ≥ (absents de Caveat) : `.cahier-op-fin`, ni gras ni agrandis.
 Lignes à fraction qui se suivent : la remontée d'un carreau (`--calm`) vaut aussi pour les paragraphes `p` et les `li` d'une correction.
-Droite graduée (`fpAxeFig`, attribut `data-axe="x0,pas,y,largeur"` en unités du viewBox) : cahierCaler la met à l'échelle (une graduation
-par carreau) et la cale (`--axw`, `--axl`, `--axt`, au pixel entier) : axe sur une ligne principale, graduations sur les lignes verticales.
-Toute nouvelle droite graduée d'un corrigé : même attribut `data-axe`.
+Droites graduées (demandé le 08/11/2026 : « l'axe doit être sur la ligne principale et on se sert des lignes verticales comme support de nos
+graduations », puis « Cale dans tous les niveaux et les chapitres concernés ») : toute figure SVG d'une page de cahier qui a une droite graduée
+(`data-axe="x0,pas,y,largeur"` en unités du viewBox, ou reconnue par `cahierAxe` : ligne horizontale coupée par au moins 5 graduations
+régulières) est étirée EN LARGEUR seulement (`cahierAxeEtire` : textes, points, flèches, écarts verticaux inchangés ; figure d'origine rendue
+hors du mode cahier, `cahierAxesRendre`) : écart entre graduations = un nombre entier de carreaux, au plus près de l'origine (un carreau si
+l'écart d'origine est plus petit ; la page défile si la droite est plus large) ; axe sur une ligne principale, graduations sur les lignes
+verticales (`--axw`, `--axl`, `--axt`, au pixel entier, sinon l'observateur de taille boucle).
 Division posée dans une correction : `.dp-boite`, lignes dans un bloc `id="…-dpLeft"`, quotient `id="…-dpQuotient"`, chiffres `dpCases` ;
 elle garde sa propre feuille (hors de la `.cahier-page`, cahierChapitre). Opérations des cours du collège : tableaux `table.cma-op` (soustraction de décimaux, durées, `ogAddBlock`, `cm1opRowsTable` du
 CM1) et divisions posées `.dp-boite` (6e N1, 6e N4, 5e N1 ; un caractère par case `dpCases`, app.js) dessinées sur la feuille par la
@@ -293,6 +297,8 @@ impressions : la figure finale dessinée par `depart`/`etapes` (éléments seg, 
 intersect, midpoint, perpendicular, perpendicular_bisector, angle_bisector… ; voir `tbAiBuildPrompt`) : vraie règle graduée,
 équerre, compas, barre de lecture. Ne jamais refaire une animation maison. En place en 6e : Distance et cercles, Construction de
 triangles, Angles (bissectrice), Symétrie axiale, Propriétés des triangles (cercle circonscrit).
+Chapitres aussi (demandé le 08/11/2026 : « on veut voir le tracé se faire avec les instruments en correction ») : 6e Angles et rapporteur,
+exercices 1 (angle de 128°) et 4 (bissectrice au rapporteur d'un angle de 78°), opération `angle` du tableau (rapporteur).
 
 ## Voix en ligne (Google Cloud Text-to-Speech, depuis le 02/11/2026)
 
