@@ -491,7 +491,8 @@ function calcCss(){
   .calc-tabpar{ display:flex; gap:8px; align-items:center; font:700 .68rem 'JetBrains Mono',monospace; color:#3B4A5C; padding:2px 0 4px; border-bottom:1px dashed #9AA8A0; }
   .calc-tabpar input{ width:44px; padding:1px 3px; border:1px solid #9AA8A0; border-radius:4px; background:rgba(255,255,255,.55); font:700 .72rem 'JetBrains Mono',monospace; color:#1C2B39; }
   .calc-tab-corps{ flex:1 1 auto; overflow:hidden; min-height:0; position:relative; } /* comme une calculatrice : on fait défiler avec ▲ ▼, pas au doigt */
-  .calc-tab-corps table{ border-collapse:collapse; width:100%; }
+  .calc-tab-corps table{ border-collapse:collapse; width:100%; table-layout:fixed; } /* deux colonnes de même largeur : elles ne bougent plus en défilant */
+  .calc-tab-corps th, .calc-tab-corps td{ width:50%; overflow:hidden; white-space:nowrap; }
   .calc-tab-corps td, .calc-tab-corps th{ border-bottom:1px solid #C9D4C4; padding:0 6px; height:25px; text-align:center; font-weight:600; }
   .calc-tab-corps th{ border-bottom:1px dashed #9AA8A0; height:22px; }
   .calc-tab-fl{ position:absolute; right:2px; font:700 .62rem 'JetBrains Mono',monospace; color:#C2410C; }
