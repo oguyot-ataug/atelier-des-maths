@@ -488,7 +488,7 @@ function calcCss(){
   .calc-tab-corps{ flex:1 1 auto; overflow:auto; min-height:0; scrollbar-width:thin; }
   .calc-tab-corps table{ border-collapse:collapse; width:100%; }
   .calc-tab-corps td, .calc-tab-corps th{ border-bottom:1px solid #C9D4C4; padding:1px 6px; text-align:center; font-weight:600; }
-  .calc-tab-corps th{ position:sticky; top:0; background:#E9F0E4; }
+  .calc-tab-corps th{ position:sticky; top:0; z-index:2; background:#E9F0E4; box-shadow:0 1px 0 #9AA8A0; } /* au-dessus des valeurs qui défilent (KaTeX place ses formules en position relative) */
   .calc-tab-corps p{ margin:6px 0 0; color:#5B6472; }
   .calc-k .ci{ font:italic 600 1.08rem 'Times New Roman',Georgia,serif; }
   .calc-k sup{ font-size:.7em; line-height:0; position:relative; top:-.5em; margin-left:1px; }
