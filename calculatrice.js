@@ -3,8 +3,9 @@
    calculatrices collège ? casio et texas instruments ? », puis « go sans mode algorithmique »).
 
    Ce n'est PAS une copie d'une machine du commerce (ni leur programme interne, ni leur façade, ni leurs logos) : une calculatrice
-   originale, aux couleurs du site, qui se comporte comme les calculatrices collège. Deux dispositions de touches au choix,
-   « type Casio » et « type TI » (ordre des touches et noms des fonctions proches de ceux que les élèves ont en main).
+   originale, aux couleurs du site, qui se comporte comme les calculatrices collège. Une seule disposition (les dispositions
+   « type Casio » / « type TI » ont été retirées le 08/11/2026). Tout s'affiche dans l'écran : résultat, tableau de valeurs,
+   calculs précédents (▲ ▼) ; rien sous les touches.
 
    - Écriture naturelle (fractions en étage, puissances, racines), éditeur à gabarits : flèches pour passer du numérateur au
      dénominateur, sortir d'une racine… ; rendu KaTeX.
@@ -13,9 +14,8 @@
    - Priorités, parenthèses, multiplication implicite (2π, 3(4 + 1)), (−), %, puissances de 10, Ans.
    - Division euclidienne (÷R : quotient et reste), décomposition en facteurs premiers (FACT, sur le dernier résultat).
    - Trigonométrie en degrés (cos, sin, tan et leurs réciproques par SECONDE / 2nde).
-   - Tableau de valeurs d'une expression en x (début, fin, pas).
-   - « Montre-moi les touches » : calcMontrer(touches, titre) tape la suite de touches, touche par touche, sur la disposition
-     choisie ; calcBouton(touches, libellé) écrit le bouton à placer dans un cours.
+   - Tableau de valeurs d'une expression en x (début, fin, pas), dans l'écran.
+   - « Montre-moi les touches » : calcMontrer(touches, titre) tape la suite de touches, touche par touche ; calcBouton(touches, libellé) écrit le bouton à placer dans un cours.
    Panneau flottant (déplaçable), ouvert par le menu L'Atelier ou par le bouton rond des chapitres du collège. Rien n'est envoyé.
    La touche ÷ et l'écran de la calculatrice gardent « ÷ » (exception prévue pour les calculatrices).
    ============================================================ */
@@ -195,33 +195,37 @@ function calcValeurTex(x, decimal){
   return x.d === 1n ? sg + rac : `${sg}\\dfrac{${rac}}{${x.d}}`;
 }
 
-/* ------------------------------ Dispositions des touches ------------------------------
-   Chaque touche : [identifiant, libellé type Casio, libellé type TI, fonction seconde (identifiant, libellé Casio, libellé TI)]. */
+/* ------------------------------ Touches ------------------------------
+   Une seule disposition, aux couleurs du site (demandé le 08/11/2026 : « On va enlever modèle casio et ti et ne garder que le modèle
+   bleu »). CALC_TOUCHES : nom de la touche (lecteur d'écran) ; CALC_ICONES : dessin des touches fraction, racine, puissances… */
 const CALC_TOUCHES = {
-  shift: ['SECONDE', '2nde'], mode: ['Tableau', 'table'], x: ['x', 'x'],
-  left: ['◀', '◀'], right: ['▶', '▶'], up: ['▲', '▲'], down: ['▼', '▼'],
-  frac: ['▭⁄▭', 'n/d'], sqrt: ['√▭', '√'], sq: ['x²', 'x²'], pow: ['x^▭', '^'], neg: ['(−)', '(-)'],
-  cos: ['cos', 'cos'], sin: ['sin', 'sin'], tan: ['tan', 'tan'], acos: ['cos⁻¹', 'cos⁻¹'], asin: ['sin⁻¹', 'sin⁻¹'], atan: ['tan⁻¹', 'tan⁻¹'],
-  pi: ['π', 'π'], sd: ['S⇔D', '◄►'], '(': ['(', '('], ')': [')', ')'], pct: ['%', '%'], divr: ['÷R', '÷reste'], fact: ['FACT', 'facteurs'],
-  del: ['DEL', 'suppr'], ac: ['AC', 'annul'], '*': ['×', '×'], '/': ['÷', '÷'], '+': ['+', '+'], '-': ['−', '−'],
-  ',': [',', ','], e10: ['×10ˣ', '×10ⁿ'], ans: ['Ans', 'rép'], exe: ['EXE', 'entrer']
+  shift: 'SECONDE', mode: 'Tableau', x: 'x', left: '◀', right: '▶', up: '▲', down: '▼',
+  frac: 'fraction', sqrt: 'racine carrée', sq: 'au carré', pow: 'puissance', neg: '(−)',
+  cos: 'cos', sin: 'sin', tan: 'tan', acos: 'cos⁻¹', asin: 'sin⁻¹', atan: 'tan⁻¹',
+  pi: 'π', sd: 'S⇔D', '(': '(', ')': ')', pct: '%', divr: '÷R', fact: 'FACT',
+  del: 'DEL', ac: 'AC', '*': '×', '/': '÷', '+': '+', '-': '−', ',': ',', e10: '×10 puissance', ans: 'Ans', exe: 'EXE'
 };
-'0123456789'.split('').forEach(c => { CALC_TOUCHES[c] = [c, c]; });
+'0123456789'.split('').forEach(c => { CALC_TOUCHES[c] = c; });
 const CALC_SECONDE = { cos: 'acos', sin: 'asin', tan: 'atan' };
-const CALC_DISPOS = {
-  casio: { nom: 'Type Casio', nav: ['shift', 'mode', 'x', 'left', 'right', 'up', 'down'],
-    rangs: [['frac', 'sqrt', 'sq', 'pow', 'neg'], ['cos', 'sin', 'tan', 'pi', 'sd'], ['(', ')', 'pct', 'divr', 'fact'],
-      ['7', '8', '9', 'del', 'ac'], ['4', '5', '6', '*', '/'], ['1', '2', '3', '+', '-'], ['0', ',', 'e10', 'ans', 'exe']] },
-  ti: { nom: 'Type TI', nav: ['shift', 'mode', 'x', 'left', 'right', 'up', 'down'],
-    rangs: [['frac', 'sd', 'sq', 'pow', 'sqrt'], ['sin', 'cos', 'tan', 'pi', 'pct'], ['(', ')', 'neg', 'divr', 'fact'],
-      ['7', '8', '9', 'del', 'ac'], ['4', '5', '6', '*', '/'], ['1', '2', '3', '+', '-'], ['0', ',', 'e10', 'ans', 'exe']] }
+const CALC_CLAVIER = { nav: ['shift', 'mode', 'x', 'left', 'right', 'up', 'down'],
+  rangs: [['frac', 'sqrt', 'sq', 'pow', 'neg'], ['cos', 'sin', 'tan', 'pi', 'sd'], ['(', ')', 'pct', 'divr', 'fact'],
+    ['7', '8', '9', 'del', 'ac'], ['4', '5', '6', '*', '/'], ['1', '2', '3', '+', '-'], ['0', ',', 'e10', 'ans', 'exe']] };
+const calcLib = id => CALC_TOUCHES[id] || id;
+const CALC_CASE = (w, h) => `<svg class="ck-case" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" aria-hidden="true"><rect x="1" y="1" width="${w - 2}" height="${h - 2}" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>`;
+const CALC_ICONES = {
+  frac: `<svg viewBox="0 0 20 28" width="16" height="23" aria-hidden="true"><rect x="4" y="1.5" width="12" height="9.5" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.7"/><line x1="1" y1="14" x2="19" y2="14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="4" y="17" width="12" height="9.5" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.7"/></svg>`,
+  sqrt: `<svg viewBox="0 0 32 24" width="29" height="22" aria-hidden="true"><path d="M1.5 14 L5.5 12 L10 21.5 L15 2.5 H30.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/><rect x="17.5" y="7" width="11" height="12" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.7"/></svg>`,
+  sq: `<span class="ci">x</span><sup>2</sup>`,
+  pow: `<span class="ci">x</span><sup>${CALC_CASE(9, 10)}</sup>`,
+  e10: `×10<sup>${CALC_CASE(9, 10)}</sup>`,
+  x: `<span class="ci">x</span>`,
+  sd: `S<span class="ck-fl">⇔</span>D`
 };
-const calcLib = (id, dispo) => (CALC_TOUCHES[id] || [id, id])[dispo === 'ti' ? 1 : 0];
+const calcIcone = id => CALC_ICONES[id] || calcLib(id);
 
 /* ------------------------------ État ------------------------------ */
 const CALC = { racine: [], L: null, i: 0, seconde: false, res: null, resTex: '', decimal: false, ans: cQ(0n), fini: false, err: '',
-  dispo: 'casio', tableau: false, montre: null, hist: [] };
-try{ if(localStorage.getItem('calcDispo') === 'ti') CALC.dispo = 'ti'; }catch(e){}
+  tableau: false, tabHtml: '', montre: null, hist: [], hi: -1 };
 CALC.L = CALC.racine;
 
 /* ------------------------------ Éditeur à gabarits ------------------------------
@@ -256,11 +260,19 @@ function calcGauche(){
   CALC.L = p.L; CALC.i = p.i;
 }
 function calcHautBas(haut){
+  if(CALC.fini){ calcRappel(haut); return; } // après un résultat : ▲ ▼ parcourent les calculs précédents
   let L = CALC.L, p = calcParent(L);
   while(p && p.n.t !== 'frac'){ L = p.L; p = calcParent(L); }
-  if(!p) return;
+  if(!p){ calcRappel(haut); return; }
   const cible = haut ? p.n.a : p.n.b; if(cible === L) return;
   CALC.L = cible; CALC.i = Math.min(CALC.i, cible.length);
+}
+// ▲ ▼ hors d'une fraction : les calculs précédents reviennent à l'écran (comme sur les calculatrices), pas de liste sous les touches.
+function calcRappel(haut){
+  const k = CALC.fini ? CALC.hi + (haut ? 1 : -1) : (haut ? 0 : -1);
+  const h = CALC.hist[k]; if(!h) return;
+  CALC.hi = k; CALC.racine.length = 0; CALC.racine.push(...JSON.parse(h.arbre)); CALC.L = CALC.racine; CALC.i = CALC.racine.length;
+  CALC.res = h.res; CALC.err = h.err; CALC.decimal = h.decimal; CALC.fini = true;
 }
 function calcSuppr(){
   if(CALC.fini){ CALC.fini = false; }
@@ -289,7 +301,7 @@ function calcTexListe(L, avecCurseur){
     s += cur(k);
     if(n.t === 'c'){
       const v = n.v;
-      s += v === ',' ? '{,}' : v === '×' ? '\\times ' : v === '÷' ? '\\div ' : v === '−' ? '-' : v === '%' ? '\\%' : v === 'π' ? '\\pi ' : v === 'Ans' ? `\\text{${calcLib('ans', CALC.dispo)}}` : v === '÷R' ? '\\,\\div\\!R\\,' : v;
+      s += v === ',' ? '{,}' : v === '×' ? '\\times ' : v === '÷' ? '\\div ' : v === '−' ? '-' : v === '%' ? '\\%' : v === 'π' ? '\\pi ' : v === 'Ans' ? '\\text{Ans}' : v === '÷R' ? '\\,\\div\\!R\\,' : v;
     } else {
       const slot = S => { const t = calcTexListe(S, avecCurseur); return t || (avecCurseur ? '\\textcolor{#9AA3B2}{\\square}' : '\\square'); };
       if(n.t === 'frac') s += `\\dfrac{${slot(n.a)}}{${slot(n.b)}}`;
@@ -379,9 +391,9 @@ function calcExe(){
     CALC.res = v; CALC.err = '';
     CALC.decimal = !!CALC._decimal && v.k !== 'eucl';
     if(v.k !== 'eucl') CALC.ans = v; else CALC.ans = cQ(v.q);
-    CALC.hist.unshift({ e: calcTexListe(CALC.racine, false), r: calcResultatTex(v) }); CALC.hist.length = Math.min(CALC.hist.length, 20);
   }catch(e){ CALC.res = null; CALC.err = /^Erreur/.test(e.message) ? e.message : 'Erreur de syntaxe'; }
   CALC.fini = true;
+  if(CALC.racine.length){ CALC.hist.unshift({ arbre: JSON.stringify(CALC.racine), res: CALC.res, err: CALC.err, decimal: CALC.decimal }); CALC.hist.length = Math.min(CALC.hist.length, 30); CALC.hi = 0; }
 }
 
 /* ------------------------------ Touches ------------------------------ */
@@ -440,15 +452,10 @@ function calcCss(){
   #calcPanneau{ position:fixed; right:18px; top:84px; z-index:9850; width:340px; max-width:calc(100vw - 24px); max-height:calc(100vh - 100px); overflow:auto;
     background:#1F3A5C; border-radius:22px; padding:10px 12px 14px; box-shadow:0 18px 50px rgba(15,30,50,.38); font-family:'Space Grotesk',Arial,sans-serif; color:#fff; }
   #calcPanneau[hidden]{ display:none; }
-  #calcPanneau.ti{ background:#2B2F36; }
   .calc-tete{ display:flex; align-items:center; gap:6px; cursor:move; user-select:none; margin-bottom:8px; }
   .calc-tete b{ flex:1; font-size:.95rem; letter-spacing:.02em; }
-  .calc-dispo{ display:inline-flex; background:rgba(255,255,255,.12); border-radius:999px; padding:2px; }
-  .calc-dispo button{ border:0; background:transparent; color:#DCE6F2; font:600 .72rem 'Space Grotesk',Arial,sans-serif; padding:4px 9px; border-radius:999px; cursor:pointer; }
-  .calc-dispo button.on{ background:#fff; color:#1F3A5C; }
   .calc-x{ border:0; background:rgba(255,255,255,.14); color:#fff; width:28px; height:28px; border-radius:50%; cursor:pointer; font-size:16px; line-height:28px; padding:0; }
   .calc-ecran{ background:#E9F0E4; color:#1C2B39; border-radius:10px; padding:6px 10px 6px; height:142px; box-sizing:border-box; display:flex; flex-direction:column; justify-content:space-between; box-shadow:inset 0 2px 6px rgba(0,0,0,.25); }
-  #calcPanneau.ti .calc-ecran{ background:#DDE3E8; }
   .calc-etat{ display:flex; gap:8px; font:700 .62rem 'JetBrains Mono',monospace; color:#5B6472; min-height:12px; }
   .calc-etat .on{ color:#C2410C; }
   .calc-expr{ font-size:1.05rem; height:56px; flex:0 0 56px; display:flex; align-items:center; overflow-x:auto; overflow-y:auto; white-space:nowrap; padding:0; scrollbar-width:none; } /* hauteurs fixes : l'écran ne change plus de taille entre une fraction et un décimal */
@@ -463,26 +470,33 @@ function calcCss(){
   .calc-clav{ display:grid; grid-template-columns:repeat(5, 1fr); gap:6px; }
   .calc-k{ position:relative; border:0; border-radius:9px; padding:13px 0 7px; font:700 .9rem 'Space Grotesk',Arial,sans-serif; background:#38557A; color:#fff; cursor:pointer;
     box-shadow:0 2px 0 rgba(0,0,0,.3); min-width:0; white-space:nowrap; overflow:hidden; }
-  #calcPanneau.ti .calc-k{ background:#474D57; }
-  .calc-k.num{ background:#F3F5F8; color:#1C2B39; font-size:1.05rem; } #calcPanneau.ti .calc-k.num{ background:#E7EAEE; color:#1C2B39; }
-  .calc-k.op{ background:#5C7FA8; } #calcPanneau.ti .calc-k.op{ background:#5A6270; }
-  .calc-k.exe{ background:#E35D3A; } #calcPanneau.ti .calc-k.exe{ background:#2E7DBA; }
+  .calc-k.num{ background:#F3F5F8; color:#1C2B39; font-size:1.05rem; }
+  .calc-k.op{ background:#5C7FA8; }
+  .calc-k.exe{ background:#E35D3A; }
   .calc-k.ac{ background:#C2410C; }
-  .calc-k.sec{ background:#F59E0B; color:#1C2B39; } #calcPanneau.ti .calc-k.sec{ background:#3BA3E0; color:#fff; }
+  .calc-k.sec{ background:#F59E0B; color:#1C2B39; }
   .calc-k.nv{ padding:6px 0; font-size:.72rem; }
   .calc-k small{ position:absolute; top:1px; left:0; right:0; font:600 .55rem 'Space Grotesk',Arial,sans-serif; color:#FCD34D; }
-  #calcPanneau.ti .calc-k small{ color:#8FD0F5; }
   .calc-k:active, .calc-k.appui{ transform:translateY(2px); box-shadow:none; outline:3px solid #F59E0B; outline-offset:1px; }
   .calc-seconde .calc-k[data-k="cos"], .calc-seconde .calc-k[data-k="sin"], .calc-seconde .calc-k[data-k="tan"]{ outline:2px dashed #F59E0B; }
-  .calc-tab{ margin-top:8px; background:#fff; color:#1C2B39; border-radius:10px; padding:8px 10px; font-size:.8rem; }
-  .calc-tab label{ display:inline-flex; align-items:center; gap:4px; margin-right:6px; }
-  .calc-tab input{ width:52px; padding:3px 4px; border:1px solid #CBD2DC; border-radius:6px; font:600 .8rem 'JetBrains Mono',monospace; }
-  .calc-tab table{ border-collapse:collapse; margin-top:6px; width:100%; }
-  .calc-tab td, .calc-tab th{ border:1px solid #DDE2EA; padding:2px 6px; text-align:center; }
-  .calc-tab-corps{ max-height:180px; overflow:auto; }
-  .calc-hist{ margin-top:8px; font-size:.75rem; color:#DCE6F2; max-height:90px; overflow:auto; }
-  .calc-hist div{ display:flex; justify-content:space-between; align-items:center; gap:8px; padding:3px 0; border-bottom:1px solid rgba(255,255,255,.1); cursor:pointer; }
-  .calc-aide{ font-size:.68rem; color:#B9C7D8; margin:8px 2px 0; line-height:1.35; }
+  .calc-ecran.tab{ height:250px; }
+  .calc-tabzone{ flex:1 1 auto; display:flex; flex-direction:column; min-height:0; font-size:.78rem; }
+  .calc-tabzone[hidden], .calc-res[hidden]{ display:none; }
+  .calc-tabpar{ display:flex; gap:8px; align-items:center; font:700 .68rem 'JetBrains Mono',monospace; color:#3B4A5C; padding:2px 0 4px; border-bottom:1px dashed #9AA8A0; }
+  .calc-tabpar input{ width:44px; padding:1px 3px; border:1px solid #9AA8A0; border-radius:4px; background:rgba(255,255,255,.55); font:700 .72rem 'JetBrains Mono',monospace; color:#1C2B39; }
+  .calc-tab-corps{ flex:1 1 auto; overflow:auto; min-height:0; scrollbar-width:thin; }
+  .calc-tab-corps table{ border-collapse:collapse; width:100%; }
+  .calc-tab-corps td, .calc-tab-corps th{ border-bottom:1px solid #C9D4C4; padding:1px 6px; text-align:center; font-weight:600; }
+  .calc-tab-corps th{ position:sticky; top:0; background:#E9F0E4; }
+  .calc-tab-corps p{ margin:6px 0 0; color:#5B6472; }
+  .calc-k .ci{ font:italic 600 1.08rem 'Times New Roman',Georgia,serif; }
+  .calc-k sup{ font-size:.7em; line-height:0; position:relative; top:-.5em; margin-left:1px; }
+  .calc-k sup .ck-case{ width:.78em; height:.88em; vertical-align:0; }
+  .calc-k svg{ vertical-align:middle; }
+  .calc-k .ck-fl{ font-size:.9em; margin:0 1px; }
+  .calc-k.ico{ display:flex; align-items:center; justify-content:center; padding:9px 0 5px; }
+  .calc-montre-bande .k svg{ vertical-align:middle; height:16px; width:auto; }
+  .calc-montre-bande .k sup{ font-size:.7em; } .calc-montre-bande .k .ci{ font:italic 700 .95rem 'Times New Roman',Georgia,serif; }
   #calcFlottant{ position:fixed; left:18px; bottom:72px; z-index:9790; width:44px; height:44px; border-radius:50%; border:0; background:#1F3A5C; color:#fff; cursor:pointer;
     box-shadow:0 4px 14px rgba(28,43,57,.25); display:none; align-items:center; justify-content:center; }
   #calcFlottant.vu{ display:flex; }
@@ -497,41 +511,34 @@ function calcConstruire(){
   calcCss();
   let p = document.getElementById('calcPanneau');
   if(!p){ p = document.createElement('div'); p.id = 'calcPanneau'; p.setAttribute('role', 'dialog'); p.setAttribute('aria-label', 'Calculatrice'); p.hidden = true; document.body.appendChild(p); calcDeplacable(p); }
-  const d = CALC_DISPOS[CALC.dispo], cl = k => /^[0-9,]$/.test(k) ? 'num' : /^[+\-*/]$/.test(k) ? 'op' : k === 'exe' ? 'exe' : k === 'ac' ? 'ac' : k === 'shift' ? 'sec' : '';
-  const touche = (k, nv) => { const vr = k === 'x' ? ' var' : ''; const sec = CALC_SECONDE[k] ? `<small>${calcLib(CALC_SECONDE[k], CALC.dispo)}</small>` : '';
-    return `<button type="button" class="calc-k ${cl(k)}${nv ? ' nv' : ''}${vr}" data-k="${k}" aria-label="${calcLib(k, CALC.dispo)}" onclick="calcClic('${k}')">${sec}${calcLib(k, CALC.dispo)}</button>`; };
-  p.className = CALC.dispo === 'ti' ? 'ti' : '';
-  p.innerHTML = `<div class="calc-tete"><span class="gicon">calculate</span><b>Calculatrice</b>
-      <span class="calc-dispo" role="group" aria-label="Disposition des touches">${Object.entries(CALC_DISPOS).map(([k, v]) => `<button type="button" class="${k === CALC.dispo ? 'on' : ''}" onclick="calcDisposition('${k}')">${v.nom}</button>`).join('')}</span>
+  const d = CALC_CLAVIER, cl = k => /^[0-9,]$/.test(k) ? 'num' : /^[+\-*/]$/.test(k) ? 'op' : k === 'exe' ? 'exe' : k === 'ac' ? 'ac' : k === 'shift' ? 'sec' : '';
+  const touche = (k, nv) => { const sec = CALC_SECONDE[k] ? `<small>${calcLib(CALC_SECONDE[k])}</small>` : '', ico = CALC_ICONES[k] && /svg|class="ci"/.test(CALC_ICONES[k]) ? ' ico' : '';
+    return `<button type="button" class="calc-k ${cl(k)}${nv ? ' nv' : ''}${ico}" data-k="${k}" aria-label="${calcLib(k)}" title="${calcLib(k)}" onclick="calcClic('${k}')">${sec}${calcIcone(k)}</button>`; };
+  p.innerHTML = `<div class="calc-tete" title="Clavier de l'ordinateur accepté : chiffres, + − * / ^ ( ), Entrée, Retour arrière, flèches (▲ ▼ : calculs précédents)."><span class="gicon">calculate</span><b>Calculatrice</b>
       <button type="button" class="calc-x" onclick="calcFermerPanneau()" aria-label="Fermer la calculatrice">×</button></div>
-    <div class="calc-ecran"><div class="calc-etat"></div><div class="calc-expr"></div><div class="calc-res" aria-live="polite"></div></div>
+    <div class="calc-ecran"><div class="calc-etat"></div><div class="calc-expr"></div><div class="calc-res" aria-live="polite"></div>
+      <div class="calc-tabzone" hidden><div class="calc-tabpar">Début <input id="calcTabD" value="-3" inputmode="decimal"> Fin <input id="calcTabF" value="3" inputmode="decimal"> Pas <input id="calcTabP" value="1" inputmode="decimal"></div><div class="calc-tab-corps"></div></div></div>
     <div class="calc-montre-bande" hidden></div>
     <div class="calc-nav">${d.nav.map(k => touche(k, true)).join('')}</div>
-    <div class="calc-clav">${d.rangs.flat().map(k => touche(k)).join('')}</div>
-    <div class="calc-tab" hidden></div>
-    <div class="calc-hist"></div>
-    <p class="calc-aide">Calculatrice du site : les touches et les noms ressemblent à ceux des calculatrices collège, mais ce n'est pas une copie d'un modèle du commerce. Clavier de l'ordinateur accepté (chiffres, + − * / ^ ( ), Entrée, Retour arrière, flèches).</p>`;
+    <div class="calc-clav">${d.rangs.flat().map(k => touche(k)).join('')}</div>`;
   calcAfficher();
 }
 function calcAfficher(){
   const p = document.getElementById('calcPanneau'); if(!p) return;
   p.classList.toggle('calc-seconde', CALC.seconde);
-  p.querySelector('.calc-etat').innerHTML = `<span class="${CALC.seconde ? 'on' : ''}">${CALC.seconde ? calcLib('shift', CALC.dispo) : ''}</span><span>DEG</span><span>${CALC.decimal ? 'Déc' : 'Exact'}</span>${CALC.tableau ? '<span class="on">TABLEAU</span>' : ''}`;
-  p.querySelector('.calc-expr').innerHTML = calcTexte(calcTexListe(CALC.racine, !CALC.fini) || (CALC.fini ? '' : CALC_CURSEUR));
-  const r = p.querySelector('.calc-res');
+  p.querySelector('.calc-etat').innerHTML = `<span class="${CALC.seconde ? 'on' : ''}">${CALC.seconde ? 'SECONDE' : ''}</span><span>DEG</span><span>${CALC.decimal ? 'Déc' : 'Exact'}</span>${CALC.tableau ? '<span class="on">TABLEAU</span>' : ''}`;
+  const ex = calcTexListe(CALC.racine, !CALC.fini) || (CALC.fini ? '' : CALC_CURSEUR);
+  p.querySelector('.calc-expr').innerHTML = calcTexte((CALC.tableau ? 'f(x) = ' : '') + ex);
+  p.querySelector('.calc-ecran').classList.toggle('tab', CALC.tableau);
+  const r = p.querySelector('.calc-res'), z = p.querySelector('.calc-tabzone');
+  r.hidden = CALC.tableau; z.hidden = !CALC.tableau;
   r.classList.toggle('err', !!CALC.err);
   r.innerHTML = CALC.err ? CALC.err : CALC.fini && CALC.res ? calcTexte(calcResultatTex(CALC.res)) : '';
-  const tab = p.querySelector('.calc-tab'); tab.hidden = !CALC.tableau;
-  if(CALC.tableau && !tab.dataset.pret){ tab.dataset.pret = '1';
-    tab.innerHTML = `<div>Tableau de valeurs de l'expression écrite (avec la touche <b>x</b>).</div>
-      <div style="margin-top:4px;"><label>Début <input id="calcTabD" value="-3"></label><label>Fin <input id="calcTabF" value="3"></label><label>Pas <input id="calcTabP" value="1"></label>
-      <button type="button" class="calc-montre" style="margin:4px 0 0;" onclick="calcTableau()">Calculer</button></div><div class="calc-tab-corps"></div>`; }
-  p.querySelector('.calc-hist').innerHTML = CALC.hist.slice(0, 6).map((h, k) => `<div onclick="calcReprendre(${k})" title="Reprendre ce résultat (Ans)"><span>${calcTexte(h.e.replace(/\\dfrac/g, '\\tfrac'))}</span><span>${calcTexte(h.r.replace(/\\dfrac/g, '\\tfrac'))}</span></div>`).join('');
+  if(CALC.tableau) z.querySelector('.calc-tab-corps').innerHTML = CALC.tabHtml || '<p>Écris l\'expression avec la touche <i>x</i>, puis EXE.</p>';
   const e = p.querySelector('.calc-expr'); e.scrollLeft = e.scrollWidth;
 }
-function calcReprendre(k){ const h = CALC.hist[k]; if(!h) return; CALC.racine.length = 0; CALC.racine.push({ t: 'c', v: 'Ans' }); CALC.L = CALC.racine; CALC.i = 1; CALC.fini = false; CALC.res = null; calcAfficher(); }
 function calcTableau(){
-  const p = document.getElementById('calcPanneau'), corps = p.querySelector('.calc-tab-corps');
+  const corps = { set innerHTML(h){ CALC.tabHtml = h; } }; // le tableau s'affiche dans l'écran (calcAfficher)
   const lire = id => { const s = String(document.getElementById(id).value).replace(',', '.').trim(); const v = Number(s); if(s === '' || !isFinite(v)) throw new Error('nombre'); return v; };
   try{
     const D = lire('calcTabD'), F = lire('calcTabF'), P = lire('calcTabP');
@@ -540,10 +547,11 @@ function calcTableau(){
     const enQ = v => { const s = String(+v.toFixed(10)); const [e, d = ''] = s.replace('-', '').split('.'); const q = cQ(BigInt(e + d), 10n ** BigInt(d.length)); return s[0] === '-' ? cNeg(q) : q; };
     let lignes = '';
     for(let k = 0; k < n; k++){ const x = enQ(D + k * P); let y;
-      try{ y = calcTexte(calcValeurTex(calcEvaluer(CALC.racine, x), false)); }catch(e){ y = 'Erreur'; }
+      try{ y = calcTexte(calcValeurTex(calcEvaluer(CALC.racine, x), false).replace(/\\dfrac/g, '\\tfrac')); }catch(e){ y = 'Erreur'; }
       lignes += `<tr><td>${calcTexte(calcValeurTex(x, true))}</td><td>${y}</td></tr>`; }
-    corps.innerHTML = `<table><tr><th>x</th><th>${calcTexte(calcTexListe(CALC.racine, false) || 'f(x)')}</th></tr>${lignes}</table>`;
-  }catch(e){ corps.innerHTML = `<p style="color:#B91C1C;margin:6px 0 0;">${e.message === 'trop' ? 'Au plus 60 valeurs : augmente le pas.' : 'Vérifie le début, la fin et le pas (pas positif, fin après le début).'}</p>`; }
+    corps.innerHTML = `<table><tr><th>${calcTexte('x')}</th><th>${calcTexte('f(x)')}</th></tr>${lignes}</table>`;
+  }catch(e){ corps.innerHTML = `<p style="color:#B91C1C;">${e.message === 'trop' ? 'Au plus 60 valeurs : augmente le pas.' : 'Vérifie le début, la fin et le pas (pas positif, fin après le début).'}</p>`; }
+  calcAfficher();
 }
 function calcDeplacable(p){
   let dx = 0, dy = 0, en = false;
@@ -553,10 +561,6 @@ function calcDeplacable(p){
 }
 function calcOuvrir(){ calcConstruire(); document.getElementById('calcPanneau').hidden = false; }
 function calcFermerPanneau(){ const p = document.getElementById('calcPanneau'); if(p) p.hidden = true; calcMontreStop(); }
-function calcDisposition(d){
-  if(!CALC_DISPOS[d]) return; CALC.dispo = d; try{ localStorage.setItem('calcDispo', d); }catch(e){}
-  const m = CALC.montre; calcConstruire(); if(m) calcMontreBande(m.touches, m.k, m.titre);
-}
 // Clavier de l'ordinateur, quand le panneau est ouvert et que l'on n'écrit pas ailleurs.
 document.addEventListener('keydown', e => {
   const p = document.getElementById('calcPanneau'); if(!p || p.hidden || e.ctrlKey || e.metaKey || e.altKey) return;
@@ -571,7 +575,7 @@ document.addEventListener('keydown', e => {
 function calcMontreBande(touches, k, titre){
   const b = document.querySelector('#calcPanneau .calc-montre-bande'); if(!b) return;
   b.hidden = false;
-  b.innerHTML = `${titre ? `<b>${titre}</b><br>` : ''}Touches : ${touches.map((t, j) => `<span class="k${j < k ? ' fait' : ''}">${calcLib(t, CALC.dispo)}</span>`).join('')}
+  b.innerHTML = `${titre ? `<b>${titre}</b><br>` : ''}Touches : ${touches.map((t, j) => `<span class="k${j < k ? ' fait' : ''}">${calcIcone(t)}</span>`).join('')}
     <div style="font-size:.68rem;color:#B9C7D8;margin-top:2px;">Sur ta calculatrice, le nom ou la place d'une touche peut être un peu différent.</div>`;
 }
 function calcMontreStop(){ if(CALC.montre){ clearTimeout(CALC.montre.t); CALC.montre = null; } document.querySelectorAll('#calcPanneau .calc-k.appui').forEach(x => x.classList.remove('appui')); }
