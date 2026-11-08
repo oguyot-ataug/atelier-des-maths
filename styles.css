@@ -2433,7 +2433,7 @@ body:not(.connecte) #navDropdownEntrainer .nav-dropdown-menu button[data-nav="le
 .cmp-barre .cma-vitesse .gicon{ font-size:18px; }
 .cmp-barre .cma-vitesse input[type=range]{ width:110px; }
 .cmp-barre .cma-vit-val{ min-width:6.5em; font-weight:600; color:#1F3A5C; }
-@media print{ .cmp-barre .cma-vitesse{ display:none; } }
+@media print{ .cmp-barre .cma-vitesse, .cmp-barre .cma-voix{ display:none; } }
 
 /* « Dans mon cahier » (07/11/2026) : opérations posées sur une feuille Seyès (cm1PoseeCahier, chapitres/cm1/_commun.js).
    À l'écran seulement : l'impression garde toujours l'opération habituelle. */

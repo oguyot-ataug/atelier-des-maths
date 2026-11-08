@@ -27,11 +27,46 @@ function cmAnimVitesse(v){
   document.querySelectorAll('.cma-vit').forEach(i => { if(+i.value !== cmVitesse) i.value = cmVitesse; });
   document.querySelectorAll('.cma-vit-val').forEach(x => { x.textContent = cmVitesseTexte(cmVitesse); });
 }
+/* Lecture à voix haute des commentaires (demandé le 08/11/2026 : « en cp, dans le cours, il serait intéressant d'avoir du vocal pour ces
+   méthodes […] les élèves ne savent pas encore lire ») : animations du CP (identifiant « cp-… ») ou option voix:true. Pendant la lecture,
+   chaque nouveau commentaire est lu avec la voix du site (voixParler, app.js) et l'animation ATTEND la fin de la phrase avant de
+   continuer ; un commentaire qui prolonge le précédent (« un, deux » puis « un, deux, trois ») ne lit que la suite. Bouton « Voix »
+   dans la barre du lecteur, réglage retenu sur l'appareil (cmAnimVoix, commun à toutes les animations). */
+let cmVoix = true;
+try{ cmVoix = localStorage.getItem('cmAnimVoix') !== '0'; }catch(e){}
+const cmVoixBtn = id => `<button type="button" class="cmp-mod cma-voix${cmVoix ? ' on' : ''}" onclick="cmAnimVoix()" title="Lire les commentaires à voix haute" aria-pressed="${cmVoix}"><span class="gicon">${cmVoix ? 'volume_up' : 'volume_off'}</span> Voix</button>`;
+function cmAnimVoix(){
+  cmVoix = !cmVoix; try{ localStorage.setItem('cmAnimVoix', cmVoix ? '1' : '0'); }catch(e){}
+  document.querySelectorAll('.cma-voix').forEach(b => { b.classList.toggle('on', cmVoix); b.setAttribute('aria-pressed', cmVoix); b.querySelector('.gicon').textContent = cmVoix ? 'volume_up' : 'volume_off'; });
+  if(!cmVoix){ Object.values(CM_ANIMS).forEach(cmAnimSilence); }
+}
+// Texte lu : sans balises ni points de suspension ; « 4 (quatre) » se dit une seule fois.
+function cmVoixTexte(html){
+  const d = document.createElement('div'); d.innerHTML = html || '';
+  d.querySelectorAll('.katex-mathml').forEach(x => x.remove());
+  return d.textContent.replace(/…/g, ' ').replace(/(\d+)\s*\(([a-zàâçéèêëîïôûùüÿœ-]+)\)/gi, '$1').replace(/\s+/g, ' ').trim();
+}
+function cmAnimSilence(a){
+  if(!a) return; clearTimeout(a.voixT);
+  if(a.attente && typeof voixArreter === 'function') voixArreter();
+  a.attente = false; a.dit = '';
+}
+function cmAnimDire(a){
+  if(!a.voix || !cmVoix || !a.anim || typeof voixParler !== 'function') return;
+  const t = a.texteVoix || ''; if(t === a.dit) return;
+  const avant = a.dit || ''; a.dit = t;
+  let part = avant && t.startsWith(avant) ? t.slice(avant.length).replace(/^[\s,;:.]+/, '') : t;
+  if(!part.trim()) return;
+  a.attente = true; clearTimeout(a.voixT);
+  const fin = () => { clearTimeout(a.voixT); a.attente = false; };
+  a.voixT = setTimeout(fin, 15000); // la voix ne répond pas : l'animation reprend quand même
+  if(voixParler(part, { onend: fin, onerror: fin }) === false) fin();
+}
 function cmAnim(id, o){
-  CM_ANIMS[id] = Object.assign({ id, t: 0, anim: null, etat: {} }, o);
+  CM_ANIMS[id] = Object.assign({ id, t: 0, anim: null, etat: {}, voix: /^cp-/.test(id) }, o);
   return `<div class="figure-wrap cm-anim" data-anim="${id}"><div class="cma-ctrl"></div><div class="cma-scene"></div><div class="cma-texte"></div>
     <div class="cmp-barre"><button type="button" class="btn cma-jouer" onclick="cmAnimJouer('${id}')"><span class="gicon">play_arrow</span> Lecture</button>
-      <input type="range" min="0" max="1000" value="0" aria-label="Avancement" oninput="cmAnimT('${id}', this.value / 1000)">
+      <input type="range" min="0" max="1000" value="0" aria-label="Avancement" oninput="cmAnimT('${id}', this.value / 1000)">${CM_ANIMS[id].voix ? cmVoixBtn(id) : ''}
       <label class="cma-vitesse" title="Vitesse de lecture"><span class="gicon">speed</span> Vitesse <input type="range" class="cma-vit" min="0.25" max="1.5" step="0.25" value="${cmVitesse}" aria-label="Vitesse de lecture" oninput="cmAnimVitesse(this.value)"> <span class="cma-vit-val">${cmVitesseTexte(cmVitesse)}</span></label></div>
     ${o.legende ? `<p class="hint" style="margin:4px 0 0;">${o.legende}</p>` : ''}</div>`;
 }
@@ -41,23 +76,27 @@ function cmAnimDessiner(id, ctrl){
   const r = a.dessin(a.t, a);
   box.querySelector('.cma-scene').innerHTML = r.scene;
   box.querySelector('.cma-texte').innerHTML = r.texte || '';
+  if(a.voix) a.texteVoix = cmVoixTexte(r.texte);
   if(typeof renderStaticMath === 'function'){ renderStaticMath(box.querySelector('.cma-texte')); if(r.scene.indexOf('class="tex"') >= 0) renderStaticMath(box.querySelector('.cma-scene')); } // fractions (cm1Frac)
   box.querySelector('input[type=range]').value = Math.round(a.t * 1000);
   box.querySelector('.cma-jouer').innerHTML = a.anim ? '<span class="gicon">pause</span> Pause' : a.t >= 1 ? '<span class="gicon">replay</span> Rejouer' : '<span class="gicon">play_arrow</span> Lecture';
 }
-function cmAnimT(id, t){ const a = CM_ANIMS[id]; cancelAnimationFrame(a.anim); a.anim = null; a.t = t; cmAnimDessiner(id, false); }
+function cmAnimT(id, t){ const a = CM_ANIMS[id]; cancelAnimationFrame(a.anim); a.anim = null; cmAnimSilence(a); a.t = t; cmAnimDessiner(id, false); }
 function cmAnimJouer(id){
   const a = CM_ANIMS[id];
-  if(a.anim){ cancelAnimationFrame(a.anim); a.anim = null; cmAnimDessiner(id, false); return; }
+  if(a.anim){ cancelAnimationFrame(a.anim); a.anim = null; cmAnimSilence(a); cmAnimDessiner(id, false); return; }
   if(a.t >= 1) a.t = 0;
+  cmAnimSilence(a);
   const d = (typeof a.duree === 'function' ? a.duree(a) : a.duree) || 6000;
   let avant = performance.now();
-  const pas = now => { a.t = Math.min(1, a.t + (now - avant) * cmVitesse / d); avant = now; /* vitesse lue à chaque image : un changement agit tout de suite */ a.anim = a.t < 1 ? requestAnimationFrame(pas) : null; cmAnimDessiner(id, false); };
-  a.anim = requestAnimationFrame(pas); cmAnimDessiner(id, false);
+  // Pendant qu'une phrase est lue (a.attente), le temps de l'animation est suspendu ; la dernière image attend aussi la fin de la phrase.
+  const pas = now => { if(!a.attente) a.t = Math.min(1, a.t + (now - avant) * cmVitesse / d); avant = now; /* vitesse lue à chaque image : un changement agit tout de suite */
+    cmAnimDessiner(id, false); cmAnimDire(a); a.anim = a.t < 1 || a.attente ? requestAnimationFrame(pas) : null; if(!a.anim) cmAnimDessiner(id, false); };
+  a.anim = requestAnimationFrame(pas); cmAnimDessiner(id, false); cmAnimDire(a); // première phrase lue tout de suite, au clic (iPhone : le son doit suivre un geste)
 }
 // Réglage changé par un bouton : nouvel état, retour au début, et lecture.
 function cmAnimRegler(id, cle, val){
-  const a = CM_ANIMS[id]; cancelAnimationFrame(a.anim); a.anim = null;
+  const a = CM_ANIMS[id]; cancelAnimationFrame(a.anim); a.anim = null; cmAnimSilence(a);
   a.etat[cle] = val; if(a.corriger) a.corriger(a); a.t = 0; cmAnimDessiner(id); cmAnimJouer(id);
 }
 const cmBtn = (id, cle, val, txt, on) => `<button type="button" class="cmp-mod${on ? ' on' : ''}" onclick="cmAnimRegler('${id}','${cle}',${JSON.stringify(val).replace(/"/g, '&quot;')})">${txt}</button>`;

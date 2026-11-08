@@ -330,6 +330,9 @@ rapport dans Administration › IA (« Rapport détaillé des voix en ligne », 
 ou GOOGLE_TTS_CLE s'il existe), portée cloud-platform ; l'API « Cloud Text-to-Speech » doit être activée dans son projet
 Google Cloud (n° 736105734207), avec facturation. Sans cela, ou en cas de souci, la voix de l'appareil prend le relais.
 Ne jamais envoyer de nom d'élève à la synthèse.
+Animations du CP (demandé le 08/11/2026 : « les élèves ne savent pas encore lire ») : le lecteur commun `cmAnim` lit chaque nouveau commentaire
+(identifiant « cp-… » ou option `voix: true` ; `cmAnimDire`, chapitres/cm1/_anims.js) et suspend l'animation jusqu'à la fin de la phrase ; un commentaire
+qui prolonge le précédent ne lit que la suite (« un, deux » → « trois ») ; bouton « Voix » retenu sur l'appareil (`cmAnimVoix`).
 « Ok Olivia ! » (olivia.js, 02/11/2026) : bouton oreille d'Oliv'IA, PROFESSEURS SEULEMENT (`oliviaProf` ; écoute à la demande, pages de cours), mot
 d'éveil `OLIV_EVEIL`, question dictée envoyée comme une question écrite, réponse lue puis écoute de la suite 10 s ; bouton micro
 pour une question dictée. Reconnaissance vocale du navigateur (sur l'appareil si possible) ; rien d'autre n'est gardé ni envoyé.
