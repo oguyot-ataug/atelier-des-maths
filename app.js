@@ -3929,6 +3929,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1390', date:'2026-11-09', items:['5e Angles et parallélisme, corrections des exercices : la justification avant le calcul, « Or » et « Donc » chacun en début de ligne.'] },
   { version:'2026-08-19.1389', date:'2026-11-09', items:['5e Angles et parallélisme : les quatre exercices ont leur correction rédigée (Ce que je sais, Or, Donc), chacune illustrée par une figure codée (angles opposés par le sommet, angle plat, triangle, angles alternes-internes).'] },
   { version:'2026-08-19.1388', date:'2026-11-09', items:['Calculatrice : les fractions imbriquées s\'affichent en entier (la ligne de calcul prend toute la hauteur libre de l\'écran, et l\'écriture se réduit si besoin).'] },
   { version:'2026-08-19.1387', date:'2026-11-09', items:['Accueil du professeur, « Ce qui mérite votre attention » : seuls les devoirs dont la date limite est passée depuis moins de 15 jours (ou arrive dans les 3 jours) sont signalés ; bouton « Masquer » sur chaque ligne (la ligne revient si la situation s\'aggrave).'] },

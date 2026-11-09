@@ -835,6 +835,13 @@ function apExo(n, enonce, corr){
     <div class="exo-correction" id="c5-g2-c${n}">${corr}</div>
   </div>`;
 }
+// Rédaction d'une correction (demandé le 09/11/2026 : « "Or" après un retour à la ligne », justification « à mettre avant le
+// calcul ») : le titre, ce que je sais et la propriété (une phrase par ligne), le calcul, puis la conclusion « Donc… » sur sa ligne.
+function apRedac(titre, avant, calc, apres){
+  const ph = l => (l || []).map(t => `<p class="cm-redac-phrase">${t}</p>`).join('');
+  const lignes = !calc ? '' : typeof calc === 'string' ? `<div class="cm-redac-ligne">${calc}</div>` : calc.suite.map(l => `<div class="cm-redac-ligne">${l}</div>`).join('');
+  return `<div class="cm-redac"><div class="cm-redac-titre"><span class="cm-redac-sou">${titre}</span> :</div>${ph(avant)}${lignes}${ph(apres)}</div>`;
+}
 const apSvgExo = (w, h, inner, px) => `<svg viewBox="0 0 ${w} ${h}" style="width:100%;max-width:${px || w}px;display:block;margin:6px auto;background:var(--white);border-radius:8px;">${inner}</svg>`;
 const apTrait = (P, Q, c) => `<line x1="${P.x.toFixed(1)}" y1="${P.y.toFixed(1)}" x2="${Q.x.toFixed(1)}" y2="${Q.y.toFixed(1)}" stroke="${c || '#1C1B2E'}" stroke-width="1.6"/>`;
 const apMesure = (O, deg, r, txt, c) => { const P = apPt(O, deg, r); return `<text x="${P.x.toFixed(1)}" y="${P.y.toFixed(1)}" font-size="12" font-weight="700" fill="${c || '#1C1B2E'}" text-anchor="middle" dominant-baseline="middle">${txt}</text>`; };
@@ -892,19 +899,19 @@ document.getElementById('exos-demo-angles-parallelisme-5e').innerHTML = `
   <h3>Exercices</h3>
   ${apExo(1, `Deux droites se coupent en un point O et forment quatre angles. L'un d'eux mesure 72°. Donne les mesures des trois autres angles.`,
     `<div style="text-align:center;">${apFigExo1()}</div>`
-    + cm1Redac(`Mesure de l'angle ${AP_W('BOD')}`, '', `Les angles ${AP_W('AOC')} et ${AP_W('BOD')} sont opposés par le sommet. Or, deux angles opposés par le sommet ont la même mesure. Donc ${AP_W('BOD')} mesure 72°.`)
-    + cm1Redac(`Mesure de l'angle ${AP_W('COB')}`, `<span class="tex">\\widehat{COB} = 180° - 72° = 108°</span>`, `Les angles ${AP_W('AOC')} et ${AP_W('COB')} sont adjacents et forment l'angle plat ${AP_W('AOB')} : ils sont supplémentaires. Donc ${AP_W('COB')} mesure 108°.`)
-    + cm1Redac(`Mesure de l'angle ${AP_W('DOA')}`, '', `Les angles ${AP_W('DOA')} et ${AP_W('COB')} sont opposés par le sommet, donc ils ont la même mesure : ${AP_W('DOA')} mesure 108°.`))}
+    + apRedac(`Mesure de l'angle ${AP_W('BOD')}`, [`Les angles ${AP_W('AOC')} et ${AP_W('BOD')} sont opposés par le sommet.`, `Or, deux angles opposés par le sommet ont la même mesure.`], '', [`Donc ${AP_W('BOD')} mesure 72°.`])
+    + apRedac(`Mesure de l'angle ${AP_W('COB')}`, [`Les angles ${AP_W('AOC')} et ${AP_W('COB')} sont adjacents et forment l'angle plat ${AP_W('AOB')} : ils sont supplémentaires.`], `<span class="tex">\\widehat{COB} = 180° - 72° = 108°</span>`, [`Donc ${AP_W('COB')} mesure 108°.`])
+    + apRedac(`Mesure de l'angle ${AP_W('DOA')}`, [`Les angles ${AP_W('DOA')} et ${AP_W('COB')} sont opposés par le sommet.`, `Or, deux angles opposés par le sommet ont la même mesure.`], '', [`Donc ${AP_W('DOA')} mesure 108°.`]))}
   ${apExo(2, `Les angles adjacents <span class="tex">\\widehat{DOE}</span> et <span class="tex">\\widehat{EOF}</span> forment un angle plat. Sachant que <span class="tex">\\widehat{DOE} = 110°</span>, calcule la mesure de l'angle <span class="tex">\\widehat{EOF}</span>.`,
     `<div style="text-align:center;">${apFigExo2()}</div>`
-    + cm1Redac(`Mesure de l'angle ${AP_W('EOF')}`, `<span class="tex">\\widehat{EOF} = 180° - 110° = 70°</span>`, `Les angles ${AP_W('DOE')} et ${AP_W('EOF')} sont adjacents et forment un angle plat : leur somme est égale à 180°. Donc ${AP_W('EOF')} mesure 70°.`))}
+    + apRedac(`Mesure de l'angle ${AP_W('EOF')}`, [`Les angles ${AP_W('DOE')} et ${AP_W('EOF')} sont adjacents et forment un angle plat.`, `Or, les mesures de deux angles qui forment un angle plat ont pour somme 180°.`], `<span class="tex">\\widehat{EOF} = 180° - 110° = 70°</span>`, [`Donc ${AP_W('EOF')} mesure 70°.`]))}
   ${apExo(3, `Dans un triangle RST, <span class="tex">\\widehat{RST} = 52°</span> et <span class="tex">\\widehat{STR} = 79°</span>. Calcule la mesure de l'angle <span class="tex">\\widehat{SRT}</span>. Rédige ta réponse.`,
     `<div style="text-align:center;">${apFigExo3()}</div>`
-    + cm1Redac(`Mesure de l'angle ${AP_W('SRT')}`, { suite: [`<span class="tex">\\widehat{SRT} = 180° - (52° + 79°)</span>`, `<span class="tex">\\widehat{SRT} = 180° - 131°</span>`, `<span class="tex">\\widehat{SRT} = 49°</span>`] },
-      `Dans le triangle RST, on connaît ${AP_W('RST')} = 52° et ${AP_W('STR')} = 79°. Or, la somme des mesures des angles d'un triangle est égale à 180°. Donc ${AP_W('SRT')} mesure 49°.`))}
+    + apRedac(`Mesure de l'angle ${AP_W('SRT')}`, [`Dans le triangle RST, on sait que ${AP_W('RST')} = 52° et ${AP_W('STR')} = 79°.`, `Or, la somme des mesures des angles d'un triangle est égale à 180°.`],
+      { suite: [`<span class="tex">\\widehat{SRT} = 180° - (52° + 79°)</span>`, `<span class="tex">\\widehat{SRT} = 180° - 131°</span>`, `<span class="tex">\\widehat{SRT} = 49°</span>`] }, [`Donc ${AP_W('SRT')} mesure 49°.`]))}
   ${apExo(4, `Les droites (AB) et (CD) sont parallèles et coupées par la sécante (BC). L'angle <span class="tex">\\widehat{ABC}</span>, alterne-interne avec l'angle <span class="tex">\\widehat{BCD}</span>, mesure 58°. Quelle est la mesure de l'angle <span class="tex">\\widehat{BCD}</span> ? Rédige en justifiant.`,
     `<div style="text-align:center;">${apFigExo4()}</div>`
-    + cm1Redac(`Mesure de l'angle ${AP_W('BCD')}`, '', `Les droites (AB) et (CD) sont parallèles, coupées par la sécante (BC). Les angles ${AP_W('ABC')} et ${AP_W('BCD')} sont alternes-internes. Or, si deux angles alternes-internes sont déterminés par des droites parallèles, alors ils ont la même mesure. Donc, comme ${AP_W('ABC')} = 58°, on a ${AP_W('BCD')} = 58°.`))}
+    + apRedac(`Mesure de l'angle ${AP_W('BCD')}`, [`Les droites (AB) et (CD) sont parallèles, coupées par la sécante (BC).`, `Les angles ${AP_W('ABC')} et ${AP_W('BCD')} sont alternes-internes.`, `Or, si deux angles alternes-internes sont déterminés par des droites parallèles, alors ils ont la même mesure.`], '', [`Donc, comme ${AP_W('ABC')} = 58°, on a ${AP_W('BCD')} = 58°.`]))}
 </div>
 `;
 
