@@ -28,6 +28,10 @@
   --radius:10px;
   --shadow:0 4px 22px rgba(31,58,92,.10), 0 1px 3px rgba(31,58,92,.08);
 }
+/* Police des icônes hébergée par le site (assets/fonts, version fixe : opsz 20, graisse 400, contour) -- signalé le 09/11/2026 :
+   « pour beaucoup d'élèves les icônes ne passaient pas » (Google Fonts bloqué par certains réseaux d'établissement). De même, KaTeX
+   (assets/katex) et html2pdf (assets/lib) ne viennent plus de cdnjs. */
+@font-face{font-family:'Material Symbols Outlined';font-style:normal;font-weight:400;font-display:block;src:url('assets/fonts/material-symbols-outlined.woff2?v=1') format('woff2');}
 /* Icônes Material Symbols (Google), à la place des emoji -- rendu plus sobre et professionnel.
    Usage : <span class="gicon">nom_icone</span> (voir la liste sur fonts.google.com/icons). */
 .gicon{

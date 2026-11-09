@@ -1031,7 +1031,7 @@ async function replaceSvgsWithImages(container){
 function evalDocumentHTML(){
   return `<!DOCTYPE html><html><head><meta charset="utf-8">
     <title>Évaluation</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+    <link rel="stylesheet" href="${location.origin}/assets/katex/katex.min.css">
     <link rel="stylesheet" href="${document.querySelector('link[href*="styles.css"]').href}">
     ${typeof PL_CSS !== 'undefined' && evaluationExercises.some(ex => (blocksStores['ex-' + ex.id] || []).some(b => b.type === 'manuel')) ? `<style>${PL_CSS.replace(/@page\s*\{[^}]*\}/, '')}</style>` : ''}
     <style>

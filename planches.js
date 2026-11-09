@@ -780,7 +780,7 @@ async function plImprimer(lvl, blocs, mode, opts){
   const premier = blocs[0], titre = opts.titre || `${plRef(lvl, plCode(lvl, premier.c), (premier.indices || [0])[0])}${blocs.length > 1 || premier.indices.length > 1 ? ' et suivantes' : ''}${mode === 'corr' ? ' (corrigé)' : ''}`;
   w.document.open();
   w.document.write(`<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><title>${escapeHtml(titre)}</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">${plFontsLien(pr)}
+    <link rel="stylesheet" href="${location.origin}/assets/katex/katex.min.css">${plFontsLien(pr)}
     ${seyes ? '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&display=swap">' : ''}
     <style>${PL_CSS}${plCssReglages(pr)}${mode === 'livre' ? PL_CSS_LIVRE : ''}${seyes ? plCssSeyes() : ''}</style></head><body class="pl-imp${seyes ? ' cahier-on' : ''}">
     <button type="button" class="pl-bouton-imp" onclick="window.print()">Imprimer / Enregistrer en PDF</button>${corps}</body></html>`);

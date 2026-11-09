@@ -2631,7 +2631,7 @@ async function toggleProjection(){
   ceProjWin.document.open();
   ceProjWin.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8">
     <title>Correction -- projection</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+    <link rel="stylesheet" href="${location.origin}/assets/katex/katex.min.css">
     <link rel="stylesheet" href="${document.querySelector('link[href*="styles.css"]').href}">
     <style>
       html,body{margin:0;padding:0;background:#FFFFFF;height:100%;}
@@ -3929,6 +3929,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1391', date:'2026-11-09', items:['Formules et icônes affichées même sur les réseaux d\'établissement qui bloquent cdnjs ou Google Fonts : KaTeX, la police des icônes et l\'outil d\'export PDF sont désormais servis par le site lui-même (signalé lors d\'une session COURS : « \\widehat » visible dans les énoncés, icônes absentes).'] },
   { version:'2026-08-19.1390', date:'2026-11-09', items:['5e Angles et parallélisme, corrections des exercices : la justification avant le calcul, « Or » et « Donc » chacun en début de ligne.'] },
   { version:'2026-08-19.1389', date:'2026-11-09', items:['5e Angles et parallélisme : les quatre exercices ont leur correction rédigée (Ce que je sais, Or, Donc), chacune illustrée par une figure codée (angles opposés par le sommet, angle plat, triangle, angles alternes-internes).'] },
   { version:'2026-08-19.1388', date:'2026-11-09', items:['Calculatrice : les fractions imbriquées s\'affichent en entier (la ligne de calcul prend toute la hauteur libre de l\'écran, et l\'écriture se réduit si besoin).'] },
@@ -9297,7 +9298,7 @@ async function exportCahierAsPDF(){
   w.document.open();
   w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Cahier de corrections</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+    <link rel="stylesheet" href="${location.origin}/assets/katex/katex.min.css">
     <link rel="stylesheet" href="${document.querySelector('link[href*="styles.css"]').href}">
     <style>
       @page{ size:A4; margin:15mm; }
@@ -9570,7 +9571,7 @@ async function exportCahierDayAsPDF(date){
   w.document.open();
   w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Cahier de corrections -- ${fmtDateFR(date)}</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+    <link rel="stylesheet" href="${location.origin}/assets/katex/katex.min.css">
     <link rel="stylesheet" href="${document.querySelector('link[href*="styles.css"]').href}">
     <style>
       @page{ size:A4; margin:15mm; }

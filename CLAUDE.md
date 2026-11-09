@@ -73,6 +73,15 @@ Ne JAMAIS retirer de `index.html` la balise `<meta name="google-site-verificatio
 prouve à Google Search Console que le site nous appartient (validée le 26/09/2026) ; sans elle,
 l'accès au suivi de l'indexation est perdu.
 
+## Bibliothèques et polices hébergées par le site (depuis le 09/11/2026)
+
+Signalé : « les angles dans les énoncés affichaient des widehat et pour beaucoup d'élèves les icônes ne passaient pas » (session COURS
+d'un groupe de 5e) : certains réseaux d'établissement bloquent cdnjs et Google Fonts. KaTeX 0.16.9 (`assets/katex/`, copié de
+tools/node_modules/katex/dist), html2pdf 0.10.1 (`assets/lib/`) et la police des icônes (`assets/fonts/material-symbols-outlined.woff2`,
+instance fixe opsz 20 / graisse 400 / contour, 400 Ko, déclarée en tête de styles.css) sont servis par le site ; les fenêtres
+d'impression utilisent `${location.origin}/assets/katex/katex.min.css`. Ne pas revenir aux liens cdnjs / Google pour ces fichiers.
+Restent chez Google : les polices de texte (Space Grotesk, Inter, JetBrains Mono, Caveat), avec des polices de secours si bloquées.
+
 ## Adresse du site : latelierdesmaths.fr (depuis le 28/10/2026)
 
 Le site est servi par GitHub Pages sur **https://latelierdesmaths.fr** (fichier `CNAME`, réglage Custom domain
