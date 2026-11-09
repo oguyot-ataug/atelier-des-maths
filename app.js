@@ -1524,7 +1524,7 @@ async function inlineSvgImages(clone){
     } catch(e){ delete svgImagesCache[href]; console.warn('svgToRasterDataUri: image non intégrée', href, e); }
   }
 }
-function svgToRasterDataUri(svgEl, displayWidth){
+function svgToRasterDataUri(svgEl, displayWidth, transparent){
   return new Promise(async (resolve)=>{
     const vbAttr = svgEl.getAttribute('viewBox');
     const vbParts = vbAttr ? vbAttr.trim().split(/\s+/).map(Number) : [0,0,400,240];
@@ -1561,8 +1561,7 @@ function svgToRasterDataUri(svgEl, displayWidth){
         const ctx = canvas.getContext('2d');
         ctx.imageSmoothingEnabled = true;
         if('imageSmoothingQuality' in ctx) ctx.imageSmoothingQuality = 'high';
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0,0,canvas.width,canvas.height);
+        if(!transparent){ ctx.fillStyle = '#ffffff'; ctx.fillRect(0,0,canvas.width,canvas.height); }
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
         resolve(canvas.toDataURL('image/png'));
       } catch(e){ console.error('svgToRasterDataUri: échec de rastérisation', e); resolve(null); }
@@ -2078,6 +2077,38 @@ function compacterPourPdf(clone){
     img.style.width = Math.round(Math.min(l, 230 / r)) + 'px'; img.style.maxWidth = '100%'; img.style.height = 'auto';
   });
 }
+/* Export PDF des cours : un bloc insécable (encadré de géométrie dynamique, figure, définition…) qui dépasse DE PEU le bas d'une
+   page part entier à la page suivante et laisse un grand blanc. On réduit alors les figures placées plus haut sur la même page
+   (au plus d'un tiers chacune) juste assez pour qu'il y tienne -- demandé le 09/11/2026 : « si la première figure était plus
+   réduite, on pourrait mettre l'encadré rose sur la première page ! ». Hauteur utile d'une page : 1046 px (voir le calcul de
+   la découpe dans exportCoursPDF), mesurée depuis le haut du conteneur. */
+function pdfResserrerFigures(wrapper){
+  const H = 1046, BLOCS = '.dyn-activite, .figure-wrap, .def-box, .redaction-template, .redaction-block, .redaction-note, .history-box, .pdf-glue-group';
+  const haut = el => el.getBoundingClientRect().top - wrapper.getBoundingClientRect().top;
+  for(let tour = 0; tour < 40; tour++){
+    let fait = false;
+    for(const b of wrapper.querySelectorAll(BLOCS)){
+      if(b.parentElement && b.parentElement.closest(BLOCS)) continue; // seulement les blocs de premier niveau
+      const t = haut(b), h = b.getBoundingClientRect().height, page = Math.floor(t / H), fin = (page + 1) * H, deborde = t + h - fin + 6;
+      if(deborde <= 6 || h > H * .9 || deborde > 160) continue;
+      // Une figure à réduire = un cadre .figure-wrap entier : toutes ses images à la même échelle (une grille de quatre petites
+      // figures ne doit pas devenir deux grandes et deux petites).
+      const cadres = [...wrapper.querySelectorAll('.figure-wrap')].filter(w => {
+        if(w.closest('.dyn-activite') || w.dataset.pdfReduit || b.contains(w)) return false;
+        const wt = haut(w), wh = w.getBoundingClientRect().height; return wt >= page * H && wt + wh <= t + 1 && wh > 120;
+      }).map(w => ({ w, imgs: [...w.querySelectorAll('svg, img')].filter(f => !f.parentElement.closest('svg') && f.getBoundingClientRect().height > 30) })).filter(c => c.imgs.length);
+      const gainDe = c => Math.max(...c.imgs.map(f => f.getBoundingClientRect().height)) / 3;
+      if(cadres.reduce((g, c) => g + gainDe(c), 0) < deborde) continue;
+      let reste = deborde;
+      cadres.sort((x, y) => gainDe(y) - gainDe(x)).forEach(c => {
+        if(reste <= 0) return; const hmax = Math.max(...c.imgs.map(f => f.getBoundingClientRect().height)), k = Math.max(2 / 3, 1 - reste / hmax);
+        c.imgs.forEach(f => { const fh = f.getBoundingClientRect().height; f.style.height = (fh * k) + 'px'; f.style.width = 'auto'; f.style.maxWidth = '100%'; });
+        c.w.dataset.pdfReduit = '1'; reste -= hmax * (1 - k); });
+      fait = true; break; // les positions ont changé : on recommence depuis le début
+    }
+    if(!fait) break;
+  }
+}
 async function exportCoursPDF(){
   if(typeof familleSansImpression==='function' && familleSansImpression()) return;
   const hint=document.getElementById('exportHint');
@@ -2089,13 +2120,21 @@ async function exportCoursPDF(){
   const content = getVisibleCoursContent();
   const title = document.getElementById('chap-title').textContent || 'cours';
   const demosAvancees = await advanceAllStepDemosToEndAsync(content);
+  // Traits de formule recadrés (racines, flèches) : taille visible mesurée sur le cours affiché, recopiée avec lui (voir
+  // expandStepDemosInClone).
+  content.querySelectorAll('.katex svg').forEach(sv=>{
+    if(!/slice/.test(sv.getAttribute('preserveAspectRatio') || '')) return;
+    const pr = sv.parentElement.getBoundingClientRect(), h = sv.getBoundingClientRect().height;
+    const fs = parseFloat(getComputedStyle(sv.parentElement).fontSize) || 16; // en em : la formule est plus petite dans le PDF
+    if(pr.width > 0 && h > 0){ sv.dataset.pdfW = (pr.width / fs).toFixed(4); sv.dataset.pdfH = (h / fs).toFixed(4); }
+  });
   const clone = content.cloneNode(true);
   clone.querySelectorAll(':scope > .cp-hidden').forEach(el=>el.remove()); // blocs masqués par le professeur (cours personnalisé)
   filterCoursByParagraph(clone);
   blankOutSelectedBoxes(clone);
   clone.querySelectorAll('.add-to-cahier-btn').forEach(el=>el.remove());
   if(typeof ordNettoyer==='function') ordNettoyer(clone); // jeu « Remettre dans l'ordre » : texte en clair, sans bouton
-  clone.querySelectorAll('.read-aloud-btn, .learn-btn, .lrn-bar, .zoom-btn, .ord-btn').forEach(el=>el.remove());
+  clone.querySelectorAll('.read-aloud-btn, .learn-btn, .lrn-bar, .zoom-btn, .ord-btn, .calc-montre, .cahier-barre, .cahier-btn').forEach(el=>el.remove()); // boutons d'écran : calculatrice « Montre-moi les touches », « Dans mon cahier »
   clone.querySelectorAll('.oliv-b, .oliv-sh, .oliv-haut').forEach(el=>{ el.classList.remove('oliv-b','oliv-sh','oliv-haut',...[...el.classList].filter(c=>c.startsWith('oliv-'))); delete el.dataset.oliv; }); // vignettes d'Oliv'IA
   clone.querySelectorAll('.lrn-active').forEach(el=>el.classList.remove('lrn-active')); // mode apprentissage : texte en clair
   clone.querySelectorAll('.figure-toolbar').forEach(el=>el.remove());
@@ -2173,7 +2212,7 @@ async function exportCoursPDF(){
   });
   // Encadrés « Géométrie dynamique », rédactions types et encadrés d'histoire : jamais coupés entre deux pages (signalé le
   // 09/11/2026 sur 5e Angles et parallélisme : « Il y a encore des coupures dans l'export pdf des cours ! »).
-  clone.querySelectorAll('.dyn-activite, .redaction-block, .redaction-template, .history-box').forEach(el=>{
+  clone.querySelectorAll('.dyn-activite, .redaction-block, .redaction-template, .redaction-note, .history-box').forEach(el=>{
     el.style.pageBreakInside='avoid'; el.style.breakInside='avoid';
   });
   // Important : html2canvas rend une page blanche si l'élément capturé est en position fixed/absolute
@@ -2239,6 +2278,7 @@ async function exportCoursPDF(){
   // pagination incohérent d'une fois sur l'autre selon la vitesse de connexion. Signalé :
   // "ce n'est pas stable" -- symptôme caractéristique d'une dépendance au timing réseau.
   if(document.fonts && document.fonts.ready) await document.fonts.ready;
+  try{ pdfResserrerFigures(wrapper); }catch(e){ console.warn(e); }
   hint.textContent='Génération du PDF en cours…';
   // html2canvas photographie la page EN TENANT COMPTE DU DÉFILEMENT : si l'on a fait défiler le
   // chapitre avant de cliquer, tout le contenu est décalé d'autant (pages blanches au début,
@@ -3877,6 +3917,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1385', date:'2026-11-09', items:['Export PDF des cours : quand un encadré dépasse de peu le bas d\'une page, les figures plus haut sur la page sont légèrement réduites pour qu\'il y tienne (5e Angles et parallélisme : l\'encadré de géométrie dynamique revient en page 1).', 'Export PDF : les racines carrées (√a, √50…) ne sont plus effacées par un rectangle blanc ; encadrés « Remarques » jamais coupés ; boutons « Montre-moi les touches » et « Dans mon cahier » retirés du PDF.'] },
   { version:'2026-08-19.1384', date:'2026-11-09', items:['Export PDF des cours : les encadrés « Géométrie dynamique », les rédactions types et les encadrés d\'histoire ne sont plus coupés entre deux pages.'] },
   { version:'2026-08-19.1383', date:'2026-11-08', items:['Relecture CE2-N3-P2-E2 : la correction de « Pose et calcule dans ton cahier » s\'écrit maintenant sur la feuille en mode « Dans mon cahier » (soustractions par compensation, +10 et +1) ; même chose pour P2-E1.'] },
   { version:'2026-08-19.1382', date:'2026-11-08', items:['Prendre rendez-vous : une Oliv\'IA (olive dorée qui tient une page d\'agenda cochée et un petit réveil) sur les boutons du menu du compte et dans le titre de la page.'] },
@@ -10389,11 +10430,18 @@ async function expandStepDemosInClone(wrapper){
     // 02/11/2026 : « Les angles sont écrasés » (5e Angles et parallélisme, export PDF : « \widehat{MON} = 35° »).
     if(cloneSvg.closest && cloneSvg.closest('.katex')){
       try{
-        const uri = await svgToRasterDataUri(cloneSvg, 600);
+        // Racine carrée, flèche de vecteur… : SVG de 400 em recadré par son conteneur (preserveAspectRatio « slice »). Rastérisé
+        // tel quel, le trait utile devenait invisible et le fond blanc masquait la formule (signalé le 09/11/2026, 4e Pythagore :
+        // « √a », « √50 » effacés). On ne garde que la partie visible, mesurée avant la copie (data-pdf-w / data-pdf-h,
+        // exportCoursPDF), sur fond transparent.
+        const pw = +cloneSvg.dataset.pdfW, ph = +cloneSvg.dataset.pdfH, vbK = (cloneSvg.getAttribute('viewBox') || '').trim().split(/[\s,]+/).map(Number);
+        const recadre = pw > 0 && ph > 0 && vbK.length === 4 && vbK[3] > 0;
+        if(recadre){ cloneSvg.setAttribute('viewBox', `${vbK[0]} ${vbK[1]} ${pw * vbK[3] / ph} ${vbK[3]}`); cloneSvg.setAttribute('preserveAspectRatio', 'none'); }
+        const uri = await svgToRasterDataUri(cloneSvg, recadre ? Math.max(40, pw * 64) : 600, true);
         if(uri){
           const img = document.createElement('img');
           img.src = uri; img.alt = '';
-          img.style.cssText = `display:block;width:100%;height:${cloneSvg.getAttribute('height') || '100%'};`;
+          img.style.cssText = recadre ? `display:block;width:${pw}em;height:${ph}em;` : `display:block;width:100%;height:${cloneSvg.getAttribute('height') || '100%'};`;
           cloneSvg.replaceWith(img);
         }
       }catch(e){ console.error('Cahier/PDF : trait de formule', e); }
