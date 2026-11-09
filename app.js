@@ -3769,7 +3769,9 @@ sb.auth.onAuthStateChange((event)=>{
    get_teacher_a_reprendre_digest) qui ne renvoient que les devoirs du prof connecté
    (auth.uid()). Ne montre que ce qui demande une action (devoirs pas rendus proches/dépassés de
    la date limite, "à reprendre" toujours en attente) -- pas les médailles, qui sont valorisantes
-   mais pas "à traiter". */
+   mais pas "à traiter". Depuis le 09/11/2026 (« Pourquoi j'ai toujours cet affichage ? ») : seulement les devoirs dont la limite
+   est passée depuis moins de 15 jours, et bouton « Masquer » par ligne (table digest_masques,
+   supabase/sql/2026-11-09-digest-masques.sql). */
 async function renderProfHomeDigest(){
   const box = document.getElementById('profHomeDigest');
   if(!box) return;
@@ -3794,8 +3796,9 @@ async function renderProfHomeDigest(){
     (pending||[]).forEach(r=>classEntry(r.class_id).pendingRows.push(r));
     (aReprendre||[]).forEach(r=>{
       const arMap = classEntry(r.class_id).aReprendreByDevoir;
-      if(!arMap.has(r.devoir_id)) arMap.set(r.devoir_id, { titre: r.devoir_titre, eleves: [] });
+      if(!arMap.has(r.devoir_id)) arMap.set(r.devoir_id, { titre: r.devoir_titre, eleves: [], ids: [] });
       arMap.get(r.devoir_id).eleves.push(profileDisplayName({nom:r.student_nom, prenom:r.student_prenom}) || '?');
+      arMap.get(r.devoir_id).ids.push(r.student_id);
     });
     const classesHtml = Array.from(byClass.entries())
       .sort((a,b)=>(classLabelById.get(a[0])||'').localeCompare(classLabelById.get(b[0])||'', 'fr'))
@@ -3804,7 +3807,7 @@ async function renderProfHomeDigest(){
           const dateStr = r.date_limite ? new Date(r.date_limite).toLocaleDateString('fr-FR') : '';
           return `<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(28,43,57,.06);flex-wrap:wrap;">
             <span class="hint" style="margin:0;"><b>${escapeHtml(r.devoir_titre)}</b> -- ${r.nb_en_attente}/${r.nb_total} élève(s) n'ont pas encore rendu${dateStr ? ' (limite : '+dateStr+')' : ''}</span>
-            <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="openDevoirSubmissions('${r.devoir_id}')">Voir</button>
+            <span style="display:flex;gap:6px;"><button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="openDevoirSubmissions('${r.devoir_id}')">Voir</button><button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" title="Ne plus signaler ce devoir ici (il revient si la situation s'aggrave)" onclick="digestMasquer('${r.devoir_id}','attente',${r.nb_en_attente})">Masquer</button></span>
           </div>`;
         }).join('');
         // Regroupé par devoir (plusieurs élèves "à reprendre" sur le même devoir tiennent sur une
@@ -3812,7 +3815,7 @@ async function renderProfHomeDigest(){
         const aReprendreHtml = Array.from(entry.aReprendreByDevoir.entries()).map(([devoirId, info])=>{
           return `<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(28,43,57,.06);flex-wrap:wrap;">
             <span class="hint" style="margin:0;"><b>${escapeHtml(info.titre)}</b> -- "à reprendre" toujours en attente : ${info.eleves.map(escapeHtml).join(', ')}</span>
-            <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="openDevoirSubmissions('${devoirId}')">Voir</button>
+            <span style="display:flex;gap:6px;"><button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="openDevoirSubmissions('${devoirId}')">Voir</button><button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" title="Ne plus signaler ce devoir ici (il revient si la situation s'aggrave)" onclick="digestMasquer('${devoirId}','reprendre',0,'${info.ids.join(',')}')">Masquer</button></span>
           </div>`;
         }).join('');
         return `<div style="margin-top:12px;">
@@ -3829,6 +3832,15 @@ async function renderProfHomeDigest(){
   }catch(e){ box.style.display = 'none'; box.innerHTML = ''; }
 }
 
+// « Masquer » une ligne de l'encadré (demandé le 09/11/2026) : retenu dans la base (digest_masques, un choix par professeur), donc
+// sur tous ses appareils. La ligne revient si la situation s'aggrave : plus d'élèves en attente, ou un nouvel élève « à reprendre ».
+async function digestMasquer(devoirId, type, nb, ids){
+  try{
+    const { error } = await sb.from('digest_masques').upsert({ teacher_id: currentUser.id, devoir_id: devoirId, type, nb: nb || 0, eleves: ids ? ids.split(',').filter(Boolean) : [] }, { onConflict: 'teacher_id,devoir_id,type' });
+    if(error) throw error;
+  }catch(e){ console.warn(e); if(typeof niceAlert === 'function') niceAlert('Le masquage n\'a pas pu être enregistré. Réessayez dans un instant.'); return; }
+  renderProfHomeDigest();
+}
 function updateClassDisplays(name){
   const badge = document.getElementById('activeClassBadge');
   if(badge) badge.textContent = name ? '· '+name : '';
@@ -3917,6 +3929,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1387', date:'2026-11-09', items:['Accueil du professeur, « Ce qui mérite votre attention » : seuls les devoirs dont la date limite est passée depuis moins de 15 jours (ou arrive dans les 3 jours) sont signalés ; bouton « Masquer » sur chaque ligne (la ligne revient si la situation s\'aggrave).'] },
   { version:'2026-08-19.1386', date:'2026-11-09', items:['Programmes officiels (notions du CP à la 3e) : les filtres gardent toujours la même disposition (Domaine, puis Niveaux affichés, chacun sur sa ligne) ; les boutons de niveau ne changent plus de largeur quand on les coche ou les décoche.'] },
   { version:'2026-08-19.1385', date:'2026-11-09', items:['Export PDF des cours : quand un encadré dépasse de peu le bas d\'une page, les figures plus haut sur la page sont légèrement réduites pour qu\'il y tienne (5e Angles et parallélisme : l\'encadré de géométrie dynamique revient en page 1).', 'Export PDF : les racines carrées (√a, √50…) ne sont plus effacées par un rectangle blanc ; encadrés « Remarques » jamais coupés ; boutons « Montre-moi les touches » et « Dans mon cahier » retirés du PDF.'] },
   { version:'2026-08-19.1384', date:'2026-11-09', items:['Export PDF des cours : les encadrés « Géométrie dynamique », les rédactions types et les encadrés d\'histoire ne sont plus coupés entre deux pages.'] },
