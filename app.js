@@ -3929,6 +3929,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1388', date:'2026-11-09', items:['Calculatrice : les fractions imbriquées s\'affichent en entier (la ligne de calcul prend toute la hauteur libre de l\'écran, et l\'écriture se réduit si besoin).'] },
   { version:'2026-08-19.1387', date:'2026-11-09', items:['Accueil du professeur, « Ce qui mérite votre attention » : seuls les devoirs dont la date limite est passée depuis moins de 15 jours (ou arrive dans les 3 jours) sont signalés ; bouton « Masquer » sur chaque ligne (la ligne revient si la situation s\'aggrave).'] },
   { version:'2026-08-19.1386', date:'2026-11-09', items:['Programmes officiels (notions du CP à la 3e) : les filtres gardent toujours la même disposition (Domaine, puis Niveaux affichés, chacun sur sa ligne) ; les boutons de niveau ne changent plus de largeur quand on les coche ou les décoche.'] },
   { version:'2026-08-19.1385', date:'2026-11-09', items:['Export PDF des cours : quand un encadré dépasse de peu le bas d\'une page, les figures plus haut sur la page sont légèrement réduites pour qu\'il y tienne (5e Angles et parallélisme : l\'encadré de géométrie dynamique revient en page 1).', 'Export PDF : les racines carrées (√a, √50…) ne sont plus effacées par un rectangle blanc ; encadrés « Remarques » jamais coupés ; boutons « Montre-moi les touches » et « Dans mon cahier » retirés du PDF.'] },

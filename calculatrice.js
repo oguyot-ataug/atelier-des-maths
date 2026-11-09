@@ -463,7 +463,8 @@ function calcCss(){
   .calc-ecran{ background:#E9F0E4; color:#1C2B39; border-radius:10px; padding:6px 10px 6px; height:236px; box-sizing:border-box; display:flex; flex-direction:column; justify-content:flex-start; box-shadow:inset 0 2px 6px rgba(0,0,0,.25); }
   .calc-etat{ display:flex; gap:8px; font:700 .62rem 'JetBrains Mono',monospace; color:#5B6472; min-height:12px; }
   .calc-etat .on{ color:#C2410C; }
-  .calc-expr{ font-size:1.05rem; height:56px; flex:0 0 56px; display:flex; align-items:center; overflow-x:auto; overflow-y:auto; white-space:nowrap; padding:0; scrollbar-width:none; } /* hauteurs fixes : l'écran ne change plus de taille entre une fraction et un décimal */
+  .calc-expr{ font-size:1.05rem; flex:1 1 auto; min-height:56px; display:flex; align-items:center; overflow-x:auto; overflow-y:hidden; white-space:nowrap; padding:0; scrollbar-width:none; }
+  .calc-ecran.tab .calc-expr{ flex:0 0 56px; } /* hauteurs fixes : l'écran ne change plus de taille entre une fraction et un décimal */
   .calc-res{ font-size:1.25rem; height:62px; flex:0 0 62px; margin-top:auto; display:flex; align-items:center; justify-content:flex-end; overflow-x:auto; overflow-y:auto; white-space:nowrap; font-weight:600; scrollbar-width:none; }
   .calc-expr::-webkit-scrollbar, .calc-res::-webkit-scrollbar{ display:none; }
   .calc-res.err{ color:#B91C1C; font:700 .95rem 'Space Grotesk',Arial,sans-serif; }
@@ -546,6 +547,15 @@ function calcAfficher(){
         + (CALC.tabPos > 0 ? '<span class="calc-tab-fl" style="top:28px;">▲</span>' : '') + (CALC.tabPos + V < T.length ? '<span class="calc-tab-fl" style="bottom:2px;">▼</span>' : '')
       : CALC.tabHtml || '<p>Écris l\'expression avec la touche <i>x</i>, puis EXE.</p>'; }
   const e = p.querySelector('.calc-expr'); e.scrollLeft = e.scrollWidth;
+  calcAjusterHauteur(e); calcAjusterHauteur(r);
+}
+// Fractions imbriquées, exposants de fractions… : l'écran garde sa taille, l'écriture se réduit pour tenir en hauteur (signalé le
+// 09/11/2026 : « L'affichage fraction imbriquée n'est pas assez haut »).
+function calcAjusterHauteur(zone){
+  const k = zone.querySelector('.katex'); if(!k) return;
+  k.style.fontSize = '';
+  const dispo = zone.clientHeight - 4;
+  for(let f = 1; f > .5 && k.getBoundingClientRect().height > dispo; f -= .08) k.style.fontSize = f.toFixed(2) + 'em';
 }
 function calcTableau(){
   const corps = { set innerHTML(h){ CALC.tabHtml = h; } }; // le tableau s'affiche dans l'écran (calcAfficher)
