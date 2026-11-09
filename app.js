@@ -3917,6 +3917,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1386', date:'2026-11-09', items:['Programmes officiels (notions du CP à la 3e) : les filtres gardent toujours la même disposition (Domaine, puis Niveaux affichés, chacun sur sa ligne) ; les boutons de niveau ne changent plus de largeur quand on les coche ou les décoche.'] },
   { version:'2026-08-19.1385', date:'2026-11-09', items:['Export PDF des cours : quand un encadré dépasse de peu le bas d\'une page, les figures plus haut sur la page sont légèrement réduites pour qu\'il y tienne (5e Angles et parallélisme : l\'encadré de géométrie dynamique revient en page 1).', 'Export PDF : les racines carrées (√a, √50…) ne sont plus effacées par un rectangle blanc ; encadrés « Remarques » jamais coupés ; boutons « Montre-moi les touches » et « Dans mon cahier » retirés du PDF.'] },
   { version:'2026-08-19.1384', date:'2026-11-09', items:['Export PDF des cours : les encadrés « Géométrie dynamique », les rédactions types et les encadrés d\'histoire ne sont plus coupés entre deux pages.'] },
   { version:'2026-08-19.1383', date:'2026-11-08', items:['Relecture CE2-N3-P2-E2 : la correction de « Pose et calcule dans ton cahier » s\'écrit maintenant sur la feuille en mode « Dans mon cahier » (soustractions par compensation, +10 et +1) ; même chose pour P2-E1.'] },

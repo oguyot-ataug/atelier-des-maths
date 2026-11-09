@@ -469,7 +469,7 @@ const niveauxCoches = () => Array.isArray(state.niveaux) && state.niveaux.length
 function niveauxChips(){
   const d = $('#nt-lvs'); if(!d) return;
   const l = niveauxCoches(), egal = a => a.length === l.length && a.every(k => l.includes(k));
-  d.innerHTML = `<div class="nt-chips">${LV.map(x => `<button type="button" class="nt-chip nt-lv nt-${x.c}" data-k="${x.k}" aria-pressed="${l.includes(x.k)}">${l.includes(x.k) ? '✓ ' : ''}${x.n}</button>`).join('')}</div>`
+  d.innerHTML = `<div class="nt-chips">${LV.map(x => `<button type="button" class="nt-chip nt-lv nt-${x.c}" data-k="${x.k}" aria-pressed="${l.includes(x.k)}"><span class="nt-ck" aria-hidden="true">✓</span>${x.n}</button>`).join('')}</div>`
     + `<div class="nt-raccs">${RACCOURCIS.map(([r, n]) => `<button type="button" class="nt-racc" data-r="${r}" aria-pressed="${egal(VUES[r])}">${n}</button>`).join('')}</div>`;
 }
 $('#nt-q').oninput = e => { state.q = e.target.value; render(); };

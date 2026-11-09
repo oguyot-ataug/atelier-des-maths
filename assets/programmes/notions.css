@@ -80,3 +80,10 @@ body.nt-vonly .nt-voc{margin-top:0;} body.nt-vonly .nt-k{display:none;}
 .nt-raccs{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:.8rem;color:var(--ink-soft);}
 .nt-racc{font:inherit;border:0;background:none;color:var(--accent);padding:0;cursor:pointer;text-decoration:underline;text-underline-offset:2px;}
 .nt-racc[aria-pressed="true"]{color:var(--ink);font-weight:700;text-decoration:none;}
+
+/* Disposition fixe des filtres (signalé le 09/11/2026 : « La disposition des choix des niveaux n'est pas fixe : à droite si tous cochés,
+   à gauche en haut si j'en décoche 1 seul ») : Domaine, puis Niveaux affichés, chacun sur sa propre ligne ; la coche garde sa place
+   (invisible si le niveau n'est pas affiché), le bouton ne change donc jamais de largeur. */
+.nt-tools > .nt-field:has(#nt-doms), .nt-tools > .nt-field:has(#nt-lvs){flex:1 1 100%;}
+.nt-chip .nt-ck{display:inline-block;width:1em;margin-right:2px;}
+.nt-chip[aria-pressed="false"] .nt-ck{visibility:hidden;}
