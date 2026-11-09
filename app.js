@@ -2171,6 +2171,11 @@ async function exportCoursPDF(){
   clone.querySelectorAll('.figure-wrap').forEach(el=>{
     el.style.pageBreakInside='avoid'; el.style.breakInside='avoid';
   });
+  // Encadrés « Géométrie dynamique », rédactions types et encadrés d'histoire : jamais coupés entre deux pages (signalé le
+  // 09/11/2026 sur 5e Angles et parallélisme : « Il y a encore des coupures dans l'export pdf des cours ! »).
+  clone.querySelectorAll('.dyn-activite, .redaction-block, .redaction-template, .history-box').forEach(el=>{
+    el.style.pageBreakInside='avoid'; el.style.breakInside='avoid';
+  });
   // Important : html2canvas rend une page blanche si l'élément capturé est en position fixed/absolute
   // (bug connu). On le garde donc dans le flux normal, juste masqué visuellement par un parent
   // de hauteur nulle et overflow:hidden.
@@ -3872,6 +3877,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1384', date:'2026-11-09', items:['Export PDF des cours : les encadrés « Géométrie dynamique », les rédactions types et les encadrés d\'histoire ne sont plus coupés entre deux pages.'] },
   { version:'2026-08-19.1383', date:'2026-11-08', items:['Relecture CE2-N3-P2-E2 : la correction de « Pose et calcule dans ton cahier » s\'écrit maintenant sur la feuille en mode « Dans mon cahier » (soustractions par compensation, +10 et +1) ; même chose pour P2-E1.'] },
   { version:'2026-08-19.1382', date:'2026-11-08', items:['Prendre rendez-vous : une Oliv\'IA (olive dorée qui tient une page d\'agenda cochée et un petit réveil) sur les boutons du menu du compte et dans le titre de la page.'] },
   { version:'2026-08-19.1381', date:'2026-11-08', items:['Menu L\'Atelier : une Oliv\'IA calculatrice (elle tient la calculatrice bleue du site) devant « Calculatrice », ouverte à tous, sans cadenas pour les visiteurs.'] },
