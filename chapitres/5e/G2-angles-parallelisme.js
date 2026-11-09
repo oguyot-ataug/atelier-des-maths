@@ -824,6 +824,59 @@ document.getElementById('methode-demo-angles-parallelisme-5e').innerHTML = `
 </div>
 `;
 
+/* ================= Exercices corrigés (demandé le 09/11/2026 : « Les exercices ne sont pas corrigés dans Angles et parallélisme
+   en 5e. Faire les figures pour illustrer si nécessaire. ») : une figure par correction, rédaction « Ce que je sais / Or / Donc ». ===== */
+const AP_W = n => `<span class="tex">\\widehat{${n}}</span>`;
+function apExo(n, enonce, corr){
+  return `<div class="exo-card">
+    <div class="num">Exercice ${n}</div>
+    ${enonce}
+    <button type="button" class="exo-correction-toggle" data-target="c5-g2-c${n}" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="c5-g2-c${n}">${corr}</div>
+  </div>`;
+}
+const apSvgExo = (w, h, inner, px) => `<svg viewBox="0 0 ${w} ${h}" style="width:100%;max-width:${px || w}px;display:block;margin:6px auto;background:var(--white);border-radius:8px;">${inner}</svg>`;
+const apTrait = (P, Q, c) => `<line x1="${P.x.toFixed(1)}" y1="${P.y.toFixed(1)}" x2="${Q.x.toFixed(1)}" y2="${Q.y.toFixed(1)}" stroke="${c || '#1C1B2E'}" stroke-width="1.6"/>`;
+const apMesure = (O, deg, r, txt, c) => { const P = apPt(O, deg, r); return `<text x="${P.x.toFixed(1)}" y="${P.y.toFixed(1)}" font-size="12" font-weight="700" fill="${c || '#1C1B2E'}" text-anchor="middle" dominant-baseline="middle">${txt}</text>`; };
+// Exercice 1 : (AB) et (CD) sécantes en O ; l'angle AOC mesure 72°.
+function apFigExo1(){
+  const O = { x: 170, y: 120 }, R = 112, rouge = '#E35D3A', bleu = '#1F3A5C';
+  const A = apPt(O, 180, R), B = apPt(O, 0, R), C = apPt(O, 108, R), D = apPt(O, -72, R);
+  const lab = (deg, t) => { const P = apPt(O, deg, R - 14); return apPointTick(O, P) + apSideLabel(O, P, t, { side: deg > 90 || deg < -90 ? -1 : 1 }); };
+  return apSvgExo(340, 245, apTrait(A, B) + apTrait(C, D)
+    + apWedge(O, B, D, 30, rouge) + apWedge(O, A, C, 30, rouge) + apWedge(O, D, A, 26, bleu, .4) + apWedge(O, C, B, 26, bleu, .4)
+    + apMesure(O, -36, 46, '72°', rouge) + apMesure(O, 144, 46, '72°', rouge) + apMesure(O, -126, 44, '108°', bleu) + apMesure(O, 54, 44, '108°', bleu)
+    + lab(180, 'A') + lab(0, 'B') + lab(108, 'C') + lab(-72, 'D') + apLabel(O.x - 4, O.y + 24, 'O'), 320);
+}
+// Exercice 2 : D, O, F alignés ; [OE) fait avec [OD) un angle de 110°.
+function apFigExo2(){
+  const O = { x: 170, y: 150 }, R = 130, D = apPt(O, 180, R), F = apPt(O, 0, R), E = apPt(O, -70, 115);
+  return apSvgExo(340, 175, apTrait(D, F) + apTrait(O, E)
+    + apWedge(O, E, D, 30, '#1F3A5C', .45) + apWedge(O, F, E, 38, '#1E8A6E', .5)
+    + apMesure(O, -125, 50, '110°', '#1F3A5C') + apMesure(O, -35, 58, '70°', '#1E8A6E')
+    + apPointTick(O, apPt(O, 180, 115)) + apSideLabel(O, apPt(O, 180, 115), 'D', { side: -1 }) + apPointTick(O, apPt(O, 0, 115)) + apSideLabel(O, apPt(O, 0, 115), 'F')
+    + apPointTick(O, apPt(O, -70, 100)) + apSideLabel(O, apPt(O, -70, 100), 'E') + apLabel(O.x - 4, O.y + 20, 'O'), 320);
+}
+// Exercice 3 : triangle RST, angles 52° en S et 79° en T.
+function apFigExo3(){
+  const S = { x: 70, y: 195 }, T = { x: 240, y: 195 }, a = 52 * Math.PI / 180, b = 79 * Math.PI / 180;
+  const d = (T.x - S.x) * Math.sin(b) / Math.sin(Math.PI - a - b), R = { x: S.x + d * Math.cos(a), y: S.y - d * Math.sin(a) };
+  return apSvgExo(310, 220, `<polygon points="${S.x},${S.y} ${T.x},${T.y} ${R.x.toFixed(1)},${R.y.toFixed(1)}" fill="#EEF4FB" stroke="#1C1B2E" stroke-width="1.6"/>`
+    + apWedge(S, T, R, 30, '#1F3A5C', .45) + apWedge(T, R, S, 26, '#1E8A6E', .5) + apWedge(R, S, T, 26, '#E35D3A', .5)
+    + apMesure(S, -26, 46, '52°', '#1F3A5C') + apMesure(T, -140, 44, '79°', '#1E8A6E') + apMesure(R, (Math.atan2(S.y - R.y, S.x - R.x) + Math.atan2(T.y - R.y, T.x - R.x)) * 90 / Math.PI, 40, '49°', '#E35D3A')
+    + apLabel(S.x - 16, S.y + 6, 'S') + apLabel(T.x + 6, T.y + 6, 'T') + apLabel(R.x - 5, R.y - 8, 'R'), 310);
+}
+// Exercice 4 : (AB) // (CD), sécante (BC) ; angles alternes-internes ABC et BCD de 58°.
+function apFigExo4(){
+  const B = { x: 210, y: 55 }, k = 110 / Math.tan(58 * Math.PI / 180), C = { x: B.x - k, y: 165 }, A = { x: 70, y: 55 }, D = { x: 290, y: 165 };
+  const u = { x: (C.x - B.x) / 110, y: 1 }, P1 = { x: B.x - u.x * 35, y: B.y - 35 }, P2 = { x: C.x + u.x * 35, y: C.y + 35 };
+  return apSvgExo(340, 210, apTrait({ x: 20, y: B.y }, { x: 320, y: B.y }) + apTrait({ x: 20, y: C.y }, { x: 320, y: C.y }) + apTrait(P1, P2, '#2EA8C9')
+    + apWedge(B, A, C, 30, '#E35D3A') + apWedge(C, B, D, 30, '#E35D3A')
+    + apMesure(B, 180 - 29, 44, '58°', '#E35D3A') + apMesure(C, -29, 44, '58°', '#E35D3A')
+    + apPointTick(B, A) + apSideLabel(B, A, 'A', { side: -1 }) + apPointTick(C, D) + apSideLabel(C, D, 'D')
+    + apLabel(B.x + 8, B.y - 8, 'B') + apLabel(C.x - 18, C.y + 18, 'C') + apLabel(305, B.y - 6, '(AB)', 11, false) + apLabel(305, C.y - 6, '(CD)', 11, false), 320);
+}
+
 /* ================= EXOS ================= */
 document.getElementById('exos-demo-angles-parallelisme-5e').innerHTML = `
 <div class="redaction-block">
@@ -837,22 +890,21 @@ document.getElementById('exos-demo-angles-parallelisme-5e').innerHTML = `
 </div>
 <div class="redaction-block">
   <h3>Exercices</h3>
-  <div class="exo-card">
-    <div class="num">Exercice 1</div>
-    Deux droites se coupent en un point O et forment quatre angles. L'un d'eux mesure 72°. Donne les mesures des trois autres angles.
-  </div>
-  <div class="exo-card">
-    <div class="num">Exercice 2</div>
-    Les angles adjacents <span class="tex">\\widehat{DOE}</span> et <span class="tex">\\widehat{EOF}</span> forment un angle plat. Sachant que <span class="tex">\\widehat{DOE} = 110°</span>, calcule la mesure de l'angle <span class="tex">\\widehat{EOF}</span>.
-  </div>
-  <div class="exo-card">
-    <div class="num">Exercice 3</div>
-    Dans un triangle RST, <span class="tex">\\widehat{RST} = 52°</span> et <span class="tex">\\widehat{STR} = 79°</span>. Calcule la mesure de l'angle <span class="tex">\\widehat{SRT}</span>. Rédige ta réponse.
-  </div>
-  <div class="exo-card">
-    <div class="num">Exercice 4</div>
-    Les droites (AB) et (CD) sont parallèles et coupées par la sécante (BC). L'angle <span class="tex">\\widehat{ABC}</span>, alterne-interne avec l'angle <span class="tex">\\widehat{BCD}</span>, mesure 58°. Quelle est la mesure de l'angle <span class="tex">\\widehat{BCD}</span> ? Rédige en justifiant.
-  </div>
+  ${apExo(1, `Deux droites se coupent en un point O et forment quatre angles. L'un d'eux mesure 72°. Donne les mesures des trois autres angles.`,
+    `<div style="text-align:center;">${apFigExo1()}</div>`
+    + cm1Redac(`Mesure de l'angle ${AP_W('BOD')}`, '', `Les angles ${AP_W('AOC')} et ${AP_W('BOD')} sont opposés par le sommet. Or, deux angles opposés par le sommet ont la même mesure. Donc ${AP_W('BOD')} mesure 72°.`)
+    + cm1Redac(`Mesure de l'angle ${AP_W('COB')}`, `<span class="tex">\\widehat{COB} = 180° - 72° = 108°</span>`, `Les angles ${AP_W('AOC')} et ${AP_W('COB')} sont adjacents et forment l'angle plat ${AP_W('AOB')} : ils sont supplémentaires. Donc ${AP_W('COB')} mesure 108°.`)
+    + cm1Redac(`Mesure de l'angle ${AP_W('DOA')}`, '', `Les angles ${AP_W('DOA')} et ${AP_W('COB')} sont opposés par le sommet, donc ils ont la même mesure : ${AP_W('DOA')} mesure 108°.`))}
+  ${apExo(2, `Les angles adjacents <span class="tex">\\widehat{DOE}</span> et <span class="tex">\\widehat{EOF}</span> forment un angle plat. Sachant que <span class="tex">\\widehat{DOE} = 110°</span>, calcule la mesure de l'angle <span class="tex">\\widehat{EOF}</span>.`,
+    `<div style="text-align:center;">${apFigExo2()}</div>`
+    + cm1Redac(`Mesure de l'angle ${AP_W('EOF')}`, `<span class="tex">\\widehat{EOF} = 180° - 110° = 70°</span>`, `Les angles ${AP_W('DOE')} et ${AP_W('EOF')} sont adjacents et forment un angle plat : leur somme est égale à 180°. Donc ${AP_W('EOF')} mesure 70°.`))}
+  ${apExo(3, `Dans un triangle RST, <span class="tex">\\widehat{RST} = 52°</span> et <span class="tex">\\widehat{STR} = 79°</span>. Calcule la mesure de l'angle <span class="tex">\\widehat{SRT}</span>. Rédige ta réponse.`,
+    `<div style="text-align:center;">${apFigExo3()}</div>`
+    + cm1Redac(`Mesure de l'angle ${AP_W('SRT')}`, { suite: [`<span class="tex">\\widehat{SRT} = 180° - (52° + 79°)</span>`, `<span class="tex">\\widehat{SRT} = 180° - 131°</span>`, `<span class="tex">\\widehat{SRT} = 49°</span>`] },
+      `Dans le triangle RST, on connaît ${AP_W('RST')} = 52° et ${AP_W('STR')} = 79°. Or, la somme des mesures des angles d'un triangle est égale à 180°. Donc ${AP_W('SRT')} mesure 49°.`))}
+  ${apExo(4, `Les droites (AB) et (CD) sont parallèles et coupées par la sécante (BC). L'angle <span class="tex">\\widehat{ABC}</span>, alterne-interne avec l'angle <span class="tex">\\widehat{BCD}</span>, mesure 58°. Quelle est la mesure de l'angle <span class="tex">\\widehat{BCD}</span> ? Rédige en justifiant.`,
+    `<div style="text-align:center;">${apFigExo4()}</div>`
+    + cm1Redac(`Mesure de l'angle ${AP_W('BCD')}`, '', `Les droites (AB) et (CD) sont parallèles, coupées par la sécante (BC). Les angles ${AP_W('ABC')} et ${AP_W('BCD')} sont alternes-internes. Or, si deux angles alternes-internes sont déterminés par des droites parallèles, alors ils ont la même mesure. Donc, comme ${AP_W('ABC')} = 58°, on a ${AP_W('BCD')} = 58°.`))}
 </div>
 `;
 
