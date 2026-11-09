@@ -148,16 +148,16 @@
       <div class="figure-wrap">
         <strong style="font-family:'Space Grotesk',sans-serif;">Exemple posé : la division de 758 par 12</strong>
         
-        <div style="display:flex;justify-content:center;align-items:stretch;gap:0;font-family:'JetBrains Mono',monospace;font-size:1.25rem;padding:20px 10px;background:var(--white);border-radius:8px;border:1px solid rgba(28,43,57,.1);">
+        <div class="dp-boite" style="display:flex;justify-content:center;align-items:stretch;gap:0;font-family:'JetBrains Mono',monospace;font-size:1.25rem;padding:20px 10px;background:var(--white);border-radius:8px;border:1px solid rgba(28,43,57,.1);">
           <div style="text-align:right;padding-right:16px;">
             <div class="dp-tag" style="color:var(--accent);">dividende</div>
-            <div id="dpLeft" style="text-align:right;line-height:2;min-width:70px;"><div>&nbsp;&nbsp;758</div></div>
+            <div id="dpLeft" style="text-align:right;line-height:2;min-width:70px;"><div><span class="dp-c">7</span><span class="dp-c">5</span><span class="dp-c">8</span></div></div>
             
           </div>
           <div style="border-left:2px solid #1C1B2E;padding-left:16px;">
             <div class="dp-tag" style="color:var(--accent-orange);">diviseur</div>
-            <div style="line-height:2;border-bottom:1.5px solid #1C1B2E;padding-bottom:2px;margin-left:-16px;padding-left:16px;">12</div>
-            <div style="display:flex;align-items:baseline;gap:8px;line-height:2;margin-top:6px;">
+            <div class="dp-div" style="line-height:2;border-bottom:1.5px solid #1C1B2E;padding-bottom:2px;margin-left:-16px;padding-left:16px;">12</div>
+            <div class="dp-quot" style="display:flex;align-items:baseline;gap:8px;line-height:2;margin-top:6px;">
               
               <span class="dp-tag" style="color:#1F6B3A;white-space:nowrap;">← quotient</span>
             </div>
@@ -298,12 +298,12 @@
   
   <div class="redaction-block">
         <h3>Rédaction type : « Effectuer un calcul avec priorités »</h3>
-        <div class="redaction-template">
+        <div class="cahier-page cahier-exemple"><div class="redaction-template">
           <div class="we-row"><span class="we-expr">E = 4 + 2 × (7 − 3)</span><span class="we-comment">On calcule d'abord la parenthèse.</span></div>
           <div class="we-row"><span class="we-expr">E = 4 + 2 × 4</span><span class="we-comment">On effectue ensuite la multiplication.</span></div>
           <div class="we-row"><span class="we-expr">E = 4 + 8</span><span class="we-comment">Il ne reste que l'addition.</span></div>
           <div class="we-row"><span class="we-expr">E = 12</span><span class="we-comment">Résultat final.</span></div>
-        </div>
+        </div></div>
       </div>
       <div class="redaction-block">
         <h3>Exercices</h3>
@@ -327,7 +327,7 @@
         </div>
         <div class="exo-card">
           <div class="num">Exercice 4</div>
-          Pose la division euclidienne de 537 par 23, puis vérifie ton résultat avec l'égalité dividende = (diviseur × quotient) + reste.
+          Pose dans ton cahier la division euclidienne de 537 par 23, puis vérifie ton résultat avec l'égalité dividende = (diviseur × quotient) + reste.
           
           
         </div>

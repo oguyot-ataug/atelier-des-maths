@@ -120,14 +120,14 @@
 
 <p class="example-title">Exemple 2 : combien d'heures, minutes et secondes y a-t-il dans 25 000 s ?</p>
 <div class="redaction-block">
-  <div class="redaction-template">
+  <div class="cahier-page cahier-exemple"><div class="redaction-template">
     <div class="we-row"><span class="we-expr">On convertit d'abord les secondes en minutes et secondes, en divisant 25 000 par 60.</span></div>
     <div class="we-row"><span class="we-expr"><span class="tex" data-tex-source="25\,000 = 60 \times 416 + 40" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>25</mn><mtext> </mtext><mn>000</mn><mo>=</mo><mn>60</mn><mo>×</mo><mn>416</mn><mo>+</mo><mn>40</mn></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord">25</span><span class="mord">000</span><span class="mrel">=</span></span><span class="base"><span class="mord">60</span><span class="mbin">×</span></span><span class="base"><span class="mord">416</span><span class="mbin">+</span></span><span class="base"><span class="mord">40</span></span></span></span></span></span><span class="we-comment">416 est le plus grand nombre tel que 60 × 416 ≤ 25 000.</span></div>
     <div class="we-row"><span class="we-expr">Donc 25 000 s = 416 min 40 s.</span></div>
     <div class="we-row"><span class="we-expr">On convertit ensuite les minutes en heures et minutes, en divisant 416 par 60.</span></div>
     <div class="we-row"><span class="we-expr"><span class="tex" data-tex-source="416 = 60 \times 6 + 56" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>416</mn><mo>=</mo><mn>60</mn><mo>×</mo><mn>6</mn><mo>+</mo><mn>56</mn></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord">416</span><span class="mrel">=</span></span><span class="base"><span class="mord">60</span><span class="mbin">×</span></span><span class="base"><span class="mord">6</span><span class="mbin">+</span></span><span class="base"><span class="mord">56</span></span></span></span></span></span><span class="we-comment">6 est le plus grand nombre tel que 60 × 6 ≤ 416.</span></div>
     <div class="we-row"><span class="we-expr">Donc 416 min = 6 h 56 min.</span></div>
-  </div>
+  </div></div>
 </div>
 <p style="margin:4px 0 0;">On a donc <b>25 000 s = 6 h 56 min 40 s</b>.</p>
 
@@ -168,17 +168,17 @@
   <div style="flex:1 1 300px;min-width:260px;">
     <p class="example-title" style="margin-top:0;">Addition : 2 h 47 min 38 s + 1 h 26 min 45 s</p>
     <div class="figure-wrap" style="max-width:320px;margin:8px 0;">
-      <table id="m2AddTable" style="width:100%;border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.95rem;text-align:center;">
+      <table id="m2AddTable" class="cma-op" style="width:100%;border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.95rem;text-align:center;">
         <thead>
           <tr><th style="width:16px;"></th><th style="padding:4px;color:#6B7A8C;font-weight:400;font-size:.72rem;">h</th><th style="padding:4px;color:#6B7A8C;font-weight:400;font-size:.72rem;">min</th><th style="padding:4px;color:#6B7A8C;font-weight:400;font-size:.72rem;">s</th></tr>
-          <tr><td style="vertical-align:top;"></td><td id="m2AddCarryH" style="height:13px;color:#E35D3A;font-size:.75rem;vertical-align:bottom;padding:0;line-height:1;"></td><td id="m2AddCarryMin" style="height:13px;color:#E35D3A;font-size:.75rem;vertical-align:bottom;padding:0;line-height:1;"></td><td style="vertical-align:top;"></td></tr>
+          <tr><td style="vertical-align:top;"></td><td id="m2AddCarryH" class="cma-ret" style="height:13px;color:#E35D3A;font-size:.75rem;vertical-align:bottom;padding:0;line-height:1;"></td><td id="m2AddCarryMin" class="cma-ret" style="height:13px;color:#E35D3A;font-size:.75rem;vertical-align:bottom;padding:0;line-height:1;"></td><td style="vertical-align:top;"></td></tr>
         </thead>
         <tbody>
           <tr><td style="vertical-align:top;"></td><td style="vertical-align:top;">2</td><td style="vertical-align:top;">47</td><td style="vertical-align:top;">38</td></tr>
-          <tr><td style="vertical-align:top;">+</td><td style="vertical-align:top;">1</td><td style="vertical-align:top;">26</td><td style="vertical-align:top;">45</td></tr>
+          <tr><td class="cma-sg" style="vertical-align:top;">+</td><td style="vertical-align:top;">1</td><td style="vertical-align:top;">26</td><td style="vertical-align:top;">45</td></tr>
         </tbody>
         <tfoot>
-          <tr style="border-top:2px solid #1C1B2E;"><td style="vertical-align:top;"></td><td id="m2AddResH" style="padding-top:6px;font-weight:700;vertical-align:top;"></td><td id="m2AddResMin" style="padding-top:6px;font-weight:700;vertical-align:top;"></td><td id="m2AddResS" style="padding-top:6px;font-weight:700;vertical-align:top;"></td></tr>
+          <tr style="border-top:2px solid #1C1B2E;"><td style="vertical-align:top;"></td><td id="m2AddResH" class="cma-res" style="padding-top:6px;font-weight:700;vertical-align:top;"></td><td id="m2AddResMin" class="cma-res" style="padding-top:6px;font-weight:700;vertical-align:top;"></td><td id="m2AddResS" class="cma-res" style="padding-top:6px;font-weight:700;vertical-align:top;"></td></tr>
         </tfoot>
       </table>
       <p class="hint" id="m2AddText" style="min-height:48px;margin:10px 0 0;">Clique sur « Étape suivante » pour commencer.</p>
@@ -189,22 +189,22 @@
   <div style="flex:1 1 300px;min-width:260px;">
     <p class="example-title" style="margin-top:0;">Soustraction : 5 h 12 min 18 s − 2 h 45 min 50 s</p>
     <div class="figure-wrap" style="max-width:320px;margin:8px 0;">
-      <table id="m2SubTable" style="width:100%;border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.95rem;text-align:center;">
+      <table id="m2SubTable" class="cma-op" style="width:100%;border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.95rem;text-align:center;">
         <thead>
           <tr><th style="width:16px;"></th><th style="padding:4px;color:#6B7A8C;font-weight:400;font-size:.72rem;">h</th><th style="padding:4px;color:#6B7A8C;font-weight:400;font-size:.72rem;">min</th><th style="padding:4px;color:#6B7A8C;font-weight:400;font-size:.72rem;">s</th></tr>
-          <tr><td style="vertical-align:top;"></td><td style="vertical-align:top;"></td><td id="m2SubPlus60Min" style="height:13px;color:#1E9E5A;font-size:.75rem;vertical-align:bottom;padding:0;line-height:1;"></td><td id="m2SubPlus60S" style="height:13px;color:#1E9E5A;font-size:.75rem;vertical-align:bottom;padding:0;line-height:1;"></td></tr>
+          <tr><td style="vertical-align:top;"></td><td style="vertical-align:top;"></td><td id="m2SubPlus60Min" class="cma-ret" style="height:13px;color:#1E9E5A;font-size:.75rem;vertical-align:bottom;padding:0;line-height:1;"></td><td id="m2SubPlus60S" class="cma-ret" style="height:13px;color:#1E9E5A;font-size:.75rem;vertical-align:bottom;padding:0;line-height:1;"></td></tr>
         </thead>
         <tbody>
           <tr><td style="vertical-align:top;"></td><td style="vertical-align:top;">5</td><td style="vertical-align:top;">12</td><td style="vertical-align:top;">18</td></tr>
           <tr>
-            <td style="vertical-align:top;">−</td>
+            <td class="cma-sg" style="vertical-align:top;">−</td>
             <td style="vertical-align:top;"><span style="position:relative;display:inline-block;">2</span></td>
             <td style="vertical-align:top;"><span style="position:relative;display:inline-block;">45</span></td>
             <td style="vertical-align:top;">50</td>
           </tr>
         </tbody>
         <tfoot>
-          <tr style="border-top:2px solid #1C1B2E;"><td style="vertical-align:top;"></td><td id="m2SubResH" style="padding-top:6px;font-weight:700;vertical-align:top;"></td><td id="m2SubResMin" style="padding-top:6px;font-weight:700;vertical-align:top;"></td><td id="m2SubResS" style="padding-top:6px;font-weight:700;vertical-align:top;"></td></tr>
+          <tr style="border-top:2px solid #1C1B2E;"><td style="vertical-align:top;"></td><td id="m2SubResH" class="cma-res" style="padding-top:6px;font-weight:700;vertical-align:top;"></td><td id="m2SubResMin" class="cma-res" style="padding-top:6px;font-weight:700;vertical-align:top;"></td><td id="m2SubResS" class="cma-res" style="padding-top:6px;font-weight:700;vertical-align:top;"></td></tr>
         </tfoot>
       </table>
       <p class="hint" id="m2SubText" style="min-height:64px;margin:10px 0 0;">Clique sur « Étape suivante » pour commencer.</p>
@@ -220,15 +220,15 @@
   
   <div class="redaction-block">
   <h3>Rédaction type : « Convertir une durée en secondes »</h3>
-  <div class="redaction-template">
+  <div class="cahier-page cahier-exemple"><div class="redaction-template">
     <div class="we-row"><span class="we-expr"><span class="fill">... h</span> <span class="tex" data-tex-source="= \text{...} \times 3\,600\text{ s} = \text{...}\text{ s}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>=</mo><mtext>...</mtext><mo>×</mo><mn>3</mn><mtext> </mtext><mn>600</mn><mtext>&nbsp;s</mtext><mo>=</mo><mtext>...&nbsp;s</mtext></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mrel">=</span></span><span class="base"><span class="mord text"><span class="mord">...</span></span><span class="mbin">×</span></span><span class="base"><span class="mord">3</span><span class="mord">600</span><span class="mord text"><span class="mord">&nbsp;s</span></span><span class="mrel">=</span></span><span class="base"><span class="mord text"><span class="mord">...</span></span><span class="mord text"><span class="mord">&nbsp;s</span></span></span></span></span></span></span></div>
     <div class="we-row"><span class="we-expr"><span class="fill">... min</span> <span class="tex" data-tex-source="= \text{...} \times 60\text{ s} = \text{...}\text{ s}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>=</mo><mtext>...</mtext><mo>×</mo><mn>60</mn><mtext>&nbsp;s</mtext><mo>=</mo><mtext>...&nbsp;s</mtext></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mrel">=</span></span><span class="base"><span class="mord text"><span class="mord">...</span></span><span class="mbin">×</span></span><span class="base"><span class="mord">60</span><span class="mord text"><span class="mord">&nbsp;s</span></span><span class="mrel">=</span></span><span class="base"><span class="mord text"><span class="mord">...</span></span><span class="mord text"><span class="mord">&nbsp;s</span></span></span></span></span></span></span></div>
     <div class="we-row"><span class="we-expr">On additionne les secondes obtenues (et celles déjà données) pour trouver la durée totale en secondes.</span></div>
-  </div>
+  </div></div>
   <h3 style="margin-top:18px;">Rédaction type : « Convertir une écriture décimale en heures et minutes »</h3>
-  <div class="redaction-template">
+  <div class="cahier-page cahier-exemple"><div class="redaction-template">
     <span class="fill">...,... h</span> = <span class="fill">...</span> h + <span class="fill">0,...</span> h. Or 1 h = 60 min, donc <span class="fill">0,...</span> h = <span class="fill">0,... × 60</span> min = <span class="fill">...</span> min.<br>Donc <span class="fill">...,... h</span> = <span class="fill">... h ... min</span>.
-  </div>
+  </div></div>
 </div>
 <div class="redaction-block">
   <h3>Exercices</h3>
@@ -258,13 +258,13 @@
   </div>
   <div class="exo-card">
     <div class="num">Exercice 5</div>
-    Pose et calcule 3 h 35 min 50 s + 2 h 48 min 22 s.
+    Pose et calcule dans ton cahier : 3 h 35 min 50 s + 2 h 48 min 22 s.
     
     
   </div>
   <div class="exo-card">
     <div class="num">Exercice 6</div>
-    Pose et calcule 6 h 10 min 5 s − 3 h 42 min 38 s.
+    Pose et calcule dans ton cahier : 6 h 10 min 5 s − 3 h 42 min 38 s.
     
     
   </div>
