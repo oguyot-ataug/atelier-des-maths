@@ -387,7 +387,9 @@ chapitre concerné. CE1 contrôlé en entier, CP, 5e, 4e et 3e complétés (buil
 
 ## Ventes : ouverture le 1er décembre 2026, page des tarifs publique (depuis le 10/11/2026)
 
-**Ouverture des ventes le 1er décembre 2026** (autorisation de cumul d'activités obtenue le 10/11/2026). Depuis le 10/11/2026
+**Ouverture des ventes prévue le 1er décembre 2026**, SOUS RÉSERVE de l'autorisation de cumul d'activités : le 10/11/2026, seul l'avis
+favorable du chef d'établissement est obtenu, la décision du rectorat est attendue (précisé le 10/11/2026). Ne pas ouvrir les ventes
+(bouton « Ouvrir les ventes ») avant la décision écrite du rectorat. Depuis le 10/11/2026
 (« On peut mettre la page des tarifs pour tous ! »), `tarifs/index.html` est la page COMPLÈTE des tarifs, publique et indexable,
 avec le bandeau « Ouverture des ventes le 1er décembre 2026 · en attendant, essai gratuit » (à retirer le 1er décembre, le jour du
 bouton « Ouvrir les ventes » d'Administration › Offres profs). `_hors-ligne/tarifs.html` (exclu de la publication) en reste la copie
