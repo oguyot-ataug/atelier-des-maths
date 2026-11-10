@@ -391,6 +391,12 @@ charge le contenu de `/tarifs/` (une seule source : modifier `tarifs/index.html`
 Tarifs bien visibles (demandé le 10/11/2026 : « je trouve que la page tarif est trop cachée ») : bouton « Tarifs » du menu principal
 (`#navTarifs`) et bouton « Voir les tarifs » de l'accueil (`#heroTarifs`), masqués aux élèves (refreshAuthUI) et sur L'Atelier du Prof.
 Plus de lien vers L'Atelier du Prof dans le pied de page de L'Atelier des Maths (demandé le 10/11/2026).
+« Demander un devis » (demandé le 10/11/2026 : « un formulaire simple à remplir (profs seul, établissement, famille, profs particuliers...)
+et s'adapter en fonction ») : fenêtre `#dvFond` de `tarifs/index.html` (boutons `data-devis`, préremplie depuis l'estimateur avec
+`data-calc`), estimation indicative, envoi à la fonction `demande-devis` (verify_jwt non) qui range la demande dans `demandes_devis`
+(`supabase/sql/2026-11-10-demandes-devis.sql`, clé de service seulement) et l'envoie à contact@ (reply_to = demandeur ; SMS pour un
+établissement). Anti-robots : champ piège `site_web`, 4 s minimum, pas de lien, 3 demandes/heure par IP (empreinte), 40/jour.
+Aucun e-mail au demandeur (un robot ferait écrire le site à n'importe qui).
 Professeur seul au collège, grille du 10/11/2026 (« Pour le prof seul, faire une offre acceptable ») : 39 € un niveau, 54 € deux,
 69 € trois ou quatre (`seul_niveau` 15 €, `seul_plafond` 69 €), jusqu'à 6 classes de 30 élèves comprises (`seul_classes`), + 10 € par
 classe au-delà (`seul_classe`) ; prix dans `prof_parametres.prix` (Administration › Offres profs), calcul dans la fonction `prof-offre`

@@ -157,7 +157,7 @@
   .t-contact{margin-top:44px;background:linear-gradient(135deg,#0C5BA0,#1F3A5C);color:#fff;border-radius:18px;padding:28px 26px;display:flex;gap:20px;align-items:center;justify-content:space-between;flex-wrap:wrap;}
   .t-contact h2{font-family:'Space Grotesk',sans-serif;margin:0 0 6px;font-size:1.5rem;color:#fff;}
   .t-contact p{margin:0;opacity:.9;max-width:60ch;}
-  .t-contact a.t-btn{background:#fff;color:var(--accent) !important;margin:0;white-space:nowrap;}
+  .t-contact .t-btn{background:#fff;color:var(--accent) !important;margin:0;white-space:nowrap;}
   .t-foot{text-align:center;color:var(--ink-soft);font-size:.84rem;margin-top:26px;}
 
   .t-swipe{display:none;}
@@ -167,6 +167,56 @@
     .t-addon .t-price{grid-column:1 / -1;text-align:left;}
     .t-for{min-height:0;}
   }
+
+  /* Formulaire « Demander un devis » (demandé le 10/11/2026), fonction serveur demande-devis */
+  .t-dv-fond{position:fixed;inset:0;z-index:10060;background:rgba(15,23,42,.55);display:flex;align-items:flex-start;justify-content:center;padding:4vh 12px;overflow-y:auto;}
+  .t-dv-fond[hidden]{display:none;}
+  .t-dv{background:#fff;border-radius:18px;max-width:640px;width:100%;padding:22px 24px 20px;box-shadow:0 24px 60px rgba(15,23,42,.35);position:relative;color:var(--ink);}
+  .t-dv h2{font-family:'Space Grotesk',sans-serif;margin:0 0 4px;font-size:1.45rem;}
+  .t-dv .t-dv-x{position:absolute;top:12px;right:12px;border:0;background:none;cursor:pointer;color:var(--ink-soft);padding:6px;border-radius:8px;display:flex;}
+  .t-dv .t-dv-x:hover{background:rgba(28,43,57,.07);}
+  .t-dv-sous{color:var(--ink-soft);margin:0 0 14px;font-size:.95rem;}
+  .t-dv-profils{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-bottom:6px;}
+  .t-dv-profils button{display:flex;align-items:center;gap:8px;text-align:left;border:1.5px solid rgba(12,91,160,.22);background:#fff;border-radius:12px;padding:10px 12px;font:600 .92rem 'Inter',sans-serif;color:var(--ink);cursor:pointer;}
+  .t-dv-profils button .gicon{color:var(--accent);font-size:1.3rem;}
+  .t-dv-profils button[aria-pressed="true"]{border-color:var(--accent);background:rgba(12,91,160,.07);box-shadow:0 0 0 2px rgba(12,91,160,.15);}
+  .t-dv form{margin-top:10px;}
+  .t-dv fieldset{border:0;padding:0;margin:0;}
+  .t-dv-bloc{margin:12px 0 0;}
+  .t-dv-titre{font:700 .78rem 'Space Grotesk',sans-serif;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft);margin:16px 0 6px;}
+  .t-dv-g{display:grid;grid-template-columns:1fr 1fr;gap:10px 12px;}
+  .t-dv label.ch{display:block;font-size:.88rem;font-weight:600;}
+  .t-dv label.ch > input,.t-dv label.ch > select,.t-dv label.ch > textarea{display:block;margin-top:4px;}
+  .t-dv .t-dv-radios{margin-top:6px;}
+  .t-dv label.ch.plein{grid-column:1/-1;}
+  .t-dv input[type=text],.t-dv input[type=email],.t-dv input[type=tel],.t-dv input[type=number],.t-dv select,.t-dv textarea{font:400 .95rem 'Inter',sans-serif;padding:9px 11px;border:1px solid rgba(28,43,57,.22);border-radius:9px;background:#fff;color:var(--ink);width:100%;box-sizing:border-box;}
+  .t-dv textarea{min-height:76px;resize:vertical;}
+  .t-dv input:focus,.t-dv select:focus,.t-dv textarea:focus{outline:2px solid rgba(12,91,160,.35);border-color:var(--accent);}
+  .t-dv-nivs{display:flex;flex-wrap:wrap;gap:6px;}
+  .t-dv-nivs label{display:inline-flex;align-items:center;gap:6px;border:1.5px solid rgba(28,43,57,.18);border-radius:999px;padding:6px 12px;font-weight:600;font-size:.9rem;cursor:pointer;}
+  .t-dv-nivs label:has(input:checked){border-color:var(--accent);background:rgba(12,91,160,.07);color:var(--accent);}
+  .t-dv-eff{display:grid;grid-template-columns:repeat(3,1fr);gap:8px 12px;}
+  .t-dv-eff label{display:flex;align-items:center;gap:8px;font-weight:700;font-size:.9rem;}
+  .t-dv-eff input{max-width:110px;}
+  .t-dv-radios{display:flex;gap:14px;flex-wrap:wrap;font-weight:600;font-size:.92rem;}
+  .t-dv-radios label{display:inline-flex;align-items:center;gap:6px;cursor:pointer;}
+  .t-dv-estim{margin:16px 0 0;padding:12px 14px;border-radius:12px;background:#EEF5FC;border:1px solid rgba(12,91,160,.18);font-size:.93rem;}
+  .t-dv-estim b{font-family:'Space Grotesk',sans-serif;font-size:1.25rem;color:var(--accent);}
+  .t-dv-estim:empty{display:none;}
+  .t-dv-piege{position:absolute !important;left:-9999px !important;width:1px;height:1px;overflow:hidden;}
+  .t-dv-bas{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:16px;}
+  .t-dv-bas small{color:var(--ink-soft);max-width:36ch;}
+  .t-dv-envoi{border:0;background:var(--accent);color:#fff;font:700 1rem 'Inter',sans-serif;padding:12px 22px;border-radius:12px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;}
+  .t-dv-envoi:disabled{opacity:.6;cursor:wait;}
+  .t-dv-msg{margin:10px 0 0;font-weight:600;color:#B42318;font-size:.92rem;}
+  .t-dv-msg:empty{display:none;}
+  .t-dv-ok{text-align:center;padding:18px 6px 6px;}
+  .t-dv-ok .gicon{font-size:3rem;color:#1F7A4D;}
+  .t-dv-ok h3{font-family:'Space Grotesk',sans-serif;margin:6px 0;}
+  .t-btn.t-btn-sec{background:#fff;color:var(--accent) !important;border:1.5px solid rgba(12,91,160,.35);}
+  .t-calc-devis{margin-top:12px;border:0;background:#fff;color:var(--accent);font:700 .9rem 'Inter',sans-serif;padding:9px 14px;border-radius:10px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;box-shadow:0 2px 8px rgba(12,91,160,.15);}
+  @media (max-width:560px){ .t-dv{padding:18px 16px;} .t-dv-g{grid-template-columns:1fr;} .t-dv-eff{grid-template-columns:repeat(2,1fr);} }
+  @media print{ .t-dv-fond{display:none !important;} }
 </style>
 </head>
 <body>
@@ -400,6 +450,7 @@
         <div class="big" id="calcTotal">875 €</div>
         <div class="det" id="calcDet">par an · 250 élèves à 3,50 €<br>12 licences professeurs offertes</div>
         <div class="cmp" id="calcCmp"></div>
+        <button type="button" class="t-calc-devis" data-devis="etablissement" data-calc><span class="gicon">request_quote</span> Demander un devis avec ces effectifs</button>
       </div>
     </div>
 
@@ -505,14 +556,167 @@
 
   <section class="t-contact">
     <div>
-      <h2>Un devis pour votre établissement ?</h2>
-      <p>École ou collège : indiquez le nom de l'établissement, public ou privé, son numéro UAI, les niveaux et les effectifs : vous recevez un devis rapidement.</p>
+      <h2>Un devis, une question ?</h2>
+      <p>Professeur, établissement, famille ou cours particuliers : un formulaire court, qui s'adapte à votre situation, et vous recevez votre devis par e-mail.</p>
     </div>
-    <a class="t-btn" href="mailto:contact@latelierdesmaths.fr?subject=Devis%20L%27Atelier%20des%20Maths">Demander un devis</a>
+    <button type="button" class="t-btn" data-devis="" style="border:0;cursor:pointer;font-size:1rem;">Demander un devis</button>
   </section>
 
   <p class="t-foot">Tarifs 2026-2027 · L'Atelier des Maths, une production de <a href="https://latelieraugmente.fr" style="text-decoration:underline;">L'Atelier Augmenté</a></p>
+
+  <!-- ================= FORMULAIRE « DEMANDER UN DEVIS » (demandé le 10/11/2026) : fonction serveur demande-devis ================= -->
+  <div class="t-dv-fond" id="dvFond" hidden>
+    <div class="t-dv" role="dialog" aria-modal="true" aria-labelledby="dvTitre">
+      <button type="button" class="t-dv-x" data-dv="fermer" aria-label="Fermer"><span class="gicon">close</span></button>
+      <div id="dvCorps">
+        <h2 id="dvTitre">Demander un devis</h2>
+        <p class="t-dv-sous">Vous êtes :</p>
+        <div class="t-dv-profils" role="group" aria-label="Votre profil">
+          <button type="button" data-profil="seul" aria-pressed="false"><span class="gicon">school</span> Professeur de collège</button>
+          <button type="button" data-profil="ecole" aria-pressed="false"><span class="gicon">child_care</span> Professeur des écoles</button>
+          <button type="button" data-profil="particulier" aria-pressed="false"><span class="gicon">groups</span> Professeur particulier</button>
+          <button type="button" data-profil="etablissement" aria-pressed="false"><span class="gicon">apartment</span> Établissement</button>
+          <button type="button" data-profil="famille" aria-pressed="false"><span class="gicon">family_restroom</span> Famille</button>
+        </div>
+        <form id="dvForm" hidden novalidate>
+          <div class="t-dv-bloc" data-pour="seul">
+            <div class="t-dv-titre">Vos niveaux</div><div class="t-dv-nivs"><label><input type="checkbox" name="nivSeul" value="6e"> 6e</label><label><input type="checkbox" name="nivSeul" value="5e"> 5e</label><label><input type="checkbox" name="nivSeul" value="4e"> 4e</label><label><input type="checkbox" name="nivSeul" value="3e"> 3e</label></div>
+            <div class="t-dv-g" style="margin-top:10px;">
+              <label class="ch">Nombre de classes<input type="number" name="classesSeul" min="1" max="30" value="5"></label>
+              <label class="ch">Votre collège <span style="font-weight:400;color:var(--ink-soft);">(facultatif)</span><input type="text" name="etabSeul" maxlength="120"></label>
+            </div>
+          </div>
+          <div class="t-dv-bloc" data-pour="ecole">
+            <div class="t-dv-g">
+              <label class="ch">Nombre de classes<input type="number" name="classesEcole" min="1" max="20" value="1"></label>
+              <label class="ch">Votre école <span style="font-weight:400;color:var(--ink-soft);">(facultatif)</span><input type="text" name="etabEcole" maxlength="120"></label>
+            </div>
+          </div>
+          <div class="t-dv-bloc" data-pour="particulier">
+            <div class="t-dv-g"><label class="ch">Nombre d'élèves suivis<input type="number" name="eleves" min="1" max="200" value="5"></label></div>
+          </div>
+          <div class="t-dv-bloc" data-pour="famille">
+            <div class="t-dv-titre">Niveaux de vos enfants</div><div class="t-dv-nivs"><label><input type="checkbox" name="nivFam" value="cm1"> CM1</label><label><input type="checkbox" name="nivFam" value="cm2"> CM2</label><label><input type="checkbox" name="nivFam" value="6e"> 6e</label><label><input type="checkbox" name="nivFam" value="5e"> 5e</label><label><input type="checkbox" name="nivFam" value="4e"> 4e</label><label><input type="checkbox" name="nivFam" value="3e"> 3e</label></div>
+            <div class="t-dv-g" style="margin-top:10px;"><label class="ch">Nombre d'enfants<input type="number" name="enfants" min="1" max="4" value="1"></label></div>
+          </div>
+          <div class="t-dv-bloc" data-pour="etablissement">
+            <div class="t-dv-g">
+              <label class="ch plein">Nom de l'établissement<input type="text" name="etablissement" maxlength="120" placeholder="ex. Collège Jean Moulin"></label>
+              <label class="ch">Commune<input type="text" name="commune" maxlength="80"></label>
+              <label class="ch">Numéro UAI <span style="font-weight:400;color:var(--ink-soft);">(facultatif)</span><input type="text" name="uai" maxlength="8" placeholder="0751234A" style="text-transform:uppercase;"></label>
+              <div class="ch plein" style="font-size:.88rem;font-weight:600;">Statut
+                <div class="t-dv-radios"><label><input type="radio" name="statut" value="public" checked> Public</label><label><input type="radio" name="statut" value="prive"> Privé (sous contrat ou hors contrat)</label></div></div>
+              <label class="ch">Votre fonction<select name="fonction"><option value="">Choisir…</option><option>Chef d'établissement</option><option>Adjoint(e) de direction</option><option>Directeur ou directrice d'école</option><option>Gestionnaire</option><option>Professeur</option><option>Référent numérique</option><option>Autre</option></select></label>
+              <label class="ch">Téléphone <span style="font-weight:400;color:var(--ink-soft);">(facultatif)</span><input type="tel" name="telephone" maxlength="20"></label>
+            </div>
+            <div class="t-dv-titre">Effectifs par niveau</div><div class="t-dv-eff"><label>CM1 <input type="number" min="0" max="2000" step="1" name="eff_cm1" placeholder="0" aria-label="Élèves de CM1"></label><label>CM2 <input type="number" min="0" max="2000" step="1" name="eff_cm2" placeholder="0" aria-label="Élèves de CM2"></label><label>6e <input type="number" min="0" max="2000" step="1" name="eff_6e" placeholder="0" aria-label="Élèves de 6e"></label><label>5e <input type="number" min="0" max="2000" step="1" name="eff_5e" placeholder="0" aria-label="Élèves de 5e"></label><label>4e <input type="number" min="0" max="2000" step="1" name="eff_4e" placeholder="0" aria-label="Élèves de 4e"></label><label>3e <input type="number" min="0" max="2000" step="1" name="eff_3e" placeholder="0" aria-label="Élèves de 3e"></label></div>
+          </div>
+          <div class="t-dv-titre">Vos coordonnées</div>
+          <div class="t-dv-g">
+            <label class="ch">Nom et prénom<input type="text" name="nom" maxlength="80" autocomplete="name"></label>
+            <label class="ch">Adresse e-mail<input type="email" name="email" maxlength="120" autocomplete="email"></label>
+            <label class="ch plein">Message <span style="font-weight:400;color:var(--ink-soft);">(facultatif)</span><textarea name="message" maxlength="1500" placeholder="Une précision, une question, une date de démarrage…"></textarea></label>
+          </div>
+          <label class="t-dv-piege" aria-hidden="true">Site web<input type="text" name="site_web" tabindex="-1" autocomplete="off"></label>
+          <div class="t-dv-estim" id="dvEstim" aria-live="polite"></div>
+          <p class="t-dv-msg" id="dvMsg" role="alert"></p>
+          <div class="t-dv-bas">
+            <small>Vos coordonnées servent uniquement à répondre à cette demande.</small>
+            <button type="submit" class="t-dv-envoi" id="dvEnvoi"><span class="gicon">send</span> Envoyer ma demande</button>
+          </div>
+        </form>
+      </div>
+      <div class="t-dv-ok" id="dvOk" hidden>
+        <span class="gicon">mark_email_read</span>
+        <h3>Demande envoyée, merci !</h3>
+        <p>Vous recevez votre devis par e-mail rapidement, à l'adresse indiquée. Pensez à regarder dans les indésirables.</p>
+        <button type="button" class="t-dv-envoi" data-dv="fermer" style="margin-top:8px;">Fermer</button>
+      </div>
+    </div>
+  </div>
 </main>
+<script>
+/* Formulaire « Demander un devis » (demandé le 10/11/2026) : un profil, des champs qui s'adaptent, une estimation indicative
+   (mêmes règles que la page), envoi à la fonction serveur demande-devis. Fonctionne sur /tarifs/ et dans le site (#/tarifs). */
+(function(){
+  var fond = document.getElementById('dvFond'); if(!fond || fond.getAttribute('data-pret')) return; fond.setAttribute('data-pret', '1');
+  var URL_FN = 'https://tdsdwbsvduitgrrrfjrp.supabase.co/functions/v1/demande-devis';
+  var form = document.getElementById('dvForm'), estim = document.getElementById('dvEstim'), msg = document.getElementById('dvMsg'), envoi = document.getElementById('dvEnvoi');
+  var profil = '', t0 = 0, COL = ['6e','5e','4e','3e'], NIV = ['cm1','cm2','6e','5e','4e','3e'];
+  var fmt = function(n){ return n.toLocaleString('fr-FR', {minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2}).replace(/ /g, ' ') + ' €'; };
+  var val = function(n){ var e = form.elements[n]; return e ? String(e.value || '').trim() : ''; };
+  var num = function(n){ return Math.max(0, parseInt(val(n), 10) || 0); };
+  var coches = function(n){ return Array.prototype.slice.call(form.querySelectorAll('input[name="' + n + '"]:checked')).map(function(x){ return x.value; }); };
+  function effectifs(){ var o = {}; NIV.forEach(function(n){ var v = num('eff_' + n); if(v) o[n] = v; }); return o; }
+  function estimation(){
+    if(profil === 'seul'){ var n = coches('nivSeul').length; if(!n) return null; var p = Math.min(39 + 15 * (n - 1), 69), c = num('classesSeul');
+      return { prix: p + 10 * Math.max(0, c - 6), det: n + ' niveau' + (n > 1 ? 'x' : '') + ', jusqu’à 6 classes comprises' + (c > 6 ? ' + ' + (c - 6) + ' classe' + (c > 7 ? 's' : '') + ' à 10 €' : '') }; }
+    if(profil === 'ecole'){ var k = Math.max(1, num('classesEcole')); return { prix: 29 + 10 * (k - 1), det: k + ' classe' + (k > 1 ? 's' : '') + ' (CM1 et CM2 compris)' }; }
+    if(profil === 'particulier'){ var e = num('eleves'); if(!e) return null; return { prix: 39 + 20 * e, det: '39 € + ' + e + ' élève' + (e > 1 ? 's' : '') + ' à 20 €' }; }
+    if(profil === 'famille'){ var nv = coches('nivFam'), c2 = nv.filter(function(x){ return COL.indexOf(x) >= 0; }).length, e2 = nv.length - c2; if(!nv.length) return null;
+      return { prix: (c2 >= 3 ? 69 : c2 === 2 ? 55 : c2 === 1 ? 35 : 0) + (e2 >= 2 ? 39 : e2 === 1 ? 25 : 0), det: 'paiement en ligne, sans devis : <a href="/#/famille" style="text-decoration:underline;">créer mon compte Famille</a>' }; }
+    if(profil === 'etablissement'){ var ef = effectifs(), nc = COL.filter(function(x){ return ef[x]; }), ec = ['cm1','cm2'].filter(function(x){ return ef[x]; });
+      if(!nc.length && !ec.length) return null; var pu = nc.length >= 4 ? 3 : nc.length >= 2 ? 3.5 : 4, el = 0, tot = 0;
+      nc.forEach(function(x){ tot += ef[x] * pu; el += ef[x]; }); ec.forEach(function(x){ tot += ef[x] * 2.5; el += ef[x]; });
+      return { prix: tot, det: el + ' élèves · ' + Math.max(1, Math.floor(el / 20)) + ' licences professeurs offertes' }; }
+    return null;
+  }
+  function maj(){
+    var e = estimation();
+    estim.innerHTML = e ? 'Estimation : <b>' + fmt(e.prix) + '</b> par an<br><span style="color:var(--ink-soft);">' + e.det + (profil === 'famille' ? '.' : '. Prix indicatif : le devis précis vous est envoyé par e-mail.') + '</span>' : '';
+  }
+  function choisir(p){
+    profil = p;
+    fond.querySelectorAll('[data-profil]').forEach(function(b){ b.setAttribute('aria-pressed', String(b.getAttribute('data-profil') === p)); });
+    form.hidden = !p;
+    form.querySelectorAll('[data-pour]').forEach(function(bl){ var on = bl.getAttribute('data-pour') === p; bl.hidden = !on; bl.querySelectorAll('input,select,textarea').forEach(function(x){ x.disabled = !on; }); });
+    msg.textContent = ''; maj();
+  }
+  function ouvrir(p, calc){
+    document.getElementById('dvCorps').hidden = false; document.getElementById('dvOk').hidden = true;
+    fond.hidden = false; document.documentElement.style.overflow = 'hidden'; t0 = Date.now();
+    choisir(p || '');
+    if(calc){ // effectifs de l'estimateur de la page
+      document.querySelectorAll('#calcul input[data-lvl]').forEach(function(cb){ var n = cb.getAttribute('data-lvl'), inp = document.querySelector('#calcul input[data-n="' + n + '"]');
+        if(form.elements['eff_' + n]) form.elements['eff_' + n].value = cb.checked && inp ? inp.value : ''; });
+      maj();
+    }
+    setTimeout(function(){ var c = p ? form.querySelector('[data-pour="' + p + '"] input:not([type=checkbox]):not([type=radio]), [name=nom]') : fond.querySelector('[data-profil]'); if(c) c.focus(); }, 30);
+  }
+  function fermer(){ fond.hidden = true; document.documentElement.style.overflow = ''; }
+  document.addEventListener('click', function(e){
+    var b = e.target.closest && e.target.closest('[data-devis]');
+    if(b){ e.preventDefault(); ouvrir(b.getAttribute('data-devis'), b.hasAttribute('data-calc')); return; }
+    if(fond.hidden) return;
+    var p = e.target.closest('[data-profil]'); if(p){ choisir(p.getAttribute('data-profil')); return; }
+    if(e.target === fond || e.target.closest('[data-dv="fermer"]') || e.target.closest('a[href]')) fermer(); // un lien (compte Famille) ferme aussi la fenêtre
+  });
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && !fond.hidden) fermer(); });
+  form.addEventListener('input', maj); form.addEventListener('change', maj);
+  form.addEventListener('submit', function(e){
+    e.preventDefault(); msg.textContent = '';
+    var corps = { profil: profil, nom: val('nom'), email: val('email'), message: val('message'), site_web: val('site_web'), duree_ms: Date.now() - t0 };
+    if(profil === 'seul'){ corps.niveaux = coches('nivSeul'); corps.classes = num('classesSeul'); corps.etablissement = val('etabSeul'); if(!corps.niveaux.length) return (msg.textContent = 'Cochez au moins un niveau.'); }
+    if(profil === 'ecole'){ corps.classes = num('classesEcole'); corps.etablissement = val('etabEcole'); }
+    if(profil === 'particulier'){ corps.eleves = num('eleves'); if(!corps.eleves) return (msg.textContent = 'Indiquez le nombre d’élèves.'); }
+    if(profil === 'famille'){ corps.niveaux = coches('nivFam'); corps.enfants = num('enfants'); if(!corps.niveaux.length) return (msg.textContent = 'Cochez au moins un niveau.'); }
+    if(profil === 'etablissement'){ corps.etablissement = val('etablissement'); corps.commune = val('commune'); corps.uai = val('uai').toUpperCase(); corps.fonction = val('fonction'); corps.telephone = val('telephone');
+      var st = form.querySelector('input[name=statut]:checked'); corps.statut = st ? st.value : 'public'; corps.effectifs = effectifs();
+      if(corps.etablissement.length < 3) return (msg.textContent = 'Indiquez le nom de l’établissement.');
+      if(corps.uai && !/^\d{7}[A-Z]$/.test(corps.uai)) return (msg.textContent = 'Le numéro UAI compte 7 chiffres et une lettre (ex. 0751234A).');
+      if(!Object.keys(corps.effectifs).length) return (msg.textContent = 'Indiquez l’effectif d’au moins un niveau.'); }
+    if(corps.nom.length < 2) return (msg.textContent = 'Indiquez votre nom.');
+    if(!/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(corps.email)) return (msg.textContent = 'Vérifiez votre adresse e-mail.');
+    envoi.disabled = true;
+    fetch(URL_FN, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(corps) })
+      .then(function(r){ return r.json().catch(function(){ return { error: 'Réponse illisible.' }; }); })
+      .then(function(d){ envoi.disabled = false;
+        if(d && d.ok){ document.getElementById('dvCorps').hidden = true; document.getElementById('dvOk').hidden = false; form.reset(); choisir(''); }
+        else msg.textContent = (d && d.error) || 'L’envoi n’a pas abouti. Écrivez à contact@latelierdesmaths.fr.'; })
+      .catch(function(){ envoi.disabled = false; msg.textContent = 'Pas de connexion au serveur. Réessayez, ou écrivez à contact@latelierdesmaths.fr.'; });
+  });
+})();
+</script>
 <script>
 /* Calculateur de la licence établissement : prix par élève selon le nombre de niveaux choisis,
    une licence professeur offerte par tranche de 20 élèves (comme les manuels numériques). */
