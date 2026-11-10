@@ -402,6 +402,9 @@ jamais sur L'Atelier du Prof. La page publique /tarifs/ reste accessible à tous
 Plus de lien vers L'Atelier du Prof dans le pied de page de L'Atelier des Maths (demandé le 10/11/2026).
 Publication GitHub Pages bloquée sur « syncing_files » (09 et 10/11/2026, plusieurs fois) : GitHub annule au bout de 10 min (plafond non
 réglable). Relancer avec un NOUVEAU commit sur main ; relancer le même commit (Run workflow) est annulé aussitôt (« Deployment cancelled »).
+Cause trouvée le 10/11/2026 : dans Settings › Pages du dépôt, « Enforce HTTPS » s'était décoché (« DNS Check in Progress ») ; recoché,
+« DNS check successful » revenu, la publication repart. Regarder d'abord cette page en cas de blocage. DNS chez Squarespace : 4 A
+185.199.108-111.153, 4 AAAA 2606:50c0:8000-8003::153, CNAME www → oguyot-ataug.github.io (conformes).
 « Demander un devis » (demandé le 10/11/2026 : « un formulaire simple à remplir (profs seul, établissement, famille, profs particuliers...)
 et s'adapter en fonction ») : fenêtre `#dvFond` de `tarifs/index.html` (boutons `data-devis`, préremplie depuis l'estimateur avec
 `data-calc`), estimation indicative, envoi à la fonction `demande-devis` (verify_jwt non) qui range la demande dans `demandes_devis`
