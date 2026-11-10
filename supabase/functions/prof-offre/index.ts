@@ -17,6 +17,10 @@
 //    professeur (classes.creee_par) et comptes élèves identifiant@mathcollege.local.
 //    Pendant l'essai de 15 jours : 1 classe de 30 élèves au plus.
 //    Phase de démonstration (ventes fermées) : essai sans date de fin (subscription_expires_at vide), mêmes droits.
+//  - Professeur seul au collège, grille du 10/11/2026 (demandé : « Pour le prof seul, faire une offre acceptable ») : 39 € pour
+//    un niveau, + 15 € par niveau en plus, jamais plus de 69 € (seul_plafond : 3 ou 4 niveaux) ; jusqu'à 6 classes de 30 élèves
+//    comprises (seul_classes), réparties librement entre les niveaux payés ; + 10 € par classe au-delà. L'ancienne grille
+//    (une classe par niveau, + 29 € par niveau, + 15 € par classe) faisait payer 127 € un service ordinaire (2 × 6e, 2 × 5e, 4e).
 //
 // Secrets : SUPABASE_*, STRIPE_SECRET_KEY, STRIPE_TEST_SECRET_KEY (professeur marqué « test »).
 
@@ -33,12 +37,19 @@ function json(body: unknown, status = 200) {
 const NIVEAUX_DISPONIBLES = ["cm1", "cm2", "6e", "5e", "4e", "3e"];
 const ORDRE = ["cm1", "cm2", "6e", "5e", "4e", "3e"];
 const ECOLE = ["cm1", "cm2"]; // vendus ensemble : une seule formule « école »
-const PRIX_DEFAUT = { seul_base: 3900, seul_niveau: 2900, seul_classe: 1500, ecole_base: 2900, ecole_classe: 1000, part_base: 3900, part_eleve: 2000, seul_eleves_max: 30 };
+const PRIX_DEFAUT = { seul_base: 3900, seul_niveau: 1500, seul_plafond: 6900, seul_classes: 6, seul_classe: 1000, ecole_base: 2900, ecole_classe: 1000, part_base: 3900, part_eleve: 2000, seul_eleves_max: 30 };
 // Libellé d'un niveau : « cm1 » → « CM1 ».
 const lib = (n: string) => /^cm/.test(n) ? n.toUpperCase() : n;
-// Classes comprises dans une offre Professeur seul : une par niveau de collège, une pour l'école (CM1 + CM2), plus les classes en plus.
-function classesComprises(niveaux: string[], sup: number): number {
-  return niveaux.filter((n) => !ECOLE.includes(n)).length + (niveaux.some((n) => ECOLE.includes(n)) ? 1 : 0) + (sup || 0);
+// Classes comprises dans une offre Professeur seul : seul_classes (6) dès qu'un niveau de collège est payé, une pour l'école
+// (CM1 + CM2), plus les classes en plus.
+function classesComprises(niveaux: string[], sup: number, P: Record<string, number>): number {
+  return (niveaux.some((n) => !ECOLE.includes(n)) ? (P.seul_classes || 6) : 0) + (niveaux.some((n) => ECOLE.includes(n)) ? 1 : 0) + (sup || 0);
+}
+// Prix des niveaux de collège : premier niveau, niveaux en plus, plafonné.
+function prixCollege(n: number, P: Record<string, number>): number {
+  if (!n) return 0;
+  const brut = P.seul_base + P.seul_niveau * (n - 1);
+  return P.seul_plafond ? Math.min(brut, Math.max(P.seul_base, P.seul_plafond)) : brut;
 }
 const MAX_GROUPES = 40, MAX_PLACES = 200, MAX_CLASSES_SUP = 12;
 
@@ -97,8 +108,11 @@ serve(async (req) => {
         const supActuelles = memePeriode ? offre.classes_sup || 0 : 0;
         classesSup = niveaux.length ? Math.max(supActuelles, Math.min(MAX_CLASSES_SUP, parseInt(body.classes_sup, 10) || 0)) : 0;
         const prixClasse = college.length ? P.seul_classe : P.ecole_classe; // classe en plus : tarif école si l'offre n'a que l'école
-        prix = (college.length ? P.seul_base + P.seul_niveau * (college.length - 1) : 0) + (ecole ? P.ecole_base : 0) + prixClasse * classesSup;
-        lignes = (ecole ? ["CM1 et CM2 (école) : " + eur(P.ecole_base)] : []).concat(college.map((n, i) => n + " : " + eur(i ? P.seul_niveau : P.seul_base)));
+        const pCollege = prixCollege(college.length, P);
+        prix = pCollege + (ecole ? P.ecole_base : 0) + prixClasse * classesSup;
+        lignes = (ecole ? ["CM1 et CM2 (école) : " + eur(P.ecole_base)] : [])
+          .concat(college.length ? [college.join(", ") + " (" + college.length + " niveau" + (college.length > 1 ? "x" : "") + ", " + (P.seul_classes || 6) + " classes comprises) : " + eur(pCollege)
+            + (pCollege < P.seul_base + P.seul_niveau * (college.length - 1) ? " (plafond)" : "")] : []);
         if (classesSup) lignes.push(classesSup + " classe" + (classesSup > 1 ? "s" : "") + " en plus × " + eur(prixClasse));
       } else {
         const actuelles = memePeriode ? offre.places || 0 : 0;
@@ -127,7 +141,7 @@ serve(async (req) => {
       if (test && !stripeKey.startsWith("sk_test_")) return json({ error: "Mode test : STRIPE_TEST_SECRET_KEY doit être une clé de test (sk_test_…)." }, 500);
       const origin = /^https:\/\/[a-z0-9.-]+$/i.test(String(body.origin || "")) || /^http:\/\/localhost(:\d+)?$/.test(String(body.origin || ""))
         ? String(body.origin) : "https://latelierdesmaths.fr";
-      const nbClasses = classesComprises(niveaux, classesSup);
+      const nbClasses = classesComprises(niveaux, classesSup, P);
       const nomOffre = type === "seul" ? "Professeur seul " + niveaux.map(lib).join(", ") + (classesSup ? " (" + nbClasses + " classes)" : "") : "Professeur particulier, " + places + " élève" + (places > 1 ? "s" : "");
       const libelleFacture = "L'Atelier des Maths – " + nomOffre + " – " + annee + (deja ? " (complément)" : "");
       const detail = (type === "seul"
@@ -195,7 +209,7 @@ serve(async (req) => {
       if (regime === "essai" && classes.length >= 1) return json({ error: demo ? "Pendant la démonstration : une classe. Écrivez à contact@latelierdesmaths.fr s'il vous en faut d'autres." : "Pendant l'essai : une classe. Choisissez une offre pour en créer d'autres." }, 400);
       if (regime === "seul") {
         if (!(offre.niveaux || []).includes(niveau)) return json({ error: "Votre offre ne comprend pas le niveau " + lib(niveau) + " : ajoutez-le dans « Mon abonnement »." }, 400);
-        const permises = classesComprises(offre.niveaux || [], offre.classes_sup || 0);
+        const permises = classesComprises(offre.niveaux || [], offre.classes_sup || 0, P);
         const prixClasse = (offre.niveaux || []).some((n: string) => !ECOLE.includes(n)) ? P.seul_classe : P.ecole_classe;
         if (classes.length >= permises) return json({ error: "Votre offre comprend " + permises + " classe" + (permises > 1 ? "s" : "") + " : ajoutez une classe dans « Mon abonnement » (" + eur(prixClasse) + ")." }, 400);
       }

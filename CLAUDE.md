@@ -386,6 +386,12 @@ avec le bandeau « Ouverture des ventes le 1er décembre 2026 · en attendant, e
 bouton « Ouvrir les ventes » d'Administration › Offres profs). `_hors-ligne/tarifs.html` (exclu de la publication) en reste la copie
 de travail. Jusqu'à l'ouverture, DANS LE SITE, les comptes non « test » ne voient ni offres, ni prix, ni lien vers les tarifs dans
 « Mon abonnement », ni prix dans l'Espace famille (`famVenteFermeeHtml`).
+Page des tarifs DANS le site aussi (demandé le 10/11/2026) : vue `#/tarifs` (`tarifs.js`, lien « Tarifs » du pied de page, sauf élèves) qui
+charge le contenu de `/tarifs/` (une seule source : modifier `tarifs/index.html`, et sa copie `_hors-ligne/tarifs.html`).
+Professeur seul au collège, grille du 10/11/2026 (« Pour le prof seul, faire une offre acceptable ») : 39 € un niveau, 54 € deux,
+69 € trois ou quatre (`seul_niveau` 15 €, `seul_plafond` 69 €), jusqu'à 6 classes de 30 élèves comprises (`seul_classes`), + 10 € par
+classe au-delà (`seul_classe`) ; prix dans `prof_parametres.prix` (Administration › Offres profs), calcul dans la fonction `prof-offre`
+(`prixCollege`, `classesComprises`) et `offres-prof.js` ; CGV (index.html, partie B) à tenir à jour avec la page des tarifs.
 
 Paiement intégré au site (Stripe Embedded Checkout, build 1205) : `paiementOuvrir` (app.js) ; les fonctions prof-offre et famille
 renvoient client_secret + clé publique si les secrets STRIPE_TEST_PUBLISHABLE_KEY / STRIPE_PUBLISHABLE_KEY existent, sinon la page Stripe.

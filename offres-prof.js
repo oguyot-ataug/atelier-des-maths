@@ -6,8 +6,8 @@
    particulier (fixe + abonnement par élève) -> permet de faire des cours en groupe", avec la classe
    et les comptes élèves créés par le professeur lui-même, dans ses limites.
 
-   - Professeur seul : 39 € le premier niveau, 29 € par niveau en plus ; une classe de 30 élèves au
-     plus par niveau payé, + 15 € par classe en plus (demandé : "et si un prof seul a deux classes de
+   - Professeur seul (grille du 10/11/2026) : 39 € le premier niveau, 15 € par niveau en plus, 69 € au plus ; 6 classes de 30 élèves
+     comprises, + 10 € par classe au-delà (avant : une classe par niveau ; demandé : "et si un prof seul a deux classes de
      6e ?" : les classes en plus se répartissent librement entre les niveaux payés) ; le professeur et ses élèves n'ont que ces niveaux (et le niveau
      inférieur en révision), comme pour l'offre Famille.
    - Professeur particulier : 39 € + 20 € par élève ; groupes libres (tous niveaux).
@@ -22,10 +22,11 @@
 const OP_ORDRE = ['cm1','cm2','6e','5e','4e','3e'];
 const OP_DISPO = ['cm1','cm2','6e','5e','4e','3e']; // miroir de NIVEAUX_DISPONIBLES (fonction prof-offre)
 const OP_ECOLE = ['cm1','cm2']; // vendus ensemble (classes à double niveau) : une formule « école »
-let opPrix = { seul_base:3900, seul_niveau:2900, seul_classe:1500, ecole_base:2900, ecole_classe:1000, part_base:3900, part_eleve:2000, seul_eleves_max:30 };
+let opPrix = { seul_base:3900, seul_niveau:1500, seul_plafond:6900, seul_classes:6, seul_classe:1000, ecole_base:2900, ecole_classe:1000, part_base:3900, part_eleve:2000, seul_eleves_max:30 };
 const opLib = n => typeof niveauLabel === 'function' ? niveauLabel(n) : n;
-// Classes comprises : une par niveau de collège, une pour l'école (CM1 + CM2) -- même calcul que la fonction prof-offre.
-function opClassesDe(niveaux, sup){ const n = niveaux || []; return n.filter(x => !OP_ECOLE.includes(x)).length + (n.some(x => OP_ECOLE.includes(x)) ? 1 : 0) + (sup || 0); }
+// Classes comprises : seul_classes (6) dès qu'un niveau de collège est payé, une pour l'école (CM1 + CM2) -- même calcul que la
+// fonction prof-offre (grille du 10/11/2026 : « Pour le prof seul, faire une offre acceptable »).
+function opClassesDe(niveaux, sup){ const n = niveaux || []; return (n.some(x => !OP_ECOLE.includes(x)) ? (opPrix.seul_classes || 6) : 0) + (n.some(x => OP_ECOLE.includes(x)) ? 1 : 0) + (sup || 0); }
 function opPrixClasse(niveaux){ return (niveaux || []).some(x => !OP_ECOLE.includes(x)) ? opPrix.seul_classe : opPrix.ecole_classe; }
 let opOffre = null;       // ligne prof_offres du professeur connecté
 let offreNiveaux = null;  // null : pas de restriction ; sinon niveaux ouverts (Professeur seul, ou élève d'une classe en libre-service)
@@ -200,13 +201,13 @@ function opOffresHtml(o, payee){
     <strong class="op-h"><span class="gicon">shopping_cart</span> ${payee ? 'Compléter mon offre' : 'Choisir mon offre'} <span class="hint" style="font-weight:400;">· année scolaire, jusqu'au 31 août</span></strong>
     <div class="op-choix">
       <button type="button" class="op-offre${e.choix === 'seul' ? ' on' : ''}" ${bloque('seul') ? 'disabled' : ''} onclick="opChoix('seul')">
-        <span class="gicon">school</span><span><b class="t">Professeur seul</b><small>Au collège : <b>${opEur(P.seul_base)}</b> par an pour un niveau (une classe de ${P.seul_eleves_max} élèves), <b>+${opEur(P.seul_niveau)}</b> par niveau en plus, <b>+${opEur(P.seul_classe)}</b> par classe en plus. À l'école : <b>${opEur(P.ecole_base)}</b> par an pour une classe de CM1 et CM2 (double niveau compris), <b>+${opEur(P.ecole_classe)}</b> par classe en plus. Tous les outils du professeur.</small></span></button>
+        <span class="gicon">school</span><span><b class="t">Professeur seul</b><small>Au collège : <b>${opEur(P.seul_base)}</b> par an pour un niveau, <b>+${opEur(P.seul_niveau)}</b> par niveau en plus${P.seul_plafond ? `, <b>${opEur(P.seul_plafond)}</b> au plus` : ''} ; jusqu'à <b>${P.seul_classes || 6} classes</b> de ${P.seul_eleves_max} élèves comprises, <b>+${opEur(P.seul_classe)}</b> par classe au-delà. À l'école : <b>${opEur(P.ecole_base)}</b> par an pour une classe de CM1 et CM2 (double niveau compris), <b>+${opEur(P.ecole_classe)}</b> par classe en plus. Tous les outils du professeur.</small></span></button>
       <button type="button" class="op-offre${e.choix === 'particulier' ? ' on' : ''}" ${bloque('particulier') ? 'disabled' : ''} onclick="opChoix('particulier')">
         <span class="gicon">groups</span><span><b class="t">Professeur particulier</b><small>Cours particuliers et soutien, seul ou en groupe : <b>${opEur(P.part_base)}</b> par an <b>+ ${opEur(P.part_eleve)}</b> par élève. Groupes libres, tous niveaux.</small></span></button>
     </div>
     ${e.choix === 'seul' ? `<p class="op-lab">Niveaux :</p><div class="op-nivs">${niv}</div>
-      <p class="hint" style="margin:4px 0 0;">Chaque niveau de collège comprend une classe de ${P.seul_eleves_max} élèves et ouvre aussi le niveau inférieur en révision (ex. 5e → 6e, 6e → CM2). « CM1 et CM2 » comprend une classe, simple ou double niveau.</p>
-      <p class="op-lab">Classes en plus <span class="hint" style="font-weight:400;margin:0;">(ex. deux classes de 6e : 1 classe en plus) · ${opEur(opPrixClasse(Array.from(e.niveaux)))} chacune</span></p>
+      <p class="hint" style="margin:4px 0 0;">Au collège, ${P.seul_classes || 6} classes de ${P.seul_eleves_max} élèves sont comprises, à répartir entre vos niveaux ; chaque niveau ouvre aussi le niveau inférieur en révision (ex. 5e → 6e, 6e → CM2). « CM1 et CM2 » comprend une classe, simple ou double niveau.</p>
+      <p class="op-lab">Classes en plus <span class="hint" style="font-weight:400;margin:0;">(au-delà des classes comprises) · ${opEur(opPrixClasse(Array.from(e.niveaux)))} chacune</span></p>
       <div class="op-places"><button type="button" class="btn secondary qz-mini" onclick="opClassesSup(-1)" ${e.classesSup <= (payee && o.offre === 'seul' ? (o.classes_sup || 0) : 0) ? 'disabled' : ''}>−</button>
         <b class="op-nb" id="opClassesSup">${e.classesSup}</b>
         <button type="button" class="btn secondary qz-mini" onclick="opClassesSup(1)" ${e.classesSup >= 12 ? 'disabled' : ''}>+</button>
@@ -515,6 +516,8 @@ async function opAdminRefresh(){
       <div class="op-nouvelle">
         <label class="hint">Prof seul, 1<sup>er</sup> niveau <input type="number" id="opPx1" step="0.01" min="1" value="${eurIn(P.seul_base)}" style="width:80px;"> €</label>
         <label class="hint">niveau en plus <input type="number" id="opPx2" step="0.01" min="0" value="${eurIn(P.seul_niveau)}" style="width:80px;"> €</label>
+        <label class="hint">au plus (plafond, 0 : aucun) <input type="number" id="opPx9" step="0.01" min="0" value="${eurIn(P.seul_plafond || 0)}" style="width:80px;"> €</label>
+        <label class="hint">classes comprises <input type="number" id="opPx10" step="1" min="1" value="${P.seul_classes || 6}" style="width:60px;"></label>
         <label class="hint">classe en plus <input type="number" id="opPx6" step="0.01" min="0" value="${eurIn(P.seul_classe)}" style="width:80px;"> €</label>
         <label class="hint">École (CM1 + CM2), une classe <input type="number" id="opPx7" step="0.01" min="0" value="${eurIn(P.ecole_base)}" style="width:80px;"> €</label>
         <label class="hint">classe d'école en plus <input type="number" id="opPx8" step="0.01" min="0" value="${eurIn(P.ecole_classe)}" style="width:80px;"> €</label>
@@ -546,7 +549,7 @@ async function opAdminTest(profId, cb){
 }
 async function opAdminPrix(){
   const c = id => Math.round(parseFloat(String(document.getElementById(id).value).replace(',', '.')) * 100);
-  const prix = { seul_base: c('opPx1'), seul_niveau: c('opPx2'), seul_classe: c('opPx6'), ecole_base: c('opPx7'), ecole_classe: c('opPx8'), part_base: c('opPx3'), part_eleve: c('opPx4'), seul_eleves_max: Math.max(1, parseInt(document.getElementById('opPx5').value, 10) || 30) };
+  const prix = { seul_base: c('opPx1'), seul_niveau: c('opPx2'), seul_plafond: c('opPx9'), seul_classes: Math.max(1, parseInt(document.getElementById('opPx10').value, 10) || 6), seul_classe: c('opPx6'), ecole_base: c('opPx7'), ecole_classe: c('opPx8'), part_base: c('opPx3'), part_eleve: c('opPx4'), seul_eleves_max: Math.max(1, parseInt(document.getElementById('opPx5').value, 10) || 30) };
   if(Object.values(prix).some(v => !(v >= 0))){ opMsg('opPxMsg', 'Montants invalides.'); return; }
   const { error } = await sb.from('prof_parametres').update({ prix, updated_at: new Date().toISOString() }).eq('id', 1);
   if(error){ opMsg('opPxMsg', 'Erreur : ' + error.message); return; }
