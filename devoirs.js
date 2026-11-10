@@ -1068,14 +1068,18 @@ let currentDevoirSubmission = null; // {devoirId, type:'figure'|'figure_complete
    des devoirs les attendent ?". Compte les devoirs pas encore rendus (brouillon ou pas commencé),
    avec la même logique de ciblage/publication programmée que renderDevoirsEleve -- appelée juste
    après la connexion (refreshAuthUI, app.js), pas besoin d'ouvrir la page Devoirs pour le savoir.
-   Rappelée aussi en fin de renderDevoirsEleve pour rester à jour après un rendu. */
+   Rappelée aussi en fin de renderDevoirsEleve pour rester à jour après un rendu.
+   Ne compte que ce que l'élève peut encore faire (signalé le 10/11/2026 : « elle a toujours un 1 entouré au-dessus de
+   devoir », plusieurs élèves) : ni un devoir archivé par le professeur, ni une interrogation dont les résultats sont
+   publiés ou dont la date limite est passée depuis plus d'un jour (interrogation en classe manquée), sauf rattrapage
+   ouvert pour l'élève ou travail « à reprendre » (devoir non archivé). */
 async function refreshDevoirsNavBadge(){
   const badge = document.getElementById('navMesDevoirsBadge');
   if(!badge) return;
   if(currentUserRole!=='eleve' || !currentUser){ badge.style.display = 'none'; return; }
   const classIds = (accountClassesList||[]).map(c=>c.id);
   if(!classIds.length){ badge.style.display = 'none'; return; }
-  const { data: devoirsListRaw, error } = await sb.from('devoirs').select('id,student_ids,date_depot').in('class_id', classIds);
+  const { data: devoirsListRaw, error } = await sb.from('devoirs').select('id,type,student_ids,date_depot,date_limite,archive_at,qz_publie_at,qz_rattrapage').in('class_id', classIds);
   if(error || !devoirsListRaw){ badge.style.display = 'none'; return; }
   const now = new Date();
   const devoirsList = devoirsListRaw.filter(d =>
@@ -1083,11 +1087,19 @@ async function refreshDevoirsNavBadge(){
     && (d.date_depot && new Date(d.date_depot) <= now)
   );
   if(!devoirsList.length){ badge.style.display = 'none'; return; }
-  const { data: mesRendus } = await sb.from('devoirs_rendus').select('devoir_id,est_rendu').eq('student_id', currentUser.id);
+  const { data: mesRendus } = await sb.from('devoirs_rendus').select('devoir_id,est_rendu,a_reprendre').eq('student_id', currentUser.id);
   const renduByDevoir = new Map((mesRendus||[]).map(r=>[r.devoir_id, r]));
   const nbEnAttente = devoirsList.filter(d=>{
     const rendu = renduByDevoir.get(d.id);
-    return !rendu || !rendu.est_rendu;
+    if(d.archive_at) return false; // devoir archivé (terminé) par le professeur, même « à reprendre »
+    if(rendu && rendu.a_reprendre) return true;
+    if(rendu && rendu.est_rendu) return false;
+    if(d.type==='questionnaire'){
+      if((d.qz_rattrapage||[]).includes(currentUser.id)) return true;
+      if(d.qz_publie_at) return false; // résultats publiés : l'interrogation est close
+      if(d.date_limite && now - new Date(d.date_limite) > 864e5) return false; // passée depuis plus d'un jour
+    }
+    return true;
   }).length;
   if(nbEnAttente>0){ badge.textContent = nbEnAttente; badge.style.display = 'inline-flex'; }
   else badge.style.display = 'none';
