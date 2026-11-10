@@ -2327,6 +2327,10 @@ async function exportCoursPDF(){
 
 /* ======================= OUTIL PROF : rendu maths ======================= */
 function katexSpan(expr){
+  // Fraction à trous (« \dfrac{8}{\ldots} », « \dfrac{\ldots}{\ldots} ») : les points de suspension n'ont presque pas de
+  // hauteur, une fraction …/… était donc plus basse qu'une fraction 8/… et deux colonnes d'un exercice ne restaient pas alignées
+  // (signalé le 10/11/2026 sur une interrogation de 6e). \vphantom{0} leur donne la hauteur d'un chiffre.
+  if(/frac/.test(expr)) expr = expr.replace(/\\(ldots|dots|cdots)(?![a-zA-Z])/g, '\\vphantom{0}\\$1');
   try{ return katex.renderToString(expr, {throwOnError:false}); }
   catch(e){ return expr; }
 }
@@ -2772,6 +2776,11 @@ function singleBlockHTML(b, ctx, withControls, draggable){
   // 1,38cm réels seulement -- pas du tout la longueur annoncée à l'élève.
   const defaultWidth = b.type==='axe' ? 500 : b.type==='repere' ? 340 : b.type==='graph' ? 420 : (b.type==='figure' || b.type==='figdyn') ? 944 : (b.type==='texte' || b.type==='manuel') ? null : 260;
   let html = b.html;
+  // Bloc de texte à fraction à trous enregistré avant le 10/11/2026 : rendu de nouveau depuis son texte (hauteur des « … »,
+  // voir katexSpan), pour que les colonnes d'un exercice déjà écrit s'alignent aussi.
+  if(b.type==='texte' && b.data && typeof b.data.text==='string' && /frac/.test(b.data.text) && /\\(ldots|dots|cdots)/.test(b.data.text) && typeof renderMathText==='function'){
+    try{ html = `<div style="padding:4px 0;">${renderMathText(b.data.text)}</div>`; }catch(e){ html = b.html; }
+  }
   if(b.type==='disque'){
     // Réglage manuel (toujours prioritaire, fiable dans tous les contextes y compris la
     // fenêtre d'impression) : s'il est défini, on l'applique directement dans le HTML.
@@ -3929,6 +3938,7 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1393', date:'2026-11-10', items:['Évaluations : nouveau champ « Complément du titre » à côté du type -- demandé : « Il est juste écrit Interrogation de Mathématiques. On devrait pouvoir rajouter ce qu\'on veut genre "IE 01" ». La copie affiche « Interrogation de Mathématiques – IE 01 » (le cahier aussi) ; le complément est enregistré avec l\'évaluation.', 'Fractions à trous (« 8/… », « …/… ») : même hauteur quel que soit le contenu -- signalé : « il y a un décalage d\'alignement entre les deux colonnes ». Les points de suspension n\'ont presque pas de hauteur : une fraction …/… était plus basse qu\'une fraction 8/…, et les lignes de deux colonnes voisines se décalaient. Corrigé partout où le site écrit une fraction, y compris dans les évaluations déjà écrites.'] },
   { version:'2026-08-19.1392', date:'2026-11-10', items:['Pastille de « Mon travail » (élèves) : elle ne compte plus que ce qui reste à faire -- signalé : « elle a toujours un 1 entouré au-dessus de devoir (elle n\'est pas la seule) ». Elle comptait aussi les interrogations en classe manquées (date limite passée, résultats publiés) et les devoirs archivés par le professeur, que l\'élève ne peut plus rendre : environ 50 élèves gardaient ainsi un « 1 » permanent. Restent comptés : les devoirs en cours ou en retard non archivés, les interrogations ouvertes, les rattrapages ouverts pour l\'élève et le travail « à reprendre ».'] },
   { version:'2026-08-19.1391', date:'2026-11-09', items:['Formules et icônes affichées même sur les réseaux d\'établissement qui bloquent cdnjs ou Google Fonts : KaTeX, la police des icônes et l\'outil d\'export PDF sont désormais servis par le site lui-même (signalé lors d\'une session COURS : « \\widehat » visible dans les énoncés, icônes absentes).'] },
   { version:'2026-08-19.1390', date:'2026-11-09', items:['5e Angles et parallélisme, corrections des exercices : la justification avant le calcul, « Or » et « Donc » chacun en début de ligne.'] },

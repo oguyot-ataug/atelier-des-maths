@@ -83,6 +83,9 @@ document.getElementById('view-evaluation').innerHTML = `
         </select>
         <input type="text" id="evalTypeCustom" placeholder="Titre libre" style="display:none;width:140px;margin-left:4px;" oninput="scheduleEvalAutoSave()">
       </label>
+      <label class="hint" style="margin:0;" title="Ajouté au titre de la copie : « Interrogation de Mathématiques – IE 01 »">Complément du titre :
+        <input type="text" id="evalTitreAjout" placeholder="ex. IE 01" maxlength="60" style="width:120px;margin-left:4px;" oninput="scheduleEvalAutoSave()">
+      </label>
     </div>
     <div class="tool-row" style="margin-bottom:10px;">
       <textarea id="evalConsignes" placeholder="Consignes générales (facultatif) -- affichées en haut de la copie, avant le premier exercice" style="flex:1;min-width:280px;min-height:44px;padding:7px 10px;border-radius:8px;border:1px solid rgba(28,43,57,.2);font-family:inherit;" oninput="scheduleEvalAutoSave()"></textarea>
@@ -221,7 +224,7 @@ function buildEvalPayload(exercisesOverride, blocksOverride){
     classes: document.getElementById('evalClasses').value,
     eval_date: document.getElementById('evalDate').value || null,
     duree: parseInt(document.getElementById('evalDuree').value) || null,
-    data: { evaluationExercises: exos, blocksStores: relevantBlocks, evalType: document.getElementById('evalType').value, evalTypeCustom: document.getElementById('evalTypeCustom').value, evalLineHeight: document.getElementById('evalLineHeight').value, evalConsignes: document.getElementById('evalConsignes').value, evalShowConsignes: document.getElementById('evalShowConsignes').checked, evalAppreciationLines: document.getElementById('evalAppreciationLines').value, evalIncludeGrilleNotation: document.getElementById('evalIncludeGrilleNotation').checked, evalGrilleNotation: document.getElementById('evalGrilleNotation').value, pageBreaksAfter: Array.from(evalPageBreaksAfter) },
+    data: { evaluationExercises: exos, blocksStores: relevantBlocks, evalType: document.getElementById('evalType').value, evalTypeCustom: document.getElementById('evalTypeCustom').value, evalTitreAjout: document.getElementById('evalTitreAjout').value, evalLineHeight: document.getElementById('evalLineHeight').value, evalConsignes: document.getElementById('evalConsignes').value, evalShowConsignes: document.getElementById('evalShowConsignes').checked, evalAppreciationLines: document.getElementById('evalAppreciationLines').value, evalIncludeGrilleNotation: document.getElementById('evalIncludeGrilleNotation').checked, evalGrilleNotation: document.getElementById('evalGrilleNotation').value, pageBreaksAfter: Array.from(evalPageBreaksAfter) },
   };
 }
 // Suivi du dernier état connu du serveur, exercice par exercice -- permet de savoir, à la
@@ -486,6 +489,7 @@ async function loadEvaluation(id){
   typeSelect.value = Array.from(typeSelect.options).some(o=>o.value===savedType) ? savedType : '__custom';
   document.getElementById('evalTypeCustom').value = (data.data && data.data.evalTypeCustom) || (typeSelect.value==='__custom' ? savedType : '');
   document.getElementById('evalTypeCustom').style.display = typeSelect.value==='__custom' ? 'inline-block' : 'none';
+  document.getElementById('evalTitreAjout').value = (data.data && data.data.evalTitreAjout) || '';
   evaluationExercises = (data.data && data.data.evaluationExercises) || [];
   Object.assign(blocksStores, (data.data && data.data.blocksStores) || {});
   evalNextExoId = Math.max(1, ...evaluationExercises.map(e=>e.id+1), evalNextExoId);
@@ -824,6 +828,7 @@ async function clearEvaluation(){
   evaluationExercises = [];
   evalPageBreaksAfter = new Set();
   document.getElementById('evalConsignes').value = '';
+  document.getElementById('evalTitreAjout').value = '';
   evalLastSyncedExercises = {};
   currentEvaluationId = null;
   unsubscribeEvalRealtime();
@@ -861,7 +866,7 @@ async function addEvaluationToCahier(){
     date,
     raw: '',
     figure: `<div style="margin:2px 0 8px;">
-      <p style="font-weight:700;font-size:1.05rem;margin:0 0 4px;">${escapeHtml(typeTitle)} de Mathématiques${classes ? ' -- '+escapeHtml(classes) : ''}</p>
+      <p style="font-weight:700;font-size:1.05rem;margin:0 0 4px;">${escapeHtml(typeTitle)} de Mathématiques${evalTitreAjoutTexte()}${classes ? ' -- '+escapeHtml(classes) : ''}</p>
       <p class="hint" style="margin:0;">${escapeHtml(dateFmt)}${duree ? ' · Durée : '+escapeHtml(duree)+' min' : ''}${total>0 ? ' · Barème total : '+formatPts(total) : ''}</p>
       ${consignes ? `<div style="margin-top:8px;padding:8px 12px;border:1px solid rgba(28,43,57,.2);border-radius:6px;">${renderMathText(consignes)}</div>` : ''}
     </div>`,
@@ -954,6 +959,12 @@ function grilleNotationHTML(){
       </table>
     </div>`;
 }
+/* Complément libre du titre de la copie (demandé le 10/11/2026 : « Il est juste écrit Interrogation de Mathématiques. On devrait
+   pouvoir rajouter ce qu'on veut genre "IE 01" ») : « Interrogation de Mathématiques – IE 01 ». */
+function evalTitreAjoutTexte(){
+  const el = document.getElementById('evalTitreAjout'), v = el ? el.value.trim() : '';
+  return v ? ' – ' + escapeHtml(v) : '';
+}
 function buildEvaluationContentHTML(){
   const niveau = document.getElementById('evalNiveau').value;
   const classes = document.getElementById('evalClasses').value.trim();
@@ -969,7 +980,7 @@ function buildEvaluationContentHTML(){
       <div>${dateFmt}</div>
     </div>
     <div style="height:2.4em;"></div>
-    <p style="text-align:center;font-weight:700;font-size:1.3rem;margin:0;">${escapeHtml(title)} de Mathématiques</p>
+    <p style="text-align:center;font-weight:700;font-size:1.3rem;margin:0;">${escapeHtml(title)} de Mathématiques${evalTitreAjoutTexte()}</p>
     <p style="text-align:center;font-size:.85rem;color:#5B6472;margin:4px 0 0;">${duree ? 'Durée : '+duree+' min' : ''}${total>0 ? ' · Barème : '+formatPts(total) : ''}</p>
     <div style="height:2.4em;"></div>
     <p style="margin:0;">NOM : .................................................... Prénom : ....................................................</p>
