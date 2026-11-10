@@ -318,6 +318,12 @@ Objets masqués et liste des objets de la Géométrie interactive (demandé le 1
 « Liste des objets » (`figObjetsBasculer`, panneau `#figObjets`) : œil, couleur, options (menu du clic droit, `onFigureContextMenu(evt, obj)`),
 survol = objet mis en évidence (`figSurvol`).
 
+Corrigé des évaluations (demandé le 10/11/2026, « les deux » : IA et à la main) : zone « Correction » sous chaque exercice (`evalCorHTML`,
+evaluation.js), blocs du contexte `cor-<id>` (getExerciseByCtx, app.js : mise en page dans `ex.cor`, `ex.cor.ia` = proposition de l'IA à relire) ;
+`evalCorIA` (prompt `evalCorPrompt` : règles de rédaction du site, figures jointes en image), `evalCorManuel` (corrigé du manuel), `evalCorIATout` ;
+impression `evalCorrigeContenuHTML` (exportEvaluationPDF(true), openEvalPreview(true)) ; cahier : « Énoncés seuls » ou « Énoncés et corrigé »
+(`evalCorDansEntree`). Le corrigé n'est jamais montré aux élèves sans ce choix.
+
 « Mes évaluations » en gestionnaire de fichiers (demandé le 10/11/2026) : `openEvalListModal` / `evalListeRendre` (evaluation.js, objet `evf`) ;
 dossiers PERSONNELS `eval_dossiers` (sous-dossiers) et `eval_rangement` (une évaluation par dossier et par utilisateur ; absente = racine),
 `supabase/sql/2026-11-10-eval-dossiers.sql` ; propriétaires par `evaluations_proprietaires()` ; une évaluation partagée n'apparaît qu'une fois.

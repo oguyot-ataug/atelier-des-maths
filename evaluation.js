@@ -54,6 +54,7 @@ document.getElementById('view-evaluation').innerHTML = `
     <div class="tool-row" style="margin-bottom:10px;">
       <label class="hint" style="margin:0;">Niveau :
         <select id="evalNiveau" onchange="renderEvalChapPicker(); scheduleEvalAutoSave();" style="margin-left:4px;">
+          <option value="cp">CP</option><option value="ce1">CE1</option>
           <option value="ce2">CE2</option><option value="cm1">CM1</option>
           <option value="cm2">CM2</option>
           <option value="6e">6e</option>
@@ -109,6 +110,15 @@ document.getElementById('view-evaluation').innerHTML = `
       <button class="btn secondary" onclick="addManualExercise()">+ Ajouter un exercice vierge</button>
       <button class="btn secondary" onclick="evalAjouterManuel()" title="Choisir des exercices dans le manuel du site (planches), affichés en entier"><span class=gicon>auto_stories</span> Exercices du manuel</button>
       <button class="btn secondary" onclick="openEvalPreview()"><span class=gicon>visibility</span> Aperçu de l'évaluation</button>
+    </div>
+    <div class="tool-row eval-cor-barre" style="margin-bottom:10px;">
+      <span class="hint" style="margin:0;font-weight:700;"><span class=gicon>fact_check</span> Corrigé :</span>
+      <button class="btn secondary needs-ai-eval" id="btnEvalCorIA" onclick="evalCorIATout()" title="L'IA rédige la correction des exercices qui n'en ont pas encore ; chaque corrigé est à relire et se modifie comme un exercice"><span class=gicon>smart_toy</span> Rédiger le corrigé avec l'IA</button>
+      <button class="btn secondary" onclick="evalCorOuvrirTout()" title="Ouvre la zone « Correction » sous chaque exercice, pour l'écrire vous-même avec les outils de correction"><span class=gicon>edit_note</span> Écrire le corrigé</button>
+      <button class="btn secondary" onclick="openEvalPreview(true)"><span class=gicon>visibility</span> Aperçu du corrigé</button>
+      <button class="btn secondary" onclick="exportEvaluationPDF(true)"><span class=gicon>print</span> Imprimer le corrigé</button>
+      <label class="hint" style="margin:0;" title="Le corrigé imprimé reprend l'énoncé de chaque exercice (en gris) au-dessus de sa correction"><input type="checkbox" id="evalCorAvecEnonce" checked> avec les énoncés</label>
+      <span class="hint" id="evalCorStatus" style="margin:0;"></span>
     </div>
     <div class="tool-row" style="margin-bottom:10px;">
       <button class="btn" onclick="saveEvaluation()"><span class=gicon>save</span> Sauvegarder / renommer</button>
@@ -216,7 +226,7 @@ function buildEvalPayload(exercisesOverride, blocksOverride){
     relevantBlocks = blocksOverride;
   } else {
     relevantBlocks = {};
-    exos.forEach(ex=>{ const k='ex-'+ex.id; if(blocksStores[k]) relevantBlocks[k]=blocksStores[k]; });
+    exos.forEach(ex=>{ ['ex-', 'cor-'].forEach(p=>{ const k=p+ex.id; if(blocksStores[k]) relevantBlocks[k]=blocksStores[k]; }); });
   }
   return {
     title: lastEvaluationTitle || document.getElementById('evalClasses').value.trim() || ('Évaluation '+document.getElementById('evalNiveau').value),
@@ -232,7 +242,7 @@ function buildEvalPayload(exercisesOverride, blocksOverride){
 // pour ne remplacer QUE ceux-là et respecter la version serveur pour les autres.
 let evalLastSyncedExercises = {}; // id -> snapshot JSON de l'exercice tel que connu du serveur
 function snapshotExercise(ex){
-  return JSON.stringify({ ...ex, __blocks: blocksStores['ex-'+ex.id] || null });
+  return JSON.stringify({ ...ex, __blocks: blocksStores['ex-'+ex.id] || null, __cor: blocksStores['cor-'+ex.id] || null });
 }
 function updateSyncedSnapshot(){
   evalLastSyncedExercises = {};
@@ -256,11 +266,11 @@ function computeMergedExercises(serverData){
       // Pas touché par nous depuis la dernière synchro : on respecte la version serveur
       // (peut avoir été modifiée par un collègue entre-temps, sur CET exercice précis).
       mergedExercises.push(serverEx);
-      if(serverBlocks['ex-'+localEx.id]) mergedBlocks['ex-'+localEx.id] = serverBlocks['ex-'+localEx.id];
+      ['ex-', 'cor-'].forEach(p=>{ if(serverBlocks[p+localEx.id]) mergedBlocks[p+localEx.id] = serverBlocks[p+localEx.id]; });
     } else {
       // Modifié par nous (ou nouvel exercice pas encore connu du serveur) : notre version l'emporte.
       mergedExercises.push(localEx);
-      if(blocksStores['ex-'+localEx.id]) mergedBlocks['ex-'+localEx.id] = blocksStores['ex-'+localEx.id];
+      ['ex-', 'cor-'].forEach(p=>{ if(blocksStores[p+localEx.id]) mergedBlocks[p+localEx.id] = blocksStores[p+localEx.id]; });
     }
   });
   // Un exercice ajouté par un collègue entre-temps (absent localement, présent côté serveur,
@@ -268,7 +278,7 @@ function computeMergedExercises(serverData){
   serverExercises.forEach(serverEx=>{
     if(!localIds.has(serverEx.id) && !(serverEx.id in evalLastSyncedExercises)){
       mergedExercises.push(serverEx);
-      if(serverBlocks['ex-'+serverEx.id]) mergedBlocks['ex-'+serverEx.id] = serverBlocks['ex-'+serverEx.id];
+      ['ex-', 'cor-'].forEach(p=>{ if(serverBlocks[p+serverEx.id]) mergedBlocks[p+serverEx.id] = serverBlocks[p+serverEx.id]; });
     }
   });
   return { mergedExercises, mergedBlocks };
@@ -647,6 +657,9 @@ async function loadEvaluation(id){
   document.getElementById('evalTypeCustom').style.display = typeSelect.value==='__custom' ? 'inline-block' : 'none';
   document.getElementById('evalTitreAjout').value = (data.data && data.data.evalTitreAjout) || '';
   evaluationExercises = (data.data && data.data.evaluationExercises) || [];
+  // Blocs de l'évaluation ouverte auparavant (énoncés et corrections) retirés d'abord : une correction de l'ancienne
+  // évaluation ne doit jamais apparaître sous l'exercice de même numéro de la nouvelle.
+  Object.keys(blocksStores).forEach(k=>{ if(/^(ex|cor)-\d+$/.test(k)) delete blocksStores[k]; });
   Object.assign(blocksStores, (data.data && data.data.blocksStores) || {});
   evalNextExoId = Math.max(1, ...evaluationExercises.map(e=>e.id+1), evalNextExoId);
   pendingBlockNextId = Math.max(pendingBlockNextId, ...Object.values(blocksStores).flat().map(b=>b.id+1));
@@ -836,6 +849,7 @@ function renderEvalExercicesList(){
           </span>
         </div>
         <div>${blocksRowsHTML(ctx, ex.rows, false, ex.cellBorders)}</div>
+        ${evalCorHTML(ex)}
       </div>
       ${evalPageBreaksAfter.has(ex.id) ? '<div style="border-top:2px dashed #1F3A5C;margin:0 0 8px;padding-top:4px;text-align:center;"><span class="hint" style="color:#1F3A5C;">✂ Saut de page ici à l\'impression</span></div>' : ''}
     `;
@@ -872,6 +886,7 @@ function renderEvalExercicesList(){
       </div>
       <p class="hint" style="margin:4px 0 0;">Fais glisser un bloc pour changer sa ligne/colonne (utilise les outils ci-dessous pour en ajouter, y compris du texte). Pour élargir une colonne, tire la barre grise entre deux colonnes (double-clic : colonnes identiques).</p>
       <div class="tool-row" style="margin-top:6px;">${toolButtonsHTML(ctx)}</div>
+      ${evalCorHTML(ex)}
     </div>
     ${evalPageBreaksAfter.has(ex.id) ? '<div style="border-top:2px dashed #1F3A5C;margin:0 0 8px;padding-top:4px;text-align:center;"><span class="hint" style="color:#1F3A5C;">✂ Saut de page ici à l\'impression</span></div>' : ''}
   `;}).join('');
@@ -929,7 +944,7 @@ function updateEvalExerciceText(id, text){
 async function removeEvalExercice(id){
   if(!(await niceConfirm('Supprimer définitivement cet exercice ?'))) return;
   evaluationExercises = evaluationExercises.filter(e=>e.id!==id);
-  delete blocksStores['ex-'+id];
+  delete blocksStores['ex-'+id]; delete blocksStores['cor-'+id];
   renderEvalExercicesList();
 }
 function toggleEvalPageBreak(id){
@@ -954,6 +969,191 @@ function editEvalExercice(id){
   const ex = evaluationExercises.find(e=>e.id===id);
   if(ex) ex.validated = false;
   renderEvalExercicesList();
+}
+/* ===== Corrigé de l'évaluation -- demandé le 10/11/2026 : « Quand on a une évaluation, peut-on en faire une correction rapide
+   avec l'IA ? ou nous-même dans l'outil correction, en reprenant les exercices de l'interrogation écrite ? » (réponse : « les deux »).
+   Sous chaque exercice, une zone « Correction » : blocs du contexte 'cor-<id>' (mêmes outils que l'outil de correction : texte,
+   opérations posées, figures…), mise en page dans ex.cor (rows, cellBorders, comme un exercice ; voir getExerciseByCtx, app.js).
+   ex.cor.ia = proposition de l'IA pas encore relue. Exercice tiré du manuel : son corrigé du site, sans IA. Le corrigé est
+   enregistré avec l'évaluation (partagé avec les collègues qui y ont accès) ; les élèves ne le voient que s'il est ajouté au
+   cahier (« Ajouter au cahier » › « Énoncés et corrigé »). ===== */
+const evalCorOuverts = new Set();   // zones « Correction » dépliées (affichage seulement)
+const evalCorIAEnCours = new Set(); // exercices dont l'IA rédige le corrigé
+function evalCorBlocs(ex){ return blocksStores['cor-' + ex.id] || []; }
+function evalCorA(ex){ return evalCorBlocs(ex).length > 0; }
+// Exercices du manuel contenus dans l'énoncé (blocs « manuel ») : leur corrigé existe déjà sur le site.
+function evalCorManuels(ex){
+  return (blocksStores['ex-' + ex.id] || []).filter(b => b.type === 'manuel' && b.data).map(b => {
+    const p = typeof plDe === 'function' ? plDe(b.data.lvl, b.data.t)[b.data.i] : null, x = p && p.exos && p.exos[b.data.k];
+    return x ? { b, x } : null;
+  }).filter(Boolean);
+}
+function evalCorHTML(ex){
+  const id = ex.id, ctx = 'cor-' + id, cor = getExerciseByCtx(ctx);
+  const ouvert = evalCorOuverts.has(id), a = evalCorA(ex), enCours = evalCorIAEnCours.has(id), manuel = evalCorManuels(ex).length > 0;
+  const etat = enCours ? '<span class="eval-cor-etat attente"><span class=gicon>hourglass_top</span> L\'IA rédige le corrigé…</span>'
+    : !a ? '<span class="eval-cor-etat vide">à rédiger</span>'
+    : cor.ia ? '<span class="eval-cor-etat ia"><span class=gicon>smart_toy</span> proposé par l\'IA, à relire</span>'
+    : '<span class="eval-cor-etat ok"><span class=gicon>check</span> rédigé</span>';
+  let corps = '';
+  if(ouvert){
+    corps = `<div class="eval-cor-corps">
+      ${a ? '' : `<p class="hint" style="margin:0 0 6px;">Écrivez la correction avec les outils ci-dessous (Texte pour les calculs et les phrases, opérations posées, figures…)${manuel ? ', reprenez le corrigé du manuel' : ''}, ou laissez l'IA la proposer.</p>`}
+      <div class="eval-blocks-preview">${blocksRowsHTML(ctx, cor.rows, true, cor.cellBorders)}</div>
+      <div class="tool-row" style="margin-top:8px;align-items:center;flex-wrap:wrap;">
+        <span class="hint" style="margin:0;">Mise en page :</span>
+        ${cor.rows.map((nc, r) => `<span style="display:inline-flex;align-items:center;gap:4px;background:rgba(28,43,57,.04);padding:3px 8px 3px 10px;border-radius:14px;">
+          <span class="hint" style="margin:0;">L${r + 1} :</span>
+          <input type="number" min="1" max="6" value="${nc}" onchange="evalCorColonnes(${id},${r},parseInt(this.value)||1)" style="width:38px;">
+          ${cor.rows.length > 1 ? `<button type="button" onclick="evalCorRetirerLigne(${id},${r})" title="Retirer cette ligne" style="border:none;background:none;cursor:pointer;color:#D93025;font-size:.9rem;"><span class=gicon>close</span></button>` : ''}
+        </span>`).join('')}
+        <button type="button" class="btn secondary" onclick="evalCorAjouterLigne(${id})" style="font-size:.78rem;padding:4px 10px;">+ Nouvelle ligne</button>
+      </div>
+      <div class="tool-row" style="margin-top:6px;">${toolButtonsHTML(ctx)}</div>
+    </div>`;
+  }
+  return `<div class="eval-cor${ouvert ? ' ouvert' : ''}${a && cor.ia ? ' a-relire' : ''}">
+    <div class="eval-cor-tete">
+      <button type="button" class="eval-cor-bascule" onclick="evalCorBasculer(${id})" aria-expanded="${ouvert}" title="${ouvert ? 'Replier la correction' : 'Déplier la correction pour l\'écrire ou la modifier'}"><span class=gicon>${ouvert ? 'expand_more' : 'chevron_right'}</span> Correction</button>
+      ${etat}
+      <span style="flex:1;"></span>
+      ${manuel ? `<button type="button" class="eval-cor-btn" onclick="evalCorManuel(${id})" title="Reprendre le corrigé de cet exercice tel qu'il est dans le manuel du site"><span class=gicon>auto_stories</span> Corrigé du manuel</button>` : ''}
+      <button type="button" class="eval-cor-btn needs-ai-eval" onclick="evalCorIA(${id})" ${enCours ? 'disabled' : ''} title="L'IA lit l'énoncé (figures comprises) et rédige la correction, question par question, selon les règles de rédaction du site. À relire avant de la distribuer."><span class=gicon>smart_toy</span> ${a ? 'Refaire avec l\'IA' : 'Rédiger avec l\'IA'}</button>
+      ${a && cor.ia ? `<button type="button" class="eval-cor-btn ok" onclick="evalCorRelu(${id})" title="Vous avez relu (et corrigé si besoin) cette proposition de l'IA"><span class=gicon>check</span> Corrigé relu</button>` : ''}
+    </div>
+    ${!ouvert && a ? `<div class="eval-cor-apercu">${blocksRowsHTML(ctx, cor.rows, false, cor.cellBorders)}</div>` : ''}
+    ${corps}
+  </div>`;
+}
+function evalCorBasculer(id){ evalCorOuverts.has(id) ? evalCorOuverts.delete(id) : evalCorOuverts.add(id); renderEvalExercicesList(); }
+async function evalCorOuvrirTout(){
+  if(!evaluationExercises.length){ await niceAlert("Ajoutez d'abord les exercices de l'évaluation."); return; }
+  evaluationExercises.forEach(ex => evalCorOuverts.add(ex.id));
+  renderEvalExercicesList();
+  const z = document.querySelector('#evalExercicesList .eval-cor'); if(z) z.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+function evalCorColonnes(id, r, n){ const c = getExerciseByCtx('cor-' + id); if(c) c.rows[r] = Math.max(1, Math.min(6, n)); renderEvalExercicesList(); }
+function evalCorAjouterLigne(id){ const c = getExerciseByCtx('cor-' + id); if(c) c.rows.push(1); renderEvalExercicesList(); }
+function evalCorRetirerLigne(id, r){
+  const c = getExerciseByCtx('cor-' + id); if(!c || c.rows.length <= 1) return;
+  (blocksStores['cor-' + id] || []).forEach(b => { const q = b.row || 0; if(q === r) b.row = Math.max(0, r - 1); else if(q > r) b.row = q - 1; });
+  colDecalerLargeurs(c.cellBorders, r, c.rows.length);
+  c.rows.splice(r, 1);
+  renderEvalExercicesList();
+}
+function evalCorRelu(id){ const c = getExerciseByCtx('cor-' + id); if(c) c.ia = false; renderEvalExercicesList(); }
+// Remplace la correction d'un exercice par un seul bloc (texte de l'IA, ou corrigé du manuel).
+function evalCorPoser(id, blocs, ia){
+  const ctx = 'cor-' + id, c = getExerciseByCtx(ctx); if(!c) return;
+  blocksStores[ctx] = blocs.map((b, n) => ({ id: pendingBlockNextId++, ctx, col: 0, row: n, ...b }));
+  c.rows = blocs.map(() => 1); c.cellBorders = {}; c.ia = !!ia;
+  evalCorOuverts.add(id);
+}
+async function evalCorManuel(id, silencieux){
+  const ex = evaluationExercises.find(e => e.id === id); if(!ex) return false;
+  const l = evalCorManuels(ex); if(!l.length) return false;
+  if(!silencieux && evalCorA(ex) && !(await niceConfirm('Remplacer la correction actuelle de cet exercice par le corrigé du manuel ?'))) return false;
+  evalCorPoser(id, l.map(({ b, x }) => ({ type: 'manuel', html: plExoCopieHtml(x, true), data: { ...b.data, corrige: true }, editFn: null })), false);
+  renderEvalExercicesList();
+  return true;
+}
+// Énoncé lu par l'IA : le texte des blocs, dans l'ordre de la page, et jusqu'à 3 figures en image.
+const EVAL_COR_TYPES = { figure: 'figure', figdyn: 'figure', image: 'image', tableau: 'tableau', axe: 'axe gradué', repere: 'repère', graph: 'graphique', stats: 'diagramme', disque: 'fraction (disque)', rectFrac: 'fraction (rectangle)', cubes: 'cubes empilés', manuel: 'exercice', divisionPosee: 'division posée' };
+async function evalCorEnonce(ex){
+  const blocs = (blocksStores['ex-' + ex.id] || []).slice().sort((a, b) => (a.row || 0) - (b.row || 0) || (a.col || 0) - (b.col || 0));
+  const morceaux = blocs.map(b => {
+    if(b.type === 'texte' && b.data && typeof b.data.text === 'string') return b.data.text.trim();
+    const d = document.createElement('div'); d.innerHTML = b.html || '';
+    d.querySelectorAll('script,style,.gicon').forEach(x => x.remove());
+    const t = (d.textContent || '').replace(/\s+/g, ' ').trim();
+    return `[${EVAL_COR_TYPES[b.type] || 'élément'}${t ? ' : ' + t.slice(0, 2500) : ''}]`;
+  }).filter(Boolean);
+  const images = [];
+  if(blocs.some(b => b.type !== 'texte' && /<svg|<img|<canvas/i.test(b.html || ''))){
+    const box = document.createElement('div');
+    box.style.cssText = 'position:fixed;left:-10000px;top:0;width:680px;background:#fff;';
+    box.innerHTML = blocksRowsHTML('ex-' + ex.id, ensureExRows(ex), false, ex.cellBorders);
+    document.body.appendChild(box);
+    try{
+      for(const svg of Array.from(box.querySelectorAll('svg'))){
+        if(images.length >= 3) break;
+        const r = svg.getBoundingClientRect(); if(r.width < 60 || r.height < 40) continue; // icônes, petits signes
+        const res = await svgToPngDataUrl(svg, 1.5);
+        if(res) images.push({ media_type: 'image/png', data: res.dataUrl.split(',')[1] });
+      }
+    }finally{ box.remove(); }
+  }
+  return { texte: morceaux.join('\n\n'), images };
+}
+function evalCorPrompt(ex, rang, enonce, niveau){
+  const primaire = /^(cp|ce1|ce2|cm1|cm2)$/i.test(niveau);
+  const regles = [
+    'Pour chaque question : sa référence telle qu\'elle figure dans l\'énoncé (a), b), Question 1…) s\'il y en a une, puis un titre qui dit ce que demande la question (la grandeur ou l\'objet cherché, par exemple « Prix total des cahiers », « Aire du triangle ABC » ; jamais un mot seul comme « Calcul », « Total » ou « Réponse », jamais un simple complément comme « En une semaine »), écrit entre doubles tirets bas puis suivi de deux-points : __Prix total des cahiers__ :',
+    'Puis le raisonnement : un seul calcul par ligne ; jamais de mots dans une ligne de calcul (ni « donc », ni « soit », ni « de », ni « et » entre deux calculs) : les mots vont dans le titre et dans la phrase. Un calcul long se développe sur plusieurs lignes qui commencent par « = ».',
+    'Puis une phrase de conclusion qui répond à la question, avec l\'unité.',
+    'Une ligne vide entre deux questions.',
+    'Multiplication : ×. Division : « : » (jamais ÷).' + (primaire ? '' : ' Au collège, une division qui sert à calculer une fraction d\'une quantité, un pourcentage, une quatrième proportionnelle, une aire de triangle, un volume de pyramide ou une moyenne s\'écrit en fraction : (2 × 35)/5 = 70/5 = 14.'),
+    'Fractions écrites a/b ou (expression)/(expression) ; puissances avec ^ (3^2) ; racine carrée sqrt(…) ; jamais de LaTeX, jamais de signe $.',
+    'Nombres décimaux avec une virgule ; nombres en lettres, s\'il y en a, en orthographe rectifiée (traits d\'union entre tous les mots : « deux-mille-quatre-cent-six », « vingt-et-un »).',
+    'Pas de numérotation « 1. », « 2. » en début de ligne, pas de tiret cadratin, pas de markdown autre que __titre__ et **gras**, pas d\'émoji.',
+    'Question de construction ou de tracé : le programme de construction, une étape par ligne, suivi de « (figure à tracer) ».',
+  ];
+  if(ex.bareme) regles.push(`Après la phrase de conclusion de chaque question, les points qu'elle rapporte entre crochets ([1 pt], [0,5 pt]), la somme faisant ${formatPts(ex.bareme)}.`);
+  regles.push('Réponds uniquement par le corrigé : ne recopie pas l\'énoncé, n\'ajoute ni introduction ni commentaire.');
+  return `Tu es ${typeof iaEnseignant === 'function' ? iaEnseignant(niveau) : 'professeur de mathématiques'}. Tu rédiges le CORRIGÉ d'un exercice d'une évaluation de ${typeof niveauLabel === 'function' ? niveauLabel(niveau) : niveau}, tel que le professeur le distribuera ou le projettera à ses élèves. ${typeof iaContexteNiveau === 'function' ? iaContexteNiveau(niveau) : ''}
+
+Exercice ${rang + 1}${ex.title ? ' (« ' + ex.title + ' »)' : ''}${ex.bareme ? ', noté sur ' + formatPts(ex.bareme) : ''}.${enonce.images.length ? ' Les figures de l\'énoncé sont jointes en image.' : ''}
+Énoncé (les éléments entre crochets sont des tableaux, figures ou exercices insérés, donnés par leur texte) :
+<<<
+${enonce.texte}
+>>>
+
+Rédige la correction complète, question par question, en respectant strictement ces règles :
+${regles.map(r => '- ' + r).join('\n')}`;
+}
+// Réponse de l'IA : sans balises de code ni signes interdits par les règles du site.
+function evalCorNettoyer(raw){
+  return String(raw || '').replace(/^\s*```[a-z]*\s*/i, '').replace(/```\s*$/, '')
+    .replace(/÷/g, ':').replace(/\\div\b/g, ':').replace(/\s—\s/g, ', ').replace(/—/g, '-')
+    .replace(/^\s*(\d+)\.\s+/gm, '').replace(/\n{3,}/g, '\n\n').trim();
+}
+async function evalCorIA(id, silencieux){
+  const ex = evaluationExercises.find(e => e.id === id); if(!ex) return false;
+  if(!currentUser){ if(!silencieux) await niceAlert("Connectez-vous pour faire rédiger le corrigé par l'IA."); return false; }
+  if(!silencieux && evalCorA(ex) && !(await niceConfirm("Remplacer la correction actuelle de cet exercice par une nouvelle proposition de l'IA ?"))) return false;
+  const enonce = await evalCorEnonce(ex);
+  if(!enonce.texte.trim() && !enonce.images.length){ if(!silencieux) await niceAlert("Cet exercice n'a pas encore d'énoncé."); return false; }
+  evalCorIAEnCours.add(id); renderEvalExercicesList();
+  try{
+    const niveau = document.getElementById('evalNiveau').value;
+    const rang = evaluationExercises.findIndex(e => e.id === id);
+    const raw = await callClaude(evalCorPrompt(ex, rang, enonce, niveau), 3000, { feature: 'evaluation', niveau, images: enonce.images.length ? enonce.images : undefined });
+    const texte = evalCorNettoyer(raw);
+    if(!texte) throw new Error('réponse vide');
+    evalCorPoser(id, [{ type: 'texte', html: `<div style="padding:4px 0;">${renderMathText(texte)}</div>`, data: { text: texte }, editFn: 'reopenTextBlock' }], true);
+    return true;
+  }catch(err){
+    if(!silencieux) await niceAlert("L'IA n'a pas pu rédiger ce corrigé : " + (err.message === 'no-session' ? 'reconnectez-vous.' : err.message));
+    return false;
+  }finally{
+    evalCorIAEnCours.delete(id); renderEvalExercicesList();
+  }
+}
+// Tous les exercices sans correction : corrigé du manuel s'il existe, sinon l'IA (un exercice après l'autre).
+async function evalCorIATout(){
+  const statut = document.getElementById('evalCorStatus'), btn = document.getElementById('btnEvalCorIA');
+  if(!evaluationExercises.length){ await niceAlert("Ajoutez d'abord les exercices de l'évaluation."); return; }
+  const aFaire = evaluationExercises.filter(ex => !evalCorA(ex));
+  if(!aFaire.length){ await niceAlert("Chaque exercice a déjà sa correction. Pour en refaire une, utilisez « Refaire avec l'IA » sous l'exercice."); return; }
+  if(btn) btn.disabled = true;
+  let ok = 0, echecs = 0;
+  for(const [n, ex] of aFaire.entries()){
+    if(statut) statut.textContent = `Corrigé en cours : exercice ${evaluationExercises.indexOf(ex) + 1} (${n + 1} sur ${aFaire.length})…`;
+    const fait = evalCorManuels(ex).length && evalCorManuels(ex).length === (blocksStores['ex-' + ex.id] || []).length ? await evalCorManuel(ex.id, true) : await evalCorIA(ex.id, true);
+    fait ? ok++ : echecs++;
+  }
+  if(btn) btn.disabled = false;
+  if(statut) statut.textContent = `${ok} corrigé${ok > 1 ? 's' : ''} rédigé${ok > 1 ? 's' : ''}${echecs ? `, ${echecs} échec${echecs > 1 ? 's' : ''} (réessayez avec « Rédiger avec l'IA » sous l'exercice)` : ''}. Relisez chaque proposition de l'IA, puis cliquez « Corrigé relu ».`;
 }
 /* Exercices du manuel (planches, planches-choix.js) -- demandé : « profiter de cette base d'exercices
    pour les insérer dans une interrogation en ligne ou papier ». Chaque exercice choisi devient un
@@ -980,7 +1180,7 @@ function addManualExercise(){
 }
 async function clearEvaluation(){
   if(evaluationExercises.length && !(await niceConfirm('Effacer tous les exercices de cette évaluation ?'))) return;
-  evaluationExercises.forEach(ex=>delete blocksStores['ex-'+ex.id]);
+  evaluationExercises.forEach(ex=>{ delete blocksStores['ex-'+ex.id]; delete blocksStores['cor-'+ex.id]; });
   evaluationExercises = [];
   evalPageBreaksAfter = new Set();
   document.getElementById('evalConsignes').value = '';
@@ -1002,6 +1202,18 @@ async function clearEvaluation(){
 async function addEvaluationToCahier(){
   if(!currentClassId){ await niceAlert("Sélectionnez d'abord une classe active (boutons en haut de page) avant d'ajouter au cahier."); return; }
   if(!evaluationExercises.length){ await niceAlert("Ajoutez au moins un exercice avant de l'ajouter au cahier."); return; }
+  // Avec ou sans le corrigé (10/11/2026) : les élèves voient le cahier, le corrigé n'y va que si on le demande.
+  let avecCorrige = false;
+  if(evaluationExercises.some(evalCorA)){
+    const choix = await niceModal({ message: "Ajouter au cahier de la classe active :\n\n• les énoncés seuls,\n• ou les énoncés suivis de leur correction.\n\nLes élèves voient le cahier : n'y mettez le corrigé qu'une fois l'évaluation passée.",
+      buttons: [{ label: 'Annuler', value: null, secondary: true }, { label: 'Énoncés seuls', value: 'enonces', secondary: true }, { label: 'Énoncés et corrigé', value: 'corrige' }] });
+    if(!choix) return;
+    avecCorrige = choix === 'corrige';
+    if(avecCorrige){
+      const nonRelus = evaluationExercises.filter(ex => evalCorA(ex) && getExerciseByCtx('cor-'+ex.id).ia).length;
+      if(nonRelus && !(await niceConfirm(`${nonRelus} correction${nonRelus > 1 ? 's proposées' : ' proposée'} par l'IA ${nonRelus > 1 ? 'n\'ont' : 'n\'a'} pas encore été relue${nonRelus > 1 ? 's' : ''}. Les ajouter au cahier quand même ?`))) return;
+    }
+  }
   const niveau = document.getElementById('evalNiveau').value;
   const classes = document.getElementById('evalClasses').value.trim();
   const date = document.getElementById('evalDate').value || todayISO();
@@ -1033,7 +1245,7 @@ async function addEvaluationToCahier(){
   const newEntries = [headerEntry, ...evaluationExercises.map((ex,i)=>{
     const ctx = 'ex-'+ex.id;
     ensureExRows(ex);
-    return {
+    const entree = {
       niveau,
       chapitre: chapitres,
       exo: String(i+1),
@@ -1045,6 +1257,8 @@ async function addEvaluationToCahier(){
       rows: JSON.parse(JSON.stringify(ex.rows||[1])),
       cellBorders: JSON.parse(JSON.stringify(ex.cellBorders||{})),
     };
+    if(avecCorrige && evalCorA(ex)) evalCorDansEntree(entree, ex);
+    return entree;
   })];
   cahier.push(...newEntries);
   sortCahierInPlace();
@@ -1059,7 +1273,22 @@ async function addEvaluationToCahier(){
     saveCahier();
     renderCahier();
   }
-  await niceAlert(`${evaluationExercises.length} exercice(s) (+ l'en-tête) ajouté(s) au cahier de la classe active, daté(s) du ${new Date(date+'T00:00:00').toLocaleDateString('fr-FR')}.`);
+  await niceAlert(`${evaluationExercises.length} exercice(s) (+ l'en-tête)${avecCorrige ? ', avec leur correction,' : ''} ajouté(s) au cahier de la classe active, daté(s) du ${new Date(date+'T00:00:00').toLocaleDateString('fr-FR')}.`);
+}
+/* Entrée du cahier d'un exercice, suivie de sa correction : une ligne « Correction » puis les lignes de la correction, décalées
+   sous celles de l'énoncé (blocs, largeurs de colonnes et bordures), pour que l'entrée reste modifiable dans l'éditeur du cahier. */
+function evalCorDansEntree(entree, ex){
+  const c = getExerciseByCtx('cor-'+ex.id), dec = entree.rows.length + 1;
+  const titre = { id: pendingBlockNextId++, type: 'texte', html: `<div style="padding:4px 0;">${renderMathText('{{vert|**Correction**}}')}</div>`, data: { text: '{{vert|**Correction**}}' }, editFn: 'reopenTextBlock', col: 0, row: entree.rows.length };
+  const blocs = JSON.parse(JSON.stringify(blocksStores['cor-'+ex.id] || [])).map(b => ({ ...b, id: pendingBlockNextId++, row: (b.row || 0) + dec }));
+  entree.blocksData = entree.blocksData.concat([titre], blocs);
+  Object.entries(c.cellBorders || {}).forEach(([k, v]) => {
+    const w = /^w(\d+)$/.exec(k), z = /^(\d+)-(\d+)$/.exec(k);
+    if(w) entree.cellBorders['w' + (+w[1] + dec)] = JSON.parse(JSON.stringify(v));
+    else if(z) entree.cellBorders[(+z[1] + dec) + '-' + z[2]] = JSON.parse(JSON.stringify(v));
+  });
+  entree.rows = entree.rows.concat([1], c.rows);
+  entree.figure += `<div style="margin-top:10px;"><p style="font-weight:700;color:#15803D;margin:0 0 4px;">Correction</p>${blocksRowsHTML('cor-'+ex.id, c.rows, false, c.cellBorders)}</div>`;
 }
 // Zone réservée à l'appréciation du professeur, sous la ligne NOM/Prénom -- 3 réglages
 // possibles (case "evalAppreciationLines") : encadré à 2 traits espacés (comportement
@@ -1121,7 +1350,8 @@ function evalTitreAjoutTexte(){
   const el = document.getElementById('evalTitreAjout'), v = el ? el.value.trim() : '';
   return v ? ' – ' + escapeHtml(v) : '';
 }
-function buildEvaluationContentHTML(){
+function buildEvaluationContentHTML(corrige){
+  if(corrige) return evalCorrigeContenuHTML();
   const niveau = document.getElementById('evalNiveau').value;
   const classes = document.getElementById('evalClasses').value.trim();
   const date = document.getElementById('evalDate').value;
@@ -1153,6 +1383,50 @@ function buildEvaluationContentHTML(){
       </div>
     `).join('')}
   `;
+}
+/* Corrigé imprimé (« Imprimer le corrigé », « Aperçu du corrigé ») : même en-tête que la copie, sans NOM ni appréciation ni
+   grille ; chaque exercice avec son énoncé en gris (case « avec les énoncés ») puis sa correction, filet vert à gauche. */
+function evalCorrigeContenuHTML(){
+  const niveau = document.getElementById('evalNiveau').value;
+  const classes = document.getElementById('evalClasses').value.trim();
+  const date = document.getElementById('evalDate').value;
+  const dateFmt = date ? new Date(date+'T00:00:00').toLocaleDateString('fr-FR', {weekday:'long', day:'numeric', month:'long', year:'numeric'}) : '';
+  const total = evalBaremeTotal();
+  const typeSel = document.getElementById('evalType').value;
+  const title = (typeSel==='__custom' ? document.getElementById('evalTypeCustom').value.trim() : typeSel) || 'Évaluation';
+  const avecEnonce = !document.getElementById('evalCorAvecEnonce') || document.getElementById('evalCorAvecEnonce').checked;
+  return `
+    <div style="display:flex;justify-content:space-between;font-size:.95rem;">
+      <div>${escapeHtml(classes || niveauLabel(niveau))}</div>
+      <div>${dateFmt}</div>
+    </div>
+    <div style="height:1.6em;"></div>
+    <p style="text-align:center;font-weight:700;font-size:1.3rem;margin:0;">Corrigé · ${escapeHtml(title)} de Mathématiques${evalTitreAjoutTexte()}</p>
+    <p style="text-align:center;font-size:.85rem;color:#5B6472;margin:4px 0 0;">${total>0 ? 'Barème : '+formatPts(total) : ''}</p>
+    <div style="height:1.6em;"></div>
+    ${evaluationExercises.map((ex,i)=>`
+      <div data-ex-id="${ex.id}" style="margin-bottom:1.2em;">
+        <p style="font-weight:700;margin:0 0 5px;display:grid;grid-template-columns:1fr 70px;gap:8px;">
+          <span>Exercice ${i+1}${ex.title ? ' · '+escapeHtml(ex.title) : ''}</span>
+          <span style="text-align:right;">${ex.bareme ? formatPts(ex.bareme) : ''}</span>
+        </p>
+        ${avecEnonce ? `<div style="color:#4A5260;border-left:3px solid #C9CED6;padding:2px 0 2px 10px;margin:0 0 8px;font-size:.94em;">${blocksRowsHTML('ex-'+ex.id, ensureExRows(ex), false, ex.cellBorders)}</div>` : ''}
+        <div style="border-left:3px solid #15803D;padding:2px 0 2px 10px;">
+          ${evalCorA(ex) ? blocksRowsHTML('cor-'+ex.id, getExerciseByCtx('cor-'+ex.id).rows, false, getExerciseByCtx('cor-'+ex.id).cellBorders) : '<p style="margin:0;color:#8A919C;font-style:italic;">Correction à rédiger.</p>'}
+        </div>
+      </div>
+    `).join('')}
+  `;
+}
+// Avant d'imprimer le corrigé : au moins une correction, et les propositions de l'IA relues (ou imprimées en connaissance de cause).
+async function evalCorPretAImprimer(){
+  const avec = evaluationExercises.filter(evalCorA);
+  if(!avec.length){ await niceAlert("Aucun exercice n'a encore de correction : « Rédiger le corrigé avec l'IA » ou « Écrire le corrigé »."); return false; }
+  const nonRelus = avec.filter(ex => getExerciseByCtx('cor-'+ex.id).ia).length, manquants = evaluationExercises.length - avec.length;
+  const alertes = [];
+  if(nonRelus) alertes.push(`${nonRelus} correction${nonRelus > 1 ? 's proposées' : ' proposée'} par l'IA ${nonRelus > 1 ? 'n\'ont' : 'n\'a'} pas encore été relue${nonRelus > 1 ? 's' : ''}.`);
+  if(manquants) alertes.push(`${manquants} exercice${manquants > 1 ? 's n\'ont' : ' n\'a'} pas encore de correction.`);
+  return !alertes.length || await niceConfirm(alertes.join(' ') + ' Imprimer le corrigé quand même ?');
 }
 /* Convertit un <svg> en image PNG (data URL) : html2canvas a un support natif des SVG très
    limité (page blanche ou figures manquantes selon les cas) ; une image bitmap classique se
@@ -1195,12 +1469,12 @@ async function replaceSvgsWithImages(container){
 /* Page HTML complète de l'évaluation, telle qu'elle est imprimée (PDF). Servie aussi à l'aperçu
    (« Aperçu de l'évaluation »), dans un cadre : l'aperçu est ainsi rigoureusement identique au PDF --
    demandé : « l'éditeur était bon et le PDF respectait l'éditeur. C'est le bouton aperçu qui était faux ». */
-function evalDocumentHTML(){
+function evalDocumentHTML(corrige){
   return `<!DOCTYPE html><html><head><meta charset="utf-8">
-    <title>Évaluation</title>
+    <title>${corrige ? 'Corrigé' : 'Évaluation'}</title>
     <link rel="stylesheet" href="${location.origin}/assets/katex/katex.min.css">
     <link rel="stylesheet" href="${document.querySelector('link[href*="styles.css"]').href}">
-    ${typeof PL_CSS !== 'undefined' && evaluationExercises.some(ex => (blocksStores['ex-' + ex.id] || []).some(b => b.type === 'manuel')) ? `<style>${PL_CSS.replace(/@page\s*\{[^}]*\}/, '')}</style>` : ''}
+    ${typeof PL_CSS !== 'undefined' && evaluationExercises.some(ex => (blocksStores['ex-' + ex.id] || []).concat(corrige ? blocksStores['cor-' + ex.id] || [] : []).some(b => b.type === 'manuel')) ? `<style>${PL_CSS.replace(/@page\s*\{[^}]*\}/, '')}</style>` : ''}
     <style>
       @page{ size:A4; margin:15mm; }
       body{ font-family:Inter,Arial,sans-serif; color:#20242E; font-size:11.5pt; line-height:${document.getElementById('evalLineHeight').value}; margin:0; }
@@ -1216,14 +1490,16 @@ function evalDocumentHTML(){
       svg{ max-width:100%; }
       .katex{ font-size:1.18em; }
     </style>
-  </head><body><div class="print-page">${buildEvaluationContentHTML()}</div></body></html>`;
+  </head><body><div class="print-page">${buildEvaluationContentHTML(corrige)}</div></body></html>`;
 }
-async function exportEvaluationPDF(){
+async function exportEvaluationPDF(corrige){
   if(!evaluationExercises.length){ await niceAlert("Ajoutez au moins un exercice avant de générer le PDF."); return; }
+  if(corrige === true){ if(!(await evalCorPretAImprimer())) return; }
+  else corrige = false;
   const missing = [];
   if(!document.getElementById('evalClasses').value.trim()) missing.push('la classe');
   if(!document.getElementById('evalDate').value) missing.push('la date');
-  if(missing.length && !(await niceConfirm(`Tu n'as pas renseigné ${missing.join(' ni ')}. Générer quand même la feuille d'évaluation ?`))) return;
+  if(!corrige && missing.length && !(await niceConfirm(`Tu n'as pas renseigné ${missing.join(' ni ')}. Générer quand même la feuille d'évaluation ?`))) return;
   // La capture d'écran (html2canvas) reproduit une page blanche de façon récurrente avec ce
   // contenu, malgré plusieurs correctifs essayés. L'impression native du navigateur, elle,
   // donne un rendu fidèle et fiable : l'utilisateur choisit "Enregistrer au format PDF" comme
@@ -1232,7 +1508,7 @@ async function exportEvaluationPDF(){
   const w = window.open('', '_blank', 'width=900,height:700');
   if(!w){ await niceAlert("La fenêtre n'a pas pu s'ouvrir : autorisez les pop-up pour ce site, ou utilisez Ctrl/Cmd+P."); return; }
   w.document.open();
-  w.document.write(evalDocumentHTML());
+  w.document.write(evalDocumentHTML(corrige));
   w.document.close();
   w.onload = () => {
     // Petit délai de sécurité : laisse le temps à la mise en page de se stabiliser
@@ -1252,8 +1528,11 @@ async function exportEvaluationPDF(){
   };
 }
 
-async function openEvalPreview(){
+async function openEvalPreview(corrige){
   if(!evaluationExercises.length){ await niceAlert("Ajoutez au moins un exercice avant l'aperçu."); return; }
+  corrige = corrige === true;
+  if(corrige && !evaluationExercises.some(evalCorA)){ await niceAlert("Aucun exercice n'a encore de correction : « Rédiger le corrigé avec l'IA » ou « Écrire le corrigé »."); return; }
+  const titreAp = document.querySelector('#evalPreviewModalOverlay strong'); if(titreAp) titreAp.textContent = corrige ? 'Corrigé' : 'Évaluation';
   const content = document.getElementById('evalPreviewContent');
   document.getElementById('evalPreviewPageMarks').innerHTML = '';
   // Même page que le PDF (evalDocumentHTML), dans un cadre de la largeur utile de la feuille (680 px) :
@@ -1267,19 +1546,19 @@ async function openEvalPreview(){
     requestAnimationFrame(() => {
       const totalHeight = doc.documentElement.scrollHeight;
       frame.style.height = totalHeight + 'px';
-      evalPreviewMarques(doc, totalHeight, 10); // 10 px : marge intérieure du conteneur de l'aperçu
+      evalPreviewMarques(doc, totalHeight, 10, corrige); // 10 px : marge intérieure du conteneur de l'aperçu
     });
   }, 200);
-  frame.srcdoc = evalDocumentHTML();
+  frame.srcdoc = evalDocumentHTML(corrige);
 }
 // Repères de saut de page de l'aperçu : la largeur utile du PDF (A4, marges de 15 mm) fait 680 px ;
 // on en déduit la hauteur d'une page dans les mêmes proportions. Deux sources : les sauts EXPLICITES
 // (evalPageBreaksAfter, garantis à cette position) et une estimation par hauteur pour le reste.
-function evalPreviewMarques(doc, totalHeight, decalage){
+function evalPreviewMarques(doc, totalHeight, decalage, corrige){
   const pxPerMm = 680/180;
   const pageHeightPx = 267*pxPerMm; // hauteur utile A4 (297 mm - 2 x 15 mm de marge)
   const sautsExplicites = evaluationExercises
-    .filter(ex=>evalPageBreaksAfter.has(ex.id))
+    .filter(ex=>!corrige && evalPageBreaksAfter.has(ex.id))
     .map(ex=>doc.querySelector('[data-ex-id="'+ex.id+'"]'))
     .filter(Boolean)
     .map(el=>el.getBoundingClientRect().bottom + doc.documentElement.scrollTop)

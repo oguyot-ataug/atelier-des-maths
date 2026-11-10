@@ -2687,3 +2687,25 @@ body.plp-ouvert .cahier-flottant{ top:56px; bottom:auto; left:16px; z-index:2147
   .evf-meta{display:block;}
   .evf-cherche input{width:150px;}
 }
+
+/* Corrigé des évaluations (evaluation.js, 10/11/2026) : zone « Correction » sous chaque exercice. Vert = correction (couleur des
+   résultats du cahier), orange = proposition de l'IA pas encore relue. */
+.eval-cor{ margin-top:10px; border:1px solid rgba(21,128,61,.28); border-left:4px solid #15803D; border-radius:8px; background:rgba(21,128,61,.035); padding:6px 10px; }
+.eval-cor.a-relire{ border-color:rgba(227,93,58,.4); border-left-color:#E35D3A; background:rgba(227,93,58,.045); }
+.eval-cor-tete{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.eval-cor-bascule{ border:none; background:none; font:700 .95rem 'Space Grotesk',sans-serif; color:#15803D; cursor:pointer; display:inline-flex; align-items:center; gap:2px; padding:2px 0; }
+.eval-cor.a-relire .eval-cor-bascule{ color:#B4441F; }
+.eval-cor-bascule:focus-visible, .eval-cor-btn:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+.eval-cor-etat{ font-size:.75rem; padding:2px 8px; border-radius:999px; display:inline-flex; align-items:center; gap:3px; }
+.eval-cor-etat .gicon{ font-size:14px; }
+.eval-cor-etat.vide{ background:rgba(28,43,57,.06); color:var(--ink-soft); }
+.eval-cor-etat.ia{ background:rgba(227,93,58,.13); color:#B4441F; }
+.eval-cor-etat.ok{ background:rgba(21,128,61,.12); color:#15803D; }
+.eval-cor-etat.attente{ background:rgba(12,91,160,.1); color:#0C5BA0; }
+.eval-cor-btn{ border:none; background:rgba(31,58,92,.08); border-radius:6px; padding:4px 10px; cursor:pointer; font-size:.82rem; display:inline-flex; align-items:center; gap:4px; color:inherit; }
+.eval-cor-btn .gicon{ font-size:16px; }
+.eval-cor-btn.ok{ background:rgba(21,128,61,.14); color:#15803D; font-weight:600; }
+.eval-cor-btn:disabled{ opacity:.5; cursor:wait; }
+.eval-cor-apercu{ margin-top:6px; }
+.eval-cor-corps{ margin-top:8px; }
+.eval-cor-barre{ align-items:center; flex-wrap:wrap; }
