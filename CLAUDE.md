@@ -378,13 +378,14 @@ plus loin : … », ses exercices préfixés « Pour aller plus loin : ». Ce qu
 chapitre concerné. CE1 contrôlé en entier, CP, 5e, 4e et 3e complétés (build 1194), CM1 et 6e (build 1195).
 À la 4e et à la 3e, le contrôle suit l'ancien programme (2020) et ses attendus de fin d'année tant qu'il est en vigueur.
 
-## Ventes fermées : page des tarifs hors ligne (depuis le 30/10/2026, build 1204)
+## Ventes : ouverture le 1er décembre 2026, page des tarifs publique (depuis le 10/11/2026)
 
-Tant que les ventes ne sont pas ouvertes (bouton « Ouvrir les ventes » d'Administration › Offres profs), `tarifs/index.html`
-est une page d'attente sans aucun prix (« Ouverture des ventes prochainement »). La page complète des tarifs est gardée dans
-`_hors-ligne/tarifs.html`, dossier exclu de la publication (`deploy-pages.yml`). À l'ouverture des ventes : la recopier dans
-`tarifs/index.html` (en retirant le bandeau « Ouverture des ventes prochainement »). Les comptes non « test » ne voient ni
-offres, ni prix, ni lien vers les tarifs dans « Mon abonnement », ni prix dans l'Espace famille (`famVenteFermeeHtml`).
+**Ouverture des ventes le 1er décembre 2026** (autorisation de cumul d'activités obtenue le 10/11/2026). Depuis le 10/11/2026
+(« On peut mettre la page des tarifs pour tous ! »), `tarifs/index.html` est la page COMPLÈTE des tarifs, publique et indexable,
+avec le bandeau « Ouverture des ventes le 1er décembre 2026 · en attendant, essai gratuit » (à retirer le 1er décembre, le jour du
+bouton « Ouvrir les ventes » d'Administration › Offres profs). `_hors-ligne/tarifs.html` (exclu de la publication) en reste la copie
+de travail. Jusqu'à l'ouverture, DANS LE SITE, les comptes non « test » ne voient ni offres, ni prix, ni lien vers les tarifs dans
+« Mon abonnement », ni prix dans l'Espace famille (`famVenteFermeeHtml`).
 
 Paiement intégré au site (Stripe Embedded Checkout, build 1205) : `paiementOuvrir` (app.js) ; les fonctions prof-offre et famille
 renvoient client_secret + clé publique si les secrets STRIPE_TEST_PUBLISHABLE_KEY / STRIPE_PUBLISHABLE_KEY existent, sinon la page Stripe.
