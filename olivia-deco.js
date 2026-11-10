@@ -64,7 +64,7 @@ function olivPoseSvg(p, teinte){
     visage = `<path d="M40 54 L52 57 M80 54 L68 57" stroke="#2C3A1A" stroke-width="3" stroke-linecap="round"/>` + yeux(false) + joues + bouche;
     extra = `<path d="M44 92 h32 l-4 10 h-24 Z" fill="#F5C518" stroke="#C99A00" stroke-width="1.5"/><text x="60" y="101" font-size="9" font-weight="800" fill="#7A2E2E" font-family="Arial" text-anchor="middle">D</text>`;
     return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">${cape}${tete}${corps}${bras}${visage}${extra}</svg>`;
-  } else if(['globe', 'musique', 'arts', 'sport', 'cuisine', 'nature', 'argent', 'jeux', 'sciences', 'geo', 'savante', 'regle', 'equerre', 'tableau', 'blocs', 'correction', 'evaluation', 'devoirs', 'interro', 'classe', 'session', 'calendrier', 'outils', 'simulateur', 'programmes', 'lexique', 'calculatrice', 'rendezvous', 'couronne', 'ia', 'cle', 'bug', 'aurevoir'].includes(p)){
+  } else if(['globe', 'musique', 'arts', 'sport', 'cuisine', 'nature', 'argent', 'jeux', 'sciences', 'geo', 'savante', 'regle', 'equerre', 'tableau', 'blocs', 'correction', 'evaluation', 'evaluations', 'devoirs', 'interro', 'classe', 'session', 'calendrier', 'outils', 'simulateur', 'programmes', 'lexique', 'calculatrice', 'rendezvous', 'couronne', 'ia', 'cle', 'bug', 'aurevoir'].includes(p)){
     // Maths & la vie (la globe-trotteuse et une pose par thème) et page Histoire des maths (la savante grecque) --
     // demandé : « insérer des logos d'Oliv'IA dans les pages Maths & la vie et dans le menu histoire », choix :
     // « globe-trotteuse, vignettes par thème et savante grecque ». La main droite tient l'objet du thème.
@@ -117,6 +117,8 @@ function olivPoseSvg(p, teinte){
       extra = `<rect x="94" y="12" width="26" height="34" rx="2" fill="#fff" stroke="#5B6472" stroke-width="2"/><path d="M99 20 h16 M99 26 h16 M99 32 h10" stroke="#B8BEC8" stroke-width="2"/><path d="M100 38 l4 4 l8 -10" stroke="#D3302F" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M105 56 L116 36" stroke="#D3302F" stroke-width="4" stroke-linecap="round"/><path d="M116 36 l2 -4" stroke="#7A2E2E" stroke-width="3"/><circle cx="105" cy="56" r="4.8" fill="${E}"/>`;
     } else if(p === 'evaluation'){ // feuille « ÉVAL » et crayon
       extra = `<rect x="92" y="10" width="28" height="36" rx="2" fill="#FFF8E1" stroke="#8A6D1F" stroke-width="2"/><text x="106" y="22" font-size="8" font-weight="800" fill="#8A6D1F" font-family="Arial" text-anchor="middle">ÉVAL</text><path d="M97 28 h18 M97 34 h18 M97 40 h12" stroke="#C9B37A" stroke-width="2"/><g transform="rotate(35 108 44)"><rect x="104" y="30" width="7" height="26" rx="1.5" fill="#F5C518" stroke="#8A6D1F" stroke-width="1.5"/><path d="M104 56 l3.5 7 l3.5 -7 Z" fill="#F3D9A0" stroke="#8A6D1F" stroke-width="1.2"/></g><circle cx="105" cy="56" r="4.8" fill="${E}"/>`;
+    } else if(p === 'evaluations'){ // sous-menu « Évaluations » : pile de copies corrigées, coche rouge et étoile (demandé le 10/11/2026 : « Il faudrait quand même une petite Olivie pour Évaluations »)
+      extra = `<rect x="98" y="8" width="24" height="32" rx="2" fill="#E8ECF2" stroke="#8A93A3" stroke-width="1.6" transform="rotate(10 110 24)"/><rect x="95" y="10" width="24" height="32" rx="2" fill="#F4F6F9" stroke="#8A93A3" stroke-width="1.6" transform="rotate(4 107 26)"/><rect x="92" y="12" width="24" height="32" rx="2" fill="#fff" stroke="#5B6472" stroke-width="2"/><path d="M96 20 h12 M96 26 h16 M96 32 h10" stroke="#B8BEC8" stroke-width="2"/><path d="M98 38 l3.5 3.5 l7 -8" stroke="#D3302F" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M116 3 l2.1 4.3 4.7 .7 -3.4 3.3 .8 4.7 -4.2 -2.2 -4.2 2.2 .8 -4.7 -3.4 -3.3 4.7 -.7 Z" fill="#F5C518" stroke="#C99A00" stroke-width="1"/><circle cx="105" cy="56" r="4.8" fill="${E}"/>`;
     } else if(p === 'devoirs'){ // copie qu'on envoie
       extra = `<rect x="94" y="16" width="24" height="30" rx="2" fill="#fff" stroke="#2F6FB3" stroke-width="2"/><path d="M99 24 h14 M99 30 h14" stroke="#B8BEC8" stroke-width="2"/><circle cx="114" cy="42" r="9" fill="#2F6FB3"/><path d="M114 47 V37 M110 41 l4 -4 l4 4" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round"/><circle cx="105" cy="56" r="4.8" fill="${E}"/>`;
     } else if(p === 'interro'){ // tablette avec un QCM
@@ -191,7 +193,8 @@ const OLIV_POSES = ['savoir', 'methode', 'muscle', 'histoire', 'quiz', 'cm2', 'd
 // Menu L'Atelier : une Oliv'IA par entrée à la place des icônes -- demandé : « On peut la décliner sur d'autres
 // entrées et remplacer les icônes Google par des Oliv'IA ».
 // Menu « L'Atelier du prof » : mêmes Oliv'IA sans lunettes, en olives de couleurs variées ; le sous-menu
-// « Évaluations » reste sans vignette (choix : « sans icône pour les sous-menus »).
+// « Évaluations » est resté sans vignette jusqu'au 10/11/2026 (« Il faudrait quand même une petite Olivie pour Évaluations ») :
+// pile de copies corrigées, olive cuivrée.
 // Couleurs variées aussi dans le menu L'Atelier -- demandé : « varie aussi les couleurs dans le menu L'Atelier ».
 const OLIV_MENU = { cm: ['muscle', 'verte'], compte: ['jeux', 'noire'], convertisseur: ['regle', 'doree'], 'figure-sandbox': ['equerre', 'cuivree'], tableau: ['tableau', 'verte'], programmation: ['blocs', 'noire'], 'histoire-maths': ['savante', 'doree'], lexique: ['lexique', 'cuivree'], calculatrice: ['calculatrice', 'verte'], 'rendez-vous': ['rendezvous', 'doree'],
   correction: ['correction', 'verte'], evaluation: ['evaluation', 'noire'], devoirsprof: ['devoirs', 'doree'], questionnaires: ['interro', 'cuivree'], supervision: ['classe', 'verte'],
@@ -202,6 +205,11 @@ function olivMenu(){
     const [pose, teinte] = Array.isArray(m) ? m : [m];
     const o = document.createElement('span'); o.className = 'oliv-menu'; o.setAttribute('aria-hidden', 'true'); o.style.backgroundImage = olivPoseUrl(pose, teinte); g.replaceWith(o);
   });
+  // Sous-menu « Évaluations » : sa propre Oliv'IA (demandé le 10/11/2026 : « Il faudrait quand même une petite Olivie pour Évaluations »).
+  const ev = document.querySelector('#navSubEvaluations > .nav-sub-trigger');
+  if(ev && !ev.querySelector('.oliv-menu')){
+    const o = document.createElement('span'); o.className = 'oliv-menu'; o.setAttribute('aria-hidden', 'true'); o.style.backgroundImage = olivPoseUrl('evaluations', 'cuivree'); ev.prepend(o);
+  }
 }
 // Menu « Mon compte » (personne connectée) : on reconnaît chaque bouton à l'action qu'il lance.
 const OLIV_COMPTE = [['openAbonnement', 'couronne', 'doree'], ['openIaPage', 'ia', 'verte'], ['openChangePasswordModal', 'cle', 'noire'], ['openBugReportModal', 'bug', 'cuivree'], ['globalSignOut', 'aurevoir', 'verte']];
@@ -283,6 +291,7 @@ function olivDecorer(demo){
     .oliv-deco .oliv-sh{--oliv-img:${olivPoseUrl('methode')};}
     /* Menu L'Atelier : Oliv'IA à la place des icônes (olivMenu) */
     .oliv-menu{display:inline-block;width:40px;height:40px;background:center/contain no-repeat;vertical-align:middle;margin:-10px 4px -8px -6px;flex:none;}
+    .nav-sub-trigger .oliv-menu{margin-right:8px;}
     .oliv-compte{display:inline-block;width:34px;height:34px;background:center/contain no-repeat;vertical-align:middle;margin:-9px 4px -8px -4px;flex:none;}
     .oliv-titre{display:inline-block;width:80px;height:80px;background:center/contain no-repeat;vertical-align:middle;margin:-10px 8px -14px -8px;flex:none;}
     .oliv-deco .oliv-sh.oliv-sh-plus{--oliv-img:${olivPoseUrl('cm2')};}

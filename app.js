@@ -3957,6 +3957,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1404', date:'2026-11-10', items:[
+    "Menu « L'Atelier du prof » : le sous-menu « Évaluations » a maintenant son Oliv'IA -- demandé : « Il faudrait quand même une petite Olivie pour Évaluations ». Une olive cuivrée avec une pile de copies corrigées (coche rouge et étoile), alignée sur les autres entrées du menu."
+  ] },
   { version:'2026-08-19.1403', date:'2026-11-10', items:[
     "Corrigé des évaluations par l'IA -- demandé : « quand il s'agit de compléter, l'IA doit corriger uniquement en complétant, pas en détaillant le pourquoi du comment ». Une question à compléter (pointillés, cases, « Complète », « Écris le nombre qui manque ») est corrigée en recopiant la ligne complétée, les réponses en gras, sans titre, sans calcul ni explication, sans phrase de conclusion. Même chose pour entourer, cocher, relier, ranger et vrai / faux : seulement la réponse attendue. Les problèmes gardent leur rédaction complète (titre, calcul, phrase)."
   ] },
