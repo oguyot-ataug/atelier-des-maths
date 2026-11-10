@@ -400,6 +400,8 @@ Tarifs bien visibles (demandé le 10/11/2026 : « je trouve que la page tarif es
 seulement (demandé le 10/11/2026 : « Supprimer la page tarif quand on est connecté » ; refreshAuthUI, tarifsOuvrir renvoie à l'accueil),
 jamais sur L'Atelier du Prof. La page publique /tarifs/ reste accessible à tous par son adresse.
 Plus de lien vers L'Atelier du Prof dans le pied de page de L'Atelier des Maths (demandé le 10/11/2026).
+Publication GitHub Pages bloquée sur « syncing_files » (09 et 10/11/2026, plusieurs fois) : GitHub annule au bout de 10 min (plafond non
+réglable). Relancer avec un NOUVEAU commit sur main ; relancer le même commit (Run workflow) est annulé aussitôt (« Deployment cancelled »).
 « Demander un devis » (demandé le 10/11/2026 : « un formulaire simple à remplir (profs seul, établissement, famille, profs particuliers...)
 et s'adapter en fonction ») : fenêtre `#dvFond` de `tarifs/index.html` (boutons `data-devis`, préremplie depuis l'estimateur avec
 `data-calc`), estimation indicative, envoi à la fonction `demande-devis` (verify_jwt non) qui range la demande dans `demandes_devis`
