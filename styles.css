@@ -2009,6 +2009,22 @@ select:not([multiple]):not([size]){
 :where(input[type=date], input[type=time], input[type=datetime-local])::-webkit-calendar-picker-indicator{ cursor:pointer; opacity:.7; }
 
 /* Géométrie interactive : menu du clic droit (trace d'un objet, outils-figures.js). */
+/* Liste des objets de la géométrie interactive (bouton « Liste des objets », outils-figures.js, 10/11/2026) */
+.fig-objets{flex:0 0 230px;max-height:min(62vh,560px);overflow-y:auto;background:#fff;border:1px solid rgba(28,43,57,.15);border-radius:8px;padding:4px;font-size:.85rem;align-self:flex-start;}
+.fig-ob-t{display:flex;align-items:center;justify-content:space-between;padding:4px 6px 6px;font:700 .9rem 'Space Grotesk',sans-serif;}
+.fig-ob-s{padding:6px 6px 2px;font:700 .72rem 'Space Grotesk',sans-serif;color:var(--ink-soft,#5B6472);text-transform:uppercase;letter-spacing:.04em;}
+.fig-ob{display:flex;align-items:center;gap:6px;padding:2px 4px;border-radius:6px;}
+.fig-ob:hover{background:rgba(227,93,58,.08);}
+.fig-ob.masque .fig-ob-n,.fig-ob.masque .fig-ob-c{opacity:.4;}
+.fig-ob-n{flex:1;min-width:0;cursor:pointer;line-height:1.25;padding:3px 0;}
+.fig-ob-c{width:10px;height:10px;border-radius:50%;flex:0 0 10px;}
+.fig-ob-oeil,.fig-ob-opt,.fig-ob-x{border:0;background:none;padding:2px;cursor:pointer;color:var(--ink-soft,#5B6472);display:flex;border-radius:5px;}
+.fig-ob-oeil:hover,.fig-ob-opt:hover,.fig-ob-x:hover{background:rgba(28,43,57,.08);color:var(--ink,#1C1B2E);}
+.fig-ob-oeil .gicon,.fig-ob-opt .gicon,.fig-ob-x .gicon{font-size:18px;}
+.fig-ob.masque .fig-ob-oeil{color:#B8511F;}
+.fig-ob-tout{margin:8px 6px 4px;font-size:.8rem;padding:4px 10px;}
+@media (max-width:760px){ .fig-objets{position:fixed;right:8px;bottom:8px;max-height:45vh;width:230px;z-index:10040;box-shadow:0 10px 28px rgba(28,43,57,.2);} }
+@media print{ .fig-objets{display:none !important;} }
 #figMenuCtx{position:fixed;z-index:10050;background:#fff;border:1px solid rgba(28,43,57,.15);border-radius:10px;box-shadow:0 10px 28px rgba(28,43,57,.2);padding:4px;min-width:200px;font-size:.9rem;}
 #figMenuCtx .fig-mc-t{padding:6px 10px 4px;font:700 .78rem 'Space Grotesk',sans-serif;color:var(--ink-soft,#5B6472);}
 #figMenuCtx .fig-mc-t::first-letter{text-transform:uppercase;}

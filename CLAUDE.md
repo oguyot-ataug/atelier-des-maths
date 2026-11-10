@@ -310,6 +310,11 @@ blocs `.fig-dyn` du moteur de la Géométrie interactive (outils-figures.js : po
 fichier du chapitre (`apdFig(points, shapes)`, chapitres/5e/G2-angles-parallelisme.js ; encadré `.dyn-activite`). Forme
 `angles-somme` (sommets dans l'ordre) : angles intérieurs d'un polygone et leur somme, arrondis pour que la somme reste exacte.
 
+Objets masqués et liste des objets de la Géométrie interactive (demandé le 10/11/2026) : réglage `masque` d'un point ou d'un objet
+(clic droit « Masquer l'objet », ou l'œil de la liste) : ni dessiné ni cliquable, mais ce qui en dépend suit toujours ; bouton
+« Liste des objets » (`figObjetsBasculer`, panneau `#figObjets`) : œil, couleur, options (menu du clic droit, `onFigureContextMenu(evt, obj)`),
+survol = objet mis en évidence (`figSurvol`).
+
 ## Corrections animées des constructions : AUX INSTRUMENTS DU SITE (demandé le 01/11/2026)
 
 « Oui, mets en place la correction animée », puis « Tu n'as pas utilisé les instruments du site ! » : une figure de construction

@@ -534,12 +534,12 @@ document.body.insertAdjacentHTML('beforeend', `
 
         <div class="fig-group-wrap">
         <button type="button" class="fig-icon-btn fig-mode" id="figPrimaryRemarquables" data-mode="perpendiculaire" onclick="setFigureMode(this.dataset.mode)" title="Perpendiculaire (dernier outil choisi dans ce groupe)">
-          <svg viewBox="0 0 24 24" width="20" height="20"><line x1="2" y1="17" x2="22" y2="17" stroke="currentColor" stroke-width="1.4"/><line x1="16" y1="6" x2="16" y2="22" stroke="currentColor" stroke-width="1.4"/><rect x="13" y="14" width="3" height="3" fill="none" stroke="currentColor" stroke-width="1"/></svg>
+          <svg viewBox="0 0 24 24" width="20" height="20"><line x1="2" y1="17" x2="22" y2="17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><line x1="10" y1="2.5" x2="10" y2="22" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M10 11.5 H15.5 V17" fill="none" stroke="currentColor" stroke-width="1.2"/><circle cx="10" cy="6.5" r="1.9" fill="currentColor"/></svg>
         </button>
         <button type="button" class="fig-group-corner" onclick="event.stopPropagation(); toggleFigGroup('remarquables')" title="Perpendiculaire / Parallèle / Médiatrice">▾</button>
         <div id="figGroupRemarquables" class="fig-group-sub">
           <button type="button" class="fig-icon-btn fig-mode" data-mode="perpendiculaire" onclick="selectFigSubTool('remarquables', this)" title="Perpendiculaire">
-            <svg viewBox="0 0 24 24" width="20" height="20"><line x1="2" y1="17" x2="22" y2="17" stroke="currentColor" stroke-width="1.4"/><line x1="16" y1="6" x2="16" y2="22" stroke="currentColor" stroke-width="1.4"/><rect x="13" y="14" width="3" height="3" fill="none" stroke="currentColor" stroke-width="1"/></svg>
+            <svg viewBox="0 0 24 24" width="20" height="20"><line x1="2" y1="17" x2="22" y2="17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><line x1="10" y1="2.5" x2="10" y2="22" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M10 11.5 H15.5 V17" fill="none" stroke="currentColor" stroke-width="1.2"/><circle cx="10" cy="6.5" r="1.9" fill="currentColor"/></svg>
           </button>
           <button type="button" class="fig-icon-btn fig-mode" data-mode="parallele" onclick="selectFigSubTool('remarquables', this)" title="Parallèle">∥</button>
           <button type="button" class="fig-icon-btn fig-mode" data-mode="mediatrice" onclick="selectFigSubTool('remarquables', this)" title="Médiatrice">
@@ -595,6 +595,7 @@ document.body.insertAdjacentHTML('beforeend', `
         <button type="button" class="fig-icon-btn" onclick="clearFigure()" title="Effacer tout"><span class=gicon>cleaning_services</span></button>
         <div style="width:1px;align-self:stretch;background:rgba(28,43,57,.15);margin:0 2px;"></div>
         <button type="button" class="fig-icon-btn" id="figFullscreenBtn" onclick="figToggleFullscreen()" title="Plein écran"><span class=gicon>fullscreen</span></button>
+        <button type="button" class="fig-icon-btn" id="figObjetsBtn" onclick="figObjetsBasculer()" title="Liste des objets : afficher ou masquer, couleur, trait, options de chaque objet"><span class=gicon>format_list_bulleted</span></button>
         <button type="button" class="fig-icon-btn" id="figNomsBtn" onclick="figBasculerNoms()" title="Masquer les noms des points (ici et sur la construction aux instruments)"><span class=gicon>label_off</span></button>
         <button type="button" class="fig-icon-btn" id="figSplitBtn" onclick="figToggleSplit()" style="display:none;" title="Écran partagé : la figure à gauche, sa construction aux instruments à droite"><span class=gicon>vertical_split</span></button>
         <button type="button" class="fig-icon-btn" id="figProjBtn" onclick="figToggleProjection()" style="display:none;" title="Projeter la construction aux instruments dans une fenêtre à part (second écran, vidéoprojecteur)"><span class=gicon>cast</span></button>
@@ -624,6 +625,7 @@ document.body.insertAdjacentHTML('beforeend', `
                style="width:min(90vw, 1000px, calc(62vh * 1.5625));aspect-ratio:500/320;display:block;margin:0 auto;background:#fff;border:1px solid rgba(28,43,57,.15);border-radius:8px;cursor:crosshair;"></svg>
           <p class="hint" style="margin-top:8px;" id="figureHint">Cliquez pour placer un point.</p>
         </div>
+        <div id="figObjets" class="fig-objets" style="display:none;"></div>
       </div>
       <div class="figure-toolbar" style="margin-top:10px;">
         <button type="button" class="btn" id="figValidateBtn" onclick="validateFigure()">✓ Valider et insérer la figure</button>
@@ -3726,7 +3728,7 @@ function svgCoordsFromEvent(svg, evt){
 }
 function findNearbyPoint(x,y){
   const thresh = 18; // légèrement augmenté (16->18) : plus tolérant, cohérent avec les formes
-  return figState.points.find(p=>(!p.hidden || (figState.mode==='deplacer' && !(p.def && p.def.type==='angle-cote'))) && Math.hypot(p.x-x,p.y-y)<thresh);
+  return figState.points.find(p=>!p.masque && (!p.hidden || (figState.mode==='deplacer' && !(p.def && p.def.type==='angle-cote'))) && Math.hypot(p.x-x,p.y-y)<thresh);
 }
 function distToSegment(px,py,ax,ay,bx,by){
   const dx=bx-ax, dy=by-ay;
@@ -3846,7 +3848,7 @@ function findCurveIntersectionNear(x, y){
 function findArcRayonHit(x, y){
   let best = null;
   figState.shapes.forEach(s=>{
-    if(s.type!=='arc-rayon') return;
+    if(s.type!=='arc-rayon' || s.masque) return;
     const ends = {a1:s.a1, a2:s.a2};
     for(const k in ends){
       const ex = s.center.x+s.radius*Math.cos(ends[k]), ey = s.center.y+s.radius*Math.sin(ends[k]), d = Math.hypot(x-ex, y-ey);
@@ -3938,6 +3940,7 @@ function findNearbyShape(x,y){
   const thresh = 18;
   let best = null, bestLen = Infinity;
   figState.shapes.forEach(s=>{
+    if(s.masque) return; // objet masqué : ni visible ni cliquable (liste des objets pour le réafficher)
     let match = false;
     if(s.type==='segment' || s.type==='vecteur' || s.type==='mesure-distance') match = distToSegment(x,y,s.p1.x,s.p1.y,s.p2.x,s.p2.y) < thresh;
     else if(s.type==='mesure-distance-ligne'){
@@ -5326,6 +5329,7 @@ function renderFigureSvg(){
   }
   figState.shapes.forEach(s=>{
     const debutObjet = html.length; // pour la trace de l'objet (figTraceNoter)
+    if(s.masque && s!==figSurvol) return; // objet masqué (clic droit ou liste des objets) : seulement montré, pâle, au survol de sa ligne dans la liste
     if([s.p1, s.p2, s.vertex, s.center, s.through].some(q=>q && q.indefini)) return; // s'appuie sur une intersection disparue
     if(s.type==='segment'){
       html+=`<line x1="${s.p1.x}" y1="${s.p1.y}" x2="${s.p2.x}" y2="${s.p2.y}" ${shapeStrokeAttrs(s,'#1C1B2E')}/>`;
@@ -5453,7 +5457,8 @@ function renderFigureSvg(){
       const lx = s.vertex.x+r*Math.cos(bis), ly = s.vertex.y+r*Math.sin(bis);
       html += `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" font-family="JetBrains Mono" font-size="9" fill="#5C5A78" text-anchor="middle">${s.deg}°</text>`;
     }
-    if(s.trace) figTraceNoter(s, html.slice(debutObjet));
+    if(s.trace && !s.masque) figTraceNoter(s, html.slice(debutObjet));
+    if(s===figSurvol) html = html.slice(0, debutObjet) + figSurvolG(html.slice(debutObjet), s.masque) + '</g>';
   });
   /* Marqueur d'un point selon le nombre d'objets (segment/droite/demi-droite comme
      extrémité, angle/bissectrice comme sommet) auxquels il appartient :
@@ -5492,8 +5497,10 @@ function renderFigureSvg(){
     return {x:dx/len, y:dy/len};
   }
   figState.points.forEach(p=>{
+    if(p.masque && p!==figSurvol) return;
+    const debutPoint = html.length;
     const sel = figState.selected.includes(p);
-    const linked = findLineShapesAt(p);
+    const linked = findLineShapesAt(p).filter(s=>!s.masque); // un objet masqué ne compte pas pour la marque du point
     // Si le point est lié à une forme dont la couleur a été personnalisée (via l'éditeur de
     // style), son marqueur ET son label reprennent cette couleur -- changer la couleur d'un
     // segment doit aussi changer la couleur de ses extrémités, pas seulement le trait.
@@ -5561,7 +5568,8 @@ function renderFigureSvg(){
     }
     }
     if(!figState.nomsMasques && !p.nomCache) html+=`<text x="${p.x+(p.labelDx??9)}" y="${p.y+(p.labelDy??-9)}" font-family="Space Grotesk" font-size="9" font-weight="700" fill="${sel?'#E35D3A':baseColor}">${p.label}</text>`;
-    if(p.trace) figTraceNoter(p, `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="1.6" fill="${baseColor}"/>`);
+    if(p.trace && !p.masque) figTraceNoter(p, `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="1.6" fill="${baseColor}"/>`);
+    if(p===figSurvol) html = html.slice(0, debutPoint) + figSurvolG(html.slice(debutPoint), p.masque) + '</g>';
   });
   if(figInterPremier && figState.shapes.includes(figInterPremier)){
     const cv = figCurve(figInterPremier);
@@ -5578,6 +5586,7 @@ function renderFigureSvg(){
     pp.forEach((q,i)=>{ html+=`<circle cx="${q.x.toFixed(1)}" cy="${q.y.toFixed(1)}" r="${i===0 && pp.length>=3 ? 6 : 3.5}" fill="${i===0 && pp.length>=3 ? 'rgba(227,93,58,.18)' : 'none'}" stroke="#E35D3A" stroke-width="1.1" pointer-events="none"/>`; });
   }
   svg.innerHTML = figTracesHtml() + html;
+  if(!figRenderCible) figObjetsMaj();
   if(!figRenderCible && figLiveActif() && !figAnim.pts.size) figLivePlanifier(); // pas de reconstruction aux instruments à chaque image d'une animation
 }
 /* TRACE D'UN OBJET -- demandé : « permettre dans la géométrie interactive d'activer la trace d'un
@@ -5610,7 +5619,77 @@ function figNomObjet(o){
   const t = { segment: `le segment [${n(o.p1)}${n(o.p2)}]`, droite: `la droite (${n(o.p1)}${n(o.p2)})`, 'demi-droite': `la demi-droite [${n(o.p1)}${n(o.p2)})`,
     vecteur: `le vecteur ${n(o.p1)}${n(o.p2)}`, cercle: `le cercle de centre ${n(o.p1)}`, arc: 'l\'arc de cercle', 'arc-rayon': 'l\'arc de cercle',
     perpendiculaire: 'la perpendiculaire', parallele: 'la parallèle', mediatrice: 'la médiatrice', bissectrice: 'la bissectrice', angle: 'l\'angle' }[o.type];
+  // Noms complets pour la liste des objets : « la perpendiculaire à (AB) passant par C », « la médiatrice de [AB] »…
+  const ref = o.refA && o.refB ? ` à (${n(o.refA)}${n(o.refB)})` : o.refLigne ? ' à ' + figNomObjet(o.refLigne).replace(/^(le|la|l')\s?/, '').replace(/^droite /, '') : '';
+  if((o.type==='perpendiculaire' || o.type==='parallele') && (ref || o.through)) return t + ref + (o.through ? ` passant par ${n(o.through)}` : '');
+  if(o.type==='mediatrice' && o.p1 && o.p2) return `la médiatrice de [${n(o.p1)}${n(o.p2)}]`;
+  if((o.type==='bissectrice' || o.type==='angle') && o.vertex && o.p1 && o.p2) return `${t} ${o.type==='bissectrice' ? 'de l\'angle ' : ''}${n(o.p1)}${n(o.vertex)}${n(o.p2)}`.replace("l'angle l'angle", "l'angle");
+  if(o.type==='arc-rayon' && o.center) return `l'arc de centre ${n(o.center)}`;
+  if(o.type==='arc' && o.center) return `l'arc de centre ${n(o.center)}`;
+  if(o.type==='mesure-distance' && o.p1 && o.p2) return `la longueur ${n(o.p1)}${n(o.p2)}`;
+  if(o.type==='mesure-distance-ligne') return 'la distance d\'un point à une droite';
+  if(o.type==='angles-somme') return 'la somme des angles';
   return t || 'cet objet';
+}
+/* OBJETS MASQUÉS ET LISTE DES OBJETS (demandé le 10/11/2026 : « En géométrie dynamique, permettre de masquer des objets, faire un
+   listing des objets pour agir sur leurs options facilement »). Un objet masqué (réglage « masque », enregistré avec la figure)
+   n'est plus dessiné ni cliquable, mais reste dans la construction : ce qui en dépend suit toujours (ex. masquer la médiatrice qui
+   a servi à placer un point). Masquer : clic droit sur l'objet, ou l'œil de sa ligne dans la liste (bouton « Liste des objets »).
+   La liste donne, pour chaque point et chaque objet, l'œil, la couleur et ses options (le menu du clic droit) ; survoler une ligne
+   montre l'objet sur la figure (en pâle s'il est masqué). */
+let figSurvol = null;
+function figSurvolG(frag, masque){ return `<g style="filter:drop-shadow(0 0 2.5px #E35D3A) drop-shadow(0 0 1px #E35D3A);"${masque ? ' opacity=".35"' : ''}>` + frag; }
+function figMasquer(obj, oui){
+  pushFigHistory();
+  if(oui){ obj.masque = true; figState.selected = figState.selected.filter(q=>q!==obj); if(figAnim.pts.has(obj)) figAnimArreter(obj); }
+  else delete obj.masque;
+  renderFigureSvg();
+}
+// Objets de la liste : points visibles (pas les points auxiliaires) et objets tracés (pas les codages, dessinés avec leur objet).
+const FIG_OBJETS_EXCLUS = ['code-droit','code-angle'];
+function figObjetsListe(){
+  return { points: figState.points.filter(q=>!q.hidden && !q.indefini), objets: figState.shapes.filter(sh=>!FIG_OBJETS_EXCLUS.includes(sh.type)) };
+}
+function figObjetsBasculer(){
+  const el = document.getElementById('figObjets'), btn = document.getElementById('figObjetsBtn'); if(!el) return;
+  const ouvrir = el.style.display==='none';
+  el.style.display = ouvrir ? '' : 'none'; if(btn) btn.classList.toggle('active', ouvrir);
+  el.dataset.sig = ''; figSurvol = null; figObjetsMaj(); renderFigureSvg();
+}
+function figObjetsMaj(){
+  const el = document.getElementById('figObjets'); if(!el || el.style.display==='none') return;
+  const { points, objets } = figObjetsListe();
+  const coul = o => figState.points.includes(o) ? (o.color || '#1C1B2E') : (o.strokeColor || '#1C1B2E');
+  const sig = JSON.stringify([points.map(q=>[q.label, !!q.masque, q.color, !!q.nomCache]), objets.map(o=>[figNomObjet(o), !!o.masque, o.strokeColor, o.strokePattern, o.strokeWidth])]);
+  if(el.dataset.sig === sig) return; // rien n'a changé (déplacement, animation) : la liste reste telle quelle
+  el.dataset.sig = sig;
+  const ligne = (o, i, k, nom) => `<div class="fig-ob${o.masque ? ' masque' : ''}" data-k="${k}" data-i="${i}">
+      <button type="button" class="fig-ob-oeil" data-a="oeil" title="${o.masque ? 'Afficher' : 'Masquer'}"><span class="gicon">${o.masque ? 'visibility_off' : 'visibility'}</span></button>
+      <span class="fig-ob-c" style="background:${coul(o)}"></span>
+      <span class="fig-ob-n" data-a="options" title="Options">${nom}</span>
+      <button type="button" class="fig-ob-opt" data-a="options" title="Options (comme le clic droit)"><span class="gicon">more_vert</span></button>
+    </div>`;
+  const nomObj = o => { const t = figNomObjet(o); return escapeHtml(t.charAt(0).toUpperCase() + t.slice(1)); };
+  const vide = !points.length && !objets.length;
+  el.innerHTML = `<div class="fig-ob-t"><span>Objets</span><button type="button" class="fig-ob-x" data-a="fermer" title="Fermer la liste"><span class="gicon">close</span></button></div>`
+    + (vide ? '<p class="hint" style="margin:6px 8px;">La figure est vide.</p>' : '')
+    + (points.length ? `<div class="fig-ob-s">Points</div>` + points.map((q, i)=>ligne(q, i, 'p', 'Point ' + escapeHtml(q.label || '?'))).join('') : '')
+    + (objets.length ? `<div class="fig-ob-s">Objets</div>` + objets.map((o, i)=>ligne(o, i, 's', nomObj(o))).join('') : '')
+    + ((points.some(q=>q.masque) || objets.some(o=>o.masque)) ? `<button type="button" class="btn secondary fig-ob-tout" data-a="tout"><span class="gicon">visibility</span> Tout afficher</button>` : '');
+  if(el.dataset.branche) return;
+  el.dataset.branche = '1';
+  const objDe = row => { if(!row) return null; const l = figObjetsListe(); return (row.dataset.k==='p' ? l.points : l.objets)[+row.dataset.i] || null; };
+  el.addEventListener('click', e=>{
+    const b = e.target.closest('[data-a]'); if(!b) return;
+    const a = b.dataset.a, o = objDe(b.closest('.fig-ob'));
+    if(a==='fermer'){ figObjetsBasculer(); return; }
+    if(a==='tout'){ pushFigHistory(); [...figState.points, ...figState.shapes].forEach(x=>delete x.masque); renderFigureSvg(); return; }
+    if(!o) return;
+    if(a==='oeil'){ figMasquer(o, !o.masque); return; }
+    if(a==='options'){ const r = b.getBoundingClientRect(); onFigureContextMenu({ preventDefault(){}, clientX: r.right, clientY: r.top }, o); }
+  });
+  el.addEventListener('mouseover', e=>{ const o = objDe(e.target.closest('.fig-ob')); if(o!==figSurvol){ figSurvol = o; renderFigureSvg(); } });
+  el.addEventListener('mouseleave', ()=>{ if(figSurvol){ figSurvol = null; renderFigureSvg(); } });
 }
 function figMenuFermer(){ const m = document.getElementById('figMenuCtx'); if(m) m.remove(); }
 /* Menu du clic droit sur un objet -- demandé : « Permettre de supprimer un point. Clic droit :
@@ -5857,14 +5936,18 @@ function figDynGlisser(v, e){
 let figDynPlanifie = false;
 new MutationObserver(()=>{ if(figDynPlanifie) return; figDynPlanifie = true; requestAnimationFrame(()=>{ figDynPlanifie = false; figDynActiver(document); }); }).observe(document.body, { childList: true, subtree: true });
 const FIG_COULEURS = [['#1C1B2E','Noir'],['#7A8A98','Gris'],['#D93025','Rouge'],['#0D5BA3','Bleu'],['#1F7A4D','Vert'],['#E35D3A','Orange'],['#8E44AD','Violet']];
-function onFigureContextMenu(evt){
+function onFigureContextMenu(evt, objImpose){
   evt.preventDefault();
   figMenuFermer();
-  const svg = document.getElementById('figureSvg');
-  const {x,y} = svgCoordsFromEvent(svg, evt);
-  const p = findNearbyPoint(x,y);
-  const arc = !p && typeof findArcRayonHit==='function' ? findArcRayonHit(x,y) : null;
-  const obj = p || (arc && arc.shape) || findNearbyShape(x,y);
+  let p, obj;
+  if(objImpose){ p = figState.points.includes(objImpose) ? objImpose : null; obj = objImpose; } // « Options » de la liste des objets
+  else {
+    const svg = document.getElementById('figureSvg');
+    const {x,y} = svgCoordsFromEvent(svg, evt);
+    p = findNearbyPoint(x,y);
+    const arc = !p && typeof findArcRayonHit==='function' ? findArcRayonHit(x,y) : null;
+    obj = p || (arc && arc.shape) || findNearbyShape(x,y);
+  }
   const ilYaDesTraces = [...figTraces.values()].some(l=>l.length > 1);
   if(!obj && !ilYaDesTraces && !figAnim.pts.size) return;
   const estPoint = !!p, mes = obj && !estPoint && typeof findEditableMeasure==='function' ? findEditableMeasure(obj) : null;
@@ -5893,6 +5976,7 @@ function onFigureContextMenu(evt){
     const cur = estPoint ? obj.color : obj.strokeColor;
     h += `<div class="fig-mc-s">Couleur</div><div class="fig-mc-couleurs">${FIG_COULEURS.map(([v, t])=>`<button type="button" data-a="couleur" data-v="${v}" title="${t}" class="${cur===v ? 'on' : ''}" style="background:${v};"></button>`).join('')}<button type="button" data-a="couleur" data-v="" title="Couleur d'origine" class="fig-mc-auto${cur ? '' : ' on'}">A</button></div>`;
     if(mes) h += bouton('mesure', 'straighten', {length:'Modifier la longueur', radius:'Modifier le rayon', angle:'Modifier l\'angle'}[mes.type] + ` (${mes.value} ${mes.unit})`);
+    h += obj.masque ? bouton('afficher', 'visibility', 'Afficher l\'objet') : bouton('masquer', 'visibility_off', 'Masquer l\'objet');
     h += bouton('suppr', 'delete', 'Supprimer' + (estPoint ? ' le point' : '') + ' (et ce qui en dépend)', 'fig-mc-suppr');
   }
   if(ilYaDesTraces) h += bouton('tout', 'cleaning_services', 'Effacer toutes les traces');
@@ -5923,6 +6007,7 @@ function onFigureContextMenu(evt){
     if(a==='trace-on'){ obj.trace = true; figTraces.delete(obj); const hint = document.getElementById('figureHint'); if(hint) hint.textContent = 'Trace activée : déplacez la figure (outil Déplacer), ' + figNomObjet(obj) + ' laisse sa trace.'; figMenuFermer(); }
     else if(a==='trace-off'){ delete obj.trace; figTraces.delete(obj); figMenuFermer(); }
     else if(a==='nom'){ obj.nomCache = !obj.nomCache; if(!obj.nomCache) delete obj.nomCache; figMenuFermer(); }
+    else if(a==='masquer' || a==='afficher'){ figMasquer(obj, a==='masquer'); figMenuFermer(); }
     else if(a==='aspect'){ if(v) obj.aspect = v; else delete obj.aspect; }
     else if(a==='epaisseur') obj.strokeWidth = v;
     else if(a==='motif') obj.strokePattern = v;
