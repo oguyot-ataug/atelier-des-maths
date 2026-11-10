@@ -2073,7 +2073,7 @@ select:not([multiple]):not([size]){
 
 /* ===== L'Atelier du Prof (adp.latelieraugmente.fr, adp.js) : le même site sans les contenus de maths ===== */
 .mode-adp #navLinks [data-nav="niveau"], .mode-adp #navDropdownEntrainer, .mode-adp #navLinks [data-nav="progression"],
-.mode-adp #navFamille, .mode-adp #navLinks [data-nav="evaluation"], .mode-adp #navProgrammes, .mode-adp #navTarifs, .mode-adp #heroTarifs, .mode-adp footer a[data-nav="tarifs"],
+.mode-adp #navFamille, .mode-adp #navLinks [data-nav="evaluation"], .mode-adp #navProgrammes, .mode-adp #navTarifs, .mode-adp #heroTarifs, .mode-adp #footTarifs,
 .mode-adp #view-home > :not(#adpAccueil):not(#profHomeDigest),
 .mode-adp .cd-ajout[onclick^="cxProfAjouterCours"],
 .mode-adp .cx-onglets button[data-o="man"], .mode-adp .cx-onglets button[data-o="prog"], .mode-adp .cx-onglets button[data-o="fig"],
@@ -2629,3 +2629,61 @@ body.plp-ouvert .cahier-flottant{ top:56px; bottom:auto; left:16px; z-index:2147
 .hero-actions .hero-tarifs-btn:hover{filter:brightness(1.08);}
 .hero-essai{display:inline-flex;align-items:center;gap:6px;color:#9A5A08;font-weight:600;font-size:.9rem;}
 @media print{ .hero-actions{display:none !important;} }
+
+/* « Mes évaluations » en gestionnaire de fichiers (evaluation.js, demandé le 10/11/2026) */
+.evf-barre{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 12px;margin:0 0 8px;}
+.evf-chemin{display:flex;align-items:center;flex-wrap:wrap;gap:2px;min-width:0;}
+.evf-miette{border:1px dashed transparent;background:none;cursor:pointer;font:600 .92rem 'Inter',sans-serif;color:var(--accent,#0C5BA0);padding:4px 8px;border-radius:8px;display:inline-flex;align-items:center;gap:5px;}
+.evf-miette .gicon{font-size:1.1rem;}
+.evf-miette:hover{background:rgba(12,91,160,.07);}
+.evf-miette.ici{color:var(--ink,#1C1B2E);cursor:default;}
+.evf-sep{color:var(--ink-soft,#5B6472);}
+.evf-outils{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.evf-cherche{display:flex;align-items:center;gap:6px;border:1px solid rgba(28,43,57,.18);border-radius:9px;padding:0 8px;background:#fff;}
+.evf-cherche .gicon{color:var(--ink-soft,#5B6472);font-size:1.15rem;}
+.evf-cherche input{border:0;outline:0;padding:7px 2px;font:400 .9rem 'Inter',sans-serif;width:210px;max-width:46vw;background:transparent;}
+.evf-btn{font-size:.85rem;padding:6px 12px;display:inline-flex;align-items:center;gap:6px;}
+.evf-filtres{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 10px;}
+.evf-puce{border:1px solid rgba(28,43,57,.16);background:#fff;border-radius:999px;padding:4px 12px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;color:var(--ink-soft,#5B6472);}
+.evf-puce.on{background:var(--accent,#0C5BA0);border-color:var(--accent,#0C5BA0);color:#fff;}
+.evf-liste{border:1px solid rgba(28,43,57,.12);border-radius:12px;background:#fff;overflow:hidden;}
+.evf-ligne{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,1.5fr) minmax(0,1.4fr) 92px 92px 40px;align-items:center;gap:8px;padding:6px 10px;border-top:1px solid rgba(28,43,57,.07);font-size:.9rem;}
+.evf-ligne:first-child{border-top:0;}
+.evf-tete{background:#F6F7F9;font-size:.78rem;padding:4px 10px;}
+.evf-tri{border:0;background:none;cursor:pointer;font:700 .76rem 'Space Grotesk',sans-serif;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft,#5B6472);padding:4px 0;display:inline-flex;align-items:center;gap:2px;}
+.evf-tri.on{color:var(--ink,#1C1B2E);}
+.evf-tri .gicon{font-size:.95rem;}
+.evf-fichier:hover,.evf-dossier:hover{background:rgba(12,91,160,.04);}
+.evf-ligne[draggable=true]{cursor:grab;}
+.evf-glisse{opacity:.45;}
+.evf-survol{background:rgba(12,91,160,.12) !important;outline:2px dashed var(--accent,#0C5BA0);outline-offset:-2px;border-radius:8px;}
+.evf-nom{border:0;background:none;cursor:pointer;display:flex;align-items:center;gap:8px;text-align:left;font:600 .92rem 'Inter',sans-serif;color:var(--ink,#1C1B2E);padding:4px 0;min-width:0;max-width:100%;}
+.evf-nom > span:last-child{min-width:0;overflow-wrap:anywhere;}
+.evf-nom:hover{color:var(--accent,#0C5BA0);text-decoration:underline;}
+.evf-ic-dos{color:#E9A21C;font-size:1.35rem;}
+.evf-ic-fic{color:var(--accent,#0C5BA0);font-size:1.3rem;}
+.evf-ou{display:block;font:400 .76rem 'Inter',sans-serif;color:var(--ink-soft,#5B6472);}
+.evf-ou .gicon{font-size:.85rem;vertical-align:-2px;}
+.evf-meta{display:none;font:400 .78rem 'Inter',sans-serif;color:var(--ink-soft,#5B6472);}
+.evf-c-prop,.evf-c-cl,.evf-c-date,.evf-c-modif{color:var(--ink-soft,#5B6472);font-size:.85rem;min-width:0;overflow:hidden;text-overflow:ellipsis;}
+.evf-c-prop{white-space:nowrap;}
+.evf-role{display:inline-flex;align-items:center;gap:2px;font-size:.72rem;background:rgba(122,79,192,.1);color:#6B3FA0;border-radius:999px;padding:1px 7px;margin-left:2px;}
+.evf-role .gicon{font-size:.8rem;}
+.evf-menu-btn{border:0;background:none;cursor:pointer;color:var(--ink-soft,#5B6472);border-radius:8px;padding:4px;display:flex;}
+.evf-menu-btn:hover{background:rgba(28,43,57,.08);color:var(--ink,#1C1B2E);}
+.evf-vide{padding:22px 14px;text-align:center;color:var(--ink-soft,#5B6472);margin:0;border-top:1px solid rgba(28,43,57,.07);}
+.evf-aide{margin:10px 2px 0;font-size:.8rem;}
+.evf-aide .gicon{font-size:.95rem;vertical-align:-3px;}
+.evf-menu{position:fixed;z-index:10070;background:#fff;border:1px solid rgba(28,43,57,.15);border-radius:10px;box-shadow:0 10px 28px rgba(28,43,57,.2);padding:4px;min-width:210px;max-height:60vh;overflow:auto;}
+.evf-menu button{display:flex;align-items:center;gap:8px;width:100%;border:0;background:none;text-align:left;padding:7px 10px;border-radius:7px;font:500 .9rem 'Inter',sans-serif;color:var(--ink,#1C1B2E);cursor:pointer;}
+.evf-menu button:hover{background:rgba(12,91,160,.07);}
+.evf-menu button .gicon{font-size:1.1rem;color:var(--ink-soft,#5B6472);}
+.evf-menu .evf-danger,.evf-menu .evf-danger .gicon{color:#B42318;}
+.evf-menu-t{font:700 .74rem 'Space Grotesk',sans-serif;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft,#5B6472);padding:6px 10px 4px;}
+@media (max-width:760px){
+  .evf-ligne{grid-template-columns:minmax(0,1fr) 40px;}
+  .evf-c-prop,.evf-c-cl,.evf-c-date,.evf-c-modif{display:none;}
+  .evf-tete{display:none;}
+  .evf-meta{display:block;}
+  .evf-cherche input{width:150px;}
+}

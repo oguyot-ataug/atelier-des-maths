@@ -101,7 +101,8 @@
         <button data-nav="programmes" id="navProgrammes"><span class="gicon">table_view</span> Programmes officiels</button>
       </div>
     </div>
-    <!-- Tarifs dans le menu principal (demandé le 10/11/2026 : « je trouve que la page tarif est trop cachée ») ; jamais pour les élèves -->
+    <!-- Tarifs dans le menu principal (demandé le 10/11/2026 : « je trouve que la page tarif est trop cachée ») ; visiteurs seulement
+         (« Supprimer la page tarif quand on est connecté », même jour : refreshAuthUI) -->
     <button data-nav="tarifs" id="navTarifs" class="nav-tarifs"><span class="gicon">sell</span> Tarifs</button>
     <button data-nav="cahier" id="navCahier" style="display:none;">Cahier élève</button>
     <button data-nav="mesdevoirs" id="navMesDevoirs" style="display:none;">Mon travail<span id="navMesDevoirsBadge" class="nav-badge" style="display:none;"></span></button>
@@ -2002,7 +2003,7 @@
   <div class="zoom-content" id="zoomBoxContent"></div>
 </div>
 
-<footer>Une production de <a href="https://www.latelieraugmente.fr" target="_blank" rel="noopener">L'Atelier Augmenté</a> · L'Atelier des Maths · Programme B.O. 2026 · <a href="#" data-nav="mentions-legales">Mentions légales</a> · <a href="#" data-nav="confidentialite">Confidentialité</a><span id="footRdv"> · <a href="#" data-nav="rendez-vous">Prendre rendez-vous</a> · <a href="/tarifs/" data-nav="tarifs">Tarifs</a></span> · <a href="/6e/">Cours de maths 6e</a> · <a href="/5e/">Cours de maths 5e</a> · <a href="/professeurs/">Pour les professeurs</a> · <a href="/programmes/" data-nav="programmes">Programmes : les notions du CP à la 3e</a> · <a href="/cm1/">Cours de maths CM1</a> · <a href="/cm2/">Cours de maths CM2</a></footer>
+<footer>Une production de <a href="https://www.latelieraugmente.fr" target="_blank" rel="noopener">L'Atelier Augmenté</a> · L'Atelier des Maths · Programme B.O. 2026 · <a href="#" data-nav="mentions-legales">Mentions légales</a> · <a href="#" data-nav="confidentialite">Confidentialité</a><span id="footRdv"> · <a href="#" data-nav="rendez-vous">Prendre rendez-vous</a></span><span id="footTarifs"> · <a href="/tarifs/" data-nav="tarifs">Tarifs</a></span> · <a href="/6e/">Cours de maths 6e</a> · <a href="/5e/">Cours de maths 5e</a> · <a href="/professeurs/">Pour les professeurs</a> · <a href="/programmes/" data-nav="programmes">Programmes : les notions du CP à la 3e</a> · <a href="/cm1/">Cours de maths CM1</a> · <a href="/cm2/">Cours de maths CM2</a></footer>
 
 <script src="https://js.stripe.com/v3/"></script>
 <script defer src="app.js?v=20260819-1400"></script>

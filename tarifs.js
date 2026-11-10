@@ -9,6 +9,8 @@
 let tarifsCharge = null; // promesse du chargement (une seule fois par session)
 
 function tarifsOuvrir(ancre){
+  // Compte connecté : pas de page Tarifs (demandé le 10/11/2026) ; « Mon abonnement » ou l'Espace famille en tiennent lieu.
+  if(typeof currentUser !== 'undefined' && currentUser){ showView('view-home'); setActiveTopnav(null); return; }
   const d = document.getElementById('accountDropdown'); if(d) d.style.display = 'none';
   showView('view-tarifs'); setActiveTopnav(null); document.getElementById('navTarifs')?.classList.add('active');
   const box = document.getElementById('tarifsContenu'); if(!box) return;

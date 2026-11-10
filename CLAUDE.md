@@ -318,6 +318,10 @@ Objets masqués et liste des objets de la Géométrie interactive (demandé le 1
 « Liste des objets » (`figObjetsBasculer`, panneau `#figObjets`) : œil, couleur, options (menu du clic droit, `onFigureContextMenu(evt, obj)`),
 survol = objet mis en évidence (`figSurvol`).
 
+« Mes évaluations » en gestionnaire de fichiers (demandé le 10/11/2026) : `openEvalListModal` / `evalListeRendre` (evaluation.js, objet `evf`) ;
+dossiers PERSONNELS `eval_dossiers` (sous-dossiers) et `eval_rangement` (une évaluation par dossier et par utilisateur ; absente = racine),
+`supabase/sql/2026-11-10-eval-dossiers.sql` ; propriétaires par `evaluations_proprietaires()` ; une évaluation partagée n'apparaît qu'une fois.
+
 ## Corrections animées des constructions : AUX INSTRUMENTS DU SITE (demandé le 01/11/2026)
 
 « Oui, mets en place la correction animée », puis « Tu n'as pas utilisé les instruments du site ! » : une figure de construction
@@ -389,10 +393,12 @@ avec le bandeau « Ouverture des ventes le 1er décembre 2026 · en attendant, e
 bouton « Ouvrir les ventes » d'Administration › Offres profs). `_hors-ligne/tarifs.html` (exclu de la publication) en reste la copie
 de travail. Jusqu'à l'ouverture, DANS LE SITE, les comptes non « test » ne voient ni offres, ni prix, ni lien vers les tarifs dans
 « Mon abonnement », ni prix dans l'Espace famille (`famVenteFermeeHtml`).
-Page des tarifs DANS le site aussi (demandé le 10/11/2026) : vue `#/tarifs` (`tarifs.js`, lien « Tarifs » du pied de page, sauf élèves) qui
+Page des tarifs DANS le site aussi (demandé le 10/11/2026) : vue `#/tarifs` (`tarifs.js`, visiteurs non connectés) qui
 charge le contenu de `/tarifs/` (une seule source : modifier `tarifs/index.html`, et sa copie `_hors-ligne/tarifs.html`).
 Tarifs bien visibles (demandé le 10/11/2026 : « je trouve que la page tarif est trop cachée ») : bouton « Tarifs » du menu principal
-(`#navTarifs`) et bouton « Voir les tarifs » de l'accueil (`#heroTarifs`), masqués aux élèves (refreshAuthUI) et sur L'Atelier du Prof.
+(`#navTarifs`) et bouton « Voir les tarifs » de l'accueil (`#heroTarifs`), lien du pied de page (`#footTarifs`) : VISITEURS NON CONNECTÉS
+seulement (demandé le 10/11/2026 : « Supprimer la page tarif quand on est connecté » ; refreshAuthUI, tarifsOuvrir renvoie à l'accueil),
+jamais sur L'Atelier du Prof. La page publique /tarifs/ reste accessible à tous par son adresse.
 Plus de lien vers L'Atelier du Prof dans le pied de page de L'Atelier des Maths (demandé le 10/11/2026).
 « Demander un devis » (demandé le 10/11/2026 : « un formulaire simple à remplir (profs seul, établissement, famille, profs particuliers...)
 et s'adapter en fonction ») : fenêtre `#dvFond` de `tarifs/index.html` (boutons `data-devis`, préremplie depuis l'estimateur avec

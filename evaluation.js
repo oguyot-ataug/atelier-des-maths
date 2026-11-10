@@ -153,9 +153,9 @@ document.body.insertAdjacentHTML('beforeend', `
   </div>
 </div>
 <div id="evalListModalOverlay" class="modal-overlay" style="display:none;" onclick="if(event.target===this) closeEvalListModal();">
-  <div class="modal-card" style="max-width:560px;max-height:80vh;overflow:auto;">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
-      <strong style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;">Mes évaluations</strong>
+  <div class="modal-card evf-carte" style="max-width:960px;width:100%;max-height:86vh;overflow:auto;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+      <strong style="font-family:'Space Grotesk',sans-serif;font-size:1.15rem;"><span class=gicon style="vertical-align:-3px;">folder_open</span> Mes évaluations</strong>
       <button class="modal-close" onclick="closeEvalListModal()"><span class=gicon>close</span></button>
     </div>
     <div id="evalListContent"></div>
@@ -353,53 +353,209 @@ async function saveEvaluation(){
     await niceAlert("Échec de la sauvegarde : "+(e.message||'erreur inconnue'));
   }
 }
+/* =====================================================================
+   « Mes évaluations » : un gestionnaire de fichiers -- demandé le 10/11/2026 : « je trouve le menu un peu grossier. Le faire
+   ressembler à un vrai éditeur de fichier, permettre de faire des dossiers, de déplacer les fichiers, ne pas faire de répétition
+   des fichiers quand ils sont partagés, montrer le propriétaire ».
+   Dossiers PERSONNELS (tables eval_dossiers, eval_rangement : chacun range à sa façon, y compris ce qu'on lui partage) ; chaque
+   évaluation n'apparaît qu'une fois (l'ancienne vue « par classe » la répétait dans chaque classe) ; colonnes Nom, Propriétaire
+   (« Moi » ou le collègue, avec son rôle), Classe(s), Date, Modifiée ; fil d'Ariane, « Nouveau dossier », recherche (dans tous les
+   dossiers, avec le chemin), filtre Toutes / Les miennes / Partagées avec moi, tri par colonne ; glisser-déposer d'une évaluation
+   ou d'un dossier sur un dossier ou sur le fil d'Ariane ; menu ⋮ : Ouvrir, Renommer, Déplacer vers…, Faire une copie, Supprimer.
+   ===================================================================== */
+let evalListeDonnees = [];
+const evf = { dossiers: [], rang: new Map(), courant: null, filtre: 'tous', recherche: '', tri: 'modif', sens: -1, proprios: new Map() };
+const evalClassesDe = e => [...new Set(String(e.classes || '').split(/\s*(?:,|;|&|\+|\/|-|\bet\b)\s*/i).map(c => c.trim().toUpperCase()).filter(Boolean))];
+function evfPref(){ try{ const p = JSON.parse(localStorage.getItem('evfPrefs') || '{}'); if(p.tri) evf.tri = p.tri; if(p.sens) evf.sens = p.sens; if(p.filtre) evf.filtre = p.filtre; }catch(_){} }
+function evfSauverPref(){ try{ localStorage.setItem('evfPrefs', JSON.stringify({ tri: evf.tri, sens: evf.sens, filtre: evf.filtre })); }catch(_){} }
 async function openEvalListModal(){
   if(!currentUser){ await niceAlert("Connectez-vous pour voir vos évaluations sauvegardées."); return; }
   document.getElementById('evalListModalOverlay').style.display='flex';
   const box = document.getElementById('evalListContent');
-  box.innerHTML = 'Chargement…';
-  const { data, error } = await sb.from('evaluations').select('id,title,niveau,classes,eval_date,owner_id,collaborators,viewers,updated_at').order('updated_at', {ascending:false});
-  if(error){ box.innerHTML = "Erreur : "+error.message; return; }
-  if(!data || !data.length){ box.innerHTML = "Aucune évaluation sauvegardée pour le moment."; return; }
-  evalListeDonnees = data;
+  box.innerHTML = '<p class="hint">Chargement…</p>';
+  evfPref();
+  const [ev, ds, rg, pr] = await Promise.all([
+    sb.from('evaluations').select('id,title,niveau,classes,eval_date,owner_id,collaborators,viewers,updated_at').order('updated_at', {ascending:false}),
+    sb.from('eval_dossiers').select('id,nom,parent_id,created_at').order('nom'),
+    sb.from('eval_rangement').select('evaluation_id,dossier_id'),
+    sb.rpc('evaluations_proprietaires'),
+  ]);
+  if(ev.error){ box.innerHTML = "Erreur : "+escapeHtml(ev.error.message); return; }
+  evalListeDonnees = ev.data || [];
+  evf.dossiers = ds.data || [];
+  evf.rang = new Map((rg.data || []).map(r => [r.evaluation_id, r.dossier_id]));
+  evf.proprios = new Map((pr.data || []).map(p => [p.id, [p.prenom, p.nom].filter(Boolean).join(' ') || 'Collègue']));
+  if(evf.courant && !evf.dossiers.some(d => d.id === evf.courant)) evf.courant = null;
   evalListeRendre();
 }
-/* Vue par classe -- demandé : « Quand j'ouvre une évaluation, est-ce possible de faire une vue par
-   classe ? ». Le champ « Classe(s) » est libre (« 5B & 5L », « 6O-6V », « 6E ») : on le découpe, et une
-   évaluation donnée à deux classes apparaît dans les deux groupes. Bascule « Par classe / Par date »,
-   mémorisée sur cet appareil ; dans un groupe, la plus récente (date d'évaluation) en premier. */
-let evalListeDonnees = [];
-const evalClassesDe = e => [...new Set(String(e.classes || '').split(/\s*(?:,|;|&|\+|\/|-|\bet\b)\s*/i).map(c => c.trim().toUpperCase()).filter(Boolean))];
-function evalListeMode(){ try { return localStorage.getItem('evalListeMode') || 'classe'; } catch(_){ return 'classe'; } }
-function evalListeChoisir(m){ try { localStorage.setItem('evalListeMode', m); } catch(_){} evalListeRendre(); }
-function evalCarteHtml(e){
-  const isMine = e.owner_id===currentUser.id;
-  const shareTag = isMine ? '' : (e.collaborators||[]).includes(currentUser.id) ? '<span class="hint">(partagée · <span class=gicon>edit</span> éditeur)</span>' : '<span class="hint">(partagée · <span class=gicon>visibility</span> lecteur)</span>';
-  const dateFmt = e.eval_date ? new Date(e.eval_date+'T00:00:00').toLocaleDateString('fr-FR') : '';
-  return `<div class="tool-shell" style="margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:10px;">
-    <div>
-      <strong>${escapeHtml(e.title||'Sans titre')}</strong> ${shareTag}<br>
-      <span class="hint">${escapeHtml(e.niveau||'')}${e.classes?' · '+escapeHtml(e.classes):''}${dateFmt?' · '+dateFmt:''}</span>
-    </div>
-    <span style="display:flex;gap:6px;flex:none;">
-      <button class="btn secondary" onclick="loadEvaluation('${e.id}')">Ouvrir</button>
-      <button class="btn secondary" title="Faire une copie (pour l'adapter à une autre classe, une autre année…)" onclick="duplicateEvaluation('${e.id}')"><span class=gicon>content_copy</span></button>
-      ${isMine ? `<button class="btn secondary" style="color:#a83c1f;" onclick="deleteEvaluationPrompt('${e.id}','${escapeHtml(e.title||'Sans titre').replace(/'/g,"\\'")}')"><span class=gicon>delete</span></button>` : ''}
-    </span>
-  </div>`;
+const evfDossier = id => evf.dossiers.find(d => d.id === id) || null;
+function evfChemin(id){ const l = []; let d = evfDossier(id), garde = 0; while(d && garde++ < 50){ l.unshift(d); d = evfDossier(d.parent_id); } return l; }
+function evfDescendants(id){ const r = new Set([id]); let encore = true; while(encore){ encore = false; evf.dossiers.forEach(d => { if(d.parent_id && r.has(d.parent_id) && !r.has(d.id)){ r.add(d.id); encore = true; } }); } return r; }
+function evfDansDossier(e){ return evf.rang.get(e.id) || null; }
+function evfRole(e){ return e.owner_id === currentUser.id ? 'proprietaire' : (e.collaborators || []).includes(currentUser.id) ? 'editeur' : 'lecteur'; }
+function evfVisible(e){ const r = evfRole(e); return evf.filtre === 'miens' ? r === 'proprietaire' : evf.filtre === 'partages' ? r !== 'proprietaire' : true; }
+function evfNbDans(id){ const ids = evfDescendants(id); return evalListeDonnees.filter(e => evfVisible(e) && ids.has(evfDansDossier(e))).length; }
+const evfDate = s => s ? new Date(String(s).length === 10 ? s + 'T00:00:00' : s).toLocaleDateString('fr-FR') : '';
+function evfTrier(l){
+  const k = { nom: e => (e.title || '').toLowerCase(), date: e => e.eval_date || '', modif: e => e.updated_at || '', proprio: e => e.owner_id === currentUser.id ? '' : (evf.proprios.get(e.owner_id) || '').toLowerCase(), classes: e => (e.classes || '').toLowerCase() }[evf.tri] || (e => e.updated_at || '');
+  return l.slice().sort((a, b) => { const x = k(a), y = k(b); return (x < y ? -1 : x > y ? 1 : 0) * evf.sens; });
 }
+function evalListeChoisir(){ evalListeRendre(); } // compatibilité (ancienne bascule « Par classe / Par date »)
 function evalListeRendre(){
   const box = document.getElementById('evalListContent'); if(!box) return;
-  const mode = evalListeMode(), data = evalListeDonnees;
-  const bascule = `<div style="display:flex;gap:6px;align-items:center;margin:0 0 12px;flex-wrap:wrap;"><span class="hint" style="margin:0;">Afficher :</span>
-    ${[['classe', 'groups', 'Par classe'], ['date', 'schedule', 'Par date de modification']].map(([m, ic, t]) => `<button type="button" class="btn ${mode === m ? '' : 'secondary'}" style="font-size:.8rem;padding:4px 10px;" onclick="evalListeChoisir('${m}')"><span class=gicon>${ic}</span> ${t}</button>`).join('')}</div>`;
-  if(mode !== 'classe'){ box.innerHTML = bascule + data.map(evalCarteHtml).join(''); return; }
-  const groupes = new Map();
-  data.forEach(e => { const cl = evalClassesDe(e); (cl.length ? cl : ['']).forEach(c => { if(!groupes.has(c)) groupes.set(c, []); groupes.get(c).push(e); }); });
-  const cles = [...groupes.keys()].sort((x, y) => !x ? 1 : !y ? -1 : x.localeCompare(y, 'fr', { numeric: true }));
-  const parDate = (x, y) => String(y.eval_date || y.updated_at || '').localeCompare(String(x.eval_date || x.updated_at || ''));
-  box.innerHTML = bascule + cles.map(c => `<details open style="margin:0 0 10px;"><summary style="cursor:pointer;font:700 1rem 'Space Grotesk',sans-serif;margin:0 0 8px;">${c ? 'Classe ' + escapeHtml(c) : 'Sans classe'} <span class="hint" style="margin:0;font-weight:400;">· ${groupes.get(c).length} évaluation${groupes.get(c).length > 1 ? 's' : ''}</span></summary>
-    ${groupes.get(c).sort(parDate).map(evalCarteHtml).join('')}</details>`).join('');
+  const q = evf.recherche.trim().toLowerCase();
+  const chemin = evfChemin(evf.courant);
+  const fil = `<nav class="evf-chemin" aria-label="Dossier">${[{ id: '', nom: 'Mes évaluations' }, ...chemin].map((d, i, t) =>
+    `<button type="button" class="evf-miette${i === t.length - 1 ? ' ici' : ''}" data-evf-aller="${d.id}" data-evf-cible="${d.id}"><span class="gicon">${i ? 'folder' : 'home'}</span> ${escapeHtml(d.nom)}</button>`).join('<span class="evf-sep">›</span>')}</nav>`;
+  const barre = `<div class="evf-barre">${fil}
+    <div class="evf-outils">
+      <label class="evf-cherche"><span class="gicon">search</span><input type="search" id="evfRecherche" placeholder="Rechercher (titre, classe, niveau)" value="${escapeHtml(evf.recherche)}"></label>
+      <button type="button" class="btn secondary evf-btn" data-evf="nouveau"><span class="gicon">create_new_folder</span> Nouveau dossier</button>
+    </div></div>
+    <div class="evf-filtres">${[['tous', 'Toutes'], ['miens', 'Les miennes'], ['partages', 'Partagées avec moi']].map(([k, t]) => `<button type="button" class="evf-puce${evf.filtre === k ? ' on' : ''}" data-evf-filtre="${k}">${t}</button>`).join('')}</div>`;
+  const tri = (k, t) => `<button type="button" class="evf-tri${evf.tri === k ? ' on' : ''}" data-evf-tri="${k}">${t}${evf.tri === k ? `<span class="gicon">${evf.sens > 0 ? 'arrow_upward' : 'arrow_downward'}</span>` : ''}</button>`;
+  const entete = `<div class="evf-ligne evf-tete" role="row"><span class="evf-c-nom">${tri('nom', 'Nom')}</span><span class="evf-c-prop">${tri('proprio', 'Propriétaire')}</span><span class="evf-c-cl">${tri('classes', 'Classe(s)')}</span><span class="evf-c-date">${tri('date', 'Date')}</span><span class="evf-c-modif">${tri('modif', 'Modifiée')}</span><span class="evf-c-act"></span></div>`;
+  let dossiers = [], evals;
+  if(q){
+    evals = evfTrier(evalListeDonnees.filter(e => evfVisible(e) && [e.title, e.classes, e.niveau, evf.proprios.get(e.owner_id)].join(' ').toLowerCase().includes(q)));
+  } else {
+    dossiers = evf.dossiers.filter(d => (d.parent_id || null) === evf.courant).sort((a, b) => a.nom.localeCompare(b.nom, 'fr', { numeric: true }));
+    evals = evfTrier(evalListeDonnees.filter(e => evfVisible(e) && evfDansDossier(e) === evf.courant));
+  }
+  const ligneDossier = d => `<div class="evf-ligne evf-dossier" role="row" draggable="true" data-evf-glisse="d:${d.id}" data-evf-cible="${d.id}">
+      <span class="evf-c-nom"><button type="button" class="evf-nom" data-evf-aller="${d.id}"><span class="gicon evf-ic-dos">folder</span> ${escapeHtml(d.nom)}</button></span>
+      <span class="evf-c-prop hint">Moi</span><span class="evf-c-cl hint">${evfNbDans(d.id)} évaluation${evfNbDans(d.id) > 1 ? 's' : ''}</span><span class="evf-c-date"></span><span class="evf-c-modif"></span>
+      <span class="evf-c-act"><button type="button" class="evf-menu-btn" data-evf-menu="d:${d.id}" aria-label="Actions du dossier"><span class="gicon">more_vert</span></button></span></div>`;
+  const ligneEval = e => {
+    const r = evfRole(e), prop = r === 'proprietaire' ? 'Moi' : escapeHtml(evf.proprios.get(e.owner_id) || 'Collègue');
+    const badge = r === 'editeur' ? '<span class="evf-role" title="Vous pouvez la modifier"><span class="gicon">edit</span> éditeur</span>' : r === 'lecteur' ? '<span class="evf-role" title="Lecture seule"><span class="gicon">visibility</span> lecteur</span>' : '';
+    const ou = q && evfDansDossier(e) ? `<span class="evf-ou"><span class="gicon">folder</span> ${evfChemin(evfDansDossier(e)).map(d => escapeHtml(d.nom)).join(' › ')}</span>` : '';
+    return `<div class="evf-ligne evf-fichier" role="row" draggable="true" data-evf-glisse="e:${e.id}">
+      <span class="evf-c-nom"><button type="button" class="evf-nom" data-evf-ouvrir="${e.id}" title="Ouvrir"><span class="gicon evf-ic-fic">${r === 'proprietaire' ? 'description' : 'folder_shared'}</span> <span>${escapeHtml(e.title || 'Sans titre')}${ou}
+        <span class="evf-meta">${prop}${e.classes ? ' · ' + escapeHtml(e.classes) : ''}${e.eval_date ? ' · ' + evfDate(e.eval_date) : ''}</span></span></button></span>
+      <span class="evf-c-prop">${prop} ${badge}</span><span class="evf-c-cl">${escapeHtml(e.niveau || '')}${e.classes ? ' · ' + escapeHtml(e.classes) : ''}</span>
+      <span class="evf-c-date">${evfDate(e.eval_date)}</span><span class="evf-c-modif">${evfDate(e.updated_at)}</span>
+      <span class="evf-c-act"><button type="button" class="evf-menu-btn" data-evf-menu="e:${e.id}" aria-label="Actions de l'évaluation"><span class="gicon">more_vert</span></button></span></div>`;
+  };
+  const vide = !dossiers.length && !evals.length
+    ? `<p class="evf-vide">${q ? 'Aucune évaluation ne correspond à la recherche.' : evf.courant ? 'Ce dossier est vide : glissez-y des évaluations, ou utilisez « Déplacer vers… » dans le menu ⋮.' : 'Aucune évaluation pour le moment.'}</p>` : '';
+  box.innerHTML = barre + `<div class="evf-liste" role="grid">${entete}${dossiers.map(ligneDossier).join('')}${evals.map(ligneEval).join('')}${vide}</div>
+    <p class="hint evf-aide"><span class="gicon">info</span> Glissez une évaluation sur un dossier (ou sur le chemin, en haut) pour la ranger. Vos dossiers ne sont visibles que par vous ; une évaluation partagée apparaît une seule fois, avec son propriétaire.</p>`;
+  const champ = document.getElementById('evfRecherche');
+  if(champ){ champ.oninput = () => { evf.recherche = champ.value; const pos = champ.selectionStart; evalListeRendre(); const c2 = document.getElementById('evfRecherche'); if(c2){ c2.focus(); try{ c2.setSelectionRange(pos, pos); }catch(_){} } }; }
+  if(!box.dataset.evf){ box.dataset.evf = '1'; evfBrancher(box); }
+}
+function evfBrancher(box){
+  box.addEventListener('click', async ev => {
+    const t = ev.target;
+    const aller = t.closest('[data-evf-aller]'); if(aller){ evf.courant = aller.dataset.evfAller || null; evf.recherche = ''; evfMenuFermer(); evalListeRendre(); return; }
+    const ouvrir = t.closest('[data-evf-ouvrir]'); if(ouvrir){ closeEvalListModal(); loadEvaluation(ouvrir.dataset.evfOuvrir); return; }
+    const f = t.closest('[data-evf-filtre]'); if(f){ evf.filtre = f.dataset.evfFiltre; evfSauverPref(); evalListeRendre(); return; }
+    const tr = t.closest('[data-evf-tri]'); if(tr){ const k = tr.dataset.evfTri; if(evf.tri === k) evf.sens = -evf.sens; else { evf.tri = k; evf.sens = (k === 'nom' || k === 'proprio' || k === 'classes') ? 1 : -1; } evfSauverPref(); evalListeRendre(); return; }
+    const m = t.closest('[data-evf-menu]'); if(m){ ev.stopPropagation(); evfMenu(m, m.dataset.evfMenu); return; }
+    if(t.closest('[data-evf="nouveau"]')){ await evfNouveauDossier(); return; }
+  });
+  // Glisser-déposer : une évaluation ou un dossier sur un dossier (ligne ou fil d'Ariane ; la racine = « Mes évaluations »).
+  box.addEventListener('dragstart', ev => { const g = ev.target.closest && ev.target.closest('[data-evf-glisse]'); if(!g) return; ev.dataTransfer.setData('text/plain', g.dataset.evfGlisse); ev.dataTransfer.effectAllowed = 'move'; g.classList.add('evf-glisse'); });
+  box.addEventListener('dragend', ev => { box.querySelectorAll('.evf-glisse,.evf-survol').forEach(x => x.classList.remove('evf-glisse', 'evf-survol')); });
+  box.addEventListener('dragover', ev => { const c = ev.target.closest && ev.target.closest('[data-evf-cible]'); if(!c) return; ev.preventDefault(); ev.dataTransfer.dropEffect = 'move'; box.querySelectorAll('.evf-survol').forEach(x => x !== c && x.classList.remove('evf-survol')); c.classList.add('evf-survol'); });
+  box.addEventListener('dragleave', ev => { const c = ev.target.closest && ev.target.closest('[data-evf-cible]'); if(c && !c.contains(ev.relatedTarget)) c.classList.remove('evf-survol'); });
+  box.addEventListener('drop', async ev => {
+    const c = ev.target.closest && ev.target.closest('[data-evf-cible]'); if(!c) return; ev.preventDefault();
+    const quoi = ev.dataTransfer.getData('text/plain'); if(!quoi) return;
+    await evfDeplacer(quoi, c.dataset.evfCible || null);
+  });
+}
+async function evfNouveauDossier(){
+  const nom = await nicePrompt('Nom du nouveau dossier :', ''); if(nom === null || !nom.trim()) return;
+  const { error } = await sb.from('eval_dossiers').insert({ nom: nom.trim().slice(0, 80), parent_id: evf.courant });
+  if(error){ await niceAlert('Dossier non créé : ' + error.message); return; }
+  await openEvalListModal();
+}
+// quoi = « e:<id> » (évaluation) ou « d:<id> » (dossier) ; vers = dossier, ou null pour la racine.
+async function evfDeplacer(quoi, vers){
+  const [type, id] = [quoi.slice(0, 1), quoi.slice(2)];
+  let error = null;
+  if(type === 'e'){
+    if((evf.rang.get(id) || null) === vers) return;
+    ({ error } = vers ? await sb.from('eval_rangement').upsert({ user_id: currentUser.id, evaluation_id: id, dossier_id: vers }, { onConflict: 'user_id,evaluation_id' })
+                      : await sb.from('eval_rangement').delete().eq('user_id', currentUser.id).eq('evaluation_id', id));
+  } else if(type === 'd'){
+    if(vers && evfDescendants(id).has(vers)){ await niceAlert('Un dossier ne peut pas aller dans lui-même ni dans l\'un de ses sous-dossiers.'); return; }
+    if((evfDossier(id) || {}).parent_id === vers) return;
+    ({ error } = await sb.from('eval_dossiers').update({ parent_id: vers }).eq('id', id));
+  }
+  if(error){ await niceAlert('Déplacement impossible : ' + error.message); return; }
+  await openEvalListModal();
+}
+function evfMenuFermer(){ const m = document.getElementById('evfMenu'); if(m) m.remove(); }
+function evfMenu(btn, quoi){
+  evfMenuFermer();
+  const [type, id] = [quoi.slice(0, 1), quoi.slice(2)];
+  const e = type === 'e' ? evalListeDonnees.find(x => x.id === id) : null, d = type === 'd' ? evfDossier(id) : null;
+  if(!e && !d) return;
+  const it = (a, ic, t, cl) => `<button type="button" data-a="${a}"${cl ? ` class="${cl}"` : ''}><span class="gicon">${ic}</span> ${t}</button>`;
+  const r = e ? evfRole(e) : 'proprietaire';
+  let h = e ? it('ouvrir', 'open_in_new', 'Ouvrir') + (r !== 'lecteur' ? it('renommer', 'edit', 'Renommer') : '') + it('deplacer', 'drive_file_move', 'Déplacer vers…') + it('copie', 'content_copy', 'Faire une copie')
+              + (r === 'proprietaire' ? it('suppr', 'delete', 'Supprimer', 'evf-danger') : (evfDansDossier(e) ? it('racine', 'folder_off', 'Retirer du dossier') : ''))
+            : it('aller', 'folder_open', 'Ouvrir') + it('renommer', 'edit', 'Renommer') + it('deplacer', 'drive_file_move', 'Déplacer vers…') + it('suppr', 'folder_delete', 'Supprimer le dossier', 'evf-danger');
+  const m = document.createElement('div'); m.id = 'evfMenu'; m.className = 'evf-menu'; m.innerHTML = h;
+  document.body.appendChild(m);
+  const rb = btn.getBoundingClientRect();
+  m.style.top = Math.min(rb.bottom + 4, innerHeight - m.offsetHeight - 8) + 'px';
+  m.style.left = Math.max(8, Math.min(rb.right - m.offsetWidth, innerWidth - m.offsetWidth - 8)) + 'px';
+  m.onclick = async ev => {
+    const b = ev.target.closest('[data-a]'); if(!b) return;
+    const a = b.dataset.a;
+    if(a === 'deplacer'){ evfChoixDossier(m, quoi); return; }
+    evfMenuFermer();
+    if(a === 'ouvrir'){ closeEvalListModal(); loadEvaluation(id); }
+    else if(a === 'aller'){ evf.courant = id; evalListeRendre(); }
+    else if(a === 'copie') duplicateEvaluation(id);
+    else if(a === 'racine') await evfDeplacer(quoi, null);
+    else if(a === 'renommer'){
+      const nom = await nicePrompt(e ? 'Nouveau titre de l\'évaluation :' : 'Nouveau nom du dossier :', e ? (e.title || '') : d.nom);
+      if(nom === null || !nom.trim()) return;
+      const { error } = e ? await sb.from('evaluations').update({ title: nom.trim(), updated_by: currentUser.id }).eq('id', id) : await sb.from('eval_dossiers').update({ nom: nom.trim().slice(0, 80) }).eq('id', id);
+      if(error){ await niceAlert('Impossible de renommer : ' + error.message); return; }
+      if(e && currentEvaluationId === id) lastEvaluationTitle = nom.trim();
+      await openEvalListModal();
+    }
+    else if(a === 'suppr'){
+      if(e) return deleteEvaluationPrompt(id, e.title || 'Sans titre');
+      const n = evfNbDans(id);
+      if(!(await niceConfirm(`Supprimer le dossier « ${d.nom} » ?` + (n ? ` Ses ${n} évaluation${n > 1 ? 's' : ''} ne sont pas supprimée${n > 1 ? 's' : ''} : elle${n > 1 ? 's' : ''} retourne${n > 1 ? 'nt' : ''} dans le dossier parent.` : '')))) return;
+      // Le contenu remonte d'un cran : sous-dossiers et évaluations rangées directement dans ce dossier.
+      const parent = d.parent_id || null;
+      await sb.from('eval_dossiers').update({ parent_id: parent }).eq('parent_id', id);
+      if(parent) await sb.from('eval_rangement').update({ dossier_id: parent }).eq('dossier_id', id);
+      const { error } = await sb.from('eval_dossiers').delete().eq('id', id);
+      if(error){ await niceAlert('Suppression impossible : ' + error.message); return; }
+      if(evf.courant === id) evf.courant = parent;
+      await openEvalListModal();
+    }
+  };
+  setTimeout(() => document.addEventListener('pointerdown', function f(ev){ if(!m.contains(ev.target)){ evfMenuFermer(); document.removeEventListener('pointerdown', f, true); } }, true), 0);
+}
+// « Déplacer vers… » : l'arborescence des dossiers dans le menu (utile au doigt, où l'on ne glisse pas).
+function evfChoixDossier(m, quoi){
+  const interdits = quoi[0] === 'd' ? evfDescendants(quoi.slice(2)) : new Set();
+  const arbre = (parent, niv) => evf.dossiers.filter(d => (d.parent_id || null) === parent && !interdits.has(d.id)).sort((a, b) => a.nom.localeCompare(b.nom, 'fr', { numeric: true }))
+    .map(d => `<button type="button" data-vers="${d.id}" style="padding-left:${10 + niv * 16}px;"><span class="gicon">folder</span> ${escapeHtml(d.nom)}</button>` + arbre(d.id, niv + 1)).join('');
+  m.innerHTML = `<div class="evf-menu-t">Déplacer vers</div><button type="button" data-vers=""><span class="gicon">home</span> Mes évaluations (racine)</button>${arbre(null, 1)}`
+    + `<button type="button" data-vers="__nouveau"><span class="gicon">create_new_folder</span> Nouveau dossier…</button>`;
+  m.onclick = async ev => {
+    const b = ev.target.closest('[data-vers]'); if(!b) return;
+    evfMenuFermer();
+    let vers = b.dataset.vers || null;
+    if(vers === '__nouveau'){
+      const nom = await nicePrompt('Nom du nouveau dossier :', ''); if(nom === null || !nom.trim()) return;
+      const { data, error } = await sb.from('eval_dossiers').insert({ nom: nom.trim().slice(0, 80), parent_id: evf.courant }).select('id').single();
+      if(error){ await niceAlert('Dossier non créé : ' + error.message); return; }
+      vers = data.id; evf.dossiers.push({ id: vers, nom: nom.trim(), parent_id: evf.courant });
+    }
+    await evfDeplacer(quoi, vers);
+  };
 }
 /* Copie d'une évaluation -- demandé : « Peut-on faire une copie d'une évaluation ? ». La copie
    appartient à celui qui la fait (même si l'originale lui a été partagée), sans les collègues
@@ -434,7 +590,7 @@ async function deleteEvaluationPrompt(id, title){
   if(error){ await niceAlert("Erreur : "+error.message); return; }
   await openEvalListModal();
 }
-function closeEvalListModal(){ document.getElementById('evalListModalOverlay').style.display='none'; }
+function closeEvalListModal(){ if(typeof evfMenuFermer === 'function') evfMenuFermer(); document.getElementById('evalListModalOverlay').style.display='none'; }
 // Synchronisation quasi temps réel entre collègues éditant la même évaluation -- demandé :
 // "on ne peut pas travailler ensemble sur l'interrogation en même temps ?". Pas d'édition
 // simultanée caractère par caractère (nécessiterait une fusion des frappes en direct, un

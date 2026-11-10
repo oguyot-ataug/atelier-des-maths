@@ -3653,7 +3653,10 @@ async function refreshAuthUI(){
     const pasEleve = !(profile && profile.role === 'eleve');
     const btnRdv = document.getElementById('btnRdv'); if(btnRdv) btnRdv.style.display = pasEleve ? 'block' : 'none';
     const footRdv = document.getElementById('footRdv'); if(footRdv) footRdv.style.display = pasEleve ? '' : 'none';
-    ['navTarifs','heroTarifs'].forEach(id => { const x = document.getElementById(id); if(x) x.style.display = pasEleve ? '' : 'none'; }); // Tarifs : jamais pour les élèves
+    // Tarifs : seulement pour les visiteurs non connectés (demandé le 10/11/2026 : « Supprimer la page tarif quand on est connecté ») ;
+    // un compte connecté a « Mon abonnement » (professeur) ou l'Espace famille (parent).
+    ['navTarifs','heroTarifs','footTarifs'].forEach(id => { const x = document.getElementById(id); if(x) x.style.display = 'none'; });
+    { const vt = document.getElementById('view-tarifs'); if(vt && vt.classList.contains('active')){ showView('view-home'); setActiveTopnav(null); } }
     bandeauEssaiMaj(profile); // professeur en essai : bandeau défilant (rendez-vous, bêta-test, relecture)
     if(typeof bandeauxInfoMaj==='function') bandeauxInfoMaj(); // bandeaux d'information (bandeaux.js)
     const chapSuggestRow = document.getElementById('chapSuggestRow');
@@ -3740,7 +3743,7 @@ async function refreshAuthUI(){
     const btnReportBugOut = document.getElementById('btnReportBug');
     if(btnReportBugOut) btnReportBugOut.style.display='none';
     const footRdvOut = document.getElementById('footRdv'); if(footRdvOut) footRdvOut.style.display = '';
-    ['navTarifs','heroTarifs'].forEach(id => { const x = document.getElementById(id); if(x) x.style.display = ''; });
+    ['navTarifs','heroTarifs','footTarifs'].forEach(id => { const x = document.getElementById(id); if(x) x.style.display = ''; });
     const chapSuggestRowOut = document.getElementById('chapSuggestRow');
     if(chapSuggestRowOut) chapSuggestRowOut.style.display='none';
     if(typeof cpOnAuthChange==='function') cpOnAuthChange();
