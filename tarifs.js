@@ -10,7 +10,7 @@ let tarifsCharge = null; // promesse du chargement (une seule fois par session)
 
 function tarifsOuvrir(ancre){
   const d = document.getElementById('accountDropdown'); if(d) d.style.display = 'none';
-  showView('view-tarifs'); setActiveTopnav(null);
+  showView('view-tarifs'); setActiveTopnav(null); document.getElementById('navTarifs')?.classList.add('active');
   const box = document.getElementById('tarifsContenu'); if(!box) return;
   if(!tarifsCharge) tarifsCharge = tarifsCharger(box).catch(err => {
     tarifsCharge = null;

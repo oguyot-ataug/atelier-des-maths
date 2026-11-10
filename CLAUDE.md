@@ -388,6 +388,9 @@ de travail. Jusqu'à l'ouverture, DANS LE SITE, les comptes non « test » ne vo
 « Mon abonnement », ni prix dans l'Espace famille (`famVenteFermeeHtml`).
 Page des tarifs DANS le site aussi (demandé le 10/11/2026) : vue `#/tarifs` (`tarifs.js`, lien « Tarifs » du pied de page, sauf élèves) qui
 charge le contenu de `/tarifs/` (une seule source : modifier `tarifs/index.html`, et sa copie `_hors-ligne/tarifs.html`).
+Tarifs bien visibles (demandé le 10/11/2026 : « je trouve que la page tarif est trop cachée ») : bouton « Tarifs » du menu principal
+(`#navTarifs`) et bouton « Voir les tarifs » de l'accueil (`#heroTarifs`), masqués aux élèves (refreshAuthUI) et sur L'Atelier du Prof.
+Plus de lien vers L'Atelier du Prof dans le pied de page de L'Atelier des Maths (demandé le 10/11/2026).
 Professeur seul au collège, grille du 10/11/2026 (« Pour le prof seul, faire une offre acceptable ») : 39 € un niveau, 54 € deux,
 69 € trois ou quatre (`seul_niveau` 15 €, `seul_plafond` 69 €), jusqu'à 6 classes de 30 élèves comprises (`seul_classes`), + 10 € par
 classe au-delà (`seul_classe`) ; prix dans `prof_parametres.prix` (Administration › Offres profs), calcul dans la fonction `prof-offre`
