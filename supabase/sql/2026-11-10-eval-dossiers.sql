@@ -22,14 +22,27 @@ create table if not exists public.eval_rangement (
 
 alter table public.eval_dossiers enable row level security;
 alter table public.eval_rangement enable row level security;
+-- Le dossier parent (ou de rangement) doit être à moi. Vérifié par une fonction SECURITY DEFINER : une policy qui relit
+-- eval_dossiers dans sa propre condition déclenchait « infinite recursion detected in policy » (signalé le 10/11/2026).
+create or replace function public.eval_dossier_a_moi(p_id uuid)
+ returns boolean
+ language sql
+ stable
+ security definer
+ set search_path to 'public'
+as $function$
+  select exists (select 1 from public.eval_dossiers where id = p_id and user_id = auth.uid());
+$function$;
+revoke all on function public.eval_dossier_a_moi(uuid) from public, anon;
+grant execute on function public.eval_dossier_a_moi(uuid) to authenticated;
 drop policy if exists eval_dossiers_moi on public.eval_dossiers;
 create policy eval_dossiers_moi on public.eval_dossiers for all to authenticated
-  using (user_id = auth.uid()) with check (user_id = auth.uid()
-    and (parent_id is null or exists (select 1 from public.eval_dossiers p where p.id = parent_id and p.user_id = auth.uid())));
+  using (user_id = auth.uid())
+  with check (user_id = auth.uid() and (parent_id is null or public.eval_dossier_a_moi(parent_id)));
 drop policy if exists eval_rangement_moi on public.eval_rangement;
 create policy eval_rangement_moi on public.eval_rangement for all to authenticated
-  using (user_id = auth.uid()) with check (user_id = auth.uid()
-    and exists (select 1 from public.eval_dossiers d where d.id = dossier_id and d.user_id = auth.uid()));
+  using (user_id = auth.uid())
+  with check (user_id = auth.uid() and public.eval_dossier_a_moi(dossier_id));
 -- GRANT explicites (obligatoires pour toute nouvelle table depuis le 30/10/2026, voir CLAUDE.md) ; rien pour anon.
 grant select, insert, update, delete on public.eval_dossiers to authenticated;
 grant select, insert, update, delete on public.eval_dossiers to service_role;
