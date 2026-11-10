@@ -320,7 +320,8 @@ survol = objet mis en évidence (`figSurvol`).
 
 Corrigé des évaluations (demandé le 10/11/2026, « les deux » : IA et à la main) : zone « Correction » sous chaque exercice (`evalCorHTML`,
 evaluation.js), blocs du contexte `cor-<id>` (getExerciseByCtx, app.js : mise en page dans `ex.cor`, `ex.cor.ia` = proposition de l'IA à relire) ;
-`evalCorIA` (prompt `evalCorPrompt` : règles de rédaction du site, figures jointes en image), `evalCorManuel` (corrigé du manuel), `evalCorIATout` ;
+`evalCorIA` (prompt `evalCorPrompt` : règles de rédaction du site, figures jointes en image ; question à compléter, entourer, cocher, relier,
+vrai / faux : seulement la réponse, ligne complétée en gras, jamais d'explication -- demandé le 10/11/2026), `evalCorManuel` (corrigé du manuel), `evalCorIATout` ;
 impression `evalCorrigeContenuHTML` (exportEvaluationPDF(true), openEvalPreview(true)) ; cahier : « Énoncés seuls » ou « Énoncés et corrigé »
 (`evalCorDansEntree`). Le corrigé n'est jamais montré aux élèves sans ce choix.
 

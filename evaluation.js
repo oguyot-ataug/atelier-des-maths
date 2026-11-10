@@ -1088,7 +1088,8 @@ async function evalCorEnonce(ex){
 function evalCorPrompt(ex, rang, enonce, niveau){
   const primaire = /^(cp|ce1|ce2|cm1|cm2)$/i.test(niveau);
   const regles = [
-    'Pour chaque question : sa référence telle qu\'elle figure dans l\'énoncé (a), b), Question 1…) s\'il y en a une, puis un titre qui dit ce que demande la question (la grandeur ou l\'objet cherché, par exemple « Prix total des cahiers », « Aire du triangle ABC » ; jamais un mot seul comme « Calcul », « Total » ou « Réponse », jamais un simple complément comme « En une semaine »), écrit entre doubles tirets bas puis suivi de deux-points : __Prix total des cahiers__ :',
+    'Question à COMPLÉTER (« Complète », « Remplis », « Écris le nombre qui manque », pointillés « … », cases ou trous à remplir) : corrige UNIQUEMENT en complétant. Recopie la ligne de l\'énoncé avec les trous remplis, chaque réponse ajoutée en **gras**, une ligne par item : ni titre, ni calcul intermédiaire, ni explication du pourquoi, ni phrase de conclusion. Même chose pour une question où l\'élève entoure, coche, relie, range ou répond par vrai / faux : seulement la réponse attendue.',
+    'Pour les autres questions : sa référence telle qu\'elle figure dans l\'énoncé (a), b), Question 1…) s\'il y en a une, puis un titre qui dit ce que demande la question (la grandeur ou l\'objet cherché, par exemple « Prix total des cahiers », « Aire du triangle ABC » ; jamais un mot seul comme « Calcul », « Total » ou « Réponse », jamais un simple complément comme « En une semaine »), écrit entre doubles tirets bas puis suivi de deux-points : __Prix total des cahiers__ :',
     'Puis le raisonnement : un seul calcul par ligne ; jamais de mots dans une ligne de calcul (ni « donc », ni « soit », ni « de », ni « et » entre deux calculs) : les mots vont dans le titre et dans la phrase. Un calcul long se développe sur plusieurs lignes qui commencent par « = ».',
     'Puis une phrase de conclusion qui répond à la question, avec l\'unité.',
     'Une ligne vide entre deux questions.',
@@ -1108,7 +1109,7 @@ Exercice ${rang + 1}${ex.title ? ' (« ' + ex.title + ' »)' : ''}${ex.bareme ? 
 ${enonce.texte}
 >>>
 
-Rédige la correction complète, question par question, en respectant strictement ces règles :
+Rédige la correction, question par question, en respectant strictement ces règles :
 ${regles.map(r => '- ' + r).join('\n')}`;
 }
 // Réponse de l'IA : sans balises de code ni signes interdits par les règles du site.
