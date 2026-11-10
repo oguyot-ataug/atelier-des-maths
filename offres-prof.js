@@ -19,12 +19,12 @@
    concernés.
    ===================================================================== */
 
-const OP_ORDRE = ['cm1','cm2','6e','5e','4e','3e'];
-const OP_DISPO = ['cm1','cm2','6e','5e','4e','3e']; // miroir de NIVEAUX_DISPONIBLES (fonction prof-offre)
-const OP_ECOLE = ['cm1','cm2']; // vendus ensemble (classes à double niveau) : une formule « école »
+const OP_ORDRE = ['cp','ce1','ce2','cm1','cm2','6e','5e','4e','3e'];
+const OP_DISPO = ['cp','ce1','ce2','cm1','cm2','6e','5e','4e','3e']; // miroir de NIVEAUX_DISPONIBLES (fonction prof-offre) ; CP-CE2 vendus depuis le 10/11/2026
+const OP_ECOLE = ['cp','ce1','ce2','cm1','cm2']; // vendus ensemble (classes à plusieurs niveaux) : une formule « école », du CP au CM2
 let opPrix = { seul_base:3900, seul_niveau:1500, seul_plafond:6900, seul_classes:6, seul_classe:1000, ecole_base:2900, ecole_classe:1000, part_base:3900, part_eleve:2000, seul_eleves_max:30 };
 const opLib = n => typeof niveauLabel === 'function' ? niveauLabel(n) : n;
-// Classes comprises : seul_classes (6) dès qu'un niveau de collège est payé, une pour l'école (CM1 + CM2) -- même calcul que la
+// Classes comprises : seul_classes (6) dès qu'un niveau de collège est payé, une pour l'école (CP au CM2) -- même calcul que la
 // fonction prof-offre (grille du 10/11/2026 : « Pour le prof seul, faire une offre acceptable »).
 function opClassesDe(niveaux, sup){ const n = niveaux || []; return (n.some(x => !OP_ECOLE.includes(x)) ? (opPrix.seul_classes || 6) : 0) + (n.some(x => OP_ECOLE.includes(x)) ? 1 : 0) + (sup || 0); }
 function opPrixClasse(niveaux){ return (niveaux || []).some(x => !OP_ECOLE.includes(x)) ? opPrix.seul_classe : opPrix.ecole_classe; }
@@ -43,8 +43,8 @@ function opAujourdhui(){ return new Date().toISOString().slice(0,10); }
    collège (et plus tard un lycée) » : le niveau précédent n'est ouvert que s'il est du même type
    (5e → 6e, CM2 → CM1, mais 6e → rien : le CM2 est à l'école). Pour les élèves et les professeurs
    des établissements ; l'offre « Professeur seul » garde opRevision. */
-const OP_ETAB = { ce2:'ecole', cm1:'ecole', cm2:'ecole', '6e':'college', '5e':'college', '4e':'college', '3e':'college' };
-const OP_ORDRE_ETAB = ['ce2','cm1','cm2','6e','5e','4e','3e'];
+const OP_ETAB = { cp:'ecole', ce1:'ecole', ce2:'ecole', cm1:'ecole', cm2:'ecole', '6e':'college', '5e':'college', '4e':'college', '3e':'college' };
+const OP_ORDRE_ETAB = ['cp','ce1','ce2','cm1','cm2','6e','5e','4e','3e'];
 function opRevisionEtab(niv){
   const s = new Set(niv);
   niv.forEach(n => { const i = OP_ORDRE_ETAB.indexOf(n), p = OP_ORDRE_ETAB[i-1]; if(i > 0 && OP_ETAB[p] === OP_ETAB[n]) s.add(p); });
@@ -192,7 +192,7 @@ function opOffresHtml(o, payee){
   const bloque = t => payee && o.offre !== t; // changer d'offre en cours d'année : par e-mail
   const deja = payee && o.offre === 'seul' ? (o.niveaux || []) : [];
   const ecolePaye = OP_ECOLE.some(n => deja.includes(n)), ecoleOn = OP_ECOLE.some(n => e.niveaux.has(n));
-  const niv = `<label class="op-niv"><input type="checkbox" ${ecoleOn || ecolePaye ? 'checked' : ''} ${ecolePaye ? 'disabled' : ''} onchange="opNiveau('ecole',this.checked)"> CM1 et CM2 <small>(école${ecolePaye ? ', compris' : ''})</small></label>`
+  const niv = `<label class="op-niv"><input type="checkbox" ${ecoleOn || ecolePaye ? 'checked' : ''} ${ecolePaye ? 'disabled' : ''} onchange="opNiveau('ecole',this.checked)"> École, du CP au CM2 <small>(${ecolePaye ? 'compris' : 'tous les niveaux, classes à plusieurs niveaux comprises'})</small></label>`
     + OP_ORDRE.filter(n => !OP_ECOLE.includes(n)).map(n => {
     const dispo = OP_DISPO.includes(n), paye = deja.includes(n);
     return `<label class="op-niv${!dispo ? ' off' : ''}"><input type="checkbox" ${e.niveaux.has(n) || paye ? 'checked' : ''} ${!dispo || paye ? 'disabled' : ''} onchange="opNiveau('${n}',this.checked)"> ${n}${paye ? ' <small>(compris)</small>' : !dispo ? ' <small>(bientôt)</small>' : ''}</label>`;
@@ -201,12 +201,12 @@ function opOffresHtml(o, payee){
     <strong class="op-h"><span class="gicon">shopping_cart</span> ${payee ? 'Compléter mon offre' : 'Choisir mon offre'} <span class="hint" style="font-weight:400;">· année scolaire, jusqu'au 31 août</span></strong>
     <div class="op-choix">
       <button type="button" class="op-offre${e.choix === 'seul' ? ' on' : ''}" ${bloque('seul') ? 'disabled' : ''} onclick="opChoix('seul')">
-        <span class="gicon">school</span><span><b class="t">Professeur seul</b><small>Au collège : <b>${opEur(P.seul_base)}</b> par an pour un niveau, <b>+${opEur(P.seul_niveau)}</b> par niveau en plus${P.seul_plafond ? `, <b>${opEur(P.seul_plafond)}</b> au plus` : ''} ; jusqu'à <b>${P.seul_classes || 6} classes</b> de ${P.seul_eleves_max} élèves comprises, <b>+${opEur(P.seul_classe)}</b> par classe au-delà. À l'école : <b>${opEur(P.ecole_base)}</b> par an pour une classe de CM1 et CM2 (double niveau compris), <b>+${opEur(P.ecole_classe)}</b> par classe en plus. Tous les outils du professeur.</small></span></button>
+        <span class="gicon">school</span><span><b class="t">Professeur seul</b><small>Au collège : <b>${opEur(P.seul_base)}</b> par an pour un niveau, <b>+${opEur(P.seul_niveau)}</b> par niveau en plus${P.seul_plafond ? `, <b>${opEur(P.seul_plafond)}</b> au plus` : ''} ; jusqu'à <b>${P.seul_classes || 6} classes</b> de ${P.seul_eleves_max} élèves comprises, <b>+${opEur(P.seul_classe)}</b> par classe au-delà. À l'école : <b>${opEur(P.ecole_base)}</b> par an pour une classe, du CP au CM2 (plusieurs niveaux compris), <b>+${opEur(P.ecole_classe)}</b> par classe en plus. Tous les outils du professeur.</small></span></button>
       <button type="button" class="op-offre${e.choix === 'particulier' ? ' on' : ''}" ${bloque('particulier') ? 'disabled' : ''} onclick="opChoix('particulier')">
         <span class="gicon">groups</span><span><b class="t">Professeur particulier</b><small>Cours particuliers et soutien, seul ou en groupe : <b>${opEur(P.part_base)}</b> par an <b>+ ${opEur(P.part_eleve)}</b> par élève. Groupes libres, tous niveaux.</small></span></button>
     </div>
     ${e.choix === 'seul' ? `<p class="op-lab">Niveaux :</p><div class="op-nivs">${niv}</div>
-      <p class="hint" style="margin:4px 0 0;">Au collège, ${P.seul_classes || 6} classes de ${P.seul_eleves_max} élèves sont comprises, à répartir entre vos niveaux ; chaque niveau ouvre aussi le niveau inférieur en révision (ex. 5e → 6e, 6e → CM2). « CM1 et CM2 » comprend une classe, simple ou double niveau.</p>
+      <p class="hint" style="margin:4px 0 0;">Au collège, ${P.seul_classes || 6} classes de ${P.seul_eleves_max} élèves sont comprises, à répartir entre vos niveaux ; chaque niveau ouvre aussi le niveau inférieur en révision (ex. 5e → 6e, 6e → CM2). « École, du CP au CM2 » comprend une classe, à un ou plusieurs niveaux.</p>
       <p class="op-lab">Classes en plus <span class="hint" style="font-weight:400;margin:0;">(au-delà des classes comprises) · ${opEur(opPrixClasse(Array.from(e.niveaux)))} chacune</span></p>
       <div class="op-places"><button type="button" class="btn secondary qz-mini" onclick="opClassesSup(-1)" ${e.classesSup <= (payee && o.offre === 'seul' ? (o.classes_sup || 0) : 0) ? 'disabled' : ''}>−</button>
         <b class="op-nb" id="opClassesSup">${e.classesSup}</b>
@@ -519,7 +519,7 @@ async function opAdminRefresh(){
         <label class="hint">au plus (plafond, 0 : aucun) <input type="number" id="opPx9" step="0.01" min="0" value="${eurIn(P.seul_plafond || 0)}" style="width:80px;"> €</label>
         <label class="hint">classes comprises <input type="number" id="opPx10" step="1" min="1" value="${P.seul_classes || 6}" style="width:60px;"></label>
         <label class="hint">classe en plus <input type="number" id="opPx6" step="0.01" min="0" value="${eurIn(P.seul_classe)}" style="width:80px;"> €</label>
-        <label class="hint">École (CM1 + CM2), une classe <input type="number" id="opPx7" step="0.01" min="0" value="${eurIn(P.ecole_base)}" style="width:80px;"> €</label>
+        <label class="hint">École (CP au CM2), une classe <input type="number" id="opPx7" step="0.01" min="0" value="${eurIn(P.ecole_base)}" style="width:80px;"> €</label>
         <label class="hint">classe d'école en plus <input type="number" id="opPx8" step="0.01" min="0" value="${eurIn(P.ecole_classe)}" style="width:80px;"> €</label>
         <label class="hint">élèves par classe <input type="number" id="opPx5" step="1" min="1" value="${P.seul_eleves_max}" style="width:60px;"></label>
         <label class="hint">Particulier, forfait <input type="number" id="opPx3" step="0.01" min="0" value="${eurIn(P.part_base)}" style="width:80px;"> €</label>

@@ -18,9 +18,9 @@ const CORS = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { ...CORS, "Content-Type": "application/json" } });
 const ADMIN_EMAIL = "contact@latelierdesmaths.fr";
 const PROFILS: Record<string, string> = { seul: "Professeur de collège", ecole: "Professeur des écoles", particulier: "Professeur particulier", etablissement: "Établissement", famille: "Famille" };
-const NIVEAUX = ["cm1", "cm2", "6e", "5e", "4e", "3e"];
+const NIVEAUX = ["cp", "ce1", "ce2", "cm1", "cm2", "6e", "5e", "4e", "3e"];
 const COLLEGE = ["6e", "5e", "4e", "3e"];
-const lib = (n: string) => /^cm/.test(n) ? n.toUpperCase() : n;
+const lib = (n: string) => /^c[pem]/.test(n) ? n.toUpperCase() : n;
 const coupe = (s: unknown, n: number) => String(s ?? "").replace(/\s+/g, " ").trim().slice(0, n);
 const esc = (s: unknown) => String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 const entier = (v: unknown, max: number) => Math.max(0, Math.min(max, parseInt(String(v ?? ""), 10) || 0));
@@ -55,7 +55,7 @@ function estimer(profil: string, d: any, P: Record<string, number>): number {
   }
   if (profil === "etablissement") {
     const eff = d.effectifs || {};
-    const nc = COLLEGE.filter((n) => eff[n] > 0), ec = ["cm1", "cm2"].filter((n) => eff[n] > 0);
+    const nc = COLLEGE.filter((n) => eff[n] > 0), ec = ["cp", "ce1", "ce2", "cm1", "cm2"].filter((n) => eff[n] > 0);
     const pu = nc.length >= 4 ? 300 : nc.length >= 2 ? 350 : 400;
     return nc.reduce((s, n) => s + eff[n] * pu, 0) + ec.reduce((s, n) => s + eff[n] * 250, 0);
   }

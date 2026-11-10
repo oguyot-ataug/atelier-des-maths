@@ -11,7 +11,8 @@
 //    unique Stripe Checkout jusqu'au 31/08 de l'année scolaire (à partir de juin : l'année suivante),
 //    compléments à la différence ; l'activation et la facture sont faites par stripe-webhook.
 //    École (demandé : « Un peu moins cher je pense non ? », tarifs validés) : pour un professeur des
-//    écoles, CM1 et CM2 sont vendus ensemble (classes à double niveau) : 29 € par an pour une classe
+//    écoles, tous les niveaux de l'école sont vendus ensemble (classes à plusieurs niveaux) -- du CP au CM2 depuis le
+//    10/11/2026 (demandé : « ajouter toutes les classes CP... à 3e ! partout où c'est nécessaire ») : 29 € par an pour une classe
 //    de 30 élèves, + 10 € par classe en plus (ecole_base / ecole_classe, modifiables par l'administrateur).
 //  - classe-creer / classe-renommer / classe-supprimer, eleve-creer / eleve-supprimer : classes du
 //    professeur (classes.creee_par) et comptes élèves identifiant@mathcollege.local.
@@ -34,14 +35,14 @@ const corsHeaders = {
 function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), { status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 }
-const NIVEAUX_DISPONIBLES = ["cm1", "cm2", "6e", "5e", "4e", "3e"];
-const ORDRE = ["cm1", "cm2", "6e", "5e", "4e", "3e"];
-const ECOLE = ["cm1", "cm2"]; // vendus ensemble : une seule formule « école »
+const NIVEAUX_DISPONIBLES = ["cp", "ce1", "ce2", "cm1", "cm2", "6e", "5e", "4e", "3e"];
+const ORDRE = ["cp", "ce1", "ce2", "cm1", "cm2", "6e", "5e", "4e", "3e"];
+const ECOLE = ["cp", "ce1", "ce2", "cm1", "cm2"]; // vendus ensemble : une seule formule « école », du CP au CM2
 const PRIX_DEFAUT = { seul_base: 3900, seul_niveau: 1500, seul_plafond: 6900, seul_classes: 6, seul_classe: 1000, ecole_base: 2900, ecole_classe: 1000, part_base: 3900, part_eleve: 2000, seul_eleves_max: 30 };
-// Libellé d'un niveau : « cm1 » → « CM1 ».
-const lib = (n: string) => /^cm/.test(n) ? n.toUpperCase() : n;
+// Libellé d'un niveau : « cm1 » → « CM1 », « cp » → « CP ».
+const lib = (n: string) => /^c[pem]/.test(n) ? n.toUpperCase() : n;
 // Classes comprises dans une offre Professeur seul : seul_classes (6) dès qu'un niveau de collège est payé, une pour l'école
-// (CM1 + CM2), plus les classes en plus.
+// (CP au CM2), plus les classes en plus.
 function classesComprises(niveaux: string[], sup: number, P: Record<string, number>): number {
   return (niveaux.some((n) => !ECOLE.includes(n)) ? (P.seul_classes || 6) : 0) + (niveaux.some((n) => ECOLE.includes(n)) ? 1 : 0) + (sup || 0);
 }
@@ -101,7 +102,7 @@ serve(async (req) => {
       let niveaux: string[] = [], places = 0, classesSup = 0, prix = 0, lignes: string[] = [];
       if (type === "seul") {
         const demandes: string[] = Array.isArray(body.niveaux) ? body.niveaux.map((n: unknown) => String(n).toLowerCase()) : [];
-        if (demandes.some((n) => ECOLE.includes(n))) demandes.push(...ECOLE); // CM1 et CM2 : toujours ensemble
+        if (demandes.some((n) => ECOLE.includes(n))) demandes.push(...ECOLE); // CP au CM2 : toujours ensemble
         const actuels: string[] = memePeriode ? offre.niveaux || [] : [];
         niveaux = ORDRE.filter((n) => (demandes.includes(n) && NIVEAUX_DISPONIBLES.includes(n)) || actuels.includes(n));
         const college = niveaux.filter((n) => !ECOLE.includes(n)), ecole = niveaux.some((n) => ECOLE.includes(n));
@@ -110,7 +111,7 @@ serve(async (req) => {
         const prixClasse = college.length ? P.seul_classe : P.ecole_classe; // classe en plus : tarif école si l'offre n'a que l'école
         const pCollege = prixCollege(college.length, P);
         prix = pCollege + (ecole ? P.ecole_base : 0) + prixClasse * classesSup;
-        lignes = (ecole ? ["CM1 et CM2 (école) : " + eur(P.ecole_base)] : [])
+        lignes = (ecole ? ["École, du CP au CM2 : " + eur(P.ecole_base)] : [])
           .concat(college.length ? [college.join(", ") + " (" + college.length + " niveau" + (college.length > 1 ? "x" : "") + ", " + (P.seul_classes || 6) + " classes comprises) : " + eur(pCollege)
             + (pCollege < P.seul_base + P.seul_niveau * (college.length - 1) ? " (plafond)" : "")] : []);
         if (classesSup) lignes.push(classesSup + " classe" + (classesSup > 1 ? "s" : "") + " en plus × " + eur(prixClasse));

@@ -118,12 +118,15 @@ Nouveaux programmes (cycle 3 : CM1, CM2, 6e ; cycle 4 : 5e, 4e, 3e), avec une en
 Le texte du nouveau programme du cycle 4 (annexe 2) couvre déjà 4e et 3e : on peut s'en servir pour
 préparer ces mises à jour, sans les publier avant la date d'effet.
 
-## CP, CE1, CE2 : publiés, pas vendus (depuis le 28/10/2026, build 1193)
+## CP, CE1, CE2 : publiés (28/10/2026) et VENDUS depuis le 10/11/2026
 
-Les trois niveaux sont visibles de tous (menus, accueil, pages publiques `cp/`, `ce1/`, `ce2/`) ; la relecture
-continue au fil de l'eau. Ils ne sont dans aucune offre (Professeur seul, Famille, licence établissement) : ne pas
-les ajouter aux offres ni aux fonctions de paiement sans demande. `NIVEAUX_ADMIN` (app.js) liste ces niveaux non
-vendus pour le bêta-test ; `NIVEAUX_MASQUES` (vide) masquerait un niveau en préparation.
+Demandé le 10/11/2026 : « ajouter toutes les classes CP... à 3e ! partout où c'est nécessaire », prix de l'école étendus du CP au
+CM2 (validé) : Professeur des écoles 29 € pour une classe, tous niveaux du CP au CM2 (+ 10 € par classe) ; Famille école 25 € pour un
+niveau, 39 € pour deux niveaux ou plus ; licence établissement 2,50 € par élève du CP au CM2. Listes de niveaux étendues : fonctions
+`prof-offre`, `famille`, `stripe-webhook` (filtre des niveaux payés !), `demande-devis` ; `offres-prof.js`, `famille.js`,
+`facturation.js`, `simulateur.js`, `groupes.js`, `progression-etab.js` ; base : `famille_niveaux_ouverts`, `groupe_enregistrer`
+(`supabase/sql/2026-11-10-cp-ce2-en-vente.sql`) ; page des tarifs, CGV. `NIVEAUX_ADMIN` (app.js) est vide (gardé pour un futur niveau
+en préparation, bêta-testeurs) ; `NIVEAUX_MASQUES` (vide) masquerait un niveau en préparation.
 
 ## Lexique du CP à la 3e (menu L'Atelier, visible par tous, depuis le 02/11/2026)
 

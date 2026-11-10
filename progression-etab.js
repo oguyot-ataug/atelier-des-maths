@@ -223,7 +223,7 @@ async function peEtabAdminRendre(){
   if(error){ box.textContent = 'Erreur : ' + error.message; return; }
   window.__peEtab = new Map((data || []).map(r => [r.id, r]));
   if(!data || !data.length){ box.innerHTML = '<p class="hint">Aucune progression proposée pour l\'instant. Un professeur propose la sienne depuis « Ma progression » (bouton « Proposer cette progression à l\'établissement »).</p>'; peEtabBadgeMaj(); return; }
-  const ordreNiv = ['ce2', 'cm1', 'cm2', '6e', '5e', '4e', '3e'];
+  const ordreNiv = ['cp', 'ce1', 'ce2', 'cm1', 'cm2', '6e', '5e', '4e', '3e'];
   const groupes = new Map();
   data.forEach(r => { const k = r.uai + '|' + r.niveau; if(!groupes.has(k)) groupes.set(k, []); groupes.get(k).push(r); });
   const cles = [...groupes.keys()].sort((a, b) => { const [ua, na] = a.split('|'), [ub, nb] = b.split('|'); return ua.localeCompare(ub) || ordreNiv.indexOf(na) - ordreNiv.indexOf(nb); });

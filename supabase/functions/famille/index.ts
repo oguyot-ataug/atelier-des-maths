@@ -28,13 +28,13 @@ function json(body: unknown, status = 200) {
 }
 
 // Niveaux actuellement en ligne sur le site (la 3e est en vente depuis le build 818, le CM1 et le
-// CM2 depuis le build 875).
-const NIVEAUX_DISPONIBLES = ["cm1", "cm2", "6e", "5e", "4e", "3e"];
-const ORDRE = ["cm1", "cm2", "6e", "5e", "4e", "3e"];
-const ECOLE = ["cm1", "cm2"];
-const lib = (n: string) => /^cm/.test(n) ? n.toUpperCase() : n;
-// École (tarifs validés : « Un peu moins cher je pense non ? ») : 25 € pour le CM1 ou le CM2, 39 € pour
-// les deux (clés ecole1 / ecole2 de famille_parametres), en plus des niveaux de collège éventuels.
+// CM2 depuis le build 875, le CP, le CE1 et le CE2 depuis le 10/11/2026 : « ajouter toutes les classes CP... à 3e ! »).
+const NIVEAUX_DISPONIBLES = ["cp", "ce1", "ce2", "cm1", "cm2", "6e", "5e", "4e", "3e"];
+const ORDRE = ["cp", "ce1", "ce2", "cm1", "cm2", "6e", "5e", "4e", "3e"];
+const ECOLE = ["cp", "ce1", "ce2", "cm1", "cm2"];
+const lib = (n: string) => /^c[pem]/.test(n) ? n.toUpperCase() : n;
+// École (tarifs validés : « Un peu moins cher je pense non ? ») : 25 € pour un niveau de l'école (du CP au CM2), 39 € pour
+// deux niveaux ou plus (clés ecole1 / ecole2 de famille_parametres), en plus des niveaux de collège éventuels.
 function prixEcole(grille: Record<string, number>, n: number): number {
   if (n <= 0) return 0;
   return Number(grille[n >= 2 ? "ecole2" : "ecole1"] ?? (n >= 2 ? 3900 : 2500));

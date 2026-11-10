@@ -15,13 +15,13 @@
      verrouillage des chapitres dans app.js (isChapterLocked).
    ===================================================================== */
 
-const FAM_ORDRE = ['cm1','cm2','6e','5e','4e','3e'];
-const FAM_DISPO = ['cm1','cm2','6e','5e','4e','3e']; // niveaux en ligne : miroir de NIVEAUX_DISPONIBLES (fonction famille)
+const FAM_ORDRE = ['cp','ce1','ce2','cm1','cm2','6e','5e','4e','3e'];
+const FAM_DISPO = ['cp','ce1','ce2','cm1','cm2','6e','5e','4e','3e']; // niveaux en ligne (CP-CE2 depuis le 10/11/2026) : miroir de NIVEAUX_DISPONIBLES (fonction famille)
 const famLib = n => typeof niveauLabel === 'function' ? niveauLabel(n) : n;
 const FAM_EXCLUSION_TEXTE = "Je certifie qu'aucun de mes enfants inscrits sur L'Atelier des Maths n'est scolarisé à l'Ensemble scolaire La Malgrange (Jarville-la-Malgrange), établissement où enseigne le concepteur du site, et je m'engage à ne pas créer de compte pour un enfant qui y serait scolarisé. Je reconnais qu'une fausse déclaration entraîne la fermeture des comptes sans remboursement.";
 // Prix affichés (en centimes, par nombre de niveaux) : lus dans famille_parametres, modifiables
 // dans Administration > Familles. Le montant réellement payé est toujours recalculé par le serveur.
-// École : ecole1 (CM1 ou CM2) / ecole2 (CM1 + CM2), en plus des niveaux de collège éventuels.
+// École : ecole1 (un niveau du CP au CM2) / ecole2 (deux niveaux de l'école ou plus), en plus des niveaux de collège éventuels.
 let famGrille = { '1':3500, '2':5500, '3':6900, ecole1:2500, ecole2:3900 };
 const famGrilleDe = p => Object.assign({ ecole1:2500, ecole2:3900 }, p || {});
 async function famChargerGrille(){
@@ -110,14 +110,14 @@ function famPresentationHtml(){
   return `
   <div class="fam-hero">
     <h1 style="margin:0 0 6px;"><span class="gicon">family_restroom</span> L'Atelier des Maths en famille</h1>
-    <p style="margin:0;max-width:72ch;">Les cours, méthodes et exercices du CM1 à la 3e, les automatismes et Objectif Nombre, avec un compte pour chaque enfant et un suivi pour vous.</p>
+    <p style="margin:0;max-width:72ch;">Les cours, méthodes et exercices du CP à la 3e, les automatismes et Objectif Nombre, avec un compte pour chaque enfant et un suivi pour vous.</p>
   </div>
   ${typeof venteOuverte === 'function' && !venteOuverte(false) ? famVenteFermeeHtml() : `<div class="fam-offres">
     <div class="fam-offre"><b>1 niveau</b><span class="fam-prix">${famPrixTxt(famGrille['1'])}</span><small>par année scolaire</small></div>
     <div class="fam-offre"><b>2 niveaux</b><span class="fam-prix">${famPrixTxt(famGrille['2'])}</span><small>par année scolaire</small></div>
     <div class="fam-offre"><b>Collège complet</b><span class="fam-prix">${famPrixTxt(famGrille['3'])}</span><small>de la 6e à la 3e</small></div>
-    <div class="fam-offre"><b>École : CM1 ou CM2</b><span class="fam-prix">${famPrixTxt(famGrille.ecole1)}</span><small>par année scolaire</small></div>
-    <div class="fam-offre"><b>CM1 et CM2</b><span class="fam-prix">${famPrixTxt(famGrille.ecole2)}</span><small>par année scolaire</small></div>
+    <div class="fam-offre"><b>École : un niveau</b> <small>(du CP au CM2)</small><span class="fam-prix">${famPrixTxt(famGrille.ecole1)}</span><small>par année scolaire</small></div>
+    <div class="fam-offre"><b>École : deux niveaux ou plus</b><span class="fam-prix">${famPrixTxt(famGrille.ecole2)}</span><small>par année scolaire</small></div>
   </div>`}
   <ul class="fam-points">
     <li><span class="gicon">group</span><span>Jusqu'à <b>4 comptes enfants</b> (des jumeaux ont chacun leur compte), gérés par vous.</span></li>
@@ -706,8 +706,8 @@ async function famAdminRefresh(){
         <label class="hint">1 niveau <input type="number" id="famTarif1" min="1" step="0.01" value="${eur(grille['1'])}" style="width:80px;"> €</label>
         <label class="hint">2 niveaux <input type="number" id="famTarif2" min="1" step="0.01" value="${eur(grille['2'])}" style="width:80px;"> €</label>
         <label class="hint">Collège complet <input type="number" id="famTarif3" min="1" step="0.01" value="${eur(grille['3'])}" style="width:80px;"> €</label>
-        <label class="hint">École, CM1 ou CM2 <input type="number" id="famTarif4" min="1" step="0.01" value="${eur(grille.ecole1)}" style="width:80px;"> €</label>
-        <label class="hint">CM1 et CM2 <input type="number" id="famTarif5" min="1" step="0.01" value="${eur(grille.ecole2)}" style="width:80px;"> €</label>
+        <label class="hint">École, un niveau <input type="number" id="famTarif4" min="1" step="0.01" value="${eur(grille.ecole1)}" style="width:80px;"> €</label>
+        <label class="hint">École, deux niveaux ou plus <input type="number" id="famTarif5" min="1" step="0.01" value="${eur(grille.ecole2)}" style="width:80px;"> €</label>
         <button class="btn" onclick="famAdminTarifs()">Enregistrer</button>
         <span class="hint" id="famTarifMsg"></span>
       </div>

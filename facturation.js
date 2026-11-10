@@ -14,8 +14,8 @@
    comme pour les évaluations et le cahier.
    ===================================================================== */
 
-const FAC_NIVEAUX = ['cm1','cm2','6e','5e','4e','3e'];
-const FAC_ECOLE = ['cm1','cm2']; // tarif école par élève (prix.ecole), quel que soit le nombre de niveaux de collège
+const FAC_NIVEAUX = ['cp','ce1','ce2','cm1','cm2','6e','5e','4e','3e']; // CP-CE2 vendus depuis le 10/11/2026
+const FAC_ECOLE = ['cp','ce1','ce2','cm1','cm2']; // tarif école par élève (prix.ecole), quel que soit le nombre de niveaux de collège
 const facLib = n => typeof niveauLabel === 'function' ? niveauLabel(n) : n;
 const FAC_STATUTS = {
   emis:    { label:'Émis',             color:'#0C5BA0' },

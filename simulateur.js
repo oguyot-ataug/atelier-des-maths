@@ -66,7 +66,7 @@ function simuSortie(){
 
 /* ---------- Côté professeur : l'écran du simulateur ---------- */
 const sim = { eleves: [], classe: null, niveau: null, nb: 3, disposition: 'prof', grand: null };
-const SIM_NIVEAUX = ['cm1', 'cm2', '6e', '5e', '4e', '3e'];
+const SIM_NIVEAUX = ['cp', 'ce1', 'ce2', 'cm1', 'cm2', '6e', '5e', '4e', '3e']; // du CP à la 3e depuis le 10/11/2026
 async function simAppel(body){
   const { data: { session } } = await sb.auth.getSession();
   if(!session) throw new Error('Connectez-vous d\'abord.');
