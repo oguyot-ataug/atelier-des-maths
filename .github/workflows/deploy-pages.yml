@@ -49,6 +49,5 @@ jobs:
       - name: Déploiement sur GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5
-        with:
-          # 10 min par défaut : dépassées deux fois (09 et 10/11/2026), GitHub restant bloqué sur « syncing_files ».
-          timeout: 1800000
+        # Pas de réglage « timeout » : GitHub plafonne à 10 min (600000 ms). Si GitHub reste bloqué sur « syncing_files »
+        # (09 et 10/11/2026), relancer avec un NOUVEAU commit : republier le même commit est annulé aussitôt (« Deployment cancelled »).
