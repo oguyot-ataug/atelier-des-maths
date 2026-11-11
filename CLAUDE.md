@@ -399,13 +399,14 @@ favorable du chef d'établissement est obtenu, la décision du rectorat est atte
 (bouton « Ouvrir les ventes ») avant la décision écrite du rectorat. Depuis le 10/11/2026
 (« On peut mettre la page des tarifs pour tous ! »), `tarifs/index.html` est la page COMPLÈTE des tarifs, publique et indexable,
 avec le bandeau « Ouverture des ventes prochainement · en attendant, essai gratuit » (date retirée le 11/11/2026, demandé : « écrire
-prochainement » ; même texte sur l'accueil, `.hero-essai`) ; à retirer le jour du bouton « Ouvrir les ventes » d'Administration › Offres profs. `_hors-ligne/tarifs.html` (exclu de la publication) en reste la copie
+prochainement ») ; à retirer le jour du bouton « Ouvrir les ventes » d'Administration › Offres profs. `_hors-ligne/tarifs.html` (exclu de la publication) en reste la copie
 de travail. Jusqu'à l'ouverture, DANS LE SITE, les comptes non « test » ne voient ni offres, ni prix, ni lien vers les tarifs dans
 « Mon abonnement », ni prix dans l'Espace famille (`famVenteFermeeHtml`).
 Page des tarifs DANS le site aussi (demandé le 10/11/2026) : vue `#/tarifs` (`tarifs.js`, visiteurs non connectés) qui
 charge le contenu de `/tarifs/` (une seule source : modifier `tarifs/index.html`, et sa copie `_hors-ligne/tarifs.html`).
 Tarifs bien visibles (demandé le 10/11/2026 : « je trouve que la page tarif est trop cachée ») : bouton « Tarifs » du menu principal
-(`#navTarifs`) et bouton « Voir les tarifs » de l'accueil (`#heroTarifs`), lien du pied de page (`#footTarifs`) : VISITEURS NON CONNECTÉS
+(`#navTarifs`) et lien du pied de page (`#footTarifs`) ; le bouton « Voir les tarifs » de l'accueil (`#heroTarifs`) a été retiré le 11/11/2026
+(« le bouton du menu suffit pour l'instant ») : VISITEURS NON CONNECTÉS
 seulement (demandé le 10/11/2026 : « Supprimer la page tarif quand on est connecté » ; refreshAuthUI, tarifsOuvrir renvoie à l'accueil),
 jamais sur L'Atelier du Prof. La page publique /tarifs/ reste accessible à tous par son adresse.
 Plus de lien vers L'Atelier du Prof dans le pied de page de L'Atelier des Maths (demandé le 10/11/2026).
