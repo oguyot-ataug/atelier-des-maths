@@ -1975,6 +1975,8 @@ function openExportPdfOptions(){
   document.getElementById('exportHideDefinitions').checked = false;
   document.getElementById('exportHideProprietes').checked = false;
   document.getElementById('exportHideRegles').checked = false;
+  const garder = document.getElementById('exportGarderCopie');
+  if(garder){ let v = false; try{ v = localStorage.getItem('exportGarderCopie') === '1'; }catch(e){} garder.checked = v; document.getElementById('exportGarderLbl').hidden = !(currentUser && sb); }
   populateExportParagraphChoices();
   document.getElementById('exportPdfOptionsOverlay').style.display='flex';
 }
@@ -2113,6 +2115,18 @@ function pdfResserrerFigures(wrapper){
     if(!fait) break;
   }
 }
+/* PDF des cours exportés gardés dans « Mes dossiers » (demandé le 11/11/2026 : « Quand je crée un pdf, je pourrais aussi l'enregistrer dans ces
+   dossiers ») : stockage privé « documents » (<id du compte>/<uuid>.pdf, lisible par son seul propriétaire), table docs_pdf
+   (supabase/sql/2026-11-11-programmes-pdf-dossiers.sql) ; ouverture, rangement, renommage dans evaluation.js (EVF_SORTES.k). */
+async function docsPdfGarder(blob, nom){
+  if(!blob || !currentUser || !sb) throw new Error('connectez-vous');
+  const id = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2);
+  const chemin = currentUser.id + '/' + id + '.pdf';
+  const { error: e1 } = await sb.storage.from('documents').upload(chemin, blob, { contentType: 'application/pdf', upsert: false });
+  if(e1) throw e1;
+  const { error: e2 } = await sb.from('docs_pdf').insert({ nom: String(nom || 'Cours').trim().slice(0, 120) || 'Cours', chemin, taille: blob.size });
+  if(e2){ await sb.storage.from('documents').remove([chemin]); throw e2; }
+}
 async function exportCoursPDF(){
   if(typeof familleSansImpression==='function' && familleSansImpression()) return;
   const hint=document.getElementById('exportHint');
@@ -2123,6 +2137,10 @@ async function exportCoursPDF(){
   if(typeof html2pdf==='undefined'){ hint.textContent="La bibliothèque PDF n'a pas pu se charger (pas de connexion internet ?), utilisez Ctrl/Cmd+P pour imprimer à la place."; return; }
   const content = getVisibleCoursContent();
   const title = document.getElementById('chap-title').textContent || 'cours';
+  // Copie dans « Mes dossiers » (case de la fenêtre d'options, professeurs) : lue avant que la fenêtre ne change.
+  const garderCopie = !!(isStaffGlobal && currentUser && sb && document.getElementById('exportGarderCopie') && document.getElementById('exportGarderCopie').checked);
+  const aCompleter = ['exportHideDefinitions', 'exportHideProprietes', 'exportHideRegles'].some(id => { const c = document.getElementById(id); return isStaffGlobal && c && c.checked; });
+  let pdfGarde = null;
   const demosAvancees = await advanceAllStepDemosToEndAsync(content);
   // Traits de formule recadrés (racines, flèches) : taille visible mesurée sur le cours affiché, recopiée avec lui (voir
   // expandStepDemosInClone).
@@ -2323,8 +2341,18 @@ async function exportCoursPDF(){
         pdf.setTextColor(120);
         pdf.text(`${i} / ${total}`, pdf.internal.pageSize.getWidth()/2, pdf.internal.pageSize.getHeight()-6, {align:'center'});
       }
+      if(garderCopie){ try{ pdfGarde = pdf.output('blob'); }catch(e){ console.warn('copie du PDF', e); } }
     }).save()
-    .then(()=>{ clip.remove(); revenir(); hint.textContent='PDF téléchargé ✓'; setTimeout(()=>hint.textContent='',4000); })
+    .then(async ()=>{
+      clip.remove(); revenir(); hint.textContent='PDF téléchargé ✓';
+      if(pdfGarde){
+        hint.textContent='PDF téléchargé ✓ · copie en cours d\'envoi dans vos dossiers…';
+        const niv = currentChapterLevel ? (/^(cp|ce|cm)/i.test(currentChapterLevel) ? String(currentChapterLevel).toUpperCase() : currentChapterLevel) + ' · ' : '';
+        try{ await docsPdfGarder(pdfGarde, niv + title.trim() + (aCompleter ? ' (à compléter)' : '')); hint.textContent='PDF téléchargé ✓ · copie gardée dans Mes dossiers ✓'; }
+        catch(e){ hint.textContent='PDF téléchargé ✓ · copie non gardée dans vos dossiers : ' + ((e && e.message) || 'réessayez'); setTimeout(()=>hint.textContent='',12000); return; }
+      }
+      setTimeout(()=>hint.textContent='',5000);
+    })
     .catch(()=>{ clip.remove(); revenir(); hint.textContent="Échec de la génération dans ce navigateur, essayez Ctrl/Cmd+P pour imprimer à la place."; });
 }
 
@@ -3957,6 +3985,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1413', date:'2026-11-11', items:[
+    "Programmes par blocs et PDF des cours dans « Mes dossiers » -- demandé : « Quand je crée un pdf, je pourrais aussi l'enregistrer dans ces dossiers, quid des blocs de codage ? ». Programmation › Création libre : « Enregistrer sous un nom », « Enregistrer », « Enregistrer sous… », « Nouveau », « Mes programmes » ; le programme est gardé en ligne (tous les appareils), rangé dans vos dossiers, rouvert d'un clic (un point signale les modifications non enregistrées). Vos défis créés y apparaissent aussi (ouvrir, renommer, ranger). Export PDF d'un cours : case « Garder aussi une copie dans mes dossiers » (retenue sur l'appareil) ; le PDF est téléchargé comme avant et une copie privée est rangée dans vos dossiers (ouvrir, télécharger, renommer, déplacer, effacer). Le gestionnaire devient « Mes dossiers », avec les filtres Tout, Évaluations, Figures, Programmes, PDF ; les élèves y retrouvent leurs figures et leurs programmes."
+  ] },
   { version:'2026-08-19.1412', date:'2026-11-11', items:[
     "Figures enregistrées rangées dans les mêmes dossiers que les évaluations -- demandé : « lorsqu'on enregistre nos figures, on a accès au même répertoire de dossier ? », choix : un seul arbre de dossiers pour tout. « Mes évaluations » devient « Mes évaluations et figures » : un dossier (par exemple « 5e – Triangles ») contient à la fois des évaluations et des figures de la Géométrie interactive, chacune avec sa vignette. Filtre Tout · Évaluations · Figures ; glisser-déposer, « Déplacer vers… », Renommer, Effacer, recherche dans tous les dossiers. Dans la Géométrie interactive, « Mes figures enregistrées » ouvre ce même gestionnaire, sur les figures. Ouvrir une figure depuis la page des évaluations ouvre la Géométrie interactive (et inversement pour une évaluation). Supprimer un dossier ne supprime rien de son contenu : il remonte d'un cran."
   ] },

@@ -316,6 +316,7 @@ function progDefi(id){
   if(prog.defi && prog.defi.id !== id) progSauverCourant();
   if(typeof dsEnd === 'function' && prog.ds){ dsEnd(prog.ds, (progSuivi[prog.defi && prog.defi.id] || {}).reussi ? 'terminee' : 'abandonnee'); prog.ds = null; }
   prog.defi = d; prog.mode = 'defis'; prog.creation = null;
+  if(typeof progFichierMaj === 'function') progFichierMaj();
   prog.ws.updateToolbox(progToolbox(d.blocs || null));
   const s = progSuivi[d.id] || {};
   progCharger(s.programme || progDepartDefaut());
@@ -387,7 +388,7 @@ async function progOuvrirDevoir(devoirId){
 function progVoirEleve(i){ const v = (window._progVoirCache || [])[i]; if(v) progOuvrir({ lecture: v }); }
 function progLecture(){
   const v = prog.lecture, d = progDefiParId(v.defi); if(!d) return;
-  prog.devoir = null; prog.defi = null; prog.mode = 'defis';
+  prog.devoir = null; prog.defi = null; prog.mode = 'defis'; if(typeof progFichierMaj === 'function') progFichierMaj();
   document.getElementById('progTabs').hidden = true; document.getElementById('progListe').hidden = true;
   prog.ws.updateToolbox(progToolbox(d.blocs || null));
   progCharger(v.programme);

@@ -94,6 +94,7 @@ async function progPersoEditer(rowId){
   progSauverCourant(); progArreter();
   const d = rowId ? progDefiParId('p-' + rowId) : null, D = d ? JSON.parse(JSON.stringify(d.src)) : { type: 'figure', blocs: 'trace', depart: { x: 0, y: 0, dir: 90 } };
   prog.mode = 'creation'; prog.defi = null;
+  if(typeof progFichierMaj === 'function') progFichierMaj();
   prog.creation = { rowId: rowId || null, titre: d ? d.titre : '', niveau: d ? d.niveau : (typeof currentChapterLevel !== 'undefined' && PROG_PERSO_NIVEAUX.includes(currentChapterLevel) ? currentChapterLevel : '6e'),
     type: D.type || 'figure', enonce: D.enonce || '', aide: D.aide || '', blocs: D.blocs || (D.type === 'calcul' ? 'calcul' : 'trace'), repeter: !!D.repeter,
     depart: Object.assign({ x: 0, y: 0, dir: 90 }, D.depart || {}), tests: (D.tests || [[2], [5]]).map(t => t.map(v => typeof v === 'number' ? String(v).replace('.', ',') : v).join(' ; ')).join('\n') };

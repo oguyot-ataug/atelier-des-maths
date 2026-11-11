@@ -438,6 +438,7 @@ function progConstruire(root){
       <h1><span class="gicon">extension</span> Programmation</h1>
       <div class="prog-tabs" id="progTabs"><button type="button" data-m="defis" onclick="progMode('defis')"><span class="gicon">emoji_events</span> Défis</button>
         <button type="button" data-m="libre" onclick="progMode('libre')"><span class="gicon">palette</span> Création libre</button></div>
+      <div class="prog-fichier" id="progFichier" hidden></div>
       <span id="progDevoirBandeau" class="prog-devoir" hidden></span>
       <button type="button" class="btn secondary prog-plein-btn" id="progPleinBtn" onclick="progPleinEcran()" title="Plein écran (Échap pour sortir)"><span class="gicon">fullscreen</span> Plein écran</button>
     </div>
@@ -508,6 +509,8 @@ function progMode(m){
   let json = null; try{ json = JSON.parse(localStorage.getItem('progLibre:' + ((currentUser && currentUser.id) || 'anon')) || 'null'); }catch(e){}
   progCharger(json || progDepartDefaut());
   prog.scene.modele = null; prog.scene.decor = null; prog.scene.depart = null; prog.scene.equipe = null; prog.scene.reset(); prog.scene.fond(); progMajPos();
+  const f = progFichierLire(); prog.fichier = f && f.id ? { id: f.id, nom: f.nom } : null; prog.fichierModifie = !!(f && f.modifie);
+  progFichierPret(); progFichierMaj();
 }
 function progDepartDefaut(){ return { blocks: { languageVersion: 0, blocks: [{ type: 'sc_drapeau', x: 40, y: 40 }] } }; }
 function progCharger(json){
@@ -520,14 +523,84 @@ function progCharger(json){
 function progProgramme(){ return Blockly.serialization.workspaces.save(prog.ws); }
 function progModifie(){
   if(!prog || prog.chargement) return;
+  if(prog.mode === 'libre' && prog.fichierPret && !prog.fichierModifie){ prog.fichierModifie = true; progFichierMaj(); }
   clearTimeout(prog.saveT); prog.saveT = setTimeout(progSauverCourant, 1200);
 }
 function progSauverCourant(){
   if(!prog || !prog.ws || prog.chargement || prog.lecture || prog.tableau) return; // tableau : défi fait en groupe en projection, rien d'enregistré
   clearTimeout(prog.saveT);
   const json = progProgramme();
-  if(prog.mode === 'libre'){ try{ localStorage.setItem('progLibre:' + ((currentUser && currentUser.id) || 'anon'), JSON.stringify(json)); }catch(e){} }
+  if(prog.mode === 'libre'){ try{ localStorage.setItem('progLibre:' + ((currentUser && currentUser.id) || 'anon'), JSON.stringify(json)); }catch(e){} progFichierRetenir(); }
   else if(prog.defi && typeof progDefiSauver === 'function') progDefiSauver(prog.defi, json);
+}
+/* Programmes enregistrés sous un nom (demandé le 11/11/2026 : « Quand je crée un pdf, je pourrais aussi l'enregistrer dans ces dossiers,
+   quid des blocs de codage ? ») : table prog_programmes (supabase/sql/2026-11-11-programmes-pdf-dossiers.sql), en ligne, sur tous les
+   appareils, rangés dans les dossiers personnels de « Mes dossiers » (evaluation.js, type 'prog'). Le brouillon de la Création libre reste
+   sur l'appareil (progLibre:<id>), relié au programme ouvert (progLibreFichier:<id> : id, nom, modifié ou non). */
+function progFichierCle(){ return 'progLibreFichier:' + ((typeof currentUser !== 'undefined' && currentUser && currentUser.id) || 'anon'); }
+function progFichierLire(){ try{ return JSON.parse(localStorage.getItem(progFichierCle()) || 'null'); }catch(e){ return null; } }
+function progFichierRetenir(){
+  if(!prog) return;
+  try{ if(prog.fichier) localStorage.setItem(progFichierCle(), JSON.stringify({ id: prog.fichier.id, nom: prog.fichier.nom, modifie: !!prog.fichierModifie })); else localStorage.removeItem(progFichierCle()); }catch(e){}
+}
+// Les événements de Blockly qui suivent un chargement ne comptent pas comme une modification.
+function progFichierPret(){ prog.fichierPret = false; clearTimeout(prog.fichierT); prog.fichierT = setTimeout(() => { if(prog) prog.fichierPret = true; }, 120); }
+function progFichierMaj(){
+  const el = document.getElementById('progFichier'); if(!el || !prog) return;
+  const voir = prog.mode === 'libre' && !prog.devoir && !prog.lecture && !prog.tableau && typeof currentUser !== 'undefined' && !!currentUser && typeof sb !== 'undefined' && !!sb;
+  el.hidden = !voir; if(!voir) return;
+  const f = prog.fichier;
+  el.innerHTML = `<span class="prog-f-nom" title="${f ? 'Programme enregistré dans vos dossiers' : 'Programme pas encore enregistré (gardé sur cet appareil)'}"><span class="gicon">${f ? 'description' : 'draft'}</span> ${f ? progEsc(f.nom) : 'Sans nom'}${prog.fichierModifie && f ? ' <i title="Modifications non enregistrées">•</i>' : ''}</span>
+    <button type="button" class="btn secondary qz-mini" onclick="progFichierEnregistrer()" title="${f ? 'Enregistrer les modifications' : 'Enregistrer ce programme sous un nom, dans vos dossiers'}"><span class="gicon">save</span> ${f ? 'Enregistrer' : 'Enregistrer sous un nom'}</button>
+    ${f ? '<button type="button" class="btn secondary qz-mini" onclick="progFichierEnregistrer(true)" title="Garder une copie sous un autre nom"><span class="gicon">save_as</span> Enregistrer sous…</button>' : ''}
+    <button type="button" class="btn secondary qz-mini" onclick="progFichierNouveau()" title="Commencer un nouveau programme"><span class="gicon">note_add</span> Nouveau</button>
+    <button type="button" class="btn secondary qz-mini" onclick="openEvalListModal({ type: 'prog' })" title="Vos programmes enregistrés, rangés dans vos dossiers"><span class="gicon">folder_open</span> Mes programmes</button>`;
+}
+async function progFichierEnregistrer(sous){
+  if(!prog || prog.mode !== 'libre' || !currentUser) return;
+  let cible = sous ? null : prog.fichier, nom = cible && cible.nom;
+  if(!cible){
+    let msg = 'Nom du programme :', def = prog.fichier ? prog.fichier.nom + ' (copie)' : '';
+    for(;;){
+      const n = await nicePrompt(msg, def); if(n == null) return;
+      nom = String(n).trim().slice(0, 80); if(!nom) return;
+      const { data: deja } = await sb.from('prog_programmes').select('id').eq('user_id', currentUser.id).eq('nom', nom).maybeSingle();
+      if(!deja) break;
+      if(await niceConfirm(`Un programme s'appelle déjà « ${nom} ». Le remplacer par celui-ci ?`)){ cible = { id: deja.id, nom }; break; }
+      msg = 'Autre nom pour le programme :'; def = nom;
+    }
+  }
+  const row = { nom, programme: progProgramme(), updated_at: new Date().toISOString() };
+  let r = cible ? await sb.from('prog_programmes').update(row).eq('id', cible.id).eq('user_id', currentUser.id).select('id,nom') : null;
+  if(!r || (!r.error && !(r.data || []).length)) r = await sb.from('prog_programmes').insert(row).select('id,nom'); // effacé entre-temps : recréé
+  if(r.error || !(r.data || []).length){ await niceAlert('Enregistrement impossible : ' + ((r.error && r.error.message) || 'réessayez.')); return; }
+  prog.fichier = { id: r.data[0].id, nom: r.data[0].nom }; prog.fichierModifie = false;
+  progSauverCourant(); progFichierMaj();
+}
+async function progFichierNouveau(){
+  if(!prog) return;
+  if(prog.fichierModifie && !(await niceConfirm(prog.fichier ? `Les dernières modifications de « ${prog.fichier.nom} » ne sont pas enregistrées. Commencer quand même un nouveau programme ?` : 'Le programme en cours n\'est pas enregistré sous un nom. Commencer quand même un nouveau programme ?'))) return;
+  progArreter();
+  prog.fichier = null; prog.fichierModifie = false;
+  progCharger(progDepartDefaut()); progFichierPret();
+  prog.scene.reset(); progMajPos(); progSauverCourant(); progFichierMaj();
+}
+// Ouvert depuis « Mes dossiers » : la Création libre avec ce programme.
+async function progFichierOuvrir(id){
+  if(!currentUser) return;
+  const { data, error } = await sb.from('prog_programmes').select('id,nom,programme').eq('id', id).eq('user_id', currentUser.id).maybeSingle();
+  if(error || !data){ await niceAlert('Programme introuvable' + (error ? ' : ' + error.message : '.')); return; }
+  if(!prog || prog.mode !== 'libre' || !document.getElementById('view-programmation').classList.contains('active')){
+    if(typeof progQuitterDevoir === 'function') progQuitterDevoir();
+    await progOuvrir({ libre: true });
+  }
+  if(!prog || !prog.ws) return;
+  if(prog.mode !== 'libre') progMode('libre');
+  if(prog.fichierModifie && !(prog.fichier && prog.fichier.id === data.id) && !(await niceConfirm(prog.fichier ? `Les dernières modifications de « ${prog.fichier.nom} » ne sont pas enregistrées. Ouvrir quand même « ${data.nom} » ?` : `Le programme en cours n'est pas enregistré sous un nom. Ouvrir quand même « ${data.nom} » ?`))) return;
+  progArreter();
+  prog.fichier = { id: data.id, nom: data.nom }; prog.fichierModifie = false;
+  progCharger(data.programme); progFichierPret();
+  prog.scene.reset(); progMajPos(); progSauverCourant(); progFichierMaj();
 }
 async function progLancer(){
   if(!prog) return;
@@ -557,6 +630,9 @@ function progArreter(){ if(prog && prog.machine){ prog.machine.arreter(); prog.m
     .prog-tabs{display:inline-flex;background:rgba(28,43,57,.06);border-radius:12px;padding:3px;gap:2px;}
     .prog-tabs button{border:none;background:none;border-radius:9px;padding:7px 14px;font:600 .9rem 'Space Grotesk',sans-serif;color:#5B6472;cursor:pointer;display:inline-flex;align-items:center;gap:6px;}
     .prog-tabs button.on{background:#fff;color:#0C5BA0;box-shadow:0 1px 4px rgba(28,43,57,.18);} .prog-tabs .gicon{font-size:1.1rem;}
+    .prog-fichier{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+    .prog-f-nom{display:inline-flex;align-items:center;gap:4px;font:600 .88rem Inter,sans-serif;color:#1C2B39;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 4px;}
+    .prog-f-nom .gicon{font-size:1.05rem;color:#0C5BA0;} .prog-f-nom i{font-style:normal;color:#E35D3A;font-size:1.2rem;line-height:1;}
     .prog-devoir{display:inline-flex;align-items:center;gap:6px;background:rgba(255,130,8,.12);color:#B8511F;border-radius:999px;padding:5px 12px;font-weight:600;font-size:.88rem;} .prog-devoir[hidden]{display:none;}
     .prog-body{display:flex;gap:14px;align-items:flex-start;}
     .prog-plein-btn{margin-left:auto;}

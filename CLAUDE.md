@@ -337,6 +337,13 @@ dossiers PERSONNELS `eval_dossiers` (sous-dossiers) et `eval_rangement` (une év
 Figures enregistrées dans les MÊMES dossiers (demandé le 11/11/2026, choix « un seul arbre pour tout ») : `figures_sauvegardees.dossier_id`
 (contrôle par la base : `supabase/sql/2026-11-11-figures-dossiers.sql`) ; gestionnaire « Mes évaluations et figures » (filtre `evf.type` tout / eval / fig,
 `evfOuvrirFigure`, `evfOuvrirEval`) ; « Mes figures enregistrées » de la Géométrie interactive = `openEvalListModal({ type: 'fig' })` (devoirs.js).
+Programmes par blocs, défis du professeur et PDF des cours dans les MÊMES dossiers (demandé le 11/11/2026 : « Quand je crée un pdf, je pourrais
+aussi l'enregistrer dans ces dossiers, quid des blocs de codage ? ») : `EVF_SORTES` (evaluation.js : p = `prog_programmes`, g = `prog_defis_perso`,
+k = `docs_pdf`), `evf.autres`, filtres Tout / Évaluations / Figures / Programmes / PDF, fenêtre « Mes dossiers » ; contrôle du dossier par la base
+(`dossier_controle`, `supabase/sql/2026-11-11-programmes-pdf-dossiers.sql`). Création libre : `progFichierEnregistrer`, `progFichierNouveau`,
+`progFichierOuvrir` (programmation.js, barre `#progFichier`, brouillon toujours sur l'appareil, relié au programme ouvert). Export PDF d'un cours :
+case « Garder aussi une copie dans mes dossiers » (`exportGarderCopie`, professeurs) → `docsPdfGarder` (app.js), stockage PRIVÉ `documents`
+(`<id du compte>/<uuid>.pdf`, 20 Mo, PDF seulement), ouverture par lien signé de 10 min.
 
 ## Corrections animées des constructions : AUX INSTRUMENTS DU SITE (demandé le 01/11/2026)
 
