@@ -3957,6 +3957,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1409', date:'2026-11-11', items:[
+    "Accueil, carrousel « Ce que vous ne trouverez nulle part ailleurs » : sept diapositives de plus -- demandé : « mettre aussi les devoirs en ligne, les automatismes, les interrogations en ligne, la gestion des classes, le codage par blocs… ». Devoirs en ligne (résultats en direct, podium), automatismes chronométrés, interrogations en ligne (correction copie par copie), séance en direct, Mes classes, programmation par blocs, Oliv'IA : 13 diapositives en tout, chacune avec une capture d'écran du site, un court texte et, quand l'outil s'ouvre aux visiteurs, un lien pour le découvrir."
+  ] },
   { version:'2026-08-19.1408', date:'2026-11-11', items:[
     "Accueil : deux carrousels sous les niveaux -- demandé : « 1er bloc : un slide avec les fonctionnalités innovantes, des copies d'écran. 2e bloc : un slide de vidéo ». « Ce que vous ne trouverez nulle part ailleurs » : six captures d'écran du site (corrections sur feuille Seyès, constructions aux instruments, calculatrice de collège, géométrie dynamique dans les cours, animations, corrigé des évaluations), avec un court texte et un lien ; défilement automatique toutes les 7 secondes, suspendu au survol ou au toucher. « L'Atelier en vidéo » : les 15 vidéos de démonstration, une à la fois, chargées seulement au clic. Flèches, points, glisser au doigt et flèches du clavier."
   ] },

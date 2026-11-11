@@ -454,8 +454,10 @@ de Supabase qui n'arrive pas toujours à l'utilisateur : lui faire coller le fic
 
 « 1er bloc : un slide avec les fonctionnalités innovantes, des copies d'écran. 2e bloc : un slide de vidéo » : `#homeNouveautes` et `#homeVideos`
 (index.html, HTML statique), comportement dans `accueil-slides.js` (piste à défilement aimanté, flèches, points, `data-auto` = défilement
-automatique, vidéo chargée au clic), styles `.home-car` / `.car-*` (styles.css). Captures 1280 × 800 dans `assets/accueil/` (faites sur le site
-avec Playwright, scratchpad accueil/cap.js) : à refaire si l'écran correspondant change beaucoup.
+automatique, vidéo chargée au clic), styles `.home-car` / `.car-*` (styles.css). Captures dans `assets/accueil/` : faites sur le site avec
+Playwright (scratchpad accueil/cap.js, classes.js avec une classe fictive), ou images tirées des vidéos de démonstration (ffmpeg, bandeau du haut
+et bande orange du bas retirés : 1280 × 596). 13 diapositives (devoirs, automatismes, interrogations, séance en direct, Mes classes, programmation,
+cahier Seyès, instruments, calculatrice, géométrie dynamique, animations, Oliv'IA, corrigé). À refaire si l'écran correspondant change beaucoup.
 
 ## Bandeaux d'information (demandé le 08/11/2026, build 1348)
 

@@ -2723,7 +2723,7 @@ body.plp-ouvert .cahier-flottant{ top:56px; bottom:auto; left:16px; z-index:2147
 .car-barre{display:flex;gap:6px;padding:8px 10px;background:#E9EDF2;}
 .car-barre i{width:9px;height:9px;border-radius:50%;background:#C9D0D9;}
 .car-barre i:first-child{background:#F28B82;} .car-barre i:nth-child(2){background:#FBD173;} .car-barre i:nth-child(3){background:#9AD69A;}
-.car-ecran img{display:block;width:100%;height:auto;aspect-ratio:16/10;object-fit:cover;object-position:top;}
+.car-ecran img{display:block;width:100%;height:auto;}
 .car-texte{display:flex;flex-direction:column;gap:10px;min-width:0;}
 .car-texte b{font-family:'Space Grotesk',sans-serif;font-size:1.35rem;line-height:1.2;color:var(--ink,#1C2B39);text-wrap:balance;}
 .car-texte > span:not(.car-ico){color:var(--ink-soft,#5B6472);line-height:1.55;}
