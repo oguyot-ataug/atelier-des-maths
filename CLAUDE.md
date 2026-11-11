@@ -398,8 +398,8 @@ chapitre concerné. CE1 contrôlé en entier, CP, 5e, 4e et 3e complétés (buil
 favorable du chef d'établissement est obtenu, la décision du rectorat est attendue (précisé le 10/11/2026). Ne pas ouvrir les ventes
 (bouton « Ouvrir les ventes ») avant la décision écrite du rectorat. Depuis le 10/11/2026
 (« On peut mettre la page des tarifs pour tous ! »), `tarifs/index.html` est la page COMPLÈTE des tarifs, publique et indexable,
-avec le bandeau « Ouverture des ventes le 1er décembre 2026 · en attendant, essai gratuit » (à retirer le 1er décembre, le jour du
-bouton « Ouvrir les ventes » d'Administration › Offres profs). `_hors-ligne/tarifs.html` (exclu de la publication) en reste la copie
+avec le bandeau « Ouverture des ventes prochainement · en attendant, essai gratuit » (date retirée le 11/11/2026, demandé : « écrire
+prochainement » ; même texte sur l'accueil, `.hero-essai`) ; à retirer le jour du bouton « Ouvrir les ventes » d'Administration › Offres profs. `_hors-ligne/tarifs.html` (exclu de la publication) en reste la copie
 de travail. Jusqu'à l'ouverture, DANS LE SITE, les comptes non « test » ne voient ni offres, ni prix, ni lien vers les tarifs dans
 « Mon abonnement », ni prix dans l'Espace famille (`famVenteFermeeHtml`).
 Page des tarifs DANS le site aussi (demandé le 10/11/2026) : vue `#/tarifs` (`tarifs.js`, visiteurs non connectés) qui

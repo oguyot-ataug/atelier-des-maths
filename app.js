@@ -3957,6 +3957,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1405', date:'2026-11-11', items:[
+    "Accueil et page des tarifs : « ouverture des ventes prochainement » à la place de la date du 1er décembre 2026 -- demandé : « Essai gratuit · ouverture des ventes le 1er décembre 2026 ... écrire prochainement ». L'essai gratuit reste annoncé."
+  ] },
   { version:'2026-08-19.1404', date:'2026-11-10', items:[
     "Menu « L'Atelier du prof » : le sous-menu « Évaluations » a maintenant son Oliv'IA -- demandé : « Il faudrait quand même une petite Olivie pour Évaluations ». Une olive cuivrée avec une pile de copies corrigées (coche rouge et étoile), alignée sur les autres entrées du menu."
   ] },
