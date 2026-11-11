@@ -3957,6 +3957,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1411', date:'2026-11-11', items:[
+    "Correctif : la version 1410 ne se chargeait pas (une phrase de cet historique contenait des guillemets mal écrits, ce qui bloquait tout le site). Republication immédiate."
+  ] },
   { version:'2026-08-19.1410', date:'2026-11-11', items:[
     "Accueil, premier carrousel : nouveau titre « Plus qu'un simple manuel numérique : tout un atelier pour faire la classe » et diapositive des constructions renommée « Construisez dans la fenêtre de géométrie dynamique, observez la construction avec les instruments » -- demandé : « Changer \"Ce que vous ne trouverez nulle part ailleurs\" par un truc du genre \"Plus qu'un simple manuel numérique, ...\" »."
   ] },
