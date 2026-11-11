@@ -3957,6 +3957,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1410', date:'2026-11-11', items:[
+    "Accueil, premier carrousel : nouveau titre « Plus qu'un simple manuel numérique : tout un atelier pour faire la classe » et diapositive des constructions renommée « Construisez dans la fenêtre de géométrie dynamique, observez la construction avec les instruments » -- demandé : « Changer "Ce que vous ne trouverez nulle part ailleurs" par un truc du genre "Plus qu'un simple manuel numérique, ..." »."
+  ] },
   { version:'2026-08-19.1409', date:'2026-11-11', items:[
     "Accueil, carrousel « Ce que vous ne trouverez nulle part ailleurs » : sept diapositives de plus -- demandé : « mettre aussi les devoirs en ligne, les automatismes, les interrogations en ligne, la gestion des classes, le codage par blocs… ». Devoirs en ligne (résultats en direct, podium), automatismes chronométrés, interrogations en ligne (correction copie par copie), séance en direct, Mes classes, programmation par blocs, Oliv'IA : 13 diapositives en tout, chacune avec une capture d'écran du site, un court texte et, quand l'outil s'ouvre aux visiteurs, un lien pour le découvrir."
   ] },
