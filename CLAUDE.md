@@ -450,6 +450,13 @@ Records du calcul mental : table `cm_records` (portée site / classe / élève, 
 jamais `auth.uid()` nu (`supabase/sql/2026-11-11-rls-select-auth.sql`). Un script avec truncate / revoke / drop déclenche une confirmation
 de Supabase qui n'arrive pas toujours à l'utilisateur : lui faire coller le fichier dans le SQL Editor du projet.
 
+## Accueil : carrousels sous les niveaux (demandé le 11/11/2026)
+
+« 1er bloc : un slide avec les fonctionnalités innovantes, des copies d'écran. 2e bloc : un slide de vidéo » : `#homeNouveautes` et `#homeVideos`
+(index.html, HTML statique), comportement dans `accueil-slides.js` (piste à défilement aimanté, flèches, points, `data-auto` = défilement
+automatique, vidéo chargée au clic), styles `.home-car` / `.car-*` (styles.css). Captures 1280 × 800 dans `assets/accueil/` (faites sur le site
+avec Playwright, scratchpad accueil/cap.js) : à refaire si l'écran correspondant change beaucoup.
+
 ## Bandeaux d'information (demandé le 08/11/2026, build 1348)
 
 « Une option "bandeau" […] l'administrateur […] (destination à définir sous chips à cocher), un référent établissement et un professeur

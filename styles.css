@@ -2709,3 +2709,55 @@ body.plp-ouvert .cahier-flottant{ top:56px; bottom:auto; left:16px; z-index:2147
 .eval-cor-apercu{ margin-top:6px; }
 .eval-cor-corps{ margin-top:8px; }
 .eval-cor-barre{ align-items:center; flex-wrap:wrap; }
+
+/* Carrousels de l'accueil, sous les niveaux (accueil-slides.js, demandé le 11/11/2026) : fonctionnalités en captures d'écran,
+   puis vidéos. Une diapositive par écran, défilement aimanté, flèches et points. */
+.home-car{margin:0 0 8px;}
+.car{position:relative;}
+.car-piste{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:auto;scrollbar-width:none;border-radius:18px;outline:none;}
+.car-piste::-webkit-scrollbar{display:none;}
+.car-piste:focus-visible{box-shadow:0 0 0 3px rgba(12,91,160,.35);}
+.car-diapo{flex:0 0 100%;scroll-snap-align:start;margin:0;min-width:0;display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:26px;align-items:center;
+  padding:22px 64px;box-sizing:border-box;background:linear-gradient(135deg,#F3F7FC 0%,#FFF8EE 100%);border:1px solid rgba(28,43,57,.08);border-radius:18px;}
+.car-ecran{border-radius:10px;overflow:hidden;background:#fff;box-shadow:0 10px 30px rgba(28,43,57,.16),0 0 0 1px rgba(28,43,57,.08);}
+.car-barre{display:flex;gap:6px;padding:8px 10px;background:#E9EDF2;}
+.car-barre i{width:9px;height:9px;border-radius:50%;background:#C9D0D9;}
+.car-barre i:first-child{background:#F28B82;} .car-barre i:nth-child(2){background:#FBD173;} .car-barre i:nth-child(3){background:#9AD69A;}
+.car-ecran img{display:block;width:100%;height:auto;aspect-ratio:16/10;object-fit:cover;object-position:top;}
+.car-texte{display:flex;flex-direction:column;gap:10px;min-width:0;}
+.car-texte b{font-family:'Space Grotesk',sans-serif;font-size:1.35rem;line-height:1.2;color:var(--ink,#1C2B39);text-wrap:balance;}
+.car-texte > span:not(.car-ico){color:var(--ink-soft,#5B6472);line-height:1.55;}
+.car-ico{width:44px;height:44px;border-radius:12px;display:inline-flex;align-items:center;justify-content:center;background:var(--accent,#0C5BA0);color:#fff;font-size:24px;}
+.car-lien{align-self:flex-start;display:inline-flex;align-items:center;gap:6px;margin-top:4px;border:1.5px solid rgba(12,91,160,.35);background:#fff;color:var(--accent,#0C5BA0);
+  font:600 .9rem Inter,sans-serif;padding:7px 14px;border-radius:999px;cursor:pointer;}
+.car-lien:hover{background:var(--accent,#0C5BA0);color:#fff;}
+.car-lien .gicon{font-size:18px;}
+/* Vidéos : l'image sur toute la largeur, le titre dessous. */
+.car-videos .car-diapo{grid-template-columns:1fr;gap:12px;padding:18px 64px;background:#1C2B39;border-color:#1C2B39;}
+.car-video video, .car-jouer{display:block;width:100%;max-width:880px;margin:0 auto;aspect-ratio:16/9;border-radius:12px;background:#000;}
+.car-jouer{position:relative;padding:0;border:0;cursor:pointer;overflow:hidden;}
+.car-jouer img{display:block;width:100%;height:100%;object-fit:cover;opacity:.92;transition:opacity .2s,transform .3s;}
+.car-jouer:hover img{opacity:1;transform:scale(1.015);}
+.car-play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:88px;color:#fff;text-shadow:0 4px 18px rgba(0,0,0,.45);}
+.car-texte-v{flex-direction:row;justify-content:center;align-items:baseline;gap:12px;text-align:center;}
+.car-texte-v b{color:#fff;font-size:1.15rem;}
+.car-texte-v span{color:#B9C4D0 !important;font-size:.9rem;}
+.car-fleche{position:absolute;top:calc(50% - 22px);transform:translateY(-50%);width:44px;height:44px;border-radius:50%;border:1px solid rgba(28,43,57,.12);background:#fff;
+  color:var(--ink,#1C2B39);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 14px rgba(28,43,57,.15);z-index:2;}
+.car-fleche:hover{background:var(--accent,#0C5BA0);color:#fff;}
+.car-fleche:focus-visible, .car-points button:focus-visible, .car-jouer:focus-visible, .car-lien:focus-visible{outline:3px solid #F29A1F;outline-offset:2px;}
+.car-prec{left:10px;} .car-suiv{right:10px;}
+.car-points{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin-top:14px;}
+.car-points button{width:10px;height:10px;padding:0;border-radius:999px;border:0;background:rgba(28,43,57,.2);cursor:pointer;transition:width .2s,background .2s;}
+.car-points button.on{width:28px;background:var(--accent,#0C5BA0);}
+@media (max-width:760px){
+  .car-diapo{grid-template-columns:1fr;padding:14px 14px 18px;gap:14px;}
+  .car-videos .car-diapo{padding:12px;}
+  .car-texte b{font-size:1.12rem;}
+  .car-fleche{width:36px;height:36px;top:auto;bottom:-46px;transform:none;}
+  .car-prec{left:0;} .car-suiv{right:0;}
+  .car-play{font-size:64px;}
+}
+@media (prefers-reduced-motion: reduce){ .car-jouer img, .car-points button{transition:none;} }
+@media print{ .home-car{display:none !important;} }
+.mode-adp .home-car{display:none !important;}

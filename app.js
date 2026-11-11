@@ -3957,6 +3957,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1408', date:'2026-11-11', items:[
+    "Accueil : deux carrousels sous les niveaux -- demandé : « 1er bloc : un slide avec les fonctionnalités innovantes, des copies d'écran. 2e bloc : un slide de vidéo ». « Ce que vous ne trouverez nulle part ailleurs » : six captures d'écran du site (corrections sur feuille Seyès, constructions aux instruments, calculatrice de collège, géométrie dynamique dans les cours, animations, corrigé des évaluations), avec un court texte et un lien ; défilement automatique toutes les 7 secondes, suspendu au survol ou au toucher. « L'Atelier en vidéo » : les 15 vidéos de démonstration, une à la fois, chargées seulement au clic. Flèches, points, glisser au doigt et flèches du clavier."
+  ] },
   { version:'2026-08-19.1407', date:'2026-11-11', items:[
     "Tarifs : le bouton « Tarifs » du menu principal est retiré ; le bouton « Voir les tarifs » de l'accueil (avec « Essai gratuit · ouverture des ventes prochainement ») reste -- demandé : « le laisser sur la page d'accueil mais le supprimer du menu ». Le lien du pied de page mène toujours à la page des tarifs, pour les visiteurs."
   ] },
