@@ -441,6 +441,14 @@ Google ne sont plus utilisés.
 Bandeau défilant des professeurs en essai (`#bandeauEssai`, `bandeauEssaiMaj`, app.js ; build 1308) : relecture en cours, invitation au
 rendez-vous et au bêta-test ; à chaque ouverture de page et connexion, jamais aux abonnés, licences établissement, bêta-testeurs, ni sur ADP.
 
+## Charge du serveur (bilan du 10/11/2026)
+
+Records du calcul mental : table `cm_records` (portée site / classe / élève, une ligne par séquence), tenue à jour par le déclencheur
+`cm_records_maj` sur cm_results (`cm_record_maj`) ; `cm_get_all_records` la lit (2 ms au lieu de 50 à 110 ms, mêmes résultats vérifiés)
+(`supabase/sql/2026-11-10-cm-records.sql`, appliqué le 11/11/2026). Règles RLS : écrire `(select auth.uid())` et `(select public.is_admin())`,
+jamais `auth.uid()` nu (`supabase/sql/2026-11-11-rls-select-auth.sql`). Un script avec truncate / revoke / drop déclenche une confirmation
+de Supabase qui n'arrive pas toujours à l'utilisateur : lui faire coller le fichier dans le SQL Editor du projet.
+
 ## Bandeaux d'information (demandé le 08/11/2026, build 1348)
 
 « Une option "bandeau" […] l'administrateur […] (destination à définir sous chips à cocher), un référent établissement et un professeur
