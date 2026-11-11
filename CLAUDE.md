@@ -404,9 +404,9 @@ de travail. Jusqu'à l'ouverture, DANS LE SITE, les comptes non « test » ne vo
 « Mon abonnement », ni prix dans l'Espace famille (`famVenteFermeeHtml`).
 Page des tarifs DANS le site aussi (demandé le 10/11/2026) : vue `#/tarifs` (`tarifs.js`, visiteurs non connectés) qui
 charge le contenu de `/tarifs/` (une seule source : modifier `tarifs/index.html`, et sa copie `_hors-ligne/tarifs.html`).
-Tarifs bien visibles (demandé le 10/11/2026 : « je trouve que la page tarif est trop cachée ») : bouton « Tarifs » du menu principal
-(`#navTarifs`) et lien du pied de page (`#footTarifs`) ; le bouton « Voir les tarifs » de l'accueil (`#heroTarifs`) a été retiré le 11/11/2026
-(« le bouton du menu suffit pour l'instant ») : VISITEURS NON CONNECTÉS
+Tarifs bien visibles (demandé le 10/11/2026 : « je trouve que la page tarif est trop cachée ») : bouton « Voir les tarifs » de l'accueil
+(`#heroTarifs`, avec « Essai gratuit · ouverture des ventes prochainement ») et lien du pied de page (`#footTarifs`) ; le bouton « Tarifs » du
+menu principal (`#navTarifs`) a été retiré le 11/11/2026 (« le laisser sur la page d'accueil mais le supprimer du menu ») : VISITEURS NON CONNECTÉS
 seulement (demandé le 10/11/2026 : « Supprimer la page tarif quand on est connecté » ; refreshAuthUI, tarifsOuvrir renvoie à l'accueil),
 jamais sur L'Atelier du Prof. La page publique /tarifs/ reste accessible à tous par son adresse.
 Plus de lien vers L'Atelier du Prof dans le pied de page de L'Atelier des Maths (demandé le 10/11/2026).
