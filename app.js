@@ -3960,6 +3960,9 @@ const CHANGELOG_DATA = [
   { version:'2026-08-19.1407', date:'2026-11-11', items:[
     "Tarifs : le bouton « Tarifs » du menu principal est retiré ; le bouton « Voir les tarifs » de l'accueil (avec « Essai gratuit · ouverture des ventes prochainement ») reste -- demandé : « le laisser sur la page d'accueil mais le supprimer du menu ». Le lien du pied de page mène toujours à la page des tarifs, pour les visiteurs."
   ] },
+  { version:'2026-08-19.1406', date:'2026-11-11', items:[
+    "Accueil : le bouton « Voir les tarifs » et la mention « Essai gratuit · ouverture des ventes prochainement » retirés (demande mal comprise, rétabli en 1407)."
+  ] },
   { version:'2026-08-19.1405', date:'2026-11-11', items:[
     "Accueil et page des tarifs : « ouverture des ventes prochainement » à la place de la date du 1er décembre 2026 -- demandé : « Essai gratuit · ouverture des ventes le 1er décembre 2026 ... écrire prochainement ». L'essai gratuit reste annoncé."
   ] },
