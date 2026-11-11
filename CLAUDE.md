@@ -292,6 +292,10 @@ Collège (6e à 3e), sur le papier (Manuel et feuilles imprimées) : les cases (
 (classe `pl-college`, demandé le 01/11/2026) ; l'écran garde ses cases à cliquer. Comparer deux quantités : « Complète avec <, > ou = »
 dans une case (`plCase()`), jamais « entoure la première · la seconde » ; une case à choix au clic : `plCase('(d1)|(d2)|(d3)')`.
 
+Calculs détaillés (relecture 5e N1a du 11/11/2026 : « Calculer c'est pouvoir détailler les calculs ») : une lettre par calcul et une étape
+par ligne, « A = 5 + 4 × 3 / A = … / A = … » (helper `etp` de chapitres/5e/planches/N1-operations-decimaux.js ; corrigés `cm1Redac` avec
+`{ nom: 'P', lignes: [...] }`, lettre de ce qui est demandé). Exercices « relier » et « place des parenthèses sans recopier » : outils
+`relier` et `parenth` (planches-num.js, data-plx), faits à l'écran ; cases à choix au clic `plCase('a|b|c')` (mots, signes, = ou ≠).
 Une feuille qui dépasse la page A4 est resserrée à l'impression (`plRemplirPages`, planches.js) : jusqu'à 15 % pour l'élève, 30 %
 pour le corrigé, en gardant toute la largeur ; jamais sur une feuille d'élève où l'on mesure une longueur à la règle. Au-delà,
 alléger le contenu (demandé le 31/10/2026 : « Occupe-toi des feuilles qui débordent »).

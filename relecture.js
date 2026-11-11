@@ -42,6 +42,32 @@ const RELECTURE_CHGT = {
   // La date d'un changement est l'heure RÉELLE de sa mise en ligne (heure du commit poussé sur main), jamais une heure
   // arrondie dans le futur : un exercice validé entre la mise en ligne et une date trop tardive resterait « Chgt effectué »
   // (signalé le 01/11/2026 pour 6e-N1 ; dates corrigées d'après l'historique des publications).
+  // Version 1414 (12/11) : relecture du 11/11 des planches 5e N1a.
+  '5e-N1a-P1-E1': { date: '2026-11-11T23:31:50Z', note: "Consigne « Complète par somme, différence, produit ou quotient » ; à l'écran, un clic dans la case passe d'un mot à l'autre" },
+  '5e-N1a-P1-E3': { date: '2026-11-11T23:31:50Z', note: "Calculs détaillés en colonne, une lettre par calcul : A = 5 + 4 × 3, puis une étape par ligne (A = 5 + 12 ; A = 17)" },
+  '5e-N1a-P1-E4': { date: '2026-11-11T23:31:50Z', note: "En colonne : A = 20 − 8 + 3 ; A = 12 + 3 ; A = 15 (une étape par ligne)" },
+  '5e-N1a-P1-E5': { date: '2026-11-11T23:31:50Z', note: "« Complète par = ou ≠ » (2 + 3 × 4 … 20) ; à l'écran, la case passe de = à ≠ au clic" },
+  '5e-N1a-P1-E6': { date: '2026-11-11T23:31:50Z', note: "Corrigé commencé par la lettre de ce qui est demandé, en colonne : P = 3 × 8,50 + 2 × 6 ; P = 25,50 + 12 ; P = 37,50" },
+  '5e-N1a-P1-E7': { date: '2026-11-11T23:31:50Z', note: "« Complète par le signe opératoire manquant » ; à l'écran, la case passe de +, −, × à : au clic" },
+  '5e-N1a-P1-E8': { date: '2026-11-11T23:31:50Z', note: "En colonne : A = 0,5 + 2 × 1,5 ; A = 0,5 + 3 ; A = 3,5 (une étape par ligne)" },
+  '5e-N1a-P2-E1': { date: '2026-11-11T23:31:50Z', note: "En colonne : A = (5 + 4) × 3 ; A = 9 × 3 ; A = 27 (une étape par ligne)" },
+  '5e-N1a-P2-E2': { date: '2026-11-11T23:31:50Z', note: "En colonne, une étape par ligne : A = 3 × (12 − 4) + 1 ; A = 3 × 8 + 1 ; A = 24 + 1 ; A = 25" },
+  '5e-N1a-P2-E4': { date: '2026-11-11T23:31:50Z', note: "On place les parenthèses dans le calcul, sans le recopier ; à l'écran, on touche un petit point pour y mettre une parenthèse (outil « parenth »)" },
+  '5e-N1a-P2-E5': { date: '2026-11-11T23:31:50Z', note: "Se fait maintenant à l'écran : pour chaque phrase, A = expression, puis A = résultat" },
+  '5e-N1a-P2-E6': { date: '2026-11-11T23:31:50Z', note: "En colonne, une étape par ligne : A = 3 × [2 + (5 − 1)] ; A = 3 × [2 + 4] ; A = 3 × 6 ; A = 18" },
+  '5e-N1a-P2-E7': { date: '2026-11-11T23:31:50Z', note: "Présentation en colonnes : relier chaque phrase à son expression ; à l'écran, on touche la phrase puis l'expression (outil « relier »)" },
+  '5e-N1a-P3-E2': { date: '2026-11-11T23:31:50Z', note: "Chaque égalité est accompagnée de « avec r < b » (58 = 7 × 8 + … avec … < 7)" },
+  '5e-N1a-P4-E2': { date: '2026-11-11T23:31:50Z', note: "À l'écran, les nombres écrits dans les cases ont la taille et la ligne de base de l'énoncé (pour toutes les planches)" },
+  '5e-N1a-P4-E3': { date: '2026-11-11T23:31:50Z', note: "Toutes les étapes, une par ligne : A = 12 × 101 ; A = 12 × (100 + 1) ; A = 12 × 100 + 12 × 1 ; A = 1 200 + 12 ; A = 1 212" },
+  '5e-N1a-P4-E4': { date: '2026-11-11T23:31:50Z', note: "« Complète par = ou ≠ » ; à l'écran, la case passe de = à ≠ au clic" },
+  '5e-N1a-P4-E5': { date: '2026-11-11T23:31:50Z', note: "Corrigé en colonne avec R : R = 47 × 9 + 53 × 9 ; R = 423 + 477 ; R = 900, puis R = 9 × (47 + 53) ; R = 9 × 100 ; R = 900" },
+  '5e-N1a-P4-E6': { date: '2026-11-11T23:31:50Z', note: "Corrigé en colonne : A = 38 × 102 ; A = 38 × (100 + 2) ; … ; A = 3 876, et B = 15 × 98 … B = 1 470" },
+  '5e-N1a-P4-E7': { date: '2026-11-11T23:31:50Z', note: "En colonne : A = 8 × (5 + 0,5) ; A = 8 × 5 + 8 × 0,5 ; A = 40 + 4 ; A = 44" },
+  '5e-N1a-P4-E8': { date: '2026-11-11T23:31:50Z', note: "En colonne : A = 14 × 3 + 14 × 7 ; A = 14 × (3 + 7) ; A = 14 × 10 ; A = 140" },
+  '5e-N1a-P5-E2': { date: '2026-11-11T23:31:50Z', note: "« Donne un ordre de grandeur du résultat » : à écrire (49,8 × 3,1 ≈ …), sans propositions" },
+  '5e-N1a-P5-E4': { date: '2026-11-11T23:31:50Z', note: "Huit égalités au lieu de quatre, sur deux colonnes" },
+  '5e-N1a-P5-E5': { date: '2026-11-11T23:31:50Z', note: "Corrigé en colonne : R = 20 − (2,5 × 2,40 + 3 × 1,10) ; R = 20 − (6 + 3,30) ; R = 20 − 9,30 ; R = 10,70" },
+  '5e-N1a-P5-E6': { date: '2026-11-11T23:31:50Z', note: "Huit divisions au lieu de quatre, sur deux colonnes (pleine largeur)" },
   // Version 1314 (05/11).
   '6e-N3-P5-E3': { date: '2026-11-05T06:39:33Z', note: "Tableau des arrondis en demi-largeur, aligné à gauche ; l'autre moitié revient à l'exercice voisin, et le tableau de troncature (par défaut, par excès, arrondi) passe aussi en demi-largeur (P5-E7)" },
   '6e-N3-P6-E5': { date: '2026-11-05T06:39:33Z', note: "Gardé comme retour sur la division euclidienne (spirale) : la consigne le dit (« Convertis en centimètres, puis pose une division euclidienne ») ; corrigé 240 = 75 × 3 + 15" },

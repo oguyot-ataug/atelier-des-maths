@@ -413,7 +413,8 @@ function plNumEtatVide(e){ e = e || {}; return { v: Object.assign({}, e.v), c: O
    - cases   { k, ox, oy, w, h, att: [[x, y]], alt?: [[[x, y]]], coul?, mode?: 'entoure' } : toucher les carreaux.
    - pts     { noms, att: { nom: [x, y] }, grille?: { k, ox, oy, w, h }, cands?: [[x, y]] } : placer des points nommés.
    - horloge { cx, cy, r, h, m } : choisir l'aiguille, puis toucher le cadran.
-   - robot   { w, h, k, m, dep, but, obs, att? } : composer un programme de flèches ; fleches { att } : sans quadrillage. */
+   - robot   { w, h, k, m, dep, but, obs, att? } : composer un programme de flèches ; fleches { att } : sans quadrillage.
+   - relier  { g, d, xm, h, att } : relier une ligne de gauche à une ligne de droite ; parenth { p, att, fs } : placer des parenthèses. */
 const plxPgcd = (a, b) => b ? plxPgcd(b, a % b) : a;
 function plxUnites(segs){ const s = new Set(); (segs || []).forEach(([a, b, c, d]) => { let dx = c - a, dy = d - b; const g = plxPgcd(Math.abs(dx), Math.abs(dy)); if(!g) return; dx /= g; dy /= g;
   for(let t = 0; t < g; t++){ const p = [a + dx * t, b + dy * t], q = [a + dx * (t + 1), b + dy * (t + 1)], k = p[0] < q[0] || (p[0] === q[0] && p[1] < q[1]) ? p.concat(q) : q.concat(p); s.add(k.join(',')); } }); return s; }
@@ -643,6 +644,36 @@ const PLX = {
       : `<span class="pn-xaide">Fais glisser le rapporteur sur un sommet, tourne-le (↻) pour aligner son zéro sur un côté, puis lis la mesure. Recommence pour chaque angle.</span>` + plxBtn(id, 'replacer', 'Ranger le rapporteur'),
     juste: (C, st) => { if(C.aide) return true; const L = PLX.rapp.cons(C); return L.length > 0 && L.every((k, i) => { const t = (st.t || {})[i]; if(t == null) return false; let d = Math.abs(t - k.d1) % 360; if(d > 180) d = 360 - d; return Math.abs(d - k.cible) <= 2; }); }
   },
+  // Relier (relecture 5e-N1a-P2-E7 du 11/11/2026 : « présentation en colonne avec comme consigne de relier la phrase à la bonne
+  // expression. Permettre de le faire à l'écran. ») : { g: [[x, y]] points de gauche, d: [[x, y]] points de droite, xm : milieu,
+  // h : hauteur d'une ligne, att : [indice à droite pour chaque ligne de gauche] }. On touche une ligne de gauche, puis une ligne
+  // de droite ; toucher une ligne de gauche déjà reliée efface son trait (on peut la relier ailleurs).
+  relier: {
+    tap(C, st, x, y){
+      const proche = L => { let k = -1, b = 1e9; L.forEach(([, py], i) => { const d = Math.abs(py - y); if(d < b){ b = d; k = i; } }); return b <= (C.h || 40) / 2 ? k : -1; };
+      st.l = st.l || {};
+      if(x < C.xm){ const i = proche(C.g); if(i < 0) return; if(st.s === i){ st.s = null; return; } delete st.l[i]; st.s = i; return; }
+      const j = proche(C.d); if(j < 0 || st.s == null) return;
+      Object.keys(st.l).forEach(k => { if(st.l[k] === j) delete st.l[k]; }); st.l[st.s] = j; st.s = null; },
+    action(C, st, a){ if(a === 'vide'){ st.l = {}; st.s = null; } },
+    dessin: (C, st) => Object.entries(st.l || {}).map(([i, j]) => { const [x1, y1] = C.g[i], [x2, y2] = C.d[j];
+        return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#1F6FEB" stroke-width="2.6" stroke-linecap="round"/>`; }).join('')
+      + (st.s != null ? `<circle cx="${C.g[st.s][0]}" cy="${C.g[st.s][1]}" r="9" fill="none" stroke="#E35D3A" stroke-width="2.5"/>` : ''),
+    barre: (C, st, id) => `<span class="pn-xaide">Touche une phrase, puis l'expression qui la traduit.</span>` + plxBtn(id, 'vide', 'Tout effacer'),
+    juste: (C, st) => C.att.every((j, i) => (st.l || {})[i] === j)
+  },
+  // Parenthèses à placer (relecture 5e-N1a-P2-E4 du 11/11/2026 : « Place des parenthèses donc pas besoin de réécrire le calcul.
+  // À l'écran, permettre de rajouter les parenthèses sans réécrire le calcul ») : { p: [[x, y, '(' ou ')']] places possibles,
+  // att : { indice: 1 } places où une parenthèse est attendue, fs : taille du texte }. Toucher une place y met la parenthèse, ou la retire.
+  parenth: {
+    tap(C, st, x, y){ let k = -1, b = 1e9; C.p.forEach(([px, py], i) => { const d = Math.hypot((px - x) * 1.4, py - 6 - y); if(d < b){ b = d; k = i; } });
+      if(k < 0 || b > 18) return; st.o = st.o || {}; if(st.o[k]) delete st.o[k]; else st.o[k] = 1; },
+    action(C, st, a){ if(a === 'vide') st.o = {}; },
+    dessin: (C, st) => C.p.map(([x, y, c], i) => (st.o || {})[i] ? `<text x="${x}" y="${y}" text-anchor="middle" font-size="${C.fs || 17}" font-weight="700" fill="#1F6FEB">${c}</text>`
+      : `<circle cx="${x}" cy="${y - (C.fs || 17) * .3}" r="2.4" fill="#9AA4B2"/>`).join(''),
+    barre: (C, st, id) => `<span class="pn-xaide">Touche un petit point pour y placer une parenthèse ; touche-la de nouveau pour l'enlever.</span>` + plxBtn(id, 'vide', 'Tout effacer'),
+    juste: (C, st) => C.p.every((_, i) => !!(st.o || {})[i] === !!(C.att || {})[i])
+  },
   fleches: {
     action(C, st, a){ plxActionFleches(st, a); },
     texte: (C, st) => st.p ? plxFleches(st.p) : '&nbsp;',
@@ -737,6 +768,12 @@ function plClavierPhysique(e){
     /* Base et exposant écrits dans la police et à la taille de l'énoncé, sur la même ligne de base que lui -- signalé le
        30/10/2026 : « problème d'alignement et de tailles de police entre l'énoncé et les réponses ». */
     .pn-ex sup{ vertical-align:baseline; position:relative; top:-.6em; line-height:0; font-size:.75em; }
+    /* Case dans une ligne de texte (liste, grille) : police et taille de l'énoncé, sur sa ligne de base -- relecture 5e-N1a-P4-E2
+       du 11/11/2026 : « À l'écran, les nombres manquants s'affichent plus gros que les autres et non alignés ». Les opérations
+       posées (tableaux) gardent leurs cases. */
+    .pn-ex :is(li, .pl-item) .pn-case:not(table .pn-case):not(.pn-base){ display:inline-block; vertical-align:baseline; height:auto; font:inherit; font-weight:600;
+      line-height:1.3; padding:1px 7px; margin:1px 3px; text-align:center; color:#1F3A5C; }
+    .pn-ex :is(li, .pl-item) .pn-case:not(table .pn-case):not(.pn-base)::before{ content:'\\200b'; }
     .pn-ex .pn-case.pn-base, .pn-ex sup .pn-case{ display:inline-block; vertical-align:baseline; height:auto; font:inherit; line-height:1.3; padding:0 4px; margin:0 1px; text-align:center; }
     .pn-ex .pn-case.pn-base::before, .pn-ex sup .pn-case::before{ content:'\\200b'; }
     .pn-ex sup .pn-case{ min-width:1.4em !important; padding:0 2px; margin:0 0 0 1px; border-width:1.5px; border-radius:4px; }
