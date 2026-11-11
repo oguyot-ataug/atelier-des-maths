@@ -1,5 +1,11 @@
 # Notes pour Claude (conventions du projet)
 
+## Avant chaque publication : `node --check` sur les fichiers .js modifiés
+
+Le 11/11/2026, une phrase de CHANGELOG_DATA avec des guillemets droits non échappés ("…") a rendu app.js illisible : tout le site
+était bloqué (version 1410, environ 7 minutes). Toujours `node --check app.js` (et les autres .js touchés) avant de committer ; dans les
+phrases de l'historique, utiliser les guillemets « » ou échapper \".
+
 ## Supabase : GRANT explicite obligatoire pour toute nouvelle table (à partir du 30/10/2026)
 
 Depuis le 30 octobre 2026, Supabase ne donne plus automatiquement accès à la Data API
@@ -328,6 +334,9 @@ impression `evalCorrigeContenuHTML` (exportEvaluationPDF(true), openEvalPreview(
 « Mes évaluations » en gestionnaire de fichiers (demandé le 10/11/2026) : `openEvalListModal` / `evalListeRendre` (evaluation.js, objet `evf`) ;
 dossiers PERSONNELS `eval_dossiers` (sous-dossiers) et `eval_rangement` (une évaluation par dossier et par utilisateur ; absente = racine),
 `supabase/sql/2026-11-10-eval-dossiers.sql` ; propriétaires par `evaluations_proprietaires()` ; une évaluation partagée n'apparaît qu'une fois.
+Figures enregistrées dans les MÊMES dossiers (demandé le 11/11/2026, choix « un seul arbre pour tout ») : `figures_sauvegardees.dossier_id`
+(contrôle par la base : `supabase/sql/2026-11-11-figures-dossiers.sql`) ; gestionnaire « Mes évaluations et figures » (filtre `evf.type` tout / eval / fig,
+`evfOuvrirFigure`, `evfOuvrirEval`) ; « Mes figures enregistrées » de la Géométrie interactive = `openEvalListModal({ type: 'fig' })` (devoirs.js).
 
 ## Corrections animées des constructions : AUX INSTRUMENTS DU SITE (demandé le 01/11/2026)
 

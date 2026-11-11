@@ -1624,7 +1624,13 @@ function figApercu(data){
     return `<svg viewBox="${[vue.x, vue.y, vue.w, vue.h].map(n=>n.toFixed(1)).join(' ')}" class="fig-liste-ap">${svg.innerHTML}</svg>`;
   }catch(e){ return ''; }
 }
+// Depuis le 11/11/2026, « Mes figures enregistrées » ouvre le gestionnaire de fichiers commun aux évaluations et aux figures
+// (dossiers, evaluation.js : openEvalListModal), sur les figures. L'ancienne fenêtre reste ci-dessous en secours.
 async function openSandboxFiguresModal(){
+  if(typeof openEvalListModal === 'function') return openEvalListModal({ type: 'fig' });
+  return openSandboxFiguresModalSimple();
+}
+async function openSandboxFiguresModalSimple(){
   const { data, error } = await sb.from('figures_sauvegardees').select('id,nom,updated_at,figure_data').eq('user_id', currentUser.id).order('updated_at', {ascending:false});
   if(error){ await niceAlert('Erreur : '+error.message); return; }
   document.querySelectorAll('.modal-overlay[data-kind="sandbox-figures"]').forEach(o=>o.remove());

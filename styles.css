@@ -2761,3 +2761,10 @@ body.plp-ouvert .cahier-flottant{ top:56px; bottom:auto; left:16px; z-index:2147
 @media (prefers-reduced-motion: reduce){ .car-jouer img, .car-points button{transition:none;} }
 @media print{ .home-car{display:none !important;} }
 .mode-adp .home-car{display:none !important;}
+/* Figures de la Géométrie interactive dans « Mes évaluations et figures » (11/11/2026) : petite vignette, filtre par type. */
+.evf-puce .gicon{font-size:16px;vertical-align:-3px;}
+.evf-filtres-sep{width:1px;align-self:stretch;background:rgba(28,43,57,.15);margin:2px 4px;}
+.evf-vign{display:inline-flex;flex:none;width:52px;height:34px;border:1px solid rgba(28,43,57,.14);border-radius:6px;background:#fff;overflow:hidden;vertical-align:middle;}
+.evf-vign svg{width:100%;height:100%;}
+.evf-ic-fig{color:#7E5A8E;font-size:1.3rem;}
+.evf-ouverte{background:rgba(12,91,160,.06);}

@@ -3957,6 +3957,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1412', date:'2026-11-11', items:[
+    "Figures enregistrées rangées dans les mêmes dossiers que les évaluations -- demandé : « lorsqu'on enregistre nos figures, on a accès au même répertoire de dossier ? », choix : un seul arbre de dossiers pour tout. « Mes évaluations » devient « Mes évaluations et figures » : un dossier (par exemple « 5e – Triangles ») contient à la fois des évaluations et des figures de la Géométrie interactive, chacune avec sa vignette. Filtre Tout · Évaluations · Figures ; glisser-déposer, « Déplacer vers… », Renommer, Effacer, recherche dans tous les dossiers. Dans la Géométrie interactive, « Mes figures enregistrées » ouvre ce même gestionnaire, sur les figures. Ouvrir une figure depuis la page des évaluations ouvre la Géométrie interactive (et inversement pour une évaluation). Supprimer un dossier ne supprime rien de son contenu : il remonte d'un cran."
+  ] },
   { version:'2026-08-19.1411', date:'2026-11-11', items:[
     "Correctif : la version 1410 ne se chargeait pas (une phrase de cet historique contenait des guillemets mal écrits, ce qui bloquait tout le site). Republication immédiate."
   ] },
