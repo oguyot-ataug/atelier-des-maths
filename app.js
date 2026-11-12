@@ -3987,6 +3987,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1423', date:'2026-11-12', items:[
+    "6e Symétrie axiale : le chapitre ne s'arrêtait plus en erreur quand on le rouvrait (ou qu'on passait du cours à la méthode) ; les points M, M', les centres des cercles et le point P des figures qu'on manipule gardent maintenant leurs repères quand on les déplace : petit trait perpendiculaire pour un point au bout d'un pointillé, rien pour le point P (intersection), codages PA = PB en petits traits de 7 px inclinés à 60°."
+  ]},
   { version:'2026-08-19.1422', date:'2026-11-12', items:[
     "Figures qu'on manipule : codages d'égalité de longueurs ramenés partout à un petit trait de 7 px incliné à 60° (6e Droites parallèles et perpendiculaires, 6e Symétrie axiale, 5e Symétrie centrale : ils mesuraient 14 à 18 px). 6e Droites parallèles et perpendiculaires et 5e Symétrie centrale : les repères des points (croix, petit trait) ne restaient plus figés après le premier affichage. 5e Symétrie centrale : O, point d'intersection, n'a plus de croix dans la figure du segment ; M et M' (sur le cercle et au bout du rayon) n'ont plus de point plein."
   ] },

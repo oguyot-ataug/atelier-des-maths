@@ -41,7 +41,7 @@ document.getElementById('cours-demo-symetrie-axiale-6e').innerHTML = `
 <p class="example-title">Exemple : construis M', symétrique du point M par rapport à la droite (d).</p>
 <p class="hint" style="margin:0 0 8px;">Axe horizontal ou vertical :</p>
 <div class="figure-wrap" style="max-width:320px;margin:12px auto;">
-  <svg id="symF2Svg" viewBox="0 0 260 140" style="width:100%;display:block;">
+  <svg id="symF2Svg" data-geo-garde viewBox="0 0 260 140" style="width:100%;display:block;">
     <defs>
       <pattern id="gridSymAxiale" width="20" height="20" patternUnits="userSpaceOnUse">
         <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#E4DFD6" stroke-width="1"/>
@@ -65,7 +65,7 @@ document.getElementById('cours-demo-symetrie-axiale-6e').innerHTML = `
 
 <p class="hint" style="margin:16px 0 8px;">Axe en diagonale : on rejoint <b>(d)</b> à l'horizontale en comptant les carreaux, puis on redescend à la verticale en comptant le <b>même nombre</b> de carreaux.</p>
 <div class="figure-wrap" style="max-width:280px;margin:12px auto;">
-  <svg id="symF3Svg" viewBox="0 0 200 180" style="width:100%;display:block;">
+  <svg id="symF3Svg" data-geo-garde viewBox="0 0 200 180" style="width:100%;display:block;">
     <rect x="0" y="0" width="200" height="180" fill="url(#gridSymAxiale)"/>
     <line x1="10" y1="170" x2="190" y2="-10" stroke="#E35D3A" stroke-width="1.4"/>
     <line id="symF3LineH" x1="60" y1="60" x2="120" y2="60" stroke="#9CA3AF" stroke-width="1.3" stroke-dasharray="3 3"/>
@@ -145,7 +145,7 @@ document.getElementById('cours-demo-symetrie-axiale-6e').innerHTML = `
   </div>
   <div class="figure-wrap" style="margin:0;">
     <p class="hint" style="text-align:center;margin:0 0 4px;">Symétrique d'un cercle</p>
-    <svg id="symF6Svg" viewBox="0 0 280 160" style="width:100%;display:block;">
+    <svg id="symF6Svg" data-geo-garde viewBox="0 0 280 160" style="width:100%;display:block;">
       <line x1="140" y1="10" x2="140" y2="150" stroke="#E35D3A" stroke-width="1.4" stroke-dasharray="5 4"/>
       <line id="symF6Axis" x1="70" y1="80" x2="210" y2="80" stroke="#9CA3AF" stroke-width="1.2" stroke-dasharray="4 3"/>
       <circle id="symF6Left" cx="70" cy="80" r="35" fill="none" stroke="#1F3A5C" stroke-width="1.8"/>
@@ -179,7 +179,7 @@ document.getElementById('cours-demo-symetrie-axiale-6e').innerHTML = `
 
 <p class="example-title">Exemple :</p>
 <div class="figure-wrap" style="max-width:280px;margin:12px auto;">
-  <svg id="symF7Svg" viewBox="0 0 240 170" style="width:100%;display:block;">
+  <svg id="symF7Svg" data-geo-garde viewBox="0 0 240 170" style="width:100%;display:block;">
     <line x1="120" y1="20" x2="120" y2="150" stroke="#E35D3A" stroke-width="1.4" stroke-dasharray="5 4"/>
     <line x1="50" y1="140" x2="190" y2="140" stroke="#1C1B2E" stroke-width="1.8"/>
     <path d="M 108 140 L 108 128 L 120 128 L 120 140" fill="none" stroke="#9CA3AF" stroke-width="1.1"/>
@@ -375,6 +375,17 @@ function symF1Fold(){
   requestAnimationFrame(frame);
 }
 
+/* Marques des points des figures déplaçables (règle du 01/11/2026) : point sur une ligne = petit trait perpendiculaire
+   (de la longueur d'une branche de croix), point d'intersection = rien. Ces figures portent data-geo-garde : geo-points.js
+   ne remplace plus leurs croix, sinon la figure ne les retrouve plus (erreur à la réouverture du chapitre). */
+function symMarque(svgEl, id, x, y, ang, size){
+  const a = svgEl.querySelector('#' + id + '1'), b = svgEl.querySelector('#' + id + '2');
+  if(!a || !b) return;
+  b.setAttribute('opacity', '0');
+  if(ang == null){ a.setAttribute('opacity', '0'); return; }
+  a.setAttribute('opacity', '1'); a.setAttribute('stroke-linecap', 'round');
+  setTick(a, x, y, ang, 2 * (size || 6) * Math.SQRT2);
+}
 /* ================= Figure 2 : symétrique d'un point, axe vertical (point M déplaçable) ================= */
 const symF2_axisX = 140;
 let symF2_M = {x:80, y:60};
@@ -382,8 +393,10 @@ function symF2Update(){
   const svgEl = document.getElementById('symF2Svg');
   const Mp = {x: 2*symF2_axisX - symF2_M.x, y: symF2_M.y};
   svgEl.querySelector('#symF2M').setAttribute('cx', symF2_M.x); svgEl.querySelector('#symF2M').setAttribute('cy', symF2_M.y);
-  setCross(svgEl.querySelector('#symF2MCross1'), svgEl.querySelector('#symF2MCross2'), symF2_M.x, symF2_M.y, 6);
-  setCross(svgEl.querySelector('#symF2MpCross1'), svgEl.querySelector('#symF2MpCross2'), Mp.x, Mp.y, 5);
+  // M et M' : extrémités du segment pointillé [MM'] ; sur l'axe, M = M' est un point de (d).
+  const surAxe = Math.abs(symF2_M.x - symF2_axisX) < 0.5;
+  symMarque(svgEl, 'symF2MCross', symF2_M.x, symF2_M.y, surAxe ? Math.PI/2 : 0, 6);
+  symMarque(svgEl, 'symF2MpCross', Mp.x, Mp.y, surAxe ? Math.PI/2 : 0, 5);
   svgEl.querySelector('#symF2Line').setAttribute('x1', symF2_M.x); svgEl.querySelector('#symF2Line').setAttribute('y1', symF2_M.y);
   svgEl.querySelector('#symF2Line').setAttribute('x2', Mp.x); svgEl.querySelector('#symF2Line').setAttribute('y2', Mp.y);
   svgEl.querySelector('#symF2MLabel').setAttribute('x', symF2_M.x-22); svgEl.querySelector('#symF2MLabel').setAttribute('y', symF2_M.y<20?symF2_M.y+22:symF2_M.y-8);
@@ -430,8 +443,10 @@ function symF3Update(){
   const tH = (M.y-symF3_axisP1.y)/dy;
   const H = {x: symF3_axisP1.x+tH*dx, y: M.y};
   svgEl.querySelector('#symF3M').setAttribute('cx', M.x); svgEl.querySelector('#symF3M').setAttribute('cy', M.y);
-  setCross(svgEl.querySelector('#symF3MCross1'), svgEl.querySelector('#symF3MCross2'), M.x, M.y, 6);
-  setCross(svgEl.querySelector('#symF3MpCross1'), svgEl.querySelector('#symF3MpCross2'), Mp.x, Mp.y, 5);
+  // M : extrémité du pointillé horizontal ; M' : extrémité du pointillé vertical ; sur l'axe : point de (d).
+  const surAxe3 = Math.abs(M.x - H.x) < 0.5, angAxe = Math.atan2(dy, dx);
+  symMarque(svgEl, 'symF3MCross', M.x, M.y, surAxe3 ? angAxe : 0, 6);
+  symMarque(svgEl, 'symF3MpCross', Mp.x, Mp.y, surAxe3 ? angAxe : Math.PI/2, 5);
   svgEl.querySelector('#symF3H').setAttribute('cx', H.x.toFixed(1)); svgEl.querySelector('#symF3H').setAttribute('cy', H.y.toFixed(1));
   svgEl.querySelector('#symF3LineH').setAttribute('x1', M.x); svgEl.querySelector('#symF3LineH').setAttribute('y1', M.y);
   svgEl.querySelector('#symF3LineH').setAttribute('x2', H.x.toFixed(1)); svgEl.querySelector('#symF3LineH').setAttribute('y2', H.y.toFixed(1));
@@ -559,8 +574,10 @@ function symF6Update(){
   svgEl.querySelector('#symF6LeftCenter').setAttribute('cx', symF6_Center.x); svgEl.querySelector('#symF6LeftCenter').setAttribute('cy', symF6_Center.y);
   svgEl.querySelector('#symF6Left').setAttribute('cx', symF6_Center.x); svgEl.querySelector('#symF6Left').setAttribute('cy', symF6_Center.y);
   svgEl.querySelector('#symF6Right').setAttribute('cx', Cp.x); svgEl.querySelector('#symF6Right').setAttribute('cy', Cp.y);
-  setCross(svgEl.querySelector('#symF6LeftCross1'), svgEl.querySelector('#symF6LeftCross2'), symF6_Center.x, symF6_Center.y, 6);
-  setCross(svgEl.querySelector('#symF6RightCross1'), svgEl.querySelector('#symF6RightCross2'), Cp.x, Cp.y, 5);
+  // Centres : extrémités du pointillé qui les relie ; sur l'axe, centre confondu avec son symétrique, point de (d).
+  const surAxe6 = Math.abs(symF6_Center.x - symF6_axisX) < 0.5;
+  symMarque(svgEl, 'symF6LeftCross', symF6_Center.x, symF6_Center.y, surAxe6 ? Math.PI/2 : 0, 6);
+  symMarque(svgEl, 'symF6RightCross', Cp.x, Cp.y, surAxe6 ? Math.PI/2 : 0, 5);
   svgEl.querySelector('#symF6Axis').setAttribute('x1', symF6_Center.x); svgEl.querySelector('#symF6Axis').setAttribute('y1', symF6_Center.y);
   svgEl.querySelector('#symF6Axis').setAttribute('x2', Cp.x); svgEl.querySelector('#symF6Axis').setAttribute('y2', Cp.y);
 }
@@ -592,7 +609,7 @@ function symF7Update(){
   const svgEl = document.getElementById('symF7Svg');
   const P = symF7_P;
   svgEl.querySelector('#symF7P').setAttribute('cx', P.x); svgEl.querySelector('#symF7P').setAttribute('cy', P.y);
-  setCross(svgEl.querySelector('#symF7PCross1'), svgEl.querySelector('#symF7PCross2'), P.x, P.y, 6);
+  symMarque(svgEl, 'symF7PCross', P.x, P.y, null); // P : intersection de [PA] et [PB], aucune marque
   svgEl.querySelector('#symF7PA').setAttribute('x1', symF7_A.x); svgEl.querySelector('#symF7PA').setAttribute('y1', symF7_A.y);
   svgEl.querySelector('#symF7PA').setAttribute('x2', P.x); svgEl.querySelector('#symF7PA').setAttribute('y2', P.y);
   svgEl.querySelector('#symF7PB').setAttribute('x1', symF7_B.x); svgEl.querySelector('#symF7PB').setAttribute('y1', symF7_B.y);
@@ -608,9 +625,9 @@ function symF7Update(){
     // A et B sont de part et d'autre de l'axe : le codage doit être en vrai reflet miroir (comme
     // pour le triangle isocèle), donc un signe OPPOSÉ pour chaque côté -- setSlantTick n'ajoute
     // qu'un décalage fixe (+65°), on calcule ici la version en miroir (-65°) pour B.
-    setSlantTick(tickA, midA.x, midA.y, angleA, 14);
-    const tiltB = angleB - 65*Math.PI/180;
-    const dxB = Math.cos(tiltB)*14/2, dyB = Math.sin(tiltB)*14/2;
+    setSlantTick(tickA, midA.x, midA.y, angleA, 7);
+    const tiltB = angleB - 60*Math.PI/180;
+    const dxB = Math.cos(tiltB)*7/2, dyB = Math.sin(tiltB)*7/2;
     tickB.setAttribute('x1', midB.x-dxB); tickB.setAttribute('y1', midB.y-dyB);
     tickB.setAttribute('x2', midB.x+dxB); tickB.setAttribute('y2', midB.y+dyB);
   }
