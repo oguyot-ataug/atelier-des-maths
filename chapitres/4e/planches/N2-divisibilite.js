@@ -56,7 +56,7 @@ PLANCHES['4e|Divisibilité'] = [
       { etoiles: 2, col: 1, consigne: 'Quel nombre a pour décomposition…',
         ...rmp([['2 × 3 × 3 × 5 ? @', 90], ['2 × 2 × 2 × 7 ? @', 56], ['3 × 5 × 11 ? @', 165]]) },
       { etoiles: 2, cahier: true, consigne: 'Décompose 360 en produit de facteurs premiers, puis donne tous ses diviseurs premiers.',
-        corr: cm1Redac('Décomposition de 360', { suite: ['360 = 2 × 180 = 2 × 2 × 90 = 2 × 2 × 2 × 45', '45 = 3 × 3 × 5', '360 = 2 × 2 × 2 × 3 × 3 × 5'] }, 'Les diviseurs premiers de 360 sont 2, 3 et 5.') },
+        corr: cm1Redac('Décomposition de 360', { nom: '360', lignes: ['2 × 180', '2 × 2 × 90', '2 × 2 × 2 × 45', '2 × 2 × 2 × 3 × 3 × 5'] }, 'Les diviseurs premiers de 360 sont 2, 3 et 5.') },
       { etoiles: 3, cahier: true, consigne: 'Par quel plus petit nombre entier faut-il multiplier 12 pour obtenir le carré d\'un nombre entier ?',
         corr: cm1Redac('Décomposition de 12', { suite: ['12 = 2 × 2 × 3', 'Pour un carré, chaque facteur premier doit apparaître un nombre pair de fois : il manque un 3.', '12 × 3 = 36 = 6 × 6'] }, 'Il faut multiplier 12 par 3 : on obtient 36, le carré de 6.') },
     ] },

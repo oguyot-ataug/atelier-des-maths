@@ -67,8 +67,8 @@ PLANCHES['3e|Grandeurs composées'] = [
   { titre: 'Problèmes avec conversions', duree: '40 min',
     attendus: ['Choisir la bonne grandeur et la bonne unité', 'Enchaîner calculs et conversions', 'Rédiger la solution d\'un problème'],
     exos: [
-      { etoiles: 1, col: 1, consigne: 'Vrai ou faux ? Entoure.',
-        ...ch([['1 m³ = 1 000 L', 'vrai'], ['1 L = 1 dm³', 'vrai'], ['1 km/h = 1 000 m/s', 'faux'], ['1 h = 3 600 s', 'vrai']], 'vrai · faux') },
+      { etoiles: 1, col: 1, consigne: 'Complète par = ou ≠.',
+        ...P3.egal([['1 m³', '1 000 L', 1], ['1 L', '1 dm³', 1], ['1 km/h', '1 000 m/s', 0], ['1 h', '3 600 s', 1]]) },
       { etoiles: 2, col: 1, consigne: 'Un coureur parcourt 10 km en 50 min.',
         ...rmp([['Sa vitesse : @ km/h', 12], ['Son allure : @ min par km', 5], ['À cette vitesse, 18 km prennent @ h @ min', 1, 30]]) },
       { etoiles: 2, col: 1, cahier: true, consigne: 'Usain Bolt a couru le 100 m en 9,58 s. Calcule sa vitesse moyenne en m/s, puis en km/h (au dixième).',

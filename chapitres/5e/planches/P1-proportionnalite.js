@@ -100,7 +100,7 @@ PLANCHES['5e|Proportionnalité'] = [
       { etoiles: 2, col: 1, consigne: 'Convertis la durée, puis calcule la distance (vitesse : 60 km par heure).',
         ...rmp([['45 min = @ h', 0.75], ['Distance en 45 min : @ km', 45], ['1 h 20 min : distance @ km', 80]], 3) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Sur une carte à l\'échelle 1/25 000, deux villages sont à 8 cm l\'un de l\'autre. Quelle est la distance réelle en km ?',
-        corr: cm1Redac('Distance réelle', '8 × 25 000 = 200 000 cm = 2 000 m = 2 km', 'Les deux villages sont à 2 km l\'un de l\'autre.') },
+        corr: cm1Redac('Distance réelle en centimètres', { nom: 'D', lignes: ['8 × 25 000', '200 000'] }, 'La distance réelle est 200 000 cm, c\'est-à-dire 2 000 m : les deux villages sont à 2 km l\'un de l\'autre.') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Un train roule à vitesse constante et parcourt 240 km en 2 h. Combien de temps lui faut-il pour parcourir 420 km ?',
         corr: cm1Redac('Distance parcourue en une heure', '240 : 2 = 120', 'Le train parcourt 120 km par heure.') + cm1Redac('Durée pour parcourir 420 km', '420 : 120 = 3,5', 'Il lui faut 3,5 h, soit 3 h 30 min.') },
     ] },

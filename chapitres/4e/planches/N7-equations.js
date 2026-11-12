@@ -50,8 +50,8 @@ PLANCHES['4e|Équations'] = [
   { titre: 'Mettre un problème en équation', duree: '40 min',
     attendus: ['Choisir l\'inconnue', 'Traduire l\'énoncé par une équation', 'Résoudre, vérifier et conclure par une phrase'],
     exos: [
-      { etoiles: 1, col: 1, consigne: 'Entoure l\'équation qui traduit la phrase (x désigne le nombre cherché).',
-        ...chx([['Le triple d\'un nombre, augmenté de 7, vaut 31 :', '3x + 7 = 31', '3(x + 7) = 31 · 3x + 7 = 31 · x + 21 = 31'], ['La moitié d\'un nombre, diminuée de 2, vaut 5 :', 'x : 2 − 2 = 5', 'x : 2 − 2 = 5 · (x − 2) : 2 = 5 · 2x − 2 = 5']]) },
+      { etoiles: 1, col: 1, consigne: 'Relie chaque phrase à l\'équation qui la traduit (x désigne le nombre cherché ; deux équations ne servent pas).',
+        ...P3.relier1(['Le triple d\'un nombre, augmenté de 7, vaut 31', 'Le quadruple d\'un nombre, diminué de 3, vaut 25', 'Le triple de la somme d\'un nombre et de 7 vaut 31'], ['4(x − 3) = 25', '3x + 7 = 31', 'x + 21 = 31', '3(x + 7) = 31', '4x − 3 = 25'], [1, 4, 3]) },
       { etoiles: 2, col: 1, consigne: 'Trouve le nombre.',
         ...rmp([['Le triple d\'un nombre, augmenté de 7, vaut 31 : le nombre est @', 8], ['La moitié d\'un nombre, diminuée de 2, vaut 5 : le nombre est @', 14], ['Si on ajoute 9 au double d\'un nombre, on obtient −3 : le nombre est @', '−6']]) },
       { etoiles: 2, cahier: true, consigne: 'Paul a trois fois l\'âge de son fils. Ensemble, ils ont 48 ans. Quel est l\'âge de chacun ?',

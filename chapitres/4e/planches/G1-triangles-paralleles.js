@@ -76,7 +76,7 @@ PLANCHES['4e|Triangles et parallèles'] = [
       { etoiles: 3, cahier: true, consigne: illu(toboggan, 'Sur ce toboggan, le montant [AB] est vertical et le sol (BC) horizontal. Une barre de renfort [MN] est parallèle au sol. AB = 2,5 m, BC = 4 m et AM = 1,5 m. Calcule la longueur de la barre MN.'),
         corr: cm1Redac('Thalès', { suite: ['M ∈ [AB], N ∈ [AC] et (MN) // (BC) : d\'après la propriété de Thalès,', `${F('AM', 'AB')} = ${F('MN', 'BC')}`, `${F('1{,}5', '2{,}5')} = ${F('MN', 4)}`, 'MN = ' + F('4 \\times 1{,}5', '2{,}5'), 'MN = 2,4'] }, 'La barre mesure 2,4 m.') },
       { etoiles: 3, cahier: true, consigne: 'Pour estimer la largeur d\'une route, Lina repère les points A, M, B alignés sur un bord, et A, N, C alignés, avec (MN) // (BC). AM = 4 m, MB = 6 m et MN = 3 m. Calcule BC.',
-        corr: cm1Redac('Longueur AB', 'AB = AM + MB = 4 + 6 = 10', 'AB mesure 10 m.') + cm1Redac('Thalès', { suite: [`${F('AM', 'AB')} = ${F('MN', 'BC')}`, `${F(4, 10)} = ${F(3, 'BC')}`, 'BC = ' + F('10 \\times 3', 4), 'BC = 7,5'] }, 'BC mesure 7,5 m.') },
+        corr: cm1Redac('Longueur AB', { nom: 'AB', lignes: ['AM + MB', '4 + 6', '10'] }, 'AB mesure 10 m.') + cm1Redac('Thalès', { suite: [`${F('AM', 'AB')} = ${F('MN', 'BC')}`, `${F(4, 10)} = ${F(3, 'BC')}`, 'BC = ' + F('10 \\times 3', 4), 'BC = 7,5'] }, 'BC mesure 7,5 m.') },
     ] },
 ];
 })();

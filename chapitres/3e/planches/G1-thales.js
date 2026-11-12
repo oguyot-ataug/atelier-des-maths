@@ -132,7 +132,7 @@ PLANCHES['3e|Théorème de Thalès'] = [
           + cm1Redac('AD et périmètre', { suite: ['AD = ' + cm1Frac('1,5 \\times 4', '1,2') + ' = 5', '4 + 3 + 5 = 12'] }, 'Le périmètre du triangle ACD est 12 m.') },
       { etoiles: 2, cahier: true, pts: 4, consigne: `<span>Pour estimer la largeur d'une rivière, on a planté des piquets A, B, C, D et O. Les points A, O, D sont alignés, ainsi que B, O, C. OA = 30 m, OD = 12 m, OB = 35 m, OC = 14 m et CD = 10 m.</span>` + cote(riviere, qs(['Montrer que les droites (AB) et (CD) sont parallèles.', 'Calculer la longueur AB.', 'Un nageur traverse en suivant [AB] à 1,2 m/s. Combien de temps met-il ?'])),
         corr: cm1Redac('(AB) et (CD) sont-elles parallèles ?', { suite: [`${cm1Frac('OA', 'OD')} = ${cm1Frac(30, 12)} = 2,5`, `${cm1Frac('OB', 'OC')} = ${cm1Frac(35, 14)} = 2,5`] }, 'Les rapports sont égaux et les points sont alignés dans le même ordre : d\'après la réciproque du théorème de Thalès, (AB) // (CD).')
-          + cm1Redac('Longueur AB', 'AB = 2,5 × CD = 2,5 × 10 = 25', 'AB = 25 m.') + cm1Redac('Durée de la traversée du nageur', '25 : 1,2 ≈ 20,8', 'Le nageur met environ 21 s.') },
+          + cm1Redac('Longueur AB', { suite: ['AB = 2,5 × 10', 'AB = 25'] }, 'AB = 25 m.') + cm1Redac('Durée de la traversée du nageur', { suite: [`t = ${cm1Frac(25, '1,2')}`, 't ≈ 20,8'] }, 'Le nageur met environ 21 s.') },
     ] },
 ];
 })();

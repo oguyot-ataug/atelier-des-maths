@@ -23,7 +23,7 @@ PLANCHES['5e|Puissances'] = [
       { etoiles: 1, uneLigne: true, consigne: 'Écris sous la forme d\'un produit, puis calcule.', ...P3.rmp([[`${T('6^2')} = @ = @`, T('6 \\times 6'), 36], [`${T('4^3')} = @ = @`, T('4 \\times 4 \\times 4'), 64], [`${T('0{,}3^2')} = @ = @`, T('0{,}3 \\times 0{,}3'), '0,09']], 5) },
       { etoiles: 1, col: 1, consigne: 'Complète sans calculatrice.', ...P3.rmp([[`${T('7^2')} = @`, 49], [`${T('11^2')} = @`, 121], [`${T('12^2')} = @`, 144], [`${T('10^3')} = @`, '1 000']], 3) },
       { etoiles: 2, col: 1, consigne: 'Écris avec une puissance.', ...P3.rmp([['5 × 5 = @<sup>@</sup>', 5, 2], ['2 × 2 × 2 = @<sup>@</sup>', 2, 3], ['9 × 9 = @<sup>@</sup>', 9, 2], ['7 × 7 × 7 = @<sup>@</sup>', 7, 3]], 2) },
-      { etoiles: 2, consigne: 'Vrai ou faux ? Entoure.', ...P3.chxTab([[T('3^2 = 6'), 'faux', 'vrai · faux'], [T('10^2 = 100'), 'vrai', 'vrai · faux'], [T('2^3 = 3^2'), 'faux', 'vrai · faux'], [T('1^3 = 1'), 'vrai', 'vrai · faux']]) },
+      { etoiles: 2, consigne: 'Complète par = ou ≠.', ...P3.egal([[T('3^2'), '6', 0], [T('10^2'), '100', 1], [T('2^3'), T('3^2'), 0], [T('1^3'), '1', 1], [T('2^4'), T('4^2'), 1], [T('5^2'), '10', 0]], 3) },
       { etoiles: 3, cahier: true, consigne: 'Léa dit : « 5² = 10 ». Explique son erreur.', corr: cm1Redac('L\'erreur de Léa', T('5^2 = 5 \\times 5 = 25'), 'Léa a calculé 5 × 2. Le carré de 5, c\'est 5 multiplié par lui-même : 25.') },
     ] },
   { titre: 'Écrire un nombre comme une puissance', duree: '25 min',

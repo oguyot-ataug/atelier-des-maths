@@ -72,8 +72,8 @@ PLANCHES['3e|Généralités sur les fonctions'] = [
   { titre: 'Tableau, formule, graphique', duree: '35 min',
     attendus: ['Passer d\'une représentation d\'une fonction à une autre', 'Lire un maximum sur une courbe', 'Contrôler une lecture graphique par le calcul'],
     exos: [
-      { etoiles: 1, col: 1, consigne: 'Entoure la formule qui correspond.',
-        ...chx([['La courbe passe par (0 ; 3) et (1 ; 4) :', 'f(x) = x + 3', 'f(x) = 3x · f(x) = x + 3 · f(x) = x²'], ['x : 1, 2, 3 → f(x) : 2, 4, 6 :', 'f(x) = 2x', 'f(x) = 2x · f(x) = x + 2 · f(x) = x²'], ['f(2) = 4 et f(−2) = 4 :', 'f(x) = x²', 'f(x) = x² · f(x) = 2x · f(x) = x + 2']]) },
+      { etoiles: 1, col: 1, consigne: 'Relie chaque information à la formule de la fonction f (une formule ne sert pas).',
+        ...P3.relier1(['La courbe passe par (0 ; 3) et (1 ; 4)', 'f(1) = 2, f(2) = 4 et f(3) = 6', 'f(2) = 4 et f(−2) = 4'], ['f(x) = x²', 'f(x) = 3x', 'f(x) = x + 3', 'f(x) = 2x'], [2, 3, 0], { fs: 14 }) },
       { etoiles: 1, col: 1, consigne: 'Complète le tableau de valeurs de f(x) = −x + 4.',
         eleve: tab([['x', '−2', '−1', 0, 1, 2], ['f(x)', '@', '@', '@', '@', '@']], false),
         corr: tab([['x', '−2', '−1', 0, 1, 2], ['f(x)', '@', '@', '@', '@', '@']], true, [6, 5, 4, 3, 2]) },

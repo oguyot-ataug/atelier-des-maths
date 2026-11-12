@@ -47,13 +47,13 @@ PLANCHES['cm2|Multiplication'] = [
         ...rmp([['12 × 15 = @', 180], ['25 × 12 = @', 300], ['99 × 7 = @', 693], ['21 × 13 = @', 273]]) },
       { etoiles: 2, col: 1, consigne: 'Calcule mentalement.',
         ...rmp([['4 × 2,5 = @', 10], ['50 × 18 = @', 900], ['0,5 × 46 = @', 23], ['3 × 1,2 = @', '3,6']]) },
-      { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.',
-        ...ch([['15 × 4 = 30 × 2', 'vrai'], ['6 × 0,5 = 12', 'faux'], ['8 × 125 = 1 000', 'vrai']], 'vrai · faux') },
+      { etoiles: 2, col: 1, consigne: 'Complète par = ou ≠.',
+        ...P3.egal([['15 × 4', '30 × 2', 1], ['6 × 0,5', '12', 0], ['8 × 125', '1 000', 1]]) },
       { etoiles: 3, cahier: true, consigne: 'Pour la sortie de fin d\'année, 3 classes de 26 élèves partent avec 9 adultes. L\'entrée au parc coûte 12 € par élève et 15 € par adulte. Quel est le prix total des entrées ?',
         corr: cm1Redac('Nombre d\'élèves', '3 × 26 = 78', 'Il y a 78 élèves.') + cm1Redac('Prix des entrées', { suite: ['78 × 12 = 936', '9 × 15 = 135', '936 + 135 = 1 071'] }, 'Les entrées coûtent 1 071 € en tout.') },
       { etoiles: 1, col: 1, consigne: 'Calcule mentalement.', ...P3.rmp([['25 × 12 = @', 300], ['99 × 7 = @', 693], ['15 × 6 = @', 90]], 3) },
       { etoiles: 2, col: 1, consigne: 'Calcule les étapes de la sortie.', ...P3.rmp([['3 × 26 = @', 78], ['78 + 9 = @', 87], ['87 × 12 = @', '1 044']], 3) },
-      { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.', ...P3.chx([['4 × 25 = 100', 'vrai', 'vrai · faux'], ['50 × 50 = 250', 'faux', 'vrai · faux']]) },
+      { etoiles: 2, col: 1, consigne: 'Complète par = ou ≠.', ...P3.egal([['4 × 25', '100', 1], ['50 × 50', '250', 0], ['0,5 × 8', '4', 1]]) },
     ] },
 ];
 })();

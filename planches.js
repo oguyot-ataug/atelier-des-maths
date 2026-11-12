@@ -659,6 +659,13 @@ function plSepNoeuds(el){
 // répondre ») : un pointillé tient au moins la réponse attendue, avec un peu de marge pour l'écriture
 // d'un élève. Correspondance dans l'ordre, comme la version écran (planches-num.js).
 const plTrousCache = new Map();
+// Longueur visible d'une réponse : une formule LaTeX (span .tex) compte pour ce qu'elle affiche, pas pour sa source
+// (« \\dfrac{5}{6} » occupe deux caractères, pas douze) -- sinon les pointillés d'une réponse en fraction couvraient la ligne.
+function plLongVisible(el){
+  const c = el.cloneNode(true);
+  c.querySelectorAll('.tex').forEach(t => { t.textContent = t.textContent.replace(/\\dfrac\{([^}]*)\}\{([^}]*)\}/g, (m, a, b) => 'x'.repeat(Math.max(a.length, b.length) + 1)).replace(/\\[a-zA-Z]+/g, 'x').replace(/[{}^_]/g, ''); });
+  return c.textContent.replace(/\s+/g, ' ').trim().length;
+}
 function plTrousAjustes(x){
   const e = x.eleve || ''; if(!x.corr || !/pl-pts/.test(e)) return e;
   if(plTrousCache.has(e)) return plTrousCache.get(e);
@@ -666,7 +673,7 @@ function plTrousAjustes(x){
   try{ const E = document.createElement('div'), C = document.createElement('div'); E.innerHTML = e; C.innerHTML = x.corr;
     const trous = [...E.querySelectorAll('.pl-frac, .pl-case-seule, .pl-pts')].filter(t => !t.closest('[data-plx]')), reps = [...C.querySelectorAll('.pl-rep')];
     if(trous.length === reps.length){ trous.forEach((t, i) => { if(!t.classList.contains('pl-pts')) return;
-        const L = reps[i].textContent.replace(/\s+/g, ' ').trim().length, besoin = +(L * .62 + 1.6).toFixed(1), actuel = parseFloat(t.style.minWidth) || 0;
+        const L = plLongVisible(reps[i]), besoin = +(L * .62 + 1.6).toFixed(1), actuel = parseFloat(t.style.minWidth) || 0;
         if(besoin > actuel) t.style.minWidth = besoin + 'em'; });
       out = E.innerHTML; } }catch(err){}
   plTrousCache.set(e, out); return out;

@@ -125,10 +125,9 @@ PLANCHES['6e|Nombres entiers'] = [
       { etoiles: 2, col: 1, consigne: 'Calcule en ligne.',
         eleve: plListe(['458 + 99 = ' + B(), '1 200 − 350 = ' + B(), '25 × 12 = ' + B(), '204 × 5 = ' + B()]),
         corr: plListe(['458 + 99 = ' + R(557), '1 200 − 350 = ' + R(850), '25 × 12 = ' + R(300), '204 × 5 = ' + R('1 020')]) },
-      { etoiles: 2, col: 1, consigne: 'Sans poser l\'opération, entoure l\'ordre de grandeur du résultat.',
-        // Propositions en tableau, à distance du calcul (relecture 6e-N1-P4-E4 : « tabulation pour ne pas trop coller les
-        // résultats à l'énoncé »).
-        ...P3.chxTab([['398 × 21', '8 000', '800 · 8 000 · 80 000'], ['5 012 − 1 989', '3 000', '300 · 3 000 · 30 000'], ['49 × 52', '2 500', '250 · 2 500 · 25 000']]) },
+      { etoiles: 2, col: 1, consigne: 'Sans poser l\'opération, donne un ordre de grandeur du résultat (arrondis chaque nombre à la centaine, ou à la dizaine s\'il a deux chiffres).',
+        // Ordre de grandeur à écrire, plus à entourer (relecture 5e-N1a du 11/11/2026, généralisée le 12/11/2026).
+        ...P3.rmp([['398 × 21 ≈ @', '8 000'], ['5 012 − 1 989 ≈ @', '3 000'], ['49 × 52 ≈ @', '2 500']], 5) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Un cinéma a 24 rangées de 36 fauteuils. 785 spectateurs sont assis. Combien de fauteuils restent libres ?',
         corr: cm1Redac('Nombre de fauteuils', '24 × 36 = 864', 'Le cinéma a 864 fauteuils.') + cm1Redac('Fauteuils libres', '864 − 785 = 79', '79 fauteuils restent libres.') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Trouve le chiffre caché : 3■7 × 4 = 1 508.',
@@ -142,9 +141,8 @@ PLANCHES['6e|Nombres entiers'] = [
       { etoiles: 1, col: 1, consigne: 'Calcule.',
         eleve: plListe(['47 × 100 = ' + B(), '305 × 1 000 = ' + B(7), '4 500 : 100 = ' + B(), '72 000 : 1 000 = ' + B()]),
         corr: plListe(['47 × 100 = ' + R('4 700'), '305 × 1 000 = ' + R('305 000'), '4 500 : 100 = ' + R(45), '72 000 : 1 000 = ' + R(72)]) },
-      { etoiles: 1, col: 1, consigne: 'Calcule astucieusement en regroupant les facteurs.',
-        eleve: plListe(['25 × 37 × 4 = ' + B(), '2 × 498 × 5 = ' + B(), '50 × 26 × 2 = ' + B(), '125 × 13 × 8 = ' + B(7)]),
-        corr: plListe(['25 × 37 × 4 = 100 × 37 = ' + R('3 700'), '2 × 498 × 5 = 10 × 498 = ' + R('4 980'), '50 × 26 × 2 = 100 × 26 = ' + R('2 600'), '125 × 13 × 8 = 1 000 × 13 = ' + R('13 000')]) },
+      { etoiles: 1, col: 1, consigne: 'Calcule astucieusement en regroupant les facteurs. Écris une étape par ligne.',
+        ...P3.etp([['A', '25 × 37 × 4', '100 × 37', '3 700'], ['B', '2 × 498 × 5', '10 × 498', '4 980'], ['C', '50 × 26 × 2', '100 × 26', '2 600'], ['D', '125 × 13 × 8', '1 000 × 13', '13 000']], 2) },
       { etoiles: 2, col: 1, consigne: 'Complète.',
         eleve: plListe(['1 000 − ' + B(4) + ' = 653', B(4) + ' + 2 450 = 10 000', '12 × ' + B(3) + ' = 96', B(3) + ' × 25 = 1 000']),
         corr: plListe(['1 000 − ' + R(347) + ' = 653', R('7 550') + ' + 2 450 = 10 000', '12 × ' + R(8) + ' = 96', R(40) + ' × 25 = 1 000']) },
@@ -165,9 +163,8 @@ PLANCHES['6e|Nombres entiers'] = [
   { titre: 'Division euclidienne', duree: '40 min',
     attendus: ['Effectuer une division euclidienne', 'Écrire l\'égalité a = b × q + r, avec r plus petit que b', 'Résoudre un problème de partage'],
     exos: [
-      { etoiles: 1, col: 1, consigne: 'Complète avec les tables (r est le reste).',
-        eleve: plListe(['47 = 6 × ' + B(2) + ' + ' + B(2), '83 = 9 × ' + B(2) + ' + ' + B(2), '100 = 7 × ' + B(2) + ' + ' + B(2)]),
-        corr: plListe(['47 = 6 × ' + R(7) + ' + ' + R(5), '83 = 9 × ' + R(9) + ' + ' + R(2), '100 = 7 × ' + R(14) + ' + ' + R(2)]) },
+      { etoiles: 1, col: 1, consigne: 'Complète avec les tables (le reste est plus petit que le diviseur).',
+        ...P3.rmp([['47 = 6 × @ + @ avec @ < 6', 7, 5, 5], ['83 = 9 × @ + @ avec @ < 9', 9, 2, 2], ['100 = 7 × @ + @ avec @ < 7', 14, 2, 2]], 2) },
       { etoiles: 2, col: 1, consigne: 'Ces égalités traduisent-elles une division euclidienne par 8 ? Entoure.',
         ...(() => { const t = P3.chxTab([['100 = 8 × 12 + 4', 'oui', 'oui · non'], ['100 = 8 × 11 + 12', 'non', 'oui · non'], ['64 = 8 × 8 + 0', 'oui', 'oui · non']]);
           return { eleve: t.eleve, corr: t.corr + '<div class="pl-petit">Le reste doit être plus petit que le diviseur : 12 &gt; 8.</div>' }; })() },

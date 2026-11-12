@@ -22,8 +22,8 @@ PLANCHES['4e|Fractions : multiplication et division'] = [
       { etoiles: 2, col: 1, consigne: 'Calcule avec les signes.',
         eleve: plListe([ligne(F('−2', 3), '×', F(5, 7), '=', Fr), ligne(F('−3', 4), '×', F('−8', 9), '=', Fr), ligne(F(4, 5), '× (−10) =', Fr)]),
         corr: plListe([ligne(F('−2', 3), '×', F(5, 7), '=', R(F('−10', 21))), ligne(F('−3', 4), '×', F('−8', 9), '=', F(24, 36), '=', R(F(2, 3))), ligne(F(4, 5), '× (−10) =', F('−40', 5), '=', R('−8'))]) },
-      { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.',
-        ...ch([[`${T(1, 2)} × ${T(1, 2)} = ${T(1, 4)}`, 'vrai'], [`${T(2, 3)} × 3 = ${T(6, 9)}`, 'faux'], [`Multiplier par ${T(1, 2)}, c'est diviser par 2.`, 'vrai']], 'vrai · faux') },
+      { etoiles: 2, col: 1, consigne: 'Complète par = ou ≠.',
+        ...P3.egal([[`${T(1, 2)} × ${T(1, 2)}`, T(1, 4), 1], [`${T(2, 3)} × 3`, T(6, 9), 0], [`${T(1, 2)} × 8`, '8 : 2', 1], [`${T(3, 4)} : 2`, T(3, 2), 0]]) },
       { etoiles: 3, cahier: true, consigne: `Calcule ${T(15, 28)} × ${T(14, 25)} en simplifiant avant d'effectuer les produits.`,
         corr: cm1Redac('Produit simplifié', { nom: 'P', lignes: [`${F(15, 28)} × ${F(14, 25)}`, `${F('3 × 5 × 2 × 7', '2 × 2 × 7 × 5 × 5')}`, `${F(3, '2 × 5')}`, `${F(3, 10)}`] }, `Le produit vaut ${F(3, 10)}.`) },
     ] },
@@ -61,9 +61,11 @@ PLANCHES['4e|Fractions : multiplication et division'] = [
   { titre: 'Enchaîner les calculs et résoudre des problèmes', duree: '40 min',
     attendus: ['Respecter les priorités avec des fractions', 'Choisir la bonne opération dans un problème', 'Rédiger la solution'],
     exos: [
-      { etoiles: 2, col: 1, consigne: 'Calcule en respectant les priorités.',
-        eleve: plListe([ligne(F(1, 2), '+', F(1, 2), '×', F(2, 3), '=', Fr), ligne('(', F(1, 2), '+', F(1, 3), ') ×', F(6, 5), '=', Fr), ligne(F(3, 4), '−', F(1, 4), ':', F(1, 2), '=', Fr)]),
-        corr: plListe([ligne(F(1, 2), '+', F(1, 3), '=', R(F(5, 6))), ligne(F(5, 6), '×', F(6, 5), '=', R('1')), ligne(F(3, 4), '−', F(2, 4), '=', R(F(1, 4)))]) },
+      { etoiles: 2, col: 1, consigne: 'Calcule en respectant les priorités. Écris une étape par ligne.',
+        ...(() => { // Calcul écrit en texte (« 1/2 + 1/3 * 6/5 ») : fractions en LaTeX, signes en texte, comme les autres lignes de la planche.
+          const X = s => s.split(' ').map(t => { const m = t.match(/^(\(?)(\d+)\/(\d+)(\)?)$/); return m ? m[1] + F(m[2], m[3]) + m[4] : t === '*' ? '×' : t === '-' ? '−' : t; }).join(' ');
+          return P3.etp([['A', X('1/2 + 1/2 * 2/3'), X('1/2 + 1/3'), X('3/6 + 2/6'), X('5/6')], ['B', X('(1/2 + 1/3) * 6/5'), X('5/6 * 6/5'), '1'],
+            ['C', X('3/4 - 1/4 : 1/2'), X('3/4 - 1/4 * 2/1'), X('3/4 - 2/4'), X('1/4')]], 2); })() },
       { etoiles: 2, col: 1, consigne: 'Entoure l\'opération qui répond à la question.',
         ...chx([[`Combien de morceaux de ${T(1, 4)} m dans un ruban de 3 m ?`, `3 : ${T(1, 4)}`, `3 × ${T(1, 4)} · 3 : ${T(1, 4)} · 3 − ${T(1, 4)}`], [`Les ${T(2, 3)} de 18 € :`, `${T(2, 3)} × 18`, `${T(2, 3)} × 18 · 18 : ${T(2, 3)} · 18 + ${T(2, 3)}`]]) },
       { etoiles: 2, cahier: true, consigne: illu(bouteille, `On verse une bouteille de ${T(3, 4)} L de jus dans des verres de ${T(1, 8)} L. Combien de verres remplit-on ?`),

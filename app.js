@@ -3985,6 +3985,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1416', date:'2026-11-12', items:[
+    "Planches du CM2 à la 3e : les principes de la relecture de la 5e « Opérations sur les nombres décimaux » étendus aux autres chapitres. Calculs détaillés : une lettre par calcul et une étape par ligne (« A = … », 6e à 3e : regrouper astucieusement, relatifs, priorités, puissances, fractions, développer et réduire) ; corrigés de problèmes en colonne (Pythagore, Thalès, trigonométrie, décompositions, échelles) ; « Vrai ou faux » sur des égalités devenu « Complète par = ou ≠ » (case à cliquer à l'écran, CM2 à 3e ; les égalités avec une lettre gardent vrai ou faux, car « ≠ » n'y voudrait rien dire) ; « Entoure l'expression qui traduit » devenu « Relie » (12 exercices, faisables à l'écran) ; ordre de grandeur à écrire au collège ; « avec r < b » dans les divisions euclidiennes.",
+    "Planches imprimées : les pointillés d'une réponse en fraction ont la bonne longueur (ils se calculaient sur l'écriture LaTeX, « \\dfrac{5}{6} », et pouvaient couvrir toute la ligne)."
+  ] },
   { version:'2026-08-19.1415', date:'2026-11-12', items:[
     "Accueil, « L'Atelier en vidéo » : la vidéo de présentation en premier -- « Visite de L'Atelier des Maths avec Oliv'IA » (4 min 05). Oliv'IA se promène sur les pages du site et explique, de sa voix, avec sous-titres, les principales fonctionnalités : cours, méthodes animées, animations, « Dans mon cahier », géométrie dynamique et instruments, calculatrice, programmation par blocs, histoire des maths, planches à imprimer, projection, automatismes, devoirs et interrogations en ligne, séance en direct, cartes flashcode, Mes classes, corrigé des évaluations et Oliv'IA."
   ] },

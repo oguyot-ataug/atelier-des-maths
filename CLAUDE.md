@@ -296,6 +296,9 @@ Calculs détaillés (relecture 5e N1a du 11/11/2026 : « Calculer c'est pouvoir 
 par ligne, « A = 5 + 4 × 3 / A = … / A = … » (helper `etp` de chapitres/5e/planches/N1-operations-decimaux.js ; corrigés `cm1Redac` avec
 `{ nom: 'P', lignes: [...] }`, lettre de ce qui est demandé). Exercices « relier » et « place des parenthèses sans recopier » : outils
 `relier` et `parenth` (planches-num.js, data-plx), faits à l'écran ; cases à choix au clic `plCase('a|b|c')` (mots, signes, = ou ≠).
+Généralisé du CM2 à la 3e le 12/11/2026 (relevé : `_hors-ligne/releve-relecture-2026-11-12.md`), outils communs de _commun3.js : `P3.etp`
+(calcul en colonne, colonnes choisies d'après la longueur), `P3.egal` (« Complète par = ou ≠ » ; une égalité avec une lettre garde vrai ou faux),
+`P3.relier` / `P3.relier1` (demi-largeur ; exposants en vrai exposant, `P3.svgExp`). Pointillés d'une réponse LaTeX : longueur affichée (`plLongVisible`).
 Une feuille qui dépasse la page A4 est resserrée à l'impression (`plRemplirPages`, planches.js) : jusqu'à 15 % pour l'élève, 30 %
 pour le corrigé, en gardant toute la largeur ; jamais sur une feuille d'élève où l'on mesure une longueur à la règle. Au-delà,
 alléger le contenu (demandé le 31/10/2026 : « Occupe-toi des feuilles qui débordent »).

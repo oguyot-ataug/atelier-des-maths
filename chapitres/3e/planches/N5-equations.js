@@ -64,8 +64,8 @@ PLANCHES['3e|Équations'] = [
   { titre: 'Mettre un problème en équation', duree: '40 min',
     attendus: ['Choisir l\'inconnue', 'Traduire l\'énoncé par une équation', 'Résoudre et conclure par une phrase'],
     exos: [
-      { etoiles: 1, col: 1, consigne: 'Entoure l\'équation qui traduit la phrase (x désigne le nombre).',
-        ...chx([['Le double d\'un nombre, augmenté de 5, vaut 17 :', '2x + 5 = 17', '2(x + 5) = 17 · 2x + 5 = 17 · x + 10 = 17'], ['Le triple de la somme d\'un nombre et de 4 vaut 30 :', '3(x + 4) = 30', '3x + 4 = 30 · 3(x + 4) = 30 · x + 12 = 30']]) },
+      { etoiles: 1, col: 1, consigne: 'Relie chaque phrase à l\'équation qui la traduit (x désigne le nombre ; deux équations ne servent pas).',
+        ...P3.relier1(['Le double d\'un nombre, augmenté de 5, vaut 17', 'Le triple de la somme d\'un nombre et de 4 vaut 30', 'Le double de la somme d\'un nombre et de 5 vaut 17'], ['3x + 4 = 30', '2x + 5 = 17', '3(x + 4) = 30', 'x + 10 = 17', '2(x + 5) = 17'], [1, 2, 4]) },
       { etoiles: 2, col: 1, cahier: true, consigne: 'Le périmètre d\'un rectangle est 54 cm. Sa longueur mesure 7 cm de plus que sa largeur. Calcule ses dimensions.',
         corr: cm1Redac('Mise en équation', { suite: ['2(ℓ + ℓ + 7) = 54', '4ℓ + 14 = 54', '4ℓ = 40', 'ℓ = 10'] }, 'La largeur est ℓ et la longueur ℓ + 7 : le rectangle mesure 17 cm sur 10 cm.') },
       { etoiles: 2, col: 1, cahier: true, consigne: 'Marc a trois fois l\'âge de sa fille. Dans 12 ans, il aura le double de son âge. Quel âge ont-ils ?',

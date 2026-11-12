@@ -59,7 +59,7 @@ PLANCHES['5e|Symétrie centrale'] = [
       complExo([[[[1, 3], [3, 1], [5, 2]], [4, 4], 8, 7]], { etoiles: 2, col: 1, consigne: 'Construis le symétrique de la ligne bleue par rapport à O.' }),
       { etoiles: 1, col: 1, consigne: 'Place les symétriques P\' et Q\' de P et Q par rapport au point O.', ...placeSym([[1, 2, 'P'], [5, 1, 'Q']], [4, 3], 7, 6, 22) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Sur ton cahier quadrillé, trace un triangle ABC et un point O hors du triangle. Construis le triangle A\'B\'C\' symétrique par rapport à O. Compare les deux triangles.',
-        corr: cm1Redac('Comparaison des deux triangles', { suite: ['A\'B\' = AB, B\'C\' = BC et A\'C\' = AC.', 'Les deux triangles sont superposables : l\'un est l\'autre après un demi-tour.'] }, 'La symétrie centrale conserve les longueurs et les formes.') },
+        corr: cm1Redac('Comparaison des deux triangles', { suite: ['A\'B\' = AB', 'B\'C\' = BC', 'A\'C\' = AC'] }, 'Les deux triangles sont superposables : l\'un est l\'autre après un demi-tour : la symétrie centrale conserve les longueurs et les formes.') },
     ] },
   { titre: 'Propriétés de la symétrie centrale', duree: '35 min',
     attendus: ['Savoir que la symétrie centrale conserve les longueurs, les angles, les aires, l\'alignement', 'Savoir que le symétrique d\'une droite est une droite parallèle', 'Utiliser ces propriétés pour calculer'],

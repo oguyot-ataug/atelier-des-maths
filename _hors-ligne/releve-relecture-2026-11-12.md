@@ -1,0 +1,333 @@
+# Relevé du 12/11/2026 : principes de la relecture 5e N1a appliqués aux autres planches
+
+## A. Calculs à plusieurs opérations écrits en une ligne (collège) → une lettre, une étape par ligne : 13
+
+- **6e-N1-P5-E2** (Nombres entiers) : Calcule astucieusement en regroupant les facteurs. — _25 × 37 × 4 = | 2 × 498 × 5 =_
+- **6e-N4a-P1-E4** (Opérations et ordre de grandeur) : Calcule astucieusement en regroupant les termes. — _4,7 + 3,8 + 5,3 = | 1,25 + 6,4 + 0,75 =_
+- **5e-N3-P2-E1** (Opérations sur les nombres relatifs) : Calcule de proche en proche. — _(−3) + (+5) + (−4) = | (+8) + (−10) + (+7) =_
+- **5e-N3-P2-E7** (Opérations sur les nombres relatifs) : Calcule. — _(−1,5) + (+4) + (−2,5) = | (+12) + (−30) + (+8) =_
+- **5e-N3-P4-E4** (Opérations sur les nombres relatifs) : Calcule astucieusement (cherche des opposés ou des sommes rondes). — _17 − 9 − 17 + 9 = | −25 + 13 + 25 − 3 =_
+- **5e-N5-P4-E5** (Calcul littéral) : Développe, puis réduis. — _2(x + 3) + 5 = | 3(a − 1) + 2a =_
+- **5e-N5-P5-E2** (Calcul littéral) : Réduis. — _5x + 2 − 3x + 7 = | 4a + 1 − 4a =_
+- **4e-N1-P2-E3** (Opérations sur les nombres relatifs) : Calcule (cherche d'abord le signe). — _(−2) × (−5) × (−3) = | 4 × (−0,5) × (−6) =_
+- **4e-N5-P3-E3** (Puissances) : Calcule. — _3,7 × 103 = | 52 × 10−2 =_
+- **4e-N6-P3-E8** (Calcul littéral) : Calcule astucieusement. — _13 × 47 + 13 × 53 = | 8,5 × 7 − 8,5 × 5 =_
+- **4e-N6-P4-E3** (Calcul littéral) : Développe, puis réduis. — _3(x + 2) + 4(x − 1) = | 2(3x − 1) − 5(x + 2) =_
+- **3e-N1-P1-E2** (Nombres et calculs) : Calcule en respectant les priorités. — _5 + 3 × 4 = | (5 + 3) × 4 =_
+- **3e-N4-P1-E1** (Calcul littéral) : Réduis. — _3x + 5x = | 7a − 2a + a =_
+
+## B. Corrigés de problèmes en une ligne « a = b = c » (collège) → en colonne, avec la lettre de ce qui est cherché : 10
+
+- **5e-G1-P2-E7** (Symétrie centrale) : Sur ton cahier quadrillé, trace un triangle ABC et un point O hors du triangle. Construis le triangle A'B'C' s — __
+- **5e-P1a-P4-E7** (Proportionnalité) : Sur une carte à l'échelle 1/25 000, deux villages sont à 8 cm l'un de l'autre. Quelle est la distance réelle e — __
+- **5e-N5-P5-E8** (Calcul littéral) : Calcule astucieusement en factorisant : 4,5 × 17 + 4,5 × 3, puis 25 × 13 − 25 × 9. — __
+- **4e-G1-P4-E4** (Triangles et parallèles) : Pour estimer la largeur d'une route, Lina repère les points A, M, B alignés sur un bord, et A, N, C alignés, a — __
+- **4e-N2-P3-E5** (Divisibilité) : Décompose 360 en produit de facteurs premiers, puis donne tous ses diviseurs premiers. — __
+- **4e-G2-P4-E3** (Théorème de Pythagore) : ?88 cm49,5 cmLa taille d'un écran est la longueur de sa diagonale, exprimée en pouces (1 pouce ≈ 2,54 cm). Un  — __
+- **3e-G1-P5-E3** (Théorème de Thalès) : Pour estimer la largeur d'une rivière, on a planté des piquets A, B, C, D et O. Les points A, O, D sont aligné — __
+- **3e-N2-P2-E6** (Arithmétique) : Décompose 360 en produit de facteurs premiers, par divisions successives. — __
+- **3e-N4-P4-E7** (Calcul littéral) : Prouve que le produit de deux nombres impairs consécutifs, augmenté de 1, est le carré d'un nombre pair. (Note — __
+- **3e-G4-P5-E2** (Trigonométrie) : Une tyrolienne relie le sommet D d'une tour de 12 m de haut à un point A du sol, situé à 45 m du pied E de la  — __
+
+## C. « Vrai ou faux ? Entoure » sur des égalités de calcul → « Complète par = ou ≠ » (case à cliquer) : 25
+
+- **CM2-N5-P3-E3** (Multiplication) : Vrai ou faux ? Entoure. — _15 × 4 = 30 × 2 vrai · faux | 6 × 0,5 = 12 vrai · faux_
+- **CM2-N5-P3-E7** (Multiplication) : Vrai ou faux ? Entoure. — _4 × 25 = 100 vrai · faux | 50 × 50 = 250 vrai · faux_
+- **CM2-N12-P1-E3** (Algèbre) : Vrai ou faux ? Entoure. — _3 + 5 = 8 + 2 vrai · faux | 12 + 8 = 10 + 10 vrai · faux_
+- **CM2-N12-P1-E7** (Algèbre) : Vrai ou faux ? Entoure. — _3 + 4 = 7 vrai · faux | 10 = 6 + 4 vrai · faux_
+- **6e-M2-P3-E3** (Heures et durée) : Vrai ou faux ? Entoure. — _1,30 h = 1 h 30 min vrai · faux | 1,5 h = 90 min vrai · faux_
+- **6e-M2-P3-E7** (Heures et durée) : Vrai ou faux ? Entoure. — _1,5 h = 1 h 50 min vrai · faux | 0,5 h = 30 min vrai · faux_
+- **5e-N4-P5-E4** (Fractions) : Vrai ou faux ? Entoure. — _\dfrac{1}{2} + \dfrac{1}{3} = \dfrac{2}{5} : vrai · faux | \dfrac{3}{4} de 100 € = 75 € : _
+- **5e-N3-P3-E5** (Opérations sur les nombres relatifs) : Vrai ou faux ? Entoure. — _(−5) − (−5) = 0 : vrai · faux | (+2) − (+7) = 5 : vrai · faux_
+- **5e-N3-P4-E7** (Opérations sur les nombres relatifs) : Vrai ou faux ? Entoure. — _−5 − 3 = −8 : vrai · faux | −5 − (−3) = −8 : vrai · faux_
+- **5e-P1b-P1-E6** (Pourcentages) : Vrai ou faux ? Entoure. — _20 % de 50 = 50 % de 20 : vrai · faux | 10 % de 90 = 90 : vrai · faux_
+- **5e-N7-P1-E4** (Puissances) : Vrai ou faux ? Entoure. — _3^2 = 6vrai · faux | 10^2 = 100vrai · faux_
+- **5e-N5-P3-E5** (Calcul littéral) : Vrai ou faux pour toutes les valeurs de x ? Entoure. — _x + x = 2x : vrai · faux | x × x = 2x : vrai · faux_
+- **5e-N5-P4-E4** (Calcul littéral) : Vrai ou faux ? Entoure. — _2(x + 5) = 2x + 5 : vrai · faux | 4(a − 3) = 4a − 12 : vrai · faux_
+- **5e-N5-P5-E5** (Calcul littéral) : Vrai ou faux ? Entoure. — _2x + 3x = 5x² : vrai · faux | 2x + 3 = 5x : vrai · faux_
+- **4e-N3-P4-E3** (Fractions : comparaison et addition) : Vrai ou faux ? Entoure. — _\dfrac{1}{2} + \dfrac{1}{3} = \dfrac{2}{5} vrai · faux | \dfrac{3}{4} − \dfrac{1}{4} = \df_
+- **4e-N4-P1-E4** (Fractions : multiplication et division) : Vrai ou faux ? Entoure. — _\dfrac{1}{2} × \dfrac{1}{2} = \dfrac{1}{4} vrai · faux | \dfrac{2}{3} × 3 = \dfrac{6}{9} v_
+- **4e-G2-P1-E5** (Théorème de Pythagore) : Vrai ou faux ? Entoure. — _√(9 + 16) = √9 + √16 vrai · faux | (√7)² = 7 vrai · faux_
+- **4e-N5-P1-E5** (Puissances) : Vrai ou faux ? Entoure. — _23 = 6 vrai · faux | (−5)2 = 25 vrai · faux_
+- **4e-N5-P3-E5** (Puissances) : Vrai ou faux ? Entoure. — _102 + 103 = 105 vrai · faux | 102 × 103 = 105 vrai · faux_
+- **4e-N6-P2-E4** (Calcul littéral) : Vrai ou faux ? Entoure. — _3(x + 2) = 3x + 2 vrai · faux | −(x − 1) = −x + 1 vrai · faux_
+- **4e-N6-P2-E8** (Calcul littéral) : Vrai ou faux ? Entoure. — _2(x + 5) = 2x + 5vrai · faux | −(x − 3) = −x + 3vrai · faux_
+- **3e-D3-P4-E1** (Grandeurs composées) : Vrai ou faux ? Entoure. — _1 m³ = 1 000 L vrai · faux | 1 L = 1 dm³ vrai · faux_
+- **3e-N3-P2-E6** (Puissances) : Vrai ou faux ? Entoure. — _10⁵ + 10⁵ = 10¹⁰ vrai · faux | 10³ × 10³ = 10⁶ vrai · faux_
+- **3e-N3-P4-E5** (Puissances) : Vrai ou faux ? Entoure. — _2³ × 2⁴ = 2⁷ vrai · faux | 2³ + 2³ = 2⁴ vrai · faux_
+- **3e-N4-P2-E4** (Calcul littéral) : Vrai ou faux pour tout nombre x ? Entoure. — _(x + 3)² = x² + 9 vrai · faux | (x + 1)(x − 1) = x² − 1 vrai · faux_
+
+## D. « Associe / entoure l'expression qui traduit » → relier (à l'écran aussi) : 15
+
+- **CM2-N4-P3-E2** (Addition et soustraction) : Entoure le calcul qui correspond à la situation. — _Un livre à 12,50 € et un cahier à 3,20 € : combien en tout ? 12,50 + 3,20 · 12,50 − 3,20 |_
+- **CM2-G3-P1-E1** (Programmes de construction) : Programme : « Trace un carré. Trace ses deux diagonales. Trace le cercle dont le centre est le point où se cou — _La figure qui correspond est la figure 1 · 2 · 3_
+- **6e-G2-P3-E1** (Droites parallèles et perpendiculaires) : Programme : « Trace un segment [EF]. Trace la droite (d) perpendiculaire à (EF) passant par F. Place un point  — _La bonne figure est la figure 1 · figure 2 · figure 3_
+- **6e-N6-P3-E3** (Initiation à l'algèbre) : On appelle x le nombre choisi. Entoure l'expression qui traduit le programme. — _multiplier par 3, puis ajouter 5 : 3 × x + 5 · (x + 5) × 3 · 2 × x − 1 | ajouter 5, puis m_
+- **5e-P1a-P4-E4** (Proportionnalité) : Entoure l'échelle correspondant à la situation. — _1 cm représente 1 km : 1/1 000 · 1/100 000 | 1 cm représente 10 m : 1/10 · 1/1 000_
+- **5e-P1b-P1-E5** (Pourcentages) : Associe : entoure l'écriture égale. — _50 % : la moitié · le quart · le dixième · les trois quarts | 25 % : la moitié · le quart _
+- **5e-N5-P1-E6** (Calcul littéral) : Associe chaque phrase à son expression : entoure. — _Le carré de x : x² · 2x · x + 2 · (2x)² · 2x² | Le double de x : x² · 2x · x + 2 · (2x)² ·_
+- **5e-N6-P1-E5** (Équations) : Quelle équation traduit la phrase ? Entoure. — _Un nombre augmenté de 9 donne 20 : x + 9 = 20 · 9x = 20 | Le triple d'un nombre vaut 27 : _
+- **5e-N6-P4-E4** (Équations) : Entoure l'équation qui traduit le problème. — _Trois stylos à x € et une gomme à 1 € coûtent 7 € : 3x + 1 = 7 · 3(x + 1) = 7 | Un nombre _
+- **4e-N1-P4-E3** (Opérations sur les nombres relatifs) : Entoure le calcul qui correspond à la situation. — _Il fait −4 °C, la température baisse de 6 degrés : −4 + 6 · −4 − 6 · 6 − 4 | Un sous-marin_
+- **4e-N5-P2-E3** (Puissances) : Entoure la puissance de 10 qui correspond au préfixe. — _kilo (k) : 103 · 106 · 10−3 | milli (m) : 103 · 10−3 · 10−6_
+- **4e-N6-P1-E4** (Calcul littéral) : Entoure l'expression qui traduit la phrase (x désigne un nombre). — _Le double de x, augmenté de 3 : 2(x + 3) · 2x + 3 · x² + 3 | Le carré de la somme de x et _
+- **4e-N7-P3-E1** (Équations) : Entoure l'équation qui traduit la phrase (x désigne le nombre cherché). — _Le triple d'un nombre, augmenté de 7, vaut 31 : 3(x + 7) = 31 · 3x + 7 = 31 · x + 21 = 31 _
+- **3e-N5-P4-E1** (Équations) : Entoure l'équation qui traduit la phrase (x désigne le nombre). — _Le double d'un nombre, augmenté de 5, vaut 17 : 2(x + 5) = 17 · 2x + 5 = 17 · x + 10 = 17 _
+- **3e-D1-P4-E1** (Généralités sur les fonctions) : Entoure la formule qui correspond. — _La courbe passe par (0 ; 3) et (1 ; 4) : f(x) = 3x · f(x) = x + 3 · f(x) = x² | x : 1, 2, _
+
+## E. Ordre de grandeur à entourer → à écrire : 14
+
+- **CE2-N8-P1-E5** (La multiplication posée) : Entoure l'ordre de grandeur. — _198 × 3 : environ 60 · 600 · 6 000 | 412 × 2 : environ 80 · 800 · 8 000_
+- **CE2-N8-P2-E5** (La multiplication posée) : Entoure l'ordre de grandeur. — _24 × 18 : environ 40 · 400 · 4 000 | 52 × 31 : environ 150 · 1 500 · 15 000_
+- **CE2-N8-P3-E1** (La multiplication posée) : Entoure l'ordre de grandeur. — _49 × 6 : environ… 30 · 300 · 3 000 | 198 × 5 : environ… 100 · 1 000 · 10 000_
+- **CE2-N8-P3-E2** (La multiplication posée) : Juste ou faux ? Entoure (pense à l'ordre de grandeur). — _52 × 4 = 2 008 juste · faux | 305 × 3 = 915 juste · faux_
+- **CM1-N7-P2-E5** (Opérations sur les nombres décimaux) : Sans calculer exactement, entoure l'ordre de grandeur du résultat. — _19,8 + 30,4 : 5 · 50 · 500 | 99,5 − 48,9 : 5 · 50 · 150_
+- **CM2-N4-P1-E1** (Addition et soustraction) : Entoure l'ordre de grandeur du résultat. — _398 + 205 : environ 500 · environ 600 · environ 700 | 19,8 + 30,4 : environ 40 · environ 5_
+- **CM2-N4-P1-E6** (Addition et soustraction) : Entoure l'ordre de grandeur. — _4 987 + 3 012 : environ 7 000 · 8 000 · 9 000 | 19,8 + 30,1 : environ 5 · 50 · 500_
+- **CM2-N5-P2-E3** (Multiplication) : Entoure l'ordre de grandeur. — _49 × 21 : environ 100 · environ 1 000 · environ 10 000 | 9,8 × 31 : environ 30 · environ 3_
+- **CM2-N5-P2-E7** (Multiplication) : Entoure l'ordre de grandeur. — _498 × 21 : environ1 000 · 10 000 · 100 000 | 31 × 9,8 : environ30 · 300 · 3 000_
+- **6e-N1-P4-E4** (Nombres entiers) : Sans poser l'opération, entoure l'ordre de grandeur du résultat. — _398 × 21800 · 8 000 · 80 000 | 5 012 − 1 989300 · 3 000 · 30 000_
+- **6e-N4a-P3-E1** (Opérations et ordre de grandeur) : Entoure l'ordre de grandeur de chaque somme (arrondis chaque terme à l'unité). — _19,8 + 30,15 : 40 · 50 · 60 | 7,9 + 12,1 : 19 · 20 · 21_
+- **6e-N4b-P2-E4** (Multiplication et division) : Sans calculer, entoure le résultat juste (ordre de grandeur et nombre de décimales). — _5,2 × 3,9 : 2,028 · 20,28 · 202,8 | 0,6 × 0,5 : 3 · 0,3 · 0,03_
+- **3e-N1-P2-E1** (Nombres et calculs) : Entoure l'ordre de grandeur du résultat. — _49,8 × 21 ≈ 100 · 1 000 · 10 000 | 3 980 : 41 ≈ 10 · 100 · 1 000_
+- **3e-N3-P3-E6** (Puissances) : Entoure l'ordre de grandeur correct. — _Masse de la Terre : 6 × 10⁶ kg · 6 × 10¹² kg · 6 × 10²⁴ kg | Diamètre d'un globule rouge :_
+
+## F. Division euclidienne sans « avec r < b » : 1
+
+- **3e-N2-P1-E5** (Arithmétique) : Complète l'égalité de la division euclidienne. — _158 = 12 × + | 1 000 = 37 × +_
+
+## G. Exercices qui ne se font pas encore à l'écran (dessins, tableaux, figures…) : 233
+
+- **CP-G1-P1-E3** (Se repérer dans l'espace) : Dessine une balle sous la table. — __
+- **CP-G1-P2-E1** (Se repérer dans l'espace) : L'enfant est vu de dos. Quelle main lève-t-il ? Entoure. — __
+- **CP-G1-P3-E2** (Se repérer dans l'espace) : La souris suit le code . Dessine son chemin et colorie la case d'arrivée. — __
+- **CP-G1-P3-E3** (Se repérer dans l'espace) : Écris un code de flèches pour amener la souris au fromage. — __
+- **CP-G1-P3-E4** (Se repérer dans l'espace) : La souris suit le code . Dessine son chemin et colorie la case d'arrivée. — __
+- **CP-G1-P4-E1** (Se repérer dans l'espace) : Sur le plan, dessine un rond rouge sur la table du premier rang, près des fenêtres, et une croix bleue sur la  — __
+- **CP-G1-P4-E4** (Se repérer dans l'espace) : Trace sur le plan le chemin de la porte jusqu'au tableau, en passant entre les tables. — __
+- **CP-N3-P3-E4** (Les nombres jusqu'à 20) : Mia a une boîte de 10 crayons et encore 6 crayons. Hugo a 14 crayons. Qui a le plus de crayons ? — __
+- **CP-N4-P1-E7** (Ajouter, retirer : premiers problèmes) : Dessine 4 ronds rouges et 5 ronds bleus. Écris le calcul. — __
+- **CP-N4-P3-E4** (Ajouter, retirer : premiers problèmes) : Il y a 6 oiseaux sur l'arbre. 2 oiseaux s'envolent. Combien en reste-t-il ? Dessine, puis écris le calcul. — __
+- **CP-N4-P3-E5** (Ajouter, retirer : premiers problèmes) : Paul a 3 voitures. Il en reçoit 4 pour son anniversaire. Combien en a-t-il ? Dessine, puis écris le calcul. — __
+- **CP-N5-P1-E6** (Les nombres jusqu'à 59) : Dessine 26 avec des barres de dix et des cubes. — __
+- **CP-N5-P2-E3** (Les nombres jusqu'à 59) : Dessine 34 avec des barres de dix et des cubes. — __
+- **CP-N6-P2-E5** (Comparer et ranger les nombres) : Colorie sur la bande les cases 23, 27 et 30. — __
+- **CP-N7-P2-E1** (Doubles, moitiés et compléments à 10) : Partage les 8 jetons en deux parts égales : colorie la moitié en bleu. — __
+- **CP-N7-P2-E4** (Doubles, moitiés et compléments à 10) : Partage les 12 jetons en deux parts égales : colorie la moitié en bleu. — __
+- **CP-N7-P3-E3** (Doubles, moitiés et compléments à 10) : Colorie en bleu les jetons qui manquent pour remplir la boîte. — _ | _
+- **CP-M1-P1-E1** (Comparer des longueurs) : Entoure le crayon le plus long. — __
+- **CP-M1-P1-E2** (Comparer des longueurs) : Attention, ils ne partent pas du même endroit ! Entoure le plus long. — __
+- **CP-M1-P1-E3** (Comparer des longueurs) : Entoure le crayon le plus court. — __
+- **CP-M1-P1-E4** (Comparer des longueurs) : Attention, ils ne partent pas du même endroit ! Entoure le plus court. — __
+- **CP-M1-P2-E2** (Comparer des longueurs) : Dessine un trait plus long que le crayon et un trait plus court. — __
+- **CP-M1-P2-E4** (Comparer des longueurs) : Entoure le crayon aussi long que le crayon rouge A. — __
+- **CP-G2-P1-E1** (Carré, rectangle, triangle, disque) : Colorie : les triangles en jaune, les carrés en bleu, les rectangles en vert, les disques en rouge. — _ | _
+- **CP-G2-P2-E6** (Carré, rectangle, triangle, disque) : Dessine une forme qui a 3 côtés. Comment s'appelle-t-elle ? — __
+- **CP-G2-P3-E1** (Carré, rectangle, triangle, disque) : Reproduis le carré à côté du modèle. — __
+- **CP-G2-P3-E2** (Carré, rectangle, triangle, disque) : Reproduis le triangle à côté du modèle. — __
+- **CP-G2-P3-E3** (Carré, rectangle, triangle, disque) : Reproduis le rectangle à côté du modèle. — __
+- **CP-M2-P2-E3** (La monnaie : les euros) : Dessine deux façons de payer 12 €. — __
+- **CP-M2-P3-E6** (La monnaie : les euros) : Dessine l'argent pour payer 9 €. — __
+- **CP-N8-P1-E6** (Les nombres jusqu'à 100) : Dessine 72 avec des barres de dix et des cubes. — __
+- **CP-N9-P3-E4** (Ajouter et soustraire des dizaines) : Malo a 3 barres de dix et 4 cubes. On lui donne 2 barres de dix. Dessine, puis écris le calcul. — __
+- **CP-N10-P2-E3** (Soustraire en cassant une dizaine) : Recule sur la bande : 32 − 4. — __
+- **CP-N10-P3-E3** (Soustraire en cassant une dizaine) : Il y a 32 œufs. On en casse 5. Combien en reste-t-il ? Dessine les barres et les cubes, puis écris le calcul. — __
+- **CP-M3-P1-E2** (Lire l'heure : les heures entières) : Dessine les aiguilles. — _1234567891011122 h | 1234567891011125 h_
+- **CP-M3-P1-E4** (Lire l'heure : les heures entières) : Dessine les aiguilles. — _1234567891011124 h | 12345678910111212 h_
+- **CP-M3-P2-E5** (Lire l'heure : les heures entières) : Dessine les aiguilles une heure plus tard. — _123456789101112maintenant | 123456789101112une heure plus tard_
+- **CP-M3-P3-E3** (Lire l'heure : les heures entières) : Écris les 7 jours de la semaine, dans l'ordre. — __
+- **CP-M3-P3-E6** (Lire l'heure : les heures entières) : Range dans l'ordre de la journée : le soir, le matin, midi, l'après-midi. — __
+- **CP-N11-P1-E4** (Problèmes en deux étapes) : Il y a 5 canards sur l'étang. 4 canards arrivent, puis 2 s'en vont. Combien y a-t-il de canards ? Dessine, pui — _Étape 1 : | Étape 2 :_
+- **CP-N11-P3-E3** (Problèmes en deux étapes) : Lina a 15 €. Elle achète un livre à 6 € et un stylo à 4 €. Combien lui reste-t-il ? Complète les étapes. — _Étape 1 : 6 + 4 = | Étape 2 : 15 − =_
+- **CP-N11-P3-E4** (Problèmes en deux étapes) : Hugo a 8 €. Mamie lui donne 10 €. Il achète un jeu à 12 €. Combien lui reste-t-il ? Complète les étapes. — _Étape 1 : 8 + 10 = | Étape 2 : − 12 =_
+- **CP-M4-P2-E1** (Mesurer avec la règle) : Trace un trait de 6 cm (avec ta règle). — __
+- **CP-M4-P2-E2** (Mesurer avec la règle) : Trace un trait de 9 cm. — __
+- **CP-M4-P2-E3** (Mesurer avec la règle) : Trace un trait de 3 cm. — __
+- **CP-M4-P2-E4** (Mesurer avec la règle) : Trace un trait de 12 cm. — __
+- **CP-M4-P2-E5** (Mesurer avec la règle) : Ce trait mesure 5 cm. Prolonge-le pour qu'il mesure 8 cm. — __
+- **CP-M4-P3-E6** (Mesurer avec la règle) : Mesure les deux traits. Écris la longueur du plus long. — _012345678910 | 012345678910_
+- **CP-N12-P1-E1** (L'addition posée) : Calcule. — _23+15 | 41+36_
+- **CP-N12-P1-E2** (L'addition posée) : Pose et calcule. — _34 + 25 | 60 + 18_
+- **CP-N12-P1-E3** (L'addition posée) : Calcule. — _64+23 | 35+42_
+- **CP-N12-P2-E1** (L'addition posée) : Calcule (attention à la retenue). — _28+15 | 36+47_
+- **CP-N12-P2-E2** (L'addition posée) : Pose et calcule. — _45 + 38 | 17 + 66_
+- **CP-N12-P2-E3** (L'addition posée) : Calcule (attention à la retenue). — _18+26 | 47+35_
+- **CP-N13-P1-E1** (Des groupes égaux) : Combien de jetons ? Écris l'addition. — _+ + = | _
+- **CP-N13-P2-E1** (Des groupes égaux) : Partage les 12 bonbons dans les 3 sachets : dessine-les. — __
+- **CP-N13-P2-E3** (Des groupes égaux) : Partage les 8 bonbons dans les 2 sachets : dessine-les. — __
+- **CP-N13-P2-E4** (Des groupes égaux) : Partage les 15 billes dans les 3 sachets : dessine-les. — __
+- **CP-N13-P3-E4** (Des groupes égaux) : Dessine 4 vases de 3 fleurs. Combien y a-t-il de fleurs ? — __
+- **CP-G3-P1-E2** (Alignements et tracés sur quadrillage) : Trace à la règle le trait qui relie A et B, puis celui qui relie B et C. — __
+- **CP-G3-P2-E1** (Alignements et tracés sur quadrillage) : Reproduis la maison à droite. — __
+- **CP-G3-P2-E2** (Alignements et tracés sur quadrillage) : Reproduis l'escalier à droite. — __
+- **CP-G3-P2-E3** (Alignements et tracés sur quadrillage) : Reproduis le drapeau à droite. — __
+- **CP-G3-P3-E1** (Alignements et tracés sur quadrillage) : Termine le rectangle : 5 carreaux de long, 3 de large. — __
+- **CP-G3-P3-E2** (Alignements et tracés sur quadrillage) : Termine le carré. — __
+- **CP-G3-P3-E3** (Alignements et tracés sur quadrillage) : Termine le rectangle : 4 carreaux de long, 2 de large. — __
+- **CP-D1-P1-E2** (Tableaux et diagrammes en barres) : Dessine 9 bâtons, en faisant des paquets de 5. — __
+- **CP-D1-P1-E4** (Tableaux et diagrammes en barres) : Dessine 13 bâtons, en faisant des paquets de 5. — __
+- **CP-D1-P1-E5** (Tableaux et diagrammes en barres) : Fais un bâton pour chaque pomme. — __
+- **CP-D1-P2-E5** (Tableaux et diagrammes en barres) : Complète le tableau : il y a 5 garçons et 7 filles dans le groupe. — __
+- **CP-D1-P3-E2** (Tableaux et diagrammes en barres) : Colorie les barres : rouge 4, bleu 7, vert 2. — __
+- **CP-D1-P3-E3** (Tableaux et diagrammes en barres) : Colorie les barres : chat 5, chien 3, lapin 6. — __
+- **CP-D1-P4-E1** (Tableaux et diagrammes en barres) : Dessine dans chaque case la forme de la ligne, avec la couleur de la colonne. — __
+- **CP-M5-P1-E2** (Comparer des masses) : Que peux-tu dire ? Entoure. — __
+- **CP-M5-P2-E2** (Comparer des masses) : Le plus gros est-il toujours le plus lourd ? Entoure. — __
+- **CP-G4-P2-E7** (Les solides) : Colorie en rouge les solides qui roulent, en bleu ceux qui ne roulent pas. — _ | _
+- **CP-G5-P1-E1** (Coder un déplacement) : La souris suit le code . Trace le chemin et colorie la case d'arrivée. — __
+- **CP-G5-P1-E2** (Coder un déplacement) : La souris suit le code . Arrive-t-elle au fromage ? Entoure. — __
+- **CP-G5-P1-E3** (Coder un déplacement) : La souris suit le code . Trace le chemin et colorie la case d'arrivée. — __
+- **CP-G5-P1-E4** (Coder un déplacement) : La souris suit le code . Arrive-t-elle au fromage ? Entoure. — __
+- **CP-G5-P2-E1** (Coder un déplacement) : Écris un code pour amener la souris au fromage. — __
+- **CP-G5-P2-E2** (Coder un déplacement) : Écris un code qui évite l'arbre. — __
+- **CP-G5-P2-E3** (Coder un déplacement) : Écris un code pour amener la souris au fromage. — __
+- **CP-G5-P3-E1** (Coder un déplacement) : Ce code devait amener la souris au fromage : . Corrige-le. — __
+- **CP-G5-P3-E2** (Coder un déplacement) : Ce code devait amener la souris au fromage : . Corrige-le. — __
+- **CP-N14-P3-E3** (Ajouter 9, aller à la dizaine) : Avance sur la bande : 27 + 9. — __
+- **CP-N14-P3-E6** (Ajouter 9, aller à la dizaine) : Dans le tableau, colorie 14. Ajoute 9 : descends d'une case et recule d'une case. Colorie la case d'arrivée. — __
+- **CP-N15-P2-E3** (Problèmes : bilan de l'année) : Tom a 6 billes. Nina en a 3 de plus. Dessine les billes de Nina, puis complète. — __
+- **CP-N15-P3-E4** (Problèmes : bilan de l'année) : Dessine 3 paquets de 4 bonbons. Combien y a-t-il de bonbons ? — __
+- **CE1-N1-P3-E2** (Les nombres jusqu'à 100) : Place les points D (70), E (85) et F (95). — __
+- **CE1-N2-P1-E6** (Calcul mental : ajouter et soustraire) : Complète la table d'addition. — __
+- **CE1-N2-P2-E7** (Calcul mental : ajouter et soustraire) : Avance sur la bande : 57 + 6. — __
+- **CE1-G1-P1-E2** (Se repérer sur un quadrillage) : Colorie les cases A2, C4 et D1. — __
+- **CE1-G1-P1-E4** (Se repérer sur un quadrillage) : Dessine un rond en B3 et une étoile en D2. — __
+- **CE1-G1-P1-E5** (Se repérer sur un quadrillage) : Colorie les cases A1, B2, C3, D4 et E5. Que vois-tu ? — __
+- **CE1-G1-P2-E2** (Se repérer sur un quadrillage) : Écris le code pour aller de A4 à E1. — __
+- **CE1-G1-P2-E3** (Se repérer sur un quadrillage) : Il y a un trou dans la case B2. Écris un code pour aller de A1 à C3 sans tomber dans le trou. — __
+- **CE1-G1-P2-E5** (Se repérer sur un quadrillage) : Écris le code pour aller de C3 à A1. — __
+- **CE1-G1-P3-E4** (Se repérer sur un quadrillage) : Sur le plan du jardin, écris le code pour aller du banc (C2) à l'étoile (E1). — __
+- **CE1-N3-P1-E7** (Les nombres jusqu'à 1 000) : Dessine 243 avec des plaques, des barres et des cubes. — __
+- **CE1-N4-P1-E4** (Problèmes : ajouter, retirer, comparer) : Dessine le schéma, puis réponds : il y a 47 pommes rouges et 38 pommes vertes. Combien de pommes en tout ? — __
+- **CE1-N4-P2-E4** (Problèmes : ajouter, retirer, comparer) : Complète le tableau. — __
+- **CE1-N4-P2-E6** (Problèmes : ajouter, retirer, comparer) : Sur la bande, Max avait 47 points. Il en gagne 6. Combien en a-t-il ? — __
+- **CE1-N4-P3-E4** (Problèmes : ajouter, retirer, comparer) : Compte les cubes. Combien Lina a-t-elle de cubes de plus que Tom ? — _Tom : | Lina :_
+- **CE1-N6-P1-E1** (L'addition posée) : Calcule. — _324+152 | 451+237_
+- **CE1-N6-P1-E2** (L'addition posée) : Pose et calcule. — _612 + 75 | 43 + 254_
+- **CE1-N6-P1-E3** (L'addition posée) : Calcule. — _132+415 | 520+64_
+- **CE1-N6-P2-E1** (L'addition posée) : Calcule. — _247+136 | 358+271_
+- **CE1-N6-P2-E2** (L'addition posée) : Pose et calcule. — _389 + 147 | 76 + 58_
+- **CE1-N6-P2-E3** (L'addition posée) : Calcule. — _164+128 | 537+286_
+- **CE1-M1-P2-E1** (Longueurs : centimètre, mètre, kilomètre) : Trace un segment de 7 cm, puis un segment de 12 cm. — __
+- **CE1-M1-P2-E3** (Longueurs : centimètre, mètre, kilomètre) : Trace un segment de 4 cm, puis un segment de 10 cm. — __
+- **CE1-M1-P3-E6** (Longueurs : centimètre, mètre, kilomètre) : Mesure les deux segments. Combien le plus long mesure-t-il de plus ? — _012345678910 | 012345678910_
+- **CE1-G2-P1-E5** (Polygones et angle droit) : Dessine un polygone à 4 côtés qui n'est ni un carré ni un rectangle. — __
+- **CE1-G2-P2-E5** (Polygones et angle droit) : Trace un angle droit avec ton équerre et code-le. — __
+- **CE1-G2-P3-E1** (Polygones et angle droit) : Trace un carré de 3 carreaux de côté et un rectangle de 5 carreaux sur 2. — __
+- **CE1-G2-P3-E3** (Polygones et angle droit) : Termine le rectangle et le carré. — __
+- **CE1-G2-P4-E1** (Polygones et angle droit) : Écris sous chaque angle : aigu, droit ou obtus. — _ | _
+- **CE1-G2-P4-E3** (Polygones et angle droit) : Cette figure a 4 côtés. Est-ce un rectangle ? Explique. — __
+- **CE1-N7-P2-E1** (La multiplication : le signe ×) : Écris la multiplication et le nombre de jetons. — _× = | × =_
+- **CE1-N7-P2-E2** (La multiplication : le signe ×) : Dessine 4 rangées de 3 jetons. Écris la multiplication. — __
+- **CE1-N7-P2-E3** (La multiplication : le signe ×) : Écris la multiplication et le nombre de jetons. — _× = | × =_
+- **CE1-N7-P2-E5** (La multiplication : le signe ×) : Dessine 2 rangées de 6 jetons. Écris la multiplication. — __
+- **CE1-M2-P2-E2** (La monnaie : euros et centimes) : Écris deux façons de payer 25 € avec des billets et des pièces. — __
+- **CE1-M2-P2-E5** (La monnaie : euros et centimes) : Dessine l'argent pour payer 38 € avec le moins de billets et de pièces possible. — __
+- **CE1-N8-P1-E1** (Tables de multiplication de 2, 5 et 10) : Complète la table de 2. — __
+- **CE1-N8-P1-E5** (Tables de multiplication de 2, 5 et 10) : Écris la multiplication et le nombre de jetons. — _× = | × =_
+- **CE1-N8-P2-E1** (Tables de multiplication de 2, 5 et 10) : Complète la table de 5. — __
+- **CE1-N8-P2-E2** (Tables de multiplication de 2, 5 et 10) : Complète la table de 10. — __
+- **CE1-N8-P3-E6** (Tables de multiplication de 2, 5 et 10) : Complète le tableau. — __
+- **CE1-N8-P4-E2** (Tables de multiplication de 2, 5 et 10) : Entoure les nombres pairs. — __
+- **CE1-N9-P3-E3** (Les fractions : partager en parts égales) : Ces trois feuilles sont pareilles. Colorie \dfrac{1}{2} de chaque feuille, d'une façon différente à chaque foi — __
+- **CE1-M3-P1-E2** (Lire l'heure : demi-heures et quarts d'heure) : Dessine les aiguilles. — _1234567891011127 h 30 | 1234567891011122 h_
+- **CE1-M3-P1-E4** (Lire l'heure : demi-heures et quarts d'heure) : Dessine les aiguilles. — _1234567891011125 h 30 | 1234567891011128 h_
+- **CE1-M3-P2-E2** (Lire l'heure : demi-heures et quarts d'heure) : Dessine les aiguilles. — _1234567891011123 h 15 | 12345678910111210 h 45_
+- **CE1-M3-P4-E4** (Lire l'heure : demi-heures et quarts d'heure) : Dessine les aiguilles à l'heure de fin. — _123456789101112début, dure 1 heure | 123456789101112fin_
+- **CE1-D1-P1-E4** (Tableaux et diagrammes) : Complète le tableau : au CE1 C, 10 filles et 13 garçons ; au CE1 D, 15 filles et 9 garçons. — __
+- **CE1-D1-P3-E1** (Tableaux et diagrammes) : Construis les barres : pommes 8, poires 4, fraises 10, kiwis 2. — __
+- **CE1-D1-P3-E2** (Tableaux et diagrammes) : Lis le tableau, puis construis les barres. — __
+- **CE1-G3-P1-E3** (Cercle, milieu et points alignés) : Place un point C aligné avec A et B, puis un point D qui n'est pas aligné avec A et B. — __
+- **CE1-G3-P1-E4** (Cercle, milieu et points alignés) : Trace le segment [AB], puis la droite qui passe par C et D. — __
+- **CE1-G3-P2-E1** (Cercle, milieu et points alignés) : Plie ta feuille pour amener A sur B. Marque le milieu M du segment. — __
+- **CE1-G3-P3-E1** (Cercle, milieu et points alignés) : Trace le cercle de centre O qui passe par A. — _OA | OA_
+- **CE1-G3-P3-E2** (Cercle, milieu et points alignés) : Trace un cercle de centre O avec un écartement de 3 cm, puis un autre de même centre avec un écartement de 2 c — __
+- **CE1-G3-P3-E4** (Cercle, milieu et points alignés) : Reproduis la figure : un carré de 4 carreaux de côté et le cercle dont le centre est au milieu du carré. — __
+- **CE1-G3-P4-E5** (Cercle, milieu et points alignés) : Trace en rouge l'axe de symétrie de chaque figure. — _ | _
+- **CE1-G3-P5-E1** (Cercle, milieu et points alignés) : Complète la figure pour que la ligne rouge soit un axe de symétrie. — __
+- **CE1-G3-P5-E2** (Cercle, milieu et points alignés) : Complète la figure. — __
+- **CE1-G3-P5-E3** (Cercle, milieu et points alignés) : Complète la figure. — __
+- **CE1-G3-P5-E4** (Cercle, milieu et points alignés) : Complète la figure. — __
+- **CE1-G3-P6-E4** (Cercle, milieu et points alignés) : Complète la figure en comptant les carreaux. — __
+- **CE1-G3-P6-E5** (Cercle, milieu et points alignés) : Complète la figure. — __
+- **CE1-N11-P1-E1** (La soustraction posée) : Calcule. — _87−34 | 568−245_
+- **CE1-N11-P1-E2** (La soustraction posée) : Pose et calcule. — _459 − 128 | 674 − 53_
+- **CE1-N11-P1-E3** (La soustraction posée) : Calcule. — _96−43 | 875−532_
+- **CE1-N11-P2-E1** (La soustraction posée) : Calcule (casse une dizaine quand il le faut). — _62−27 | 453−128_
+- **CE1-N11-P2-E2** (La soustraction posée) : Pose et calcule. — _735 − 281 | 624 − 357_
+- **CE1-N11-P2-E3** (La soustraction posée) : Calcule. — _73−48 | 562−317_
+- **CE1-N11-P3-E4** (La soustraction posée) : Le car a 58 places. 39 enfants sont assis. Combien de places libres ? — __
+- **CE1-N11-P3-E5** (La soustraction posée) : Vérifie par une addition : 72 − 35 = 37. — __
+- **CE1-N12-P1-E1** (Tables de multiplication de 3 et 4) : Complète la table de 3. — __
+- **CE1-N12-P1-E5** (Tables de multiplication de 3 et 4) : Écris la multiplication et le nombre de jetons. — _× = | × =_
+- **CE1-N12-P2-E1** (Tables de multiplication de 3 et 4) : Complète la table de 4. — __
+- **CE1-N12-P2-E5** (Tables de multiplication de 3 et 4) : Écris la multiplication et le nombre de jetons. — _× = | × =_
+- **CE1-N12-P3-E5** (Tables de multiplication de 3 et 4) : Complète le tableau. — __
+- **CE1-G4-P4-E1** (Les solides : faces, arêtes, sommets) : Ce dessin est-il un patron de cube ? Entoure. — __
+- **CE1-G4-P4-E2** (Les solides : faces, arêtes, sommets) : Ce dessin est-il un patron de cube ? Entoure. — __
+- **CE1-N13-P2-E3** (Comparer, ajouter, retirer des fractions) : Colorie \dfrac{2}{8} en rouge, puis \dfrac{3}{8} en bleu. Quelle fraction de la bande est coloriée ? — __
+- **CE1-N13-P4-E2** (Comparer, ajouter, retirer des fractions) : Colorie le tiers des 12 jetons, puis le quart des 8 jetons. — __
+- **CE1-M5-P3-E7** (Les durées : heures et minutes) : Écris les mois qui ont 31 jours. — __
+- **CE1-G5-P1-E1** (Programmer des déplacements) : Écris avec des flèches le chemin du point rouge jusqu'à l'étoile. — __
+- **CE1-G5-P1-E2** (Programmer des déplacements) : Suis le code depuis le point rouge et dessine une étoile à l'arrivée. — __
+- **CE1-G5-P1-E3** (Programmer des déplacements) : Suis le code depuis le point rouge et dessine une étoile à l'arrivée. — __
+- **CE1-G5-P1-E4** (Programmer des déplacements) : Écris avec des flèches le chemin le plus court du point rouge jusqu'à l'étoile. — __
+- **CE1-G5-P2-E2** (Programmer des déplacements) : La tortue suit le programme. Dessine une croix sur sa case d'arrivée. — __
+- **CE1-G5-P2-E3** (Programmer des déplacements) : La tortue suit le programme. Dessine une croix sur sa case d'arrivée. — __
+- **CE1-G5-P3-E1** (Programmer des déplacements) : Écris un programme pour amener la tortue sur l'étoile (avance, tourne à gauche, tourne à droite). — __
+- **CE1-G5-P3-E3** (Programmer des déplacements) : Écris un programme pour amener la tortue sur l'étoile. — __
+- **CE1-N15-P1-E1** (Tables de multiplication de 6, 7, 8 et 9) : Complète la table de 6. — __
+- **CE1-N15-P1-E3** (Tables de multiplication de 6, 7, 8 et 9) : Complète la table de 7. — __
+- **CE1-N15-P2-E1** (Tables de multiplication de 6, 7, 8 et 9) : Complète la table de 8. — __
+- **CE1-N15-P2-E3** (Tables de multiplication de 6, 7, 8 et 9) : Complète la table de 9. — __
+- **CE1-N15-P3-E5** (Tables de multiplication de 6, 7, 8 et 9) : Complète le tableau. — __
+- **CE1-N16-P2-E6** (Problèmes : bilan de l'année) : Écris la multiplication et le nombre de jetons. — _× = | × =_
+- **CE1-N16-P3-E6** (Problèmes : bilan de l'année) : Mesure les deux segments. Combien mesurent-ils mis bout à bout ? — _012345678910 | 012345678910_
+- **CE2-G1-P2-E2** (Points, droites, segments) : Sur le quadrillage, place un point C aligné avec A et B, entre les deux. — __
+- **CE2-G1-P3-E3** (Points, droites, segments) : Sur le quadrillage, place le milieu I du segment qui va de E à F, et le milieu J du segment qui va de G à H. — __
+- **CE2-G1-P3-E4** (Points, droites, segments) : Reproduis la figure sur le quadrillage de droite. — _ | _
+- **CE2-N5-P1-E2** (La multiplication) : Combien de carreaux ? Écris deux multiplications. — _× = × = | × = × =_
+- **CE2-G2-P3-E2** (Polygones et quadrilatères) : Trace un rectangle de 5 carreaux sur 2, puis un triangle rectangle. — __
+- **CE2-G2-P3-E3** (Polygones et quadrilatères) : Entoure les triangles rectangles. — __
+- **CE2-G2-P3-E4** (Polygones et quadrilatères) : Termine le rectangle de 5 carreaux sur 2. — __
+- **CE2-G2-P3-E5** (Polygones et quadrilatères) : Termine le triangle rectangle. — __
+- **CE2-M3-P1-E2** (L'heure et les durées) : Dessine les aiguilles. — _1234567891011127 h 30 | 1234567891011122 h 15_
+- **CE2-D1-P2-E2** (Tableaux et diagrammes en barres) : Trace les barres qui manquent : Lou a lu 6 livres, Max 3 livres. — __
+- **CE2-G3-P1-E3** (Angle droit, cercle et constructions) : Code les angles droits de ce rectangle. — __
+- **CE2-G3-P3-E6** (Angle droit, cercle et constructions) : Termine le carré. — __
+- **CE2-G3-P3-E7** (Angle droit, cercle et constructions) : Termine le rectangle. — __
+- **CE2-N8-P1-E1** (La multiplication posée) : Calcule ces multiplications posées. — _43×2 | 124×3_
+- **CE2-N8-P2-E1** (La multiplication posée) : Calcule ces multiplications posées. — _34×12+ | 125×23+_
+- **CE2-G4-P1-E1** (La symétrie) : Trace en rouge les axes de symétrie de ces lettres. Attention : certaines n'en ont pas, d'autres en ont deux. — _A | F_
+- **CE2-G4-P1-E6** (La symétrie) : Trace en rouge l'axe de symétrie de chaque figure. — _ | _
+- **CE2-G4-P2-E1** (La symétrie) : Complète la figure pour qu'elle soit symétrique par rapport à l'axe rouge. — __
+- **CE2-G4-P2-E2** (La symétrie) : Même consigne, avec un axe horizontal. — __
+- **CE2-N11-P2-E3** (Comparer et additionner des fractions) : Colorie \dfrac{1}{4} en rouge, puis \dfrac{2}{4} en bleu sur la même bande. Quelle fraction est coloriée en to — _\dfrac{1}{4} + \dfrac{2}{4} =_
+- **CE2-N12-P3-E5** (Problèmes multiplicatifs) : Avec les chiffres 1, 2 et 3 (sans répéter), écris tous les nombres de 2 chiffres. — __
+- **CM1-G1-P2-E3** (Droites parallèles et perpendiculaires) : Avec ton équerre, trace la droite perpendiculaire à la droite (d) passant par le point A, puis celle passant p — _(d)A | (d)B_
+- **CM1-G1-P2-E6** (Droites parallèles et perpendiculaires) : Trace la droite parallèle à la droite (d) passant par le point N (avec deux perpendiculaires, ou avec la règle — __
+- **CM1-G2-P1-E4** (Construction de figures) : Avec ton compas, trace le cercle de centre O qui passe par le point A. — __
+- **CM2-G1-P1-E2** (Droites, segments et cercles) : Trace en rouge le segment [AB], en bleu la droite (BC), en vert la demi-droite [CD). — __
+- **CM2-G1-P2-E2** (Droites, segments et cercles) : Trace la droite perpendiculaire à la droite (d) passant par le point M. — __
+- **CM2-G1-P2-E3** (Droites, segments et cercles) : Trace la droite parallèle à la droite (d) passant par le point N. — __
+- **CM2-D2-P3-E2** (Organisation et gestion de données) : Une plante a été mesurée chaque semaine. Place les points du tableau dans le repère, puis relie-les.Semaine012 — __
+- **CM2-G3-P2-E1** (Programmes de construction) : Trace le segment [AB]. Trace la perpendiculaire à [AB] passant par B. Place le point C sur cette droite, 3 car — __
+- **CM2-G3-P2-E2** (Programmes de construction) : Place le point D pour que ABCD soit un carré (ses côtés suivent les diagonales des carreaux). Trace le carré. — __
+- **CM2-G4-P1-E1** (Symétrie axiale) : La droite rouge est un axe de symétrie. Termine chaque dessin. — _ | _
+- **CM2-G4-P1-E2** (Symétrie axiale) : Cette fois, l'axe de symétrie est horizontal. Termine chaque dessin. — _ | _
+- **CM2-G4-P1-E3** (Symétrie axiale) : Place les points A', B' et C', symétriques de A, B et C par rapport à la droite rouge (A' se lit « A prime »). — __
+- **CM2-G4-P2-E1** (Symétrie axiale) : L'axe rouge suit les diagonales des carreaux. Termine chaque dessin (un point et son symétrique sont de part e — _ | _
+- **CM2-G4-P2-E2** (Symétrie axiale) : Colorie les carreaux symétriques par rapport à l'axe rouge. — __
+- **CM2-G4-P2-E3** (Symétrie axiale) : Place les points A', B' et C', symétriques de A, B et C par rapport à l'axe rouge. — __
+- **CM2-G5-P3-E2** (Solides et repérage dans l'espace) : Pars de D et suis le chemin : → → → ↑ ↑ ← ↑ ↑ → →. Trace-le et marque l'arrivée A. — __
+- **CM2-D4-P1-E1** (Pensée informatique) : Le robot (triangle rouge) regarde vers le haut. Trace son chemin et marque l'arrivée.avancer de 2 tourner à dr — __
+- **CM2-D4-P2-E3** (Pensée informatique) : Le robot regarde vers la droite. Trace le chemin de ce programme.répéter 3 fois ( avancer de 2 tourner à gauch — __
+- **6e-G2-P4-E5** (Droites parallèles et perpendiculaires) : Dans le cadre, trace un triangle EFG. À l'équerre, trace la perpendiculaire à (EF) passant par G et la perpend — __
+- **6e-G1-P3-E4** (Distance et cercles) : Avec ton compas, trace le cercle de centre O qui passe par A, puis le cercle de diamètre [OA]. — __
+- **4e-N3-P3-E4** (Fractions : comparaison et addition) : Calcule. — _\dfrac{1}{2} + \dfrac{1}{3} + \dfrac{1}{6} = | \dfrac{5}{4} − \dfrac{1}{2} − \dfrac{1}{8} _
+- **4e-N4-P1-E3** (Fractions : multiplication et division) : Calcule avec les signes. — _\dfrac{−2}{3} × \dfrac{5}{7} = | \dfrac{−3}{4} × \dfrac{−8}{9} =_
+- **4e-N4-P3-E1** (Fractions : multiplication et division) : Donne l'inverse. — _de \dfrac{3}{4} : | de 5 :_
+- **4e-N4-P3-E2** (Fractions : multiplication et division) : Calcule et donne le résultat sous forme irréductible. — _\dfrac{2}{3} : \dfrac{4}{5} = | \dfrac{3}{7} : \dfrac{9}{14} =_
+- **4e-N4-P4-E1** (Fractions : multiplication et division) : Calcule en respectant les priorités. — _\dfrac{1}{2} + \dfrac{1}{2} × \dfrac{2}{3} = | ( \dfrac{1}{2} + \dfrac{1}{3} ) × \dfrac{6}_
+- **4e-D4-P2-E1** (Formules et graphiques) : Complète le tableau pour P = 30 + 5n. — __
+- **4e-D4-P2-E2** (Formules et graphiques) : Complète le tableau pour A = 260 − 4x². — __

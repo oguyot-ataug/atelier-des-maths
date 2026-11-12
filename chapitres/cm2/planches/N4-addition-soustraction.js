@@ -48,8 +48,8 @@ PLANCHES['cm2|Addition et soustraction'] = [
     exos: [
       { etoiles: 1, col: 1, consigne: 'Calcule (on commence par les parenthèses).',
         ...rmp([['(15 + 5) − 8 = @', 12], ['30 − (12 + 8) = @', 10], ['(7,5 + 2,5) − (3 + 1,5) = @', '5,5']]) },
-      { etoiles: 2, col: 1, consigne: 'Entoure le calcul qui correspond à la situation.',
-        ...chx([['Un livre à 12,50 € et un cahier à 3,20 € : combien en tout ?', '12,50 + 3,20', '12,50 + 3,20 · 12,50 − 3,20'], ['Un fil de 3 m, on en coupe 1,25 m : combien reste-t-il ?', '3 − 1,25', '3 + 1,25 · 3 − 1,25']]) },
+      { etoiles: 2, col: 1, consigne: 'Relie chaque situation au calcul qui la résout (deux calculs ne servent pas).',
+        ...P3.relier1(['Un livre à 12,50 € et un cahier à 3,20 € : combien en tout ?', 'Un fil de 3 m, on en coupe 1,25 m : combien reste-t-il ?'], ['12,50 − 3,20', '3 − 1,25', '12,50 + 3,20', '3 + 1,25'], [2, 1]) },
       { etoiles: 2, cahier: true, consigne: 'Une randonnée comporte trois étapes : 8,6 km, 12,35 km et 9,05 km. Quelle est la longueur totale ? Il reste 4,8 km après la deuxième étape pour arriver au refuge : à quel kilomètre se trouve le refuge depuis le départ ?',
         corr: cm1Redac('Longueur totale', { suite: ['8,6 + 12,35 = 20,95', '20,95 + 9,05 = 30'] }, 'La randonnée mesure 30 km.') + cm1Redac('Position du refuge', '20,95 + 4,8 = 25,75', 'Le refuge est à 25,75 km du départ.') },
       { etoiles: 3, cahier: true, consigne: 'Sur son compte, Hugo a 135,40 €. Il dépense 28,75 € puis 47,90 €, et reçoit 50 €. Combien a-t-il maintenant ?',

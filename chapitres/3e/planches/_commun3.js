@@ -126,6 +126,42 @@ const P3 = {
     return P3.svg(W, H, g, o.px || Math.min(W, 260)); },
 };
 
+// Outils de la relecture 5e N1a (11/11/2026), généralisés aux autres planches le 12/11/2026 :
+// « Calculer c'est pouvoir détailler les calculs » : une lettre par calcul, une étape par ligne ; = ou ≠ et mots en case
+// à cliquer ; relier une phrase à son expression. Tout se fait aussi à l'écran (planches-num.js).
+// Calcul détaillé en colonne : [[lettre, expression, étape…, résultat], …] ; l'élève écrit une étape par ligne.
+P3.enHaut = h => h.replace('class="pl-grille" style="', 'class="pl-grille" style="align-items:start;');
+P3.ET = (n, e, et, rep) => `<div style="line-height:2;white-space:nowrap;">${n} = ${e}${et.map(x => `<br>${n} = ${rep(x)}`).join('')}</div>`;
+// Sans cols : deux colonnes si les calculs sont courts (au plus 18 caractères), sinon une (exercice en demi-largeur).
+// Longueur à l'écran d'un calcul (balises retirées, une fraction LaTeX compte comme son plus long terme).
+P3.lgVis = s => String(s).replace(/<[^>]+>/g, '').replace(/\\dfrac\{([^}]*)\}\{([^}]*)\}/g, (m, a, b) => 'x'.repeat(Math.max(a.length, b.length) + 1)).replace(/\\[a-z]+/g, 'x').length;
+P3.etpCols = l => Math.max(...l.map(([n, e]) => P3.lgVis(n + ' = ' + e))) <= 18 ? 2 : 1;
+P3.etp = (l, cols) => { const c = cols || P3.etpCols(l);
+  return { eleve: P3.enHaut(plGrille(l.map(([n, e, ...et]) => P3.ET(n, e, et, x => P3.B(Math.max(5, Math.ceil(P3.lgVis(x) * .85))))), c)),
+    corr: P3.enHaut(plGrille(l.map(([n, e, ...et]) => P3.ET(n, e, et, P3.R)), c)) }; };
+// Case à cliquer (chaque clic passe au choix suivant) : [['texte avec @', réponse], …], choix 'a|b|c'.
+P3.bsc = (l, choix, cols) => { const el = l.map(([t]) => t.replace('@', plCase(choix))), co = l.map(([t, r]) => t.replace('@', P3.R(r)));
+  return cols ? { eleve: plGrille(el, cols), corr: plGrille(co, cols) } : { eleve: plListe(el), corr: plListe(co) }; };
+// « Complète par = ou ≠ » : [['membre de gauche', 'membre de droite', vrai ?], …].
+P3.egal = (l, cols) => P3.bsc(l.map(([a, b, v]) => [`${a} @ ${b}`, v ? '=' : '≠']), '=|≠', cols);
+P3.VERT = '#1F7A4D';
+// Relier : phrases à gauche (G), expressions à droite (D), att[i] = indice dans D de la réponse de G[i].
+// o = { W: largeur, xg: abscisse des points de gauche, ecart: entre les deux colonnes de points, fs: taille des expressions,
+// n: caractères par ligne à gauche }. P3.relier1 : réglages d'un exercice en demi-largeur ({ col: 1 }).
+// Exposants écrits en caractères (x², 10⁻⁶) : dessinés en vrai exposant dans le SVG (le signe « ⁻ » des polices est trop large).
+P3.svgExp = t => String(t).replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹⁻]+/g, m => `<tspan baseline-shift="super" font-size="72%">${[...m].map(c => '0123456789−'['⁰¹²³⁴⁵⁶⁷⁸⁹⁻'.indexOf(c)]).join('')}</tspan>`);
+P3.relier = (G, D, att, o) => { o = o || {};
+  const coupe = (t, n) => { const m = []; let l = ''; t.split(' ').forEach(w => { if((l + ' ' + w).trim().length > n){ m.push(l); l = w; } else l = (l + ' ' + w).trim(); }); if(l) m.push(l); return m; };
+  const LG = G.map(t => coupe(t, o.n || 46)), h = o.h || Math.max(30, Math.max(...LG.map(l => l.length)) * 15 + 10);
+  const W = o.W || 640, H = Math.max(G.length, D.length) * h + 8, xg = o.xg || 392, xd = xg + (o.ecart || 60), yy = i => 4 + h * i + h / 2;
+  const tg = LG.map((ls, i) => ls.map((l, k) => `<text x="6" y="${(yy(i) + 5 + (k - (ls.length - 1) / 2) * 15).toFixed(1)}" font-size="14" fill="#1C2B39">${P3.svgExp(l)}</text>`).join('')).join('');
+  const td = D.map((t, j) => `<text x="${xd + 16}" y="${yy(j) + 6}" font-size="${o.fs || 16}" fill="#1C2B39">${P3.svgExp(t)}</text>`).join('');
+  const pts = G.map((_, i) => `<circle cx="${xg}" cy="${yy(i)}" r="4.5" fill="#1F3A5C"/>`).join('') + D.map((_, j) => `<circle cx="${xd}" cy="${yy(j)}" r="4.5" fill="#1F3A5C"/>`).join('');
+  const svg = sol => `<svg class="pl-libre" viewBox="0 0 ${W} ${H}" style="width:${W}px;max-width:100%;display:block;" font-family="Inter, Arial, sans-serif">${tg}${td}${sol}${pts}</svg>`;
+  return { eleve: plX(svg(''), { t: 'relier', g: G.map((_, i) => [xg, yy(i)]), d: D.map((_, j) => [xd, yy(j)]), xm: (xg + xd) / 2, h, att }),
+    corr: svg(att.map((j, i) => `<line x1="${xg}" y1="${yy(i)}" x2="${xd}" y2="${yy(j)}" stroke="${P3.VERT}" stroke-width="2.4"/>`).join('')) }; };
+P3.relier1 = (G, D, att, o) => P3.relier(G, D, att, Object.assign({ W: 340, xg: 186, ecart: 40, n: 24, fs: 15 }, o || {}));
+
 // Illustrations des problèmes concrets : bibliothèque commune (chapitres/planches-dessins.js).
 P3.illu = plIllu;
 P3.D = PL_DESSINS;
