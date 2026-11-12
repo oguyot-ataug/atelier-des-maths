@@ -107,12 +107,53 @@ function famMsg(id, text, ok){
   el.innerHTML = text ? `<span style="color:${ok?'#1E7B34':'#B3261E'};">${famEsc(text)}</span>` : '';
 }
 
+/* ---------- Famille d'olives (demandé le 12/11/2026 : « On peut faire une famille d'Olives ? ») ----------
+   Deux grandes olives (verte, noire) et deux petites (dorée, cuivrée), aux teintes d'Oliv'IA (OLIV_TEINTES,
+   olivia-deco.js), qui se tiennent par la main ; la plus petite fait coucou. Même dessin que olivPoseSvg (corps,
+   reflet, feuille, yeux, joues, sourire), à des tailles différentes, pieds alignés. */
+function famOlivesSvg(){
+  const TE = (typeof OLIV_TEINTES !== 'undefined' && OLIV_TEINTES) || {};
+  const tt = n => TE[n] || { f: '#8DB84A', e: '#4F6B2A' };
+  const SOL = 150, membres = [
+    { x: 62, s: 1.0, t: 'verte', clin: false }, { x: 152, s: .66, t: 'doree', clin: true },
+    { x: 232, s: .95, t: 'noire', clin: false }, { x: 310, s: .56, t: 'cuivree', clin: false, coucou: true } ];
+  const olive = m => { const T = tt(m.t), E = T.e, tx = m.x - 60 * m.s, ty = SOL - 108 * m.s;
+    return `<g transform="translate(${tx.toFixed(1)} ${ty.toFixed(1)}) scale(${m.s})">
+      <path d="M60 20 q-2 -9 4 -14" stroke="${E}" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M64 8 C 74 -1, 88 3, 92 10 C 82 16, 72 15, 64 8 Z" fill="#7BAE4F" stroke="${E}" stroke-width="1.5"/>
+      <ellipse cx="60" cy="66" rx="34" ry="42" fill="${T.f}" stroke="${E}" stroke-width="3.5"/><ellipse cx="47" cy="46" rx="8" ry="13" fill="#fff" opacity=".35" transform="rotate(-20 47 46)"/>
+      <circle cx="47" cy="62" r="11" fill="#fff" stroke="#2C3A1A" stroke-width="2.5"/><circle cx="49" cy="64" r="5.5" fill="#1C2B39"/><circle cx="51" cy="61.5" r="1.8" fill="#fff"/>
+      ${m.clin ? '<path d="M64 63 Q73 57 82 63" stroke="#2C3A1A" stroke-width="3" fill="none" stroke-linecap="round"/>'
+        : '<circle cx="73" cy="62" r="11" fill="#fff" stroke="#2C3A1A" stroke-width="2.5"/><circle cx="75" cy="64" r="5.5" fill="#1C2B39"/><circle cx="77" cy="61.5" r="1.8" fill="#fff"/>'}
+      <circle cx="36" cy="82" r="5" fill="#F4A7B9" opacity=".9"/><circle cx="84" cy="82" r="5" fill="#F4A7B9" opacity=".9"/>
+      <path d="M50 84 Q60 92 70 84" stroke="#2C3A1A" stroke-width="3.5" fill="none" stroke-linecap="round"/></g>`; };
+  // Point d'attache d'un bras (épaule) en coordonnées de la figure : côté gauche (c = -1) ou droit (c = 1).
+  const epaule = (m, c) => [m.x + c * 31 * m.s, SOL - 108 * m.s + 74 * m.s];
+  const bras = [], mains = [];
+  for(let j = 0; j < membres.length - 1; j++){
+    const A = membres[j], B = membres[j + 1], [x1, y1] = epaule(A, 1), [x2, y2] = epaule(B, -1);
+    const mx = (x1 + x2) / 2, my = Math.max(y1, y2) + 12;
+    bras.push(`<path d="M${x1.toFixed(1)} ${y1.toFixed(1)} Q${((x1 + mx) / 2).toFixed(1)} ${(my + 4).toFixed(1)} ${mx.toFixed(1)} ${my.toFixed(1)}" stroke="${tt(A.t).e}" stroke-width="3.6" fill="none" stroke-linecap="round"/>`
+      + `<path d="M${x2.toFixed(1)} ${y2.toFixed(1)} Q${((x2 + mx) / 2).toFixed(1)} ${(my + 4).toFixed(1)} ${mx.toFixed(1)} ${my.toFixed(1)}" stroke="${tt(B.t).e}" stroke-width="3.6" fill="none" stroke-linecap="round"/>`);
+    mains.push(`<circle cx="${(mx - 2.5).toFixed(1)}" cy="${my.toFixed(1)}" r="4.2" fill="${tt(A.t).e}"/><circle cx="${(mx + 2.5).toFixed(1)}" cy="${my.toFixed(1)}" r="4.2" fill="${tt(B.t).e}"/>`);
+  }
+  // Bras libres : la première olive bras le long du corps, la dernière fait coucou.
+  { const m = membres[0], [x, y] = epaule(m, -1); bras.push(`<path d="M${x} ${y} q-13 5 -15 17" stroke="${tt(m.t).e}" stroke-width="3.8" fill="none" stroke-linecap="round"/><circle cx="${x - 15}" cy="${y + 18}" r="4.3" fill="${tt(m.t).e}"/>`); }
+  { const m = membres[membres.length - 1], [x, y] = epaule(m, 1), E = tt(m.t).e;
+    bras.push(`<path d="M${x.toFixed(1)} ${y.toFixed(1)} q11 -6 12 -24" stroke="${E}" stroke-width="3.4" fill="none" stroke-linecap="round"/><circle cx="${(x + 12).toFixed(1)}" cy="${(y - 25).toFixed(1)}" r="4" fill="${E}"/>`
+      + `<path d="M${(x + 19).toFixed(1)} ${(y - 33).toFixed(1)} q4 4 3 9 M${(x + 23).toFixed(1)} ${(y - 37).toFixed(1)} q6 6 4 14" stroke="#9AA3AE" stroke-width="2" fill="none" stroke-linecap="round"/>`); }
+  return `<svg class="fam-olives" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 160" role="img" aria-label="Une famille d'olives qui se tiennent par la main">
+    <ellipse cx="185" cy="${SOL + 3}" rx="170" ry="6" fill="#1C2B39" opacity=".07"/>${bras.join('')}${membres.map(olive).join('')}${mains.join('')}</svg>`;
+}
+
 /* ---------- Présentation + inscription (visiteur) ---------- */
 function famPresentationHtml(){
   return `
   <div class="fam-hero">
-    <h1 style="margin:0 0 6px;"><span class="gicon">family_restroom</span> L'Atelier des Maths en famille</h1>
-    <p style="margin:0;max-width:72ch;">Les cours, méthodes et exercices du CP à la 3e, les automatismes et Objectif Nombre, avec un compte pour chaque enfant et un suivi pour vous.</p>
+    <div class="fam-hero-txt">
+      <h1 style="margin:0 0 6px;"><span class="gicon">family_restroom</span> L'Atelier des Maths en famille</h1>
+      <p style="margin:0;max-width:72ch;">Les cours, méthodes et exercices du CP à la 3e, les automatismes et Objectif Nombre, avec un compte pour chaque enfant et un suivi pour vous.</p>
+    </div>
+    ${famOlivesSvg()}
   </div>
   ${typeof venteOuverte === 'function' && !venteOuverte(false) ? famVenteFermeeHtml() : `<div class="fam-offres">
     <div class="fam-offre"><b>1 niveau</b><span class="fam-prix">${famPrixTxt(famGrille['1'])}</span><small>par année scolaire</small></div>
@@ -580,7 +621,10 @@ async function famSupprimerCompte(){
 (function famStyles(){
   const st = document.createElement('style');
   st.textContent = `
-    .fam-hero{background:linear-gradient(135deg,#FFF4E0,#E8F1FB);border-radius:14px;padding:18px 20px;margin:6px 0 14px;}
+    .fam-hero{background:linear-gradient(135deg,#FFF4E0,#E8F1FB);border-radius:14px;padding:18px 20px;margin:6px 0 14px;display:flex;align-items:center;gap:18px;}
+    .fam-hero-txt{flex:1 1 auto;min-width:0;}
+    .fam-olives{flex:0 0 auto;width:270px;height:auto;display:block;margin:-6px 0 -10px;}
+    @media (max-width:720px){ .fam-hero{flex-direction:column;align-items:stretch;} .fam-olives{width:min(260px,80%);margin:4px auto -6px;} }
     .fam-offres{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 12px;}
     .fam-offre{flex:1 1 150px;background:#fff;border:1.5px solid rgba(28,43,57,.12);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:2px;}
     .fam-offre b{font-family:'Space Grotesk',sans-serif;}

@@ -3987,6 +3987,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1426', date:'2026-11-12', items:[
+    "Offre Famille : une famille d'olives dans le bandeau -- demandé : « On peut faire une famille d'Olives ? ». Deux grandes olives (verte, noire) et deux petites (dorée, cuivrée), aux teintes d'Oliv'IA, se tiennent par la main ; la plus petite fait coucou. À droite du titre sur ordinateur, sous le texte sur téléphone."
+  ]},
   { version:'2026-08-19.1425', date:'2026-11-12', items:[
     "Le Manuel ouvert aux enfants des comptes Famille -- demandé : « En famille, les élèves ont bien accès aux exercices des manuels ? », puis « oui » (entraînement, correction après un essai, suivi du parent). Onglet « Manuel » de chaque chapitre : les exercices marqués « à l'écran » se font directement (Vérifier, Effacer, réponses gardées pour reprendre), les autres « dans ton cahier » (« J'ai fini dans mon cahier ») ; la correction s'ouvre seulement après un essai ; « Autre version » pour s'entraîner encore ; ni impression, ni projection. Espace famille › Suivi : les exercices du manuel de chaque enfant (meilleur résultat, nombre d'essais, correction vue). Les élèves des classes ne changent pas."
   ]},
