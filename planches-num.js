@@ -226,7 +226,8 @@ function plNumAnalyser(x){
       // Case qui doit rester vide (opération à poser soi-même dans une grille plus large que nécessaire, relecture
       // CE2-N3-P1-E3 du 03/11/2026 : « c'est à l'élève de poser les nombres dans les cases ; faire plus de cases que prévues ») :
       // elle ne compte pas dans le score ; remplie à tort, elle est marquée fausse.
-      if(r.hasAttribute('data-vide')){ tr.outerHTML = `<button type="button" class="pn-case pn-signe" data-pn="${id}" data-pnv="${id}"></button>`; cibles.push({ type: 'vide', id }); continue; }
+      // Case à choix qui doit rester vide (case à cocher d'un tableau, relecture 5e-G2-P6-E2 du 12/11/2026) : même bascule au clic.
+      if(r.hasAttribute('data-vide')){ tr.outerHTML = `<button type="button" class="pn-case pn-signe" data-pn="${id}" data-pnv="${id}"${tr.dataset.plchoix ? ` data-pnchoix="${tr.dataset.plchoix.replace(/"/g, '&quot;')}"` : ''}></button>`; cibles.push({ type: 'vide', id }); continue; }
       if(r.dataset.entre){ const [a, b] = r.dataset.entre.split('|').map(plNumVal); // réponse ouverte : un nombre entre a et b
         tr.outerHTML = `<button type="button" class="pn-case" data-pn="${id}" data-pnv="${id}" style="min-width:${Math.min(320, r.textContent.trim().length * 12 + 26)}px"></button>`;
         cibles.push({ type: 'entre', id, rep: [a, b] }); continue; }
@@ -384,8 +385,12 @@ function plNum(root, x, o){
     // d'espaces (« 3 × 5 ») ; « 3*5 », « 3 * 5 », « 3×5 » et « 3x5 » sont tous acceptés à la vérification (plNumNorm).
     if(t === '*' || ((t === 'x' || t === 'X') && plClavier.mode === '123')) t = '×';
     else if(t === '-') t = '−';
+    // Tous les signes opératoires, pas seulement « × », sont entourés d'espaces quand ils suivent un nombre ou une parenthèse
+    // (relecture 5e-N1a-P4-E3 du 12/11/2026 : « Tu encadres * d'espaces automatiquement, peut-on faire la même chose pour les
+    // autres signes opératoires ? ») ; un « − » en tête ou après « ( » reste collé (nombre négatif). La vérification ignore les espaces.
     if(t === '×' && /[\d)a-z]$/i.test(v)){ v = v.replace(/\s+$/, '') + ' × '; etat.v[sel] = v; effacerMarques(); afficher(); change(); return; }
-    if(t === '⌫' && / × $/.test(v)) v = v.slice(0, -3);
+    if(/^[+−:=<>]$/.test(t) && /[\d)]\s*$/.test(v)){ v = v.replace(/\s+$/, '') + ` ${t} `; etat.v[sel] = v; effacerMarques(); afficher(); change(); return; }
+    if(t === '⌫' && / [×+−:=<>] $/.test(v)) v = v.slice(0, -3);
     else if(t === '⌫') v = v.slice(0, -1);
     else if(t === 'ok'){ const els = [...root.querySelectorAll('[data-pnv]')], b = els.find(z => z.dataset.pnv === sel);
       if(b && b.hasAttribute('data-pnsuiv')){ // opération posée : ordre du calcul, puis la case qui suit l'opération

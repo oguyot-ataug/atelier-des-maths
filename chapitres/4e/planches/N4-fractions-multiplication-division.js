@@ -73,7 +73,7 @@ PLANCHES['4e|Fractions : multiplication et division'] = [
       { etoiles: 3, cahier: true, consigne: `Un ruban mesure ${T(5, 2)} m. On en coupe ${T(2, 5)}, puis on partage le reste en 3 morceaux égaux. Quelle est la longueur d'un morceau ?`,
         corr: cm1Redac('Longueur coupée', `${F(2, 5)} × ${F(5, 2)} = 1`, 'On coupe 1 m.') + cm1Redac('Longueur restante', `${F(5, 2)} − 1 = ${F(3, 2)}`, `Il reste ${F(3, 2)} m.`) + cm1Redac('Longueur d\'un morceau', `${F(3, 2)} : 3 = ${F(3, 2)} × ${F(1, 3)} = ${F(1, 2)}`, 'Un morceau mesure un demi-mètre, soit 50 cm.') },
       { etoiles: 3, cahier: true, consigne: `Un réservoir de 60 L est plein aux ${T(5, 6)}. On en utilise les ${T(2, 5)}. Combien de litres reste-t-il dans le réservoir ?`,
-        corr: cm1Redac('Contenu au départ', `${F(5, 6)} × 60 = 50`, 'Le réservoir contient 50 L.') + cm1Redac('Litres utilisés', `${F(2, 5)} × 50 = 20`, 'On utilise 20 L.') + cm1Redac('Litres restants dans le réservoir', '50 − 20 = 30', 'Il reste 30 L dans le réservoir.') },
+        corr: cm1Redac('Volume d\'eau au départ', `${F(5, 6)} × 60 = 50`, 'Le réservoir contient 50 L.') + cm1Redac('Volume utilisé', `${F(2, 5)} × 50 = 20`, 'On utilise 20 L.') + cm1Redac('Volume restant dans le réservoir', '50 − 20 = 30', 'Il reste 30 L dans le réservoir.') },
     ] },
 ];
 })();

@@ -256,8 +256,12 @@ function plTdRendre(lvl, c){
     else if(t.closest('[data-tdorig]')){ const [i, k] = t.closest('[data-tdorig]').dataset.tdorig.split('|').map(Number); plTdAutre(lvl, c, i, k, 0); }
     else if(t.closest('[data-tdfiche]')){ const [i, k] = t.closest('[data-tdfiche]').dataset.tdfiche.split('|').map(Number); plRepetition(lvl, c, i, k); }
     else if(co){ const [i, k] = co.dataset.tdcorr.split('|').map(Number), x = plTdX(lvl, c, i, k), v = document.getElementById(`tdv-${i}-${k}`), on = !v.classList.contains('corr');
+      // Les lignes gardent la hauteur de l'énoncé : une fraction à compléter (deux cases) est plus haute que la fraction écrite
+      // du corrigé (relecture 5e-N4-P4-E1, E2, E6 du 12/11/2026 : « En mode correction, les lignes se réduisent ! »).
+      const lignes = () => [...v.querySelectorAll('.pl-corps li, .pl-corps .pl-item')], avant = on ? lignes().map(e => e.offsetHeight) : null;
       v.classList.toggle('corr', on); v.querySelector('.pl-corps').innerHTML = plExoCorps(x, on); co.innerHTML = on ? '<span class="gicon">visibility_off</span> Énoncé' : '<span class="gicon">fact_check</span> Correction';
-      if(typeof renderStaticMath === 'function') renderStaticMath(v); }
+      if(typeof renderStaticMath === 'function') renderStaticMath(v);
+      const L = avant ? lignes() : []; if(L.length === avant?.length) L.forEach((e, j) => { const d = avant[j] - e.offsetHeight; if(d > 2){ e.style.paddingTop = (d / 2) + 'px'; e.style.paddingBottom = (d / 2) + 'px'; } }); }
     else if(ca){ const [i, k] = ca.dataset.tdcahier.split('|').map(Number); plAjouterCahier(lvl, c, i, k, ca, plTdV[plTdCle(lvl, c, i, k)]); }
     else if(t.closest('[data-tdsess]')){ const b = t.closest('[data-tdsess]'), [i, k] = b.dataset.tdsess.split('|').map(Number); plAjouterSession(lvl, c, i, k, b, plTdV[plTdCle(lvl, c, i, k)]); }
   };

@@ -5,6 +5,7 @@
    ligne : « Calculer c'est pouvoir détailler les calculs ») ; cases à cliquer à l'écran (mots, signes, = ou ≠) ; relier une
    phrase à son expression et placer des parenthèses sans réécrire le calcul (outils « relier » et « parenth », planches-num.js) ;
    « avec r < b » dans la division euclidienne ; ordre de grandeur à écrire ; plus d'exemples.
+   Relecture du 12/11/2026 : factoriser « 25 × (3 + 1) » ; places des parenthèses resserrées sur le papier.
    ============================================================ */
 (() => {
 const B = n => plPointilles(n || 3), R = v => plRep(String(v));
@@ -38,10 +39,12 @@ const parenth = lignes => {
   const fs = 17, h = 33, p = [], att = {}; let txt = '', W = 0;
   lignes.forEach(([jetons, ouv, ferm], r) => { let x = 8, eg = false; const y = 26 + r * h;
     jetons.forEach((t, k) => { if(t === '=') eg = true; const nb = /^\d/.test(t) && !eg;
-      if(nb){ x += 7; p.push([x, y, '(']); if(k === ouv) att[p.length - 1] = 1; x += 7; }
+      // Place d'une parenthèse : 4 unités de part et d'autre (relecture 5e-N1a-P2-E4 du 12/11/2026 : « L'espace sur le papier pour les
+      // parenthèses est trop exagéré », 7 auparavant).
+      if(nb){ x += 4; p.push([x, y, '(']); if(k === ouv) att[p.length - 1] = 1; x += 5; }
       const w = t.length * fs * .6 + (nb ? 0 : 8);
       txt += `<text x="${(x + w / 2).toFixed(1)}" y="${y}" text-anchor="middle" font-size="${fs}" fill="#1C2B39">${t}</text>`; x += w;
-      if(nb){ x += 7; p.push([x, y, ')']); if(k === ferm) att[p.length - 1] = 1; x += 7; }
+      if(nb){ x += 5; p.push([x, y, ')']); if(k === ferm) att[p.length - 1] = 1; x += 4; }
       x += 5; }); W = Math.max(W, x + 8); });
   const H = 8 + lignes.length * h, svg = sol => `<svg class="pl-libre" viewBox="0 0 ${Math.ceil(W)} ${H}" style="width:${Math.ceil(W)}px;max-width:100%;display:block;" font-family="Inter, Arial, sans-serif">${txt}${sol}</svg>`;
   return { eleve: plX(svg(''), { t: 'parenth', p, att, fs }),
@@ -118,7 +121,7 @@ PLANCHES['5e|Opérations sur les nombres décimaux'] = [
       { etoiles: 1, col: 1, consigne: 'Complète pour développer.',
         ...rmp([['7 × (10 + 3) = 7 × 10 + 7 × @', 3], ['5 × (20 − 1) = 5 × 20 − 5 × @', 1], ['(8 + 2) × 4 = 8 × 4 + @ × 4', 2], ['6 × (100 + 5) = @ + 30', 600]], 3) },
       { etoiles: 1, col: 1, consigne: 'Complète pour factoriser.',
-        ...rmp([['9 × 4 + 9 × 6 = 9 × (4 + @)', 6], ['13 × 7 − 13 × 2 = @ × (7 − 2)', 13], ['4,5 × 8 + 5,5 × 8 = (4,5 + 5,5) × @', 8], ['25 × 3 + 25 × 1 = 25 × @', 4]], 3) },
+        ...rmp([['9 × 4 + 9 × 6 = 9 × (4 + @)', 6], ['13 × 7 − 13 × 2 = @ × (7 − 2)', 13], ['4,5 × 8 + 5,5 × 8 = (4,5 + 5,5) × @', 8], ['25 × 3 + 25 × 1 = 25 × (@)', '3 + 1']], 4) }, // relecture 5e-N1a-P4-E2 du 12/11/2026 : factoriser, donc (3 + 1), pas 4
       { etoiles: 2, consigne: 'Calcule astucieusement, en détaillant toutes les étapes (une par ligne).',
         ...etp([['A', '12 × 101', '12 × (100 + 1)', '12 × 100 + 12 × 1', '1 200 + 12', '1 212'], ['B', '25 × 99', '25 × (100 − 1)', '25 × 100 − 25 × 1', '2 500 − 25', '2 475'],
           ['C', '3,7 × 8 + 6,3 × 8', '(3,7 + 6,3) × 8', '10 × 8', '80']], 3) },

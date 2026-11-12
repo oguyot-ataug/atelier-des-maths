@@ -201,8 +201,14 @@ PLANCHES['5e|Angles et parallélisme'] = [
           const tb = (L, corr) => `<table style="border-collapse:collapse;width:100%;"><tr><th></th>${O.map(o => `<th style="font-size:.78em;font-weight:600;color:#5B6472;padding:0 3px 3px;text-align:center;">${o}</th>`).join('')}</tr>`
             + L.map(([t, r]) => `<tr style="border-top:1px solid #E3E8EF;"><td style="white-space:nowrap;padding:4px 6px 4px 0;">${t.replace(' :', '')}</td>${O.map((o, i) => `<td style="text-align:center;font-size:1.15em;">${corr && i === r ? '<span class="pl-rep">☑</span>' : '☐'}</td>`).join('')}</tr>`).join('') + '</table>';
           const g = corr => `<div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 22px;">${tb(l.slice(0, 4), corr)}${tb(l.slice(4), corr)}</div>`;
+          // À l'écran aussi des cases à cocher (relecture 5e-G2-P6-E2 du 12/11/2026 : « Pourquoi ne pas mettre des cases à cocher
+          // (ou bouton radio) également à l'écran ? ») : un clic coche ✓, un autre décoche ; les cases à laisser vides comptent faux si cochées.
+          const tbE = (L, corr) => `<table style="border-collapse:collapse;width:100%;"><tr><th></th>${O.map(o => `<th style="font-size:.78em;font-weight:600;color:#5B6472;padding:0 3px 3px;text-align:center;">${o}</th>`).join('')}</tr>`
+            + L.map(([t, r]) => `<tr style="border-top:1px solid #E3E8EF;"><td style="white-space:nowrap;padding:4px 6px 4px 0;">${t.replace(' :', '')}</td>${O.map((o, i) => `<td style="text-align:center;">${corr ? (i === r ? plRep('✓') : '<span class="pl-rep" data-vide></span>') : plCase('✓')}</td>`).join('')}</tr>`).join('') + '</table>';
+          const gE = corr => `<div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 22px;">${tbE(l.slice(0, 4), corr)}${tbE(l.slice(4), corr)}</div>`;
+          void ec;
           return { eleve: g(false), corr: g(true),
-            ecran: ec }; })() },
+            ecran: { eleve: gE(false), corr: gE(true) } }; })() },
       { etoiles: 3, cahier: true, consigne: 'Pour aller plus loin : deux angles sont complémentaires et l\'un est le double de l\'autre. Quelles sont leurs mesures ?',
         // Relecture du 03/11/2026 : « un dessin à main levée avec â et 2â dans la correction uniquement ».
         corr: `<div style="text-align:center;">${(() => { const V = [30, 100];

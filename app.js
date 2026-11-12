@@ -3987,6 +3987,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1429', date:'2026-11-13', items:[
+    "Relecture du 12/11 au soir (20 remarques). 5e Fractions : dénominateur imposé écrit dans la fraction (seul le numérateur à compléter) ; listes sur deux ou trois colonnes, plus d'exemples ; « Compare à 1 : complète avec <, > ou = » ; corrections qui expliquent pourquoi (réduction au même dénominateur, une égalité par ligne) ; additions et soustractions en colonne avec une lettre (A = … puis des pointillés pour chaque étape) ; corrections qui partent du calcul demandé (S = …, P = …) ; « Volume restant » au lieu de « Litres restants » (aussi en 4e) et « distance parcourue » (6e Proportionnalité). Manuel : en correction, les lignes gardent la hauteur de l'énoncé. 5e Opérations sur les décimaux : 25 × (3 + 1) pour factoriser ; places des parenthèses resserrées ; à l'écran, tous les signes tapés après un nombre sont entourés d'espaces. 5e Angles : tableau de cases à cocher aussi à l'écran."
+  ]},
   { version:'2026-08-19.1428', date:'2026-11-12', items:[
     "« Dans mon cahier » : les signes d'une ligne à fraction (« = », « < », « : »…) encadrent exactement la ligne principale -- signalé : « le signe = est encore trop bas. Il doit ‹ encadrer › la ligne principale ». Le site mesure maintenant le signe dessiné et le pose sur la barre de fraction voisine, quel que soit le navigateur. Titres avec une fraction : le soulignement vert, passé sous le dénominateur, n'est plus coupé. 5e-N4-P3, exercice 7 : correction réécrite étape par étape, sans « : » qui faisait croire à une division (« le ‹ : › après 8/8 n'est pas terrible ici »)."
   ]},

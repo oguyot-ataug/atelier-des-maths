@@ -55,7 +55,7 @@ document.getElementById('cours-demo-proportionnalite-6e').innerHTML = `
     </tr>
   </table>
 </div>
-<p style="margin:4px 0 4px;">À cette vitesse, la consommation en litres de carburant est égale au produit du nombre de kilomètres parcourus par 0,05, qui est le <b>coefficient de proportionnalité</b>.</p>
+<p style="margin:4px 0 4px;">À cette vitesse, le volume de carburant consommé (en litres) est égal au produit de la distance parcourue (en kilomètres) par 0,05, qui est le <b>coefficient de proportionnalité</b>.</p>
 <p style="margin:4px 0 12px;">Dans cette situation, ce coefficient permet de calculer la consommation à partir de la distance parcourue : par exemple, pour 15 km, la consommation sera <span class="tex">15 \\times 0{,}05 = 0{,}75</span> L.</p>
 
 <span class="prop-badge">Règle 2</span>

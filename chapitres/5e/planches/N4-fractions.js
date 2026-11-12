@@ -1,6 +1,10 @@
 /* ============================================================
    5e · Planches : Fractions (N4)
    Quotient et égalité de quotients, simplification, comparaison, addition et soustraction, problèmes.
+   Relecture du 12/11/2026 (16 remarques) : dénominateur imposé écrit dans la fraction ; listes sur deux colonnes ; « Complète
+   avec <, > ou = » (comparer à 1) ; corrections qui expliquent pourquoi (réduction au même dénominateur, une égalité par ligne) ;
+   calculs de fractions en colonne avec une lettre (« A = … », des pointillés pour chaque étape) ; corrections qui partent du
+   calcul demandé (S = …, P = …) ; « Volume restant » (jamais « Litres restants »).
    ============================================================ */
 (() => {
 // Illustrations des problèmes concrets (chapitres/planches-dessins.js).
@@ -27,7 +31,28 @@ const egal = l => ({ eleve: plListe(l.map(([a, b]) => ligne(F(a, b), '=', Fr))),
 const cmp = l => ({ eleve: plListe(l.map(([a, b, c, d]) => ligne(F(a, b), C, F(c, d)))), corr: plListe(l.map(([a, b, c, d]) => { const x = a * d - c * b; return ligne(F(a, b), R(x > 0 ? gt : x < 0 ? lt : '='), F(c, d)); })) });
 // Opérations : [a, b, c, d, [n, d, étape]] → a/b op c/d = (étape =) n/d.
 const ops = (l, op) => ({ eleve: plListe(l.map(([a, b, c, d]) => ligne(F(a, b), op, F(c, d), '=', Fr))), corr: plListe(l.map(([a, b, c, d, r]) => ligne(F(a, b), op, F(c, d), '=', ...(r[2] ? [r[2], '='] : []), R(F(r[0], r[1]))))) });
+// Les mêmes calculs sur deux colonnes (planche 4, exercices 1 et 2 : la feuille tient sur une page).
+const ops2 = (l, op) => ({ eleve: plGrille(l.map(([a, b, c, d]) => ligne(F(a, b), op, F(c, d), '=', Fr)), 2), corr: plGrille(l.map(([a, b, c, d, r]) => ligne(F(a, b), op, F(c, d), '=', R(F(r[0], r[1])))), 2) });
 const rmp = (l, n) => ({ eleve: plListe(l.map(([t]) => t.replace('@', B(n || 3)))), corr: plListe(l.map(([t, r]) => t.replace('@', R(r)))) });
+// Fraction dont le dénominateur est donné : seul le numérateur est à écrire (relecture 5e-N4-P2-E1 du 12/11/2026 : « Quel intérêt
+// de demander sur 12 ? Autant l'écrire directement au dénominateur ! »).
+const fd = (haut, den) => `<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1.2;margin:0 3px;"><span>${haut}</span><span style="align-self:stretch;border-top:1.6px solid currentColor;margin:3px 0 2px;min-width:1.6em;"></span><span>${den}</span></span>`;
+const pgcd = (a, b) => b ? pgcd(b, a % b) : a, ppcm = (a, b) => a / pgcd(a, b) * b;
+// Pourquoi : une égalité ou une comparaison par ligne, sous la réponse (relecture 5e-N4-P3-E2, E5 : « La correction doit expliquer pourquoi »).
+const pq = l => `<div style="margin:2px 0 4px 4px;line-height:2.2;font-size:.92em;">${l.join('<br>')}</div>`;
+const sg = (a, b, c, d) => { const x = a * d - c * b; return x > 0 ? gt : x < 0 ? lt : '='; };
+const Fx = (a, b) => b === 1 ? String(a) : F(a, b); // un entier s'écrit sans dénominateur
+// Comparer avec explication : [a, b, c, d] (c/d = 1 si d = 1 et c = 1 : « 1 »), réduits au même dénominateur.
+const cmpX = (l, cols) => { const L = l.map(([a, b, c, d]) => { const m = d === 1 ? b : ppcm(b, d), A = a * m / b, Cc = c * m / d, s0 = sg(a, b, c, d), et = [];
+    if(b !== m) et.push(`${F(a, b)} = ${F(A, m)}`); if(d !== m) et.push(`${Fx(c, d)} = ${F(Cc, m)}`); if(!(b === m && A === Cc)) et.push(`${F(A, m)} ${s0} ${F(Cc, m)}`); // 42/42 et 1 : « 1 = 42/42 » suffit
+    return { e: ligne(F(a, b), C, Fx(c, d)), c: ligne(F(a, b), R(s0), Fx(c, d)) + pq(et) }; });
+  return cols ? { eleve: plGrille(L.map(x => x.e), cols), corr: plGrille(L.map(x => x.c), cols) } : { eleve: plListe(L.map(x => x.e)), corr: plListe(L.map(x => x.c)) }; };
+// Calcul de fractions en colonne, une lettre par calcul : [lettre, expression, étape…, résultat] (relecture 5e-N4-P4-E3, E4, E5 :
+// « Écrire des pointillés pour les étapes de réduction au même dénominateur. Donc A = … et à développer en colonne »).
+const EF = (n, e, et, rep) => `<div style="line-height:2.2;white-space:nowrap;">${n} = ${e}${et.map(x => `<br>${n} = ${rep(x)}`).join('')}</div>`;
+const etf = (l, cols) => ({ eleve: P3.enHaut(plGrille(l.map(([n, e, ...et]) => EF(n, e, et, x => B(Math.max(4, Math.ceil(P3.lgVis(x) * .9))))), cols || 2)),
+  corr: P3.enHaut(plGrille(l.map(([n, e, ...et]) => EF(n, e, et, R)), cols || 2)) });
+const sm = (op, ...f) => f.map(([a, b]) => Fx(a, b)).join(` ${op} `);
 PLANCHES['5e|Fractions'] = [
   { titre: 'Une fraction est un quotient', duree: '35 min',
     attendus: ['Interpréter a/b comme le quotient de a par b', 'Trouver le nombre qui, multiplié par b, donne a', 'Passer de l\'écriture fractionnaire à l\'écriture décimale'],
@@ -53,13 +78,15 @@ PLANCHES['5e|Fractions'] = [
   { titre: 'Égalité de quotients et simplification', duree: '40 min',
     attendus: ['Multiplier ou diviser le numérateur et le dénominateur par un même nombre', 'Simplifier une fraction', 'Reconnaître une fraction irréductible'],
     exos: [
-      { etoiles: 1, col: 1, consigne: 'Complète pour obtenir une fraction égale (dénominateur imposé).',
-        eleve: plListe([ligne(F(3, 4), '=', Fr, '(sur 12)'), ligne(F(2, 5), '=', Fr, '(sur 20)'), ligne(F(7, 3), '=', Fr, '(sur 15)'), ligne(F(5, 6), '=', Fr, '(sur 18)')]),
-        corr: plListe([ligne(F(3, 4), '=', R(F(9, 12))), ligne(F(2, 5), '=', R(F(8, 20))), ligne(F(7, 3), '=', R(F(35, 15))), ligne(F(5, 6), '=', R(F(15, 18)))]) },
+      { etoiles: 1, col: 1, consigne: 'Complète le numérateur pour obtenir une fraction égale.',
+        ...(() => { const l = [[3, 4, 9, 12], [2, 5, 8, 20], [7, 3, 35, 15], [5, 6, 15, 18], [4, 9, 12, 27], [1, 8, 5, 40]];
+          return { eleve: plGrille(l.map(([a, b, , d]) => ligne(F(a, b), '=', fd(C, d))), 2), corr: plGrille(l.map(([a, b, c, d]) => ligne(F(a, b), '=', fd(R(c), d))), 2) }; })() },
       { etoiles: 1, col: 1, consigne: 'Simplifie (divise par le nombre indiqué).',
         eleve: plListe([ligne(F(12, 18), '=', Fr, '(par 6)'), ligne(F(15, 25), '=', Fr, '(par 5)'), ligne(F(28, 21), '=', Fr, '(par 7)'), ligne(F(40, 100), '=', Fr, '(par 20)')]),
         corr: plListe([ligne(F(12, 18), '=', R(F(2, 3))), ligne(F(15, 25), '=', R(F(3, 5))), ligne(F(28, 21), '=', R(F(4, 3))), ligne(F(40, 100), '=', R(F(2, 5)))]) },
-      { etoiles: 2, col: 1, consigne: 'Simplifie le plus possible.', ...egal([[18, 24, 3, 4], [35, 45, 7, 9], [36, 16, 9, 4], [72, 27, 8, 3]]) },
+      { etoiles: 2, col: 1, consigne: 'Simplifie le plus possible.',
+        ...(() => { const l = [[18, 24, 3, 4], [35, 45, 7, 9], [36, 16, 9, 4], [72, 27, 8, 3], [20, 30, 2, 3], [42, 56, 3, 4]];
+          return { eleve: plGrille(l.map(([a, b]) => ligne(F(a, b), '=', Fr)), 2), corr: plGrille(l.map(([a, b, c, d]) => ligne(F(a, b), '=', R(F(c, d)))), 2) }; })() },
       { etoiles: 2, col: 1, consigne: 'La fraction est-elle irréductible ? Entoure.',
         ...ch([[`${T(9, 14)} :`, 'oui'], [`${T(15, 21)} :`, 'non'], [`${T(11, 22)} :`, 'non'], [`${T(8, 27)} :`, 'oui']], 'oui · non') },
       { etoiles: 2, col: 1,
@@ -72,15 +99,19 @@ PLANCHES['5e|Fractions'] = [
   { titre: 'Comparer des fractions', duree: '40 min',
     attendus: ['Comparer deux fractions de même dénominateur', 'Comparer en réduisant au même dénominateur (dénominateurs multiples l\'un de l\'autre)', 'Ranger des fractions'],
     exos: [
-      { etoiles: 1, col: 1, consigne: 'Complète avec &lt;, &gt; ou =.', ...cmp([[7, 9, 4, 9], [11, 13, 15, 13], [5, 5, 9, 9], [3, 2, 1, 1]]) },
-      { etoiles: 2, col: 1, consigne: 'Réduis au même dénominateur, puis compare.', ...cmp([[2, 3, 7, 12], [5, 4, 11, 8], [7, 10, 3, 5], [13, 6, 9, 4]]) },
-      { etoiles: 2, col: 1, consigne: 'Compare à 1 : entoure.',
-        ...ch([[`${T(17, 16)} est …`, 'plus grand que 1'], [`${T(99, 100)} est …`, 'plus petit que 1'], [`${T(42, 42)} est …`, 'égal à 1']], 'plus petit que 1 · égal à 1 · plus grand que 1') },
+      { etoiles: 1, col: 1, consigne: 'Complète avec &lt;, &gt; ou =.',
+        ...(() => { const l = [[7, 9, 4, 9], [11, 13, 15, 13], [5, 5, 9, 9], [3, 2, 1, 2], [2, 7, 5, 7], [6, 11, 6, 11]];
+          return { eleve: plGrille(l.map(([a, b, c, d]) => ligne(F(a, b), C, F(c, d))), 3), corr: plGrille(l.map(([a, b, c, d]) => ligne(F(a, b), R(sg(a, b, c, d)), F(c, d))), 3) }; })() },
+      { etoiles: 2, col: 1, consigne: 'Réduis au même dénominateur, puis compare.', ...cmpX([[2, 3, 7, 12], [5, 4, 11, 8], [7, 10, 3, 5], [13, 6, 9, 4]], 2) },
+      { etoiles: 2, col: 1, consigne: 'Compare à 1 : complète avec &lt;, &gt; ou =.', ...cmpX([[17, 16, 1, 1], [99, 100, 1, 1], [42, 42, 1, 1], [5, 8, 1, 1]], 2) },
       { etoiles: 2, consigne: `Range dans l'ordre croissant : ${T(5, 6)} ; ${T(2, 3)} ; ${T(7, 12)} ; ${T(3, 4)} ; ${T(1, 2)} (pense aux douzièmes).`,
         eleve: '<div style="text-align:center;">' + ligne(Fr, lt, Fr, lt, Fr, lt, Fr, lt, Fr) + '</div>',
-        corr: '<div style="text-align:center;">' + ligne(R(F(1, 2)), lt, R(F(7, 12)), lt, R(F(2, 3)), lt, R(F(3, 4)), lt, R(F(5, 6))) + '</div>' },
+        // Relecture 5e-N4-P3-E4 du 12/11/2026 : « La correction doit expliquer » : les fractions en douzièmes, puis le rangement.
+        corr: plGrille([`${F(5, 6)} = ${F(10, 12)}`, `${F(2, 3)} = ${F(8, 12)}`, `${F(3, 4)} = ${F(9, 12)}`, `${F(1, 2)} = ${F(6, 12)}`], 4)
+          + '<div style="text-align:center;margin:6px 0;">' + ligne(F(6, 12), lt, F(7, 12), lt, F(8, 12), lt, F(9, 12), lt, F(10, 12)) + '</div>'
+          + '<div style="text-align:center;">' + ligne(R(F(1, 2)), lt, R(F(7, 12)), lt, R(F(2, 3)), lt, R(F(3, 4)), lt, R(F(5, 6))) + '</div>' },
       { etoiles: 2, col: 1, consigne: 'Complète avec &lt;, &gt; ou =.',
-        ...signe([[T(3, 8), T(1, 4), '>'], [T(5, 9), T(2, 3), '<'], [T(11, 10), T(6, 5), '<'], [T(7, 7), T(13, 14), '>']]) },
+        ...cmpX([[3, 8, 1, 4], [5, 9, 2, 3], [11, 10, 6, 5], [7, 7, 13, 14]], 2) },
       { etoiles: 3, col: 1, cahier: true, consigne: `Lucas a lu ${T(3, 5)} de son livre et Nora ${T(7, 10)} du même livre. Qui en a lu le plus ? Justifie.`,
         corr: cm1Redac('Qui en a lu le plus ?', `${F(3, 5)} = ${F(6, 10)} et ${F(6, 10)} &lt; ${F(7, 10)}`, 'Nora a lu la plus grande partie du livre.') },
       { etoiles: 3, col: 1, cahier: true, consigne: `Trouve une fraction comprise entre ${T(3, 4)} et 1, puis une fraction comprise entre ${T(1, 3)} et ${T(1, 2)}.`,
@@ -91,18 +122,26 @@ PLANCHES['5e|Fractions'] = [
   { titre: 'Additionner et soustraire des fractions', duree: '40 min',
     attendus: ['Additionner ou soustraire deux fractions de même dénominateur', 'Réduire au même dénominateur avant d\'additionner', 'Simplifier le résultat'],
     exos: [
-      { etoiles: 1, col: 1, consigne: 'Calcule.', ...ops([[3, 11, 5, 11, [8, 11]], [7, 9, 2, 9, [5, 9]], [15, 8, 3, 8, [12, 8]]], '+') },
-      { etoiles: 1, col: 1, consigne: 'Calcule.', ...ops([[9, 5, 2, 5, [7, 5]], [11, 12, 7, 12, [4, 12]], [20, 7, 6, 7, [14, 7]]], '−') },
-      { etoiles: 2, col: 1, consigne: 'Calcule (réduis d\'abord au même dénominateur).', ...ops([[1, 3, 5, 6, [7, 6, F(2, 6) + ' + ' + F(5, 6)]], [3, 4, 1, 12, [10, 12, F(9, 12) + ' + ' + F(1, 12)]], [2, 5, 7, 20, [15, 20, F(8, 20) + ' + ' + F(7, 20)]]], '+') },
-      { etoiles: 2, col: 1, consigne: 'Calcule.', ...ops([[5, 6, 1, 3, [3, 6, F(5, 6) + ' − ' + F(2, 6)]], [7, 4, 3, 8, [11, 8, F(14, 8) + ' − ' + F(3, 8)]], [9, 10, 2, 5, [5, 10, F(9, 10) + ' − ' + F(4, 10)]]], '−') },
-      { etoiles: 2, col: 1, consigne: 'Calcule (écris l\'entier sous forme de fraction).',
-        eleve: plListe([ligne('2 +', F(1, 3), '=', Fr), ligne('1 −', F(5, 9), '=', Fr), ligne(F(7, 4), '− 1 =', Fr), ligne('3 −', F(1, 2), '=', Fr)]),
-        corr: plListe([ligne('2 +', F(1, 3), '=', F(6, 3), '+', F(1, 3), '=', R(F(7, 3))), ligne('1 −', F(5, 9), '=', R(F(4, 9))), ligne(F(7, 4), '− 1 =', R(F(3, 4))), ligne('3 −', F(1, 2), '=', R(F(5, 2)))]) },
-      { etoiles: 2, col: 1, consigne: 'Complète.',
-        eleve: plListe([ligne(F(2, 7), '+', Fr, '= 1'), ligne(F(1, 4), '+', Fr, '=', F(3, 4), '(sur 4)'), ligne(Fr, '−', F(1, 6), '=', F(1, 2), '(sur 6)')]),
-        corr: plListe([ligne(F(2, 7), '+', R(F(5, 7)), '= 1'), ligne(F(1, 4), '+', R(F(2, 4)), '=', F(3, 4)), ligne(R(F(4, 6)), '−', F(1, 6), '=', F(1, 2))]) },
+      { etoiles: 1, col: 1, consigne: 'Calcule.', ...ops2([[3, 11, 5, 11, [8, 11]], [7, 9, 2, 9, [5, 9]], [15, 8, 3, 8, [12, 8]], [5, 13, 4, 13, [9, 13]]], '+') },
+      { etoiles: 1, col: 1, consigne: 'Calcule.', ...ops2([[9, 5, 2, 5, [7, 5]], [11, 12, 7, 12, [4, 12]], [20, 7, 6, 7, [14, 7]], [17, 10, 9, 10, [8, 10]]], '−') },
+      { etoiles: 2, consigne: 'Réduis au même dénominateur, calcule, puis simplifie si possible. Une étape par ligne.',
+        ...etf([['A', sm('+', [1, 3], [5, 6]), sm('+', [2, 6], [5, 6]), F(7, 6)], ['B', sm('+', [3, 4], [1, 12]), sm('+', [9, 12], [1, 12]), F(10, 12), F(5, 6)],
+          ['C', sm('+', [2, 5], [7, 20]), sm('+', [8, 20], [7, 20]), F(15, 20), F(3, 4)], ['D', sm('+', [1, 2], [3, 8]), sm('+', [4, 8], [3, 8]), F(7, 8)]], 4) },
+      { etoiles: 2, consigne: 'Réduis au même dénominateur, calcule, puis simplifie si possible. Une étape par ligne.',
+        ...etf([['A', sm('−', [5, 6], [1, 3]), sm('−', [5, 6], [2, 6]), F(3, 6), F(1, 2)], ['B', sm('−', [7, 4], [3, 8]), sm('−', [14, 8], [3, 8]), F(11, 8)],
+          ['C', sm('−', [9, 10], [2, 5]), sm('−', [9, 10], [4, 10]), F(5, 10), F(1, 2)], ['D', sm('−', [2, 3], [1, 6]), sm('−', [4, 6], [1, 6]), F(3, 6), F(1, 2)]], 4) },
+      { etoiles: 2, consigne: 'Calcule (écris l\'entier sous forme de fraction). Écris une étape par ligne.',
+        ...etf([['A', sm('+', [2, 1], [1, 3]), sm('+', [6, 3], [1, 3]), F(7, 3)], ['B', sm('−', [1, 1], [5, 9]), sm('−', [9, 9], [5, 9]), F(4, 9)],
+          ['C', sm('−', [7, 4], [1, 1]), sm('−', [7, 4], [4, 4]), F(3, 4)], ['D', sm('−', [3, 1], [1, 2]), sm('−', [6, 2], [1, 2]), F(5, 2)]], 4) },
+      // Pleine largeur (les exercices 3 à 5 passent sur toute la largeur, relecture du 12/11/2026) : quatre exemples sur deux colonnes ;
+      // le dénominateur imposé est écrit dans la fraction (comme en planche 2, « Autant l'écrire directement au dénominateur ! »).
+      { etoiles: 2, consigne: 'Complète.',
+        eleve: plListe([ligne(F(2, 7), '+', Fr, '= 1'), ligne(F(1, 4), '+', fd(C, 4), '=', F(3, 4)), ligne(fd(C, 6), '−', F(1, 6), '=', F(1, 2)), ligne(F(3, 5), '+', Fr, '= 1')]),
+        corr: plListe([ligne(F(2, 7), '+', R(F(5, 7)), '= 1'), ligne(F(1, 4), '+', fd(R(2), 4), '=', F(3, 4)), ligne(fd(R(4), 6), '−', F(1, 6), '=', F(1, 2)), ligne(F(3, 5), '+', R(F(2, 5)), '= 1')]) },
       { etoiles: 3, cahier: true, consigne: `Calcule ${T(1, 2)} + ${T(1, 4)} + ${T(1, 8)}, puis simplifie si possible. Que manque-t-il pour obtenir 1 ?`,
-        corr: cm1Redac('Somme des trois fractions', `${F(4, 8)} + ${F(2, 8)} + ${F(1, 8)} = ${F(7, 8)}`, `La somme vaut ${F(7, 8)} : il manque ${F(1, 8)} pour obtenir 1.`) },
+        // Relecture 5e-N4-P4-E7 du 12/11/2026 : « S = 1/2 + 1/4 + 1/8 et développer en colonne. La correction doit toujours partir du calcul demandé ».
+        corr: cm1Redac('Somme des trois fractions', [{ nom: 'S', lignes: [`${F(1, 2)} + ${F(1, 4)} + ${F(1, 8)}`, `${F(4, 8)} + ${F(2, 8)} + ${F(1, 8)}`, F(7, 8)] }], `La somme vaut ${F(7, 8)} ; ${F(7, 8)} est irréductible.`)
+          + cm1Redac('Ce qui manque pour obtenir 1', [{ nom: 'M', lignes: [`1 − ${F(7, 8)}`, `${F(8, 8)} − ${F(7, 8)}`, F(1, 8)] }], `Il manque ${F(1, 8)} pour obtenir 1.`) },
     ] },
   { titre: 'Résoudre des problèmes avec des fractions', duree: '45 min',
     attendus: ['Calculer une fraction d\'une quantité', 'Additionner des fractions dans un problème', 'Trouver la part restante'],
@@ -117,11 +156,16 @@ PLANCHES['5e|Fractions'] = [
       { etoiles: 2, col: 1, consigne: 'Complète par = ou ≠.',
         ...P3.egal([[`${T(1, 2)} + ${T(1, 3)}`, T(2, 5), 0], [`${T(3, 4)} × 100`, '75', 1], [`${T(1, 3)} + ${T(1, 3)} + ${T(1, 3)}`, '1', 1], [`${T(1, 2)} × ${T(1, 2)}`, T(1, 4), 1]]) },
       { etoiles: 3, col: 1, cahier: true, consigne: illu(reservoir, `Un réservoir de 60 L est rempli aux ${T(3, 4)}. On utilise ${T(1, 3)} de sa contenance totale. Combien de litres reste-t-il ?`),
-        corr: cm1Redac('Litres restants', { suite: [`${F(3, 4)} de 60 L = 45 L`, `${F(1, 3)} de 60 L = 20 L`, '45 − 20 = 25'] }, 'Il reste 25 L dans le réservoir.') },
+        // Relecture 5e-N4-P5-E5 du 12/11/2026 : « On ne dit pas Litres restants, c'est affreux. Volume restant » ; pas de « de » dans un calcul.
+        corr: cm1Redac('Volume d\'eau au départ', [{ nom: 'V', lignes: [`${F(3, 4)} × 60`, '3 × 15', '45'] }], 'Le réservoir contient 45 L au départ.')
+          + cm1Redac('Volume utilisé', [{ nom: 'U', lignes: [`${F(1, 3)} × 60`, '20'] }], 'On utilise 20 L.')
+          + cm1Redac('Volume restant', [{ nom: 'R', lignes: ['45 − 20', '25'] }], 'Il reste 25 L dans le réservoir.') },
       { etoiles: 3, col: 1, cahier: true, consigne: `Lina dépense ${T(2, 5)} de son argent de poche en livres et ${T(1, 4)} en sorties. Quelle fraction de son argent lui reste-t-il ? Elle avait 40 € : combien lui reste-t-il ?`,
         corr: cm1Redac('Fraction restante', `1 − ${F(2, 5)} − ${F(1, 4)} = ${F(20, 20)} − ${F(8, 20)} − ${F(5, 20)} = ${F(7, 20)}`, `Il lui reste les ${F(7, 20)} de son argent.`) + cm1Redac('Somme restante', `${F(7, 20)} × 40 = 7 × ${F(40, 20)} = 7 × 2 = 14`, 'Il lui reste 14 €.') },
       { etoiles: 3, cahier: true, consigne: illu(gateau12, `Un gâteau est coupé en 12 parts égales. Paul en mange ${T(1, 4)}, Léa ${T(1, 3)} et Sam ${T(1, 6)}. Reste-t-il du gâteau ? Si oui, combien de parts ?`),
-        corr: cm1Redac('Parts mangées', `${F(3, 12)} + ${F(4, 12)} + ${F(2, 12)} = ${F(9, 12)}`, 'Ils ont mangé 9 parts sur 12 : il reste 3 parts.') },
+        // Relecture 5e-N4-P5-E7 du 12/11/2026 : « partir du calcul du départ et commencer par une lettre comme P = … ».
+        corr: cm1Redac('Fraction du gâteau mangée', [{ nom: 'P', lignes: [`${F(1, 4)} + ${F(1, 3)} + ${F(1, 6)}`, `${F(3, 12)} + ${F(4, 12)} + ${F(2, 12)}`, F(9, 12)] }], `Ils ont mangé les ${F(9, 12)} du gâteau, soit 9 parts sur 12.`)
+          + cm1Redac('Parts restantes', [{ nom: 'N', lignes: ['12 − 9', '3'] }], 'Oui, il reste du gâteau : 3 parts.') },
     ] },
 ];
 })();

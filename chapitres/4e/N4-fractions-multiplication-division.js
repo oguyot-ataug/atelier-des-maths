@@ -196,7 +196,7 @@ document.getElementById('exos-demo-fractions-mult-4e').innerHTML = `
     mu4Tex('B = -\\dfrac{5 \\times 3 \\times 3}{2 \\times 3 \\times 2 \\times 5} = -\\dfrac{3}{4}'),
     mu4Tex('C = \\dfrac{4 \\times 5 \\times 5}{3 \\times 5 \\times 4 \\times 2} = \\dfrac{5}{6}') + ' (deux facteurs négatifs : résultat positif).'])}
   ${mu4Exo(2, 'Un réservoir de 60 L est rempli aux ' + mu4Tex('\\dfrac{3}{4}') + '. On utilise les ' + mu4Tex('\\dfrac{2}{5}') + ' de son contenu. Combien de litres a-t-on utilisés ?', [
-    'Contenu : ' + mu4Tex('\\dfrac{3}{4} \\times 60 = 45') + ' L. Litres utilisés : ' + mu4Tex('\\dfrac{2}{5} \\times 45 = 18') + ' L.',
+    'Volume au départ : ' + mu4Tex('\\dfrac{3}{4} \\times 60 = 45') + ' L. Volume utilisé : ' + mu4Tex('\\dfrac{2}{5} \\times 45 = 18') + ' L.',
     'Autre méthode : on calcule la fraction du réservoir utilisée,', mu4Tex('F = \\dfrac{2}{5} \\times \\dfrac{3}{4} = \\dfrac{6}{20} = \\dfrac{3}{10}'), 'soit ' + mu4Tex('\\dfrac{3}{10} \\times 60 = 18') + ' L.'])}
   ${mu4Exo(3, 'Donne l\'inverse de chacun de ces nombres : 7 ; ' + mu4Tex('-\\dfrac{3}{8}') + ' ; 0,25 ; −1. Lequel est égal à son inverse ?', [
     'Inverse de 7 : ' + mu4Tex('\\dfrac{1}{7}') + ' ; inverse de ' + mu4Tex('-\\dfrac{3}{8}') + ' : ' + mu4Tex('-\\dfrac{8}{3}') + '.',
