@@ -478,6 +478,10 @@ automatique, vidéo chargée au clic), styles `.home-car` / `.car-*` (styles.css
 Playwright (scratchpad accueil/cap.js, classes.js avec une classe fictive), ou images tirées des vidéos de démonstration (ffmpeg, bandeau du haut
 et bande orange du bas retirés : 1280 × 596). 13 diapositives (devoirs, automatismes, interrogations, séance en direct, Mes classes, programmation,
 cahier Seyès, instruments, calculatrice, géométrie dynamique, animations, Oliv'IA, corrigé). À refaire si l'écran correspondant change beaucoup.
+Vidéo de présentation (demandée le 11/11/2026, en ligne le 12/11/2026) : première diapositive de `#homeVideos`, `assets/videos/presentation-olivia.mp4`
+(1280 × 720, 4 min 05, voix d'Oliv'IA, sous-titres, musique originale synthétisée) ; fabriquée hors du site (scratchpad video/ : captures Playwright,
+scène HTML rendue image par image, séquences filmées à horloge contrôlée, son assemblé avec numpy/ffmpeg). Voix obtenues par une fonction
+Supabase temporaire `voix-video` (désactivée, renvoie 410) via une session de l'environnement « atelier-des-maths » (accès à Supabase).
 
 ## Bandeaux d'information (demandé le 08/11/2026, build 1348)
 

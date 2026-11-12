@@ -3985,6 +3985,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1415', date:'2026-11-12', items:[
+    "Accueil, « L'Atelier en vidéo » : la vidéo de présentation en premier -- « Visite de L'Atelier des Maths avec Oliv'IA » (4 min 05). Oliv'IA se promène sur les pages du site et explique, de sa voix, avec sous-titres, les principales fonctionnalités : cours, méthodes animées, animations, « Dans mon cahier », géométrie dynamique et instruments, calculatrice, programmation par blocs, histoire des maths, planches à imprimer, projection, automatismes, devoirs et interrogations en ligne, séance en direct, cartes flashcode, Mes classes, corrigé des évaluations et Oliv'IA."
+  ] },
   { version:'2026-08-19.1414', date:'2026-11-12', items:[
     "Relecture des planches de 5e « Opérations sur les nombres décimaux » (25 remarques du 11/11). Calculs détaillés en colonne, avec une lettre par calcul et une étape par ligne (A = 5 + 4 × 3 ; A = 5 + 12 ; A = 17), dans les exercices et les corrigés (P, R : la lettre de ce qui est demandé). Cases à cliquer à l'écran : somme, différence, produit ou quotient ; signe opératoire manquant ; = ou ≠. Deux nouveaux outils pour faire l'exercice à l'écran : relier une phrase à son expression, et placer des parenthèses dans un calcul sans le recopier. Division euclidienne : « avec r < b ». Ordre de grandeur à écrire, plus d'exemples (planche 5). À l'écran, sur toutes les planches, un nombre écrit dans une case a maintenant la taille et la ligne de base de l'énoncé."
   ] },
