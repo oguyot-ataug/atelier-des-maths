@@ -460,7 +460,11 @@ classe au-delà (`seul_classe`) ; prix dans `prof_parametres.prix` (Administrati
 Essai Famille de 15 jours (demandé le 12/11/2026) : `familles.essai_until` posé à l'inscription par la fonction `famille` (aujourd'hui + 14 jours) ;
 `ma_famille()` ouvre alors TOUS les niveaux (clés `essai`, `paye`, `essai_until`), IA comprise (`ai_student_sponsor`, `my_ai_access`) ;
 rangé à part de l'accès payé (`niveaux`, `acces_until`, `montant_paye_centimes`, famille_activer et factures inchangés) ;
-`supabase/sql/2026-11-12-essai-famille.sql`. Offre Famille visible sur le site : case d'Administration › Famille (`famille_parametres.publique`).
+`supabase/sql/2026-11-12-essai-famille.sql`.
+Manuel des enfants d'une famille (demandé le 12/11/2026) : `manuel-famille.js` (`pmfEnfant`, `pmfRendre`, appelé par plTdRendre) : exercices
+« à l'écran » (plNum, Vérifier) ou « dans ton cahier », correction seulement après un essai, ni impression ni projection ; résultats dans
+`famille_manuel` (`supabase/sql/2026-11-12-famille-manuel.sql`, l'enfant écrit ses lignes, le parent les lit), affichés dans le suivi du parent.
+Offre Famille visible sur le site : case d'Administration › Famille (`famille_parametres.publique`).
 
 Paiement intégré au site (Stripe Embedded Checkout, build 1205) : `paiementOuvrir` (app.js) ; les fonctions prof-offre et famille
 renvoient client_secret + clé publique si les secrets STRIPE_TEST_PUBLISHABLE_KEY / STRIPE_PUBLISHABLE_KEY existent, sinon la page Stripe.

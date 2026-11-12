@@ -252,13 +252,15 @@ async function renderFamille(){
   ]);
   const enfants = (enf||[]).map(e=>({ ...e, prenom:(e.profiles&&e.profiles.prenom)||'', identifiant: famIdent(e.profiles&&e.profiles.email) }));
   const ids = enfants.map(e=>e.enfant_id);
-  const [{ data: cm }, { data: ceb }, { data: use }] = ids.length ? await Promise.all([
+  const [{ data: cm }, { data: ceb }, { data: use }, { data: man }] = ids.length ? await Promise.all([
     sb.from('cm_results').select('student_id,sequence_label,score,total,duration_ms,created_at').in('student_id', ids).order('created_at', {ascending:false}).limit(300),
     sb.from('ceb_results').select('student_id,target,result_value,gap,success,timed,created_at').in('student_id', ids).order('created_at', {ascending:false}).limit(300),
     sb.from('ai_usage_log').select('user_id,feature,input_tokens,output_tokens,created_at').eq('billed_to', currentUser.id).gte('created_at', since30).order('created_at', {ascending:false}),
+    // Exercices du Manuel faits par les enfants (manuel-famille.js) : réponses non chargées, seulement le bilan.
+    sb.from('famille_manuel').select('enfant_id,niveau,chapitre,libelle,ecran,juste,total,meilleur,essais,fini,correction_vue,updated_at').in('enfant_id', ids).order('updated_at', {ascending:false}).limit(300),
   ]) : [{data:[]},{data:[]},(await sb.from('ai_usage_log').select('user_id,feature,input_tokens,output_tokens,created_at').eq('billed_to', currentUser.id).gte('created_at', since30))];
   await venteP;
-  famData = { fam: fam||{}, enfants, pay: pay||[], ai: ai||{}, cm: cm||[], ceb: ceb||[], use: use||[], factures: factures||[], code: (famData && famData.code) || '' };
+  famData = { fam: fam||{}, enfants, pay: pay||[], ai: ai||{}, cm: cm||[], ceb: ceb||[], use: use||[], man: man||[], factures: factures||[], code: (famData && famData.code) || '' };
   const today = new Date().toISOString().slice(0,10);
   const active = !!(fam && fam.acces_until && fam.acces_until >= today);
   // Essai de 15 jours (essai_until, posé à l'inscription par la fonction famille) : tous les niveaux, sans paiement.
@@ -468,18 +470,23 @@ function famSuiviHtml(enfants){
   const semaine = Date.now()-7*24*3600e3;
   const blocs = enfants.map(e=>{
     const cm = famData.cm.filter(r=>r.student_id===e.enfant_id), ceb = famData.ceb.filter(r=>r.student_id===e.enfant_id);
+    const man = (famData.man||[]).filter(r=>r.enfant_id===e.enfant_id), man7 = man.filter(r=>new Date(r.updated_at)>semaine);
     const ia = famData.use.filter(r=>r.user_id===e.enfant_id);
     const cm7 = cm.filter(r=>new Date(r.created_at)>semaine), ceb7 = ceb.filter(r=>new Date(r.created_at)>semaine), ia7 = ia.filter(r=>new Date(r.created_at)>semaine);
     const moy = cm7.length ? Math.round(100*cm7.reduce((a,r)=>a+(r.total?r.score/r.total:0),0)/cm7.length) : null;
     return `
     <details class="fam-suivi">
-      <summary><b>${famEsc(e.prenom)}</b> <span class="hint">· 7 derniers jours : ${cm7.length} série${cm7.length>1?'s':''} d'automatismes${moy!==null?' (réussite moyenne '+moy+' %)':''}, ${ceb7.length} partie${ceb7.length>1?'s':''} d'Objectif Nombre, ${ia7.length} demande${ia7.length>1?'s':''} IA</span></summary>
+      <summary><b>${famEsc(e.prenom)}</b> <span class="hint">· 7 derniers jours : ${man7.length} exercice${man7.length>1?'s':''} du manuel, ${cm7.length} série${cm7.length>1?'s':''} d'automatismes${moy!==null?' (réussite moyenne '+moy+' %)':''}, ${ceb7.length} partie${ceb7.length>1?'s':''} d'Objectif Nombre, ${ia7.length} demande${ia7.length>1?'s':''} IA</span></summary>
       <div class="fam-suivi-grid">
         <div><div class="fam-step" style="margin-top:6px;">Automatismes</div>
           ${cm.length ? `<table class="fam-table"><tr><th>Date</th><th>Exercice</th><th>Score</th><th>Durée</th></tr>${cm.slice(0,15).map(r=>`<tr><td>${famDate(r.created_at)}</td><td>${famEsc(r.sequence_label||'')}</td><td>${r.score}/${r.total}</td><td>${famDuree(r.duration_ms)}</td></tr>`).join('')}</table>` : '<p class="hint">Rien pour l\'instant.</p>'}</div>
         <div><div class="fam-step" style="margin-top:6px;">Objectif Nombre</div>
           ${ceb.length ? `<table class="fam-table"><tr><th>Date</th><th>Cible</th><th>Résultat</th></tr>${ceb.slice(0,15).map(r=>`<tr><td>${famDate(r.created_at)}</td><td>${r.target}</td><td>${r.success?'<span style="color:#1E7B34;">trouvé ✓</span>':(r.result_value!=null?r.result_value+' (écart '+r.gap+')':'–')}</td></tr>`).join('')}</table>` : '<p class="hint">Rien pour l\'instant.</p>'}</div>
       </div>
+      <div><div class="fam-step" style="margin-top:6px;">Exercices du manuel</div>
+        ${man.length ? `<div style="overflow-x:auto;"><table class="fam-table"><tr><th>Date</th><th>Chapitre</th><th>Exercice</th><th>Résultat</th><th>Correction</th></tr>${man.slice(0,20).map(r=>`<tr><td>${famDate(r.updated_at)}</td><td>${famEsc(famLib(r.niveau))} · ${famEsc(r.chapitre)}</td><td>${famEsc(r.libelle)}</td>
+          <td>${r.ecran ? (r.essais ? `${r.meilleur===r.total && r.total ? '<span style="color:#1E7B34;">'+r.meilleur+'/'+r.total+' ✓</span>' : (r.meilleur||0)+'/'+r.total}<div class="hint" style="margin:0;">${r.essais} essai${r.essais>1?'s':''}</div>` : '<span class="hint">commencé</span>') : (r.fini ? 'fait dans le cahier' : '<span class="hint">commencé</span>')}</td>
+          <td>${r.correction_vue ? 'vue' : '–'}</td></tr>`).join('')}</table></div>` : '<p class="hint" style="margin:4px 0;">Aucun exercice du manuel pour l\'instant (onglet « Manuel » de chaque chapitre).</p>'}</div>
     </details>`;
   }).join('');
   return `

@@ -218,13 +218,16 @@ function plMaj(lvl, c){
 function plTdMaj(lvl, c){
   const tab = document.getElementById('tabTd'), root = document.getElementById('tdRoot'); if(!tab || !root) return;
   const role = typeof currentUserRole !== 'undefined' ? currentUserRole : null;
-  const ok = (role === 'prof' || role === 'admin' || role === 'parent') && c && (plDe(lvl, c.t).length > 0 || (typeof plProgDe === 'function' && plProgDe(lvl, c.t).length > 0));
+  // + enfant d'un compte Famille : le Manuel en entraînement (manuel-famille.js, demandé le 12/11/2026).
+  const enfant = typeof pmfEnfant === 'function' && pmfEnfant();
+  const ok = (role === 'prof' || role === 'admin' || role === 'parent' || enfant) && c && (plDe(lvl, c.t).length > 0 || (!enfant && typeof plProgDe === 'function' && plProgDe(lvl, c.t).length > 0));
   tab.style.display = ok ? '' : 'none';
   if(!ok){ root.innerHTML = ''; if(tab.classList.contains('active')){ const b = document.querySelector('.tab-btn[data-tab="cours"]'); if(b) b.click(); } return; }
   plTdRendre(lvl, c);
 }
 function plTdRendre(lvl, c){
   const root = document.getElementById('tdRoot'); if(!root) return;
+  if(typeof pmfEnfant === 'function' && pmfEnfant()) return pmfRendre(lvl, c); // enfant d'une famille : entraînement
   root.classList.toggle('pl-college', plCollege(lvl)); // collège : pointillés au lieu des cases sur le papier
   const liste = plDe(lvl, c.t), esc = s => escapeHtml(String(s ?? ''));
   root.innerHTML = `<div class="td-intro"><span class="pl-oliv">${plOliv('muscle')}</span><div><b>Manuel : ${liste.reduce((n, p) => n + p.exos.length, 0)} exercices</b>

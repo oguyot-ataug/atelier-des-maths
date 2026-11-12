@@ -3987,6 +3987,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1425', date:'2026-11-12', items:[
+    "Le Manuel ouvert aux enfants des comptes Famille -- demandé : « En famille, les élèves ont bien accès aux exercices des manuels ? », puis « oui » (entraînement, correction après un essai, suivi du parent). Onglet « Manuel » de chaque chapitre : les exercices marqués « à l'écran » se font directement (Vérifier, Effacer, réponses gardées pour reprendre), les autres « dans ton cahier » (« J'ai fini dans mon cahier ») ; la correction s'ouvre seulement après un essai ; « Autre version » pour s'entraîner encore ; ni impression, ni projection. Espace famille › Suivi : les exercices du manuel de chaque enfant (meilleur résultat, nombre d'essais, correction vue). Les élèves des classes ne changent pas."
+  ]},
   { version:'2026-08-19.1424', date:'2026-11-12', items:[
     "Essai Famille de 15 jours -- demandé : « Oui, mets en place l'essai Famille de 15 jours ». À la création d'un compte Famille, tous les niveaux, du CP à la 3e, s'ouvrent pendant 15 jours pour le parent et ses enfants, sans carte bancaire (IA comprise, avec la clé du parent). L'essai est rangé à part de l'accès payé : il ne compte jamais comme un paiement et ne change ni les prix, ni les factures. Espace famille : « Essai gratuit jusqu'au … », puis « Essai terminé » ; Administration › Famille : familles en essai. Bandeau « Vous êtes parent ? » : l'essai gratuit à la place du prix tant que les ventes sont fermées. Page des tarifs et CGV (partie A) : l'essai Famille."
   ]},
