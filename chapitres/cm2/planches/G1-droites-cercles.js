@@ -39,8 +39,8 @@ PLANCHES['cm2|Droites, segments et cercles'] = [
     exos: [
       { etoiles: 1, consigne: `Observe les droites. Vérifie avec ton équerre, puis entoure.<div style="text-align:center;">${droites}</div>`,
         ...ch([['(d1) et (d2) sont…', 'perpendiculaires'], ['(d1) et (d3) sont…', 'parallèles'], ['(d2) et (d3) sont…', 'perpendiculaires'], ['(d1) et (d4) sont…', 'ni l\'un ni l\'autre']], 'perpendiculaires · parallèles · ni l\'un ni l\'autre') },
-      { etoiles: 2, col: 1, consigne: 'Trace la droite perpendiculaire à la droite (d) passant par le point M.', eleve: perpQ(false), corr: perpQ(true) },
-      { etoiles: 2, col: 1, consigne: 'Trace la droite parallèle à la droite (d) passant par le point N.', eleve: paraQ(false), corr: paraQ(true) },
+      { etoiles: 2, col: 1, consigne: 'Trace la droite perpendiculaire à la droite (d) passant par le point M.', eleve: perpQ(false).replace('<svg ', `<svg data-pltrace='${JSON.stringify({ k: 20, w: 200, h: 140, M: [121, 101], v: [0, 1] })}' `), corr: perpQ(true) },
+      { etoiles: 2, col: 1, consigne: 'Trace la droite parallèle à la droite (d) passant par le point N.', eleve: paraQ(false).replace('<svg ', `<svg data-pltrace='${JSON.stringify({ k: 20, w: 200, h: 140, M: [101, 121], v: [0.7071, -0.7071] })}' `), corr: paraQ(true) },
       { etoiles: 3, cahier: true, consigne: 'Sur une feuille blanche, trace une droite (d) et place un point A qui n\'est pas sur (d). Trace la perpendiculaire à (d) passant par A, puis la parallèle à (d) passant par A. Que remarques-tu ?',
         corr: cm1Redac('Construction de la perpendiculaire et de la parallèle', { suite: ['Je place l\'équerre le long de (d), un côté de l\'angle droit passant par A : je trace la perpendiculaire.', 'Je fais glisser la règle le long de l\'équerre pour tracer la parallèle passant par A.'] }, 'Les deux droites tracées passent par A et sont perpendiculaires.') },
     ] },

@@ -348,8 +348,16 @@
 - Figures à terminer, reproduire, symétries (axe vertical, horizontal, diagonal), axes de symétrie à tracer.
 - Quadrillage vide (« Trace un carré de 3 carreaux ») : formes acceptées à n'importe quelle place (à une translation près, `libre`).
 
+**Lot 3, version 1420 (12/11/2026) : 16 tracés AUX INSTRUMENTS DU SITE**
+- Demandé : « Un outil de plus en reprenant les visuels et fonctionnalités des instruments du site ? » : `planches-instruments.js`
+  (outil `instr`, `plInstr(figure, cfg)`) ouvre le vrai tableau interactif (emprunté comme le lecteur des corrections) avec les
+  instruments autorisés et la figure de départ (programme du tableau) ; « J'ai fini » compare les tracés aux attendus
+  (trait de n cm, segment, droite, prolongement, cercle, perpendiculaire, parallèle ; 1,5 mm et 2,5° de tolérance).
+- En place : traits de 3, 6, 9, 12 cm et prolongement (CP), segments de n cm (CE1), segment et droite (CE1), cercles (CE1, CM1,
+  6e avec le cercle de diamètre [OA]), perpendiculaires et parallèle à l'équerre (CM1) ; droites sur quadrillage du CM2 (outil droite).
+
 **Lots suivants (outils existants à brancher, exercice par exercice)**
-- Tracés restants (≈ 30) : traits à la règle de n cm, cercles au compas, perpendiculaires et parallèles, chemins sur un plan.
+- Tracés restants (≈ 14) : chemins sur un plan, programmes de construction (CM2, 6e), angle droit à coder, couleurs imposées.
 - Coder un déplacement, chemin de la souris (≈ 25) : outils `robot` / `fleches`.
 - Colorier des cases (≈ 16) : outil `cases`.
 - Placer des points, avancer / reculer sur la bande (≈ 10) : outils `pts`, `cases`.

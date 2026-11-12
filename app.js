@@ -3985,6 +3985,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1420', date:'2026-11-12', items:[
+    "Planches à l'écran : les tracés se font maintenant AVEC LES INSTRUMENTS DU SITE. Le bouton « Construire avec les instruments » ouvre le tableau interactif (même crayon, gomme, règle graduée, équerre, compas que partout ailleurs) avec la figure de départ ; « J'ai fini » vérifie la construction (longueur à 1,5 mm près, angle à 2,5° près). En place : traits de n cm (CP, CE1), segment et droite, cercles au compas (CE1, CM1, 6e), perpendiculaires et parallèles à l'équerre (CM1), droites sur quadrillage (CM2) : 16 exercices de plus."
+  ] },
   { version:'2026-08-19.1419', date:'2026-11-12', items:[
     "Planches à l'écran : 31 exercices de tracé sur quadrillage de plus, du CP au CM2 (figures à terminer, à reproduire, symétries, axes de symétrie). On touche deux points du quadrillage pour tracer un segment ; une figure à tracer « où l'on veut » est acceptée à n'importe quelle place."
   ] },

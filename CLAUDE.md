@@ -303,6 +303,10 @@ Généralisé du CM2 à la 3e le 12/11/2026 (relevé : `_hors-ligne/releve-relec
 Exercices à l'écran (chantier du 12/11/2026, avancement dans le relevé) : tableaux et opérations posées dont les cases sont simplement
 vides reconnus automatiquement (`plNumTabAuto` ; « Pose et calcule » : `plNumGrillePose`), réponses groupées découpées (`plNumRepsDecoupees`) ;
 tracés sur quadrillage : les quadrillages (`cpQuadFig`, `symQ`, `CM2G.Q`) notent leurs traits (`data-quad`), `plNumQuadAuto` en déduit l'outil `seg` (`libre` : à une translation près).
+Tracés aux instruments (demandé le 12/11/2026 : « en reprenant les visuels et fonctionnalités des instruments du site ») : `plInstr(figure, { depart,
+outils, att, caches })` (planches-instruments.js, outil `instr`) ouvre le VRAI tableau interactif emprunté (`tbAiBorrowBoard`), figure de départ au
+format des programmes du tableau construite sans animation, points cachés (`caches`) pour placer une droite ; attendus `long`, `seg`, `droite`,
+`prolonge`, `cercle` (`par`, `r` ou `milieu`), `perp`, `para`. Ne jamais refaire des instruments maison.
 Une feuille qui dépasse la page A4 est resserrée à l'impression (`plRemplirPages`, planches.js) : jusqu'à 15 % pour l'élève, 30 %
 pour le corrigé, en gardant toute la largeur ; jamais sur une feuille d'élève où l'on mesure une longueur à la règle. Au-delà,
 alléger le contenu (demandé le 31/10/2026 : « Occupe-toi des feuilles qui débordent »).

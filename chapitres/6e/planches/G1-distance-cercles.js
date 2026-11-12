@@ -130,7 +130,7 @@ PLANCHES['6e|Distance et cercles'] = [
       { etoiles: 2, consigne: '(C) est le cercle de centre O et de rayon 4 cm. Pour chaque point, entoure sa position.',
         ...choix([['OM = 4 cm : M est', 'sur le cercle'], ['OP = 2,5 cm : P est', 'à l\'intérieur'], ['OQ = 6 cm : Q est', 'à l\'extérieur'], ['[OR] est un rayon : R est', 'sur le cercle']], 'sur le cercle · à l\'intérieur · à l\'extérieur') },
       { etoiles: 2, col: 1, consigne: 'Avec ton compas, trace le cercle de centre O qui passe par A, puis le cercle de diamètre [OA].',
-        eleve: `<div style="text-align:center;">${S(220, 150, P([110, 75], 'O', -14, 14) + P([170, 75], 'A', 6, 4), 200)}</div>`,
+        eleve: `<div style="text-align:center;">${plInstr(S(220, 150, P([110, 75], 'O', -14, 14) + P([170, 75], 'A', 6, 4), 200), { depart: [{ op: 'point', name: 'O' }, { op: 'point', name: 'A', from: 'O', dx: 3, dy: 0 }], outils: ['compas', 'regle'], att: [{ k: 'cercle', c: 'O', par: 'A' }, { k: 'cercle', milieu: ['O', 'A'] }] })}</div>`,
         corr: `<div style="text-align:center;">${CERCLES_OA}</div><div class="pl-petit">Le cercle de diamètre [OA] a pour centre le milieu de [OA].</div>` },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Trace un segment [AB] de 5 cm. Place tous les points qui sont à 3 cm de A et à 4 cm de B.',
         corr: cm1Redac('Points à 3 cm de A et à 4 cm de B', { suite: ['Les points à 3 cm de A sont sur le cercle de centre A et de rayon 3 cm.', 'Les points à 4 cm de B sont sur le cercle de centre B et de rayon 4 cm.'] }, 'Les deux cercles se coupent en deux points : ce sont les points cherchés.') + `<div style="text-align:center;margin-top:4px;">${DEUX_CERCLES}</div>` },

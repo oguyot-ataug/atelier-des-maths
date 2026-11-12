@@ -13,9 +13,9 @@ PLANCHES['ce1|Longueurs : centimètre, mètre, kilomètre'] = [
   { titre: 'Tracer et estimer', duree: '20 min',
     attendus: ['Tracer un segment de longueur donnée', 'Estimer des longueurs (cm ou m)'],
     exos: [
-      { etoiles: 1, consigne: 'Trace un segment de 7 cm, puis un segment de 12 cm.', eleve: cadre(70), corr: lig(cpRegle(12, { seg: 7, K: 22 })) + lig(cpRegle(13, { seg: 12, K: 20 })) },
+      { etoiles: 1, consigne: 'Trace un segment de 7 cm, puis un segment de 12 cm.', eleve: cadre(70) + plInstr(null, { outils: ['regle'], att: [{ k: 'long', l: 7 }, { k: 'long', l: 12 }] }), corr: lig(cpRegle(12, { seg: 7, K: 22 })) + lig(cpRegle(13, { seg: 12, K: 20 })) },
       { etoiles: 2, col: 1, consigne: 'Choisis la bonne unité : cm ou m.', ...P3.rmp([['Une gomme mesure 4 @.', 'cm'], ['Une porte mesure 2 @.', 'm'], ['Un crayon mesure 15 @.', 'cm'], ['La cour mesure 40 @.', 'm']], 2) },
-      { etoiles: 1, consigne: 'Trace un segment de 4 cm, puis un segment de 10 cm.', eleve: cadre(70), corr: lig(cpRegle(5, { seg: 4, K: 24 })) + lig(cpRegle(11, { seg: 10, K: 22 })) },
+      { etoiles: 1, consigne: 'Trace un segment de 4 cm, puis un segment de 10 cm.', eleve: cadre(70) + plInstr(null, { outils: ['regle'], att: [{ k: 'long', l: 4 }, { k: 'long', l: 10 }] }), corr: lig(cpRegle(5, { seg: 4, K: 24 })) + lig(cpRegle(11, { seg: 10, K: 22 })) },
       { etoiles: 2, col: 1, consigne: 'Entoure la mesure qui convient.', ...P3.chx([['La hauteur d\'une table :', '70 cm', '7 cm · 70 cm · 7 m'], ['La longueur d\'un bus :', '12 m', '12 cm · 12 m'], ['La longueur d\'un doigt :', '6 cm', '6 cm · 6 m']]) },
       { etoiles: 2, consigne: 'Choisis la bonne unité : cm ou m.', ...P3.rmp([['Un arbre mesure 8 @.', 'm'], ['Un livre mesure 25 @.', 'cm'], ['Une piscine mesure 25 @.', 'm'], ['Une gomme mesure 4 @.', 'cm'], ['Un autobus mesure 12 @.', 'm'], ['Un stylo mesure 14 @.', 'cm']], 2) },
     ] },

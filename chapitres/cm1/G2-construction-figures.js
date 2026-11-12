@@ -515,7 +515,7 @@ PLANCHES['cm1|Construction de figures'] = [
         eleve: plListe(['rayon : 3 cm ; diamètre : ' + B(2) + ' cm', 'rayon : 7 cm ; diamètre : ' + B(2) + ' cm', 'diamètre : 10 cm ; rayon : ' + B(2) + ' cm', 'diamètre : 8 cm ; rayon : ' + B(2) + ' cm']),
         corr: plListe(['rayon : 3 cm ; diamètre : ' + R(6) + ' cm', 'rayon : 7 cm ; diamètre : ' + R(14) + ' cm', 'diamètre : 10 cm ; rayon : ' + R(5) + ' cm', 'diamètre : 8 cm ; rayon : ' + R(4) + ' cm']) },
       { etoiles: 2, col: 1, consigne: 'Avec ton compas, trace le cercle de centre O qui passe par le point A.',
-        eleve: `<div style="text-align:center;">${OA(false)}</div>`,
+        eleve: `<div style="text-align:center;">${plInstr(OA(false), { depart: [{ op: 'point', name: 'O' }, { op: 'point', name: 'A', from: 'O', dx: 2.5, dy: 0 }], outils: ['compas'], att: [{ k: 'cercle', c: 'O', par: 'A' }] })}</div>`,
         corr: `<div style="text-align:center;">${OA(true)}</div>` },
       { etoiles: 2, consigne: 'Reproduis la maison sur le quadrillage de droite, en commençant par le point rouge.',
         eleve: duo([col(Q(6, 7, 17, maison(1, 1)), 'Le modèle'), col(plX(Q(8, 7, 17, g => P(g(2, 6), '', 0, 0, ROUGE)), { t: 'seg', k: 17, ox: 1, oy: 1, w: 8, h: 7, att: maisonSegs(2, 1) }), 'À toi !')]),

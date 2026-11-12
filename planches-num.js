@@ -271,6 +271,10 @@ function plNumAnalyser(x){
   });
   // 3. Figures blanches dans l'énoncé, coloriées dans le corrigé.
   let svE = [...E.querySelectorAll('svg')], svC = [...C.querySelectorAll('svg')];
+  // Énoncé dont les seules figures s'ouvrent sur les instruments du site (planches-instruments.js) : rien à colorier, le
+  // corrigé peut avoir d'autres figures (le tracé attendu).
+  const instr = a => { const z = a.closest('[data-plx]'); try{ return !!z && JSON.parse(z.getAttribute('data-plx')).t === 'instr'; }catch(e){ return false; } };
+  if(svE.length && svE.every(instr)){ svE = []; svC = []; }
   if(svE.length !== svC.length) return null;
   { const garde = svE.map(a => !a.closest('[data-plx]')); svE = svE.filter((_, i) => garde[i]); svC = svC.filter((_, i) => garde[i]); } // outils déclarés : déjà pris en compte
   const groupes = new Map();
