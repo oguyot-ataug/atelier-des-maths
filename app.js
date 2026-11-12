@@ -3985,6 +3985,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1418', date:'2026-11-12', items:[
+    "Planches à l'écran : 39 exercices de plus se font en ligne (projection, devoirs, séances). Tables de multiplication et d'addition, tableaux de données à compléter (CP, CE1, 4e) ; additions posées du CP et du CE1 (« Pose et calcule » : l'élève pose lui-même l'opération dans une grille, comme au CE2) ; « Écris la multiplication » (les deux facteurs dans un ordre ou dans l'autre) ; horloges du CP où l'on place les aiguilles."
+  ] },
   { version:'2026-08-19.1417', date:'2026-11-12', items:[
     "Planches de calcul littéral (5e, 4e, 3e) : « Vrai ou faux pour toutes les valeurs de x ? » demande maintenant, quand c'est faux, une valeur de x qui le prouve (dans le cahier) ; le corrigé donne un contre-exemple sous chaque égalité fausse (« Pour x = 0, 2(x + 5) vaut 10 et 2x + 5 vaut 5. »). Le vrai ou faux reste à cliquer à l'écran."
   ] },

@@ -76,7 +76,70 @@ function plNumModele(x){
   if(plNumCache.has(cle)) return plNumCache.get(cle);
   let m = null;
   try{ m = plNumAnalyser(x); }catch(e){ console.warn('plNum', e); m = null; }
+  // Tableau ou opération posée dont les cases à remplir sont simplement vides (sans pointillés) : on les retrouve en
+  // comparant l'énoncé au corrigé (chantier « exercices à l'écran » du 12/11/2026 : tables de multiplication, tables
+  // d'addition, tableaux de données, opérations posées).
+  if(!m){ const t = plNumTabAuto(x); if(t){ try{ m = plNumAnalyser(Object.assign({}, x, t)); }catch(e){ m = null; } } }
+  if(!m){ const t = plNumRepsDecoupees(x); if(t){ try{ m = plNumAnalyser(Object.assign({}, x, t)); }catch(e){ m = null; } } }
   plNumCache.set(cle, m); return m;
+}
+// Réponse écrite d'un bloc dans le corrigé (« 2 × 5 = 10 ») alors que l'énoncé a une case par nombre (… × … = …) :
+// la réponse est découpée en ses nombres. Seulement si le nombre total de cases devient égal au nombre de réponses.
+function plNumRepsDecoupees(x){
+  const E = document.createElement('div'), C = document.createElement('div'); E.innerHTML = x.eleve; C.innerHTML = x.corr;
+  const trous = [...E.querySelectorAll('.pl-frac, .pl-case-seule, .pl-pts')].filter(t => !t.closest('[data-plx]')), reps = [...C.querySelectorAll('.pl-rep')];
+  if(trous.length <= reps.length) return null;
+  let n = 0; reps.forEach(r => { if(r.querySelector('.tex')) return; const t = r.textContent.trim(), nb = t.match(/\d+(?:[ \u202f]\d{3})*(?:,\d+)?/g);
+    if(!nb || nb.length < 2 || !/[×+−:=-]/.test(t)) return; n++;
+    // « a × b = c », « a + b = c » : les deux premiers nombres dans un ordre ou dans l'autre (data-perm).
+    const P = t.split(/(\d+(?:[ \u202f]\d{3})*(?:,\d+)?)/), perm = P.length >= 5 && /^\s*[×+]\s*$/.test(P[2]) ? ` data-perm="dec${n}"` : '';
+    r.outerHTML = P.map((s, i) => i % 2 ? `<span class="pl-rep"${i <= 3 ? perm : ''}>${s}</span>` : escapeHtml(s)).join(''); });
+  if(!n || C.querySelectorAll('.pl-rep').length !== trous.length) return null;
+  return { eleve: x.eleve, corr: C.innerHTML };
+}
+// Grille où poser soi-même a op b (même dessin que les planches du CE2) : deux colonnes de plus que nécessaire, qui
+// doivent rester vides (data-vide).
+function plNumGrillePose(a, op, b, rep){
+  const r = op === '+' ? a + b : a - b, n = Math.max(String(a).length, String(b).length, String(r).length) + 2;
+  const cel = (v, k, j) => `<td data-plcol="${n - 1 - j}" data-plrow="${k}" style="width:30px;height:30px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:700;">${rep ? (v === ' ' ? '<span class="pl-rep" data-vide=""></span>' : plRep(v)) : '<span class="pl-case pl-case-seule" style="margin:0;width:18px;"></span>'}</td>`;
+  const lig = (v, k, signe, st) => `<tr${st ? ` style="${st}"` : ''}><td style="width:22px;text-align:center;color:#FF8208;font-weight:700;">${signe}</td>${String(v).padStart(n).split('').map((c, j) => cel(c, k, j)).join('')}</tr>`;
+  return `<table style="border-collapse:collapse;margin:5px auto;">${lig(a, 1, '')}${lig(b, 2, op)}${lig(r, 3, '', 'border-top:2px solid #1C1B2E;')}</table>`;
+}
+// Cases vides d'un tableau de l'énoncé, remplies dans le corrigé : pointillés dans l'énoncé, réponse (.pl-rep) dans le
+// corrigé. Mêmes tableaux, même nombre de cases, sinon rien. Renvoie { eleve, corr } ou null.
+function plNumTabAuto(x){
+  const E = document.createElement('div'), C = document.createElement('div'); E.innerHTML = x.eleve; C.innerHTML = x.corr;
+  const hauts = R => [...R.querySelectorAll('table')].filter(t => !(t.parentElement && t.parentElement.closest('table')));
+  let tE = hauts(E), tC = hauts(C);
+  // « Pose et calcule » : l'énoncé laisse un cadre vide, le corrigé pose l'opération (addition ou soustraction de deux
+  // nombres entiers) : à l'écran, une grille plus large que nécessaire où l'élève pose lui-même l'opération (comme en CE2,
+  // relecture CE2-N3-P1-E3 : « c'est à l'élève de poser les nombres dans les cases »).
+  if(!tE.length && tC.length && tC.every(t => t.classList.contains('pose-ecran'))){
+    const it = [...E.querySelectorAll('.pl-item')], itC = [...C.querySelectorAll('.pl-item')]; if(it.length !== tC.length || itC.length !== it.length) return null;
+    const ops = tC.map(t => { const L = [...t.querySelectorAll('tr')].map(r => r.textContent.replace(/\s+/g, '')).filter(s => /\d/.test(s));
+      const m = L.length === 3 && /^\d+$/.test(L[0]) && /^([+−-])(\d+)$/.exec(L[1]); if(!m || !/^\d+$/.test(L[2])) return null;
+      const a = +L[0], b = +m[2], op = m[1] === '+' ? '+' : '−'; return (op === '+' ? a + b : a - b) === +L[2] ? [a, op, b] : null; });
+    if(ops.some(o => !o)) return null;
+    it.forEach((d, i) => { const t = (d.firstChild && d.firstChild.nodeType === 3 ? d.firstChild.textContent : '').trim();
+      d.innerHTML = (t ? `<div>${escapeHtml(t)}</div>` : '') + plNumGrillePose(...ops[i]);
+      itC[i].innerHTML = (t ? `<div>${escapeHtml(t)}</div>` : '') + plNumGrillePose(...ops[i], true); });
+    return { eleve: E.innerHTML, corr: C.innerHTML };
+  }
+  if(!tE.length || tE.length !== tC.length) return null;
+  let n = 0;
+  for(let i = 0; i < tE.length; i++){
+    // Lignes alignées par le bas : le corrigé d'une opération posée a en plus, en haut, la ligne des retenues.
+    const rE = [...tE[i].querySelectorAll('tr')], rC = [...tC[i].querySelectorAll('tr')];
+    if(rC.length < rE.length || rC.slice(0, rC.length - rE.length).some(r => /\d/.test(r.textContent) && !tC[i].classList.contains('pose-ecran'))) return null;
+    const cel = rs => rs.flatMap(r => [...r.querySelectorAll('td, th')]);
+    const cE = cel(rE), cC = cel(rC.slice(rC.length - rE.length)); if(cE.length !== cC.length) return null;
+    cE.forEach((e, k) => { const c = cC[k];
+      if(e.textContent.trim() || e.querySelector('svg, img, .pl-pts, .pl-case, .pl-frac, .pl-ret-case, button')) return;
+      const t = c.textContent.replace(/\s+/g, ' ').trim(); if(!t || c.querySelector('svg, img')) return;
+      if(!c.querySelector('.pl-rep')) c.innerHTML = `<span class="pl-rep">${escapeHtml(t)}</span>`;
+      e.innerHTML = plPointilles(Math.max(2, t.length)); n++; });
+  }
+  return n ? { eleve: E.innerHTML, corr: C.innerHTML } : null;
 }
 function plNumPossible(x){ return !!plNumModele(x); }
 function plNumAnalyser(x){

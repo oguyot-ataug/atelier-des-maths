@@ -3,6 +3,10 @@
 const { lig, compte, cadre } = PCP, B = P3.B, R = P3.R;
 // Horloge sans aiguilles, pour les dessiner.
 const vide = cpSvg(160, 160, ce2Horloge(80, 80, 74, 0).replace(/<line x1="80" y1="80"[^>]*\/>/g, '').replace(/<circle cx="80" cy="80" r="5"[^>]*\/>/, '<circle cx="80" cy="80" r="4" fill="#1F3A5C"/>'), 100);
+// À l'écran, l'élève place les aiguilles (outil horloge, planches-num.js).
+// Colonne : horloge, (boutons de l'écran), puis l'heure en dessous.
+const colH = (svg, t) => `<span style="display:flex;flex-direction:column;align-items:center;gap:2px;">${svg}<span>${t}</span></span>`;
+const videH = (h, t) => `<span style="display:flex;flex-direction:column;align-items:center;gap:2px;">${plX(vide, { t: 'horloge', cx: 80, cy: 80, r: 74, h, m: 0 })}<span>${t}</span></span>`;
 const JOURS = 'lundi, mardi, mercredi, jeudi, vendredi, samedi, dimanche';
 PLANCHES['cp|Lire l\'heure : les heures entières'] = [
   { titre: 'Lire l\'heure', duree: '20 min',
@@ -11,11 +15,11 @@ PLANCHES['cp|Lire l\'heure : les heures entières'] = [
       { etoiles: 1, consigne: 'Quelle heure est-il ?',
         ...compte([[cpHorloge(3, 90), '3 h'], [cpHorloge(7, 90), '7 h'], [cpHorloge(10, 90), '10 h'], [cpHorloge(12, 90), '12 h']], 4, 3) },
       { etoiles: 2, consigne: 'Dessine les aiguilles.',
-        eleve: plGrille([vide + '<br>2 h', vide + '<br>5 h', vide + '<br>9 h'], 3), corr: plGrille([cpHorloge(2, 100) + '<br>2 h', cpHorloge(5, 100) + '<br>5 h', cpHorloge(9, 100) + '<br>9 h'], 3) },
+        eleve: plGrille([videH(2, '2 h'), videH(5, '5 h'), videH(9, '9 h')], 3), corr: plGrille([cpHorloge(2, 100) + '<br>2 h', cpHorloge(5, 100) + '<br>5 h', cpHorloge(9, 100) + '<br>9 h'], 3) },
       { etoiles: 1, consigne: 'Quelle heure est-il ?',
         ...compte([[cpHorloge(1, 90), '1 h'], [cpHorloge(6, 90), '6 h'], [cpHorloge(8, 90), '8 h'], [cpHorloge(11, 90), '11 h']], 4, 3) },
       { etoiles: 2, consigne: 'Dessine les aiguilles.',
-        eleve: plGrille([vide + '<br>4 h', vide + '<br>12 h', vide + '<br>6 h'], 3), corr: plGrille([cpHorloge(4, 100) + '<br>4 h', cpHorloge(12, 100) + '<br>12 h', cpHorloge(6, 100) + '<br>6 h'], 3) },
+        eleve: plGrille([videH(4, '4 h'), videH(12, '12 h'), videH(6, '6 h')], 3), corr: plGrille([cpHorloge(4, 100) + '<br>4 h', cpHorloge(12, 100) + '<br>12 h', cpHorloge(6, 100) + '<br>6 h'], 3) },
     ] },
   { titre: 'Une heure plus tard', duree: '20 min',
     attendus: ['Trouver l\'heure une ou deux heures plus tard'],
@@ -29,8 +33,8 @@ PLANCHES['cp|Lire l\'heure : les heures entières'] = [
       { etoiles: 2, consigne: 'Quelle heure était-il une heure plus tôt ?',
         ...P3.rmp([['6 h → @', '5 h'], ['1 h → @', '12 h'], ['9 h → @', '8 h'], ['3 h → @', '2 h'], ['11 h → @', '10 h'], ['8 h → @', '7 h']], 3) },
       { etoiles: 2, consigne: 'Dessine les aiguilles une heure plus tard.',
-        eleve: plGrille([cpHorloge(3, 100) + '<br>maintenant', vide + '<br>une heure plus tard', cpHorloge(7, 100) + '<br>maintenant', vide + '<br>une heure plus tard'], 4),
-        corr: plGrille([cpHorloge(3, 100) + '<br>maintenant', cpHorloge(4, 100) + '<br>4 h', cpHorloge(7, 100) + '<br>maintenant', cpHorloge(8, 100) + '<br>8 h'], 4) },
+        eleve: plGrille([colH(cpHorloge(3, 100), 'maintenant'), videH(4, 'une heure plus tard'), colH(cpHorloge(7, 100), 'maintenant'), videH(8, 'une heure plus tard')], 4),
+        corr: plGrille([colH(cpHorloge(3, 100), 'maintenant'), colH(cpHorloge(4, 100), '4 h'), colH(cpHorloge(7, 100), 'maintenant'), colH(cpHorloge(8, 100), '8 h')], 4) },
     ] },
   { titre: 'La journée et la semaine', duree: '15 min',
     attendus: ['Ordonner les moments de la journée', 'Connaître les jours de la semaine'],

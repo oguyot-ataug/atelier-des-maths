@@ -331,3 +331,24 @@
 - **4e-N4-P4-E1** (Fractions : multiplication et division) : Calcule en respectant les priorités. — _\dfrac{1}{2} + \dfrac{1}{2} × \dfrac{2}{3} = | ( \dfrac{1}{2} + \dfrac{1}{3} ) × \dfrac{6}_
 - **4e-D4-P2-E1** (Formules et graphiques) : Complète le tableau pour P = 30 + 5n. — __
 - **4e-D4-P2-E2** (Formules et graphiques) : Complète le tableau pour A = 260 − 4x². — __
+
+## Chantier « exercices à l'écran » (catégorie G), avancement
+
+**Lot 1, version 1418 (12/11/2026) : 39 exercices**
+- Tableaux à compléter (tables de multiplication et d'addition, tableaux de données, 4e « Formules et graphiques ») : cases vides
+  retrouvées en comparant l'énoncé au corrigé (`plNumTabAuto`, planches-num.js).
+- Additions posées (CP, CE1) : cases vides de l'opération ; « Pose et calcule » : grille plus large que nécessaire où l'élève pose
+  lui-même (`plNumGrillePose`).
+- « Écris la multiplication » : réponse du corrigé découpée en ses nombres, facteurs dans un ordre ou dans l'autre (`plNumRepsDecoupees`).
+- Horloges du CP (« Dessine les aiguilles ») : outil horloge.
+
+**Lots suivants (outils existants à brancher, exercice par exercice)**
+- Tracer sur quadrillage, reproduire, symétrie (≈ 45) : outil `seg`.
+- Coder un déplacement, chemin de la souris (≈ 25) : outils `robot` / `fleches`.
+- Colorier des cases (≈ 16) : outil `cases`.
+- Placer des points, avancer / reculer sur la bande (≈ 10) : outils `pts`, `cases`.
+
+**Outils à créer**
+- Dessiner des objets (ronds, jetons, barres de dix et cubes, bâtons, bonbons dans des sachets) (≈ 40) : tampons à poser.
+- Entourer un objet dans une image (crayon le plus long, balance…) (≈ 12).
+- Ranger des étiquettes (jours, moments de la journée) (≈ 5).
