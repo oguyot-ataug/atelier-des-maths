@@ -3985,8 +3985,11 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1417', date:'2026-11-12', items:[
+    "Planches de calcul littéral (5e, 4e, 3e) : « Vrai ou faux pour toutes les valeurs de x ? » demande maintenant, quand c'est faux, une valeur de x qui le prouve (dans le cahier) ; le corrigé donne un contre-exemple sous chaque égalité fausse (« Pour x = 0, 2(x + 5) vaut 10 et 2x + 5 vaut 5. »). Le vrai ou faux reste à cliquer à l'écran."
+  ] },
   { version:'2026-08-19.1416', date:'2026-11-12', items:[
-    "Planches du CM2 à la 3e : les principes de la relecture de la 5e « Opérations sur les nombres décimaux » étendus aux autres chapitres. Calculs détaillés : une lettre par calcul et une étape par ligne (« A = … », 6e à 3e : regrouper astucieusement, relatifs, priorités, puissances, fractions, développer et réduire) ; corrigés de problèmes en colonne (Pythagore, Thalès, trigonométrie, décompositions, échelles) ; « Vrai ou faux » sur des égalités devenu « Complète par = ou ≠ » (case à cliquer à l'écran, CM2 à 3e ; les égalités avec une lettre gardent vrai ou faux, car « ≠ » n'y voudrait rien dire) ; « Entoure l'expression qui traduit » devenu « Relie » (12 exercices, faisables à l'écran) ; ordre de grandeur à écrire au collège ; « avec r < b » dans les divisions euclidiennes.",
+    "Planches du CM2 à la 3e : les principes de la relecture de la 5e « Opérations sur les nombres décimaux » étendus aux autres chapitres. Calculs détaillés : une lettre par calcul et une étape par ligne (« A = … », 6e à 3e : regrouper astucieusement, relatifs, priorités, puissances, fractions, développer et réduire) ; corrigés de problèmes en colonne (Pythagore, Thalès, trigonométrie, décompositions, échelles) ; « Vrai ou faux » sur des égalités devenu « Complète par = ou ≠ » (case à cliquer à l'écran, CM2 à 3e ; les égalités avec une lettre gardent vrai ou faux pour toutes les valeurs, car deux expressions peuvent être égales pour certaines valeurs seulement) ; « Entoure l'expression qui traduit » devenu « Relie » (12 exercices, faisables à l'écran) ; ordre de grandeur à écrire au collège ; « avec r < b » dans les divisions euclidiennes.",
     "Planches imprimées : les pointillés d'une réponse en fraction ont la bonne longueur (ils se calculaient sur l'écriture LaTeX, « \\dfrac{5}{6} », et pouvaient couvrir toute la ligne)."
   ] },
   { version:'2026-08-19.1415', date:'2026-11-12', items:[

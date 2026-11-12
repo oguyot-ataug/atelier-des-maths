@@ -145,6 +145,18 @@ P3.bsc = (l, choix, cols) => { const el = l.map(([t]) => t.replace('@', plCase(c
 // « Complète par = ou ≠ » : [['membre de gauche', 'membre de droite', vrai ?], …].
 P3.egal = (l, cols) => P3.bsc(l.map(([a, b, v]) => [`${a} @ ${b}`, v ? '=' : '≠']), '=|≠', cols);
 P3.VERT = '#1F7A4D';
+// Égalité avec une lettre : vrai ou faux POUR TOUTES LES VALEURS (« ≠ » n'y conviendrait pas : x × x et 2x sont égaux pour x = 2) ;
+// si c'est faux, l'élève justifie par un contre-exemple (demandé le 12/11/2026 : « Oui, justifier quand c'est faux »), donné
+// dans le corrigé. Items : [gauche, droite, vrai, [valeur de la lettre, valeur à gauche, valeur à droite]?, lettre ('x')].
+// cols : 2 = deux listes côte à côte (exercice pleine largeur).
+P3.vfx = (it, cols) => {
+  const nb = v => String(v).replace('-', '−').replace('.', ',');
+  const li = ([g, d, v, c, l], corr) => `${g} = ${d}` + (corr ? ` ${P3.entoureParmi('vrai · faux', v ? 'vrai' : 'faux')}`
+      + (!v && c ? `<div class="pl-contre" style="font-size:.9em;color:${P3.VERT};">Pour ${l || 'x'} = ${nb(c[0])}, ${g} vaut ${nb(c[1])} et ${d} vaut ${nb(c[2])}.</div>` : '') : ' <b>vrai · faux</b>');
+  const liste = (l, corr) => '<div class="pl-col1">' + plListe(l.map(x => li(x, corr))) + '</div>';
+  if(cols !== 2) return { eleve: liste(it, false), corr: liste(it, true) };
+  const h = Math.ceil(it.length / 2), d = (a, b) => `<div style="display:grid;grid-template-columns:1fr 1fr;gap:2px 24px;align-items:start;">${a}${b}</div>`;
+  return { eleve: d(liste(it.slice(0, h), false), liste(it.slice(h), false)), corr: d(liste(it.slice(0, h), true), liste(it.slice(h), true)) }; };
 // Relier : phrases à gauche (G), expressions à droite (D), att[i] = indice dans D de la réponse de G[i].
 // o = { W: largeur, xg: abscisse des points de gauche, ecart: entre les deux colonnes de points, fs: taille des expressions,
 // n: caractères par ligne à gauche }. P3.relier1 : réglages d'un exercice en demi-largeur ({ col: 1 }).
