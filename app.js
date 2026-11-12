@@ -3985,6 +3985,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1421', date:'2026-11-12', items:[
+    "6e, Distance et cercles : les figures qu'on manipule (milieu d'un segment, vocabulaire du cercle, cercle et disque) et la méthode animée suivent la règle des figures du site. Point sur un segment : petit trait perpendiculaire ; point d'intersection (centre, extrémités d'un rayon, d'un diamètre, d'une corde) : le nom seul ; codages des longueurs égales : petits traits inclinés. Les points à déplacer gardent un léger halo. La méthode animée pose la vraie règle graduée du site (l'étape de la règle ne s'affichait plus)."
+  ] },
   { version:'2026-08-19.1420', date:'2026-11-12', items:[
     "Planches à l'écran : les tracés se font maintenant AVEC LES INSTRUMENTS DU SITE. Le bouton « Construire avec les instruments » ouvre le tableau interactif (même crayon, gomme, règle graduée, équerre, compas que partout ailleurs) avec la figure de départ ; « J'ai fini » vérifie la construction (longueur à 1,5 mm près, angle à 2,5° près). En place : traits de n cm (CP, CE1), segment et droite, cercles au compas (CE1, CM1, 6e), perpendiculaires et parallèles à l'équerre (CM1), droites sur quadrillage (CM2) : 16 exercices de plus."
   ] },
