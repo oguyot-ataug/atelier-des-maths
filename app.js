@@ -3985,6 +3985,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1419', date:'2026-11-12', items:[
+    "Planches à l'écran : 31 exercices de tracé sur quadrillage de plus, du CP au CM2 (figures à terminer, à reproduire, symétries, axes de symétrie). On touche deux points du quadrillage pour tracer un segment ; une figure à tracer « où l'on veut » est acceptée à n'importe quelle place."
+  ] },
   { version:'2026-08-19.1418', date:'2026-11-12', items:[
     "Planches à l'écran : 39 exercices de plus se font en ligne (projection, devoirs, séances). Tables de multiplication et d'addition, tableaux de données à compléter (CP, CE1, 4e) ; additions posées du CP et du CE1 (« Pose et calcule » : l'élève pose lui-même l'opération dans une grille, comme au CE2) ; « Écris la multiplication » (les deux facteurs dans un ordre ou dans l'autre) ; horloges du CP où l'on place les aiguilles."
   ] },

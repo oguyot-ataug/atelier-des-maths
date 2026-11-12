@@ -81,6 +81,7 @@ function plNumModele(x){
   // d'addition, tableaux de données, opérations posées).
   if(!m){ const t = plNumTabAuto(x); if(t){ try{ m = plNumAnalyser(Object.assign({}, x, t)); }catch(e){ m = null; } } }
   if(!m){ const t = plNumRepsDecoupees(x); if(t){ try{ m = plNumAnalyser(Object.assign({}, x, t)); }catch(e){ m = null; } } }
+  if(!m){ const t = plNumQuadAuto(x); if(t){ try{ m = plNumAnalyser(Object.assign({}, x, t)); }catch(e){ m = null; } } }
   plNumCache.set(cle, m); return m;
 }
 // Réponse écrite d'un bloc dans le corrigé (« 2 × 5 = 10 ») alors que l'énoncé a une case par nombre (… × … = …) :
@@ -96,6 +97,30 @@ function plNumRepsDecoupees(x){
     r.outerHTML = P.map((s, i) => i % 2 ? `<span class="pl-rep"${i <= 3 ? perm : ''}>${s}</span>` : escapeHtml(s)).join(''); });
   if(!n || C.querySelectorAll('.pl-rep').length !== trous.length) return null;
   return { eleve: x.eleve, corr: C.innerHTML };
+}
+// Figure quadrillée (data-quad, cpQuadFig) : les traits du corrigé absents de l'énoncé sont à tracer à l'écran (outil seg :
+// on touche deux nœuds). Les traits déjà donnés doivent se retrouver dans le corrigé.
+function plNumQuadAuto(x){
+  const E = document.createElement('div'), C = document.createElement('div'); E.innerHTML = x.eleve; C.innerHTML = x.corr;
+  const qE = [...E.querySelectorAll('svg[data-quad]')], qC = [...C.querySelectorAll('svg[data-quad]')];
+  if(!qE.length || qE.length !== qC.length) return null;
+  let n = 0;
+  for(let i = 0; i < qE.length; i++){
+    if(qE[i].hasAttribute('data-plx')) continue;
+    let a, b; try{ a = JSON.parse(qE[i].getAttribute('data-quad')); b = JSON.parse(qC[i].getAttribute('data-quad')); }catch(e){ return null; }
+    if(a.c !== b.c || a.nc !== b.nc || a.nr !== b.nr) return null;
+    const uE = plxUnites(a.segs), uC = plxUnites(b.segs);
+    if([...uE].some(s => !uC.has(s))) continue; // l'énoncé a un trait que le corrigé n'a pas : ce n'est pas un tracé à compléter
+    const att = [...uC].filter(s => !uE.has(s)).map(s => s.split(',').map(Number)); if(!att.length) continue;
+    // Quadrillage vide (ni trait ni point donné) : les formes se tracent où l'on veut (« Trace un carré de 3 carreaux de
+    // côté ») ; comparées à une translation près. Sinon, le tracé est à sa place (axe de symétrie, figure à terminer…).
+    const libres = !a.segs.length && !(a.pts || []).length ? plxComposantes(att) : [];
+    // Tracé de l'élève en bleu : le rouge est déjà celui des axes de symétrie.
+    const o = a.o ?? 4, cfg = { t: 'seg', k: a.c, ox: o, oy: o, w: a.nc, h: a.nr, att, coul: '#1F6FEB' };
+    if(libres.length){ const L = new Set(libres.flat().map(s => s.join(','))); cfg.att = att.filter(s => !L.has(s.join(','))); cfg.libre = libres.map(plxForme).sort(); }
+    qE[i].setAttribute('data-plx', JSON.stringify(cfg)); n++;
+  }
+  return n ? { eleve: E.innerHTML, corr: x.corr } : null;
 }
 // Grille où poser soi-même a op b (même dessin que les planches du CE2) : deux colonnes de plus que nécessaire, qui
 // doivent rester vides (data-vide).
@@ -482,6 +507,17 @@ const plxPgcd = (a, b) => b ? plxPgcd(b, a % b) : a;
 function plxUnites(segs){ const s = new Set(); (segs || []).forEach(([a, b, c, d]) => { let dx = c - a, dy = d - b; const g = plxPgcd(Math.abs(dx), Math.abs(dy)); if(!g) return; dx /= g; dy /= g;
   for(let t = 0; t < g; t++){ const p = [a + dx * t, b + dy * t], q = [a + dx * (t + 1), b + dy * (t + 1)], k = p[0] < q[0] || (p[0] === q[0] && p[1] < q[1]) ? p.concat(q) : q.concat(p); s.add(k.join(',')); } }); return s; }
 const plxEgal = (A, B) => A.size === B.size && [...A].every(x => B.has(x));
+// Morceaux d'un dessin : segments unités reliés par leurs extrémités ; forme d'un morceau à une translation près.
+function plxComposantes(segs){
+  const U = [...plxUnites(segs)].map(s => s.split(',').map(Number)), vu = new Set(), res = [];
+  U.forEach((s, i) => { if(vu.has(i)) return; const cp = [], pile = [i]; vu.add(i);
+    while(pile.length){ const k = pile.pop(), [a, b, c, d] = U[k]; cp.push(U[k]);
+      U.forEach((t, j) => { if(vu.has(j)) return; const [e, f, g, h] = t; if((e === a && f === b) || (e === c && f === d) || (g === a && h === b) || (g === c && h === d)){ vu.add(j); pile.push(j); } }); }
+    res.push(cp); });
+  return res;
+}
+const plxForme = cp => { const mx = Math.min(...cp.flatMap(s => [s[0], s[2]])), my = Math.min(...cp.flatMap(s => [s[1], s[3]]));
+  return cp.map(([a, b, c, d]) => [a - mx, b - my, c - mx, d - my].join(',')).sort().join(';'); };
 function plxNoeud(G, x, y){ const i = Math.round((x - G.ox) / G.k), j = Math.round((y - G.oy) / G.k);
   return i < 0 || j < 0 || i > G.w || j > G.h || Math.hypot(G.ox + i * G.k - x, G.oy + j * G.k - y) > G.k * .45 ? null : [i, j]; }
 const plxBtn = (id, a, txt, on, cl) => `<button type="button" class="pn-xbtn${on ? ' on' : ''}${cl ? ' ' + cl : ''}" data-pnxb="${id}|${a}">${txt}</button>`;
@@ -589,7 +625,11 @@ const PLX = {
       (st.s || []).forEach(([a, b, c, d]) => { const p = P(a, b), q = P(c, d); s += `<line x1="${p[0]}" y1="${p[1]}" x2="${q[0]}" y2="${q[1]}" stroke="${C.coul || '#E35D3A'}" stroke-width="2.6" stroke-linecap="round"/>`; });
       if(st.a){ const [x, y] = P(...st.a); s += `<circle cx="${x}" cy="${y}" r="${C.k * .22}" fill="#E35D3A"/>`; } return s; },
     barre: (C, st, id) => `<span class="pn-xaide">Touche deux points du quadrillage pour tracer un segment ; touche à nouveau les deux points pour l'effacer.</span>`,
-    juste: (C, st) => plxEgal(plxUnites(st.s), plxUnites(C.att))
+    // libre : formes à tracer où l'on veut (à une translation près), en plus des traits imposés (att).
+    juste: (C, st) => { if(!C.libre) return plxEgal(plxUnites(st.s), plxUnites(C.att));
+      const S = plxUnites(st.s), F = plxUnites(C.att); if([...F].some(s => !S.has(s))) return false;
+      const reste = [...S].filter(s => !F.has(s)).map(s => s.split(',').map(Number));
+      return plxComposantes(reste).map(plxForme).sort().join('|') === C.libre.join('|'); }
   },
   cases: {
     tap(C, st, x, y){ const i = Math.floor((x - C.ox) / C.k), j = Math.floor((y - C.oy) / C.k); if(i < 0 || j < 0 || i >= C.w || j >= C.h) return;

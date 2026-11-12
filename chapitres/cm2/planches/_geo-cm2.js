@@ -21,11 +21,18 @@ const CM2G = (() => {
   const droit = (a, b, c, col) => { const u = (p, q) => { const l = Math.hypot(q[0] - p[0], q[1] - p[1]); return [(q[0] - p[0]) / l, (q[1] - p[1]) / l]; }, e = u(b, a), g = u(b, c), k = 8;
     return `<path d="M${f(b[0] + e[0] * k)},${f(b[1] + e[1] * k)} L${f(b[0] + (e[0] + g[0]) * k)},${f(b[1] + (e[1] + g[1]) * k)} L${f(b[0] + g[0] * k)},${f(b[1] + g[1] * k)}" fill="none" stroke="${col || RO}" stroke-width="1.4"/>`; };
   // Quadrillage de w × h carreaux de k px ; dessin(g) reçoit g(x, y) → coordonnées en px.
+  // Les tracés faits avec ligne() sont notés en carreaux (data-quad) : l'écran retrouve ceux que l'élève doit tracer en
+  // comparant l'énoncé et le corrigé (plNumQuadAuto, planches-num.js ; chantier « exercices à l'écran » du 12/11/2026).
+  let traits = null;
   const Q = (w, h, k, dessin, px) => { const g = (x, y) => [1 + x * k, 1 + y * k]; let s = '';
     for(let x = 0; x <= w; x++) s += L(g(x, 0), g(x, h), '#B9C7D6', .8); for(let y = 0; y <= h; y++) s += L(g(0, y), g(w, y), '#B9C7D6', .8);
-    return svg(w * k + 2, h * k + 2, s + (dessin ? dessin(g) : ''), px); };
+    traits = []; const d = dessin ? dessin(g) : '', segs = traits; traits = null;
+    const q = JSON.stringify({ c: k, nc: w, nr: h, o: 1, segs, pts: [] }).replace(/"/g, '&quot;');
+    return svg(w * k + 2, h * k + 2, s + d, px).replace('<svg ', `<svg data-quad="${q}" `); };
   const AX = (a, b) => L(a, b, RO, 2.4);
-  const ligne = (g, pts, c, ferme) => P(pts.map(([x, y]) => g(x, y)), c || K, 2.4, 'none', ferme);
+  const ligne = (g, pts, c, ferme) => { if(traits){ const l = ferme === false ? pts : pts.concat([pts[0]]);
+      for(let i = 0; i + 1 < l.length; i++) if(l[i].concat(l[i + 1]).every(Number.isInteger)) traits.push(l[i].concat(l[i + 1])); }
+    return P(pts.map(([x, y]) => g(x, y)), c || K, 2.4, 'none', ferme); };
   // Figure sous un nom (dans une grille de cartes).
   const carte = (fig, txt) => `<div style="text-align:center;">${fig}<div style="margin-top:2px;">${txt}</div></div>`;
   // Horloge à aiguilles (h, m) ; t = largeur en px.

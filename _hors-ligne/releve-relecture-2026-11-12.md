@@ -342,8 +342,14 @@
 - « Écris la multiplication » : réponse du corrigé découpée en ses nombres, facteurs dans un ordre ou dans l'autre (`plNumRepsDecoupees`).
 - Horloges du CP (« Dessine les aiguilles ») : outil horloge.
 
+**Lot 2, version 1419 (12/11/2026) : 31 tracés sur quadrillage (CP à CM2)**
+- Les quadrillages des planches (`cpQuadFig`, `symQ` du CE1, `CM2G.Q`) notent leurs traits en carreaux (`data-quad`) ; l'écran
+  déduit les segments à tracer en comparant l'énoncé et le corrigé (`plNumQuadAuto`, outil `seg`, tracé de l'élève en bleu).
+- Figures à terminer, reproduire, symétries (axe vertical, horizontal, diagonal), axes de symétrie à tracer.
+- Quadrillage vide (« Trace un carré de 3 carreaux ») : formes acceptées à n'importe quelle place (à une translation près, `libre`).
+
 **Lots suivants (outils existants à brancher, exercice par exercice)**
-- Tracer sur quadrillage, reproduire, symétrie (≈ 45) : outil `seg`.
+- Tracés restants (≈ 30) : traits à la règle de n cm, cercles au compas, perpendiculaires et parallèles, chemins sur un plan.
 - Coder un déplacement, chemin de la souris (≈ 25) : outils `robot` / `fleches`.
 - Colorier des cases (≈ 16) : outil `cases`.
 - Placer des points, avancer / reculer sur la bande (≈ 10) : outils `pts`, `cases`.

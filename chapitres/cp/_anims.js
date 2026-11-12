@@ -851,7 +851,11 @@ function cpQuadFig(nc, nr, traits, o){
   traits.forEach(([pts, col, ferme]) => { const p = pts.map(([x, y]) => `${4 + x * c},${4 + y * c}`).join(' ');
     s += ferme === false ? `<polyline points="${p}" fill="none" stroke="${col || CPC.bord}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>` : `<polygon points="${p}" fill="${col}" fill-opacity=".3" stroke="${CPC.bord}" stroke-width="2.5"/>`; });
   (o.points || []).forEach(([x, y, nom]) => { s += `<circle cx="${4 + x * c}" cy="${4 + y * c}" r="4" fill="${CE2C.rouge}"/>` + (nom ? ce2T(4 + x * c + 9, 4 + y * c - 6, nom, { t: 13, g: 700 }) : ''); });
-  return cpSvg(nc * c + 8, nr * c + 8, s, o.px);
+  // Les traits, en carreaux (data-quad) : l'écran retrouve ceux que l'élève doit tracer en comparant l'énoncé et le corrigé
+  // (plNumQuadAuto, planches-num.js ; chantier « exercices à l'écran » du 12/11/2026).
+  const segs = []; traits.forEach(([pts, , ferme]) => { const l = ferme === false ? pts : pts.concat([pts[0]]);
+    for(let i = 0; i + 1 < l.length; i++) if(l[i].concat(l[i + 1]).every(Number.isInteger)) segs.push(l[i].concat(l[i + 1])); });
+  return cpSvg(nc * c + 8, nr * c + 8, s, o.px).replace('<svg ', `<svg data-quad="${JSON.stringify({ c, nc, nr, segs, pts: (o.points || []).map(([x, y]) => [x, y]) }).replace(/"/g, '&quot;')}" `);
 }
 /* ---- Reproduire une figure sur quadrillage : le trait se dessine côté par côté, en comptant les carreaux ---- */
 function cpAnimReproduire(id, o){

@@ -7,7 +7,9 @@ function symQ(nc, nr, pts, v, image, px){ const c = 22; let s = '';
   const poly = (L, col) => `<polygon points="${L.map(([x, y]) => `${4 + x * c},${4 + y * c}`).join(' ')}" fill="${col}" fill-opacity=".3" stroke="${col}" stroke-width="2.5"/>`;
   s += poly(pts, CE2C.vert) + (image ? poly(pts.map(([x, y]) => [2 * v - x, y]), CE2C.violet) : '');
   s += `<line x1="${4 + v * c}" y1="0" x2="${4 + v * c}" y2="${8 + nr * c}" stroke="${CE2C.rouge}" stroke-width="2.5" stroke-dasharray="7 5"/>`;
-  return cpSvg(nc * c + 8, nr * c + 8, s, px || 200); }
+  // Côtés en carreaux (data-quad) : à l'écran, l'élève trace les côtés de l'image (plNumQuadAuto, planches-num.js).
+  const cotes = L => L.map((p, i) => p.concat(L[(i + 1) % L.length])), segs = cotes(pts).concat(image ? cotes(pts.map(([x, y]) => [2 * v - x, y])) : []);
+  return cpSvg(nc * c + 8, nr * c + 8, s, px || 200).replace('<svg ', `<svg data-quad="${JSON.stringify({ c, nc, nr, o: 4, segs, pts: [] }).replace(/"/g, '&quot;')}" `); }
 const lettre = (L, axe) => `<span style="font:700 2.2rem 'Space Grotesk',sans-serif;padding:0 6px;${axe ? 'border-bottom:0;' : ''}">${L}</span>`;
 const Bd = CPC.bord, Rg = CE2C.rouge, Bl = CE2C.bleu;
 const croix = (x, y, nom, dx, dy, c) => `<path d="M${x - 5} ${y - 5} L${x + 5} ${y + 5} M${x - 5} ${y + 5} L${x + 5} ${y - 5}" stroke="${c || Bd}" stroke-width="2.2"/>` + ce2T(x + (dx || 0), y + (dy == null ? -10 : dy), nom, { t: 15, g: 700, c: c || Bd });

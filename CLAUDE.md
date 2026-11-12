@@ -301,7 +301,8 @@ Généralisé du CM2 à la 3e le 12/11/2026 (relevé : `_hors-ligne/releve-relec
 `P3.vfx`, demandé le 12/11/2026 « Oui, justifier quand c'est faux »),
 `P3.relier` / `P3.relier1` (demi-largeur ; exposants en vrai exposant, `P3.svgExp`). Pointillés d'une réponse LaTeX : longueur affichée (`plLongVisible`).
 Exercices à l'écran (chantier du 12/11/2026, avancement dans le relevé) : tableaux et opérations posées dont les cases sont simplement
-vides reconnus automatiquement (`plNumTabAuto` ; « Pose et calcule » : `plNumGrillePose`), réponses groupées découpées (`plNumRepsDecoupees`).
+vides reconnus automatiquement (`plNumTabAuto` ; « Pose et calcule » : `plNumGrillePose`), réponses groupées découpées (`plNumRepsDecoupees`) ;
+tracés sur quadrillage : les quadrillages (`cpQuadFig`, `symQ`, `CM2G.Q`) notent leurs traits (`data-quad`), `plNumQuadAuto` en déduit l'outil `seg` (`libre` : à une translation près).
 Une feuille qui dépasse la page A4 est resserrée à l'impression (`plRemplirPages`, planches.js) : jusqu'à 15 % pour l'élève, 30 %
 pour le corrigé, en gardant toute la largeur ; jamais sur une feuille d'élève où l'on mesure une longueur à la règle. Au-delà,
 alléger le contenu (demandé le 31/10/2026 : « Occupe-toi des feuilles qui débordent »).
