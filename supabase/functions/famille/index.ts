@@ -62,7 +62,7 @@ const CERTIFICATION_TEXTE =
   "des comptes sans remboursement.";
 
 function normIdent(s: string): string {
-  return String(s || "").trim().toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/\s+/g, ".");
+  return String(s || "").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, ".");
 }
 
 serve(async (req) => {
