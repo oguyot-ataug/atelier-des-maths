@@ -3987,6 +3987,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1427', date:'2026-11-12', items:[
+    "La famille d'olives aussi sur l'accueil et dans l'Espace famille -- demandé : « oui ». Bandeau « Vous êtes parent ? » de l'accueil : les olives à la place de l'icône (au-dessus du texte sur téléphone) ; Espace famille : à droite du titre."
+  ]},
   { version:'2026-08-19.1426', date:'2026-11-12', items:[
     "Offre Famille : une famille d'olives dans le bandeau -- demandé : « On peut faire une famille d'Olives ? ». Deux grandes olives (verte, noire) et deux petites (dorée, cuivrée), aux teintes d'Oliv'IA, se tiennent par la main ; la plus petite fait coucou. À droite du titre sur ordinateur, sous le texte sur téléphone."
   ]},

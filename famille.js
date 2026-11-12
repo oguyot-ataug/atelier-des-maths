@@ -45,6 +45,9 @@ function famMajLiens(){
   // Bandeau : pour les visiteurs (découvrir l'offre) et les parents (accès direct à leur espace).
   if(banner) banner.style.display = (famPublique && (!connecte || role === 'parent')) ? 'flex' : 'none';
   if(btn) btn.style.display = famPublique ? 'flex' : 'none';
+  // Famille d'olives à la place de l'icône du bandeau de l'accueil (demandé le 12/11/2026).
+  const ico = banner && banner.querySelector('.fam-home-ico');
+  if(ico && !ico.dataset.olives){ ico.dataset.olives = '1'; ico.classList.add('fam-home-olives'); ico.innerHTML = famOlivesSvg(); }
   const cta = document.getElementById('famHomeCta'), prix = document.getElementById('famHomePrix');
   if(cta) cta.innerHTML = role === 'parent' ? 'Mon Espace famille <span class="gicon">arrow_forward</span>' : 'Découvrir l\'offre Famille <span class="gicon">arrow_forward</span>';
   // Ventes fermées : pas de prix dans le site (règle du 10/11/2026), seulement l'essai gratuit.
@@ -308,8 +311,10 @@ async function renderFamille(){
   const essai = !active && !!(fam && fam.essai_until && fam.essai_until >= today);
 
   root.innerHTML = `
-    <h1 style="margin:6px 0 4px;"><span class="gicon">family_restroom</span> Espace famille</h1>
-    <p style="color:var(--ink-soft);margin:0 0 14px;">Bonjour ${famEsc(currentUser && document.getElementById('accountNameDisplay').textContent)} : vous gérez ici l'accès, les comptes de vos enfants, leur suivi et l'IA.</p>
+    <div class="fam-tete"><div class="fam-hero-txt">
+      <h1 style="margin:6px 0 4px;"><span class="gicon">family_restroom</span> Espace famille</h1>
+      <p style="color:var(--ink-soft);margin:0 0 14px;">Bonjour ${famEsc(currentUser && document.getElementById('accountNameDisplay').textContent)} : vous gérez ici l'accès, les comptes de vos enfants, leur suivi et l'IA.</p>
+    </div>${famOlivesSvg()}</div>
     ${paye && !active ? '<div class="fam-banner"><span class="gicon">hourglass_top</span> Paiement reçu, activation en cours… cette page se met à jour toute seule.</div>' : ''}
     ${paye && active ? '<div class="fam-banner ok"><span class="gicon">check_circle</span> Merci ! Votre accès est activé. Votre facture est disponible ci-dessous, dans « Mes factures », et vous a été annoncée par e-mail.</div>' : ''}
     ${famData.fam.stripe_test ? '<div class="fam-banner"><span class="gicon">science</span><span><b>Compte de test</b> : les paiements sont simulés par Stripe, aucun argent ne circule. Carte de test : <code>4242 4242 4242 4242</code>, date future quelconque, code 123.</span></div>' : ''}
@@ -623,6 +628,9 @@ async function famSupprimerCompte(){
   st.textContent = `
     .fam-hero{background:linear-gradient(135deg,#FFF4E0,#E8F1FB);border-radius:14px;padding:18px 20px;margin:6px 0 14px;display:flex;align-items:center;gap:18px;}
     .fam-hero-txt{flex:1 1 auto;min-width:0;}
+    .fam-tete{display:flex;align-items:center;gap:18px;margin:0 0 4px;} .fam-tete .fam-olives{width:220px;margin:0;}
+    .fam-home-ico.fam-home-olives{width:150px;height:auto;background:none;box-shadow:none;border-radius:0;} .fam-home-olives .fam-olives{width:150px;margin:0;}
+    @media (max-width:720px){ .fam-tete{flex-direction:column;align-items:stretch;} .fam-tete .fam-olives{width:min(220px,70%);margin:0 auto 8px;} .fam-home-ico.fam-home-olives{width:100%;justify-content:center;} .fam-home-olives .fam-olives{width:180px;} }
     .fam-olives{flex:0 0 auto;width:270px;height:auto;display:block;margin:-6px 0 -10px;}
     @media (max-width:720px){ .fam-hero{flex-direction:column;align-items:stretch;} .fam-olives{width:min(260px,80%);margin:4px auto -6px;} }
     .fam-offres{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 12px;}
