@@ -1422,9 +1422,11 @@ function setTick(el, cx, cy, angleRad, len){
 }
 /* Code d'égalité de longueur : un trait fin et INCLINÉ par rapport au segment (convention du
    petit trait oblique), pour ne jamais ressembler à une marque de point (qui, elle, est perpendiculaire). */
+// Codage d'égalité de longueurs : petit trait de 7 px incliné à 60° sur le segment (règle du site, demandée le 01/11/2026 ;
+// la longueur demandée par l'appelant est ignorée depuis le 12/11/2026 : les codages de 14 à 16 px se confondaient avec des points).
 function setSlantTick(el, cx, cy, angleRad, len){
-  len = len||14;
-  const tilt = angleRad + 65*Math.PI/180;
+  len = 7;
+  const tilt = angleRad + 60*Math.PI/180;
   const dx = Math.cos(tilt)*len/2, dy = Math.sin(tilt)*len/2;
   el.setAttribute('x1',cx-dx); el.setAttribute('y1',cy-dy);
   el.setAttribute('x2',cx+dx); el.setAttribute('y2',cy+dy);
@@ -3985,6 +3987,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1422', date:'2026-11-12', items:[
+    "Figures qu'on manipule : codages d'égalité de longueurs ramenés partout à un petit trait de 7 px incliné à 60° (6e Droites parallèles et perpendiculaires, 6e Symétrie axiale, 5e Symétrie centrale : ils mesuraient 14 à 18 px). 6e Droites parallèles et perpendiculaires et 5e Symétrie centrale : les repères des points (croix, petit trait) ne restaient plus figés après le premier affichage. 5e Symétrie centrale : O, point d'intersection, n'a plus de croix dans la figure du segment ; M et M' (sur le cercle et au bout du rayon) n'ont plus de point plein."
+  ] },
   { version:'2026-08-19.1421', date:'2026-11-12', items:[
     "6e, Distance et cercles : les figures qu'on manipule (milieu d'un segment, vocabulaire du cercle, cercle et disque) et la méthode animée suivent la règle des figures du site. Point sur un segment : petit trait perpendiculaire ; point d'intersection (centre, extrémités d'un rayon, d'un diamètre, d'une corde) : le nom seul ; codages des longueurs égales : petits traits inclinés. Les points à déplacer gardent un léger halo. La méthode animée pose la vraie règle graduée du site (l'étape de la règle ne s'affichait plus)."
   ] },

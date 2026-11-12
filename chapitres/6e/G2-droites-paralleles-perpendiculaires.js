@@ -208,8 +208,8 @@ document.getElementById('cours-demo-droites-paralleles').innerHTML = `
     <line id="dp-medSeg" stroke="#1C1B2E" stroke-width="1.8"/>
     <line id="dp-medLine" stroke="#E35D3A" stroke-width="1.8"/>
     <path id="dp-medAngleMark" fill="none" stroke="#1C1B2E" stroke-width="1.3"/>
-    <line id="dp-medTick1a" stroke="#1F6B3A" stroke-width="1.8"/>
-    <line id="dp-medTick1b" stroke="#1F6B3A" stroke-width="1.8"/>
+    <line id="dp-medTick1a" stroke="#1C1B2E" stroke-width="1.6"/>
+    <line id="dp-medTick1b" stroke="#1C1B2E" stroke-width="1.6"/>
     <circle id="dp-medP" r="5.5" fill="#1C1B2E" style="cursor:grab;" data-marker="cross"/>
     <circle id="dp-medQ" r="5.5" fill="#1C1B2E" style="cursor:grab;" data-marker="cross"/>
     <text id="dp-medLabelP" font-style="italic" font-size="14">A</text>
@@ -232,8 +232,8 @@ document.getElementById('cours-demo-droites-paralleles').innerHTML = `
     <rect id="dp-mm-measureRuler" rx="6" fill="rgba(205,228,255,.35)" stroke="#1C1B2E" stroke-width="1.5" style="display:none;"/>
     <path id="dp-mm-measureTicks" stroke="#1C1B2E" stroke-width="1" fill="none" style="display:none;"/>
     <g id="dp-mm-measureLabels" style="display:none;"></g>
-    <line id="dp-mm-tick1a" stroke="#1F6B3A" stroke-width="1.8" style="display:none;"/>
-    <line id="dp-mm-tick1b" stroke="#1F6B3A" stroke-width="1.8" style="display:none;"/>
+    <line id="dp-mm-tick1a" stroke="#1C1B2E" stroke-width="1.6" style="display:none;"/>
+    <line id="dp-mm-tick1b" stroke="#1C1B2E" stroke-width="1.6" style="display:none;"/>
     <circle id="dp-mm-midpoint" r="3.5" fill="#1C1B2E" style="display:none;" data-marker="cross"/>
     <g id="dp-mm-equerre" style="display:none;">
       ${equerreSVG(TB_EQUERRE_LEGX, TB_EQUERRE_LEGY)}
@@ -478,7 +478,7 @@ function dpDistSegment(x, y, l){
   return Math.hypot(x - (x1 + t*dx), y - (y1 + t*dy));
 }
 function dpMarqueSync(c){
-  const g = c._dpCroix; if(!g) return;
+  const g = c._dpCroix; if(!g || g.children.length < 2) return;
   const x = parseFloat(c.getAttribute('cx')) || 0, y = parseFloat(c.getAttribute('cy')) || 0;
   const [l1, l2] = g.children, couleur = c.getAttribute('fill') || '#1C1B2E';
   // La droite doit être DÉJÀ TRACÉE jusqu'au point (signalé : « il faut le faire quand la droite est
@@ -507,6 +507,9 @@ function dpCroixPoint(c){
   if(c._dpCroix) return;
   const g = document.createElementNS(DP_NS, 'g');
   g.setAttribute('class', 'dp-croix'); g.setAttribute('pointer-events', 'none');
+  // geo-points.js ne doit pas retoucher ces repères (il remplaçait la croix une fois pour toutes, puis dpMarqueSync ne
+  // trouvait plus ses deux traits : erreur à chaque déplacement, repères figés -- vu le 12/11/2026).
+  g.setAttribute('data-geo-garde', '');
   g.innerHTML = '<line stroke-width="1.9" stroke-linecap="round"/><line stroke-width="1.9" stroke-linecap="round"/>';
   c.parentNode.insertBefore(g, c.nextSibling);
   c._dpCroix = g;
@@ -630,7 +633,7 @@ function updateMedDemo(){
   dpSetTxt(document.getElementById('dp-medLabelQ'), dpMedQ, 8, 4);
   dpSetTxt(document.getElementById('dp-medLabelMed'), {x:mid.x+perpDir.x*60, y:mid.y+perpDir.y*60}, -40, -4);
   // codage des longueurs égales (petits traits obliques sur PM et MQ)
-  const tickLen=9, tickAngle=Math.atan2(dDir.y,dDir.x)+Math.PI/2.6;
+  const tickLen=3.5, tickAngle=Math.atan2(dDir.y,dDir.x)+Math.PI/3; // codage : trait de 7 px incliné à 60° (règle du site)
   const quarter1 = {x:(dpMedP.x+mid.x)/2, y:(dpMedP.y+mid.y)/2};
   const quarter2 = {x:(mid.x+dpMedQ.x)/2, y:(mid.y+dpMedQ.y)/2};
   const t1 = document.getElementById('dp-medTick1a');
@@ -726,7 +729,7 @@ function dpRenderMedMethode(animate){
   const tick1a = document.getElementById('dp-mm-tick1a'), tick1b = document.getElementById('dp-mm-tick1b'), midpoint = document.getElementById('dp-mm-midpoint');
   const midpointOnwards = ['midpoint','equerre','ruler','removed','traced','clean'];
   if(midpointOnwards.indexOf(s.phase)!==-1){
-    const tickLen=9, tickAngle=Math.atan2(dpMmDir.y,dpMmDir.x)+Math.PI/2.6;
+    const tickLen=3.5, tickAngle=Math.atan2(dpMmDir.y,dpMmDir.x)+Math.PI/3; // codage : trait de 7 px incliné à 60° (règle du site)
     const q1 = {x:(DP_MM_A.x+dpMmMid.x)/2, y:(DP_MM_A.y+dpMmMid.y)/2};
     const q2 = {x:(dpMmMid.x+DP_MM_B.x)/2, y:(dpMmMid.y+DP_MM_B.y)/2};
     tick1a.setAttribute('x1', q1.x-Math.cos(tickAngle)*tickLen); tick1a.setAttribute('y1', q1.y-Math.sin(tickAngle)*tickLen);
@@ -1233,8 +1236,8 @@ function dpMedMethodeSVGBlock(idPrefix, viewBox, labelA, labelB){
     <rect id="${idPrefix}-measureRuler" rx="6" fill="rgba(205,228,255,.35)" stroke="#1C1B2E" stroke-width="1.5" style="display:none;"/>
     <path id="${idPrefix}-measureTicks" stroke="#1C1B2E" stroke-width="1" fill="none" style="display:none;"/>
     <g id="${idPrefix}-measureLabels" style="display:none;"></g>
-    <line id="${idPrefix}-tick1a" stroke="#1F6B3A" stroke-width="1.8" style="display:none;"/>
-    <line id="${idPrefix}-tick1b" stroke="#1F6B3A" stroke-width="1.8" style="display:none;"/>
+    <line id="${idPrefix}-tick1a" stroke="#1C1B2E" stroke-width="1.6" style="display:none;"/>
+    <line id="${idPrefix}-tick1b" stroke="#1C1B2E" stroke-width="1.6" style="display:none;"/>
     <circle id="${idPrefix}-midpoint" r="3.5" fill="#1C1B2E" style="display:none;" data-marker="cross"/>
     <g id="${idPrefix}-equerre" style="display:none;">${equerreSVG(TB_EQUERRE_LEGX, TB_EQUERRE_LEGY)}</g>
     <g id="${idPrefix}-ruler" style="display:none;">${rulerSVG(true)}</g>
@@ -1317,7 +1320,7 @@ function makeMedMethodeDemo(idPrefix, PA, PB, lengthCm, labelA, labelB){
     const tick1a = document.getElementById(idPrefix+'-tick1a'), tick1b = document.getElementById(idPrefix+'-tick1b'), midpoint = document.getElementById(idPrefix+'-midpoint');
     const midpointOnwards = ['midpoint','equerre','ruler','removed','traced','clean'];
     if(midpointOnwards.indexOf(s.phase)!==-1){
-      const tickLen=9, tickAngle=Math.atan2(dir.y,dir.x)+Math.PI/2.6;
+      const tickLen=3.5, tickAngle=Math.atan2(dir.y,dir.x)+Math.PI/3; // codage : trait de 7 px incliné à 60° (règle du site)
       const q1 = {x:(PA.x+mid.x)/2, y:(PA.y+mid.y)/2};
       const q2 = {x:(mid.x+PB.x)/2, y:(mid.y+PB.y)/2};
       tick1a.setAttribute('x1', q1.x-Math.cos(tickAngle)*tickLen); tick1a.setAttribute('y1', q1.y-Math.sin(tickAngle)*tickLen);

@@ -18,7 +18,7 @@ document.getElementById('cours-demo-symetrie').innerHTML = `
       <div class="figure-wrap">
         <strong style="font-family:'Space Grotesk',sans-serif;">Exemple : un demi-tour autour de O</strong>
         <p class="hint interaction-hint" style="margin-top:6px;">Déplacez les 3 sommets du triangle bleu, puis lancez l'animation : elle tourne d'un demi-tour (180°) autour de O et vient se superposer exactement à son image (contour orange).</p>
-        <svg id="svgTri" viewBox="0 0 400 260" style="width:100%;max-width:460px;display:block;margin:10px auto;touch-action:none;">
+        <svg id="svgTri" data-geo-garde viewBox="0 0 400 260" style="width:100%;max-width:460px;display:block;margin:10px auto;touch-action:none;">
           <line x1="192" y1="122" x2="208" y2="138" stroke="#1C1B2E" stroke-width="2" class="pt-cross"/>
           <line x1="208" y1="122" x2="192" y2="138" stroke="#1C1B2E" stroke-width="2" class="pt-cross"/>
           <text x="210" y="122" font-family="Space Grotesk" font-size="13" fill="#1C1B2E">O</text>
@@ -41,7 +41,7 @@ document.getElementById('cours-demo-symetrie').innerHTML = `
       <div class="figure-wrap">
         <strong style="font-family:'Space Grotesk',sans-serif;">Exemple : le symétrique d'un point</strong>
         <p class="hint interaction-hint" style="margin-top:6px;">Déplacez le point <b>A</b> (bleu) : son symétrique <b>A'</b> (orange) se recalcule en temps réel. O reste le centre de symétrie.</p>
-        <svg id="svgPoint" viewBox="0 0 400 260" style="width:100%;max-width:460px;display:block;margin:10px auto;touch-action:none;">
+        <svg id="svgPoint" data-geo-garde viewBox="0 0 400 260" style="width:100%;max-width:460px;display:block;margin:10px auto;touch-action:none;">
           <line id="ptLine" x1="0" y1="0" x2="0" y2="0" stroke="#B7C3CD" stroke-width="1.5" stroke-dasharray="4 4"/>
           <line id="markO" class="pt-tick" stroke="#1C1B2E" stroke-width="2"/>
           <text x="200" y="150" font-family="Space Grotesk" font-size="14" fill="#1C1B2E">O</text>
@@ -70,7 +70,7 @@ document.getElementById('cours-demo-symetrie').innerHTML = `
       <div class="figure-wrap">
         <strong style="font-family:'Space Grotesk',sans-serif;">Exemple</strong>
         <p class="hint interaction-hint" style="margin-top:6px;">Déplacez les points I et J : la droite (d) les suit toujours exactement, et son image (d') reste parallèle.</p>
-        <svg id="svgDroite" viewBox="0 0 400 240" style="width:100%;max-width:440px;display:block;margin:10px auto;touch-action:none;">
+        <svg id="svgDroite" data-geo-garde viewBox="0 0 400 240" style="width:100%;max-width:440px;display:block;margin:10px auto;touch-action:none;">
           <line id="lineD" stroke="#1F3A5C" stroke-width="1.6"/>
           <line id="lineDprime" stroke="#E35D3A" stroke-width="1.6" stroke-dasharray="6 4"/>
           <line id="crossO1" stroke="#1C1B2E" stroke-width="2"/>
@@ -100,7 +100,7 @@ document.getElementById('cours-demo-symetrie').innerHTML = `
       <div class="figure-wrap">
         <strong style="font-family:'Space Grotesk',sans-serif;">Exemple</strong>
         <p class="hint interaction-hint" style="margin-top:6px;">Déplacez R ou S : [R'S'] suit, et les petits traits codent que R'S' = RS.</p>
-        <svg id="svgSegment" viewBox="0 0 400 200" style="width:100%;max-width:400px;display:block;margin:10px auto;touch-action:none;">
+        <svg id="svgSegment" data-geo-garde viewBox="0 0 400 200" style="width:100%;max-width:400px;display:block;margin:10px auto;touch-action:none;">
           <line id="segRS" stroke="#1F3A5C" stroke-width="2.2"/>
           <line id="segRSprime" stroke="#E35D3A" stroke-width="2.2"/>
           <line id="segDropR" stroke="#B7C3CD" stroke-width="1.2" stroke-dasharray="3 3"/>
@@ -142,7 +142,7 @@ document.getElementById('cours-demo-symetrie').innerHTML = `
             </select>
           </label>
         </div>
-        <svg id="svgPolygone" viewBox="0 0 400 240" style="width:100%;max-width:400px;display:block;margin:10px auto;touch-action:none;">
+        <svg id="svgPolygone" data-geo-garde viewBox="0 0 400 240" style="width:100%;max-width:400px;display:block;margin:10px auto;touch-action:none;">
           <polygon id="polyShape" fill="#1F3A5C" fill-opacity=".12" stroke="#1F3A5C" stroke-width="2"/>
           <polygon id="polyShapePrime" fill="#E35D3A" fill-opacity=".12" stroke="#E35D3A" stroke-width="2"/>
           <line id="polyCrossO1" stroke="#1C1B2E" stroke-width="2"/>
@@ -163,7 +163,7 @@ document.getElementById('cours-demo-symetrie').innerHTML = `
       <div class="figure-wrap">
         <strong style="font-family:'Space Grotesk',sans-serif;">Exemple</strong>
         <p class="hint interaction-hint" style="margin-top:6px;">Déplacez le centre N ou le point M (qui fixe le rayon) : le cercle symétrique suit, avec le même rayon codé sur les deux figures.</p>
-        <svg id="svgCercle" viewBox="0 0 400 220" style="width:100%;max-width:400px;display:block;margin:10px auto;touch-action:none;">
+        <svg id="svgCercle" data-geo-garde viewBox="0 0 400 220" style="width:100%;max-width:400px;display:block;margin:10px auto;touch-action:none;">
           <circle id="cercleN" fill="none" stroke="#1F3A5C" stroke-width="1.8"/>
           <circle id="cercleNprime" fill="none" stroke="#E35D3A" stroke-width="1.8"/>
           <line id="cercleDrop" stroke="#B7C3CD" stroke-width="1.2" stroke-dasharray="3 3"/>
@@ -180,15 +180,15 @@ document.getElementById('cours-demo-symetrie').innerHTML = `
           <line id="crossN2" stroke="#1F3A5C" stroke-width="2"/>
           <circle id="handleN" r="15" fill="transparent" style="cursor:grab;"/>
           <text id="cercleLabelN" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700">N</text>
-          <line id="tickM" class="pt-tick" stroke="#1F3A5C" stroke-width="2"/>
-          <circle id="dotM" r="3.5" fill="#1F3A5C"/>
+          <!-- M et M' sont à la fois sur le cercle et au bout du rayon : points d'intersection, donc aucune marque (règle du site) ;
+               M, qu'on déplace, garde un léger halo. -->
+          <circle id="haloM" r="10" fill="#1F3A5C" fill-opacity=".16"/>
           <circle id="handleM" r="12" fill="transparent" style="cursor:grab;"/>
           <text id="cercleLabelM" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700">M</text>
           <line id="crossNprime1" stroke="#E35D3A" stroke-width="2"/>
           <line id="crossNprime2" stroke="#E35D3A" stroke-width="2"/>
           <text id="cercleLabelNprime" font-family="Space Grotesk" font-size="13" fill="#E35D3A" font-weight="700">N'</text>
-          <line id="tickMprime" class="pt-tick" stroke="#E35D3A" stroke-width="2"/>
-          <circle id="dotMprime" r="3.5" fill="#E35D3A"/>
+
           <text id="cercleLabelMprime" font-family="Space Grotesk" font-size="13" fill="#E35D3A" font-weight="700">M'</text>
         </svg>
         <div class="figure-toolbar">
@@ -442,7 +442,7 @@ function qgInitTout(){
 document.getElementById('methode-demo-symetrie').innerHTML = `
       <div class="sub-header"><span class="letter">M</span><h4>Construire le symétrique d'un point A, au compas et à la règle</h4></div>
 <div class="figure-wrap" id="mMethodeCompas">
-        <svg id="svgMethod" viewBox="0 0 400 260" style="width:100%;max-width:460px;display:block;margin:14px auto;">
+        <svg id="svgMethod" data-geo-garde viewBox="0 0 400 260" style="width:100%;max-width:460px;display:block;margin:14px auto;">
           <line id="mTickO" class="pt-tick" stroke="#1C1B2E" stroke-width="2"/>
           <text x="207" y="122" font-family="Space Grotesk" font-size="13" fill="#1C1B2E">O</text>
           <line id="mTickA" class="pt-tick" stroke="#1F3A5C" stroke-width="2"/>
@@ -693,7 +693,8 @@ function updateSegmentDemo(){
   set('#segRSprime',{x1:Rp.x,y1:Rp.y,x2:Sp.x,y2:Sp.y});
   set('#segDropR',{x1:R.x,y1:R.y,x2:Rp.x,y2:Rp.y});
   set('#segDropS',{x1:S.x,y1:S.y,x2:Sp.x,y2:Sp.y});
-  setCross(svgEl.querySelector('#segCrossO1'), svgEl.querySelector('#segCrossO2'), segO.x, segO.y);
+  // O est l'intersection de [RR'] et [SS'] : aucune marque (règle du site), son nom seul.
+  svgEl.querySelector('#segCrossO1').style.display = 'none'; svgEl.querySelector('#segCrossO2').style.display = 'none';
   set('#segLabelO',{x:segO.x+10,y:segO.y-8});
   set('#handleR',{cx:R.x,cy:R.y}); set('#handleS',{cx:S.x,cy:S.y});
   const angleRS = Math.atan2(S.y-R.y, S.x-R.x);
@@ -740,14 +741,14 @@ function updateCercleDemo(){
   set('#cercleN',{cx:N.x,cy:N.y,r}); set('#cercleNprime',{cx:Np.x,cy:Np.y,r});
   set('#cercleDrop',{x1:N.x,y1:N.y,x2:Np.x,y2:Np.y});
   set('#rayonNM',{x1:N.x,y1:N.y,x2:M.x,y2:M.y}); set('#rayonNMprime',{x1:Np.x,y1:Np.y,x2:Mp.x,y2:Mp.y});
-  setCross(svgEl.querySelector('#cercleCrossO1'), svgEl.querySelector('#cercleCrossO2'), cercleO.x, cercleO.y);
+  // Marques calculées ici (la figure bouge ; geo-points.js ne la retouche pas, data-geo-garde) : O est sur [NN'], N au bout
+  // du rayon [NM], N' au bout de [N'M'] : petit trait perpendiculaire ; M et M' sont des intersections (rien).
+  const angleNN = Math.atan2(Np.y-N.y, Np.x-N.x), trait = (a, b, x, y, ang) => { setTick(svgEl.querySelector(a), x, y, ang, 10); svgEl.querySelector(b).style.display = 'none'; };
+  trait('#cercleCrossO1', '#cercleCrossO2', cercleO.x, cercleO.y, angleNN);
   set('#cercleLabelO',{x:cercleO.x+10,y:cercleO.y-8});
-  setCross(svgEl.querySelector('#crossN1'), svgEl.querySelector('#crossN2'), N.x, N.y);
-  setCross(svgEl.querySelector('#crossNprime1'), svgEl.querySelector('#crossNprime2'), Np.x, Np.y);
   const angleNM=Math.atan2(M.y-N.y,M.x-N.x);
-  setTick(svgEl.querySelector('#tickM'), M.x, M.y, angleNM);
-  setTick(svgEl.querySelector('#tickMprime'), Mp.x, Mp.y, angleNM);
-  set('#dotM',{cx:M.x,cy:M.y}); set('#dotMprime',{cx:Mp.x,cy:Mp.y});
+  trait('#crossN1', '#crossN2', N.x, N.y, angleNM); trait('#crossNprime1', '#crossNprime2', Np.x, Np.y, angleNM);
+  set('#haloM',{cx:M.x,cy:M.y});
   set('#handleN',{cx:N.x,cy:N.y}); set('#handleM',{cx:M.x,cy:M.y});
   set('#cercleLabelN',{x:N.x+9,y:N.y-9});
   set('#cercleLabelM',{x:M.x+14*Math.cos(angleNM), y:M.y+14*Math.sin(angleNM)});
