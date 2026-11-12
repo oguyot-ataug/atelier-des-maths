@@ -223,7 +223,7 @@ côte à côte peuvent passer à la ligne.
 Lignes avec une fraction (demandé le 07/11/2026, validé sur images) : barre de fraction CHEVAUCHANT la ligne principale, « = » et
 signes (− + × ÷ : < >) centrés dessus (un trait de chaque côté) -- UNIQUEMENT dans une ligne qui a une fraction (rappelé le 07/11/2026 ;
 ailleurs les signes restent posés sur la ligne d'écriture ; « : » centré seulement dans une ligne de calcul) ; dans KaTeX, `.mord` de la fraction, `.mrel`, `.mbin` descendus de
-0,25 em + 1 px ; signes écrits en texte enveloppés par `cahierOps` (`.cahier-op`, 1,2 em, descendus de 0,27 em) ; `cahierCaler` cale
+0,25 em + 1 px ; signes écrits en texte enveloppés par `cahierOps` (`.cahier-op`, 1,2 em, descendus de 0,27 em, puis CALÉS PAR MESURE : `cahierOpsCaler`, milieu du glyphe posé sur la barre de fraction voisine, car le seul décalage CSS variait selon le navigateur -- relecture du 12/11/2026 « le signe = est encore trop bas ») ; `cahierCaler` cale
 la ligne d'écriture du bloc sur une ligne principale (padding-top `--calh`), sans arrondi au pixel.
 Titre de rédaction (`.cm-redac-sou`) souligné SUR L'INTERLIGNE (première ligne fine sous la ligne principale, demandé le 07/11/2026) :
 trait dessiné en fond à 9,25 px sous la ligne d'écriture (`--soul`, calculé dans `cahierCaler`), continu sous les jambages.

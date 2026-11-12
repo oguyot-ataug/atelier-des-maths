@@ -3987,6 +3987,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1428', date:'2026-11-12', items:[
+    "« Dans mon cahier » : les signes d'une ligne à fraction (« = », « < », « : »…) encadrent exactement la ligne principale -- signalé : « le signe = est encore trop bas. Il doit ‹ encadrer › la ligne principale ». Le site mesure maintenant le signe dessiné et le pose sur la barre de fraction voisine, quel que soit le navigateur. Titres avec une fraction : le soulignement vert, passé sous le dénominateur, n'est plus coupé. 5e-N4-P3, exercice 7 : correction réécrite étape par étape, sans « : » qui faisait croire à une division (« le ‹ : › après 8/8 n'est pas terrible ici »)."
+  ]},
   { version:'2026-08-19.1427', date:'2026-11-12', items:[
     "La famille d'olives aussi sur l'accueil et dans l'Espace famille -- demandé : « oui ». Bandeau « Vous êtes parent ? » de l'accueil : les olives à la place de l'icône (au-dessus du texte sur téléphone) ; Espace famille : à droite du titre."
   ]},

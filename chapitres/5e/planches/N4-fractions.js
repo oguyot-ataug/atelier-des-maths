@@ -84,7 +84,9 @@ PLANCHES['5e|Fractions'] = [
       { etoiles: 3, col: 1, cahier: true, consigne: `Lucas a lu ${T(3, 5)} de son livre et Nora ${T(7, 10)} du même livre. Qui en a lu le plus ? Justifie.`,
         corr: cm1Redac('Qui en a lu le plus ?', `${F(3, 5)} = ${F(6, 10)} et ${F(6, 10)} &lt; ${F(7, 10)}`, 'Nora a lu la plus grande partie du livre.') },
       { etoiles: 3, col: 1, cahier: true, consigne: `Trouve une fraction comprise entre ${T(3, 4)} et 1, puis une fraction comprise entre ${T(1, 3)} et ${T(1, 2)}.`,
-        corr: cm1Redac('Fractions comprises entre les nombres donnés', { suite: [`${F(3, 4)} = ${F(6, 8)} et 1 = ${F(8, 8)} : ${F(7, 8)} convient.`, `${F(1, 3)} = ${F(4, 12)} et ${F(1, 2)} = ${F(6, 12)} : ${F(5, 12)} convient.`] }, 'On écrit les deux fractions avec un dénominateur plus grand pour « faire de la place » entre elles.') },
+        // Une étape par ligne, sans mot ni « : » dans les calculs (relecture du 12/11/2026 : « le ":" après 8/8 […] on croit que c'est une division »).
+        corr: cm1Redac(`Fraction comprise entre ${F(3, 4)} et 1`, { suite: [`${F(3, 4)} = ${F(6, 8)}`, `1 = ${F(8, 8)}`, `${F(6, 8)} < ${F(7, 8)} < ${F(8, 8)}`] }, `La fraction ${F(7, 8)} est comprise entre ${F(3, 4)} et 1.`)
+          + cm1Redac(`Fraction comprise entre ${F(1, 3)} et ${F(1, 2)}`, { suite: [`${F(1, 3)} = ${F(4, 12)}`, `${F(1, 2)} = ${F(6, 12)}`, `${F(4, 12)} < ${F(5, 12)} < ${F(6, 12)}`] }, `La fraction ${F(5, 12)} est comprise entre ${F(1, 3)} et ${F(1, 2)}. On a écrit les fractions avec un dénominateur plus grand pour « faire de la place » entre elles.`) },
     ] },
   { titre: 'Additionner et soustraire des fractions', duree: '40 min',
     attendus: ['Additionner ou soustraire deux fractions de même dénominateur', 'Réduire au même dénominateur avant d\'additionner', 'Simplifier le résultat'],

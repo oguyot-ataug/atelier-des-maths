@@ -489,6 +489,10 @@ function cahierCaler(page){
     let so = bl + 9.25; const kx = u.querySelector('.mfrac') ? cahierEncre(u) : null;
     const kb = kx ? (kx.b - u.getBoundingClientRect().top) / (k || 1) : 0; if(kb > so - 1) so += 8 * Math.ceil((kb + 1 - so) / 8);
     u.style.setProperty('--soul', (Math.round(so * 100) / 100) + 'px');
+    // Trait passé sous le dénominateur : la boîte du titre (fond où il est dessiné) descend jusqu'à lui, sinon il est coupé
+    // (relecture 5e-N4-P3-E7 du 12/11/2026 : titre à fraction resté sans soulignement).
+    const pb = parseFloat(getComputedStyle(u).paddingBottom) || 0, h0 = u.getBoundingClientRect().height / (k || 1) - pb;
+    const besoin = Math.max(12, Math.ceil(so + 3 - h0)); if(Math.abs(besoin - pb) > .5) u.style.paddingBottom = besoin + 'px';
   });
   // Un dépassement de moins d'un pixel ne vaut pas un carreau de plus.
   blocs.forEach((b, i) => { const m = H[i] % 32, r = m < 1 ? 0 : Math.round((32 - m) * 100) / 100; if(r > .01) b.style.setProperty('--cal', r + 'px'); });
@@ -503,6 +507,31 @@ function cahierCaler(page){
     // (sous le dénominateur du résultat précédent), plutôt que de laisser un carreau vide.
     const ef = titreFr && fin ? cahierEncre(fin) : null, et = ef ? cahierEncre(r.firstElementChild) : null;
     if(ef && et && (et.t - ef.b) / (k || 1) >= 33) r.style.setProperty('--redm', '-32px'); });
+  cahierOpsCaler(page, k);
+}
+/* Signes écrits en texte d'une ligne à fraction (« = », « : », « + »…) : le milieu du signe, mesuré sur son glyphe, posé
+   exactement sur la barre de fraction voisine, donc sur la ligne principale (demandé le 12/11/2026 : « le signe = est encore
+   trop bas. Il doit "encadrer" la ligne principale »). Le décalage de la feuille de style (.cahier-op, top .27em) est juste
+   dans Chromium mais pas dans tous les navigateurs : il sert de départ, la mesure corrige le reste. Appel répété sans effet. */
+const cahierMesure = document.createElement('canvas').getContext('2d');
+function cahierOpsCaler(page, k){
+  page.querySelectorAll('.cahier-op').forEach(op => {
+    const ligne = op.closest('.cm-redac-ligne, .cm-redac-col, .cm-redac-phrase, .we-row, li, p') || op.parentElement;
+    const fr = ligne ? [...ligne.querySelectorAll('.frac-line')] : [];
+    if(!fr.length || !op.offsetParent) return;
+    const cs = getComputedStyle(op), police = `${cs.fontStyle} ${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+    // Police manuscrite pas encore chargée : la mesure attend (sinon elle se ferait sur la police de secours).
+    if(document.fonts && !document.fonts.check(police)){ if(!op.dataset.calAttente){ op.dataset.calAttente = '1'; document.fonts.load(police).then(() => cahierOpsCaler(page, k)).catch(() => {}); } return; }
+    cahierMesure.font = police;
+    const m = cahierMesure.measureText(op.textContent.trim()); if(!(m.actualBoundingBoxAscent + m.actualBoundingBoxDescent)) return;
+    const r = op.getBoundingClientRect(), cx = (r.left + r.right) / 2;
+    let barre = null; fr.forEach(f => { const q = f.getBoundingClientRect(), d = Math.abs((q.left + q.right) / 2 - cx); if(!barre || d < barre.d) barre = { d, y: (q.top + q.bottom) / 2 }; });
+    const s = document.createElement('span'); s.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline;'; op.appendChild(s);
+    const base = s.getBoundingClientRect().bottom; s.remove();
+    const ecart = (barre.y - (base - (m.actualBoundingBoxAscent - m.actualBoundingBoxDescent) * (k || 1) / 2)) / (k || 1);
+    if(Math.abs(ecart) < .2) return;
+    op.style.top = (Math.round(((parseFloat(cs.top) || 0) + ecart) * 100) / 100) + 'px';
+  });
 }
 // Droite graduée d'une figure SVG : [x0, pas, y, largeur du viewBox] en unités du viewBox, ou null. data-axe si la figure le donne ;
 // sinon une ligne horizontale de plus de 100 unités coupée par au moins 5 petits traits verticaux régulièrement espacés.
