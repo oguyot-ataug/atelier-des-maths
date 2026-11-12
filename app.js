@@ -3987,6 +3987,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1424', date:'2026-11-12', items:[
+    "Essai Famille de 15 jours -- demandé : « Oui, mets en place l'essai Famille de 15 jours ». À la création d'un compte Famille, tous les niveaux, du CP à la 3e, s'ouvrent pendant 15 jours pour le parent et ses enfants, sans carte bancaire (IA comprise, avec la clé du parent). L'essai est rangé à part de l'accès payé : il ne compte jamais comme un paiement et ne change ni les prix, ni les factures. Espace famille : « Essai gratuit jusqu'au … », puis « Essai terminé » ; Administration › Famille : familles en essai. Bandeau « Vous êtes parent ? » : l'essai gratuit à la place du prix tant que les ventes sont fermées. Page des tarifs et CGV (partie A) : l'essai Famille."
+  ]},
   { version:'2026-08-19.1423', date:'2026-11-12', items:[
     "6e Symétrie axiale : le chapitre ne s'arrêtait plus en erreur quand on le rouvrait (ou qu'on passait du cours à la méthode) ; les points M, M', les centres des cercles et le point P des figures qu'on manipule gardent maintenant leurs repères quand on les déplace : petit trait perpendiculaire pour un point au bout d'un pointillé, rien pour le point P (intersection), codages PA = PB en petits traits de 7 px inclinés à 60°."
   ]},

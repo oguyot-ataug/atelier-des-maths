@@ -457,6 +457,11 @@ Professeur seul au collège, grille du 10/11/2026 (« Pour le prof seul, faire u
 classe au-delà (`seul_classe`) ; prix dans `prof_parametres.prix` (Administration › Offres profs), calcul dans la fonction `prof-offre`
 (`prixCollege`, `classesComprises`) et `offres-prof.js` ; CGV (index.html, partie B) à tenir à jour avec la page des tarifs.
 
+Essai Famille de 15 jours (demandé le 12/11/2026) : `familles.essai_until` posé à l'inscription par la fonction `famille` (aujourd'hui + 14 jours) ;
+`ma_famille()` ouvre alors TOUS les niveaux (clés `essai`, `paye`, `essai_until`), IA comprise (`ai_student_sponsor`, `my_ai_access`) ;
+rangé à part de l'accès payé (`niveaux`, `acces_until`, `montant_paye_centimes`, famille_activer et factures inchangés) ;
+`supabase/sql/2026-11-12-essai-famille.sql`. Offre Famille visible sur le site : case d'Administration › Famille (`famille_parametres.publique`).
+
 Paiement intégré au site (Stripe Embedded Checkout, build 1205) : `paiementOuvrir` (app.js) ; les fonctions prof-offre et famille
 renvoient client_secret + clé publique si les secrets STRIPE_TEST_PUBLISHABLE_KEY / STRIPE_PUBLISHABLE_KEY existent, sinon la page Stripe.
 

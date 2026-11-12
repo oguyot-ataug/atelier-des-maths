@@ -3,7 +3,9 @@
 // Offre Famille : tout ce qu'un parent fait passe par ici (clé service_role côté serveur
 // uniquement ; le navigateur n'a qu'un droit de LECTURE sur les tables familles).
 //
-//  - inscription     : crée le profil parent + la déclaration (texte certifié, date, IP, navigateur) ;
+//  - inscription     : crée le profil parent + la déclaration (texte certifié, date, IP, navigateur),
+//                      et ouvre l'ESSAI de 15 jours (essai_until : tous les niveaux, sans paiement ; demandé le
+//                      12/11/2026), rangé à part de l'accès payé (niveaux, acces_until, montant_paye_centimes) ;
 //  - enfant-creer    : compte enfant (identifiant@mathcollege.local), 4 au plus, collège déclaré
 //                      refusé s'il figure dans famille_exclusions ;
 //  - enfant-mdp, enfant-supprimer, enfant-reglages (niveau, IA, quota) ;
@@ -100,7 +102,9 @@ serve(async (req) => {
         signup_status: "approved", subscription_status: "active", must_change_password: false,
       });
       if (pErr) return json({ error: pErr.message }, 400);
-      const { error: fErr } = await admin.from("familles").insert({ parent_id: user.id, certification });
+      // Essai de 15 jours, aujourd'hui compris (ma_famille ouvre tous les niveaux jusqu'à essai_until inclus).
+      const essai = new Date(Date.now() + 14 * 86400000).toISOString().slice(0, 10);
+      const { error: fErr } = await admin.from("familles").insert({ parent_id: user.id, certification, essai_until: essai });
       if (fErr) { await admin.from("profiles").delete().eq("id", user.id); return json({ error: fErr.message }, 400); }
       return json({ ok: true });
     }

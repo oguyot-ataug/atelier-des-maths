@@ -47,7 +47,9 @@ function famMajLiens(){
   if(btn) btn.style.display = famPublique ? 'flex' : 'none';
   const cta = document.getElementById('famHomeCta'), prix = document.getElementById('famHomePrix');
   if(cta) cta.innerHTML = role === 'parent' ? 'Mon Espace famille <span class="gicon">arrow_forward</span>' : 'Découvrir l\'offre Famille <span class="gicon">arrow_forward</span>';
-  if(prix) prix.textContent = role === 'parent' ? '' : 'À partir de ' + famPrixTxt(Math.min(famGrille['1'], famGrille.ecole1)) + ' par année scolaire.';
+  // Ventes fermées : pas de prix dans le site (règle du 10/11/2026), seulement l'essai gratuit.
+  const vente = typeof venteOuverte === 'function' && venteOuverte(false);
+  if(prix) prix.textContent = role === 'parent' ? '' : (vente ? 'À partir de ' + famPrixTxt(Math.min(famGrille['1'], famGrille.ecole1)) + ' par année scolaire, ' : '') + '15 jours d\'essai gratuit, sans carte bancaire.';
 }
 if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => setTimeout(famAppliquerVisibilite, 0)); else setTimeout(famAppliquerVisibilite, 0);
 function famFinAnnee(){ const d = new Date(), y = d.getFullYear(); return (d.getMonth()+1 >= 6 ? y+1 : y)+'-08-31'; }
@@ -120,6 +122,7 @@ function famPresentationHtml(){
     <div class="fam-offre"><b>École : deux niveaux ou plus</b><span class="fam-prix">${famPrixTxt(famGrille.ecole2)}</span><small>par année scolaire</small></div>
   </div>`}
   <ul class="fam-points">
+    <li><span class="gicon">redeem</span><span><b>15 jours d'essai gratuit</b> dès la création du compte : tous les niveaux du CP à la 3e, pour vous et vos enfants, sans carte bancaire.</span></li>
     <li><span class="gicon">group</span><span>Jusqu'à <b>4 comptes enfants</b> (des jumeaux ont chacun leur compte), gérés par vous.</span></li>
     <li><span class="gicon">history_edu</span><span>Chaque niveau choisi ouvre aussi le <b>niveau inférieur en révision</b>.</span></li>
     <li><span class="gicon">monitoring</span><span>Vous suivez les résultats de chaque enfant.</span></li>
@@ -129,7 +132,7 @@ function famPresentationHtml(){
 }
 // Ventes fermées (demandé le 30/10/2026 : « masque les prix famille ») : ni prix, ni choix d'offre, sauf compte « test ».
 function famVenteFermeeHtml(){
-  return `<div class="fam-banner"><span class="gicon">event</span><span><b>Ouverture des ventes prochainement.</b> Les offres Famille seront bientôt disponibles : vous pouvez déjà créer votre compte, vous serez prévenu à l'ouverture.</span></div>`;
+  return `<div class="fam-banner"><span class="gicon">event</span><span><b>Ouverture des ventes prochainement.</b> Les offres Famille seront bientôt disponibles. Chaque compte Famille commence par <b>15 jours d'essai gratuit</b> de tous les niveaux ; vous serez prévenu à l'ouverture.</span></div>`;
 }
 function famSignupHtml(){
   return `
@@ -137,7 +140,7 @@ function famSignupHtml(){
     <div class="auth-modal-head fam-signup-head">
       <span class="auth-badge big"><span class="gicon">family_restroom</span></span>
       <div class="auth-title">Créer mon compte Famille</div>
-      <div class="auth-sub">Gratuit : vous choisirez l'accès et paierez ensuite, depuis votre Espace famille.</div>
+      <div class="auth-sub">15 jours d'essai gratuit de tous les niveaux, sans carte bancaire. Vous choisirez ensuite l'accès depuis votre Espace famille.</div>
     </div>
     <form class="auth-modal-body" onsubmit="famSignup();return false;">
       <div class="auth-grid">
@@ -258,6 +261,8 @@ async function renderFamille(){
   famData = { fam: fam||{}, enfants, pay: pay||[], ai: ai||{}, cm: cm||[], ceb: ceb||[], use: use||[], factures: factures||[], code: (famData && famData.code) || '' };
   const today = new Date().toISOString().slice(0,10);
   const active = !!(fam && fam.acces_until && fam.acces_until >= today);
+  // Essai de 15 jours (essai_until, posé à l'inscription par la fonction famille) : tous les niveaux, sans paiement.
+  const essai = !active && !!(fam && fam.essai_until && fam.essai_until >= today);
 
   root.innerHTML = `
     <h1 style="margin:6px 0 4px;"><span class="gicon">family_restroom</span> Espace famille</h1>
@@ -267,7 +272,7 @@ async function renderFamille(){
     ${famData.fam.stripe_test ? '<div class="fam-banner"><span class="gicon">science</span><span><b>Compte de test</b> : les paiements sont simulés par Stripe, aucun argent ne circule. Carte de test : <code>4242 4242 4242 4242</code>, date future quelconque, code 123.</span></div>' : ''}
     ${famAccesHtml(famData.fam, active)}
     ${famFacturesHtml(famData.factures)}
-    ${famEnfantsHtml(enfants, active)}
+    ${famEnfantsHtml(enfants, active || essai)}
     ${famSuiviHtml(enfants)}
     ${famIaHtml(famData.fam, famData.ai, enfants, famData.use)}
     ${famCompteHtml(famData.fam)}`;
@@ -282,9 +287,15 @@ function famAccesHtml(fam, active){
   const fin = famFinAnnee();
   const memePeriode = active && fam.acces_until === fin;
   const actuels = memePeriode ? (fam.niveaux||[]) : [];
-  const ouverts = active ? ((famState && famState.niveaux_ouverts) || []) : [];
-  const revision = ouverts.filter(n=>!(fam.niveaux||[]).includes(n));
-  const statut = active
+  const paye = fam.niveaux||[];
+  const revision = active ? FAM_ORDRE.filter((n, i)=>!paye.includes(n) && paye.includes(FAM_ORDRE[i+1])) : [];
+  const today = new Date().toISOString().slice(0,10);
+  const essai = !active && fam.essai_until && fam.essai_until >= today;
+  const statut = essai
+    ? `<p style="margin:6px 0;"><span class="fam-badge" style="background:#0C5BA0;">Essai gratuit</span> jusqu'au <b>${famDate(fam.essai_until)}</b> inclus : tous les niveaux, du CP à la 3e, sont ouverts à vous et à vos enfants.</p>`
+    : !active && fam.essai_until
+    ? `<p style="margin:6px 0;"><span class="fam-badge" style="background:#8A5A00;">Essai terminé</span> le ${famDate(fam.essai_until)}. Vos enfants ne voient plus que les chapitres gratuits.</p>`
+    : active
     ? `<p style="margin:6px 0;"><span class="fam-badge" style="background:#1E7B34;">Accès en cours</span> jusqu'au <b>${famDate(fam.acces_until)}</b> : ${(fam.niveaux||[]).map(famLib).join(', ')}${revision.length?' <span class="hint">(+ '+revision.map(famLib).join(', ')+' en révision)</span>':''}</p>`
     : `<p style="margin:6px 0;"><span class="fam-badge" style="background:#8A5A00;">Pas d'accès en cours</span> Vos enfants ne voient que les chapitres gratuits.</p>`;
   const cases = FAM_ORDRE.map(n=>{
@@ -683,11 +694,12 @@ async function famAdminRefresh(){
       <button class="btn secondary" onclick="famAdminCodeActif('${famEsc(c.code)}', ${!c.actif})">${c.actif ? 'Désactiver' : 'Réactiver'}</button></td></tr>`; }).join('');
   const nbEnf = new Map(); (enf||[]).forEach(e=>nbEnf.set(e.parent_id, (nbEnf.get(e.parent_id)||0)+1));
   const actives = (fams||[]).filter(f=>f.acces_until && f.acces_until>=today).length;
+  const essais = (fams||[]).filter(f=>!(f.acces_until && f.acces_until>=today) && f.essai_until && f.essai_until>=today).length;
   const ca = (pays||[]).filter(p=>!p.test).reduce((a,p)=>a+p.montant_centimes,0);
   const rows = (fams||[]).map(f=>{
-    const p = f.profiles||{}, act = f.acces_until && f.acces_until>=today;
+    const p = f.profiles||{}, act = f.acces_until && f.acces_until>=today, ess = !act && f.essai_until && f.essai_until>=today;
     return `<tr><td>${famEsc([p.prenom,p.nom].filter(Boolean).join(' '))}<br><small class="hint">${famEsc(p.email)}</small></td>
-      <td>${act?'<span class="fam-badge" style="background:#1E7B34;">active</span>':'<span class="fam-badge" style="background:#8A8F98;">sans accès</span>'}</td>
+      <td>${act?'<span class="fam-badge" style="background:#1E7B34;">active</span>':ess?'<span class="fam-badge" style="background:#0C5BA0;">essai</span><div class="hint" style="margin:0;">jusqu\'au '+famDate(f.essai_until)+'</div>':'<span class="fam-badge" style="background:#8A8F98;">sans accès</span>'}</td>
       <td>${(f.niveaux||[]).join(', ')||'–'}</td><td>${famDate(f.acces_until)||'–'}</td><td>${nbEnf.get(f.parent_id)||0}</td>
       <td>${famEuros(f.montant_paye_centimes||0)}</td><td><small class="hint">${famDate(f.certification&&f.certification.date)}</small></td>
       <td><label class="hint" style="display:inline-flex;gap:4px;align-items:center;margin:0;white-space:nowrap;" title="Paiements simulés avec la clé test de Stripe (cartes fictives)"><input type="checkbox" ${f.stripe_test?'checked':''} onchange="famAdminTest('${f.parent_id}', this)"> test</label></td></tr>`;
@@ -695,7 +707,7 @@ async function famAdminRefresh(){
   root.innerHTML = `
     <div class="tool-shell fam-card">
       <strong class="fam-h"><span class="gicon">family_restroom</span> Comptes Famille</strong>
-      <p class="hint" style="margin:4px 0 8px;">${(fams||[]).length} famille(s) inscrite(s), ${actives} avec un accès en cours · ${famEuros(ca)} encaissés au total, paiements de test exclus (voir aussi le tableau de bord Stripe). Cochez « test » pour qu'un compte paie avec les cartes fictives de Stripe.</p>
+      <p class="hint" style="margin:4px 0 8px;">${(fams||[]).length} famille(s) inscrite(s), ${actives} avec un accès payé en cours, ${essais} en essai · ${famEuros(ca)} encaissés au total, paiements de test exclus (voir aussi le tableau de bord Stripe). Cochez « test » pour qu'un compte paie avec les cartes fictives de Stripe.</p>
       ${rows ? `<div style="overflow-x:auto;"><table class="fam-table"><tr><th>Parent</th><th>Statut</th><th>Niveaux</th><th>Jusqu'au</th><th>Enfants</th><th>Payé (année)</th><th>Déclaration</th><th>Stripe</th></tr>${rows}</table></div>` : '<p class="hint">Aucune famille pour l\'instant.</p>'}
     </div>
     <div class="tool-shell fam-card">
