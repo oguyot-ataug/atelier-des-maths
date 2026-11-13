@@ -39,14 +39,15 @@ const rmp = (l, n) => ({ eleve: plListe(l.map(([t]) => t.replace('@', B(n || 3))
 const fd = (haut, den) => `<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1.2;margin:0 3px;"><span>${haut}</span><span style="align-self:stretch;border-top:1.6px solid currentColor;margin:3px 0 2px;min-width:1.6em;"></span><span>${den}</span></span>`;
 const pgcd = (a, b) => b ? pgcd(b, a % b) : a, ppcm = (a, b) => a / pgcd(a, b) * b;
 // Pourquoi : une égalité ou une comparaison par ligne, sous la réponse (relecture 5e-N4-P3-E2, E5 : « La correction doit expliquer pourquoi »).
-const pq = l => `<div style="margin:2px 0 4px 4px;line-height:2.2;font-size:.92em;">${l.join('<br>')}</div>`;
+// Chaque égalité dans son propre bloc, sous la réponse (sur téléphone, un interligne fixe faisait chevaucher les fractions).
+const pq = l => `<div style="flex-basis:100%;width:100%;margin:0 0 6px 4px;font-size:.92em;line-height:1.3;">${l.map(x => `<div style="padding:3px 0;white-space:nowrap;">${x}</div>`).join('')}</div>`;
 const sg = (a, b, c, d) => { const x = a * d - c * b; return x > 0 ? gt : x < 0 ? lt : '='; };
 const Fx = (a, b) => b === 1 ? String(a) : F(a, b); // un entier s'écrit sans dénominateur
 // Comparer avec explication : [a, b, c, d] (c/d = 1 si d = 1 et c = 1 : « 1 »), réduits au même dénominateur.
 const cmpX = (l, cols) => { const L = l.map(([a, b, c, d]) => { const m = d === 1 ? b : ppcm(b, d), A = a * m / b, Cc = c * m / d, s0 = sg(a, b, c, d), et = [];
     if(b !== m) et.push(`${F(a, b)} = ${F(A, m)}`); if(d !== m) et.push(`${Fx(c, d)} = ${F(Cc, m)}`); if(!(b === m && A === Cc)) et.push(`${F(A, m)} ${s0} ${F(Cc, m)}`); // 42/42 et 1 : « 1 = 42/42 » suffit
     return { e: ligne(F(a, b), C, Fx(c, d)), c: ligne(F(a, b), R(s0), Fx(c, d)) + pq(et) }; });
-  return cols ? { eleve: plGrille(L.map(x => x.e), cols), corr: plGrille(L.map(x => x.c), cols) } : { eleve: plListe(L.map(x => x.e)), corr: plListe(L.map(x => x.c)) }; };
+  return cols ? { eleve: plGrille(L.map(x => x.e), cols), corr: P3.enHaut(plGrille(L.map(x => x.c), cols)) } : { eleve: plListe(L.map(x => x.e)), corr: plListe(L.map(x => x.c)) }; };
 // Calcul de fractions en colonne, une lettre par calcul : [lettre, expression, étape…, résultat] (relecture 5e-N4-P4-E3, E4, E5 :
 // « Écrire des pointillés pour les étapes de réduction au même dénominateur. Donc A = … et à développer en colonne »).
 const EF = (n, e, et, rep) => `<div style="line-height:2.2;white-space:nowrap;">${n} = ${e}${et.map(x => `<br>${n} = ${rep(x)}`).join('')}</div>`;

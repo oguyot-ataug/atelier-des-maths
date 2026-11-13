@@ -3987,6 +3987,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1430', date:'2026-11-13', items:[
+    "5e Fractions, planche 3 (exercices 2, 3 et 5) : sur téléphone, les explications de la correction ne se chevauchent plus. Chaque égalité est dans son propre bloc, sous la réponse, et les colonnes partent du haut."
+  ]},
   { version:'2026-08-19.1429', date:'2026-11-13', items:[
     "Relecture du 12/11 au soir (20 remarques). 5e Fractions : dénominateur imposé écrit dans la fraction (seul le numérateur à compléter) ; listes sur deux ou trois colonnes, plus d'exemples ; « Compare à 1 : complète avec <, > ou = » ; corrections qui expliquent pourquoi (réduction au même dénominateur, une égalité par ligne) ; additions et soustractions en colonne avec une lettre (A = … puis des pointillés pour chaque étape) ; corrections qui partent du calcul demandé (S = …, P = …) ; « Volume restant » au lieu de « Litres restants » (aussi en 4e) et « distance parcourue » (6e Proportionnalité). Manuel : en correction, les lignes gardent la hauteur de l'énoncé. 5e Opérations sur les décimaux : 25 × (3 + 1) pour factoriser ; places des parenthèses resserrées ; à l'écran, tous les signes tapés après un nombre sont entourés d'espaces. 5e Angles : tableau de cases à cocher aussi à l'écran."
   ]},
