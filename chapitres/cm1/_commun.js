@@ -414,12 +414,22 @@ function cahierOps(bloc){
     n.parentNode.replaceChild(f, n);
   });
 }
+// Signes ≈ ≠ ≤ ≥ écrits en texte, n'importe où dans une page de cahier (pas seulement dans une ligne à fraction) : enveloppés dans
+// .cahier-fin, tracé fin (relecture du 13/11/2026 : « le environ égal est trop grossier - on en a déjà parlé »). Appel répété sans effet.
+function cahierSignesFins(page){
+  const w = document.createTreeWalker(page, NodeFilter.SHOW_TEXT, { acceptNode: n => /[≈≠≤≥]/.test(n.nodeValue) && !n.parentElement.closest('.katex, .cahier-op, .cahier-fin, svg') ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT });
+  const L = []; for(let n = w.nextNode(); n; n = w.nextNode()) L.push(n);
+  L.forEach(n => { const f = document.createDocumentFragment();
+    n.nodeValue.split(/([≈≠≤≥])/).forEach(x => { if(!x) return; if(/^[≈≠≤≥]$/.test(x)){ const sp = document.createElement('span'); sp.className = 'cahier-fin'; sp.textContent = x; f.appendChild(sp); } else f.appendChild(document.createTextNode(x)); });
+    n.parentNode.replaceChild(f, n); });
+}
 // Haut et bas de l'encre d'un élément (texte et formules), d'après les glyphes eux-mêmes.
 function cahierEncre(el){ const L = [], w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
   for(let n = w.nextNode(); n; n = w.nextNode()){ if(!n.nodeValue.trim()) continue; const g = document.createRange(); g.selectNodeContents(n); L.push(...[...g.getClientRects()].filter(x => x.height > 2 && x.width > 0)); }
   return L.length ? { t: Math.min(...L.map(x => x.top)), b: Math.max(...L.map(x => x.bottom)) } : null; }
 function cahierCaler(page){
   if(!cahierOn || !page.isConnected || !page.offsetParent) return;
+  cahierSignesFins(page);
   const blocs = [], voir = el => [...el.children].forEach(c => { if(c.classList.contains('cm-redac') || c.classList.contains('redaction-template') || /^(UL|OL)$/.test(c.tagName) || (c.tagName === 'DIV' && !c.attributes.length && c.children.length && [...c.children].every(x => getComputedStyle(x).display !== 'inline')) || c.classList.contains('pl-cote')) voir(c); else if(getComputedStyle(c).display !== 'inline') blocs.push(c); });
   voir(page);
   blocs.forEach(b => { b.style.removeProperty('--cal'); b.style.removeProperty('--calh'); b.style.removeProperty('--calm'); });

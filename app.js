@@ -4061,6 +4061,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1447', date:'2026-11-13', items:[
+    "Cahier Seyès : le signe ≈ (et ≠, ≤, ≥) s'écrit d'un trait fin dans toutes les lignes, résultats compris -- demandé : « le environ égal est trop grossier - on en a déjà parlé » ; les racines carrées ne descendent plus sous la ligne d'écriture (4e Pythagore : √56,25, √56)."
+  ]},
   { version:'2026-08-19.1446', date:'2026-11-13', items:[
     "PDF des cours plus fins et plus compacts -- demandé : « trop grossiers et les figures prennent trop de place avec trop de marges au dessus et en dessous ». Image plus nette ; chaque figure recadrée sur son dessin (le blanc autour est retiré), cadre fin sans ombre ; formules sans interligne exagéré (seules les vraies fractions gardent un peu de place) ; étiquettes Définition / Propriété plus discrètes. Exemple : 5e Angles et parallélisme passe de 9 à 7 pages.",
     "Définitions, propriétés ou règles à compléter : le nombre de lignes d'écriture suit la longueur du texte masqué (de 2 à 12 lignes) au lieu de 4 lignes partout -- demandé : « il ne faut pas exagérer la place nécessaire à l'écriture. Il y a souvent trop de place et parfois c'est un peu juste »."

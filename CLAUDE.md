@@ -260,7 +260,9 @@ carreau. Exemples rédigés des cours, méthodes et rédactions types (demandé 
 papier seyes ») : chaque `.redaction-template` hors correction et non interactif est enveloppé dans une `.cahier-page.cahier-exemple`
 (cahierChapitre) ; commentaire `.we-comment` à la suite, sans agrandir la ligne ; formule longue (`cl4Long`…) sur la ligne.
 Phrase à fraction écrite sur plusieurs lignes : classe `cahier-fr2` (cahierCaler), une ligne tous les deux carreaux, chacune sur une
-ligne principale. Signes ≈ ≠ ≤ ≥ (absents de Caveat) : `.cahier-op-fin`, ni gras ni agrandis.
+ligne principale. Signes ≈ ≠ ≤ ≥ (absents de Caveat) : `.cahier-op-fin`, ni gras ni agrandis ; dans TOUTES les lignes d'une page de cahier (`cahierSignesFins`,
+`.cahier-fin`, tracé de KaTeX_Main ; relecture du 13/11/2026 : « le environ égal est trop grossier - on en a déjà parlé »). Racines : la pointe du
+signe s'arrête sur la ligne d'écriture (`.sqrt .hide-tail` scaleY 0,8 depuis le haut, styles.css).
 Lignes à fraction qui se suivent : la remontée d'un carreau (`--calm`) vaut aussi pour les paragraphes `p` et les `li` d'une correction.
 Calculs en colonne (`table.cm-redac-col`, cm1Redac avec `{ nom, lignes }`) : `cahierColCaler` (appelé EN DERNIER dans cahierCaler) pose chaque ligne sur une ligne principale (`--colh`),
 un carreau entre deux lignes de texte, deux dès qu'une des deux a une fraction ; les signes ne sont calés (cahierOps, cahierOpsCaler) que sur la barre de
