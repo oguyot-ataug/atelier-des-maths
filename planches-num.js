@@ -490,10 +490,18 @@ function plNum(root, x, o){
   };
   afficher(); if(o.res) marquer(o.res);
   return {
-    total: M.cibles.filter(c => !(c.type === 'x' && c.rep.aide) && c.type !== 'vide').length,
+    total: (() => { const L = new Set(); let n = 0; M.cibles.forEach(c => { const el = root.querySelector(`[data-pn="${c.id}"]`), tr = el && el.classList.contains('pn-coche') ? el.closest('tr') : null;
+      if(tr) L.add(tr); else if(!(c.type === 'x' && c.rep.aide) && c.type !== 'vide') n++; }); return n + L.size; })(), // une ligne de cases à cocher compte pour une réponse
     etat: () => plNumCopie(etat),
     // Résultat sans rien montrer (session où seul le professeur voit les erreurs).
-    evaluer(){ const d = M.cibles.map(c => c.type === 'x' && c.rep.aide ? null : c.type === 'vide' ? (String(etat.v[c.id] || '').trim() ? false : null) : juste(c)), n = d.filter(v => v !== null); return { juste: n.filter(Boolean).length, total: n.length, d, classes: M.cibles.some((c, i) => d[i] === false && malEcrit(c)) }; },
+    evaluer(){ const d = M.cibles.map(c => c.type === 'x' && c.rep.aide ? null : c.type === 'vide' ? (String(etat.v[c.id] || '').trim() ? false : null) : juste(c));
+      // Tableau de cases à cocher : le score compte les LIGNES (demandé le 13/11/2026 : « compte par ligne ») ; une ligne est juste si
+      // seule la bonne case y est cochée. Les autres réponses comptent une à une, comme avant ; d (marques case par case) ne change pas.
+      const lignes = new Map(), seules = [];
+      M.cibles.forEach((c, i) => { const el = root.querySelector(`[data-pn="${c.id}"]`), tr = el && el.classList.contains('pn-coche') ? el.closest('tr') : null;
+        if(tr){ if(!lignes.has(tr)) lignes.set(tr, []); lignes.get(tr).push(d[i]); } else seules.push(d[i]); });
+      const n = seules.filter(v => v !== null).concat([...lignes.values()].map(l => !l.includes(false)));
+      return { juste: n.filter(Boolean).length, total: n.length, d, classes: M.cibles.some((c, i) => d[i] === false && malEcrit(c)) }; },
     verifier(){ choisir(null); const res = this.evaluer(); marquer(res); return res; },
     effacer(){ etat = plNumEtatVide(); choisir(null); effacerMarques(); afficher(); change(); },
     poser(e, res){ etat = plNumEtatVide(e); afficher(); marquer(res); },

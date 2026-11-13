@@ -3992,6 +3992,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1433', date:'2026-11-13', items:[
+    "Tableaux de cases à cocher à l'écran : le score compte les lignes -- demandé : « compte par ligne ». Une ligne est juste si seule la bonne case est cochée (5e Angles et parallélisme, planche 6, exercice 2 : « … sur 8 » pour huit paires d'angles)."
+  ]},
   { version:'2026-08-19.1432', date:'2026-11-13', items:[
     "Cases à cocher à l'écran (5e Angles et parallélisme, planche 6, exercice 2) : toutes les cases ont la même taille, un petit carré qui se coche d'un ✓ (la case à cocher était plus large que les autres et trahissait la réponse). Après « Vérifier », seules les cases cochées sont colorées, en vert ou en rouge : une case vide ne montre plus où était la bonne réponse."
   ]},
