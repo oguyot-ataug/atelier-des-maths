@@ -3999,6 +3999,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1439', date:'2026-11-13', items:[
+    "5e Fractions, planche 4, exercices 3 à 5 à l'écran (projection) : plus d'espace entre les étapes, les cases d'une ligne ne touchent plus la fraction de la ligne du dessus."
+  ]},
   { version:'2026-08-19.1438', date:'2026-11-13', items:[
     "5e Fractions, planche 4, exercices 3 à 5 : les étapes du corrigé sont espacées, les fractions de deux lignes voisines ne se touchent plus (vignettes du Manuel, écran, projection)."
   ]},

@@ -60,7 +60,7 @@ const EF = (n, e, et, rep) => `<div style="white-space:nowrap;">${[`${n} = ${e}`
 const SMX = new Map();
 const etE = (x, corr) => { const m = SMX.get(x); if(!m) return corr ? R(x) : Fr;
   return m.f.map(([a, b]) => corr ? R(Fx(a, b)) : Fr).join(` ${m.op} `); };
-const EFe = (n, e, et, corr) => `<div style="white-space:nowrap;">${[`${n} = ${e}`, ...et.map(x => `${n} = ${etE(x, corr)}`)].map(t => `<div style="display:flex;align-items:center;gap:6px;min-height:2.4em;padding:5px 0;">${t}</div>`).join('')}</div>`;
+const EFe = (n, e, et, corr) => `<div style="white-space:nowrap;">${[`${n} = ${e}`, ...et.map(x => `${n} = ${etE(x, corr)}`)].map(t => `<div style="display:flex;align-items:center;gap:6px;min-height:2.4em;padding:.6em 0;">${t}</div>`).join('')}</div>`;
 const etf = (l, cols) => ({ eleve: P3.enHaut(plGrille(l.map(([n, e, ...et]) => EF(n, e, et, x => B(Math.max(4, Math.ceil(P3.lgVis(x) * .9))))), cols || 2)),
   corr: P3.enHaut(plGrille(l.map(([n, e, ...et]) => EF(n, e, et, R)), cols || 2)),
   ecran: { eleve: P3.enHaut(plGrille(l.map(([n, e, ...et]) => EFe(n, e, et, false)), cols || 2)), corr: P3.enHaut(plGrille(l.map(([n, e, ...et]) => EFe(n, e, et, true)), cols || 2)) } });
