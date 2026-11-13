@@ -134,10 +134,14 @@ Nouveaux programmes (cycle 3 : CM1, CM2, 6e ; cycle 4 : 5e, 4e, 3e), avec une en
   repris en 3e) ; `progBadge`, `progAncien(texte)` (bandeau devant une partie de l'ancien programme dans un chapitre mixte).
   Nouveaux chapitres (13/11/2026) : G6 « Droite des milieux », G7 « Droites remarquables et cercles » (bilan et points de
   concours, cercle circonscrit du triangle rectangle et demi-cercle, diagonales des parallélogrammes particuliers, rectangle
-  sans équerre). Reste à faire : compléments des chapitres existants (Pythagore : contraposée ; probabilités : notations ensemblistes, deux épreuves ;
-  statistiques : étendue, valeur extrême ; proportionnalité : ratio, partage, coefficient multiplicateur ; relatifs : produit par
-  la distributivité ; fractions : fraction d'une fraction), bandeaux progAncien dans N5 (exposants négatifs, notation scientifique)
-  et G5 (agrandissement-réduction). À l'été 2027 : réordonner CH4, passer les chapitres 'anc' en « Pour aller plus loin » ou en 3e.
+  sans équerre). Chapitres complétés le 13/11/2026 : Pythagore (contraposée : cours, méthode, exercices, quiz, planche),
+  Puissances (produits de puissances ; bandeaux progAncien : exposants négatifs, préfixes, écriture scientifique), Espace
+  (bandeaux : repérage dans le pavé, agrandissement-réduction), Statistiques (étendue, comparer des séries, tableur),
+  Probabilités (complémentaire, réunion, intersection, ensemble vide ; deux épreuves ; planche 5), Proportionnalité (ratio,
+  partage proportionnel, coefficient multiplicateur ; planche 5), Relatifs (« moins par moins » démontré par la distributivité).
+  Reste à vérifier : Calcul littéral (conjectures au tableur ou par un algorithme, démonstrations par le calcul), Formules et
+  graphiques (programme de calcul appliqué à une variable), automatismes (carrés parfaits, cubes, a % de c). À l'été 2027 :
+  réordonner CH4, passer les chapitres 'anc' et les parties progAncien en « Pour aller plus loin » ou en 3e.
   Texte officiel : relevé de `assets/programmes/notions.js` (s4n) ; education.gouv.fr est bloqué par le réseau des sessions.
 - **3e** : le nouveau programme ne prend effet qu'en **septembre 2028**. D'ici là, garder l'ancien
   programme (et le brevet correspondant) ; contrôle de la 3e avant la rentrée 2028.

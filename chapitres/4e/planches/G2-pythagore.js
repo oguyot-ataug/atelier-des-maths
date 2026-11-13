@@ -48,7 +48,7 @@ PLANCHES['4e|Théorème de Pythagore'] = [
         corr: cm1Redac('Pythagore', { suite: ['EFG est rectangle en F : d\'après le théorème de Pythagore,', 'EG² = EF² + FG²', '9² = 5² + FG²', 'FG² = 81 − 25', 'FG² = 56', 'FG = √56 ≈ 7,48'] }, 'FG mesure environ 7,5 cm.') },
     ] },
   { titre: 'Triangle rectangle ou non ?', duree: '30 min',
-    attendus: ['Comparer le carré du plus grand côté à la somme des carrés des deux autres', 'Prouver qu\'un triangle est rectangle', 'Prouver qu\'un triangle n\'est pas rectangle'],
+    attendus: ['Comparer le carré du plus grand côté à la somme des carrés des deux autres', 'Prouver qu\'un triangle est rectangle', 'Prouver qu\'un triangle n\'est pas rectangle (contraposée)'],
     exos: [
       { etoiles: 1, col: 1, consigne: 'Le triangle est-il rectangle ? Entoure.',
         ...ch([['Côtés 6 ; 8 ; 10 :', 'oui'], ['Côtés 5 ; 6 ; 7 :', 'non'], ['Côtés 9 ; 12 ; 15 :', 'oui'], ['Côtés 4 ; 7,5 ; 8,5 :', 'oui']], 'oui · non') },
@@ -59,7 +59,7 @@ PLANCHES['4e|Théorème de Pythagore'] = [
       { etoiles: 3, cahier: true, consigne: 'Le triangle ABC a pour côtés AB = 4,8 cm, BC = 6 cm et AC = 3,6 cm. Est-il rectangle ? Rédige.',
         corr: cm1Redac('Carré du plus grand côté [BC]', 'BC² = 6² = 36', '') + cm1Redac('Somme des carrés des deux autres côtés', { suite: ['AB² + AC² = 4,8² + 3,6²', 'AB² + AC² = 23,04 + 12,96', 'AB² + AC² = 36'] }, 'BC² = AB² + AC² : d\'après la réciproque du théorème de Pythagore, ABC est rectangle en A.') },
       { etoiles: 3, cahier: true, consigne: 'Un triangle a pour côtés 5 cm, 8 cm et 9 cm. Est-il rectangle ? Rédige.',
-        corr: cm1Redac('Carré du plus grand côté', '9² = 81', '') + cm1Redac('Somme des carrés des deux autres côtés', '5² + 8² = 25 + 64 = 89', '81 ≠ 89 : d\'après le théorème de Pythagore, le triangle n\'est pas rectangle.') },
+        corr: cm1Redac('Carré du plus grand côté', '9² = 81', '') + cm1Redac('Somme des carrés des deux autres côtés', '5² + 8² = 25 + 64 = 89', '81 ≠ 89 : d\'après la contraposée du théorème de Pythagore, le triangle n\'est pas rectangle.') },
     ] },
   { titre: 'Problèmes avec le théorème de Pythagore', duree: '40 min',
     attendus: ['Repérer un triangle rectangle dans une situation', 'Choisir entre le théorème et sa réciproque', 'Rédiger la solution d\'un problème'],

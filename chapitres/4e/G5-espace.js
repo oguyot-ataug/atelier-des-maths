@@ -151,6 +151,7 @@ ${r4Ex('Exemple 2 : volume d\'un cône de révolution de hauteur 10 cm, dont la 
 ])}
 
 <div class="lesson-header"><span class="num">4</span><h3>Se repérer dans l'espace</h3></div>
+${progAncien('au nouveau programme, le repérage dans un pavé droit n\'est plus au programme de la 4e')}
 <span class="prop-badge">Propriété</span>
 <div class="def-box">Dans un <b>repère de l'espace</b> (trois axes gradués de même origine O, deux à deux perpendiculaires), tout point M est repéré par ses trois <b>coordonnées</b> :
   <ul style="margin:4px 0 0;padding-left:20px;line-height:1.8;">
@@ -161,6 +162,7 @@ ${r4Ex('Exemple 2 : volume d\'un cône de révolution de hauteur 10 cm, dont la 
 ${es4Deux(`<ul class="example-list"><li>On construit le pavé droit de sommets O et M dont les arêtes sont parallèles aux axes. On lit : abscisse 3, ordonnée 4, cote 2.</li><li>Le point M a pour coordonnées <b>(3 ; 4 ; 2)</b>.</li></ul>`, `<svg viewBox="0 0 300 220" style="width:100%;max-width:300px;display:block;margin:6px auto;">${es4Repere(3, 4, 2, -1.95, 0.35, 30, 110, 150)}</svg>`)}
 
 <div class="lesson-header"><span class="num">5</span><h3>Agrandissement et réduction</h3></div>
+${progAncien('au nouveau programme, les agrandissements et réductions ne sont plus au programme de la 4e')}
 <span class="def-badge">Définition</span>
 <div class="def-box">Quand on <b>agrandit</b> ou qu'on <b>réduit</b> une figure ou un solide, toutes les longueurs sont multipliées par un même nombre <span class="tex">k</span>, le <b>rapport</b> (ou l'échelle). Si <span class="tex">k &gt; 1</span>, c'est un agrandissement ; si <span class="tex">0 &lt; k &lt; 1</span>, une réduction. Les angles ne changent pas.</div>
 ${es4AnimAgr('es4-agr')}
@@ -238,6 +240,7 @@ document.getElementById('methode-demo-espace-4e').innerHTML = `
 </div>
 
 <div class="sub-header"><span class="letter">M</span><h4>Méthode 5 : placer un point dans un repère de l'espace</h4></div>
+${progAncien('au nouveau programme, le repérage dans un pavé droit n\'est plus au programme de la 4e')}
 <div class="figure-wrap" style="margin-top:20px;">
   <p class="interaction-hint" style="margin:6px 0;">Réglez l'abscisse, l'ordonnée et la cote du point M : le pavé construit de O à M montre comment lire ses coordonnées. Faites glisser la figure pour la tourner.</p>
   <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;align-items:center;">

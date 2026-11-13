@@ -122,6 +122,13 @@ ${r4Ex('Exemple 2 :', [
     <tr><th style="border:1px solid #C9D6E6;padding:6px 14px;background:#F4F5F8;">−</th><td style="border:1px solid #C9D6E6;padding:6px 14px;color:#C0392B;font-weight:700;">−</td><td style="border:1px solid #C9D6E6;padding:6px 14px;color:#1E7B34;font-weight:700;">+</td></tr>
   </table>
 </div>
+${r4Ex('Pourquoi « moins par moins donne plus » ? On le démontre avec la distributivité.', [
+  ['On sait que 1 + (−1) = 0.', 'Deux nombres opposés ont une somme nulle.'],
+  ['(−1) × [1 + (−1)] = (−1) × 0 = 0', 'On multiplie les deux membres par (−1).'],
+  ['(−1) × 1 + (−1) × (−1) = 0', 'On développe avec la distributivité.'],
+  ['(−1) + (−1) × (−1) = 0', 'Un nombre multiplié par 1 ne change pas.'],
+  ['(−1) × (−1) est donc l\'opposé de (−1) : (−1) × (−1) = 1.', 'Son produit par (−1) ajouté à −1 donne 0.'],
+])}
 ${r4Ex('Exemple 1 :', [
   ['G = (−6) × (−1,5)', 'Deux nombres négatifs : même signe.'],
   ['G = 6 × 1,5', 'Le produit est positif : on multiplie les distances à zéro.'],

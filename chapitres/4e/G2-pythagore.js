@@ -114,14 +114,16 @@ ${py4Deux(py4Fig([['E', 40, 45], ['F', 40, 125], ['G', 184, 125]], 1, [[0, 1, '5
   [py4Tex('FG = \\sqrt{56}') + ' cm (valeur exacte) ; FG ≈ 7,5 cm (valeur approchée au dixième).', ''],
 ]))}
 
-<div class="sub-header"><span class="letter">D</span><h4>Prouver qu'un triangle n'est pas rectangle</h4></div>
+<div class="sub-header"><span class="letter">D</span><h4>Prouver qu'un triangle n'est pas rectangle : la contraposée</h4></div>
+<span class="prop-badge">Théorème (contraposée)</span>
+<div class="def-box"><b>Si</b>, dans un triangle, le carré de la longueur du plus grand côté <b>n'est pas égal</b> à la somme des carrés des longueurs des deux autres côtés, <b>alors</b> ce triangle <b>n'est pas rectangle</b>.</div>
 <p class="example-title">Exemple : MNP est un triangle tel que MN = 6,5 cm, NP = 7,2 cm et MP = 9,8 cm. Le triangle MNP est-il rectangle ?</p>
 ${py4Deux(py4Fig([['M', 30, 120], ['N', 118, 25], ['P', 226, 120]], -1, [[0, 1, '6,5 cm'], [1, 2, '7,2 cm'], [0, 2, '9,8 cm']]), r4Ex('', [
   ['Le plus grand côté est [MP] : on calcule séparément.', 'Si MNP était rectangle, [MP] serait son hypoténuse.'],
   [py4Tex('MP^2 = 9{,}8^2 = 96{,}04'), ''],
   [py4Tex('MN^2 + NP^2 = 6{,}5^2 + 7{,}2^2 = 42{,}25 + 51{,}84 = 94{,}09'), ''],
-  ['Donc ' + py4Tex('MP^2 \\neq MN^2 + NP^2') + '.', 'Si MNP était rectangle, on aurait l\'égalité (théorème de Pythagore).'],
-  ['Le triangle MNP n\'est donc pas rectangle.', ''],
+  ['Donc ' + py4Tex('MP^2 \\neq MN^2 + NP^2') + '.', ''],
+  ['D\'après la contraposée du théorème de Pythagore, le triangle MNP n\'est pas rectangle.', 'Si MNP était rectangle, on aurait l\'égalité (théorème de Pythagore).'],
 ]))}
 
 <div class="lesson-header"><span class="num">4</span><h3>La réciproque du théorème de Pythagore</h3></div>
@@ -140,6 +142,8 @@ ${py4Deux(py4Fig([['I', 30, 120], ['J', 117, 24], ['K', 224, 120]], 1, [[0, 1, '
   ['Donc ' + py4Tex('IK^2 = IJ^2 + JK^2') + '.', ''],
   ['D\'après la réciproque du théorème de Pythagore, le triangle IJK est rectangle en J.', 'J est le sommet opposé au plus grand côté.'],
 ]))}
+<div class="redaction-note" ${R4_REM}><b>Théorème, réciproque, contraposée.</b> Le théorème dit : « si le triangle est rectangle, alors l'égalité est vraie ». Sa <b>réciproque</b> échange les deux parties : « si l'égalité est vraie, alors le triangle est rectangle » (il a fallu la démontrer à part : Euclide l'a fait). Sa <b>contraposée</b> les échange en les niant : « si l'égalité est fausse, alors le triangle n'est pas rectangle ». La contraposée d'un théorème vrai est <b>toujours</b> vraie : si le triangle était rectangle, l'égalité serait vraie !
+<ul style="margin:4px 0 0;padding-left:20px;"><li>l'égalité est vraie : <b>réciproque</b>, le triangle est rectangle ;</li><li>l'égalité est fausse : <b>contraposée</b>, le triangle n'est pas rectangle.</li></ul></div>
 <div class="redaction-note" ${R4_REM}>Comparez avec le 3 D : les triangles MNP et IJK ne diffèrent que de 1 mm sur le plus grand côté, et pourtant l'un est rectangle et l'autre non ! Une figure ne suffit jamais pour <b>prouver</b> qu'un angle est droit.</div>
 `;
 
@@ -273,7 +277,7 @@ document.getElementById('exos-demo-pythagore-4e').innerHTML = `
     'a) Le plus grand côté mesure 61 cm. On calcule séparément :', py4Tex('A = 61^2 = 3\\,721'), py4Tex('B = 11^2 + 60^2 = 121 + 3\\,600 = 3\\,721'),
     'A = B : d\'après la réciproque du théorème de Pythagore, le triangle est rectangle.',
     'b) Le plus grand côté mesure 9 cm. On calcule séparément :', py4Tex('C = 9^2 = 81'), py4Tex('D = 5^2 + 7^2 = 25 + 49 = 74'),
-    'C ≠ D : le triangle n\'est pas rectangle (sinon on aurait l\'égalité de Pythagore).'])}
+    'C ≠ D : d\'après la contraposée du théorème de Pythagore, le triangle n\'est pas rectangle.'])}
   ${py4Exo(7, 'Une échelle de 5 m est posée contre un mur vertical. Son pied est à 1,4 m du mur. À quelle hauteur l\'échelle touche-t-elle le mur ?', [
     'Le mur, le sol et l\'échelle forment un triangle rectangle (au pied du mur), dont l\'hypoténuse est l\'échelle.',
     'On note <i>h</i> la hauteur cherchée. D\'après le théorème de Pythagore :', py4Tex('h^2 = 5^2 - 1{,}4^2 = 25 - 1{,}96 = 23{,}04'),
@@ -431,8 +435,8 @@ function py4Rectangle(){
     lignes.push(['Donc ' + py4Tex(`${g}^2 = ${p}^2 + ${q}^2`) + '.', '']);
     lignes.push([`D'après la réciproque du théorème de Pythagore, le triangle EFG est rectangle en ${sommet}.`, `${sommet} est le sommet opposé au plus grand côté.`]);
   } else {
-    lignes.push(['Donc ' + py4Tex(`${g}^2 \\neq ${p}^2 + ${q}^2`) + '.', 'Si EFG était rectangle, on aurait l\'égalité (théorème de Pythagore).']);
-    lignes.push(['Le triangle EFG n\'est donc pas rectangle.', '']);
+    lignes.push(['Donc ' + py4Tex(`${g}^2 \\neq ${p}^2 + ${q}^2`) + '.', '']);
+    lignes.push(['D\'après la contraposée du théorème de Pythagore, le triangle EFG n\'est pas rectangle.', 'Si EFG était rectangle, on aurait l\'égalité (théorème de Pythagore).']);
   }
   // Dessin à partir des trois longueurs : le plus grand côté à l'horizontale.
   const P1 = g[0], P2 = g[1], d = (u, v) => L[[u, v].sort().join('')] || L[[v, u].join('')] || L[u + v] || L[v + u];
@@ -463,4 +467,5 @@ DEMO_QUIZZES['4e|Théorème de Pythagore'] = [
   { q: 'Un triangle a des côtés de 5 cm, 12 cm et 13 cm. Est-il rectangle ?', opts: ['Oui', 'Non', 'On ne peut pas savoir'], correct: 0 },
   { q: '√50 est compris entre...', opts: ['6 et 7', '7 et 8', '24 et 25'], correct: 1 },
   { q: 'Hypoténuse 10 cm, un côté de l\'angle droit 6 cm : l\'autre côté mesure...', opts: ['4 cm', '8 cm', '√136 cm'], correct: 1 },
+  { q: 'Pour prouver qu\'un triangle n\'est PAS rectangle, on utilise...', opts: ['la réciproque du théorème de Pythagore', 'la contraposée du théorème de Pythagore', 'la racine carrée'], correct: 1 },
 ];

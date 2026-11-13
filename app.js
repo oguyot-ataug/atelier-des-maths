@@ -4079,6 +4079,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1452', date:'2026-11-13', items:[
+    "4e, nouveau programme : chapitres existants complétés -- Pythagore : la contraposée (cours, méthode, exercices, quiz, planche) ; Puissances : produits de puissances d'un même nombre et de même exposant, et bandeaux « Ancien programme » sur les exposants négatifs, les préfixes et l'écriture scientifique (vus en 3e) ; Espace : bandeaux sur le repérage dans le pavé et l'agrandissement-réduction ; Statistiques : l'étendue pour comparer des séries (et le tableur) ; Probabilités : complémentaire, réunion, intersection, ensemble vide, expériences à deux épreuves (arbre, tableau) et une planche ; Proportionnalité : ratio, partage proportionnel, coefficient multiplicateur et une planche ; Relatifs : « moins par moins donne plus » démontré par la distributivité."
+  ]},
   { version:'2026-08-19.1451', date:'2026-11-13', items:[
     "4e, nouveau programme : nouveau chapitre « Droites remarquables et cercles » -- bilan des médiatrices, hauteurs, médianes et bissectrices avec leurs points de concours (concours des médiatrices démontré), triangle rectangle et cercle circonscrit (milieu de l'hypoténuse, triangle inscrit dans un demi-cercle, démonstration par le rectangle), parallélogrammes particuliers reconnus par leurs diagonales, rectangle construit sans équerre ; 4 méthodes animées, 8 exercices corrigés, histoire (Thalès, Euclide, droite d'Euler), quiz et 4 planches (constructions corrigées aux instruments)."
   ]},

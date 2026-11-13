@@ -68,5 +68,21 @@ PLANCHES['4e|Proportionnalité'] = [
       { etoiles: 1, col: 1, consigne: 'Complète.', ...P3.rmp([['1 kWh = @ Wh', '1 000'], ['un appareil de 2 000 W pendant 3 h : @ kWh', 6]], 3) },
       { etoiles: 2, col: 1, consigne: 'Entoure l\'unité qui convient.', ...P3.chx([['une vitesse', 'km/h', 'km/h · km · h'], ['une énergie consommée', 'kWh', 'kW · kWh']]) },
     ] },
+  { titre: 'Ratio, partage et coefficient multiplicateur', duree: '35 min',
+    attendus: ['Utiliser un ratio', 'Partager une quantité dans un ratio donné', 'Utiliser un coefficient multiplicateur pour une augmentation ou une diminution'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'Une boisson contient du sirop et de l\'eau dans le ratio 1 : 7. Complète.',
+        ...rmp([['2 cL de sirop : @ cL d\'eau', 14], ['5 cL de sirop : @ cL d\'eau', 35], ['@ cL de sirop : 56 cL d\'eau', 8]]) },
+      { etoiles: 1, col: 1, consigne: 'Complète le coefficient multiplicateur.',
+        ...rmp([['Augmenter de 10 % : × @', '1,1'], ['Augmenter de 25 % : × @', '1,25'], ['Diminuer de 30 % : × @', '0,7'], ['Diminuer de 5 % : × @', '0,95']]) },
+      { etoiles: 2, uneLigne: true, consigne: 'Complète.',
+        ...rmp([['Un article à 40 € augmente de 15 % : il coûte 40 × @ = @ €', '1,15', 46], ['Un article à 90 € baisse de 20 % : il coûte 90 × @ = @ €', '0,8', 72], ['Une ville de 12 000 habitants gagne 5 % : 12 000 × @ = @ habitants', '1,05', '12 600']]) },
+      { etoiles: 2, cahier: true, consigne: 'Trois amis ont acheté ensemble un billet de loterie : Lina a payé 2 €, Sam 3 € et Ali 5 €. Ils gagnent 400 € et se les partagent dans le ratio 2 : 3 : 5. Combien reçoit chacun ?',
+        corr: cm1Redac('Nombre de parts', { nom: 'n', lignes: ['2 + 3 + 5', '10'] }, '') + cm1Redac('Valeur d\'une part', { nom: 'p', lignes: [cm1Frac(400, 10), '40'] }, '')
+          + plCote(cm1Redac('Part de Lina', { nom: 'L', lignes: ['2 × 40', '80'] }, ''), cm1Redac('Part de Sam', { nom: 'S', lignes: ['3 × 40', '120'] }, ''), cm1Redac('Part d\'Ali', { nom: 'A', lignes: ['5 × 40', '200'] }, ''))
+          + '<p style="margin:4px 0 0;">Lina reçoit 80 €, Sam 120 € et Ali 200 €.</p>' },
+      { etoiles: 3, cahier: true, consigne: 'Un pull coûte 50 €. Son prix augmente de 20 %, puis baisse de 20 %. Calcule le prix final. A-t-il retrouvé son prix de départ ?',
+        corr: cm1Redac('Prix après l\'augmentation', { nom: 'P', lignes: ['50 × 1,2', '60'] }, '') + cm1Redac('Prix après la baisse', { nom: 'Q', lignes: ['60 × 0,8', '48'] }, 'Le pull coûte 48 € : il n\'a pas retrouvé son prix, car la baisse porte sur 60 €.') },
+    ] },
 ];
 })();

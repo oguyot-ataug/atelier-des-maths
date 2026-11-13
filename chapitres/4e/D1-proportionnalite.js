@@ -76,6 +76,41 @@ ${r4Ex('Exemple 2 : la masse volumique. L\'aluminium a une masse volumique de 2,
   [po4Tex('x = \\dfrac{3{,}2 \\times 2{,}7}{1} = 8{,}64') + ' : la plaque pèse 8,64 kg.', ''],
 ])}
 <div class="redaction-note" ${R4_REM}>Remarque : l'eau a une masse volumique de 1 kg/dm³ (1 litre d'eau pèse 1 kg). Un matériau de masse volumique inférieure à 1 kg/dm³, comme le bois de chêne (environ 0,7 kg/dm³), flotte sur l'eau.</div>
+
+<div class="lesson-header"><span class="num">3</span><h3>Ratio, partage et coefficient multiplicateur</h3></div>
+<div class="sub-header"><span class="letter">A</span><h4>Le ratio</h4></div>
+<span class="def-badge">Définition</span>
+<div class="def-box">Deux quantités <i>a</i> et <i>b</i> sont dans le <b>ratio 2 : 3</b> (on lit « 2 pour 3 ») lorsque <i>a</i> et <i>b</i> sont proportionnelles à 2 et 3 : ${po4Tex('\\dfrac{a}{2} = \\dfrac{b}{3}')}. Pour 2 parts de la première, il y a 3 parts de la seconde.</div>
+${r4Ex('Exemple : une vinaigrette contient de l\'huile et du vinaigre dans le ratio 3 : 1. Quelle quantité de vinaigre faut-il pour 12 cL d\'huile ?', [
+  [po4Tab(['3', '12'], ['1', '?'], 'Huile (cL)', 'Vinaigre (cL)'), 'Le ratio donne un tableau de proportionnalité.'],
+  [po4Tex('v = \\dfrac{12 \\times 1}{3} = 4'), ''],
+  ['Il faut 4 cL de vinaigre.', ''],
+])}
+<div class="sub-header"><span class="letter">B</span><h4>Le partage proportionnel</h4></div>
+${r4Ex('Exemple : Léa et Tom se partagent 120 € dans le ratio 2 : 3. Combien reçoit chacun ?', [
+  ['On partage en 2 + 3 = 5 parts égales.', 'Léa reçoit 2 parts, Tom 3 parts.'],
+  [po4Tex('p = \\dfrac{120}{5} = 24'), 'Valeur d\'une part, en euros.'],
+  [po4Tex('L = 2 \\times 24 = 48'), 'Part de Léa.'],
+  [po4Tex('T = 3 \\times 24 = 72'), 'Part de Tom.'],
+  ['Léa reçoit 48 € et Tom 72 € (vérification : 48 + 72 = 120).', ''],
+])}
+<div class="sub-header"><span class="letter">C</span><h4>Le coefficient multiplicateur</h4></div>
+<span class="prop-badge">Propriété</span>
+<div class="def-box"><ul style="margin:0;padding-left:20px;line-height:1.9;">
+  <li><b>Augmenter</b> une quantité de <i>t</i> %, c'est la <b>multiplier</b> par ${po4Tex('1 + \\dfrac{t}{100}')}.</li>
+  <li><b>Diminuer</b> une quantité de <i>t</i> %, c'est la <b>multiplier</b> par ${po4Tex('1 - \\dfrac{t}{100}')}.</li>
+</ul>Ce nombre est le <b>coefficient multiplicateur</b>.</div>
+${r4Ex('Exemple 1 : un vélo coûte 80 €. Son prix augmente de 15 %. Quel est son nouveau prix ?', [
+  [po4Tex('k = 1 + \\dfrac{15}{100} = 1{,}15'), 'Coefficient multiplicateur.'],
+  [po4Tex('P = 80 \\times 1{,}15 = 92'), 'Nouveau prix.'],
+  ['Le vélo coûte maintenant 92 €.', ''],
+])}
+${r4Ex('Exemple 2 : un manteau à 65 € est soldé à −20 %. Quel est son prix soldé ?', [
+  [po4Tex('k = 1 - \\dfrac{20}{100} = 0{,}8'), 'Coefficient multiplicateur.'],
+  [po4Tex('P = 65 \\times 0{,}8 = 52'), 'Prix soldé.'],
+  ['Le manteau soldé coûte 52 €.', ''],
+])}
+<div class="redaction-note" ${R4_REM}>Pourquoi ? Augmenter 80 € de 15 %, c'est ajouter ${po4Tex('\\dfrac{15}{100} \\times 80')} : ${po4Tex('80 + \\dfrac{15}{100} \\times 80 = 80 \\times \\left(1 + \\dfrac{15}{100}\\right)')}, par la distributivité.</div>
 `;
 
 document.getElementById('histoire-demo-proportionnalite-4e').innerHTML = `
@@ -175,6 +210,12 @@ document.getElementById('exos-demo-proportionnalite-4e').innerHTML = `
   ${po4Exo(8, 'Le fer a une masse volumique de 7,9 kg/dm³. Combien pèse un cube de fer de 2 dm d\'arête ? Flotte-t-il sur l\'eau ?', [
     'Volume : 2 × 2 × 2 = 8 dm³. Masse : 7,9 × 8 = <b>63,2 kg</b>.',
     'Il coule : sa masse volumique (7,9 kg/dm³) est bien supérieure à celle de l\'eau (1 kg/dm³).'])}
+  ${po4Exo(9, 'Pour faire une pâte à crêpes, on mélange de la farine et du lait dans le ratio 1 : 2 (en grammes de farine pour des millilitres de lait). Quelle quantité de lait faut-il pour 250 g de farine ? Partage ensuite 900 g de pâte entre Inès et Noé dans le ratio 4 : 5.', [
+    po4Tex('l = 250 \\times 2 = 500') + ' : il faut 500 mL de lait.', 'On partage en 4 + 5 = 9 parts.', po4Tex('p = \\dfrac{900}{9} = 100'),
+    po4Tex('I = 4 \\times 100 = 400'), po4Tex('N = 5 \\times 100 = 500'), 'Inès a 400 g de pâte et Noé 500 g.'])}
+  ${po4Exo(10, 'Le prix d\'un jeu vidéo de 60 € augmente de 10 %, puis le nouveau prix baisse de 10 %. Le jeu revient-il à 60 € ?', [
+    po4Tex('P_1 = 60 \\times 1{,}1 = 66'), po4Tex('P_2 = 66 \\times 0{,}9 = 59{,}4'),
+    'Non : il coûte 59,40 €. La baisse de 10 % porte sur 66 €, pas sur 60 € (60 × 1,1 × 0,9 = 60 × 0,99).'])}
 </div>
 `;
 
@@ -302,6 +343,8 @@ DEMO_REGISTRY['4e|Proportionnalité'] = {
 };
 
 DEMO_QUIZZES['4e|Proportionnalité'] = [
+  { q: 'Augmenter un prix de 20 %, c\'est le multiplier par...', opts: ['0,2', '1,2', '20'], correct: 1 },
+  { q: 'On partage 50 € dans le ratio 2 : 3. La plus petite part vaut...', opts: ['20 €', '25 €', '30 €'], correct: 0 },
   { q: '3 cahiers coûtent 4,50 €. Combien coûtent 5 cahiers ?', opts: ['7,50 €', '6,50 €', '9 €'], correct: 0 },
   { q: 'Dans un tableau de proportionnalité, 4 correspond à 10. À quoi correspond 6 ?', opts: ['12', '15', '16'], correct: 1 },
   { q: '12 élèves sur 48, cela représente...', opts: ['12 %', '25 %', '40 %'], correct: 1 },

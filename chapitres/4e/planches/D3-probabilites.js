@@ -71,5 +71,22 @@ PLANCHES['4e|Probabilités'] = [
       { etoiles: 3, cahier: true, consigne: 'Une urne contient 5 boules rouges, 3 vertes et 2 bleues. Combien de boules bleues faut-il ajouter pour que la probabilité de tirer une boule bleue soit 0,5 ?',
         corr: cm1Redac('Choix de l\'inconnue', '', 'Avec x boules bleues ajoutées, il y a 2 + x boules bleues sur 10 + x boules. Il faut autant de bleues que d\'autres boules (8).') + cm1Redac('Mise en équation', { suite: ['2 + x = 8', 'x = 8 − 2', 'x = 6'] }, 'Il faut ajouter 6 boules bleues (8 bleues sur 16 boules).') },
     ] },
+  { titre: 'Réunion, intersection, deux épreuves', duree: '35 min',
+    attendus: ['Utiliser les notations du contraire, de la réunion et de l\'intersection', 'Organiser les issues de deux épreuves dans un arbre ou un tableau', 'Calculer une probabilité dans une expérience à deux épreuves'],
+    exos: [
+      { etoiles: 1, uneLigne: true, consigne: 'On tire une boule numérotée de 1 à 10. A = {2 ; 4 ; 6 ; 8 ; 10} et B = {1 ; 2 ; 3 ; 4}. Complète.',
+        ...rmp([['A ∩ B = {@}', '2 ; 4'], ['A ∪ B = {@}', '1 ; 2 ; 3 ; 4 ; 6 ; 8 ; 10'], ['<span style="text-decoration:overline;">B</span> = {@}', '5 ; 6 ; 7 ; 8 ; 9 ; 10']]) },
+      { etoiles: 1, consigne: 'Avec les évènements A et B de l\'exercice 1, complète.',
+        ...rmp([['P(A ∩ B) = @', cm1Frac(2, 10)], ['P(A ∪ B) = @', cm1Frac(7, 10)], ['P(<span style="text-decoration:overline;">B</span>) = @', cm1Frac(6, 10)]], 3) },
+      { etoiles: 2, consigne: 'On lance un dé équilibré à 6 faces. Entoure l\'évènement qui correspond à chaque phrase. A : « obtenir un nombre pair » ; B : « obtenir au moins 5 ».',
+        ...chx([['Obtenir 6 :', 'A ∩ B', 'A ∩ B · A ∪ B · <span style="text-decoration:overline;">A</span>'], ['Obtenir 2, 4, 5 ou 6 :', 'A ∪ B', 'A ∩ B · A ∪ B · <span style="text-decoration:overline;">B</span>'], ['Obtenir 1, 3 ou 5 :', '<span style="text-decoration:overline;">A</span>', '<span style="text-decoration:overline;">A</span> · B · A ∩ B'], ['Obtenir 1, 2, 3 ou 4 :', '<span style="text-decoration:overline;">B</span>', '<span style="text-decoration:overline;">B</span> · A · A ∪ B']]) },
+      { etoiles: 2, cahier: true, consigne: 'On lance deux fois une pièce équilibrée. Construis l\'arbre des issues, puis calcule la probabilité d\'obtenir au moins une fois face.',
+        corr: cm1Redac('Issues', { suite: ['PP ; PF ; FP ; FF : 4 issues qui ont les mêmes chances.', 'Le contraire de « au moins une fois face » est {PP}.'] }, '')
+          + cm1Redac('Probabilité d\'obtenir au moins une fois face', { nom: 'P', lignes: [`1 − ${cm1Frac(1, 4)}`, cm1Frac(3, 4)] }, 'La probabilité d\'obtenir au moins une fois face est ' + cm1Frac(3, 4) + '.') },
+      { etoiles: 3, cahier: true, consigne: 'On lance deux dés équilibrés à 6 faces et on additionne les deux nombres. Construis le tableau à double entrée des sommes, puis calcule la probabilité d\'obtenir une somme égale à 7, puis une somme supérieure ou égale à 10.',
+        corr: cm1Redac('Issues', { suite: ['Le tableau a 6 × 6 = 36 cases : 36 issues qui ont les mêmes chances.', 'Somme 7 : 6 cases (1 et 6, 2 et 5, 3 et 4, 4 et 3, 5 et 2, 6 et 1).', 'Somme 10, 11 ou 12 : 3 + 2 + 1 = 6 cases.'] }, '')
+          + cm1Redac('Probabilité d\'une somme égale à 7', { nom: 'P', lignes: [cm1Frac(6, 36), cm1Frac(1, 6)] }, '')
+          + cm1Redac('Probabilité d\'une somme supérieure ou égale à 10', { nom: 'Q', lignes: [cm1Frac(6, 36), cm1Frac(1, 6)] }, 'Les deux évènements ont la même probabilité, ' + cm1Frac(1, 6) + '.') },
+    ] },
 ];
 })();

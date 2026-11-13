@@ -109,7 +109,24 @@ ${r4Ex('', [
 ])}
 <div class="redaction-note" ${R4_REM}>Remarques : la médiane n'est pas toujours une valeur de la série (ici 2,5). Elle est <b>peu sensible aux valeurs extrêmes</b> : si le nageur le plus lent avait mis 80 s au lieu de 47 s, la médiane serait toujours 40 s, alors que la moyenne passerait d'environ 40,2 s à environ 43,9 s.</div>
 
-<div class="lesson-header"><span class="num">3</span><h3>Le diagramme circulaire</h3></div>
+<div class="lesson-header"><span class="num">3</span><h3>L'étendue : comparer des séries</h3></div>
+<span class="def-badge">Définition</span>
+<div class="def-box">L'<b>étendue</b> d'une série statistique est la <b>différence</b> entre sa plus grande valeur et sa plus petite valeur. Elle mesure la <b>dispersion</b> des valeurs : plus elle est grande, plus les valeurs sont éloignées les unes des autres.</div>
+<p class="example-title">Exemple : pour les 9 nageurs ci-dessus, le plus rapide a mis 35 s et le plus lent 47 s.</p>
+${r4Ex('', [[st4Tex('E = 47 - 35 = 12'), 'Plus grande valeur moins plus petite valeur.'], ['L\'étendue de la série est 12 s.', '']])}
+<p class="example-title">Comparer deux séries : les notes de deux groupes de 5 élèves.</p>
+${st4Tab([['Groupe A', '8', '9', '10', '11', '12'], ['Groupe B', '2', '6', '10', '14', '18']])}
+${r4Ex('', [
+  [st4Tex('M_A = \\dfrac{8 + 9 + 10 + 11 + 12}{5} = \\dfrac{50}{5} = 10'), 'Moyenne du groupe A.'],
+  [st4Tex('M_B = \\dfrac{2 + 6 + 10 + 14 + 18}{5} = \\dfrac{50}{5} = 10'), 'Moyenne du groupe B.'],
+  ['Les deux groupes ont la même moyenne (10) et la même médiane (10).', ''],
+  [st4Tex('E_A = 12 - 8 = 4'), 'Étendue du groupe A.'],
+  [st4Tex('E_B = 18 - 2 = 16'), 'Étendue du groupe B.'],
+  ['Les notes du groupe B sont beaucoup plus dispersées que celles du groupe A.', 'La moyenne et la médiane ne suffisent pas pour décrire une série.'],
+])}
+<div class="redaction-note" ${R4_REM}>L'étendue est <b>très sensible</b> à une valeur extrême : une seule valeur très grande ou très petite la change complètement. Avec un tableur, si les valeurs sont dans les cellules A1 à A9 : <b>=MOYENNE(A1:A9)</b>, <b>=MEDIANE(A1:A9)</b> et, pour l'étendue, <b>=MAX(A1:A9)-MIN(A1:A9)</b>.</div>
+
+<div class="lesson-header"><span class="num">4</span><h3>Le diagramme circulaire</h3></div>
 <span class="def-badge">Définition</span>
 <div class="def-box">Dans un <b>diagramme circulaire</b>, le disque représente l'effectif total. Chaque valeur est représentée par un <b>secteur</b> dont l'angle est <b>proportionnel</b> à son effectif : l'effectif total correspond à 360°.</div>
 ${st4Camembert('st4-cam')}
@@ -216,6 +233,9 @@ document.getElementById('exos-demo-statistiques-4e').innerHTML = `
     'La somme des notes des filles est 12 × 13 = 156, celle des garçons 15 × 11,2 = 168.',
     'Moyenne de la classe : (156 + 168) : (12 + 15) = 324 : 27 = <b>12</b>.',
     'Attention : ce n\'est pas (13 + 11,2) : 2 = 12,1 ! Il faut pondérer chaque moyenne par l\'effectif de son groupe.'])}
+  ${st4Exo(9, 'Les températures maximales (en °C) relevées pendant une semaine à Brest sont 12 ; 14 ; 13 ; 15 ; 14 ; 13 ; 12, et à Strasbourg 4 ; 9 ; 15 ; 18 ; 11 ; 7 ; 13. Calcule l\'étendue de chaque série. Quelle ville a eu les températures les plus régulières ?', [
+    st4Tex('E_1 = 15 - 12 = 3') + ' : l\'étendue à Brest est 3 °C.', st4Tex('E_2 = 18 - 4 = 14') + ' : l\'étendue à Strasbourg est 14 °C.',
+    'L\'étendue est bien plus petite à Brest : les températures y ont été les plus régulières.'])}
 </div>
 `;
 
@@ -351,5 +371,6 @@ DEMO_QUIZZES['4e|Statistiques'] = [
   { q: 'Une série rangée a un effectif total de 41. Sa médiane est...', opts: ['la 20e valeur', 'la 21e valeur', 'la moyenne de la 20e et de la 21e valeur'], correct: 1 },
   { q: 'Une série rangée a un effectif total de 50. Sa médiane est...', opts: ['la 25e valeur', 'la moyenne de la 25e et de la 26e valeur', 'la 26e valeur'], correct: 1 },
   { q: 'Lequel de ces deux nombres est peu sensible à une valeur extrême ?', opts: ['La moyenne', 'La médiane'], correct: 1 },
+  { q: 'Les valeurs d\'une série vont de 7 à 19. Son étendue est...', opts: ['12', '13', '26'], correct: 0 },
   { q: 'Notes : 12 (coefficient 1) et 18 (coefficient 2). La moyenne est...', opts: ['15', '16', '14'], correct: 1 },
 ];

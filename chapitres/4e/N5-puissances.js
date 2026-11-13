@@ -62,7 +62,21 @@ ${r4Ex('Exemples :', [
   [pw4Tex('C = (5 + 3)^2 = 8^2 = 64'), 'Avec des parenthèses, on calcule d\'abord ce qu\'elles contiennent.'],
 ])}
 
+<div class="sub-header"><span class="letter">C</span><h4>Produits de puissances</h4></div>
+<span class="prop-badge">Propriétés</span>
+<div class="def-box">Pour tout nombre relatif <i>a</i> et <i>b</i>, et tous nombres entiers <i>n</i> et <i>m</i> positifs :
+<ul style="margin:6px 0 0;padding-left:20px;line-height:1.9;">
+  <li>puissances d'un <b>même nombre</b> : ${pw4Tex('a^n \\times a^m = a^{n+m}')} ;</li>
+  <li>puissances de <b>même exposant</b> : ${pw4Tex('a^n \\times b^n = (a \\times b)^n')}.</li>
+</ul></div>
+${r4Ex('Pourquoi ? On déplie les puissances :', [
+  [pw4Tex('5^2 \\times 5^3 = (5 \\times 5) \\times (5 \\times 5 \\times 5) = 5^5'), '2 + 3 = 5 facteurs égaux à 5.'],
+  [pw4Tex('2^3 \\times 7^3 = (2 \\times 2 \\times 2) \\times (7 \\times 7 \\times 7) = (2 \\times 7)^3 = 14^3'), 'On regroupe les facteurs deux par deux (2 × 7), trois fois.'],
+])}
+<div class="redaction-note" ${R4_REM}>Attention : les exposants s'<b>additionnent</b> quand on multiplie des puissances d'un même nombre, mais ${pw4Tex('5^2 + 5^3')} n'est pas ${pw4Tex('5^5')} : ${pw4Tex('5^2 + 5^3 = 25 + 125 = 150')}.</div>
+
 <div class="lesson-header"><span class="num">2</span><h3>Les puissances de 10</h3></div>
+${progAncien('au nouveau programme, la 4e ne garde que les puissances de 10 d\'exposant positif ; les exposants négatifs, les préfixes et l\'écriture scientifique (parties 2 B, 2 C et 3) sont vus en 3e')}
 
 <div class="sub-header"><span class="letter">A</span><h4>Exposant positif, exposant négatif</h4></div>
 <span class="def-badge">Définitions</span>
@@ -98,6 +112,7 @@ ${r4Ex('Exemples :', [
 <div class="redaction-note" ${R4_REM}>Pourquoi ? ${pw4Tex('10^3 \\times 10^2 = (10 \\times 10 \\times 10) \\times (10 \\times 10)')} : il y a 3 + 2 = 5 facteurs 10, donc ${pw4Tex('10^5')}.</div>
 
 <div class="lesson-header"><span class="num">3</span><h3>L'écriture scientifique</h3></div>
+${progAncien('au nouveau programme, l\'écriture scientifique est vue en 3e')}
 
 <div class="sub-header"><span class="letter">A</span><h4>Multiplier par une puissance de 10</h4></div>
 <span class="prop-badge">Propriété 1</span>
@@ -167,6 +182,7 @@ document.getElementById('methode-demo-puissances-4e').innerHTML = `
 </div>
 
 <div class="sub-header"><span class="letter">M</span><h4>Méthode 4 : trouver l'écriture scientifique d'un nombre</h4></div>
+${progAncien()}
 <div class="figure-wrap" style="margin-top:20px;">
   <p class="interaction-hint" style="margin:6px 0;">Écrivez un nombre décimal (espaces acceptés, virgule pour les décimaux) : son écriture scientifique est rédigée.</p>
   <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;align-items:center;margin:10px 0;">
@@ -176,6 +192,7 @@ document.getElementById('methode-demo-puissances-4e').innerHTML = `
 </div>
 
 <div class="sub-header"><span class="letter">M</span><h4>Méthode 5 : du pico au téra, les préfixes</h4></div>
+${progAncien()}
 <div class="figure-wrap" style="margin-top:20px;">
   <p class="interaction-hint" style="margin:6px 0;">Faites glisser le curseur d'un préfixe à l'autre : sa puissance de 10, son écriture décimale et un exemple de la vie courante s'affichent.</p>
   <input id="pw4-pVal" type="range" min="0" max="11" step="1" value="3" style="width:100%;max-width:520px;display:block;margin:8px auto;" oninput="pw4Prefixe()">

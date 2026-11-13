@@ -60,6 +60,27 @@ ${pr4Urne([])}
   <li>${pr4Tex('\\overline{A}')} : « obtenir un nombre impair » est l'<b>évènement contraire</b> de A : ${pr4Tex('\\overline{A}')} = {1 ; 3 ; 5 ; 7 ; 9}.</li>
 </ul>
 
+<div class="sub-header"><span class="letter">C</span><h4>Contraire, réunion, intersection : les notations</h4></div>
+<span class="def-badge">Définitions</span>
+<div class="def-box"><ul style="margin:0;padding-left:20px;line-height:1.9;">
+  <li>${pr4Tex('\\overline{A}')} (« A barre ») est le <b>complémentaire</b> de A : c'est l'évènement contraire, formé des issues qui ne sont pas dans A.</li>
+  <li>${pr4Tex('A \\cap B')} (« A <b>inter</b> B ») est l'<b>intersection</b> de A et B : les issues qui sont dans A <b>et</b> dans B.</li>
+  <li>${pr4Tex('A \\cup B')} (« A <b>union</b> B ») est la <b>réunion</b> de A et B : les issues qui sont dans A <b>ou</b> dans B (ou dans les deux).</li>
+  <li>${pr4Tex('\\varnothing')} est l'<b>ensemble vide</b> : il ne contient aucune issue (évènement impossible).</li>
+</ul></div>
+${(() => { const A = [2, 4, 6], AB = [8, 10], B = [7, 9], hors = [1, 3, 5];
+  const n = (v, x, y) => `<text x="${x}" y="${y}" text-anchor="middle" font-size="16" font-weight="700" fill="${PR4_ENCRE}">${v}</text>`;
+  return `<svg viewBox="0 0 360 190" style="width:100%;max-width:380px;display:block;margin:6px auto;"><rect x="4" y="4" width="352" height="182" rx="10" fill="#F7F9FC" stroke="#C9D6E6"/>
+  <ellipse cx="135" cy="98" rx="92" ry="66" fill="${PR4_BLEU}" fill-opacity=".14" stroke="${PR4_BLEU}" stroke-width="2"/><ellipse cx="225" cy="98" rx="92" ry="66" fill="${PR4_ORANGE}" fill-opacity=".14" stroke="${PR4_ORANGE}" stroke-width="2"/>
+  <text x="70" y="40" font-size="16" font-weight="700" fill="${PR4_BLEU}">A</text><text x="282" y="40" font-size="16" font-weight="700" fill="${PR4_ORANGE}">B</text>
+  ${A.map((v, i) => n(v, 85 + (i % 2) * 34, 85 + i * 22)).join('')}${AB.map((v, i) => n(v, 180, 88 + i * 30)).join('')}${B.map((v, i) => n(v, 255 + i * 22, 95 + i * 24)).join('')}${hors.map((v, i) => n(v, 330, 70 + i * 40)).join('')}</svg>`; })()}
+<p class="example-title">Exemple : on tire une boule de l'urne. A : « obtenir un nombre pair » et B : « obtenir un nombre supérieur ou égal à 7 ».</p>
+<ul class="example-list">
+  <li>${pr4Tex('A \\cap B')} = {8 ; 10} : « obtenir un nombre pair <b>et</b> supérieur ou égal à 7 ».</li>
+  <li>${pr4Tex('A \\cup B')} = {2 ; 4 ; 6 ; 7 ; 8 ; 9 ; 10} : « obtenir un nombre pair <b>ou</b> supérieur ou égal à 7 ».</li>
+  <li>${pr4Tex('A \\cap \\overline{A} = \\varnothing')} : un nombre ne peut pas être à la fois pair et impair.</li>
+</ul>
+
 <div class="lesson-header"><span class="num">2</span><h3>Calculer des probabilités</h3></div>
 
 <div class="sub-header"><span class="letter">A</span><h4>La probabilité d'un évènement</h4></div>
@@ -105,6 +126,20 @@ ${r4Ex('Exemple : F : « obtenir un nombre supérieur ou égal à 3 ».', [
 </table></div>
 <ul class="example-list"><li>Sur peu de tirages, la fréquence varie beaucoup ; plus le nombre de tirages augmente, plus elle se rapproche de 0,3.</li></ul>
 <div class="redaction-note" ${R4_REM}>Remarques : quand on ne peut pas calculer une probabilité (une punaise qui tombe sur la pointe, par exemple), on l'<b>estime</b> par la fréquence observée sur un grand nombre d'essais. Un tableur ou un programme permet de <b>simuler</b> des milliers d'expériences en quelques secondes (voir l'onglet Méthode).</div>
+
+<div class="lesson-header"><span class="num">4</span><h3>Les expériences à deux épreuves</h3></div>
+<p style="margin:4px 0 8px;">Une expérience aléatoire peut se faire en <b>deux épreuves</b> successives : par exemple, lancer deux fois une pièce. Pour trouver toutes les issues, on les organise dans un <b>arbre</b> ou dans un <b>tableau à double entrée</b>.</p>
+<p class="example-title">Exemple : on lance deux fois une pièce équilibrée (P : pile ; F : face).</p>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:4px 18px;align-items:center;">
+${(() => { const N = (x, y, t, c) => `<circle cx="${x}" cy="${y}" r="13" fill="#fff" stroke="${c}" stroke-width="2"/><text x="${x}" y="${y + 5}" text-anchor="middle" font-size="14" font-weight="700" fill="${c}">${t}</text>`;
+  const L = (x1, y1, x2, y2) => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#8A93A3" stroke-width="1.6"/>`;
+  const f = [['P', 45], ['F', 135]], g = [['P', 20], ['F', 70], ['P', 110], ['F', 160]], iss = ['PP', 'PF', 'FP', 'FF'];
+  return `<svg viewBox="0 0 330 180" style="width:100%;max-width:330px;display:block;margin:6px auto;">${f.map(([, y]) => L(22, 90, 97, y)).join('')}${g.map(([, y], k) => L(123, f[k >> 1][1], 197, y)).join('')}`
+    + `<circle cx="16" cy="90" r="5" fill="${PR4_ENCRE}"/>${f.map(([t, y]) => N(110, y, t, PR4_BLEU)).join('')}${g.map(([t, y]) => N(210, y, t, PR4_ORANGE)).join('')}`
+    + iss.map((t, k) => `<text x="250" y="${g[k][1] + 5}" font-size="14" font-weight="700" fill="${PR4_ENCRE}">${t}</text>`).join('') + `<text x="110" y="176" text-anchor="middle" font-size="11" fill="#4E5665">1er lancer</text><text x="210" y="176" text-anchor="middle" font-size="11" fill="#4E5665">2e lancer</text></svg>`; })()}
+<ul class="example-list"><li>Il y a 4 issues : PP, PF, FP et FF. Elles ont toutes les mêmes chances : chacune a pour probabilité ${pr4Tex('\\dfrac{1}{4}')}.</li><li>A : « obtenir deux fois le même côté » = {PP ; FF}, donc ${pr4Tex('P(A) = \\dfrac{2}{4} = \\dfrac{1}{2}')}.</li><li>B : « obtenir au moins une fois pile » : son contraire est {FF}, donc ${pr4Tex('P(B) = 1 - \\dfrac{1}{4} = \\dfrac{3}{4}')}.</li></ul>
+</div>
+<div class="redaction-note" ${R4_REM}>Avec deux dés, un <b>tableau à double entrée</b> (6 lignes, 6 colonnes) donne les 36 issues. Attention : avec deux dés, « obtenir une somme de 7 » (6 issues) est plus probable que « obtenir une somme de 12 » (une seule issue : 6 et 6).</div>
 `;
 
 document.getElementById('histoire-demo-probabilites-4e').innerHTML = `
@@ -228,6 +263,11 @@ document.getElementById('exos-demo-probabilites-4e').innerHTML = `
   ${pr4Exo(8, 'Une urne contient des boules rouges et des boules bleues. La probabilité de tirer une rouge est ' + pr4Tex('\\dfrac{3}{8}') + ', et il y a 15 boules rouges. Combien y a-t-il de boules bleues ?', [
     'Les ' + pr4Tex('\\dfrac{3}{8}') + ' des boules sont rouges : ' + pr4Tex('\\dfrac{1}{8}') + ' des boules représente ' + pr4Tex('\\dfrac{15}{3} = 5') + ' boules.', 'Nombre de boules : 8 × 5 = 40.',
     'Il y a donc 40 − 15 = <b>25 boules bleues</b>.'])}
+  ${pr4Exo(9, 'On lance un dé équilibré à 6 faces. A : « obtenir un nombre pair » ; B : « obtenir un multiple de 3 ». Écris les issues de ' + pr4Tex('A \\cap B') + ', de ' + pr4Tex('A \\cup B') + ' et de ' + pr4Tex('\\overline{B}') + ', puis calcule leurs probabilités.', [
+    'A = {2 ; 4 ; 6} et B = {3 ; 6}.', pr4Tex('A \\cap B') + ' = {6} : ' + pr4Tex('P(A \\cap B) = \\dfrac{1}{6}') + '.',
+    pr4Tex('A \\cup B') + ' = {2 ; 3 ; 4 ; 6} : ' + pr4Tex('P(A \\cup B) = \\dfrac{4}{6} = \\dfrac{2}{3}') + '.', pr4Tex('\\overline{B}') + ' = {1 ; 2 ; 4 ; 5} : ' + pr4Tex('P(\\overline{B}) = \\dfrac{4}{6} = \\dfrac{2}{3}') + '.'])}
+  ${pr4Exo(10, 'Une urne contient une boule rouge (R) et une boule verte (V). On tire une boule, on note sa couleur, on la remet, puis on tire une deuxième boule. Construis un arbre, puis calcule la probabilité d\'obtenir deux boules de couleurs différentes.', [
+    'Les issues sont RR, RV, VR et VV : 4 issues qui ont les mêmes chances.', '« Deux couleurs différentes » = {RV ; VR}.', pr4Tex('P = \\dfrac{2}{4} = \\dfrac{1}{2}')])}
 </div>
 `;
 
@@ -355,6 +395,8 @@ DEMO_QUIZZES['4e|Probabilités'] = [
   { q: 'On lance un dé équilibré à 6 faces. La probabilité d\'obtenir 6 est...', opts: ['1/6', '6', '1/2'], correct: 0 },
   { q: 'Une probabilité peut valoir...', opts: ['1,5', '−0,2', '0,75'], correct: 2 },
   { q: 'Si P(A) = 0,35, alors la probabilité de l\'évènement contraire de A est...', opts: ['0,35', '0,65', '1,35'], correct: 1 },
+  { q: 'A ∩ B est formé des issues qui sont...', opts: ['dans A et dans B', 'dans A ou dans B', 'ni dans A ni dans B'], correct: 0 },
+  { q: 'On lance deux fois une pièce. Combien y a-t-il d\'issues ?', opts: ['2', '3', '4'], correct: 2 },
   { q: 'La probabilité d\'un évènement impossible est...', opts: ['0', '1', 'on ne peut pas savoir'], correct: 0 },
   { q: 'Un sac contient 3 boules rouges et 2 bleues. La probabilité de tirer une bleue est...', opts: ['2/3', '2/5', '3/5'], correct: 1 },
   { q: 'On a obtenu pile 4 fois de suite avec une pièce équilibrée. Au lancer suivant...', opts: ['face a plus de chances', 'pile a plus de chances', 'il y a toujours une chance sur deux'], correct: 2 },
