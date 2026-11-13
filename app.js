@@ -3999,6 +3999,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1435', date:'2026-11-13', items:[
+    "5e Fractions, planche 4, exercices 3 à 5 à l'écran : les étapes gardent leur forme -- demandé : « L'idée est de faire des étapes avec réduction au même dénominateur ! ». Ligne de réduction avec une fraction à compléter par terme (A = …/… + …/…), puis la somme, puis la fraction simplifiée ; chaque fraction est vérifiée."
+  ]},
   { version:'2026-08-19.1434', date:'2026-11-13', items:[
     "Angles : les lettres sous le chapeau sont écrites droites partout sur le site (cours, planches, corrigés, quiz, pages publiques) -- demandé : « lettres droites partout ». Les angles notés par une minuscule (â, x̂) restent en italique.",
     "Consignes : « Calcule la mesure de l'angle… » / « Calcule la mesure des angles… » au lieu de « Calcule l'angle » (6e Propriétés des triangles, 5e Angles et parallélisme, Statistiques, Parallélogrammes, 4e Cosinus, Statistiques, 3e Trigonométrie).",

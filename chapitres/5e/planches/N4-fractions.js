@@ -51,9 +51,17 @@ const cmpX = (l, cols) => { const L = l.map(([a, b, c, d]) => { const m = d === 
 // Calcul de fractions en colonne, une lettre par calcul : [lettre, expression, étape…, résultat] (relecture 5e-N4-P4-E3, E4, E5 :
 // « Écrire des pointillés pour les étapes de réduction au même dénominateur. Donc A = … et à développer en colonne »).
 const EF = (n, e, et, rep) => `<div style="line-height:2.2;white-space:nowrap;">${n} = ${e}${et.map(x => `<br>${n} = ${rep(x)}`).join('')}</div>`;
+// À l'écran (relecture 5e-N4-P4 du 13/11/2026 : « La version écran ne peut pas convenir. L'idée est de faire des étapes avec
+// réduction au même dénominateur ! ») : chaque étape garde sa forme, une fraction à compléter par terme (A = ▢/▢ + ▢/▢),
+// puis la somme, puis la fraction simplifiée.
+const SMX = new Map();
+const etE = (x, corr) => { const m = SMX.get(x); if(!m) return corr ? R(x) : Fr;
+  return m.f.map(([a, b]) => corr ? R(Fx(a, b)) : Fr).join(` ${m.op} `); };
+const EFe = (n, e, et, corr) => `<div style="white-space:nowrap;">${[`${n} = ${e}`, ...et.map(x => `${n} = ${etE(x, corr)}`)].map(t => `<div style="display:flex;align-items:center;gap:6px;min-height:2.4em;margin:2px 0;">${t}</div>`).join('')}</div>`;
 const etf = (l, cols) => ({ eleve: P3.enHaut(plGrille(l.map(([n, e, ...et]) => EF(n, e, et, x => B(Math.max(4, Math.ceil(P3.lgVis(x) * .9))))), cols || 2)),
-  corr: P3.enHaut(plGrille(l.map(([n, e, ...et]) => EF(n, e, et, R)), cols || 2)) });
-const sm = (op, ...f) => f.map(([a, b]) => Fx(a, b)).join(` ${op} `);
+  corr: P3.enHaut(plGrille(l.map(([n, e, ...et]) => EF(n, e, et, R)), cols || 2)),
+  ecran: { eleve: P3.enHaut(plGrille(l.map(([n, e, ...et]) => EFe(n, e, et, false)), cols || 2)), corr: P3.enHaut(plGrille(l.map(([n, e, ...et]) => EFe(n, e, et, true)), cols || 2)) } });
+const sm = (op, ...f) => { const t = f.map(([a, b]) => Fx(a, b)).join(` ${op} `); SMX.set(t, { op, f }); return t; };
 PLANCHES['5e|Fractions'] = [
   { titre: 'Une fraction est un quotient', duree: '35 min',
     attendus: ['Interpréter a/b comme le quotient de a par b', 'Trouver le nombre qui, multiplié par b, donne a', 'Passer de l\'écriture fractionnaire à l\'écriture décimale'],
