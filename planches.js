@@ -458,7 +458,8 @@ function plOuvrir(lvl, c){
     <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px;flex-wrap:wrap;">
       ${plLivreAutorise() ? `<span class="pl-livre-grp"><span class="pl-livre-t"><span class="gicon">menu_book</span> Livre d'exercices ${esc(niv)} (${nbLivre} chapitre${nbLivre > 1 ? 's' : ''})</span>
         <button type="button" class="btn secondary td-mini" data-livre="eleve" title="Couverture, sommaire et toutes les planches du niveau, sans les corrigés : le livre de l'élève">Sans corrigés</button>
-        <button type="button" class="btn secondary td-mini" data-livre="corr" title="Le même livre, avec tous les corrigés à la fin">Avec corrigés</button></span>` : ''}
+        <button type="button" class="btn secondary td-mini" data-livre="corr" title="Le même livre, avec tous les corrigés à la fin">Avec corrigés</button>
+        <label class="pl-livre-cours" title="Le cours de chaque chapitre (onglet Cours) est imprimé avant ses planches, comme dans un manuel"><input type="checkbox" id="plLivreCours"${plLivreCoursPref() ? ' checked' : ''}> avec le cours</label></span>` : ''}
       <span style="flex:1"></span>
       <button type="button" class="btn secondary" data-x>Fermer</button>
       <button type="button" class="btn secondary" data-tout="corr"><span class="gicon">fact_check</span> Tous les corrigés</button>
@@ -474,7 +475,7 @@ function plOuvrir(lvl, c){
     const pr = t.closest('[data-proj]'); if(pr){ plProjeter(lvl, c, Number(pr.dataset.proj)); return; }
     const b = t.closest('[data-imp]'); if(b){ plImprimer(lvl, [{ c, indices: [Number(b.dataset.imp)] }], b.dataset.mode); return; }
     const a = t.closest('[data-tout]'); if(a){ plImprimer(lvl, [{ c, indices: liste.map((_, i) => i) }], a.dataset.tout, { filigrane: window.plFiligrane || null }); return; }
-    const lv = t.closest('[data-livre]'); if(lv) plLivre(lvl, lv.dataset.livre === 'corr');
+    const lv = t.closest('[data-livre]'); if(lv){ const cc = document.getElementById('plLivreCours'), avecCours = !!(cc && cc.checked); try{ localStorage.setItem('plLivreCours', avecCours ? '1' : '0'); }catch(e){} plLivre(lvl, lv.dataset.livre === 'corr', avecCours); }
   });
 }
 
@@ -780,8 +781,8 @@ function plSeyesFond(pg){
 async function plImprimer(lvl, blocs, mode, opts){
   opts = opts || {};
   const pr = plPrefs(), logo = await plLogo();
-  const pages = m => blocs.map(({ c, indices, planches }) => { const l = plDe(lvl, c.t);
-    return planches ? planches.map(({ p, i }) => plPageHtml(lvl, c, p, i, l.length, m, pr, logo)).join('') : indices.map(i => plPageHtml(lvl, c, l[i], i, l.length, m, pr, logo)).join(''); }).join('');
+  const pages = m => blocs.map(({ c, indices, planches, cours }) => { const l = plDe(lvl, c.t);
+    return (cours && m !== 'corr' ? cours : '') + (planches ? planches.map(({ p, i }) => plPageHtml(lvl, c, p, i, l.length, m, pr, logo)).join('') : indices.map(i => plPageHtml(lvl, c, l[i], i, l.length, m, pr, logo)).join('')); }).join('');
   const tmp = document.createElement('div'); tmp.style.cssText = 'position:absolute;left:-9999px;top:0;width:180mm;';
   tmp.innerHTML = (opts.avant || '') + (mode === 'livre' ? pages('eleve') + (opts.sansCorriges ? '' : (opts.entreCorriges || '') + pages('corr')) : mode === 'les2' ? pages('eleve') + pages('corr') : pages(mode));
   document.body.appendChild(tmp);
@@ -799,7 +800,8 @@ async function plImprimer(lvl, blocs, mode, opts){
   w.document.write(`<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><title>${escapeHtml(titre)}</title>
     <link rel="stylesheet" href="${location.origin}/assets/katex/katex.min.css">${plFontsLien(pr)}
     ${seyes ? '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&display=swap">' : ''}
-    <style>${PL_CSS}${plCssReglages(pr)}${mode === 'livre' ? PL_CSS_LIVRE : ''}${seyes ? plCssSeyes() : ''}</style></head><body class="pl-imp${seyes ? ' cahier-on' : ''}">
+    ${opts.cours ? '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Inter:wght@400;600;700&display=swap">' : ''}
+    <style>${opts.cours ? plCoursCss() : ''}${PL_CSS}${plCssReglages(pr)}${mode === 'livre' ? PL_CSS_LIVRE : ''}${seyes ? plCssSeyes() : ''}</style></head><body class="pl-imp${seyes ? ' cahier-on' : ''}">
     <button type="button" class="pl-bouton-imp" onclick="window.print()">Imprimer / Enregistrer en PDF</button>${corps}</body></html>`);
   w.document.close();
   const lancer = () => setTimeout(() => { try{ if(typeof geoPoints === 'function') geoPoints(w.document); }catch(e){} if(seyes) try{ plSeyesCaler(w.document); }catch(e){ console.warn(e); } try{ plRemplirPages(w.document); }catch(e){ console.warn(e); } w.focus(); w.print(); }, 300);
@@ -896,23 +898,105 @@ function plCouvConstruction(){
     <path d="M176.0,130.4 A200,200 0 0 1 220.9,168.8" stroke="#E8862E"/><path d="M179.1,168.8 A200,200 0 0 1 224.0,130.4" stroke="#E8862E"/>
     <circle cx="${O[0]}" cy="${O[1]}" r="3" fill="#1F3A5C"/>${L([20, 390], [395, 390])}${g}</svg>`;
 }
-async function plLivre(lvl, avecCorriges){
+/* ---------- Manuel avec le cours (demandé le 13/11/2026 : « Serait-il possible de faire une version du manuel papier avec le
+   cours ? », choix « cours complet » et « chapitre par chapitre ») ----------
+   Le cours de chaque chapitre (onglet Cours), préparé comme pour l'export PDF (exportCoursPDF : démonstrations déroulées jusqu'à
+   leur dernière étape, boutons d'écran, activités de géométrie dynamique et réglages retirés), est imprimé avant ses planches,
+   dans la partie élève du livre ; les formules repassent par plFigerMaths, comme celles des planches. Les styles du cours sont
+   recopiés de la page, chacun limité à `.pl-cours` (les planches n'en sont pas touchées), sans les règles @media print du site. */
+function plLivreCoursPref(){ try{ return localStorage.getItem('plLivreCours') === '1'; }catch(e){ return false; } }
+let plCoursCssCache = null;
+function plCoursCss(){
+  if(plCoursCssCache != null) return plCoursCssCache;
+  const abs = t => t.replace(/url\((['"]?)(?!data:|https?:|\/|#)/g, `url($1${location.origin}/`);
+  const portee = sel => sel.split(',').map(x => x.trim().replace(/#view-chapitre|#panel-cours|\.tab-panel(\.active)?/g, '').trim()).filter(x => x && !/^(html|body|:root)\b/.test(x) && !/pl-/.test(x)).map(x => '.pl-cours ' + x).join(', ');
+  const voir = (regles, out) => [...regles].forEach(r => {
+    if(r instanceof CSSFontFaceRule) out.push(abs(r.cssText));
+    else if(r instanceof CSSMediaRule){ if(/print/.test(r.conditionText)) return; const l = []; voir(r.cssRules, l); if(l.length) out.push(`@media ${r.conditionText}{${l.join('\n')}}`); }
+    else if(r instanceof CSSKeyframesRule) out.push(r.cssText);
+    else if(r instanceof CSSStyleRule){
+      if(r.selectorText.trim() === ':root'){ out.push(r.cssText); return; }
+      const sel = portee(r.selectorText); if(sel) out.push(abs(sel + '{' + r.style.cssText + '}'));
+    }
+  });
+  const L = [];
+  [...document.styleSheets].forEach(f => { if(/katex/.test(f.href || '')) return; try{ voir(f.cssRules, L); }catch(e){} });
+  return plCoursCssCache = L.join('\n') + `
+    .pl-cours{ font:10.5pt/1.5 Inter,Arial,sans-serif; color:#1C1B2E; }
+    .pl-cours .katex{ font-size:1.05em !important; }
+    .pl-cours-tete{ display:flex; align-items:baseline; gap:10px; margin:0 0 10px; padding:8px 14px; border-radius:10px; background:var(--f); border-left:6px solid var(--c); }
+    .pl-cours-tete .pl-cours-code{ font:800 11pt 'Space Grotesk',Arial,sans-serif; color:var(--c); }
+    .pl-cours-tete b{ font:700 15pt 'Space Grotesk',Arial,sans-serif; color:#1C1B2E; }
+    .pl-cours-tete span:last-child{ margin-left:auto; font:600 10pt 'Space Grotesk',Arial,sans-serif; color:var(--c); text-transform:uppercase; letter-spacing:.06em; }
+    .pl-cours svg, .pl-cours img{ max-width:100%; }
+    .pl-cours .def-box, .pl-cours .figure-wrap, .pl-cours .redaction-template, .pl-cours .redaction-note, .pl-cours .history-box, .pl-cours table, .pl-cours svg, .pl-cours img, .pl-cours li, .pl-cours p{ break-inside:avoid; page-break-inside:avoid; }
+    .pl-cours .lesson-header, .pl-cours .sub-header, .pl-cours .def-badge, .pl-cours .prop-badge, .pl-cours .example-title{ break-after:avoid; page-break-after:avoid; }
+    .pl-cours .figure-wrap{ box-shadow:none !important; border:1px solid #DCE3EC !important; padding:8px !important; }
+    .pl-cours .lesson-header{ break-before:auto; }
+    .pl-cours .def-badge, .pl-cours .prop-badge{ font-size:9pt !important; padding:2px 9px !important; }
+    .pl-cours .def-box{ padding:8px 12px !important; margin-bottom:10px !important; }`;
+}
+// Cours de chaque chapitre, prêt pour le papier : { titre du chapitre: html }. null si l'impression est annulée.
+async function plCoursLivre(lvl, chaps){
+  const orig = (CHAPITRES_BY_LEVEL[lvl] || []).find(x => x.t === currentChapterTitle), onglet = (document.getElementById('view-chapitre') || {}).dataset?.onglet || 'td';
+  const info = document.createElement('div');
+  info.style.cssText = 'position:fixed;left:50%;top:18px;transform:translateX(-50%);z-index:99999;background:#1F3A5C;color:#fff;padding:10px 18px;border-radius:12px;font:600 14px Inter,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.25);';
+  document.body.appendChild(info);
+  const out = {};
+  try{
+    for(let k = 0; k < chaps.length; k++){
+      const c = chaps[k]; info.textContent = `Préparation du manuel : cours ${k + 1} sur ${chaps.length} (${c.t})…`;
+      await new Promise(r => setTimeout(r, 30));
+      try{ out[c.t] = await plCoursPapier(lvl, c); }catch(e){ console.warn('Cours non imprimé : ' + c.t, e); }
+    }
+  } finally {
+    info.remove();
+    if(orig) try{ openChapitre(orig, onglet, lvl, { silencieux: true }); }catch(e){}
+  }
+  return out;
+}
+async function plCoursPapier(lvl, c){
+  const demo = DEMO_REGISTRY[lvl + '|' + c.t]; if(!demo || !demo.cours) return '';
+  openChapitre(c, 'cours', lvl, { silencieux: true });
+  await new Promise(r => setTimeout(r, 80));
+  const vivant = document.getElementById(demo.cours); if(!vivant || !vivant.textContent.trim()) return '';
+  const avances = await advanceAllStepDemosToEndAsync(vivant);
+  const toiles = [...vivant.querySelectorAll('canvas')].map(cv => { try{ return cv.toDataURL('image/png'); }catch(e){ return null; } });
+  const clone = vivant.cloneNode(true);
+  try{ await expandStepDemosInClone(clone); }catch(e){ console.warn(e); } finally { resetAdvancedStepDemos(avances); }
+  clone.querySelectorAll('canvas').forEach((cv, i) => { const d = toiles[i]; if(d){ const im = document.createElement('img'); im.src = d; im.style.maxWidth = '100%'; im.style.width = (cv.style.width || cv.width + 'px'); cv.replaceWith(im); } else cv.remove(); });
+  clone.querySelectorAll(':scope > .cp-hidden, .add-to-cahier-btn, .read-aloud-btn, .learn-btn, .lrn-bar, .zoom-btn, .ord-btn, .calc-montre, .cahier-barre, .cahier-btn, .figure-toolbar, .interaction-hint, .dyn-activite, .fig-dyn, button, select, input[type="range"], .cahier-page > .cahier-fond, [hidden]').forEach(el => el.remove());
+  clone.querySelectorAll('[style]').forEach(el => { if(/display\s*:\s*none/.test(el.getAttribute('style'))) el.remove(); });
+  if(typeof ordNettoyer === 'function') ordNettoyer(clone);
+  clone.querySelectorAll('.oliv-b, .oliv-sh, .oliv-haut').forEach(el => { el.classList.remove('oliv-b', 'oliv-sh', 'oliv-haut', ...[...el.classList].filter(x => x.startsWith('oliv-'))); delete el.dataset.oliv; });
+  clone.querySelectorAll('.lrn-active, .cahier-actif, .cahier-page').forEach(el => el.classList.remove('lrn-active', 'cahier-actif'));
+  // Formules : retour au LaTeX d'origine ; plFigerMaths les écrit ensuite comme dans les planches (fractions dans la police du livre).
+  clone.querySelectorAll('.tex').forEach(t => { if(t.dataset.texSource != null){ t.textContent = t.dataset.texSource; delete t.dataset.rendered; } });
+  try{ await pdfRognerFigures(clone); }catch(e){ console.warn(e); }
+  if(typeof compacterPourPdf === 'function') compacterPourPdf(clone);
+  clone.removeAttribute('id'); clone.removeAttribute('style');
+  const [, coul, fond] = plDom(c);
+  return `<section class="pl-page pl-cours-sec" data-ref="cours-${plCode(lvl, c)}"><div class="pl-cours"><div class="pl-cours-tete" style="--c:${coul};--f:${fond};"><span class="pl-cours-code">${escapeHtml(c.code)}</span><b>${escapeHtml(c.t)}</b><span>Le cours</span></div>${clone.outerHTML}</div></section>`;
+}
+async function plLivre(lvl, avecCorriges, avecCours){
   if(!plLivreAutorise()){ await niceAlert('Le livre d\'exercices est réservé aux professeurs.'); return; }
   const niv = PL_NIVEAUX_TXT[lvl] || lvl, logo = await plLogo();
   const chaps = (CHAPITRES_BY_LEVEL[lvl] || []).filter(c => plDe(lvl, c.t).length);
   if(!chaps.length){ await niceAlert('Aucune planche n\'est encore écrite pour ce niveau.'); return; }
+  const cours = avecCours ? await plCoursLivre(lvl, chaps) : {};
+  if(avecCours && cours === null) return;
   const nb = chaps.reduce((s, c) => s + plDe(lvl, c.t).length, 0);
   const doms = [...new Set(chaps.map(c => plDom(c)))];
   const couv = plCollege(lvl) ? `<section class="pl-page pl-couv pl-couv-col">
     <div class="pl-col-haut">${logo ? `<img class="pl-couv-logo" src="${logo}" alt="L'Atelier des Maths">` : '<b>L\'Atelier des Maths</b>'}<span class="pl-col-cycle">${lvl === '6e' ? 'Cycle 3' : 'Cycle 4'} · nouveau programme</span></div>
-    <div class="pl-col-bande"><span class="pl-col-mat">Mathématiques</span><span class="pl-col-niv">${escapeHtml(lvl.replace('e', ''))}<sup>e</sup></span><span class="pl-col-titre">Cahier d'exercices</span></div>
+    <div class="pl-col-bande"><span class="pl-col-mat">Mathématiques</span><span class="pl-col-niv">${escapeHtml(lvl.replace('e', ''))}<sup>e</sup></span><span class="pl-col-titre">${avecCours ? 'Manuel : cours et exercices' : 'Cahier d\'exercices'}</span></div>
     <div class="pl-col-milieu">${plCouvConstruction()}
       <span class="pl-col-prog">Au programme</span><ul class="pl-col-doms">${Object.values(PL_DOMAINES).filter(d => doms.includes(d)).map(([t, c]) => `<li style="--c:${c};">${t}</li>`).join('')}</ul></div>
     <div class="pl-col-champs"><span>Nom <i></i></span><span>Prénom <i></i></span><span class="pl-col-classe">Classe <i></i></span></div>
     <div class="pl-col-pied"><span>${chaps.length} chapitres · ${nb} planches d'exercices · trois niveaux de difficulté${avecCorriges ? ' · corrigés à la fin' : ''}</span><span class="pl-col-sign"><span class="pl-oliv">${plOliv('methode')}</span>L'Atelier des Maths · édition du ${new Date().toLocaleDateString('fr-FR')}</span></div></section>` : `<section class="pl-page pl-couv">${plCouvDeco()}
     <div class="pl-couv-haut">${logo ? `<img class="pl-couv-logo" src="${logo}" alt="L'Atelier des Maths">` : '<b>L\'Atelier des Maths</b>'}</div>
     <div class="pl-couv-niv">${niv}</div>
-    <h1 class="pl-couv-titre">Mon livre d'exercices<br><span>de mathématiques</span></h1>
+    <h1 class="pl-couv-titre">${avecCours ? 'Mon manuel' : 'Mon livre d\'exercices'}<br><span>de mathématiques</span></h1>
     <div class="pl-couv-olivia"><span class="pl-couv-oliv">${plOliv('muscle')}</span><span class="pl-couv-bulle">À toi de jouer !<small>Du plus simple ★ au défi ★★★</small></span></div>
     <div class="pl-couv-doms">${Object.values(PL_DOMAINES).filter(d => doms.includes(d)).map(([t, c, f]) => `<span style="background:${f};color:${c};border-color:${c};">${t}</span>`).join('')}</div>
     <div class="pl-couv-nom">Ce livre appartient à : <span></span></div>
@@ -924,7 +1008,7 @@ async function plLivre(lvl, avecCorriges){
     <div class="pl-som-leg">${Object.values(PL_DOMAINES).filter(d => doms.includes(d)).map(([t, c]) => `<span><i style="background:${c};"></i>${t}</span>`).join('')}</div>
     ${chaps.map(c => { const [, coul, fond] = plDom(c), l = plDe(lvl, c.t);
       return `<div class="pl-som-chap" style="--c:${coul};--f:${fond};"><div class="pl-som-ct"><span class="pl-som-code">${escapeHtml(c.code)}</span><b>${escapeHtml(c.t)}</b><span class="pl-som-nb">${l.length} planche${l.length > 1 ? 's' : ''}</span></div>
-        ${l.map((p, i) => ligne(plRef(lvl, plCode(lvl, c), i), escapeHtml(p.titre), plRef(lvl, plCode(lvl, c), i), plEtoiles(Math.max(...p.exos.map(x => x.etoiles || 1))))).join('')}</div>`; }).join('')}
+        ${cours[c.t] ? ligne('Cours', 'Le cours du chapitre', 'cours-' + plCode(lvl, c)) : ''}${l.map((p, i) => ligne(plRef(lvl, plCode(lvl, c), i), escapeHtml(p.titre), plRef(lvl, plCode(lvl, c), i), plEtoiles(Math.max(...p.exos.map(x => x.etoiles || 1))))).join('')}</div>`; }).join('')}
     ${avecCorriges ? `<div class="pl-som-chap" style="--c:#1F7A4D;--f:#E8F5EE;"><div class="pl-som-ct"><span class="pl-som-code">✓</span><b>Corrigés</b></div>${ligne('', 'Toutes les planches, dans le même ordre, avec leurs réponses', 'corriges')}</div>` : ''}
     <div class="pl-guide"><h2>Comment utiliser ce livre ?</h2><div class="pl-guide-g">
       <div><span class="pl-guide-i pl-et">★<span class="pl-et-off">★★</span></span><span><b>Les étoiles</b> : dans chaque planche, les exercices vont du plus simple (★) au plus difficile (★★★).</span></div>
@@ -934,7 +1018,7 @@ async function plLivre(lvl, avecCorriges){
       <div><span class="pl-guide-i">${plVisage(0)}${plVisage(1)}${plVisage(2)}</span><span><b>Je fais le point</b> : à la fin d'une planche, tu colories le visage qui te ressemble.</span></div>
       <div><span class="pl-guide-i pl-guide-ref">CM1-N2-P1</span><span><b>La référence</b> de chaque planche : le niveau, le chapitre, puis le numéro de la planche.</span></div>
     </div></div></section>`;
-  plImprimer(lvl, chaps.map(c => ({ c, indices: plDe(lvl, c.t).map((_, i) => i) })), 'livre', { avant: couv + sommaire, sansCorriges: !avecCorriges, titre: `Livre d'exercices ${niv}${avecCorriges ? ' (avec corrigés)' : ''}`, filigrane: window.plFiligrane || null });
+  plImprimer(lvl, chaps.map(c => ({ c, indices: plDe(lvl, c.t).map((_, i) => i), cours: cours[c.t] || '' })), 'livre', { cours: avecCours, avant: couv + sommaire, sansCorriges: !avecCorriges, titre: `${avecCours ? 'Manuel' : 'Livre d\'exercices'} ${niv}${avecCorriges ? ' (avec corrigés)' : ''}`, filigrane: window.plFiligrane || null });
 }
 
 /* ---------- Projection : un exercice à la fois, avec la correction ---------- */
