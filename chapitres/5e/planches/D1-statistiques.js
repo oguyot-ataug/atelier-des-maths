@@ -109,5 +109,14 @@ PLANCHES['5e|Statistiques'] = [
       { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.', ...P3.ch([['La moyenne est toujours une des valeurs de la série.', 'faux'], ['Une fréquence est comprise entre 0 et 1.', 'vrai'], ['La somme des fréquences vaut 1.', 'vrai']], 'vrai · faux') },
       { etoiles: 2, consigne: 'Dans une classe de 25 élèves, 10 ont un chat, 6 un chien et les autres n\'ont pas d\'animal. Complète.', ...P3.rmp([['Élèves sans animal : @', 9], ['Fréquence des élèves qui ont un chat : @', '0,4'], ['En pourcentage : @ %', 40], ['Angle du secteur « chat » : @', '144°']], 4) },
     ] },
+  { titre: 'Problèmes de statistiques', duree: '40 min',
+    attendus: ['Calculer et interpréter une moyenne', 'Comparer deux séries', 'Construire un diagramme circulaire'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'Léa a eu 12, 15 et 9. Complète.', ...P3.rmp([['Somme de ses notes : @', 36], ['Note à obtenir au 4e devoir pour avoir 12 de moyenne : @', 12]]) },
+      { etoiles: 1, col: 1, consigne: 'Sur 200 personnes interrogées, 30 % préfèrent le vélo. Complète.', ...P3.rmp([['Nombre de personnes : @', 60], ['Fréquence : @', '0,3']]) },
+      { etoiles: 2, cahier: true, consigne: 'Températures d\'une semaine (en °C) : 12 ; 15 ; 9 ; 14 ; 11 ; 16 ; 13. Calcule la moyenne (au dixième) et l\'étendue.', corr: cm1Redac('Température moyenne', { nom: 'M', lignes: [cm1Frac('12 + 15 + 9 + 14 + 11 + 16 + 13', 7), cm1Frac(90, 7)] }, 'La moyenne vaut ' + cm1Frac(90, 7) + ' °C, soit environ 12,9 °C.') + cm1Redac('Étendue', { nom: 'E', lignes: ['16 − 9', '7'] }, 'L\'étendue est de 7 °C.') },
+      { etoiles: 2, cahier: true, consigne: 'Notes de deux groupes : groupe A, 9 ; 14 ; 12 ; 15 ; 10 ; groupe B, 11 ; 12 ; 13 ; 12 ; 12. Compare leurs moyennes et leurs étendues.', corr: plCote(cm1Redac('Moyenne du groupe A', { nom: 'A', lignes: [cm1Frac(60, 5), '12'] }, ''), cm1Redac('Moyenne du groupe B', { nom: 'B', lignes: [cm1Frac(60, 5), '12'] }, '')) + cm1Redac('Étendues', { suite: ['15 − 9 = 6', '13 − 11 = 2'] }, 'Même moyenne, mais les notes du groupe A sont beaucoup plus dispersées.') },
+      { etoiles: 3, cahier: true, consigne: 'Sur 40 élèves, 18 viennent en bus, 12 à pied et 10 à vélo. Calcule l\'angle de chaque secteur d\'un diagramme circulaire.', corr: cm1Redac('Angle pour un élève', { nom: 'a', lignes: [cm1Frac(360, 40), '9'] }, '') + cm1Redac('Angles des secteurs', { suite: ['Bus : 18 × 9° = 162°', 'À pied : 12 × 9° = 108°', 'Vélo : 10 × 9° = 90°'] }, 'Vérification : 162° + 108° + 90° = 360°.') },
+    ] },
 ];
 })();

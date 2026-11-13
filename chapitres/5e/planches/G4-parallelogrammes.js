@@ -107,5 +107,14 @@ PLANCHES['5e|Parallélogrammes'] = [
       { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['Côtés 6 cm et 4 cm : périmètre @ cm', 20], ['Base 6 cm, hauteur 3 cm : aire @ cm²', 18], ['Base 7 cm, aire 28 cm² : hauteur @ cm', 4]]) },
       { etoiles: 2, consigne: 'Quelle est la nature du quadrilatère ? Entoure.', ...P3.chx([['Ses diagonales ont le même milieu :', 'parallélogramme', 'parallélogramme · trapèze · on ne sait pas'], ['Ses côtés opposés sont parallèles deux à deux :', 'parallélogramme', 'parallélogramme · trapèze · on ne sait pas'], ['Il a deux côtés parallèles :', 'on ne sait pas', 'parallélogramme · trapèze · on ne sait pas']]) },
     ] },
+  { titre: 'Problèmes', duree: '40 min',
+    attendus: ['Calculer des longueurs et des angles dans un parallélogramme', 'Démontrer qu\'un quadrilatère est un parallélogramme', 'Calculer une aire dans une situation concrète'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'ABCD est un parallélogramme, AB = 7 cm et BC = 4 cm. Complète.', ...P3.rmp([['Périmètre : @ cm', 22], ['L\'angle ABC mesure 115° : l\'angle BCD mesure @', '65°']]) },
+      { etoiles: 1, col: 1, consigne: 'ABCD est un parallélogramme de centre O, AC = 12 cm et BD = 9 cm. Complète.', ...P3.rmp([['OA = @ cm', 6], ['OD = @ cm', '4,5']]) },
+      { etoiles: 2, cahier: true, consigne: 'Les segments [AC] et [BD] ont le même milieu I. Démontre que ABCD est un parallélogramme.', corr: cm1Redac('Démonstration', { suite: ['Les diagonales [AC] et [BD] du quadrilatère ABCD ont le même milieu I.'] }, 'Un quadrilatère dont les diagonales ont le même milieu est un parallélogramme : ABCD est un parallélogramme.') },
+      { etoiles: 2, cahier: true, consigne: 'Un portail a la forme d\'un parallélogramme ABCD dont l\'angle en A mesure 65°. Calcule la mesure des trois autres angles.', corr: cm1Redac('Angle en C', { suite: ['Les angles opposés d\'un parallélogramme ont la même mesure.'] }, 'L\'angle en C mesure 65°.') + cm1Redac('Angles en B et en D', { nom: 'B', lignes: ['180° − 65°', '115°'] }, 'Deux angles consécutifs sont supplémentaires : les angles en B et en D mesurent 115°.') },
+      { etoiles: 3, cahier: true, consigne: 'Un terrain a la forme d\'un parallélogramme de base 12 m et de hauteur 7 m. Le gazon coûte 3 € le m². Combien coûte le gazon pour tout le terrain ?', corr: cm1Redac('Aire du terrain', { nom: 'A', lignes: ['12 × 7', '84'] }, '') + cm1Redac('Prix du gazon', { nom: 'P', lignes: ['84 × 3', '252'] }, 'Le gazon coûte 252 €.') },
+    ] },
 ];
 })();

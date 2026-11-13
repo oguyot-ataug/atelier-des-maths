@@ -96,5 +96,14 @@ PLANCHES['5e|Probabilités'] = [
       { etoiles: 2, col: 1, consigne: 'Roue de 8 secteurs égaux, dont 3 rouges. Complète.', ...P3.rmp([['P(rouge) = @', cm1Frac(3, 8)], ['P(pas rouge) = @', cm1Frac(5, 8)]]) },
       { etoiles: 2, col: 1, consigne: 'Une pièce est lancée 100 fois : 47 fois pile. Complète.', ...P3.rmp([['Fréquence de pile : @', '0,47'], ['Probabilité de pile : @', '0,5']]) },
     ] },
+  { titre: 'Problèmes de probabilités', duree: '40 min',
+    attendus: ['Calculer une probabilité dans une situation concrète', 'Dire si un jeu est équitable', 'Trouver une composition à partir d\'une probabilité'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'On tire une carte d\'un jeu de 32 cartes. Complète.', ...P3.rmp([['P(as) = @', cm1Frac(4, 32)], ['P(cœur) = @', cm1Frac(8, 32)]]) },
+      { etoiles: 1, col: 1, consigne: 'Un sac contient 4 jetons rouges et 6 verts. Complète.', ...P3.rmp([['P(rouge) = @', cm1Frac(4, 10)], ['Avec 2 jetons rouges de plus : P(rouge) = @', cm1Frac(6, 12)]]) },
+      { etoiles: 2, cahier: true, consigne: 'On lance un dé équilibré. Lina gagne si elle obtient 1 ou 2, Tom s\'il obtient 4, 5 ou 6. Le jeu est-il équitable ?', corr: plCote(cm1Redac('Probabilité que Lina gagne', { nom: 'L', lignes: [cm1Frac(2, 6)] }, ''), cm1Redac('Probabilité que Tom gagne', { nom: 'T', lignes: [cm1Frac(3, 6)] }, '')) + '<p style=\"margin:4px 0 0;\">Tom a plus de chances de gagner : le jeu n\'est pas équitable.</p>' },
+      { etoiles: 2, cahier: true, consigne: 'Une roue a un secteur rouge de 180°, un bleu de 90° et un vert de 90°. Calcule la probabilité de chaque couleur.', corr: cm1Redac('Probabilité de rouge', { nom: 'R', lignes: [cm1Frac(180, 360), cm1Frac(1, 2)] }, '') + cm1Redac('Probabilité de bleu', { nom: 'B', lignes: [cm1Frac(90, 360), cm1Frac(1, 4)] }, 'La probabilité de vert est aussi ' + cm1Frac(1, 4) + '.') },
+      { etoiles: 3, cahier: true, consigne: 'Une urne contient 3 boules rouges. Combien de boules vertes faut-il ajouter pour que la probabilité de tirer une rouge soit ' + cm1Frac(1, 4) + ' ?', corr: cm1Redac('Nombre total de boules', { suite: ['Les 3 rouges doivent représenter le quart des boules : il faut 4 × 3 = 12 boules.'] }, '') + cm1Redac('Boules vertes', { nom: 'V', lignes: ['12 − 3', '9'] }, 'Il faut ajouter 9 boules vertes.') },
+    ] },
 ];
 })();

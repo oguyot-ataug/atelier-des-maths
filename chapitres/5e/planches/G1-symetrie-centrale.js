@@ -122,5 +122,14 @@ PLANCHES['5e|Symétrie centrale'] = [
       { etoiles: 2, col: 1, consigne: 'Par une symétrie centrale, complète.', ...P3.rmp([['Un angle de 50° a pour image un angle de @', '50°'], ['Un segment de 4,2 cm a pour image un segment de @ cm', '4,2'], ['Un cercle de rayon 2 cm a pour image un cercle de rayon @ cm', 2]]) },
       { etoiles: 2, consigne: 'Entoure la bonne réponse.', ...P3.chx([['Le symétrique du centre O par rapport à O est :', 'O lui-même', 'O lui-même · un autre point · il n\'existe pas'], ['Le symétrique d\'une droite qui passe par O est :', 'la même droite', 'la même droite · une droite perpendiculaire · un point']]) },
     ] },
+  { titre: 'Problèmes', duree: '40 min',
+    attendus: ['Utiliser la symétrie centrale dans un repère', 'Justifier avec les propriétés de conservation', 'Résoudre un problème concret'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'Symétrique par rapport à l\'origine O du repère. Complète.', ...P3.rmp([['A(2 ; 3) a pour image A\'(@ ; @)', '−2', '−3'], ['B(−1 ; 4) a pour image B\'(@ ; @)', 1, '−4'], ['C(0 ; −5) a pour image C\'(@ ; @)', 0, 5]]) },
+      { etoiles: 1, col: 1, consigne: 'Une figure a un périmètre de 18 cm et une aire de 20 cm². Son image par une symétrie centrale a…', ...P3.rmp([['un périmètre de @ cm', 18], ['une aire de @ cm²', 20]]) },
+      { etoiles: 2, cahier: true, consigne: 'ABCD est un parallélogramme de centre O. Quels sont les symétriques de A et de B par rapport à O ? Justifie.', corr: cm1Redac('Démonstration', { suite: ['Les diagonales d\'un parallélogramme ont le même milieu : O est le milieu de [AC] et de [BD].'] }, 'Le symétrique de A par rapport à O est C ; celui de B est D.') },
+      { etoiles: 2, cahier: true, consigne: 'Un jardinier a planté un arbre A à 7 m d\'un puits O. Il plante un second arbre A\', symétrique de A par rapport à O. Quelle distance sépare les deux arbres ?', corr: cm1Redac('Distance entre les deux arbres', { nom: 'AA\'', lignes: ['2 × 7', '14'] }, 'O est le milieu de [AA\'] : les deux arbres sont à 14 m l\'un de l\'autre.') },
+      { etoiles: 3, cahier: true, consigne: 'Dans le triangle EFG, EF = 5 cm et l\'angle EFG mesure 35°. E\'F\'G\' est son image par la symétrie de centre O. Donne E\'F\' et la mesure de l\'angle E\'F\'G\'. Justifie.', corr: cm1Redac('Démonstration', { suite: ['La symétrie centrale conserve les longueurs et les mesures d\'angles.'] }, 'E\'F\' = 5 cm et l\'angle E\'F\'G\' mesure 35°.') },
+    ] },
 ];
 })();

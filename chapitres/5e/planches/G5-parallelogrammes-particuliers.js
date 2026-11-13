@@ -106,5 +106,14 @@ PLANCHES['5e|Parallélogrammes particuliers'] = [
       { etoiles: 2, col: 1, consigne: 'Rectangle de 8 cm sur 5 cm. Complète.', ...P3.rmp([['Périmètre : @ cm', 26], ['Aire : @ cm²', 40], ['Ses diagonales sont de même @', 'longueur']]) },
       { etoiles: 2, consigne: 'Un parallélogramme a des diagonales… Entoure sa nature.', ...P3.chx([['… de même longueur :', 'rectangle', 'rectangle · losange · carré'], ['… perpendiculaires :', 'losange', 'rectangle · losange · carré'], ['… de même longueur et perpendiculaires :', 'carré', 'rectangle · losange · carré']]) },
     ] },
+  { titre: 'Problèmes', duree: '40 min',
+    attendus: ['Calculer des longueurs dans les parallélogrammes particuliers', 'Justifier la nature d\'un quadrilatère', 'Résoudre un problème de carrelage'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'Un carré a un périmètre de 36 cm. Complète.', ...P3.rmp([['Côté : @ cm', 9], ['Aire : @ cm²', 81]]) },
+      { etoiles: 1, col: 1, consigne: 'Complète.', ...P3.rmp([['Losange de périmètre 20 cm : côté @ cm', 5], ['Rectangle de longueur 9 cm et de périmètre 30 cm : largeur @ cm', 6]]) },
+      { etoiles: 2, cahier: true, consigne: 'ABCD est un parallélogramme dont les deux diagonales mesurent 6 cm. Quelle est sa nature ? Justifie.', corr: cm1Redac('Démonstration', { suite: ['Le parallélogramme ABCD a des diagonales de même longueur.'] }, 'Un parallélogramme dont les diagonales ont la même longueur est un rectangle : ABCD est un rectangle.') },
+      { etoiles: 2, cahier: true, consigne: 'EFGH est un losange qui a un angle droit en E. Quelle est sa nature ? Justifie.', corr: cm1Redac('Démonstration', { suite: ['Un losange est un parallélogramme : avec un angle droit, c\'est un rectangle.'] }, 'EFGH est à la fois un losange et un rectangle : c\'est un carré.') },
+      { etoiles: 3, cahier: true, consigne: 'Une pièce rectangulaire mesure 3,60 m sur 2,70 m. On la couvre de carreaux carrés de 30 cm de côté. Combien faut-il de carreaux ?', corr: cm1Redac('Carreaux sur la longueur', { nom: 'L', lignes: [cm1Frac(360, 30), '12'] }, '') + cm1Redac('Carreaux sur la largeur', { nom: 'ℓ', lignes: [cm1Frac(270, 30), '9'] }, '') + cm1Redac('Nombre de carreaux', { nom: 'N', lignes: ['12 × 9', '108'] }, 'Il faut 108 carreaux.') },
+    ] },
 ];
 })();

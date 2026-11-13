@@ -108,5 +108,14 @@ PLANCHES['5e|Fonctions'] = [
       { etoiles: 2, col: 1, consigne: 'Formule y = 2x + 1. Le point est-il sur la représentation ? Entoure.', ...P3.ch([['(1 ; 3)', 'oui'], ['(2 ; 4)', 'non'], ['(0 ; 1)', 'oui']], 'oui · non') },
       { etoiles: 2, consigne: 'Un taxi coûte P = 3 + 2d euros pour d kilomètres. Complète.', ...P3.rmp([['d = 5 : P = @ €', 13], ['d = 10 : P = @ €', 23], ['P = 11 € : d = @ km', 4], ['Le prix est-il proportionnel à la distance ? @', 'non']], 4) },
     ] },
+  { titre: 'Problèmes', duree: '40 min',
+    attendus: ['Produire une formule à partir d\'une situation', 'Calculer une valeur avec une formule', 'Comparer deux tarifs'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'Un abonnement coûte 8 € par mois. Complète.', ...P3.rmp([['Coût C pour n mois : C = @', '8n'], ['Pour 12 mois : @ €', 96]]) },
+      { etoiles: 1, col: 1, consigne: 'Location de vélo : 5 €, puis 2 € par heure. Complète.', ...P3.rmp([['Prix P pour h heures : P = @', '5 + 2h'], ['Pour 3 heures : @ €', 11]]) },
+      { etoiles: 2, cahier: true, consigne: 'Un randonneur marche à 4 km/h. La distance parcourue est d = 4t (d en km, t en heures). Calcule la distance pour 2,5 h, puis le temps pour parcourir 10 km.', corr: cm1Redac('Distance en 2,5 h', { nom: 'd', lignes: ['4 × 2,5', '10'] }, '') + cm1Redac('Temps pour 10 km', { nom: 't', lignes: [cm1Frac(10, 4), '2,5'] }, 'Il parcourt 10 km en 2,5 h, soit 2 h 30 min.') },
+      { etoiles: 2, cahier: true, consigne: 'Forfait A : 20 € par mois ; forfait B : 2 € par heure de connexion. Pour combien d\'heures les deux forfaits coûtent-ils le même prix ?', corr: cm1Redac('Prix du forfait B pour h heures', { suite: ['B = 2h'] }, '') + cm1Redac('Nombre d\'heures', { nom: 'h', lignes: [cm1Frac(20, 2), '10'] }, 'Pour 10 heures, les deux forfaits coûtent 20 € ; au-delà, le forfait A est le moins cher.') },
+      { etoiles: 3, cahier: true, consigne: 'L\'aire A d\'un carré de côté c est A = c². Complète le tableau pour c = 1, 2, 3, 4, puis dis si l\'aire est proportionnelle au côté.', corr: cm1Tableau(['c', '1', '2', '3', '4'], [['A', ...['1', '4', '9', '16'].map(P3.R)]]) + '<p style=\"margin:4px 0 0;\">Non : quand le côté double (de 1 à 2), l\'aire est multipliée par 4.</p>' },
+    ] },
 ];
 })();

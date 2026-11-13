@@ -115,5 +115,14 @@ PLANCHES['5e|Droites remarquables dans un triangle'] = [
       { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.', ...P3.ch([['Un point de la médiatrice de [AB] est à la même distance de A et de B.', 'vrai'], ['Les trois médiatrices d\'un triangle se coupent en un même point.', 'vrai'], ['Une hauteur est toujours à l\'intérieur du triangle.', 'faux']], 'vrai · faux') },
       { etoiles: 2, col: 1, consigne: 'Triangle ABC rectangle en A. Entoure.', ...P3.chx([['Centre de son cercle circonscrit :', 'milieu de [BC]', 'A · milieu de [BC] · milieu de [AB]'], ['Hauteur issue de B :', '(AB)', '(AB) · (BC) · (AC)']]) },
     ] },
+  { titre: 'Problèmes', duree: '40 min',
+    attendus: ['Utiliser les médiatrices dans une situation concrète', 'Utiliser une hauteur pour calculer une aire', 'Utiliser le cercle circonscrit d\'un triangle rectangle'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'On veut placer une antenne à la même distance de trois villages A, B et C. Complète.', ...P3.rmp([['Elle est au point de concours des @', 'médiatrices'], ['C\'est le centre du cercle @', 'circonscrit']]) },
+      { etoiles: 1, col: 1, consigne: 'Le triangle ABC a une aire de 24 cm² ; I est le milieu de [BC]. Complète.', ...P3.rmp([['Aire du triangle ABI : @ cm²', 12], ['Aire du triangle AIC : @ cm²', 12]]) },
+      { etoiles: 2, cahier: true, consigne: 'Explique comment trouver l\'emplacement de l\'antenne de l\'exercice 1, et pourquoi il convient.', corr: cm1Redac('Construction', { suite: ['On trace la médiatrice de [AB] et celle de [BC] : elles se coupent en O.', 'O est sur la médiatrice de [AB] : OA = OB ; sur celle de [BC] : OB = OC.'] }, 'OA = OB = OC : l\'antenne placée en O est à la même distance des trois villages.') },
+      { etoiles: 2, cahier: true, consigne: 'Dans le triangle ABC, la hauteur issue de A coupe [BC] en H. BC = 8 cm et AH = 5 cm. Calcule l\'aire du triangle ABC.', corr: cm1Redac('Aire du triangle ABC', { nom: 'A', lignes: [cm1Frac('8 \\times 5', 2), cm1Frac(40, 2), '20'] }, 'L\'aire du triangle ABC est 20 cm².') },
+      { etoiles: 3, cahier: true, consigne: 'Le triangle ABC est rectangle en A et BC = 10 cm. O est le milieu de [BC]. Calcule la longueur OA.', corr: cm1Redac('Démonstration', { suite: ['Le centre du cercle circonscrit à un triangle rectangle est le milieu de l\'hypoténuse : OA = OB = OC.'] }, '') + cm1Redac('Longueur OA', { nom: 'OA', lignes: [cm1Frac(10, 2), '5'] }, 'OA mesure 5 cm.') },
+    ] },
 ];
 })();

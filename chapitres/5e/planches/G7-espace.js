@@ -135,5 +135,14 @@ PLANCHES['5e|Représentation de l\'espace'] = [
       { etoiles: 2, col: 1, consigne: 'Cube. Complète.', ...P3.rmp([['Nombre de faces : @', 6], ['Nombre d\'arêtes : @', 12], ['Nombre de sommets : @', 8]]) },
       { etoiles: 2, consigne: 'Entoure la bonne réponse.', ...P3.chx([['Le patron d\'un cylindre : deux disques et un', 'rectangle', 'rectangle · triangle · cercle'], ['Les faces latérales d\'un prisme droit sont des', 'rectangles', 'rectangles · triangles · disques']]) },
     ] },
+  { titre: 'Problèmes', duree: '40 min',
+    attendus: ['Calculer un volume dans une situation concrète', 'Convertir un volume en litres', 'Calculer le volume d\'un cylindre avec π'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'Un aquarium a la forme d\'un pavé de 50 cm sur 30 cm sur 40 cm. Complète.', ...P3.rmp([['Volume : @ cm³', '60 000'], ['Contenance : @ L', 60]]) },
+      { etoiles: 1, col: 1, consigne: 'Un cylindre a une base de 20 cm² et une hauteur de 15 cm. Complète.', ...P3.rmp([['Volume : @ cm³', 300], ['Contenance : @ cL', 30]]) },
+      { etoiles: 2, cahier: true, consigne: 'Une piscine a la forme d\'un pavé de 8 m sur 4 m et de 1,5 m de profondeur. Calcule son volume en m³, puis sa contenance en litres.', corr: cm1Redac('Volume de la piscine', { nom: 'V', lignes: ['8 × 4 × 1,5', '32 × 1,5', '48'] }, 'La piscine a un volume de 48 m³, soit 48 000 litres (1 m³ = 1 000 L).') },
+      { etoiles: 2, cahier: true, consigne: 'Une boîte de conserve est un cylindre de rayon 4 cm et de hauteur 10 cm. Calcule son volume en fonction de π, puis une valeur approchée au cm³ près.', corr: cm1Redac('Aire de la base', { nom: 'B', lignes: ['π × 4²', '16π'] }, '') + cm1Redac('Volume de la boîte', { nom: 'V', lignes: ['16π × 10', '160π'] }, 'Le volume est 160π cm³, soit environ 503 cm³.') },
+      { etoiles: 3, cahier: true, consigne: 'Un prisme droit a pour base un triangle rectangle dont les côtés de l\'angle droit mesurent 3 cm et 4 cm, et pour hauteur 10 cm. Calcule son volume.', corr: cm1Redac('Aire de la base', { nom: 'B', lignes: [cm1Frac('3 \\times 4', 2), cm1Frac(12, 2), '6'] }, '') + cm1Redac('Volume du prisme', { nom: 'V', lignes: ['6 × 10', '60'] }, 'Le volume du prisme est 60 cm³.') },
+    ] },
 ];
 })();

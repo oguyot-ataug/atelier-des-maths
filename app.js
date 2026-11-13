@@ -4079,6 +4079,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1456', date:'2026-11-13', items:[
+    "Manuel de 5e : une planche « Problèmes » dans les 9 chapitres qui n'en avaient pas (symétrie centrale, droites remarquables, parallélogrammes, parallélogrammes particuliers, espace, statistiques, probabilités, programmation, fonctions), corrigés rédigés. La 5e passe de 95 à 125 planches (787 exercices) dans la journée, soit 30 pages de plus."
+  ]},
   { version:'2026-08-19.1455', date:'2026-11-13', items:[
     "Manuel de 5e : une planche « Automatismes » aussi dans les 13 chapitres de géométrie, de données et de fonctions (symétrie centrale, angles, droites remarquables, parallélogrammes, aires, espace, statistiques, probabilités, programmation, proportionnalité, pourcentages, fonctions) : 116 planches et 742 exercices en 5e."
   ]},

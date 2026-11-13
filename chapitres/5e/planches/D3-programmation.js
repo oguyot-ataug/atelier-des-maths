@@ -122,5 +122,14 @@ PLANCHES['5e|Pensée informatique et programmation'] = [
       { etoiles: 2, col: 1, consigne: 'demander n ; si n > 5 alors dire « grand » sinon dire « petit ». Que dit-il ?', ...P3.rmp([['pour 8 : @', 'grand'], ['pour 5 : @', 'petit'], ['pour 2 : @', 'petit']]) },
       { etoiles: 2, col: 1, consigne: 'De quel angle tourner à chaque sommet pour tracer… ?', ...P3.rmp([['un pentagone régulier : @', '72°'], ['un octogone régulier : @', '45°'], ['un triangle équilatéral : @', '120°']]) },
     ] },
+  { titre: 'Problèmes et projets', duree: '40 min',
+    attendus: ['Écrire un programme qui répond à un besoin', 'Prévoir ce que dit un programme', 'Tracer une figure avec une boucle'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'mettre score à 0, puis ajouter 10 à score à chaque bonne réponse. Complète.', ...P3.rmp([['Après 7 bonnes réponses : score = @', 70], ['Pour un score de 120 : @ bonnes réponses', 12]]) },
+      { etoiles: 1, col: 1, consigne: 'Pour tracer un carré de côté 80, complète.', ...P3.rmp([['Le stylo avance de @', 80], ['Il tourne de @', '90°'], ['On répète @ fois', 4]]) },
+      { etoiles: 2, cahier: true, consigne: 'Écris un programme qui demande deux nombres et dit leur moyenne.', corr: cm1Redac('Programme', { suite: ['demander « Premier nombre ? » ; mettre a à réponse ;', 'demander « Second nombre ? » ; mettre b à réponse ;', 'dire (a + b) : 2.'] }, 'Pour 8 et 12, il dit 10.') },
+      { etoiles: 2, cahier: true, consigne: 'mettre n à 1 ; répéter 5 fois [dire n ; mettre n à n × 2]. Qu\'est-ce que le programme dit ?', corr: cm1Redac('Valeurs dites', { suite: ['1, puis 2, puis 4, puis 8, puis 16.'] }, 'n est doublé à chaque tour : le programme dit les cinq premières puissances de 2.') },
+      { etoiles: 3, cahier: true, consigne: 'Écris un programme qui trace un triangle équilatéral de côté 100, puis modifie-le pour tracer un hexagone régulier.', corr: cm1Redac('Triangle équilatéral', { suite: ['répéter 3 fois [avancer de 100 ; tourner de 120°]'] }, '') + cm1Redac('Hexagone régulier', { suite: ['répéter 6 fois [avancer de 100 ; tourner de 60°]'] }, 'À chaque sommet, on tourne de 360° divisé par le nombre de côtés.') },
+    ] },
 ];
 })();
