@@ -2136,6 +2136,15 @@ select:not([multiple]):not([size]){
 .chap-card .chap-vie{display:inline-flex;align-items:center;gap:3px;margin:-4px 0 8px;font-size:.7rem;font-weight:600;color:#2F6FB3;background:#EEF5FB;border-radius:999px;padding:1px 8px 1px 5px;cursor:help;}
 .chap-card .chap-vie .gicon{font-size:14px;}
 .tl-item .chap-vie-ic{font-size:15px;color:#2F6FB3;vertical-align:-3px;cursor:help;}
+/* Changement de programme de la 4e (progBadge, progAncien ; 13/11/2026) */
+.chap-card .chap-prog{display:inline-flex;align-items:center;gap:3px;margin:-4px 6px 8px 0;font-size:.7rem;font-weight:600;border-radius:999px;padding:1px 8px 1px 5px;cursor:help;}
+.chap-card .chap-prog .gicon{font-size:14px;}
+.chap-prog.nv,.chap-prog-ic.nv{color:#1E7B34;background:#E8F5EC;}
+.chap-prog.anc,.chap-prog-ic.anc{color:#7A5B12;background:#FBF3DF;}
+.tl-item .chap-prog-ic{font-size:.68rem;font-weight:700;border-radius:999px;padding:0 7px;margin-left:6px;vertical-align:1px;cursor:help;}
+.prog-ancien{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:10px 0 6px;padding:6px 12px;border-radius:10px;background:#FBF3DF;color:#5E450B;font-size:.88rem;border:1px dashed #D9B45A;}
+.prog-ancien .gicon{font-size:18px;color:#B4851B;}
+@media print{.prog-ancien{display:none;}}
 /* Éditeur de formules visuel (editeur-maths.js) et pointillés « à compléter » (mathBlancs, app.js). */
 #mxOverlay{z-index:650;}
 .mx-card{max-width:720px;max-height:92vh;}

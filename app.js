@@ -78,11 +78,16 @@ const CH5 = [
    pourcentages, vitesse-distance-temps, grandeurs composées ; D2 série statistique, médiane ;
    D3 notion de probabilité, des fréquences aux probabilités.
    Niveau visible des seuls administrateurs (menu, routes #/niveau/4e et #/chapitre/4e/...),
-   voir NIVEAUX_ADMIN. */
+   voir NIVEAUX_ADMIN.
+   Nouveau programme (BO n° 10 du 05/03/2026, annexe 2, en vigueur en 4e à la rentrée 2027) : demandé le 13/11/2026
+   (« Vu que je souhaite lancer les ventes pour la rentrée prochaine, autant faire les nouveaux programmes », choix « 4e
+   seulement » et « garder l'ancien en option »). Champ prog : 'nv' = chapitre du nouveau programme (ajouté en fin de
+   progression cette année), 'anc' = chapitre de l'ancien programme, qui sort de la 4e en 2027 (repris en 3e) ; badge sur
+   les cartes et la frise (progBadge). Dans un chapitre mixte, la partie qui sort est précédée de progAncien(…). */
 const CH4 = [
  {n:1,code:'N1',cat:'N',t:'Opérations sur les nombres relatifs',s:2,p:'3-13',d:'1-13 sept'},
- {n:2,code:'G1',cat:'G',t:'Triangles et parallèles',s:2,p:'72-83',d:'14-27 sept'},
- {n:3,code:'N2',cat:'N',t:'Divisibilité',s:1,p:'14-18',d:'28 sept-4 oct'},
+ {n:2,code:'G1',cat:'G',t:'Triangles et parallèles',s:2,p:'72-83',d:'14-27 sept',prog:'anc'},
+ {n:3,code:'N2',cat:'N',t:'Divisibilité',s:1,p:'14-18',d:'28 sept-4 oct',prog:'anc'},
  {n:4,code:'G4',cat:'G',t:'Translations',s:1,p:'107-111',d:'5-11 oct'},
  {n:5,code:'N3',cat:'N',t:'Fractions : comparaison et addition',s:2,p:'19-29',d:'2-15 nov'},
  {n:6,code:'D2',cat:'D',t:'Statistiques',s:2,p:'138-145',d:'16-29 nov'},
@@ -91,12 +96,13 @@ const CH4 = [
  {n:9,code:'N5',cat:'N',t:'Puissances',s:2,p:'42-49',d:'25 jan-7 fév'},
  {n:10,code:'D3',cat:'D',t:'Probabilités',s:1,p:'146-153',d:'8-14 fév'},
  {n:11,code:'N6',cat:'N',t:'Calcul littéral',s:3,p:'50-62',d:'8-28 mars'},
- {n:12,code:'G3',cat:'G',t:'Cosinus',s:2,p:'98-106',d:'29 mars-11 avr'},
+ {n:12,code:'G3',cat:'G',t:'Cosinus',s:2,p:'98-106',d:'29 mars-11 avr',prog:'anc'},
  {n:13,code:'D1',cat:'D',t:'Proportionnalité',s:2,p:'125-137',d:'3-16 mai'},
  {n:14,code:'N7',cat:'N',t:'Équations',s:2,p:'63-71',d:'17-30 mai'},
  {n:15,code:'G5',cat:'G',t:'Espace',s:2,p:'112-124',d:'31 mai-13 juin'},
  {n:16,code:'D4',cat:'D',t:'Formules et graphiques',s:1,p:'',d:'14-20 juin'},
  {n:17,code:'D5',cat:'D',t:'Algorithmique et programmation',s:1,p:'',d:'21-27 juin'},
+ {n:18,code:'G6',cat:'G',t:'Droite des milieux',s:2,p:'',d:'',prog:'nv'},
 ];
 
 /* Progression 3e -- demandé : « voici les chapitres de 3e » (sommaire du manuel iParcours Maths 3e
@@ -1126,6 +1132,17 @@ function chapVieBadge(lvl, c, court){
   return court ? ` <span class="gicon chap-vie-ic" title="${escapeHtml(t)}">public</span>`
     : `<div class="chap-vie" title="${escapeHtml(t)}"><span class="gicon">public</span> Maths &amp; la vie</div>`;
 }
+/* Repères du changement de programme de la 4e (CH4, champ prog) : badge sur les cartes et la frise ; dans un chapitre,
+   progAncien(texte) annonce une partie de l'ancien programme. */
+function progBadge(c, court){
+  if(!c || !c.prog) return '';
+  const nv = c.prog === 'nv', t = nv ? 'Nouveau programme (en vigueur à la rentrée 2027)' : 'Ancien programme : sort de la 4e à la rentrée 2027 (repris en 3e)';
+  return court ? ` <span class="chap-prog-ic ${nv ? 'nv' : 'anc'}" title="${t}">${nv ? 'Nouveau' : 'Ancien'}</span>`
+    : `<div class="chap-prog ${nv ? 'nv' : 'anc'}" title="${t}"><span class="gicon">${nv ? 'new_releases' : 'history'}</span> ${nv ? 'Nouveau programme 2027' : 'Ancien programme'}</div>`;
+}
+function progAncien(t){
+  return `<div class="prog-ancien"><span class="gicon">history</span> <b>Ancien programme</b> (jusqu'en juin 2027) · ${t || 'au nouveau programme, cette partie est vue en 3e'}.</div>`;
+}
 function renderTheme(data, lvl){
   const order=['N','G','D','P','M'];
   let html='';
@@ -1144,7 +1161,7 @@ function renderTheme(data, lvl){
         ${locked?'<span class="status lock-status"><span class=gicon>lock</span> '+lockedChapterLabel()+'</span>':(ready?'':'<span class="status">à venir</span>')}
         <div class="code">${c.code} · ch. ${c.n}</div>
         <div class="titre">${c.dispT||c.t}</div>
-        ${chapVieBadge(lvl, c)}
+        ${progBadge(c)}${chapVieBadge(lvl, c)}
         <div class="meta">${c.p ? `<span>p. ${c.p}</span>` : ''}<span>${c.s} sem.</span></div>
       </div>`;
     });
@@ -1278,9 +1295,9 @@ function renderFrise(data, lvl){
     const locked = isChapterLocked(lvl, c.t);
     html += `<div class="tl-item${done?' tl-done':''}${locked?' locked':''}" data-code="${c.code}" data-cat="${c.cat}" data-t="${c.t}" data-p="${c.p}" data-s="${c.s}" data-d="${c.d}">
       <span class="dot" style="background:${CATS[c.cat].text}"></span>
-      <span class="titre">${c.dispT||c.t}${chapVieBadge(lvl, c, true)}</span>
+      <span class="titre">${c.dispT||c.t}${progBadge(c, true)}${chapVieBadge(lvl, c, true)}</span>
       ${locked?'<span class="tl-content-badge missing lock-status"><span class=gicon>lock</span> '+lockedChapterLabel()+'</span>':`<span class="tl-content-badge ${hasContent?'ready':'missing'}" title="${hasContent?'Contenu du site déjà créé':'Contenu du site pas encore créé'}">${hasContent?'<span class=gicon>public</span> En ligne':'<span class=gicon>edit</span> À créer'}</span>`}
-      <span class="dates">${c.code} · ${c.d}</span>
+      <span class="dates">${c.code}${c.d ? ' · ' + c.d : (c.prog === 'nv' ? ' · rentrée 2027' : '')}</span>
       ${done?'<span class="tl-check" title="Chapitre déjà traité (date passée)">✓</span>':''}
     </div>`;
     const v = vac.find(v=>v.after===c.n);
@@ -1341,7 +1358,7 @@ function openChapitre(c, tab, lvlOverride, opts){
   document.getElementById('chap-code-tag').style.background = CATS[c.cat].bg;
   document.getElementById('chap-code-tag').style.color = CATS[c.cat].text;
   document.getElementById('chap-title').textContent = demo && demo.chp ? demo.chp.titre : c.t; // chapitre personnalisé (chapitres-perso.js) : son titre
-  document.getElementById('chap-meta').textContent = `${c.p ? 'pages ' + c.p + ' · ' : ''}${c.s} semaine(s) · ${c.d}`;
+  document.getElementById('chap-meta').textContent = `${c.p ? 'pages ' + c.p + ' · ' : ''}${c.s} semaine(s)${c.d ? ' · ' + c.d : ''}${(CHAPITRES_BY_LEVEL[lvl] || []).find(x => x.t === c.t && x.prog === 'nv') ? ' · nouveau programme (rentrée 2027)' : ''}`;
   // En-tête visible UNIQUEMENT à l'impression (voir @media print, styles.css) -- signalé :
   // "en haut de page à gauche : Chapitre 1... puis N1 - Nombres décimaux."
   // c.n n'est pas toujours transmis par l'appelant (ex. carte cliquée, reconstruite depuis
@@ -4061,6 +4078,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1450', date:'2026-11-13', items:[
+    "4e, nouveau programme (rentrée 2027) -- demandé : « Vu que je souhaite lancer les ventes pour la rentrée prochaine, autant faire les nouveaux programmes » (4e seulement, ancien programme gardé) : badges « Nouveau programme 2027 » et « Ancien programme » sur les chapitres de 4e (Triangles et parallèles, Divisibilité et Cosinus passent en 3e en 2027), et nouveau chapitre « Droite des milieux » : les trois théorèmes, leur démonstration par les parallélogrammes, géométrie dynamique, 4 méthodes animées, 8 exercices corrigés, histoire (Euclide, Varignon), quiz et 5 planches."
+  ]},
   { version:'2026-08-19.1449', date:'2026-11-13', items:[
     "Cahier Seyès : le signe ≠ des calculs retrouve une barre fine -- demandé : « le signe différent est moche la barre est trop exagérée »."
   ]},

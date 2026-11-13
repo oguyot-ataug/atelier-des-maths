@@ -126,8 +126,19 @@ Nouveaux programmes (cycle 3 : CM1, CM2, 6e ; cycle 4 : 5e, 4e, 3e), avec une en
   proportionnalité, pas de rapporteur, notations de géométrie toujours expliquées.
 - **5e** : nouveau programme du cycle 4, en vigueur dès l'année 2026-2027. Chapitres contrôlés et
   complétés, chapitre « Pensée informatique et programmation » ajouté (build 863).
-- **4e** : le nouveau programme ne prend effet qu'en **septembre 2027**. D'ici là, garder l'ancien
-  programme ; faire le contrôle de conformité de la 4e avant la rentrée 2027.
+- **4e** : le nouveau programme prend effet en **septembre 2027**. Demandé le 13/11/2026 (« Vu que je souhaite lancer les ventes
+  pour la rentrée prochaine, autant faire les nouveaux programmes » ; choix « 4e seulement » et « garder l'ancien en option ») : la
+  4e passe au nouveau programme DÈS MAINTENANT, sans rien retirer de l'ancien cette année. Champ `prog` de CH4 (app.js) :
+  `'nv'` chapitre du nouveau programme (ajouté en fin de progression, badge « Nouveau programme 2027 », dates « rentrée 2027 »),
+  `'anc'` chapitre qui sort de la 4e en 2027 (badge « Ancien programme » ; G1 Thalès et cas d'égalité, G3 Cosinus, N2 Divisibilité :
+  repris en 3e) ; `progBadge`, `progAncien(texte)` (bandeau devant une partie de l'ancien programme dans un chapitre mixte).
+  Nouveaux chapitres : G6 « Droite des milieux » (13/11/2026). Reste à faire : G7 « Droites remarquables et cercles » (cercle
+  circonscrit, triangle rectangle et demi-cercle, parallélogrammes particuliers par leurs diagonales, rectangle sans équerre),
+  compléments des chapitres existants (Pythagore : contraposée ; probabilités : notations ensemblistes, deux épreuves ;
+  statistiques : étendue, valeur extrême ; proportionnalité : ratio, partage, coefficient multiplicateur ; relatifs : produit par
+  la distributivité ; fractions : fraction d'une fraction), bandeaux progAncien dans N5 (exposants négatifs, notation scientifique)
+  et G5 (agrandissement-réduction). À l'été 2027 : réordonner CH4, passer les chapitres 'anc' en « Pour aller plus loin » ou en 3e.
+  Texte officiel : relevé de `assets/programmes/notions.js` (s4n) ; education.gouv.fr est bloqué par le réseau des sessions.
 - **3e** : le nouveau programme ne prend effet qu'en **septembre 2028**. D'ici là, garder l'ancien
   programme (et le brevet correspondant) ; contrôle de la 3e avant la rentrée 2028.
 
