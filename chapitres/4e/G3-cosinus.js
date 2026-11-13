@@ -162,7 +162,7 @@ function co4Exo(n, enonce, lignes){
 document.getElementById('exos-demo-cosinus-4e').innerHTML = `
 <div class="redaction-block">
   <h3>Rédaction type : « Calculer la mesure d'un angle »</h3>
-  <p style="margin:0 0 8px;">Une rampe d'accès GHI, rectangle en H, mesure GI = 5 m ; sa longueur au sol est GH = 4,8 m. Calculer l'angle ${co4Tex(co4Ang('HGI'))} qu'elle fait avec le sol, au degré près.</p>
+  <p style="margin:0 0 8px;">Une rampe d'accès GHI, rectangle en H, mesure GI = 5 m ; sa longueur au sol est GH = 4,8 m. Calculer la mesure de l'angle ${co4Tex(co4Ang('HGI'))} qu'elle fait avec le sol, au degré près.</p>
   <div class="redaction-template">
     <div class="we-row"><span class="we-expr" style="font-family:inherit;">Le triangle GHI est rectangle en H.</span><span class="we-comment">On cite l'hypothèse.</span></div>
     <div class="we-row"><span class="we-expr">${co4Tex('\\cos ' + co4Ang('HGI') + ' = \\dfrac{GH}{GI}')}</span><span class="we-comment">[GH] est le côté adjacent à l'angle, [GI] l'hypoténuse.</span></div>
@@ -182,7 +182,7 @@ document.getElementById('exos-demo-cosinus-4e').innerHTML = `
     'ABC est rectangle en C : ' + co4Tex('\\cos ' + co4Ang('BAC') + ' = \\dfrac{AC}{AB}') + ', donc ' + co4Tex('AC = 12 \\times \\cos 60° = 6') + ' cm (cos 60° = 0,5 exactement).'])}
   ${co4Exo(5, 'DEF est rectangle en D, avec DE = 3 cm et ' + co4Tex(co4Ang('DEF') + ' = 72°') + '. Calcule EF, au dixième près.', [
     'DEF est rectangle en D : ' + co4Tex('\\cos ' + co4Ang('DEF') + ' = \\dfrac{DE}{EF}') + ', donc ' + co4Tex('EF = \\dfrac{3}{\\cos 72°}') + ' ≈ 9,7 cm.'])}
-  ${co4Exo(6, 'PQR est rectangle en Q, avec PQ = 5 cm et PR = 13 cm. Calcule l\'angle ' + co4Tex(co4Ang('QPR')) + ', au degré près.', [
+  ${co4Exo(6, 'PQR est rectangle en Q, avec PQ = 5 cm et PR = 13 cm. Calcule la mesure de l\'angle ' + co4Tex(co4Ang('QPR')) + ', au degré près.', [
     'PQR est rectangle en Q : ' + co4Tex('\\cos ' + co4Ang('QPR') + ' = \\dfrac{PQ}{PR} = \\dfrac{5}{13}') + ', donc ' + co4Tex(co4Ang('QPR') + ' \\approx 67°') + ' (Arccos(5 : 13) ≈ 67,38).'])}
   ${co4Exo(7, 'Une échelle de 4 m est appuyée contre un mur ; son pied est à 1,2 m du mur. Pour être stable, elle doit faire avec le sol un angle compris entre 65° et 75°. Est-ce le cas ?', [
     'Le mur est perpendiculaire au sol : l\'échelle, le sol et le mur forment un triangle rectangle, d\'hypoténuse l\'échelle.',

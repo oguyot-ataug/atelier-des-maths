@@ -2360,7 +2360,14 @@ async function exportCoursPDF(){
 
 
 /* ======================= OUTIL PROF : rendu maths ======================= */
+/* Noms d'angles en lettres DROITES (demandé le 13/11/2026 : « lettres droites partout ») : sous le chapeau, A, B, C… s'écrivent
+   comme dans le texte et comme en classe, plus en italique de formule. Seulement des majuscules, avec primes ou indices
+   (\widehat{ABC}, \widehat{A'B'C'}, \widehat{A_1BC}) ; un angle noté par une minuscule (\widehat{a}) reste en italique. */
+function texAnglesDroits(expr){
+  return String(expr).replace(/\\(widehat|hat)\s*\{\s*((?:[A-Z](?:'|_\{?\d+\}?)*\s*)+)\}/g, (m, cmd, n) => `\\${cmd}{\\mathrm{${n.replace(/\s+/g, '')}}}`);
+}
 function katexSpan(expr){
+  expr = texAnglesDroits(expr);
   // Fraction à trous (« \dfrac{8}{\ldots} », « \dfrac{\ldots}{\ldots} ») : les points de suspension n'ont presque pas de
   // hauteur, une fraction …/… était donc plus basse qu'une fraction 8/… et deux colonnes d'un exercice ne restaient pas alignées
   // (signalé le 10/11/2026 sur une interrogation de 6e). \vphantom{0} leur donne la hauteur d'un chiffre.
@@ -3992,6 +3999,11 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1434', date:'2026-11-13', items:[
+    "Angles : les lettres sous le chapeau sont écrites droites partout sur le site (cours, planches, corrigés, quiz, pages publiques) -- demandé : « lettres droites partout ». Les angles notés par une minuscule (â, x̂) restent en italique.",
+    "Consignes : « Calcule la mesure de l'angle… » / « Calcule la mesure des angles… » au lieu de « Calcule l'angle » (6e Propriétés des triangles, 5e Angles et parallélisme, Statistiques, Parallélogrammes, 4e Cosinus, Statistiques, 3e Trigonométrie).",
+    "5e Angles et parallélisme, planche 7 : corrigés des exercices 1 à 4 réécrits, la propriété en phrase, puis le calcul seul sur sa ligne (plus de « Triangle ABC : … », ni de « donc » dans un calcul) ; la feuille tient toujours sur sa page."
+  ]},
   { version:'2026-08-19.1433', date:'2026-11-13', items:[
     "Tableaux de cases à cocher à l'écran : le score compte les lignes -- demandé : « compte par ligne ». Une ligne est juste si seule la bonne case est cochée (5e Angles et parallélisme, planche 6, exercice 2 : « … sur 8 » pour huit paires d'angles)."
   ]},

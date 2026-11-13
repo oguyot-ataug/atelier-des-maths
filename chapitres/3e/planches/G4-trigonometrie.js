@@ -61,7 +61,7 @@ PLANCHES['3e|Trigonométrie'] = [
         ...rmp([['cos Â = @', '0,8'], ['sin Â = @', '0,6'], ['tan Â = @', '0,75']]) },
       { etoiles: 2, col: 1, consigne: 'À la calculatrice (au centième si besoin).',
         ...rmp([['cos 60° = @', '0,5'], ['sin 30° = @', '0,5'], ['tan 45° = @', 1], ['cos 35° ≈ @', '0,82'], ['sin 72° ≈ @', '0,95']]) },
-      { etoiles: 2, col: 1, consigne: 'Trouve l\'angle aigu x (au degré près).',
+      { etoiles: 2, col: 1, consigne: 'Trouve la mesure de l\'angle aigu x (au degré près).',
         ...rmp([['cos x = 0,5 : x = @°', 60], ['tan x = 1 : x = @°', 45], ['sin x = 0,8 : x ≈ @°', 53], ['cos x = 0,3 : x ≈ @°', 73]]) },
       { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.',
         ...ch([['Le cosinus d\'un angle aigu est compris entre 0 et 1.', 'vrai'], ['tan x = sin x : cos x', 'vrai'], ['sin 30° est la moitié de sin 60°.', 'faux'], ['(cos x)² + (sin x)² = 1', 'vrai']], 'vrai · faux') },
@@ -87,7 +87,7 @@ PLANCHES['3e|Trigonométrie'] = [
         corr: cm1Redac('Tangente', { suite: ['h₁ = 15 × tan 38° ≈ 11,7 m', '11,7 + 1,6 = 13,3'] }, 'L\'arbre mesure environ 13,3 m.') },
     ] },
   { titre: 'Calculer un angle', duree: '35 min',
-    attendus: ['Calculer le cosinus, le sinus ou la tangente d\'un angle', 'Retrouver l\'angle avec la calculatrice', 'Utiliser la somme des angles d\'un triangle'],
+    attendus: ['Calculer le cosinus, le sinus ou la tangente d\'un angle', 'Retrouver la mesure de l\'angle avec la calculatrice', 'Utiliser la somme des angles d\'un triangle'],
     exos: [
       { etoiles: 1, col: 1, consigne: 'ABC est rectangle en B, AB = 6 cm et AC = 10 cm.',
         ...rmp([['cos Â = @', '0,6'], ['Â ≈ @° (au degré)', 53], ['Ĉ ≈ @°', 37]]) },
@@ -127,11 +127,11 @@ PLANCHES['3e|Trigonométrie'] = [
     exos: [
       { etoiles: 1, auto: true, pts: 3, consigne: 'Automatismes (sans calculatrice) : écris ou entoure la réponse. Aucune justification n\'est demandée.',
         ...auto([['ABC rectangle en B : cos Â =', T('AB', 'AC'), [T('AB', 'AC'), T('BC', 'AC'), T('AB', 'BC')]], ['cos 60° =', '0,5'], ['tan 45° =', 1], ['Hypoténuse d\'un triangle rectangle de côtés 6 et 8 :', 10], ['Un angle aigu d\'un triangle rectangle mesure 35°. L\'autre mesure (en degrés)', 55], ['sin x = 0,5 et x est aigu : x =', '30°', ['30°', '45°', '60°']]]) },
-      { etoiles: 2, cahier: true, pts: 5, consigne: '<span>Une tyrolienne relie le sommet D d\'une tour de 12 m de haut à un point A du sol, situé à 45 m du pied E de la tour. Le câble [AD] est supposé tendu.</span>' + cote(tyro, qs(['Calculer la longueur du câble AD, au centimètre près.', 'Calculer l\'angle DAE, au degré près.', 'Pour la sécurité, cet angle doit être compris entre 5° et 25°. La tyrolienne est-elle conforme ?', 'On descend à 18 km/h en moyenne. Combien de temps dure la descente ?'])),
+      { etoiles: 2, cahier: true, pts: 5, consigne: '<span>Une tyrolienne relie le sommet D d\'une tour de 12 m de haut à un point A du sol, situé à 45 m du pied E de la tour. Le câble [AD] est supposé tendu.</span>' + cote(tyro, qs(['Calculer la longueur du câble AD, au centimètre près.', 'Calculer la mesure de l\'angle DAE, au degré près.', 'Pour la sécurité, cet angle doit être compris entre 5° et 25°. La tyrolienne est-elle conforme ?', 'On descend à 18 km/h en moyenne. Combien de temps dure la descente ?'])),
         corr: cm1Redac('Longueur du câble (Pythagore)', { suite: ['AD² = AE² + ED²', 'AD² = 45² + 12²', 'AD² = 2 025 + 144', 'AD² = 2 169', 'AD = √2 169', 'AD ≈ 46,57'] }, 'Le câble mesure environ 46,57 m.')
           + cm1Redac('Angle DAE', { suite: [`tan DAE = ${cm1Frac('DE', 'AE')}`, `tan DAE = ${cm1Frac(12, 45)}`, 'DAE ≈ 15°'] }, 'L\'angle DAE mesure environ 15°.') + cm1Redac('La tyrolienne est-elle conforme ?', '5° &lt; 15° &lt; 25°', 'La tyrolienne est conforme.')
           + cm1Redac('Durée de la descente', { suite: [`v = ${cm1Frac('18\\,000 \\text{ m}', '3\\,600 \\text{ s}')}`, 'v = 5 m/s', `t = ${cm1Frac('46,57', 5)}`, 't ≈ 9,3'] }, 'La descente dure environ 9 secondes.') },
-      { etoiles: 2, cahier: true, pts: 4, consigne: '<span>Une rampe [AB] de 4,5 m relie le trottoir au seuil d\'une porte situé 0,35 m plus haut.</span>' + cote(rampe, qs(['Calculer l\'angle que fait la rampe avec le sol, au dixième de degré.', 'Calculer la longueur horizontale AH, au centimètre près.', 'La réglementation impose une pente (hauteur : longueur horizontale) d\'au plus 5 %. La rampe est-elle conforme ?'])),
+      { etoiles: 2, cahier: true, pts: 4, consigne: '<span>Une rampe [AB] de 4,5 m relie le trottoir au seuil d\'une porte situé 0,35 m plus haut.</span>' + cote(rampe, qs(['Calculer la mesure de l\'angle que fait la rampe avec le sol, au dixième de degré.', 'Calculer la longueur horizontale AH, au centimètre près.', 'La réglementation impose une pente (hauteur : longueur horizontale) d\'au plus 5 %. La rampe est-elle conforme ?'])),
         corr: cm1Redac('Angle de la rampe avec le sol', { suite: ['sin Â = 0,35 : 4,5 ≈ 0,078', 'Â ≈ 4,5°'] }, '') + cm1Redac('Longueur horizontale', { suite: ['AH² = 4,5² − 0,35² = 20,127 5', 'AH ≈ 4,49'] }, 'La longueur horizontale mesure environ 4,49 m.')
           + cm1Redac('Pente de la rampe', '0,35 : 4,49 ≈ 0,078 = 7,8 %', 'La pente dépasse 5 % : la rampe n\'est pas conforme (il faudrait 7 m à l\'horizontale).') },
     ] },

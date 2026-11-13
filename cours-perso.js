@@ -550,7 +550,7 @@ function cpBuildBlock(id, spec, container){
 function cpMath(src){
   const esc = cpEsc(src);
   let html;
-  try{ html = katex.renderToString(src, {throwOnError:false}); }catch(e){ html = esc; }
+  try{ html = katex.renderToString(typeof texAnglesDroits === 'function' ? texAnglesDroits(src) : src, {throwOnError:false}); }catch(e){ html = esc; }
   return `<span class="tex" data-tex-source="${esc}" data-rendered="1">${html}</span>`;
 }
 function cpInline(line){

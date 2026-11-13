@@ -92,7 +92,7 @@ async function extractChapters(page, base) {
       hidden.forEach(n => n.removeAttribute('data-seo-hidden'));
       // Formules pas encore rendues par l'application (ex. onglet Méthode, rendu au fil de l'animation).
       if (window.katex) clone.querySelectorAll('.tex:not([data-rendered])').forEach(n => {
-        try { n.innerHTML = katex.renderToString(n.textContent, { throwOnError: false }); } catch (e) {}
+        try { n.innerHTML = katex.renderToString(typeof texAnglesDroits === 'function' ? texAnglesDroits(n.textContent) : n.textContent, { throwOnError: false }); } catch (e) {}
       });
       clone.querySelectorAll('[data-seo-hidden], script, canvas, button, input, select, textarea, iframe, .interaction-hint, .no-print, label').forEach(n => n.remove());
       clone.querySelectorAll('*').forEach(n => {

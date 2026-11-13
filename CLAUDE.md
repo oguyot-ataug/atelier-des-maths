@@ -171,6 +171,9 @@ fichier) ; la page est écrite par `tools/build-seo.js`.
   Les trois méthodes de a/b × c (6e N5), dans cet ordre : Méthode 1 `2/5 × 35 = 0,4 × 35 = 14` ; Méthode 2
   `2/5 × 35 = 2 × 35/5 = 2 × 7 = 14` ; Méthode 3 `2/5 × 35 = (2 × 35)/5 = 70/5 = 14`. Le « : » reste pour une division seule
   (« 22 : 2 = 11 »), au primaire, en programmation et dans les exercices sur les priorités.
+- **Angles** (demandé le 13/11/2026 : « lettres droites partout ») : les lettres sous le chapeau sont droites, automatiquement
+  (`texAnglesDroits`, app.js, appelé par katexSpan, cours-perso.js et tools/build-seo.js : `\\widehat{ABC}` → `\\widehat{\\mathrm{ABC}}` ;
+  une minuscule seule, â, reste en italique). Consigne : « Calcule la mesure de l'angle… / des angles… », jamais « Calcule l'angle ».
 - **Pas de numérotation « 1. », « 2. »** devant les questions, surtout si elles commencent par un nombre
   ou un calcul (listes à puces ; le quiz affiche « Question 1 » au-dessus de l'énoncé).
 - **Nombres en lettres en orthographe rectifiée** (tous niveaux) : des traits d'union entre tous les mots du

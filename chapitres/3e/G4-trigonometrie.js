@@ -246,7 +246,7 @@ function tr3DynMaj(){
 function tr3ChoixMaj(){
   const on = c => document.getElementById('tr3-ch' + c).checked, h = on('hyp'), o = on('opp'), a = on('adj'), out = document.getElementById('tr3-choix');
   const n = [h, o, a].filter(Boolean).length;
-  if(n !== 2){ out.innerHTML = '<span class="hint" style="margin:0;">Cochez exactement deux côtés : celui qu\'on connaît et celui qu\'on cherche (ou les deux qu\'on connaît, pour trouver l\'angle).</span>'; return; }
+  if(n !== 2){ out.innerHTML = '<span class="hint" style="margin:0;">Cochez exactement deux côtés : celui qu\'on connaît et celui qu\'on cherche (ou les deux qu\'on connaît, pour trouver la mesure de l\'angle).</span>'; return; }
   const f = h && o ? ['SOH', 'sinus', '\\sin \\widehat{A} = \\dfrac{' + tr3C(TR3_OPP, '\\text{opposé}') + '}{' + tr3C(TR3_HYP, '\\text{hypoténuse}') + '}']
     : h && a ? ['CAH', 'cosinus', '\\cos \\widehat{A} = \\dfrac{' + tr3C(TR3_ADJ, '\\text{adjacent}') + '}{' + tr3C(TR3_HYP, '\\text{hypoténuse}') + '}']
     : ['TOA', 'tangente', '\\tan \\widehat{A} = \\dfrac{' + tr3C(TR3_OPP, '\\text{opposé}') + '}{' + tr3C(TR3_ADJ, '\\text{adjacent}') + '}'];

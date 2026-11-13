@@ -61,7 +61,7 @@ PLANCHES['5e|Parallélogrammes'] = [
         corr: cm1Redac('Construction du parallélogramme ABCD', { suite: ['Je trace [AC] de 8 cm et je place son milieu O.', 'Je trace une droite passant par O et je place B et D de part et d\'autre de O, à 2,5 cm.'] }, 'Les diagonales se coupent en leur milieu : ABCD est un parallélogramme.') },
     ] },
   { titre: 'Angles d\'un parallélogramme', duree: '35 min',
-    attendus: ['Savoir que les angles opposés d\'un parallélogramme ont la même mesure', 'Savoir que deux angles consécutifs sont supplémentaires', 'Calculer les angles d\'un parallélogramme'],
+    attendus: ['Savoir que les angles opposés d\'un parallélogramme ont la même mesure', 'Savoir que deux angles consécutifs sont supplémentaires', 'Calculer la mesure des angles d\'un parallélogramme'],
     exos: [
       { etoiles: 1, col: 1, consigne: 'ABCD est un parallélogramme et l\'angle A mesure 65°. Complète.',
         ...rmp([[`${W('C')} = @ °`, 65], [`${W('B')} = @ °`, 115], [`${W('D')} = @ °`, 115], ['Somme des quatre angles : @ °', 360]], 2) },

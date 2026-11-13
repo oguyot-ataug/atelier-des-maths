@@ -114,7 +114,7 @@ ${r4Ex('', [
 <div class="def-box">Dans un <b>diagramme circulaire</b>, le disque représente l'effectif total. Chaque valeur est représentée par un <b>secteur</b> dont l'angle est <b>proportionnel</b> à son effectif : l'effectif total correspond à 360°.</div>
 ${st4Camembert('st4-cam')}
 <span class="prop-badge">Méthode</span>
-<div class="def-box">Pour construire le diagramme, on calcule l'angle de chaque secteur avec un tableau de proportionnalité :
+<div class="def-box">Pour construire le diagramme, on calcule la mesure de l'angle de chaque secteur avec un tableau de proportionnalité :
 ${st4Tab([['Âge (ans)', '11', '13', '14', '15', 'Total'], ['Effectif', '5', '20', '9', '2', '36'], ['Angle (°)', '50', '200', '90', '20', '360']], 2)}
 Ici, 36 adhérents correspondent à 360° : un adhérent correspond à <span class="tex">360 : 36 = 10</span>°. Puis on trace chaque angle au rapporteur, à la suite les uns des autres.</div>
 <p class="example-title">Lire un diagramme circulaire :</p>
