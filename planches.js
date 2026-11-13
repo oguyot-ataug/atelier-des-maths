@@ -801,7 +801,7 @@ async function plImprimer(lvl, blocs, mode, opts){
     <link rel="stylesheet" href="${location.origin}/assets/katex/katex.min.css">${plFontsLien(pr)}
     ${seyes ? '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&display=swap">' : ''}
     ${opts.cours ? '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Inter:wght@400;600;700&display=swap">' : ''}
-    <style>${opts.cours ? plCoursCss() : ''}${PL_CSS}${plCssReglages(pr)}${mode === 'livre' ? PL_CSS_LIVRE : ''}${seyes ? plCssSeyes() : ''}</style></head><body class="pl-imp${seyes ? ' cahier-on' : ''}">
+    ${opts.cours ? `<style>${plCoursCss()}</style>` : ''}<style>${PL_CSS}${plCssReglages(pr)}${mode === 'livre' ? PL_CSS_LIVRE : ''}${seyes ? plCssSeyes() : ''}</style></head><body class="pl-imp${seyes ? ' cahier-on' : ''}">
     <button type="button" class="pl-bouton-imp" onclick="window.print()">Imprimer / Enregistrer en PDF</button>${corps}</body></html>`);
   w.document.close();
   const lancer = () => setTimeout(() => { try{ if(typeof geoPoints === 'function') geoPoints(w.document); }catch(e){} if(seyes) try{ plSeyesCaler(w.document); }catch(e){ console.warn(e); } try{ plRemplirPages(w.document); }catch(e){ console.warn(e); } w.focus(); w.print(); }, 300);
@@ -908,7 +908,8 @@ function plLivreCoursPref(){ try{ return localStorage.getItem('plLivreCours') ==
 let plCoursCssCache = null;
 function plCoursCss(){
   if(plCoursCssCache != null) return plCoursCssCache;
-  const abs = t => t.replace(/url\((['"]?)(?!data:|https?:|\/|#)/g, `url($1${location.origin}/`);
+  // Adresses relatives (polices, images) rendues absolues ; les images intégrées (data:) et les adresses complètes ne bougent pas.
+  const abs = t => t.replace(/url\(\s*(['"]?)([^'")]*)\1\s*\)/g, (m, q, u) => /^(data:|https?:|\/|#)/.test(u) ? m : `url(${q}${location.origin}/${u}${q})`);
   const portee = sel => sel.split(',').map(x => x.trim().replace(/#view-chapitre|#panel-cours|\.tab-panel(\.active)?/g, '').trim()).filter(x => x && !/^(html|body|:root)\b/.test(x) && !/pl-/.test(x)).map(x => '.pl-cours ' + x).join(', ');
   const voir = (regles, out) => [...regles].forEach(r => {
     if(r instanceof CSSFontFaceRule) out.push(abs(r.cssText));
@@ -921,7 +922,10 @@ function plCoursCss(){
   });
   const L = [];
   [...document.styleSheets].forEach(f => { if(/katex/.test(f.href || '')) return; try{ voir(f.cssRules, L); }catch(e){} });
-  return plCoursCssCache = L.join('\n') + `
+  // Chaque règle est vérifiée seule : une règle mal réécrite ne doit pas emporter les suivantes (constaté au premier essai : les
+  // planches imprimées sans leur mise en page).
+  const test = new CSSStyleSheet(), lisible = t => { try{ test.insertRule(t, test.cssRules.length); return true; }catch(e){ return false; } };
+  return plCoursCssCache = L.filter(lisible).join('\n') + `
     .pl-cours{ font:10.5pt/1.5 Inter,Arial,sans-serif; color:#1C1B2E; }
     .pl-cours .katex{ font-size:1.05em !important; }
     .pl-cours-tete{ display:flex; align-items:baseline; gap:10px; margin:0 0 10px; padding:8px 14px; border-radius:10px; background:var(--f); border-left:6px solid var(--c); }
