@@ -4079,6 +4079,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1459', date:'2026-11-13', items:[
+    "PDF des planches et des manuels : vraies marges de 1 cm, aussi sur téléphone -- signalé : « le pdf semble avoir des marges beaucoup plus grande que 1 cm » (Chrome sur Android). Une feuille resserrée ou un élément trop large (tableau vrai / faux, propositions à entourer, tableau de valeurs) élargissait le document, et le navigateur réduisait alors TOUTES les pages. Les feuilles gardent désormais leur largeur exacte ; une feuille trop large est resserrée comme une feuille trop haute, les énoncés et propositions trop longs passent à la ligne. Le manuel avec le cours était lui aussi réduit (marges de 2 cm) : il est maintenant à taille réelle."
+  ]},
   { version:'2026-08-19.1458', date:'2026-11-13', items:[
     "Planches et manuels imprimés : marges de 1 cm à gauche et à droite, comme les manuels du commerce (12 mm auparavant) -- demandé : « Les manuels concurrents ont des marges gauche et droite assez courtes (1 cm) ». Les feuilles gagnent 6 mm de largeur utile."
   ]},

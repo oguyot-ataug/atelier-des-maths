@@ -373,7 +373,11 @@ au sommaire) ; styles du cours recopiés de la page par `plCoursCss` : chaque r�
 une feuille À PART (une règle cassée emportait toute la mise en page des planches au premier essai ; les images `data:` ne doivent pas être
 réécrites en adresses absolues). 5e : 193 pages (couverture, sommaire, 70 pages de cours, 125 planches), préparation ≈ 8 s. Contrôle : scratchpad
 relec/livre.js (PDF du livre dans le navigateur de test, feuille KaTeX injectée).
-Marges des feuilles imprimées : 1 cm à gauche et à droite (demandé le 13/11/2026 : « Les manuels concurrents ont des marges gauche et droite
+Marges des feuilles imprimées : 1 cm à gauche et à droite (demandé le 13/11/2026 : « Les manuels concurrents ont des marges gauche et droite Un élément plus large que la feuille (ou une feuille zoomée elle-même) élargit le document : Chrome (Android, et même l'ordinateur
+pour le livre avec le cours) réduit alors TOUTES les pages (marges de 2 cm ; PDF reçu le 13/11/2026). Donc : le zoom porte sur un bloc
+intérieur `.pl-zoom`, la feuille garde sa largeur (overflow hidden) ; plRemplirPages resserre aussi une feuille trop LARGE (mêmes limites),
+fait passer à la ligne tableaux vrai / faux (`.pl-chxtab`) et propositions (`.pl-chr`, `.pl-props`) qui dépassent ; à l'impression
+`.pl-planche{ overflow-x:clip }`. Contrôle : scratchpad relec/larges.js (Manuel d'un niveau, fenêtre de 718 px : document 718/718).
 assez courtes (1 cm) ») : `@page` 10 mm 10 mm, `.pl-page` 190 mm au plus (PL_CSS, planches.js), préparation hors écran sur 186 mm (plImprimer).
 Une feuille qui dépasse la page A4 est resserrée à l'impression (`plRemplirPages`, planches.js) : jusqu'à 15 % pour l'élève, 30 %
 pour le corrigé, en gardant toute la largeur ; jamais sur une feuille d'élève où l'on mesure une longueur à la règle. Au-delà,

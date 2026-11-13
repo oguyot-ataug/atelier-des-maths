@@ -797,7 +797,7 @@ async function plImprimer(lvl, blocs, mode, opts){
   if(!w){ await niceAlert('La fenêtre n\'a pas pu s\'ouvrir : autorisez les fenêtres (pop-up) pour ce site.'); return; }
   const premier = blocs[0], titre = opts.titre || `${plRef(lvl, plCode(lvl, premier.c), (premier.indices || [0])[0])}${blocs.length > 1 || premier.indices.length > 1 ? ' et suivantes' : ''}${mode === 'corr' ? ' (corrigé)' : ''}`;
   w.document.open();
-  w.document.write(`<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><title>${escapeHtml(titre)}</title>
+  w.document.write(`<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${escapeHtml(titre)}</title>
     <link rel="stylesheet" href="${location.origin}/assets/katex/katex.min.css">${plFontsLien(pr)}
     ${seyes ? '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&display=swap">' : ''}
     ${opts.cours ? '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Inter:wght@400;600;700&display=swap">' : ''}
@@ -838,26 +838,58 @@ function plRemplirPages(doc){
   const sonde = doc.createElement('div'); sonde.style.cssText = 'position:absolute;visibility:hidden;height:277mm;width:1px;';
   doc.body.appendChild(sonde); const L = sonde.getBoundingClientRect().height - 4; sonde.remove();
   const H = el => el.getBoundingClientRect().height;
+  // Tableau de propositions (P3.chxTab) plus large que sa place (énoncés longs, deux tableaux côte à côte) : les énoncés passent
+  // à la ligne. Sinon il dépasse de la feuille, et Chrome sur Android réduit tout le PDF (marges bien plus grandes que 1 cm,
+  // signalé le 13/11/2026 sur 5e-N1a-P5).
+  doc.querySelectorAll('.pl-planche table.pl-chxtab').forEach(t => { const box = t.parentElement, d = box && box.getBoundingClientRect().right, pg = t.closest('.pl-planche').getBoundingClientRect().right;
+    if(t.getBoundingClientRect().right > Math.min(d || pg, pg) + 1) t.querySelectorAll('tr > td:first-child').forEach(td => { td.style.whiteSpace = 'normal'; }); });
+  // Propositions à entourer qui dépassent : la colonne à part passe sous chaque question (pl-chbas), puis les propositions vont à la ligne.
+  const dep = e => e.getBoundingClientRect().right > e.closest('.pl-planche').getBoundingClientRect().right + 1;
+  doc.querySelectorAll('.pl-planche .pl-chr').forEach(r => { if(!dep(r)) return; const ul = r.closest('ul.pl-chcol');
+    if(ul){ ul.classList.remove('pl-chcol', 'pl-chcol2'); ul.classList.add('pl-chbas'); }
+    if(dep(r)){ r.style.whiteSpace = 'normal'; r.querySelectorAll('.pl-props').forEach(b => { b.style.whiteSpace = 'normal'; }); } });
+  // Ligne sans retour (uneLigne, nowrap) terminée par des propositions qui dépassent : les propositions passent ensemble à la ligne.
+  doc.querySelectorAll('.pl-planche .pl-props').forEach(b => { if(!dep(b)) return; const win = doc.defaultView;
+    for(let e = b.parentElement; e && !e.classList.contains('pl-planche'); e = e.parentElement){ if(win.getComputedStyle(e).whiteSpace === 'nowrap') e.style.whiteSpace = 'normal'; if(e.matches('li, .pl-item, .pl-exo')) break; } });
   doc.querySelectorAll('.pl-planche').forEach(pg => {
     // Feuille un peu trop haute (jusqu'à 15 % pour l'élève, 30 % pour le corrigé) : resserrée pour tenir sur une page
     // -- demandé le 31/10/2026 : « Occupe-toi des feuilles qui débordent ». Jamais sur une feuille d'élève où l'on mesure
     // une longueur à la règle sur un dessin imprimé (les longueurs doivent rester vraies).
     let z = 1;
-    if(H(pg) > L){
-      const corr = pg.classList.contains('pl-corrige'), regle = /mesure[rsz]? (le|la|les|ce|cette|ces|chaque) (segment|longueur|côté|trait|ligne|bande)|avec (ta|la|une) règle|règle graduée/i.test(pg.textContent);
+    const corr = pg.classList.contains('pl-corrige'), regle = /mesure[rsz]? (le|la|les|ce|cette|ces|chaque) (segment|longueur|côté|trait|ligne|bande)|avec (ta|la|une) règle|règle graduée/i.test(pg.textContent);
+    if(H(pg) > L) haut: {
       const min = corr ? .7 : .85; z = L / H(pg);
-      if(z < min || (regle && !corr)) return;
+      if(z < min || (regle && !corr)){ z = 1; break haut; }
       const W = pg.getBoundingClientRect().width; // la feuille resserrée garde toute la largeur
-      do { z -= .005; pg.style.zoom = z.toFixed(3); pg.style.maxWidth = 'none'; pg.style.width = (W / z) + 'px'; } while(H(pg) > L && z > min); // le texte se recompose : on resserre par petits pas
-      if(H(pg) > L){ pg.style.zoom = ''; pg.style.width = ''; pg.style.maxWidth = ''; return; }
+      // Le zoom porte sur un bloc intérieur (.pl-zoom), pas sur la feuille : la feuille garde sa largeur exacte et masque tout débordement.
+      // Zoomée elle-même (largeur W/z), une feuille élargissait le document pour Chrome sur Android, qui réduisait alors TOUTES les pages
+      // (~94 %, marges de 1,6 cm et 3 cm en bas ; PDF envoyé le 13/11/2026).
+      const zw = doc.createElement('div'); zw.className = 'pl-zoom';
+      [...pg.childNodes].filter(nd => !(nd.classList && nd.classList.contains('pl-filigrane'))).forEach(nd => zw.appendChild(nd));
+      pg.appendChild(zw); pg.style.overflow = 'hidden';
+      do { z -= .005; zw.style.zoom = z.toFixed(3); zw.style.width = (W / z) + 'px'; } while(H(zw) > L && z > min); // le texte se recompose : on resserre par petits pas
+      if(H(zw) > L){ [...zw.childNodes].forEach(nd => pg.insertBefore(nd, zw)); zw.remove(); pg.style.overflow = ''; z = 1; break haut; }
       pg.classList.add('pl-reduit');
+    }
+    // Feuille trop LARGE (tableau, propositions ou pointillés qui dépassent à droite) : même resserrement, en largeur cette fois
+    // (jusqu'à 15 % / 30 %, jamais si l'on mesure à la règle). Ce qui dépasse encore est coupé à l'impression (.pl-planche
+    // overflow-x:clip, PL_CSS) : un élément plus large que la feuille faisait réduire TOUT le PDF par Chrome sur Android.
+    const deborde = () => { const R = pg.getBoundingClientRect().right;
+      return [...pg.querySelectorAll('*')].some(e => { if(e.ownerSVGElement || e.closest('.pl-filigrane')) return false; const q = e.getBoundingClientRect(); return q.width > 0 && q.right > R + 1; }); };
+    if(!(regle && !corr) && deborde()){
+      const min = corr ? .7 : .85, W = pg.getBoundingClientRect().width; let zw = pg.querySelector(':scope > .pl-zoom'), neuf = false;
+      if(!zw){ zw = doc.createElement('div'); zw.className = 'pl-zoom'; neuf = true;
+        [...pg.childNodes].filter(nd => !(nd.classList && nd.classList.contains('pl-filigrane'))).forEach(nd => zw.appendChild(nd)); pg.appendChild(zw); }
+      const z0 = z; while(deborde() && z > min){ z -= .01; zw.style.zoom = z.toFixed(3); zw.style.width = (W / z) + 'px'; }
+      if(z === z0 && neuf){ [...zw.childNodes].forEach(nd => pg.insertBefore(nd, zw)); zw.remove(); }
+      else { pg.style.overflow = 'hidden'; pg.classList.add('pl-reduit'); }
     }
     const ex = [...pg.querySelectorAll('.pl-exos > .pl-exo')];
     ex.forEach(e => { if(!e.classList.contains('pl-demi')) return; const t = e.getBoundingClientRect().top;
       if(!ex.some(f => f !== e && f.classList.contains('pl-demi') && Math.abs(f.getBoundingClientRect().top - t) < 3)) e.classList.add('pl-seul'); });
     const pt = pg.querySelector('.pl-point');
     if(pt && L - H(pg) > 100){ pt.hidden = false; if(H(pg) > L) pt.hidden = true; }
-    if(H(pg) <= L){ pg.classList.add('pl-plein'); pg.style.height = (L / z) + 'px'; } // en unités de la feuille resserrée
+    if(H(pg) <= L){ pg.classList.add('pl-plein'); pg.style.height = L + 'px'; const zw = pg.querySelector(':scope > .pl-zoom'); if(zw) zw.style.height = (L / z) + 'px'; } // bloc resserré : en ses unités
   });
   // Pages pleines du livre (couverture, séparation) et numéros de page du sommaire.
   // Couverture et sommaire : la dernière page n'est jamais à moitié vide (l'espace se répartit entre les chapitres).
@@ -1158,7 +1190,9 @@ const PL_CSS = `
   *{ -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
   body.pl-imp{ background:#fff; color:#1C2B39; font-family:Inter,Arial,sans-serif; font-size:11.5pt; line-height:1.35; margin:0; padding:0; }
   .pl-bouton-imp{ display:block; margin:12px auto; padding:10px 18px; border:0; border-radius:24px; background:#0C5BA0; color:#fff; font:600 14px Inter,Arial,sans-serif; cursor:pointer; }
-  @media print{ .pl-bouton-imp{ display:none; } }
+  @media print{ .pl-bouton-imp{ display:none; } .pl-page{ margin:0 auto; } html, body{ width:auto; overflow:visible; } .pl-planche{ overflow-x:clip; } }
+  /* Chrome sur Android réduisait toute la feuille (~94 %, marges de 1,6 cm et 3 cm en bas, signalé le 13/11/2026) : aucune marge
+     sous les feuilles à l'impression, et 2 mm de réserve en hauteur (plRemplirPages). */
   .pl-page{ max-width:190mm; margin:0 auto 10mm; page-break-after:always; break-after:page; position:relative; }
   .pl-filigrane{ position:absolute; inset:0; width:100%; height:100%; pointer-events:none; z-index:6; overflow:hidden; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
   .pl-page:last-child{ page-break-after:auto; break-after:auto; }
@@ -1241,6 +1275,7 @@ const PL_CSS = `
   .pl-plein .pl-exo{ display:flex; flex-direction:column; }
   .pl-plein .pl-corps{ flex:1; display:flex; flex-direction:column; justify-content:flex-start; }
   .pl-plein .pl-pied{ margin-top:auto; }
+.pl-zoom{ box-sizing:border-box; } .pl-plein > .pl-zoom{ flex:1 1 auto; display:flex; flex-direction:column; min-height:0; }
   .pl-point{ border:1.5px solid #8DB84A; background:#F6FAEF; border-radius:10px; padding:4px 11px 5px; margin:0 0 4px; break-inside:avoid; }
   .pl-point[hidden]{ display:none; }
   .pl-point-tete{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:2px; } .pl-point-tete b{ font:700 11pt 'Space Grotesk',Arial,sans-serif; color:#3E5A1E; }

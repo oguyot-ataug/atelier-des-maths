@@ -48,7 +48,7 @@ PLANCHES['5e|Opérations sur les nombres relatifs'] = [
       { etoiles: 1, col: 1, consigne: 'Calcule de proche en proche. Écris une étape par ligne.',
         ...P3.etp([['A', '(−3) + (+5) + (−4)', '(+2) + (−4)', '−2'], ['B', '(+8) + (−10) + (+7)', '(−2) + (+7)', '+5']], 2) },
       { etoiles: 2, consigne: 'Regroupe les nombres positifs et les nombres négatifs, puis calcule. Écris une étape par ligne.',
-        ...P3.etp([['A', '(+4) + (−9) + (+6) + (−3)', '(+4) + (+6) + (−9) + (−3)', '(+10) + (−12)', '−2'], ['B', '(−7) + (+2) + (−5) + (+11)', '(+2) + (+11) + (−7) + (−5)', '(+13) + (−12)', '+1']], 2) },
+        ...P3.etp([['A', '(+4) + (−9) + (+6) + (−3)', '(+4) + (+6) + (−9) + (−3)', '(+10) + (−12)', '−2'], ['B', '(−7) + (+2) + (−5) + (+11)', '(+2) + (+11) + (−7) + (−5)', '(+13) + (−12)', '+1']]) },
       { etoiles: 2, col: 1, consigne: 'Table d\'addition : la case = nombre de la ligne + nombre de la colonne.',
         ...(() => { const L = [-3, 5], Cc = [-4, 2, -7], tab = f => `<table class="pl-tab"><tr><th>+</th>${Cc.map(c => `<th>${rel(c)}</th>`).join('')}</tr>${L.map(l => `<tr><th>${rel(l)}</th>${Cc.map(c => `<td>${f(l + c)}</td>`).join('')}</tr>`).join('')}</table>`;
           return { eleve: tab(() => B(2)), corr: tab(v => R(rel(v))) }; })() },

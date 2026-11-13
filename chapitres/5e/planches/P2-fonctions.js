@@ -47,7 +47,7 @@ PLANCHES['5e|Fonctions'] = [
       { etoiles: 1, col: 1, consigne: 'Le prix d\'une location de vélo est P = 3 + 2h (P en €, h en heures). Complète le tableau.',
         ...(() => { const h = [1, 2, 3, 5, 8]; return { eleve: tabV('h (heures)', 'P (€)', h, h.map(() => B(1))), corr: tabV('h (heures)', 'P (€)', h, h.map(x => R(3 + 2 * x))) }; })() },
       { etoiles: 1, col: 1, consigne: 'Programme : « choisir un nombre, le multiplier par 4, soustraire 1 ». Complète.',
-        ...(() => { const x = [0, 1, 2, 5, 10]; return { eleve: tabV('Nombre choisi', 'Résultat', x, x.map(() => B(1))), corr: tabV('Nombre choisi', 'Résultat', x, x.map(v => R(d(4 * v - 1)))) }; })() },
+        ...(() => { const x = [0, 1, 2, 5, 10]; return { eleve: tabV('Nombre', 'Résultat', x, x.map(() => B(1))), corr: tabV('Nombre', 'Résultat', x, x.map(v => R(d(4 * v - 1)))) }; })() },
       { etoiles: 2, col: 1, consigne: 'L\'aire d\'un carré de côté c (en cm) est A = c × c. Complète.',
         ...(() => { const c = [1, 2, 3, 4, 2.5]; return { eleve: tabV('c (cm)', 'A (cm²)', c.map(d), c.map(() => B(1))), corr: tabV('c (cm)', 'A (cm²)', c.map(d), c.map(v => R(d(v * v)))) }; })() },
       { etoiles: 2, col: 1, consigne: 'Lis le tableau du vélo (location).',
