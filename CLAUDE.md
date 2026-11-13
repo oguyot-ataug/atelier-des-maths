@@ -306,6 +306,9 @@ Généralisé du CM2 à la 3e le 12/11/2026 (relevé : `_hors-ligne/releve-relec
 (calcul en colonne, colonnes choisies d'après la longueur), `P3.egal` (« Complète par = ou ≠ » ; une égalité avec une lettre garde vrai ou faux POUR TOUTES LES VALEURS, avec contre-exemple quand c'est faux :
 `P3.vfx`, demandé le 12/11/2026 « Oui, justifier quand c'est faux »),
 `P3.relier` / `P3.relier1` (demi-largeur ; exposants en vrai exposant, `P3.svgExp`). Pointillés d'une réponse LaTeX : longueur affichée (`plLongVisible`).
+Cases à l'écran (`.pn-case`, planches-num.js ; demandé le 13/11/2026 : « bien trop grossières […] pas besoin d'être en gras ») : trait de 1,2 px,
+coins de 4 px, écriture en graisse normale, cases d'une fraction à la taille des fractions de l'énoncé. Projection : une grille d'exemples dont
+l'agrandissement est limité par la hauteur prend toute la largeur disponible (plProjAjuster).
 Exercices à l'écran (chantier du 12/11/2026, avancement dans le relevé) : tableaux et opérations posées dont les cases sont simplement
 vides reconnus automatiquement (`plNumTabAuto` ; « Pose et calcule » : `plNumGrillePose`), réponses groupées découpées (`plNumRepsDecoupees`) ;
 tracés sur quadrillage : les quadrillages (`cpQuadFig`, `symQ`, `CM2G.Q`) notent leurs traits (`data-quad`), `plNumQuadAuto` en déduit l'outil `seg` (`libre` : à une translation près).

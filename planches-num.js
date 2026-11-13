@@ -883,8 +883,10 @@ function plClavierPhysique(e){
     @media (max-width:640px){ .pn-ex.pn-plein .pl-liste:not(.pl-chcol):not(.pl-chbas){ columns:1; } } .pn-ex .pl-liste.pl-chcol{ row-gap:10px; }
     .pn-ex .pl-unites{ display:inline-flex; gap:5px; flex-wrap:wrap; align-items:center; vertical-align:middle; }
     .cx-td .pn-ex, .cx-td.pn-ex{ font-size:1.1rem; line-height:1.5; } @media (min-width:700px){ .cx-td.pn-ex{ zoom:1.3; } } .cx-td svg{ max-width:100%; height:auto; }
-    .pn-ex .pn-case{ white-space:pre; display:inline-flex; align-items:center; justify-content:center; min-width:30px; height:26px; padding:0 5px; border:2px solid #3A6EA5; border-radius:6px; background:#fff;
-      font:700 1rem 'Space Grotesk',Arial,sans-serif; color:#1F3A5C; cursor:pointer; vertical-align:middle; margin:0 2px; }
+    /* Cases fines, écriture en graisse normale (demandé le 13/11/2026 : « les cases sont bien trop grossières (partout dans le site).
+       L'écriture du corrigé saisi par l'utilisateur n'a pas besoin d'être en gras »). */
+    .pn-ex .pn-case{ white-space:pre; display:inline-flex; align-items:center; justify-content:center; min-width:28px; height:24px; padding:0 5px; border:1.2px solid #6E93BD; border-radius:4px; background:#fff;
+      font:400 1rem 'Space Grotesk',Arial,sans-serif; color:#1F3A5C; cursor:pointer; vertical-align:middle; margin:0 2px; }
     /* Exposant à écrire (« @<sup>@</sup> ») : petite case surélevée, collée à la base -- signalé le 30/10/2026 (5e-N7) : la
        case de l'exposant avait la taille et la hauteur de celle de la base, on ne voyait pas la puissance. */
     /* Base et exposant écrits dans la police et à la taille de l'énoncé, sur la même ligne de base que lui -- signalé le
@@ -893,7 +895,7 @@ function plClavierPhysique(e){
     /* Case dans une ligne de texte (liste, grille) : police et taille de l'énoncé, sur sa ligne de base -- relecture 5e-N1a-P4-E2
        du 11/11/2026 : « À l'écran, les nombres manquants s'affichent plus gros que les autres et non alignés ». Les opérations
        posées (tableaux) gardent leurs cases. */
-    .pn-ex :is(li, .pl-item) .pn-case:not(table .pn-case):not(.pn-base){ display:inline-block; vertical-align:baseline; height:auto; font:inherit; font-weight:600;
+    .pn-ex :is(li, .pl-item) .pn-case:not(table .pn-case):not(.pn-base){ display:inline-block; vertical-align:baseline; height:auto; font:inherit; font-weight:400;
       line-height:1.3; padding:1px 7px; margin:1px 3px; text-align:center; color:#1F3A5C; }
     .pn-ex :is(li, .pl-item) .pn-case:not(table .pn-case):not(.pn-base)::before{ content:'\\200b'; }
     /* Case à cocher (plCase('✓')) : un petit carré, toutes de la même taille, qu'elles doivent être cochées ou laissées vides
@@ -908,9 +910,10 @@ function plClavierPhysique(e){
     .pn-ex .pn-case.pn-large{ min-width:120px; }
     .pn-ex .pn-effret{ display:block; margin:2px auto 0; font:inherit; font-size:.78rem; font-weight:600; color:#E07A1F; background:none; border:1px dashed #F0B27A; border-radius:6px; padding:3px 10px; cursor:pointer; }
     .pn-ex .pn-effret:hover{ background:#FFF4E8; } .pn-ex .pn-case.pn-vide{ background:#F3F7FC; }
-    .pn-ex .pn-case.pn-sel{ border-color:#E35D3A; box-shadow:0 0 0 3px rgba(227,93,58,.25); background:#FFF6F2; }
+    .pn-ex .pn-case.pn-sel{ border-color:#E35D3A; box-shadow:0 0 0 2px rgba(227,93,58,.2); background:#FFF6F2; }
     .pn-ex .pn-frac{ display:inline-flex; flex-direction:column; align-items:center; gap:3px; vertical-align:middle; margin:0 3px; }
-    .pn-ex .pn-barre{ display:block; width:36px; border-top:2px solid #1C2B39; }
+    .pn-ex .pn-barre{ display:block; width:34px; border-top:1.5px solid #1C2B39; }
+    .pn-ex .pn-frac .pn-case{ min-width:22px; height:20px; padding:0 4px; font-size:.95rem; } .pn-ex .pn-frac{ gap:2px; } .pn-ex .pn-frac .pn-barre{ width:28px; } /* fraction à compléter à la taille des fractions de l'énoncé */
     .pn-ex svg.pn-trace{ width:min(100%, 520px) !important; height:auto !important; max-height:none !important; display:block; touch-action:manipulation; }
     .pn-ex svg.pn-trace.pn-trace-n{ width:min(100%, 250px) !important; margin:0 auto; } .pn-ex .pn-tr-aide-n{ text-align:center; margin-top:8px; }
     .pn-ex .pn-tr-n{ cursor:pointer; } .pn-ex .pn-tr-n:hover{ fill:rgba(227,93,58,.25); } .pn-lecture .pn-tr-n{ cursor:default; } .pn-tr-aide{ font-size:.85rem; color:#4E5665; margin-top:4px; } .pn-lecture .pn-tr-aide{ display:none; }

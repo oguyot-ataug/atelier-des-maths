@@ -3999,6 +3999,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1440', date:'2026-11-13', items:[
+    "Exercices à l'écran, partout sur le site : cases plus fines (trait fin, coins moins arrondis), réponses écrites en graisse normale, cases des fractions à la taille des fractions de l'énoncé -- demandé : « les cases sont bien trop grossières (partout dans le site). L'écriture du corrigé saisi par l'utilisateur n'a pas besoin d'être en gras ».",
+    "Projection : une grille d'exemples (quatre calculs côte à côte…) prend toute la largeur disponible, chaque colonne s'élargit -- demandé : « on pourrait mettre plus de largeur pour chaque colonne »."
+  ]},
   { version:'2026-08-19.1439', date:'2026-11-13', items:[
     "5e Fractions, planche 4, exercices 3 à 5 à l'écran (projection) : plus d'espace entre les étapes, les cases d'une ligne ne touchent plus la fraction de la ligne du dessus."
   ]},

@@ -1043,6 +1043,11 @@ function plProjAjuster(){
   if(!etroit) boite.style.width = Math.ceil(r.width) + 1 + 'px';
   // Sur téléphone, on n'écrase jamais le texte : au pire, on fait défiler.
   const z = etroit ? Math.max(1, Math.min(W / r.width, H / r.height, 1.6)) : Math.max(.6, Math.min(W / r.width, H / r.height, 3.4));
+  // Grille d'exemples dont l'agrandissement est limité par la hauteur : la boîte prend toute la largeur disponible, chaque colonne
+  // s'élargit (demandé le 13/11/2026 : « La largeur n'est pas optimisée, on pourrait mettre plus de largeur pour chaque colonne »).
+  if(!etroit && H / r.height < W / r.width && boite.querySelector('.pl-grille')){
+    boite.style.maxWidth = 'none'; boite.style.width = Math.floor(W / z) + 'px'; const r2 = boite.getBoundingClientRect();
+    boite.style.zoom = Math.max(.6, Math.min(W / r2.width, H / r2.height, 3.4)).toFixed(3); return; }
   boite.style.zoom = z.toFixed(3);
 }
 const PL_CSS = `
