@@ -917,6 +917,7 @@ function plClavierPhysique(e){
     .pn-ex .pn-case.pn-sel{ border-color:#E35D3A; box-shadow:0 0 0 2px rgba(227,93,58,.2); background:#FFF6F2; }
     .pn-ex .pn-frac{ display:inline-flex; flex-direction:column; align-items:center; gap:3px; vertical-align:middle; margin:0 3px; }
     .pn-ex .pn-barre{ display:block; width:34px; border-top:1.5px solid #1C2B39; }
+    .pn-ex .pl-fd .pn-case, .pn-ex .pl-frac .pn-case{ font-family:'KaTeX_Main','Times New Roman',serif !important; font-size:1.18em !important; font-weight:400 !important; }
     .pn-ex .pn-frac .pn-case{ min-width:22px; height:20px; padding:0 4px; font-family:'KaTeX_Main','Times New Roman',serif !important; font-size:1.18em !important; font-weight:400 !important; line-height:1 !important; height:20px !important; padding:0 4px !important; display:inline-flex !important; } /* même police que les fractions de l'énoncé (KaTeX) */ .pn-ex .pn-frac{ gap:2px; } .pn-ex .pn-frac .pn-barre{ width:28px; } /* fraction à compléter à la taille des fractions de l'énoncé */
     .pn-ex svg.pn-trace{ width:min(100%, 520px) !important; height:auto !important; max-height:none !important; display:block; touch-action:manipulation; }
     .pn-ex svg.pn-trace.pn-trace-n{ width:min(100%, 250px) !important; margin:0 auto; } .pn-ex .pn-tr-aide-n{ text-align:center; margin-top:8px; }

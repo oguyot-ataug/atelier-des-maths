@@ -3999,6 +3999,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1442', date:'2026-11-13', items:[
+    "Fractions à compléter dessinées à la main (5e Fractions planche 4 exercice 6, CE2 Fractions égales) : le nombre donné et la réponse sont écrits comme les fractions voisines -- police des formules à l'écran, police de la feuille sur papier, sans gras pour le nombre donné, barre fine ; le « 1 » de « = 1 » aussi."
+  ]},
   { version:'2026-08-19.1441', date:'2026-11-13', items:[
     "Projection d'une grille d'exemples : la bande réservée au clavier n'est plus gardée quand le clavier ne cacherait aucun calcul ; l'exercice prend toute la largeur de l'écran (et garde la même taille quand le clavier s'ouvre) -- demandé : « Il y a encore beaucoup de place à droite ! ».",
     "Cases des fractions à l'écran : réponses écrites dans la même police que les fractions de l'énoncé -- demandé : « La police de réponse n'est pas la même que celle de l'énoncé ».",

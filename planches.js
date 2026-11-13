@@ -1111,6 +1111,7 @@ const PL_CSS = `
   .pl-item{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; min-height:26px; }
   .pl-liste{ margin:0; padding-left:20px; columns:2; } .pl-liste li{ margin:0; padding:1px 0; break-inside:avoid; } /* marge en padding : la 2e colonne commence à la même hauteur que la 1re */
   .pl-frac{ display:inline-flex; flex-direction:column; align-items:center; vertical-align:middle; gap:2px; margin:0 3px; }
+  .pl-fd-t{ font-size:1.05em; font-weight:400; line-height:1.1; } .pl-fd .pl-rep{ font-size:1.05em; line-height:1.1; } .pl-fd .pl-fd-b{ border-top:1.5px solid currentColor !important; } /* sur papier, fractions dessinées en HTML (.pl-f) dans la police de la feuille : même écriture ; fraction à trou : même écriture que les fractions KaTeX voisines (relecture 5e-N4-P4-E6 du 13/11/2026) */
   .pl-case{ display:inline-block; width:22px; height:18px; border:1.5px solid #8A93A3; border-radius:4px; background:#fff; }
   /* Collège : sur le papier, des pointillés au lieu des cases (demandé le 01/11/2026 : « Dans les exercices de collèges,
      remplacer les cases par des pointillés sur le papier »). */
@@ -1282,6 +1283,7 @@ const PL_CSS_LIVRE = `
     .td-vig .pl-liste, .pl-ex-cahier .pl-liste{ margin:0; padding-left:18px; } .td-vig .pl-liste li, .pl-ex-cahier .pl-liste li{ margin:3px 0; }
     /* Exercice pleine largeur : la liste sur deux colonnes, comme sur la feuille -- relecture 5e-N7-P4-E1 : « Il n'y a pas deux colonnes ici et plein de place à droite ». */
     .td-vig.td-plein .pl-liste{ columns:2; column-gap:28px; } .td-vig.td-plein .pl-liste li{ break-inside:avoid; margin:0; padding:1.5px 0; } .td-vig.td-plein .pl-col1 .pl-liste{ columns:1; }
+    .pl-fd-t, .pl-fd .pl-rep{ font-family:'KaTeX_Main','Times New Roman',serif; font-size:1.21em; font-weight:400 !important; line-height:1.2; } .pl-fd .pl-fd-b{ border-top:1px solid currentColor !important; } /* fraction à trou : même écriture que les fractions KaTeX voisines (relecture 5e-N4-P4-E6 du 13/11/2026) */
     .td-vig .pl-frac, .pl-ex-cahier .pl-frac, .cd-contenu .pl-frac{ display:inline-flex; flex-direction:column; align-items:center; vertical-align:middle; gap:2px; margin:0 3px; }
     .td-vig .pl-case, .pl-ex-cahier .pl-case, .cd-contenu .pl-case{ display:inline-block; width:20px; height:16px; border:1.5px solid #8A93A3; border-radius:4px; background:#fff; } .pl-case-seule{ vertical-align:middle; margin:0 4px; }
     .pl-college .td-vig .pl-case{ border:0; border-bottom:1.5px dotted #6F7A89; border-radius:0; background:transparent; width:2.6em; height:1.15em; } .pl-college .td-vig .pl-frac .pl-case{ width:2em; height:1.35em; margin:1px 0 3px; } .pl-college .td-vig .pl-case-seule{ width:1.8em; }

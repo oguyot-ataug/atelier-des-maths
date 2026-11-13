@@ -13,7 +13,7 @@
 (() => {
 const { rmp, chx } = P3, F = cm1Frac;
 // Fraction dont un terme est à écrire (null = case vide), sur le modèle de plFrac.
-const fracT = (a, b) => `<span class="pl-frac">${a == null ? '<span class="pl-case"></span>' : `<span style="font-weight:700;">${a}</span>`}<span class="pl-barre"></span>${b == null ? '<span class="pl-case"></span>' : `<span style="font-weight:700;">${b}</span>`}</span>`;
+const fracT = (a, b) => `<span class="pl-frac pl-fd">${a == null ? '<span class="pl-case"></span>' : `<span class="pl-fd-t">${a}</span>`}<span class="pl-barre"></span>${b == null ? '<span class="pl-case"></span>' : `<span class="pl-fd-t">${b}</span>`}</span>`;
 // Égalités à compléter : [[a, b, inconnue en haut ? , réponse, autre terme]] → énoncé et corrigé.
 const egal = l => ({ eleve: plListe(l.map(([a, b, haut, r, t]) => `${F(a, b)} = ${haut ? fracT(null, t) : fracT(t, null)}`)),
   corr: plListe(l.map(([a, b, haut, r, t]) => `${F(a, b)} = ${P3.R(haut ? F(r, t) : F(t, r))}`)) });

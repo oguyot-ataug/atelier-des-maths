@@ -56,7 +56,7 @@ const RELECTURE_CHGT = {
   '5e-N4-P4-E3': { date: '2026-11-13T14:52:51Z', note: "À l'écran : une étape par ligne, réduction au même dénominateur (A = …/… + …/…), somme, simplification ; lignes espacées, les fractions ne se touchent plus (corrigé du Manuel compris)" },
   '5e-N4-P4-E4': { date: '2026-11-13T14:52:51Z', note: "À l'écran : une étape par ligne, réduction au même dénominateur (A = …/… − …/…), différence, simplification ; lignes espacées, les fractions ne se touchent plus" },
   '5e-N4-P4-E5': { date: '2026-11-13T09:36:07Z', note: "Une étape par bloc : les lignes à fractions ne se chevauchent plus" },
-  '5e-N4-P4-E6': { date: '2026-11-13T09:36:07Z', note: "Grille remplie ligne par ligne, fraction à compléter symétrique : barres de fraction alignées entre les deux colonnes, sur papier et à l'écran" },
+  '5e-N4-P4-E6': { date: '2026-11-13T15:20:21Z', note: "Grille remplie ligne par ligne, barres alignées entre les deux colonnes ; fraction à compléter écrite comme les autres fractions (même police, sans gras, barre fine), sur papier et à l'écran" },
   '5e-N4-P4-E7': { date: '2026-11-13T09:36:07Z', note: "Cahier Seyès : chaque ligne du calcul en colonne sur une ligne principale, signes + à leur place (calés sur la barre de leur propre ligne)" },
   '5e-N4-P5-E5': { date: '2026-11-13T09:36:07Z', note: "Cahier Seyès : lignes du calcul en colonne sur les lignes principales ; le × de « 3 × 15 » reste à sa place (plus de × superposés)" },
   '5e-N4-P5-E7': { date: '2026-11-13T09:36:07Z', note: "Cahier Seyès : lignes sur les lignes principales, signes = et + calés sur la barre de fraction de leur ligne, cadre du résultat autour de la fraction" },

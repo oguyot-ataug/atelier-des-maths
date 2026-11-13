@@ -37,7 +37,8 @@ const rmp = (l, n) => ({ eleve: plListe(l.map(([t]) => t.replace('@', B(n || 3))
 // Fraction dont le dénominateur est donné : seul le numérateur est à écrire (relecture 5e-N4-P2-E1 du 12/11/2026 : « Quel intérêt
 // de demander sur 12 ? Autant l'écrire directement au dénominateur ! »).
 // Numérateur et dénominateur de même hauteur : la barre au milieu, alignée sur celles des fractions voisines (relecture 5e-N4-P4-E6).
-const fd = (haut, den) => `<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1.2;margin:0 3px;"><span style="display:flex;align-items:flex-end;justify-content:center;min-height:1.7em;">${haut}</span><span style="align-self:stretch;border-top:1.6px solid currentColor;margin:2px 0;min-width:1.6em;"></span><span style="display:flex;align-items:flex-start;justify-content:center;min-height:1.7em;">${den}</span></span>`;
+const fdT = x => /</.test(String(x)) ? x : `<span class="pl-fd-t">${x}</span>`; // nombre donné : police des fractions KaTeX
+const fd = (haut, den) => `<span class="pl-fd" style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1.2;margin:0 3px;"><span style="display:flex;align-items:flex-end;justify-content:center;min-height:1.7em;">${fdT(haut)}</span><span class="pl-fd-b" style="align-self:stretch;border-top:1px solid currentColor;margin:2px 0;min-width:1.6em;"></span><span style="display:flex;align-items:flex-start;justify-content:center;min-height:1.7em;">${fdT(den)}</span></span>`;
 const pgcd = (a, b) => b ? pgcd(b, a % b) : a, ppcm = (a, b) => a / pgcd(a, b) * b;
 // Pourquoi : une égalité ou une comparaison par ligne, sous la réponse (relecture 5e-N4-P3-E2, E5 : « La correction doit expliquer pourquoi »).
 // Chaque égalité dans son propre bloc, sous la réponse (sur téléphone, un interligne fixe faisait chevaucher les fractions).
@@ -152,8 +153,8 @@ PLANCHES['5e|Fractions'] = [
       { etoiles: 2, consigne: 'Complète.',
         // Grille remplie ligne par ligne (relecture 5e-N4-P4-E6 du 13/11/2026 : « mauvais alignements des traits de fraction entre deux
         // colonnes ») : les deux exemples d'une même ligne ont la même hauteur, barres de fraction à la même hauteur.
-        eleve: plGrille([ligne(F(2, 7), '+', Fr, '= 1'), ligne(fd(C, 6), '−', F(1, 6), '=', F(1, 2)), ligne(F(1, 4), '+', fd(C, 4), '=', F(3, 4)), ligne(F(3, 5), '+', Fr, '= 1')].map(fx), 2),
-        corr: plGrille([ligne(F(2, 7), '+', R(F(5, 7)), '= 1'), ligne(fd(R(4), 6), '−', F(1, 6), '=', F(1, 2)), ligne(F(1, 4), '+', fd(R(2), 4), '=', F(3, 4)), ligne(F(3, 5), '+', R(F(2, 5)), '= 1')].map(fx), 2) },
+        eleve: plGrille([ligne(F(2, 7), '+', Fr, '=', cm1Tex('1')), ligne(fd(C, 6), '−', F(1, 6), '=', F(1, 2)), ligne(F(1, 4), '+', fd(C, 4), '=', F(3, 4)), ligne(F(3, 5), '+', Fr, '=', cm1Tex('1'))].map(fx), 2),
+        corr: plGrille([ligne(F(2, 7), '+', R(F(5, 7)), '=', cm1Tex('1')), ligne(fd(R(4), 6), '−', F(1, 6), '=', F(1, 2)), ligne(F(1, 4), '+', fd(R(2), 4), '=', F(3, 4)), ligne(F(3, 5), '+', R(F(2, 5)), '=', cm1Tex('1'))].map(fx), 2) },
       { etoiles: 3, cahier: true, consigne: `Calcule ${T(1, 2)} + ${T(1, 4)} + ${T(1, 8)}, puis simplifie si possible. Que manque-t-il pour obtenir 1 ?`,
         // Relecture 5e-N4-P4-E7 du 12/11/2026 : « S = 1/2 + 1/4 + 1/8 et développer en colonne. La correction doit toujours partir du calcul demandé ».
         corr: cm1Redac('Somme des trois fractions', [{ nom: 'S', lignes: [`${F(1, 2)} + ${F(1, 4)} + ${F(1, 8)}`, `${F(4, 8)} + ${F(2, 8)} + ${F(1, 8)}`, F(7, 8)] }], `La somme vaut ${F(7, 8)} ; ${F(7, 8)} est irréductible.`)
