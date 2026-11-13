@@ -102,7 +102,7 @@
   <tr>
     <td style="padding:8px;border:1px solid rgba(28,43,57,.15);font-family:'JetBrains Mono',monospace;">AB</td>
     <td style="padding:8px;border:1px solid rgba(28,43,57,.15);">C'est la <b>longueur</b> du segment [AB].</td>
-    <td style="padding:4px;border:1px solid rgba(28,43,57,.15);"><svg viewBox="0 0 160 50" style="width:150px;" data-geo-points="1"><line x1="20" y1="25" x2="140" y2="25" stroke="#1C1B2E" stroke-width="1.6"></line><line x1="20" y1="18" x2="20" y2="32" stroke="#1C1B2E" stroke-width="1.6"></line><line x1="140" y1="18" x2="140" y2="32" stroke="#1C1B2E" stroke-width="1.6"></line><text x="16" y="14" font-size="13" font-style="italic">A</text><text x="136" y="14" font-size="13" font-style="italic">B</text><text x="55" y="45" font-size="11" fill="#8A4210">AB = 4 cm</text></svg></td>
+    <td style="padding:4px;border:1px solid rgba(28,43,57,.15);"><svg viewBox="0 0 160 50" style="width:150px;" data-geo-points="1"><line x1="20" y1="25" x2="140" y2="25" stroke="#1C1B2E" stroke-width="1.6"></line><line x1="20" y1="20" x2="20" y2="30" stroke="#1C1B2E" stroke-width="1.6"></line><line x1="140" y1="20" x2="140" y2="30" stroke="#1C1B2E" stroke-width="1.6"></line><text x="16" y="14" font-size="13" font-style="italic">A</text><text x="136" y="14" font-size="13" font-style="italic">B</text><text x="55" y="45" font-size="11" fill="#8A4210">AB = 4 cm</text></svg></td>
   </tr>
 </tbody></table>
 </div>
@@ -114,13 +114,12 @@
 <p class="example-title">Exemple : trace un segment [RT] de longueur 6 cm puis construis son milieu A.</p>
 
 <div class="figure-wrap">
-  <svg id="dc-milieuSvg" viewBox="0 0 400 200" style="width:100%;max-width:460px;display:block;margin:0 auto;background:var(--white);border-radius:8px;" data-geo-points="1">
+  <svg id="dc-milieuSvg" data-geo-garde="" viewBox="0 0 400 200" style="width:100%;max-width:460px;display:block;margin:0 auto;background:var(--white);border-radius:8px;" data-geo-points="1">
     <line id="dc-milieuSeg" stroke="#1C1B2E" stroke-width="1.8" x1="80" y1="100" x2="320" y2="100"></line>
-    <line id="dc-milieuTick1" stroke="#1F6B3A" stroke-width="1.8" x1="138.43" y1="102.71" x2="141.57" y2="97.29" stroke-linecap="round" data-geo-codage="1"></line>
-    <line id="dc-milieuTick2" stroke="#1F6B3A" stroke-width="1.8" x1="258.43" y1="102.71" x2="261.57" y2="97.29" stroke-linecap="round" data-geo-codage="1"></line>
-    <circle id="dc-milieuR" r="5.5" fill="#1C1B2E" style="" cx="80" cy="100"></circle>
-    <circle id="dc-milieuT" r="5.5" fill="#1C1B2E" style="" cx="320" cy="100"></circle>
-    <circle id="dc-milieuA" r="4" fill="#E35D3A" cx="200" cy="100"></circle>
+    <path id="dc-milieuCodes" fill="none" stroke="#1C1B2E" stroke-width="1.8" stroke-linecap="round" d="M138.3,97.0 L141.8,103.0 M258.3,97.0 L261.8,103.0"></path>
+    <circle id="dc-milieuHaloR" r="10" fill="#E35D3A" fill-opacity=".16" cx="80" cy="100"></circle><circle id="dc-milieuHaloT" r="10" fill="#E35D3A" fill-opacity=".16" cx="320" cy="100"></circle>
+    <path id="dc-milieuMkR" fill="none" stroke="#1C1B2E" stroke-width="1.8" stroke-linecap="round" d="M80.0,95.0 L80.0,105.0"></path><path id="dc-milieuMkT" fill="none" stroke="#1C1B2E" stroke-width="1.8" stroke-linecap="round" d="M320.0,95.0 L320.0,105.0"></path><path id="dc-milieuMkA" fill="none" stroke="#E35D3A" stroke-width="1.8" stroke-linecap="round" d="M200.0,95.0 L200.0,105.0"></path>
+    <circle id="dc-milieuR" r="13" fill="transparent" style="" cx="80" cy="100"></circle><circle id="dc-milieuT" r="13" fill="transparent" style="" cx="320" cy="100"></circle>
     <text id="dc-milieuLabelR" font-style="italic" font-size="14" x="64" y="105">R</text>
     <text id="dc-milieuLabelT" font-style="italic" font-size="14" x="328" y="105">T</text>
     <text id="dc-milieuLabelA" font-style="italic" font-size="14" fill="#E35D3A" x="196" y="88">A</text>
@@ -133,17 +132,13 @@
 <div class="def-box">Un <b>cercle</b> est l'ensemble des points équidistants d'un point appelé <b>centre</b>. Cette distance est le <b>rayon</b> du cercle.<br>Autrement dit, le cercle (C) de centre O et de rayon r est l'ensemble des points M tels que OM = r.</div>
 
 <div class="figure-wrap">
-  <svg id="dc-vocabSvg" viewBox="0 0 400 260" style="width:100%;max-width:460px;display:block;margin:0 auto;background:var(--white);border-radius:8px;" data-geo-points="1">
+  <svg id="dc-vocabSvg" data-geo-garde="" viewBox="0 0 400 260" style="width:100%;max-width:460px;display:block;margin:0 auto;background:var(--white);border-radius:8px;" data-geo-points="1">
     <circle id="dc-vocabCircle" fill="none" stroke="#1F3A5C" stroke-width="1.8" cx="200" cy="130" r="94.33981132056603"></circle>
     <line id="dc-vocabRayon" stroke="#1C1B2E" stroke-width="1.5" x1="200" y1="130" x2="280" y2="80"></line>
     <line id="dc-vocabDiametre" stroke="#1C1B2E" stroke-width="1.5" x1="250" y1="210" x2="150.00000000000003" y2="50"></line>
     <line id="dc-vocabCorde" stroke="#1C1B2E" stroke-width="1.5" x1="155.71796769724492" y1="213.30127018922192" x2="105.71796769724492" y2="133.30127018922192"></line>
-    <circle id="dc-vocabO" r="4" fill="#1C1B2E" cx="200" cy="130"></circle>
-    <circle id="dc-vocabA" r="5.5" fill="#E35D3A" style="" cx="280" cy="80"></circle>
-    <circle id="dc-vocabE" r="4" fill="#1C1B2E" cx="250" cy="210"></circle>
-    <circle id="dc-vocabF" r="4" fill="#1C1B2E" cx="150.00000000000003" cy="50"></circle>
-    <circle id="dc-vocabM" r="4" fill="#1C1B2E" cx="155.71796769724492" cy="213.30127018922192"></circle>
-    <circle id="dc-vocabN" r="4" fill="#1C1B2E" cx="105.71796769724492" cy="133.30127018922192"></circle>
+    <circle id="dc-vocabHaloA" r="10" fill="#E35D3A" fill-opacity=".16" cx="280" cy="80"></circle>
+    <circle id="dc-vocabA" r="13" fill="transparent" style="" cx="280" cy="80"></circle>
     <text id="dc-vocabLabelO" font-style="italic" font-size="14" x="184" y="135">O</text>
     <text id="dc-vocabLabelA" font-style="italic" font-size="14" fill="#E35D3A" x="288" y="74">A</text>
     <text id="dc-vocabLabelE" font-style="italic" font-size="14" x="258" y="226">E</text>
@@ -199,12 +194,12 @@
 
 
 <div class="figure-wrap">
-  <svg id="dc-distSvg" viewBox="0 0 400 260" style="width:100%;max-width:460px;display:block;margin:0 auto;background:var(--white);border-radius:8px;" data-geo-points="1">
+  <svg id="dc-distSvg" data-geo-garde="" viewBox="0 0 400 260" style="width:100%;max-width:460px;display:block;margin:0 auto;background:var(--white);border-radius:8px;" data-geo-points="1">
     <circle id="dc-distDisque" fill="rgba(31,58,92,.08)" stroke="none" cx="200" cy="130" r="80"></circle>
     <circle id="dc-distCircle" fill="none" stroke="#1F3A5C" stroke-width="1.8" cx="200" cy="130" r="80"></circle>
     <line id="dc-distSeg" stroke="#8A8578" stroke-width="1.3" stroke-dasharray="4 3" x1="200" y1="130" x2="320" y2="130"></line>
-    <circle id="dc-distO" r="4" fill="#1C1B2E" cx="200" cy="130"></circle>
-    <circle id="dc-distP" r="6" fill="#A83C1F" style="" cx="320" cy="130"></circle>
+    <path id="dc-distMkO" fill="none" stroke="#1C1B2E" stroke-width="1.8" stroke-linecap="round" d="M200.0,125.0 L200.0,135.0"></path><circle id="dc-distHaloP" r="10" fill="#A83C1F" fill-opacity=".16" cx="320" cy="130"></circle><path id="dc-distMkP" fill="none" stroke="#A83C1F" stroke-width="1.8" stroke-linecap="round" d="M320.0,125.0 L320.0,135.0"></path>
+    <circle id="dc-distP" r="13" fill="transparent" style="" cx="320" cy="130"></circle>
     <text id="dc-distLabelO" font-style="italic" font-size="14" x="184" y="135">O</text>
     <text id="dc-distLabelP" font-style="italic" font-size="14" fill="#E35D3A" x="328" y="135">P</text>
   </svg>
@@ -219,15 +214,11 @@
   <div class="sub-header oliv-sh" data-oliv="Suis la méthode !"><span class="letter">M</span><h4>Méthode : construire le milieu d'un segment à la règle</h4></div>
 <div class="figure-wrap">
   
-  <svg id="dc-mm-svg" viewBox="0 0 400 220" style="width:100%;max-width:460px;display:block;margin:10px auto 0;background:var(--white);border-radius:8px;" data-geo-points="1">
+  <svg id="dc-mm-svg" data-geo-garde="" viewBox="0 0 400 220" style="width:100%;max-width:460px;display:block;margin:10px auto 0;background:var(--white);border-radius:8px;" data-geo-points="1">
     <line id="dc-mm-seg" stroke="#1C1B2E" stroke-width="1.8" x1="70" y1="150" x2="330" y2="110"></line>
-    <circle id="dc-mm-R" r="5" fill="#1C1B2E" cx="70" cy="150"></circle>
-    <circle id="dc-mm-T" r="5" fill="#1C1B2E" cx="330" cy="110"></circle>
+    <path id="dc-mm-R" fill="none" stroke="#1C1B2E" stroke-width="1.8" stroke-linecap="round" d="M69.2,145.1 L70.8,154.9"></path><path id="dc-mm-T" fill="none" stroke="#1C1B2E" stroke-width="1.8" stroke-linecap="round" d="M329.2,105.1 L330.8,114.9"></path>
     <text id="dc-mm-labelR" font-style="italic" font-size="14" x="54" y="155">R</text>
     <text id="dc-mm-labelT" font-style="italic" font-size="14" x="338" y="115">T</text>
-    
-    
-    
     
     
     
