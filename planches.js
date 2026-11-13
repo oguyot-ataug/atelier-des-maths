@@ -47,7 +47,7 @@ function plEntoure(html){ return `<span class="pl-entoure">${html}</span>`; }
 function plGrille(items, cols){ return `<div class="pl-grille" style="grid-template-columns:repeat(${cols || 2},1fr);">${items.map(x => `<div class="pl-item">${x}</div>`).join('')}</div>`; }
 // Raisonnements côte à côte SUR PAPIER seulement (corrigé imprimé qui dépasse la page) ; à l'écran et dans le cahier Seyès, l'un sous
 // l'autre comme d'habitude (13/11/2026).
-function plCote(...h){ return `<div class="pl-cote">${h.join('')}</div>`; }
+function plCote(...h){ return `<div class="pl-cote">${h.map(x => `<div>${x}</div>`).join('')}</div>`; }
 // Liste à puces (jamais « 1. », « 2. »).
 function plListe(items){ return `<ul class="pl-liste">${items.map(x => `<li>${x}</li>`).join('')}</ul>`; }
 // Exercice de rédaction : l'élève répond dans son cahier (exo { cahier: true } : Oliv'IA et sa bulle).

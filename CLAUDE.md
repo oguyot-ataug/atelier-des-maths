@@ -327,6 +327,9 @@ Tracés aux instruments (demandé le 12/11/2026 : « en reprenant les visuels et
 outils, att, caches })` (planches-instruments.js, outil `instr`) ouvre le VRAI tableau interactif emprunté (`tbAiBorrowBoard`), figure de départ au
 format des programmes du tableau construite sans animation, points cachés (`caches`) pour placer une droite ; attendus `long`, `seg`, `droite`,
 `prolonge`, `cercle` (`par`, `r` ou `milieu`), `perp`, `para`. Ne jamais refaire des instruments maison.
+Feuilles trop VIDES (demandé le 13/11/2026 : « vérifie qu'il n'y a pas d'autres planches aussi vides ») : `plRemplirPages` étire une feuille courte
+jusqu'à la page (`pl-plein`), donc la hauteur imprimée ne la révèle pas ; mesurer la hauteur NATURELLE (scratchpad relec/vides.js : toutes les feuilles
+élève d'un niveau, classe pl-plein et hauteur retirées). Le 13/11/2026 : 718 feuilles, 17 sous 0,6 page, 76 sous 0,7 (relevé vides_tout.json).
 Une feuille qui dépasse la page A4 est resserrée à l'impression (`plRemplirPages`, planches.js) : jusqu'à 15 % pour l'élève, 30 %
 pour le corrigé, en gardant toute la largeur ; jamais sur une feuille d'élève où l'on mesure une longueur à la règle. Au-delà,
 alléger le contenu (demandé le 31/10/2026 : « Occupe-toi des feuilles qui débordent »).

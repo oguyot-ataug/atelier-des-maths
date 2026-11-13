@@ -7,7 +7,7 @@
    « sous la forme d'un carré, puis d'un cube » (une seule réponse juste pour chaque case). Planche 2 : l'élève écrit
    aussi l'exposant, rien n'est imprimé d'avance -- relecture du 30/10 : « pourquoi avoir ajouté les puissances ? Il faut
    laisser l'élève les écrire ». Planche 3 : corrigés des calculs sans titre, la première ligne est le calcul demandé.
-   Planche 4 : six questions sur deux colonnes à l'exercice 1 ; l'exercice 2 (côté d'un carré de 81 m²) devient un calcul d'aire à partir
+   Planche 4 refaite le 13/11/2026 (feuille trop vide). Avant : six questions sur deux colonnes à l'exercice 1 ; l'exercice 2 (côté d'un carré de 81 m²) devient un calcul d'aire à partir
    du périmètre -- relecture : « une réponse qui n'est pas le résultat d'un calcul ».
    ============================================================ */
 (() => {
@@ -42,12 +42,32 @@ PLANCHES['5e|Puissances'] = [
       { etoiles: 2, col: 1, consigne: 'Calcule pour x = 3.', ...P3.rmp([[`${T('x^2')} = @`, 9], [`${T('2x^2')} = @`, 18], [`${T('x^2 + x')} = @`, 12], [`${T('x^3 - 1')} = @`, 26]], 3) },
       { etoiles: 3, cahier: true, consigne: 'Calcule C = (5 + 4)² et D = 5² + 4². Les résultats sont-ils égaux ?', corr: etapes([['C', ['(5 + 4)^2', '9^2', '81']], ['D', ['5^2 + 4^2', '25 + 16', '41']]], 'Non : C = 81 et D = 41. Le carré d\'une somme n\'est pas la somme des carrés.') },
     ] },
-  { titre: 'Problèmes : aires et volumes', duree: '30 min',
-    attendus: ['Utiliser le carré pour l\'aire d\'un carré et le cube pour le volume d\'un cube'],
+  // Refaite le 13/11/2026 (« Que penses-tu de cette planche ? » : trois exercices, feuille presque vide, puissances peu présentes) :
+  // la puissance s'écrit (8², 4³), unités cm / cm² / cm³, tableau d'un cube, problèmes rédigés en colonne, effet du doublement de l'arête.
+  // Pas de « retrouve le côté à partir de l'aire » (relecture antérieure : « une réponse qui n'est pas le résultat d'un calcul »).
+  { titre: 'Problèmes : aires et volumes', duree: '40 min',
+    attendus: ['Écrire une aire avec un carré et un volume avec un cube', 'Distinguer cm, cm² et cm³', 'Résoudre un problème d\'aire ou de volume'],
     exos: [
-      { etoiles: 1, consigne: 'Complète.', ...P3.rmp([['Carré de côté 8 cm : aire = @ cm²', 64], ['Carré de côté 5 cm : aire = @ cm²', 25], ['Carré de côté 12 m : aire = @ m²', 144], ['Cube d\'arête 4 cm : volume = @ cm³', 64], ['Cube d\'arête 3 cm : volume = @ cm³', 27], ['Cube d\'arête 5 cm : volume = @ cm³', 125]], 3) },
-      { etoiles: 2, cahier: true, consigne: 'Un carré a un périmètre de 36 m. Calcule son aire.', corr: cm1Redac('Côté du carré', T('36 : 4 = 9'), 'Le côté mesure 9 m.') + cm1Redac('Aire du carré', T('9^2 = 9 \\times 9 = 81'), 'L\'aire du carré est 81 m².') },
-      { etoiles: 3, cahier: true, consigne: 'Un aquarium a la forme d\'un cube de 30 cm d\'arête. Combien de litres d\'eau peut-il contenir ? (1 L = 1 000 cm³)', corr: cm1Redac('Contenance de l\'aquarium', { suite: [T('30^3 = 30 \\times 30 \\times 30 = 27\\,000'), '27 000 cm³ = 27 L'] }, 'L\'aquarium peut contenir 27 L d\'eau.') },
+      { etoiles: 1, uneLigne: true, consigne: 'Écris l\'aire A ou le volume V avec une puissance, puis calcule.',
+        ...P3.rmp([['Carré de côté 8 cm : A = @<sup>@</sup> = @ cm²', 8, 2, 64], ['Carré de côté 5 cm : A = @<sup>@</sup> = @ cm²', 5, 2, 25], ['Carré de côté 12 m : A = @<sup>@</sup> = @ m²', 12, 2, 144],
+          ['Cube d\'arête 4 cm : V = @<sup>@</sup> = @ cm³', 4, 3, 64], ['Cube d\'arête 3 cm : V = @<sup>@</sup> = @ cm³', 3, 3, 27], ['Cube d\'arête 10 cm : V = @<sup>@</sup> = @ cm³', 10, 3, '1 000']], 3) },
+      { etoiles: 2, col: 1, consigne: 'Complète par cm, cm² ou cm³.',
+        ...(() => { const l = [['Côté d\'un carré : 5', 'cm'], ['Aire d\'une face d\'un dé : 4', 'cm²'], ['Volume d\'une boîte : 1 000', 'cm³'], ['Périmètre d\'un carré : 20', 'cm'], ['Aire d\'un timbre : 6', 'cm²']];
+          return { eleve: plListe(l.map(([t]) => `${t} ${plCase('cm|cm²|cm³')}`)), corr: plListe(l.map(([t, r]) => `${t} ${R(r)}`)) }; })() },
+      { etoiles: 2, col: 1, consigne: 'Complète le tableau pour un cube.',
+        ...(() => { const L = [['Arête (cm)', '2', '3', '5', '10'], ['Aire d\'une face (cm²)', '@', '@', '@', '@'], ['Volume (cm³)', '@', '@', '@', '@']], r = [4, 9, 25, 100, 8, 27, 125, '1 000'];
+          return { eleve: P3.tab(L, false), corr: P3.tab(L, true, r) }; })() },
+      { etoiles: 2, col: 1, cahier: true, consigne: 'Un carré a un périmètre de 36 m. Calcule son aire.',
+        corr: cm1Redac('Côté du carré', [{ nom: 'C', lignes: ['36 : 4', '9'] }], 'Le côté mesure 9 m.') + cm1Redac('Aire du carré', [{ nom: 'A', lignes: [T('9^2'), '9 × 9', '81'] }], 'L\'aire du carré est 81 m².') },
+      { etoiles: 3, col: 1, cahier: true, consigne: 'Un aquarium a la forme d\'un cube de 30 cm d\'arête. Combien de litres d\'eau peut-il contenir ? (1 L = 1 000 cm³)',
+        corr: cm1Redac('Volume de l\'aquarium', [{ nom: 'V', lignes: [T('30^3'), '30 × 30 × 30', '27 000'] }], 'Le volume de l\'aquarium est 27 000 cm³.') + cm1Redac('Contenance en litres', [{ nom: 'L', lignes: ['27 000 : 1 000', '27'] }], 'L\'aquarium peut contenir 27 L d\'eau.') },
+      { etoiles: 3, cahier: true, consigne: 'On double l\'arête d\'un cube de 3 cm : elle passe à 6 cm. Par combien le volume du cube est-il multiplié ? Et l\'aire d\'une face ?',
+        corr: plCote(cm1Redac('Volume du petit cube', [{ nom: 'V<sub>1</sub>', lignes: [T('3^3'), '3 × 3 × 3', '27'] }], 'Le petit cube a un volume de 27 cm³.')
+            + cm1Redac('Volume du grand cube', [{ nom: 'V<sub>2</sub>', lignes: [T('6^3'), '6 × 6 × 6', '216'] }], 'Le grand cube a un volume de 216 cm³.')
+            + cm1Redac('Coefficient pour le volume', [{ nom: 'k', lignes: ['216 : 27', '8'] }], `Le volume est multiplié par 8, c'est-à-dire ${T('2^3')}.`),
+          cm1Redac('Aire d\'une face du petit cube', [{ nom: 'A<sub>1</sub>', lignes: [T('3^2'), '3 × 3', '9'] }], 'Une face du petit cube mesure 9 cm².')
+            + cm1Redac('Aire d\'une face du grand cube', [{ nom: 'A<sub>2</sub>', lignes: [T('6^2'), '6 × 6', '36'] }], 'Une face du grand cube mesure 36 cm².')
+            + cm1Redac('Coefficient pour l\'aire', [{ nom: 'k\'', lignes: ['36 : 9', '4'] }], `L'aire d'une face est multipliée par 4, c'est-à-dire ${T('2^2')}.`)) },
     ] },
 ];
 })();

@@ -3999,6 +3999,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1445', date:'2026-11-13', items:[
+    "5e Puissances, planche 4 « Problèmes : aires et volumes » refaite -- demandé : « refais-la ainsi ». Six exercices au lieu de trois : écrire l'aire ou le volume avec une puissance (A = 8² = 64 cm²), compléter par cm, cm² ou cm³, tableau d'un cube (aire d'une face, volume), périmètre puis aire d'un carré, aquarium, et défi « on double l'arête » (volume × 8 = 2³, aire × 4 = 2²) ; corrigés en colonne."
+  ]},
   { version:'2026-08-19.1444', date:'2026-11-13', items:[
     "Corrigés : plus de saut de « a/b × c » au résultat -- demandé : « on passe de 3/4 × 60 à 3 × 15. Il manque 3 × 60/4 ». Étape a × c/b ajoutée et calcul en colonne (une lettre, une étape par ligne) : 5e Fractions planche 5, 4e Fractions (multiplication et division) planches 2 et 4, 6e Fractions (multiplication) planches 2 et 4 ; pourcentages en écriture fractionnaire (5e Statistiques, 5e Pourcentages).",
     "Manuel : la fraction de la première ligne d'un énoncé n'est plus coupée en haut -- demandé : « elle est souvent un peu tronquée sur le haut ».",
