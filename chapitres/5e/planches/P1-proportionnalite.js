@@ -123,5 +123,15 @@ PLANCHES['5e|Proportionnalité'] = [
       { etoiles: 3, col: 1, cahier: true, consigne: 'Une imprimante imprime 45 pages en 3 minutes. Combien de pages en 20 minutes ? Combien de temps pour imprimer 420 pages ?',
         corr: cm1Redac('Pages par minute', '45 : 3 = 15', 'L\'imprimante imprime 15 pages par minute.') + cm1Redac('Pages en 20 minutes', '20 × 15 = 300', 'Elle imprime 300 pages en 20 minutes.') + cm1Redac('Durée pour 420 pages', '420 : 15 = 28', 'Il faut 28 minutes pour imprimer 420 pages.') },
     ] },
+  { titre: 'Automatismes', duree: '20 min',
+    attendus: ['Reconnaître une situation de proportionnalité', 'Calculer une quatrième proportionnelle mentalement', 'Utiliser une échelle, une vitesse'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: '3 stylos coûtent 4,50 €. Complète.', ...P3.rmp([['1 stylo : @ €', '1,50'], ['6 stylos : @ €', 9], ['10 stylos : @ €', 15]]) },
+      { etoiles: 1, col: 1, consigne: 'Est-ce une situation de proportionnalité ? Entoure.', ...P3.ch([['Le prix des pommes et leur masse', 'oui'], ['L\'âge et la taille d\'une personne', 'non'], ['Le périmètre d\'un carré et son côté', 'oui'], ['L\'aire d\'un carré et son côté', 'non']], 'oui · non') },
+      { etoiles: 2, col: 1, consigne: 'Tableau de proportionnalité : 2 correspond à 6. Complète.', ...P3.rmp([['5 correspond à @', 15], ['@ correspond à 24', 8], ['Coefficient de proportionnalité : @', 3]]) },
+      { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['60 km en 1 h : en 30 min, @ km', 30], ['90 km/h pendant 2 h : @ km', 180], [`Échelle ${cm1Frac(1, '1\\,000')} : 3 cm représentent @ m`, 30]]) },
+      { etoiles: 2, col: 1, consigne: 'Recette pour 4 personnes : 200 g de farine. Complète.', ...P3.rmp([['Pour 6 personnes : @ g', 300], ['Pour 2 personnes : @ g', 100], ['Pour 10 personnes : @ g', 500]]) },
+      { etoiles: 2, col: 1, consigne: 'Est-ce un tableau de proportionnalité ? Entoure.', ...P3.ch([['2 → 5 ; 4 → 10 ; 6 → 15', 'oui'], ['1 → 3 ; 2 → 5 ; 3 → 7', 'non'], ['3 → 1,5 ; 8 → 4 ; 10 → 5', 'oui']], 'oui · non') },
+    ] },
 ];
 })();

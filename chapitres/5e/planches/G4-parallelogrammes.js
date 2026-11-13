@@ -98,5 +98,14 @@ PLANCHES['5e|Parallélogrammes'] = [
       { etoiles: 3, col: 1, cahier: true, consigne: 'Un quadrilatère EFGH vérifie EF = GH = 5 cm et FG = HE = 3 cm. Est-ce forcément un parallélogramme ? Dessine pour vérifier.',
         corr: cm1Redac('EFGH est-il forcément un parallélogramme ?', 'Si EFGH n\'est pas croisé, ses côtés opposés ont la même longueur deux à deux : c\'est un parallélogramme.', 'Attention : un quadrilatère croisé peut aussi avoir ces longueurs sans être un parallélogramme.') },
     ] },
+  { titre: 'Automatismes', duree: '20 min',
+    attendus: ['Utiliser les propriétés des côtés et des angles', 'Utiliser les propriétés des diagonales', 'Reconnaître un parallélogramme'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'ABCD est un parallélogramme. Complète.', ...P3.rmp([['AB = 5 cm, donc CD = @ cm', 5], ['BC = 3 cm, donc AD = @ cm', 3], ['L\'angle en A mesure 70°, l\'angle en C mesure @', '70°'], ['L\'angle en B mesure @', '110°']]) },
+      { etoiles: 1, col: 1, consigne: 'Vrai ou faux ? Entoure.', ...P3.ch([['Les diagonales d\'un parallélogramme ont le même milieu.', 'vrai'], ['Les diagonales d\'un parallélogramme ont la même longueur.', 'faux'], ['Deux angles consécutifs sont supplémentaires.', 'vrai']], 'vrai · faux') },
+      { etoiles: 2, col: 1, consigne: 'ABCD est un parallélogramme de centre O. Complète.', ...P3.rmp([['AC = 8 cm, donc AO = @ cm', 4], ['OB = 2,5 cm, donc BD = @ cm', 5], ['O est le @ de [AC] et de [BD]', 'milieu']]) },
+      { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['Côtés 6 cm et 4 cm : périmètre @ cm', 20], ['Base 6 cm, hauteur 3 cm : aire @ cm²', 18], ['Base 7 cm, aire 28 cm² : hauteur @ cm', 4]]) },
+      { etoiles: 2, consigne: 'Quelle est la nature du quadrilatère ? Entoure.', ...P3.chx([['Ses diagonales ont le même milieu :', 'parallélogramme', 'parallélogramme · trapèze · on ne sait pas'], ['Ses côtés opposés sont parallèles deux à deux :', 'parallélogramme', 'parallélogramme · trapèze · on ne sait pas'], ['Il a deux côtés parallèles :', 'on ne sait pas', 'parallélogramme · trapèze · on ne sait pas']]) },
+    ] },
 ];
 })();

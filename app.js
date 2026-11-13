@@ -4079,6 +4079,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1455', date:'2026-11-13', items:[
+    "Manuel de 5e : une planche « Automatismes » aussi dans les 13 chapitres de géométrie, de données et de fonctions (symétrie centrale, angles, droites remarquables, parallélogrammes, aires, espace, statistiques, probabilités, programmation, proportionnalité, pourcentages, fonctions) : 116 planches et 742 exercices en 5e."
+  ]},
   { version:'2026-08-19.1454', date:'2026-11-13', items:[
     "Manuel de 5e : une planche « Automatismes » dans chacun des 8 chapitres de nombres (décimaux, divisibilité, relatifs, opérations sur les relatifs, fractions, calcul littéral, équations, puissances) -- demandé : « Notre TD en 5e fait 99 pages ! Il manque environ 30 pages d'exercices par rapport à iparcours ». 103 planches en 5e."
   ]},

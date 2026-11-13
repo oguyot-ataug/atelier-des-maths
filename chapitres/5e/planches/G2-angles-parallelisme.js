@@ -294,5 +294,15 @@ PLANCHES['5e|Angles et parallélisme'] = [
             + cm1Redac('Angle ' + W('DAE'), '', 'De même, le triangle AED est isocèle en E : ' + W('DAE') + ' = 36°.')
             + cm1Redac('Angle ' + W('CAD'), '108° − 36° − 36° = 36°', 'Les deux diagonales partagent l\'angle en A en trois angles égaux de 36°.') }; })() },
     ] },
+  { titre: 'Automatismes', duree: '20 min',
+    attendus: ['Calculer un angle supplémentaire ou opposé par le sommet', 'Utiliser la somme des angles d\'un triangle', 'Utiliser les angles formés par des parallèles'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'Complète.', ...P3.rmp([['Supplémentaire d\'un angle de 70° : @', '110°'], ['Supplémentaire d\'un angle de 125° : @', '55°'], ['Opposé par le sommet à un angle de 38° : @', '38°']]) },
+      { etoiles: 1, col: 1, consigne: 'Complète.', ...P3.rmp([['Angle droit : @', '90°'], ['Angle plat : @', '180°'], ['Tour complet : @', '360°'], ['Angles de l\'équerre : 30°, 60° et @', '90°']]) },
+      { etoiles: 2, col: 1, consigne: 'Calcule le troisième angle du triangle.', ...P3.rmp([['50° et 60° : @', '70°'], ['90° et 35° : @', '55°'], ['112° et 41° : @', '27°']]) },
+      { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['Triangle isocèle, angle au sommet 40° : angles à la base @', '70°'], ['Triangle équilatéral : chaque angle @', '60°'], ['Triangle rectangle isocèle : angles aigus @', '45°']]) },
+      { etoiles: 2, consigne: 'Deux droites parallèles sont coupées par une sécante. Un des angles formés mesure 72°. Complète.', ...P3.rmp([['Son alterne-interne : @', '72°'], ['Son correspondant : @', '72°'], ['Son adjacent supplémentaire : @', '108°']], 3) },
+      { etoiles: 2, consigne: 'Vrai ou faux ? Entoure.', ...P3.ch([['Deux angles alternes-internes formés par deux parallèles ont la même mesure.', 'vrai'], ['Deux angles correspondants ont toujours la même mesure.', 'faux'], ['Un triangle peut avoir des angles de 90°, 60° et 40°.', 'faux']], 'vrai · faux') },
+    ] },
 ];
 })();

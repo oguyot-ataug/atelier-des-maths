@@ -97,5 +97,16 @@ PLANCHES['5e|Fonctions'] = [
       { etoiles: 3, cahier: true, consigne: 'Sur ton cahier, trace un repère et représente la hauteur de la bougie (20 cm, −1,5 cm par heure) de 0 h à 10 h. Les points sont-ils alignés ? Est-ce une situation de proportionnalité ?',
         corr: cm1Redac('Graphique de la hauteur de la bougie', { suite: ['Points : (0 ; 20), (2 ; 17), (4 ; 14), (6 ; 11), (8 ; 8), (10 ; 5).', 'Ils sont alignés, sur une droite qui descend.'] }, 'Ce n\'est pas une situation de proportionnalité : la droite ne passe pas par l\'origine.') },
     ] },
+  { titre: 'Automatismes', duree: '20 min',
+    attendus: ['Calculer avec une formule', 'Lire les coordonnées d\'un point', 'Appliquer un programme de calcul'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'Calcule avec la formule.', ...P3.rmp([['P = 4c, avec c = 3 : P = @', 12], ['A = c², avec c = 5 : A = @', 25], ['y = 2x + 1, avec x = 4 : y = @', 9]]) },
+      { etoiles: 1, col: 1, consigne: 'Complète.', ...P3.rmp([['Le point (3 ; 5) a pour abscisse @', 3], ['Le point (3 ; 5) a pour ordonnée @', 5], ['Le point d\'abscisse 0 et d\'ordonnée 2 : (@ ; @)', 0, 2]]) },
+      { etoiles: 2, col: 1, consigne: 'Programme : choisir x ; multiplier par 3 ; soustraire 1. Complète.', ...P3.rmp([['x = 2 : @', 5], ['x = 0 : @', '−1'], ['x = 10 : @', 29]]) },
+      { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.', ...P3.ch([['Une situation de proportionnalité est représentée par des points alignés avec l\'origine.', 'vrai'], ['Sur un graphique, on lit l\'abscisse sur l\'axe vertical.', 'faux']], 'vrai · faux') },
+      { etoiles: 2, col: 1, consigne: 'Formule y = 3x. Complète.', ...P3.rmp([['x = 1 : y = @', 3], ['x = 4 : y = @', 12], ['x = −2 : y = @', '−6']]) },
+      { etoiles: 2, col: 1, consigne: 'Formule y = 2x + 1. Le point est-il sur la représentation ? Entoure.', ...P3.ch([['(1 ; 3)', 'oui'], ['(2 ; 4)', 'non'], ['(0 ; 1)', 'oui']], 'oui · non') },
+      { etoiles: 2, consigne: 'Un taxi coûte P = 3 + 2d euros pour d kilomètres. Complète.', ...P3.rmp([['d = 5 : P = @ €', 13], ['d = 10 : P = @ €', 23], ['P = 11 € : d = @ km', 4], ['Le prix est-il proportionnel à la distance ? @', 'non']], 4) },
+    ] },
 ];
 })();

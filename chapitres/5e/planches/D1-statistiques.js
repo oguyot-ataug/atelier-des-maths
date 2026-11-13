@@ -98,5 +98,16 @@ PLANCHES['5e|Statistiques'] = [
       { etoiles: 3, col: 1, cahier: true, consigne: 'Deux élèves ont eu ces notes. Hugo : 10 ; 10 ; 10 ; 10. Inès : 4 ; 16 ; 6 ; 14. Calcule leurs moyennes. Que remarques-tu ? Qui est le plus régulier ?',
         corr: cm1Redac('Moyenne de Hugo', { suite: ['10 + 10 + 10 + 10 = 40', '40 : 4 = 10'] }, '') + cm1Redac('Moyenne d\'Inès', { suite: ['4 + 16 + 6 + 14 = 40', '40 : 4 = 10'] }, 'Ils ont la même moyenne, mais Hugo est plus régulier : ses notes sont toutes égales, celles d\'Inès sont très dispersées.') },
     ] },
+  { titre: 'Automatismes', duree: '20 min',
+    attendus: ['Calculer une moyenne simple', 'Calculer une fréquence', 'Lire un effectif, une étendue'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'Calcule la moyenne.', ...P3.rmp([['10 ; 12 ; 14 : @', 12], ['5 ; 7 ; 9 ; 11 : @', 8], ['3 ; 3 ; 3 ; 15 : @', 6]]) },
+      { etoiles: 1, col: 1, consigne: 'Calcule la fréquence.', ...P3.rmp([['12 élèves sur 30 : @', '0,4'], ['5 sur 20 : @', '0,25'], ['9 sur 10 : @', '0,9']]) },
+      { etoiles: 2, col: 1, consigne: 'Écris la fréquence en pourcentage.', ...P3.rmp([['0,4 : @ %', 40], ['0,25 : @ %', 25], [`${cm1Frac(3, 4)} : @ %`, 75]]) },
+      { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['Étendue de 4 ; 12 ; 7 ; 20 : @', 16], ['Effectif total pour 4, 7 et 9 élèves : @', 20], ['Diagramme circulaire : 25 % correspond à @', '90°']]) },
+      { etoiles: 2, col: 1, consigne: 'Notes : 8 ; 12 ; 15 ; 9 ; 11. Complète.', ...P3.rmp([['Somme des notes : @', 55], ['Moyenne : @', 11], ['Étendue : @', 7]]) },
+      { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.', ...P3.ch([['La moyenne est toujours une des valeurs de la série.', 'faux'], ['Une fréquence est comprise entre 0 et 1.', 'vrai'], ['La somme des fréquences vaut 1.', 'vrai']], 'vrai · faux') },
+      { etoiles: 2, consigne: 'Dans une classe de 25 élèves, 10 ont un chat, 6 un chien et les autres n\'ont pas d\'animal. Complète.', ...P3.rmp([['Élèves sans animal : @', 9], ['Fréquence des élèves qui ont un chat : @', '0,4'], ['En pourcentage : @ %', 40], ['Angle du secteur « chat » : @', '144°']], 4) },
+    ] },
 ];
 })();

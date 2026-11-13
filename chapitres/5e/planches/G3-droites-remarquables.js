@@ -106,5 +106,14 @@ PLANCHES['5e|Droites remarquables dans un triangle'] = [
       { etoiles: 3, col: 1, cahier: true, consigne: 'ABC est un triangle isocèle en A, et I est le milieu de [BC]. Démontre que (AI) est perpendiculaire à (BC).',
         corr: cm1Redac('Démonstration', { suite: ['AB = AC (triangle isocèle) : A est à égale distance de B et de C, donc A est sur la médiatrice de [BC].', 'I est le milieu de [BC] : il est aussi sur cette médiatrice.'] }, '(AI) est la médiatrice de [BC] : elle est perpendiculaire à (BC).') },
     ] },
+  { titre: 'Automatismes', duree: '20 min',
+    attendus: ['Nommer les droites remarquables', 'Utiliser la propriété de la médiatrice', 'Connaître le cercle circonscrit'],
+    exos: [
+      { etoiles: 1, consigne: 'Complète avec le nom de la droite.', ...P3.rmp([['Perpendiculaire à un segment en son milieu : la @', 'médiatrice'], ['Passe par un sommet et est perpendiculaire au côté opposé : la @', 'hauteur'], ['Passe par un sommet et par le milieu du côté opposé : la @', 'médiane']]) },
+      { etoiles: 1, col: 1, consigne: 'Complète.', ...P3.rmp([['M est sur la médiatrice de [AB] et MA = 5 cm : MB = @ cm', 5], ['O est le centre du cercle circonscrit à ABC et OA = 4 cm : OC = @ cm', 4]]) },
+      { etoiles: 1, col: 1, consigne: 'Complète.', ...P3.rmp([['Les médiatrices se coupent au centre du cercle @', 'circonscrit'], ['Une médiane partage le triangle en deux triangles de même @', 'aire']]) },
+      { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.', ...P3.ch([['Un point de la médiatrice de [AB] est à la même distance de A et de B.', 'vrai'], ['Les trois médiatrices d\'un triangle se coupent en un même point.', 'vrai'], ['Une hauteur est toujours à l\'intérieur du triangle.', 'faux']], 'vrai · faux') },
+      { etoiles: 2, col: 1, consigne: 'Triangle ABC rectangle en A. Entoure.', ...P3.chx([['Centre de son cercle circonscrit :', 'milieu de [BC]', 'A · milieu de [BC] · milieu de [AB]'], ['Hauteur issue de B :', '(AB)', '(AB) · (BC) · (AC)']]) },
+    ] },
 ];
 })();

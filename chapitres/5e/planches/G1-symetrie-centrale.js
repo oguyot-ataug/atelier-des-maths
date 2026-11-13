@@ -113,5 +113,14 @@ PLANCHES['5e|Symétrie centrale'] = [
       { etoiles: 3, cahier: true, consigne: 'Trace un segment [AB] de 5 cm et un point O hors de (AB). Construis le symétrique de [AB] par rapport à O, puis par rapport à la droite (OA). Compare les deux images.',
         corr: cm1Redac('Comparaison des deux images', { suite: ['Image par la symétrie de centre O : [A\'B\'] parallèle à [AB], de 5 cm.', 'Image par la symétrie d\'axe (OA) : un segment de 5 cm, en général non parallèle à [AB].'] }, 'Les deux images ont la même longueur, mais elles ne sont pas placées de la même façon.') },
     ] },
+  { titre: 'Automatismes', duree: '20 min',
+    attendus: ['Connaître la définition de la symétrie centrale', 'Utiliser ses propriétés de conservation', 'Reconnaître un centre de symétrie'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'A\' est le symétrique de A par rapport à O. Complète.', ...P3.rmp([['O est le @ de [AA\']', 'milieu'], ['OA = 3 cm, donc OA\' = @ cm', 3], ['AA\' = @ cm', 6]]) },
+      { etoiles: 1, col: 1, consigne: 'Vrai ou faux ? Entoure.', ...P3.ch([['La symétrie centrale conserve les longueurs.', 'vrai'], ['L\'image d\'une droite est une droite parallèle.', 'vrai'], ['Un triangle et son image n\'ont pas la même aire.', 'faux']], 'vrai · faux') },
+      { etoiles: 1, col: 1, consigne: 'La figure a-t-elle un centre de symétrie ? Entoure.', ...P3.ch([['Un carré', 'oui'], ['Un triangle équilatéral', 'non'], ['Un cercle', 'oui'], ['La lettre N', 'oui'], ['La lettre A', 'non']], 'oui · non') },
+      { etoiles: 2, col: 1, consigne: 'Par une symétrie centrale, complète.', ...P3.rmp([['Un angle de 50° a pour image un angle de @', '50°'], ['Un segment de 4,2 cm a pour image un segment de @ cm', '4,2'], ['Un cercle de rayon 2 cm a pour image un cercle de rayon @ cm', 2]]) },
+      { etoiles: 2, consigne: 'Entoure la bonne réponse.', ...P3.chx([['Le symétrique du centre O par rapport à O est :', 'O lui-même', 'O lui-même · un autre point · il n\'existe pas'], ['Le symétrique d\'une droite qui passe par O est :', 'la même droite', 'la même droite · une droite perpendiculaire · un point']]) },
+    ] },
 ];
 })();

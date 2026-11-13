@@ -126,5 +126,14 @@ PLANCHES['5e|Représentation de l\'espace'] = [
       { etoiles: 3, col: 1, cahier: true, consigne: illu(tente, 'Une tente est un prisme droit. Sa base est un triangle de base 2 m et de hauteur 1,5 m ; la tente est longue de 3 m. Calcule son volume.'),
         corr: cm1Redac('Aire de la base', cm1Frac('2 \\times 1,5', 2) + ' = 1,5', 'La base mesure 1,5 m².') + cm1Redac('Volume de la tente', 'V = 1,5 × 3 = 4,5', 'La tente a un volume de 4,5 m³.') },
     ] },
+  { titre: 'Automatismes', duree: '20 min',
+    attendus: ['Décrire un prisme, un cylindre', 'Calculer un volume', 'Convertir des unités de volume et de contenance'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'Calcule le volume.', ...P3.rmp([['Cube d\'arête 3 cm : @ cm³', 27], ['Pavé de 2 cm sur 3 cm sur 5 cm : @ cm³', 30], ['Prisme : base 6 cm², hauteur 4 cm : @ cm³', 24], ['Cylindre : base 10 cm², hauteur 3 cm : @ cm³', 30]]) },
+      { etoiles: 1, col: 1, consigne: 'Convertis.', ...P3.rmp([['1 L = @ dm³', 1], ['1 dm³ = @ cm³', '1 000'], ['2,5 L = @ cL', 250], ['1 m³ = @ L', '1 000']]) },
+      { etoiles: 2, col: 1, consigne: 'Prisme droit à base triangulaire. Complète.', ...P3.rmp([['Nombre de faces : @', 5], ['Nombre d\'arêtes : @', 9], ['Nombre de sommets : @', 6]]) },
+      { etoiles: 2, col: 1, consigne: 'Cube. Complète.', ...P3.rmp([['Nombre de faces : @', 6], ['Nombre d\'arêtes : @', 12], ['Nombre de sommets : @', 8]]) },
+      { etoiles: 2, consigne: 'Entoure la bonne réponse.', ...P3.chx([['Le patron d\'un cylindre : deux disques et un', 'rectangle', 'rectangle · triangle · cercle'], ['Les faces latérales d\'un prisme droit sont des', 'rectangles', 'rectangles · triangles · disques']]) },
+    ] },
 ];
 })();

@@ -124,5 +124,15 @@ PLANCHES['5e|Aires'] = [
       { etoiles: 3, col: 1, cahier: true, consigne: illu(champ, 'Un champ triangulaire a une base de 150 m et une hauteur de 80 m. Calcule son aire en m², puis en hectares.'),
         corr: cm1Redac('Aire du champ', { suite: ['A = ' + cm1Frac('150 \\times 80', 2) + ' = 6 000 m²', '6 000 m² = 0,6 ha'] }, 'Le champ mesure 6 000 m², soit 0,6 ha.') },
     ] },
+  { titre: 'Automatismes', duree: '20 min',
+    attendus: ['Calculer l\'aire des figures usuelles', 'Convertir des unités d\'aire', 'Exprimer l\'aire d\'un disque avec π'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'Calcule l\'aire.', ...P3.rmp([['Rectangle de 7 cm sur 4 cm : @ cm²', 28], ['Carré de côté 9 cm : @ cm²', 81], ['Triangle de base 6 cm et de hauteur 5 cm : @ cm²', 15], ['Parallélogramme de base 8 cm et de hauteur 3 cm : @ cm²', 24]]) },
+      { etoiles: 1, col: 1, consigne: 'Convertis.', ...P3.rmp([['1 m² = @ dm²', 100], ['3 cm² = @ mm²', 300], ['250 dm² = @ m²', '2,5'], ['1 ha = @ m²', '10 000']]) },
+      { etoiles: 2, col: 1, consigne: 'Aire du disque, en fonction de π.', ...P3.rmp([['Rayon 3 cm : @ cm²', '9π'], ['Rayon 10 cm : @ cm²', '100π'], ['Diamètre 4 cm : @ cm²', '4π']]) },
+      { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.', ...P3.ch([['Doubler le côté d\'un carré double son aire.', 'faux'], ['Deux figures de même périmètre ont la même aire.', 'faux'], ['Un triangle a la moitié de l\'aire du rectangle de même base et de même hauteur.', 'vrai']], 'vrai · faux') },
+      { etoiles: 2, col: 1, consigne: 'Longueur du cercle, en fonction de π.', ...P3.rmp([['Rayon 5 cm : @ cm', '10π'], ['Diamètre 8 cm : @ cm', '8π'], ['Rayon 1,5 cm : @ cm', '3π']]) },
+      { etoiles: 2, col: 1, consigne: 'Calcule l\'aire.', ...P3.rmp([['Triangle rectangle, côtés de l\'angle droit 6 cm et 8 cm : @ cm²', 24], ['Demi-disque de rayon 2 cm : @ cm²', '2π']]) },
+    ] },
 ];
 })();

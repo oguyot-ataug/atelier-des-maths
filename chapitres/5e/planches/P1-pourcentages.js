@@ -91,5 +91,16 @@ PLANCHES['5e|Pourcentages'] = [
       { etoiles: 3, col: 1, cahier: true, consigne: 'Une classe de 28 élèves part en voyage ; 25 % des élèves ne peuvent pas venir. Le car a 25 places pour les élèves. Y a-t-il assez de places ?',
         corr: cm1Redac('Nombre d\'élèves absents', F('28 \\times 25', 100) + ' = 7', '7 élèves ne viennent pas.') + cm1Redac('Nombre d\'élèves présents', '28 − 7 = 21', '21 élèves partent : les 25 places suffisent.') },
     ] },
+  { titre: 'Automatismes', duree: '20 min',
+    attendus: ['Appliquer un pourcentage simple', 'Exprimer une proportion en pourcentage', 'Calculer une remise'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'Calcule.', ...P3.rmp([[`${cm1Frac(50, 100)} × 80 = @`, 40], [`${cm1Frac(25, 100)} × 60 = @`, 15], [`${cm1Frac(10, 100)} × 230 = @`, 23], [`${cm1Frac(1, 100)} × 700 = @`, 7]]) },
+      { etoiles: 1, col: 1, consigne: 'Écris en pourcentage.', ...P3.rmp([['12 élèves sur 50 : @ %', 24], ['3 sur 4 : @ %', 75], ['7 sur 20 : @ %', 35]]) },
+      { etoiles: 2, col: 1, consigne: 'Un article coûte 40 €, avec une remise de 25 %. Complète.', ...P3.rmp([['Montant de la remise : @ €', 10], ['Prix à payer : @ €', 30]]) },
+      { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.', ...P3.ch([['50 %, c\'est la moitié.', 'vrai'], ['25 %, c\'est le quart.', 'vrai'], ['20 %, c\'est le cinquième.', 'vrai'], ['150 % d\'une quantité est plus petit qu\'elle.', 'faux']], 'vrai · faux') },
+      { etoiles: 2, col: 1, consigne: 'Un prix de 50 € augmente de 10 %. Complète.', ...P3.rmp([['Hausse : @ €', 5], ['Nouveau prix : @ €', 55]]) },
+      { etoiles: 2, col: 1, consigne: 'Écris en pourcentage.', ...P3.rmp([[`${cm1Frac(1, 2)} = @ %`, 50], [`${cm1Frac(1, 4)} = @ %`, 25], [`${cm1Frac(3, 10)} = @ %`, 30], [`${cm1Frac(1, 5)} = @ %`, 20]]) },
+      { etoiles: 2, consigne: 'Un collège compte 600 élèves. Complète.', ...P3.rmp([['45 % sont des filles : @ filles', 270], ['30 % sont demi-pensionnaires : @ élèves', 180], ['120 élèves sont en 5e : @ %', 20]], 3) },
+    ] },
 ];
 })();

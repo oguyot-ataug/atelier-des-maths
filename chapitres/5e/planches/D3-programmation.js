@@ -112,5 +112,15 @@ PLANCHES['5e|Pensée informatique et programmation'] = [
       { etoiles: 3, cahier: true, consigne: 'Écris un programme qui trace un octogone régulier de côté 40, puis un programme qui trace un rectangle de 100 sur 50.',
         corr: cm1Redac('Programmes de l\'octogone et du rectangle', { suite: ['Octogone : répéter 8 fois ( avancer de 40 ; tourner de 45° )', 'Rectangle : répéter 2 fois ( avancer de 100 ; tourner de 90° ; avancer de 50 ; tourner de 90° )'] }, 'Pour un polygone régulier, l\'angle de rotation vaut 360 : nombre de côtés.') },
     ] },
+  { titre: 'Automatismes', duree: '20 min',
+    attendus: ['Suivre la valeur d\'une variable', 'Prévoir la figure tracée par une boucle', 'Appliquer un programme de calcul'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'Complète la valeur de la variable à la fin.', ...P3.rmp([['mettre a à 3 ; ajouter 4 à a : a = @', 7], ['mettre b à 10 ; mettre b à b × 2 : b = @', 20], ['mettre c à 5 ; ajouter −8 à c : c = @', '−3']]) },
+      { etoiles: 1, col: 1, consigne: 'Quelle figure le stylo trace-t-il ?', ...P3.rmp([['répéter 4 fois [avancer de 50 ; tourner de 90°] : @', 'un carré'], ['répéter 3 fois [avancer de 60 ; tourner de 120°] : @', 'un triangle équilatéral'], ['répéter 6 fois [avancer de 40 ; tourner de 60°] : @', 'un hexagone régulier']]) },
+      { etoiles: 2, col: 1, consigne: 'Programme : demander x ; dire 2 × x + 1. Que dit-il ?', ...P3.rmp([['pour 4 : @', 9], ['pour 0 : @', 1], ['pour −1 : @', '−1']]) },
+      { etoiles: 2, col: 1, consigne: 'mettre total à 0, puis… Complète.', ...P3.rmp([['répéter 5 fois [ajouter 3 à total] : total = @', 15], ['répéter 10 fois [ajouter 2 à total] : total = @', 20], ['répéter 4 fois [ajouter −1 à total] : total = @', '−4']]) },
+      { etoiles: 2, col: 1, consigne: 'demander n ; si n > 5 alors dire « grand » sinon dire « petit ». Que dit-il ?', ...P3.rmp([['pour 8 : @', 'grand'], ['pour 5 : @', 'petit'], ['pour 2 : @', 'petit']]) },
+      { etoiles: 2, col: 1, consigne: 'De quel angle tourner à chaque sommet pour tracer… ?', ...P3.rmp([['un pentagone régulier : @', '72°'], ['un octogone régulier : @', '45°'], ['un triangle équilatéral : @', '120°']]) },
+    ] },
 ];
 })();

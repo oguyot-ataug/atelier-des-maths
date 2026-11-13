@@ -86,5 +86,15 @@ PLANCHES['5e|Probabilités'] = [
       { etoiles: 3, cahier: true, consigne: 'Simule 20 lancers d\'une pièce (ou utilise une calculatrice). Calcule la fréquence de « face ». Compare avec la probabilité, puis avec les résultats de la classe.',
         corr: cm1Redac('Fréquence de « face »', 'Sur 20 lancers, la fréquence de « face » peut s\'éloigner de 0,5.', 'Avec tous les lancers de la classe, elle se rapproche de 0,5 : c\'est la probabilité.') },
     ] },
+  { titre: 'Automatismes', duree: '20 min',
+    attendus: ['Reconnaître un évènement certain ou impossible', 'Calculer une probabilité simple', 'Savoir qu\'une probabilité est entre 0 et 1'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'On lance un dé équilibré à 6 faces. Complète.', ...P3.rmp([['P(obtenir 6) = @', cm1Frac(1, 6)], ['P(obtenir un nombre pair) = @', cm1Frac(3, 6)], ['P(obtenir 7) = @', 0], ['P(obtenir moins de 7) = @', 1]]) },
+      { etoiles: 1, col: 1, consigne: 'Avec un dé à 6 faces, entoure.', ...P3.chx([['Obtenir 7 :', 'impossible', 'certain · impossible · ni l\'un ni l\'autre'], ['Obtenir un nombre entre 1 et 6 :', 'certain', 'certain · impossible · ni l\'un ni l\'autre'], ['Obtenir 3 :', 'ni l\'un ni l\'autre', 'certain · impossible · ni l\'un ni l\'autre']]) },
+      { etoiles: 2, col: 1, consigne: 'Une urne contient 3 boules rouges, 5 bleues et 2 vertes. On tire une boule. Complète.', ...P3.rmp([['P(rouge) = @', cm1Frac(3, 10)], ['P(bleue) = @', cm1Frac(5, 10)], ['P(verte) = @', cm1Frac(2, 10)]]) },
+      { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.', ...P3.ch([['Une probabilité peut valoir 1,5.', 'faux'], ['Une probabilité est comprise entre 0 et 1.', 'vrai'], ['Avec une pièce équilibrée, P(pile) = 0,5.', 'vrai']], 'vrai · faux') },
+      { etoiles: 2, col: 1, consigne: 'Roue de 8 secteurs égaux, dont 3 rouges. Complète.', ...P3.rmp([['P(rouge) = @', cm1Frac(3, 8)], ['P(pas rouge) = @', cm1Frac(5, 8)]]) },
+      { etoiles: 2, col: 1, consigne: 'Une pièce est lancée 100 fois : 47 fois pile. Complète.', ...P3.rmp([['Fréquence de pile : @', '0,47'], ['Probabilité de pile : @', '0,5']]) },
+    ] },
 ];
 })();

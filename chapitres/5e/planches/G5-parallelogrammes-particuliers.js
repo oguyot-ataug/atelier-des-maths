@@ -97,5 +97,14 @@ PLANCHES['5e|Parallélogrammes particuliers'] = [
       { etoiles: 1, consigne: 'Qui suis-je ? Entoure.',
         ...P3.chx2([['Mes quatre côtés sont égaux mais je n\'ai pas d\'angle droit :', 'losange', 'rectangle · losange · carré'], ['J\'ai quatre angles droits et des côtés de longueurs différentes :', 'rectangle', 'rectangle · losange · carré'], ['Je suis un losange et un rectangle :', 'carré', 'rectangle · losange · carré'], ['J\'ai quatre angles droits et quatre côtés égaux :', 'carré', 'rectangle · losange · carré']]) },
     ] },
+  { titre: 'Automatismes', duree: '20 min',
+    attendus: ['Connaître les définitions du rectangle, du losange et du carré', 'Utiliser leurs diagonales', 'Calculer périmètres et aires'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'Complète.', ...P3.rmp([['Parallélogramme qui a un angle droit : @', 'rectangle'], ['Parallélogramme qui a deux côtés consécutifs de même longueur : @', 'losange'], ['À la fois rectangle et losange : @', 'carré']]) },
+      { etoiles: 1, col: 1, consigne: 'Vrai ou faux ? Entoure.', ...P3.ch([['Les diagonales d\'un rectangle ont la même longueur.', 'vrai'], ['Les diagonales d\'un losange sont perpendiculaires.', 'vrai'], ['Un losange a toujours quatre angles droits.', 'faux'], ['Un carré est un losange.', 'vrai']], 'vrai · faux') },
+      { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['Rectangle de diagonale 10 cm : chaque demi-diagonale @ cm', 5], ['Losange de côté 4 cm : périmètre @ cm', 16], ['Carré de côté 7 cm : aire @ cm²', 49]]) },
+      { etoiles: 2, col: 1, consigne: 'Rectangle de 8 cm sur 5 cm. Complète.', ...P3.rmp([['Périmètre : @ cm', 26], ['Aire : @ cm²', 40], ['Ses diagonales sont de même @', 'longueur']]) },
+      { etoiles: 2, consigne: 'Un parallélogramme a des diagonales… Entoure sa nature.', ...P3.chx([['… de même longueur :', 'rectangle', 'rectangle · losange · carré'], ['… perpendiculaires :', 'losange', 'rectangle · losange · carré'], ['… de même longueur et perpendiculaires :', 'carré', 'rectangle · losange · carré']]) },
+    ] },
 ];
 })();
