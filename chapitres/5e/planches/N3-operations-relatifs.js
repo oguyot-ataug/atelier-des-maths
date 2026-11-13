@@ -124,5 +124,15 @@ PLANCHES['5e|Opérations sur les nombres relatifs'] = [
       { etoiles: 3, col: 1, cahier: true, consigne: illu(sousMarin, 'Un sous-marin est à −250 m. Il remonte de 120 m, redescend de 75 m puis remonte de 180 m. À quelle profondeur est-il ? Est-il remonté à la surface ?'),
         corr: cm1Redac('Profondeur du sous-marin', '−250 + 120 − 75 + 180 = 300 − 325 = −25', 'Il est à −25 m : il n\'est pas encore à la surface.') },
     ] },
+  { titre: 'Automatismes', duree: '20 min',
+    attendus: ['Additionner et soustraire des relatifs mentalement', 'Calculer une somme algébrique', 'Compléter une égalité'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'Calcule.', ...P3.rmp([['(−3) + (+8) = @', 5], ['(−6) + (−4) = @', '−10'], ['(+2,5) + (−7) = @', '−4,5'], ['(−9) + (+9) = @', 0]]) },
+      { etoiles: 1, col: 1, consigne: 'Calcule.', ...P3.rmp([['5 − 8 = @', '−3'], ['(−4) − (+3) = @', '−7'], ['(−2) − (−6) = @', 4], ['0 − (−5) = @', 5]]) },
+      { etoiles: 2, col: 1, consigne: 'Calcule.', ...P3.rmp([['−3 + 7 − 2 = @', 2], ['4 − 9 + 1 = @', '−4'], ['−5 − 5 + 12 = @', 2], ['−1 − 2 − 3 = @', '−6']]) },
+      { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['−3 + @ = 4', 7], ['@ + 5 = −1', '−6'], ['2 − @ = 6', '−4'], ['@ − 3 = −10', '−7']]) },
+      { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.', ...P3.ch([['La somme de deux nombres négatifs est négative.', 'vrai'], ['La différence de deux nombres positifs est positive.', 'faux'], ['Soustraire un nombre, c\'est ajouter son opposé.', 'vrai']], 'vrai · faux') },
+      { etoiles: 2, col: 1, consigne: 'Calcule l\'écart.', ...P3.rmp([['entre −12 et 5 : @', 17], ['entre −30 m et 120 m : @ m', 150], ['entre −8 °C et −3 °C : @ °C', 5]]) },
+    ] },
 ];
 })();

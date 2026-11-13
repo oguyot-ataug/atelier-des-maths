@@ -83,5 +83,15 @@ PLANCHES['5e|Divisibilité'] = [
       { etoiles: 3, cahier: true, consigne: illu(deuxPhares, 'Deux phares s\'allument en même temps. L\'un s\'allume toutes les 6 secondes, l\'autre toutes les 8 secondes. Dans combien de secondes s\'allumeront-ils de nouveau ensemble ?'),
         corr: cm1Redac('Multiples communs', { suite: ['Multiples de 6 : 6 ; 12 ; 18 ; 24 ; 30…', 'Multiples de 8 : 8 ; 16 ; 24 ; 32…'] }, 'Ils s\'allumeront de nouveau ensemble dans 24 secondes.') },
     ] },
+  { titre: 'Automatismes', duree: '20 min',
+    attendus: ['Reconnaître multiples et diviseurs', 'Utiliser les critères de divisibilité', 'Écrire quotient et reste'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'Est-ce un multiple de 3 ? Entoure.', ...P3.ch([['123', 'oui'], ['241', 'non'], ['1 005', 'oui'], ['2 222', 'non']], 'oui · non') },
+      { etoiles: 1, col: 1, consigne: 'Est-ce divisible par 9 ? Entoure.', ...P3.ch([['486', 'oui'], ['7 209', 'oui'], ['1 001', 'non'], ['3 330', 'oui']], 'oui · non') },
+      { etoiles: 1, col: 1, consigne: 'Complète.', ...P3.rmp([['21 = 3 × @', 7], ['56 = 7 × @', 8], ['45 = @ × 9', 5], ['72 = 8 × @', 9]]) },
+      { etoiles: 2, col: 1, consigne: 'Complète avec le quotient et le reste.', ...P3.rmp([['29 = 4 × @ + @', 7, 1], ['50 = 6 × @ + @', 8, 2], ['63 = 7 × @ + @', 9, 0]]) },
+      { etoiles: 2, col: 1, consigne: 'Écris tous les diviseurs.', ...P3.rmp([['de 12 : @', '1 ; 2 ; 3 ; 4 ; 6 ; 12'], ['de 18 : @', '1 ; 2 ; 3 ; 6 ; 9 ; 18'], ['de 7 : @', '1 ; 7']]) },
+      { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.', ...P3.ch([['Un nombre divisible par 9 est divisible par 3.', 'vrai'], ['Un nombre divisible par 3 est divisible par 9.', 'faux'], ['Tout nombre pair est divisible par 4.', 'faux']], 'vrai · faux') },
+    ] },
 ];
 })();

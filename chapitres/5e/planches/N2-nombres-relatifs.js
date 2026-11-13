@@ -122,5 +122,15 @@ PLANCHES['5e|Nombres relatifs'] = [
       { etoiles: 3, cahier: true, consigne: 'Un jeu : on gagne 5 points par bonne réponse et on perd 3 points par erreur. Zoé part de 0, a 4 bonnes réponses et 9 erreurs. Quel est son score ?',
         corr: cm1Redac('Score de Zoé', '4 × 5 − 9 × 3 = 20 − 27 = −7', 'Le score de Zoé est −7 points.') },
     ] },
+  { titre: 'Automatismes', duree: '20 min',
+    attendus: ['Donner l\'opposé et la distance à zéro', 'Comparer et ranger des relatifs', 'Repérer sur une droite graduée'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'Donne l\'opposé.', ...P3.rmp([['de 5 : @', '−5'], ['de −3,2 : @', '3,2'], ['de 0 : @', 0], ['de −17 : @', 17]]) },
+      { etoiles: 1, col: 1, consigne: 'Donne la distance à zéro.', ...P3.rmp([['de −7 : @', 7], ['de 4,5 : @', '4,5'], ['de −0,3 : @', '0,3'], ['de 12 : @', 12]]) },
+      { etoiles: 1, col: 1, consigne: 'Complète avec <, > ou =.', ...P3.bsc([['−3 @ 2', '&lt;'], ['−5 @ −8', '&gt;'], ['0 @ −0,5', '&gt;'], ['−1,2 @ −1,02', '&lt;']], '') },
+      { etoiles: 2, col: 1, consigne: 'Complète avec l\'abscisse du point (droite graduée de 1 en 1).', ...P3.rmp([['3 graduations à gauche de 0 : @', '−3'], ['5 graduations à droite de −2 : @', 3], ['4 graduations à gauche de 1 : @', '−3']]) },
+      { etoiles: 2, uneLigne: true, consigne: 'Range dans l\'ordre croissant.', ...P3.rmp([['−2 ; 5 ; −7 ; 0 ; 3 : @', '−7 < −2 < 0 < 3 < 5'], ['−1,5 ; −1 ; −2,5 ; 1 : @', '−2,5 < −1,5 < −1 < 1']]) },
+      { etoiles: 2, consigne: 'Températures : complète.', ...P3.rmp([['Il fait −4 °C, la température monte de 6 °C : il fait @ °C', 2], ['Il fait 3 °C, la température baisse de 5 °C : il fait @ °C', '−2'], ['De −6 °C à 2 °C, la température monte de @ °C', 8]]) },
+    ] },
 ];
 })();

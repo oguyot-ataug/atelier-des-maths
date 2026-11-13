@@ -185,5 +185,15 @@ PLANCHES['5e|Fractions'] = [
         corr: plCote(cm1Redac('Fraction du gâteau mangée', [{ nom: 'P', lignes: [`${F(1, 4)} + ${F(1, 3)} + ${F(1, 6)}`, `${F(3, 12)} + ${F(4, 12)} + ${F(2, 12)}`, F(9, 12)] }], `Ils ont mangé les ${F(9, 12)} du gâteau, soit 9 parts sur 12.`)
           , cm1Redac('Parts restantes', [{ nom: 'N', lignes: ['12 − 9', '3'] }], 'Oui, il reste du gâteau : 3 parts.')) },
     ] },
+  { titre: 'Automatismes', duree: '20 min',
+    attendus: ['Simplifier une fraction', 'Passer d\'une fraction à un décimal', 'Additionner des fractions simples'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'Simplifie.', ...P3.rmp([[`${cm1Frac(6, 8)} = @`, cm1Frac(3, 4)], [`${cm1Frac(15, 20)} = @`, cm1Frac(3, 4)], [`${cm1Frac(12, 18)} = @`, cm1Frac(2, 3)], [`${cm1Frac(21, 35)} = @`, cm1Frac(3, 5)]]) },
+      { etoiles: 1, col: 1, consigne: 'Écris en nombre décimal.', ...P3.rmp([[`${cm1Frac(3, 4)} = @`, '0,75'], [`${cm1Frac(1, 5)} = @`, '0,2'], [`${cm1Frac(5, 2)} = @`, '2,5'], [`${cm1Frac(7, 10)} = @`, '0,7']]) },
+      { etoiles: 1, col: 1, consigne: 'Écris avec une fraction.', ...P3.rmp([['0,5 = @', cm1Frac(1, 2)], ['0,25 = @', cm1Frac(1, 4)], ['1,5 = @', cm1Frac(3, 2)], ['0,1 = @', cm1Frac(1, 10)]]) },
+      { etoiles: 2, col: 1, consigne: 'Complète avec <, > ou =.', ...P3.bsc([[`${cm1Frac(3, 5)} @ ${cm1Frac(4, 5)}`, '&lt;'], [`${cm1Frac(7, 4)} @ 1`, '&gt;'], [`${cm1Frac(2, 3)} @ ${cm1Frac(4, 6)}`, '='], [`${cm1Frac(9, 10)} @ 1`, '&lt;']], '') },
+      { etoiles: 2, col: 1, consigne: 'Calcule.', ...P3.rmp([[`${cm1Frac(2, 7)} + ${cm1Frac(3, 7)} = @`, cm1Frac(5, 7)], [`${cm1Frac(1, 2)} + ${cm1Frac(1, 4)} = @`, cm1Frac(3, 4)], [`${cm1Frac(2, 3)} + ${cm1Frac(1, 6)} = @`, cm1Frac(5, 6)], [`${cm1Frac(5, 9)} − ${cm1Frac(1, 9)} = @`, cm1Frac(4, 9)]]) },
+      { etoiles: 2, col: 1, consigne: 'Calcule.', ...P3.rmp([[`${cm1Frac(3, 4)} × 20 = @`, 15], [`${cm1Frac(2, 5)} × 35 = @`, 14], [`${cm1Frac(1, 3)} × 27 = @`, 9], [`${cm1Frac(5, 6)} × 12 = @`, 10]]) },
+    ] },
 ];
 })();

@@ -4079,6 +4079,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1454', date:'2026-11-13', items:[
+    "Manuel de 5e : une planche « Automatismes » dans chacun des 8 chapitres de nombres (décimaux, divisibilité, relatifs, opérations sur les relatifs, fractions, calcul littéral, équations, puissances) -- demandé : « Notre TD en 5e fait 99 pages ! Il manque environ 30 pages d'exercices par rapport à iparcours ». 103 planches en 5e."
+  ]},
   { version:'2026-08-19.1453', date:'2026-11-13', items:[
     "Manuel de 4e étoffé -- comparé au manuel iParcours de 4e (170 pages avec les cours) : 7 nouvelles planches, 82 planches et 430 exercices en tout : Formules et graphiques (programmes de calcul appliqués à une variable, formules de la vie courante), Algorithmique (suivre une variable pas à pas, conditions et programmes de calcul), Calcul littéral (conjecturer puis démontrer par le calcul, tableur, contre-exemples), Puissances (produits de puissances) ; les planches de puissances de 10 et d'écriture scientifique sont titrées « Ancien programme »."
   ]},

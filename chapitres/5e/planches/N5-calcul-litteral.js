@@ -115,5 +115,15 @@ PLANCHES['5e|Calcul littéral'] = [
       { etoiles: 3, col: 1, cahier: true, consigne: 'Calcule astucieusement en factorisant : 4,5 × 17 + 4,5 × 3, puis 25 × 13 − 25 × 9.',
         corr: cm1Redac('Premier calcul', { nom: 'A', lignes: ['4,5 × 17 + 4,5 × 3', '4,5 × (17 + 3)', '4,5 × 20', '90'] }, 'Le premier calcul vaut 90.') + cm1Redac('Second calcul', { nom: 'B', lignes: ['25 × 13 − 25 × 9', '25 × (13 − 9)', '25 × 4', '100'] }, 'Le second calcul vaut 100.') },
     ] },
+  { titre: 'Automatismes', duree: '20 min',
+    attendus: ['Utiliser les conventions d\'écriture', 'Calculer la valeur d\'une expression', 'Réduire, développer, factoriser simplement'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'Écris plus simplement.', ...P3.rmp([['3 × x = @', '3x'], ['a × b = @', 'ab'], ['x × x = @', 'x²'], ['2 × y × 5 = @', '10y']]) },
+      { etoiles: 1, col: 1, consigne: 'Calcule pour x = 3.', ...P3.rmp([['2x + 1 = @', 7], ['x² = @', 9], ['5 − x = @', 2], ['4(x − 1) = @', 8]]) },
+      { etoiles: 1, col: 1, consigne: 'Réduis.', ...P3.rmp([['3x + 2x = @', '5x'], ['7a − a = @', '6a'], ['4x + 3 + x = @', '5x + 3'], ['2y + 5 − y = @', 'y + 5']]) },
+      { etoiles: 2, col: 1, consigne: 'Développe.', ...P3.rmp([['3(x + 2) = @', '3x + 6'], ['5(2 − y) = @', '10 − 5y'], ['2(3a + 4) = @', '6a + 8'], ['k(k + 1) = @', 'k² + k']]) },
+      { etoiles: 2, col: 1, consigne: 'Factorise.', ...P3.rmp([['5x + 5y = @', '5(x + y)'], ['3a + 12 = @', '3(a + 4)'], ['7x − 7 = @', '7(x − 1)'], ['4b + 4c = @', '4(b + c)']]) },
+      { etoiles: 2, col: 1, consigne: 'Complète par = ou ≠.', ...P3.egal([['2x + 3x', '5x', 1], ['x + x', 'x²', 0], ['3(x + 1)', '3x + 3', 1], ['x × x', '2x', 0]]) },
+    ] },
 ];
 })();

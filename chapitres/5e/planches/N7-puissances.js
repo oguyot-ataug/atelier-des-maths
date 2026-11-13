@@ -69,5 +69,15 @@ PLANCHES['5e|Puissances'] = [
             + cm1Redac('Aire d\'une face du grand cube', [{ nom: 'A<sub>2</sub>', lignes: [T('6^2'), '6 × 6', '36'] }], 'Une face du grand cube mesure 36 cm².')
             + cm1Redac('Coefficient pour l\'aire', [{ nom: 'k\'', lignes: ['36 : 9', '4'] }], `L'aire d'une face est multipliée par 4, c'est-à-dire ${T('2^2')}.`)) },
     ] },
+  { titre: 'Automatismes', duree: '20 min',
+    attendus: ['Connaître les carrés et les cubes usuels', 'Écrire un produit sous forme de puissance', 'Calculer avec des puissances'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'Calcule.', ...P3.rmp([['7<sup>2</sup> = @', 49], ['11<sup>2</sup> = @', 121], ['0,3<sup>2</sup> = @', '0,09'], ['12<sup>2</sup> = @', 144]]) },
+      { etoiles: 1, col: 1, consigne: 'Calcule.', ...P3.rmp([['2<sup>3</sup> = @', 8], ['3<sup>3</sup> = @', 27], ['10<sup>3</sup> = @', '1 000'], ['0,1<sup>3</sup> = @', '0,001']]) },
+      { etoiles: 1, col: 1, consigne: 'Écris sous la forme d\'une puissance.', ...P3.rmp([['5 × 5 × 5 × 5 = @', '5<sup>4</sup>'], ['7 × 7 = @', '7<sup>2</sup>'], ['2 × 2 × 2 × 2 × 2 × 2 = @', '2<sup>6</sup>'], ['10 × 10 × 10 = @', '10<sup>3</sup>']]) },
+      { etoiles: 2, col: 1, consigne: 'Calcule.', ...P3.rmp([['10<sup>2</sup> = @', 100], ['10<sup>4</sup> = @', '10 000'], ['10<sup>6</sup> = @', '1 000 000'], ['10<sup>1</sup> = @', 10]]) },
+      { etoiles: 2, col: 1, consigne: 'Calcule en respectant les priorités.', ...P3.rmp([['2 + 3<sup>2</sup> = @', 11], ['(2 + 3)<sup>2</sup> = @', 25], ['2 × 4<sup>2</sup> = @', 32], ['(2 × 4)<sup>2</sup> = @', 64]]) },
+      { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['Aire d\'un carré de côté 6 cm : @ cm²', 36], ['Volume d\'un cube d\'arête 4 cm : @ cm³', 64], ['Côté d\'un carré d\'aire 81 cm² : @ cm', 9]]) },
+    ] },
 ];
 })();

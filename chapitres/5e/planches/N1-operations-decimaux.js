@@ -154,5 +154,15 @@ PLANCHES['5e|Opérations sur les nombres décimaux'] = [
       { etoiles: 2, consigne: 'Vrai ou faux ? Entoure.',
         ...P3.chx2([['Multiplier par 0,1, c\'est diviser par 10 :', 'vrai', 'vrai · faux'], ['3,5 × 0,1 = 35 :', 'faux', 'vrai · faux'], ['Multiplier par 0,5, c\'est prendre la moitié :', 'vrai', 'vrai · faux'], ['Un produit est toujours plus grand que ses facteurs :', 'faux', 'vrai · faux']]) },
     ] },
+  { titre: 'Automatismes', duree: '20 min',
+    attendus: ['Calculer mentalement avec des décimaux', 'Appliquer les priorités', 'Estimer un ordre de grandeur'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'Calcule mentalement.', ...P3.rmp([['3,7 + 2,5 = @', '6,2'], ['10 − 4,3 = @', '5,7'], ['0,8 + 0,25 = @', '1,05'], ['7,5 − 2,75 = @', '4,75']]) },
+      { etoiles: 1, col: 1, consigne: 'Calcule mentalement.', ...P3.rmp([['3,45 × 10 = @', '34,5'], ['0,07 × 100 = @', 7], ['52 × 0,1 = @', '5,2'], ['4,6 × 0,01 = @', '0,046']]) },
+      { etoiles: 1, col: 1, consigne: 'Calcule en respectant les priorités.', ...P3.rmp([['2 + 3 × 4 = @', 14], ['20 − 6 : 2 = @', 17], ['(5 + 3) × 2 = @', 16], ['18 : 3 × 2 = @', 12]]) },
+      { etoiles: 2, col: 1, consigne: 'Calcule astucieusement.', ...P3.rmp([['7 × 99 = @', 693], ['12 × 101 = @', '1 212'], ['25 × 13 × 4 = @', '1 300'], ['8 × 1,25 = @', 10]]) },
+      { etoiles: 2, col: 1, consigne: 'Entoure l\'ordre de grandeur.', ...P3.chx([['19,8 × 5,1 ≈', '100', '10 · 100 · 1 000'], ['49,7 + 20,4 ≈', '70', '7 · 70 · 700'], ['301 × 9,9 ≈', '3 000', '300 · 3 000 · 30 000']]) },
+      { etoiles: 2, col: 1, consigne: 'Complète la division euclidienne.', ...P3.rmp([['47 = 6 × @ + @', 7, 5], ['100 = 7 × @ + @', 14, 2], ['85 = 9 × @ + @', 9, 4]]) },
+    ] },
 ];
 })();

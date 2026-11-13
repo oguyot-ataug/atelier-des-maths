@@ -87,5 +87,15 @@ PLANCHES['5e|Équations'] = [
       { etoiles: 3, cahier: true, consigne: 'Trois nombres entiers consécutifs ont pour somme 72. Quels sont-ils ? (Appelle n le plus petit.)',
         corr: cm1Redac('Équation', { suite: ['n + (n + 1) + (n + 2) = 72', '3n + 3 = 72', '3n = 69', 'n = 69 : 3', 'n = 23'] }, 'Les nombres sont 23, 24 et 25.') },
     ] },
+  { titre: 'Automatismes', duree: '20 min',
+    attendus: ['Tester si un nombre est solution', 'Résoudre mentalement une équation simple', 'Traduire une phrase par une expression'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'Le nombre est-il solution ? Entoure.', ...P3.ch([['4 pour 2x + 1 = 9', 'oui'], ['5 pour 3x − 2 = 10', 'non'], ['−4 pour x + 7 = 3', 'oui'], ['0 pour 5x = 5', 'non']], 'oui · non') },
+      { etoiles: 1, col: 1, consigne: 'Résous mentalement.', ...P3.rmp([['x + 5 = 12 : x = @', 7], ['x − 3 = 8 : x = @', 11], ['4x = 28 : x = @', 7], ['6x = 3 : x = @', '0,5']]) },
+      { etoiles: 2, col: 1, consigne: 'Résous mentalement.', ...P3.rmp([['2x + 3 = 11 : x = @', 4], ['3x − 4 = 5 : x = @', 3], ['5x + 1 = 21 : x = @', 4], ['10x − 2 = 8 : x = @', 1]]) },
+      { etoiles: 2, col: 1, consigne: 'Écris une expression (x est le nombre).', ...P3.rmp([['le double de x, augmenté de 3 : @', '2x + 3'], ['le triple de x, diminué de 4 : @', '3x − 4'], ['la somme de x et de 7 : @', 'x + 7'], ['le carré de x : @', 'x²']]) },
+      { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.', ...P3.ch([['2 est solution de x² = 4.', 'vrai'], ['−2 est solution de x² = 4.', 'vrai'], ['L\'équation x + 1 = x n\'a pas de solution.', 'vrai']], 'vrai · faux') },
+      { etoiles: 2, col: 1, consigne: 'Trouve le nombre.', ...P3.rmp([['Un nombre augmenté de 9 donne 25 : @', 16], ['Le quintuple d\'un nombre vaut 45 : @', 9], ['Le double d\'un nombre, diminué de 1, vaut 13 : @', 7]]) },
+    ] },
 ];
 })();
