@@ -4061,6 +4061,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1449', date:'2026-11-13', items:[
+    "Cahier Seyès : le signe ≠ des calculs retrouve une barre fine -- demandé : « le signe différent est moche la barre est trop exagérée »."
+  ]},
   { version:'2026-08-19.1448', date:'2026-11-13', items:[
     "Cahier Seyès : les calculs s'écrivent à la main comme le texte (même écriture, même taille, même graisse) -- demandé : « la police change lors des calculs ! ça ne fait pas naturel ! ».",
     "Cahier Seyès : chaque racine carrée est posée à part -- pointe sur la ligne d'écriture, barre juste au-dessus des chiffres, sans les toucher (demandé : « Sur la première racine, elle […] colle les chiffres au dessus. Sur la deuxième, […] le symbole ne touche pas la ligne principale »)."

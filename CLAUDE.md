@@ -264,7 +264,8 @@ ligne principale. Signes ≈ ≠ ≤ ≥ (absents de Caveat) : `.cahier-op-fin`,
 `.cahier-fin`, tracé de KaTeX_Main ; relecture du 13/11/2026 : « le environ égal est trop grossier - on en a déjà parlé »). Racines : chaque signe recalé à part
 (`cahierRacines`, _commun.js : pointe sur la ligne d'écriture, barre à 0,15 em au-dessus de l'encre des chiffres, `--rac` sur `.hide-tail`).
 Formules ÉCRITES EN CAVEAT comme le texte (relecture du 13/11/2026 : « la police change lors des calculs ! ça ne fait pas naturel ! ») :
-`.katex-html` en Caveat (signe absent → KaTeX_Main), sans italique, taille 1 em et graisse de la ligne.
+`.katex-html` en Caveat (signe absent → KaTeX_Main), sans italique, taille 1 em et graisse de la ligne. Signe barré (≠ de KaTeX = « = » + barre
+superposée, absente de Caveat) : signe entier en KaTeX_Main (`.mrel:has(.rlap)`), sinon la barre est énorme.
 Lignes à fraction qui se suivent : la remontée d'un carreau (`--calm`) vaut aussi pour les paragraphes `p` et les `li` d'une correction.
 Calculs en colonne (`table.cm-redac-col`, cm1Redac avec `{ nom, lignes }`) : `cahierColCaler` (appelé EN DERNIER dans cahierCaler) pose chaque ligne sur une ligne principale (`--colh`),
 un carreau entre deux lignes de texte, deux dès qu'une des deux a une fraction ; les signes ne sont calés (cahierOps, cahierOpsCaler) que sur la barre de

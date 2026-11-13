@@ -2525,6 +2525,9 @@ body.plp-ouvert .cahier-flottant{ top:56px; bottom:auto; left:16px; z-index:2147
   /* Calculs écrits à la main comme le texte (relecture du 13/11/2026 : « la police change lors des calculs ! ça ne fait pas naturel ! ») :
      formules en Caveat ; un signe absent de Caveat (−, ≈…) retombe sur la police des formules ; lettres droites, pas d'italique. */
   body.cahier-on .cahier-actif .katex .katex-html, body.cahier-on .cahier-actif .katex .katex-html *{ font-family:'Caveat','KaTeX_Main','Times New Roman',serif !important; font-style:normal !important; font-weight:inherit; }
+  /* Signe barré (≠, ≰…) : un « = » plus une barre superposée ; la barre est un caractère que Caveat n'a pas (police de secours énorme) --
+     relecture du 13/11/2026 : « le signe différent est moche la barre est trop exagérée ». Le signe entier garde le tracé fin des formules. */
+  body.cahier-on .cahier-actif .katex .mrel:has(.rlap), body.cahier-on .cahier-actif .katex .mrel:has(.rlap) *{ font-family:'KaTeX_Main','Times New Roman',serif !important; font-weight:400 !important; }
   body.cahier-on .cahier-actif sup, body.cahier-on .cahier-actif sub{ line-height:0; } /* un exposant (XXIᵉ, 10⁸) ne fait pas déborder la ligne sur le carreau suivant */
   /* Rédactions types du collège (.redaction-template, .we-row) dans une correction : une ligne par ligne du cahier, sans cadre
      (08/11/2026, mode cahier étendu au collège) ; la dernière ligne (le résultat) en vert. */
