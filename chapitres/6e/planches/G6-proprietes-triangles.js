@@ -90,7 +90,7 @@ PLANCHES['6e|Propriétés des triangles'] = [
       { etoiles: 3, col: 1, cahier: true, consigne: 'Construis un triangle ABC rectangle en A tel que BC = 8 cm et ' + W('ABC') + ' = 40°. Trace son cercle circonscrit. Où est son centre ?',
         corr: cm1Redac('Construction du triangle ABC rectangle en A', { suite: ['Je trace [BC] de 8 cm et le cercle de diamètre [BC].', 'En B, je construis un angle de 40° : sa demi-droite coupe le cercle en A.'] }, 'Le centre du cercle circonscrit est le milieu de l\'hypoténuse [BC] ; le rayon est 4 cm.') },
       { etoiles: 3, cahier: true, consigne: 'Un triangle isocèle a un angle de 40°. Combien mesurent ses autres angles ? (Attention : il y a deux possibilités.)',
-        corr: cm1Redac('Premier cas : 40° est l\'angle principal', '(180° − 40°) : 2 = 70°', 'Les angles mesurent 40°, 70° et 70°.') + cm1Redac('Second cas : 40° est un angle à la base', '180° − 40° − 40° = 100°', 'Les angles mesurent 40°, 40° et 100°. Il y a deux triangles possibles.') },
+        corr: cm1Redac('Premier cas : 40° est l\'angle principal', `${cm1Frac('180° − 40°', 2)} = ${cm1Frac('140°', 2)} = 70°`, 'Les angles mesurent 40°, 70° et 70°.') + cm1Redac('Second cas : 40° est un angle à la base', '180° − 40° − 40° = 100°', 'Les angles mesurent 40°, 40° et 100°. Il y a deux triangles possibles.') },
     ] },
 ];
 })();

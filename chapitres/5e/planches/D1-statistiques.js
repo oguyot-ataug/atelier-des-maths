@@ -61,7 +61,7 @@ PLANCHES['5e|Statistiques'] = [
       { etoiles: 2, col: 1, consigne: 'Dans un diagramme circulaire, un disque entier = 360°. Calcule la mesure de l\'angle de chaque secteur.',
         ...rmp([['50 % → @ °', 180], ['25 % → @ °', 90], ['10 % → @ °', 36], ['1 élève sur 30 → @ °', 12]], 2) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Sur 40 élèves, 18 ont un chat, 12 un chien et 10 aucun animal. Calcule la mesure de l\'angle de chaque secteur d\'un diagramme circulaire, puis trace-le.',
-        corr: cm1Redac('Secteur « chat »', '18 × 360° : 40 = 162°', '') + cm1Redac('Secteur « chien »', '12 × 360° : 40 = 108°', '') + cm1Redac('Secteur « aucun animal »', '10 × 360° : 40 = 90°', '') + cm1Redac('Vérification', '162° + 108° + 90° = 360°', 'Les trois secteurs remplissent bien tout le disque.') },
+        corr: cm1Redac('Secteur « chat »', `${F('18 \\times 360°', 40)} = ${F('6\\,480°', 40)} = 162°`, '') + cm1Redac('Secteur « chien »', `${F('12 \\times 360°', 40)} = ${F('4\\,320°', 40)} = 108°`, '') + cm1Redac('Secteur « aucun animal »', `${F('10 \\times 360°', 40)} = ${F('3\\,600°', 40)} = 90°`, '') + cm1Redac('Vérification', '162° + 108° + 90° = 360°', 'Les trois secteurs remplissent bien tout le disque.') },
     ] },
   { titre: 'La moyenne', duree: '40 min',
     attendus: ['Calculer la moyenne d\'une série de valeurs', 'Calculer une moyenne à partir d\'un tableau d\'effectifs', 'Interpréter une moyenne'],

@@ -3999,6 +3999,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1436', date:'2026-11-13', items:[
+    "Corrigés du collège : les divisions d'angles s'écrivent en fraction -- demandé : « Oui, passe les six corrigés en fractions ». Par exemple, (180° − 100°)/2 = 80°/2 = 40° au lieu de « (180° − 100°) : 2 » (6e Propriétés des triangles, 5e Angles et parallélisme) ; de même 18 × 360°/40 = 6 480°/40 = 162° pour les secteurs d'un diagramme circulaire (5e Statistiques)."
+  ]},
   { version:'2026-08-19.1435', date:'2026-11-13', items:[
     "5e Fractions, planche 4, exercices 3 à 5 à l'écran : les étapes gardent leur forme -- demandé : « L'idée est de faire des étapes avec réduction au même dénominateur ! ». Ligne de réduction avec une fraction à compléter par terme (A = …/… + …/…), puis la somme, puis la fraction simplifiée ; chaque fraction est vérifiée."
   ]},

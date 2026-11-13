@@ -233,11 +233,11 @@ PLANCHES['5e|Angles et parallélisme'] = [
           return { eleve: `<div style="text-align:center;">${f(280)}</div>`,
             corr: `<div style="float:right;margin:0 0 4px 12px;">${f(220)}</div>` + cm1Redac('Mesures des trois angles en B', { suite: [
               `Le triangle ABD est isocèle en D (DA = DB) : ses angles à la base ont la même mesure, et la somme de ses angles vaut 180°.`,
-              `${W('ABD')} = (180° − 100°) : 2 = 80° : 2 = ${R('40°')}`,
+              `${W('ABD')} = ${cm1Frac('180° − 100°', 2)} = ${cm1Frac('80°', 2)} = ${R('40°')}`,
               `Le triangle DBE est équilatéral : ses trois angles mesurent 60°.`,
               `${W('DBE')} = ${R('60°')}`,
               `Le triangle BEC est isocèle en E (EB = EC), et son angle en E mesure 20°.`,
-              `${W('EBC')} = (180° − 20°) : 2 = 160° : 2 = ${R('80°')}`] }, '')
+              `${W('EBC')} = ${cm1Frac('180° − 20°', 2)} = ${cm1Frac('160°', 2)} = ${R('80°')}`] }, '')
               + cm1Redac('Les points sont-ils alignés ?', { suite: [`Les angles ${W('ABD')}, ${W('DBE')} et ${W('EBC')} sont adjacents deux à deux.`, `${W('ABD')} + ${W('DBE')} + ${W('EBC')} = 40° + 60° + 80° = 180°`, `L'angle ${W('ABC')} mesure donc 180° : c'est un angle plat.`] }, 'Les points A, B et C sont alignés.') }; })() },
       { etoiles: 3, cahier: true, consigne: `ABC est un triangle isocèle en A tel que ${W('BAC')} = 50°. M est un point de [AB] et N un point de [AC] tels que AM = AN.<br>Démontre que les droites (MN) et (BC) sont parallèles.`,
         ...(() => { const A = [140, 22], Bp = [70, 172], C = [210, 172], M = [A[0] + .45 * (Bp[0] - A[0]), A[1] + .45 * (Bp[1] - A[1])], N = [A[0] + .45 * (C[0] - A[0]), A[1] + .45 * (C[1] - A[1])];
@@ -246,9 +246,9 @@ PLANCHES['5e|Angles et parallélisme'] = [
           return { eleve: `<div style="text-align:center;">${f(280)}</div>`,
             corr: `<div style="float:right;margin:0 0 4px 12px;">${f(190)}</div>` + cm1Redac('Démonstration', { suite: [
               `Le triangle ABC est isocèle en A : ses angles à la base ont la même mesure, et la somme de ses angles vaut 180°.`,
-              `${W('ABC')} = (180° − 50°) : 2 = 130° : 2 = 65°`,
+              `${W('ABC')} = ${cm1Frac('180° − 50°', 2)} = ${cm1Frac('130°', 2)} = 65°`,
               `Le triangle AMN est isocèle en A (AM = AN), et son angle en A est l'angle ${W('BAC')}, de 50°.`,
-              `${W('AMN')} = (180° − 50°) : 2 = 130° : 2 = 65°`,
+              `${W('AMN')} = ${cm1Frac('180° − 50°', 2)} = ${cm1Frac('130°', 2)} = 65°`,
               `Les angles ${W('AMN')} et ${W('ABC')} sont correspondants (droites (MN) et (BC), sécante (AB)) et ont la même mesure, 65°.`,
               `Or, si deux angles correspondants ont la même mesure, alors les droites sont parallèles.`] }, 'Les droites (MN) et (BC) sont parallèles.') }; })() },
       { etoiles: 2, col: 1, consigne: 'Les droites (d1) et (d2) sont parallèles. Calcule la mesure des angles x, y et z du triangle ABC.',
@@ -288,7 +288,7 @@ PLANCHES['5e|Angles et parallélisme'] = [
           const base = Q.map((q, i) => L(q, Q[(i + 1) % 5])).join('') + L(Q[0], Q[2], Bl) + L(Q[0], Q[3], Bl) + Q.map((q, i) => T(P(V, [90, 18, -54, -126, 162][i], 85), nm[i], K)).join('');
           const f = S(200, 180, base, 190), fc = S(200, 180, base + arc(Q[0], 216, 252, 40, Ro, '36°') + arc(Q[0], 252, 288, 46, Ve, '36°') + arc(Q[0], 288, 324, 40, Ro, '36°'), 190);
           return { eleve: `<div style="text-align:center;">${f}</div>`, corr: `<div style="text-align:center;">${fc}</div>` + cm1Redac('Angle du pentagone régulier', { suite: ['(5 − 2) × 180° = 540°', '540° : 5 = 108°'] }, 'Chaque angle du pentagone régulier mesure 108°.')
-            + cm1Redac('Angle ' + W('BAC'), '(180° − 108°) : 2 = 36°', 'Le triangle ABC est isocèle en B (BA = BC) et ' + W('ABC') + ' = 108°.')
+            + cm1Redac('Angle ' + W('BAC'), `${cm1Frac('180° − 108°', 2)} = ${cm1Frac('72°', 2)} = 36°`, 'Le triangle ABC est isocèle en B (BA = BC) et ' + W('ABC') + ' = 108°.')
             + cm1Redac('Angle ' + W('DAE'), '', 'De même, le triangle AED est isocèle en E : ' + W('DAE') + ' = 36°.')
             + cm1Redac('Angle ' + W('CAD'), '108° − 36° − 36° = 36°', 'Les deux diagonales partagent l\'angle en A en trois angles égaux de 36°.') }; })() },
     ] },
