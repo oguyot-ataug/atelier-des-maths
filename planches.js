@@ -1011,6 +1011,8 @@ function plProjRendre(){
     plProj.pn = plNum(document.getElementById('plpRep'), x, { etat: plProj.etat, res: plProj.res, onChange: e => { plProj.etat = e; const b = document.getElementById('plpBilan'); if(b && plProj.res){ plProj.res = null; b.innerHTML = ''; } } });
     if(plProj.res) plProjVerifier();
   } else if(typeof renderStaticMath === 'function') renderStaticMath(v);
+  // Consigne d'un exercice fait à l'écran : ses formules aussi (relecture 5e-G2-P7-E3 du 13/11/2026 : « \widehat{x} » restait écrit tel quel).
+  if(num && typeof renderStaticMath === 'function'){ const cg = v.querySelector('.plp-consigne'); if(cg) renderStaticMath(cg); }
   // Mode cahier : les opérations posées sur la feuille sont dessinées tout de suite, pour que l'agrandissement tienne compte de leur
   // largeur (sinon la boîte était mesurée sans elles et la ligne d'opérations débordait).
   if(typeof cahierOn !== 'undefined' && cahierOn && typeof cahierAppliquer === 'function') try{ cahierAppliquer(v); }catch(e){}

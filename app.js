@@ -3999,6 +3999,11 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1437', date:'2026-11-13', items:[
+    "Cahier Seyès, calculs en colonne (S = …, V = …, P = …) : chaque ligne posée sur une ligne principale, un carreau entre deux lignes de texte, deux dès qu'une ligne a une fraction ; les signes = + × sont calés sur la barre de leur propre ligne (relecture : « Il manque des + et certains sont mal placés », « des x superposés et d'autres manquants ») ; le cadre d'un résultat en fraction entoure aussi le dénominateur.",
+    "5e Fractions, planche 4 : les étapes de l'exercice 5 ne se chevauchent plus ; exercice 6, barres de fraction alignées entre les deux colonnes, sur papier et à l'écran.",
+    "5e Angles et parallélisme, planche 7, exercice 3 : x, y et z écrits avec un chapeau (consigne, figure, réponses, corrigé). Projection : les formules de la consigne d'un exercice fait à l'écran sont rendues (plus de « \\widehat{…} » écrit tel quel)."
+  ]},
   { version:'2026-08-19.1436', date:'2026-11-13', items:[
     "Corrigés du collège : les divisions d'angles s'écrivent en fraction -- demandé : « Oui, passe les six corrigés en fractions ». Par exemple, (180° − 100°)/2 = 80°/2 = 40° au lieu de « (180° − 100°) : 2 » (6e Propriétés des triangles, 5e Angles et parallélisme) ; de même 18 × 360°/40 = 6 480°/40 = 162° pour les secteurs d'un diagramme circulaire (5e Statistiques)."
   ]},

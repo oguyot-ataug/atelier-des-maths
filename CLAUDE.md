@@ -249,6 +249,9 @@ papier seyes ») : chaque `.redaction-template` hors correction et non interacti
 Phrase à fraction écrite sur plusieurs lignes : classe `cahier-fr2` (cahierCaler), une ligne tous les deux carreaux, chacune sur une
 ligne principale. Signes ≈ ≠ ≤ ≥ (absents de Caveat) : `.cahier-op-fin`, ni gras ni agrandis.
 Lignes à fraction qui se suivent : la remontée d'un carreau (`--calm`) vaut aussi pour les paragraphes `p` et les `li` d'une correction.
+Calculs en colonne (`table.cm-redac-col`, cm1Redac avec `{ nom, lignes }`) : `cahierColCaler` pose chaque ligne sur une ligne principale (`--colh`),
+un carreau entre deux lignes de texte, deux dès qu'une des deux a une fraction ; les signes ne sont calés (cahierOps, cahierOpsCaler) que sur la barre de
+fraction de LEUR ligne (`tr`) (relecture du 13/11/2026 : « des x superposés et d'autres manquants »).
 Blocs sans classe d'une page de cahier en `display:flow-root` : la marge d'une figure (margin:6px auto) ne sort plus du bloc et ne décale
 plus la rédaction qui suit (relecture du 08/11/2026 : « la rédaction n'est pas sur les lignes principales »).
 Droites graduées (demandé le 08/11/2026 : « l'axe doit être sur la ligne principale et on se sert des lignes verticales comme support de nos

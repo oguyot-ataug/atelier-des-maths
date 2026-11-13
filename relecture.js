@@ -36,6 +36,7 @@
 
 // Changements faits à la suite d'une remarque : clé → { date (ISO, heure UTC du changement), note }.
 const RELECTURE_CHGT = {
+  '5e-G2-P7-E3': { date: '2026-11-13T09:36:07Z', note: "Angles x, y, z écrits avec un chapeau (consigne, figure, réponses, corrigé) ; formules de la consigne rendues en projection" },
   // UNE SEULE entrée par clé : pour un exercice déjà corrigé, remplacer (ou retirer) l'ancienne entrée. Avec deux entrées, JavaScript
   // garde la DERNIÈRE du fichier -- la plus ancienne, puisque les nouvelles vont en tête -- et l'exercice restait « Commenté »
   // (signalé le 05/11/2026 : « Tu sembles avoir traité des exercices en CE2 mais ils ne sont pas marqués comme tels »).
@@ -54,11 +55,11 @@ const RELECTURE_CHGT = {
   '5e-N4-P4-E2': { date: '2026-11-12T23:21:11Z', note: "En correction, les lignes gardent la hauteur de l'énoncé (Manuel) ; quatre calculs sur deux colonnes" },
   '5e-N4-P4-E3': { date: '2026-11-12T23:21:11Z', note: "En colonne avec une lettre : A = 1/3 + 5/6, puis des pointillés pour chaque étape (réduction, somme, simplification)" },
   '5e-N4-P4-E4': { date: '2026-11-12T23:21:11Z', note: "En colonne avec une lettre : A = 5/6 − 1/3, puis des pointillés pour chaque étape" },
-  '5e-N4-P4-E5': { date: '2026-11-12T23:21:11Z', note: "En colonne avec une lettre : A = 2 + 1/3 ; A = 6/3 + 1/3 ; A = 7/3" },
-  '5e-N4-P4-E6': { date: '2026-11-12T23:21:11Z', note: "En correction, les lignes gardent la hauteur de l'énoncé ; dénominateur imposé écrit dans la fraction" },
-  '5e-N4-P4-E7': { date: '2026-11-12T23:21:11Z', note: "Correction qui part du calcul demandé, en colonne : S = 1/2 + 1/4 + 1/8 ; S = 4/8 + 2/8 + 1/8 ; S = 7/8, puis M = 1 − 7/8" },
-  '5e-N4-P5-E5': { date: '2026-11-12T23:21:11Z', note: "« Volume d'eau au départ », « Volume utilisé », « Volume restant » (plus de « Litres restants », ni de « de » dans un calcul) ; aussi corrigé en 4e Fractions et en 6e Proportionnalité (« distance parcourue »)" },
-  '5e-N4-P5-E7': { date: '2026-11-12T23:21:11Z', note: "Correction qui part du calcul : P = 1/4 + 1/3 + 1/6 ; P = 3/12 + 4/12 + 2/12 ; P = 9/12, puis N = 12 − 9" },
+  '5e-N4-P4-E5': { date: '2026-11-13T09:36:07Z', note: "Une étape par bloc : les lignes à fractions ne se chevauchent plus" },
+  '5e-N4-P4-E6': { date: '2026-11-13T09:36:07Z', note: "Grille remplie ligne par ligne, fraction à compléter symétrique : barres de fraction alignées entre les deux colonnes, sur papier et à l'écran" },
+  '5e-N4-P4-E7': { date: '2026-11-13T09:36:07Z', note: "Cahier Seyès : chaque ligne du calcul en colonne sur une ligne principale, signes + à leur place (calés sur la barre de leur propre ligne)" },
+  '5e-N4-P5-E5': { date: '2026-11-13T09:36:07Z', note: "Cahier Seyès : lignes du calcul en colonne sur les lignes principales ; le × de « 3 × 15 » reste à sa place (plus de × superposés)" },
+  '5e-N4-P5-E7': { date: '2026-11-13T09:36:07Z', note: "Cahier Seyès : lignes sur les lignes principales, signes = et + calés sur la barre de fraction de leur ligne, cadre du résultat autour de la fraction" },
   '5e-G2-P6-E2': { date: '2026-11-12T23:21:11Z', note: "À l'écran aussi, un tableau de cases à cocher (un clic coche, un autre décoche)" },
   '5e-N1a-P4-E3': { date: '2026-11-12T23:21:11Z', note: "À l'écran, tous les signes opératoires tapés après un nombre sont entourés d'espaces, comme « × »" },
   '5e-N1a-P4-E2': { date: '2026-11-12T23:21:11Z', note: "Factoriser : 25 × 3 + 25 × 1 = 25 × (3 + 1)" },

@@ -2511,9 +2511,12 @@ body.plp-ouvert .cahier-flottant{ top:56px; bottom:auto; left:16px; z-index:2147
   body.cahier-on .cahier-actif .cm-redac-titre{ font-weight:700; }
   body.cahier-on .cahier-actif .cm-redac-sou{ text-decoration:none; padding-bottom:12px; background-image:linear-gradient(#15803D, #15803D); background-repeat:no-repeat; background-size:100% 2px; background-position:0 var(--soul, 30px); }
   body.cahier-on .cahier-actif .cm-redac-ligne, body.cahier-on .cahier-actif .cm-redac-col, body.cahier-on .cahier-actif .cm-redac-fig{ margin-left:32px !important; }
-  body.cahier-on .cahier-actif .cm-redac-col td{ padding:0 6px 0 0; line-height:32px; height:32px; }
+  body.cahier-on .cahier-actif .cm-redac-col{ border-collapse:separate; border-spacing:0; }
+  body.cahier-on .cahier-actif .cm-redac-col td:nth-child(2) .cahier-op{ margin:0 3px 0 5px; } /* « S = » : le signe ne colle ni à la lettre ni à la fraction */ /* padding du bloc (--calh, --cal) pris en compte */
+  body.cahier-on .cahier-actif .cm-redac-col td{ padding:var(--colh, 0px) 6px 0 0; line-height:32px; height:32px; vertical-align:baseline; } /* chaque ligne posée sur une ligne principale (cahierColCaler) */
   body.cahier-on .cahier-actif .cm-redac-pose{ display:block; margin-left:0 !important; }
   body.cahier-on .cahier-actif .cm-encadre{ border-color:#15803D; color:#15803D; padding:0 6px; line-height:24px; }
+  body.cahier-on .cahier-actif .cm-encadre:has(.mfrac){ line-height:normal; padding:1px 6px 5px; } /* résultat en fraction : le cadre entoure aussi le dénominateur (relecture 5e-N4-P5-E7 du 13/11/2026) */
   body.cahier-on .cahier-actif .cm-redac-phrase{ font-weight:600; }
   body.cahier-on .cahier-actif ul, body.cahier-on .cahier-actif ol{ margin:0; padding-left:24px; }
   body.cahier-on .cahier-actif li, body.cahier-on .cahier-actif p{ line-height:32px; margin:0; }

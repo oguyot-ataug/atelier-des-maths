@@ -18,7 +18,9 @@ const T = (p, t, c, fs) => cmT(p[0], p[1], t, { fs: fs || 12, c: c || K });
 const rad = a => a * Math.PI / 180, P = (V, a, r) => [V[0] + r * Math.cos(rad(a)), V[1] - r * Math.sin(rad(a))];
 // Arc d'angle au sommet V, entre les directions a1 et a2 (degrés, sens direct), étiquette au milieu.
 function arc(V, a1, a2, r, c, txt){ let b = a2; while(b <= a1) b += 360; const p = P(V, a1, r), q = P(V, b, r), large = b - a1 > 180 ? 1 : 0;
-  return `<path d="M${p[0].toFixed(1)},${p[1].toFixed(1)} A${r},${r} 0 ${large} 0 ${q[0].toFixed(1)},${q[1].toFixed(1)}" fill="none" stroke="${c || Ro}" stroke-width="2"/>` + (txt != null ? T(P(V, (a1 + b) / 2, r + 12), txt, c || Ro, 11) : ''); }
+  return `<path d="M${p[0].toFixed(1)},${p[1].toFixed(1)} A${r},${r} 0 ${large} 0 ${q[0].toFixed(1)},${q[1].toFixed(1)}" fill="none" stroke="${c || Ro}" stroke-width="2"/>` + (txt != null ? (() => { const h = /\u0302$/.test(txt), L = P(V, (a1 + b) / 2, r + (h ? 17 : 12)), t = h ? txt.slice(0, -1) : txt;
+    // Lettre d'angle avec un chapeau (x̂) : chapeau dessiné au-dessus de la lettre (l'accent combinant se plaçait mal dans les figures).
+    return T(L, t, c || Ro, 11) + (h ? `<path d="M${(L[0] - 3).toFixed(1)},${(L[1] - 8.5).toFixed(1)} L${L[0].toFixed(1)},${(L[1] - 11.5).toFixed(1)} L${(L[0] + 3).toFixed(1)},${(L[1] - 8.5).toFixed(1)}" fill="none" stroke="${c || Ro}" stroke-width="1.1"/>` : ''); })() : ''); }
 const ch = (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) + '</div>' });
 const chx = it => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t, , m]) => `${t} <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) + '</div>' });
 const rmp = (l, n) => ({ eleve: plListe(l.map(([t]) => t.replace('@', B(n || 3)))), corr: plListe(l.map(([t, r]) => t.replace('@', R(r)))) });
@@ -251,15 +253,15 @@ PLANCHES['5e|Angles et parallélisme'] = [
               `${W('AMN')} = ${cm1Frac('180° − 50°', 2)} = ${cm1Frac('130°', 2)} = 65°`,
               `Les angles ${W('AMN')} et ${W('ABC')} sont correspondants (droites (MN) et (BC), sécante (AB)) et ont la même mesure, 65°.`,
               `Or, si deux angles correspondants ont la même mesure, alors les droites sont parallèles.`] }, 'Les droites (MN) et (BC) sont parallèles.') }; })() },
-      { etoiles: 2, col: 1, consigne: 'Les droites (d1) et (d2) sont parallèles. Calcule la mesure des angles x, y et z du triangle ABC.',
+      { etoiles: 2, col: 1, consigne: `Les droites (d1) et (d2) sont parallèles. Calcule la mesure des angles ${W('x')}, ${W('y')} et ${W('z')} du triangle ABC.`,
         ...(() => { const A = [122, 34], Bp = [A[0] - 110 / Math.tan(rad(50)), 144], C = [A[0] + 110 / Math.tan(rad(70)), 144];
           const f = S(250, 166, L([10, 34], [240, 34]) + L([10, 144], [240, 144]) + L(A, Bp) + L(A, C) + arc(A, 180, 230, 22, Ro, '50°') + arc(A, 290, 360, 22, Bl, '70°')
-            + arc(Bp, 0, 50, 20, Ve, 'x') + arc(C, 110, 180, 20, Ve, 'y') + arc(A, 230, 290, 16, Vi, 'z')
+            + arc(Bp, 0, 50, 20, Ve, 'x\u0302') + arc(C, 110, 180, 20, Ve, 'y\u0302') + arc(A, 230, 290, 16, Vi, 'z\u0302')
             + T([A[0], A[1] - 7], 'A', K) + T([Bp[0] - 4, Bp[1] + 14], 'B', K) + T([C[0] + 4, C[1] + 14], 'C', K) + T([226, 26], '(d1)', K, 11) + T([226, 136], '(d2)', K, 11), 240), fc = f.replace('width:240px', 'width:190px');
-          const q = rmp([['x = @ °', 50], ['y = @ °', 70], ['z = @ °', 60]], 2);
+          const q = rmp([[`${W('x')} = @ °`, 50], [`${W('y')} = @ °`, 70], [`${W('z')} = @ °`, 60]], 2);
           // Une phrase (la propriété), puis le calcul seul sur sa ligne (relecture du 13/11/2026 : pas de mots dans une ligne de calcul).
-          return { eleve: f + q.eleve, corr: fc + plListe([PH(`Les droites (d1) et (d2) sont parallèles ; x et l'angle de 50° sont alternes-internes, donc ils ont la même mesure.`, `x = ${R('50°')}`),
-            PH(`De même, y et l'angle de 70° sont alternes-internes.`, `y = ${R('70°')}`), PH('Dans le triangle ABC, la somme des angles vaut 180°.', `z = 180° − 50° − 70° = ${R('60°')}`)]) }; })() },
+          return { eleve: f + q.eleve, corr: fc + plListe([PH(`Les droites (d1) et (d2) sont parallèles ; ${W('x')} et l'angle de 50° sont alternes-internes, donc ils ont la même mesure.`, `${W('x')} = ${R('50°')}`),
+            PH(`De même, ${W('y')} et l'angle de 70° sont alternes-internes.`, `${W('y')} = ${R('70°')}`), PH('Dans le triangle ABC, la somme des angles vaut 180°.', `${W('z')} = 180° − 50° − 70° = ${R('60°')}`)]) }; })() },
       { etoiles: 2, col: 1, consigne: `ABC est un triangle rectangle en A tel que ${W('ABC')} = 35°. H est le pied de la hauteur issue de A. Calcule la mesure des angles ${W('ACB')}, ${W('BAH')} et ${W('HAC')}.`,
         ...(() => { const Bp = [20, 150], C = [235, 150], A = P(Bp, 35, 215 * Math.cos(rad(35))), H = [A[0], 150];
           const f = S(250, 170, L(Bp, C) + L(Bp, A) + L(A, C) + L(A, H, Bl)  + rangle(A, Bp, C) + rangle(H, A, C)

@@ -36,7 +36,8 @@ const ops2 = (l, op) => ({ eleve: plGrille(l.map(([a, b, c, d]) => ligne(F(a, b)
 const rmp = (l, n) => ({ eleve: plListe(l.map(([t]) => t.replace('@', B(n || 3)))), corr: plListe(l.map(([t, r]) => t.replace('@', R(r)))) });
 // Fraction dont le dénominateur est donné : seul le numérateur est à écrire (relecture 5e-N4-P2-E1 du 12/11/2026 : « Quel intérêt
 // de demander sur 12 ? Autant l'écrire directement au dénominateur ! »).
-const fd = (haut, den) => `<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1.2;margin:0 3px;"><span>${haut}</span><span style="align-self:stretch;border-top:1.6px solid currentColor;margin:3px 0 2px;min-width:1.6em;"></span><span>${den}</span></span>`;
+// Numérateur et dénominateur de même hauteur : la barre au milieu, alignée sur celles des fractions voisines (relecture 5e-N4-P4-E6).
+const fd = (haut, den) => `<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1.2;margin:0 3px;"><span style="display:flex;align-items:flex-end;justify-content:center;min-height:1.7em;">${haut}</span><span style="align-self:stretch;border-top:1.6px solid currentColor;margin:2px 0;min-width:1.6em;"></span><span style="display:flex;align-items:flex-start;justify-content:center;min-height:1.7em;">${den}</span></span>`;
 const pgcd = (a, b) => b ? pgcd(b, a % b) : a, ppcm = (a, b) => a / pgcd(a, b) * b;
 // Pourquoi : une égalité ou une comparaison par ligne, sous la réponse (relecture 5e-N4-P3-E2, E5 : « La correction doit expliquer pourquoi »).
 // Chaque égalité dans son propre bloc, sous la réponse (sur téléphone, un interligne fixe faisait chevaucher les fractions).
@@ -50,7 +51,9 @@ const cmpX = (l, cols) => { const L = l.map(([a, b, c, d]) => { const m = d === 
   return cols ? { eleve: plGrille(L.map(x => x.e), cols), corr: P3.enHaut(plGrille(L.map(x => x.c), cols)) } : { eleve: plListe(L.map(x => x.e)), corr: plListe(L.map(x => x.c)) }; };
 // Calcul de fractions en colonne, une lettre par calcul : [lettre, expression, étape…, résultat] (relecture 5e-N4-P4-E3, E4, E5 :
 // « Écrire des pointillés pour les étapes de réduction au même dénominateur. Donc A = … et à développer en colonne »).
-const EF = (n, e, et, rep) => `<div style="line-height:2.2;white-space:nowrap;">${n} = ${e}${et.map(x => `<br>${n} = ${rep(x)}`).join('')}</div>`;
+// Une étape par bloc (relecture 5e-N4-P4-E5 du 13/11/2026 : « les fractions se superposent légèrement ») : une ligne à fractions
+// prend la hauteur qu'il lui faut au lieu d'un interligne fixe.
+const EF = (n, e, et, rep) => `<div style="white-space:nowrap;">${[`${n} = ${e}`, ...et.map(x => `${n} = ${rep(x)}`)].map(t => `<div style="display:flex;align-items:center;gap:4px;min-height:2.2em;margin:1px 0;">${t}</div>`).join('')}</div>`;
 // À l'écran (relecture 5e-N4-P4 du 13/11/2026 : « La version écran ne peut pas convenir. L'idée est de faire des étapes avec
 // réduction au même dénominateur ! ») : chaque étape garde sa forme, une fraction à compléter par terme (A = ▢/▢ + ▢/▢),
 // puis la somme, puis la fraction simplifiée.
@@ -61,6 +64,8 @@ const EFe = (n, e, et, corr) => `<div style="white-space:nowrap;">${[`${n} = ${e
 const etf = (l, cols) => ({ eleve: P3.enHaut(plGrille(l.map(([n, e, ...et]) => EF(n, e, et, x => B(Math.max(4, Math.ceil(P3.lgVis(x) * .9))))), cols || 2)),
   corr: P3.enHaut(plGrille(l.map(([n, e, ...et]) => EF(n, e, et, R)), cols || 2)),
   ecran: { eleve: P3.enHaut(plGrille(l.map(([n, e, ...et]) => EFe(n, e, et, false)), cols || 2)), corr: P3.enHaut(plGrille(l.map(([n, e, ...et]) => EFe(n, e, et, true)), cols || 2)) } });
+// Ligne d'une grille à fractions : hauteur fixe, contenu centré (la barre de fraction au milieu de la ligne).
+const fx = h => `<div style="display:flex;align-items:center;min-height:3.4em;">${h}</div>`;
 const sm = (op, ...f) => { const t = f.map(([a, b]) => Fx(a, b)).join(` ${op} `); SMX.set(t, { op, f }); return t; };
 PLANCHES['5e|Fractions'] = [
   { titre: 'Une fraction est un quotient', duree: '35 min',
@@ -145,8 +150,10 @@ PLANCHES['5e|Fractions'] = [
       // Pleine largeur (les exercices 3 à 5 passent sur toute la largeur, relecture du 12/11/2026) : quatre exemples sur deux colonnes ;
       // le dénominateur imposé est écrit dans la fraction (comme en planche 2, « Autant l'écrire directement au dénominateur ! »).
       { etoiles: 2, consigne: 'Complète.',
-        eleve: plListe([ligne(F(2, 7), '+', Fr, '= 1'), ligne(F(1, 4), '+', fd(C, 4), '=', F(3, 4)), ligne(fd(C, 6), '−', F(1, 6), '=', F(1, 2)), ligne(F(3, 5), '+', Fr, '= 1')]),
-        corr: plListe([ligne(F(2, 7), '+', R(F(5, 7)), '= 1'), ligne(F(1, 4), '+', fd(R(2), 4), '=', F(3, 4)), ligne(fd(R(4), 6), '−', F(1, 6), '=', F(1, 2)), ligne(F(3, 5), '+', R(F(2, 5)), '= 1')]) },
+        // Grille remplie ligne par ligne (relecture 5e-N4-P4-E6 du 13/11/2026 : « mauvais alignements des traits de fraction entre deux
+        // colonnes ») : les deux exemples d'une même ligne ont la même hauteur, barres de fraction à la même hauteur.
+        eleve: plGrille([ligne(F(2, 7), '+', Fr, '= 1'), ligne(fd(C, 6), '−', F(1, 6), '=', F(1, 2)), ligne(F(1, 4), '+', fd(C, 4), '=', F(3, 4)), ligne(F(3, 5), '+', Fr, '= 1')].map(fx), 2),
+        corr: plGrille([ligne(F(2, 7), '+', R(F(5, 7)), '= 1'), ligne(fd(R(4), 6), '−', F(1, 6), '=', F(1, 2)), ligne(F(1, 4), '+', fd(R(2), 4), '=', F(3, 4)), ligne(F(3, 5), '+', R(F(2, 5)), '= 1')].map(fx), 2) },
       { etoiles: 3, cahier: true, consigne: `Calcule ${T(1, 2)} + ${T(1, 4)} + ${T(1, 8)}, puis simplifie si possible. Que manque-t-il pour obtenir 1 ?`,
         // Relecture 5e-N4-P4-E7 du 12/11/2026 : « S = 1/2 + 1/4 + 1/8 et développer en colonne. La correction doit toujours partir du calcul demandé ».
         corr: cm1Redac('Somme des trois fractions', [{ nom: 'S', lignes: [`${F(1, 2)} + ${F(1, 4)} + ${F(1, 8)}`, `${F(4, 8)} + ${F(2, 8)} + ${F(1, 8)}`, F(7, 8)] }], `La somme vaut ${F(7, 8)} ; ${F(7, 8)} est irréductible.`)

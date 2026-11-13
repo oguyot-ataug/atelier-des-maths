@@ -405,6 +405,8 @@ function cahierOps(bloc){
   const L = []; for(let n = w.nextNode(); n; n = w.nextNode()) L.push(n);
   L.forEach(n => {
     const S = `[=+\\u2212\\-×÷<>≈≠≤≥${deux}]`, t = n.nodeValue; if(!new RegExp(S).test(t)) return;
+    // Signe seul dans son nœud (le « = » d'un calcul en colonne a sa propre case : « V | = | … »).
+    if(CAHIER_OP.test(t) && new RegExp(`^\\s*${S}\\s*$`).test(t)){ const sp = document.createElement('span'); sp.className = 'cahier-op' + (/[≈≠≤≥]/.test(t) ? ' cahier-op-fin' : ''); sp.textContent = t; n.parentNode.replaceChild(sp, n); return; }
     const parts = t.split(new RegExp(`(\\s${S}\\s|^${S}\\s|\\s${S}$)`));
     if(parts.length < 2) return;
     const f = document.createDocumentFragment();
@@ -426,7 +428,8 @@ function cahierCaler(page){
   const k = page.offsetHeight ? page.getBoundingClientRect().height / page.offsetHeight : 1;
   // Ligne avec une fraction : la ligne d'écriture (donc la barre de fraction) est descendue jusqu'à une ligne principale.
   const fr = blocs.map(b => !!b.querySelector('.mfrac'));
-  blocs.forEach((b, i) => { if(fr[i]) cahierOps(b); });
+  // Calcul en colonne : seulement les lignes qui ont une fraction (« 3 × 15 » garde son signe sur la ligne d'écriture).
+  blocs.forEach((b, i) => { if(fr[i]) (b.matches('table.cm-redac-col') ? [...b.rows].filter(r => r.querySelector('.mfrac')) : [b]).forEach(cahierOps); });
   // Phrase à fraction écrite sur plusieurs lignes (relecture du 08/11/2026 : « "écriture fractionnaire" n'est pas écrit sur la ligne
   // principale ») : une ligne sur deux carreaux, le numérateur et le dénominateur gardent le leur, chaque ligne reste sur une ligne principale.
   blocs.forEach((b, i) => { b.classList.remove('cahier-fr2'); if(!fr[i]) return;
@@ -434,8 +437,9 @@ function cahierCaler(page){
     for(let n = w.nextNode(); n; n = w.nextNode()){ if(!n.nodeValue.trim()) continue; const g = document.createRange(); g.selectNodeContents(n);
       [...g.getClientRects()].filter(r => r.height > 4 && r.width > 1).forEach(r => { if(!L.some(y => Math.abs(y - r.bottom) < 12 * (k || 1))) L.push(r.bottom); }); }
     if(L.length > 1 && !b.matches('table, .cm-redac-col') && !b.querySelector('table, svg, .katex-display')) b.classList.add('cahier-fr2'); });
+  cahierColCaler(page, k);
   const haut = blocs.map((b, i) => {
-    if(!fr[i]) return 0;
+    if(!fr[i] || b.matches('.cm-redac-col')) return 0;
     const s = document.createElement('span'); s.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline;';
     b.insertBefore(s, b.firstChild); const bl = (s.getBoundingClientRect().bottom - b.getBoundingClientRect().top) / (k || 1); s.remove();
     return Math.round((((CAHIER_B - bl) % 32 + 32) % 32) * 100) / 100; // sans arrondi au pixel : sinon un « = » sur deux décalé d'1 px
@@ -509,6 +513,29 @@ function cahierCaler(page){
     if(ef && et && (et.t - ef.b) / (k || 1) >= 33) r.style.setProperty('--redm', '-32px'); });
   cahierOpsCaler(page, k);
 }
+/* Calcul en colonne (cm1Redac avec { nom, lignes }, table.cm-redac-col) : chaque ligne posée sur une ligne principale (sa ligne
+   d'écriture, donc la barre de ses fractions), le plus haut possible sans toucher l'encre de la ligne précédente : deux lignes à
+   fraction se suivent sans carreau vide, le dénominateur de l'une et le numérateur de la suivante ont chacun leur carreau
+   (relecture 5e-N4-P4-E7 et 5e-N4-P5-E7 du 13/11/2026 : « La correction ne suit pas le papier Seyès »). */
+function cahierColCaler(page, k){
+  const P = page.getBoundingClientRect(), y = v => (v - P.top) / (k || 1) - page.clientTop;
+  page.querySelectorAll('table.cm-redac-col').forEach(t => {
+    const R = [...t.rows];
+    // Comme les lignes validées sur 5e-N4-P3-E7 : un carreau entre deux lignes de texte, deux dès qu'une des deux a une fraction ;
+    // une première ligne à fraction laisse le carreau du soulignement du titre.
+    let cible = null, avant = false;
+    R.forEach(r => { const c = r.cells[r.cells.length - 1]; if(!c) return; const f = !!r.querySelector('.mfrac');
+      if(cible == null){ const t0 = y(t.getBoundingClientRect().top) + (parseFloat(getComputedStyle(t).paddingTop) || 0);
+        cible = CAHIER_B + 32 * Math.ceil((t0 - CAHIER_B + 9) / 32) + (f ? 32 : 0); }
+      else cible += f || avant ? 64 : 32;
+      avant = f;
+      const s = document.createElement('span'); s.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline;';
+      c.insertBefore(s, c.firstChild); const bl = y(s.getBoundingClientRect().bottom); s.remove();
+      // Écart de moins de 0,3 px : on garde la valeur (sinon des centièmes de pixel relancent sans fin l'observateur de taille).
+      const d0 = parseFloat(r.style.getPropertyValue('--colh')) || 0, d = Math.max(0, Math.round((d0 + cible - bl) * 100) / 100);
+      if(Math.abs(cible - bl) > .3) r.style.setProperty('--colh', d + 'px'); });
+  });
+}
 /* Signes écrits en texte d'une ligne à fraction (« = », « : », « + »…) : le milieu du signe, mesuré sur son glyphe, posé
    exactement sur la barre de fraction voisine, donc sur la ligne principale (demandé le 12/11/2026 : « le signe = est encore
    trop bas. Il doit "encadrer" la ligne principale »). Le décalage de la feuille de style (.cahier-op, top .27em) est juste
@@ -516,7 +543,9 @@ function cahierCaler(page){
 const cahierMesure = document.createElement('canvas').getContext('2d');
 function cahierOpsCaler(page, k){
   page.querySelectorAll('.cahier-op').forEach(op => {
-    const ligne = op.closest('.cm-redac-ligne, .cm-redac-col, .cm-redac-phrase, .we-row, li, p') || op.parentElement;
+    // Ligne d'un calcul en colonne : la rangée du tableau, jamais tout le tableau (relecture 5e-N4-P5-E5 du 13/11/2026 : « des x superposés et
+    // d'autres manquants » : un signe d'une ligne sans fraction était calé sur la barre d'une autre ligne).
+    const ligne = op.closest('tr, .cm-redac-ligne, .cm-redac-col, .cm-redac-phrase, .we-row, li, p') || op.parentElement;
     const fr = ligne ? [...ligne.querySelectorAll('.frac-line')] : [];
     if(!fr.length || !op.offsetParent) return;
     const cs = getComputedStyle(op), police = `${cs.fontStyle} ${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
