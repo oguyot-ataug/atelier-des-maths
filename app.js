@@ -103,6 +103,7 @@ const CH4 = [
  {n:16,code:'D4',cat:'D',t:'Formules et graphiques',s:1,p:'',d:'14-20 juin'},
  {n:17,code:'D5',cat:'D',t:'Algorithmique et programmation',s:1,p:'',d:'21-27 juin'},
  {n:18,code:'G6',cat:'G',t:'Droite des milieux',s:2,p:'',d:'',prog:'nv'},
+ {n:19,code:'G7',cat:'G',t:'Droites remarquables et cercles',s:2,p:'',d:'',prog:'nv'},
 ];
 
 /* Progression 3e -- demandé : « voici les chapitres de 3e » (sommaire du manuel iParcours Maths 3e
@@ -4078,6 +4079,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1451', date:'2026-11-13', items:[
+    "4e, nouveau programme : nouveau chapitre « Droites remarquables et cercles » -- bilan des médiatrices, hauteurs, médianes et bissectrices avec leurs points de concours (concours des médiatrices démontré), triangle rectangle et cercle circonscrit (milieu de l'hypoténuse, triangle inscrit dans un demi-cercle, démonstration par le rectangle), parallélogrammes particuliers reconnus par leurs diagonales, rectangle construit sans équerre ; 4 méthodes animées, 8 exercices corrigés, histoire (Thalès, Euclide, droite d'Euler), quiz et 4 planches (constructions corrigées aux instruments)."
+  ]},
   { version:'2026-08-19.1450', date:'2026-11-13', items:[
     "4e, nouveau programme (rentrée 2027) -- demandé : « Vu que je souhaite lancer les ventes pour la rentrée prochaine, autant faire les nouveaux programmes » (4e seulement, ancien programme gardé) : badges « Nouveau programme 2027 » et « Ancien programme » sur les chapitres de 4e (Triangles et parallèles, Divisibilité et Cosinus passent en 3e en 2027), et nouveau chapitre « Droite des milieux » : les trois théorèmes, leur démonstration par les parallélogrammes, géométrie dynamique, 4 méthodes animées, 8 exercices corrigés, histoire (Euclide, Varignon), quiz et 5 planches."
   ]},

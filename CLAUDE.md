@@ -132,9 +132,9 @@ Nouveaux programmes (cycle 3 : CM1, CM2, 6e ; cycle 4 : 5e, 4e, 3e), avec une en
   `'nv'` chapitre du nouveau programme (ajouté en fin de progression, badge « Nouveau programme 2027 », dates « rentrée 2027 »),
   `'anc'` chapitre qui sort de la 4e en 2027 (badge « Ancien programme » ; G1 Thalès et cas d'égalité, G3 Cosinus, N2 Divisibilité :
   repris en 3e) ; `progBadge`, `progAncien(texte)` (bandeau devant une partie de l'ancien programme dans un chapitre mixte).
-  Nouveaux chapitres : G6 « Droite des milieux » (13/11/2026). Reste à faire : G7 « Droites remarquables et cercles » (cercle
-  circonscrit, triangle rectangle et demi-cercle, parallélogrammes particuliers par leurs diagonales, rectangle sans équerre),
-  compléments des chapitres existants (Pythagore : contraposée ; probabilités : notations ensemblistes, deux épreuves ;
+  Nouveaux chapitres (13/11/2026) : G6 « Droite des milieux », G7 « Droites remarquables et cercles » (bilan et points de
+  concours, cercle circonscrit du triangle rectangle et demi-cercle, diagonales des parallélogrammes particuliers, rectangle
+  sans équerre). Reste à faire : compléments des chapitres existants (Pythagore : contraposée ; probabilités : notations ensemblistes, deux épreuves ;
   statistiques : étendue, valeur extrême ; proportionnalité : ratio, partage, coefficient multiplicateur ; relatifs : produit par
   la distributivité ; fractions : fraction d'une fraction), bandeaux progAncien dans N5 (exposants négatifs, notation scientifique)
   et G5 (agrandissement-réduction). À l'été 2027 : réordonner CH4, passer les chapitres 'anc' en « Pour aller plus loin » ou en 3e.
