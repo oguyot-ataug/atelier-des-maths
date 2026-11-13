@@ -4079,6 +4079,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1458', date:'2026-11-13', items:[
+    "Planches et manuels imprimés : marges de 1 cm à gauche et à droite, comme les manuels du commerce (12 mm auparavant) -- demandé : « Les manuels concurrents ont des marges gauche et droite assez courtes (1 cm) ». Les feuilles gagnent 6 mm de largeur utile."
+  ]},
   { version:'2026-08-19.1457', date:'2026-11-13', items:[
     "Manuel papier avec le cours -- demandé : « Serait-il possible de faire une version du manuel papier avec le cours ? » : dans l'onglet Manuel (professeurs), case « avec le cours » à côté des boutons du livre. Pour chaque chapitre, le cours complet (définitions, propriétés, exemples rédigés, figures, démonstrations déroulées) est imprimé avant ses planches ; couverture « Manuel : cours et exercices » et ligne « Le cours » au sommaire. En 5e : 193 pages, préparées en quelques secondes."
   ]},

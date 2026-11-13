@@ -373,6 +373,8 @@ au sommaire) ; styles du cours recopiés de la page par `plCoursCss` : chaque r�
 une feuille À PART (une règle cassée emportait toute la mise en page des planches au premier essai ; les images `data:` ne doivent pas être
 réécrites en adresses absolues). 5e : 193 pages (couverture, sommaire, 70 pages de cours, 125 planches), préparation ≈ 8 s. Contrôle : scratchpad
 relec/livre.js (PDF du livre dans le navigateur de test, feuille KaTeX injectée).
+Marges des feuilles imprimées : 1 cm à gauche et à droite (demandé le 13/11/2026 : « Les manuels concurrents ont des marges gauche et droite
+assez courtes (1 cm) ») : `@page` 10 mm 10 mm, `.pl-page` 190 mm au plus (PL_CSS, planches.js), préparation hors écran sur 186 mm (plImprimer).
 Une feuille qui dépasse la page A4 est resserrée à l'impression (`plRemplirPages`, planches.js) : jusqu'à 15 % pour l'élève, 30 %
 pour le corrigé, en gardant toute la largeur ; jamais sur une feuille d'élève où l'on mesure une longueur à la règle. Au-delà,
 alléger le contenu (demandé le 31/10/2026 : « Occupe-toi des feuilles qui débordent »).

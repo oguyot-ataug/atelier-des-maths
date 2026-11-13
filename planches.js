@@ -783,7 +783,7 @@ async function plImprimer(lvl, blocs, mode, opts){
   const pr = plPrefs(), logo = await plLogo();
   const pages = m => blocs.map(({ c, indices, planches, cours }) => { const l = plDe(lvl, c.t);
     return (cours && m !== 'corr' ? cours : '') + (planches ? planches.map(({ p, i }) => plPageHtml(lvl, c, p, i, l.length, m, pr, logo)).join('') : indices.map(i => plPageHtml(lvl, c, l[i], i, l.length, m, pr, logo)).join('')); }).join('');
-  const tmp = document.createElement('div'); tmp.style.cssText = 'position:absolute;left:-9999px;top:0;width:180mm;';
+  const tmp = document.createElement('div'); tmp.style.cssText = 'position:absolute;left:-9999px;top:0;width:186mm;';
   tmp.innerHTML = (opts.avant || '') + (mode === 'livre' ? pages('eleve') + (opts.sansCorriges ? '' : (opts.entreCorriges || '') + pages('corr')) : mode === 'les2' ? pages('eleve') + pages('corr') : pages(mode));
   document.body.appendChild(tmp);
   if(opts.filigrane) tmp.querySelectorAll('.pl-page').forEach(pg => pg.insertAdjacentHTML('afterbegin', plFiligraneSvg(opts.filigrane)));
@@ -1154,12 +1154,12 @@ function plProjAjuster(){
   boite.style.zoom = z.toFixed(3);
 }
 const PL_CSS = `
-  @page{ size:A4; margin:10mm 12mm; }
+  @page{ size:A4; margin:10mm 10mm; } /* marges de 1 cm, comme les manuels du commerce (demandé le 13/11/2026) */
   *{ -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
   body.pl-imp{ background:#fff; color:#1C2B39; font-family:Inter,Arial,sans-serif; font-size:11.5pt; line-height:1.35; margin:0; padding:0; }
   .pl-bouton-imp{ display:block; margin:12px auto; padding:10px 18px; border:0; border-radius:24px; background:#0C5BA0; color:#fff; font:600 14px Inter,Arial,sans-serif; cursor:pointer; }
   @media print{ .pl-bouton-imp{ display:none; } }
-  .pl-page{ max-width:184mm; margin:0 auto 10mm; page-break-after:always; break-after:page; position:relative; }
+  .pl-page{ max-width:190mm; margin:0 auto 10mm; page-break-after:always; break-after:page; position:relative; }
   .pl-filigrane{ position:absolute; inset:0; width:100%; height:100%; pointer-events:none; z-index:6; overflow:hidden; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
   .pl-page:last-child{ page-break-after:auto; break-after:auto; }
   .pl-tete{ display:flex; justify-content:space-between; align-items:center; gap:10px; border-bottom:2px solid #1F3A5C; padding-bottom:4px; font-size:9pt; color:#4E5665; }
