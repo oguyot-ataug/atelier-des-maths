@@ -364,6 +364,15 @@ Volume du Manuel comparé aux manuels du commerce (demandé le 13/11/2026 : « N
 d'exercices par rapport à iparcours » ; iParcours : environ 130 pages d'exercices en 5e, 170 pages avec les cours en 4e) : chaque chapitre de 5e a
 désormais une planche « Automatismes » (questions flash, 20 min) et une planche « Problèmes » (ou équivalente) ; 5e : 125 planches, 787 exercices
 (contre 95 et 618 le matin du 13/11/2026). 4e : 82 planches (19 chapitres). Garder ce rythme pour tout nouveau chapitre.
+Manuel AVEC LE COURS (demandé le 13/11/2026 : « Serait-il possible de faire une version du manuel papier avec le cours ? » ; choix « cours
+complet », « chapitre par chapitre ») : case « avec le cours » à côté des boutons du livre (`plLivre(lvl, avecCorriges, avecCours)`, retenue sur
+l'appareil `plLivreCours`). `plCoursLivre` ouvre chaque chapitre en silence (`openChapitre(..., { silencieux: true })`, puis rouvre celui de départ) ;
+`plCoursPapier` prépare l'onglet Cours comme exportCoursPDF (démonstrations déroulées, toiles en images, boutons, réglages et activités de géométrie
+dynamique retirés, formules remises en LaTeX pour plFigerMaths) dans une `section.pl-page.pl-cours-sec` (`data-ref` cours-<code>, ligne « Le cours »
+au sommaire) ; styles du cours recopiés de la page par `plCoursCss` : chaque règle limitée à `.pl-cours`, sans @media print, vérifiée une à une, dans
+une feuille À PART (une règle cassée emportait toute la mise en page des planches au premier essai ; les images `data:` ne doivent pas être
+réécrites en adresses absolues). 5e : 193 pages (couverture, sommaire, 70 pages de cours, 125 planches), préparation ≈ 8 s. Contrôle : scratchpad
+relec/livre.js (PDF du livre dans le navigateur de test, feuille KaTeX injectée).
 Une feuille qui dépasse la page A4 est resserrée à l'impression (`plRemplirPages`, planches.js) : jusqu'à 15 % pour l'élève, 30 %
 pour le corrigé, en gardant toute la largeur ; jamais sur une feuille d'élève où l'on mesure une longueur à la règle. Au-delà,
 alléger le contenu (demandé le 31/10/2026 : « Occupe-toi des feuilles qui débordent »).

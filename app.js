@@ -4079,6 +4079,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1457', date:'2026-11-13', items:[
+    "Manuel papier avec le cours -- demandé : « Serait-il possible de faire une version du manuel papier avec le cours ? » : dans l'onglet Manuel (professeurs), case « avec le cours » à côté des boutons du livre. Pour chaque chapitre, le cours complet (définitions, propriétés, exemples rédigés, figures, démonstrations déroulées) est imprimé avant ses planches ; couverture « Manuel : cours et exercices » et ligne « Le cours » au sommaire. En 5e : 193 pages, préparées en quelques secondes."
+  ]},
   { version:'2026-08-19.1456', date:'2026-11-13', items:[
     "Manuel de 5e : une planche « Problèmes » dans les 9 chapitres qui n'en avaient pas (symétrie centrale, droites remarquables, parallélogrammes, parallélogrammes particuliers, espace, statistiques, probabilités, programmation, fonctions), corrigés rédigés. La 5e passe de 95 à 125 planches (787 exercices) dans la journée, soit 30 pages de plus."
   ]},
