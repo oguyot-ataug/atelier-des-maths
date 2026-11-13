@@ -2726,6 +2726,11 @@ let figState = {points:[], shapes:[], mode:'point', selected:[], refShape:null, 
    panneau, prêt à être réinséré une fois ajusté. */
 let blocksStores = { global: [] };
 let pendingBlockNextId = 1;
+/* Blocs relus (entrée du cahier, évaluation) : chacun reçoit un numéro neuf. Les numéros enregistrés venaient d'une autre
+   session : le compteur ci-dessus repartant de 1, un bloc ajouté ensuite pouvait reprendre le numéro d'un bloc existant, et
+   « Modifier » ouvrait l'autre bloc (signalé le 13/11/2026 : « dans le corrigé de l'exercice 3 page 37 en 5e, lorsque j'édite
+   le bloc a., il ouvre d. »). Renuméroter répare aussi les entrées déjà enregistrées avec deux blocs du même numéro. */
+function blocsNumerosNeufs(l){ return (l || []).map(b => ({ ...b, id: pendingBlockNextId++ })); }
 let currentBlocksContext = 'global'; // contexte ciblé par le PROCHAIN outil qu'on ouvre
 function setToolContext(ctx){ currentBlocksContext = ctx; if(!blocksStores[ctx]) blocksStores[ctx]=[]; }
 function renderBlocksContext(ctx){
@@ -3987,6 +3992,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1431', date:'2026-11-13', items:[
+    "Cahier de la classe et évaluations : « Modifier » ouvre toujours le bon bloc -- signalé : « dans le corrigé de l'exercice 3 page 37 en 5e, lorsque j'édite le bloc a., il ouvre d. ». Les blocs d'une entrée rouverte gardaient les numéros d'une session précédente ; un bloc ajouté ensuite pouvait reprendre le numéro d'un autre. Chaque bloc relu reçoit maintenant un numéro neuf, ce qui répare aussi les entrées déjà enregistrées."
+  ]},
   { version:'2026-08-19.1430', date:'2026-11-13', items:[
     "5e Fractions, planche 3 (exercices 2, 3 et 5) : sur téléphone, les explications de la correction ne se chevauchent plus. Chaque égalité est dans son propre bloc, sous la réponse, et les colonnes partent du haut."
   ]},
@@ -8528,7 +8536,7 @@ function reuseSharedCorrectionEntry(i){
   document.getElementById('correctionInputWrap').style.display = hasText ? 'block' : 'none';
   document.getElementById('btnCorAddTextarea').style.display = hasText ? 'none' : 'inline-flex';
   if(match.blocksData){
-    blocksStores['global'] = JSON.parse(JSON.stringify(match.blocksData));
+    blocksStores['global'] = blocsNumerosNeufs(JSON.parse(JSON.stringify(match.blocksData)));
     corRows = match.rows ? JSON.parse(JSON.stringify(match.rows)) : [1];
     corCellBorders = match.cellBorders ? JSON.parse(JSON.stringify(match.cellBorders)) : {};
   } else if(match.figure){
@@ -8699,7 +8707,7 @@ async function editCahierEntry(i){
   if(e.blocksData){
     // Entrée enregistrée avec la structure des blocs (depuis ce correctif) : tout redevient
     // modifiable normalement (déplacer, éditer, supprimer bloc par bloc).
-    blocksStores['global'] = JSON.parse(JSON.stringify(e.blocksData));
+    blocksStores['global'] = blocsNumerosNeufs(JSON.parse(JSON.stringify(e.blocksData)));
     corRows = e.rows ? JSON.parse(JSON.stringify(e.rows)) : [1];
     corCellBorders = e.cellBorders ? JSON.parse(JSON.stringify(e.cellBorders)) : {};
   } else if(e.figure || (e.html && !(e.raw && e.raw.trim()))){

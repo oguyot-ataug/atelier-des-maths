@@ -846,6 +846,8 @@ async function loadEvaluation(id){
   // évaluation ne doit jamais apparaître sous l'exercice de même numéro de la nouvelle.
   Object.keys(blocksStores).forEach(k=>{ if(/^(ex|cor)-\d+$/.test(k)) delete blocksStores[k]; });
   Object.assign(blocksStores, (data.data && data.data.blocksStores) || {});
+  pendingBlockNextId = Math.max(pendingBlockNextId, ...Object.values(blocksStores).flat().map(b=>b.id+1));
+  Object.keys(blocksStores).forEach(k=>{ if(/^(ex|cor)-\d+$/.test(k)) blocksStores[k] = blocsNumerosNeufs(blocksStores[k]); }); // numéros neufs et uniques (app.js)
   evalNextExoId = Math.max(1, ...evaluationExercises.map(e=>e.id+1), evalNextExoId);
   pendingBlockNextId = Math.max(pendingBlockNextId, ...Object.values(blocksStores).flat().map(b=>b.id+1));
   // Migration : les évaluations sauvegardées avant la fusion du texte principal avec le
