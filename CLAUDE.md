@@ -249,9 +249,11 @@ papier seyes ») : chaque `.redaction-template` hors correction et non interacti
 Phrase à fraction écrite sur plusieurs lignes : classe `cahier-fr2` (cahierCaler), une ligne tous les deux carreaux, chacune sur une
 ligne principale. Signes ≈ ≠ ≤ ≥ (absents de Caveat) : `.cahier-op-fin`, ni gras ni agrandis.
 Lignes à fraction qui se suivent : la remontée d'un carreau (`--calm`) vaut aussi pour les paragraphes `p` et les `li` d'une correction.
-Calculs en colonne (`table.cm-redac-col`, cm1Redac avec `{ nom, lignes }`) : `cahierColCaler` pose chaque ligne sur une ligne principale (`--colh`),
+Calculs en colonne (`table.cm-redac-col`, cm1Redac avec `{ nom, lignes }`) : `cahierColCaler` (appelé EN DERNIER dans cahierCaler) pose chaque ligne sur une ligne principale (`--colh`),
 un carreau entre deux lignes de texte, deux dès qu'une des deux a une fraction ; les signes ne sont calés (cahierOps, cahierOpsCaler) que sur la barre de
 fraction de LEUR ligne (`tr`) (relecture du 13/11/2026 : « des x superposés et d'autres manquants »).
+Polices chargées après coup (Caveat, KaTeX ne se chargent qu'à l'affichage du cahier) : `document.fonts` « loadingdone » relance cahierCaler sur
+toutes les pages (relecture du 13/11/2026 : sans cela le deuxième calcul restait à un demi-carreau des lignes principales).
 Blocs sans classe d'une page de cahier en `display:flow-root` : la marge d'une figure (margin:6px auto) ne sort plus du bloc et ne décale
 plus la rédaction qui suit (relecture du 08/11/2026 : « la rédaction n'est pas sur les lignes principales »).
 Droites graduées (demandé le 08/11/2026 : « l'axe doit être sur la ligne principale et on se sert des lignes verticales comme support de nos
@@ -306,6 +308,12 @@ Généralisé du CM2 à la 3e le 12/11/2026 (relevé : `_hors-ligne/releve-relec
 (calcul en colonne, colonnes choisies d'après la longueur), `P3.egal` (« Complète par = ou ≠ » ; une égalité avec une lettre garde vrai ou faux POUR TOUTES LES VALEURS, avec contre-exemple quand c'est faux :
 `P3.vfx`, demandé le 12/11/2026 « Oui, justifier quand c'est faux »),
 `P3.relier` / `P3.relier1` (demi-largeur ; exposants en vrai exposant, `P3.svgExp`). Pointillés d'une réponse LaTeX : longueur affichée (`plLongVisible`).
+RÈGLE POUR TOUT LE SITE (demandé le 13/11/2026) : à l'écran, les nombres tapés par l'utilisateur sont ALIGNÉS sur ceux de l'énoncé et de MÊME
+taille et police : case dans une ligne de texte = police de la ligne (font:inherit) ; case d'un tableau / d'une opération posée = police de la
+cellule (hors retenues) ; fraction à remplir (`.pn-frac`) et fraction à trou HTML (`.fr-h`, ex. `fd` de 5e-N4) = géométrie de \dfrac de KaTeX
+(KaTeX_Main 1,21 em, centre du numérateur 0,75 em au-dessus de la barre, du dénominateur 0,61 em en dessous, barre fine), mesurée à moins
+d'1 px de la fraction voisine (scratchpad relec/align.js). Sur papier, les fractions sont dessinées en HTML (`.pl-f`, plFigerMaths) dans la
+police de la feuille : `.fr-h` y suit `.pl-f` (PL_CSS).
 Cases à l'écran (`.pn-case`, planches-num.js ; demandé le 13/11/2026 : « bien trop grossières […] pas besoin d'être en gras ») : trait de 1,2 px,
 coins de 4 px, écriture en graisse normale, cases d'une fraction à la taille des fractions de l'énoncé. Projection : une grille d'exemples dont
 l'agrandissement est limité par la hauteur prend toute la largeur disponible (plProjAjuster).

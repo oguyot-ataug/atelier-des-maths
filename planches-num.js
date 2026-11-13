@@ -917,8 +917,11 @@ function plClavierPhysique(e){
     .pn-ex .pn-case.pn-sel{ border-color:#E35D3A; box-shadow:0 0 0 2px rgba(227,93,58,.2); background:#FFF6F2; }
     .pn-ex .pn-frac{ display:inline-flex; flex-direction:column; align-items:center; gap:3px; vertical-align:middle; margin:0 3px; }
     .pn-ex .pn-barre{ display:block; width:34px; border-top:1.5px solid #1C2B39; }
-    .pn-ex .pl-fd .pn-case, .pn-ex .pl-frac .pn-case{ font-family:'KaTeX_Main','Times New Roman',serif !important; font-size:1.18em !important; font-weight:400 !important; }
-    .pn-ex .pn-frac .pn-case{ min-width:22px; height:20px; padding:0 4px; font-family:'KaTeX_Main','Times New Roman',serif !important; font-size:1.18em !important; font-weight:400 !important; line-height:1 !important; height:20px !important; padding:0 4px !important; display:inline-flex !important; } /* même police que les fractions de l'énoncé (KaTeX) */ .pn-ex .pn-frac{ gap:2px; } .pn-ex .pn-frac .pn-barre{ width:28px; } /* fraction à compléter à la taille des fractions de l'énoncé */
+    .pn-ex table .pn-case:not(.pn-ret):not(.pn-coche){ font-family:inherit !important; font-size:inherit !important; font-weight:inherit !important; } /* opération posée, tableau : chiffres tapés comme ceux de l'énoncé (règle du 13/11/2026) */
+    .pn-ex .pn-frac{ display:inline-flex; flex-direction:column; align-items:center; vertical-align:middle; position:relative; top:.025em; margin:0 .12em; gap:0 !important; font:400 1.21em 'KaTeX_Main','Times New Roman',serif; }
+    .pn-ex .pn-frac .pn-case, .pn-ex .fr-h .pn-case{ display:inline-flex !important; align-items:center; justify-content:center; height:1.2em !important; line-height:1.2em !important; min-width:1.1em !important; padding:0 .14em !important; margin:0 0 .07em !important; font:400 1em 'KaTeX_Main','Times New Roman',serif !important; border-radius:.16em; vertical-align:middle; }
+    .pn-ex .pn-frac .pn-barre{ width:auto !important; align-self:stretch; min-width:1.3em; border-top:max(1px, .045em) solid currentColor !important; margin:0 0 .01em; }
+    .pn-ex .pn-frac .pn-case:last-child{ margin-bottom:0 !important; } .pn-ex .fr-h .pn-case{ margin:0 !important; }
     .pn-ex svg.pn-trace{ width:min(100%, 520px) !important; height:auto !important; max-height:none !important; display:block; touch-action:manipulation; }
     .pn-ex svg.pn-trace.pn-trace-n{ width:min(100%, 250px) !important; margin:0 auto; } .pn-ex .pn-tr-aide-n{ text-align:center; margin-top:8px; }
     .pn-ex .pn-tr-n{ cursor:pointer; } .pn-ex .pn-tr-n:hover{ fill:rgba(227,93,58,.25); } .pn-lecture .pn-tr-n{ cursor:default; } .pn-tr-aide{ font-size:.85rem; color:#4E5665; margin-top:4px; } .pn-lecture .pn-tr-aide{ display:none; }

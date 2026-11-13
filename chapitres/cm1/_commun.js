@@ -437,7 +437,6 @@ function cahierCaler(page){
     for(let n = w.nextNode(); n; n = w.nextNode()){ if(!n.nodeValue.trim()) continue; const g = document.createRange(); g.selectNodeContents(n);
       [...g.getClientRects()].filter(r => r.height > 4 && r.width > 1).forEach(r => { if(!L.some(y => Math.abs(y - r.bottom) < 12 * (k || 1))) L.push(r.bottom); }); }
     if(L.length > 1 && !b.matches('table, .cm-redac-col') && !b.querySelector('table, svg, .katex-display')) b.classList.add('cahier-fr2'); });
-  cahierColCaler(page, k);
   const haut = blocs.map((b, i) => {
     if(!fr[i] || b.matches('.cm-redac-col')) return 0;
     const s = document.createElement('span'); s.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline;';
@@ -511,6 +510,11 @@ function cahierCaler(page){
     // (sous le dénominateur du résultat précédent), plutôt que de laisser un carreau vide.
     const ef = titreFr && fin ? cahierEncre(fin) : null, et = ef ? cahierEncre(r.firstElementChild) : null;
     if(ef && et && (et.t - ef.b) / (k || 1) >= 33) r.style.setProperty('--redm', '-32px'); });
+  // Calculs en colonne calés EN DERNIER, une fois tous les blocs au-dessus ajustés (relecture du 13/11/2026 : « le deuxième calcul ne
+  // suit pas les lignes principales » : les marges des blocs précédents, posées après, le décalaient), puis leur hauteur arrondie au carreau.
+  cahierColCaler(page, k);
+  page.querySelectorAll('table.cm-redac-col').forEach(t => { if(!blocs.includes(t)) return; t.style.removeProperty('--cal');
+    const m = (t.getBoundingClientRect().height / (k || 1)) % 32, r = m < 1 ? 0 : Math.round((32 - m) * 100) / 100; if(r > .01) t.style.setProperty('--cal', r + 'px'); });
   cahierOpsCaler(page, k);
 }
 /* Calcul en colonne (cm1Redac avec { nom, lignes }, table.cm-redac-col) : chaque ligne posée sur une ligne principale (sa ligne
@@ -615,6 +619,11 @@ function cahierAppliquer(racine){
   P.forEach(p => { if(p.classList.contains('cahier-actif')) cahierCaler(p); });
 }
 if(typeof document !== 'undefined' && document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if(cahierOn) document.querySelectorAll('.cahier-actif').forEach(cahierCaler); });
+// Caveat et les polices de KaTeX ne se chargent qu'à l'affichage du cahier, après le premier calage : à chaque police arrivée,
+// tout est recalé (relecture du 13/11/2026 : « le deuxième calcul ne suit pas les lignes principales » ; la hauteur des lignes ne
+// changeant pas, l'observateur de taille ne relançait rien et le calage restait celui de la police de secours).
+if(typeof document !== 'undefined' && document.fonts && document.fonts.addEventListener) document.fonts.addEventListener('loadingdone', () => {
+  if(cahierOn) requestAnimationFrame(() => document.querySelectorAll('.cahier-actif').forEach(p => { try{ cahierCaler(p); }catch(e){} })); });
 let cahierObs = null;
 function cahierMaj(){
   if(!document.body) return;

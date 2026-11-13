@@ -38,7 +38,7 @@ const rmp = (l, n) => ({ eleve: plListe(l.map(([t]) => t.replace('@', B(n || 3))
 // de demander sur 12 ? Autant l'écrire directement au dénominateur ! »).
 // Numérateur et dénominateur de même hauteur : la barre au milieu, alignée sur celles des fractions voisines (relecture 5e-N4-P4-E6).
 const fdT = x => /</.test(String(x)) ? x : `<span class="pl-fd-t">${x}</span>`; // nombre donné : police des fractions KaTeX
-const fd = (haut, den) => `<span class="pl-fd" style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1.2;margin:0 3px;"><span style="display:flex;align-items:flex-end;justify-content:center;min-height:1.7em;">${fdT(haut)}</span><span class="pl-fd-b" style="align-self:stretch;border-top:1px solid currentColor;margin:2px 0;min-width:1.6em;"></span><span style="display:flex;align-items:flex-start;justify-content:center;min-height:1.7em;">${fdT(den)}</span></span>`;
+const fd = (haut, den) => `<span class="pl-fd fr-h"><span class="fr-n">${fdT(haut)}</span><span class="fr-b"></span><span class="fr-d">${fdT(den)}</span></span>`;
 const pgcd = (a, b) => b ? pgcd(b, a % b) : a, ppcm = (a, b) => a / pgcd(a, b) * b;
 // Pourquoi : une égalité ou une comparaison par ligne, sous la réponse (relecture 5e-N4-P3-E2, E5 : « La correction doit expliquer pourquoi »).
 // Chaque égalité dans son propre bloc, sous la réponse (sur téléphone, un interligne fixe faisait chevaucher les fractions).

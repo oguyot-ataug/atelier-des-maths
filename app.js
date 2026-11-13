@@ -3999,6 +3999,11 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1443', date:'2026-11-13', items:[
+    "Règle pour tout le site, à l'écran : les nombres tapés sont alignés sur ceux de l'énoncé et de même taille -- demandé : « les nombres tapés par l'utilisateur doivent être alignés avec les nombres présents dans l'énoncé et de même taille ». Fractions à remplir : même géométrie que les fractions de l'énoncé (numérateur, dénominateur et barre alignés à moins d'un pixel) ; opérations posées et tableaux : police et taille des chiffres de l'opération.",
+    "Corrigés : les fractions à trou (5e Fractions, planche 4, exercice 6) sont écrites exactement comme les autres fractions, à l'écran et sur papier -- demandé : « Dans la correction, il y a des tailles et des polices différentes ! ».",
+    "Cahier Seyès : le calage est refait quand la police manuscrite ou celle des formules arrive après l'affichage ; le deuxième calcul en colonne (M = …) suit de nouveau les lignes principales -- demandé : « le deuxième calcul ne suit pas les lignes principales »."
+  ]},
   { version:'2026-08-19.1442', date:'2026-11-13', items:[
     "Fractions à compléter dessinées à la main (5e Fractions planche 4 exercice 6, CE2 Fractions égales) : le nombre donné et la réponse sont écrits comme les fractions voisines -- police des formules à l'écran, police de la feuille sur papier, sans gras pour le nombre donné, barre fine ; le « 1 » de « = 1 » aussi."
   ]},
