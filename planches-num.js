@@ -824,7 +824,11 @@ const plClavier = {
   largeur(mode){ this.creer(); const el = this.el;
     if(el.style.display === 'block' && this.mode === mode) return el.getBoundingClientRect().width;
     const m = this.mode, d = el.style.display; this.mode = mode; this.rendre(); el.style.visibility = 'hidden'; el.style.display = 'block';
-    const w = el.getBoundingClientRect().width; el.style.display = d; el.style.visibility = ''; this.mode = m; this.rendre(); return w; },
+    const q = el.getBoundingClientRect(), w = q.width; this.haut = q.height; el.style.display = d; el.style.visibility = ''; this.mode = m; this.rendre(); return w; },
+  // Rectangle du clavier à l'écran : réel s'il est ouvert, sinon là où il s'ouvrira (position gardée, ou en bas à droite de la projection).
+  rect(mode){ this.creer(); if(this.el.style.display === 'block') return this.el.getBoundingClientRect();
+    const w = this.largeur(mode || '123'), h = this.haut || 260; let pos = null; try{ pos = JSON.parse(localStorage.getItem('plClavierPos') || 'null'); }catch(_){}
+    const x = pos ? pos.x : window.innerWidth - 16 - w, y = pos ? pos.y : window.innerHeight - 84 - h; return { left: x, top: y, right: x + w, bottom: y + h }; },
   creer(){ if(!this.el){ this.el = document.createElement('div'); this.el.id = 'plClavier'; document.body.appendChild(this.el);
       // Double-clic sur la poignée : le clavier revient à sa place (en bas, au milieu).
       this.el.addEventListener('dblclick', e => { if(e.target.closest('.pn-cl-poignee')){ try{ localStorage.removeItem('plClavierPos'); }catch(_){} this.placer(null); } });
@@ -913,7 +917,7 @@ function plClavierPhysique(e){
     .pn-ex .pn-case.pn-sel{ border-color:#E35D3A; box-shadow:0 0 0 2px rgba(227,93,58,.2); background:#FFF6F2; }
     .pn-ex .pn-frac{ display:inline-flex; flex-direction:column; align-items:center; gap:3px; vertical-align:middle; margin:0 3px; }
     .pn-ex .pn-barre{ display:block; width:34px; border-top:1.5px solid #1C2B39; }
-    .pn-ex .pn-frac .pn-case{ min-width:22px; height:20px; padding:0 4px; font-size:.95rem; } .pn-ex .pn-frac{ gap:2px; } .pn-ex .pn-frac .pn-barre{ width:28px; } /* fraction à compléter à la taille des fractions de l'énoncé */
+    .pn-ex .pn-frac .pn-case{ min-width:22px; height:20px; padding:0 4px; font-family:'KaTeX_Main','Times New Roman',serif !important; font-size:1.18em !important; font-weight:400 !important; line-height:1 !important; height:20px !important; padding:0 4px !important; display:inline-flex !important; } /* même police que les fractions de l'énoncé (KaTeX) */ .pn-ex .pn-frac{ gap:2px; } .pn-ex .pn-frac .pn-barre{ width:28px; } /* fraction à compléter à la taille des fractions de l'énoncé */
     .pn-ex svg.pn-trace{ width:min(100%, 520px) !important; height:auto !important; max-height:none !important; display:block; touch-action:manipulation; }
     .pn-ex svg.pn-trace.pn-trace-n{ width:min(100%, 250px) !important; margin:0 auto; } .pn-ex .pn-tr-aide-n{ text-align:center; margin-top:8px; }
     .pn-ex .pn-tr-n{ cursor:pointer; } .pn-ex .pn-tr-n:hover{ fill:rgba(227,93,58,.25); } .pn-lecture .pn-tr-n{ cursor:default; } .pn-tr-aide{ font-size:.85rem; color:#4E5665; margin-top:4px; } .pn-lecture .pn-tr-aide{ display:none; }

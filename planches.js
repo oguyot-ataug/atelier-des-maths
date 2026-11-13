@@ -1045,9 +1045,21 @@ function plProjAjuster(){
   const z = etroit ? Math.max(1, Math.min(W / r.width, H / r.height, 1.6)) : Math.max(.6, Math.min(W / r.width, H / r.height, 3.4));
   // Grille d'exemples dont l'agrandissement est limité par la hauteur : la boîte prend toute la largeur disponible, chaque colonne
   // s'élargit (demandé le 13/11/2026 : « La largeur n'est pas optimisée, on pourrait mettre plus de largeur pour chaque colonne »).
-  if(!etroit && H / r.height < W / r.width && boite.querySelector('.pl-grille')){
-    boite.style.maxWidth = 'none'; boite.style.width = Math.floor(W / z) + 'px'; const r2 = boite.getBoundingClientRect();
-    boite.style.zoom = Math.max(.6, Math.min(W / r2.width, H / r2.height, 3.4)).toFixed(3); return; }
+  // La bande réservée au clavier n'est gardée que si le clavier (ouvert, ou là où il s'ouvrira) recouvrirait un calcul
+  // (relecture du 13/11/2026 : « Il y a encore beaucoup de place à droite ! »).
+  if(!etroit && boite.querySelector('.pl-grille')){
+    const essai = (pad, k) => { corps.style.paddingRight = pad; const c2 = getComputedStyle(corps), W2 = corps.clientWidth - parseFloat(c2.paddingLeft) - parseFloat(c2.paddingRight);
+      boite.style.zoom = 1; boite.style.width = ''; boite.style.maxWidth = ''; const r0 = boite.getBoundingClientRect();
+      const zk = Math.max(.6, Math.min(W2 / r0.width, H / r0.height, 3.4)) * (k || 1);
+      // au plus 1,3 fois la largeur naturelle : une grille courte agrandie au maximum ne s'étale pas (colonnes très écartées).
+      boite.style.maxWidth = 'none'; boite.style.width = Math.floor(Math.min(W2 / zk, r0.width * 1.3)) + 'px'; const r2 = boite.getBoundingClientRect();
+      boite.style.zoom = Math.max(.6, Math.min(W2 / r2.width, H / r2.height, zk)).toFixed(3); };
+    // Plus grande largeur possible : sans la bande du clavier, puis bande réduite par paliers (et, au besoin, agrandissement réduit
+    // de quelques %) tant qu'un calcul passerait sous le clavier ; la bande entière en dernier recours.
+    if(droite && cases){ const kb = plClavier.rect(lettres ? 'abc' : '123'), sur = q => q.width && q.right > kb.left - 8 && q.left < kb.right + 8 && q.bottom > kb.top - 8 && q.top < kb.bottom + 8;
+      for(const f of [0, .25, .5, .75]) for(const k of [1, .96, .92]){ essai(f ? Math.round((droite + 24) * f) + 'px' : '', k);
+        if(![...boite.querySelectorAll('.pl-item *')].some(e => !e.children.length || e.matches('.katex, .pn-frac') ? sur(e.getBoundingClientRect()) : false)) return; } }
+    essai(droite ? droite + 24 + 'px' : ''); return; }
   boite.style.zoom = z.toFixed(3);
 }
 const PL_CSS = `
@@ -1263,6 +1275,9 @@ const PL_CSS_LIVRE = `
     .td-var{ border-color:rgba(46,158,91,.45) !important; color:#1E7B34 !important; }
     .td-ver{ margin-left:8px; font-size:.78rem; font-weight:700; color:#1E7B34; display:inline-flex; align-items:center; gap:4px; }
     .td-ver:empty{ display:none; } .td-orig{ border:1px solid rgba(30,123,52,.4); background:#fff; color:#1E7B34; border-radius:999px; font-size:.72rem; padding:0 7px; cursor:pointer; }
+    /* Étapes d'un calcul en colonne à fractions (5e-N4-P4) : serrées sur la feuille imprimée, espacées à l'écran (vignettes, projection) --
+       relecture du 13/11/2026 : « la correction se marche toujours dessus ! ». */
+    .td-vig .pl-etape, .plp-boite .pl-etape, .pn-ex .pl-etape{ margin:0 !important; padding:.45em 0; }
     .td-vig .pl-grille, .pl-ex-cahier .pl-grille{ display:grid; gap:6px 14px; align-items:center; } .td-vig .pl-item, .pl-ex-cahier .pl-item{ display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
     .td-vig .pl-liste, .pl-ex-cahier .pl-liste{ margin:0; padding-left:18px; } .td-vig .pl-liste li, .pl-ex-cahier .pl-liste li{ margin:3px 0; }
     /* Exercice pleine largeur : la liste sur deux colonnes, comme sur la feuille -- relecture 5e-N7-P4-E1 : « Il n'y a pas deux colonnes ici et plein de place à droite ». */

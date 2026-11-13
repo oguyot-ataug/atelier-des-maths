@@ -53,7 +53,7 @@ const cmpX = (l, cols) => { const L = l.map(([a, b, c, d]) => { const m = d === 
 // « Écrire des pointillés pour les étapes de réduction au même dénominateur. Donc A = … et à développer en colonne »).
 // Une étape par bloc (relecture 5e-N4-P4-E5 du 13/11/2026 : « les fractions se superposent légèrement ») : une ligne à fractions
 // prend la hauteur qu'il lui faut au lieu d'un interligne fixe.
-const EF = (n, e, et, rep) => `<div style="white-space:nowrap;">${[`${n} = ${e}`, ...et.map(x => `${n} = ${rep(x)}`)].map(t => `<div style="display:flex;align-items:center;gap:4px;min-height:2.2em;margin:1px 0;">${t}</div>`).join('')}</div>`;
+const EF = (n, e, et, rep) => `<div style="white-space:nowrap;">${[`${n} = ${e}`, ...et.map(x => `${n} = ${rep(x)}`)].map(t => `<div class="pl-etape" style="display:flex;align-items:center;gap:4px;min-height:2.2em;margin:1px 0;">${t}</div>`).join('')}</div>`;
 // À l'écran (relecture 5e-N4-P4 du 13/11/2026 : « La version écran ne peut pas convenir. L'idée est de faire des étapes avec
 // réduction au même dénominateur ! ») : chaque étape garde sa forme, une fraction à compléter par terme (A = ▢/▢ + ▢/▢),
 // puis la somme, puis la fraction simplifiée.
