@@ -173,16 +173,17 @@ PLANCHES['5e|Fractions'] = [
       { etoiles: 2, col: 1, consigne: 'Complète par = ou ≠.',
         ...P3.egal([[`${T(1, 2)} + ${T(1, 3)}`, T(2, 5), 0], [`${T(3, 4)} × 100`, '75', 1], [`${T(1, 3)} + ${T(1, 3)} + ${T(1, 3)}`, '1', 1], [`${T(1, 2)} × ${T(1, 2)}`, T(1, 4), 1]]) },
       { etoiles: 3, col: 1, cahier: true, consigne: illu(reservoir, `Un réservoir de 60 L est rempli aux ${T(3, 4)}. On utilise ${T(1, 3)} de sa contenance totale. Combien de litres reste-t-il ?`),
+        // Relecture 5e-N4-P5-E5 du 13/11/2026 : « on passe de 3/4 × 60 à 3 × 15. Il manque 3 × 60/4 » (méthode 2 : a/b × c = a × c/b).
         // Relecture 5e-N4-P5-E5 du 12/11/2026 : « On ne dit pas Litres restants, c'est affreux. Volume restant » ; pas de « de » dans un calcul.
-        corr: cm1Redac('Volume d\'eau au départ', [{ nom: 'V', lignes: [`${F(3, 4)} × 60`, '3 × 15', '45'] }], 'Le réservoir contient 45 L au départ.')
-          + cm1Redac('Volume utilisé', [{ nom: 'U', lignes: [`${F(1, 3)} × 60`, '20'] }], 'On utilise 20 L.')
+        corr: cm1Redac('Volume d\'eau au départ', [{ nom: 'V', lignes: [`${F(3, 4)} × 60`, `3 × ${F(60, 4)}`, '3 × 15', '45'] }], 'Le réservoir contient 45 L au départ.')
+          + cm1Redac('Volume utilisé', [{ nom: 'U', lignes: [`${F(1, 3)} × 60`, F(60, 3), '20'] }], 'On utilise 20 L.')
           + cm1Redac('Volume restant', [{ nom: 'R', lignes: ['45 − 20', '25'] }], 'Il reste 25 L dans le réservoir.') },
       { etoiles: 3, col: 1, cahier: true, consigne: `Lina dépense ${T(2, 5)} de son argent de poche en livres et ${T(1, 4)} en sorties. Quelle fraction de son argent lui reste-t-il ? Elle avait 40 € : combien lui reste-t-il ?`,
         corr: cm1Redac('Fraction restante', `1 − ${F(2, 5)} − ${F(1, 4)} = ${F(20, 20)} − ${F(8, 20)} − ${F(5, 20)} = ${F(7, 20)}`, `Il lui reste les ${F(7, 20)} de son argent.`) + cm1Redac('Somme restante', `${F(7, 20)} × 40 = 7 × ${F(40, 20)} = 7 × 2 = 14`, 'Il lui reste 14 €.') },
       { etoiles: 3, cahier: true, consigne: illu(gateau12, `Un gâteau est coupé en 12 parts égales. Paul en mange ${T(1, 4)}, Léa ${T(1, 3)} et Sam ${T(1, 6)}. Reste-t-il du gâteau ? Si oui, combien de parts ?`),
         // Relecture 5e-N4-P5-E7 du 12/11/2026 : « partir du calcul du départ et commencer par une lettre comme P = … ».
-        corr: cm1Redac('Fraction du gâteau mangée', [{ nom: 'P', lignes: [`${F(1, 4)} + ${F(1, 3)} + ${F(1, 6)}`, `${F(3, 12)} + ${F(4, 12)} + ${F(2, 12)}`, F(9, 12)] }], `Ils ont mangé les ${F(9, 12)} du gâteau, soit 9 parts sur 12.`)
-          + cm1Redac('Parts restantes', [{ nom: 'N', lignes: ['12 − 9', '3'] }], 'Oui, il reste du gâteau : 3 parts.') },
+        corr: plCote(cm1Redac('Fraction du gâteau mangée', [{ nom: 'P', lignes: [`${F(1, 4)} + ${F(1, 3)} + ${F(1, 6)}`, `${F(3, 12)} + ${F(4, 12)} + ${F(2, 12)}`, F(9, 12)] }], `Ils ont mangé les ${F(9, 12)} du gâteau, soit 9 parts sur 12.`)
+          , cm1Redac('Parts restantes', [{ nom: 'N', lignes: ['12 − 9', '3'] }], 'Oui, il reste du gâteau : 3 parts.')) },
     ] },
 ];
 })();

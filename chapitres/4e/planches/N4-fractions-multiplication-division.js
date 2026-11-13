@@ -40,7 +40,7 @@ PLANCHES['4e|Fractions : multiplication et division'] = [
       { etoiles: 2, col: 1, consigne: 'Ces deux fractions sont-elles égales ? Utilise les produits en croix.',
         ...ch([[`${T(12, 18)} et ${T(10, 15)} :`, 'oui'], [`${T(5, 7)} et ${T(7, 9)} :`, 'non'], [`${T(9, 24)} et ${T(15, 40)} :`, 'oui']], 'oui · non') },
       { etoiles: 2, cahier: true, consigne: `Dans un collège de 540 élèves, ${T(4, 9)} sont des filles. Parmi elles, ${T(3, 4)} sont demi-pensionnaires. Combien de filles sont demi-pensionnaires ? Quelle fraction des élèves du collège cela représente-t-il ?`,
-        corr: cm1Redac('Nombre de filles', `${F(4, 9)} × 540 = 240`, 'Il y a 240 filles.') + cm1Redac('Filles demi-pensionnaires', `${F(3, 4)} × 240 = 180`, '180 filles sont demi-pensionnaires.') + cm1Redac('Fraction du collège', `${F(3, 4)} × ${F(4, 9)} = ${F(12, 36)} = ${F(1, 3)}`, `Cela représente ${F(1, 3)} des élèves du collège.`) },
+        corr: cm1Redac('Nombre de filles', [{ nom: 'F', lignes: [`${F(4, 9)} × 540`, `4 × ${F(540, 9)}`, '4 × 60', '240'] }], 'Il y a 240 filles.') + cm1Redac('Filles demi-pensionnaires', [{ nom: 'D', lignes: [`${F(3, 4)} × 240`, `3 × ${F(240, 4)}`, '3 × 60', '180'] }], '180 filles sont demi-pensionnaires.') + cm1Redac('Fraction du collège', `${F(3, 4)} × ${F(4, 9)} = ${F(12, 36)} = ${F(1, 3)}`, `Cela représente ${F(1, 3)} des élèves du collège.`) },
     ] },
   { titre: 'Inverse et quotient de fractions', duree: '35 min',
     attendus: ['Donner l\'inverse d\'un nombre', 'Diviser, c\'est multiplier par l\'inverse', 'Calculer un quotient de fractions'],
@@ -73,7 +73,7 @@ PLANCHES['4e|Fractions : multiplication et division'] = [
       { etoiles: 3, cahier: true, consigne: `Un ruban mesure ${T(5, 2)} m. On en coupe ${T(2, 5)}, puis on partage le reste en 3 morceaux égaux. Quelle est la longueur d'un morceau ?`,
         corr: cm1Redac('Longueur coupée', `${F(2, 5)} × ${F(5, 2)} = 1`, 'On coupe 1 m.') + cm1Redac('Longueur restante', `${F(5, 2)} − 1 = ${F(3, 2)}`, `Il reste ${F(3, 2)} m.`) + cm1Redac('Longueur d\'un morceau', `${F(3, 2)} : 3 = ${F(3, 2)} × ${F(1, 3)} = ${F(1, 2)}`, 'Un morceau mesure un demi-mètre, soit 50 cm.') },
       { etoiles: 3, cahier: true, consigne: `Un réservoir de 60 L est plein aux ${T(5, 6)}. On en utilise les ${T(2, 5)}. Combien de litres reste-t-il dans le réservoir ?`,
-        corr: cm1Redac('Volume d\'eau au départ', `${F(5, 6)} × 60 = 50`, 'Le réservoir contient 50 L.') + cm1Redac('Volume utilisé', `${F(2, 5)} × 50 = 20`, 'On utilise 20 L.') + cm1Redac('Volume restant dans le réservoir', '50 − 20 = 30', 'Il reste 30 L dans le réservoir.') },
+        corr: plCote(cm1Redac('Volume d\'eau au départ', [{ nom: 'V', lignes: [`${F(5, 6)} × 60`, `5 × ${F(60, 6)}`, '5 × 10', '50'] }], 'Le réservoir contient 50 L.') + cm1Redac('Volume utilisé', [{ nom: 'U', lignes: [`${F(2, 5)} × 50`, `2 × ${F(50, 5)}`, '2 × 10', '20'] }], 'On utilise 20 L.')) + cm1Redac('Volume restant dans le réservoir', [{ nom: 'R', lignes: ['50 − 20', '30'] }], 'Il reste 30 L dans le réservoir.') },
     ] },
 ];
 })();

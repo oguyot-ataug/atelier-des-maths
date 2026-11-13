@@ -45,6 +45,9 @@ function plBarre(html){ return `<span class="pl-barre-rep">${html}</span>`; }
 function plEntoure(html){ return `<span class="pl-entoure">${html}</span>`; }
 // Grille d'items (cols colonnes) : items = [html...].
 function plGrille(items, cols){ return `<div class="pl-grille" style="grid-template-columns:repeat(${cols || 2},1fr);">${items.map(x => `<div class="pl-item">${x}</div>`).join('')}</div>`; }
+// Raisonnements côte à côte SUR PAPIER seulement (corrigé imprimé qui dépasse la page) ; à l'écran et dans le cahier Seyès, l'un sous
+// l'autre comme d'habitude (13/11/2026).
+function plCote(...h){ return `<div class="pl-cote">${h.join('')}</div>`; }
 // Liste à puces (jamais « 1. », « 2. »).
 function plListe(items){ return `<ul class="pl-liste">${items.map(x => `<li>${x}</li>`).join('')}</ul>`; }
 // Exercice de rédaction : l'élève répond dans son cahier (exo { cahier: true } : Oliv'IA et sa bulle).
@@ -1112,6 +1115,7 @@ const PL_CSS = `
   .pl-liste{ margin:0; padding-left:20px; columns:2; } .pl-liste li{ margin:0; padding:1px 0; break-inside:avoid; } /* marge en padding : la 2e colonne commence à la même hauteur que la 1re */
   .pl-frac{ display:inline-flex; flex-direction:column; align-items:center; vertical-align:middle; gap:2px; margin:0 3px; }
   .pl-fd-t{ font-size:1.05em; font-weight:400; line-height:1.1; } .pl-fd .pl-rep{ font-size:1.05em; line-height:1.1; }
+  .pl-cote{ display:grid; grid-template-columns:1fr 1fr; gap:0 22px; align-items:start; }
   .fr-h{ display:inline-flex; flex-direction:column; align-items:center; vertical-align:middle; margin:0 2px; line-height:1.1; font-size:1.05em; } .fr-h > .fr-n, .fr-h > .fr-d{ padding:0 3px; } .fr-h > .fr-b{ align-self:stretch; border-top:1.5px solid currentColor; } .fr-h .pl-fd-t, .fr-h .pl-rep{ font-size:1em; } /* papier : comme les fractions .pl-f */ .pl-fd .pl-fd-b{ border-top:1.5px solid currentColor !important; } /* sur papier, fractions dessinées en HTML (.pl-f) dans la police de la feuille : même écriture ; fraction à trou : même écriture que les fractions KaTeX voisines (relecture 5e-N4-P4-E6 du 13/11/2026) */
   .pl-case{ display:inline-block; width:22px; height:18px; border:1.5px solid #8A93A3; border-radius:4px; background:#fff; }
   /* Collège : sur le papier, des pointillés au lieu des cases (demandé le 01/11/2026 : « Dans les exercices de collèges,
@@ -1271,7 +1275,7 @@ const PL_CSS_LIVRE = `
     .td-vig.corr{ border-color:#1F7A4D; background:#F6FBF8; }
     .td-v-tete{ display:flex; justify-content:space-between; align-items:center; } .td-v-tete .pl-marque{ display:inline-flex; align-items:center; gap:3px; margin:-8px 0 -8px 8px; } .td-v-tete .pl-marque .pl-oliv{ width:30px; height:30px; display:inline-block; } .td-v-tete .pl-marque .pl-oliv svg{ width:100%; height:100%; } .td-v-tete .pl-marque .pl-bulle{ background:#fff; color:#3E5A1E; border:2px solid #8DB84A; border-radius:10px 10px 10px 3px; padding:0 7px; font:700 .72rem 'Space Grotesk',sans-serif; white-space:nowrap; } .td-v-tete .pl-marque + .td-num{ margin-left:8px; } .td-v-tete .pl-et{ margin-left:auto; } .td-vig .pl-num{ font:700 .95rem 'Space Grotesk',sans-serif; color:#E35D3A; }
     .td-vig .pl-et{ color:#E9A21C; letter-spacing:2px; } .td-vig .pl-et-off{ color:#D8DCE3; }
-    .td-v-corps{ font-size:.92rem; overflow-x:auto; } .td-v-corps .pl-consigne{ font-weight:600; margin-bottom:6px; }
+    .td-v-corps{ font-size:.92rem; overflow-x:auto; padding:8px 0 4px; margin:-8px 0 -4px; } /* le défilement horizontal coupe aussi en hauteur : place pour le numérateur d'une fraction en première ligne (relecture du 13/11/2026 : « souvent un peu tronquée sur le haut ») */ .td-v-corps .pl-consigne{ font-weight:600; margin-bottom:6px; }
     .td-num{ margin:0 auto 0 10px; font:700 .72rem 'Space Grotesk',sans-serif; color:#3A6EA5; background:#EEF4FB; border-radius:999px; padding:1px 8px; display:inline-flex; align-items:center; gap:3px; } .td-num .gicon{ font-size:14px; }
     .td-v-pied{ display:flex; gap:6px; flex-wrap:wrap; margin-top:auto; } .td-mini{ padding:4px 10px !important; font-size:.82rem !important; }
     .td-var{ border-color:rgba(46,158,91,.45) !important; color:#1E7B34 !important; }

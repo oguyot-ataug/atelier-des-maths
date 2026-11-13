@@ -68,7 +68,7 @@ PLANCHES['5e|Pourcentages'] = [
       { etoiles: 3, col: 1, cahier: true, consigne: 'Un vélo coûte 250 €. Le magasin annonce 15 % de remise. Combien coûte le vélo soldé ? Tom paie avec 5 billets de 50 € : combien lui rend-on ?',
         corr: cm1Redac('Montant de la remise', `${F(15, 100)} × 250 = 37,50`, 'La remise est de 37,50 €.') + cm1Redac('Prix soldé', '250 − 37,50 = 212,50', 'Le vélo soldé coûte 212,50 €.') + cm1Redac('Somme donnée', '5 × 50 = 250', 'Tom donne 250 €.') + cm1Redac('Monnaie rendue', '250 − 212,50 = 37,50', 'On lui rend 37,50 €.') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Le loyer de Mme Martin est de 640 € par mois. Il augmente de 5 %. Quel est le nouveau loyer ? Combien paiera-t-elle de plus sur un an ?',
-        corr: cm1Redac('Augmentation du loyer', `${F(5, 100)} × 640 = 32`, 'Le loyer augmente de 32 € par mois.') + cm1Redac('Nouveau loyer', '640 + 32 = 672', 'Le nouveau loyer est de 672 €.') + cm1Redac('Somme payée en plus sur un an', '32 × 12 = 384', 'Elle paiera 384 € de plus sur un an.') },
+        corr: cm1Redac('Augmentation du loyer', [{ nom: 'A', lignes: [`${F(5, 100)} × 640`, F('5 \\times 640', 100), F('3\\,200', 100), '32'] }], 'Le loyer augmente de 32 € par mois.') + cm1Redac('Nouveau loyer', '640 + 32 = 672', 'Le nouveau loyer est de 672 €.') + cm1Redac('Somme payée en plus sur un an', '32 × 12 = 384', 'Elle paiera 384 € de plus sur un an.') },
     ] },
   { titre: 'Problèmes avec des pourcentages', duree: '40 min',
     attendus: ['Lire et utiliser des pourcentages dans un document', 'Calculer un effectif à partir d\'un pourcentage', 'Choisir le bon calcul'],

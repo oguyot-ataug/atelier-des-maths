@@ -58,7 +58,7 @@ const RELECTURE_CHGT = {
   '5e-N4-P4-E5': { date: '2026-11-13T09:36:07Z', note: "Une étape par bloc : les lignes à fractions ne se chevauchent plus" },
   '5e-N4-P4-E6': { date: '2026-11-13T15:35:01Z', note: "Fractions à compléter alignées sur les fractions de l'énoncé et de même taille à l'écran (géométrie de KaTeX), même écriture dans le corrigé (vignette et papier)" },
   '5e-N4-P4-E7': { date: '2026-11-13T15:35:01Z', note: "Cahier Seyès : chaque ligne des deux calculs (S et M) sur une ligne principale, même quand la police manuscrite arrive après l'affichage" },
-  '5e-N4-P5-E5': { date: '2026-11-13T09:36:07Z', note: "Cahier Seyès : lignes du calcul en colonne sur les lignes principales ; le × de « 3 × 15 » reste à sa place (plus de × superposés)" },
+  '5e-N4-P5-E5': { date: '2026-11-13T15:47:52Z', note: "Étape ajoutée : V = 3 × 60/4 avant 3 × 15 (et U = 60/3) ; fraction de la première ligne de l'énoncé plus coupée en haut dans la vignette" },
   '5e-N4-P5-E7': { date: '2026-11-13T09:36:07Z', note: "Cahier Seyès : lignes sur les lignes principales, signes = et + calés sur la barre de fraction de leur ligne, cadre du résultat autour de la fraction" },
   '5e-G2-P6-E2': { date: '2026-11-12T23:21:11Z', note: "À l'écran aussi, un tableau de cases à cocher (un clic coche, un autre décoche)" },
   '5e-N1a-P4-E3': { date: '2026-11-12T23:21:11Z', note: "À l'écran, tous les signes opératoires tapés après un nombre sont entourés d'espaces, comme « × »" },

@@ -420,7 +420,7 @@ function cahierEncre(el){ const L = [], w = document.createTreeWalker(el, NodeFi
   return L.length ? { t: Math.min(...L.map(x => x.top)), b: Math.max(...L.map(x => x.bottom)) } : null; }
 function cahierCaler(page){
   if(!cahierOn || !page.isConnected || !page.offsetParent) return;
-  const blocs = [], voir = el => [...el.children].forEach(c => { if(c.classList.contains('cm-redac') || c.classList.contains('redaction-template') || /^(UL|OL)$/.test(c.tagName) || (c.tagName === 'DIV' && !c.attributes.length && c.children.length && [...c.children].every(x => getComputedStyle(x).display !== 'inline'))) voir(c); else if(getComputedStyle(c).display !== 'inline') blocs.push(c); });
+  const blocs = [], voir = el => [...el.children].forEach(c => { if(c.classList.contains('cm-redac') || c.classList.contains('redaction-template') || /^(UL|OL)$/.test(c.tagName) || (c.tagName === 'DIV' && !c.attributes.length && c.children.length && [...c.children].every(x => getComputedStyle(x).display !== 'inline')) || c.classList.contains('pl-cote')) voir(c); else if(getComputedStyle(c).display !== 'inline') blocs.push(c); });
   voir(page);
   blocs.forEach(b => { b.style.removeProperty('--cal'); b.style.removeProperty('--calh'); b.style.removeProperty('--calm'); });
   // Hauteurs en pixels de la page, pas de l'écran : la projection et le Manuel agrandissent par zoom (signalé le 07/11/2026 :

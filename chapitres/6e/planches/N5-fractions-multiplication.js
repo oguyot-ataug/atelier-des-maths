@@ -44,7 +44,7 @@ PLANCHES['6e|Fractions : multiplication'] = [
       { etoiles: 3, col: 1, cahier: true, consigne: `Une classe de 28 élèves part en sortie. ${T(3, 7)} des élèves vont au musée, les autres au parc. Combien d'élèves vont au parc ?`,
         corr: cm1Redac('Nombre d\'élèves qui vont au musée', `${F(3, 7)} × 28 = 3 × ${F(28, 7)} = 3 × 4 = 12`, '12 élèves vont au musée.') + cm1Redac('Nombre d\'élèves qui vont au parc', '28 − 12 = 16', '16 élèves vont au parc.') },
       { etoiles: 3, col: 1, cahier: true, consigne: `Un réservoir de 60 L est rempli aux ${T(2, 3)}. On utilise ${T(1, 4)} de son contenu. Combien de litres reste-t-il ?`,
-        corr: cm1Redac('Contenu du réservoir', `${F(2, 3)} × 60 = 40`, 'Le réservoir contient 40 L.') + cm1Redac('Quantité utilisée', `${F(1, 4)} × 40 = 10`, 'On utilise 10 L.') + cm1Redac('Quantité restante dans le réservoir', '40 − 10 = 30', 'Il reste 30 L.') },
+        corr: cm1Redac('Contenu du réservoir', [{ nom: 'C', lignes: [`${F(2, 3)} × 60`, `2 × ${F(60, 3)}`, '2 × 20', '40'] }], 'Le réservoir contient 40 L.') + cm1Redac('Quantité utilisée', [{ nom: 'U', lignes: [`${F(1, 4)} × 40`, F(40, 4), '10'] }], 'On utilise 10 L.') + cm1Redac('Quantité restante dans le réservoir', '40 − 10 = 30', 'Il reste 30 L.') },
     ] },
   { titre: 'Prendre un pourcentage d\'une quantité', duree: '35 min',
     attendus: ['Savoir que p % de a, c\'est p/100 × a', 'Calculer mentalement 10 %, 25 %, 50 %, 75 %', 'Calculer une réduction ou une augmentation'],
@@ -78,7 +78,7 @@ PLANCHES['6e|Fractions : multiplication'] = [
         eleve: plListe(['Prix des cerises : ' + B() + ' €', 'Prix des fraises : ' + B() + ' €', 'Total : ' + B() + ' €']),
         corr: plListe(['Prix des cerises : ' + R(6) + ' €', 'Prix des fraises : ' + R(3) + ' €', 'Total : ' + R(9) + ' €']) },
       { etoiles: 3, col: 1, cahier: true, consigne: `Un roman a 360 pages. Le premier jour, Sacha lit ${T(1, 4)} du livre ; le deuxième jour, ${T(1, 3)} du livre. Combien de pages lui reste-t-il à lire ? Quelle fraction du livre cela représente-t-il ?`,
-        corr: cm1Redac('Pages lues', { suite: [`${F(1, 4)} × 360 = 90`, `${F(1, 3)} × 360 = 120`, '90 + 120 = 210'] }, 'Sacha a lu 210 pages.') + cm1Redac('Pages restantes', '360 − 210 = 150', `Il lui reste 150 pages, soit ${F(150, 360)} = ${F(5, 12)} du livre.`) },
+        corr: cm1Redac('Pages lues', [{ nom: 'L', lignes: [`${F(1, 4)} × 360 + ${F(1, 3)} × 360`, `${F(360, 4)} + ${F(360, 3)}`, '90 + 120', '210'] }], 'Sacha a lu 210 pages.') + cm1Redac('Pages restantes', '360 − 210 = 150', `Il lui reste 150 pages, soit ${F(150, 360)} = ${F(5, 12)} du livre.`) },
       { etoiles: 3, cahier: true, consigne: 'Le prix d\'un jeu augmente de 10 %, puis baisse de 10 %. Revient-il à son prix de départ (40 €) ? Calcule.',
         corr: cm1Redac('Augmentation du prix', `${F(10, 100)} × 40 = ${F(400, 100)} = 4`, 'Le prix augmente de 4 €.') + cm1Redac('Prix après l\'augmentation', '40 + 4 = 44', 'Après l\'augmentation, le jeu coûte 44 €.')
           + cm1Redac('Baisse du prix', `${F(10, 100)} × 44 = ${F(440, 100)} = 4,40`, 'Le prix baisse de 4,40 €.') + cm1Redac('Prix après la baisse', '44 − 4,40 = 39,60', 'Le jeu coûte 39,60 € : il ne revient pas à 40 €.') },

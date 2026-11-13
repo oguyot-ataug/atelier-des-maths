@@ -168,6 +168,9 @@ fichier) ; la page est écrite par `tools/build-seo.js`.
 - **Au collège, on garde les écritures fractionnaires, y compris pour symboliser les divisions** (demandé le 08/11/2026) :
   fraction d'une quantité, pourcentage, quatrième proportionnelle (Thalès, échelles), aire du triangle, volume de la pyramide,
   moyenne : `F('2 \\times 35', 5)`, `2 × F(35, 5)`, `F(21, 4) = 5,25`, jamais « (2 × 35) : 5 », « 2 × (35 : 5) », « 9 × 4 : 6 ».
+  Jamais de saut de « a/b × c » au résultat (relecture du 13/11/2026 : « on passe de 3/4 × 60 à 3 × 15. Il manque 3 × 60/4 ») : V = 3/4 × 60,
+  V = 3 × 60/4, V = 3 × 15, V = 45 ; pourcentage : 5/100 × 640, (5 × 640)/100, 3 200/100, 32. Corrigé imprimé trop long : `plCote(a, b)`
+  (planches.js) met deux raisonnements côte à côte sur papier seulement.
   Les trois méthodes de a/b × c (6e N5), dans cet ordre : Méthode 1 `2/5 × 35 = 0,4 × 35 = 14` ; Méthode 2
   `2/5 × 35 = 2 × 35/5 = 2 × 7 = 14` ; Méthode 3 `2/5 × 35 = (2 × 35)/5 = 70/5 = 14`. Le « : » reste pour une division seule
   (« 22 : 2 = 11 »), au primaire, en programmation et dans les exercices sur les priorités.

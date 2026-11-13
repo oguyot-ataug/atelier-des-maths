@@ -3999,6 +3999,11 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1444', date:'2026-11-13', items:[
+    "Corrigés : plus de saut de « a/b × c » au résultat -- demandé : « on passe de 3/4 × 60 à 3 × 15. Il manque 3 × 60/4 ». Étape a × c/b ajoutée et calcul en colonne (une lettre, une étape par ligne) : 5e Fractions planche 5, 4e Fractions (multiplication et division) planches 2 et 4, 6e Fractions (multiplication) planches 2 et 4 ; pourcentages en écriture fractionnaire (5e Statistiques, 5e Pourcentages).",
+    "Manuel : la fraction de la première ligne d'un énoncé n'est plus coupée en haut -- demandé : « elle est souvent un peu tronquée sur le haut ».",
+    "Corrigés imprimés trop longs : deux raisonnements côte à côte sur le papier seulement (5e Fractions planche 5 exercice 7, 4e Fractions planche 4 exercice 5) ; à l'écran et dans le cahier, ils restent l'un sous l'autre."
+  ]},
   { version:'2026-08-19.1443', date:'2026-11-13', items:[
     "Règle pour tout le site, à l'écran : les nombres tapés sont alignés sur ceux de l'énoncé et de même taille -- demandé : « les nombres tapés par l'utilisateur doivent être alignés avec les nombres présents dans l'énoncé et de même taille ». Fractions à remplir : même géométrie que les fractions de l'énoncé (numérateur, dénominateur et barre alignés à moins d'un pixel) ; opérations posées et tableaux : police et taille des chiffres de l'opération.",
     "Corrigés : les fractions à trou (5e Fractions, planche 4, exercice 6) sont écrites exactement comme les autres fractions, à l'écran et sur papier -- demandé : « Dans la correction, il y a des tailles et des polices différentes ! ».",

@@ -42,7 +42,7 @@ PLANCHES['5e|Statistiques'] = [
       { etoiles: 2, col: 1, consigne: 'Notes d\'un contrôle : 12 ; 15 ; 9 ; 12 ; 18 ; 15 ; 12 ; 7 ; 15 ; 12. Complète.',
         ...rmp([['Effectif total : @', 10], ['Effectif de la note 12 : @', 4], ['Fréquence de la note 15 : @ %', 30], ['Fréquence des notes inférieures à 10 : @ %', 20]], 2) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Dans un collège de 480 élèves, 30 % sont en 6e et 25 % en 5e. Combien d\'élèves sont en 6e ? en 5e ? Quelle fréquence représentent les élèves de 4e et de 3e réunis ?',
-        corr: cm1Redac('Élèves de 6e', `${F(30, 100)} × 480 = 144`, 'Il y a 144 élèves en 6e.') + cm1Redac('Élèves de 5e', `${F(25, 100)} × 480 = 120`, 'Il y a 120 élèves en 5e.') + cm1Redac('4e et 3e', '100 % − 30 % − 25 % = 45 %', 'Les élèves de 4e et de 3e représentent 45 % des élèves.') },
+        corr: cm1Redac('Élèves de 6e', [{ nom: 'S', lignes: [`${F(30, 100)} × 480`, F('30 \\times 480', 100), F('14\\,400', 100), '144'] }], 'Il y a 144 élèves en 6e.') + cm1Redac('Élèves de 5e', [{ nom: 'C', lignes: [`${F(25, 100)} × 480`, F('25 \\times 480', 100), F('12\\,000', 100), '120'] }], 'Il y a 120 élèves en 5e.') + cm1Redac('4e et 3e', '100 % − 30 % − 25 % = 45 %', 'Les élèves de 4e et de 3e représentent 45 % des élèves.') },
     ] },
   { titre: 'Diagrammes en barres et circulaires', duree: '40 min',
     attendus: ['Lire un diagramme en barres ou circulaire', 'Compléter un diagramme en barres', 'Choisir le diagramme adapté'],
