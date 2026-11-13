@@ -2504,7 +2504,7 @@ body.plp-ouvert .cahier-flottant{ top:56px; bottom:auto; left:16px; z-index:2147
   body.cahier-on .cahier-actif .katex:has(.mfrac) .base > .mbin{ position:relative; top:calc(.25em + 1px); } /* + 1 px : la barre chevauche la ligne principale au lieu de la surmonter */
   body.cahier-on .cahier-actif .cahier-op{ position:relative; top:.27em; font-size:1.2em; line-height:0; }
   body.cahier-on .cahier-actif .cahier-op-fin, body.cahier-on .cahier-actif .cahier-fin{ font-family:'KaTeX_Main','Times New Roman',serif !important; font-size:1em; font-weight:400 !important; } /* ≈ ≠ ≤ ≥ : absents de Caveat, la police de secours écrite en gras et agrandie était trop épaisse ; tracé fin de la police des formules, dans TOUTES les lignes du cahier (relecture du 13/11/2026 : « le environ égal est trop grossier ») */
-  body.cahier-on .cahier-actif .katex .sqrt .hide-tail{ transform:scaleY(.8); transform-origin:50% 0; } /* racine : la pointe du signe s'arrête sur la ligne d'écriture au lieu de passer dessous (barre inchangée) -- relecture du 13/11/2026 */
+  body.cahier-on .cahier-actif .katex .sqrt .hide-tail{ transform-origin:50% 0; transform:var(--rac, none); } /* racine : la pointe du signe s'arrête sur la ligne d'écriture au lieu de passer dessous (barre inchangée) -- relecture du 13/11/2026 */
   body.cahier-on .cahier-actif .cahier-fr2{ line-height:64px !important; }
   body.cahier-on .cahier-actif > div:not([class]){ display:flow-root; } /* une marge intérieure (figure : margin:6px auto) ne sort plus du bloc : la suite reste calée sur les carreaux */
   body.cahier-on .cahier-actif svg.cahier-axe{ width:var(--axw, 100%) !important; min-width:0 !important; max-width:none !important; margin-left:var(--axl, 0px) !important; margin-top:var(--axt, 0px) !important; } /* droite graduée calée sur la feuille (cahierCaler) */ /* phrase à fraction sur plusieurs lignes : chaque ligne sur une ligne principale (cahierCaler) */ /* milieu du « = » manuscrit (6,5 px au-dessus de la ligne d'écriture à 27,6 px) posé sur la ligne principale */
@@ -2517,11 +2517,14 @@ body.plp-ouvert .cahier-flottant{ top:56px; bottom:auto; left:16px; z-index:2147
   body.cahier-on .cahier-actif .cm-redac-col td{ padding:var(--colh, 0px) 6px 0 0; line-height:32px; height:32px; vertical-align:baseline; } /* chaque ligne posée sur une ligne principale (cahierColCaler) */
   body.cahier-on .cahier-actif .cm-redac-pose{ display:block; margin-left:0 !important; }
   body.cahier-on .cahier-actif .cm-encadre{ border-color:#15803D; color:#15803D; padding:0 6px; line-height:24px; }
-  body.cahier-on .cahier-actif .cm-encadre:has(.mfrac){ line-height:normal; padding:1px 6px 5px; } /* résultat en fraction : le cadre entoure aussi le dénominateur (relecture 5e-N4-P5-E7 du 13/11/2026) */
+  body.cahier-on .cahier-actif .cm-encadre:has(.mfrac){ line-height:normal; padding:5px 7px 9px; } /* résultat en fraction : le cadre entoure aussi le dénominateur (relecture 5e-N4-P5-E7 du 13/11/2026) */
   body.cahier-on .cahier-actif .cm-redac-phrase{ font-weight:600; }
   body.cahier-on .cahier-actif ul, body.cahier-on .cahier-actif ol{ margin:0; padding-left:24px; }
   body.cahier-on .cahier-actif li, body.cahier-on .cahier-actif p{ line-height:32px; margin:0; }
-  body.cahier-on .cahier-actif .katex{ font-size:.82em; }
+  body.cahier-on .cahier-actif .katex{ font-size:1em; font-weight:inherit; } /* formules en Caveat : même taille et même graisse que l'écriture de la ligne (0,82 em compensait les grands chiffres de la police des formules) */
+  /* Calculs écrits à la main comme le texte (relecture du 13/11/2026 : « la police change lors des calculs ! ça ne fait pas naturel ! ») :
+     formules en Caveat ; un signe absent de Caveat (−, ≈…) retombe sur la police des formules ; lettres droites, pas d'italique. */
+  body.cahier-on .cahier-actif .katex .katex-html, body.cahier-on .cahier-actif .katex .katex-html *{ font-family:'Caveat','KaTeX_Main','Times New Roman',serif !important; font-style:normal !important; font-weight:inherit; }
   body.cahier-on .cahier-actif sup, body.cahier-on .cahier-actif sub{ line-height:0; } /* un exposant (XXIᵉ, 10⁸) ne fait pas déborder la ligne sur le carreau suivant */
   /* Rédactions types du collège (.redaction-template, .we-row) dans une correction : une ligne par ligne du cahier, sans cadre
      (08/11/2026, mode cahier étendu au collège) ; la dernière ligne (le résultat) en vert. */

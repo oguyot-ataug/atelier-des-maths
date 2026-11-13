@@ -522,6 +522,7 @@ function cahierCaler(page){
     if(ef && et && (et.t - ef.b) / (k || 1) >= 33) r.style.setProperty('--redm', '-32px'); });
   // Calculs en colonne calés EN DERNIER, une fois tous les blocs au-dessus ajustés (relecture du 13/11/2026 : « le deuxième calcul ne
   // suit pas les lignes principales » : les marges des blocs précédents, posées après, le décalaient), puis leur hauteur arrondie au carreau.
+  cahierRacines(page, k);
   cahierColCaler(page, k);
   page.querySelectorAll('table.cm-redac-col').forEach(t => { if(!blocs.includes(t)) return; t.style.removeProperty('--cal');
     const m = (t.getBoundingClientRect().height / (k || 1)) % 32, r = m < 1 ? 0 : Math.round((32 - m) * 100) / 100; if(r > .01) t.style.setProperty('--cal', r + 'px'); });
@@ -548,6 +549,27 @@ function cahierColCaler(page, k){
       // Écart de moins de 0,3 px : on garde la valeur (sinon des centièmes de pixel relancent sans fin l'observateur de taille).
       const d0 = parseFloat(r.style.getPropertyValue('--colh')) || 0, d = Math.max(0, Math.round((d0 + cible - bl) * 100) / 100);
       if(Math.abs(cible - bl) > .3) r.style.setProperty('--colh', d + 'px'); });
+  });
+}
+/* Racines carrées d'une page de cahier (relecture du 13/11/2026 : « Sur la première racine, elle est posée sur la ligne principale mais
+   colle les chiffres au dessus. Sur la deuxième, l'écart au dessus est bien mais le symbole ne touche pas la ligne principale ») : chaque
+   signe est recalé à part (KaTeX dessine une racine plus longue quand une virgule descend) : pointe sur la ligne d'écriture, barre à
+   0,15 em au-dessus de l'encre des chiffres (mesurée sur les glyphes), par translation et étirement vertical du seul tracé du signe. */
+function cahierRacines(page, k){
+  page.querySelectorAll('.katex .sqrt').forEach(sq => {
+    const ht = sq.querySelector('.hide-tail'), sv = ht && ht.querySelector('svg'); if(!sv) return;
+    ht.style.removeProperty('--rac');
+    const q = sv.getBoundingClientRect(); if(!(q.height > 2)) return;
+    const s = document.createElement('span'); s.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline;'; sq.insertBefore(s, sq.firstChild);
+    const Y = s.getBoundingClientRect().bottom; s.remove();
+    const corps = [...sq.querySelectorAll('.mord, .mpunct')].filter(e => !e.closest('.hide-tail') && !e.querySelector('.mord') && e.textContent.trim());
+    if(!corps.length) return;
+    const cs = getComputedStyle(corps[0]); cahierMesure.font = `${cs.fontStyle} ${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+    const asc = Math.max(...corps.map(e => cahierMesure.measureText(e.textContent.trim()).actualBoundingBoxAscent)) * (k || 1);
+    const em = parseFloat(cs.fontSize) * (k || 1), haut = Y - asc - .15 * em, bas = Y + .02 * em;
+    const sc = (bas - haut) / q.height, tr = (haut - q.top) / (k || 1);
+    if(Math.abs(sc - 1) < .01 && Math.abs(tr) < .3) return;
+    ht.style.setProperty('--rac', `translateY(${tr.toFixed(2)}px) scaleY(${sc.toFixed(3)})`);
   });
 }
 /* Signes écrits en texte d'une ligne à fraction (« = », « : », « + »…) : le milieu du signe, mesuré sur son glyphe, posé

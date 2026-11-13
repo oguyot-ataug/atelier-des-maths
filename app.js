@@ -4061,6 +4061,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1448', date:'2026-11-13', items:[
+    "Cahier Seyès : les calculs s'écrivent à la main comme le texte (même écriture, même taille, même graisse) -- demandé : « la police change lors des calculs ! ça ne fait pas naturel ! ».",
+    "Cahier Seyès : chaque racine carrée est posée à part -- pointe sur la ligne d'écriture, barre juste au-dessus des chiffres, sans les toucher (demandé : « Sur la première racine, elle […] colle les chiffres au dessus. Sur la deuxième, […] le symbole ne touche pas la ligne principale »)."
+  ]},
   { version:'2026-08-19.1447', date:'2026-11-13', items:[
     "Cahier Seyès : le signe ≈ (et ≠, ≤, ≥) s'écrit d'un trait fin dans toutes les lignes, résultats compris -- demandé : « le environ égal est trop grossier - on en a déjà parlé » ; les racines carrées ne descendent plus sous la ligne d'écriture (4e Pythagore : √56,25, √56)."
   ]},
