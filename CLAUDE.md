@@ -88,6 +88,16 @@ instance fixe opsz 20 / graisse 400 / contour, 400 Ko, déclarée en tête de st
 d'impression utilisent `${location.origin}/assets/katex/katex.min.css`. Ne pas revenir aux liens cdnjs / Google pour ces fichiers.
 Restent chez Google : les polices de texte (Space Grotesk, Inter, JetBrains Mono, Caveat), avec des polices de secours si bloquées.
 
+## Export PDF des cours (`exportCoursPDF`, app.js ; revu le 13/11/2026)
+
+Demandé : « trop grossiers et les figures prennent trop de place avec trop de marges au dessus et en dessous […] il ne faut pas exagérer la place
+nécessaire à l'écriture ». Capture à l'échelle `PDF_ECHELLE` (2), la MÊME constante sert à la découpe des pages (un facteur écrit en dur coupait
+les pages aux trois quarts) ; figures rastérisées recadrées sur leur dessin (`pdfRognerFigures` : pixels non blancs + petite marge), hauteur
+plafonnée à 200 px (`compacterPourPdf`), SVG restants recadrés (`pdfFiguresSerrees`), cadre fin sans ombre ; interligne 2 seulement pour une
+vraie fraction (1,7 sinon) ; étiquettes Définition/Propriété et encadrés plus discrets ; encadrés masqués (« à compléter ») : nombre de lignes
+d'après le texte masqué (`pdfLignesEcriture` : ≈ 1,8 ligne manuscrite par ligne imprimée, de 2 à 12, lignes tous les 26 px). Contrôle :
+scratchpad relec/pdfcours.js (génère le PDF d'un cours dans le navigateur de test) puis pdftoppm. 5e G2 : 9 → 7 pages.
+
 ## Adresse du site : latelierdesmaths.fr (depuis le 28/10/2026)
 
 Le site est servi par GitHub Pages sur **https://latelierdesmaths.fr** (fichier `CNAME`, réglage Custom domain

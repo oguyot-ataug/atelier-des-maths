@@ -2031,12 +2031,6 @@ function blankOutSelectedBoxes(clone){
   const hideProp = document.getElementById('exportHideProprietes')?.checked;
   const hideRegle = document.getElementById('exportHideRegles')?.checked;
   if(!hideDef && !hideProp && !hideRegle) return;
-  // Lignes fines en pointillés (façon papier réglé) à la place du contenu masqué, pour
-  // guider l'écriture manuscrite de l'élève -- 4 lignes, hauteur proche de l'espace laissé
-  // avant (3 <br>).
-  const writingLines = Array.from({length:4}).map(()=>
-    '<div style="border-bottom:1px dotted #999;height:22px;margin-bottom:6px;"></div>'
-  ).join('');
   clone.querySelectorAll('.def-badge, .prop-badge').forEach(badge=>{
     const label = badge.textContent.trim();
     // startsWith (pas ===) : les badges varient en nombre et en singulier/pluriel selon les
@@ -2048,7 +2042,9 @@ function blankOutSelectedBoxes(clone){
     if(!shouldHide) return;
     const box = badge.nextElementSibling;
     if(box && box.classList.contains('def-box')){
-      box.innerHTML = writingLines;
+      // Nombre de lignes d'après le texte masqué (pdfLignesEcriture, une fois le cours mis en page) -- demandé le 13/11/2026 :
+      // « il ne faut pas exagérer la place nécessaire à l'écriture. Il y a souvent trop de place et parfois c'est un peu juste ».
+      box.dataset.pdfEcrire = '1';
       // Marge basse forcée explicitement (18px, la même que .def-box en CSS) -- garantit
       // l'espacement avec le paragraphe suivant, indépendamment d'un éventuel effet de perte
       // de marge dû au regroupement en bloc insécable (glueWithNextSibling, plus bas dans
@@ -2082,7 +2078,7 @@ function compacterPourPdf(clone){
   clone.querySelectorAll('img[alt="Figure"]').forEach(img=>{
     const l = Number(img.dataset.largeur) || 0, r = Number(img.dataset.ratio) || 0;
     if(!l || !r) return;
-    img.style.width = Math.round(Math.min(l, 230 / r)) + 'px'; img.style.maxWidth = '100%'; img.style.height = 'auto';
+    img.style.width = Math.round(Math.min(l, 200 / r)) + 'px'; img.style.maxWidth = '100%'; img.style.height = 'auto';
   });
 }
 /* Export PDF des cours : un bloc insécable (encadré de géométrie dynamique, figure, définition…) qui dépasse DE PEU le bas d'une
@@ -2117,6 +2113,63 @@ function pdfResserrerFigures(wrapper){
     if(!fait) break;
   }
 }
+/* PDF des cours (demandé le 13/11/2026 : « trop grossiers et les figures prennent trop de place avec trop de marges au dessus et en
+   dessous ») : chaque figure SVG est recadrée sur son dessin (le blanc de sa zone de dessin d'origine est retiré, même échelle), sa
+   hauteur plafonnée ; cadre fin, sans ombre, marges réduites. Ne concerne que la copie du PDF. */
+function pdfFiguresSerrees(wrapper){
+  const HMAX = 210, HMAX_DYN = 190;
+  wrapper.querySelectorAll('.figure-wrap').forEach(w => { w.style.padding = '6px 10px'; w.style.margin = '4px 0 10px'; w.style.boxShadow = 'none'; });
+  wrapper.querySelectorAll('svg').forEach(sv => {
+    if(sv.closest('.katex') || sv.parentElement.closest('svg') || sv.closest('.lesson-header, .sub-header, .def-badge, .prop-badge, button')) return;
+    const r = sv.getBoundingClientRect(); if(r.width < 80 || r.height < 50) return;
+    const vb = (sv.getAttribute('viewBox') || '').split(/[\s,]+/).map(Number); if(vb.length !== 4 || !(vb[2] > 0 && vb[3] > 0)) return;
+    let bb; try{ bb = sv.getBBox(); }catch(e){ return; } if(!bb || !(bb.width > 4 && bb.height > 4)) return;
+    const s = Math.min(r.width / vb[2], r.height / vb[3]); // échelle d'affichage (preserveAspectRatio « meet »)
+    const m = Math.max(bb.width, bb.height) * .04 + 6, x = Math.max(vb[0], bb.x - m), y = Math.max(vb[1], bb.y - m);
+    const x2 = Math.min(vb[0] + vb[2], bb.x + bb.width + m), y2 = Math.min(vb[1] + vb[3], bb.y + bb.height + m), W = x2 - x, H = y2 - y;
+    if(W * H > vb[2] * vb[3] * .9 && r.height <= HMAX) return; // déjà serrée et pas trop haute
+    const hmax = sv.closest('.dyn-activite') ? HMAX_DYN : HMAX, k = Math.min(s, hmax / H);
+    sv.setAttribute('viewBox', `${x} ${y} ${W} ${H}`);
+    sv.style.width = Math.round(W * k) + 'px'; sv.style.height = Math.round(H * k) + 'px'; sv.style.maxWidth = '100%'; sv.style.maxHeight = 'none';
+    sv.removeAttribute('width'); sv.removeAttribute('height');
+  });
+}
+/* Figures rastérisées du PDF (img alt="Figure", expandStepDemosInClone) : le blanc de la zone de dessin d'origine est coupé (pixels non
+   blancs, petite marge), la largeur affichée réduite d'autant -- même échelle, figure seulement moins haute et moins large. */
+async function pdfRognerFigures(clone){
+  for(const img of clone.querySelectorAll('img[alt="Figure"]')){
+    try{
+      const im = new Image(); im.src = img.src; await (im.decode ? im.decode() : new Promise(r => { im.onload = r; }));
+      const W = im.naturalWidth, H = im.naturalHeight; if(!(W > 20 && H > 20)) continue;
+      const cv = document.createElement('canvas'); cv.width = W; cv.height = H; const g = cv.getContext('2d'); g.drawImage(im, 0, 0);
+      const d = g.getImageData(0, 0, W, H).data; let x0 = W, y0 = H, x1 = -1, y1 = -1;
+      for(let y = 0; y < H; y++) for(let x = 0; x < W; x++){ const i = (y * W + x) * 4;
+        if(d[i + 3] > 12 && (d[i] < 236 || d[i + 1] < 236 || d[i + 2] < 236)){ if(x < x0) x0 = x; if(x > x1) x1 = x; if(y < y0) y0 = y; if(y > y1) y1 = y; } }
+      if(x1 < 0) continue;
+      const m = Math.round(Math.max(x1 - x0, y1 - y0) * .03 + 6 * W / (Number(img.dataset.largeur) || W));
+      x0 = Math.max(0, x0 - m); y0 = Math.max(0, y0 - m); x1 = Math.min(W - 1, x1 + m); y1 = Math.min(H - 1, y1 + m);
+      const w = x1 - x0 + 1, h = y1 - y0 + 1; if(w * h > W * H * .88) continue;
+      const c2 = document.createElement('canvas'); c2.width = w; c2.height = h; c2.getContext('2d').drawImage(cv, x0, y0, w, h, 0, 0, w, h);
+      img.src = c2.toDataURL('image/png');
+      const l = Number(img.dataset.largeur) || 0; if(l) img.dataset.largeur = Math.round(l * w / W);
+      img.dataset.ratio = h / w; img.style.maxWidth = (img.dataset.largeur || w) + 'px';
+    }catch(e){ console.warn('PDF : recadrage de figure', e); }
+  }
+}
+/* Lignes d'écriture des encadrés masqués (Définitions, Propriétés, Règles « à compléter ») : autant de lignes que le texte masqué en
+   demande -- environ 1,8 ligne manuscrite par ligne imprimée (on écrit plus gros qu'on n'imprime), au moins 2, au plus 12 ; une figure
+   de l'encadré compte pour sa hauteur. Lignes en pointillés tous les 26 px (environ 7 mm). */
+function pdfLignesEcriture(wrapper){
+  wrapper.querySelectorAll('.def-box[data-pdf-ecrire]').forEach(box => {
+    const tops = []; const w = document.createTreeWalker(box, NodeFilter.SHOW_TEXT, { acceptNode: n => n.parentElement.closest('.katex-mathml, svg') ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT });
+    for(let n = w.nextNode(); n; n = w.nextNode()){ if(!n.nodeValue.trim()) continue; const g = document.createRange(); g.selectNodeContents(n);
+      [...g.getClientRects()].forEach(q => { if(q.height > 3 && !tops.some(t => Math.abs(t - q.bottom) < 7)) tops.push(q.bottom); }); }
+    const fig = [...box.querySelectorAll('svg, img, table')].filter(f => !f.closest('.katex') && !f.parentElement.closest('svg, table')).reduce((h, f) => h + f.getBoundingClientRect().height, 0);
+    const n = Math.max(2, Math.min(12, Math.ceil(tops.length * 1.8 + fig / 26)));
+    box.innerHTML = Array.from({ length: n }, () => '<div style="border-bottom:1px dotted #999;height:26px;"></div>').join('');
+    box.style.paddingTop = '2px'; box.style.paddingBottom = '8px'; box.style.marginBottom = '10px'; delete box.dataset.pdfEcrire;
+  });
+}
 /* PDF des cours exportés gardés dans « Mes dossiers » (demandé le 11/11/2026 : « Quand je crée un pdf, je pourrais aussi l'enregistrer dans ces
    dossiers ») : stockage privé « documents » (<id du compte>/<uuid>.pdf, lisible par son seul propriétaire), table docs_pdf
    (supabase/sql/2026-11-11-programmes-pdf-dossiers.sql) ; ouverture, rangement, renommage dans evaluation.js (EVF_SORTES.k). */
@@ -2129,6 +2182,9 @@ async function docsPdfGarder(blob, nom){
   const { error: e2 } = await sb.from('docs_pdf').insert({ nom: String(nom || 'Cours').trim().slice(0, 120) || 'Cours', chemin, taille: blob.size });
   if(e2){ await sb.storage.from('documents').remove([chemin]); throw e2; }
 }
+// Échelle de la capture du PDF des cours (2 : texte et traits nets ; 1,5 donnait un rendu un peu flou -- « trop grossiers », 13/11/2026).
+// La découpe en pages (plus bas) utilise la MÊME échelle.
+const PDF_ECHELLE = 2;
 async function exportCoursPDF(){
   if(typeof familleSansImpression==='function' && familleSansImpression()) return;
   const hint=document.getElementById('exportHint');
@@ -2173,15 +2229,19 @@ async function exportCoursPDF(){
   clone.querySelectorAll('.interaction-hint').forEach(el=>el.remove());
   try{ await expandStepDemosInClone(clone); }
   finally{ resetAdvancedStepDemos(demosAvancees); } // la page affichée retrouve ses figures de départ
+  try{ await pdfRognerFigures(clone); }catch(e){ console.warn(e); }
   compacterPourPdf(clone);
+  // Étiquettes et encadrés plus discrets sur le papier (demandé le 13/11/2026 : PDF « trop grossiers ») : réglages d'écran trop gros une fois imprimés.
+  clone.querySelectorAll('.def-badge, .prop-badge').forEach(b => { b.style.fontSize = '10px'; b.style.padding = '2px 9px'; b.style.marginBottom = '4px'; b.style.borderRadius = '5px'; });
+  clone.querySelectorAll('.def-box').forEach(b => { b.style.padding = '8px 12px'; b.style.marginBottom = '10px'; });
   // Empêche un saut de page de couper un paragraphe (ou une formule) en deux au milieu d'une
   // phrase -- protégé dans tous les cas, pas seulement s'il contient une formule (signalé :
   // "le dernier texte est coupé").
   clone.querySelectorAll('p, li, .step-column > div').forEach(el=>{
     el.style.pageBreakInside='avoid'; el.style.breakInside='avoid';
-    if(el.querySelector('.tex')){
-      el.style.lineHeight='2.2'; // laisse assez de place verticale au numérateur/dénominateur d'une fraction
-    }
+    // Interligne agrandi seulement pour une vraie fraction (numérateur et dénominateur) ; une autre formule (angle, puissance)
+    // garde un interligne presque normal -- demandé le 13/11/2026 (PDF « trop grossiers », trop de place).
+    if(el.querySelector('.tex')) el.style.lineHeight = /\\[dt]?frac/.test(el.innerHTML) || el.querySelector('.mfrac') ? '2' : '1.7';
   });
   // PDF uniquement : les grilles "auto-fit" (ex. "Calculs astucieux", 2 colonnes sur le site)
   // n'ont pas la place de tenir sur la largeur réduite du wrapper PDF (700px, contre ~1032px
@@ -2302,6 +2362,8 @@ async function exportCoursPDF(){
   // pagination incohérent d'une fois sur l'autre selon la vitesse de connexion. Signalé :
   // "ce n'est pas stable" -- symptôme caractéristique d'une dépendance au timing réseau.
   if(document.fonts && document.fonts.ready) await document.fonts.ready;
+  try{ pdfFiguresSerrees(wrapper); }catch(e){ console.warn(e); }
+  try{ pdfLignesEcriture(wrapper); }catch(e){ console.warn(e); }
   try{ pdfResserrerFigures(wrapper); }catch(e){ console.warn(e); }
   hint.textContent='Génération du PDF en cours…';
   // html2canvas photographie la page EN TENANT COMPTE DU DÉFILEMENT : si l'on a fait défiler le
@@ -2323,14 +2385,14 @@ async function exportCoursPDF(){
     if(!calquePdf || !calquePdf.isConnected) calquePdf = document.querySelector('.html2pdf__overlay');
     return !(calquePdf && (el===calquePdf || calquePdf.contains(el) || el.contains(calquePdf)));
   };
-  html2pdf().set({margin:10, filename:title.replace(/[^\w-]+/g,'_')+'.pdf', html2canvas:{scale:1.5, useCORS:true, foreignObjectRendering:false, scrollX:0, scrollY:0, windowHeight:wrapper.scrollHeight, ignoreElements:horsExport}, jsPDF:{unit:'mm',format:'a4'}, pagebreak:{mode:['css']}})
+  html2pdf().set({margin:10, filename:title.replace(/[^\w-]+/g,'_')+'.pdf', html2canvas:{scale:PDF_ECHELLE, useCORS:true, foreignObjectRendering:false, scrollX:0, scrollY:0, windowHeight:wrapper.scrollHeight, ignoreElements:horsExport}, jsPDF:{unit:'mm',format:'a4'}, pagebreak:{mode:['css']}})
     .from(wrapper).toCanvas().then(function(){
       // html2pdf place ses sauts de page tous les 1046 px (hauteur utile arrondie à l'inférieur), mais découpait
       // ensuite l'image tous les 1047,3 px (calcul fait sur la largeur arrondie de l'image) -- signalé : « il
       // reste encore parfois des défauts de découpage » : 1,3 px de décalage par page, qui s'accumulait jusqu'à
       // faire apparaître le haut du badge suivant en bas de page. La découpe suit donc exactement la même
       // hauteur que les sauts de page (la page imprimée fait 276,5 mm au lieu de 277, invisible).
-      const ps = this.prop.pageSize, largeur = this.prop.canvas.width, hauteur = Math.round(ps.inner.px.height*1.5);
+      const ps = this.prop.pageSize, largeur = this.prop.canvas.width, hauteur = Math.round(ps.inner.px.height*PDF_ECHELLE);
       ps.inner.ratio = (hauteur + 0.5)/largeur;
       ps.inner.height = ps.inner.width*hauteur/largeur;
     }).toPdf().get('pdf').then(pdf=>{
@@ -3999,6 +4061,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1446', date:'2026-11-13', items:[
+    "PDF des cours plus fins et plus compacts -- demandé : « trop grossiers et les figures prennent trop de place avec trop de marges au dessus et en dessous ». Image plus nette ; chaque figure recadrée sur son dessin (le blanc autour est retiré), cadre fin sans ombre ; formules sans interligne exagéré (seules les vraies fractions gardent un peu de place) ; étiquettes Définition / Propriété plus discrètes. Exemple : 5e Angles et parallélisme passe de 9 à 7 pages.",
+    "Définitions, propriétés ou règles à compléter : le nombre de lignes d'écriture suit la longueur du texte masqué (de 2 à 12 lignes) au lieu de 4 lignes partout -- demandé : « il ne faut pas exagérer la place nécessaire à l'écriture. Il y a souvent trop de place et parfois c'est un peu juste »."
+  ]},
   { version:'2026-08-19.1445', date:'2026-11-13', items:[
     "5e Puissances, planche 4 « Problèmes : aires et volumes » refaite -- demandé : « refais-la ainsi ». Six exercices au lieu de trois : écrire l'aire ou le volume avec une puissance (A = 8² = 64 cm²), compléter par cm, cm² ou cm³, tableau d'un cube (aire d'une face, volume), périmètre puis aire d'un carré, aquarium, et défi « on double l'arête » (volume × 8 = 2³, aire × 4 = 2²) ; corrigés en colonne."
   ]},
