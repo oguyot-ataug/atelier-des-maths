@@ -3992,6 +3992,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1432', date:'2026-11-13', items:[
+    "Cases à cocher à l'écran (5e Angles et parallélisme, planche 6, exercice 2) : toutes les cases ont la même taille, un petit carré qui se coche d'un ✓ (la case à cocher était plus large que les autres et trahissait la réponse). Après « Vérifier », seules les cases cochées sont colorées, en vert ou en rouge : une case vide ne montre plus où était la bonne réponse."
+  ]},
   { version:'2026-08-19.1431', date:'2026-11-13', items:[
     "Cahier de la classe et évaluations : « Modifier » ouvre toujours le bon bloc -- signalé : « dans le corrigé de l'exercice 3 page 37 en 5e, lorsque j'édite le bloc a., il ouvre d. ». Les blocs d'une entrée rouverte gardaient les numéros d'une session précédente ; un bloc ajouté ensuite pouvait reprendre le numéro d'un autre. Chaque bloc relu reçoit maintenant un numéro neuf, ce qui répare aussi les entrées déjà enregistrées."
   ]},

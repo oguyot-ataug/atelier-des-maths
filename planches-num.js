@@ -227,7 +227,7 @@ function plNumAnalyser(x){
       // CE2-N3-P1-E3 du 03/11/2026 : « c'est à l'élève de poser les nombres dans les cases ; faire plus de cases que prévues ») :
       // elle ne compte pas dans le score ; remplie à tort, elle est marquée fausse.
       // Case à choix qui doit rester vide (case à cocher d'un tableau, relecture 5e-G2-P6-E2 du 12/11/2026) : même bascule au clic.
-      if(r.hasAttribute('data-vide')){ tr.outerHTML = `<button type="button" class="pn-case pn-signe" data-pn="${id}" data-pnv="${id}"${tr.dataset.plchoix ? ` data-pnchoix="${tr.dataset.plchoix.replace(/"/g, '&quot;')}"` : ''}></button>`; cibles.push({ type: 'vide', id }); continue; }
+      if(r.hasAttribute('data-vide')){ tr.outerHTML = `<button type="button" class="pn-case pn-signe${tr.dataset.plchoix === '✓' ? ' pn-coche' : ''}" data-pn="${id}" data-pnv="${id}"${tr.dataset.plchoix ? ` data-pnchoix="${tr.dataset.plchoix.replace(/"/g, '&quot;')}"` : ''}></button>`; cibles.push({ type: 'vide', id }); continue; }
       if(r.dataset.entre){ const [a, b] = r.dataset.entre.split('|').map(plNumVal); // réponse ouverte : un nombre entre a et b
         tr.outerHTML = `<button type="button" class="pn-case" data-pn="${id}" data-pnv="${id}" style="min-width:${Math.min(320, r.textContent.trim().length * 12 + 26)}px"></button>`;
         cibles.push({ type: 'entre', id, rep: [a, b] }); continue; }
@@ -244,7 +244,7 @@ function plNumAnalyser(x){
       // « sur écran, la case n'est pas assez grande pour écrire le résultat »).
       // width en plus de min-width : un min-width en pourcentage compte pour 0 dans la largeur naturelle de la boîte, et la case passait
       // à la ligne en projection (relecture bêta CE2-N3-P1-E2 du 07/11/2026 : « pourquoi la réponse est sur la ligne du dessous ? »).
-      tr.outerHTML = `<button type="button" class="pn-case${large ? ' pn-large' : ''}${base ? ' pn-base' : ''}${tr.classList.contains('pl-case-seule') ? ' pn-signe' : ''}" data-pn="${id}" data-pnv="${id}"${tr.dataset.plchoix ? ` data-pnchoix="${tr.dataset.plchoix.replace(/"/g, '&quot;')}" style="min-width:${Math.max(...tr.dataset.plchoix.split('|').map(t => t.length)) * 11 + 26}px"` : ''}${tr.classList.contains('pl-case-seule') ? '' : large ? ` style="min-width:min(100%, ${Math.max(120, lg * 11 + 30)}px);width:${Math.max(120, lg * 11 + 30)}px;max-width:100%"` : largeur ? ` style="min-width:${largeur > 320 ? `min(100%, ${largeur}px)` : largeur + 'px'}"` : ''}></button>`;
+      tr.outerHTML = `<button type="button" class="pn-case${large ? ' pn-large' : ''}${base ? ' pn-base' : ''}${tr.classList.contains('pl-case-seule') ? ' pn-signe' : ''}${tr.dataset.plchoix === '✓' ? ' pn-coche' : ''}" data-pn="${id}" data-pnv="${id}"${tr.dataset.plchoix ? ` data-pnchoix="${tr.dataset.plchoix.replace(/"/g, '&quot;')}" style="min-width:${Math.max(...tr.dataset.plchoix.split('|').map(t => t.length)) * 11 + 26}px"` : ''}${tr.classList.contains('pl-case-seule') ? '' : large ? ` style="min-width:min(100%, ${Math.max(120, lg * 11 + 30)}px);width:${Math.max(120, lg * 11 + 30)}px;max-width:100%"` : largeur ? ` style="min-width:${largeur > 320 ? `min(100%, ${largeur}px)` : largeur + 'px'}"` : ''}></button>`;
       // classes : la réponse attendue contient un grand nombre écrit par classes, l'élève doit l'écrire ainsi.
       const brut = r.textContent.replace(/[\u00a0\u202f]/g, ' '), classes = /\d{1,3}(?: \d{3})+/.test(brut) && plNumClassesOk(brut);
       cibles.push({ type: 'txt', id, rep, classes, maj: /^[(\[]?[A-ZÉÈ]/.test(r.textContent.trim()), perm: r.dataset.perm || '' }); // réponse en majuscule (nom de point…) : clavier en majuscules
@@ -472,7 +472,9 @@ function plNum(root, x, o){
   const marquer = res => {
     effacerMarques(); if(!res || !res.d) return;
     M.cibles.forEach((c, i) => { const el = root.querySelector(`[data-pn="${c.id}"]`) || (c.type === 'bascule' ? root.querySelector(`[data-pnt^="${c.id}:"]`)?.closest('.pl-grille, .pl-liste, ul') : null);
-      if(el && res.d[i] !== null) el.classList.add(res.d[i] ? 'pn-ok' : 'pn-ko');
+      // Case à cocher restée vide : jamais colorée, même si elle devait être cochée (sinon le rouge montrerait la bonne case).
+      const cocheVide = el && el.classList.contains('pn-coche') && !String(etat.v[c.id] || '').trim();
+      if(el && res.d[i] !== null && !cocheVide) el.classList.add(res.d[i] ? 'pn-ok' : 'pn-ko');
       // Bon nombre mais mal écrit : on dit pourquoi.
       if(el && res.d[i] === false && malEcrit(c)){ const v = String(etat.v[c.id] || '').replace(/\s+/g, '').replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1 ');
         const note = `<span class="pn-note-classes">Un espace tous les trois chiffres : ${escapeHtml(v)}</span>`, li = el.closest('li');
@@ -886,6 +888,9 @@ function plClavierPhysique(e){
     .pn-ex :is(li, .pl-item) .pn-case:not(table .pn-case):not(.pn-base){ display:inline-block; vertical-align:baseline; height:auto; font:inherit; font-weight:600;
       line-height:1.3; padding:1px 7px; margin:1px 3px; text-align:center; color:#1F3A5C; }
     .pn-ex :is(li, .pl-item) .pn-case:not(table .pn-case):not(.pn-base)::before{ content:'\\200b'; }
+    /* Case à cocher (plCase('✓')) : un petit carré, toutes de la même taille, qu'elles doivent être cochées ou laissées vides
+       (relecture du 13/11/2026, 5e-G2-P6-E2 : les cases à cocher étaient plus larges que les autres et trahissaient la réponse). */
+    .pn-ex .pn-case.pn-coche{ width:28px !important; min-width:28px !important; height:28px !important; padding:0 !important; border-radius:5px; font-size:20px; line-height:1; font-weight:700; color:#1F7A4D; }
     .pn-ex .pn-case.pn-base, .pn-ex sup .pn-case{ display:inline-block; vertical-align:baseline; height:auto; font:inherit; line-height:1.3; padding:0 4px; margin:0 1px; text-align:center; }
     .pn-ex .pn-case.pn-base::before, .pn-ex sup .pn-case::before{ content:'\\200b'; }
     .pn-ex sup .pn-case{ min-width:1.4em !important; padding:0 2px; margin:0 0 0 1px; border-width:1.5px; border-radius:4px; }
