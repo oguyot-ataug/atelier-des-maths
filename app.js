@@ -3999,6 +3999,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1438', date:'2026-11-13', items:[
+    "5e Fractions, planche 4, exercices 3 à 5 : les étapes du corrigé sont espacées, les fractions de deux lignes voisines ne se touchent plus (vignettes du Manuel, écran, projection)."
+  ]},
   { version:'2026-08-19.1437', date:'2026-11-13', items:[
     "Cahier Seyès, calculs en colonne (S = …, V = …, P = …) : chaque ligne posée sur une ligne principale, un carreau entre deux lignes de texte, deux dès qu'une ligne a une fraction ; les signes = + × sont calés sur la barre de leur propre ligne (relecture : « Il manque des + et certains sont mal placés », « des x superposés et d'autres manquants ») ; le cadre d'un résultat en fraction entoure aussi le dénominateur.",
     "5e Fractions, planche 4 : les étapes de l'exercice 5 ne se chevauchent plus ; exercice 6, barres de fraction alignées entre les deux colonnes, sur papier et à l'écran.",

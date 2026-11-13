@@ -60,12 +60,12 @@ const EF = (n, e, et, rep) => `<div style="white-space:nowrap;">${[`${n} = ${e}`
 const SMX = new Map();
 const etE = (x, corr) => { const m = SMX.get(x); if(!m) return corr ? R(x) : Fr;
   return m.f.map(([a, b]) => corr ? R(Fx(a, b)) : Fr).join(` ${m.op} `); };
-const EFe = (n, e, et, corr) => `<div style="white-space:nowrap;">${[`${n} = ${e}`, ...et.map(x => `${n} = ${etE(x, corr)}`)].map(t => `<div style="display:flex;align-items:center;gap:6px;min-height:2.4em;margin:2px 0;">${t}</div>`).join('')}</div>`;
+const EFe = (n, e, et, corr) => `<div style="white-space:nowrap;">${[`${n} = ${e}`, ...et.map(x => `${n} = ${etE(x, corr)}`)].map(t => `<div style="display:flex;align-items:center;gap:6px;min-height:2.4em;padding:5px 0;">${t}</div>`).join('')}</div>`;
 const etf = (l, cols) => ({ eleve: P3.enHaut(plGrille(l.map(([n, e, ...et]) => EF(n, e, et, x => B(Math.max(4, Math.ceil(P3.lgVis(x) * .9))))), cols || 2)),
   corr: P3.enHaut(plGrille(l.map(([n, e, ...et]) => EF(n, e, et, R)), cols || 2)),
   ecran: { eleve: P3.enHaut(plGrille(l.map(([n, e, ...et]) => EFe(n, e, et, false)), cols || 2)), corr: P3.enHaut(plGrille(l.map(([n, e, ...et]) => EFe(n, e, et, true)), cols || 2)) } });
 // Ligne d'une grille à fractions : hauteur fixe, contenu centré (la barre de fraction au milieu de la ligne).
-const fx = h => `<div style="display:flex;align-items:center;min-height:3.4em;">${h}</div>`;
+const fx = h => `<div style="display:flex;align-items:center;min-height:3.1em;">${h}</div>`;
 const sm = (op, ...f) => { const t = f.map(([a, b]) => Fx(a, b)).join(` ${op} `); SMX.set(t, { op, f }); return t; };
 PLANCHES['5e|Fractions'] = [
   { titre: 'Une fraction est un quotient', duree: '35 min',
