@@ -27,7 +27,7 @@ PLANCHES['4e|Puissances'] = [
       { etoiles: 3, cahier: true, consigne: `Une bactérie se divise en deux toutes les heures. On part d'une seule bactérie. Combien y en a-t-il au bout de 10 heures ? Écris le résultat sous forme de puissance, puis calcule-le.`,
         corr: cm1Redac('Nombre de bactéries', { suite: ['Chaque heure, le nombre est multiplié par 2.', `Au bout de 10 heures : ${p(2, 10)}`, `${p(2, 10)} = 1 024`] }, 'Au bout de 10 heures, il y a 1 024 bactéries.') },
     ] },
-  { titre: 'Puissances de 10 et préfixes', duree: '30 min',
+  { titre: 'Ancien programme : puissances de 10 et préfixes', duree: '30 min',
     attendus: ['Écrire une puissance de 10 en écriture décimale', 'Utiliser les exposants négatifs', 'Connaître les préfixes des unités'],
     exos: [
       { etoiles: 1, col: 1, consigne: 'Écris en écriture décimale.',
@@ -41,7 +41,7 @@ PLANCHES['4e|Puissances'] = [
       { etoiles: 2, cahier: true, consigne: 'Un disque dur contient 2 To (téraoctets, 1 To = 10<sup>12</sup> octets). Une photo occupe 4 Mo. Combien de photos peut-on y ranger ?',
         corr: cm1Redac('Nombre de photos', { suite: [`2 To = 2 × ${p(10, 12)} octets`, `4 Mo = 4 × ${p(10, 6)} octets`, `(2 × ${p(10, 12)}) : (4 × ${p(10, 6)}) = 0,5 × ${p(10, 6)}`, '0,5 × 1 000 000 = 500 000'] }, 'On peut y ranger 500 000 photos.') },
     ] },
-  { titre: 'Calculer avec des puissances de 10', duree: '35 min',
+  { titre: 'Ancien programme : calculer avec des puissances de 10', duree: '35 min',
     attendus: ['Multiplier et diviser des puissances de 10', 'Multiplier un nombre par une puissance de 10', 'Calculer une expression avec des puissances de 10'],
     exos: [
       { etoiles: 1, col: 1, consigne: 'Écris sous la forme d\'une seule puissance de 10.',
@@ -57,7 +57,7 @@ PLANCHES['4e|Puissances'] = [
       { etoiles: 3, cahier: true, consigne: `Calcule A = ${p(10, 5)} × 3 × ${p(10, '−2')} : (6 × ${p(10, 2)}). Donne le résultat en écriture décimale.`,
         corr: cm1Redac('Valeur de A', { suite: [`A = (3 : 6) × ${p(10, 5)} × ${p(10, '−2')} : ${p(10, 2)}`, `A = 0,5 × ${p(10, 1)}`, 'A = 5'] }, 'A est égal à 5.') },
     ] },
-  { titre: 'L\'écriture scientifique', duree: '40 min',
+  { titre: 'Ancien programme : l\'écriture scientifique', duree: '40 min',
     attendus: ['Donner l\'écriture scientifique d\'un nombre', 'Comparer des nombres en écriture scientifique', 'Utiliser l\'écriture scientifique dans un problème'],
     exos: [
       { etoiles: 1, uneLigne: true, consigne: 'Donne l\'écriture scientifique.',
@@ -72,6 +72,17 @@ PLANCHES['4e|Puissances'] = [
         corr: cm1Redac('Écriture scientifique', '150 000 000 = 1,5 × 10<sup>8</sup>', 'La distance est de 1,5 × 10<sup>8</sup> km.') + cm1Redac('Durée du trajet', { suite: [`(1,5 × ${p(10, 8)}) : (3 × ${p(10, 5)}) = 0,5 × ${p(10, 3)}`, '0,5 × 1 000 = 500 s', '500 s = 8 min 20 s'] }, 'La lumière du Soleil met environ 8 minutes et 20 secondes pour nous parvenir.') },
       { etoiles: 3, cahier: true, consigne: 'Un virus mesure environ 0,000 000 1 m. Combien de virus faudrait-il aligner pour atteindre 1 cm ? Utilise l\'écriture scientifique.',
         corr: cm1Redac('Nombre de virus', { suite: [`0,000 000 1 m = ${p(10, '−7')} m`, `1 cm = ${p(10, '−2')} m`, `${p(10, '−2')} : ${p(10, '−7')} = ${p(10, 5)}`] }, 'Il faudrait aligner 10<sup>5</sup>, soit 100 000 virus.') },
+    ] },
+  { titre: 'Produits de puissances', duree: '30 min',
+    attendus: ['Multiplier des puissances d\'un même nombre', 'Multiplier des puissances de même exposant', 'Ne pas confondre produit et somme de puissances'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'Écris sous la forme d\'une seule puissance.', ...rmp([[`${p(3, 2)} × ${p(3, 4)} = @`, p(3, 6)], [`${p(5, 3)} × 5 = @`, p(5, 4)], [`${p(2, 5)} × ${p(2, 5)} = @`, p(2, 10)], [`${p(7, 1)} × ${p(7, 3)} = @`, p(7, 4)]]) },
+      { etoiles: 1, col: 1, consigne: 'Écris sous la forme d\'une seule puissance.', ...rmp([[`${p(2, 3)} × ${p(5, 3)} = @`, p(10, 3)], [`${p(4, 2)} × ${p(3, 2)} = @`, p(12, 2)], [`${p(5, 4)} × ${p(2, 4)} = @`, p(10, 4)], [`${p('(−2)', 3)} × ${p(3, 3)} = @`, p('(−6)', 3)]]) },
+      { etoiles: 2, consigne: 'Complète par = ou ≠.', ...P3.egal([[`${p(2, 3)} × ${p(2, 4)}`, p(2, 7), 1], [`${p(2, 3)} + ${p(2, 4)}`, p(2, 7), 0], [`${p(3, 2)} × ${p(3, 2)}`, p(9, 2), 0], [`${p(2, 2)} × ${p(5, 2)}`, '100', 1]]) },
+      { etoiles: 2, cahier: true, consigne: `Explique, en dépliant les puissances, pourquoi ${p(4, 2)} × ${p(4, 3)} = ${p(4, 5)}.`,
+        corr: cm1Redac('Produit des deux puissances', { suite: [`${p(4, 2)} × ${p(4, 3)} = (4 × 4) × (4 × 4 × 4)`] }, `C'est un produit de 2 + 3 = 5 facteurs égaux à 4 : ${p(4, 2)} × ${p(4, 3)} = ${p(4, 5)}.`) },
+      { etoiles: 3, cahier: true, consigne: `Calcule astucieusement ${p(5, 6)} × ${p(2, 6)}, puis ${p(25, 3)} × ${p(4, 3)}.`,
+        corr: cm1Redac('Premier produit', { nom: 'A', lignes: [p('(5 × 2)', 6), p(10, 6), '1 000 000'] }, '') + cm1Redac('Second produit', { nom: 'B', lignes: [p('(25 × 4)', 3), p(100, 3), '1 000 000'] }, 'Les deux produits sont égaux à un million.') },
     ] },
 ];
 })();

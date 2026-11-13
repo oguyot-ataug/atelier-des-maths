@@ -4079,6 +4079,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1453', date:'2026-11-13', items:[
+    "Manuel de 4e étoffé -- comparé au manuel iParcours de 4e (170 pages avec les cours) : 7 nouvelles planches, 82 planches et 430 exercices en tout : Formules et graphiques (programmes de calcul appliqués à une variable, formules de la vie courante), Algorithmique (suivre une variable pas à pas, conditions et programmes de calcul), Calcul littéral (conjecturer puis démontrer par le calcul, tableur, contre-exemples), Puissances (produits de puissances) ; les planches de puissances de 10 et d'écriture scientifique sont titrées « Ancien programme »."
+  ]},
   { version:'2026-08-19.1452', date:'2026-11-13', items:[
     "4e, nouveau programme : chapitres existants complétés -- Pythagore : la contraposée (cours, méthode, exercices, quiz, planche) ; Puissances : produits de puissances d'un même nombre et de même exposant, et bandeaux « Ancien programme » sur les exposants négatifs, les préfixes et l'écriture scientifique (vus en 3e) ; Espace : bandeaux sur le repérage dans le pavé et l'agrandissement-réduction ; Statistiques : l'étendue pour comparer des séries (et le tableur) ; Probabilités : complémentaire, réunion, intersection, ensemble vide, expériences à deux épreuves (arbre, tableau) et une planche ; Proportionnalité : ratio, partage proportionnel, coefficient multiplicateur et une planche ; Relatifs : « moins par moins donne plus » démontré par la distributivité."
   ]},

@@ -79,5 +79,19 @@ PLANCHES['4e|Calcul littéral'] = [
       { etoiles: 3, cahier: true, consigne: 'Programme : choisir un nombre ; ajouter 5 ; multiplier par 4 ; soustraire 20 ; soustraire le triple du nombre choisi. Prouve que l\'on obtient toujours le nombre de départ.',
         corr: cm1Redac('Résultat avec un nombre x', { nom: 'E', lignes: ['4(x + 5) − 20 − 3x', '4x + 20 − 20 − 3x', 'x'] }, 'On obtient toujours le nombre choisi au départ.') },
     ] },
+  { titre: 'Conjecturer, puis démontrer par le calcul', duree: '40 min',
+    attendus: ['Faire une conjecture à partir d\'exemples, d\'un tableur ou d\'un programme', 'Démontrer une propriété en calculant avec une lettre', 'Trouver un contre-exemple'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'Calcule la somme de trois nombres entiers consécutifs.', ...rmp([['4 + 5 + 6 = @', 15], ['10 + 11 + 12 = @', 33], ['21 + 22 + 23 = @', 66]]) },
+      { etoiles: 1, col: 1, consigne: 'Que remarques-tu sur les sommes de l\'exercice 1 ? Complète.', ...rmp([['Chaque somme est un multiple de @', 3], ['Elle est égale à 3 fois le nombre du @', 'milieu']]) },
+      { etoiles: 2, cahier: true, consigne: 'Démontre que la somme de trois nombres entiers consécutifs est toujours un multiple de 3. Aide : appelle n le premier nombre.',
+        corr: cm1Redac('Somme de trois entiers consécutifs', { nom: 'S', lignes: ['n + (n + 1) + (n + 2)', 'n + n + 1 + n + 2', '3n + 3', '3(n + 1)'] }, 'S = 3(n + 1) est un multiple de 3, quel que soit l\'entier n.') },
+      { etoiles: 2, consigne: 'Dans un tableur, la colonne A contient les nombres 1, 2, 3, … et on écrit en B1 la formule =A1*A1-1, recopiée vers le bas. Complète.',
+        ...rmp([['Pour 3 : @', 8], ['Pour 4 : @', 15], ['Pour 5 : @', 24], ['Pour 6 : @', 35], ['La formule calcule @', cm1Tex('x^2 - 1')]], 5) },
+      { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure. Si c\'est faux, cherche un contre-exemple dans ton cahier.', ...ch([['Le carré d\'un nombre est toujours plus grand que ce nombre.', 'faux'], ['La somme de deux nombres pairs est paire.', 'vrai']], 'vrai · faux') },
+      { etoiles: 2, col: 1, consigne: 'Contre-exemple : complète pour montrer que « le carré d\'un nombre est toujours plus grand que ce nombre » est faux.', ...rmp([['0,5² = @', '0,25'], ['0,25 est plus @ que 0,5', 'petit']]) },
+      { etoiles: 3, cahier: true, consigne: 'Démontre que la somme de deux nombres pairs est un nombre pair. Aide : un nombre pair s\'écrit 2a, avec a entier.',
+        corr: cm1Redac('Somme de deux nombres pairs', { nom: 'S', lignes: ['2a + 2b', '2(a + b)'] }, 'S = 2(a + b) est le double d\'un entier : c\'est un nombre pair.') },
+    ] },
 ];
 })();
