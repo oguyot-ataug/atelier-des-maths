@@ -14,7 +14,7 @@ PLANCHES['cp|Problèmes : bilan de l\'année'] = [
       { etoiles: 1, col: 1, consigne: 'Faut-il ajouter ou retirer ? Entoure.',
         ...P3.chx([['Maman utilise des œufs.', 'retirer', 'ajouter · retirer'], ['On me donne des billes.', 'ajouter', 'ajouter · retirer'], ['Je perds 3 cartes.', 'retirer', 'ajouter · retirer']]) },
       { etoiles: 2, col: 1, consigne: 'Calcule.',
-        ...P3.rmp([['14 + 13 = @', 27], ['30 − 12 = @', 18], ['20 + 15 = @', 35], ['45 − 20 = @', 25]], 2) },
+        ...P3.rmp(plDeux([['14 + 13 = @', 27], ['30 − 12 = @', 18], ['20 + 15 = @', 35], ['45 − 20 = @', 25], ['21 + 16 = @', 37], ['40 − 15 = @', 25], ['30 + 24 = @', 54], ['58 − 30 = @', 28]]), 2) },
     ] },
   { titre: 'Comparer', duree: '20 min',
     attendus: ['Résoudre des problèmes de comparaison (de plus, de moins)'],
@@ -43,7 +43,7 @@ PLANCHES['cp|Problèmes : bilan de l\'année'] = [
       { etoiles: 2, col: 1, consigne: 'Calcule.',
         ...P3.rmp([['5 + 5 + 5 + 5 = @', 20], ['10 + 10 + 10 = @', 30], ['2 + 2 + 2 + 2 + 2 = @', 10]], 2) },
       { etoiles: 2, col: 1, consigne: 'Calcule en deux étapes.',
-        ...P3.rmp([['20 − 7 = @', 13], ['13 + 4 = @', 17], ['6 + 6 = @', 12], ['12 + 3 = @', 15]], 2) },
+        ...P3.rmp(plDeux([['20 − 7 = @', 13], ['13 + 4 = @', 17], ['6 + 6 = @', 12], ['12 + 3 = @', 15], ['30 − 8 = @', 22], ['22 + 5 = @', 27], ['8 + 8 = @', 16], ['16 + 4 = @', 20]]), 2) },
     ] },
 ];
 })();

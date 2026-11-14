@@ -70,7 +70,7 @@ PLANCHES['ce2|Fractions égales'] = [
         eleve: plListe([`${F(4, 8)} · ${F(3, 5)} · ${F(6, 12)} · ${F(2, 3)} · ${F(5, 10)}`]),
         corr: plListe([`${plEntoure(F(4, 8))} · ${F(3, 5)} · ${plEntoure(F(6, 12))} · ${F(2, 3)} · ${plEntoure(F(5, 10))}`]) },
       { etoiles: 2, col: 1, consigne: 'Complète.',
-        ...egal([[1, 2, false, 8, 4], [1, 2, true, 6, 12], [1, 2, false, 6, 3]]) },
+        ...egal(plDeux([[1, 2, false, 8, 4], [1, 2, true, 6, 12], [1, 2, false, 6, 3], [1, 3, false, 9, 3], [3, 4, true, 6, 8], [1, 4, false, 8, 2]])) },
       { etoiles: 3, col: 1, cahier: true, consigne: `Une fraction égale à ${F(1, 2)} peut-elle avoir 7 comme dénominateur ? Explique.`,
         corr: cm1Redac('Moitié de 7 parts', '7 parts : on ne peut pas faire deux paquets égaux', `Non : 7 est impair, on ne peut pas prendre la moitié des 7 parts. Une fraction égale à ${F(1, 2)} a un dénominateur pair.`) },
       { etoiles: 1, col: 1, consigne: 'Complète.', ...P3.rmp([['Sur 10 parts, la moitié, c\'est @ parts.', 5], ['Sur 12 parts, la moitié, c\'est @ parts.', 6]], 2) },

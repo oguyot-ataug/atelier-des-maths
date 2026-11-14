@@ -61,8 +61,8 @@ PLANCHES['ce2|Nombres jusqu\'à 10 000'] = [
     attendus: ['Comparer deux nombres avec <, > ou =', 'Encadrer un nombre entre deux centaines, deux milliers', 'Ranger des nombres'],
     exos: [
       { etoiles: 1, col: 1, consigne: 'Complète avec <, > ou =.',
-        eleve: plListe(['3 457 ' + plCase() + ' 3 475', '8 090 ' + plCase() + ' 8 009', '5 000 ' + plCase() + ' 4 999', '2 dizaines ' + plCase() + ' 20']),
-        corr: plListe(['3 457 ' + P3.R('<') + ' 3 475', '8 090 ' + P3.R('>') + ' 8 009', '5 000 ' + P3.R('>') + ' 4 999', '2 dizaines ' + P3.R('=') + ' 20']) },
+        eleve: plListe(['3 457 ' + plCase() + ' 3 475', '8 090 ' + plCase() + ' 8 009', '5 000 ' + plCase() + ' 4 999', '2 dizaines ' + plCase() + ' 20', '6 302 ' + plCase() + ' 6 320', '9 999 ' + plCase() + ' 10 000', '4 080 ' + plCase() + ' 4 008', '300 ' + plCase() + ' 299'], 2),
+        corr: plListe(['3 457 ' + P3.R('<') + ' 3 475', '8 090 ' + P3.R('>') + ' 8 009', '5 000 ' + P3.R('>') + ' 4 999', '2 dizaines ' + P3.R('=') + ' 20', '6 302 ' + P3.R('<') + ' 6 320', '9 999 ' + P3.R('<') + ' 10 000', '4 080 ' + P3.R('>') + ' 4 008', '300 ' + P3.R('>') + ' 299'], 2) },
       // Relecture : « consigne pas claire » -- chaque ligne dit maintenant entre quoi encadrer.
       { etoiles: 2, col: 1, consigne: 'Encadre chaque nombre.',
         ...rmp([['entre deux centaines qui se suivent : @ < 4 563 < @', '4 500', '4 600'], ['entre deux milliers qui se suivent : @ < 4 563 < @', '4 000', '5 000'], ['entre deux centaines qui se suivent : @ < 7 091 < @', '7 000', '7 100'], ['entre deux milliers qui se suivent : @ < 7 091 < @', '7 000', '8 000']], 4) },

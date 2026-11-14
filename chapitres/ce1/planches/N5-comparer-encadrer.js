@@ -2,18 +2,18 @@
 (() => {
 const B = P3.B, R = P3.R;
 const cmp = (a, b) => a < b ? '<' : a > b ? '>' : '=';
-const L = [[456, 465], [702, 699], [380, 308], [999, 1000], [520, 520]];
+const L = plDeux([[456, 465], [702, 699], [380, 308], [999, 1000], [520, 520], [618, 681], [905, 950], [270, 207], [499, 500], [833, 833]]);
 PLANCHES['ce1|Comparer, ranger, encadrer'] = [
   { titre: 'Comparer', duree: '20 min',
     attendus: ['Comparer deux nombres jusqu\'à 1 000 avec < , > ou ='],
     exos: [
       { etoiles: 1, col: 1, consigne: 'Écris <, > ou =.', eleve: plListe(L.map(([a, b]) => `${a} ${plCase()} ${b}`), L.cols), corr: plListe(L.map(([a, b]) => `${a} ${R(cmp(a, b))} ${b}`), L.cols) },
       { etoiles: 2, col: 1, consigne: 'Entoure le plus grand nombre.', ...P3.chx([['', '610', '601 · 610 · 106'], ['', '890', '809 · 890 · 889']]) },
-      { etoiles: 2, col: 1, consigne: 'Écris <, > ou =.', eleve: plListe([[234, 243], [870, 807], [505, 550], [99, 100]].map(([a, b]) => `${a} ${plCase()} ${b}`)), corr: plListe([[234, 243], [870, 807], [505, 550], [99, 100]].map(([a, b]) => `${a} ${R(cmp(a, b))} ${b}`)) },
+      { etoiles: 2, col: 1, consigne: 'Écris <, > ou =.', eleve: plListe([[234, 243], [870, 807], [505, 550], [99, 100], [312, 321], [690, 609], [450, 450], [199, 200]].map(([a, b]) => `${a} ${plCase()} ${b}`), 2), corr: plListe([[234, 243], [870, 807], [505, 550], [99, 100], [312, 321], [690, 609], [450, 450], [199, 200]].map(([a, b]) => `${a} ${R(cmp(a, b))} ${b}`), 2) },
       { etoiles: 2, col: 1, consigne: 'Entoure le plus petit nombre.', ...P3.chx([['', '108', '180 · 108 · 801'], ['', '499', '500 · 499 · 510']]) },
       { etoiles: 3, consigne: 'Place A (320) et B (380) sur la droite. Lequel est le plus grand ?', eleve: cm1Axe(300, 400, 10, 50, []) + plListe(['Le plus grand : ' + B(3)]), corr: cm1Axe(300, 400, 10, 50, [[320, 'A'], [380, 'B']]) + plListe(['Le plus grand : ' + R(380) + ' (il est plus à droite)']) },
       { etoiles: 1, col: 1, consigne: 'Vrai ou faux ? Entoure.', ...P3.chx([['532 > 523', 'vrai', 'vrai · faux'], ['99 > 100', 'faux', 'vrai · faux'], ['706 < 760', 'vrai', 'vrai · faux'], ['480 = 408', 'faux', 'vrai · faux']]) },
-      { etoiles: 2, col: 1, consigne: 'Écris <, > ou =.', eleve: plListe([[1000, 999], [640, 604], [77, 707]].map(([a, b]) => `${a} ${plCase()} ${b}`)), corr: plListe([[1000, 999], [640, 604], [77, 707]].map(([a, b]) => `${a} ${R(cmp(a, b))} ${b}`)) },
+      { etoiles: 2, col: 1, consigne: 'Écris <, > ou =.', eleve: plListe([[1000, 999], [640, 604], [77, 707], [808, 880], [95, 905], [300, 299]].map(([a, b]) => `${a} ${plCase()} ${b}`), 2), corr: plListe([[1000, 999], [640, 604], [77, 707], [808, 880], [95, 905], [300, 299]].map(([a, b]) => `${a} ${R(cmp(a, b))} ${b}`), 2) },
     ] },
   { titre: 'Ranger', duree: '20 min',
     attendus: ['Ranger des nombres dans l\'ordre croissant ou décroissant'],

@@ -24,7 +24,7 @@ PLANCHES['ce1|Partager et faire des groupes'] = [
         eleve: lig(cpJetons(12)) + lig(B(2) + ' paquets'), corr: lig(cpJetons(12, 0, [...Array(4).fill(CPC.jeton), ...Array(4).fill(CPC.jeton2), ...Array(4).fill('#2E9C6A')])) + lig(R(3) + ' paquets') },
       { etoiles: 2, col: 1, consigne: 'Combien de groupes ?', ...P3.rmp([['30 élèves, équipes de 5 : @ équipes', 6], ['20 chaussettes, des paires : @ paires', 10], ['60 minutes, des demi-heures : @', 2]], 2) },
       { etoiles: 3, col: 1, consigne: 'Partage ou groupes ? Entoure.', ...P3.chx([['3 bonbons par sachet : combien de sachets ?', 'groupes', 'partage · groupes'], ['Autant pour 4 enfants : combien chacun ?', 'partage', 'partage · groupes']]) },
-      { etoiles: 2, col: 1, consigne: 'Vérifie avec une multiplication.', ...P3.rmp([['6 × @ = 30', 5], ['4 × @ = 40', 10], ['2 × @ = 20', 10]], 2) },
+      { etoiles: 2, col: 1, consigne: 'Vérifie avec une multiplication.', ...P3.rmp(plDeux([['6 × @ = 30', 5], ['4 × @ = 40', 10], ['2 × @ = 20', 10], ['5 × @ = 25', 5], ['3 × @ = 30', 10], ['10 × @ = 70', 7]]), 2) },
     ] },
   { titre: 'Quand il en reste', duree: '20 min',
     attendus: ['Trouver ce qui reste après un partage ou un groupement'],

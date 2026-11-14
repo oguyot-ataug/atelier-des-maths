@@ -10,7 +10,7 @@ PLANCHES['cp|Les nombres jusqu\'à 59'] = [
       { etoiles: 2, col: 1, consigne: 'Complète.',
         ...P3.rmp([['3 dizaines et 4 unités : @', 34], ['5 dizaines et 2 unités : @', 52], ['2 dizaines : @', 20], ['4 dizaines et 9 unités : @', 49]], 2) },
       { etoiles: 2, col: 1, consigne: 'Décompose.',
-        ...P3.rmp([['27 = 20 + @', 7], ['45 = @ + 5', 40], ['58 = @ + @', 50, 8]], 2) },
+        ...P3.rmp(plDeux([['27 = 20 + @', 7], ['45 = @ + 5', 40], ['58 = @ + @', 50, 8], ['36 = 30 + @', 6], ['52 = @ + 2', 50], ['49 = @ + @', 40, 9]]), 2) },
       { etoiles: 2, col: 1, consigne: 'Combien de dizaines ?',
         ...P3.rmp([['Dans 37 : @ dizaines', 3], ['Dans 52 : @ dizaines', 5], ['Dans 40 : @ dizaines', 4]], 1) },
       { etoiles: 2, col: 1, consigne: 'Combien d\'unités ?',

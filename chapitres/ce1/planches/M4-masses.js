@@ -19,7 +19,7 @@ PLANCHES['ce1|Les masses : le gramme et le kilogramme'] = [
       { etoiles: 1, col: 1, consigne: 'g ou kg ?', ...P3.rmp([['Une pomme : 150 @', 'g'], ['Un chien : 20 @', 'kg'], ['Une gomme : 25 @', 'g'], ['Un sac de pommes de terre : 5 @', 'kg']], 2) },
       { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['1 kg = @ g', '1 000'], ['500 g + 500 g = @ kg', 1], ['2 kg = @ g', '2 000']], 3) },
       { etoiles: 2, col: 1, consigne: 'Entoure la masse qui convient.', ...P3.chx([['un vélo :', '12 kg', '12 g · 12 kg'], ['une fraise :', '15 g', '15 g · 15 kg'], ['un enfant de CE1 :', '25 kg', '25 g · 25 kg']]) },
-      { etoiles: 3, col: 1, consigne: 'Écris <, > ou =.', ...P3.rmp([['1 kg @ 800 g', '>'], ['1 000 g @ 1 kg', '='], ['2 kg @ 3 000 g', '<']], 1) },
+      { etoiles: 3, col: 1, consigne: 'Écris <, > ou =.', ...P3.rmp(plDeux([['1 kg @ 800 g', '>'], ['1 000 g @ 1 kg', '='], ['2 kg @ 3 000 g', '<'], ['1 kg @ 1 200 g', '<'], ['500 g @ 1 kg', '<'], ['3 kg @ 3 000 g', '=']]), 1) },
       { etoiles: 1, consigne: 'Entoure les objets qui pèsent plus de 1 kg.', ...PCP.entoure([['<b>un cartable plein</b>', true], ['<b>une gomme</b>', false], ['<b>un chat</b>', true], ['<b>une cuillère</b>', false], ['<b>un sac de farine de 2 kg</b>', true]], 5) },
       { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['3 kg = @ g', '3 000'], ['1 kg = 500 g + @ g', 500], ['1 kg = 250 g + 250 g + @ g', 500]], 3) },
       { etoiles: 2, col: 1, consigne: 'Range du plus léger au plus lourd : 1 kg, 300 g, 2 kg, 900 g.', ...P3.rmp([['@', '300 g, 900 g, 1 kg, 2 kg']], 10) },

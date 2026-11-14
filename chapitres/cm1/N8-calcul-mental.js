@@ -127,16 +127,16 @@ ${cm1Sous('A', 'Atelier : 10 calculs pour t\'entraîner')}
 (() => {
 const B = n => plPointilles(n || 4), R = v => plRep(String(v));
 // Liste de calculs : [énoncé avec « … » à la place de la réponse, réponse].
-const ex = l => ({ eleve: plListe(l.map(([t]) => t.replace('…', B()))), corr: plListe(l.map(([t, r]) => t.replace('…', R(r)))) });
+const ex = l => ({ eleve: plListe(l.map(([t]) => t.replace('…', B())), l.cols), corr: plListe(l.map(([t, r]) => t.replace('…', R(r))), l.cols) });
 PLANCHES['cm1|Procédures de calcul mental'] = [
   { titre: 'Ce qu\'on sait par cœur, ajouter et soustraire', duree: '25 min',
     attendus: ['Connaître les tables, les doubles, les moitiés et les compléments', 'Ajouter ou soustraire 9, 11, 19, 21', 'Décomposer pour calculer de tête'],
     exos: [
       { etoiles: 1, col: 1, consigne: 'Doubles et moitiés.', ...ex([['le double de 35 : …', 70], ['le double de 150 : …', 300], ['la moitié de 90 : …', 45], ['la moitié de 500 : …', 250], ['la moitié de 18 : …', 9]]) },
       { etoiles: 1, col: 1, consigne: 'Compléments.', ...ex([['65 + … = 100', 35], ['28 + … = 100', 72], ['450 + … = 1 000', 550], ['720 + … = 1 000', 280], ['3,4 + … = 4', '0,6']]) },
-      { etoiles: 2, col: 1, consigne: 'Ajoute ou soustrais 9 ou 11 : passe par 10.', ...ex([['47 + 9 = …', 56], ['136 + 11 = …', 147], ['82 − 9 = …', 73], ['250 − 11 = …', 239], ['399 + 9 = …', 408]]) },
-      { etoiles: 2, col: 1, consigne: 'Ajoute ou soustrais 19 ou 21 : passe par 20.', ...ex([['85 − 19 = …', 66], ['240 + 21 = …', 261], ['63 + 19 = …', 82], ['500 − 21 = …', 479], ['148 + 19 = …', 167]]) },
-      { etoiles: 2, col: 1, consigne: 'Décompose pour calculer.', ...ex([['35 + 48 = …', 83], ['67 + 25 = …', 92], ['14 × 6 = …', 84], ['23 × 11 = …', 253]]) },
+      { etoiles: 2, col: 1, consigne: 'Ajoute ou soustrais 9 ou 11 : passe par 10.', ...ex(plDeux([['47 + 9 = …', 56], ['136 + 11 = …', 147], ['82 − 9 = …', 73], ['250 − 11 = …', 239], ['399 + 9 = …', 408], ['63 + 9 = …', 72], ['218 + 11 = …', 229], ['54 − 9 = …', 45], ['170 − 11 = …', 159], ['595 + 9 = …', 604]])) },
+      { etoiles: 2, col: 1, consigne: 'Ajoute ou soustrais 19 ou 21 : passe par 20.', ...ex(plDeux([['85 − 19 = …', 66], ['240 + 21 = …', 261], ['63 + 19 = …', 82], ['500 − 21 = …', 479], ['148 + 19 = …', 167], ['74 − 19 = …', 55], ['130 + 21 = …', 151], ['46 + 19 = …', 65], ['300 − 21 = …', 279], ['256 + 19 = …', 275]])) },
+      { etoiles: 2, col: 1, consigne: 'Décompose pour calculer.', ...ex(plDeux([['35 + 48 = …', 83], ['67 + 25 = …', 92], ['14 × 6 = …', 84], ['23 × 11 = …', 253], ['26 + 57 = …', 83], ['45 + 38 = …', 83], ['12 × 7 = …', 84], ['32 × 11 = …', 352]])) },
       { etoiles: 2, col: 1, consigne: 'Soustrais 99 ou 999 : enlève 100 ou 1 000, puis rajoute 1.', ...ex([['368 − 99 = …', 269], ['540 − 99 = …', 441], ['2 300 − 999 = …', '1 301'], ['5 000 − 999 = …', '4 001']]) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Explique comment tu calcules 245 + 98 de tête.',
         corr: cm1Redac('Calcul de 245 + 98', ['245 + 100 − 2', '345 − 2', '343'], 'J\'ajoute 100, c\'est facile, puis j\'enlève les 2 que j\'ai ajoutés en trop.') },
@@ -147,10 +147,10 @@ PLANCHES['cm1|Procédures de calcul mental'] = [
     attendus: ['Multiplier un nombre entier par 10, 100, 1 000', 'Multiplier et diviser un nombre décimal par 10', 'Multiplier par 4, par 5, par 20'],
     exos: [
       { etoiles: 1, col: 1, consigne: 'Multiplie par 10, 100 ou 1 000.', ...ex([['36 × 10 = …', 360], ['36 × 100 = …', '3 600'], ['36 × 1 000 = …', '36 000'], ['205 × 10 = …', '2 050'], ['40 × 100 = …', '4 000']]) },
-      { etoiles: 1, col: 1, consigne: 'Nombres décimaux : suis le chiffre des unités.', ...ex([['4,6 × 10 = …', 46], ['0,35 × 10 = …', '3,5'], ['27 : 10 = …', '2,7'], ['5,4 : 10 = …', '0,54'], ['2,5 × 10 = …', 25]]) },
-      { etoiles: 2, col: 1, consigne: '× 4, c\'est le double du double.', ...ex([['23 × 4 = …', 92], ['15 × 4 = …', 60], ['45 × 4 = …', 180], ['125 × 4 = …', 500]]) },
-      { etoiles: 2, col: 1, consigne: '× 5, c\'est × 10 puis la moitié.', ...ex([['36 × 5 = …', 180], ['48 × 5 = …', 240], ['14 × 5 = …', 70], ['120 × 5 = …', 600]]) },
-      { etoiles: 2, col: 1, consigne: '× 20, c\'est × 2 puis × 10.', ...ex([['13 × 20 = …', 260], ['25 × 20 = …', 500], ['31 × 20 = …', 620], ['45 × 20 = …', 900]]) },
+      { etoiles: 1, col: 1, consigne: 'Nombres décimaux : suis le chiffre des unités.', ...ex(plDeux([['4,6 × 10 = …', 46], ['0,35 × 10 = …', '3,5'], ['27 : 10 = …', '2,7'], ['5,4 : 10 = …', '0,54'], ['2,5 × 10 = …', 25], ['7,2 × 10 = …', 72], ['0,48 × 10 = …', '4,8'], ['36 : 10 = …', '3,6'], ['8,1 : 10 = …', '0,81'], ['1,5 × 10 = …', 15]])) },
+      { etoiles: 2, col: 1, consigne: '× 4, c\'est le double du double.', ...ex(plDeux([['23 × 4 = …', 92], ['15 × 4 = …', 60], ['45 × 4 = …', 180], ['125 × 4 = …', 500], ['12 × 4 = …', 48], ['25 × 4 = …', 100], ['35 × 4 = …', 140], ['50 × 4 = …', 200]])) },
+      { etoiles: 2, col: 1, consigne: '× 5, c\'est × 10 puis la moitié.', ...ex(plDeux([['36 × 5 = …', 180], ['48 × 5 = …', 240], ['14 × 5 = …', 70], ['120 × 5 = …', 600], ['24 × 5 = …', 120], ['62 × 5 = …', 310], ['18 × 5 = …', 90], ['200 × 5 = …', '1 000']])) },
+      { etoiles: 2, col: 1, consigne: '× 20, c\'est × 2 puis × 10.', ...ex(plDeux([['13 × 20 = …', 260], ['25 × 20 = …', 500], ['31 × 20 = …', 620], ['45 × 20 = …', 900], ['12 × 20 = …', 240], ['15 × 20 = …', 300], ['21 × 20 = …', 420], ['50 × 20 = …', '1 000']])) },
       { etoiles: 2, col: 1, consigne: 'Complète.', ...ex([['… × 10 = 480', 48], ['… × 100 = 7 000', 70], ['… : 10 = 0,6', 6], ['36 × … = 3 600', 100]]) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Un carnet coûte 5 €. Combien coûtent 48 carnets ? Calcule de tête et explique.',
         corr: cm1Redac('Prix des carnets', ['48 × 5', '480 : 2', '240'], '48 carnets coûtent 240 € : j\'ai multiplié par 10 (480), puis j\'ai pris la moitié.') },

@@ -127,7 +127,7 @@ ${cm1Demo('rp-division', 'Division avec reste : interpréter le résultat', '100
 (() => {
 const B = n => plPointilles(n || 4), R = v => plRep(String(v));
 const OPS = '+ · − · × · :';
-const op = items => ({ eleve: '<div class="pl-col1">' + plListe(items.map(([t]) => `${t} <b>${OPS}</b>`)) + '</div>', corr: plListe(items.map(([t, r]) => `${t} ${plEntoure(r)}`)) });
+const op = items => ({ eleve: '<div class="pl-col1">' + plListe(items.map(([t]) => `${t} <b>${OPS}</b>`), items.cols) + '</div>', corr: plListe(items.map(([t, r]) => `${t} ${plEntoure(r)}`), items.cols) });
 const P = (parts, o) => cm1Paquets(parts, Object.assign({ L: 260, xt: 70 }, o || {}));
 const petit = h => `<div style="max-width:240px;">${h}</div>`;
 const lettre = t => `<div style="font:700 13px 'Space Grotesk',sans-serif;color:#1F3A5C;margin-top:4px;">${t}</div>`;

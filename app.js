@@ -4079,6 +4079,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1466', date:'2026-11-14', items:[
+    "Planches du CP au CM2 : exemples doublés en deux colonnes, avec un trait fin entre les colonnes, comme au collège -- environ 250 exercices (tables, calcul mental, décompositions, comparaisons, fractions, mesures…), corrigés compris. Aucune feuille ne dépasse la page. Restent en une colonne les listes liées à une figure ou à un seul énoncé, les opérations à poser dans le cahier et les lignes trop longues pour une demi-colonne."
+  ]},
   { version:'2026-08-19.1465', date:'2026-11-14', items:[
     "Planches de 6e, 4e et 3e : exemples doublés en deux colonnes, avec un trait fin entre les colonnes, comme en 5e -- environ 95 exercices (6e : 42 ; 4e : 36 ; 3e : 17). Corrigés complétés et vérifiés ; aucune feuille d'élève ne dépasse la page. Restent en une colonne les listes liées à une figure, à un tableau ou à un seul énoncé, et les lignes trop longues pour une demi-colonne."
   ]},

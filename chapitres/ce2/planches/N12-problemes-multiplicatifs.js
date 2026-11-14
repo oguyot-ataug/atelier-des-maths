@@ -16,7 +16,7 @@ PLANCHES['ce2|Problèmes multiplicatifs'] = [
         corr: cm1Redac('Images par enfant', '42 : 6 = 7', 'Car 6 × 7 = 42 : chacun a 7 images.') },
       { etoiles: 2, cahier: true, consigne: 'Une salle a 9 rangées de 25 chaises. Combien de chaises en tout ?',
         corr: cm1Redac('Nombre de chaises', { suite: ['25 × 4 = 100', '25 × 8 = 200', '200 + 25 = 225'] }, 'Il y a 225 chaises.', PQ(Array.from({ length: 9 }, () => [25, '25']), { uni: true, accolade: '? chaises' })) },
-      { etoiles: 1, col: 1, consigne: 'Calcule.', ...P3.rmp([['7 × 8 = @', 56], ['42 : 6 = @', 7], ['9 × 25 = @', 225]], 3) },
+      { etoiles: 1, col: 1, consigne: 'Calcule.', ...P3.rmp(plDeux([['7 × 8 = @', 56], ['42 : 6 = @', 7], ['9 × 25 = @', 225], ['6 × 9 = @', 54], ['48 : 8 = @', 6], ['4 × 25 = @', 100]]), 3) },
       { etoiles: 1, col: 1, consigne: 'Multiplication ou division ? Entoure.', ...P3.chx([['8 biscuits par paquet, 7 paquets : combien de biscuits ?', '×', '× · :'], ['42 images pour 6 enfants : combien chacun ?', ':', '× · :'], ['5 rangées de 12 chaises : combien de chaises ?', '×', '× · :']]) },
       { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['6 boîtes de 12 œufs : @ œufs', 72], ['72 œufs en boîtes de 6 : @ boîtes', 12]], 2) },
       { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['4 tables de 8 élèves : @ élèves', 32], ['32 élèves en 4 équipes : @ par équipe', 8]], 2) },

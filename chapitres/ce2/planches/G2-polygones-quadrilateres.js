@@ -18,7 +18,7 @@ PLANCHES['ce2|Polygones et quadrilatères'] = [
         corr: plGrille(formes.map((f, i) => f + '<br>' + P3.R(['triangle', 'pentagone', 'hexagone', 'quadrilatère', 'pas un polygone (pas de côtés droits)', 'pas un polygone (pas fermée)'][i])), 3) },
       { etoiles: 1, col: 1, consigne: 'Complète.',
         ...rmp([['Un triangle a @ côtés et @ sommets.', 3, 3], ['Un quadrilatère a @ côtés.', 4], ['Un hexagone a @ côtés.', 6], ['Un polygone de 5 côtés est un @.', 'pentagone']], 4) },
-      { etoiles: 1, col: 1, consigne: 'Combien de côtés ?', ...P3.rmp([['un hexagone : @', 6], ['un pentagone : @', 5], ['un triangle : @', 3], ['un quadrilatère : @', 4]], 2) },
+      { etoiles: 1, col: 1, consigne: 'Combien de côtés ?', ...P3.rmp(plDeux([['un hexagone : @', 6], ['un pentagone : @', 5], ['un triangle : @', 3], ['un quadrilatère : @', 4], ['un carré : @', 4], ['un rectangle : @', 4], ['un losange : @', 4], ['un octogone : @', 8]]), 2) },
       { etoiles: 2, consigne: 'Vrai ou faux ? Entoure.', ...P3.chx2([['Un cercle est un polygone.', 'faux', 'vrai · faux'], ['Un carré est un quadrilatère.', 'vrai', 'vrai · faux'], ['Un polygone a des côtés droits.', 'vrai', 'vrai · faux'], ['Un triangle a 4 côtés.', 'faux', 'vrai · faux'], ['Un rectangle est un quadrilatère.', 'vrai', 'vrai · faux'], ['Un losange a 4 côtés de même longueur.', 'vrai', 'vrai · faux']]) },
     ] },
   { titre: 'Carré, rectangle, losange', duree: '30 min',

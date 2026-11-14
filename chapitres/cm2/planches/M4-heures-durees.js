@@ -21,7 +21,7 @@ PLANCHES['cm2|Heures et durées'] = [
         ...rmp([['Un quart d\'heure = @ min', 15], ['Une demi-heure = @ min', 30], ['Trois quarts d\'heure = @ min', 45], ['1 min = @ s', 60], ['1 jour = @ h', 24]], 2) },
       { etoiles: 2, col: 1, consigne: 'Complète.',
         ...rmp([['2 h 15 min = @ min', 135], ['90 min = @ h @ min', 1, 30], ['200 s = @ min @ s', 3, 20], ['3 jours = @ h', 72]], 2) },
-      { etoiles: 1, col: 1, consigne: 'Complète.', ...P3.rmp([['1 h = @ min', 60], ['1 min = @ s', 60], ['1 jour = @ h', 24]], 2) },
+      { etoiles: 1, col: 1, consigne: 'Complète.', ...P3.rmp(plDeux([['1 h = @ min', 60], ['1 min = @ s', 60], ['1 jour = @ h', 24], ['2 h = @ min', 120], ['3 min = @ s', 180], ['2 jours = @ h', 48]]), 2) },
       { etoiles: 2, col: 1, consigne: 'Convertis.', ...P3.rmp([['2 h 30 min = @ min', 150], ['200 min = @ h @ min', 3, 20]], 2) },
       { etoiles: 2, consigne: 'Complète.', ...P3.rmp([['15 h 30, c\'est @ de l\'après-midi.', '3 h 30'], ['21 h, c\'est @ du soir.', '9 h'], ['18 h 45, c\'est @ du soir.', '6 h 45'], ['13 h 15, c\'est @ de l\'après-midi.', '1 h 15']], 3) },
     ] },

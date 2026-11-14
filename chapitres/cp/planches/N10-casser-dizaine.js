@@ -22,7 +22,7 @@ PLANCHES['cp|Soustraire en cassant une dizaine'] = [
       { etoiles: 1, consigne: 'Recule sur la bande : 23 − 5.',
         eleve: lig(cpBande(15, 25, { c: 26 })) + lig('23 − 5 = ' + B(2)), corr: lig(cpSautsBande(23, -5, { de: 15, a: 25, px: 300 })) + lig('23 − 5 = ' + R(18)) },
       { etoiles: 2, col: 1, consigne: 'Calcule.',
-        ...P3.rmp([['42 − 4 = @', 38], ['31 − 6 = @', 25], ['56 − 8 = @', 48], ['70 − 3 = @', 67]], 2) },
+        ...P3.rmp(plDeux([['42 − 4 = @', 38], ['31 − 6 = @', 25], ['56 − 8 = @', 48], ['70 − 3 = @', 67], ['53 − 5 = @', 48], ['24 − 7 = @', 17], ['65 − 9 = @', 56], ['80 − 4 = @', 76]]), 2) },
       { etoiles: 2, consigne: 'Recule sur la bande : 32 − 4.',
         eleve: lig(cpBande(25, 35, { c: 26 })) + lig('32 − 4 = ' + B(2)), corr: lig(cpSautsBande(32, -4, { de: 25, a: 35, px: 300 })) + lig('32 − 4 = ' + R(28)) },
       { etoiles: 2, col: 1, consigne: 'Recule jusqu\'à la dizaine, puis encore.',

@@ -34,7 +34,7 @@ PLANCHES['ce1|Longueurs : centimètre, mètre, kilomètre'] = [
   { titre: 'Le kilomètre', duree: '20 min',
     attendus: ['Connaître 1 km = 1 000 m et 1 m = 100 cm', 'Choisir l\'unité adaptée (cm, m, km)'],
     exos: [
-      { etoiles: 1, col: 1, consigne: 'Complète.', ...P3.rmp([['1 km = @ m', '1 000'], ['1 m = @ cm', 100], ['2 km = @ m', '2 000']], 3) },
+      { etoiles: 1, col: 1, consigne: 'Complète.', ...P3.rmp(plDeux([['1 km = @ m', '1 000'], ['1 m = @ cm', 100], ['2 km = @ m', '2 000'], ['2 m = @ cm', 200], ['3 m = @ cm', 300], ['3 km = @ m', '3 000']]), 3) },
       { etoiles: 1, col: 1, consigne: 'Entoure l\'unité qui convient.', ...P3.chx([['Une trousse mesure 20 …', 'cm', 'cm · m · km'], ['La cour de l\'école mesure 40 …', 'm', 'cm · m · km'], ['De Paris à Lyon : 470 …', 'km', 'cm · m · km']]) },
       { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['1 m + 46 cm = @ cm', 146], ['2 m + 5 cm = @ cm', 205], ['300 cm = @ m', 3]], 3) },
       { etoiles: 2, col: 1, consigne: 'Entoure la longueur qui convient.', ...P3.chx([['La longueur d\'une trousse :', '20 cm', '2 cm · 20 cm · 2 m'], ['La hauteur d\'une porte :', '2 m', '2 cm · 2 m · 2 km'], ['Une heure de marche :', '4 km', '4 m · 40 m · 4 km']]) },

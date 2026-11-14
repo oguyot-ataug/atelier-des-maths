@@ -6,11 +6,11 @@ PLANCHES['cp|Problèmes en deux étapes'] = [
     attendus: ['Résoudre un problème en deux étapes', 'Écrire un calcul pour chaque étape'],
     exos: [
       { etoiles: 1, col: 1, consigne: 'Calcule en deux étapes.',
-        ...P3.rmp([['10 + 5 = @', 15], ['15 − 3 = @', 12], ['8 + 4 = @', 12], ['12 − 2 = @', 10]], 2) },
+        ...P3.rmp(plDeux([['10 + 5 = @', 15], ['15 − 3 = @', 12], ['8 + 4 = @', 12], ['12 − 2 = @', 10], ['10 + 7 = @', 17], ['17 − 4 = @', 13], ['9 + 5 = @', 14], ['14 − 4 = @', 10]]), 2) },
       { etoiles: 2, cahier: true, consigne: 'Dans le bus, il y a 12 enfants. 6 montent, puis 4 descendent. Combien d\'enfants y a-t-il dans le bus ?',
         corr: cm1Redac('Enfants dans le bus', { suite: ['12 + 6 = 18', '18 − 4 = 14'] }, 'Il y a 14 enfants dans le bus.') },
       { etoiles: 2, col: 1, consigne: 'Calcule en deux étapes.',
-        ...P3.rmp([['20 + 6 = @', 26], ['26 − 5 = @', 21], ['9 + 9 = @', 18], ['18 − 8 = @', 10]], 2) },
+        ...P3.rmp(plDeux([['20 + 6 = @', 26], ['26 − 5 = @', 21], ['9 + 9 = @', 18], ['18 − 8 = @', 10], ['30 + 8 = @', 38], ['38 − 6 = @', 32], ['7 + 7 = @', 14], ['14 − 3 = @', 11]]), 2) },
       { etoiles: 2, consigne: 'Il y a 5 canards sur l\'étang. 4 canards arrivent, puis 2 s\'en vont. Combien y a-t-il de canards ? Dessine, puis calcule.',
         eleve: cadre(70) + plListe(['Étape 1 : ' + B(5), 'Étape 2 : ' + B(5)]),
         corr: lig(cpJetons(9, 2, cpBleus(5, 4))) + plListe(['5 + 4 = ' + R(9), '9 − 2 = ' + R(7)]) + lig('Il y a ' + R(7) + ' canards.') },

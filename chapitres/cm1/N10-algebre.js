@@ -105,7 +105,7 @@ ${cm1Demo('al-remonter', 'Remonter un programme de calcul', 'Programme : « Choi
 /* ---- Planches d'exercices imprimables (planches.js) ---- */
 {
 const B = n => plPointilles(n || 3), R = v => plRep(String(v));
-const ex = l => ({ eleve: plListe(l.map(([t]) => t.replace('…', B()))), corr: plListe(l.map(([t, r]) => t.replace('…', R(r)))) });
+const ex = l => ({ eleve: plListe(l.map(([t]) => t.replace('…', B())), l.cols), corr: plListe(l.map(([t, r]) => t.replace('…', R(r))), l.cols) });
 const all = n => allumettes(n).replace('<svg ', '<svg class="pl-libre" ');
 const bal = (g, d) => balance(g, d).replace('<svg ', '<svg class="pl-libre" ').replace('style="width:260px;display:block;margin:6px auto;"', 'style="width:190px;display:block;margin:2px auto;"');
 PLANCHES['cm1|Algèbre'] = [
@@ -133,7 +133,7 @@ PLANCHES['cm1|Algèbre'] = [
   { titre: 'Égalités, balances et programmes de calcul', duree: '30 min',
     attendus: ['Comprendre le signe = comme une égalité', 'Trouver le nombre caché (égalité à trou, balance)', 'Appliquer un programme de calcul'],
     exos: [
-      { etoiles: 1, col: 1, consigne: 'Trouve le nombre caché.', ...ex([['8 + … = 15', 7], ['… − 6 = 9', 15], ['4 × … = 28', 7], ['45 = … + 20', 25]]) },
+      { etoiles: 1, col: 1, consigne: 'Trouve le nombre caché.', ...ex(plDeux([['8 + … = 15', 7], ['… − 6 = 9', 15], ['4 × … = 28', 7], ['45 = … + 20', 25], ['9 + … = 20', 11], ['… − 8 = 12', 20], ['6 × … = 54', 9], ['30 = … + 12', 18]])) },
       { etoiles: 2, col: 1, consigne: 'Le signe = veut dire « a la même valeur que ». Vrai ou faux ?',
         eleve: plListe(['7 + 5 = 12 + 3 <b>vrai · faux</b>', '10 + 4 = 7 + 7 <b>vrai · faux</b>', '3 × 4 = 6 × 2 <b>vrai · faux</b>', '15 − 5 = 5 <b>vrai · faux</b>']),
         corr: plListe([['7 + 5 = 12 + 3 ', 'faux'], ['10 + 4 = 7 + 7 ', 'vrai'], ['3 × 4 = 6 × 2 ', 'vrai'], ['15 − 5 = 5 ', 'faux']].map(([t, r]) => t + plEntoure(r))) },

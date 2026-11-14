@@ -12,7 +12,7 @@ PLANCHES['cp|L\'addition posée'] = [
       { etoiles: 2, consigne: 'Pose et calcule.', eleve: plGrille(['34 + 25', '60 + 18', '13 + 72'].map(t => t + cadre(80)), 3), corr: plGrille([pose(34, 25), pose(60, 18), pose(13, 72)], 3) },
       { etoiles: 1, consigne: 'Calcule.', ...deux([[64, 23], [35, 42], [71, 18]]) },
       { etoiles: 2, col: 1, consigne: 'Calcule.',
-        ...P3.rmp([['30 + 40 = @', 70], ['25 + 3 = @', 28], ['50 + 26 = @', 76]], 2) },
+        ...P3.rmp(plDeux([['30 + 40 = @', 70], ['25 + 3 = @', 28], ['50 + 26 = @', 76], ['20 + 50 = @', 70], ['44 + 5 = @', 49], ['30 + 62 = @', 92]]), 2) },
       { etoiles: 3, col: 1, consigne: 'Le calcul est-il bien posé ? Entoure.',
         eleve: plGrille([cm1Posee([[' ', '34'], ['+', ' 5'], [' ', '']]) + '<br><b>oui · non</b>', cm1Posee([[' ', '34'], ['+', '5 '], [' ', '']]) + '<br><b>oui · non</b>'], 2),
         corr: plGrille([cm1Posee([[' ', '34'], ['+', ' 5'], [' ', '39']]) + '<br>' + plEntoure('oui'), cm1Posee([[' ', '34'], ['+', '5 '], [' ', '']]) + '<br>' + plEntoure('non') + ' : le 5 doit être sous les unités'], 2) },

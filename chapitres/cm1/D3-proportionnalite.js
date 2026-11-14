@@ -83,7 +83,7 @@ ${cm1Demo('pp-unite', 'Passer par l\'unité', '5 baguettes coûtent 6 €. Combi
    Au CM : pas de tableau de proportionnalité ; on raisonne avec des phrases (fois plus, en additionnant, l'unité). */
 {
 const B = n => plPointilles(n || 4), R = v => plRep(String(v));
-const ex = l => ({ eleve: plListe(l.map(([t]) => t.replace('…', B()))), corr: plListe(l.map(([t, r]) => t.replace('…', R(r)))) });
+const ex = l => ({ eleve: plListe(l.map(([t]) => t.replace('…', B())), l.cols), corr: plListe(l.map(([t, r]) => t.replace('…', R(r))), l.cols) });
 PLANCHES['cm1|Proportionnalité'] = [
   { titre: 'Raisonner dans des situations de proportionnalité', duree: '35 min',
     attendus: ['Raisonner avec « fois plus », en additionnant, en passant par l\'unité', 'Reconnaître une situation qui n\'est pas proportionnelle'],

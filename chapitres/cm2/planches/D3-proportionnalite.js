@@ -48,7 +48,7 @@ PLANCHES['cm2|Proportionnalité'] = [
         corr: cm1Redac('Prix d\'un yaourt du paquet de 6', '2,70 : 6 = 0,45', 'Un yaourt coûte 0,45 €.') + cm1Redac('Prix d\'un yaourt du paquet de 4', '2 : 4 = 0,50', 'Un yaourt coûte 0,50 €.') + cm1Redac('Paquet le plus avantageux', '0,45 &lt; 0,50', 'Le paquet de 6 yaourts est le plus avantageux.') },
       { etoiles: 3, cahier: true, consigne: 'Une imprimante imprime 45 pages en 3 minutes. Combien de pages imprime-t-elle en 8 minutes ?',
         corr: cm1Redac('Pages imprimées en 1 minute', '45 : 3 = 15', 'Elle imprime 15 pages par minute.') + cm1Redac('Pages imprimées en 8 minutes', '15 × 8 = 120', 'Elle imprime 120 pages en 8 minutes.') },
-      { etoiles: 1, col: 1, consigne: 'Une voiture consomme 6 L pour 100 km. Complète.', ...P3.rmp([['50 km : @ L', 3], ['200 km : @ L', 12], ['350 km : @ L', 21]], 2) },
+      { etoiles: 1, col: 1, consigne: 'Une voiture consomme 6 L pour 100 km. Complète.', ...P3.rmp(plDeux([['50 km : @ L', 3], ['200 km : @ L', 12], ['350 km : @ L', 21], ['300 km : @ L', 18], ['25 km : @ L', '1,5'], ['1 000 km : @ L', 60]]), 2) },
       { etoiles: 2, col: 1, consigne: 'L\'imprimante imprime 45 pages en 3 min. Complète.', ...P3.rmp([['1 min : @ pages', 15], ['8 min : @ pages', 120]], 2) },
       { etoiles: 2, col: 1, consigne: 'Prix d\'un yaourt :', ...P3.rmp([['paquet de 6 à 2,70 € : @ €', '0,45'], ['paquet de 4 à 2 € : @ €', '0,50']], 3) },
       { etoiles: 3, col: 1, consigne: 'Quel paquet est le plus avantageux ? Entoure.', ...P3.chx([['', 'le paquet de 6', 'le paquet de 6 · le paquet de 4']]) },

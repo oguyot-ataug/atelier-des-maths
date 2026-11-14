@@ -44,16 +44,16 @@ PLANCHES['cm2|Multiplication'] = [
     attendus: ['Décomposer un nombre pour multiplier mentalement', 'Utiliser les doubles et les moitiés', 'Résoudre un problème à étapes'],
     exos: [
       { etoiles: 1, col: 1, consigne: 'Calcule mentalement en décomposant.',
-        ...rmp([['12 × 15 = @', 180], ['25 × 12 = @', 300], ['99 × 7 = @', 693], ['21 × 13 = @', 273]]) },
+        ...rmp(plDeux([['12 × 15 = @', 180], ['25 × 12 = @', 300], ['99 × 7 = @', 693], ['21 × 13 = @', 273], ['11 × 14 = @', 154], ['25 × 8 = @', 200], ['99 × 4 = @', 396], ['31 × 3 = @', 93]])) },
       { etoiles: 2, col: 1, consigne: 'Calcule mentalement.',
-        ...rmp([['4 × 2,5 = @', 10], ['50 × 18 = @', 900], ['0,5 × 46 = @', 23], ['3 × 1,2 = @', '3,6']]) },
+        ...rmp(plDeux([['4 × 2,5 = @', 10], ['50 × 18 = @', 900], ['0,5 × 46 = @', 23], ['3 × 1,2 = @', '3,6'], ['8 × 2,5 = @', 20], ['50 × 12 = @', 600], ['0,5 × 30 = @', 15], ['4 × 1,5 = @', 6]])) },
       { etoiles: 2, col: 1, consigne: 'Complète par = ou ≠.',
-        ...P3.egal([['15 × 4', '30 × 2', 1], ['6 × 0,5', '12', 0], ['8 × 125', '1 000', 1]]) },
+        ...P3.egal(plDeux([['15 × 4', '30 × 2', 1], ['6 × 0,5', '12', 0], ['8 × 125', '1 000', 1], ['25 × 4', '50 × 2', 1], ['10 × 0,5', '20', 0], ['4 × 250', '1 000', 1]])) },
       { etoiles: 3, cahier: true, consigne: 'Pour la sortie de fin d\'année, 3 classes de 26 élèves partent avec 9 adultes. L\'entrée au parc coûte 12 € par élève et 15 € par adulte. Quel est le prix total des entrées ?',
         corr: cm1Redac('Nombre d\'élèves', '3 × 26 = 78', 'Il y a 78 élèves.') + cm1Redac('Prix des entrées', { suite: ['78 × 12 = 936', '9 × 15 = 135', '936 + 135 = 1 071'] }, 'Les entrées coûtent 1 071 € en tout.') },
-      { etoiles: 1, col: 1, consigne: 'Calcule mentalement.', ...P3.rmp([['25 × 12 = @', 300], ['99 × 7 = @', 693], ['15 × 6 = @', 90]], 3) },
+      { etoiles: 1, col: 1, consigne: 'Calcule mentalement.', ...P3.rmp(plDeux([['25 × 12 = @', 300], ['99 × 7 = @', 693], ['15 × 6 = @', 90], ['25 × 8 = @', 200], ['99 × 3 = @', 297], ['15 × 4 = @', 60]]), 3) },
       { etoiles: 2, col: 1, consigne: 'Calcule les étapes de la sortie.', ...P3.rmp([['3 × 26 = @', 78], ['78 + 9 = @', 87], ['87 × 12 = @', '1 044']], 3) },
-      { etoiles: 2, col: 1, consigne: 'Complète par = ou ≠.', ...P3.egal([['4 × 25', '100', 1], ['50 × 50', '250', 0], ['0,5 × 8', '4', 1]]) },
+      { etoiles: 2, col: 1, consigne: 'Complète par = ou ≠.', ...P3.egal(plDeux([['4 × 25', '100', 1], ['50 × 50', '250', 0], ['0,5 × 8', '4', 1], ['2 × 50', '100', 1], ['20 × 20', '40', 0], ['0,5 × 10', '5', 1]])) },
     ] },
 ];
 })();

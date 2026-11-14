@@ -146,8 +146,8 @@ PLANCHES['cm1|Nombres entiers jusqu\'à 9 999'] = [
     attendus: ['Comparer, encadrer et intercaler des nombres', 'Ranger des nombres', 'Repérer des nombres sur une demi-droite graduée'],
     exos: [
       { etoiles: 1, col: 1, consigne: 'Complète avec &lt;, &gt; ou =.',
-        eleve: plListe([`4 506 ${C} 4 560`, `7 099 ${C} 7 100`, `3 000 ${C} 2 999`, `6 040 ${C} 6 040`]),
-        corr: plListe([`4 506 ${R(lt)} 4 560`, `7 099 ${R(lt)} 7 100`, `3 000 ${R(gt)} 2 999`, `6 040 ${R('=')} 6 040`]) },
+        eleve: plListe([`4 506 ${C} 4 560`, `7 099 ${C} 7 100`, `3 000 ${C} 2 999`, `6 040 ${C} 6 040`, `8 215 ${C} 8 152`, `5 999 ${C} 6 000`, `1 010 ${C} 1 001`, `2 700 ${C} 2 700`], 2),
+        corr: plListe([`4 506 ${R(lt)} 4 560`, `7 099 ${R(lt)} 7 100`, `3 000 ${R(gt)} 2 999`, `6 040 ${R('=')} 6 040`, `8 215 ${R(gt)} 8 152`, `5 999 ${R(lt)} 6 000`, `1 010 ${R(gt)} 1 001`, `2 700 ${R('=')} 2 700`], 2) },
       { etoiles: 1, col: 1, consigne: 'Encadre entre deux milliers qui se suivent.',
         eleve: plListe([`${B()} &lt; 5 372 &lt; ${B()}`, `${B()} &lt; 8 905 &lt; ${B()}`, `${B()} &lt; 1 460 &lt; ${B()}`]),
         corr: plListe([`${R('5 000')} &lt; 5 372 &lt; ${R('6 000')}`, `${R('8 000')} &lt; 8 905 &lt; ${R('9 000')}`, `${R('1 000')} &lt; 1 460 &lt; ${R('2 000')}`]) },

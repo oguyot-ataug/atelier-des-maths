@@ -25,11 +25,11 @@ PLANCHES['cp|Lire l\'heure : les heures entières'] = [
     attendus: ['Trouver l\'heure une ou deux heures plus tard'],
     exos: [
       { etoiles: 1, col: 1, consigne: 'Quelle heure sera-t-il une heure plus tard ?',
-        ...P3.rmp([['4 h → @', '5 h'], ['8 h → @', '9 h'], ['11 h → @', '12 h']], 3) },
+        ...P3.rmp(plDeux([['4 h → @', '5 h'], ['8 h → @', '9 h'], ['11 h → @', '12 h'], ['2 h → @', '3 h'], ['6 h → @', '7 h'], ['9 h → @', '10 h']]), 3) },
       { etoiles: 2, cahier: true, consigne: 'Le film commence à 2 h. Il dure 2 heures. À quelle heure finit-il ?',
         corr: cm1Redac('Fin du film', '2 + 2 = 4', 'Le film finit à 4 h.', cpHorloge(4, 80)) },
       { etoiles: 2, col: 1, consigne: 'Quelle heure sera-t-il deux heures plus tard ?',
-        ...P3.rmp([['3 h → @', '5 h'], ['9 h → @', '11 h'], ['10 h → @', '12 h']], 3) },
+        ...P3.rmp(plDeux([['3 h → @', '5 h'], ['9 h → @', '11 h'], ['10 h → @', '12 h'], ['1 h → @', '3 h'], ['5 h → @', '7 h'], ['7 h → @', '9 h']]), 3) },
       { etoiles: 2, consigne: 'Quelle heure était-il une heure plus tôt ?',
         ...P3.rmp([['6 h → @', '5 h'], ['1 h → @', '12 h'], ['9 h → @', '8 h'], ['3 h → @', '2 h'], ['11 h → @', '10 h'], ['8 h → @', '7 h']], 3) },
       { etoiles: 2, consigne: 'Dessine les aiguilles une heure plus tard.',

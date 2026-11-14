@@ -56,7 +56,7 @@ PLANCHES['ce2|Fractions et mesure de longueurs'] = [
       { etoiles: 1, col: 1, consigne: 'Complète.', ...P3.rmp([[`${cm1Frac(1, 2)} = @ quarts`, 2], [`${cm1Frac(1, 2)} = @ dixièmes`, 5]], 2) },
       { etoiles: 2, col: 1, consigne: 'Entoure la plus petite longueur.', ...P3.chx([['', cm1Frac(1, 10), `${cm1Frac(1, 10)} · ${cm1Frac(1, 4)} · ${cm1Frac(1, 2)}`], ['', cm1Frac(2, 10), `${cm1Frac(1, 2)} · ${cm1Frac(2, 10)}`]]) },
       { etoiles: 2, col: 1, consigne: 'Range de la plus petite à la plus grande.', ...P3.rmp([[`${cm1Frac(3, 4)} · ${cm1Frac(1, 4)} · ${cm1Frac(2, 4)} : @`, `${cm1Frac(1, 4)} < ${cm1Frac(2, 4)} < ${cm1Frac(3, 4)}`]], 8) },
-      { etoiles: 3, col: 1, consigne: 'Complète avec <, > ou =.', ...P3.rmp([[`${cm1Frac(5, 10)} @ ${cm1Frac(1, 2)}`, '='], [`${cm1Frac(3, 4)} @ 1`, '<'], [`${cm1Frac(6, 4)} @ 1`, '>']], 1) },
+      { etoiles: 3, col: 1, consigne: 'Complète avec <, > ou =.', ...P3.rmp(plDeux([[`${cm1Frac(5, 10)} @ ${cm1Frac(1, 2)}`, '='], [`${cm1Frac(3, 4)} @ 1`, '<'], [`${cm1Frac(6, 4)} @ 1`, '>'], [`${cm1Frac(2, 4)} @ ${cm1Frac(1, 2)}`, '='], [`${cm1Frac(5, 4)} @ 1`, '>'], [`${cm1Frac(1, 3)} @ 1`, '<']]), 1) },
     ] },
 ];
 })();

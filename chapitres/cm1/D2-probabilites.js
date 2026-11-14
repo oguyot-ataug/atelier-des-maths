@@ -102,7 +102,7 @@ ${cm1Sous('A', 'Atelier : tirer des billes dans un sac')}
 const R = v => plRep(String(v));
 const sac = (b, t) => sacSVG(b, t || 84).replace('<svg ', '<svg class="pl-libre" ');
 const MOTS3 = 'impossible · possible · certain', MOTS5 = 'impossible · peu probable · une chance sur deux · probable · certain';
-const choix = (items, mots) => ({ eleve: plListe(items.map(([t]) => `${t} <b>${mots}</b>`)), corr: plListe(items.map(([t, r]) => `${t} ${plEntoure(r)}`)) });
+const choix = (items, mots) => ({ eleve: plListe(items.map(([t]) => `${t} <b>${mots}</b>`), items.cols), corr: plListe(items.map(([t, r]) => `${t} ${plEntoure(r)}`), items.cols) });
 // Roue partagée en parts égales : couleurs = liste de couleurs, une par part.
 function roue(coul, t){ const n = coul.length, r = 40; let s = `<svg class="pl-libre" viewBox="0 0 100 100" style="width:${t || 84}px;display:inline-block;vertical-align:middle;">`;
   coul.forEach((c, i) => { const a0 = -Math.PI / 2 + 2 * Math.PI * i / n, a1 = a0 + 2 * Math.PI / n;
