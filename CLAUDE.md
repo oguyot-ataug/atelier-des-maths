@@ -328,6 +328,9 @@ toute la largeur, sans retour à la ligne (rangements, décompositions, encadrem
 Propositions à entourer en fin de question (« vrai · faux », « oui · non »…) : rangées automatiquement dans une colonne à part,
 alignées, plus loin de l'énoncé (`plChoixCols`, planches.js ; demandé le 01/11/2026). Propositions trop longues pour tenir à côté
 (plus de 16 caractères en demi-largeur, 48 en pleine largeur) : sous chaque question, au même retrait. Rien à écrire dans les sources.
+À l'ÉCRAN (demandé le 14/11/2026 : « pourquoi aller à la ligne pour les propositions de réponses ? Il y a suffisamment de place en largeur ») :
+toujours à côté de la question quand ça tient (`plChoixEcran` sur les vignettes du Manuel ; exercices faits à l'écran : seuil pleine largeur dès
+420 px ou en projection) ; projection : boîte mesurée sur tout son contenu (scrollWidth, plProjAjuster). Le papier garde la règle des 16 caractères.
 
 Collège (6e à 3e), sur le papier (Manuel et feuilles imprimées) : les cases (`plCase`, fractions `plFrac`) s'affichent en pointillés
 (classe `pl-college`, demandé le 01/11/2026) ; l'écran garde ses cases à cliquer. Comparer deux quantités : « Complète avec <, > ou = »
