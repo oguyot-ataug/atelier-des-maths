@@ -942,9 +942,12 @@ const plCollege = lvl => /^[3-6]e$/.test(lvl);
    Page de 190 × 272 mm (718 × 1028 px) où tout est placé au pixel : grand logo, niveau et titre, bande oblique (− 4°) qui porte
    Oliv'IA, bas de page à la couleur du niveau (domaines, nom, prénom, classe), pied bleu nuit. Aucun texte ne touche une image
    (contrôle : scratchpad couv/controle.js, rectangles mesurés). Couleurs de chaque niveau : PL_TEINTES = [couleur, ombre, bande, fond]. */
-const PL_TEINTES = { cp: ['#D6336C', '#A61E4D', '#FFC83D', '#FCE8EF'], ce1: ['#2E9E5B', '#1E7543', '#FFC83D', '#E6F5EC'], ce2: ['#E8862E', '#B5621A', '#2E6FD8', '#FDF0E3'],
-  cm1: ['#0E8C8C', '#0A6666', '#F5A623', '#E2F4F4'], cm2: ['#8E44AD', '#6C3483', '#F5A623', '#F3EAF8'], '6e': ['#E35D3A', '#B5432A', '#2E6FD8', '#FDECE7'],
-  '5e': ['#2E6FD8', '#1D4F9E', '#F5A623', '#E8F0FD'], '4e': ['#3949AB', '#283593', '#F5A623', '#E8EAF6'], '3e': ['#C0392B', '#922B21', '#F5A623', '#FBE9E7'] };
+const PL_TEINTES = { // couleur de chaque niveau = celle du site (styles.css : --accent-cp, --accent-ce1, …, --accent, --accent-4e, --accent-3e)
+  cp: ['#C2185B', '#8E1043', '#F8AF23', '#FCE4EC'], ce1: ['#00838F', '#005F68', '#F8AF23', '#E0F2F3'], ce2: ['#558B2F', '#3E6622', '#F8AF23', '#EEF4E6'],
+  cm1: ['#2E7D32', '#1E5A22', '#F8AF23', '#E8F3E8'], cm2: ['#1B5E20', '#0F3D12', '#F8AF23', '#E5EFE5'], '6e': ['#FF8208', '#C45F00', '#0C5BA0', '#FFF0E1'],
+  '5e': ['#0C5BA0', '#083F70', '#F8AF23', '#E6EEF7'], '4e': ['#0B7A83', '#075A60', '#F8AF23', '#E2F1F2'], '3e': ['#7A3E9D', '#5A2C75', '#F8AF23', '#F1E8F6'] };
+// Niveau dont le livre suit déjà un programme à venir (CLAUDE.md : la 4e passe au nouveau programme dès 2026-2027).
+const PL_PROG_FUTUR = { '4e': 'Nouveau programme · rentrée 2027' };
 const PL_CV = { W: 718, H: 1028, pente: Math.tan(4 * Math.PI / 180) };
 const plCvY = (x, y0) => y0 - x * PL_CV.pente; // bord haut de la bande oblique à l'abscisse x (y0 : à gauche de la page)
 // Oliv'IA dans le dessin de la page : un svg placé (x, y) de côté w.
@@ -963,7 +966,7 @@ function plCouverture(lvl, o){ // o = { logo, doms, nbChap, nb, avecCorriges, av
       ${sym.map(([t, x, y, k]) => `<text x="${x}" y="${y}" fill="${k}" opacity=".2" font-family="Space Grotesk,Arial,sans-serif" font-weight="700" font-size="40" text-anchor="middle">${t}</text>`).join('')}
       ${plCvOliv('defi', ox, oy, ow)}</svg>
     ${o.logo ? `<img class="pl-cv-logo" src="${o.logo}" alt="L'Atelier des Maths">` : '<b class="pl-cv-logo">L\'Atelier des Maths</b>'}
-    <div class="pl-cv-niv"><span class="pl-cv-n">${plCvNiv(lvl)}</span><span class="pl-cv-t"><span>Mathématiques · ${plCvCycle(lvl).toLowerCase()}</span>${titre}</span></div>
+    <div class="pl-cv-niv"><span class="pl-cv-n">${plCvNiv(lvl)}</span><span class="pl-cv-t"><span>Mathématiques · ${plCvCycle(lvl).toLowerCase()}</span>${titre}${PL_PROG_FUTUR[lvl] ? `<em class="pl-cv-prog">${PL_PROG_FUTUR[lvl]}</em>` : ''}</span></div>
     <div class="pl-cv-bulle" style="right:${W - ox + 16}px;top:${(oy + 18).toFixed(0)}px;">${bulle}</div>
     <div class="pl-cv-doms">${Object.values(PL_DOMAINES).filter(d => o.doms.includes(d)).map(([t, k]) => `<span style="color:${k};border-color:${k};">${t}</span>`).join('')}</div>
     <div class="pl-cv-champs"><span>Nom <i></i></span><span>Prénom <i></i></span><span>Classe <i></i></span></div>
@@ -981,11 +984,11 @@ function plDos(lvl, o){ // 4e de couverture : dernière page du livre (toujours 
     ['methode', col ? 'Des calculs détaillés' : 'Pas à pas', col ? 'Une étape par ligne, une lettre par calcul, des corrigés rédigés comme on attend que l\'élève les écrive.' : 'Des consignes courtes, des exemples nombreux, des corrigés rédigés comme dans le cahier.']];
   return `<section class="pl-page pl-dos pl-cv" style="--c:${c};">
     <svg class="pl-cv-fond" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}"><polygon points="0,0 ${W},0 ${W},${plCvY(W, yG).toFixed(1)} 0,${yG}" fill="${fond}"/>${plCvBande(yG, 12, c2)}</svg>
-    <div class="pl-dos-tete">${o.logo ? `<img src="${o.logo}" alt="L'Atelier des Maths">` : ''}<h2>${nom}<span>${o.nbChap} chapitres · ${o.nb} planches d'exercices${o.avecCours ? ' · le cours de chaque chapitre' : ''}${o.avecCorriges ? ' · corrigés à la fin' : ''}</span></h2></div>
+    <div class="pl-dos-tete">${o.logo ? `<img src="${o.logo}" alt="L'Atelier des Maths">` : ''}<h2>${nom}<span>${o.nbChap} chapitres · ${o.nb} planches d'exercices${o.avecCours ? ' · le cours de chaque chapitre' : ''}${o.avecCorriges ? ' · corrigés à la fin' : ''}${PL_PROG_FUTUR[lvl] ? `<em class="pl-cv-prog">${PL_PROG_FUTUR[lvl]}</em>` : ''}</span></h2></div>
     <div class="pl-dos-blocs">${blocs.map(([p, t, x]) => `<div class="pl-dos-bloc"><span class="pl-dos-oliv">${plOliv(p)}</span><div><h3>${t}</h3><p>${x}</p></div></div>`).join('')}</div>
     <div class="pl-dos-site"><div><h3>Et sur latelierdesmaths.fr</h3><ul><li>les mêmes exercices à faire à l'écran, corrigés aussitôt</li><li>des corrections de construction animées aux instruments</li><li>le cours, les méthodes et leurs animations</li><li>Oliv'IA, l'assistante qui explique pas à pas</li></ul></div>
       <div class="pl-dos-url">Tout le niveau en ligne<b>latelierdesmaths.fr/${escapeHtml(lvl)}</b></div></div>
-    <div class="pl-dos-bas">${o.logoH ? `<img src="${o.logoH}" alt="L'Atelier des Maths">` : ''}<span>Conforme aux programmes en vigueur<br>L'Atelier des Maths · L'Atelier Augmenté</span></div></section>`;
+    <div class="pl-dos-bas">${o.logoH ? `<img src="${o.logoH}" alt="L'Atelier des Maths">` : ''}<span>${PL_PROG_FUTUR[lvl] ? `Conforme au nouveau programme du cycle 4<br>(${escapeHtml(lvl)} : rentrée 2027)` : 'Conforme aux programmes en vigueur'}<br>L'Atelier des Maths · L'Atelier Augmenté</span></div></section>`;
 }
 /* ---------- Manuel avec le cours (demandé le 13/11/2026 : « Serait-il possible de faire une version du manuel papier avec le
    cours ? », choix « cours complet » et « chapitre par chapitre ») ----------
@@ -1363,6 +1366,8 @@ const PL_CSS_LIVRE = `
   .pl-cv-n sup{ font-size:.45em; }
   .pl-cv-t{ font:700 27px/1.15 'Space Grotesk',Arial,sans-serif; color:#1F3A5C; white-space:nowrap; }
   .pl-cv-t > span{ display:block; font:600 13.5px Inter,Arial,sans-serif; color:var(--c); letter-spacing:.08em; text-transform:uppercase; margin-bottom:5px; }
+  .pl-cv-prog{ display:table; font:700 12.5px Inter,Arial,sans-serif; font-style:normal; color:#fff; background:#E35D3A; border-radius:999px; padding:4px 12px; margin-top:8px; letter-spacing:.02em; }
+  .pl-dos-tete .pl-cv-prog{ margin-top:6px; }
   .pl-cv-bulle{ width:196px; background:#fff; border:2.5px solid #1F3A5C; border-radius:18px; padding:11px 14px; font:700 18px/1.2 'Space Grotesk',Arial,sans-serif; color:#1F3A5C; box-shadow:0 3px 0 #1F3A5C; box-sizing:border-box; }
   .pl-cv-bulle sup{ font-size:.6em; } .pl-cv-bulle small{ display:block; font:600 11.5px/1.35 Inter,Arial,sans-serif; color:#4E5665; margin-top:5px; }
   .pl-cv-bulle::after{ content:''; position:absolute; right:-24px; top:20px; border:10px solid transparent; border-left:14px solid #1F3A5C; }

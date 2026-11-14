@@ -4079,6 +4079,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1468', date:'2026-11-14', items:[
+    "Manuel papier : la couverture et la 4e de couverture reprennent la couleur de chaque niveau sur le site (framboise pour le CP, sarcelle pour le CE1, vert pour le CE2, le CM1 et le CM2, orange pour la 6e, bleu pour la 5e, bleu-vert pour la 4e, violet pour la 3e). En 4e : « Nouveau programme · rentrée 2027 » sur la couverture et la 4e de couverture."
+  ]},
   { version:'2026-08-19.1467', date:'2026-11-14', items:[
     "Manuel papier : nouvelle couverture et nouvelle 4e de couverture, pour tous les niveaux du CP à la 3e. Couverture : grand logo de L'Atelier des Maths, niveau et titre, Oliv'IA en super-héroïne posée sur une bande oblique, bas de page à la couleur du niveau (domaines, nom, prénom, classe). 4e de couverture : ce que contient le livre (étoiles, défis, « Je fais le point », calculs détaillés) avec Oliv'IA, et ce que l'on retrouve sur latelierdesmaths.fr. La 4e de couverture tombe toujours sur une page paire (une page blanche est ajoutée si besoin)."
   ]},

@@ -379,7 +379,8 @@ relec/livre.js (PDF du livre dans le navigateur de test, feuille KaTeX injectée
 Couverture et 4e de couverture du Manuel (demandé le 14/11/2026 : « refaire les pages de garde et de quatrième de couverture […] avec le
 logo plus visible et Oliv'IA », proposition A « combinée avec le trait oblique qui porte Olivia de B. Attention à ne pas chevaucher texte et
 image ») : `plCouverture(lvl, o)` et `plDos(lvl, o)` (planches.js), pages de 718 × 1028 px placées au pixel ; couleurs par niveau
-`PL_TEINTES` ; bande oblique à − 4° (`plCvY`) ; 4e de couverture passée à plImprimer par `apres`, toujours sur une page paire
+`PL_TEINTES` (TOUJOURS les couleurs des niveaux du site, styles.css --accent-… ; demandé le 14/11/2026) ; 4e : « Nouveau programme · rentrée 2027 »
+(`PL_PROG_FUTUR`) ; bande oblique à − 4° (`plCvY`) ; 4e de couverture passée à plImprimer par `apres`, toujours sur une page paire
 (`.pl-blanche` ajoutée par plRemplirPages), sans numéro (`@page dos`). Pas de QR code (aucune bibliothèque) : l'adresse du niveau est écrite.
 Contrôle : scratchpad couv/controle.js (aucun texte sur le logo, Oliv'IA ou la bande ; 0 le 14/11/2026 en 5e, CE2, 3e, CP).
 Marges des feuilles imprimées : 1 cm à gauche et à droite (demandé le 13/11/2026 : « Les manuels concurrents ont des marges gauche et droite
