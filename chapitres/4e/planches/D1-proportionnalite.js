@@ -37,7 +37,7 @@ PLANCHES['4e|Proportionnalité'] = [
         ...ch([['Augmenter de 10 %, c\'est multiplier par 1,1.', 'vrai'], ['Baisser de 20 % puis augmenter de 20 % ramène au prix de départ.', 'faux'], ['50 % d\'une quantité, c\'est sa moitié.', 'vrai']], 'vrai · faux') },
       { etoiles: 3, cahier: true, consigne: 'Un collège compte 500 élèves. 36 % sont en 6e ou en 5e, et parmi les autres, 40 % sont en 4e. Combien d\'élèves sont en 4e ?',
         corr: cm1Redac('Élèves de 4e et de 3e', { suite: ['100 % − 36 % = 64 %', cm1Frac('500 \\times 64', 100) + ' = 320'] }, '320 élèves sont en 4e ou en 3e.') + cm1Redac('Élèves de 4e', cm1Frac('320 \\times 40', 100) + ' = 128', 'Il y a 128 élèves de 4e.') },
-      { etoiles: 1, col: 1, consigne: 'Calcule.', ...P3.rmp([['10 % de 250 : @', 25], ['25 % de 80 : @', 20], ['50 % de 46 : @', 23]], 2) },
+      { etoiles: 1, col: 1, consigne: 'Calcule.', ...P3.rmp(plDeux([['10 % de 250 : @', 25], ['25 % de 80 : @', 20], ['50 % de 46 : @', 23], ['20 % de 60 : @', 12], ['75 % de 40 : @', 30], ['5 % de 300 : @', 15]]), 2) },
       { etoiles: 2, col: 1, consigne: 'Calcule le nouveau prix.', ...P3.rmp([['40 € augmentés de 10 % : @ €', 44], ['60 € réduits de 20 % : @ €', 48]], 2) },
     ] },
   { titre: 'Vitesse moyenne', duree: '35 min',

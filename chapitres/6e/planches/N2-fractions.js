@@ -52,14 +52,14 @@ PLANCHES['6e|Fractions : nombres et partage'] = [
     attendus: ['Utiliser une fraction pour exprimer un partage, un quotient', 'Repérer une fraction sur une demi-droite graduée', 'Reconnaître et produire des fractions égales, simplifier'],
     exos: [
       { etoiles: 1, col: 1, consigne: `Le quotient de 7 par 4 est le nombre ${T(7, 4)} : c'est le nombre qui, multiplié par 4, donne 7. Complète.`,
-        eleve: plListe([ligne('4 ×', Fr, '= 7'), ligne('5 ×', Fr, '= 2'), ligne('3 ×', Fr, '= 10')]),
-        corr: plListe([ligne('4 ×', R(F(7, 4)), '= 7'), ligne('5 ×', R(F(2, 5)), '= 2'), ligne('3 ×', R(F(10, 3)), '= 10')]),
+        eleve: plListe([ligne('4 ×', Fr, '= 7'), ligne('5 ×', Fr, '= 2'), ligne('3 ×', Fr, '= 10'), ligne('7 ×', Fr, '= 3'), ligne('2 ×', Fr, '= 9'), ligne('6 ×', Fr, '= 5')], 2),
+        corr: plListe([ligne('4 ×', R(F(7, 4)), '= 7'), ligne('5 ×', R(F(2, 5)), '= 2'), ligne('3 ×', R(F(10, 3)), '= 10'), ligne('7 ×', R(F(3, 7)), '= 3'), ligne('2 ×', R(F(9, 2)), '= 9'), ligne('6 ×', R(F(5, 6)), '= 5')], 2),
         // Autres versions et fiche de répétition (relecture bêta 6e-N2-P3-E1 du 07/11/2026, « Ajouter autre version », « Ajouter
         // fiche de répétition ») : trois quotients b × … = a, fraction a/b déjà simplifiée et non entière (comme 7/4, 2/5, 10/3 :
-        // la réponse attendue est unique), jamais 7 et 4.
+        // la réponse attendue est unique), jamais 7 et 4 ; six quotients sur deux colonnes (14/11/2026).
         gen: alea => {
-          const L = [], pgcd = (x, y) => y ? pgcd(y, x % y) : x;
-          while(L.length < 3){ const b = 2 + Math.floor(alea() * 8), a = 1 + Math.floor(alea() * 12);
+          const L = plDeux([]), pgcd = (x, y) => y ? pgcd(y, x % y) : x;
+          while(L.length < 6){ const b = 2 + Math.floor(alea() * 8), a = 1 + Math.floor(alea() * 12);
             if(pgcd(a, b) !== 1 || (a === 7 && b === 4) || L.some(([x, y]) => x === a || y === b)) continue; L.push([a, b]); }
           return { eleve: plListe(L.map(([a, b]) => ligne(b + ' ×', Fr, '= ' + a)), L.cols), corr: plListe(L.map(([a, b]) => ligne(b + ' ×', R(F(a, b)), '= ' + a)), L.cols) };
         } },
@@ -67,8 +67,8 @@ PLANCHES['6e|Fractions : nombres et partage'] = [
         eleve: plListe([ligne(F(2, 3), '=', Fr, '(dénominateur 12)'), ligne(F(15, 20), '=', Fr, '(numérateur 3)'), ligne(F(7, 5), '=', Fr, '(numérateur 21)'), ligne('1 =', Fr, '(dénominateur 9)')]),
         corr: plListe([ligne(F(2, 3), '=', R(F(8, 12))), ligne(F(15, 20), '=', R(F(3, 4))), ligne(F(7, 5), '=', R(F(21, 15))), ligne('1 =', R(F(9, 9)))]) },
       { etoiles: 2, col: 1, consigne: 'Simplifie le plus possible.',
-        eleve: plListe([ligne(F(12, 18), '=', Fr), ligne(F(25, 100), '=', Fr), ligne(F(14, 21), '=', Fr), ligne(F(30, 45), '=', Fr)]),
-        corr: plListe([ligne(F(12, 18), '=', R(F(2, 3))), ligne(F(25, 100), '=', R(F(1, 4))), ligne(F(14, 21), '=', R(F(2, 3))), ligne(F(30, 45), '=', R(F(2, 3)))]) },
+        eleve: plListe([ligne(F(12, 18), '=', Fr), ligne(F(25, 100), '=', Fr), ligne(F(14, 21), '=', Fr), ligne(F(30, 45), '=', Fr), ligne(F(16, 24), '=', Fr), ligne(F(20, 50), '=', Fr), ligne(F(18, 27), '=', Fr), ligne(F(35, 50), '=', Fr)], 2),
+        corr: plListe([ligne(F(12, 18), '=', R(F(2, 3))), ligne(F(25, 100), '=', R(F(1, 4))), ligne(F(14, 21), '=', R(F(2, 3))), ligne(F(30, 45), '=', R(F(2, 3))), ligne(F(16, 24), '=', R(F(2, 3))), ligne(F(20, 50), '=', R(F(2, 5))), ligne(F(18, 27), '=', R(F(2, 3))), ligne(F(35, 50), '=', R(F(7, 10)))], 2) },
       { etoiles: 2, col: 1, consigne: `Entoure les fractions égales à ${T(2, 3)}.`,
         eleve: plGrille([[4, 6], [6, 9], [3, 4], [10, 15], [8, 12], [5, 6]].map(([a, b]) => F(a, b)), 3),
         corr: plGrille([[4, 6], [6, 9], [3, 4], [10, 15], [8, 12], [5, 6]].map(([a, b]) => a * 3 === b * 2 ? plEntoure(F(a, b)) : F(a, b)), 3) },
@@ -91,12 +91,12 @@ PLANCHES['6e|Fractions : nombres et partage'] = [
         eleve: plListe([ligne(F(7, 3), '=', B(1), '+', Fr), ligne(F(11, 4), '=', B(1), '+', Fr), ligne(F(9, 5), '=', B(1), '+', Fr), ligne(F(17, 6), '=', B(1), '+', Fr)]),
         corr: plListe([ligne(F(7, 3), '=', R(2), '+', R(F(1, 3))), ligne(F(11, 4), '=', R(2), '+', R(F(3, 4))), ligne(F(9, 5), '=', R(1), '+', R(F(4, 5))), ligne(F(17, 6), '=', R(2), '+', R(F(5, 6)))]) },
       { etoiles: 2, col: 1, consigne: 'Encadre chaque fraction entre deux nombres entiers consécutifs.',
-        eleve: plListe([ligne(B(1), '&lt;', F(13, 4), '&lt;', B(1)), ligne(B(1), '&lt;', F(22, 5), '&lt;', B(1)), ligne(B(1), '&lt;', F(9, 2), '&lt;', B(1)), ligne(B(1), '&lt;', F(30, 7), '&lt;', B(1))]),
-        corr: plListe([ligne(R(3), '&lt;', F(13, 4), '&lt;', R(4)), ligne(R(4), '&lt;', F(22, 5), '&lt;', R(5)), ligne(R(4), '&lt;', F(9, 2), '&lt;', R(5)), ligne(R(4), '&lt;', F(30, 7), '&lt;', R(5))]) },
+        eleve: plListe([ligne(B(1), '&lt;', F(13, 4), '&lt;', B(1)), ligne(B(1), '&lt;', F(22, 5), '&lt;', B(1)), ligne(B(1), '&lt;', F(9, 2), '&lt;', B(1)), ligne(B(1), '&lt;', F(30, 7), '&lt;', B(1)), ligne(B(1), '&lt;', F(7, 2), '&lt;', B(1)), ligne(B(1), '&lt;', F(17, 3), '&lt;', B(1)), ligne(B(1), '&lt;', F(11, 4), '&lt;', B(1)), ligne(B(1), '&lt;', F(41, 10), '&lt;', B(1))], 2),
+        corr: plListe([ligne(R(3), '&lt;', F(13, 4), '&lt;', R(4)), ligne(R(4), '&lt;', F(22, 5), '&lt;', R(5)), ligne(R(4), '&lt;', F(9, 2), '&lt;', R(5)), ligne(R(4), '&lt;', F(30, 7), '&lt;', R(5)), ligne(R(3), '&lt;', F(7, 2), '&lt;', R(4)), ligne(R(5), '&lt;', F(17, 3), '&lt;', R(6)), ligne(R(2), '&lt;', F(11, 4), '&lt;', R(3)), ligne(R(4), '&lt;', F(41, 10), '&lt;', R(5))], 2) },
       // « … 1 » à compléter par <, > ou = ; à l'écran, la case bascule au clic (relecture 6e-N2-P4-E6).
       { etoiles: 2, col: 1, consigne: 'Compare chaque fraction à 1 : complète avec &lt;, &gt; ou =.',
-        eleve: plListe([ligne(F(7, 8), plCase(), '1'), ligne(F(9, 8), plCase(), '1'), ligne(F(12, 12), plCase(), '1')]),
-        corr: plListe([ligne(F(7, 8), R('&lt;'), '1', '<small>(7 &lt; 8)</small>'), ligne(F(9, 8), R('&gt;'), '1', '<small>(9 &gt; 8)</small>'), ligne(F(12, 12), R('='), '1')]) },
+        eleve: plListe([ligne(F(7, 8), plCase(), '1'), ligne(F(9, 8), plCase(), '1'), ligne(F(12, 12), plCase(), '1'), ligne(F(5, 3), plCase(), '1'), ligne(F(4, 4), plCase(), '1'), ligne(F(2, 9), plCase(), '1')], 2),
+        corr: plListe([ligne(F(7, 8), R('&lt;'), '1', '<small>(7 &lt; 8)</small>'), ligne(F(9, 8), R('&gt;'), '1', '<small>(9 &gt; 8)</small>'), ligne(F(12, 12), R('='), '1'), ligne(F(5, 3), R('&gt;'), '1', '<small>(5 &gt; 3)</small>'), ligne(F(4, 4), R('='), '1'), ligne(F(2, 9), R('&lt;'), '1', '<small>(2 &lt; 9)</small>')], 2) },
       { etoiles: 3, col: 1, cahier: true, consigne: `Trace une demi-droite graduée (l'unité mesure 6 côtés de carreau) et place-y les nombres ${T(1, 2)}, ${T(5, 3)}, ${T(7, 6)} et 2.`,
         corr: cm1Redac('Placement des nombres sur la demi-droite', { suite: ['L\'unité mesure 6 côtés de carreau : un sixième mesure 1 côté de carreau.', `${F(1, 2)} = ${F(3, 6)} : à 3 côtés de carreau de l'origine.`, `${F(7, 6)} : à 7 côtés de carreau.`, `${F(5, 3)} = ${F(10, 6)} : à 10 côtés de carreau.`, `2 = ${F(12, 6)} : à 12 côtés de carreau.`] }, 'On compte les côtés de carreau depuis l\'origine pour placer chaque point.',
           // Le tracé sur papier quadrillé (relecture 6e-N2-P4-E7).
@@ -114,14 +114,14 @@ PLANCHES['6e|Fractions : nombres et partage'] = [
     attendus: ['Passer d\'une fraction décimale à un nombre décimal, et inversement', 'Reconnaître des fractions égales', 'Utiliser le quotient pour résoudre a × … = b'],
     exos: [
       { etoiles: 1, col: 1, consigne: 'Écris chaque nombre sous forme décimale.',
-        eleve: plListe([ligne(F(3, 10), '=', B()), ligne(F(25, 100), '=', B()), ligne(F(7, 100), '=', B()), ligne(F(1, 2), '=', B()), ligne(F(3, 4), '=', B())]),
-        corr: plListe([ligne(F(3, 10), '=', R('0,3')), ligne(F(25, 100), '=', R('0,25')), ligne(F(7, 100), '=', R('0,07')), ligne(F(1, 2), '=', R('0,5')), ligne(F(3, 4), '=', R('0,75'))]) },
+        eleve: plListe([ligne(F(3, 10), '=', B()), ligne(F(25, 100), '=', B()), ligne(F(7, 100), '=', B()), ligne(F(1, 2), '=', B()), ligne(F(3, 4), '=', B()), ligne(F(7, 10), '=', B()), ligne(F(43, 100), '=', B()), ligne(F(1, 4), '=', B()), ligne(F(9, 2), '=', B()), ligne(F(1, 5), '=', B())], 2),
+        corr: plListe([ligne(F(3, 10), '=', R('0,3')), ligne(F(25, 100), '=', R('0,25')), ligne(F(7, 100), '=', R('0,07')), ligne(F(1, 2), '=', R('0,5')), ligne(F(3, 4), '=', R('0,75')), ligne(F(7, 10), '=', R('0,7')), ligne(F(43, 100), '=', R('0,43')), ligne(F(1, 4), '=', R('0,25')), ligne(F(9, 2), '=', R('4,5')), ligne(F(1, 5), '=', R('0,2'))], 2) },
       { etoiles: 1, col: 1, consigne: 'Écris chaque nombre sous forme d\'une fraction décimale.',
-        eleve: plListe([ligne('0,7 =', Fr), ligne('1,23 =', Fr), ligne('0,05 =', Fr), ligne('2,9 =', Fr)]),
-        corr: plListe([ligne('0,7 =', R(F(7, 10))), ligne('1,23 =', R(F(123, 100))), ligne('0,05 =', R(F(5, 100))), ligne('2,9 =', R(F(29, 10)))]) },
+        eleve: plListe([ligne('0,7 =', Fr), ligne('1,23 =', Fr), ligne('0,05 =', Fr), ligne('2,9 =', Fr), ligne('0,3 =', Fr), ligne('4,07 =', Fr), ligne('0,61 =', Fr), ligne('5,1 =', Fr)], 2),
+        corr: plListe([ligne('0,7 =', R(F(7, 10))), ligne('1,23 =', R(F(123, 100))), ligne('0,05 =', R(F(5, 100))), ligne('2,9 =', R(F(29, 10))), ligne('0,3 =', R(F(3, 10))), ligne('4,07 =', R(F(407, 100))), ligne('0,61 =', R(F(61, 100))), ligne('5,1 =', R(F(51, 10)))], 2) },
       { etoiles: 2, col: 1, consigne: 'Trouve le nombre manquant (écris-le sous forme décimale).',
-        eleve: plListe(['6 × ' + B() + ' = 15', '4 × ' + B() + ' = 3', '8 × ' + B() + ' = 2', '5 × ' + B() + ' = 7']),
-        corr: plListe(['6 × ' + R('2,5') + ' = 15', '4 × ' + R('0,75') + ' = 3', '8 × ' + R('0,25') + ' = 2', '5 × ' + R('1,4') + ' = 7']) },
+        eleve: plListe(['6 × ' + B() + ' = 15', '4 × ' + B() + ' = 3', '8 × ' + B() + ' = 2', '5 × ' + B() + ' = 7', '2 × ' + B() + ' = 5', '5 × ' + B() + ' = 4', '4 × ' + B() + ' = 9', '10 × ' + B() + ' = 3'], 2),
+        corr: plListe(['6 × ' + R('2,5') + ' = 15', '4 × ' + R('0,75') + ' = 3', '8 × ' + R('0,25') + ' = 2', '5 × ' + R('1,4') + ' = 7', '2 × ' + R('2,5') + ' = 5', '5 × ' + R('0,8') + ' = 4', '4 × ' + R('2,25') + ' = 9', '10 × ' + R('0,3') + ' = 3'], 2) },
       { etoiles: 3, col: 1, cahier: true, consigne: `Lucas affirme que ${T(3, 4)}, 0,75 et 75 % désignent le même nombre. A-t-il raison ? Justifie.`,
         corr: cm1Redac('Justification', { suite: [`${F(3, 4)} = ${F('3 × 25', '4 × 25')} = ${F(75, 100)}`, `${F(75, 100)} = 0,75 et ${F(75, 100)} = 75 %`] }, 'Lucas a raison : ce sont trois écritures du même nombre.') },
     ] },
@@ -129,11 +129,11 @@ PLANCHES['6e|Fractions : nombres et partage'] = [
     attendus: ['Calculer une fraction d\'une quantité', 'Utiliser une fraction pour exprimer un partage équitable', 'Résoudre un problème avec une fraction'],
     exos: [
       { etoiles: 1, col: 1, consigne: 'Calcule.',
-        eleve: plListe([ligne(F(1, 4), 'de 20 =', B()), ligne(F(3, 4), 'de 20 =', B()), ligne(F(2, 5), 'de 35 =', B()), ligne(F(5, 6), 'de 42 =', B())]),
-        corr: plListe([ligne(F(1, 4), 'de 20 =', R(5)), ligne(F(3, 4), 'de 20 = 3 × 5 =', R(15)), ligne(F(2, 5), 'de 35 = 2 × 7 =', R(14)), ligne(F(5, 6), 'de 42 = 5 × 7 =', R(35))]) },
+        eleve: plListe([ligne(F(1, 4), 'de 20 =', B()), ligne(F(3, 4), 'de 20 =', B()), ligne(F(2, 5), 'de 35 =', B()), ligne(F(5, 6), 'de 42 =', B()), ligne(F(1, 3), 'de 24 =', B()), ligne(F(2, 3), 'de 24 =', B()), ligne(F(3, 5), 'de 40 =', B()), ligne(F(4, 7), 'de 21 =', B())], 2),
+        corr: plListe([ligne(F(1, 4), 'de 20 =', R(5)), ligne(F(3, 4), 'de 20 = 3 × 5 =', R(15)), ligne(F(2, 5), 'de 35 = 2 × 7 =', R(14)), ligne(F(5, 6), 'de 42 = 5 × 7 =', R(35)), ligne(F(1, 3), 'de 24 =', R(8)), ligne(F(2, 3), 'de 24 = 2 × 8 =', R(16)), ligne(F(3, 5), 'de 40 = 3 × 8 =', R(24)), ligne(F(4, 7), 'de 21 = 4 × 3 =', R(12))], 2) },
       { etoiles: 1, col: 1, consigne: 'Complète. Rappel : 1 h = 60 min et 1 m = 100 cm.',
-        eleve: plListe([ligne(F(1, 2), 'h =', B(), 'min'), ligne(F(3, 4), 'h =', B(), 'min'), ligne(F(2, 3), 'h =', B(), 'min'), ligne(F(1, 10), 'm =', B(), 'cm')]),
-        corr: plListe([ligne(F(1, 2), 'h =', R(30), 'min'), ligne(F(3, 4), 'h =', R(45), 'min'), ligne(F(2, 3), 'h =', R(40), 'min'), ligne(F(1, 10), 'm =', R(10), 'cm')]) },
+        eleve: plListe([ligne(F(1, 2), 'h =', B(), 'min'), ligne(F(3, 4), 'h =', B(), 'min'), ligne(F(2, 3), 'h =', B(), 'min'), ligne(F(1, 10), 'm =', B(), 'cm'), ligne(F(1, 4), 'h =', B(), 'min'), ligne(F(1, 3), 'h =', B(), 'min'), ligne(F(1, 2), 'm =', B(), 'cm'), ligne(F(3, 4), 'm =', B(), 'cm')], 2),
+        corr: plListe([ligne(F(1, 2), 'h =', R(30), 'min'), ligne(F(3, 4), 'h =', R(45), 'min'), ligne(F(2, 3), 'h =', R(40), 'min'), ligne(F(1, 10), 'm =', R(10), 'cm'), ligne(F(1, 4), 'h =', R(15), 'min'), ligne(F(1, 3), 'h =', R(20), 'min'), ligne(F(1, 2), 'm =', R(50), 'cm'), ligne(F(3, 4), 'm =', R(75), 'cm')], 2) },
       { etoiles: 2, col: 1, consigne: 'Complète chaque partage équitable par une fraction.',
         eleve: plListe([ligne('3 pizzas pour 4 enfants : chacun a', Fr, 'de pizza.'), ligne('5 tablettes pour 2 enfants : chacun a', Fr, 'tablette.'), ligne('7 m de ruban en 3 morceaux égaux : chacun mesure', Fr, 'm.')]),
         corr: plListe([ligne('3 pizzas pour 4 enfants : chacun a', R(F(3, 4)), 'de pizza.'), ligne('5 tablettes pour 2 enfants : chacun a', R(F(5, 2)), 'tablette.'), ligne('7 m de ruban en 3 morceaux égaux : chacun mesure', R(F(7, 3)), 'm.')]) },
@@ -154,11 +154,11 @@ PLANCHES['6e|Fractions : nombres et partage'] = [
     attendus: ['Exprimer une proportion par une fraction', 'Passer d\'une fraction à un pourcentage', 'Calculer un pourcentage simple d\'une quantité'],
     exos: [
       { etoiles: 1, col: 1, consigne: 'Écris en pourcentage.',
-        eleve: plListe([`${F(1, 2)} = ${B()} %`, `${F(1, 4)} = ${B()} %`, `${F(3, 4)} = ${B()} %`, `${F(1, 10)} = ${B()} %`, `${F(3, 5)} = ${B()} %`]),
-        corr: plListe([`${F(1, 2)} = ${R(50)} %`, `${F(1, 4)} = ${R(25)} %`, `${F(3, 4)} = ${R(75)} %`, `${F(1, 10)} = ${R(10)} %`, `${F(3, 5)} = ${R(60)} %`]) },
+        eleve: plListe([`${F(1, 2)} = ${B()} %`, `${F(1, 4)} = ${B()} %`, `${F(3, 4)} = ${B()} %`, `${F(1, 10)} = ${B()} %`, `${F(3, 5)} = ${B()} %`, `${F(1, 5)} = ${B()} %`, `${F(7, 10)} = ${B()} %`, `${F(2, 5)} = ${B()} %`, `${F(9, 10)} = ${B()} %`, `${F(1, 20)} = ${B()} %`], 2),
+        corr: plListe([`${F(1, 2)} = ${R(50)} %`, `${F(1, 4)} = ${R(25)} %`, `${F(3, 4)} = ${R(75)} %`, `${F(1, 10)} = ${R(10)} %`, `${F(3, 5)} = ${R(60)} %`, `${F(1, 5)} = ${R(20)} %`, `${F(7, 10)} = ${R(70)} %`, `${F(2, 5)} = ${R(40)} %`, `${F(9, 10)} = ${R(90)} %`, `${F(1, 20)} = ${R(5)} %`], 2) },
       { etoiles: 1, col: 1, consigne: 'Calcule.',
-        eleve: plListe(['50 % de 60 = ' + B(), '10 % de 250 = ' + B(), '25 % de 80 = ' + B(), '75 % de 40 = ' + B(), '20 % de 35 = ' + B()]),
-        corr: plListe(['50 % de 60 = ' + R(30), '10 % de 250 = ' + R(25), '25 % de 80 = ' + R(20), '75 % de 40 = ' + R(30), '20 % de 35 = ' + R(7)]) },
+        eleve: plListe(['50 % de 60 = ' + B(), '10 % de 250 = ' + B(), '25 % de 80 = ' + B(), '75 % de 40 = ' + B(), '20 % de 35 = ' + B(), '50 % de 120 = ' + B(), '10 % de 70 = ' + B(), '25 % de 200 = ' + B(), '20 % de 15 = ' + B(), '75 % de 12 = ' + B()], 2),
+        corr: plListe(['50 % de 60 = ' + R(30), '10 % de 250 = ' + R(25), '25 % de 80 = ' + R(20), '75 % de 40 = ' + R(30), '20 % de 35 = ' + R(7), '50 % de 120 = ' + R(60), '10 % de 70 = ' + R(7), '25 % de 200 = ' + R(50), '20 % de 15 = ' + R(3), '75 % de 12 = ' + R(9)], 2) },
       { etoiles: 2, consigne: 'Quelle proportion de chaque figure est coloriée ? Donne la fraction, puis le pourcentage.',
         eleve: plGrille([[cm1Disque(4, 1, { taille: 66 })], [cm1Bande(10, 3, { largeur: 150 })], [cm1Bande(5, 2, { largeur: 130 })]].map(([f]) => col(f, `${Fr} = ${B()} %`)), 3),
         corr: plGrille([[cm1Disque(4, 1, { taille: 66 }), 1, 4, 25], [cm1Bande(10, 3, { largeur: 150 }), 3, 10, 30], [cm1Bande(5, 2, { largeur: 130 }), 2, 5, 40]].map(([f, a, b, p]) => col(f, `${R(F(a, b))} = ${R(p)} %`)), 3) },

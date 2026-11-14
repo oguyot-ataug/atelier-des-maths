@@ -25,7 +25,7 @@ PLANCHES['3e|Calcul littéral'] = [
       { etoiles: 2, col: 1, consigne: 'Factorise.',
         ...rmp([['6x + 18 = 6(@)', 'x+3'], ['15a − 10 = 5(@)', '3a−2'], ['x² + 4x = x(@)', 'x+4'], ['7y − 7 = @(y − 1)', 7]], 5) },
       { etoiles: 2, col: 1, consigne: 'Calcule E = 3x² − 2x + 1.',
-        ...rmp([['Pour x = 2 : E = @', 9], ['Pour x = −1 : E = @', 6], ['Pour x = 0 : E = @', 1]]) },
+        ...rmp(plDeux([['Pour x = 2 : E = @', 9], ['Pour x = −1 : E = @', 6], ['Pour x = 0 : E = @', 1], ['Pour x = 1 : E = @', 2], ['Pour x = 3 : E = @', 22], ['Pour x = −2 : E = @', 17]])) },
       { etoiles: 2, col: 1, consigne: 'Entoure l\'expression égale.',
         ...chx([['3(x − 2) =', '3x − 6', '3x − 2 · 3x − 6 · x − 6'], ['−(x + 4) =', '−x − 4', '−x + 4 · −x − 4 · x − 4'], ['2x + 2x =', '4x', '4x · 4x² · 2x²'], ['x × x × 3 =', '3x²', '3x · x³ · 3x²']]) },
       { etoiles: 3, cahier: true, consigne: 'Un rectangle a pour longueur 2x + 3 et pour largeur x (en cm). Exprime son périmètre et son aire en fonction de x, sous forme développée et réduite.',

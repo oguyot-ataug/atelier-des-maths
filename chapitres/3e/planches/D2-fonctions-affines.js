@@ -70,7 +70,7 @@ PLANCHES['3e|Fonctions linéaires et affines'] = [
       { etoiles: 2, col: 1, consigne: 'Location d\'une voiture : 30 € par jour, plus 0,20 € par km.',
         ...rmp([['Prix pour x km : f(x) = @x + @', '0,2', 30], ['Prix pour 150 km : @ €', 60], ['Nombre de km pour 90 € : @', 300]]) },
       { etoiles: 2, col: 1, consigne: 'Température en degrés Fahrenheit : F = 1,8 × C + 32 (C en degrés Celsius).',
-        ...rmp([['20 °C = @ °F', 68], ['100 °C = @ °F', 212], ['−40 °C = @ °F', '−40'], ['86 °F = @ °C', 30]]) },
+        ...rmp(plDeux([['20 °C = @ °F', 68], ['100 °C = @ °F', 212], ['−40 °C = @ °F', '−40'], ['86 °F = @ °C', 30], ['0 °C = @ °F', 32], ['10 °C = @ °F', 50], ['37 °C = @ °F', '98,6'], ['212 °F = @ °C', 100]])) },
       { etoiles: 2, col: 1, cahier: true, consigne: 'Un réservoir de 60 L se vide à 4 L par minute. Exprime le volume V(t) au bout de t minutes. Quel volume reste-t-il après 6 min ? Quand est-il vide ?',
         corr: cm1Redac('Expression du volume V(t)', 'V(t) = 60 − 4t', '') + cm1Redac('Volume restant après 6 min', '60 − 4 × 6 = 36', 'Il reste 36 L.') + cm1Redac('Réservoir vide', { suite: ['60 − 4t = 0', 't = 15'] }, 'Le réservoir est vide au bout de 15 min.') },
       { etoiles: 2, col: 1, cahier: true, consigne: 'Forfait A : 15 € par mois, appels illimités. Forfait B : 5 € par mois plus 0,10 € par minute. Pour quelle durée d\'appel les deux forfaits coûtent-ils le même prix ?',

@@ -54,7 +54,7 @@ PLANCHES['4e|Espace'] = [
         eleve: `<div style="text-align:center;">${pave}</div>` + rmp([['C(@ ; @ ; @)', 4, 3, 0], ['F(@ ; @ ; @)', 4, 0, 2], ['G(@ ; @ ; @)', 4, 3, 2], ['H(@ ; @ ; @)', 0, 3, 2]]).eleve,
         corr: `<div style="text-align:center;">${pave}</div>` + rmp([['C(@ ; @ ; @)', 4, 3, 0], ['F(@ ; @ ; @)', 4, 0, 2], ['G(@ ; @ ; @)', 4, 3, 2], ['H(@ ; @ ; @)', 0, 3, 2]]).corr },
       { etoiles: 2, col: 1, consigne: 'Même pavé. Quel sommet a pour coordonnées…',
-        ...rmp([['(0 ; 3 ; 0) ? @', 'D'], ['(4 ; 0 ; 2) ? @', 'F'], ['(0 ; 0 ; 2) ? @', 'E']]) },
+        ...rmp(plDeux([['(0 ; 3 ; 0) ? @', 'D'], ['(4 ; 0 ; 2) ? @', 'F'], ['(0 ; 0 ; 2) ? @', 'E'], ['(4 ; 3 ; 0) ? @', 'C'], ['(4 ; 3 ; 2) ? @', 'G'], ['(0 ; 3 ; 2) ? @', 'H']])) },
       { etoiles: 2, consigne: 'Le point M est le milieu de l\'arête [EF]. Le point N est le centre de la face ABCD.',
         ...rmp([['M(@ ; @ ; @)', 2, 0, 2], ['N(@ ; @ ; @)', 2, '1,5', 0]]) },
       { etoiles: 3, cahier: true, consigne: 'Une salle de classe a la forme d\'un pavé de 8 m de long, 6 m de large et 3 m de haut. Une lampe est fixée au centre du plafond. En prenant un coin du sol comme origine, donne les coordonnées de la lampe.',

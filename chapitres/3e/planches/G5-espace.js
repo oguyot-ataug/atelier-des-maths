@@ -95,7 +95,7 @@ PLANCHES['3e|Espace'] = [
       { etoiles: 1, col: 1, consigne: 'Complète.',
         ...rmp([['Cube d\'arête 4 cm : @ cm³', 64], ['Pavé de 5 cm × 3 cm × 2 cm : @ cm³', 30], ['Cylindre, r = 2 cm, h = 5 cm : @π cm³', 20], ['Cône, r = 3 cm, h = 4 cm : @π cm³', 12], ['Pyramide de base 9 cm² et de hauteur 5 cm : @ cm³', 15]]) },
       { etoiles: 1, col: 1, consigne: 'Convertis.',
-        ...rmp([['1 L = @ dm³', 1], ['2,5 m³ = @ L', '2 500'], ['750 cm³ = @ L', '0,75'], ['1 cm³ = @ mL', 1]]) },
+        ...rmp(plDeux([['1 L = @ dm³', 1], ['2,5 m³ = @ L', '2 500'], ['750 cm³ = @ L', '0,75'], ['1 cm³ = @ mL', 1], ['3 L = @ dm³', 3], ['0,5 m³ = @ L', 500], ['1 500 cm³ = @ L', '1,5'], ['20 mL = @ cm³', 20]])) },
       { etoiles: 2, col: 1, consigne: 'Entoure la section obtenue.',
         ...chx([['Cube coupé parallèlement à une face :', 'un carré', 'un carré · un triangle · un cercle'], ['Cylindre coupé parallèlement à sa base :', 'un disque', 'un disque · un rectangle · un triangle'], ['Cylindre coupé parallèlement à son axe :', 'un rectangle', 'un disque · un rectangle · un triangle'], ['Pyramide coupée parallèlement à sa base :', 'une réduction de la base', 'un carré quelconque · une réduction de la base · un triangle']]) },
       { etoiles: 2, col: 1, cahier: true, consigne: illu(verreMiHauteur, 'Un verre conique a un rayon de 4 cm et une hauteur de 9 cm. Calcule son volume. On le remplit à mi-hauteur : quel volume de liquide contient-il ?'),

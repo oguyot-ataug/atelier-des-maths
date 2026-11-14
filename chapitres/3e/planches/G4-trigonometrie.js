@@ -60,7 +60,7 @@ PLANCHES['3e|Trigonométrie'] = [
       { etoiles: 2, col: 1, consigne: 'Dans ABC rectangle en B : AB = 4 cm, BC = 3 cm et AC = 5 cm.',
         ...rmp([['cos Â = @', '0,8'], ['sin Â = @', '0,6'], ['tan Â = @', '0,75']]) },
       { etoiles: 2, col: 1, consigne: 'À la calculatrice (au centième si besoin).',
-        ...rmp([['cos 60° = @', '0,5'], ['sin 30° = @', '0,5'], ['tan 45° = @', 1], ['cos 35° ≈ @', '0,82'], ['sin 72° ≈ @', '0,95']]) },
+        ...rmp(plDeux([['cos 60° = @', '0,5'], ['sin 30° = @', '0,5'], ['tan 45° = @', 1], ['cos 35° ≈ @', '0,82'], ['sin 72° ≈ @', '0,95'], ['cos 0° = @', 1], ['sin 90° = @', 1], ['tan 60° ≈ @', '1,73'], ['cos 20° ≈ @', '0,94'], ['sin 45° ≈ @', '0,71']])) },
       { etoiles: 2, col: 1, consigne: 'Trouve la mesure de l\'angle aigu x (au degré près).',
         ...rmp([['cos x = 0,5 : x = @°', 60], ['tan x = 1 : x = @°', 45], ['sin x = 0,8 : x ≈ @°', 53], ['cos x = 0,3 : x ≈ @°', 73]]) },
       { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.',

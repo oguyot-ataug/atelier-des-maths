@@ -21,7 +21,7 @@ PLANCHES['3e|Généralités sur les fonctions'] = [
     attendus: ['Calculer une image avec une formule', 'Utiliser le vocabulaire : image, antécédent, f(x)', 'Compléter et lire un tableau de valeurs'],
     exos: [
       { etoiles: 1, col: 1, consigne: 'f est la fonction f(x) = 3x − 2. Calcule.',
-        ...rmp([['f(4) = @', 10], ['f(0) = @', '−2'], ['f(−1) = @', '−5'], ['f(1,5) = @', '2,5']]) },
+        ...rmp(plDeux([['f(4) = @', 10], ['f(0) = @', '−2'], ['f(−1) = @', '−5'], ['f(1,5) = @', '2,5'], ['f(2) = @', 4], ['f(10) = @', 28], ['f(−3) = @', '−11'], ['f(0,5) = @', '−0,5']])) },
       { etoiles: 1, col: 1, consigne: 'Entoure le bon mot.',
         ...ch([['f(5) = 12 : 12 est … de 5.', 'l\'image'], ['f(5) = 12 : 5 est … de 12.', 'un antécédent'], ['g(x) = x² : 9 est … de 3.', 'l\'image'], ['g(x) = x² : −3 est … de 9.', 'un antécédent']], 'l\'image · un antécédent') },
       { etoiles: 2, col: 1, consigne: 'g est la fonction g(x) = x² − 4.',

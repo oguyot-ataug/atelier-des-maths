@@ -17,9 +17,9 @@ PLANCHES['4e|Puissances'] = [
       { etoiles: 1, col: 1, consigne: 'Écris sous la forme d\'une puissance.',
         ...rmp([['7 × 7 × 7 = @', p(7, 3)], ['(−4) × (−4) = @', p('(−4)', 2)], ['2,5 × 2,5 × 2,5 × 2,5 = @', p('2,5', 4)], ['a × a × a × a × a = @', p('a', 5)]]) },
       { etoiles: 1, col: 1, consigne: 'Calcule.',
-        ...rmp([[`${p(3, 4)} = @`, 81], [`${p(2, 5)} = @`, 32], [`${p('(−2)', 3)} = @`, '−8'], [`${p('0,1', 2)} = @`, '0,01'], [`${p(5, 1)} = @`, 5]]) },
+        ...rmp(plDeux([[`${p(3, 4)} = @`, 81], [`${p(2, 5)} = @`, 32], [`${p('(−2)', 3)} = @`, '−8'], [`${p('0,1', 2)} = @`, '0,01'], [`${p(5, 1)} = @`, 5], [`${p(2, 4)} = @`, 16], [`${p('(−3)', 3)} = @`, '−27'], [`${p(10, 5)} = @`, '100 000'], [`${p('0,5', 2)} = @`, '0,25'], [`${p(1, 7)} = @`, 1]])) },
       { etoiles: 2, col: 1, consigne: 'Attention au signe ! Calcule.',
-        ...rmp([[`${p('(−3)', 2)} = @`, 9], [`−${p(3, 2)} = @`, '−9'], [`${p('(−1)', 7)} = @`, '−1'], [`${p('(−1)', 10)} = @`, 1]]) },
+        ...rmp(plDeux([[`${p('(−3)', 2)} = @`, 9], [`−${p(3, 2)} = @`, '−9'], [`${p('(−1)', 7)} = @`, '−1'], [`${p('(−1)', 10)} = @`, 1], [`${p('(−2)', 4)} = @`, 16], [`−${p(2, 4)} = @`, '−16'], [`${p('(−5)', 2)} = @`, 25], [`${p('(−1)', 3)} = @`, '−1']])) },
       { etoiles: 2, col: 1, consigne: 'Calcule en respectant les priorités. Écris une étape par ligne.',
         ...P3.etp([['A', `2 × ${p(3, 2)}`, '2 × 9', '18'], ['B', `${p('(2 × 3)', 2)}`, p(6, 2), '36'], ['C', `5 + ${p(2, 3)}`, '5 + 8', '13'], ['D', `${p(10, 2)} − ${p(4, 2)}`, '100 − 16', '84']], 2) },
       { etoiles: 2, consigne: 'Complète par = ou ≠.',
@@ -31,7 +31,7 @@ PLANCHES['4e|Puissances'] = [
     attendus: ['Écrire une puissance de 10 en écriture décimale', 'Utiliser les exposants négatifs', 'Connaître les préfixes des unités'],
     exos: [
       { etoiles: 1, col: 1, consigne: 'Écris en écriture décimale.',
-        ...rmp([[`${p(10, 4)} = @`, '10 000'], [`${p(10, 0)} = @`, 1], [`${p(10, '−2')} = @`, '0,01'], [`${p(10, '−5')} = @`, '0,000 01']]) },
+        ...rmp(plDeux([[`${p(10, 4)} = @`, '10 000'], [`${p(10, 0)} = @`, 1], [`${p(10, '−2')} = @`, '0,01'], [`${p(10, '−5')} = @`, '0,000 01'], [`${p(10, 6)} = @`, '1 000 000'], [`${p(10, 1)} = @`, 10], [`${p(10, '−1')} = @`, '0,1'], [`${p(10, '−3')} = @`, '0,001']])) },
       { etoiles: 1, col: 1, consigne: 'Écris sous la forme d\'une puissance de 10.',
         ...rmp([['1 000 000 = @', p(10, 6)], ['0,001 = @', p(10, '−3')], ['10 = @', p(10, 1)], ['0,000 000 1 = @', p(10, '−7')]]) },
       { etoiles: 2, col: 1, consigne: 'Relie chaque préfixe à la puissance de 10 qui lui correspond.',
@@ -45,7 +45,7 @@ PLANCHES['4e|Puissances'] = [
     attendus: ['Multiplier et diviser des puissances de 10', 'Multiplier un nombre par une puissance de 10', 'Calculer une expression avec des puissances de 10'],
     exos: [
       { etoiles: 1, col: 1, consigne: 'Écris sous la forme d\'une seule puissance de 10.',
-        ...rmp([[`${p(10, 3)} × ${p(10, 5)} = @`, p(10, 8)], [`${p(10, 7)} : ${p(10, 4)} = @`, p(10, 3)], [`${p(10, '−2')} × ${p(10, 6)} = @`, p(10, 4)], [`${p(10, 5)} : ${p(10, '−3')} = @`, p(10, 8)]]) },
+        ...rmp(plDeux([[`${p(10, 3)} × ${p(10, 5)} = @`, p(10, 8)], [`${p(10, 7)} : ${p(10, 4)} = @`, p(10, 3)], [`${p(10, '−2')} × ${p(10, 6)} = @`, p(10, 4)], [`${p(10, 5)} : ${p(10, '−3')} = @`, p(10, 8)], [`${p(10, 2)} × ${p(10, 4)} = @`, p(10, 6)], [`${p(10, 9)} : ${p(10, 2)} = @`, p(10, 7)], [`${p(10, '−3')} × ${p(10, '−1')} = @`, p(10, '−4')], [`${p(10, '−2')} : ${p(10, 3)} = @`, p(10, '−5')]])) },
       { etoiles: 2, col: 1, consigne: 'Écris sous la forme d\'une seule puissance de 10.',
         ...rmp([[`${p(10, 4)} × ${p(10, '−4')} = @`, p(10, 0)], [`${p(10, '−3')} : ${p(10, 2)} = @`, p(10, '−5')], [`${p(`(${p(10, 2)})`, 3)} = @`, p(10, 6)], [`${p(10, 6)} × ${p(10, '−1')} : ${p(10, 2)} = @`, p(10, 3)]]) },
       { etoiles: 1, col: 1, consigne: 'Calcule.',
@@ -76,7 +76,7 @@ PLANCHES['4e|Puissances'] = [
   { titre: 'Produits de puissances', duree: '30 min',
     attendus: ['Multiplier des puissances d\'un même nombre', 'Multiplier des puissances de même exposant', 'Ne pas confondre produit et somme de puissances'],
     exos: [
-      { etoiles: 1, col: 1, consigne: 'Écris sous la forme d\'une seule puissance.', ...rmp([[`${p(3, 2)} × ${p(3, 4)} = @`, p(3, 6)], [`${p(5, 3)} × 5 = @`, p(5, 4)], [`${p(2, 5)} × ${p(2, 5)} = @`, p(2, 10)], [`${p(7, 1)} × ${p(7, 3)} = @`, p(7, 4)]]) },
+      { etoiles: 1, col: 1, consigne: 'Écris sous la forme d\'une seule puissance.', ...rmp(plDeux([[`${p(3, 2)} × ${p(3, 4)} = @`, p(3, 6)], [`${p(5, 3)} × 5 = @`, p(5, 4)], [`${p(2, 5)} × ${p(2, 5)} = @`, p(2, 10)], [`${p(7, 1)} × ${p(7, 3)} = @`, p(7, 4)], [`${p(2, 3)} × ${p(2, 4)} = @`, p(2, 7)], [`${p(4, 2)} × 4 = @`, p(4, 3)], [`${p(10, 3)} × ${p(10, 3)} = @`, p(10, 6)], [`${p(6, 2)} × ${p(6, 6)} = @`, p(6, 8)]])) },
       { etoiles: 1, col: 1, consigne: 'Écris sous la forme d\'une seule puissance.', ...rmp([[`${p(2, 3)} × ${p(5, 3)} = @`, p(10, 3)], [`${p(4, 2)} × ${p(3, 2)} = @`, p(12, 2)], [`${p(5, 4)} × ${p(2, 4)} = @`, p(10, 4)], [`${p('(−2)', 3)} × ${p(3, 3)} = @`, p('(−6)', 3)]]) },
       { etoiles: 2, consigne: 'Complète par = ou ≠.', ...P3.egal([[`${p(2, 3)} × ${p(2, 4)}`, p(2, 7), 1], [`${p(2, 3)} + ${p(2, 4)}`, p(2, 7), 0], [`${p(3, 2)} × ${p(3, 2)}`, p(9, 2), 0], [`${p(2, 2)} × ${p(5, 2)}`, '100', 1]]) },
       { etoiles: 2, cahier: true, consigne: `Explique, en dépliant les puissances, pourquoi ${p(4, 2)} × ${p(4, 3)} = ${p(4, 5)}.`,

@@ -390,7 +390,7 @@ systématiquement ») : une liste d'exemples à une colonne qui laisse la moiti�
 `plListe(items, 2)` à la main) ; trait fin entre les colonnes (column-rule ; grilles plGrille à 2 colonnes : `.pl-g2`), comme iParcours. Exceptions :
 liste liée à une seule figure, ligne trop longue pour une demi-colonne (≈ 138 px à l'impression ; les pointillés se raccourcissent jusqu'à 1,8 em,
 plRemplirPages). Contrôle : scratchpad relec/colonnes.js (listes qui laissent la moitié vide ; COUPE=1 : lignes coupées) et pages.js (aucune feuille
-de plus d'une page). 5e faite le 14/11/2026 (63 exercices).
+de plus d'une page). Fait le 14/11/2026 : 5e (61 exercices), 6e (42), 4e (36), 3e (17) ; primaire à faire.
 Une feuille qui dépasse la page A4 est resserrée à l'impression (`plRemplirPages`, planches.js) : jusqu'à 15 % pour l'élève, 30 %
 pour le corrigé, en gardant toute la largeur ; jamais sur une feuille d'élève où l'on mesure une longueur à la règle. Au-delà,
 alléger le contenu (demandé le 31/10/2026 : « Occupe-toi des feuilles qui débordent »).

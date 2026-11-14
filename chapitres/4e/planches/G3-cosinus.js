@@ -27,7 +27,7 @@ PLANCHES['4e|Cosinus'] = [
       { etoiles: 1, col: 1, consigne: 'Entoure l\'écriture de cos Â (triangle rectangle en B).',
         ...chx([['cos Â =', `${T('AB', 'AC')}`, `${T('AB', 'AC')} · ${T('BC', 'AC')} · ${T('AC', 'AB')}`]]) },
       { etoiles: 2, col: 1, consigne: 'À la calculatrice (mode degrés), arrondis au centième.',
-        ...rmp([['cos 30° ≈ @', '0,87'], ['cos 45° ≈ @', '0,71'], ['cos 72° ≈ @', '0,31'], ['cos 60° = @', '0,5']]) },
+        ...rmp(plDeux([['cos 30° ≈ @', '0,87'], ['cos 45° ≈ @', '0,71'], ['cos 72° ≈ @', '0,31'], ['cos 60° = @', '0,5'], ['cos 20° ≈ @', '0,94'], ['cos 80° ≈ @', '0,17'], ['cos 15° ≈ @', '0,97'], ['cos 0° = @', 1]])) },
       { etoiles: 2, col: 1, consigne: 'Trouve la mesure de l\'angle (au degré près).',
         ...rmp([['cos x = 0,5 : x = @°', 60], ['cos x = 0,8 : x ≈ @°', 37], ['cos x = 0,25 : x ≈ @°', 76]]) },
       { etoiles: 2, consigne: 'Vrai ou faux ? Entoure.',

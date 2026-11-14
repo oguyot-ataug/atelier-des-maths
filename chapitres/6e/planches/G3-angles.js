@@ -214,8 +214,8 @@ PLANCHES['6e|Angles et rapporteur'] = [
     attendus: ['Calculer des mesures d\'angles par addition et soustraction', 'Utiliser les angles d\'un tour complet (360°) et d\'un angle plat (180°)', 'Réinvestir le vocabulaire des angles'],
     exos: [
       { etoiles: 2, col: 1, consigne: 'Entre deux nombres voisins du cadran d\'une horloge, l\'angle mesure 360° : 12 = 30°. Quel angle (saillant) forment les aiguilles ?',
-        eleve: plListe(['à 1 h : ' + B() + ' °', 'à 5 h : ' + B() + ' °', 'à 10 h : ' + B() + ' °', 'à 6 h : ' + B() + ' °']),
-        corr: plListe(['à 1 h : ' + R(30) + ' °', 'à 5 h : 5 × 30 = ' + R(150) + ' °', 'à 10 h : 2 × 30 = ' + R(60) + ' °', 'à 6 h : ' + R(180) + ' °']) },
+        eleve: plListe(['à 1 h : ' + B() + ' °', 'à 5 h : ' + B() + ' °', 'à 10 h : ' + B() + ' °', 'à 6 h : ' + B() + ' °', 'à 2 h : ' + B() + ' °', 'à 3 h : ' + B() + ' °', 'à 4 h : ' + B() + ' °', 'à 8 h : ' + B() + ' °'], 2),
+        corr: plListe(['à 1 h : ' + R(30) + ' °', 'à 5 h : 5 × 30 = ' + R(150) + ' °', 'à 10 h : 2 × 30 = ' + R(60) + ' °', 'à 6 h : ' + R(180) + ' °', 'à 2 h : 2 × 30 = ' + R(60) + ' °', 'à 3 h : 3 × 30 = ' + R(90) + ' °', 'à 4 h : 4 × 30 = ' + R(120) + ' °', 'à 8 h : 4 × 30 = ' + R(120) + ' °'], 2) },
       { etoiles: 2, col: 1, consigne: 'Les angles ' + W('xOy') + ' = 40°, ' + W('yOz') + ' = 35° et ' + W('zOt') + ' = 50° sont adjacents, dans cet ordre. Calcule.',
         eleve: plListe([W('xOz') + ' = ' + B() + ' °', W('yOt') + ' = ' + B() + ' °', W('xOt') + ' = ' + B() + ' °', W('xOt') + ' est un angle <b>aigu · droit · obtus</b>']),
         corr: plListe([W('xOz') + ' = 40 + 35 = ' + R(75) + ' °', W('yOt') + ' = 35 + 50 = ' + R(85) + ' °', W('xOt') + ' = 40 + 35 + 50 = ' + R(125) + ' °', W('xOt') + ' est un angle ' + plEntoure('obtus')]) },

@@ -13,7 +13,7 @@ PLANCHES['4e|Algorithmique et programmation'] = [
   { titre: 'Conditions, variables, événements', duree: '35 min',
     attendus: ['Utiliser « si … alors … sinon »', 'Intégrer une variable', 'Déclencher un script par un événement'],
     exos: [
-      { etoiles: 1, col: 1, consigne: 'Programme : demander un nombre ; si réponse > 10 alors dire « grand » sinon dire « petit ». Que dit-il ?', ...P3.rmp([['pour 15 : @', 'grand'], ['pour 10 : @', 'petit'], ['pour 3 : @', 'petit']], 4) },
+      { etoiles: 1, col: 1, consigne: 'Programme : demander un nombre ; si réponse > 10 alors dire « grand » sinon dire « petit ». Que dit-il ?', ...P3.rmp(plDeux([['pour 15 : @', 'grand'], ['pour 10 : @', 'petit'], ['pour 3 : @', 'petit'], ['pour 11 : @', 'grand'], ['pour 0 : @', 'petit'], ['pour 10,5 : @', 'grand']]), 4) },
       { etoiles: 2, cahier: true, consigne: 'Écris un programme qui demande la longueur du côté puis trace un carré de cette longueur.', corr: cm1Redac('Programme du carré', '', 'demander « Côté ? » ; mettre côté à réponse ; stylo en position d\'écriture ; répéter 4 fois [avancer de côté ; tourner de 90 degrés].') },
       { etoiles: 2, col: 1, consigne: 'Relie chaque bloc à sa famille : événement, contrôle, variable.', ...P3.rmp([['quand le drapeau vert est cliqué : @', 'événement'], ['répéter 10 fois : @', 'contrôle'], ['ajouter 1 à score : @', 'variable']], 5) },
       { etoiles: 3, cahier: true, consigne: 'Dans un jeu, le lutin « balle » rebondit. Écris le script du lutin « raquette » pour qu\'il dise « Touché ! » quand la balle le touche.', corr: cm1Redac('Script de la raquette', '', 'quand le drapeau vert est cliqué ; répéter indéfiniment [si touche la balle ? alors dire « Touché ! » pendant 1 seconde].') },
@@ -33,7 +33,7 @@ PLANCHES['4e|Algorithmique et programmation'] = [
     attendus: ['Écrire une instruction conditionnelle', 'Programmer un calcul avec une variable', 'Tester un programme sur plusieurs valeurs'],
     exos: [
       { etoiles: 1, col: 1, consigne: 'demander un nombre ; si réponse > 0 alors dire « positif » sinon dire « négatif ou nul ». Que dit-il ?', ...P3.rmp([['pour 7 : @', 'positif'], ['pour 0 : @', 'négatif ou nul'], ['pour −3 : @', 'négatif ou nul']]) },
-      { etoiles: 1, col: 1, consigne: 'demander x ; mettre y à 3 × x − 2 ; dire y. Que dit le programme ?', ...P3.rmp([['pour x = 4 : @', 10], ['pour x = 0 : @', '−2'], ['pour x = −1 : @', '−5']]) },
+      { etoiles: 1, col: 1, consigne: 'demander x ; mettre y à 3 × x − 2 ; dire y. Que dit le programme ?', ...P3.rmp(plDeux([['pour x = 4 : @', 10], ['pour x = 0 : @', '−2'], ['pour x = −1 : @', '−5'], ['pour x = 2 : @', 4], ['pour x = 10 : @', 28], ['pour x = 0,5 : @', '−0,5']])) },
       { etoiles: 2, consigne: 'demander a ; demander b ; si a > b alors dire a sinon dire b. Complète.', ...P3.rmp([['pour a = 3 et b = 8 : @', 8], ['pour a = 5 et b = −2 : @', 5], ['pour a = −4 et b = −1 : @', '−1'], ['Le programme dit le plus @ des deux nombres', 'grand']], 4) },
       { etoiles: 2, cahier: true, consigne: 'Un magasin fait 10 % de réduction sur les achats de plus de 50 €. Écris un programme qui demande le prix et dit le prix à payer. Teste-le avec 40 € et 80 €.',
         corr: cm1Redac('Programme', { suite: ['demander « Prix ? » ; mettre p à réponse ;', 'si p > 50 alors mettre p à p × 0,9 ;', 'dire p.'] }, 'Pour 40 €, il dit 40 ; pour 80 €, il dit 72.') },

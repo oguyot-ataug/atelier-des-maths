@@ -4079,6 +4079,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1465', date:'2026-11-14', items:[
+    "Planches de 6e, 4e et 3e : exemples doublés en deux colonnes, avec un trait fin entre les colonnes, comme en 5e -- environ 95 exercices (6e : 42 ; 4e : 36 ; 3e : 17). Corrigés complétés et vérifiés ; aucune feuille d'élève ne dépasse la page. Restent en une colonne les listes liées à une figure, à un tableau ou à un seul énoncé, et les lignes trop longues pour une demi-colonne."
+  ]},
   { version:'2026-08-19.1464', date:'2026-11-14', items:[
     "Planches : deux fois plus d'exemples dans les exercices en colonnes, avec un trait fin entre les colonnes (comme les manuels du commerce) -- demandé sur 5e-N4-P1 : « Une planche comme celle-là n'est pas acceptable. Dans chaque exercice, on peut doubler en colonne le nombre d'exemples. » 5e : 63 exercices complétés (Fractions, Décimaux, Divisibilité, Relatifs, Statistiques, Pourcentages, Puissances, Calcul littéral, Probabilités, Espace, Fonctions, Programmation…), sans qu'aucune feuille ne dépasse la page. Les listes liées à une seule figure restent en une colonne. La puce d'une ligne qui commence par une fraction à compléter est maintenant au milieu de la ligne."
   ]},

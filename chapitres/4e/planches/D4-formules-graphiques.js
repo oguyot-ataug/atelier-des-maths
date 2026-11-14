@@ -27,7 +27,7 @@ PLANCHES['4e|Formules et graphiques'] = [
   { titre: 'Programmes de calcul et formules', duree: '35 min',
     attendus: ['Appliquer un programme de calcul à un nombre, puis à une variable', 'Écrire la formule d\'un programme de calcul', 'Remonter un programme de calcul'],
     exos: [
-      { etoiles: 1, col: 1, consigne: 'Programme : choisir un nombre ; le multiplier par 3 ; ajouter 4. Complète.', ...P3.rmp([['Avec 5 : @', 19], ['Avec 0 : @', 4], ['Avec −2 : @', '−2'], ['Avec x : @', T('3x + 4')]]) },
+      { etoiles: 1, col: 1, consigne: 'Programme : choisir un nombre ; le multiplier par 3 ; ajouter 4. Complète.', ...P3.rmp(plDeux([['Avec 5 : @', 19], ['Avec 0 : @', 4], ['Avec −2 : @', '−2'], ['Avec 1 : @', 7], ['Avec 10 : @', 34], ['Avec −1 : @', 1], ['Avec 0,5 : @', '5,5'], ['Avec x : @', T('3x + 4')]])) },
       { etoiles: 1, col: 1, consigne: 'Programme : choisir un nombre ; ajouter 2 ; multiplier par 5. Complète.', ...P3.rmp([['Avec 1 : @', 15], ['Avec 4 : @', 30], ['Avec −2 : @', 0], ['Avec x : @', T('5(x + 2)')]]) },
       { etoiles: 2, consigne: 'Écris la formule de chaque programme (x est le nombre choisi).', ...P3.rmp([['multiplier par 2, puis ajouter 7 : @', T('2x + 7')], ['ajouter 7, puis multiplier par 2 : @', T('2(x + 7)')], ['élever au carré, puis soustraire 1 : @', T('x^2 - 1')], ['soustraire 1, puis élever au carré : @', T('(x - 1)^2')]], 4) },
       { etoiles: 2, cahier: true, consigne: 'Programme : choisir un nombre ; le multiplier par 4 ; soustraire 6. On obtient 30. Quel nombre a-t-on choisi ? (Remonte le programme.)',

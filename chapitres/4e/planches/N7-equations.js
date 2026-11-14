@@ -67,7 +67,7 @@ PLANCHES['4e|Équations'] = [
       { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.',
         ...ch([['L\'équation x + 3 = x + 5 n\'a pas de solution.', 'vrai'], ['L\'équation 2x = 0 n\'a pas de solution.', 'faux'], ['Si x = 4, alors 3x − 2 = 10.', 'vrai']], 'vrai · faux') },
       { etoiles: 2, col: 1, consigne: 'Complète pour que 3 soit la solution.',
-        ...rmp([['2x + @ = 11', 5], ['@x − 4 = 11', 5], ['x + 7 = @', 10]]) },
+        ...rmp(plDeux([['2x + @ = 11', 5], ['@x − 4 = 11', 5], ['x + 7 = @', 10], ['4x − @ = 10', 2], ['@x + 1 = 7', 2], ['5x = @', 15]])) },
       { etoiles: 2, cahier: true, consigne: 'La somme de trois nombres entiers consécutifs est 87. Quels sont ces nombres ?',
         corr: cm1Redac('Mise en équation', { suite: ['Soit n le plus petit ; les nombres sont n, n + 1 et n + 2.', 'n + (n + 1) + (n + 2) = 87', '3n + 3 = 87', '3n = 84', 'n = 28'] }, 'Les trois nombres sont 28, 29 et 30.') },
       { etoiles: 3, cahier: true, consigne: 'Un cinéma vend des places à 9 € (plein tarif) et à 6 € (tarif réduit). Pour une séance, 120 places ont été vendues pour 930 €. Combien de places au tarif réduit ont été vendues ?',
