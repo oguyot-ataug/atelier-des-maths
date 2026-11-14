@@ -4079,6 +4079,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1469', date:'2026-11-14', items:[
+    "Manuel papier, couverture : le niveau est écrit en très grand, la bulle a disparu, et Oliv'IA porte une tenue différente à chaque niveau. CP : cartable et nœud ; CE1 : bonnet à pompon ; CE2 : chapeau d'exploratrice et loupe ; CM1 : casque de chantier et règle ; CM2 : casquette, sac à dos et bâton de randonnée ; 6e : casquette et équerre ; 5e : lunettes, écharpe et calculatrice ; 4e : casque audio et tableau ; 3e : toque de diplômée et diplôme."
+  ]},
   { version:'2026-08-19.1468', date:'2026-11-14', items:[
     "Manuel papier : la couverture et la 4e de couverture reprennent la couleur de chaque niveau sur le site (framboise pour le CP, sarcelle pour le CE1, vert pour le CE2, le CM1 et le CM2, orange pour la 6e, bleu pour la 5e, bleu-vert pour la 4e, violet pour la 3e). En 4e : « Nouveau programme · rentrée 2027 » sur la couverture et la 4e de couverture."
   ]},

@@ -951,23 +951,56 @@ const PL_PROG_FUTUR = { '4e': 'Nouveau programme · rentrée 2027' };
 const PL_CV = { W: 718, H: 1028, pente: Math.tan(4 * Math.PI / 180) };
 const plCvY = (x, y0) => y0 - x * PL_CV.pente; // bord haut de la bande oblique à l'abscisse x (y0 : à gauche de la page)
 // Oliv'IA dans le dessin de la page : un svg placé (x, y) de côté w.
-const plCvOliv = (pose, x, y, w) => plOliv(pose).replace('<svg ', `<svg class="pl-cv-oliv" x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${w}" height="${w}" `);
+const plCvOliv = (svg, x, y, w) => svg.replace('<svg ', `<svg class="pl-cv-oliv" x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${w}" height="${w}" `);
+// Oliv'IA de la couverture : une tenue par niveau (demandé le 14/11/2026 : « Change d'Olivia au collège ou même par niveau. On peut
+// lui ajouter une tenue différente »). Une pose du site (olivPoseSvg) + des accessoires dessinés derrière (bas) ou devant (haut) ;
+// cadre élargi à −10 −10 140 140 pour les chapeaux et visières (bas du corps : y = 108, soit 0,843 de la hauteur).
+const PL_CV_VB = [-10, -10, 140], PL_CV_PIEDS = (108 + 10) / 140;
+function plCvTenue(lvl){
+  const c = (PL_TEINTES[lvl] || PL_TEINTES['5e'])[0], fonce = (PL_TEINTES[lvl] || PL_TEINTES['5e'])[1];
+  const sansFeuille = s => s.replace(/<path d="M60 20 q-2 -9 4 -14"[^>]*\/>/, '').replace(/<path d="M64 8 C 74 -1[^>]*\/>/, '');
+  const sansChapeau = s => s.replace(/<ellipse cx="60" cy="25" rx="38" ry="7"[^>]*\/>/, '').replace(/<path d="M38 24 Q40 4 60 4[^>]*\/>/, '').replace(/<path d="M39 19 H81"[^>]*\/>/, '');
+  const noeud = `<path d="M60 21 L45 12 L44 30 Z M60 21 L75 12 L76 30 Z" fill="#E11D48" stroke="#9F1239" stroke-width="2" stroke-linejoin="round"/><circle cx="60" cy="21" r="4.5" fill="#BE123C" stroke="#9F1239" stroke-width="1.5"/>`;
+  const T = {
+    cp: ['savoir', true, `<rect x="10" y="44" width="30" height="50" rx="9" fill="#F59E0B" stroke="#B45309" stroke-width="2.5"/><path d="M10 58 H40" stroke="#B45309" stroke-width="2.5"/><rect x="20" y="62" width="10" height="7" rx="2" fill="#FDE68A" stroke="#B45309" stroke-width="1.5"/>`,
+      `<path d="M38 34 Q30 66 36 100" stroke="#B45309" stroke-width="5" fill="none" stroke-linecap="round"/>${noeud}`],
+    ce1: ['savoir', false, '', `<path d="M29 36 Q29 4 60 4 Q91 4 91 36 Z" fill="${c}" stroke="${fonce}" stroke-width="2.5"/><path d="M40 10 V34 M50 6 V34 M60 5 V34 M70 6 V34 M80 10 V34" stroke="${fonce}" stroke-width="1.5" opacity=".5"/>
+      <rect x="25" y="30" width="70" height="12" rx="6" fill="#fff" stroke="${fonce}" stroke-width="2.5"/><circle cx="60" cy="1" r="8" fill="#fff" stroke="${fonce}" stroke-width="2.5"/>`],
+    ce2: ['methode', false, '', `<ellipse cx="60" cy="25" rx="40" ry="7.5" fill="#A0743B" stroke="#6B4A22" stroke-width="2"/><path d="M37 24 Q39 2 60 2 Q81 2 83 24 Z" fill="#C49A5C" stroke="#6B4A22" stroke-width="2"/><path d="M38 18 H82" stroke="${c}" stroke-width="5"/>`],
+    cm1: ['regle', false, '', `<ellipse cx="60" cy="33" rx="37" ry="6" fill="#EAB308" stroke="#A16207" stroke-width="2.5"/><path d="M33 32 Q33 6 60 6 Q87 6 87 32 Z" fill="#FACC15" stroke="#A16207" stroke-width="2.5"/>
+      <path d="M60 7 V31" stroke="#A16207" stroke-width="5" stroke-linecap="round"/><path d="M44 12 Q40 20 40 30 M76 12 Q80 20 80 30" stroke="#A16207" stroke-width="1.8" fill="none"/>`],
+    cm2: ['cm2', false, '', `<path d="M33 30 Q30 12 46 8 L76 8 Q92 12 88 30 Z" fill="${c}" stroke="${fonce}" stroke-width="2.5"/><path d="M28 30 Q60 40 92 30 L94 36 Q60 46 26 36 Z" fill="${c}" stroke="${fonce}" stroke-width="2.5"/>`],
+    '6e': ['equerre', false, '', `<path d="M33 34 Q34 6 61 6 Q86 8 87 34 Z" fill="${c}" stroke="${fonce}" stroke-width="2.5"/><path d="M60 6 V33 M46 9 Q41 20 40 33 M75 9 Q80 20 81 33" stroke="${fonce}" stroke-width="1.6" fill="none" opacity=".6"/>
+      <path d="M82 28 Q106 25 113 35 Q98 39 84 36 Z" fill="${fonce}" stroke="${fonce}" stroke-width="2" stroke-linejoin="round"/><circle cx="61" cy="6" r="3.5" fill="${fonce}"/>`],
+    '5e': ['calculatrice', true, '', `<circle cx="47" cy="62" r="14" fill="none" stroke="#1F2937" stroke-width="3"/><circle cx="73" cy="62" r="14" fill="none" stroke="#1F2937" stroke-width="3"/><path d="M58 59 Q60 56 62 59" stroke="#1F2937" stroke-width="3" fill="none"/><path d="M33 60 L27 57 M87 60 L93 57" stroke="#1F2937" stroke-width="3" stroke-linecap="round"/>
+      <path d="M28 94 Q60 108 92 94 L91 103 Q60 117 29 103 Z" fill="${c}" stroke="${fonce}" stroke-width="2.5"/><path d="M42 99 l-2 9 M54 102 l-1 9 M66 102 l1 9 M78 99 l2 9" stroke="#fff" stroke-width="3"/>
+      <path d="M74 103 L78 116 L88 114 L84 101 Z" fill="${c}" stroke="${fonce}" stroke-width="2.5" stroke-linejoin="round"/><path d="M77 109 l9 -3" stroke="#fff" stroke-width="3"/>`],
+    '4e': ['tableau', true, '', `<path d="M23 62 Q19 8 60 8 Q101 8 97 62" stroke="#1F2937" stroke-width="6" fill="none" stroke-linecap="round"/><path d="M23 62 Q19 8 60 8 Q101 8 97 62" stroke="${c}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <rect x="13" y="52" width="15" height="26" rx="6" fill="${c}" stroke="#1F2937" stroke-width="2.5"/><rect x="92" y="52" width="15" height="26" rx="6" fill="${c}" stroke="#1F2937" stroke-width="2.5"/>`],
+    '3e': ['histoire', false, '', `<path d="M42 30 Q60 38 78 30 L78 20 L42 20 Z" fill="#1F2937" stroke="#111827" stroke-width="2"/><path d="M60 4 L104 17 L60 30 L16 17 Z" fill="#334155" stroke="#111827" stroke-width="2.5" stroke-linejoin="round"/>
+      <path d="M60 17 L23 22 V40" stroke="#F5A623" stroke-width="2.5" fill="none"/><path d="M19 40 h8 l2 10 h-12 Z" fill="#F5A623" stroke="#B7791F" stroke-width="1.5"/><circle cx="60" cy="17" r="3" fill="#F5A623"/>
+      <path d="M96 56 h22" stroke="#C0392B" stroke-width="4"/><path d="M107 56 l-5 9 M107 56 l5 9" stroke="#C0392B" stroke-width="3" stroke-linecap="round"/>`] };
+  const [pose, feuille, bas, haut] = T[lvl] || T['5e'];
+  let s = plOliv(pose); if(!s) return '';
+  if(!feuille) s = sansFeuille(s);
+  if(pose === 'histoire') s = sansChapeau(s);
+  return s.replace(/viewBox="[^"]*"/, `viewBox="${PL_CV_VB[0]} ${PL_CV_VB[1]} ${PL_CV_VB[2]} ${PL_CV_VB[2]}"`).replace(/(<svg[^>]*>)/, `$1${bas}`).replace(/<\/svg>\s*$/, `${haut}</svg>`);
+}
+
 const plCvBande = (y0, ep, coul) => { const { W } = PL_CV; return `<polygon points="0,${y0} ${W},${plCvY(W, y0).toFixed(1)} ${W},${(plCvY(W, y0) + ep).toFixed(1)} 0,${y0 + ep}" fill="${coul}"/>`; };
 const plCvNiv = lvl => plCollege(lvl) ? `${escapeHtml(lvl.replace('e', ''))}<sup>e</sup>` : escapeHtml(PL_NIVEAUX_TXT[lvl] || lvl);
 const plCvCycle = lvl => ['cp', 'ce1', 'ce2'].includes(lvl) ? 'Cycle 2' : ['5e', '4e', '3e'].includes(lvl) ? 'Cycle 4' : 'Cycle 3';
 function plCouverture(lvl, o){ // o = { logo, doms, nbChap, nb, avecCorriges, avecCours }
   const [c, cs, c2, fond] = PL_TEINTES[lvl] || PL_TEINTES['5e'], { W, H } = PL_CV, col = plCollege(lvl);
-  const yG = 735, ow = 200, ox = W - 40 - ow, oy = plCvY(ox + ow / 2, yG) - .95 * ow + 2; // bas de la cape (0,95 du dessin) posé sur la bande
-  const sym = [['+', 62, 128, c], ['×', 640, 104, '#E35D3A'], ['π', 58, 520, '#2E9E5B'], [col ? '√' : '=', 662, 330, '#8E44AD'], [':', 120, 640, c]];
+  const yG = 735, ow = 240, ox = W - 36 - ow, oy = plCvY(ox + ow / 2, yG) - PL_CV_PIEDS * ow + 3; // bas du corps posé sur la bande
+  const sym = [['+', 62, 128, c], ['×', 640, 104, '#E35D3A'], ['π', 70, 560, '#2E9E5B'], [col ? '√' : '=', 662, 300, '#8E44AD'], [':', 200, 650, c], ['%', 330, 580, '#E35D3A']];
   const titre = col ? (o.avecCours ? 'Manuel<br>cours et exercices' : 'Cahier<br>d\'exercices') : (o.avecCours ? 'Mon manuel<br>de mathématiques' : 'Mon livre d\'exercices<br>de mathématiques');
-  const bulle = col ? `Cap sur la ${plCvNiv(lvl)} !<small>Du ★ pour s'entraîner<br>au défi ★★★</small>` : 'À toi de jouer !<small>Du plus simple ★<br>au défi ★★★</small>';
   return `<section class="pl-page pl-couv pl-cv" style="--c:${c};--cs:${cs};background:${fond};">
     <svg class="pl-cv-fond" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}"><polygon points="0,0 ${W},0 ${W},${plCvY(W, yG).toFixed(1)} 0,${yG}" fill="#fff"/>${plCvBande(yG, 16, c2)}
       ${sym.map(([t, x, y, k]) => `<text x="${x}" y="${y}" fill="${k}" opacity=".2" font-family="Space Grotesk,Arial,sans-serif" font-weight="700" font-size="40" text-anchor="middle">${t}</text>`).join('')}
-      ${plCvOliv('defi', ox, oy, ow)}</svg>
+      ${plCvOliv(plCvTenue(lvl), ox, oy, ow)}</svg>
     ${o.logo ? `<img class="pl-cv-logo" src="${o.logo}" alt="L'Atelier des Maths">` : '<b class="pl-cv-logo">L\'Atelier des Maths</b>'}
     <div class="pl-cv-niv"><span class="pl-cv-n">${plCvNiv(lvl)}</span><span class="pl-cv-t"><span>Mathématiques · ${plCvCycle(lvl).toLowerCase()}</span>${titre}${PL_PROG_FUTUR[lvl] ? `<em class="pl-cv-prog">${PL_PROG_FUTUR[lvl]}</em>` : ''}</span></div>
-    <div class="pl-cv-bulle" style="right:${W - ox + 16}px;top:${(oy + 18).toFixed(0)}px;">${bulle}</div>
     <div class="pl-cv-doms">${Object.values(PL_DOMAINES).filter(d => o.doms.includes(d)).map(([t, k]) => `<span style="color:${k};border-color:${k};">${t}</span>`).join('')}</div>
     <div class="pl-cv-champs"><span>Nom <i></i></span><span>Prénom <i></i></span><span>Classe <i></i></span></div>
     <div class="pl-cv-ed">Édition du ${new Date().toLocaleDateString('fr-FR')}</div>
@@ -1360,17 +1393,14 @@ const PL_CSS_LIVRE = `
   @page dos{ @bottom-center{ content:none; } } .pl-dos, .pl-blanche{ page:dos; }
   .pl-cv{ width:718px; height:1028px; padding:0; box-sizing:border-box; overflow:hidden; position:relative; text-align:left; }
   .pl-cv > *{ position:absolute; margin:0; } .pl-cv-fond{ left:0; top:0; } .pl-cv-oliv{ overflow:visible; }
-  .pl-cv-logo{ left:50%; top:30px; transform:translateX(-50%); width:262px; height:auto; font:700 30px 'Space Grotesk',Arial,sans-serif; color:#1F3A5C; white-space:nowrap; }
-  .pl-cv-niv{ left:0; right:0; top:388px; display:flex; justify-content:center; align-items:center; gap:18px; }
-  .pl-cv-n{ background:var(--c); color:#fff; font:700 64px/1 'Space Grotesk',Arial,sans-serif; padding:4px 24px 10px; border-radius:20px; box-shadow:0 6px 0 var(--cs); }
+  .pl-cv-logo{ left:50%; top:24px; transform:translateX(-50%); width:236px; height:auto; font:700 30px 'Space Grotesk',Arial,sans-serif; color:#1F3A5C; white-space:nowrap; }
+  .pl-cv-niv{ left:0; right:0; top:344px; display:flex; justify-content:center; align-items:center; gap:24px; }
+  .pl-cv-n{ background:var(--c); color:#fff; font:700 116px/1 'Space Grotesk',Arial,sans-serif; letter-spacing:-.02em; padding:6px 30px 16px; border-radius:28px; box-shadow:0 8px 0 var(--cs); }
   .pl-cv-n sup{ font-size:.45em; }
-  .pl-cv-t{ font:700 27px/1.15 'Space Grotesk',Arial,sans-serif; color:#1F3A5C; white-space:nowrap; }
+  .pl-cv-t{ font:700 29px/1.15 'Space Grotesk',Arial,sans-serif; color:#1F3A5C; white-space:nowrap; }
   .pl-cv-t > span{ display:block; font:600 13.5px Inter,Arial,sans-serif; color:var(--c); letter-spacing:.08em; text-transform:uppercase; margin-bottom:5px; }
   .pl-cv-prog{ display:table; font:700 12.5px Inter,Arial,sans-serif; font-style:normal; color:#fff; background:#E35D3A; border-radius:999px; padding:4px 12px; margin-top:8px; letter-spacing:.02em; }
   .pl-dos-tete .pl-cv-prog{ margin-top:6px; }
-  .pl-cv-bulle{ width:196px; background:#fff; border:2.5px solid #1F3A5C; border-radius:18px; padding:11px 14px; font:700 18px/1.2 'Space Grotesk',Arial,sans-serif; color:#1F3A5C; box-shadow:0 3px 0 #1F3A5C; box-sizing:border-box; }
-  .pl-cv-bulle sup{ font-size:.6em; } .pl-cv-bulle small{ display:block; font:600 11.5px/1.35 Inter,Arial,sans-serif; color:#4E5665; margin-top:5px; }
-  .pl-cv-bulle::after{ content:''; position:absolute; right:-24px; top:20px; border:10px solid transparent; border-left:14px solid #1F3A5C; }
   .pl-cv-doms{ left:40px; right:40px; top:782px; display:flex; flex-wrap:wrap; gap:8px; justify-content:center; }
   .pl-cv-doms span{ background:#fff; border:1.5px solid; border-radius:999px; padding:4px 13px; font:600 12.5px Inter,Arial,sans-serif; }
   .pl-cv-champs{ left:44px; right:44px; top:884px; display:grid; grid-template-columns:1.3fr 1.3fr .7fr; gap:22px; font:600 14px Inter,Arial,sans-serif; color:#1F3A5C; }
