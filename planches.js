@@ -261,10 +261,13 @@ function plTdRendre(lvl, c){
     else if(co){ const [i, k] = co.dataset.tdcorr.split('|').map(Number), x = plTdX(lvl, c, i, k), v = document.getElementById(`tdv-${i}-${k}`), on = !v.classList.contains('corr');
       // Les lignes gardent la hauteur de l'énoncé : une fraction à compléter (deux cases) est plus haute que la fraction écrite
       // du corrigé (relecture 5e-N4-P4-E1, E2, E6 du 12/11/2026 : « En mode correction, les lignes se réduisent ! »).
-      const lignes = () => [...v.querySelectorAll('.pl-corps li, .pl-corps .pl-item')], avant = on ? lignes().map(e => e.offsetHeight) : null;
+      // Hauteur avec les marges : une ligne à fraction du corrigé a plus de marge (14/11/2026) ; sans elles, l'écart s'ajoutait deux fois
+      // (5e-N4-P1-E1 : « un exercice qui était validé se retrouve maintenant avec des espaces très larges »).
+      const haut = e => { const cs = getComputedStyle(e); return e.offsetHeight + parseFloat(cs.marginTop) + parseFloat(cs.marginBottom); };
+      const lignes = () => [...v.querySelectorAll('.pl-corps li, .pl-corps .pl-item')], avant = on ? lignes().map(haut) : null;
       v.classList.toggle('corr', on); v.querySelector('.pl-corps').innerHTML = plExoCorps(x, on); co.innerHTML = on ? '<span class="gicon">visibility_off</span> Énoncé' : '<span class="gicon">fact_check</span> Correction';
       if(typeof renderStaticMath === 'function') renderStaticMath(v);
-      const L = avant ? lignes() : []; if(L.length === avant?.length) L.forEach((e, j) => { const d = avant[j] - e.offsetHeight; if(d > 2){ e.style.paddingTop = (d / 2) + 'px'; e.style.paddingBottom = (d / 2) + 'px'; } }); }
+      const L = avant ? lignes() : []; if(L.length === avant?.length) L.forEach((e, j) => { const d = avant[j] - haut(e); if(d > 2){ e.style.paddingTop = (d / 2) + 'px'; e.style.paddingBottom = (d / 2) + 'px'; } }); }
     else if(ca){ const [i, k] = ca.dataset.tdcahier.split('|').map(Number); plAjouterCahier(lvl, c, i, k, ca, plTdV[plTdCle(lvl, c, i, k)]); }
     else if(t.closest('[data-tdsess]')){ const b = t.closest('[data-tdsess]'), [i, k] = b.dataset.tdsess.split('|').map(Number); plAjouterSession(lvl, c, i, k, b, plTdV[plTdCle(lvl, c, i, k)]); }
   };

@@ -4079,6 +4079,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1462', date:'2026-11-14', items:[
+    "Manuel à l'écran : en affichant la correction, les lignes à fraction ne s'écartent plus -- signalé sur 5e-N4-P1-E1 : « un exercice qui était validé se retrouve maintenant avec des espaces très larges ». La correction garde la hauteur de l'énoncé, marges comprises (le nouvel espace entre les lignes à fraction s'ajoutait deux fois)."
+  ]},
   { version:'2026-08-19.1461', date:'2026-11-14', items:[
     "Planches à l'écran (Manuel, exercices faits à l'écran, projection) : plus d'espace entre deux lignes qui contiennent une fraction -- demandé sur 5e-N4-P6 : « On pourrait avoir plus d'espace entre deux lignes. » Les fractions ne se touchent plus d'une ligne à l'autre ; le papier ne change pas."
   ]},
