@@ -4079,6 +4079,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1461', date:'2026-11-14', items:[
+    "Planches à l'écran (Manuel, exercices faits à l'écran, projection) : plus d'espace entre deux lignes qui contiennent une fraction -- demandé sur 5e-N4-P6 : « On pourrait avoir plus d'espace entre deux lignes. » Les fractions ne se touchent plus d'une ligne à l'autre ; le papier ne change pas."
+  ]},
   { version:'2026-08-19.1460', date:'2026-11-14', items:[
     "Exercices à l'écran et en projection : propositions à entourer resserrées et alignées sous la question (5e-N1a-P6, « Entoure l'ordre de grandeur ») -- l'écart entre deux propositions était compté deux fois, puis agrandi par la projection : grands vides, et « 30 000 » renvoyé à la ligne."
   ]},

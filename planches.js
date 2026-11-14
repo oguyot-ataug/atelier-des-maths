@@ -1411,6 +1411,8 @@ const PL_CSS_LIVRE = `
     .td-vig .pl-liste, .pl-ex-cahier .pl-liste{ margin:0; padding-left:18px; } .td-vig .pl-liste li, .pl-ex-cahier .pl-liste li{ margin:3px 0; }
     /* Exercice pleine largeur : la liste sur deux colonnes, comme sur la feuille -- relecture 5e-N7-P4-E1 : « Il n'y a pas deux colonnes ici et plein de place à droite ». */
     .td-vig.td-plein .pl-liste{ columns:2; column-gap:28px; } .td-vig.td-plein .pl-liste li{ break-inside:avoid; margin:0; padding:1.5px 0; } .td-vig.td-plein .pl-col1 .pl-liste{ columns:1; }
+    /* Lignes avec une fraction : plus d'air entre deux lignes (demandé le 14/11/2026 sur 5e-N4-P6 : « On pourrait avoir plus d'espace entre deux lignes. ») */
+    .td-vig .pl-liste li:has(.mfrac, .pn-frac, .fr-h, .pl-f){ margin:9px 0; } .td-vig.td-plein .pl-liste li:has(.mfrac, .pn-frac, .fr-h, .pl-f){ margin:0; padding:7px 0; }
     /* Fraction écrite en HTML à côté de fractions KaTeX (fraction à trou fd, 5e-N4-P4-E6) : MÊME géométrie que \dfrac de KaTeX (police,
        taille 1,21 em, centre du numérateur 0,75 em au-dessus de la barre, du dénominateur 0,61 em en dessous, barre fine) -- demandé le
        13/11/2026 : « les nombres tapés doivent être alignés avec les nombres de l'énoncé et de même taille (règle pour tout le site !) ». */
@@ -1457,7 +1459,7 @@ const PL_CSS_LIVRE = `
     .plp-verif{ background:#F08A3C !important; border-color:#F08A3C !important; }
     .plp-consigne{ font-weight:700; margin-bottom:10px; }
     .plp-corps .pl-grille{ display:grid; gap:8px 26px; align-items:center; } .plp-corps .pl-item{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
-    .plp-corps .pl-liste{ padding-left:20px; margin:0; } .plp-corps .pl-liste li{ margin:6px 0; } .plp-corps .pl-liste.pl-chcol{ row-gap:12px; }
+    .plp-corps .pl-liste{ padding-left:20px; margin:0; } .plp-corps .pl-liste li{ margin:6px 0; } .plp-corps .pl-liste li:has(.mfrac, .pn-frac, .fr-h){ margin:11px 0; } .plp-corps .pl-liste.pl-chcol{ row-gap:12px; }
     .plp-corps .pl-frac{ display:inline-flex; flex-direction:column; align-items:center; vertical-align:middle; gap:2px; margin:0 3px; }
     .plp-corps .pl-case{ display:inline-block; width:22px; height:18px; border:1.5px solid #8A93A3; border-radius:4px; background:#fff; } .plp-corps .pl-case-seule{ vertical-align:middle; margin:0 4px; }
     .plp-corps .pl-barre{ display:block; width:28px; border-top:2px solid #1C2B39; }
