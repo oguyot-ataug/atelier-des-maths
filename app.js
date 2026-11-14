@@ -4079,6 +4079,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1460', date:'2026-11-14', items:[
+    "Exercices à l'écran et en projection : propositions à entourer resserrées et alignées sous la question (5e-N1a-P6, « Entoure l'ordre de grandeur ») -- l'écart entre deux propositions était compté deux fois, puis agrandi par la projection : grands vides, et « 30 000 » renvoyé à la ligne."
+  ]},
   { version:'2026-08-19.1459', date:'2026-11-13', items:[
     "PDF des planches et des manuels : vraies marges de 1 cm, aussi sur téléphone -- signalé : « le pdf semble avoir des marges beaucoup plus grande que 1 cm » (Chrome sur Android). Une feuille resserrée ou un élément trop large (tableau vrai / faux, propositions à entourer, tableau de valeurs) élargissait le document, et le navigateur réduisait alors TOUTES les pages. Les feuilles gardent désormais leur largeur exacte ; une feuille trop large est resserrée comme une feuille trop haute, les énoncés et propositions trop longs passent à la ligne. Le manuel avec le cours était lui aussi réduit (marges de 2 cm) : il est maintenant à taille réelle."
   ]},
