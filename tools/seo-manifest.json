@@ -1,7 +1,7 @@
 {
  "/": {
-  "hash": "14e731be3062a1d0fd8a881874e70bedbaa61336",
-  "lastmod": "2026-11-13"
+  "hash": "9c5e2d63d7ca0ec595dba6b55cbe023c53c26e3a",
+  "lastmod": "2026-11-14"
  },
  "/cp/les-nombres-jusqu-a-10/": {
   "hash": "7185553455881bd607f0806db0b8c6e896e3f837",
@@ -324,8 +324,8 @@
   "lastmod": "2026-11-10"
  },
  "/cm1/nombres-entiers-jusqu-a-9-999/": {
-  "hash": "2040be137df2110437097456b942207e1edb3887",
-  "lastmod": "2026-11-12"
+  "hash": "86f68233dc14206c1fad14345ddc620c37162079",
+  "lastmod": "2026-11-14"
  },
  "/cm1/fractions/": {
   "hash": "933e3564bce420f30e48ddac1140d4099b06d5d7",
@@ -448,8 +448,8 @@
   "lastmod": "2026-11-10"
  },
  "/cm2/multiplication/": {
-  "hash": "7489ef5b1d987546b00a4af00a2223bef1b18138",
-  "lastmod": "2026-11-10"
+  "hash": "12a0bb9b3c7e881c58bbe0bd15a9cd8ccb813901",
+  "lastmod": "2026-11-14"
  },
  "/cm2/probabilites/": {
   "hash": "b8e8ca111df7cfedcff170c890768fae41b79815",
@@ -512,8 +512,8 @@
   "lastmod": "2026-11-10"
  },
  "/cm2/heures-et-durees/": {
-  "hash": "f8b0e03c1a44f8e800119d7181e23f8068a30eb4",
-  "lastmod": "2026-11-10"
+  "hash": "fe8e9663c08b1c02884ae4e03a1ff3e7e038d20d",
+  "lastmod": "2026-11-14"
  },
  "/cm2/pensee-informatique/": {
   "hash": "e594de4be70ab1c2a3979acc72b1a3b7e19d1a77",
@@ -580,8 +580,8 @@
   "lastmod": "2026-11-10"
  },
  "/6e/proportionnalite/": {
-  "hash": "a68b55779d48f92539f0d85541ba476aac52d8e5",
-  "lastmod": "2026-11-13"
+  "hash": "4f91c2b5f74463e710d5f0b20d13abca025733d0",
+  "lastmod": "2026-11-14"
  },
  "/6e/aire-et-perimetre/": {
   "hash": "32e763bbbdcde84cda095d0146896b366b5272b6",
@@ -700,8 +700,8 @@
   "lastmod": "2026-11-10"
  },
  "/4e/operations-sur-les-nombres-relatifs/": {
-  "hash": "ebc82c85c950ef7e8547b6ef4b83ac927a601733",
-  "lastmod": "2026-11-10"
+  "hash": "bb7bbf304e9eab854aed1dae145f468489ff9855",
+  "lastmod": "2026-11-14"
  },
  "/4e/triangles-et-paralleles/": {
   "hash": "e395b12faca16c15b84c2be55480f6c278eb294f",
@@ -720,24 +720,24 @@
   "lastmod": "2026-11-10"
  },
  "/4e/statistiques/": {
-  "hash": "6eb29f8952f1c0d4efd6aaaae6c3da1d55a5818b",
-  "lastmod": "2026-11-13"
+  "hash": "57ad2204513948eec6320fdd91bd90aef4460b56",
+  "lastmod": "2026-11-14"
  },
  "/4e/fractions-multiplication-et-division/": {
   "hash": "ba95552169d24a76da3fd16d8f17fdf67f928dff",
   "lastmod": "2026-11-10"
  },
  "/4e/theoreme-de-pythagore/": {
-  "hash": "0ac9e377e668a8f63e0c2b37180a0ae7fb4d950c",
-  "lastmod": "2026-11-10"
+  "hash": "4d5cf13083581cf6425cfc9b6e874713dc16e940",
+  "lastmod": "2026-11-14"
  },
  "/4e/puissances/": {
-  "hash": "5d702c92a35ac1fac4813469d62ed01898cd71a7",
-  "lastmod": "2026-11-10"
+  "hash": "94b41d9ffff264e293c60270a07a83a044d25e71",
+  "lastmod": "2026-11-14"
  },
  "/4e/probabilites/": {
-  "hash": "9ddb244c7a610ae563dc086458159edf7ad1e004",
-  "lastmod": "2026-11-10"
+  "hash": "25d36997b781a06fb6a19dd23d47c256e12f912a",
+  "lastmod": "2026-11-14"
  },
  "/4e/calcul-litteral/": {
   "hash": "c199f6a6229905191e21647b20a66919020b0940",
@@ -748,28 +748,36 @@
   "lastmod": "2026-11-13"
  },
  "/4e/proportionnalite/": {
-  "hash": "18663d833116ddf1af3a0f6e2aca6eb08c4d0e8f",
-  "lastmod": "2026-11-10"
+  "hash": "f1f813a273dad5451f47e2d4e454446e56db0109",
+  "lastmod": "2026-11-14"
  },
  "/4e/equations/": {
   "hash": "73805c44522ec903030194910985f64e0761fddb",
   "lastmod": "2026-11-10"
  },
  "/4e/espace/": {
-  "hash": "0de33448e240183c61e55047b34a5e2e681a040e",
-  "lastmod": "2026-11-10"
+  "hash": "971e23b8d0907e9fc25af4648c3aae3bea8bcbec",
+  "lastmod": "2026-11-14"
  },
  "/4e/formules-et-graphiques/": {
   "hash": "abfd20f493c87cbd097bef0f928ab90831355e45",
   "lastmod": "2026-11-10"
  },
  "/4e/algorithmique-et-programmation/": {
-  "hash": "b1e54c055d2a70675fc48aae763e902b865fe66d",
-  "lastmod": "2026-11-10"
+  "hash": "0aa5d7bbd51f24c8a6ac677aa47133c3c5ca77ba",
+  "lastmod": "2026-11-14"
+ },
+ "/4e/droite-des-milieux/": {
+  "hash": "2778a8e958a280cd42e78e72f56f0cc6e208dd2f",
+  "lastmod": "2026-11-14"
+ },
+ "/4e/droites-remarquables-et-cercles/": {
+  "hash": "818bc894b30cfeda49def53626145c185c243887",
+  "lastmod": "2026-11-14"
  },
  "/4e/": {
-  "hash": "44377cb381a23ee57da8e6ea9a9e1fd7770787c8",
-  "lastmod": "2026-11-10"
+  "hash": "12a9f6e2b73165f4a96b656118a6f19ae8fe3c93",
+  "lastmod": "2026-11-14"
  },
  "/3e/nombres-et-calculs/": {
   "hash": "041d8df54210a973c7a6db107fa544fc6cc5a3f9",
@@ -792,8 +800,8 @@
   "lastmod": "2026-11-13"
  },
  "/3e/puissances/": {
-  "hash": "8ca2d596df15ae1e4bd82cbb0d2ad363f347dca0",
-  "lastmod": "2026-11-10"
+  "hash": "45d2485d1b500f91997b54a6cae0ea16939b5341",
+  "lastmod": "2026-11-14"
  },
  "/3e/statistiques/": {
   "hash": "2255c6b9713b0a53e6401a050361772fb8f5d136",
@@ -832,8 +840,8 @@
   "lastmod": "2026-11-10"
  },
  "/3e/algorithmique-et-programmation/": {
-  "hash": "832f1fb4749a10353038eec4273027f94f94b235",
-  "lastmod": "2026-11-10"
+  "hash": "2de3eb306e02e55d67fdc4328694b392c1ef937b",
+  "lastmod": "2026-11-14"
  },
  "/3e/": {
   "hash": "d2cec290fe97c24642ddea187ec824e0b95b9221",
