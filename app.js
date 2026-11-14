@@ -4079,6 +4079,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1467', date:'2026-11-14', items:[
+    "Manuel papier : nouvelle couverture et nouvelle 4e de couverture, pour tous les niveaux du CP à la 3e. Couverture : grand logo de L'Atelier des Maths, niveau et titre, Oliv'IA en super-héroïne posée sur une bande oblique, bas de page à la couleur du niveau (domaines, nom, prénom, classe). 4e de couverture : ce que contient le livre (étoiles, défis, « Je fais le point », calculs détaillés) avec Oliv'IA, et ce que l'on retrouve sur latelierdesmaths.fr. La 4e de couverture tombe toujours sur une page paire (une page blanche est ajoutée si besoin)."
+  ]},
   { version:'2026-08-19.1466', date:'2026-11-14', items:[
     "Planches du CP au CM2 : exemples doublés en deux colonnes, avec un trait fin entre les colonnes, comme au collège -- environ 250 exercices (tables, calcul mental, décompositions, comparaisons, fractions, mesures…), corrigés compris. Aucune feuille ne dépasse la page. Restent en une colonne les listes liées à une figure ou à un seul énoncé, les opérations à poser dans le cahier et les lignes trop longues pour une demi-colonne."
   ]},
