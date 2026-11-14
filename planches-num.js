@@ -331,7 +331,11 @@ function plNum(root, x, o){
     if([...ul.children].some(li => li.scrollWidth > li.clientWidth + 2)) ul.style.columns = '1';
   }));
   if(typeof plSepNoeuds === 'function') plSepNoeuds(root); // « 6 102 · 6 210 » : grand espace au lieu du point central
-  if(typeof plChoixCols === 'function') plChoixCols(root, null, !x.col && !x.uneLigne); // « vrai · faux » en colonne, à part de l'énoncé
+  // « vrai · faux » en colonne, à part de l'énoncé. À l'écran, un exercice demi-largeur a la place d'une ligne entière (projection, ou
+  // vignette d'au moins 420 px) : propositions à côté de la question, sans retour à la ligne (demandé le 14/11/2026 sur 5e-N1a-P6 :
+  // « pourquoi aller à la ligne pour les propositions de réponses ? Il y a suffisamment de place en largeur »).
+  const large = !x.col && !x.uneLigne || !!root.closest('.plp-boite') || root.getBoundingClientRect().width >= 420;
+  if(typeof plChoixCols === 'function') plChoixCols(root, null, large);
   const NS = 'http://www.w3.org/2000/svg';
   M.cibles.filter(c => c.type === 'trace').forEach(c => {
     const svg = root.querySelector(`[data-pn="${c.id}"]`), P = c.rep; if(!svg) return;

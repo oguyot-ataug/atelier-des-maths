@@ -249,6 +249,7 @@ function plTdRendre(lvl, c){
           ${typeof plVariable === 'function' && plVariable(x) ? `<button type="button" class="btn secondary td-mini td-var" data-tdvar="${i}|${k}" title="Le même exercice avec d'autres nombres (corrigé recalculé) : pour s'entraîner encore"><span class="gicon">autorenew</span> Autre version</button>
           <button type="button" class="btn secondary td-mini td-var" data-tdfiche="${i}|${k}" title="Imprimer plusieurs versions de cet exercice sur une feuille, avec leur corrigé"><span class="gicon">content_copy</span> Fiche de répétition</button>` : ''}</div></div>`).join('')}</div></section>`).join('')}${typeof plTdProgHtml === 'function' ? plTdProgHtml(lvl, c) : ''}`;
   if(typeof renderStaticMath === 'function') renderStaticMath(root);
+  plChoixEcran(root);
   root.onclick = e => {
     const t = e.target, pj = t.closest('[data-tdproj]'), co = t.closest('[data-tdcorr]'), ca = t.closest('[data-tdcahier]'), pg = t.closest('[data-tdprog]');
     const ps = t.closest('[data-tdprogsess]');
@@ -267,6 +268,7 @@ function plTdRendre(lvl, c){
       const lignes = () => [...v.querySelectorAll('.pl-corps li, .pl-corps .pl-item')], avant = on ? lignes().map(haut) : null;
       v.classList.toggle('corr', on); v.querySelector('.pl-corps').innerHTML = plExoCorps(x, on); co.innerHTML = on ? '<span class="gicon">visibility_off</span> Énoncé' : '<span class="gicon">fact_check</span> Correction';
       if(typeof renderStaticMath === 'function') renderStaticMath(v);
+      plChoixEcran(v);
       const L = avant ? lignes() : []; if(L.length === avant?.length) L.forEach((e, j) => { const d = avant[j] - haut(e); if(d > 2){ e.style.paddingTop = (d / 2) + 'px'; e.style.paddingBottom = (d / 2) + 'px'; } }); }
     else if(ca){ const [i, k] = ca.dataset.tdcahier.split('|').map(Number); plAjouterCahier(lvl, c, i, k, ca, plTdV[plTdCle(lvl, c, i, k)]); }
     else if(t.closest('[data-tdsess]')){ const b = t.closest('[data-tdsess]'), [i, k] = b.dataset.tdsess.split('|').map(Number); plAjouterSession(lvl, c, i, k, b, plTdV[plTdCle(lvl, c, i, k)]); }
@@ -626,6 +628,15 @@ function plChoixCols(root, ref, plein){
     ul.classList.add('pl-chcol');
     if(plein && !ul.closest('.pl-col1') && ul.children.length >= 4 && lg <= 16) ul.classList.add('pl-chcol2');
   });
+}
+// À l'écran (vignettes du Manuel) : propositions mises sous la question faute de place sur PAPIER (demi-colonne) remises à côté de la
+// question quand la vignette est assez large (demandé le 14/11/2026 sur 5e-N1a-P6 : « pourquoi aller à la ligne pour les propositions de
+// réponses ? Il y a suffisamment de place en largeur »). Si une ligne déborde, elles restent dessous.
+function plChoixEcran(root){
+  if(!root) return;
+  root.querySelectorAll('ul.pl-liste.pl-chbas').forEach(ul => { if(ul.closest('.pl-page')) return;
+    ul.classList.remove('pl-chbas'); ul.classList.add('pl-chcol');
+    if(ul.scrollWidth > ul.clientWidth + 1 || [...ul.querySelectorAll('.pl-chr')].some(r => r.getBoundingClientRect().right > ul.getBoundingClientRect().right + 1)){ ul.classList.remove('pl-chcol'); ul.classList.add('pl-chbas'); } });
 }
 const plChCache = new Map();
 function plChoixColHtml(h, refHtml, plein){
@@ -1164,9 +1175,12 @@ function plProjAjuster(){
   // Une question dont la case de réponse passe à la ligne : boîte élargie (relecture bêta CE2-N3-P1-E2 du 07/11/2026 : « À l'écran,
   // pourquoi la réponse est sur la ligne du dessous ? »).
   if(!etroit && !boite.style.maxWidth && [...boite.querySelectorAll('.pl-liste > li')].some(li => { const lh = parseFloat(getComputedStyle(li).lineHeight) || 24; return li.getBoundingClientRect().height > lh * 1.9; })) boite.style.maxWidth = '1040px';
-  const r = boite.getBoundingClientRect();
+  let r = boite.getBoundingClientRect();
   // Largeur gardée telle quelle une fois agrandie : sinon, avec moins de place, les figures côte à côte passent à la ligne.
   if(!etroit) boite.style.width = Math.ceil(r.width) + 1 + 'px';
+  // Contenu plus large que la boîte mesurée (propositions à entourer dans une grille : la largeur « max-content » les sous-estime) :
+  // la boîte prend la largeur du contenu, sinon les propositions dépassent à droite une fois agrandies (5e-N1a-P6, 14/11/2026).
+  if(!etroit && boite.scrollWidth > boite.clientWidth + 1){ const w = r.width + boite.scrollWidth - boite.clientWidth; boite.style.width = Math.ceil(w) + 1 + 'px'; r = boite.getBoundingClientRect(); }
   // Sur téléphone, on n'écrase jamais le texte : au pire, on fait défiler.
   const z = etroit ? Math.max(1, Math.min(W / r.width, H / r.height, 1.6)) : Math.max(.6, Math.min(W / r.width, H / r.height, 3.4));
   // Grille d'exemples dont l'agrandissement est limité par la hauteur : la boîte prend toute la largeur disponible, chaque colonne
