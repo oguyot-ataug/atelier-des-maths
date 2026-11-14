@@ -9,7 +9,7 @@ const L = (a, b, c, w, d) => `<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="$
 const T = (p, t, c) => cmT(p[0], p[1], t, { fs: 12, c: c || K });
 const W = n => cm1Tex(`\\widehat{${n}}`);
 const X = (p, n, dx, dy, c) => `<path d="M${p[0] - 4},${p[1] - 4} L${p[0] + 4},${p[1] + 4} M${p[0] - 4},${p[1] + 4} L${p[0] + 4},${p[1] - 4}" stroke="${c || K}" stroke-width="2"/>` + (n ? T([p[0] + (dx == null ? 7 : dx), p[1] + (dy == null ? -6 : dy)], n, c) : '');
-const ch = (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) + '</div>' });
+const ch = (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`), it.cols) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`), it.cols) + '</div>' });
 function Gq(w, h, k, f){ let s = ''; for(let x = 0; x <= w; x++) s += L([x * k, 0], [x * k, h * k], '#C9DCEB', 1); for(let y = 0; y <= h; y++) s += L([0, y * k], [w * k, y * k], '#C9DCEB', 1); return S(w * k, h * k, s + f((i, j) => [i * k, j * k]), w * k); }
 // Centre du cercle circonscrit à placer (outil points) : triangle de sommets A, B, C (carreaux), centre O.
 function centre(P, O, w, h, r){ const k = 20, base = g => `<polygon points="${P.map(p => g(...p).join(',')).join(' ')}" fill="#EAF4FB" stroke="${K}" stroke-width="2"/>` + P.map((p, i) => X(g(...p), 'ABC'[i], i === 2 ? 6 : -14, i === 2 ? -6 : 14)).join('');

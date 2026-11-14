@@ -326,7 +326,7 @@ function plNum(root, x, o){
   root.innerHTML = M.html;
   // Liste sur deux colonnes dont une ligne ne tient pas dans sa colonne (encadrements, cases larges) : une seule colonne, sinon la
   // colonne de droite chevauche celle de gauche (relecture bêta 6e-N1-P3-E6 du 07/11/2026 : « Les éléments se chevauchent »).
-  if(!x.col && !x.uneLigne) requestAnimationFrame(() => root.querySelectorAll('.pl-liste').forEach(ul => {
+  if(!x.uneLigne) requestAnimationFrame(() => root.querySelectorAll('.pl-liste').forEach(ul => {
     if(getComputedStyle(ul).columnCount !== '2') return;
     if([...ul.children].some(li => li.scrollWidth > li.clientWidth + 2)) ul.style.columns = '1';
   }));
@@ -885,8 +885,8 @@ function plClavierPhysique(e){
 (function plNumStyles(){
   const st = document.createElement('style');
   st.textContent = `
-    .pn-ex .pl-grille{ display:grid; gap:8px 22px; align-items:center; } .pn-ex .pl-item{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; min-height:30px; }
-    .pn-ex .pl-liste{ margin:0; padding-left:20px; } .pn-ex .pl-liste li{ margin:6px 0; } .pn-ex .pl-liste li:has(.mfrac, .pn-frac, .fr-h){ margin:11px 0; } /* lignes à fraction : plus d'air (14/11/2026) */
+    .pn-ex .pl-grille{ display:grid; gap:8px 22px; align-items:center; --gx:22px; } .pn-ex .pl-item{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; min-height:30px; }
+    .pn-ex .pl-liste{ margin:0; padding-left:20px; } .pn-ex .pl-liste li{ margin-block:6px; } .pn-ex .pl-liste.pl-2col > li{ margin-block:0 !important; padding-block:6px; } .pn-ex .pl-liste.pl-2col > li:has(.mfrac, .pn-frac, .fr-h){ padding-block:11px; } .pn-ex .pl-liste.pl-2col{ columns:2; } .pn-ex .pl-liste:not(.pl-chcol){ column-gap:36px; column-rule:.6px solid #C3CEDB; padding-left:0; } .pn-ex .pl-liste:not(.pl-chcol) > li{ margin-left:20px; break-inside:avoid; } .pn-ex .pl-liste li:has(.mfrac, .pn-frac, .fr-h){ margin-block:11px; } /* lignes à fraction : plus d'air (14/11/2026) */
     .pn-ex.pn-plein .pl-liste:not(.pl-chcol):not(.pl-chbas){ columns:2; column-gap:36px; } .pn-ex.pn-plein .pl-liste li{ break-inside:avoid; } .pn-ex.pn-plein .pl-col1 .pl-liste{ columns:1; }
     @media (max-width:640px){ .pn-ex.pn-plein .pl-liste:not(.pl-chcol):not(.pl-chbas){ columns:1; } } .pn-ex .pl-liste.pl-chcol{ row-gap:10px; }
     .pn-ex .pl-unites{ display:inline-flex; gap:5px; flex-wrap:wrap; align-items:center; vertical-align:middle; }

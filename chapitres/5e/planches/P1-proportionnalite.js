@@ -10,10 +10,10 @@ const murPeinture = DS.fig(184, 108, DS.sol(4, 180, 92) + DS.mur(8, 92, 120, 72)
 const robinetCuve = DS.fig(150, 130, `<path d="M8,14 h40 v10 h-8 v8 h-10 v-8 h-22 Z" fill="#B9C2CC" stroke="#1F3A5C" stroke-width="1.2"/><rect x="28" y="4" width="10" height="10" fill="#E35D3A" stroke="#1F3A5C" stroke-width="1"/>`
   + DS.ln([35, 32], [35, 92], '#2EA8C9', 3) + DS.pave(16, 120, 80, 64, 30, 18, 30) + DS.tx([118, 128], 'cuve', { fs: 9 }), 120);
 const B = n => plPointilles(n || 3), R = v => plRep(String(v));
-const ch = (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) + '</div>' });
-const chx = it => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t, , m]) => `${t} <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) + '</div>' }); // choix propres à chaque question
+const ch = (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`), it.cols) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`), it.cols) + '</div>' });
+const chx = it => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t, , m]) => `${t} <b>${m}</b>`), it.cols) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`), it.cols) + '</div>' }); // choix propres à chaque question
 const d = v => String(+(+v).toFixed(3)).replace('.', ',');
-const rmp = (l, n) => ({ eleve: plListe(l.map(([t]) => t.replace('@', B(n || 3)))), corr: plListe(l.map(([t, r]) => t.replace('@', R(typeof r === 'number' ? d(r) : r)))) });
+const rmp = (l, n) => ({ eleve: plListe(l.map(([t]) => t.replace('@', B(n || 3))), l.cols), corr: plListe(l.map(([t, r]) => t.replace('@', R(typeof r === 'number' ? d(r) : r))), l.cols) });
 // Tableau à deux lignes ; null = case à compléter (réponse dans sol).
 const tab = (t1, t2, l1, l2, f) => `<table class="pl-tab"><tr><th>${t1}</th>${l1.map(v => `<td>${v == null ? f(0) : d(v)}</td>`).join('')}</tr><tr><th>${t2}</th>${l2.map(v => `<td>${v == null ? f(1) : d(v)}</td>`).join('')}</tr></table>`;
 function tabExo(t1, t2, l1, l2, k){ // k : coefficient de la 1re ligne vers la 2de ; les null sont complétés
@@ -126,7 +126,7 @@ PLANCHES['5e|Proportionnalité'] = [
   { titre: 'Automatismes', duree: '20 min',
     attendus: ['Reconnaître une situation de proportionnalité', 'Calculer une quatrième proportionnelle mentalement', 'Utiliser une échelle, une vitesse'],
     exos: [
-      { etoiles: 1, col: 1, consigne: '3 stylos coûtent 4,50 €. Complète.', ...P3.rmp([['1 stylo : @ €', '1,50'], ['6 stylos : @ €', 9], ['10 stylos : @ €', 15]]) },
+      { etoiles: 1, col: 1, consigne: '3 stylos coûtent 4,50 €. Complète.', ...P3.rmp(plDeux([['1 stylo : @ €', '1,50'], ['6 stylos : @ €', 9], ['10 stylos : @ €', 15], ['2 stylos : @ €', 3], ['5 stylos : @ €', '7,50'], ['12 stylos : @ €', 18]])) },
       { etoiles: 1, col: 1, consigne: 'Est-ce une situation de proportionnalité ? Entoure.', ...P3.ch([['Le prix des pommes et leur masse', 'oui'], ['L\'âge et la taille d\'une personne', 'non'], ['Le périmètre d\'un carré et son côté', 'oui'], ['L\'aire d\'un carré et son côté', 'non']], 'oui · non') },
       { etoiles: 2, col: 1, consigne: 'Tableau de proportionnalité : 2 correspond à 6. Complète.', ...P3.rmp([['5 correspond à @', 15], ['@ correspond à 24', 8], ['Coefficient de proportionnalité : @', 3]]) },
       { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['60 km en 1 h : en 30 min, @ km', 30], ['90 km/h pendant 2 h : @ km', 180], [`Échelle ${cm1Frac(1, '1\\,000')} : 3 cm représentent @ m`, 30]]) },

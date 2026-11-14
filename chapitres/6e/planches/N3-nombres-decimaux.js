@@ -13,7 +13,7 @@
 const B = n => plPointilles(n || 4), R = v => plRep(String(v)), F = cm1Frac, Fr = plFrac(), C = plCase();
 const lt = '&lt;', gt = '&gt;';
 const ligne = (...h) => `<span style="display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap;">${h.join(' ')}</span>`;
-const ch = it => ({ eleve: plListe(it.map(([t, , m]) => `${t} <b>${m}</b>`)), corr: plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) });
+const ch = it => ({ eleve: plListe(it.map(([t, , m]) => `${t} <b>${m}</b>`), it.cols), corr: plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`), it.cols) });
 const suite = (n, l, sg) => '<div style="text-align:center;line-height:2.4;">' + (Array.isArray(n) ? n.map(R) : Array.from({ length: n }, () => B(l))).join(` ${sg} `) + '</div>';
 const tab = (ent, lignes, g) => `<table class="pl-tab"${g ? ' style="margin:4px 0;"' : ''}><tr>${ent.map(e => `<th>${e}</th>`).join('')}</tr>${lignes.map(l => `<tr>${l.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</table>`;
 const dec = v => String(+v.toFixed(4)).replace('.', ',');

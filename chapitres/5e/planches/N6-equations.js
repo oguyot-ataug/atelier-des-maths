@@ -9,12 +9,12 @@ const balanceSac = DS.fig(150, 112, `<rect x="20" y="78" width="110" height="26"
   + `<rect x="14" y="72" width="122" height="6" rx="2" fill="#B9C2CC" stroke="#1F3A5C" stroke-width="1"/><path d="M30,72 L36,30 L76,30 L82,72 Z" fill="#7A4FC0" stroke="#1F3A5C" stroke-width="1.3"/><path d="M44,30 q12,-18 24,0" fill="none" stroke="#1F3A5C" stroke-width="2"/>`
   + `<rect x="90" y="52" width="40" height="20" fill="#E35D3A" stroke="#1F3A5C" stroke-width="1.2"/><rect x="90" y="66" width="40" height="3" fill="#fff"/>` + DS.tx([56, 56], 'sac', { fs: 10, c: '#fff' }) + DS.tx([110, 47], 'livre', { fs: 9 }), 130);
 const B = n => plPointilles(n || 3), R = v => plRep(String(v));
-const ch = (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) + '</div>' });
-const chx = it => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t, , m]) => `${t} <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) + '</div>' }); // choix propres à chaque question
+const ch = (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`), it.cols) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`), it.cols) + '</div>' });
+const chx = it => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t, , m]) => `${t} <b>${m}</b>`), it.cols) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`), it.cols) + '</div>' }); // choix propres à chaque question
 const rel = v => String(+(+v).toFixed(3)).replace('-', '−').replace('.', ',');
 // Résolutions : [équation, solution, étape].
-const res = l => ({ eleve: plListe(l.map(([e]) => `${e} → x = ${B(3)}`)), corr: plListe(l.map(([e, s, et]) => `${e} → ${et ? et + ' → ' : ''}x = ${R(rel(s))}`)) });
-const rmp = (l, n) => ({ eleve: plListe(l.map(([t]) => t.replace('@', B(n || 3)))), corr: plListe(l.map(([t, r]) => t.replace('@', R(rel(r))))) });
+const res = l => ({ eleve: plListe(l.map(([e]) => `${e} → x = ${B(3)}`), l.cols), corr: plListe(l.map(([e, s, et]) => `${e} → ${et ? et + ' → ' : ''}x = ${R(rel(s))}`), l.cols) });
+const rmp = (l, n) => ({ eleve: plListe(l.map(([t]) => t.replace('@', B(n || 3))), l.cols), corr: plListe(l.map(([t, r]) => t.replace('@', R(rel(r)))), l.cols) });
 // Balance : objets x à gauche + masses, masses à droite (dessin simple).
 const balance = (g, d) => `<svg class="pl-libre" viewBox="0 0 280 100" style="width:240px;max-width:100%;display:block;margin:0 auto;"><polygon points="128,96 152,96 140,40" fill="#8E9AA8"/><line x1="30" y1="40" x2="250" y2="40" stroke="#4E5665" stroke-width="4" stroke-linecap="round"/><path d="M4 70 L92 70 L84 80 L12 80 Z" fill="#C8D1DC" stroke="#4E5665"/><path d="M188 70 L276 70 L268 80 L196 80 Z" fill="#C8D1DC" stroke="#4E5665"/><line x1="30" y1="40" x2="10" y2="70" stroke="#4E5665"/><line x1="30" y1="40" x2="86" y2="70" stroke="#4E5665"/><line x1="250" y1="40" x2="194" y2="70" stroke="#4E5665"/><line x1="250" y1="40" x2="270" y2="70" stroke="#4E5665"/>${g.map((t, i) => `<rect x="${12 + i * 26}" y="48" width="22" height="22" rx="4" fill="${t === 'x' ? '#7A4FC0' : '#B8962E'}"/>` + cmT(23 + i * 26, 63, t, { fs: 11, c: '#fff' })).join('')}${d.map((t, i) => `<rect x="${196 + i * 26}" y="48" width="22" height="22" rx="4" fill="#B8962E"/>` + cmT(207 + i * 26, 63, t, { fs: 11, c: '#fff' })).join('')}</svg>`;
 PLANCHES['5e|Équations'] = [
@@ -73,7 +73,7 @@ PLANCHES['5e|Équations'] = [
     exos: [
       { etoiles: 1, col: 1, consigne: 'Écris l\'équation, puis résous-la (x désigne le nombre cherché).',
         ...(() => { const l = [['Un nombre augmenté de 14 donne 50.', 'x+14=50', 36], ['Le quadruple d\'un nombre est 52.', '4x=52', 13], ['Un nombre diminué de 6 donne −1.', 'x−6=−1', 5]];
-          return { eleve: plListe(l.map(([t]) => `${t} Équation : ${B(5)} ; x = ${B(2)}`)), corr: plListe(l.map(([t, e, s]) => `${t} Équation : ${R(e)} ; x = ${R(s)}`)) }; })() },
+          return { eleve: plListe(l.map(([t]) => `${t} Équation : ${B(5)} ; x = ${B(2)}`), l.cols), corr: plListe(l.map(([t, e, s]) => `${t} Équation : ${R(e)} ; x = ${R(s)}`), l.cols) }; })() },
       { etoiles: 2, col: 1, consigne: 'Périmètres : trouve x.',
         ...rmp([['Un carré de côté x a un périmètre de 34 cm : x = @ cm', 8.5], ['Un rectangle de longueur x et de largeur 4 a un périmètre de 30 : x = @', 11], ['Un triangle équilatéral de côté x a un périmètre de 27 : x = @', 9]], 3) },
       { etoiles: 2, col: 1, consigne: 'Âges.',

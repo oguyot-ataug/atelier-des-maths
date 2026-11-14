@@ -7,7 +7,7 @@ PLANCHES['ce1|Comparer, ranger, encadrer'] = [
   { titre: 'Comparer', duree: '20 min',
     attendus: ['Comparer deux nombres jusqu\'à 1 000 avec < , > ou ='],
     exos: [
-      { etoiles: 1, col: 1, consigne: 'Écris <, > ou =.', eleve: plListe(L.map(([a, b]) => `${a} ${plCase()} ${b}`)), corr: plListe(L.map(([a, b]) => `${a} ${R(cmp(a, b))} ${b}`)) },
+      { etoiles: 1, col: 1, consigne: 'Écris <, > ou =.', eleve: plListe(L.map(([a, b]) => `${a} ${plCase()} ${b}`), L.cols), corr: plListe(L.map(([a, b]) => `${a} ${R(cmp(a, b))} ${b}`), L.cols) },
       { etoiles: 2, col: 1, consigne: 'Entoure le plus grand nombre.', ...P3.chx([['', '610', '601 · 610 · 106'], ['', '890', '809 · 890 · 889']]) },
       { etoiles: 2, col: 1, consigne: 'Écris <, > ou =.', eleve: plListe([[234, 243], [870, 807], [505, 550], [99, 100]].map(([a, b]) => `${a} ${plCase()} ${b}`)), corr: plListe([[234, 243], [870, 807], [505, 550], [99, 100]].map(([a, b]) => `${a} ${R(cmp(a, b))} ${b}`)) },
       { etoiles: 2, col: 1, consigne: 'Entoure le plus petit nombre.', ...P3.chx([['', '108', '180 · 108 · 801'], ['', '499', '500 · 499 · 510']]) },

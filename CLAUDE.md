@@ -383,6 +383,14 @@ pour le livre avec le cours) réduit alors TOUTES les pages (marges de 2 cm ; PD
 intérieur `.pl-zoom`, la feuille garde sa largeur (overflow hidden) ; plRemplirPages resserre aussi une feuille trop LARGE (mêmes limites),
 fait passer à la ligne tableaux vrai / faux (`.pl-chxtab`) et propositions (`.pl-chr`, `.pl-props`) qui dépassent ; à l'impression
 `.pl-planche{ overflow-x:clip }`. Contrôle : scratchpad relec/larges.js (Manuel d'un niveau, fenêtre de 718 px : document 718/718).
+Exemples DOUBLÉS en deux colonnes (demandé le 14/11/2026 sur 5e-N4-P1 : « Une planche comme celle-là n'est pas acceptable. Dans chaque exercice, on
+peut doubler en colonne le nombre d'exemples », « Prends ce parti directement », « S'il y a de la place pour d'autres exemples en colonne, je le fais
+systématiquement ») : une liste d'exemples à une colonne qui laisse la moitié droite vide reçoit autant d'exemples nouveaux, sur deux colonnes :
+`plDeux([...])` autour du tableau d'exemples (lu par tous les outils des planches : `plListe(l.map(…), l.cols)`, P3.rmp, P3.bsc, P3.egal ;
+`plListe(items, 2)` à la main) ; trait fin entre les colonnes (column-rule ; grilles plGrille à 2 colonnes : `.pl-g2`), comme iParcours. Exceptions :
+liste liée à une seule figure, ligne trop longue pour une demi-colonne (≈ 138 px à l'impression ; les pointillés se raccourcissent jusqu'à 1,8 em,
+plRemplirPages). Contrôle : scratchpad relec/colonnes.js (listes qui laissent la moitié vide ; COUPE=1 : lignes coupées) et pages.js (aucune feuille
+de plus d'une page). 5e faite le 14/11/2026 (63 exercices).
 Une feuille qui dépasse la page A4 est resserrée à l'impression (`plRemplirPages`, planches.js) : jusqu'à 15 % pour l'élève, 30 %
 pour le corrigé, en gardant toute la largeur ; jamais sur une feuille d'élève où l'on mesure une longueur à la règle. Au-delà,
 alléger le contenu (demandé le 31/10/2026 : « Occupe-toi des feuilles qui débordent »).

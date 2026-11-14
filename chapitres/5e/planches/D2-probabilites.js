@@ -8,13 +8,13 @@ const B = n => plPointilles(n || 3), R = v => plRep(String(v)), F = cm1Frac, Fr 
 const T = (a, b) => cm1Tex(`\\dfrac{${a}}{${b}}`);
 const d = v => String(+(+v).toFixed(3)).replace('.', ',');
 const ligne = (...h) => `<span style="display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap;">${h.join(' ')}</span>`;
-const ch = (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) + '</div>' });
-const chx = it => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t, , m]) => `${t} <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) + '</div>' });
+const ch = (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`), it.cols) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`), it.cols) + '</div>' });
+const chx = it => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t, , m]) => `${t} <b>${m}</b>`), it.cols) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`), it.cols) + '</div>' });
 const S = (w, h, inner, px) => `<svg class="pl-libre" viewBox="0 0 ${w} ${h}" style="width:${px || w}px;max-width:100%;display:inline-block;vertical-align:middle;">${inner}</svg>`;
 const urne = l => `<div style="max-width:120px;margin:0 auto;">${urnSvg(l.map(([count, color]) => ({ count, color })), 'urne').replace(/<svg width="[\d.]+" height="[\d.]+"/, '<svg')}</div>`;
 const roue = cs => { const n = cs.length; let s = ''; cs.forEach((c, i) => { const a = i / n * 2 * Math.PI - Math.PI / 2, b = (i + 1) / n * 2 * Math.PI - Math.PI / 2; s += `<path d="M60,60 L${60 + 50 * Math.cos(a)},${60 + 50 * Math.sin(a)} A50,50 0 0 1 ${60 + 50 * Math.cos(b)},${60 + 50 * Math.sin(b)} Z" fill="${c}" stroke="#fff" stroke-width="2"/>`; }); return S(120, 125, s + '<polygon points="60,4 54,-6 66,-6" fill="#1C2B39" transform="translate(0,8)"/>', 110); };
 // Liste de probabilités à écrire sous forme de fraction (sans simplifier) : [texte, num, den].
-const probas = l => ({ eleve: plListe(l.map(([t]) => ligne(t, Fr))), corr: plListe(l.map(([t, a, b]) => ligne(t, R(F(a, b))))) });
+const probas = l => ({ eleve: plListe(l.map(([t]) => ligne(t, Fr)), l.cols), corr: plListe(l.map(([t, a, b]) => ligne(t, R(F(a, b)))), l.cols) });
 const ROU = '#D93025', BLE = '#0D5BA3', VER = '#1F7A4D', JAU = '#F2C94C';
 PLANCHES['5e|Probabilités'] = [
   { titre: 'Vocabulaire et échelle des probabilités', duree: '35 min',
@@ -58,13 +58,13 @@ PLANCHES['5e|Probabilités'] = [
         eleve: plListe([ligne('P(A) =', F(1, 4), '; P(non A) =', Fr), ligne('P(B) =', F(5, 8), '; P(non B) =', Fr), 'P(C) = 0,3 ; P(non C) = ' + B(2), 'P(D) = 85 % ; P(non D) = ' + B(1) + ' %']),
         corr: plListe([ligne('P(A) =', F(1, 4), '; P(non A) =', R(F(3, 4))), ligne('P(B) =', F(5, 8), '; P(non B) =', R(F(3, 8))), 'P(C) = 0,3 ; P(non C) = ' + R('0,7'), 'P(D) = 85 % ; P(non D) = ' + R(15) + ' %']) },
       { etoiles: 2, col: 1, consigne: 'Une roue a trois couleurs : P(rouge) = 0,5 ; P(bleu) = 0,3. Complète.',
-        ...(() => { const l = [['P(vert) = @', '0,2'], ['P(non rouge) = @', '0,5'], ['P(rouge ou bleu) = @', '0,8']]; return { eleve: plListe(l.map(([t]) => t.replace('@', B(2)))), corr: plListe(l.map(([t, r]) => t.replace('@', R(r)))) }; })() },
+        ...(() => { const l = [['P(vert) = @', '0,2'], ['P(non rouge) = @', '0,5'], ['P(rouge ou bleu) = @', '0,8']]; return { eleve: plListe(l.map(([t]) => t.replace('@', B(2))), l.cols), corr: plListe(l.map(([t, r]) => t.replace('@', R(r))), l.cols) }; })() },
       { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.',
         ...ch([['P(A) + P(non A) = 1 :', 'vrai'], ['Si P(A) = 0,2, alors A est plus probable que non A :', 'faux'], ['Un événement et son contraire peuvent se réaliser en même temps :', 'faux']], 'vrai · faux') },
       { etoiles: 2, col: 1, consigne: 'Sur une loterie, 3 billets sur 200 sont gagnants. Complète (sans simplifier).',
         eleve: plListe([ligne('P(gagner) =', Fr), ligne('P(perdre) =', Fr)]), corr: plListe([ligne('P(gagner) =', R(F(3, 200))), ligne('P(perdre) =', R(F(197, 200)))]) },
       { etoiles: 2, col: 1, consigne: 'Écris chaque probabilité en nombre décimal, puis en pourcentage.',
-        ...(() => { const l = [[1, 4, '0,25', 25], [3, 5, '0,6', 60], [7, 20, '0,35', 35]]; return { eleve: plListe(l.map(([a, b]) => `${F(a, b)} = ${B(2)} = ${B(1)} %`)), corr: plListe(l.map(([a, b, x, p]) => `${F(a, b)} = ${R(x)} = ${R(p)} %`)) }; })() },
+        ...(() => { const l = [[1, 4, '0,25', 25], [3, 5, '0,6', 60], [7, 20, '0,35', 35]]; return { eleve: plListe(l.map(([a, b]) => `${F(a, b)} = ${B(2)} = ${B(1)} %`), l.cols), corr: plListe(l.map(([a, b, x, p]) => `${F(a, b)} = ${R(x)} = ${R(p)} %`), l.cols) }; })() },
       { etoiles: 3, cahier: true, consigne: 'La météo annonce 70 % de risque de pluie demain. Quelle est la probabilité qu\'il ne pleuve pas ? Faut-il prendre un parapluie ? Explique.',
         corr: cm1Redac('Pas de pluie', '100 % − 70 % = 30 %', 'Il y a 30 % de chances qu\'il ne pleuve pas : la pluie est plus probable, mieux vaut prendre un parapluie.') },
     ] },
@@ -72,7 +72,7 @@ PLANCHES['5e|Probabilités'] = [
     attendus: ['Calculer la fréquence d\'un résultat dans une série d\'essais', 'Comparer fréquence observée et probabilité', 'Choisir le jeu le plus favorable en comparant des probabilités'],
     exos: [
       { etoiles: 1, col: 1, consigne: 'On a lancé un dé 300 fois ; le 6 est sorti 54 fois. Complète.',
-        ...(() => { const l = [['Fréquence du 6 en % : @', 18], ['Probabilité du 6 (en % arrondi à l\'unité) : @', 17]]; return { eleve: plListe(l.map(([t]) => t.replace('@', B(1)))), corr: plListe(l.map(([t, r]) => t.replace('@', R(r)))) }; })() },
+        ...(() => { const l = [['Fréquence du 6 en % : @', 18], ['Probabilité du 6 (en % arrondi à l\'unité) : @', 17]]; return { eleve: plListe(l.map(([t]) => t.replace('@', B(1))), l.cols), corr: plListe(l.map(([t, r]) => t.replace('@', R(r))), l.cols) }; })() },
       { etoiles: 2, col: 1, consigne: 'Dans quel jeu a-t-on le plus de chances de gagner ? Entoure.',
         ...chx([[`Sac A : 2 gagnants sur 8 ; sac B : 3 gagnants sur 10 →`, 'sac B', 'sac A · sac B'], [`Roue A : ${T(1, 3)} ; roue B : 30 % →`, 'roue A', 'roue A · roue B'], ['Dé : obtenir 6 ; pièce : obtenir pile →', 'pièce', 'dé · pièce']]) },
       { etoiles: 2, col: 1, consigne: 'Une classe a tiré 400 fois une boule dans une urne (boules rouges et bleues) : 300 rouges. Entoure la composition la plus vraisemblable.',
@@ -80,7 +80,7 @@ PLANCHES['5e|Probabilités'] = [
       { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.',
         ...ch([['Avec 10 lancers, la fréquence est forcément égale à la probabilité :', 'faux'], ['Plus on fait d\'essais, plus la fréquence se rapproche de la probabilité :', 'vrai'], ['Une fréquence est un nombre entre 0 et 1 :', 'vrai']], 'vrai · faux') },
       { etoiles: 2, col: 1, consigne: 'Résultats de 50 lancers d\'une pièce : 28 « pile ». Complète.',
-        ...(() => { const l = [['Nombre de « face » : @', 22], ['Fréquence de « pile » : @ %', 56], ['Fréquence de « face » : @ %', 44]]; return { eleve: plListe(l.map(([t]) => t.replace('@', B(1)))), corr: plListe(l.map(([t, r]) => t.replace('@', R(r)))) }; })() },
+        ...(() => { const l = [['Nombre de « face » : @', 22], ['Fréquence de « pile » : @ %', 56], ['Fréquence de « face » : @ %', 44]]; return { eleve: plListe(l.map(([t]) => t.replace('@', B(1))), l.cols), corr: plListe(l.map(([t, r]) => t.replace('@', R(r))), l.cols) }; })() },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Jeu A : on gagne si on obtient 5 ou 6 avec un dé. Jeu B : on gagne si on tire une boule rouge dans une urne de 4 rouges et 6 bleues. Quel jeu choisir ?',
         corr: cm1Redac('Probabilité de gagner à chaque jeu', { suite: [`Jeu A : ${F(2, 6)} = ${F(1, 3)} ≈ 0,33`, `Jeu B : ${F(4, 10)} = 0,4`] }, 'Il vaut mieux choisir le jeu B.') },
       { etoiles: 3, cahier: true, consigne: 'Simule 20 lancers d\'une pièce (ou utilise une calculatrice). Calcule la fréquence de « face ». Compare avec la probabilité, puis avec les résultats de la classe.',
@@ -91,7 +91,7 @@ PLANCHES['5e|Probabilités'] = [
     exos: [
       { etoiles: 1, col: 1, consigne: 'On lance un dé équilibré à 6 faces. Complète.', ...P3.rmp([['P(obtenir 6) = @', cm1Frac(1, 6)], ['P(obtenir un nombre pair) = @', cm1Frac(3, 6)], ['P(obtenir 7) = @', 0], ['P(obtenir moins de 7) = @', 1]]) },
       { etoiles: 1, col: 1, consigne: 'Avec un dé à 6 faces, entoure.', ...P3.chx([['Obtenir 7 :', 'impossible', 'certain · impossible · ni l\'un ni l\'autre'], ['Obtenir un nombre entre 1 et 6 :', 'certain', 'certain · impossible · ni l\'un ni l\'autre'], ['Obtenir 3 :', 'ni l\'un ni l\'autre', 'certain · impossible · ni l\'un ni l\'autre']]) },
-      { etoiles: 2, col: 1, consigne: 'Une urne contient 3 boules rouges, 5 bleues et 2 vertes. On tire une boule. Complète.', ...P3.rmp([['P(rouge) = @', cm1Frac(3, 10)], ['P(bleue) = @', cm1Frac(5, 10)], ['P(verte) = @', cm1Frac(2, 10)]]) },
+      { etoiles: 2, col: 1, consigne: 'Une urne contient 3 boules rouges, 5 bleues et 2 vertes. On tire une boule. Complète.', ...P3.rmp(plDeux([['P(rouge) = @', cm1Frac(3, 10)], ['P(bleue) = @', cm1Frac(5, 10)], ['P(verte) = @', cm1Frac(2, 10)], ['P(jaune) = @', 0]])) },
       { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.', ...P3.ch([['Une probabilité peut valoir 1,5.', 'faux'], ['Une probabilité est comprise entre 0 et 1.', 'vrai'], ['Avec une pièce équilibrée, P(pile) = 0,5.', 'vrai']], 'vrai · faux') },
       { etoiles: 2, col: 1, consigne: 'Roue de 8 secteurs égaux, dont 3 rouges. Complète.', ...P3.rmp([['P(rouge) = @', cm1Frac(3, 8)], ['P(pas rouge) = @', cm1Frac(5, 8)]]) },
       { etoiles: 2, col: 1, consigne: 'Une pièce est lancée 100 fois : 47 fois pile. Complète.', ...P3.rmp([['Fréquence de pile : @', '0,47'], ['Probabilité de pile : @', '0,5']]) },

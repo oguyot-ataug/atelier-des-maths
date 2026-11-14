@@ -10,10 +10,10 @@ const bougie = (() => { let g = `<rect x="22" y="30" width="22" height="100" fil
   for(let c = 0; c <= 20; c++) g += DS.ln([56, 130 - c * 5], [c % 5 ? 61 : 65, 130 - c * 5], '#1F3A5C', c % 5 ? .6 : 1.1) + (c % 5 ? '' : DS.tx([76, 133 - c * 5], String(c), { a: 'start', fs: 8 }));
   return DS.fig(100, 140, g + DS.tx([86, 22], 'cm', { fs: 8 }), 82); })();
 const B = n => plPointilles(n || 3), R = v => plRep(String(v));
-const ch = (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) + '</div>' });
-const chx = it => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t, , m]) => `${t} <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) + '</div>' }); // choix propres à chaque question
+const ch = (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`), it.cols) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`), it.cols) + '</div>' });
+const chx = it => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t, , m]) => `${t} <b>${m}</b>`), it.cols) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`), it.cols) + '</div>' }); // choix propres à chaque question
 const d = v => String(+(+v).toFixed(3)).replace('-', '−').replace('.', ',');
-const rmp = (l, n) => ({ eleve: plListe(l.map(([t]) => t.replace('@', B(n || 3)))), corr: plListe(l.map(([t, r]) => t.replace('@', R(typeof r === 'number' ? d(r) : r)))) });
+const rmp = (l, n) => ({ eleve: plListe(l.map(([t]) => t.replace('@', B(n || 3))), l.cols), corr: plListe(l.map(([t, r]) => t.replace('@', R(typeof r === 'number' ? d(r) : r))), l.cols) });
 // Repère quadrillé : x de 0 à xm (pas px par unité ux), y de y0 à ym (uy par carreau) ; pts reliés si ligne.
 function repere(o){ const { xm, y0 = 0, ym, ux = 1, uy = 1, k = 24, lx = '', ly = '' } = o, nx = xm / ux, ny = (ym - y0) / uy, W = 44 + nx * k, H = 30 + ny * k, X = x => 34 + x / ux * k, Y = y => 10 + (ym - y) / uy * k;
   let s = ''; for(let i = 0; i <= nx; i++) s += `<line x1="${X(i * ux)}" y1="${Y(ym)}" x2="${X(i * ux)}" y2="${Y(y0)}" stroke="#C9DCEB"/>`; for(let j = 0; j <= ny; j++) s += `<line x1="${X(0)}" y1="${Y(y0 + j * uy)}" x2="${X(xm)}" y2="${Y(y0 + j * uy)}" stroke="#C9DCEB"/>`;
@@ -102,9 +102,9 @@ PLANCHES['5e|Fonctions'] = [
     exos: [
       { etoiles: 1, col: 1, consigne: 'Calcule avec la formule.', ...P3.rmp([['P = 4c, avec c = 3 : P = @', 12], ['A = c², avec c = 5 : A = @', 25], ['y = 2x + 1, avec x = 4 : y = @', 9]]) },
       { etoiles: 1, col: 1, consigne: 'Complète.', ...P3.rmp([['Le point (3 ; 5) a pour abscisse @', 3], ['Le point (3 ; 5) a pour ordonnée @', 5], ['Le point d\'abscisse 0 et d\'ordonnée 2 : (@ ; @)', 0, 2]]) },
-      { etoiles: 2, col: 1, consigne: 'Programme : choisir x ; multiplier par 3 ; soustraire 1. Complète.', ...P3.rmp([['x = 2 : @', 5], ['x = 0 : @', '−1'], ['x = 10 : @', 29]]) },
+      { etoiles: 2, col: 1, consigne: 'Programme : choisir x ; multiplier par 3 ; soustraire 1. Complète.', ...P3.rmp(plDeux([['x = 2 : @', 5], ['x = 0 : @', '−1'], ['x = 10 : @', 29], ['x = 5 : @', 14], ['x = 1 : @', 2], ['x = −1 : @', '−4']])) },
       { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.', ...P3.ch([['Une situation de proportionnalité est représentée par des points alignés avec l\'origine.', 'vrai'], ['Sur un graphique, on lit l\'abscisse sur l\'axe vertical.', 'faux']], 'vrai · faux') },
-      { etoiles: 2, col: 1, consigne: 'Formule y = 3x. Complète.', ...P3.rmp([['x = 1 : y = @', 3], ['x = 4 : y = @', 12], ['x = −2 : y = @', '−6']]) },
+      { etoiles: 2, col: 1, consigne: 'Formule y = 3x. Complète.', ...P3.rmp(plDeux([['x = 1 : y = @', 3], ['x = 4 : y = @', 12], ['x = −2 : y = @', '−6'], ['x = 10 : y = @', 30], ['x = 0,5 : y = @', '1,5'], ['x = 0 : y = @', 0]])) },
       { etoiles: 2, col: 1, consigne: 'Formule y = 2x + 1. Le point est-il sur la représentation ? Entoure.', ...P3.ch([['(1 ; 3)', 'oui'], ['(2 ; 4)', 'non'], ['(0 ; 1)', 'oui']], 'oui · non') },
       { etoiles: 2, consigne: 'Un taxi coûte P = 3 + 2d euros pour d kilomètres. Complète.', ...P3.rmp([['d = 5 : P = @ €', 13], ['d = 10 : P = @ €', 23], ['P = 11 € : d = @ km', 4], ['Le prix est-il proportionnel à la distance ? @', 'non']], 4) },
     ] },

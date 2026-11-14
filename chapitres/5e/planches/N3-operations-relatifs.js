@@ -18,25 +18,25 @@ const sousMarin = (() => { const Y = m => 18 + m * .36; let g = `<rect x="0" y="
   const sm = `<g transform="translate(110,${Y(250)})"><ellipse cx="0" cy="0" rx="30" ry="9" fill="#F6C343" stroke="#1F3A5C" stroke-width="1.3"/><rect x="-6" y="-17" width="14" height="9" rx="2" fill="#F6C343" stroke="#1F3A5C" stroke-width="1.2"/><line x1="2" y1="-17" x2="2" y2="-24" stroke="#1F3A5C" stroke-width="1.4"/><circle cx="-14" cy="0" r="2.5" fill="#9CC8E8"/><circle cx="-2" cy="0" r="2.5" fill="#9CC8E8"/><circle cx="10" cy="0" r="2.5" fill="#9CC8E8"/></g>`;
   return DS.fig(170, 136, g + DS.ln([40, Y(0)], [40, Y(300)], '#1F3A5C', 1.2) + sm + DS.tx([40, Y(300) + 12], 'profondeur (m)', { a: 'start', fs: 9 }).replace(/y="[\d.]+"/, 'y="12"').replace(/x="40"/, 'x="44"'), 150); })();
 const B = n => plPointilles(n || 3), R = v => plRep(String(v));
-const ch = (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) + '</div>' });
+const ch = (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`), it.cols) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`), it.cols) + '</div>' });
 const rel = v => String(+(+v).toFixed(3)).replace('-', '−').replace('.', ',');
 const P = v => v < 0 ? `(${rel(v)})` : `(+${rel(v)})`; // écriture entre parenthèses : (−3), (+5)
 // Liste de calculs [expr, résultat, étapes].
-const calc = l => ({ eleve: plListe(l.map(([e]) => `${e} = ${B(3)}`)), corr: plListe(l.map(([e, r, et]) => `${e} = ${et ? et + ' = ' : ''}${R(rel(r))}`)) });
-const add = l => calc(l.map(([a, b]) => [`${P(a)} + ${P(b)}`, a + b]));
-const sub = l => calc(l.map(([a, b]) => [`${P(a)} − ${P(b)}`, a - b, `${P(a)} + ${P(-b)}`]));
-const rmp = (l, n) => ({ eleve: plListe(l.map(([t]) => t.replace('@', B(n || 3)))), corr: plListe(l.map(([t, r]) => t.replace('@', R(rel(r))))) });
+const calc = l => ({ eleve: plListe(l.map(([e]) => `${e} = ${B(3)}`), l.cols), corr: plListe(l.map(([e, r, et]) => `${e} = ${et ? et + ' = ' : ''}${R(rel(r))}`), l.cols) });
+const add = l => calc(Object.assign(l.map(([a, b]) => [`${P(a)} + ${P(b)}`, a + b]), { cols: l.cols }));
+const sub = l => calc(Object.assign(l.map(([a, b]) => [`${P(a)} − ${P(b)}`, a - b, `${P(a)} + ${P(-b)}`]), { cols: l.cols }));
+const rmp = (l, n) => ({ eleve: plListe(l.map(([t]) => t.replace('@', B(n || 3))), l.cols), corr: plListe(l.map(([t, r]) => t.replace('@', R(rel(r)))), l.cols) });
 PLANCHES['5e|Opérations sur les nombres relatifs'] = [
   { titre: 'Additionner deux nombres relatifs', duree: '35 min',
     attendus: ['Additionner deux nombres de même signe', 'Additionner deux nombres de signes contraires', 'Utiliser la somme de deux opposés'],
     exos: [
-      { etoiles: 1, col: 1, consigne: 'Même signe : on ajoute les distances à zéro et on garde le signe.', ...add([[3, 5], [-4, -6], [-12, -8], [-2.5, -1.5], [7, 13]]) },
-      { etoiles: 1, col: 1, consigne: 'Signes contraires : on soustrait les distances à zéro, signe de celui qui a la plus grande distance à zéro.', ...add([[-7, 3], [9, -4], [-5, 11], [6, -10], [-8, 8]]) },
+      { etoiles: 1, col: 1, consigne: 'Même signe : on ajoute les distances à zéro et on garde le signe.', ...add(plDeux([[3, 5], [-4, -6], [-12, -8], [-2.5, -1.5], [7, 13], [-9, -3], [6, 14], [-0.5, -4.5], [-20, -15], [11, 9]])) },
+      { etoiles: 1, col: 1, consigne: 'Signes contraires : on soustrait les distances à zéro, signe de celui qui a la plus grande distance à zéro.', ...add(plDeux([[-7, 3], [9, -4], [-5, 11], [6, -10], [-8, 8], [12, -5], [-15, 6], [3, -3.5], [-2, 9], [10, -18]])) },
       { etoiles: 2, col: 1, consigne: 'Calcule.', ...add([[-15, 27], [-3.2, 1.2], [-0.5, -4], [25, -40], [-1.7, 3]]) },
       { etoiles: 2, col: 1, consigne: 'Entoure le signe de la somme, sans calculer.',
         ...ch([['(−37) + (+12) :', 'négatif'], ['(+58) + (−9) :', 'positif'], ['(−4,5) + (−2) :', 'négatif'], ['(+19) + (−23) :', 'négatif'], ['(−7) + (+7) :', 'nul']], 'positif · négatif · nul') },
       { etoiles: 2, col: 1, consigne: 'Complète.',
-        ...rmp([['(−4) + @ = 3', 7], ['@ + (+6) = −2', -8], ['(+9) + @ = 0', -9], ['(−5) + @ = −12', -7]], 2) },
+        ...rmp(plDeux([['(−4) + @ = 3', 7], ['@ + (+6) = −2', -8], ['(+9) + @ = 0', -9], ['(−5) + @ = −12', -7], ['(+2) + @ = −5', -7], ['@ + (−3) = 4', 7], ['(−8) + @ = −1', 7], ['(+6) + @ = 6', 0]]), 2) },
       { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.',
         ...ch([['La somme de deux nombres négatifs est négative :', 'vrai'], ['La somme d\'un positif et d\'un négatif est toujours négative :', 'faux'], ['(−3) + (+3) = 0 :', 'vrai'], ['(−6) + (−2) = −4 :', 'faux']], 'vrai · faux') },
       { etoiles: 3, cahier: true, consigne: illu(thermometre, 'Le matin, il fait −6 °C. La température augmente de 9 °C dans la journée, puis baisse de 11 °C la nuit. Quelle est la température la nuit ? Écris les additions.'),
@@ -67,13 +67,13 @@ PLANCHES['5e|Opérations sur les nombres relatifs'] = [
   { titre: 'Soustraire un nombre relatif', duree: '40 min',
     attendus: ['Soustraire un nombre, c\'est ajouter son opposé', 'Transformer une soustraction en addition', 'Calculer une différence de relatifs'],
     exos: [
-      { etoiles: 1, col: 1, consigne: 'Transforme en addition, puis calcule.', ...sub([[5, 8], [-3, 4], [7, -2], [-6, -9]]) },
+      { etoiles: 1, col: 1, consigne: 'Transforme en addition, puis calcule.', ...sub(plDeux([[5, 8], [-3, 4], [7, -2], [-6, -9], [2, 10], [-5, 1], [4, -6], [-8, -3]])) },
       { etoiles: 2, col: 1, consigne: 'Calcule.', ...sub([[-10, 15], [0, -7], [-2.5, -2.5], [12, 20], [-1, 0.5]]) },
       { etoiles: 1, col: 1, consigne: 'Complète la phrase.',
         eleve: plListe(['Soustraire (+6), c\'est ajouter ' + B(3), 'Soustraire (−4), c\'est ajouter ' + B(3), 'Soustraire 0, c\'est ajouter ' + B(2)]),
         corr: plListe(['Soustraire (+6), c\'est ajouter ' + R('−6'), 'Soustraire (−4), c\'est ajouter ' + R('4'), 'Soustraire 0, c\'est ajouter ' + R('0')]) },
       { etoiles: 2, col: 1, consigne: 'Complète.',
-        ...rmp([['(+3) − @ = 8', -5], ['(−7) − @ = −10', 3], ['@ − (+4) = −1', 3], ['(−2) − @ = 0', -2]], 2) },
+        ...rmp(plDeux([['(+3) − @ = 8', -5], ['(−7) − @ = −10', 3], ['@ − (+4) = −1', 3], ['(−2) − @ = 0', -2], ['(+5) − @ = 1', 4], ['(−1) − @ = 6', -7], ['@ − (−2) = 3', 1], ['(+4) − @ = 9', -5]]), 2) },
       { etoiles: 2, col: 1, consigne: 'Complète par = ou ≠.',
         ...P3.egal([['(−5) − (−5)', '0', 1], ['(+2) − (+7)', '5', 0], ['(−1) − (+1)', '−2', 1], ['(+3) − (−4)', '(−4) − (+3)', 0]]) },
       { etoiles: 2, col: 1, consigne: 'Table de soustraction : la case = nombre de la ligne − nombre de la colonne.',
@@ -89,7 +89,7 @@ PLANCHES['5e|Opérations sur les nombres relatifs'] = [
     exos: [
       { etoiles: 1, col: 1, consigne: 'Écris plus simplement (sans parenthèses), puis calcule.',
         ...calc([['(+5) + (−3)', 2, '5 − 3'], ['(−4) − (+6)', -10, '−4 − 6'], ['(−2) − (−9)', 7, '−2 + 9'], ['(+1) + (−8) − (−3)', -4, '1 − 8 + 3']]) },
-      { etoiles: 2, col: 1, consigne: 'Calcule.', ...calc([['7 − 12', -5], ['−3 − 8', -11], ['−15 + 9', -6], ['−4 + 4 − 6', -6], ['2,5 − 7', -4.5]]) },
+      { etoiles: 2, col: 1, consigne: 'Calcule.', ...calc(plDeux([['7 − 12', -5], ['−3 − 8', -11], ['−15 + 9', -6], ['−4 + 4 − 6', -6], ['2,5 − 7', -4.5], ['3 − 9', -6], ['−6 − 6', -12], ['−11 + 20', 9], ['5 − 8 + 1', -2], ['−1,5 − 2', -3.5]])) },
       { etoiles: 2, col: 1, consigne: 'Regroupe les termes positifs et les termes négatifs. Écris une étape par ligne.',
         ...P3.etp([['A', '5 − 8 + 3 − 7', '5 + 3 − 8 − 7', '8 − 15', '−7'], ['B', '−6 + 10 − 2 + 4', '10 + 4 − 6 − 2', '14 − 8', '6'], ['C', '12 − 3 − 4 − 5 + 1', '12 + 1 − 3 − 4 − 5', '13 − 12', '1']], 1) },
       { etoiles: 2, col: 1, consigne: 'Calcule astucieusement (cherche des opposés ou des sommes rondes). Écris une étape par ligne.',
@@ -100,7 +100,7 @@ PLANCHES['5e|Opérations sur les nombres relatifs'] = [
         eleve: plListe(['(+7) − (−2) + (−5) = ' + B(8), '(−1) + (−4) − (+3) = ' + B(8), '(+6) − (+6) − (−6) = ' + B(8)]),
         corr: plListe(['(+7) − (−2) + (−5) = ' + R('7+2−5'), '(−1) + (−4) − (+3) = ' + R('−1−4−3'), '(+6) − (+6) − (−6) = ' + R('6−6+6')]) },
       { etoiles: 2, col: 1, consigne: 'Complète par = ou ≠.',
-        ...P3.egal([['−5 − 3', '−8', 1], ['−5 − (−3)', '−8', 0], ['8 − 10 + 2', '0', 1], ['−1 − 1 − 1', '−1', 0]]) },
+        ...P3.egal(plDeux([['−5 − 3', '−8', 1], ['−5 − (−3)', '−8', 0], ['8 − 10 + 2', '0', 1], ['−1 − 1 − 1', '−1', 0], ['4 − 7', '−3', 1], ['−2 + 6', '−4', 0], ['−9 − (−9)', '0', 1], ['3 − (−2)', '1', 0]])) },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Calcule A = 3 − 7 + 12 − 5 − 9 + 1 de deux façons : de gauche à droite, puis en regroupant les termes positifs et négatifs.',
         corr: cm1Redac('Calcul de gauche à droite', { suite: ['3 − 7 = −4', '−4 + 12 = 8', '8 − 5 = 3', '3 − 9 = −6', '−6 + 1 = −5'] }, '') + cm1Redac('Calcul en regroupant les termes', { suite: ['A = (3 + 12 + 1) − (7 + 5 + 9)', 'A = 16 − 21', 'A = −5'] }, 'Dans les deux cas, A = −5.') },
     ] },
@@ -128,9 +128,9 @@ PLANCHES['5e|Opérations sur les nombres relatifs'] = [
     attendus: ['Additionner et soustraire des relatifs mentalement', 'Calculer une somme algébrique', 'Compléter une égalité'],
     exos: [
       { etoiles: 1, col: 1, consigne: 'Calcule.', ...P3.rmp([['(−3) + (+8) = @', 5], ['(−6) + (−4) = @', '−10'], ['(+2,5) + (−7) = @', '−4,5'], ['(−9) + (+9) = @', 0]]) },
-      { etoiles: 1, col: 1, consigne: 'Calcule.', ...P3.rmp([['5 − 8 = @', '−3'], ['(−4) − (+3) = @', '−7'], ['(−2) − (−6) = @', 4], ['0 − (−5) = @', 5]]) },
-      { etoiles: 2, col: 1, consigne: 'Calcule.', ...P3.rmp([['−3 + 7 − 2 = @', 2], ['4 − 9 + 1 = @', '−4'], ['−5 − 5 + 12 = @', 2], ['−1 − 2 − 3 = @', '−6']]) },
-      { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['−3 + @ = 4', 7], ['@ + 5 = −1', '−6'], ['2 − @ = 6', '−4'], ['@ − 3 = −10', '−7']]) },
+      { etoiles: 1, col: 1, consigne: 'Calcule.', ...P3.rmp(plDeux([['5 − 8 = @', '−3'], ['(−4) − (+3) = @', '−7'], ['(−2) − (−6) = @', 4], ['0 − (−5) = @', 5], ['2 − 9 = @', '−7'], ['(+6) − (−1) = @', 7], ['(−3) − (−3) = @', 0], ['(−7) − (+2) = @', '−9']])) },
+      { etoiles: 2, col: 1, consigne: 'Calcule.', ...P3.rmp(plDeux([['−3 + 7 − 2 = @', 2], ['4 − 9 + 1 = @', '−4'], ['−5 − 5 + 12 = @', 2], ['−1 − 2 − 3 = @', '−6'], ['6 − 10 + 3 = @', '−1'], ['−8 + 2 + 5 = @', '−1'], ['10 − 4 − 9 = @', '−3'], ['−2 + 7 + 1 = @', 6]])) },
+      { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp(plDeux([['−3 + @ = 4', 7], ['@ + 5 = −1', '−6'], ['2 − @ = 6', '−4'], ['@ − 3 = −10', '−7'], ['6 + @ = 1', '−5'], ['@ + 4 = 0', '−4'], ['−5 − @ = 2', '−7'], ['@ − 8 = −2', 6]])) },
       { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.', ...P3.ch([['La somme de deux nombres négatifs est négative.', 'vrai'], ['La différence de deux nombres positifs est positive.', 'faux'], ['Soustraire un nombre, c\'est ajouter son opposé.', 'vrai']], 'vrai · faux') },
       { etoiles: 2, col: 1, consigne: 'Calcule l\'écart.', ...P3.rmp([['entre −12 et 5 : @', 17], ['entre −30 m et 120 m : @ m', 150], ['entre −8 °C et −3 °C : @ °C', 5]]) },
     ] },

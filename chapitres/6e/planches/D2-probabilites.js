@@ -5,7 +5,7 @@
 const B = n => plPointilles(n || 3), R = v => plRep(String(v)), F = cm1Frac, Fr = plFrac();
 const T = (a, b) => cm1Tex(`\\dfrac{${a}}{${b}}`);
 const ligne = (...h) => `<span style="display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap;">${h.join(' ')}</span>`;
-const ch = (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) + '</div>' });
+const ch = (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`), it.cols) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`), it.cols) + '</div>' });
 const S = (w, h, inner, px) => `<svg class="pl-libre" viewBox="0 0 ${w} ${h}" style="width:${px || w}px;max-width:100%;display:inline-block;vertical-align:middle;">${inner}</svg>`;
 // Urne : l'outil « urne » du tableau interactif (urnSvg) ; boules [[nombre, couleur]].
 const urne = l => `<div style="max-width:130px;margin:0 auto;">${urnSvg(l.map(([count, color]) => ({ count, color })), 'urne').replace(/<svg width="[\d.]+" height="[\d.]+"/, '<svg')}</div>`;

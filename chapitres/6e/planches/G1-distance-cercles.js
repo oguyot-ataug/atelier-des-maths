@@ -12,7 +12,7 @@ const P = (p, n, dx, dy, c) => { if(n && dx != null && dy != null && Math.abs(dx
 const P0 = (p, n, dx, dy, c) => `<path d="M${p[0] - 4},${p[1] - 4} L${p[0] + 4},${p[1] + 4} M${p[0] - 4},${p[1] + 4} L${p[0] + 4},${p[1] - 4}" stroke="${c || K}" stroke-width="2"/>` + (n ? cmT(p[0] + (dx == null ? 8 : dx), p[1] + (dy == null ? -7 : dy), n, { fs: 13, c: c || K }) : '');
 const Ci = (o, r, c, d) => `<circle cx="${o[0]}" cy="${o[1]}" r="${r}" fill="none" stroke="${c || K}" stroke-width="2"${d ? ' stroke-dasharray="5 4"' : ''}/>`;
 const cd = (a, b, n) => { const m = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2], l = Math.hypot(b[0] - a[0], b[1] - a[1]), u = [(b[0] - a[0]) / l, (b[1] - a[1]) / l], v = [-u[1] * 6, u[0] * 6]; let s = ''; for(let i = 0; i < (n || 1); i++){ const d = (i - ((n || 1) - 1) / 2) * 4; s += L([m[0] + u[0] * d - v[0], m[1] + u[1] * d - v[1]], [m[0] + u[0] * d + v[0], m[1] + u[1] * d + v[1]], Ro, 1.6); } return s; };
-const choix = (items, mots) => ({ eleve: '<div class="pl-col1">' + plListe(items.map(([t]) => `${t} <b>${mots}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(items.map(([t, r]) => `${t} ${plEntoure(r)}`)) + '</div>' });
+const choix = (items, mots) => ({ eleve: '<div class="pl-col1">' + plListe(items.map(([t]) => `${t} <b>${mots}</b>`), items.cols) + '</div>', corr: '<div class="pl-col1">' + plListe(items.map(([t, r]) => `${t} ${plEntoure(r)}`), items.cols) + '</div>' });
 const regle = (mm, nom, rep) => `<span style="display:flex;flex-direction:column;align-items:center;width:100%;">${cm1RegleGraduee(mm, nom, { n: 8 })}<span>${nom[0]}${nom[1]} = ${rep ? R(String(mm / 10).replace('.', ',')) : B()} cm</span></span>`;
 // Cercle de centre O : rayon [OA], diamètre [BC], corde [DE].
 const O = [90, 80], r = 62, pt = a => [O[0] + r * Math.cos(a * Math.PI / 180), O[1] - r * Math.sin(a * Math.PI / 180)];
@@ -107,8 +107,8 @@ PLANCHES['6e|Distance et cercles'] = [
         ...(() => { const it = [['Si I est le milieu de [AB], les points A, I et B sont', 'alignés', 'alignés · non alignés'], ['Un segment a', 'un seul milieu', 'un seul milieu · plusieurs milieux'], ['Si AI = IB et I est sur [AB], I est', 'le milieu', 'le milieu · un autre point']];
           const pts = '<span style="display:inline-block;min-width:4.5em;border-bottom:1.5px dotted #8A93A3;height:1.1em;vertical-align:baseline;"></span>';
           const parmi = (m, r) => '<b>' + m.split(' · ').map(w => w === r ? plEntoure(w) : w).join(' · ') + '</b>';
-          return { eleve: '<div class="pl-col1">' + plListe(it.map(([t, , m]) => `${t} ${pts}. <b>${m}</b>`)) + '</div>',
-            corr: '<div class="pl-col1">' + plListe(it.map(([t, r, m]) => `${t} <span style="color:#1F7A4D;font-weight:700;">${r}</span>. ${parmi(m, r)}`)) + '</div>' }; })() },
+          return { eleve: '<div class="pl-col1">' + plListe(it.map(([t, , m]) => `${t} ${pts}. <b>${m}</b>`), it.cols) + '</div>',
+            corr: '<div class="pl-col1">' + plListe(it.map(([t, r, m]) => `${t} <span style="color:#1F7A4D;font-weight:700;">${r}</span>. ${parmi(m, r)}`), it.cols) + '</div>' }; })() },
       // Milieu placé à la règle graduée : la construction au compas (médiatrice) ne vient qu'avec la symétrie axiale
       // (relecture 6e-G1-P2-E6).
       { etoiles: 3, cahier: true, consigne: 'Trace un segment [AB] de 7 cm. Place son milieu I avec la règle graduée. Explique comment tu as trouvé où placer I, puis vérifie en mesurant IB.',
@@ -123,7 +123,7 @@ PLANCHES['6e|Distance et cercles'] = [
         ...(() => { const m = 'un rayon · un diamètre · une corde', it = [['Le segment [OA] est', 'un rayon', m], ['Le segment [BC] est', 'un diamètre', m], ['Le segment [DE] est', 'une corde', m],
             ['La longueur OA est', 'le rayon', 'le rayon · un rayon'], ['La longueur BC est', 'le diamètre', 'le diamètre · un diamètre'], ['Le segment [OC] est', 'un rayon', 'le rayon · un rayon']];
           const parmi = (m, r) => '<b>' + m.split(' · ').map(w => w === r ? plEntoure(w) : w).join(' · ') + '</b>';
-          return { eleve: '<div class="pl-col1">' + plListe(it.map(([t, , m]) => `${t} : <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r, m]) => `${t} : ${parmi(m, r)}`)) + '</div>' }; })() },
+          return { eleve: '<div class="pl-col1">' + plListe(it.map(([t, , m]) => `${t} : <b>${m}</b>`), it.cols) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r, m]) => `${t} : ${parmi(m, r)}`), it.cols) + '</div>' }; })() },
       { etoiles: 1, col: 1, consigne: 'Complète.',
         eleve: plListe(['rayon 4 cm : diamètre ' + B() + ' cm', 'diamètre 9 cm : rayon ' + B() + ' cm', 'rayon 2,5 cm : diamètre ' + B() + ' cm', 'diamètre 13 cm : rayon ' + B() + ' cm']),
         corr: plListe(['rayon 4 cm : diamètre ' + R(8) + ' cm', 'diamètre 9 cm : rayon ' + R('4,5') + ' cm', 'rayon 2,5 cm : diamètre ' + R(5) + ' cm', 'diamètre 13 cm : rayon ' + R('6,5') + ' cm']) },
@@ -142,7 +142,7 @@ PLANCHES['6e|Distance et cercles'] = [
         ...(() => { const k = 18, o = [6, 6], g = (i, j) => [i * k, j * k];
           const f = Gq(12, 12, k, () => Ci(g(...o), 5 * k) + P(g(...o), 'O', -14, 14) + P(g(9, 2), 'A', 6, -4) + P(g(10, 10), 'B', 6, -2) + P(g(4, 5), 'C', -14, -4) + P(g(1, 6), 'D', 6, -6));
           const it = [['A :', 'sur'], ['B :', 'à l\'extérieur'], ['C :', 'à l\'intérieur'], ['D :', 'sur']], m = 'sur · à l\'intérieur · à l\'extérieur';
-          return { eleve: `<div style="text-align:center;">${f}</div><div class="pl-col1">` + plListe(it.map(([t]) => `${t} <b>${m}</b>`)) + '</div>', corr: `<div style="text-align:center;">${f}</div><div class="pl-col1">` + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) + '</div>' }; })() },
+          return { eleve: `<div style="text-align:center;">${f}</div><div class="pl-col1">` + plListe(it.map(([t]) => `${t} <b>${m}</b>`), it.cols) + '</div>', corr: `<div style="text-align:center;">${f}</div><div class="pl-col1">` + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`), it.cols) + '</div>' }; })() },
       { etoiles: 1, col: 1, consigne: 'Le cercle (C) a pour centre O et pour rayon 3 cm. [AB] est un diamètre de (C), et M un point de (C). Complète.',
         eleve: plListe(['OA = ' + B() + ' cm', 'AB = ' + B() + ' cm', 'OM = ' + B() + ' cm', 'O est le ' + B(5) + ' du segment [AB].']),
         corr: plListe(['OA = ' + R(3) + ' cm', 'AB = ' + R(6) + ' cm', 'OM = ' + R(3) + ' cm', 'O est le ' + R('milieu') + ' du segment [AB].']) },

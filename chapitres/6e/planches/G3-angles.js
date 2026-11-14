@@ -29,7 +29,7 @@ const horl = h => { const O = [40, 40]; let s = `<circle cx="40" cy="40" r="35" 
   return S(80, 80, s + L(O, pt(O, 90, 27), Bl, 2.6) + L(O, pt(O, 90 - h * 30, 18), Ro, 3.4) + `<circle cx="40" cy="40" r="3" fill="${K}"/>`, 70); };
 const duo = l => `<div style="display:flex;justify-content:space-around;align-items:flex-start;gap:10px;flex-wrap:wrap;">${l.join('')}</div>`;
 const col = (h, t, w) => `<span style="display:flex;flex-direction:column;align-items:center;gap:2px;">${h}<span class="pl-item" style="text-align:center;display:block;max-width:${w || 130}px;line-height:1.35;">${t}</span></span>`;
-const ch = (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) + '</div>' });
+const ch = (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`), it.cols) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`), it.cols) + '</div>' });
 const vig = (inner, w) => S(110, 80, `<rect x="1" y="1" width="108" height="78" rx="8" fill="#fff" stroke="#C9DCEB"/>` + inner, w || 98);
 const vigs = (V, it, m) => ({ eleve: duo(V.map((v, i) => col(v, `<b>${it[i][0]}</b><br><b>${m}</b>`, 116))), corr: duo(V.map((v, i) => col(v, `<b>${it[i][0]}</b><br>${plEntoure(it[i][1])}`, 116))) });
 // ---- Mesurer et construire au rapporteur (à l'écran : le rapporteur du tableau, outil « rapp » de planches-num.js) ----

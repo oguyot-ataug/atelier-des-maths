@@ -11,8 +11,8 @@
 const B = n => plPointilles(n || 3), R = v => plRep(String(v));
 const ligne = (...h) => `<span style="display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap;">${h.join(' ')}</span>`;
 // Liste de calculs « expr = … » : [expr, résultat, étapes facultatives].
-const calc = l => ({ eleve: plListe(l.map(([e]) => `${e} = ${B(3)}`)), corr: plListe(l.map(([e, r, et]) => `${e} = ${et ? et + ' = ' : ''}${R(r)}`)) });
-const ch = (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) + '</div>' });
+const calc = l => ({ eleve: plListe(l.map(([e]) => `${e} = ${B(3)}`), l.cols), corr: plListe(l.map(([e, r, et]) => `${e} = ${et ? et + ' = ' : ''}${R(r)}`), l.cols) });
+const ch = (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`), it.cols) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`), it.cols) + '</div>' });
 // Calcul détaillé en colonne : [lettre, expression, étape…, résultat] ; l'élève écrit une étape par ligne, le corrigé les donne toutes.
 const enHaut = h => h.replace('class="pl-grille" style="', 'class="pl-grille" style="align-items:start;');
 const ET = (n, e, et, rep) => `<div style="line-height:2;white-space:nowrap;">${n} = ${e}${et.map(x => `<br>${n} = ${rep(x)}`).join('')}</div>`;
@@ -20,7 +20,7 @@ const etp = (l, cols) => ({ eleve: enHaut(plGrille(l.map(([n, e, ...et]) => ET(n
   corr: enHaut(plGrille(l.map(([n, e, ...et]) => ET(n, e, et, R)), cols || 2)) });
 // Case à cliquer (à l'écran, chaque clic passe au choix suivant) : [texte avec @, réponse].
 const bsc = (l, choix, cols) => { const el = l.map(([t]) => t.replace('@', plCase(choix))), co = l.map(([t, r]) => t.replace('@', R(r)));
-  return cols ? { eleve: plGrille(el, cols), corr: plGrille(co, cols) } : { eleve: plListe(el), corr: plListe(co) }; };
+  return cols ? { eleve: plGrille(el, cols), corr: plGrille(co, cols) } : { eleve: plListe(el, l.cols), corr: plListe(co, l.cols) }; };
 const VERT = '#1F7A4D';
 // Relier une phrase à son expression : phrases à gauche, expressions à droite, un point au bout de chaque ligne.
 const relier = (G, D, att) => {
@@ -50,7 +50,7 @@ const parenth = lignes => {
   return { eleve: plX(svg(''), { t: 'parenth', p, att, fs }),
     corr: svg(p.filter((_, i) => att[i]).map(([x, y, c]) => `<text x="${x}" y="${y}" text-anchor="middle" font-size="${fs}" font-weight="700" fill="${VERT}">${c}</text>`).join('')) };
 };
-const rmp = (l, n) => ({ eleve: plListe(l.map(([t]) => t.replace('@', B(n || 3)))), corr: plListe(l.map(([t, r]) => t.replace('@', R(r)))) });
+const rmp = (l, n) => ({ eleve: plListe(l.map(([t]) => t.replace('@', B(n || 3))), l.cols), corr: plListe(l.map(([t, r]) => t.replace('@', R(r))), l.cols) });
 PLANCHES['5e|Opérations sur les nombres décimaux'] = [
   { titre: 'Vocabulaire et priorités sans parenthèses', duree: '35 min',
     attendus: ['Nommer une somme, une différence, un produit, un quotient et leurs termes', 'Effectuer les multiplications et les divisions avant les additions et les soustractions', 'Calculer de gauche à droite à priorité égale'],
@@ -64,11 +64,11 @@ PLANCHES['5e|Opérations sur les nombres décimaux'] = [
       { etoiles: 2, col: 1, consigne: 'Calcule (à priorité égale, de gauche à droite). Écris une étape par ligne.',
         ...etp([['A', '20 − 8 + 3', '12 + 3', '15'], ['B', '36 : 4 × 3', '9 × 3', '27'], ['C', '50 − 10 − 5', '40 − 5', '35'], ['D', '48 : 6 : 2', '8 : 2', '4']]) },
       { etoiles: 2, col: 1, consigne: 'Complète par = ou ≠.',
-        ...bsc([['2 + 3 × 4 @ 20', '≠'], ['10 − 4 : 2 @ 8', '='], ['12 : 3 × 2 @ 2', '≠'], ['1,5 + 0,5 × 4 @ 3,5', '=']], '=|≠') },
+        ...bsc(plDeux([['2 + 3 × 4 @ 20', '≠'], ['10 − 4 : 2 @ 8', '='], ['12 : 3 × 2 @ 2', '≠'], ['1,5 + 0,5 × 4 @ 3,5', '='], ['6 + 4 × 2 @ 14', '='], ['(6 + 4) × 2 @ 14', '≠'], ['9 − 3 × 2 @ 12', '≠'], ['8 : 2 + 2 @ 6', '=']]), '=|≠') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Au cinéma, Lina paie 3 places à 8,50 € et 2 menus à 6 €. Écris le calcul en une seule expression, puis calcule le prix total.',
         corr: cm1Redac('Prix total', { nom: 'P', lignes: ['3 × 8,50 + 2 × 6', '25,50 + 12', '37,50'] }, 'Lina paie 37,50 €.') },
       { etoiles: 2, col: 1, consigne: 'Complète par le signe opératoire manquant : +, −, × ou :.',
-        ...bsc([['6 @ 4 + 2 = 26', '×'], ['15 @ 3 × 2 = 9', '−'], ['20 @ 5 − 1 = 3', ':'], ['7 @ 2 × 3 = 13', '+']], '+|−|×|:') },
+        ...bsc(plDeux([['6 @ 4 + 2 = 26', '×'], ['15 @ 3 × 2 = 9', '−'], ['20 @ 5 − 1 = 3', ':'], ['7 @ 2 × 3 = 13', '+'], ['5 @ 3 + 1 = 16', '×'], ['18 @ 6 : 2 = 15', '−'], ['24 @ 4 + 2 = 8', ':'], ['9 @ 4 × 2 = 17', '+']]), '+|−|×|:') },
       { etoiles: 2, col: 1, consigne: 'Calcule. Écris une étape par ligne.',
         ...etp([['A', '0,5 + 2 × 1,5', '0,5 + 3', '3,5'], ['B', '10 − 0,2 × 5', '10 − 1', '9'], ['C', '4 × 2,5 + 6 : 3', '10 + 2', '12'], ['D', '9 : 3 × 3 − 9', '3 × 3 − 9', '9 − 9', '0']]) },
     ] },
@@ -139,7 +139,7 @@ PLANCHES['5e|Opérations sur les nombres décimaux'] = [
   { titre: 'Calculer avec des nombres décimaux', duree: '35 min',
     attendus: ['Multiplier par 10, 100, 0,1 ou 0,01', 'Estimer un résultat par un ordre de grandeur', 'Résoudre un problème à plusieurs étapes'],
     exos: [
-      { etoiles: 1, col: 1, consigne: 'Calcule mentalement.', ...calc([['3,7 × 10', 37], ['0,45 × 100', 45], ['52 × 0,1', '5,2'], ['806 × 0,01', '8,06'], ['7,2 : 10', '0,72']]) },
+      { etoiles: 1, col: 1, consigne: 'Calcule mentalement.', ...calc(plDeux([['3,7 × 10', 37], ['0,45 × 100', 45], ['52 × 0,1', '5,2'], ['806 × 0,01', '8,06'], ['7,2 : 10', '0,72'], ['4,6 × 100', 460], ['0,3 × 1 000', 300], ['75 × 0,1', '7,5'], ['19 : 100', '0,19'], ['3,5 × 0,01', '0,035']])) },
       { etoiles: 1, col: 1, consigne: 'Donne un ordre de grandeur du résultat (arrondis d\'abord chaque nombre).',
         ...rmp([['49,8 × 3,1 ≈ @', '150'], ['198,5 + 401,2 ≈ @', '600'], ['8,9 × 21 ≈ @', '180'], ['999 : 9,9 ≈ @', '100']], 4) },
       { etoiles: 2, col: 1, consigne: 'Calcule (pose l\'opération dans ton cahier si besoin).', ...calc([['12,5 × 0,8', 10], ['4,05 + 17,9', '21,95'], ['30 − 7,46', '22,54'], ['6,4 × 2,5', 16], ['1,2 × 3 + 0,4', 4]]) },
@@ -159,7 +159,7 @@ PLANCHES['5e|Opérations sur les nombres décimaux'] = [
     exos: [
       { etoiles: 1, col: 1, consigne: 'Calcule mentalement.', ...P3.rmp([['3,7 + 2,5 = @', '6,2'], ['10 − 4,3 = @', '5,7'], ['0,8 + 0,25 = @', '1,05'], ['7,5 − 2,75 = @', '4,75']]) },
       { etoiles: 1, col: 1, consigne: 'Calcule mentalement.', ...P3.rmp([['3,45 × 10 = @', '34,5'], ['0,07 × 100 = @', 7], ['52 × 0,1 = @', '5,2'], ['4,6 × 0,01 = @', '0,046']]) },
-      { etoiles: 1, col: 1, consigne: 'Calcule en respectant les priorités.', ...P3.rmp([['2 + 3 × 4 = @', 14], ['20 − 6 : 2 = @', 17], ['(5 + 3) × 2 = @', 16], ['18 : 3 × 2 = @', 12]]) },
+      { etoiles: 1, col: 1, consigne: 'Calcule en respectant les priorités.', ...P3.rmp(plDeux([['2 + 3 × 4 = @', 14], ['20 − 6 : 2 = @', 17], ['(5 + 3) × 2 = @', 16], ['18 : 3 × 2 = @', 12], ['15 − 2 × 5 = @', 5], ['3 × 4 + 6 = @', 18], ['(10 − 4) : 2 = @', 3], ['30 : 5 + 1 = @', 7]])) },
       { etoiles: 2, col: 1, consigne: 'Calcule astucieusement.', ...P3.rmp([['7 × 99 = @', 693], ['12 × 101 = @', '1 212'], ['25 × 13 × 4 = @', '1 300'], ['8 × 1,25 = @', 10]]) },
       { etoiles: 2, col: 1, consigne: 'Entoure l\'ordre de grandeur.', ...P3.chx([['19,8 × 5,1 ≈', '100', '10 · 100 · 1 000'], ['49,7 + 20,4 ≈', '70', '7 · 70 · 700'], ['301 × 9,9 ≈', '3 000', '300 · 3 000 · 30 000']]) },
       { etoiles: 2, col: 1, consigne: 'Complète la division euclidienne.', ...P3.rmp([['47 = 6 × @ + @', 7, 5], ['100 = 7 × @ + @', 14, 2], ['85 = 9 × @ + @', 9, 4]]) },

@@ -20,8 +20,8 @@ const K = '#1F3A5C', Ro = '#E35D3A', Bl = '#2EA8C9', Ve = '#2E9C6A';
 const S = (w, h, inner, px) => `<svg class="pl-libre" viewBox="0 0 ${w} ${h}" style="width:${px || w}px;max-width:100%;display:inline-block;vertical-align:middle;">${inner}</svg>`;
 const L = (a, b, c, w, d) => `<line x1="${a[0].toFixed(1)}" y1="${a[1].toFixed(1)}" x2="${b[0].toFixed(1)}" y2="${b[1].toFixed(1)}" stroke="${c || K}" stroke-width="${w || 2}"${d ? ' stroke-dasharray="5 4"' : ''} stroke-linecap="round"/>`;
 const T = (p, t, c, fs) => cmT(p[0], p[1], t, { fs: fs || 12, c: c || K });
-const chx = it => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t, , m]) => `${t} <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) + '</div>' });
-const rmp = (l, n) => ({ eleve: plListe(l.map(([t]) => t.replace('@', B(n || 3)))), corr: plListe(l.map(([t, r]) => t.replace('@', R(r)))) });
+const chx = it => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t, , m]) => `${t} <b>${m}</b>`), it.cols) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`), it.cols) + '</div>' });
+const rmp = (l, n) => ({ eleve: plListe(l.map(([t]) => t.replace('@', B(n || 3))), l.cols), corr: plListe(l.map(([t, r]) => t.replace('@', R(r))), l.cols) });
 const duo = l => `<div style="display:flex;justify-content:space-around;align-items:flex-start;gap:8px;flex-wrap:wrap;">${l.join('')}</div>`;
 const col = (h, t) => `<span style="display:flex;flex-direction:column;align-items:center;gap:4px;">${h}<span class="pl-item" style="text-align:center;display:block;line-height:2;">${t}</span></span>`;
 const vig = (inner, w, h) => S(w || 120, h || 96, `<rect x="1" y="1" width="${(w || 120) - 2}" height="${(h || 96) - 2}" rx="8" fill="#fff" stroke="#C9DCEB"/>` + inner, (w || 120) * .86);
@@ -114,7 +114,7 @@ PLANCHES['5e|Représentation de l\'espace'] = [
       { etoiles: 1, col: 1, consigne: 'Calcule le volume (V = aire de la base × hauteur).',
         ...rmp([['Prisme : base de 12 cm², hauteur 5 cm : @ cm³', 60], ['Prisme : base de 7,5 cm², hauteur 4 cm : @ cm³', 30], ['Cylindre : base de 20 cm², hauteur 3 cm : @ cm³', 60]], 2) },
       { etoiles: 1, col: 1, consigne: 'Convertis.',
-        ...rmp([['1 L = @ dm³', 1], ['1 dm³ = @ cm³', 1000], ['2,5 L = @ cm³', 2500], ['750 cm³ = @ L', '0,75'], ['1 m³ = @ L', 1000]], 2) },
+        ...rmp(plDeux([['1 L = @ dm³', 1], ['1 dm³ = @ cm³', 1000], ['2,5 L = @ cm³', 2500], ['750 cm³ = @ L', '0,75'], ['1 m³ = @ L', 1000], ['3 L = @ dm³', 3], ['1 cm³ = @ mL', 1], ['0,5 L = @ cm³', 500], ['2 000 cm³ = @ L', 2], ['0,25 m³ = @ L', 250]]), 2) },
       { etoiles: 2, consigne: 'Calcule le volume de chaque solide (cylindre : arrondi au dixième).',
         ...figs([[PR_COTE, [['Aire de la base : @ cm²', 6], ['V = @ cm³', 60]]], [CYL_COTE, [['V = @ π cm³', 90], ['V ≈ @ cm³', '282,7']]]]) },
       { etoiles: 2, col: 1, consigne: 'Entoure l\'unité la mieux adaptée.',

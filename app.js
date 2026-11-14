@@ -4079,6 +4079,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.1464', date:'2026-11-14', items:[
+    "Planches : deux fois plus d'exemples dans les exercices en colonnes, avec un trait fin entre les colonnes (comme les manuels du commerce) -- demandé sur 5e-N4-P1 : « Une planche comme celle-là n'est pas acceptable. Dans chaque exercice, on peut doubler en colonne le nombre d'exemples. » 5e : 63 exercices complétés (Fractions, Décimaux, Divisibilité, Relatifs, Statistiques, Pourcentages, Puissances, Calcul littéral, Probabilités, Espace, Fonctions, Programmation…), sans qu'aucune feuille ne dépasse la page. Les listes liées à une seule figure restent en une colonne. La puce d'une ligne qui commence par une fraction à compléter est maintenant au milieu de la ligne."
+  ]},
   { version:'2026-08-19.1463', date:'2026-11-14', items:[
     "Propositions à entourer à côté de la question à l'écran (Manuel, exercices faits à l'écran, projection), alignées en colonne -- demandé sur 5e-N1a-P6 : « pourquoi aller à la ligne pour les propositions de réponses ? Il y a suffisamment de place en largeur ». Elles ne passent dessous que si la ligne ne tient pas ; le papier garde sa mise en page. En projection, la boîte de l'exercice est mesurée sur tout son contenu : « 30 000 » ne passe plus à la ligne et rien ne dépasse à droite."
   ]},

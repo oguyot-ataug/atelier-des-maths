@@ -24,16 +24,16 @@ const T = (a, b) => cm1Tex(`\\dfrac{${a}}{${b}}`);
 const lt = '&lt;', gt = '&gt;';
 const ligne = (...h) => `<span style="display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap;">${h.join(' ')}</span>`;
 // Comparer deux fractions : une case à compléter avec <, > ou = (bascule au clic à l'écran), demandé le 01/11/2026.
-const signe = (it, f = h => `<span style="white-space:nowrap;display:inline-block;padding:4px 0;">${h}</span>`) => ({ eleve: plListe(it.map(([a, b]) => f(`${a} ${plCase()} ${b}`))), corr: plListe(it.map(([a, b, r, x]) => f(`${a} ${plRep(r === '<' ? '&lt;' : r === '>' ? '&gt;' : r)} ${b}`) + (x ? ` <small>${x}</small>` : ''))) });
-const ch = (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) + '</div>' });
+const signe = (it, f = h => `<span style="white-space:nowrap;display:inline-block;padding:4px 0;">${h}</span>`) => ({ eleve: plListe(it.map(([a, b]) => f(`${a} ${plCase()} ${b}`)), it.cols), corr: plListe(it.map(([a, b, r, x]) => f(`${a} ${plRep(r === '<' ? '&lt;' : r === '>' ? '&gt;' : r)} ${b}`) + (x ? ` <small>${x}</small>` : '')), it.cols) });
+const ch = (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`), it.cols) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`), it.cols) + '</div>' });
 // Fractions égales : [a, b, c, d] → a/b = c/d, la case vide est la seconde fraction.
-const egal = l => ({ eleve: plListe(l.map(([a, b]) => ligne(F(a, b), '=', Fr))), corr: plListe(l.map(([a, b, c, d]) => ligne(F(a, b), '=', R(F(c, d))))) });
-const cmp = l => ({ eleve: plListe(l.map(([a, b, c, d]) => ligne(F(a, b), C, F(c, d)))), corr: plListe(l.map(([a, b, c, d]) => { const x = a * d - c * b; return ligne(F(a, b), R(x > 0 ? gt : x < 0 ? lt : '='), F(c, d)); })) });
+const egal = l => ({ eleve: plListe(l.map(([a, b]) => ligne(F(a, b), '=', Fr)), l.cols), corr: plListe(l.map(([a, b, c, d]) => ligne(F(a, b), '=', R(F(c, d)))), l.cols) });
+const cmp = l => ({ eleve: plListe(l.map(([a, b, c, d]) => ligne(F(a, b), C, F(c, d))), l.cols), corr: plListe(l.map(([a, b, c, d]) => { const x = a * d - c * b; return ligne(F(a, b), R(x > 0 ? gt : x < 0 ? lt : '='), F(c, d)); }), l.cols) });
 // Opérations : [a, b, c, d, [n, d, étape]] → a/b op c/d = (étape =) n/d.
-const ops = (l, op) => ({ eleve: plListe(l.map(([a, b, c, d]) => ligne(F(a, b), op, F(c, d), '=', Fr))), corr: plListe(l.map(([a, b, c, d, r]) => ligne(F(a, b), op, F(c, d), '=', ...(r[2] ? [r[2], '='] : []), R(F(r[0], r[1]))))) });
+const ops = (l, op) => ({ eleve: plListe(l.map(([a, b, c, d]) => ligne(F(a, b), op, F(c, d), '=', Fr)), l.cols), corr: plListe(l.map(([a, b, c, d, r]) => ligne(F(a, b), op, F(c, d), '=', ...(r[2] ? [r[2], '='] : []), R(F(r[0], r[1])))), l.cols) });
 // Les mêmes calculs sur deux colonnes (planche 4, exercices 1 et 2 : la feuille tient sur une page).
 const ops2 = (l, op) => ({ eleve: plGrille(l.map(([a, b, c, d]) => ligne(F(a, b), op, F(c, d), '=', Fr)), 2), corr: plGrille(l.map(([a, b, c, d, r]) => ligne(F(a, b), op, F(c, d), '=', R(F(r[0], r[1])))), 2) });
-const rmp = (l, n) => ({ eleve: plListe(l.map(([t]) => t.replace('@', B(n || 3)))), corr: plListe(l.map(([t, r]) => t.replace('@', R(r)))) });
+const rmp = (l, n, cols) => ({ eleve: plListe(l.map(([t]) => t.replace('@', B(n || 3))), cols), corr: plListe(l.map(([t, r]) => t.replace('@', R(r))), cols) });
 // Fraction dont le dénominateur est donné : seul le numérateur est à écrire (relecture 5e-N4-P2-E1 du 12/11/2026 : « Quel intérêt
 // de demander sur 12 ? Autant l'écrire directement au dénominateur ! »).
 // Numérateur et dénominateur de même hauteur : la barre au milieu, alignée sur celles des fractions voisines (relecture 5e-N4-P4-E6).
@@ -49,7 +49,7 @@ const Fx = (a, b) => b === 1 ? String(a) : F(a, b); // un entier s'écrit sans d
 const cmpX = (l, cols) => { const L = l.map(([a, b, c, d]) => { const m = d === 1 ? b : ppcm(b, d), A = a * m / b, Cc = c * m / d, s0 = sg(a, b, c, d), et = [];
     if(b !== m) et.push(`${F(a, b)} = ${F(A, m)}`); if(d !== m) et.push(`${Fx(c, d)} = ${F(Cc, m)}`); if(!(b === m && A === Cc)) et.push(`${F(A, m)} ${s0} ${F(Cc, m)}`); // 42/42 et 1 : « 1 = 42/42 » suffit
     return { e: ligne(F(a, b), C, Fx(c, d)), c: ligne(F(a, b), R(s0), Fx(c, d)) + pq(et) }; });
-  return cols ? { eleve: plGrille(L.map(x => x.e), cols), corr: P3.enHaut(plGrille(L.map(x => x.c), cols)) } : { eleve: plListe(L.map(x => x.e)), corr: plListe(L.map(x => x.c)) }; };
+  return cols ? { eleve: plGrille(L.map(x => x.e), cols), corr: P3.enHaut(plGrille(L.map(x => x.c), cols)) } : { eleve: plListe(L.map(x => x.e), L.cols), corr: plListe(L.map(x => x.c), L.cols) }; };
 // Calcul de fractions en colonne, une lettre par calcul : [lettre, expression, étape…, résultat] (relecture 5e-N4-P4-E3, E4, E5 :
 // « Écrire des pointillés pour les étapes de réduction au même dénominateur. Donc A = … et à développer en colonne »).
 // Une étape par bloc (relecture 5e-N4-P4-E5 du 13/11/2026 : « les fractions se superposent légèrement ») : une ligne à fractions
@@ -73,14 +73,14 @@ PLANCHES['5e|Fractions'] = [
     attendus: ['Interpréter a/b comme le quotient de a par b', 'Trouver le nombre qui, multiplié par b, donne a', 'Passer de l\'écriture fractionnaire à l\'écriture décimale'],
     exos: [
       { etoiles: 1, col: 1, consigne: 'Complète avec une fraction.',
-        eleve: plListe([ligne('7 ×', Fr, '= 3'), ligne('5 ×', Fr, '= 2'), ligne(Fr, '× 9 = 4'), ligne('12 ×', Fr, '= 1')]),
-        corr: plListe([ligne('7 ×', R(F(3, 7)), '= 3'), ligne('5 ×', R(F(2, 5)), '= 2'), ligne(R(F(4, 9)), '× 9 = 4'), ligne('12 ×', R(F(1, 12)), '= 1')]) },
+        eleve: plListe([ligne('7 ×', Fr, '= 3'), ligne('5 ×', Fr, '= 2'), ligne(Fr, '× 9 = 4'), ligne('12 ×', Fr, '= 1'), ligne('3 ×', Fr, '= 8'), ligne('6 ×', Fr, '= 5'), ligne(Fr, '× 11 = 2'), ligne('4 ×', Fr, '= 9')], 2),
+        corr: plListe([ligne('7 ×', R(F(3, 7)), '= 3'), ligne('5 ×', R(F(2, 5)), '= 2'), ligne(R(F(4, 9)), '× 9 = 4'), ligne('12 ×', R(F(1, 12)), '= 1'), ligne('3 ×', R(F(8, 3)), '= 8'), ligne('6 ×', R(F(5, 6)), '= 5'), ligne(R(F(2, 11)), '× 11 = 2'), ligne('4 ×', R(F(9, 4)), '= 9')], 2) },
       { etoiles: 1, col: 1, consigne: 'Donne l\'écriture décimale.',
-        eleve: plListe([ligne(F(3, 4), '=', B(2)), ligne(F(7, 2), '=', B(2)), ligne(F(1, 5), '=', B(2)), ligne(F(9, 10), '=', B(2)), ligne(F(13, 4), '=', B(2))]),
-        corr: plListe([ligne(F(3, 4), '=', R('0,75')), ligne(F(7, 2), '=', R('3,5')), ligne(F(1, 5), '=', R('0,2')), ligne(F(9, 10), '=', R('0,9')), ligne(F(13, 4), '=', R('3,25'))]) },
+        ...(() => { const l = [[3, 4, '0,75'], [7, 2, '3,5'], [1, 5, '0,2'], [9, 10, '0,9'], [13, 4, '3,25'], [1, 4, '0,25'], [5, 2, '2,5'], [3, 5, '0,6'], [17, 10, '1,7'], [6, 5, '1,2']];
+          return { eleve: plListe(l.map(([a, b]) => ligne(F(a, b), '=', B(2))), 2), corr: plListe(l.map(([a, b, r]) => ligne(F(a, b), '=', R(r))), 2) }; })() },
       { etoiles: 1, col: 1, consigne: 'Écris sous forme de fraction décimale (dénominateur 10, 100…).',
-        eleve: plListe([ligne('0,7 =', Fr), ligne('1,3 =', Fr), ligne('0,25 =', Fr), ligne('2,07 =', Fr)]),
-        corr: plListe([ligne('0,7 =', R(F(7, 10))), ligne('1,3 =', R(F(13, 10))), ligne('0,25 =', R(F(25, 100))), ligne('2,07 =', R(F(207, 100)))]) },
+        ...(() => { const l = [['0,7', 7, 10], ['1,3', 13, 10], ['0,25', 25, 100], ['2,07', 207, 100], ['0,9', 9, 10], ['3,1', 31, 10], ['0,45', 45, 100], ['1,05', 105, 100]];
+          return { eleve: plListe(l.map(([d]) => ligne(d + ' =', Fr)), 2), corr: plListe(l.map(([d, a, b]) => ligne(d + ' =', R(F(a, b)))), 2) }; })() },
       { etoiles: 2, col: 1, consigne: 'Encadre la fraction entre deux entiers consécutifs.',
         eleve: plListe([ligne(B(1), lt, F(17, 5), lt, B(1)), ligne(B(1), lt, F(25, 7), lt, B(1)), ligne(B(1), lt, F(9, 4), lt, B(1)), ligne(B(1), lt, F(100, 9), lt, B(1))]),
         corr: plListe([ligne(R(3), lt, F(17, 5), lt, R(4)), ligne(R(3), lt, F(25, 7), lt, R(4)), ligne(R(2), lt, F(9, 4), lt, R(3)), ligne(R(11), lt, F(100, 9), lt, R(12))]) },
@@ -164,14 +164,14 @@ PLANCHES['5e|Fractions'] = [
     attendus: ['Calculer une fraction d\'une quantité', 'Additionner des fractions dans un problème', 'Trouver la part restante'],
     exos: [
       { etoiles: 1, col: 1, consigne: 'Calcule.',
-        ...rmp([[`${T(3, 4)} de 20 = @`, 15], [`${T(2, 5)} de 35 = @`, 14], [`${T(5, 6)} de 42 = @`, 35], [`${T(7, 10)} de 3 = @`, '2,1']], 3) },
+        ...rmp([[`${T(3, 4)} × 20 = @`, 15], [`${T(2, 5)} × 35 = @`, 14], [`${T(5, 6)} × 42 = @`, 35], [`${T(7, 10)} × 3 = @`, '2,1'], [`${T(2, 3)} × 18 = @`, 12], [`${T(3, 5)} × 40 = @`, 24], [`${T(4, 7)} × 28 = @`, 16], [`${T(9, 10)} × 5 = @`, '4,5']], 3, 2) },
       { etoiles: 2, col: 1, consigne: 'Calcule.',
         ...rmp([[`${T(1, 4)} d\'une heure = @ min`, 15], [`${T(2, 3)} d\'une heure = @ min`, 40], [`${T(3, 5)} de 1 km = @ m`, 600], [`${T(3, 8)} de 1 kg = @ g`, 375]], 3) },
       { etoiles: 2, col: 1, consigne: 'Dans deux collèges, les élèves viennent à pied, en bus ou en voiture. Quelle fraction vient en voiture ?',
         eleve: plListe([ligne('À pied :', F(1, 4), '; en bus :', F(1, 2), '. En voiture :', Fr), ligne('À pied :', F(2, 5), '; en bus :', F(3, 10), '. En voiture :', Fr)]),
         corr: plListe([ligne('À pied :', F(1, 4), '; en bus :', F(1, 2), '. En voiture :', R(F(1, 4))), ligne('À pied :', F(2, 5), '; en bus :', F(3, 10), '. En voiture :', R(F(3, 10)))]) },
       { etoiles: 2, col: 1, consigne: 'Complète par = ou ≠.',
-        ...P3.egal([[`${T(1, 2)} + ${T(1, 3)}`, T(2, 5), 0], [`${T(3, 4)} × 100`, '75', 1], [`${T(1, 3)} + ${T(1, 3)} + ${T(1, 3)}`, '1', 1], [`${T(1, 2)} × ${T(1, 2)}`, T(1, 4), 1]]) },
+        ...P3.egal([[`${T(1, 2)} + ${T(1, 3)}`, T(2, 5), 0], [`${T(3, 4)} × 100`, '75', 1], [`${T(1, 3)} + ${T(1, 3)} + ${T(1, 3)}`, '1', 1], [`${T(1, 2)} × ${T(1, 2)}`, T(1, 4), 1], [`${T(2, 3)} − ${T(1, 3)}`, T(1, 3), 1], [`${T(1, 4)} + ${T(1, 4)}`, T(2, 8), 0], [`${T(1, 5)} × 10`, '2', 1], [`${T(3, 6)}`, T(1, 3), 0]], 2) },
       { etoiles: 3, col: 1, cahier: true, consigne: illu(reservoir, `Un réservoir de 60 L est rempli aux ${T(3, 4)}. On utilise ${T(1, 3)} de sa contenance totale. Combien de litres reste-t-il ?`),
         // Relecture 5e-N4-P5-E5 du 13/11/2026 : « on passe de 3/4 × 60 à 3 × 15. Il manque 3 × 60/4 » (méthode 2 : a/b × c = a × c/b).
         // Relecture 5e-N4-P5-E5 du 12/11/2026 : « On ne dit pas Litres restants, c'est affreux. Volume restant » ; pas de « de » dans un calcul.
@@ -188,12 +188,12 @@ PLANCHES['5e|Fractions'] = [
   { titre: 'Automatismes', duree: '20 min',
     attendus: ['Simplifier une fraction', 'Passer d\'une fraction à un décimal', 'Additionner des fractions simples'],
     exos: [
-      { etoiles: 1, col: 1, consigne: 'Simplifie.', ...P3.rmp([[`${cm1Frac(6, 8)} = @`, cm1Frac(3, 4)], [`${cm1Frac(15, 20)} = @`, cm1Frac(3, 4)], [`${cm1Frac(12, 18)} = @`, cm1Frac(2, 3)], [`${cm1Frac(21, 35)} = @`, cm1Frac(3, 5)]]) },
-      { etoiles: 1, col: 1, consigne: 'Écris en nombre décimal.', ...P3.rmp([[`${cm1Frac(3, 4)} = @`, '0,75'], [`${cm1Frac(1, 5)} = @`, '0,2'], [`${cm1Frac(5, 2)} = @`, '2,5'], [`${cm1Frac(7, 10)} = @`, '0,7']]) },
-      { etoiles: 1, col: 1, consigne: 'Écris avec une fraction.', ...P3.rmp([['0,5 = @', cm1Frac(1, 2)], ['0,25 = @', cm1Frac(1, 4)], ['1,5 = @', cm1Frac(3, 2)], ['0,1 = @', cm1Frac(1, 10)]]) },
-      { etoiles: 2, col: 1, consigne: 'Complète avec <, > ou =.', ...P3.bsc([[`${cm1Frac(3, 5)} @ ${cm1Frac(4, 5)}`, '&lt;'], [`${cm1Frac(7, 4)} @ 1`, '&gt;'], [`${cm1Frac(2, 3)} @ ${cm1Frac(4, 6)}`, '='], [`${cm1Frac(9, 10)} @ 1`, '&lt;']], '') },
-      { etoiles: 2, col: 1, consigne: 'Calcule.', ...P3.rmp([[`${cm1Frac(2, 7)} + ${cm1Frac(3, 7)} = @`, cm1Frac(5, 7)], [`${cm1Frac(1, 2)} + ${cm1Frac(1, 4)} = @`, cm1Frac(3, 4)], [`${cm1Frac(2, 3)} + ${cm1Frac(1, 6)} = @`, cm1Frac(5, 6)], [`${cm1Frac(5, 9)} − ${cm1Frac(1, 9)} = @`, cm1Frac(4, 9)]]) },
-      { etoiles: 2, col: 1, consigne: 'Calcule.', ...P3.rmp([[`${cm1Frac(3, 4)} × 20 = @`, 15], [`${cm1Frac(2, 5)} × 35 = @`, 14], [`${cm1Frac(1, 3)} × 27 = @`, 9], [`${cm1Frac(5, 6)} × 12 = @`, 10]]) },
+      { etoiles: 1, col: 1, consigne: 'Simplifie.', ...P3.rmp([[`${cm1Frac(6, 8)} = @`, cm1Frac(3, 4)], [`${cm1Frac(15, 20)} = @`, cm1Frac(3, 4)], [`${cm1Frac(12, 18)} = @`, cm1Frac(2, 3)], [`${cm1Frac(21, 35)} = @`, cm1Frac(3, 5)], [`${cm1Frac(10, 25)} = @`, cm1Frac(2, 5)], [`${cm1Frac(14, 21)} = @`, cm1Frac(2, 3)], [`${cm1Frac(9, 12)} = @`, cm1Frac(3, 4)], [`${cm1Frac(16, 40)} = @`, cm1Frac(2, 5)]], 3, 2) },
+      { etoiles: 1, col: 1, consigne: 'Écris en nombre décimal.', ...P3.rmp([[`${cm1Frac(3, 4)} = @`, '0,75'], [`${cm1Frac(1, 5)} = @`, '0,2'], [`${cm1Frac(5, 2)} = @`, '2,5'], [`${cm1Frac(7, 10)} = @`, '0,7'], [`${cm1Frac(1, 4)} = @`, '0,25'], [`${cm1Frac(4, 5)} = @`, '0,8'], [`${cm1Frac(9, 2)} = @`, '4,5'], [`${cm1Frac(3, 100)} = @`, '0,03']], 3, 2) },
+      { etoiles: 1, col: 1, consigne: 'Écris avec une fraction.', ...P3.rmp([['0,5 = @', cm1Frac(1, 2)], ['0,25 = @', cm1Frac(1, 4)], ['1,5 = @', cm1Frac(3, 2)], ['0,1 = @', cm1Frac(1, 10)], ['0,75 = @', cm1Frac(3, 4)], ['0,2 = @', cm1Frac(1, 5)], ['2,5 = @', cm1Frac(5, 2)], ['0,01 = @', cm1Frac(1, 100)]], 3, 2) },
+      { etoiles: 2, col: 1, consigne: 'Complète avec <, > ou =.', ...P3.bsc(plDeux([[`${cm1Frac(3, 5)} @ ${cm1Frac(4, 5)}`, '&lt;'], [`${cm1Frac(7, 4)} @ 1`, '&gt;'], [`${cm1Frac(2, 3)} @ ${cm1Frac(4, 6)}`, '='], [`${cm1Frac(9, 10)} @ 1`, '&lt;'], [`${cm1Frac(5, 8)} @ ${cm1Frac(3, 8)}`, '&gt;'], [`${cm1Frac(6, 6)} @ 1`, '='], [`${cm1Frac(1, 2)} @ ${cm1Frac(3, 4)}`, '&lt;'], [`${cm1Frac(11, 10)} @ 1`, '&gt;']]), '') },
+      { etoiles: 2, col: 1, consigne: 'Calcule.', ...P3.rmp([[`${cm1Frac(2, 7)} + ${cm1Frac(3, 7)} = @`, cm1Frac(5, 7)], [`${cm1Frac(1, 2)} + ${cm1Frac(1, 4)} = @`, cm1Frac(3, 4)], [`${cm1Frac(2, 3)} + ${cm1Frac(1, 6)} = @`, cm1Frac(5, 6)], [`${cm1Frac(5, 9)} − ${cm1Frac(1, 9)} = @`, cm1Frac(4, 9)], [`${cm1Frac(4, 11)} + ${cm1Frac(5, 11)} = @`, cm1Frac(9, 11)], [`${cm1Frac(3, 4)} − ${cm1Frac(1, 2)} = @`, cm1Frac(1, 4)], [`${cm1Frac(1, 3)} + ${cm1Frac(4, 9)} = @`, cm1Frac(7, 9)], [`${cm1Frac(7, 10)} − ${cm1Frac(1, 5)} = @`, cm1Frac(1, 2)]], 3, 2) },
+      { etoiles: 2, col: 1, consigne: 'Calcule.', ...P3.rmp([[`${cm1Frac(3, 4)} × 20 = @`, 15], [`${cm1Frac(2, 5)} × 35 = @`, 14], [`${cm1Frac(1, 3)} × 27 = @`, 9], [`${cm1Frac(5, 6)} × 12 = @`, 10], [`${cm1Frac(2, 3)} × 15 = @`, 10], [`${cm1Frac(3, 10)} × 50 = @`, 15], [`${cm1Frac(1, 4)} × 36 = @`, 9], [`${cm1Frac(4, 5)} × 25 = @`, 20]], 3, 2) },
     ] },
 ];
 })();

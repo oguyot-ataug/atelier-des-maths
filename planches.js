@@ -44,12 +44,16 @@ function plBarre(html){ return `<span class="pl-barre-rep">${html}</span>`; }
 // Réponse entourée dans le corrigé.
 function plEntoure(html){ return `<span class="pl-entoure">${html}</span>`; }
 // Grille d'items (cols colonnes) : items = [html...].
-function plGrille(items, cols){ return `<div class="pl-grille" style="grid-template-columns:repeat(${cols || 2},1fr);">${items.map(x => `<div class="pl-item">${x}</div>`).join('')}</div>`; }
+function plGrille(items, cols){ return `<div class="pl-grille${(cols || 2) === 2 ? ' pl-g2' : ''}" style="grid-template-columns:repeat(${cols || 2},1fr);">${items.map(x => `<div class="pl-item">${x}</div>`).join('')}</div>`; }
 // Raisonnements côte à côte SUR PAPIER seulement (corrigé imprimé qui dépasse la page) ; à l'écran et dans le cahier Seyès, l'un sous
 // l'autre comme d'habitude (13/11/2026).
 function plCote(...h){ return `<div class="pl-cote">${h.map(x => `<div>${x}</div>`).join('')}</div>`; }
 // Liste à puces (jamais « 1. », « 2. »).
-function plListe(items){ return `<ul class="pl-liste">${items.map(x => `<li>${x}</li>`).join('')}</ul>`; }
+// plListe(items, 2) : exemples sur deux colonnes, même dans un exercice en demi-largeur (demandé le 14/11/2026 : « Dans chaque exercice,
+// on peut doubler en colonne le nombre d'exemples »), avec un trait fin entre les colonnes (comme les manuels du commerce).
+// plDeux([...]) : marque une liste d'exemples à mettre sur deux colonnes (lue par les outils des planches : plListe(l.map(…), l.cols)).
+function plDeux(a){ a.cols = 2; return a; }
+function plListe(items, cols){ return `<ul class="pl-liste${cols === 2 ? ' pl-2col' : ''}">${items.map(x => `<li>${x}</li>`).join('')}</ul>`; }
 // Exercice de rédaction : l'élève répond dans son cahier (exo { cahier: true } : Oliv'IA et sa bulle).
 // Lignes pour rédiger sur la planche, quand on veut quand même de la place.
 function plLignes(n){ return `<div class="pl-lignes">${'<div></div>'.repeat(n || 3)}</div>`; }
@@ -612,7 +616,7 @@ function plChoixCols(root, ref, plein){
   if(!root) return;
   const R = ref ? [...ref.querySelectorAll('ul.pl-liste')] : null;
   [...root.querySelectorAll('ul.pl-liste')].forEach((ul, k) => {
-    if(ul.classList.contains('pl-chcol') || ul.closest('svg, .pl-une-ligne')) return;
+    if(ul.classList.contains('pl-chcol') || ul.classList.contains('pl-2col') || ul.closest('svg, .pl-une-ligne')) return; // deux colonnes d'exemples : propositions à la suite de la question
     let lg = 0;
     if(R){ const e = R[k]; if(!e || !plChListeOk(e) || e.children.length !== ul.children.length) return; lg = plChLarg(e);
       // corrigé : la réponse entourée dans la colonne ; ce qui la suit (une précision « (60 % contre 52 %) ») reste avec la question
@@ -857,6 +861,12 @@ function plRemplirPages(doc){
   // signalé le 13/11/2026 sur 5e-N1a-P5).
   doc.querySelectorAll('.pl-planche table.pl-chxtab').forEach(t => { const box = t.parentElement, d = box && box.getBoundingClientRect().right, pg = t.closest('.pl-planche').getBoundingClientRect().right;
     if(t.getBoundingClientRect().right > Math.min(d || pg, pg) + 1) t.querySelectorAll('tr > td:first-child').forEach(td => { td.style.whiteSpace = 'normal'; }); });
+  // Deux colonnes d'exemples (plListe(…, 2)) : une ligne dont les pointillés passent à la ligne les raccourcit (jusqu'à 1,8 em) pour
+  // tenir sur sa ligne (14/11/2026).
+  // Ligne coupée : plus haute que la même ligne écrite sans retour à la ligne.
+  const coupee = li => { const h = li.getBoundingClientRect().height; li.style.whiteSpace = 'nowrap'; const h1 = li.getBoundingClientRect().height; li.style.whiteSpace = ''; return h > h1 + 3; };
+  doc.querySelectorAll('.pl-planche ul.pl-2col').forEach(ul => { [...ul.children].forEach(li => { const pts = [...li.querySelectorAll('.pl-pts')]; if(!pts.length) return;
+      for(let k = 0; k < 8 && coupee(li); k++) pts.forEach(p => { const m = parseFloat(p.style.minWidth) || 2; if(m > 1.8) p.style.minWidth = Math.max(1.8, m - .3) + 'em'; }); }); });
   // Propositions à entourer qui dépassent : la colonne à part passe sous chaque question (pl-chbas), puis les propositions vont à la ligne.
   const dep = e => e.getBoundingClientRect().right > e.closest('.pl-planche').getBoundingClientRect().right + 1;
   doc.querySelectorAll('.pl-planche .pl-chr').forEach(r => { if(!dep(r)) return; const ul = r.closest('ul.pl-chcol');
@@ -1223,6 +1233,9 @@ const PL_CSS = `
   .pl-exos{ display:grid; grid-template-columns:1fr 1fr; gap:6px 8px; grid-auto-flow:row dense; }
   .pl-exos > .pl-exo{ grid-column:1 / -1; margin:0; } .pl-exos > .pl-exo.pl-demi{ grid-column:auto; }
   .pl-demi .pl-liste, .pl-col1 .pl-liste{ columns:1; }
+  /* Colonnes d'exemples : trait fin entre les colonnes (14/11/2026) ; la puce tient dans la marge de sa ligne, pas dans l'écart */
+  .pl-liste.pl-2col{ columns:2 !important; } .pl-liste > li > span[style*="inline-flex"]::before{ content:'\\200b'; margin-right:-6px; } /* ligne qui commence par une fraction à compléter : la puce au milieu de la ligne, pas sur la case du haut (14/11/2026) */ .pl-liste:not(.pl-chcol){ column-gap:22px; column-rule:.6px solid #C3CEDB; }
+  .pl-grille.pl-g2 > .pl-item:nth-child(2n){ position:relative; } .pl-grille.pl-g2 > .pl-item:nth-child(2n)::before{ content:''; position:absolute; left:calc(var(--gx, 18px) / -2); top:0; bottom:0; border-left:.6px solid #C3CEDB; }
   .pl-corrige{ font-size:.9em; } .pl-corrige .pl-exo{ padding:4px 10px 5px; } .pl-corrige .cm-redac{ margin:1px 0 3px; line-height:1.3; }
   .pl-ref{ font:700 10pt 'Space Grotesk',Arial,sans-serif; color:#1F3A5C; border:1.5px solid #1F3A5C; border-radius:6px; padding:1px 8px; }
   .pl-corrige .pl-ref{ color:#1F7A4D; border-color:#1F7A4D; }
@@ -1252,6 +1265,7 @@ const PL_CSS = `
   .cpn-prix b{ display:block; font-weight:600; font-size:.85em; color:#5B6472; }
   .pl-item{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; min-height:26px; }
   .pl-liste{ margin:0; padding-left:20px; columns:2; } .pl-liste li{ margin:0; padding:1px 0; break-inside:avoid; } /* marge en padding : la 2e colonne commence à la même hauteur que la 1re */
+  .pl-liste:not(.pl-chcol){ padding-left:0; } .pl-liste:not(.pl-chcol) > li{ margin-left:20px; } .pl-liste.pl-2col > li{ margin-left:16px; }
   .pl-frac{ display:inline-flex; flex-direction:column; align-items:center; vertical-align:middle; gap:2px; margin:0 3px; }
   .pl-fd-t{ font-size:1.05em; font-weight:400; line-height:1.1; } .pl-fd .pl-rep{ font-size:1.05em; line-height:1.1; }
   .pl-cote{ display:grid; grid-template-columns:1fr 1fr; gap:0 22px; align-items:start; }
@@ -1425,11 +1439,15 @@ const PL_CSS_LIVRE = `
        relecture du 13/11/2026 : « la correction se marche toujours dessus ! ». */
     .td-vig .pl-etape, .plp-boite .pl-etape, .pn-ex .pl-etape{ margin:0 !important; padding:.45em 0; }
     .td-vig .pl-grille, .pl-ex-cahier .pl-grille{ display:grid; gap:6px 14px; align-items:center; } .td-vig .pl-item, .pl-ex-cahier .pl-item{ display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
-    .td-vig .pl-liste, .pl-ex-cahier .pl-liste{ margin:0; padding-left:18px; } .td-vig .pl-liste li, .pl-ex-cahier .pl-liste li{ margin:3px 0; }
+    .td-vig .pl-liste, .pl-ex-cahier .pl-liste{ margin:0; padding-left:18px; } .td-vig .pl-liste li, .pl-ex-cahier .pl-liste li{ margin-block:3px; }
+    .td-vig .pl-liste.pl-2col, .pl-ex-cahier .pl-liste.pl-2col{ columns:2; } .pl-liste > li > span[style*="inline-flex"]::before{ content:'\\200b'; margin-right:-6px; } /* ligne qui commence par une fraction à compléter : la puce au milieu de la ligne, pas sur la case du haut (14/11/2026) */ .td-vig .pl-liste:not(.pl-chcol), .pl-ex-cahier .pl-liste:not(.pl-chcol){ column-gap:30px; column-rule:.6px solid #C3CEDB; padding-left:0; }
+    .td-vig .pl-liste:not(.pl-chcol) > li, .pl-ex-cahier .pl-liste:not(.pl-chcol) > li{ margin-left:18px; break-inside:avoid; } .td-vig .pl-grille, .pl-ex-cahier .pl-grille{ --gx:14px; }
     /* Exercice pleine largeur : la liste sur deux colonnes, comme sur la feuille -- relecture 5e-N7-P4-E1 : « Il n'y a pas deux colonnes ici et plein de place à droite ». */
-    .td-vig.td-plein .pl-liste{ columns:2; column-gap:28px; } .td-vig.td-plein .pl-liste li{ break-inside:avoid; margin:0; padding:1.5px 0; } .td-vig.td-plein .pl-col1 .pl-liste{ columns:1; }
+    .td-vig.td-plein .pl-liste{ columns:2; column-gap:28px; } .td-vig.td-plein .pl-liste li{ break-inside:avoid; margin-block:0; padding-block:1.5px; } .td-vig.td-plein .pl-col1 .pl-liste{ columns:1; }
     /* Lignes avec une fraction : plus d'air entre deux lignes (demandé le 14/11/2026 sur 5e-N4-P6 : « On pourrait avoir plus d'espace entre deux lignes. ») */
-    .td-vig .pl-liste li:has(.mfrac, .pn-frac, .fr-h, .pl-f){ margin:9px 0; } .td-vig.td-plein .pl-liste li:has(.mfrac, .pn-frac, .fr-h, .pl-f){ margin:0; padding:7px 0; }
+    .td-vig .pl-liste li:has(.mfrac, .pn-frac, .fr-h, .pl-f){ margin-block:9px; } .td-vig.td-plein .pl-liste li:has(.mfrac, .pn-frac, .fr-h, .pl-f){ margin-block:0; padding-block:7px; }
+    /* Deux colonnes : écart vertical en padding (une marge est coupée en haut de la 2e colonne, qui commençait plus haut) */
+    .td-vig .pl-liste.pl-2col > li{ margin-block:0 !important; padding-block:3px; } .td-vig .pl-liste.pl-2col > li:has(.mfrac, .pn-frac, .fr-h, .pl-f){ padding-block:9px; }
     /* Fraction écrite en HTML à côté de fractions KaTeX (fraction à trou fd, 5e-N4-P4-E6) : MÊME géométrie que \dfrac de KaTeX (police,
        taille 1,21 em, centre du numérateur 0,75 em au-dessus de la barre, du dénominateur 0,61 em en dessous, barre fine) -- demandé le
        13/11/2026 : « les nombres tapés doivent être alignés avec les nombres de l'énoncé et de même taille (règle pour tout le site !) ». */
@@ -1475,8 +1493,8 @@ const PL_CSS_LIVRE = `
     @media (max-width:700px){ body.plp-ouvert #plClavier{ left:8px; right:8px; bottom:8px; width:auto; } .plp-corps{ padding:10px 12px; } .plp-tete{ padding:6px 12px; gap:8px; } .plp-tete b{ font-size:1rem; flex-basis:100%; order:5; } .plp-pied{ gap:6px !important; padding:8px !important; } .plp-pied .btn{ padding:8px 12px; font-size:.95rem; } }
     .plp-verif{ background:#F08A3C !important; border-color:#F08A3C !important; }
     .plp-consigne{ font-weight:700; margin-bottom:10px; }
-    .plp-corps .pl-grille{ display:grid; gap:8px 26px; align-items:center; } .plp-corps .pl-item{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
-    .plp-corps .pl-liste{ padding-left:20px; margin:0; } .plp-corps .pl-liste li{ margin:6px 0; } .plp-corps .pl-liste li:has(.mfrac, .pn-frac, .fr-h){ margin:11px 0; } .plp-corps .pl-liste.pl-chcol{ row-gap:12px; }
+    .plp-corps .pl-grille{ display:grid; gap:8px 26px; align-items:center; --gx:26px; } .plp-corps .pl-item{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+    .plp-corps .pl-liste{ padding-left:20px; margin:0; } .plp-corps .pl-liste li{ margin-block:6px; } .plp-corps .pl-liste.pl-2col > li{ margin-block:0 !important; padding-block:6px; } .plp-corps .pl-liste.pl-2col > li:has(.mfrac, .pn-frac, .fr-h){ padding-block:11px; } .plp-corps .pl-liste.pl-2col{ columns:2; } .plp-corps .pl-liste:not(.pl-chcol){ column-gap:44px; column-rule:1px solid #C3CEDB; padding-left:0; } .plp-corps .pl-liste:not(.pl-chcol) > li{ margin-left:20px; break-inside:avoid; } .plp-corps .pl-liste li:has(.mfrac, .pn-frac, .fr-h){ margin-block:11px; } .plp-corps .pl-liste.pl-chcol{ row-gap:12px; }
     .plp-corps .pl-frac{ display:inline-flex; flex-direction:column; align-items:center; vertical-align:middle; gap:2px; margin:0 3px; }
     .plp-corps .pl-case{ display:inline-block; width:22px; height:18px; border:1.5px solid #8A93A3; border-radius:4px; background:#fff; } .plp-corps .pl-case-seule{ vertical-align:middle; margin:0 4px; }
     .plp-corps .pl-barre{ display:block; width:28px; border-top:2px solid #1C2B39; }

@@ -8,8 +8,8 @@
 const { chx } = P3, F = cm1Frac;
 const bande = (n, k, c) => cm1Bande(n, k, { largeur: 220, coul: c }).replace(/style="width:[^;]*;max-width:[^;]*;/, 'style="width:230px;max-width:100%;');
 const signe = (a, b, s) => ({ eleve: `${a} ${plCase()} ${b}`, corr: `${a} ${P3.R(s)} ${b}` });
-const signes = l => ({ eleve: plListe(l.map(x => signe(...x).eleve)), corr: plListe(l.map(x => signe(...x).corr)) });
-const calc = l => ({ eleve: plListe(l.map(([e]) => `${e} = ${plFrac()}`)), corr: plListe(l.map(([e, r]) => `${e} = ${P3.R(r)}`)) });
+const signes = l => ({ eleve: plListe(l.map(x => signe(...x).eleve), l.cols), corr: plListe(l.map(x => signe(...x).corr), l.cols) });
+const calc = l => ({ eleve: plListe(l.map(([e]) => `${e} = ${plFrac()}`), l.cols), corr: plListe(l.map(([e, r]) => `${e} = ${P3.R(r)}`), l.cols) });
 PLANCHES['ce2|Comparer et additionner des fractions'] = [
   { titre: 'Comparer des fractions', duree: '30 min',
     attendus: ['Comparer des fractions de même dénominateur', 'Comparer des fractions de même numérateur', 'Comparer quand un dénominateur est multiple de l\'autre'],

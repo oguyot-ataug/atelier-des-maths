@@ -7,9 +7,9 @@
 const B = n => plPointilles(n || 3), R = v => plRep(String(v));
 const d = v => String(+(+v).toFixed(3)).replace('-', '−').replace('.', ',');
 const duo = l => `<div style="display:flex;justify-content:space-around;align-items:flex-start;gap:10px;flex-wrap:wrap;">${l.join('')}</div>`;
-const ch = (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) + '</div>' });
-const chx = it => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t, , m]) => `${t} <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) + '</div>' });
-const rmp = (l, n) => ({ eleve: plListe(l.map(([t]) => t.replace('@', B(n || 3)))), corr: plListe(l.map(([t, r]) => t.replace('@', R(typeof r === 'number' ? d(r) : r)))) });
+const ch = (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`), it.cols) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`), it.cols) + '</div>' });
+const chx = it => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t, , m]) => `${t} <b>${m}</b>`), it.cols) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`), it.cols) + '</div>' });
+const rmp = (l, n) => ({ eleve: plListe(l.map(([t]) => t.replace('@', B(n || 3))), l.cols), corr: plListe(l.map(([t, r]) => t.replace('@', R(typeof r === 'number' ? d(r) : r))), l.cols) });
 // Blocs : [famille, texte, blocs internes (boucle)].
 const COUL = { evt: '#C88330', mvt: '#4C97FF', sty: '#0FBD8C', ctl: '#FFAB19', var: '#FF8C1A', ope: '#59C059', cap: '#5CB1D6' };
 // Styles en ligne : ils doivent suivre dans la fenêtre d'impression des planches.
@@ -89,7 +89,7 @@ PLANCHES['5e|Pensée informatique et programmation'] = [
         ...rmp([['x = @', 16], ['Et avec « répéter 10 fois » : x = @', 1024]], 3) },
       { etoiles: 1, col: 1, consigne: 'Écris le programme avec une boucle (complète).',
         ...(() => { const l = [[`${prog('hhhhhh')} = répéter ${B(1)} fois ( ↑ )`, `${prog('hhhhhh')} = répéter ${R(6)} fois ( ↑ )`], [`${prog('gggghh')} = répéter ${B(1)} fois ( ← ) puis répéter ${B(1)} fois ( ↑ )`, `${prog('gggghh')} = répéter ${R(4)} fois ( ← ) puis répéter ${R(2)} fois ( ↑ )`]];
-          return { eleve: plListe(l.map(x => x[0])), corr: plListe(l.map(x => x[1])) }; })() },
+          return { eleve: plListe(l.map(x => x[0]), l.cols), corr: plListe(l.map(x => x[1]), l.cols) }; })() },
       { etoiles: 3, cahier: true, consigne: 'Écris avec une boucle un programme qui fait dire au lutin les multiples de 7 de 7 à 70.',
         corr: cm1Redac('Programme des multiples de 7', { suite: ['mettre n à 7', 'répéter 10 fois ( dire n ; ajouter 7 à n )'] }, 'Le lutin dit 7, 14, 21… jusqu\'à 70.') },
     ] },
@@ -117,9 +117,9 @@ PLANCHES['5e|Pensée informatique et programmation'] = [
     exos: [
       { etoiles: 1, col: 1, consigne: 'Complète la valeur de la variable à la fin.', ...P3.rmp([['mettre a à 3 ; ajouter 4 à a : a = @', 7], ['mettre b à 10 ; mettre b à b × 2 : b = @', 20], ['mettre c à 5 ; ajouter −8 à c : c = @', '−3']]) },
       { etoiles: 1, col: 1, consigne: 'Quelle figure le stylo trace-t-il ?', ...P3.rmp([['répéter 4 fois [avancer de 50 ; tourner de 90°] : @', 'un carré'], ['répéter 3 fois [avancer de 60 ; tourner de 120°] : @', 'un triangle équilatéral'], ['répéter 6 fois [avancer de 40 ; tourner de 60°] : @', 'un hexagone régulier']]) },
-      { etoiles: 2, col: 1, consigne: 'Programme : demander x ; dire 2 × x + 1. Que dit-il ?', ...P3.rmp([['pour 4 : @', 9], ['pour 0 : @', 1], ['pour −1 : @', '−1']]) },
+      { etoiles: 2, col: 1, consigne: 'Programme : demander x ; dire 2 × x + 1. Que dit-il ?', ...P3.rmp(plDeux([['pour 4 : @', 9], ['pour 0 : @', 1], ['pour −1 : @', '−1'], ['pour 10 : @', 21], ['pour 2,5 : @', 6], ['pour −3 : @', '−5']])) },
       { etoiles: 2, col: 1, consigne: 'mettre total à 0, puis… Complète.', ...P3.rmp([['répéter 5 fois [ajouter 3 à total] : total = @', 15], ['répéter 10 fois [ajouter 2 à total] : total = @', 20], ['répéter 4 fois [ajouter −1 à total] : total = @', '−4']]) },
-      { etoiles: 2, col: 1, consigne: 'demander n ; si n > 5 alors dire « grand » sinon dire « petit ». Que dit-il ?', ...P3.rmp([['pour 8 : @', 'grand'], ['pour 5 : @', 'petit'], ['pour 2 : @', 'petit']]) },
+      { etoiles: 2, col: 1, consigne: 'demander n ; si n > 5 alors dire « grand » sinon dire « petit ». Que dit-il ?', ...P3.rmp(plDeux([['pour 8 : @', 'grand'], ['pour 5 : @', 'petit'], ['pour 2 : @', 'petit'], ['pour 6 : @', 'grand'], ['pour 100 : @', 'grand'], ['pour 0 : @', 'petit']])) },
       { etoiles: 2, col: 1, consigne: 'De quel angle tourner à chaque sommet pour tracer… ?', ...P3.rmp([['un pentagone régulier : @', '72°'], ['un octogone régulier : @', '45°'], ['un triangle équilatéral : @', '120°']]) },
     ] },
   { titre: 'Problèmes et projets', duree: '40 min',

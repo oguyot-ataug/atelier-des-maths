@@ -11,10 +11,10 @@ const ascenseur = (() => { const y0 = 18, e = 13, Y = n => y0 + (5 - n) * e; let
   return DS.fig(150, 132, `<path d="M36,${Y(-1)} L4,${Y(-1)} L4,${Y(-2) + e} L36,${Y(-2) + e} Z" fill="#E8D9B5"/><path d="M106,${Y(-1)} L146,${Y(-1)} L146,${Y(-2) + e} L106,${Y(-2) + e} Z" fill="#E8D9B5"/>`
     + g + DS.sol(4, 146, Y(-1)).replace(/<line[^>]*>/, '') + DS.ln([4, Y(-1)], [146, Y(-1)], '#2E9C6A', 2) + DS.tx([112, Y(0) + 10], 'RDC', { a: 'start', fs: 9, c: '#2E9C6A' }) + DS.tx([112, Y(-1) + 12], 'sous-sol', { a: 'start', fs: 9 }), 120); })();
 const B = n => plPointilles(n || 3), R = v => plRep(String(v));
-const ch = (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) + '</div>' });
-const chx = it => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t, , m]) => `${t} <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) + '</div>' }); // choix propres à chaque question
+const ch = (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`), it.cols) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`), it.cols) + '</div>' });
+const chx = it => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t, , m]) => `${t} <b>${m}</b>`), it.cols) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`), it.cols) + '</div>' }); // choix propres à chaque question
 const rel = v => String(+(+v).toFixed(3)).replace('-', '−').replace('.', ',');
-const rmp = (l, n) => ({ eleve: plListe(l.map(([t]) => t.replace('@', B(n || 3)))), corr: plListe(l.map(([t, r]) => t.replace('@', R(r)))) });
+const rmp = (l, n) => ({ eleve: plListe(l.map(([t]) => t.replace('@', B(n || 3))), l.cols), corr: plListe(l.map(([t, r]) => t.replace('@', R(r))), l.cols) });
 const lt = '&lt;', gt = '&gt;', C = plCase();
 // Droite graduée : lire les abscisses / placer des points (outil points à l'écran).
 const axe = (min, max, pas, etiq, pts) => cm1Axe(min, max, pas, etiq, pts, { fmt: rel, alterne: true });
@@ -67,9 +67,9 @@ PLANCHES['5e|Nombres relatifs'] = [
     attendus: ['Comparer deux nombres relatifs (positif, négatif, deux négatifs)', 'Ranger des nombres relatifs', 'Utiliser une droite graduée pour comparer'],
     exos: [
       { etoiles: 1, col: 1, consigne: 'Complète avec &lt; ou &gt;.',
-        ...(() => { const l = [[-3, 2], [5, -8], [-1, -6], [-4, -2], [0, -0.5], [-7.5, -7]]; return { eleve: plListe(l.map(([a, b]) => `${rel(a)} ${C} ${rel(b)}`)), corr: plListe(l.map(([a, b]) => `${rel(a)} ${R(a < b ? lt : gt)} ${rel(b)}`)) }; })() },
+        ...(() => { const l = plDeux([[-3, 2], [5, -8], [-1, -6], [-4, -2], [0, -0.5], [-7.5, -7], [2, -9], [-10, -1], [-3.5, -3], [6, 0], [-0.1, -1], [-12, 12]]); return { eleve: plListe(l.map(([a, b]) => `${rel(a)} ${C} ${rel(b)}`), l.cols), corr: plListe(l.map(([a, b]) => `${rel(a)} ${R(a < b ? lt : gt)} ${rel(b)}`), l.cols) }; })() },
       { etoiles: 1, col: 1, consigne: 'Entoure le plus grand nombre.',
-        ...chx([['', '−2', '−9 · −2'], ['', '1', '−15 · 1'], ['', '−3,4', '−3,4 · −3,5'], ['', '−99', '−100 · −99']]) },
+        ...chx(plDeux([['', '−2', '−9 · −2'], ['', '1', '−15 · 1'], ['', '−3,4', '−3,4 · −3,5'], ['', '−99', '−100 · −99'], ['', '0', '0 · −4'], ['', '−0,5', '−0,5 · −5'], ['', '7', '−8 · 7'], ['', '−1,1', '−1,1 · −1,2']])) },
       { etoiles: 2, consigne: 'Range dans l\'ordre croissant : 3 ; −5 ; 0 ; −1,5 ; 7 ; −8 ; 2.',
         eleve: '<div style="text-align:center;line-height:2.4;">' + Array.from({ length: 7 }, () => B(2)).join(' &lt; ') + '</div>',
         corr: '<div style="text-align:center;line-height:2.4;">' + ['−8', '−5', '−1,5', '0', '2', '3', '7'].map(R).join(' &lt; ') + '</div>' },
@@ -125,9 +125,9 @@ PLANCHES['5e|Nombres relatifs'] = [
   { titre: 'Automatismes', duree: '20 min',
     attendus: ['Donner l\'opposé et la distance à zéro', 'Comparer et ranger des relatifs', 'Repérer sur une droite graduée'],
     exos: [
-      { etoiles: 1, col: 1, consigne: 'Donne l\'opposé.', ...P3.rmp([['de 5 : @', '−5'], ['de −3,2 : @', '3,2'], ['de 0 : @', 0], ['de −17 : @', 17]]) },
-      { etoiles: 1, col: 1, consigne: 'Donne la distance à zéro.', ...P3.rmp([['de −7 : @', 7], ['de 4,5 : @', '4,5'], ['de −0,3 : @', '0,3'], ['de 12 : @', 12]]) },
-      { etoiles: 1, col: 1, consigne: 'Complète avec <, > ou =.', ...P3.bsc([['−3 @ 2', '&lt;'], ['−5 @ −8', '&gt;'], ['0 @ −0,5', '&gt;'], ['−1,2 @ −1,02', '&lt;']], '') },
+      { etoiles: 1, col: 1, consigne: 'Donne l\'opposé.', ...P3.rmp(plDeux([['de 5 : @', '−5'], ['de −3,2 : @', '3,2'], ['de 0 : @', 0], ['de −17 : @', 17], ['de −8 : @', 8], ['de 2,6 : @', '−2,6'], ['de −0,4 : @', '0,4'], ['de 100 : @', '−100']])) },
+      { etoiles: 1, col: 1, consigne: 'Donne la distance à zéro.', ...P3.rmp(plDeux([['de −7 : @', 7], ['de 4,5 : @', '4,5'], ['de −0,3 : @', '0,3'], ['de 12 : @', 12], ['de −25 : @', 25], ['de 0 : @', 0], ['de −1,8 : @', '1,8'], ['de 9 : @', 9]])) },
+      { etoiles: 1, col: 1, consigne: 'Complète avec <, > ou =.', ...P3.bsc(plDeux([['−3 @ 2', '&lt;'], ['−5 @ −8', '&gt;'], ['0 @ −0,5', '&gt;'], ['−1,2 @ −1,02', '&lt;'], ['−7 @ −7', '='], ['4 @ −6', '&gt;'], ['−2,5 @ −2', '&lt;'], ['−10 @ −1', '&lt;']]), '') },
       { etoiles: 2, col: 1, consigne: 'Complète avec l\'abscisse du point (droite graduée de 1 en 1).', ...P3.rmp([['3 graduations à gauche de 0 : @', '−3'], ['5 graduations à droite de −2 : @', 3], ['4 graduations à gauche de 1 : @', '−3']]) },
       { etoiles: 2, uneLigne: true, consigne: 'Range dans l\'ordre croissant.', ...P3.rmp([['−2 ; 5 ; −7 ; 0 ; 3 : @', '−7 < −2 < 0 < 3 < 5'], ['−1,5 ; −1 ; −2,5 ; 1 : @', '−2,5 < −1,5 < −1 < 1']]) },
       { etoiles: 2, consigne: 'Températures : complète.', ...P3.rmp([['Il fait −4 °C, la température monte de 6 °C : il fait @ °C', 2], ['Il fait 3 °C, la température baisse de 5 °C : il fait @ °C', '−2'], ['De −6 °C à 2 °C, la température monte de @ °C', 8]]) },

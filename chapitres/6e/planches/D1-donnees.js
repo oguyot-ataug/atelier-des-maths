@@ -11,7 +11,7 @@ const S = (w, h, inner, px) => `<svg class="pl-libre" viewBox="0 0 ${w} ${h}" st
 const L = (a, b, c, w, d) => `<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="${c || K}" stroke-width="${w || 1.5}"${d ? ' stroke-dasharray="4 3"' : ''}/>`;
 const T = (x, y, t, o) => cmT(x, y, t, Object.assign({ fs: 11 }, o || {}));
 const tab = (ent, lignes) => `<table class="pl-tab"><tr>${ent.map(e => `<th>${e}</th>`).join('')}</tr>${lignes.map(l => `<tr>${l.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</table>`;
-const ch = (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) + '</div>' });
+const ch = (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`), it.cols) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`), it.cols) + '</div>' });
 const ligne = (...h) => `<span style="display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap;">${h.join(' ')}</span>`;
 const ctr = h => `<div style="text-align:center;">${h}</div>`;
 // Diagramme en barres : data [[nom, valeur]], axe de 0 à max, graduation pas ; vides : indices des barres à tracer (null = toutes tracées).

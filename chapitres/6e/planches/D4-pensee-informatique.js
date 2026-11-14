@@ -4,7 +4,7 @@
 (() => {
 const B = n => plPointilles(n || 3), R = v => plRep(String(v));
 const duo = l => `<div style="display:flex;justify-content:space-around;align-items:flex-start;gap:10px;flex-wrap:wrap;">${l.join('')}</div>`;
-const ch = (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) + '</div>' });
+const ch = (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`), it.cols) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`), it.cols) + '</div>' });
 const FL = { h: '↑', b: '↓', g: '←', d: '→' };
 const prog = p => `<span style="font-family:'JetBrains Mono',monospace;font-weight:700;letter-spacing:2px;">${p.split('').map(c => FL[c]).join(' ')}</span>`;
 // Quadrillage du robot : départ (rond bleu), but (étoile), obstacles, chemin éventuel.

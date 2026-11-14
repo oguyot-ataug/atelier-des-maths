@@ -3,7 +3,7 @@
    ============================================================ */
 (() => {
 const B = n => plPointilles(n || 3), R = v => plRep(String(v));
-const ch = (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) + '</div>' });
+const ch = (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`), it.cols) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`), it.cols) + '</div>' });
 const S = (w, h, inner, px) => `<svg class="pl-libre" viewBox="0 0 ${w} ${h}" style="width:${px || w}px;max-width:100%;display:inline-block;vertical-align:middle;">${inner}</svg>`;
 // Balance en équilibre : à gauche k boîtes « ? » et a unités, à droite b unités (dessin).
 const bal = (k, a, b) => { let s = `<polygon points="150,112 162,112 156,60" fill="#8E9AA8"/><line x1="40" y1="60" x2="272" y2="60" stroke="#4E5665" stroke-width="4"/><path d="M8 92 L120 92 L110 102 L18 102 Z" fill="#C8D1DC" stroke="#4E5665"/><path d="M192 92 L304 92 L294 102 L202 102 Z" fill="#C8D1DC" stroke="#4E5665"/><line x1="64" y1="60" x2="64" y2="92" stroke="#4E5665"/><line x1="248" y1="60" x2="248" y2="92" stroke="#4E5665"/>`;

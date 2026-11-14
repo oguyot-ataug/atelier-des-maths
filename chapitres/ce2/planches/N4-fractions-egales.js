@@ -15,8 +15,8 @@ const { rmp, chx } = P3, F = cm1Frac;
 // Fraction dont un terme est à écrire (null = case vide), sur le modèle de plFrac.
 const fracT = (a, b) => `<span class="pl-frac pl-fd">${a == null ? '<span class="pl-case"></span>' : `<span class="pl-fd-t">${a}</span>`}<span class="pl-barre"></span>${b == null ? '<span class="pl-case"></span>' : `<span class="pl-fd-t">${b}</span>`}</span>`;
 // Égalités à compléter : [[a, b, inconnue en haut ? , réponse, autre terme]] → énoncé et corrigé.
-const egal = l => ({ eleve: plListe(l.map(([a, b, haut, r, t]) => `${F(a, b)} = ${haut ? fracT(null, t) : fracT(t, null)}`)),
-  corr: plListe(l.map(([a, b, haut, r, t]) => `${F(a, b)} = ${P3.R(haut ? F(r, t) : F(t, r))}`)) });
+const egal = l => ({ eleve: plListe(l.map(([a, b, haut, r, t]) => `${F(a, b)} = ${haut ? fracT(null, t) : fracT(t, null)}`), l.cols),
+  corr: plListe(l.map(([a, b, haut, r, t]) => `${F(a, b)} = ${P3.R(haut ? F(r, t) : F(t, r))}`), l.cols) });
 const bande = (n, k) => cm1Bande(n, k, { largeur: 200 }).replace(/style="width:[^;]*;max-width:[^;]*;/, 'style="width:210px;max-width:100%;');
 // Petite figure (bande ou disque) avec, dessous, sa fraction : [figure, contenu sous la figure].
 const petite = f => f[0] === 'b' ? cm1Bande(f[1], f[2], { largeur: 200 }).replace(/style="width:[^;]*;max-width:[^;]*;/, 'style="width:140px;max-width:100%;') : cm1Disque(f[1], f[2], { taille: 62 });

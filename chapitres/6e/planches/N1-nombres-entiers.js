@@ -26,7 +26,7 @@ const pose = (a, op, b, res, o) => cm1Posee([[' ', a], [op, b], [' ', res]], '',
 const div = (a, b) => typeof divisionPoseeHTML === 'function' ? `<div class="pl-div">${divisionPoseeHTML(computeDivisionPosee(a, b))}</div>` : '';
 const grille = (l, h) => cm1Quad(l || 10, h || 7, [], { k: 16, largeur: (l || 10) * 16 });
 // Choix : [texte, réponse, mots] ; suite : n cases (ou les réponses) séparées par un signe.
-const ch = it => ({ eleve: plListe(it.map(([t, , m]) => `${t} <b>${m}</b>`)), corr: plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) });
+const ch = it => ({ eleve: plListe(it.map(([t, , m]) => `${t} <b>${m}</b>`), it.cols), corr: plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`), it.cols) });
 // Une décomposition, un encadrement ne se coupent jamais en fin de ligne (demandé le 31/10/2026 : « une décomposition ne doit
 // jamais se poursuivre sur la ligne suivante »).
 const ligne = h => `<span style="white-space:nowrap;">${h}</span>`;

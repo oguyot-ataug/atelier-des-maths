@@ -4,7 +4,7 @@
 (() => {
 const B = n => plPointilles(n || 4), R = v => plRep(String(v));
 const duo = l => `<div style="display:flex;justify-content:space-around;align-items:flex-start;gap:8px;flex-wrap:wrap;">${l.join('')}</div>`;
-const ch = it => ({ eleve: plListe(it.map(([t, , m]) => `${t} <b>${m}</b>`)), corr: plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) });
+const ch = it => ({ eleve: plListe(it.map(([t, , m]) => `${t} <b>${m}</b>`), it.cols), corr: plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`), it.cols) });
 const fr = x => String(+x.toFixed(6)).replace('.', ',');
 // Multiplication posée de deux décimaux (b a au plus deux chiffres significatifs) : on calcule sans virgule,
 // les produits partiels sont entiers, la virgule est placée dans le résultat. o : { trous, rep } (écran).

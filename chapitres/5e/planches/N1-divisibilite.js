@@ -9,10 +9,10 @@ const rayons = (x, y, c) => [-1, 1].map(s => `<path d="M${x},${y} L${x + s * 30}
 const deuxPhares = DS.fig(180, 120, `<rect x="0" y="100" width="180" height="20" fill="#E3F2FA"/>` + DS.vagues(2, 178, 100) + rayons(48, 22, '#F6C343') + rayons(132, 22, '#F6C343') + DS.phare(48, 100, 84) + DS.phare(132, 100, 84)
   + DS.tx([48, 116], 'toutes les 6 s', { fs: 9 }) + DS.tx([132, 116], 'toutes les 8 s', { fs: 9 }), 160);
 const B = n => plPointilles(n || 3), R = v => plRep(String(v));
-const ch = (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) + '</div>' });
+const ch = (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`), it.cols) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`), it.cols) + '</div>' });
 // Ligne à trous : les @ sont remplacés dans l'ordre par les réponses.
 const trous = (t, reps, n) => { let i = 0, j = 0; return { e: t.replace(/@/g, () => B(n || 2)), c: t.replace(/@/g, () => R(reps[j++])) }; };
-const rmpM = (l, n) => { const r = l.map(([t, reps]) => trous(t, [].concat(reps), n)); return { eleve: plListe(r.map(x => x.e)), corr: plListe(r.map(x => x.c)) }; };
+const rmpM = (l, n) => { const r = l.map(([t, reps]) => trous(t, [].concat(reps), n)); return { eleve: plListe(r.map(x => x.e), l.cols), corr: plListe(r.map(x => x.c), l.cols) }; };
 // Grille de nombres : on entoure ceux qui vérifient f.
 const fmt = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
 const entoure = (l, f, cols) => ({ eleve: plGrille(l.map(fmt), cols || 4), corr: plGrille(l.map(n => f(n) ? plEntoure(fmt(n)) : fmt(n)), cols || 4) });
@@ -60,7 +60,7 @@ PLANCHES['5e|Divisibilité'] = [
       { etoiles: 2, col: 1, consigne: 'Divisible par 4 ? Regarde le nombre formé par les deux derniers chiffres. Entoure.',
         ...ch([['1 316 (16 = 4 × 4) :', 'oui'], ['2 542 :', 'non'], ['7 100 :', 'oui'], ['938 :', 'non'], ['5 024 :', 'oui']], 'oui · non') },
       { etoiles: 2, col: 1, consigne: 'Remplace … par un chiffre pour que le nombre soit divisible par 9.',
-        ...rmpM([['4…6 → 4@6', [8]], ['26… → 26@', [1]], ['1…34 → 1@34', [1]], ['8…8 → 8@8', [2]]], 1) },
+        ...rmpM(plDeux([['4…6 → 4@6', [8]], ['26… → 26@', [1]], ['1…34 → 1@34', [1]], ['8…8 → 8@8', [2]], ['6…5 → 6@5', [7]], ['2…2 → 2@2', [5]], ['…27 → @27', [9]], ['4…3 → 4@3', [2]]]), 1) },
       { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.',
         ...ch([['Un nombre divisible par 9 est divisible par 3 :', 'vrai'], ['Un nombre divisible par 3 est divisible par 9 :', 'faux'], ['La somme des chiffres de 999 999 est 54 : il est divisible par 9 :', 'vrai'], ['234 est divisible par 2, par 3 et par 9 :', 'vrai']], 'vrai · faux') },
       { etoiles: 3, cahier: true, consigne: 'Justifie, en citant le critère, que 7 515 est divisible par 5 et par 9 mais pas par 2.',
@@ -88,7 +88,7 @@ PLANCHES['5e|Divisibilité'] = [
     exos: [
       { etoiles: 1, col: 1, consigne: 'Est-ce un multiple de 3 ? Entoure.', ...P3.ch([['123', 'oui'], ['241', 'non'], ['1 005', 'oui'], ['2 222', 'non']], 'oui · non') },
       { etoiles: 1, col: 1, consigne: 'Est-ce divisible par 9 ? Entoure.', ...P3.ch([['486', 'oui'], ['7 209', 'oui'], ['1 001', 'non'], ['3 330', 'oui']], 'oui · non') },
-      { etoiles: 1, col: 1, consigne: 'Complète.', ...P3.rmp([['21 = 3 × @', 7], ['56 = 7 × @', 8], ['45 = @ × 9', 5], ['72 = 8 × @', 9]]) },
+      { etoiles: 1, col: 1, consigne: 'Complète.', ...P3.rmp(plDeux([['21 = 3 × @', 7], ['56 = 7 × @', 8], ['45 = @ × 9', 5], ['72 = 8 × @', 9], ['63 = 9 × @', 7], ['48 = @ × 6', 8], ['36 = 4 × @', 9], ['54 = 6 × @', 9]])) },
       { etoiles: 2, col: 1, consigne: 'Complète avec le quotient et le reste.', ...P3.rmp([['29 = 4 × @ + @', 7, 1], ['50 = 6 × @ + @', 8, 2], ['63 = 7 × @ + @', 9, 0]]) },
       { etoiles: 2, col: 1, consigne: 'Écris tous les diviseurs.', ...P3.rmp([['de 12 : @', '1 ; 2 ; 3 ; 4 ; 6 ; 12'], ['de 18 : @', '1 ; 2 ; 3 ; 6 ; 9 ; 18'], ['de 7 : @', '1 ; 7']]) },
       { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.', ...P3.ch([['Un nombre divisible par 9 est divisible par 3.', 'vrai'], ['Un nombre divisible par 3 est divisible par 9.', 'faux'], ['Tout nombre pair est divisible par 4.', 'faux']], 'vrai · faux') },

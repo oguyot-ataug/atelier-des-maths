@@ -61,7 +61,7 @@ PLANCHES['6e|Fractions : nombres et partage'] = [
           const L = [], pgcd = (x, y) => y ? pgcd(y, x % y) : x;
           while(L.length < 3){ const b = 2 + Math.floor(alea() * 8), a = 1 + Math.floor(alea() * 12);
             if(pgcd(a, b) !== 1 || (a === 7 && b === 4) || L.some(([x, y]) => x === a || y === b)) continue; L.push([a, b]); }
-          return { eleve: plListe(L.map(([a, b]) => ligne(b + ' ×', Fr, '= ' + a))), corr: plListe(L.map(([a, b]) => ligne(b + ' ×', R(F(a, b)), '= ' + a))) };
+          return { eleve: plListe(L.map(([a, b]) => ligne(b + ' ×', Fr, '= ' + a)), L.cols), corr: plListe(L.map(([a, b]) => ligne(b + ' ×', R(F(a, b)), '= ' + a)), L.cols) };
         } },
       { etoiles: 2, col: 1, consigne: 'Complète les égalités.',
         eleve: plListe([ligne(F(2, 3), '=', Fr, '(dénominateur 12)'), ligne(F(15, 20), '=', Fr, '(numérateur 3)'), ligne(F(7, 5), '=', Fr, '(numérateur 21)'), ligne('1 =', Fr, '(dénominateur 9)')]),
@@ -141,8 +141,8 @@ PLANCHES['6e|Fractions : nombres et partage'] = [
       // case passe de < à >, puis = à chaque clic.
       { etoiles: 2, uneLigne: true, consigne: 'Complète avec &lt;, &gt; ou =.',
         ...(() => { const it = [[`${F(1, 3)} de 90`, `${F(3, 10)} de 90`, '>', '(30 et 27)'], [`${F(3, 4)} de 60`, `${F(4, 5)} de 60`, '<', '(45 et 48)'], [`${F(1, 2)} de 50`, `${F(2, 4)} de 50`, '=', '(25 et 25)']];
-          return { eleve: plListe(it.map(([a, b]) => `<span style="white-space:nowrap;display:inline-block;padding:4px 0;">${a} ${plCase()} ${b}</span>`)),
-            corr: plListe(it.map(([a, b, r, x]) => `<span style="white-space:nowrap;display:inline-block;padding:4px 0;">${a} ${plRep(r === '<' ? '&lt;' : r === '>' ? '&gt;' : r)} ${b}</span> <small>${x}</small>`)) }; })() },
+          return { eleve: plListe(it.map(([a, b]) => `<span style="white-space:nowrap;display:inline-block;padding:4px 0;">${a} ${plCase()} ${b}</span>`), it.cols),
+            corr: plListe(it.map(([a, b, r, x]) => `<span style="white-space:nowrap;display:inline-block;padding:4px 0;">${a} ${plRep(r === '<' ? '&lt;' : r === '>' ? '&gt;' : r)} ${b}</span> <small>${x}</small>`), it.cols) }; })() },
       { etoiles: 2, col: 1, consigne: 'Dans un sac de 36 billes, il y a des rouges, des bleues et des vertes.',
         eleve: plListe([ligne(F(2, 9), 'des billes sont rouges :', B(), 'billes rouges.'), ligne(F(1, 4), 'des billes sont bleues :', B(), 'billes bleues.'), ligne('Les autres sont vertes :', B(), 'billes vertes.')]),
         corr: plListe([ligne(F(2, 9), 'des billes sont rouges :', R(8), 'billes rouges.'), ligne(F(1, 4), 'des billes sont bleues :', R(9), 'billes bleues.'), ligne('Les autres sont vertes : 36 − 8 − 9 =', R(19), 'billes vertes.')]) },

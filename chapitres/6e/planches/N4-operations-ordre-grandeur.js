@@ -5,7 +5,7 @@
 const B = n => plPointilles(n || 4), R = v => plRep(String(v));
 const duo = l => `<div style="display:flex;justify-content:space-around;align-items:flex-start;gap:8px;flex-wrap:wrap;">${l.join('')}</div>`;
 const tab = (ent, lignes) => `<table class="pl-tab"><tr>${ent.map(e => `<th>${e}</th>`).join('')}</tr>${lignes.map(l => `<tr>${l.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</table>`;
-const ch = it => ({ eleve: plListe(it.map(([t, , m]) => `${t} <b>${m}</b>`)), corr: plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) });
+const ch = it => ({ eleve: plListe(it.map(([t, , m]) => `${t} <b>${m}</b>`), it.cols), corr: plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`), it.cols) });
 const fr = x => String(+x.toFixed(4)).replace('.', ',');
 // Opération posée alignée sur la virgule : a op b = résultat (calculé) ; o : { trous, rep } (écran).
 function pose(a, op, b, o){ const r = op === '+' ? a + b : a - b, l = [fr(a), fr(b), fr(r)], d = Math.max(...l.map(x => (x.split(',')[1] || '').length));

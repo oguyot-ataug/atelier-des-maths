@@ -16,7 +16,7 @@ const ad = (p, u, v, c) => `<polyline points="${p[0] + u[0] * 9},${p[1] + u[1] *
 const cd = (a, b) => { const m = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2], l = Math.hypot(b[0] - a[0], b[1] - a[1]), n = [-(b[1] - a[1]) / l * 6, (b[0] - a[0]) / l * 6]; return L([m[0] - n[0], m[1] - n[1]], [m[0] + n[0], m[1] + n[1]], Ro, 1.6); };
 const col = (h, t) => `<span style="display:flex;flex-direction:column;align-items:center;gap:2px;">${h}${t ? `<span>${t}</span>` : ''}</span>`;
 const duo = l => `<div style="display:flex;justify-content:space-around;align-items:flex-end;gap:10px;flex-wrap:wrap;">${l.join('')}</div>`;
-const choix = (items, mots) => ({ eleve: '<div class="pl-col1">' + plListe(items.map(([t]) => `${t} <b>${mots}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(items.map(([t, r]) => `${t} ${plEntoure(r)}`)) + '</div>' });
+const choix = (items, mots) => ({ eleve: '<div class="pl-col1">' + plListe(items.map(([t]) => `${t} <b>${mots}</b>`), items.cols) + '</div>', corr: '<div class="pl-col1">' + plListe(items.map(([t, r]) => `${t} ${plEntoure(r)}`), items.cols) + '</div>' });
 // Quadrillage w × h carreaux de k px (nœuds en i·k, origine 0 : le format de la droite à tracer à l'écran).
 function Gr(w, h, k, f){ let s = ''; for(let x = 0; x <= w; x++) s += L([x * k, 0], [x * k, h * k], '#C9DCEB', 1); for(let y = 0; y <= h; y++) s += L([0, y * k], [w * k, y * k], '#C9DCEB', 1); return S(w * k, h * k, s + f(x => x * k), w * k); }
 // Médiatrice d'un segment [AB] sur quadrillage (A, B en carreaux) ; trace : à l'écran, l'élève trace la droite.
@@ -88,7 +88,7 @@ PLANCHES['6e|Droites parallèles et perpendiculaires'] = [
         ...(() => { const o = { pts: [[[1, 5], 'A', 3, 14], [[5, 3], 'B', 4, -8], [[4, 6], 'C', -14, -4], [[8, 4], 'D', 4, -8], [[9, 1], 'E', -14, -2], [[11, 5], 'F', 8, 12]] },
             T = traceD(12, 7, 15, o, [{ p: [1, 5], v: [2, -1], n: '(AB)', lab: [.9, 6.1] }, { p: [4, 6], v: [2, -1], n: '(CD)', lab: [10.6, 3.4] }, { p: [9, 1], v: [1, 2], n: '(EF)', lab: [11.3, 3.3] }]),
             it = [['(AB)', '//', '(CD)'], ['(AB)', '⊥', '(EF)'], ['(CD)', '⊥', '(EF)']], sym = l => `<span style="white-space:nowrap;font-size:1.1em;">${l}</span>`;
-          return { eleve: cote(T.eleve, '<div class="pl-col1">' + plListe(it.map(([a, , b]) => sym(`${a} ${plCase()} ${b}`))) + '</div>'), corr: cote(T.corr, '<div class="pl-col1">' + plListe(it.map(([a, r, b]) => sym(`${a} ${R(r)} ${b}`))) + '</div>') }; })() },
+          return { eleve: cote(T.eleve, '<div class="pl-col1">' + plListe(it.map(([a, , b]) => sym(`${a} ${plCase()} ${b}`)), it.cols) + '</div>'), corr: cote(T.corr, '<div class="pl-col1">' + plListe(it.map(([a, r, b]) => sym(`${a} ${R(r)} ${b}`)), it.cols) + '</div>') }; })() },
     ] },
   { titre: 'Notations et programmes de construction', duree: '35 min',
     attendus: ['Utiliser les notations (AB), [AB), [AB]', 'Compléter et remettre dans l\'ordre un programme de construction', 'Suivre un programme sur quadrillage'],
@@ -98,7 +98,7 @@ PLANCHES['6e|Droites parallèles et perpendiculaires'] = [
           // Propositions sur leur propre ligne, sous la question et en retrait : en demi-largeur, un tableau les écrasait à
           // l'impression (relecture 6e-G2-P2-E1 : « ne pas coller les réponses aux énoncés »).
           const sous = h => `<div style="padding:2px 0 0 1.4em;white-space:nowrap;">${h}</div>`;
-          return { eleve: plListe(it.map(([t, , m]) => t + sous(`<b>${m}</b>`))), corr: plListe(it.map(([t, r, m]) => t + sous(P3.entoureParmi(m, r)))) }; })() },
+          return { eleve: plListe(it.map(([t, , m]) => t + sous(`<b>${m}</b>`)), it.cols), corr: plListe(it.map(([t, r, m]) => t + sous(P3.entoureParmi(m, r))), it.cols) }; })() },
       { etoiles: 1, col: 1, consigne: `Observe la figure, puis complète son programme de construction.<div style="text-align:center;">${S(250, 130, L([30, 110], [220, 110], K, 2.2) + L([90, 5], [90, 128], Ro, 2) + ad([90, 110], [1, 0], [0, -1]) + L([220, 110], [49, 5], Bl, 2) + P([30, 110], 'A', -14, 4) + P([220, 110], 'B', 4, 14) + P([90, 30], 'C', -14, -2) + P([90, 110], 'H', -14, 16))}</div>`,
         eleve: plListe(['Trace le segment ' + B(3) + '.', 'Place un point C qui n\'appartient pas à la droite ' + B(3) + '.', 'Trace la droite perpendiculaire à (AB) passant par le point ' + B(2) + '.', 'Cette droite coupe le segment [AB] au point ' + B(2) + '.', 'Trace la demi-droite d\'origine B qui passe par C : ' + B(3) + '.']),
         corr: plListe(['Trace le segment ' + R('[AB]') + '.', 'Place un point C qui n\'appartient pas à la droite ' + R('(AB)') + '.', 'Trace la droite perpendiculaire à (AB) passant par le point ' + R('C') + '.', 'Cette droite coupe le segment [AB] au point ' + R('H') + '.', 'Trace la demi-droite d\'origine B qui passe par C : ' + R('[BC)') + '.']) },
@@ -161,7 +161,7 @@ PLANCHES['6e|Droites parallèles et perpendiculaires'] = [
       { etoiles: 1, col: 1, consigne: `Complète avec ⊥ ou //, en t'aidant des codages.<div style="text-align:center;">${POS}</div>`,
         // Une case à compléter ; à l'écran, un clic passe de ⊥ à // (relecture 6e-G2-P5-E1).
         ...(() => { const it = [['(d1)', '⊥', '(d2)'], ['(d1)', '//', '(d3)'], ['(d2)', '⊥', '(d3)']], l = h => `<span style="white-space:nowrap;font-size:1.1em;">${h}</span>`;
-          return { eleve: plListe(it.map(([a, , b]) => l(`${a} ${plCase()} ${b}`))), corr: plListe(it.map(([a, r, b]) => l(`${a} ${R(r)} ${b}`))) }; })() },
+          return { eleve: plListe(it.map(([a, , b]) => l(`${a} ${plCase()} ${b}`)), it.cols), corr: plListe(it.map(([a, r, b]) => l(`${a} ${R(r)} ${b}`)), it.cols) }; })() },
       { etoiles: 2, consigne: 'Dans chaque cas, trace la droite parallèle à (d) passant par le point, en suivant le quadrillage.',
         ...(() => { const c = [{ d: [[0, 88], [154, 88]], M: [66, 22], nomM: 'R' }, { d: [[22, 0], [132, 110]], M: [110, 22], nomM: 'S' }, { d: [[0, 132], [132, 66]], M: [22, 44], nomM: 'T' }];
           const f = o => cm1dpFig({ w: 154, h: 132, k: 22, ...o });
@@ -182,7 +182,7 @@ PLANCHES['6e|Droites parallèles et perpendiculaires'] = [
       // Compléter par ⊥ ou // ; à l'écran, un clic dans la case passe de l'un à l'autre (relecture 6e-G2-P6-E1).
       { etoiles: 2, consigne: 'Que peux-tu dire des droites ? Complète avec ⊥ ou //.',
         ...(() => { const it = [['(d1) ⊥ (d3) et (d2) ⊥ (d3), donc', '(d1)', '//', '(d2)'], ['(d1) // (d2) et (d3) ⊥ (d1), donc', '(d3)', '⊥', '(d2)'], ['(d1) // (d2) et (d2) // (d3), donc', '(d1)', '//', '(d3)'], ['(d1) ⊥ (d2) et (d2) // (d3), donc', '(d1)', '⊥', '(d3)']];
-          return { eleve: plListe(it.map(([t, a, , b]) => `${t} <span style="white-space:nowrap;">${a} ${plCase()} ${b}</span>`)), corr: plListe(it.map(([t, a, r, b]) => `${t} <span style="white-space:nowrap;">${a} ${R(r)} ${b}</span>`)) }; })() },
+          return { eleve: plListe(it.map(([t, a, , b]) => `${t} <span style="white-space:nowrap;">${a} ${plCase()} ${b}</span>`), it.cols), corr: plListe(it.map(([t, a, r, b]) => `${t} <span style="white-space:nowrap;">${a} ${R(r)} ${b}</span>`), it.cols) }; })() },
       { etoiles: 2, col: 1, consigne: 'Complète la démonstration.',
         eleve: plListe(['On sait que : (d1) // (d2) et (d3) ⊥ (d1).', 'Propriété : si deux droites sont parallèles, alors toute droite perpendiculaire à l\'une est ' + B(7) + ' à l\'autre.', 'Donc : (d3) ' + plCase() + ' (d2).']), // relecture 6e-G2-P6-E2 : à compléter, bascule au clic à l'écran
         corr: plListe(['On sait que : (d1) // (d2) et (d3) ⊥ (d1).', 'Propriété : si deux droites sont parallèles, alors toute droite perpendiculaire à l\'une est ' + R('perpendiculaire') + ' à l\'autre.', 'Donc : (d3) ' + R('⊥') + ' (d2).']) },

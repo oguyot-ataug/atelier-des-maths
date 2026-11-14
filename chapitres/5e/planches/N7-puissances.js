@@ -21,25 +21,25 @@ PLANCHES['5e|Puissances'] = [
     attendus: ['Comprendre les notations a² et a³', 'Connaître les carrés de 0 à 12 et le cube de 10'],
     exos: [
       { etoiles: 1, uneLigne: true, consigne: 'Écris sous la forme d\'un produit, puis calcule.', ...P3.rmp([[`${T('6^2')} = @ = @`, T('6 \\times 6'), 36], [`${T('4^3')} = @ = @`, T('4 \\times 4 \\times 4'), 64], [`${T('0{,}3^2')} = @ = @`, T('0{,}3 \\times 0{,}3'), '0,09']], 5) },
-      { etoiles: 1, col: 1, consigne: 'Complète sans calculatrice.', ...P3.rmp([[`${T('7^2')} = @`, 49], [`${T('11^2')} = @`, 121], [`${T('12^2')} = @`, 144], [`${T('10^3')} = @`, '1 000']], 3) },
-      { etoiles: 2, col: 1, consigne: 'Écris avec une puissance.', ...P3.rmp([['5 × 5 = @<sup>@</sup>', 5, 2], ['2 × 2 × 2 = @<sup>@</sup>', 2, 3], ['9 × 9 = @<sup>@</sup>', 9, 2], ['7 × 7 × 7 = @<sup>@</sup>', 7, 3]], 2) },
+      { etoiles: 1, col: 1, consigne: 'Complète sans calculatrice.', ...P3.rmp(plDeux([[`${T('7^2')} = @`, 49], [`${T('11^2')} = @`, 121], [`${T('12^2')} = @`, 144], [`${T('10^3')} = @`, '1 000'], [`${T('9^2')} = @`, 81], [`${T('5^3')} = @`, 125], [`${T('15^2')} = @`, 225], [`${T('2^4')} = @`, 16]]), 3) },
+      { etoiles: 2, col: 1, consigne: 'Écris avec une puissance.', ...P3.rmp(plDeux([['5 × 5 = @<sup>@</sup>', 5, 2], ['2 × 2 × 2 = @<sup>@</sup>', 2, 3], ['9 × 9 = @<sup>@</sup>', 9, 2], ['7 × 7 × 7 = @<sup>@</sup>', 7, 3], ['4 × 4 = @<sup>@</sup>', 4, 2], ['8 × 8 = @<sup>@</sup>', 8, 2], ['6 × 6 × 6 = @<sup>@</sup>', 6, 3], ['1,5 × 1,5 = @<sup>@</sup>', '1,5', 2]]), 2) },
       { etoiles: 2, consigne: 'Complète par = ou ≠.', ...P3.egal([[T('3^2'), '6', 0], [T('10^2'), '100', 1], [T('2^3'), T('3^2'), 0], [T('1^3'), '1', 1], [T('2^4'), T('4^2'), 1], [T('5^2'), '10', 0]], 3) },
       { etoiles: 3, cahier: true, consigne: 'Léa dit : « 5² = 10 ». Explique son erreur.', corr: cm1Redac('L\'erreur de Léa', T('5^2 = 5 \\times 5 = 25'), 'Léa a calculé 5 × 2. Le carré de 5, c\'est 5 multiplié par lui-même : 25.') },
     ] },
   { titre: 'Écrire un nombre comme une puissance', duree: '25 min',
     attendus: ['Écrire un nombre sous la forme d\'un carré ou d\'un cube'],
     exos: [
-      { etoiles: 1, col: 1, consigne: 'Écris sous la forme d\'un carré.', ...P3.rmp([['36 = @<sup>@</sup>', 6, 2], ['81 = @<sup>@</sup>', 9, 2], ['100 = @<sup>@</sup>', 10, 2], ['144 = @<sup>@</sup>', 12, 2]], 2) },
-      { etoiles: 2, col: 1, consigne: 'Écris sous la forme d\'un cube.', ...P3.rmp([['27 = @<sup>@</sup>', 3, 3], ['125 = @<sup>@</sup>', 5, 3], ['1 000 = @<sup>@</sup>', 10, 3], ['8 = @<sup>@</sup>', 2, 3]], 2) },
+      { etoiles: 1, col: 1, consigne: 'Écris sous la forme d\'un carré.', ...P3.rmp(plDeux([['36 = @<sup>@</sup>', 6, 2], ['81 = @<sup>@</sup>', 9, 2], ['100 = @<sup>@</sup>', 10, 2], ['144 = @<sup>@</sup>', 12, 2], ['49 = @<sup>@</sup>', 7, 2], ['25 = @<sup>@</sup>', 5, 2], ['121 = @<sup>@</sup>', 11, 2], ['64 = @<sup>@</sup>', 8, 2]]), 2) },
+      { etoiles: 2, col: 1, consigne: 'Écris sous la forme d\'un cube.', ...P3.rmp(plDeux([['27 = @<sup>@</sup>', 3, 3], ['125 = @<sup>@</sup>', 5, 3], ['1 000 = @<sup>@</sup>', 10, 3], ['8 = @<sup>@</sup>', 2, 3], ['64 = @<sup>@</sup>', 4, 3], ['1 = @<sup>@</sup>', 1, 3], ['216 = @<sup>@</sup>', 6, 3], ['0,001 = @<sup>@</sup>', '0,1', 3]]), 2) },
       { etoiles: 2, col: 1, consigne: 'Écris 64 sous la forme d\'un carré, puis sous la forme d\'un cube.', ...P3.rmp([['64 = @<sup>@</sup> = @<sup>@</sup>', 8, 2, 4, 3]], 2) },
       { etoiles: 3, col: 1, consigne: 'Entre quels carrés consécutifs se trouve chaque nombre ?', ...P3.rmp([['@<sup>@</sup> &lt; 50 &lt; @<sup>@</sup>', 7, 2, 8, 2], ['@<sup>@</sup> &lt; 130 &lt; @<sup>@</sup>', 11, 2, 12, 2]], 2) },
     ] },
   { titre: 'Calculer avec des puissances', duree: '35 min',
     attendus: ['Respecter les priorités : puissances, puis multiplications, puis additions', 'Calculer une expression littérale avec une puissance'],
     exos: [
-      { etoiles: 1, col: 1, consigne: 'Calcule.', ...P3.rmp([[`${T('3 + 2^2')} = @`, 7], [`${T('2 \\times 5^2')} = @`, 50], [`${T('(2 \\times 5)^2')} = @`, 100], [`${T('6^2 - 2^3')} = @`, 28]], 3) },
+      { etoiles: 1, col: 1, consigne: 'Calcule.', ...P3.rmp(plDeux([[`${T('3 + 2^2')} = @`, 7], [`${T('2 \\times 5^2')} = @`, 50], [`${T('(2 \\times 5)^2')} = @`, 100], [`${T('6^2 - 2^3')} = @`, 28], [`${T('10 - 3^2')} = @`, 1], [`${T('3 \\times 2^3')} = @`, 24], [`${T('(1 + 3)^2')} = @`, 16], [`${T('4^2 + 5^2')} = @`, 41]]), 3) },
       { etoiles: 2, cahier: true, consigne: 'Calcule B = 4 + 3 × 2³ en écrivant les étapes.', corr: etapes([['B', ['4 + 3 \\times 2^3', '4 + 3 \\times 8', '4 + 24', '28']]]) },
-      { etoiles: 2, col: 1, consigne: 'Calcule pour x = 3.', ...P3.rmp([[`${T('x^2')} = @`, 9], [`${T('2x^2')} = @`, 18], [`${T('x^2 + x')} = @`, 12], [`${T('x^3 - 1')} = @`, 26]], 3) },
+      { etoiles: 2, col: 1, consigne: 'Calcule pour x = 3.', ...P3.rmp(plDeux([[`${T('x^2')} = @`, 9], [`${T('2x^2')} = @`, 18], [`${T('x^2 + x')} = @`, 12], [`${T('x^3 - 1')} = @`, 26], [`${T('x^3')} = @`, 27], [`${T('(2x)^2')} = @`, 36], [`${T('10 - x^2')} = @`, 1], [`${T('x^2 + 2x')} = @`, 15]]), 3) },
       { etoiles: 3, cahier: true, consigne: 'Calcule C = (5 + 4)² et D = 5² + 4². Les résultats sont-ils égaux ?', corr: etapes([['C', ['(5 + 4)^2', '9^2', '81']], ['D', ['5^2 + 4^2', '25 + 16', '41']]], 'Non : C = 81 et D = 41. Le carré d\'une somme n\'est pas la somme des carrés.') },
     ] },
   // Refaite le 13/11/2026 (« Que penses-tu de cette planche ? » : trois exercices, feuille presque vide, puissances peu présentes) :
@@ -53,7 +53,7 @@ PLANCHES['5e|Puissances'] = [
           ['Cube d\'arête 4 cm : V = @<sup>@</sup> = @ cm³', 4, 3, 64], ['Cube d\'arête 3 cm : V = @<sup>@</sup> = @ cm³', 3, 3, 27], ['Cube d\'arête 10 cm : V = @<sup>@</sup> = @ cm³', 10, 3, '1 000']], 3) },
       { etoiles: 2, col: 1, consigne: 'Complète par cm, cm² ou cm³.',
         ...(() => { const l = [['Côté d\'un carré : 5', 'cm'], ['Aire d\'une face d\'un dé : 4', 'cm²'], ['Volume d\'une boîte : 1 000', 'cm³'], ['Périmètre d\'un carré : 20', 'cm'], ['Aire d\'un timbre : 6', 'cm²']];
-          return { eleve: plListe(l.map(([t]) => `${t} ${plCase('cm|cm²|cm³')}`)), corr: plListe(l.map(([t, r]) => `${t} ${R(r)}`)) }; })() },
+          return { eleve: plListe(l.map(([t]) => `${t} ${plCase('cm|cm²|cm³')}`), l.cols), corr: plListe(l.map(([t, r]) => `${t} ${R(r)}`), l.cols) }; })() },
       { etoiles: 2, col: 1, consigne: 'Complète le tableau pour un cube.',
         ...(() => { const L = [['Arête (cm)', '2', '3', '5', '10'], ['Aire d\'une face (cm²)', '@', '@', '@', '@'], ['Volume (cm³)', '@', '@', '@', '@']], r = [4, 9, 25, 100, 8, 27, 125, '1 000'];
           return { eleve: P3.tab(L, false), corr: P3.tab(L, true, r) }; })() },
@@ -72,11 +72,11 @@ PLANCHES['5e|Puissances'] = [
   { titre: 'Automatismes', duree: '20 min',
     attendus: ['Connaître les carrés et les cubes usuels', 'Écrire un produit sous forme de puissance', 'Calculer avec des puissances'],
     exos: [
-      { etoiles: 1, col: 1, consigne: 'Calcule.', ...P3.rmp([['7<sup>2</sup> = @', 49], ['11<sup>2</sup> = @', 121], ['0,3<sup>2</sup> = @', '0,09'], ['12<sup>2</sup> = @', 144]]) },
-      { etoiles: 1, col: 1, consigne: 'Calcule.', ...P3.rmp([['2<sup>3</sup> = @', 8], ['3<sup>3</sup> = @', 27], ['10<sup>3</sup> = @', '1 000'], ['0,1<sup>3</sup> = @', '0,001']]) },
+      { etoiles: 1, col: 1, consigne: 'Calcule.', ...P3.rmp(plDeux([['7<sup>2</sup> = @', 49], ['11<sup>2</sup> = @', 121], ['0,3<sup>2</sup> = @', '0,09'], ['12<sup>2</sup> = @', 144], ['8<sup>2</sup> = @', 64], ['20<sup>2</sup> = @', 400], ['0,5<sup>2</sup> = @', '0,25'], ['13<sup>2</sup> = @', 169]])) },
+      { etoiles: 1, col: 1, consigne: 'Calcule.', ...P3.rmp(plDeux([['2<sup>3</sup> = @', 8], ['3<sup>3</sup> = @', 27], ['10<sup>3</sup> = @', '1 000'], ['0,1<sup>3</sup> = @', '0,001'], ['4<sup>3</sup> = @', 64], ['5<sup>3</sup> = @', 125], ['1<sup>3</sup> = @', 1], ['0,2<sup>3</sup> = @', '0,008']])) },
       { etoiles: 1, col: 1, consigne: 'Écris sous la forme d\'une puissance.', ...P3.rmp([['5 × 5 × 5 × 5 = @', '5<sup>4</sup>'], ['7 × 7 = @', '7<sup>2</sup>'], ['2 × 2 × 2 × 2 × 2 × 2 = @', '2<sup>6</sup>'], ['10 × 10 × 10 = @', '10<sup>3</sup>']]) },
       { etoiles: 2, col: 1, consigne: 'Calcule.', ...P3.rmp([['10<sup>2</sup> = @', 100], ['10<sup>4</sup> = @', '10 000'], ['10<sup>6</sup> = @', '1 000 000'], ['10<sup>1</sup> = @', 10]]) },
-      { etoiles: 2, col: 1, consigne: 'Calcule en respectant les priorités.', ...P3.rmp([['2 + 3<sup>2</sup> = @', 11], ['(2 + 3)<sup>2</sup> = @', 25], ['2 × 4<sup>2</sup> = @', 32], ['(2 × 4)<sup>2</sup> = @', 64]]) },
+      { etoiles: 2, col: 1, consigne: 'Calcule en respectant les priorités.', ...P3.rmp(plDeux([['2 + 3<sup>2</sup> = @', 11], ['(2 + 3)<sup>2</sup> = @', 25], ['2 × 4<sup>2</sup> = @', 32], ['(2 × 4)<sup>2</sup> = @', 64], ['10 − 2<sup>3</sup> = @', 2], ['(10 − 2)<sup>2</sup> = @', 64], ['3 × 1<sup>2</sup> = @', 3], ['5<sup>2</sup> − 4<sup>2</sup> = @', 9]])) },
       { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['Aire d\'un carré de côté 6 cm : @ cm²', 36], ['Volume d\'un cube d\'arête 4 cm : @ cm³', 64], ['Côté d\'un carré d\'aire 81 cm² : @ cm', 9]]) },
     ] },
 ];

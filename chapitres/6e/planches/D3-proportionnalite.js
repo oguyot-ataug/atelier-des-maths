@@ -5,7 +5,7 @@
 const B = n => plPointilles(n || 3), R = v => plRep(String(v));
 const tab = (ent, lignes) => `<table class="pl-tab"><tr>${ent.map(e => `<th>${e}</th>`).join('')}</tr>${lignes.map(l => `<tr>${l.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</table>`;
 const ctr = h => `<div style="text-align:center;">${h}</div>`;
-const ch = (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) + '</div>' });
+const ch = (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`), it.cols) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`), it.cols) + '</div>' });
 // Tableau de proportionnalité à compléter : l1, l2 = lignes (null = case à trouver), titres t.
 const tp = (t, l1, l2, s1, s2) => ({ eleve: ctr(tab([t[0], ...l1.map(v => v == null ? B() : v)], [[t[1], ...l2.map(v => v == null ? B() : v)]])), corr: ctr(tab([t[0], ...l1.map((v, i) => v == null ? R(s1[i]) : v)], [[t[1], ...l2.map((v, i) => v == null ? R(s2[i]) : v)]])) });
 PLANCHES['6e|Proportionnalité'] = [

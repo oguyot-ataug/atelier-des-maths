@@ -10,8 +10,8 @@ const rectX5 = DS.fig(186, 82, `<rect x="30" y="10" width="140" height="50" fill
 const rectLl = DS.fig(170, 80, `<rect x="24" y="8" width="132" height="54" fill="#EAF4FB" stroke="#1F3A5C" stroke-width="1.8"/>` + DS.tx([90, 76], 'L', { fs: 13, c: '#E35D3A' }) + DS.tx([16, 39], 'ℓ', { a: 'end', fs: 13, c: '#E35D3A' }), 140);
 const triExpr = DS.fig(180, 116, DS.poly([[20, 100], [160, 100], [64, 16]], '#EAF4FB', '#1F3A5C', 1.8) + DS.tx([90, 114], '3x + 1', { fs: 12, c: '#E35D3A' }) + DS.tx([34, 56], '2x', { a: 'end', fs: 12, c: '#E35D3A' }) + DS.tx([120, 54], 'x + 4', { a: 'start', fs: 12, c: '#E35D3A' }), 150);
 const B = n => plPointilles(n || 3), R = v => plRep(String(v));
-const ch = (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) + '</div>' });
-const rmp = (l, n) => ({ eleve: plListe(l.map(([t]) => t.replace('@', B(n || 3)))), corr: plListe(l.map(([t, r]) => t.replace('@', R(r)))) });
+const ch = (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`), it.cols) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`), it.cols) + '</div>' });
+const rmp = (l, n) => ({ eleve: plListe(l.map(([t]) => t.replace('@', B(n || 3))), l.cols), corr: plListe(l.map(([t, r]) => t.replace('@', R(r))), l.cols) });
 const x2 = 'x²';
 // Petite figure : rectangle coté (longueur, largeur en lettres).
 const rect = (L, l, w) => `<svg class="pl-libre" viewBox="0 0 150 90" style="width:${w || 130}px;display:inline-block;vertical-align:middle;"><rect x="22" y="12" width="110" height="55" fill="#EAF4FB" stroke="#1F3A5C" stroke-width="2"/>${cmT(77, 82, L, { fs: 13 })}${cmT(12, 44, l, { fs: 13 })}</svg>`;
@@ -39,19 +39,19 @@ PLANCHES['5e|Calcul littéral'] = [
     attendus: ['Remplacer une lettre par un nombre (substitution)', 'Respecter les priorités opératoires', 'Calculer avec des nombres décimaux ou relatifs'],
     exos: [
       { etoiles: 1, col: 1, consigne: 'Calcule A = 3x + 4 pour…',
-        ...rmp([['x = 2 : A = @', 10], ['x = 0 : A = @', 4], ['x = 10 : A = @', 34], ['x = 1,5 : A = @', '8,5']], 3) },
+        ...rmp(plDeux([['x = 2 : A = @', 10], ['x = 0 : A = @', 4], ['x = 10 : A = @', 34], ['x = 1,5 : A = @', '8,5'], ['x = 5 : A = @', 19], ['x = 3 : A = @', 13], ['x = 0,5 : A = @', '5,5'], ['x = 100 : A = @', 304]]), 3) },
       { etoiles: 1, col: 1, consigne: 'Calcule B = 5(y − 1) pour…',
-        ...rmp([['y = 3 : B = @', 10], ['y = 1 : B = @', 0], ['y = 7 : B = @', 30], ['y = 2,2 : B = @', 6]], 3) },
+        ...rmp(plDeux([['y = 3 : B = @', 10], ['y = 1 : B = @', 0], ['y = 7 : B = @', 30], ['y = 2,2 : B = @', 6], ['y = 2 : B = @', 5], ['y = 11 : B = @', 50], ['y = 1,4 : B = @', 2], ['y = 0 : B = @', '−5']]), 3) },
       { etoiles: 2, col: 1, consigne: 'Pour a = 4 et b = 3, calcule.',
-        ...rmp([['2a + b = @', 11], ['ab = @', 12], ['a² = @', 16], ['a − 2b = @', '−2'], ['3(a + b) = @', 21]], 3) },
+        ...rmp(plDeux([['2a + b = @', 11], ['ab = @', 12], ['a² = @', 16], ['a − 2b = @', '−2'], ['3(a + b) = @', 21], ['b² = @', 9], ['2a − b = @', 5], ['a + b = @', 7], ['5b − a = @', 11], ['a(b + 1) = @', 16]]), 3) },
       { etoiles: 2, col: 1, consigne: 'Calcule C = x² + 2x pour…',
-        ...rmp([['x = 1 : C = @', 3], ['x = 3 : C = @', 15], ['x = 0 : C = @', 0], ['x = 10 : C = @', 120]], 3) },
+        ...rmp(plDeux([['x = 1 : C = @', 3], ['x = 3 : C = @', 15], ['x = 0 : C = @', 0], ['x = 10 : C = @', 120], ['x = 2 : C = @', 8], ['x = 5 : C = @', 35], ['x = 4 : C = @', 24], ['x = 0,5 : C = @', '1,25']]), 3) },
       { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.',
         ...ch([['Si x = 5, alors 2x = 25 :', 'faux'], ['Si x = 5, alors x² = 25 :', 'vrai'], ['Si t = 2, alors 3t + 1 = 7 :', 'vrai'], ['Si t = 2, alors 3(t + 1) = 7 :', 'faux']], 'vrai · faux') },
       { etoiles: 2, col: 1, consigne: 'Le prix d\'une course de taxi est P = 4 + 1,5k (en €, k en km). Calcule.',
-        ...rmp([['Pour 10 km : @ €', 19], ['Pour 4 km : @ €', 10], ['Pour 0 km : @ €', 4]], 3) },
+        ...rmp(plDeux([['Pour 10 km : @ €', 19], ['Pour 4 km : @ €', 10], ['Pour 0 km : @ €', 4], ['Pour 2 km : @ €', 7], ['Pour 20 km : @ €', 34], ['Pour 7 km : @ €', '14,5']]), 3) },
       { etoiles: 2, col: 1, consigne: 'Calcule D = 2x − 5 pour…',
-        ...rmp([['x = 1 : D = @', '−3'], ['x = −2 : D = @', '−9'], ['x = 2,5 : D = @', 0]], 3) },
+        ...rmp(plDeux([['x = 1 : D = @', '−3'], ['x = −2 : D = @', '−9'], ['x = 2,5 : D = @', 0], ['x = 0 : D = @', '−5'], ['x = 4 : D = @', 3], ['x = −1 : D = @', '−7']]), 3) },
       { etoiles: 3, col: 1, cahier: true, consigne: illu(rectLl, 'L\'aire d\'un rectangle de longueur L et de largeur ℓ est L × ℓ. Calcule l\'aire pour L = 7,5 cm et ℓ = 4 cm, puis le périmètre 2(L + ℓ).'),
         corr: cm1Redac('Aire du rectangle', '7,5 × 4 = 30', 'L\'aire est 30 cm².') + cm1Redac('Périmètre du rectangle', '2 × (7,5 + 4) = 2 × 11,5 = 23', 'Le périmètre est 23 cm.') },
     ] },
@@ -79,11 +79,11 @@ PLANCHES['5e|Calcul littéral'] = [
     attendus: ['Développer k(a + b) = ka + kb', 'Développer k(a − b) = ka − kb', 'Utiliser le développement en calcul mental'],
     exos: [
       { etoiles: 1, col: 1, consigne: 'Développe.',
-        ...rmp([['3(x + 4) = @', '3x+12'], ['5(a + 2) = @', '5a+10'], ['2(y − 7) = @', '2y−14'], ['10(1 + t) = @', '10+10t'], ['4(2x + 1) = @', '8x+4']], 6) },
+        ...rmp(plDeux([['3(x + 4) = @', '3x+12'], ['5(a + 2) = @', '5a+10'], ['2(y − 7) = @', '2y−14'], ['10(1 + t) = @', '10+10t'], ['4(2x + 1) = @', '8x+4'], ['6(x + 2) = @', '6x+12'], ['7(b − 1) = @', '7b−7'], ['3(2a + 5) = @', '6a+15'], ['9(1 − y) = @', '9−9y'], ['2(5t + 3) = @', '10t+6']]), 6) },
       { etoiles: 2, col: 1, consigne: 'Développe.',
-        ...rmp([['6(3 − x) = @', '18−6x'], ['3(4 − 2x) = @', '12−6x'], ['0,5(4a + 6) = @', '2a+3'], ['7(2b − 3) = @', '14b−21']], 7) },
+        ...rmp(plDeux([['6(3 − x) = @', '18−6x'], ['3(4 − 2x) = @', '12−6x'], ['0,5(4a + 6) = @', '2a+3'], ['7(2b − 3) = @', '14b−21'], ['4(5 − 2x) = @', '20−8x'], ['2(3a − 7) = @', '6a−14'], ['0,5(2y + 8) = @', 'y+4'], ['10(0,3b − 2) = @', '3b−20']]), 7) },
       { etoiles: 2, col: 1, consigne: 'Complète.',
-        ...rmp([['@(x + 3) = 4x + 12', 4], ['2(a + @) = 2a + 18', 9], ['5(@ − 1) = 5y − 5', 'y'], ['3(2x + 5) = 6x + @', 15]], 2) },
+        ...rmp(plDeux([['@(x + 3) = 4x + 12', 4], ['2(a + @) = 2a + 18', 9], ['5(@ − 1) = 5y − 5', 'y'], ['3(2x + 5) = 6x + @', 15], ['@(y + 5) = 3y + 15', 3], ['4(x + @) = 4x + 8', 2], ['6(@ + 2) = 6a + 12', 'a'], ['2(5x − 1) = 10x − @', 2]]), 2) },
       { etoiles: 2, col: 1, consigne: 'Vrai ou faux pour toutes les valeurs de la lettre ? Entoure. Si c\'est faux, donne dans ton cahier une valeur qui le prouve.',
         ...P3.vfx([['2(x + 5)', '2x + 5', 0, [0, 10, 5]], ['4(a − 3)', '4a − 12', 1], ['3(2 + y)', '6 + 3y', 1], ['5(x + 1)', '5x + 6', 0, [0, 5, 6]]]) },
       { etoiles: 2, col: 1, consigne: 'Développe, puis réduis. Écris une étape par ligne.',
@@ -103,13 +103,13 @@ PLANCHES['5e|Calcul littéral'] = [
       { etoiles: 2, col: 1, consigne: 'Réduis (regroupe d\'abord les termes de même nature). Écris une étape par ligne.',
         ...P3.etp([['A', '5x + 2 − 3x + 7', '5x − 3x + 2 + 7', '2x + 9'], ['B', '4a + 1 − 4a', '4a − 4a + 1', '1'], ['C', '10y − 3 − 2y − 5', '10y − 2y − 3 − 5', '8y − 8']], 1) },
       { etoiles: 2, col: 1, consigne: 'Factorise.',
-        ...rmp([['5x + 5y = @', '5(x+y)'], ['3a + 12 = @', '3(a+4)'], ['7t − 14 = @', '7(t−2)'], ['2x + 2 = @', '2(x+1)']], 6) },
+        ...rmp(plDeux([['5x + 5y = @', '5(x+y)'], ['3a + 12 = @', '3(a+4)'], ['7t − 14 = @', '7(t−2)'], ['2x + 2 = @', '2(x+1)'], ['4a + 4b = @', '4(a+b)'], ['6x + 18 = @', '6(x+3)'], ['4y − 8 = @', '4(y−2)'], ['3t + 3 = @', '3(t+1)']]), 6) },
       { etoiles: 2, col: 1, consigne: 'Entoure l\'expression réduite égale à 4x + 6 − x + 2.',
         ...ch([['Réduction :', '3x + 8'], ['Sa valeur pour x = 2 :', '14']], '3x + 8 · 5x + 8 · 11x · 14 · 18') },
       { etoiles: 2, col: 1, consigne: 'Vrai ou faux pour toutes les valeurs de la lettre ? Entoure. Si c\'est faux, donne dans ton cahier une valeur qui le prouve.',
         ...P3.vfx([['2x + 3x', '5x²', 0, [2, 10, 20]], ['2x + 3', '5x', 0, [0, 3, 0]], ['6a − 6', '6(a − 1)', 1], ['x + x', 'x²', 0, [1, 2, 1]]]) },
       { etoiles: 2, col: 1, consigne: 'Factorise (cherche le facteur commun).',
-        ...rmp([['4x + 4 = @', '4(x+1)'], ['9a − 9b = @', '9(a−b)'], ['6y + 3 = @', '3(2y+1)']], 6) },
+        ...rmp(plDeux([['4x + 4 = @', '4(x+1)'], ['9a − 9b = @', '9(a−b)'], ['6y + 3 = @', '3(2y+1)'], ['5x − 5 = @', '5(x−1)'], ['8a + 8b = @', '8(a+b)'], ['10y + 5 = @', '5(2y+1)']]), 6) },
       { etoiles: 3, col: 1, cahier: true, consigne: illu(triExpr, 'Le périmètre d\'un triangle a pour côtés 2x, 3x + 1 et x + 4. Exprime son périmètre sous forme réduite, puis calcule-le pour x = 5.'),
         corr: cm1Redac('Périmètre du triangle', '2x + 3x + 1 + x + 4 = 6x + 5', 'Le périmètre vaut 6x + 5.') + cm1Redac('Périmètre pour x = 5', '6 × 5 + 5 = 35', 'Pour x = 5, le périmètre vaut 35.') },
       { etoiles: 3, col: 1, cahier: true, consigne: 'Calcule astucieusement en factorisant : 4,5 × 17 + 4,5 × 3, puis 25 × 13 − 25 × 9.',
@@ -118,8 +118,8 @@ PLANCHES['5e|Calcul littéral'] = [
   { titre: 'Automatismes', duree: '20 min',
     attendus: ['Utiliser les conventions d\'écriture', 'Calculer la valeur d\'une expression', 'Réduire, développer, factoriser simplement'],
     exos: [
-      { etoiles: 1, col: 1, consigne: 'Écris plus simplement.', ...P3.rmp([['3 × x = @', '3x'], ['a × b = @', 'ab'], ['x × x = @', 'x²'], ['2 × y × 5 = @', '10y']]) },
-      { etoiles: 1, col: 1, consigne: 'Calcule pour x = 3.', ...P3.rmp([['2x + 1 = @', 7], ['x² = @', 9], ['5 − x = @', 2], ['4(x − 1) = @', 8]]) },
+      { etoiles: 1, col: 1, consigne: 'Écris plus simplement.', ...P3.rmp(plDeux([['3 × x = @', '3x'], ['a × b = @', 'ab'], ['x × x = @', 'x²'], ['2 × y × 5 = @', '10y'], ['y × 4 = @', '4y'], ['a × a = @', 'a²'], ['3 × x × 2 = @', '6x'], ['1 × b = @', 'b']])) },
+      { etoiles: 1, col: 1, consigne: 'Calcule pour x = 3.', ...P3.rmp(plDeux([['2x + 1 = @', 7], ['x² = @', 9], ['5 − x = @', 2], ['4(x − 1) = @', 8], ['3x − 2 = @', 7], ['x² + 1 = @', 10], ['10 − 2x = @', 4], ['2(x + 4) = @', 14]])) },
       { etoiles: 1, col: 1, consigne: 'Réduis.', ...P3.rmp([['3x + 2x = @', '5x'], ['7a − a = @', '6a'], ['4x + 3 + x = @', '5x + 3'], ['2y + 5 − y = @', 'y + 5']]) },
       { etoiles: 2, col: 1, consigne: 'Développe.', ...P3.rmp([['3(x + 2) = @', '3x + 6'], ['5(2 − y) = @', '10 − 5y'], ['2(3a + 4) = @', '6a + 8'], ['k(k + 1) = @', 'k² + k']]) },
       { etoiles: 2, col: 1, consigne: 'Factorise.', ...P3.rmp([['5x + 5y = @', '5(x + y)'], ['3a + 12 = @', '3(a + 4)'], ['7x − 7 = @', '7(x − 1)'], ['4b + 4c = @', '4(b + c)']]) },

@@ -12,9 +12,9 @@ const L = (a, b, c, w) => `<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[
 const T = (x, y, t, o) => cmT(x, y, t, Object.assign({ fs: 11 }, o || {}));
 const d = v => String(+(+v).toFixed(3)).replace('.', ',');
 const tab = (ent, lignes) => `<table class="pl-tab"><tr>${ent.map(e => `<th>${e}</th>`).join('')}</tr>${lignes.map(l => `<tr>${l.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</table>`;
-const ch = (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) + '</div>' });
-const chx = it => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t, , m]) => `${t} <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) + '</div>' });
-const rmp = (l, n) => ({ eleve: plListe(l.map(([t]) => t.replace('@', B(n || 3)))), corr: plListe(l.map(([t, r]) => t.replace('@', R(typeof r === 'number' ? d(r) : r)))) });
+const ch = (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`), it.cols) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`), it.cols) + '</div>' });
+const chx = it => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t, , m]) => `${t} <b>${m}</b>`), it.cols) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`), it.cols) + '</div>' });
+const rmp = (l, n) => ({ eleve: plListe(l.map(([t]) => t.replace('@', B(n || 3))), l.cols), corr: plListe(l.map(([t, r]) => t.replace('@', R(typeof r === 'number' ? d(r) : r))), l.cols) });
 function barres(data, max, pas, o){ o = o || {}; const n = data.length, W = 60 + n * 64, y0 = 170, u = 140 / max; let s = '';
   for(let v = 0; v <= max; v += pas){ const y = y0 - v * u; s += L([40, y], [W - 10, y], 'rgba(28,43,57,.1)', 1) + `<text x="34" y="${y + 4}" font-size="10" text-anchor="end" font-family="JetBrains Mono, monospace" fill="#1C1B2E">${v}</text>`; }
   s += L([40, 20], [40, y0], '#1C1B2E', 1.6) + L([40, y0], [W - 10, y0], '#1C1B2E', 1.6) + (o.axe ? T(44, 14, o.axe, { a: 'start', fs: 10 }) : '');
@@ -34,7 +34,7 @@ PLANCHES['5e|Statistiques'] = [
           return { eleve: tab(['Transport', 'Effectif', 'Fréquence (%)'], D.map(([n, e]) => [n, e, B(1)]).concat([['Total', B(1), '100']])), corr: tab(['Transport', 'Effectif', 'Fréquence (%)'], D.map(([n, e]) => [n, e, R(e * 4)]).concat([['Total', R(25), '100']])) }; })() },
       { etoiles: 1, col: 1, consigne: 'Écris chaque fréquence sous trois formes.',
         ...(() => { const l = [[3, 10, '0,3', 30], [1, 4, '0,25', 25], [7, 20, '0,35', 35]];
-          return { eleve: plListe(l.map(([a, b]) => `${a} sur ${b} = ${F(a, b)} = ${B(2)} = ${B(1)} %`)), corr: plListe(l.map(([a, b, dd, p]) => `${a} sur ${b} = ${F(a, b)} = ${R(dd)} = ${R(p)} %`)) }; })() },
+          return { eleve: plListe(l.map(([a, b]) => `${a} sur ${b} = ${F(a, b)} = ${B(2)} = ${B(1)} %`), l.cols), corr: plListe(l.map(([a, b, dd, p]) => `${a} sur ${b} = ${F(a, b)} = ${R(dd)} = ${R(p)} %`), l.cols) }; })() },
       { etoiles: 2, col: 1, consigne: 'Sur 200 personnes interrogées, voici les effectifs. Calcule les fréquences en %.',
         ...rmp([['Thé : 50 personnes → @ %', 25], ['Café : 90 personnes → @ %', 45], ['Chocolat : 40 personnes → @ %', 20], ['Rien : 20 personnes → @ %', 10]], 2) },
       { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.',
@@ -101,9 +101,9 @@ PLANCHES['5e|Statistiques'] = [
   { titre: 'Automatismes', duree: '20 min',
     attendus: ['Calculer une moyenne simple', 'Calculer une fréquence', 'Lire un effectif, une étendue'],
     exos: [
-      { etoiles: 1, col: 1, consigne: 'Calcule la moyenne.', ...P3.rmp([['10 ; 12 ; 14 : @', 12], ['5 ; 7 ; 9 ; 11 : @', 8], ['3 ; 3 ; 3 ; 15 : @', 6]]) },
+      { etoiles: 1, col: 1, consigne: 'Calcule la moyenne.', ...P3.rmp(plDeux([['10 ; 12 ; 14 : @', 12], ['5 ; 7 ; 9 ; 11 : @', 8], ['3 ; 3 ; 3 ; 15 : @', 6], ['8 ; 10 ; 15 : @', 11], ['2 ; 4 ; 6 ; 8 : @', 5], ['20 ; 0 ; 10 : @', 10]])) },
       { etoiles: 1, col: 1, consigne: 'Calcule la fréquence.', ...P3.rmp([['12 élèves sur 30 : @', '0,4'], ['5 sur 20 : @', '0,25'], ['9 sur 10 : @', '0,9']]) },
-      { etoiles: 2, col: 1, consigne: 'Écris la fréquence en pourcentage.', ...P3.rmp([['0,4 : @ %', 40], ['0,25 : @ %', 25], [`${cm1Frac(3, 4)} : @ %`, 75]]) },
+      { etoiles: 2, col: 1, consigne: 'Écris la fréquence en pourcentage.', ...P3.rmp(plDeux([['0,4 : @ %', 40], ['0,25 : @ %', 25], [`${cm1Frac(3, 4)} : @ %`, 75], ['0,8 : @ %', 80], ['0,05 : @ %', 5], [`${cm1Frac(1, 2)} : @ %`, 50]])) },
       { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['Étendue de 4 ; 12 ; 7 ; 20 : @', 16], ['Effectif total pour 4, 7 et 9 élèves : @', 20], ['Diagramme circulaire : 25 % correspond à @', '90°']]) },
       { etoiles: 2, col: 1, consigne: 'Notes : 8 ; 12 ; 15 ; 9 ; 11. Complète.', ...P3.rmp([['Somme des notes : @', 55], ['Moyenne : @', 11], ['Étendue : @', 7]]) },
       { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.', ...P3.ch([['La moyenne est toujours une des valeurs de la série.', 'faux'], ['Une fréquence est comprise entre 0 et 1.', 'vrai'], ['La somme des fréquences vaut 1.', 'vrai']], 'vrai · faux') },

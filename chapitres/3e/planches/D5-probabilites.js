@@ -7,7 +7,7 @@
 (() => {
 const { B, R, F, T, ligne, rmp, ch, chx, auto, qs } = P3, Fr = plFrac();
 // Probabilités à compléter : [['texte', [num, den]] ou ['texte', valeur décimale]].
-const pr = l => ({ eleve: plListe(l.map(([t, r]) => ligne(t, Array.isArray(r) ? Fr : B(3)))), corr: plListe(l.map(([t, r]) => ligne(t, R(Array.isArray(r) ? F(r[0], r[1]) : r)))) });
+const pr = l => ({ eleve: plListe(l.map(([t, r]) => ligne(t, Array.isArray(r) ? Fr : B(3))), l.cols), corr: plListe(l.map(([t, r]) => ligne(t, R(Array.isArray(r) ? F(r[0], r[1]) : r))), l.cols) });
 PLANCHES['3e|Probabilités'] = [
   { titre: 'Vocabulaire et équiprobabilité', duree: '35 min',
     attendus: ['Utiliser le vocabulaire : issue, événement, impossible, certain, contraire', 'Calculer une probabilité dans une situation d\'équiprobabilité', 'Utiliser P(non A) = 1 − P(A)'],

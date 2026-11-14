@@ -4,10 +4,10 @@
    ============================================================ */
 (() => {
 const B = n => plPointilles(n || 3), R = v => plRep(String(v));
-const ch = (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) + '</div>' });
-const chx = it => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t, , m]) => `${t} <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) + '</div>' }); // choix propres à chaque question
+const ch = (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`), it.cols) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`), it.cols) + '</div>' });
+const chx = it => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t, , m]) => `${t} <b>${m}</b>`), it.cols) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`), it.cols) + '</div>' }); // choix propres à chaque question
 const d = v => String(+(+v).toFixed(3)).replace('.', ',');
-const rmp = (l, n) => ({ eleve: plListe(l.map(([t]) => t.replace('@', B(n || 3)))), corr: plListe(l.map(([t, r]) => t.replace('@', R(typeof r === 'number' ? d(r) : r)))) });
+const rmp = (l, n) => ({ eleve: plListe(l.map(([t]) => t.replace('@', B(n || 3))), l.cols), corr: plListe(l.map(([t, r]) => t.replace('@', R(typeof r === 'number' ? d(r) : r))), l.cols) });
 const T = (a, b) => cm1Tex(`\\dfrac{${a}}{${b}}`), F = cm1Frac;
 // Barre de 100 carreaux (10 × 10) dont n sont colorés : pour visualiser un pourcentage.
 const cent = (n, w) => { let s = ''; for(let i = 0; i < 100; i++){ const x = (i % 10) * 11, y = Math.floor(i / 10) * 11; s += `<rect x="${x + 1}" y="${y + 1}" width="10" height="10" fill="${i < n ? '#7FC29B' : '#fff'}" stroke="#9AB"/>`; } return `<svg class="pl-libre" viewBox="0 0 112 112" style="width:${w || 92}px;display:block;">${s}</svg>`; };
@@ -37,7 +37,7 @@ PLANCHES['5e|Pourcentages'] = [
     attendus: ['Écrire une proportion sous forme de fraction', 'Transformer une fraction en pourcentage (dénominateur 100)', 'Comparer des proportions grâce aux pourcentages'],
     exos: [
       { etoiles: 1, col: 1, consigne: 'Exprime en pourcentage.',
-        ...rmp([[`${T(1, 2)} = @ %`, 50], [`${T(3, 4)} = @ %`, 75], [`${T(1, 5)} = @ %`, 20], [`${T(7, 10)} = @ %`, 70], [`${T(9, 20)} = @ %`, 45]], 2) },
+        ...rmp(plDeux([[`${T(1, 2)} = @ %`, 50], [`${T(3, 4)} = @ %`, 75], [`${T(1, 5)} = @ %`, 20], [`${T(7, 10)} = @ %`, 70], [`${T(9, 20)} = @ %`, 45], [`${T(1, 4)} = @ %`, 25], [`${T(2, 5)} = @ %`, 40], [`${T(3, 10)} = @ %`, 30], [`${T(1, 20)} = @ %`, 5], [`${T(13, 50)} = @ %`, 26]]), 2) },
       { etoiles: 2, col: 1, consigne: 'Quel pourcentage cela représente-t-il ?',
         ...rmp([['12 élèves sur 25 : @ %', 48], ['18 réussites sur 20 : @ %', 90], ['3 filles sur 12 élèves : @ %', 25], ['45 € sur 300 € : @ %', 15]], 2) },
       { etoiles: 2, col: 1, consigne: 'Entoure la plus grande proportion.',
@@ -57,10 +57,10 @@ PLANCHES['5e|Pourcentages'] = [
     exos: [
       { etoiles: 1, col: 1, consigne: 'Soldes : calcule la remise, puis le prix soldé.',
         ...(() => { const l = [[80, 20], [45, 10], [120, 25], [36, 50]];
-          return { eleve: plListe(l.map(([p, t]) => `${p} € avec ${t} % de remise : remise ${B(2)} € ; prix soldé ${B(2)} €`)), corr: plListe(l.map(([p, t]) => `${p} € avec ${t} % de remise : remise ${R(d(p * t / 100))} € ; prix soldé ${R(d(p - p * t / 100))} €`)) }; })() },
+          return { eleve: plListe(l.map(([p, t]) => `${p} € avec ${t} % de remise : remise ${B(2)} € ; prix soldé ${B(2)} €`), l.cols), corr: plListe(l.map(([p, t]) => `${p} € avec ${t} % de remise : remise ${R(d(p * t / 100))} € ; prix soldé ${R(d(p - p * t / 100))} €`), l.cols) }; })() },
       { etoiles: 2, col: 1, consigne: 'Hausse : calcule l\'augmentation, puis le nouveau prix.',
         ...(() => { const l = [[50, 10], [200, 5], [64, 25]];
-          return { eleve: plListe(l.map(([p, t]) => `${p} € augmenté de ${t} % : hausse ${B(2)} € ; nouveau prix ${B(2)} €`)), corr: plListe(l.map(([p, t]) => `${p} € augmenté de ${t} % : hausse ${R(d(p * t / 100))} € ; nouveau prix ${R(d(p + p * t / 100))} €`)) }; })() },
+          return { eleve: plListe(l.map(([p, t]) => `${p} € augmenté de ${t} % : hausse ${B(2)} € ; nouveau prix ${B(2)} €`), l.cols), corr: plListe(l.map(([p, t]) => `${p} € augmenté de ${t} % : hausse ${R(d(p * t / 100))} € ; nouveau prix ${R(d(p + p * t / 100))} €`), l.cols) }; })() },
       { etoiles: 2, col: 1, consigne: 'Entoure l\'offre la plus avantageuse pour un article à 60 €.',
         ...chx([['', '30 % de remise', '30 % de remise · 15 € de remise'], ['', '10 % de remise', '10 % de remise · 5 € de remise'], ['Pour deux articles :', '50 % sur le 2e', '50 % sur le 2e · 20 % sur les deux']]) },
       { etoiles: 2, col: 1, consigne: 'Complète.',
@@ -94,12 +94,12 @@ PLANCHES['5e|Pourcentages'] = [
   { titre: 'Automatismes', duree: '20 min',
     attendus: ['Appliquer un pourcentage simple', 'Exprimer une proportion en pourcentage', 'Calculer une remise'],
     exos: [
-      { etoiles: 1, col: 1, consigne: 'Calcule.', ...P3.rmp([[`${cm1Frac(50, 100)} × 80 = @`, 40], [`${cm1Frac(25, 100)} × 60 = @`, 15], [`${cm1Frac(10, 100)} × 230 = @`, 23], [`${cm1Frac(1, 100)} × 700 = @`, 7]]) },
+      { etoiles: 1, col: 1, consigne: 'Calcule.', ...P3.rmp(plDeux([[`${cm1Frac(50, 100)} × 80 = @`, 40], [`${cm1Frac(25, 100)} × 60 = @`, 15], [`${cm1Frac(10, 100)} × 230 = @`, 23], [`${cm1Frac(1, 100)} × 700 = @`, 7], [`${cm1Frac(20, 100)} × 40 = @`, 8], [`${cm1Frac(75, 100)} × 12 = @`, 9], [`${cm1Frac(10, 100)} × 45 = @`, '4,5'], [`${cm1Frac(5, 100)} × 200 = @`, 10]])) },
       { etoiles: 1, col: 1, consigne: 'Écris en pourcentage.', ...P3.rmp([['12 élèves sur 50 : @ %', 24], ['3 sur 4 : @ %', 75], ['7 sur 20 : @ %', 35]]) },
       { etoiles: 2, col: 1, consigne: 'Un article coûte 40 €, avec une remise de 25 %. Complète.', ...P3.rmp([['Montant de la remise : @ €', 10], ['Prix à payer : @ €', 30]]) },
       { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.', ...P3.ch([['50 %, c\'est la moitié.', 'vrai'], ['25 %, c\'est le quart.', 'vrai'], ['20 %, c\'est le cinquième.', 'vrai'], ['150 % d\'une quantité est plus petit qu\'elle.', 'faux']], 'vrai · faux') },
       { etoiles: 2, col: 1, consigne: 'Un prix de 50 € augmente de 10 %. Complète.', ...P3.rmp([['Hausse : @ €', 5], ['Nouveau prix : @ €', 55]]) },
-      { etoiles: 2, col: 1, consigne: 'Écris en pourcentage.', ...P3.rmp([[`${cm1Frac(1, 2)} = @ %`, 50], [`${cm1Frac(1, 4)} = @ %`, 25], [`${cm1Frac(3, 10)} = @ %`, 30], [`${cm1Frac(1, 5)} = @ %`, 20]]) },
+      { etoiles: 2, col: 1, consigne: 'Écris en pourcentage.', ...P3.rmp(plDeux([[`${cm1Frac(1, 2)} = @ %`, 50], [`${cm1Frac(1, 4)} = @ %`, 25], [`${cm1Frac(3, 10)} = @ %`, 30], [`${cm1Frac(1, 5)} = @ %`, 20], [`${cm1Frac(3, 4)} = @ %`, 75], [`${cm1Frac(9, 10)} = @ %`, 90], [`${cm1Frac(2, 5)} = @ %`, 40], [`${cm1Frac(1, 10)} = @ %`, 10]])) },
       { etoiles: 2, consigne: 'Un collège compte 600 élèves. Complète.', ...P3.rmp([['45 % sont des filles : @ filles', 270], ['30 % sont demi-pensionnaires : @ élèves', 180], ['120 élèves sont en 5e : @ %', 20]], 3) },
     ] },
 ];

@@ -24,11 +24,11 @@ const P3 = {
   ineg: t => { if(!/ [<>≤≥] /.test(t)) return t; const k = t.lastIndexOf(' : '), d = k < 0 ? 0 : k + 3;
     return t.slice(0, d) + '<span class="pl-ineg" style="white-space:nowrap;">' + t.slice(d) + '</span>'; },
   // calc : les lignes brutes, pour poser les opérations dans le corrigé d'un exercice « Pose dans ton cahier » (plPoseesAuto, planches.js).
-  rmp: (l, n) => ({ calc: l, eleve: plListe(l.map(([t]) => P3.ineg(t).split('@').join(P3.B(n || 3)))), corr: plListe(l.map(([t, ...r]) => { let i = 0; return P3.ineg(t).replace(/@/g, () => P3.R(r[i++])) + (r.some(v => v && v.entre) ? ' <small>(ou un autre nombre qui convient)</small>' : ''); })) }),
+  rmp: (l, n, cols) => ({ calc: l, eleve: plListe(l.map(([t]) => P3.ineg(t).split('@').join(P3.B(n || 3))), cols || l.cols), corr: plListe(l.map(([t, ...r]) => { let i = 0; return P3.ineg(t).replace(/@/g, () => P3.R(r[i++])) + (r.some(v => v && v.entre) ? ' <small>(ou un autre nombre qui convient)</small>' : ''); }), cols || l.cols) }),
   // Choix à entourer : [['question', 'bonne réponse'], …], m = les choix proposés (« a · b · c »).
-  ch: (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${P3.entoureParmi(m, r)}`)) + '</div>' }),
+  ch: (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`), it.cols) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${P3.entoureParmi(m, r)}`), it.cols) + '</div>' }),
   // Choix différents pour chaque question : [['question', 'bonne réponse', 'a · b · c'], …].
-  chx: it => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t, , m]) => `${t} <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r, m]) => `${t} ${P3.entoureParmi(m, r)}`)) + '</div>' }),
+  chx: it => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t, , m]) => `${t} <b>${m}</b>`), it.cols) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r, m]) => `${t} ${P3.entoureParmi(m, r)}`), it.cols) + '</div>' }),
   // Choix présentés en tableau (relecture CE2-N1-P2-E8 : « tabulation ou tableau ») : une ligne par question, la
   // question dans la 1re colonne, les choix alignés dans la 2e. Mêmes données que chx.
   chxTab: it => { const t = c => `<table class="pl-chxtab" style="border-collapse:collapse;margin:2px 0;">${it.map(c).join('')}</table>`;
@@ -45,8 +45,8 @@ const P3 = {
   // Automatismes du brevet : questions courtes, réponse à écrire ou à entourer parmi des choix.
   // [['question', réponse, ['choix1', 'choix2', …]?], …]
   auto: it => ({
-    eleve: plListe(it.map(([q, , c]) => c ? `${q} <b>${c.join(' · ')}</b>` : `${q} ${P3.B(4)}`)),
-    corr: plListe(it.map(([q, r, c]) => c ? `${q} ${P3.entoureParmi(c.join(' · '), r)}` : `${q} ${P3.R(r)}`)) }),
+    eleve: plListe(it.map(([q, , c]) => c ? `${q} <b>${c.join(' · ')}</b>` : `${q} ${P3.B(4)}`), it.cols),
+    corr: plListe(it.map(([q, r, c]) => c ? `${q} ${P3.entoureParmi(c.join(' · '), r)}` : `${q} ${P3.R(r)}`), it.cols) }),
   // Questions enchaînées d'un problème de brevet (numérotées comme au brevet) ; une question peut
   // avoir des sous-questions : ['texte', ['a)…', 'b)…']].
   qs: items => `<ol class="pl-bq">${items.map(x => Array.isArray(x) ? `<li>${x[0]}<ol>${x[1].map(y => `<li>${y}</li>`).join('')}</ol></li>` : `<li>${x}</li>`).join('')}</ol>`,
@@ -141,9 +141,9 @@ P3.etp = (l, cols) => { const c = cols || P3.etpCols(l);
     corr: P3.enHaut(plGrille(l.map(([n, e, ...et]) => P3.ET(n, e, et, P3.R)), c)) }; };
 // Case à cliquer (chaque clic passe au choix suivant) : [['texte avec @', réponse], …], choix 'a|b|c'.
 P3.bsc = (l, choix, cols) => { const el = l.map(([t]) => t.replace('@', plCase(choix))), co = l.map(([t, r]) => t.replace('@', P3.R(r)));
-  return cols ? { eleve: plGrille(el, cols), corr: plGrille(co, cols) } : { eleve: plListe(el), corr: plListe(co) }; };
+  return cols ? { eleve: plGrille(el, cols), corr: plGrille(co, cols) } : { eleve: plListe(el, l.cols), corr: plListe(co, l.cols) }; };
 // « Complète par = ou ≠ » : [['membre de gauche', 'membre de droite', vrai ?], …].
-P3.egal = (l, cols) => P3.bsc(l.map(([a, b, v]) => [`${a} @ ${b}`, v ? '=' : '≠']), '=|≠', cols);
+P3.egal = (l, cols) => P3.bsc(Object.assign(l.map(([a, b, v]) => [`${a} @ ${b}`, v ? '=' : '≠']), { cols: l.cols }), '=|≠', cols);
 P3.VERT = '#1F7A4D';
 // Égalité avec une lettre : vrai ou faux POUR TOUTES LES VALEURS (« ≠ » n'y conviendrait pas : x × x et 2x sont égaux pour x = 2) ;
 // si c'est faux, l'élève justifie par un contre-exemple (demandé le 12/11/2026 : « Oui, justifier quand c'est faux »), donné
@@ -153,7 +153,7 @@ P3.vfx = (it, cols) => {
   const nb = v => String(v).replace('-', '−').replace('.', ',');
   const li = ([g, d, v, c, l], corr) => `${g} = ${d}` + (corr ? ` ${P3.entoureParmi('vrai · faux', v ? 'vrai' : 'faux')}`
       + (!v && c ? `<div class="pl-contre" style="font-size:.9em;color:${P3.VERT};">Pour ${l || 'x'} = ${nb(c[0])}, ${g} vaut ${nb(c[1])} et ${d} vaut ${nb(c[2])}.</div>` : '') : ' <b>vrai · faux</b>');
-  const liste = (l, corr) => '<div class="pl-col1">' + plListe(l.map(x => li(x, corr))) + '</div>';
+  const liste = (l, corr) => '<div class="pl-col1">' + plListe(l.map(x => li(x, corr)), l.cols) + '</div>';
   if(cols !== 2) return { eleve: liste(it, false), corr: liste(it, true) };
   const h = Math.ceil(it.length / 2), d = (a, b) => `<div style="display:grid;grid-template-columns:1fr 1fr;gap:2px 24px;align-items:start;">${a}${b}</div>`;
   return { eleve: d(liste(it.slice(0, h), false), liste(it.slice(h), false)), corr: d(liste(it.slice(0, h), true), liste(it.slice(h), true)) }; };

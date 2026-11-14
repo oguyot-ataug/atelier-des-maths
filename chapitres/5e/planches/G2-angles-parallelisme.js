@@ -21,9 +21,9 @@ function arc(V, a1, a2, r, c, txt){ let b = a2; while(b <= a1) b += 360; const p
   return `<path d="M${p[0].toFixed(1)},${p[1].toFixed(1)} A${r},${r} 0 ${large} 0 ${q[0].toFixed(1)},${q[1].toFixed(1)}" fill="none" stroke="${c || Ro}" stroke-width="2"/>` + (txt != null ? (() => { const h = /\u0302$/.test(txt), L = P(V, (a1 + b) / 2, r + (h ? 17 : 12)), t = h ? txt.slice(0, -1) : txt;
     // Lettre d'angle avec un chapeau (x̂) : chapeau dessiné au-dessus de la lettre (l'accent combinant se plaçait mal dans les figures).
     return T(L, t, c || Ro, 11) + (h ? `<path d="M${(L[0] - 3).toFixed(1)},${(L[1] - 8.5).toFixed(1)} L${L[0].toFixed(1)},${(L[1] - 11.5).toFixed(1)} L${(L[0] + 3).toFixed(1)},${(L[1] - 8.5).toFixed(1)}" fill="none" stroke="${c || Ro}" stroke-width="1.1"/>` : ''); })() : ''); }
-const ch = (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) + '</div>' });
-const chx = it => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t, , m]) => `${t} <b>${m}</b>`)) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`)) + '</div>' });
-const rmp = (l, n) => ({ eleve: plListe(l.map(([t]) => t.replace('@', B(n || 3)))), corr: plListe(l.map(([t, r]) => t.replace('@', R(r)))) });
+const ch = (it, m) => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t]) => `${t} <b>${m}</b>`), it.cols) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`), it.cols) + '</div>' });
+const chx = it => ({ eleve: '<div class="pl-col1">' + plListe(it.map(([t, , m]) => `${t} <b>${m}</b>`), it.cols) + '</div>', corr: '<div class="pl-col1">' + plListe(it.map(([t, r]) => `${t} ${plEntoure(r)}`), it.cols) + '</div>' });
+const rmp = (l, n) => ({ eleve: plListe(l.map(([t]) => t.replace('@', B(n || 3))), l.cols), corr: plListe(l.map(([t, r]) => t.replace('@', R(r))), l.cols) });
 const W = n => cm1Tex(`\\widehat{${n}}`);
 // Correction : la propriété en phrase, puis le calcul seul sur la ligne suivante.
 const PH = (phrase, calcul) => `<div>${phrase}</div><div style="margin:2px 0 4px;">${calcul}</div>`;
@@ -70,7 +70,7 @@ PLANCHES['5e|Angles et parallélisme'] = [
     attendus: ['Reconnaître deux angles adjacents', 'Savoir que deux angles supplémentaires ont pour somme 180°', 'Calculer le supplément d\'un angle'],
     exos: [
       { etoiles: 1, col: 1, consigne: `Les angles ${W('a')} et ${W('b')} sont supplémentaires. Calcule ${W('b')}.`,
-        ...(() => { const l = [35, 72, 110, 45, 90]; return { eleve: plListe(l.map(a => `${W('a')} = ${a}° : ${W('b')} = ${B(6)}`)), corr: plListe(l.map(a => `${W('a')} = ${a}° : ${W('b')} = 180° − ${a}° = ${R((180 - a) + '°')}`)) }; })() },
+        ...(() => { const l = [35, 72, 110, 45, 90]; return { eleve: plListe(l.map(a => `${W('a')} = ${a}° : ${W('b')} = ${B(6)}`), l.cols), corr: plListe(l.map(a => `${W('a')} = ${a}° : ${W('b')} = 180° − ${a}° = ${R((180 - a) + '°')}`), l.cols) }; })() },
       { etoiles: 1, col: 1, consigne: 'Ces deux angles sont-ils supplémentaires ? Entoure.',
         ...ch([['30° et 150° :', 'oui'], ['100° et 80° :', 'oui'], ['45° et 145° :', 'non'], ['90° et 90° :', 'oui'], ['50° et 50° :', 'non']], 'oui · non') },
       { etoiles: 2, consigne: 'Les angles marqués sont-ils adjacents ? Entoure.',
@@ -168,7 +168,7 @@ PLANCHES['5e|Angles et parallélisme'] = [
     attendus: ['Savoir que la somme des angles d\'un triangle vaut 180°', 'Calculer la mesure du troisième angle d\'un triangle', 'Utiliser les angles des triangles particuliers (isocèle, équilatéral, rectangle)'],
     exos: [
       { etoiles: 1, col: 1, consigne: 'Calcule la mesure du troisième angle du triangle.',
-        ...(() => { const l = [['50° et 70°', 60], ['90° et 35°', 55], ['110° et 25°', 45], ['60° et 60°', 60], ['12,5° et 100°', '67,5']]; return { eleve: plListe(l.map(([t]) => `${t} : ${B(2)} °`)), corr: plListe(l.map(([t, r]) => `${t} : ${R(r)} °`)) }; })() },
+        ...(() => { const l = [['50° et 70°', 60], ['90° et 35°', 55], ['110° et 25°', 45], ['60° et 60°', 60], ['12,5° et 100°', '67,5']]; return { eleve: plListe(l.map(([t]) => `${t} : ${B(2)} °`), l.cols), corr: plListe(l.map(([t, r]) => `${t} : ${R(r)} °`), l.cols) }; })() },
       { etoiles: 1, col: 1, consigne: 'Calcule la mesure de l\'angle marqué d\'un point d\'interrogation.',
         ...(() => { const f = tri([[20, 110], [190, 110], [80, 20]], ['A', 'B', 'C'], [[0, '57°', Ro], [1, '34°', Bl], [2, '?', Ve]], 210), q = rmp([[`${W('ACB')} = @ °`, 89]], 2);
           return { eleve: f + q.eleve, corr: f + plListe(['Dans un triangle, la somme des trois angles vaut 180°.', `${W('BAC')} + ${W('ABC')} + ${W('ACB')} = 180°`, `${W('ACB')} = 180° − ${W('BAC')} − ${W('ABC')}`, `${W('ACB')} = 180° − 57° − 34°`, `${W('ACB')} = ${R('89°')}`]) }; })() },
@@ -299,7 +299,7 @@ PLANCHES['5e|Angles et parallélisme'] = [
     exos: [
       { etoiles: 1, col: 1, consigne: 'Complète.', ...P3.rmp([['Supplémentaire d\'un angle de 70° : @', '110°'], ['Supplémentaire d\'un angle de 125° : @', '55°'], ['Opposé par le sommet à un angle de 38° : @', '38°']]) },
       { etoiles: 1, col: 1, consigne: 'Complète.', ...P3.rmp([['Angle droit : @', '90°'], ['Angle plat : @', '180°'], ['Tour complet : @', '360°'], ['Angles de l\'équerre : 30°, 60° et @', '90°']]) },
-      { etoiles: 2, col: 1, consigne: 'Calcule le troisième angle du triangle.', ...P3.rmp([['50° et 60° : @', '70°'], ['90° et 35° : @', '55°'], ['112° et 41° : @', '27°']]) },
+      { etoiles: 2, col: 1, consigne: 'Calcule le troisième angle du triangle.', ...P3.rmp(plDeux([['50° et 60° : @', '70°'], ['90° et 35° : @', '55°'], ['112° et 41° : @', '27°'], ['45° et 45° : @', '90°'], ['120° et 25° : @', '35°'], ['73° et 68° : @', '39°']])) },
       { etoiles: 2, col: 1, consigne: 'Complète.', ...P3.rmp([['Triangle isocèle, angle au sommet 40° : angles à la base @', '70°'], ['Triangle équilatéral : chaque angle @', '60°'], ['Triangle rectangle isocèle : angles aigus @', '45°']]) },
       { etoiles: 2, consigne: 'Deux droites parallèles sont coupées par une sécante. Un des angles formés mesure 72°. Complète.', ...P3.rmp([['Son alterne-interne : @', '72°'], ['Son correspondant : @', '72°'], ['Son adjacent supplémentaire : @', '108°']], 3) },
       { etoiles: 2, consigne: 'Vrai ou faux ? Entoure.', ...P3.ch([['Deux angles alternes-internes formés par deux parallèles ont la même mesure.', 'vrai'], ['Deux angles correspondants ont toujours la même mesure.', 'faux'], ['Un triangle peut avoir des angles de 90°, 60° et 40°.', 'faux']], 'vrai · faux') },

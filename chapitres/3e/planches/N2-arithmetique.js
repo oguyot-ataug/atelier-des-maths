@@ -10,7 +10,7 @@ const DS = P3.D, illu = P3.illu;
 const roues2436 = DS.fig(202, 128, DS.roue(44, 60, 36, 24, '#F6DFA4') + DS.roue(44 + 36 + 54 + 4, 60, 54, 36, '#DCE6F0').replace(/<path/, `<path transform="rotate(5 138 60)"`)
   + `<circle cx="80" cy="60" r="3.5" fill="#E35D3A"/>` + DS.tx([44, 112], '24 dents', { fs: 10 }) + DS.tx([138, 126], '36 dents', { fs: 10 }), 150);
 const sq = '<b style="display:inline-block;border:1.5px solid #1F3A5C;width:.9em;height:1em;vertical-align:-2px;"></b>';
-const simp = l => ({ eleve: plListe(l.map(([a, b]) => ligne(F(a, b), '=', Fr))), corr: plListe(l.map(([a, b, c, d]) => ligne(F(a, b), '=', R(F(c, d))))) });
+const simp = l => ({ eleve: plListe(l.map(([a, b]) => ligne(F(a, b), '=', Fr)), l.cols), corr: plListe(l.map(([a, b, c, d]) => ligne(F(a, b), '=', R(F(c, d)))), l.cols) });
 PLANCHES['3e|Arithmétique'] = [
   { titre: 'Multiples, diviseurs et critères de divisibilité', duree: '35 min',
     attendus: ['Reconnaître un multiple, un diviseur', 'Utiliser les critères de divisibilité par 2, 3, 4, 5, 9 et 10', 'Effectuer une division euclidienne'],
